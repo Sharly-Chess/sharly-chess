@@ -29,7 +29,6 @@ from database.sqlite.event.event_store import (
 )
 from plugins import ffe
 from plugins.chessevent import PLUGIN_NAME, TMP_DIR
-from plugins.chessevent.utils import ChessEventTournamentPluginData, ChessEventUtils
 from plugins.chessevent.chessevent_session import (
     ChessEventSession,
     ChessEventTournamentRequestData,
@@ -40,11 +39,11 @@ from plugins.chessevent.chessevent_status import (
     UnexpectedErrorChessEventStatus,
 )
 from plugins.chessevent.exceptions import ChessEventStatusError
+from plugins.chessevent.tournament_importer import options
 from plugins.chessevent.tournament_importer.data import (
     ChessEventTournament,
     ChessEventPlayer,
 )
-from plugins.chessevent.tournament_importer import options
 from plugins.chessevent.tournament_importer.mappers import (
     ChessEventPairingVariation,
     ChessEventTieBreak,
@@ -52,6 +51,7 @@ from plugins.chessevent.tournament_importer.mappers import (
     ChessEventTitle,
     ChessEventRatingType,
 )
+from plugins.chessevent.utils import ChessEventTournamentPluginData, ChessEventUtils
 from plugins.ffe.ffe import FfePlugin
 from plugins.ffe.utils import FfePlayerPluginData
 from utils.enum import TournamentRating, Result

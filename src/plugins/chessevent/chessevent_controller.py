@@ -28,7 +28,6 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
 from web.guards import EventGuard, ActionGuard
 
-
 logger = get_logger()
 
 

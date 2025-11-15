@@ -2,10 +2,11 @@ from collections import defaultdict
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any, Iterable, override
 
+from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
-from litestar.plugins.htmx import HTMXRequest
 from common.i18n import _
+from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import PlayerTableColumn, ColumnUsage
 from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
@@ -14,10 +15,11 @@ from data.event import Player
 from data.print_documents import PlayerSplitter
 from data.print_documents.documents import PrintDocument, PlayerRankingPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
-from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.event.event_store import StoredTournament
-from data.columns import player_table, player_datasheet
+from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins import PLUGINS_DIR
+from plugins.ffe.ffe import FfeLeagueTableColumn, FfePlugin
+from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.papi_converter import PapiPlayer
 from plugins.fra_schools import PLUGIN_NAME
 from plugins.fra_schools.fra_schools_controller import FRASchoolsController
@@ -43,8 +45,6 @@ from plugins.fra_schools.utils import (
     FRASchoolsUtils,
     FRASchoolsEventPluginData,
 )
-from plugins.ffe.ffe import FfeLeagueTableColumn, FfePlugin
-from plugins.ffe.ffe_database import FfeDatabase
 from plugins.hookspec import ExtraAdminColumn, hookimpl
 from plugins.manager import Path
 from plugins.utils import (

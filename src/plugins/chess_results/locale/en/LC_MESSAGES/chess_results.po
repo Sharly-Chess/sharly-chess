@@ -1,0 +1,136 @@
+msgid "Auto-upload disabled"
+msgstr ""
+
+msgid "Auto-upload enabled"
+msgstr ""
+
+msgid "Auto-upload results"
+msgstr ""
+
+msgid "Auto-upload:"
+msgstr ""
+
+msgid "Automatic"
+msgstr ""
+
+msgid "Chess-Results.com"
+msgstr ""
+
+msgid "Chess-Results.com only displays {max} tie-breaks. However, the rankings remain the same as in Sharly Chess."
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Disabled"
+msgstr ""
+
+msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
+msgstr ""
+
+msgid "Enabled"
+msgstr ""
+
+msgid "Error uploading tournament"
+msgstr ""
+
+msgid "Last upload"
+msgstr ""
+
+msgid "Manage"
+msgstr ""
+
+msgid "Manual"
+msgstr ""
+
+msgid "Minimum delay between uploads (minutes):"
+msgstr ""
+
+msgid "Mode"
+msgstr ""
+
+msgid "Modified since last upload"
+msgstr ""
+
+msgid "Modified, but no internet connection"
+msgstr ""
+
+msgid "No Chess-Results ID defined for tournament [{tournament}]."
+msgstr ""
+
+msgid "No internet connection"
+msgstr ""
+
+msgid "Remark:"
+msgstr ""
+
+msgid "Results upload OK"
+msgstr ""
+
+msgid "Scan to access the tournament on Chess-Results.com."
+msgstr ""
+
+msgid "Site"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
+msgstr ""
+
+msgid "Tournament"
+msgstr ""
+
+msgid "Tournament finished, upload no longer possible."
+msgstr ""
+
+msgid "Tournament modified, awaiting auto-upload"
+msgstr ""
+
+msgid "Tournament not modified since last upload"
+msgstr ""
+
+msgid "Tournament not yet uploaded."
+msgstr ""
+
+#, python-format
+msgid "Tournament number: %(tnr)s"
+msgstr ""
+
+msgid "Tournament on Chess-results.com"
+msgstr ""
+
+msgid "Tournament previously uploaded."
+msgstr ""
+
+msgid "Unable to upload tournament."
+msgstr ""
+
+msgid "Unknown error when uploading results."
+msgstr ""
+
+msgid "Upload"
+msgstr ""
+
+msgid "Upload to Chess-Results.com"
+msgstr ""
+
+msgid "Upload tournaments now"
+msgstr ""
+
+msgid "Upload tournaments to Chess-Results.com"
+msgstr ""
+
+msgid "Uploading of tournaments to Chess-Results.com."
+msgstr ""
+
+msgid "Uploading tournament…"
+msgstr ""
+
+msgid "Use default - {option}"
+msgstr ""
+
+msgid "You are not allowed to publish results."
+msgstr ""
+

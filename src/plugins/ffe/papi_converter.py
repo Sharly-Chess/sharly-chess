@@ -1,12 +1,12 @@
+import glob
 import json
+import sqlite3
+import subprocess
 import tempfile
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
-import subprocess
-import glob
-import sqlite3
 
 from common.exception import SharlyChessException, DictReaderException
 from common.i18n import _
@@ -20,8 +20,8 @@ from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
     PairingVariation,
 )
-from data.player import PlayerRating
 from data.player import Player
+from data.player import PlayerRating
 from data.tie_breaks.tie_breaks import ManualTieBreak, TieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_store import (
@@ -33,7 +33,6 @@ from database.sqlite.event.event_store import (
     StoredTieBreak,
 )
 from plugins.ffe import TMP_DIR, PLUGIN_NAME
-from plugins.ffe.utils import FFEUtils
 from plugins.ffe.papi_mappers import (
     PapiPairingVariation,
     PapiPlayerCategory,
@@ -48,9 +47,10 @@ from plugins.ffe.papi_mappers import (
     PapiPlayerTitle,
     PapiPairingSystem,
 )
+from plugins.ffe.utils import FFEUtils
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence, FFE_EPOCH
-from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
 from plugins.manager import plugin_manager
+from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
 from utils import Utils
 from utils.enum import (
     TournamentRating,
@@ -59,7 +59,6 @@ from utils.enum import (
     PlayerRatingType,
     Result,
 )
-
 
 logger = get_logger()
 

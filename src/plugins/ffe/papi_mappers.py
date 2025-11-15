@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from enum import StrEnum, IntEnum
 from typing import Self
 
-from data.tournament import Tournament
 from data.pairing import Pairing
 from data.pairings import PairingVariation, variations
 from data.pairings.systems import (
@@ -11,6 +10,7 @@ from data.pairings.systems import (
     PairingSystem,
 )
 from data.tie_breaks import tie_breaks, TieBreak
+from data.tournament import Tournament
 from plugins.ffe import ffe_tie_breaks
 from plugins.ffe.ffe_tie_breaks import (
     PapiBuchholzTypeOption,

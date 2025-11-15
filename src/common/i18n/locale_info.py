@@ -7,31 +7,36 @@ from logging import Logger
 import re
 from pathlib import Path
 
+from common.i18n.domains import Domain
 from common.logger import get_logger
 
 logger: Logger = get_logger()
 
 
-class LocaleInfo:
+class DomainLocaleInfo(Domain):
     def __init__(
         self,
-        id_: str,
-        locale_dir: Path,
-        default: bool,
-        translators: list[dict[str, str | None]],
+        domain_id: str | None,
+        locale: str,
+        default_locale: str,
     ):
-        self.id: str = id_
-        self.locale_dir: Path = locale_dir
-        self.default: bool = default
-        self.translators: list[dict[str, str | None]] = translators
-        self.po_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.po'
-        self.mo_file: Path = self.locale_dir / self.id / 'LC_MESSAGES' / 'messages.mo'
+        super().__init__(domain_id)
+        self.locale: str = locale
+        self.default: bool = self.locale == default_locale
         self.messages: dict[str, Message] = {}
         self.error_messages: dict[str, Message] = {}
         self.empty_optional_messages: dict[str, Message] = {}
         self.mandatory_messages: dict[str, Message] = {}
         self.empty_mandatory_messages: dict[str, Message] = {}
         self.flagged_messages: dict[str, dict[str, Message]] = {}
+
+    @property
+    def po_file(self) -> Path:
+        return self.locale_po_file(self.locale)
+
+    @property
+    def mo_file(self) -> Path:
+        return self.locale_mo_file(self.locale)
 
     @staticmethod
     def escape_gh_md(string: str) -> str:
@@ -174,7 +179,7 @@ class LocaleInfo:
                         self.flagged_messages[flag][msg.id] = msg
         tmp_file: Path = self.po_file.with_suffix('.tmp')
         with open(tmp_file, 'wb') as f:
-            write_po(f, catalog, width=0, omit_header=True)
+            write_po(f, catalog, width=0, omit_header=True)  # type: ignore
         # compare line by line because files differ on CR/LF
         changed: bool = False
         with open(self.po_file, 'r') as before_f, open(tmp_file, 'r') as after_f:
@@ -199,7 +204,9 @@ class LocaleInfo:
             or self.flagged_messages
         )
         if errors:
-            logger.info(f'- Locale [{self.id}]{" (default)" if self.default else ""}:')
+            logger.info(
+                f'- Locale [{self.locale}]{" (default)" if self.default else ""}:'
+            )
         if self.error_messages:
             logger.error(f'  * Error messages ({len(self.error_messages)})')
             for msg_id in self.error_messages:

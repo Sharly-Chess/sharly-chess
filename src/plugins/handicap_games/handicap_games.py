@@ -21,7 +21,6 @@ from plugins.utils import (
     PluginData,
     PluginUtils,
 )
-
 from utils.time_control import parse_time_control_trf25
 from web.controllers.base_controller import WebContext
 from web.utils import ColumnUsage

@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import IO
+
 from common.i18n import _
 from data.input_output import TournamentExporter
 from data.tournament import Tournament

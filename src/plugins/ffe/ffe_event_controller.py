@@ -1,10 +1,11 @@
 from functools import partial
 from typing import Annotated, Any
+
 from litestar import get, post
-from litestar.response import Template
-from litestar_htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
+from litestar.response import Template
+from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from common import format_timestamp_date_time
 from common.i18n import _

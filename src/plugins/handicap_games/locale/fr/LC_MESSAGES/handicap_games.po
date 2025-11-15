@@ -1,0 +1,37 @@
+msgid "/move"
+msgstr "/cp"
+
+msgid "Adds features for handicap tournaments where weaker players are given a time advantage."
+msgstr "Ajoute des fonctionnalités pour les tournois avec handicap, où les joueur·euses les moins fort·es bénéficient d’un avantage de temps."
+
+#, python-format
+msgid "E.g.: %(val)d"
+msgstr "E.g. : %(val)d"
+
+msgid "Elo step:"
+msgstr "Tranche Elo :"
+
+msgid "Handicap games"
+msgstr "Parties à handicap"
+
+msgid "Minimum time (secs):"
+msgstr "Temps minimal (sec.) :"
+
+msgid "Penalties require a time control with a single period."
+msgstr "Les pénalités nécessitent une cadence avec une seule période."
+
+msgid "Penalty (secs):"
+msgstr "Pénalité (sec.) :"
+
+msgid "The minimum time, whatever the ranking difference between the two players."
+msgstr "La temps minimal, quelle que soit la différence de classement entre les deux joueur·euses."
+
+msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
+msgstr "Le nombre de points de différence entre le classement des joueur·euses utilisé pour calculer le nombre de pénalités appliqué au·à la joueur·euse le·la mieux classé·e."
+
+msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
+msgstr "Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses)."
+
+msgid "Time control"
+msgstr "Temps"
+

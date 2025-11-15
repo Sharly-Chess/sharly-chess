@@ -1,0 +1,125 @@
+#, python-format
+msgid "%(string)s:"
+msgstr "%(string)s :"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Add a school to the options."
+msgstr "Ajouter un établissement aux options."
+
+msgid "Adds support for school competitions in France"
+msgstr "Ajoute la prise en charge des compétitions scolaires en France"
+
+msgid "At least one department is expected."
+msgstr "Au moins un département est attendu."
+
+msgid "At least one school is expected."
+msgstr "Au moins un établissement est attendu."
+
+#, python-format
+msgid "Average age: %(years)s"
+msgstr "Âge moyen : %(years)s ans"
+
+msgid "Cancel"
+msgstr "Annuler"
+
+msgid "Choose at least one department."
+msgstr "Choisir au moins un département."
+
+msgid "Choose at least one school."
+msgstr "Choisir au moins un établissement."
+
+msgid "City"
+msgstr "Ville"
+
+msgid "Code"
+msgstr "Code"
+
+msgid "Complete Team"
+msgstr "Équipe complète"
+
+msgid "Department"
+msgstr "Département"
+
+msgid "Departments"
+msgstr "Départements"
+
+msgid "Exclude: {values}"
+msgstr "Exclure : {values}"
+
+msgid "Filter the schools."
+msgstr "Filtrer les établissements scolaires."
+
+msgid "French School Competitions"
+msgstr "Compétitions scolaires françaises"
+
+msgid "French Schools"
+msgstr "Établissements Scolaires"
+
+msgid "French school"
+msgstr "Établissement scolaire"
+
+msgid "Incomplete Team"
+msgstr "Équipe incomplète"
+
+msgid "Loading more results…"
+msgstr "Plus de résultats en cours de chargement…"
+
+#, python-format
+msgid "Missing boys: %(count)d"
+msgstr "Garçons manquants: %(count)d"
+
+#, python-format
+msgid "Missing girls: %(count)d"
+msgstr "Filles manquantes : %(count)d"
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "OK"
+msgstr "OK"
+
+#, python-format
+msgid "Other missing players: %(count)d"
+msgstr "Autres joueur·euses manquant·es : %(count)d"
+
+msgid "Ranking by school"
+msgstr "Classement par établissement"
+
+msgid "Ranking by school after round #{round}"
+msgstr "Classement par établissement après la ronde n°{round}"
+
+msgid "School *** SCHOOL FOR TABLE HEADER"
+msgstr "Établissement"
+
+msgid "Schools"
+msgstr "Établissements"
+
+#, python-format
+msgid "Search by: %(fields)s"
+msgstr "Rechercher par : %(fields)s"
+
+msgid "Sort the players by school."
+msgstr "Trier les joueur·euses par établissement scolaire."
+
+#, python-format
+msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
+msgstr "La base de données [%(database)s] n'est pas installée (pour l'installer : Menu > Sources de données)."
+
+#, python-format
+msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
+msgstr "La base de données [%(database)s] a été mise à jour pour la dernière fois il y a plus de %(age)d mois. Il est préférable de la mettre à jour avant de continuer (Menu > Sources de données)."
+
+msgid "The tournament has not yet started."
+msgstr "Le tournoi n'est pas encore commencé."
+
+msgid "This round is not finished (last finished: #{round})."
+msgstr "Cette ronde n'est pas terminée (dernière ronde terminée : n°{round})."
+
+msgid "This round is not valid (the tournament has {rounds} rounds)."
+msgstr "Ce numéro de ronde n'est pas valide (le tournoi comporte {rounds} rondes)."
+
+msgid "Total"
+msgstr "Total"
+

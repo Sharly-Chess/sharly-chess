@@ -4,8 +4,10 @@ from datetime import date
 from functools import partial
 from statistics import mean
 from typing import Any, Optional, override, Callable
+
 from common.exception import OptionError
 from common.i18n import _
+from data.columns import player_table as columns
 from data.columns.handlers import PlayerColumnHandler
 from data.columns.player_table import PlayerTableColumn
 from data.event import Player
@@ -19,7 +21,6 @@ from data.print_documents.documents import (
 from plugins.fra_schools.fra_schools_controller import FRASchool, FRASchoolsUtils
 from utils.enum import PlayerGender
 from web.utils import ColumnUsage
-from data.columns import player_table as columns
 
 
 @dataclass

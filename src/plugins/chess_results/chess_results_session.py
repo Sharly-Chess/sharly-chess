@@ -1,8 +1,8 @@
-from functools import partial
-from logging import Logger
 import random
 import time
 import xml.etree.ElementTree as ET
+from functools import partial
+from logging import Logger
 
 import requests
 from requests import Session
@@ -19,8 +19,8 @@ from plugins.chess_results.chess_results_mappers import (
     ChessResultPairingSystem,
 )
 from plugins.chess_results.utils import ChessResultsUtils
-from plugins.utils import PluginUtils
 from plugins.manager import plugin_manager
+from plugins.utils import PluginUtils
 from utils.enum import Result
 
 logger: Logger = get_logger()
