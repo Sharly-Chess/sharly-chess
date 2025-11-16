@@ -324,6 +324,9 @@ msgstr "Fichier Papi"
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "Remplacer [%(old)s] par [%(new)s]"
 
+msgid "Replace the player to update this field."
+msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
+
 msgid "Results upload OK"
 msgstr "Mise en ligne des résultats OK"
 

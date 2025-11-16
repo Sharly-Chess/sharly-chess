@@ -114,6 +114,9 @@ msgstr "La base de données [%(database)s] a été mise à jour pour la dernièr
 msgid "The tournament has not yet started."
 msgstr "Le tournoi n'est pas encore commencé."
 
+msgid "This field is not editable."
+msgstr "Ce champ n'est pas modifiable."
+
 msgid "This round is not finished (last finished: #{round})."
 msgstr "Cette ronde n'est pas terminée (dernière ronde terminée : n°{round})."
 

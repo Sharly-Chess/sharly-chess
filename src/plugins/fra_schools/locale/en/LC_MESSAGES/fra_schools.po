@@ -114,6 +114,9 @@ msgstr ""
 msgid "The tournament has not yet started."
 msgstr ""
 
+msgid "This field is not editable."
+msgstr ""
+
 msgid "This round is not finished (last finished: #{round})."
 msgstr ""
 
