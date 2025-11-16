@@ -262,6 +262,10 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         return PLUGINS_DIR / self.id / 'templates'
 
     @property
+    def locale_path(self) -> Path:
+        return PLUGINS_DIR / self.id / 'locale'
+
+    @property
     def static_path(self) -> Path:
         return PLUGINS_DIR / self.id / 'static'
 

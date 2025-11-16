@@ -81,6 +81,14 @@ class AppPluginManager(PluginManager):
         ]
 
     @property
+    def locale_paths(self) -> list[Path]:
+        return [
+            plugin.locale_path
+            for plugin in self.all_plugins
+            if plugin.locale_path.exists()
+        ]
+
+    @property
     def static_paths(self) -> list[Path]:
         return [
             plugin.static_path
