@@ -12,7 +12,7 @@ window.addEventListener('show.bs.modal', function(event) {
     var target = $(event.relatedTarget);
     if (!target) return;
 
-    // After a modal closes, bootstrap refocusses the element causing the tooltip to reopen.
+    // After a modal closes, bootstrap refocuses the element causing the tooltip to reopen.
     // We disable the tooltip until the button loses focus.
     target.one("focus", function(event) {
         var parent = target.closest('*[data-bs-toggle="tooltip"]')

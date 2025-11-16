@@ -1337,7 +1337,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path=('/return-player/{event_uniq_id:str}/{tournament_id:int}/{player_id:int}'),
+        path='/return-player/{event_uniq_id:str}/{tournament_id:int}/{player_id:int}',
         name='admin-player-return-player',
         guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
     )

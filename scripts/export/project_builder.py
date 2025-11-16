@@ -304,60 +304,62 @@ class ProjectBuilder(ABC):
         external_files_created = []
 
         # Helper function to process installers uniformly
-        def process_installer(installer, install_dir, installer_type):
+        def process_installer(installer_, install_dir, installer_type):
             # Check if installer has licence files OR licence type
-            has_licence_files = installer.licence_files and install_dir.exists()
-            has_licence_type = installer.licence_type is not None
+            has_licence_files = installer_.licence_files and install_dir.exists()
+            has_licence_type = installer_.licence_type is not None
 
             if has_licence_files or has_licence_type:
                 logger.debug(
-                    f'Scanning {installer_type.lower()}: {installer.name} in {install_dir}'
+                    f'Scanning {installer_type.lower()}: {installer_.name} in {install_dir}'
                 )
 
                 # Create one combined file for this tool/library
                 safe_tool_name = (
-                    installer.name.replace('/', '_').replace(' ', '_').replace('-', '_')
+                    installer_.name.replace('/', '_')
+                    .replace(' ', '_')
+                    .replace('-', '_')
                 )
                 individual_file = (
-                    packages_dir / f'{safe_tool_name}-{installer.version}.txt'
+                    packages_dir / f'{safe_tool_name}-{installer_.version}.txt'
                 )
 
                 try:
-                    with open(individual_file, 'w', encoding='utf-8') as f:
-                        f.write(f'Tool/Library: {installer.name}\n')
-                        f.write(f'Version: {installer.version}\n')
+                    with open(individual_file, 'w', encoding='utf-8') as f_:
+                        f_.write(f'Tool/Library: {installer_.name}\n')
+                        f_.write(f'Version: {installer_.version}\n')
 
                         # List sources
                         sources = []
                         if has_licence_files:
                             sources.append(
-                                f'Source Licence Files: {", ".join(installer.licence_files)}'
+                                f'Source Licence Files: {", ".join(installer_.licence_files)}'
                             )
                         if has_licence_type:
-                            sources.append(f'Licence Type: {installer.licence_type}')
+                            sources.append(f'Licence Type: {installer_.licence_type}')
 
                         if sources:
                             for source in sources:
-                                f.write(f'{source}\n')
+                                f_.write(f'{source}\n')
 
-                        f.write('=' * 50 + '\n\n')
+                        f_.write('=' * 50 + '\n\n')
 
                         # First, process any licence files if they exist
                         if has_licence_files:
                             for i, licence_file_path in enumerate(
-                                installer.licence_files
+                                installer_.licence_files
                             ):
                                 licence_file = install_dir / licence_file_path
 
                                 if licence_file.exists() and licence_file.is_file():
-                                    if len(installer.licence_files) > 1:
-                                        f.write(
+                                    if len(installer_.licence_files) > 1:
+                                        f_.write(
                                             f'LICENCE FILE {i + 1}: {licence_file_path}\n'
                                         )
-                                        f.write('-' * 40 + '\n')
+                                        f_.write('-' * 40 + '\n')
                                     else:
-                                        f.write('LICENCE CONTENT:\n')
-                                        f.write('-' * 20 + '\n')
+                                        f_.write('LICENCE CONTENT:\n')
+                                        f_.write('-' * 20 + '\n')
 
                                     try:
                                         with open(
@@ -369,27 +371,27 @@ class ProjectBuilder(ABC):
                                             licence_content = (
                                                 licence_content_file.read()
                                             )
-                                        f.write(licence_content)
+                                        f_.write(licence_content)
                                         if not licence_content.endswith('\n'):
-                                            f.write('\n')
-                                        f.write('\n')  # Extra blank line between files
+                                            f_.write('\n')
+                                        f_.write('\n')  # Extra blank line between files
                                     except Exception as e:
                                         logger.warning(
                                             'Failed to read licence content from [%s]: %s',
                                             licence_file,
                                             str(e),
                                         )
-                                        f.write(
+                                        f_.write(
                                             f'Could not read licence file content: {e}\n'
                                         )
-                                        f.write(
+                                        f_.write(
                                             f'Licence file location: {licence_file}\n\n'
                                         )
 
                                     licence_info.append(
                                         {
-                                            'tool_name': installer.name,
-                                            'tool_version': str(installer.version),
+                                            'tool_name': installer_.name,
+                                            'tool_version': str(installer_.version),
                                             'licence_file': licence_file,
                                             'individual_file': individual_file
                                             if individual_file.exists()
@@ -400,25 +402,27 @@ class ProjectBuilder(ABC):
                                     logger.warning(
                                         'Expected licence file not found: [%s] for [%s]',
                                         licence_file,
-                                        installer.name,
+                                        installer_.name,
                                     )
 
                         # Then, if there's a licence_type, add the template content
                         if has_licence_type:
                             if has_licence_files:
-                                f.write('-' * 40 + '\n')
-                                f.write(f'STANDARD {installer.licence_type} LICENCE:\n')
-                                f.write('-' * 40 + '\n')
+                                f_.write('-' * 40 + '\n')
+                                f_.write(
+                                    f'STANDARD {installer_.licence_type} LICENCE:\n'
+                                )
+                                f_.write('-' * 40 + '\n')
                             else:
-                                f.write('LICENCE CONTENT:\n')
-                                f.write('-' * 20 + '\n')
+                                f_.write('LICENCE CONTENT:\n')
+                                f_.write('-' * 20 + '\n')
 
                             # Path to licence templates
                             templates_dir = (
                                 BASE_DIR / 'src' / 'common' / 'licence_templates'
                             )
                             template_file = (
-                                templates_dir / f'{installer.licence_type}.txt'
+                                templates_dir / f'{installer_.licence_type}.txt'
                             )
 
                             try:
@@ -427,17 +431,17 @@ class ProjectBuilder(ABC):
                                         template_file, 'r', encoding='utf-8'
                                     ) as template_content_file:
                                         template_content = template_content_file.read()
-                                    f.write(template_content)
+                                    f_.write(template_content)
                                     if not template_content.endswith('\n'):
-                                        f.write('\n')
+                                        f_.write('\n')
                                 else:
-                                    f.write(
-                                        f'Licence template not found for type: {installer.licence_type}\n'
+                                    f_.write(
+                                        f'Licence template not found for type: {installer_.licence_type}\n'
                                     )
-                                    f.write(
+                                    f_.write(
                                         f'Please add a template file at: {template_file}\n'
                                     )
-                                    f.write(
+                                    f_.write(
                                         "Or refer to the project's repository for licence details.\n"
                                     )
                             except Exception as e:
@@ -446,17 +450,17 @@ class ProjectBuilder(ABC):
                                     template_file,
                                     str(e),
                                 )
-                                f.write(f'Could not read licence template: {e}\n')
-                                f.write(f'Template file location: {template_file}\n')
+                                f_.write(f'Could not read licence template: {e}\n')
+                                f_.write(f'Template file location: {template_file}\n')
 
                             licence_info.append(
                                 {
-                                    'tool_name': installer.name,
-                                    'tool_version': str(installer.version),
+                                    'tool_name': installer_.name,
+                                    'tool_version': str(installer_.version),
                                     'licence_file': template_file
                                     if template_file.exists()
                                     else None,
-                                    'licence_type': installer.licence_type,
+                                    'licence_type': installer_.licence_type,
                                     'individual_file': individual_file
                                     if individual_file.exists()
                                     else None,
@@ -471,7 +475,7 @@ class ProjectBuilder(ABC):
                 except Exception as e:
                     logger.warning(
                         'Failed to create licence file for [%s]: %s',
-                        installer.name,
+                        installer_.name,
                         str(e),
                     )
 

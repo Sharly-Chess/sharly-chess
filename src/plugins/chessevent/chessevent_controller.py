@@ -93,7 +93,7 @@ class ChessEventController(BaseEventAdminController):
             importer.load_tournament(tournament.event, tournament)
             return True
         except ImporterError:
-            """Already repercuted in the status."""
+            """Already said in the status."""
         except SharlyChessException as error:
             logger.error(
                 'An error occurred while synchronizing '
