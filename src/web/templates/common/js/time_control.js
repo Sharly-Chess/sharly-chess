@@ -3,8 +3,8 @@ var polyglot = new Polyglot({
     phrases: {
         // Units
         'tc.moves':   '{{ _("<smart_count> move |||| <smart_count> moves") }}',
-        'tc.min_abbr': '{{ _("min") }}',
-        'tc.sec_abbr': '{{ _("s") }}',
+        'tc.min_abbr': '{{ _("min *** MINUTES") }}',
+        'tc.sec_abbr': '{{ _("s *** SECONDS") }}',
         'tc.per_move': '{{ _("/move") }}',          // used like “+30 s/move”
         'tc.for_moves': '{{ _("/<moves>") }}',      // used like “90 min/40 moves”
 
@@ -61,13 +61,7 @@ function humanizePeriodShort(p, idx, totalCount){
         const slashForMoves = polyglot.t('tc.for_moves', { moves: movesStr });
         return `${base}${slashForMoves}${inc}`;
     }
-
-    let out = base + inc;
-    // Special case: single-period with increment → add “from move 1”
-    if (totalCount === 1 && p.increment != null && p.increment > 0) {
-        out += ' ' + '{{ _("from move 1") }}';
-    }
-    return out;
+    return base + inc;
 }
 
 function humanizeSideShort(periods){
@@ -92,7 +86,7 @@ function humanizeSideShort(periods){
     let out = parts.join(' {{ _('then') }} ');
 
     // Attach increment only once if shared
-    if (allEqual && commonInc > 0) {
+    if (allEqual && periods.length > 1 && commonInc > 0) {
         out += ` + ${commonInc} ${polyglot.t('tc.sec_abbr')}${polyglot.t('tc.per_move')} {{ _("from move 1") }}`;
     } else {
         const parts = periods.map((p,i) => humanizePeriodShort(p, i, periods.length));

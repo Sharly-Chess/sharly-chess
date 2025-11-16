@@ -191,6 +191,12 @@ msgstr "-"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
+msgid "/<moves>"
+msgstr ""
+
+msgid "/move"
+msgstr ""
+
 msgid "0 - 0 (U)"
 msgstr ""
 
@@ -264,6 +270,18 @@ msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr ""
 
 msgid "<b>Delete</b> from the tournament"
+msgstr ""
+
+msgid "<first> then <second>"
+msgstr ""
+
+msgid "<first>, <second>"
+msgstr ""
+
+msgid "<side>: <text>"
+msgstr ""
+
+msgid "<smart_count> move |||| <smart_count> moves"
 msgstr ""
 
 msgid "A URL, or the path to the rules file on the server, in PDF format."
@@ -2326,6 +2344,9 @@ msgstr ""
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr ""
 
+msgid "Invalid TRF25 string: unexpected characters."
+msgstr ""
+
 msgid "Invalid URL [{background_image}]."
 msgstr ""
 
@@ -2375,6 +2396,9 @@ msgid "Invalid mail [{mail}]."
 msgstr ""
 
 msgid "Invalid password."
+msgstr ""
+
+msgid "Invalid period:"
 msgstr ""
 
 msgid "Invalid time [{time_str}]."
@@ -2949,6 +2973,9 @@ msgid "Not paired"
 msgstr ""
 
 msgid "Not paired for this round"
+msgstr ""
+
+msgid "Not specified"
 msgstr ""
 
 msgid "Notification"
@@ -5591,8 +5618,14 @@ msgstr ""
 msgid "forfeits played"
 msgstr ""
 
+msgid "from move 1"
+msgstr ""
+
 msgid "last"
 msgstr ""
+
+msgid "min *** MINUTES"
+msgstr "min"
 
 msgid "minimum: {value}"
 msgstr ""
@@ -5648,6 +5681,9 @@ msgstr ""
 msgid "round_{round}"
 msgstr ""
 
+msgid "s *** SECONDS"
+msgstr "s"
+
 msgid "screens of {number} boards"
 msgstr ""
 
@@ -5691,6 +5727,9 @@ msgid "the number of moves must not be specified for the final period."
 msgstr ""
 
 msgid "the whole ranking"
+msgstr ""
+
+msgid "then"
 msgstr ""
 
 msgid "value: {value}"
