@@ -155,9 +155,7 @@ _i18n_pattern: str = (
     )
     + os.sep
 )
-_jinja_pattern: str = (
-    os.sep + os.sep.join(['Lib', 'site-packages', 'jinja2']) + os.sep
-)
+_jinja_pattern = os.sep + os.sep.join(['Lib', 'site-packages', 'jinja2']) + os.sep
 
 
 def get_filename_plugin_name(filename: str) -> str:
