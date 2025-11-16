@@ -2345,7 +2345,7 @@ msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Identifiant FIDE [{fide_id}] non valide."
 
 msgid "Invalid TRF25 string: unexpected characters."
-msgstr "Valeur TRF25 invalide : charactères inattendus."
+msgstr "Valeur TRF25 invalide : caractères inattendus."
 
 msgid "Invalid URL [{background_image}]."
 msgstr "URL [{background_image}] non valide."
