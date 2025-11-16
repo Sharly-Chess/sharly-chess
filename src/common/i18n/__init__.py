@@ -156,7 +156,7 @@ _i18n_pattern: str = (
     + os.sep
 )
 _jinja_pattern: str = (
-    os.sep + os.sep.join(['venv', 'Lib', 'site-packages', 'jinja2']) + os.sep
+    os.sep + os.sep.join(['Lib', 'site-packages', 'jinja2']) + os.sep
 )
 
 
