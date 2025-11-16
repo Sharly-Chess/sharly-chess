@@ -189,6 +189,10 @@ def get_i18n_domain() -> str:
 
 def gettext(message: str, locale: str | None = None):
     """Overrides the gettext.gettext() function to use the locale of the current thread."""
+    logger.error(f'gettext([{message}]):')
+    for frame_summary in reversed(extract_stack()):
+        logger.error(f'{frame_summary=}])')
+    logger.error(f'gettext([{get_i18n_domain()=}])')
     if locales:
         return _all_translations[get_i18n_domain()][locale or get_locale()].gettext(
             message
