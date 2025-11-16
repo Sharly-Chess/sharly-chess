@@ -3797,6 +3797,9 @@ msgstr "Remplacer [%(old)s] par [%(new)s]"
 msgid "Replace player"
 msgstr "Remplacer le·la joueur·euse"
 
+msgid "Replace the player to update this field."
+msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
+
 #, python-format
 msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
 msgstr "Remplace la catégorie [%(category)s] et supprime tous les critères de cette catégorie."
@@ -4713,6 +4716,9 @@ msgstr "Ce champ ne peut être modifié une fois le tournoi commencé."
 
 msgid "This field can't be updated once the tournament has started."
 msgstr "Ce champ ne peut être mis à jour après le début du tournoi."
+
+msgid "This field is not editable."
+msgstr "Ce champ n'est pas modifiable."
 
 msgid "This field is required."
 msgstr "Ce champ est obligatoire."

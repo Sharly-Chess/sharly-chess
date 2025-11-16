@@ -324,6 +324,9 @@ msgstr ""
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr ""
 
+msgid "Replace the player to update this field."
+msgstr ""
+
 msgid "Results upload OK"
 msgstr ""
 
