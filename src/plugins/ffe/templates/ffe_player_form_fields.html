@@ -2,15 +2,20 @@
     {{ _('French Chess Federation') }}
 </h4>
 <div class="row gy-2 gx-3">
-    <div class="col-12 col-md-4 col-sm-6">
+    <div class="col-12 col-md-6">
         {{ admin_macros.text_input(
             name='ffe_licence_number',
             label=_('%(string)s:', string=_('Licence no. *** LICENCE NUMBER')),
             placeholder=_('E.g.: %(string)s', string='R08943'),
+            disabled=action == 'update' or data['ffe_id'] != '',
+            input_tooltip=_(
+                'This field is not editable. If you need to replace the value, '
+                'you have to use the `Replace` button on the players tab.'
+            ) if action == 'update' or data['ffe_id'] != '' else '',
             data=data, errors=errors
         ) }}
     </div>
-    <div class="col-12 col-md-4 col-sm-6">
+    <div class="col-12 col-md-6">
         {{ admin_macros.select_input(
             name='ffe_licence',
             label=_('Licence:'),
@@ -18,13 +23,5 @@
             data=data, errors=errors
         ) }}
     </div>
-    <div class="col-12 col-md-4 col-sm-6">
-        {{ admin_macros.number_input(
-            name='ffe_id',
-            label=_('%(string)s:', string=_('FFE ID')),
-            disabled=true,
-            min=1,
-            data=data, errors=errors
-        ) }}
-    </div>
+    <input type="hidden" name="ffe_id" value="{{ data['ffe_id'] }}">
 </div>

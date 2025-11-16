@@ -243,6 +243,10 @@
                             name='fide_id',
                             label=_('FIDE ID:'),
                             disabled=true,
+                            input_tooltip=_(
+                                'This field is not editable. If you need to replace the value, '
+                                'you have to use the `Replace` button on the players tab.'
+                            ),
                             min=1,
                             data=data, errors=errors
                         ) }}
