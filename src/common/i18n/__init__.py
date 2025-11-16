@@ -134,8 +134,7 @@ def set_locale(locale: str) -> bool:
 
 _domain_names: list[str] = [d.name for d in Domain.get_domains()]
 _plugins_pattern: str = (
-    os.sep
-    + os.sep.join(
+    os.sep.join(
         [
             'src',
             'plugins',
@@ -144,58 +143,79 @@ _plugins_pattern: str = (
     + os.sep
 )
 _plugins_pattern_len: int = len(_plugins_pattern)
+
+
+def get_filename_plugin_name(filename: str, debug: bool = False) -> str:
+    pos: int = filename.rfind(_plugins_pattern)
+    if pos != -1:
+        relative_path: str = filename[pos + _plugins_pattern_len :]
+        plugin_name: str = relative_path.split(os.sep, 1)[0]
+        if plugin_name in _domain_names:
+            if debug:
+                logger.debug(
+                    f'get_filename_plugin_name({filename=}): {_plugins_pattern=} found, {plugin_name=} found in [{", ".join(_domain_names)} => [{plugin_name}].'
+                )
+            return plugin_name
+        else:
+            if debug:
+                logger.debug(
+                    f'get_filename_plugin_name({filename=}): {_plugins_pattern=} found, {plugin_name=} not found in [{", ".join(_domain_names)} => [{Domain.core_name}].'
+                )
+    else:
+        if debug:
+            logger.debug(f'gettext({filename=}): {_plugins_pattern=} not found.')
+    return Domain.core_name
+
+
 _i18n_pattern: str = (
-    os.sep
-    + os.sep.join(
+    os.sep.join(
         [
-            'src',
             'common',
             'i18n',
         ]
     )
     + os.sep
 )
-_jinja_pattern = os.sep + os.sep.join(['site-packages', 'jinja2']) + os.sep
+_jinja_pattern: str = 'jinja2' + os.sep
 
 
-def get_filename_plugin_name(filename: str) -> str:
-    pos: int = filename.rfind(_plugins_pattern)
-    if pos != -1:
-        relative_path: str = filename[pos + _plugins_pattern_len :]
-        plugin_name: str = relative_path.split(os.sep, 1)[0]
-        if plugin_name in _domain_names:
-            return plugin_name
-    return Domain.core_name
-
-
-def get_i18n_domain() -> str:
+def get_i18n_domain(debug: bool = False) -> str:
     global _domain_names
-    search_current_frame: bool = True
     stack_summary: StackSummary = extract_stack()
     for frame_summary in reversed(stack_summary):
-        if search_current_frame:
-            if frame_summary.name == 'get_i18n_domain':
-                search_current_frame = False
-                continue
-        else:
-            # looking for the calling frame (not in this module)
-            if (
-                frame_summary.filename.rfind(_i18n_pattern) == -1
-                and frame_summary.filename.rfind(_jinja_pattern) == -1
-            ):
-                return get_filename_plugin_name(frame_summary.filename)
+        if frame_summary.filename.rfind(_i18n_pattern) != -1:
+            if debug:
+                logger.debug(
+                    f'get_i18n_domain(): {frame_summary=}: pattern {_i18n_pattern=} found in {frame_summary.filename=}, ignoring the frame.'
+                )
+            continue
+        if frame_summary.filename.rfind(_jinja_pattern) != -1:
+            if debug:
+                logger.debug(
+                    f'get_i18n_domain(): {frame_summary=}: pattern {_jinja_pattern=} found in {frame_summary.filename=}, ignoring the frame.'
+                )
+            continue
+        # we have our calling frame
+        if debug:
+            logger.debug(
+                f'get_i18n_domain(): {frame_summary=}: pattern {_jinja_pattern=} found in {frame_summary.filename=}, calling get_filename_plugin_name()'
+            )
+        return get_filename_plugin_name(frame_summary.filename, debug=debug)
+    if debug:
+        logger.debug(f'get_i18n_domain(): should never happen => {Domain.core_name}')
     return Domain.core_name
 
 
 def gettext(message: str, locale: str | None = None):
     """Overrides the gettext.gettext() function to use the locale of the current thread."""
-    logger.error(f'gettext([{message}]):')
-    for frame_summary in reversed(extract_stack()):
-        logger.error(f'{frame_summary=}])')
-    logger.error(f'gettext([{get_i18n_domain()=}])')
+    debug: bool = message.startswith('FFE licence')
+    if debug:
+        logger.debug(f'gettext({message=}):')
     if locales:
-        return _all_translations[get_i18n_domain()][locale or get_locale()].gettext(
-            message
+        return _all_translations[get_i18n_domain(debug=debug)][
+            locale or get_locale()
+        ].gettext(
+            message,
         )
     else:
         return gettext_lib.gettext(message)
