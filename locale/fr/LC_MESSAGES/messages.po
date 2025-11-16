@@ -191,6 +191,12 @@ msgstr "-"
 msgid "- *** SHORT NAME FOR GENDER NONE"
 msgstr "-"
 
+msgid "/<moves>"
+msgstr "/<moves>"
+
+msgid "/move"
+msgstr "/cp"
+
 msgid "0 - 0 (U)"
 msgstr "0 - 0 (NC)"
 
@@ -265,6 +271,18 @@ msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %
 
 msgid "<b>Delete</b> from the tournament"
 msgstr "<b>Supprimer</b> du tournoi"
+
+msgid "<first> then <second>"
+msgstr "<first> puis <second>"
+
+msgid "<first>, <second>"
+msgstr "<first>, <second>"
+
+msgid "<side>: <text>"
+msgstr "<side> : <text>"
+
+msgid "<smart_count> move |||| <smart_count> moves"
+msgstr "<smart_count> coup |||| <smart_count> coups"
 
 msgid "A URL, or the path to the rules file on the server, in PDF format."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF."
@@ -2326,6 +2344,9 @@ msgstr "Maître International"
 msgid "Invalid FIDE ID [{fide_id}]."
 msgstr "Identifiant FIDE [{fide_id}] non valide."
 
+msgid "Invalid TRF25 string: unexpected characters."
+msgstr "Valeur TRF25 invalide : charactères inattendus."
+
 msgid "Invalid URL [{background_image}]."
 msgstr "URL [{background_image}] non valide."
 
@@ -2376,6 +2397,9 @@ msgstr "Mél [{mail}] non valide."
 
 msgid "Invalid password."
 msgstr "Mot de passe invalide."
+
+msgid "Invalid period:"
+msgstr "Période invalide :"
 
 msgid "Invalid time [{time_str}]."
 msgstr "Heure non valide [{time_str}]."
@@ -2950,6 +2974,9 @@ msgstr "Non-apparié·e"
 
 msgid "Not paired for this round"
 msgstr "Non-apparié·e pour cette ronde"
+
+msgid "Not specified"
+msgstr "Non-spécifié"
 
 msgid "Notification"
 msgstr "Notification"
@@ -5585,8 +5612,14 @@ msgstr "exemple"
 msgid "forfeits played"
 msgstr "forfaits joués"
 
+msgid "from move 1"
+msgstr "depuis le 1er coup"
+
 msgid "last"
 msgstr "dernier"
+
+msgid "min *** MINUTES"
+msgstr "min"
 
 msgid "minimum: {value}"
 msgstr "minimum : {value}"
@@ -5642,6 +5675,9 @@ msgstr "classement du début à {last}"
 msgid "round_{round}"
 msgstr "ronde_{round}"
 
+msgid "s *** SECONDS"
+msgstr "s"
+
 msgid "screens of {number} boards"
 msgstr "écrans de {number} échiquiers"
 
@@ -5686,6 +5722,9 @@ msgstr "le nombre de coups ne doit pas être spécifié pour la période finale.
 
 msgid "the whole ranking"
 msgstr "classement complet"
+
+msgid "then"
+msgstr "puis"
 
 msgid "value: {value}"
 msgstr "valeur : {value}"
