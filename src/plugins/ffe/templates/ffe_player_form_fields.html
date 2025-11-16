@@ -9,8 +9,7 @@
             placeholder=_('E.g.: %(string)s', string='R08943'),
             disabled=action == 'update' or data['ffe_id'] != '',
             input_tooltip=_(
-                'This field is not editable. If you need to replace the value, '
-                'you have to use the `Replace` button on the players tab.'
+                'Replace the player to update this field.'
             ) if action == 'update' or data['ffe_id'] != '' else '',
             data=data, errors=errors
         ) }}
