@@ -155,6 +155,7 @@ _i18n_pattern: str = (
     )
     + os.sep
 )
+_jinja_pattern = os.sep + os.sep.join(['site-packages', 'jinja2']) + os.sep
 
 
 def get_filename_plugin_name(filename: str) -> str:
@@ -178,7 +179,10 @@ def get_i18n_domain() -> str:
                 continue
         else:
             # looking for the calling frame (not in this module)
-            if frame_summary.filename.rfind(_i18n_pattern) == -1:
+            if (
+                frame_summary.filename.rfind(_i18n_pattern) == -1
+                and frame_summary.filename.rfind(_jinja_pattern) == -1
+            ):
                 return get_filename_plugin_name(frame_summary.filename)
     return Domain.core_name
 
