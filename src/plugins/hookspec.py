@@ -50,7 +50,7 @@ hookimpl = pluggy.HookimplMarker(APP_NAME)
 
 
 class AppHookSpecs:
-    """Holds all hookspecs for this application"""
+    """Holds all hook specs for this application"""
 
     # ---------------------------------------------------------------------------------
     # Initialisation and configuration

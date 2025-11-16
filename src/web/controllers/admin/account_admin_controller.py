@@ -260,8 +260,8 @@ class AccountAdminController(BaseEventAdminController):
                     account_name=full_name
                 )
 
-        password = WebContext.form_data_to_str(flat_data, field := 'password')
-        password_hash: str | None = None
+        password = WebContext.form_data_to_str(flat_data, 'password')
+        password_hash: str | None
         if not password:
             if action == FormAction.UPDATE:
                 assert account is not None
@@ -272,10 +272,10 @@ class AccountAdminController(BaseEventAdminController):
             password_hash = PasswordHasher().hash(password)
 
         chief_tournament_ids = WebContext.form_data_to_list_int(
-            flat_data, field := 'chief_tournament_ids'
+            flat_data, 'chief_tournament_ids'
         )
         deputy_tournament_ids = WebContext.form_data_to_list_int(
-            flat_data, field := 'deputy_tournament_ids'
+            flat_data, 'deputy_tournament_ids'
         )
         event = web_context.get_admin_event()
         for tournament_id in deputy_tournament_ids:
@@ -566,7 +566,7 @@ class AccountAdminController(BaseEventAdminController):
         )
 
     @get(
-        path=('/account-permission-create-modal/{event_uniq_id:str}/{account_id:int}'),
+        path='/account-permission-create-modal/{event_uniq_id:str}/{account_id:int}',
         name='admin-account-permission-create-modal',
     )
     async def htmx_admin_account_permission_create_modal(

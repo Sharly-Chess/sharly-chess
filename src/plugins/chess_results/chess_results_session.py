@@ -449,7 +449,8 @@ class ChessResultsSession(Session):
                 )
 
                 # Retry the upload once (fresh creation)
-                return self.upload()
+                self.upload()
+                return
 
             self.report_error(error_text)
         else:

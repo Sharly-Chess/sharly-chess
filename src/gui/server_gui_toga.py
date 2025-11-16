@@ -71,8 +71,8 @@ def ansi_to_html(s: str) -> str:
             }
         ]
 
-    def escape_html(text: str) -> str:
-        return text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+    def escape_html(string: str) -> str:
+        return string.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
 
     i = 0
     while i < len(parts):
@@ -260,6 +260,7 @@ class SharlyChessServerToga(toga.App):
     """Main Toga GUI app for Sharly Chess server."""
 
     def __init__(self, *, debug: bool = False, port: int | None = None):
+        icon_file_name: str | None = None
         system = platform.system()
         match system:
             case 'Windows':
@@ -297,22 +298,23 @@ class SharlyChessServerToga(toga.App):
         self.expanded_size = (1200, 700)
 
         # GUI elements (initialized in startup)
-        self.main_box: toga.Box
-        self.browser_btn: toga.Button
-        self.network_btn: toga.Button
-        self.website_btn: toga.Button
-        self.clear_btn: toga.Button
-        self.toggle_log_btn: toga.Button
-        self.log_view: toga.Box
-        self.html_view: toga.WebView
-        self.log_level_select: toga.Selection
-        self.launch_browser_switch: toga.Switch
-        self.color_switch: toga.Switch
-        self.show_level_switch: toga.Switch
-        self.show_time_switch: toga.Switch
-        self.info_view: toga.Box
-        self.main_buttons_section: toga.Box
-        self.networks_section: toga.Box
+        self.main_box: Optional[toga.Box] = None
+        self.browser_btn: Optional[toga.Button] = None
+        self.network_btn: Optional[toga.Button] = None
+        self.website_btn: Optional[toga.Button] = None
+        self.clear_btn: Optional[toga.Button] = None
+        self.toggle_log_btn: Optional[toga.Button] = None
+        self.log_view: Optional[toga.Box] = None
+        self.html_view: Optional[toga.WebView] = None
+        self.log_level_select: Optional[toga.Selection] = None
+        self.launch_browser_switch: Optional[toga.Switch] = None
+        self.color_switch: Optional[toga.Switch] = None
+        self.show_level_switch: Optional[toga.Switch] = None
+        self.show_time_switch: Optional[toga.Switch] = None
+        self.info_view: Optional[toga.Box] = None
+        self.main_buttons_section: Optional[toga.Box] = None
+        self.networks_section: Optional[toga.Box] = None
+        self.networks_view: Optional[toga.Box] = None
 
     # --- Toga lifecycle ---
     def startup(self):
@@ -462,6 +464,7 @@ class SharlyChessServerToga(toga.App):
 
     def on_running(self):
         # Logging handler
+        assert self.html_view is not None
         self.html_view.set_content('about:blank', LOG_HTML)
         self.gui_handler = GUILogHandler(self)
         self.gui_handler.setLevel(logging.DEBUG)
@@ -477,10 +480,11 @@ class SharlyChessServerToga(toga.App):
         return button
 
     def on_server_ready(self):
+        assert self.browser_btn is not None
         self.browser_btn.enabled = True
         config = SharlyChessConfig()
-        network_interfaces = config.lan_ifaces
-        if network_interfaces := network_interfaces:
+        if config.lan_ifaces:
+            assert self.networks_section is not None
             self.networks_section.add(
                 toga.Label(
                     text=_(
@@ -628,7 +632,10 @@ class SharlyChessServerToga(toga.App):
         self.networks_visible = not self.networks_visible
 
         # Show/hide networks view
+        assert self.networks_section is not None
+        assert self.info_view is not None
         if self.networks_visible:
+            assert self.info_view is not None
             if self.networks_section not in self.info_view.children:
                 self.info_view.add(self.networks_section)
         else:
@@ -639,6 +646,7 @@ class SharlyChessServerToga(toga.App):
         self.main_window.size = self.compact_size
 
         # Update button label
+        assert self.network_btn is not None
         self.network_btn.text = (
             _('Hide Networks') if self.networks_visible else _('See Networks')
         )
@@ -647,15 +655,21 @@ class SharlyChessServerToga(toga.App):
         self.log_visible = not self.log_visible
 
         # Show/hide log view
+        assert self.log_view is not None
         self.log_view.style.visibility = 'visible' if self.log_visible else 'hidden'
+        assert self.clear_btn is not None
         self.clear_btn.style.visibility = 'visible' if self.log_visible else 'hidden'
+        assert self.html_view is not None
         self.html_view.refresh()
 
         # Update button label
+        assert self.toggle_log_btn is not None
         self.toggle_log_btn.text = _('Hide Log') if self.log_visible else _('Show Log')
 
         # Resize window to fit content
         assert isinstance(self.main_window, toga.MainWindow)
+        assert self.main_box is not None
+        assert self.info_view is not None
         if self.log_visible:
             if self.log_view not in self.main_box.children:
                 self.main_box.add(self.log_view)
@@ -808,6 +822,7 @@ class SharlyChessServerToga(toga.App):
                 # Flush safely; ignore individual eval errors
                 for js in self._pending_js:
                     try:
+                        assert self.html_view is not None
                         self.html_view.evaluate_javascript(js)
                     except Exception:
                         pass
@@ -818,6 +833,7 @@ class SharlyChessServerToga(toga.App):
     def _eval_or_buffer_js(self, js: str):
         if self._logview_ready:
             try:
+                assert self.html_view is not None
                 self.html_view.evaluate_javascript(js)
             except Exception as e:
                 print(e)

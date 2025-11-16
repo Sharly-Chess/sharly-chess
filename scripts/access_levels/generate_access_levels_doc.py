@@ -356,7 +356,7 @@ def generate_doc(
     print_interactive_info('Done.')
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-o',
@@ -378,3 +378,7 @@ if __name__ == '__main__':
         sys.exit(1)
     dev_output_dir: Path = Path(__file__).parents[2] / 'docs' / 'technical-appendices'
     generate_doc(dev_output_dir, web_output_dir)
+
+
+if __name__ == '__main__':
+    main()
