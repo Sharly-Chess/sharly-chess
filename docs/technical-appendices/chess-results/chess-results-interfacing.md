@@ -106,7 +106,7 @@ For increased security, each upload call SHOULD be preceded by a GETSID call.
 > [!NOTE]
 > It is unknown whether an old (> 1s) SID can be used during the UPLOAD call
 
-In all the sections, optional data can be sent empty. It is unknown whether the field needs to be sent empty, or if it can simply be ommitted.
+In all the sections, optional data can be sent empty. It is unknown whether the field needs to be sent empty, or if it can simply be omitted.
 
 ### Tournament data (mandatory)
 

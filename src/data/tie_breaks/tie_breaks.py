@@ -721,7 +721,7 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
 class SumOfBuchholzTieBreak(BuchholzTieBreak):
     """The sum of Buchholz scores of the opponents.
     Options:
-      - FORE_MODIFIER: When True, will use Fore Bochholz instead of total Buchholz.
+      - FORE_MODIFIER: When True, will use Fore Buchholz instead of total Buchholz.
     """
 
     @staticmethod
@@ -780,7 +780,7 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
 class AverageOfBuchholzTieBreak(BuchholzTieBreak):
     """The average of opponents Buchholz scores.
     Options:
-      - FORE_MODIFIER: When True, will use Fore Bochholz instead of total Buchholz.
+      - FORE_MODIFIER: When True, will use Fore Buchholz instead of total Buchholz.
     See FIDE Handbook C.07.8.2."""
 
     @staticmethod

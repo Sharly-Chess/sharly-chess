@@ -13,7 +13,16 @@
 
             <div class="team">
                 <div class="team-rank">{{ ordinal_integer(loop.index)|safe }}</div>
-                <div class="team-title">{{ team.school.name }} <span class="team-label">{{ team.label }}</span></div>
+                <div class="team-title">
+                    {{ team.school.name }}{% if team.label %}<span class="team-label"> {{ team.label }}</span>{% endif %}{% if team.school.city %},
+                        <span class="school-city">
+                            {{ team.school.city }}
+                            {% if team.school.department %}
+                                ({{ team.school.department }})
+                            {% endif %}
+                        </span>
+                    {% endif %}
+                </div>
                 <div class="team-info">
                     {% if team.avg_age_years %}
                         <div style="margin-bottom: 0.75rem;">

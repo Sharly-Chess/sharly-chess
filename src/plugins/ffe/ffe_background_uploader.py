@@ -266,17 +266,17 @@ class FfeBackgroundUploader:
             try:
                 # Set the locale (called in a new thread)
                 set_locale(SharlyChessConfig().locale)
-                for event_uuid, tournament_id in updated_tournaments:
+                for event_uuid_, tournament_id_ in updated_tournaments:
                     scheduled_upload = cls_.timeout_threads.get(
-                        cls_.result_id(event_uuid, tournament_id)
+                        cls_.result_id(event_uuid_, tournament_id_)
                     )
                     if scheduled_upload and scheduled_upload.is_alive():
                         # Cancel the scheduled upload
                         scheduled_upload.cancel()
                         cls_.timeout_threads.pop(
-                            cls_.result_id(event_uuid, tournament_id), None
+                            cls_.result_id(event_uuid_, tournament_id_), None
                         )
-                    cls_.upload_tournament(event_uuid, tournament_id, True)
+                    cls_.upload_tournament(event_uuid_, tournament_id_, True)
 
             finally:
                 cls.uploading_event = False

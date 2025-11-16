@@ -7,7 +7,7 @@ from common import experimental_features_enabled
 from collections import defaultdict
 import json
 from dataclasses import dataclass
-from typing import Annotated, Any
+from typing import Annotated, Any, Optional
 
 from common.i18n.utils import by
 from data.access_levels.actions import AuthAction
@@ -620,6 +620,7 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         board_id: int = int(data['board_id'])
         key: str = data['key']
+        result: Optional[Result] = None
         match key:
             case 'Digit0' | 'Numpad0':
                 result = Result.NO_RESULT
@@ -634,7 +635,7 @@ class PairingsAdminController(BaseEventAdminController):
                     template_name='/common/empty.html',
                     re_swap='none',
                 )
-
+        assert result is not None
         return self._admin_update_result(
             request,
             tournament_id=tournament_id,
@@ -657,8 +658,7 @@ class PairingsAdminController(BaseEventAdminController):
 
         # If there aren't any pairings, then the round for the bye is the first round
         round_for_participation = web_context.admin_round or 1
-        new_byes: dict[int, Result] = {}
-        new_byes[round_for_participation] = result
+        new_byes: dict[int, Result] = {round_for_participation: result}
         tournament.set_player_byes(player, new_byes)
         if success_message:
             Message.success(web_context.request, success_message)

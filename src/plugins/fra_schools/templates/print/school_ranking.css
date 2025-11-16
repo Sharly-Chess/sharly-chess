@@ -37,6 +37,11 @@
     font-weight: bold;
 }
 
+.school-city {
+    font-size: 1.5rem;
+    font-style: italic;
+}
+
 .team-info {
     grid-column: 1 / -1;
     contain: inline-size;
