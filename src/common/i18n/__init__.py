@@ -133,15 +133,7 @@ def set_locale(locale: str) -> bool:
 
 
 _domain_names: list[str] = [d.name for d in Domain.get_domains()]
-_plugins_pattern: str = (
-    os.sep.join(
-        [
-            'src',
-            'plugins',
-        ]
-    )
-    + os.sep
-)
+_plugins_pattern: str = 'plugins' + os.sep
 _plugins_pattern_len: int = len(_plugins_pattern)
 
 
@@ -208,7 +200,7 @@ def get_i18n_domain(debug: bool = False) -> str:
 
 def gettext(message: str, locale: str | None = None):
     """Overrides the gettext.gettext() function to use the locale of the current thread."""
-    debug: bool = message.startswith('FFE licence')
+    debug: bool = message.startswith('A - Competition *** FFE licence')
     if debug:
         logger.debug(f'gettext({message=}):')
     if locales:
