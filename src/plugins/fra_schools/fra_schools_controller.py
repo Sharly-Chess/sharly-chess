@@ -146,7 +146,7 @@ class FRASchoolsController(BaseEventAdminController):
         if not school.name:
             errors['fra_school_name'] = _('This field is required.')
         if school.postal_code and not (
-            school.postal_code.isdigit() and len(school.postal_code) != 5
+            school.postal_code.isdigit() and len(school.postal_code) == 5
         ):
             errors['fra_school_postal_code'] = _('Invalid format (expected: 5 digits).')
         if not errors:
