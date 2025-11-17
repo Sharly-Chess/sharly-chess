@@ -1,21 +1,27 @@
 import weakref
 from typing import TYPE_CHECKING, Optional
+from collections import namedtuple
 
 from trf.Player import Game as TrfGame
 
 from logging import Logger
+from common.i18n import _
 from common.logger import get_logger
 from data.board import Board
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPairing
 from utils import Utils
-from utils.enum import Result, BoardColor
+from utils.enum import Result, BoardColor, PlayerRatingType
+from utils.fide_ratings import find_win_probability
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.player import Player
 
 logger: Logger = get_logger()
+
+
+RatingChange = namedtuple('RatingChange', ['delta', 'new_rating', 'comment'])
 
 
 class Pairing:
@@ -218,6 +224,68 @@ class Pairing:
         return (
             board.black_player if self.color == BoardColor.WHITE else board.white_player
         )
+
+    def fide_rating_change(self, k_factor: int):
+        player = self.player
+        opponent = self.opponent
+        if self.unplayed:
+            return RatingChange(None, player.rating_used_by_fide.value, '')
+
+        assert opponent is not None
+        if player.rating_used_by_fide.type != PlayerRatingType.FIDE:
+            return RatingChange(
+                None, player.rating_used_by_fide.value, _('Player is not yet rated.')
+            )
+
+        if opponent.rating_used_by_fide.type != PlayerRatingType.FIDE:
+            return RatingChange(
+                None, player.rating_used_by_fide.value, _('Unrated opponent.')
+            )
+
+        diff = opponent.rating_used_by_fide.value - player.rating_used_by_fide.value
+
+        # - For players rated below 2650, clamp |diff| to 400.
+        # - For players rated 2650 and above, use full difference.
+        if player.rating_used_by_fide.value < 2650:
+            if diff > 400:
+                diff = 400
+            elif diff < -400:
+                diff = -400
+
+        # Find matching probability (fallback to last)
+        expected = find_win_probability(diff)
+        delta = round(k_factor * (self.result.point_value - expected), 2)
+        new_rating = round(player.rating_used_by_fide.value + delta, 2)
+
+        comment = ''
+        opponent_rating_overriddent = not opponent.rating_is_overridden(
+            player.tournament.rating, player.tournament.player_rating_type
+        ) and opponent.fide_will_override_with_standard_rating(
+            player.tournament.rating, player.tournament.player_rating_type
+        )
+        player_rating_overriddent = not player.rating_is_overridden(
+            player.tournament.rating, player.tournament.player_rating_type
+        ) and player.fide_will_override_with_standard_rating(
+            player.tournament.rating, player.tournament.player_rating_type
+        )
+
+        if opponent_rating_overriddent and player_rating_overriddent:
+            comment = _(
+                'The FIDE will the standard ratings of both players for this game ({rating_opponent} and {rating_player}).'
+            ).format(
+                rating_opponent=opponent.rating_used_by_fide,
+                rating_player=player.rating_used_by_fide,
+            )
+        elif opponent_rating_overriddent:
+            comment = _(
+                "The FIDE will use the opponent's standard rating for this game ({rating})."
+            ).format(rating=opponent.rating_used_by_fide)
+        elif player_rating_overriddent:
+            comment = _(
+                "The FIDE will use the player's standard rating for this game ({rating})."
+            ).format(rating=player.rating_used_by_fide)
+
+        return RatingChange(delta, new_rating, comment)
 
     @property
     def opponent_id(self) -> int | None:

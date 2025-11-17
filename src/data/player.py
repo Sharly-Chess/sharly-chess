@@ -32,6 +32,7 @@ from utils.types import (
     NormCheckResult,
     TieBreakValue,
 )
+from utils.fide_ratings import percentage_score_rating_difference
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
@@ -332,12 +333,9 @@ class Player:
     def rating_str(self) -> str:
         return str(self._tournament_rating)
 
-    def rating_is_overridden(
+    def fide_will_override_with_standard_rating(
         self, tournament_rating: TournamentRating, player_rating_type: PlayerRatingType
     ) -> bool:
-        if not self.tournament.override_unrated_rapid_blitz:
-            return False
-
         if player_rating_type != PlayerRatingType.FIDE:
             # We only override for tournament that are using the FIDE ratings
             return False
@@ -353,9 +351,33 @@ class Player:
 
         return False
 
+    def rating_is_overridden(
+        self, tournament_rating: TournamentRating, player_rating_type: PlayerRatingType
+    ) -> bool:
+        return (
+            self.tournament.override_unrated_rapid_blitz
+            and self.fide_will_override_with_standard_rating(
+                tournament_rating, player_rating_type
+            )
+        )
+
     @property
     def manual_tiebreak(self) -> int | None:
         return self.stored_tournament_player.manual_tiebreak
+
+    @property
+    def rating_used_by_fide(self) -> PlayerRatingAndType:
+        if self.fide_will_override_with_standard_rating(
+            self.tournament.rating, self.tournament.player_rating_type
+        ):
+            rating = self.ratings.get(TournamentRating.STANDARD)
+            assert rating is not None
+            assert rating.fide is not None
+            return PlayerRatingAndType(rating.fide, PlayerRatingType.FIDE)
+
+        return self.get_rating_and_type(
+            self.tournament.rating, self.tournament.player_rating_type
+        )
 
     @property
     def _tournament_rating(self) -> PlayerRatingAndType:
@@ -383,6 +405,61 @@ class Player:
                 for tournament_rating in TournamentRating
             ]
         )
+
+    @property
+    def fide_rating_coefficient(self) -> int:
+        """Make a best guess of the FIDE rating coefficient (k) for this player."""
+        if self.rating_used_by_fide.type != PlayerRatingType.FIDE:
+            return 40
+        if self.rating_used_by_fide.value > 2400:
+            return 10
+        if isinstance(self.date_of_birth, date):
+            today = date.today()
+            age = (
+                today.year
+                - self.date_of_birth.year
+                - (
+                    (today.month, today.day)
+                    < (self.date_of_birth.month, self.date_of_birth.day)
+                )
+            )
+            if age < 18:
+                return 40
+        return 20
+
+    @property
+    def first_fide_rating(self) -> tuple[int | None, str | None]:
+        """Calculate a players first FIDE rating based on this tournament."""
+        games = [
+            pairing
+            for pairing in self.pairings.values()
+            if pairing.played
+            and pairing.opponent
+            and pairing.opponent.rating_type == PlayerRatingType.FIDE
+        ]
+        if len(games) == 0:
+            return None, _('No games against FIDE rated opponents.')
+        if all(game.loss for game in games):
+            return None, _(
+                'The player did not win any games against FIDE rated opponents.'
+            )
+
+        # Average rating of opponents + 2 fictional opponents with 1800 rating against which the player draws
+        total_opponent_ratings = 1800 * 2
+        for game in games:
+            if game.opponent and game.opponent.rating_used_by_fide:
+                total_opponent_ratings += game.opponent.rating_used_by_fide.value
+
+        num_games = len(games) + 2
+        average_rating = Utils.round_ranking(total_opponent_ratings / num_games)
+        score = (
+            sum(game.result.point_value for game in games) + Result.DRAW.point_value * 2
+        )
+        average_score = score / num_games
+        rating_difference = percentage_score_rating_difference[
+            round(average_score * 100)
+        ]
+        return average_rating + rating_difference, None
 
     @property
     def point_values(self) -> dict[Result, float] | None:

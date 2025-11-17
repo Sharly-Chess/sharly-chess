@@ -2034,6 +2034,9 @@ msgstr "Filtrer les genres."
 msgid "Filter the tournaments."
 msgstr "Filtrer les tournois."
 
+msgid "First FIDE rating (based only on this tournament)"
+msgstr "Premier classement FIDE (basé uniquement sur ce tournoi)"
+
 msgid "First board number:"
 msgstr "Numéro du premier échiquier :"
 
@@ -2747,6 +2750,10 @@ msgstr "Réseau"
 msgid "Network:"
 msgstr "Réseau :"
 
+#, python-format
+msgid "New FIDE rating (assuming <i>k</i> of <b>%(k)d</b>)"
+msgstr "Nouveau classement FIDE (en supposant un <i>k</i> de <b>%(k)d</b>)"
+
 msgid "New category"
 msgstr "Nouvelle catégorie"
 
@@ -2821,6 +2828,9 @@ msgstr "Aucun évènement."
 
 msgid "No families to add."
 msgstr "Pas de famille à ajouter."
+
+msgid "No games against FIDE rated opponents."
+msgstr "Aucune partie contre des adversaires classés FIDE."
 
 msgid "No hours."
 msgstr "Aucun horaire."
@@ -3394,6 +3404,9 @@ msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names
 msgid "Player estimation explained in the rules"
 msgstr "Estimation expliquée dans le règlement"
 
+msgid "Player is not yet rated."
+msgstr "Le·la joueur·euse n’est pas encore classé·e"
+
 msgid "Player pairings"
 msgstr "Appariements par joueur·euse"
 
@@ -3761,6 +3774,9 @@ msgstr "Elo"
 
 msgid "Rating *** RATING FOR PLAYERS COLUMNS"
 msgstr "Classement"
+
+msgid "Rating change"
+msgstr "Variation Elo"
 
 msgid "Rating ranges"
 msgstr "Tranches de classement"
@@ -4410,6 +4426,15 @@ msgstr "Je"
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr "Le règlement FIDE indique que seuls les appariements de la ronde <b>précédant</b> la ronde courante peuvent être modifiés. Les modifications des appariements antérieurs doivent être effectuées à la <b>fin</b> du tournoi, <b>après</b> la publication du classement, et uniquement pour le calcul des classements ELO FIDE."
 
+msgid "The FIDE will the standard ratings of both players for this game ({rating_opponent} and {rating_player})."
+msgstr "La FIDE utilisera les classements standards des deux joueurs pour cette partie ({rating_opponent} et {rating_player})."
+
+msgid "The FIDE will use the opponent's standard rating for this game ({rating})."
+msgstr "La FIDE utilisera le classement standard de l’adversaire pour cette partie ({rating})."
+
+msgid "The FIDE will use the player's standard rating for this game ({rating})."
+msgstr "La FIDE utilisera le classement standard du·de la joueur·euse pour cette partie ({rating})."
+
 msgid "The URL of the image to display."
 msgstr "L'URL de l'image à afficher."
 
@@ -4584,6 +4609,9 @@ msgstr "Les permissions de ce compte ne peuvent être modifiées."
 
 msgid "The phone numbers."
 msgstr "Les numéros de téléphone."
+
+msgid "The player did not win any games against FIDE rated opponents."
+msgstr "Le·la joueur·euse n’a remporté aucune partie contre des adversaires classés FIDE."
 
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
@@ -5180,6 +5208,9 @@ msgstr "Défaite non comptabilisé pour le classement Elo"
 
 msgid "Unrated Win"
 msgstr "Victoire non comptabilisé pour le classement Elo"
+
+msgid "Unrated opponent."
+msgstr "Adversaire non classé."
 
 msgid "Unrated players"
 msgstr "Joueur·euses non-classé·es"
