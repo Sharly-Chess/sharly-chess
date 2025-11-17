@@ -407,23 +407,23 @@ class Player:
         )
 
     @property
-    def fide_rating_coefficient(self) -> int:
-        """Make a best guess of the FIDE rating coefficient (k) for this player."""
+    def fide_rating_coefficient(self) -> tuple[int, bool]:
+        """Returns the player's coefficient (k), or the best guess."""
         match self.tournament.rating:
             case TournamentRating.STANDARD:
                 if self.stored_player.k_standard is not None:
-                    return self.stored_player.k_standard
+                    return (self.stored_player.k_standard, False)
             case TournamentRating.RAPID:
                 if self.stored_player.k_rapid is not None:
-                    return self.stored_player.k_rapid
+                    return (self.stored_player.k_rapid, False)
             case TournamentRating.BLITZ:
                 if self.stored_player.k_blitz is not None:
-                    return self.stored_player.k_blitz
+                    return (self.stored_player.k_blitz, False)
 
         if self.rating_used_by_fide.type != PlayerRatingType.FIDE:
-            return 40
+            return (40, True)
         if self.rating_used_by_fide.value > 2400:
-            return 10
+            return (10, True)
         if isinstance(self.date_of_birth, date):
             today = date.today()
             age = (
@@ -435,8 +435,8 @@ class Player:
                 )
             )
             if age < 18:
-                return 40
-        return 20
+                return (40, True)
+        return (20, True)
 
     @property
     def first_fide_rating(self) -> tuple[int | None, str | None]:

@@ -2754,6 +2754,10 @@ msgstr "Réseau :"
 msgid "New FIDE rating (assuming <i>k</i> of <b>%(k)d</b>)"
 msgstr "Nouveau classement FIDE (en supposant un <i>k</i> de <b>%(k)d</b>)"
 
+#, python-format
+msgid "New FIDE rating (based on player's official <i>k</i> of <b>%(k)d</b>)"
+msgstr "Nouveau classement FIDE (basé sur le <i>k</i< officiel du·de la joueur·euse : <b>%(k)d</b>)"
+
 msgid "New category"
 msgstr "Nouvelle catégorie"
 
