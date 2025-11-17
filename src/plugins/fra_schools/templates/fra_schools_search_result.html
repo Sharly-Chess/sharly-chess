@@ -5,11 +5,10 @@
     onClick="
         $('#fra-school-code, #fra-school-code-hidden').val(`{{ school.code }}`);
         $('#fra-school-name').val(`{{ school.name }}`);
-        $('#fra-school-name').trigger('keyup');
         $('#fra-school-city').val(`{{ school.city }}`);
-        $('#fra-school-department').val(`{{ school.department }}`).trigger('change');
+        $('#fra-school-postal-code').val(`{{ school.postal_code }}`);
         $('#fra-schools-search').val('');
         $('#fra-schools-search-results').hide();"
 >
-    <b>{{ school.code }}</b> {{ school.name }}, <i>{{ school.city }} ({{ school.department }})</i>
+    <b>{{ school.code }}</b> {{ school.name }}, <i>{{ school.city }} ({{ school.postal_code }})</i>
 </li>

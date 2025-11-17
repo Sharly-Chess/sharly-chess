@@ -60,7 +60,7 @@
                                         class="{{ name }}"
                                     />
                                     <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                                        {% if school %}{{ school.name }}{% endif %} ({{ fra_school_counts[school_id] }})
+                                        {% if school %}{{ school.short_name }}{% endif %} ({{ fra_school_counts[school_id] }})
                                     </label>
                                 </li>
                             {% endfor %}

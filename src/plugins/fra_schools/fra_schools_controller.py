@@ -9,6 +9,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
+from common.i18n import _
 from data.access_levels.actions import AuthAction
 from database.sqlite.event.event_database import EventDatabase
 from plugins.fra_schools import PLUGIN_NAME
@@ -34,6 +35,7 @@ class FRASchoolsController(BaseEventAdminController):
             code=row['code'],
             name=row['name'],
             department=row['department'],
+            postal_code=row['postal_code'],
             city=row['city'],
             type=row['type'],
             private=bool(row['private']),
@@ -47,21 +49,15 @@ class FRASchoolsController(BaseEventAdminController):
         schools = FRASchoolsUtils.get_event_plugin_data(event).fra_schools
         school_counts = FRASchoolsUtils.get_event_school_counts(event)
         school_options: dict[str, SelectOption] = {'': SelectOption('-')}
-        for school in sorted(schools, key=attrgetter('name')):
-            option_name = school.name
+        for school in sorted(schools, key=attrgetter('sort_key')):
+            option_name = school.short_name
             if school.id in school_counts:
                 option_name += f' ({school_counts[school.id]})'
             school_options[str(school.id)] = SelectOption(
                 option_name, school.tooltip, search=school.full_name
             )
         database = FRASchoolsDatabase()
-        department_options: dict[str, str] = {}
-        if database.DEPARTMENTS:
-            department_options = {'': '-'} | {
-                code: f'{code} - {name}' for code, name in database.DEPARTMENTS.items()
-            }
         return {
-            'fra_schools_department_options': department_options,
             'fra_schools_database': database,
             'fra_school_options': school_options,
         }
@@ -89,7 +85,14 @@ class FRASchoolsController(BaseEventAdminController):
         if fra_schools_search and database.file_path().exists():
             with database:
                 query: str = """
-                    SELECT s.code, s.name, s.department, s.city, s.type, s.private
+                    SELECT
+                        s.code,
+                        s.name,
+                        s.department,
+                        s.postal_code,
+                        s.city,
+                        s.type,
+                        s.private
                     FROM school s
                     JOIN school_fts ON school_fts.rowid = s.id
                     WHERE school_fts MATCH ?
@@ -139,29 +142,41 @@ class FRASchoolsController(BaseEventAdminController):
         event = web_context.get_admin_event()
         plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
         school = FRASchool.from_form_data(data)
-        school_id = next(
-            (s.id for s in plugin_data.fra_schools if s.code == school.code),
-            None,
-        )
-        if not school_id:
-            school_id = (
-                max(plugin_data.fra_schools_by_id | {0: ''}) + 1
-                if plugin_data.fra_schools_by_id
-                else 1
+        errors: dict[str, str] = {}
+        if not school.name:
+            errors['fra_school_name'] = _('This field is required.')
+        if school.postal_code and not (
+            school.postal_code.isdigit() and len(school.postal_code) == 5
+        ):
+            errors['fra_school_postal_code'] = _('Invalid format (expected: 5 digits).')
+        if not errors:
+            school_id = next(
+                (s.id for s in plugin_data.fra_schools if s.code == school.code),
+                None,
             )
-        school.id = school_id
-        plugin_data.fra_schools_by_id[school_id] = school
-        event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
-        with EventDatabase(event.uniq_id, True) as database:
-            database.update_stored_event(event.stored_event)
-        new_data = FRASchool().to_form_data() | {
-            'fra_school': str(school_id),
-        }
+            if not school_id:
+                school_id = (
+                    max(plugin_data.fra_schools_by_id | {0: ''}) + 1
+                    if plugin_data.fra_schools_by_id
+                    else 1
+                )
+            school.id = school_id
+            plugin_data.fra_schools_by_id[school_id] = school
+            event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+            with EventDatabase(event.uniq_id, True) as database:
+                database.update_stored_event(event.stored_event)
+            data |= FRASchool().to_form_data() | {
+                'fra_school': str(school_id),
+            }
         return HTMXTemplate(
             template_name='/fra_schools_player_form_fields.html',
             context=(
                 web_context.template_context
                 | self.get_fra_school_template_context(web_context)
-                | {'data': new_data}
+                | {
+                    'data': data,
+                    'errors': errors,
+                    'show_fra_school_form': bool(errors),
+                }
             ),
         )

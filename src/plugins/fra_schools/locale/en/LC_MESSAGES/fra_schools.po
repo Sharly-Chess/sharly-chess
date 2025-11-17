@@ -11,9 +11,6 @@ msgstr ""
 msgid "Adds support for school competitions in France"
 msgstr ""
 
-msgid "At least one department is expected."
-msgstr ""
-
 msgid "At least one school is expected."
 msgstr ""
 
@@ -22,9 +19,6 @@ msgid "Average age: %(years)s"
 msgstr ""
 
 msgid "Cancel"
-msgstr ""
-
-msgid "Choose at least one department."
 msgstr ""
 
 msgid "Choose at least one school."
@@ -37,12 +31,6 @@ msgid "Code"
 msgstr ""
 
 msgid "Complete Team"
-msgstr ""
-
-msgid "Department"
-msgstr ""
-
-msgid "Departments"
 msgstr ""
 
 msgid "Exclude: {values}"
@@ -60,7 +48,13 @@ msgstr ""
 msgid "French school"
 msgstr ""
 
+msgid "Identifier"
+msgstr ""
+
 msgid "Incomplete Team"
+msgstr ""
+
+msgid "Invalid format (expected: 5 digits)."
 msgstr ""
 
 msgid "Loading more results…"
@@ -82,6 +76,9 @@ msgstr ""
 
 #, python-format
 msgid "Other missing players: %(count)d"
+msgstr ""
+
+msgid "Postal code"
 msgstr ""
 
 msgid "Ranking by school"
@@ -115,6 +112,9 @@ msgid "The tournament has not yet started."
 msgstr ""
 
 msgid "This field is not editable."
+msgstr ""
+
+msgid "This field is required."
 msgstr ""
 
 msgid "This round is not finished (last finished: #{round})."

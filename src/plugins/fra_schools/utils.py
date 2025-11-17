@@ -15,6 +15,7 @@ class FRASchool(PluginData):
     id: int = 0
     code: str | None = None
     name: str = ''
+    postal_code: str | None = None
     department: str | None = None
     city: str | None = None
 
@@ -25,6 +26,7 @@ class FRASchool(PluginData):
             code=stored_value.get('code', None),
             name=stored_value.get('name', ''),
             department=stored_value.get('department', None),
+            postal_code=stored_value.get('postal_code', None),
             city=stored_value.get('city', None),
         )
 
@@ -43,7 +45,7 @@ class FRASchool(PluginData):
             id=id_,
             code=WebContext.form_data_to_str(data, 'fra_school_code'),
             name=WebContext.form_data_to_str(data, 'fra_school_name') or '',
-            department=WebContext.form_data_to_str(data, 'fra_school_department'),
+            postal_code=WebContext.form_data_to_str(data, 'fra_school_postal_code'),
             city=WebContext.form_data_to_str(data, 'fra_school_city'),
         )
 
@@ -52,7 +54,7 @@ class FRASchool(PluginData):
             {
                 'fra_school_code': self.code,
                 'fra_school_name': self.name,
-                'fra_school_department': self.department,
+                'fra_school_postal_code': self.postal_code,
                 'fra_school_city': self.city,
             }
         )
@@ -65,12 +67,18 @@ class FRASchool(PluginData):
         return full_name
 
     @property
+    def short_name(self) -> str:
+        if self.postal_code:
+            return f'{self.postal_code} - {self.name}'
+        return self.name
+
+    @property
     def full_name_without_code(self) -> str:
         full_name = self.name
         if self.city:
             full_name += f', {self.city}'
-        if self.department:
-            full_name += f' ({self.department})'
+        if self.postal_code:
+            full_name += f' ({self.postal_code})'
         return full_name
 
     @cached_property
@@ -83,15 +91,24 @@ class FRASchool(PluginData):
         tooltip += f'<div class="text-center">{self.name}</div>'
         if self.city:
             city = self.city
-            if self.department:
-                city += f' ({self.department})'
+            if self.postal_code:
+                city += f' ({self.postal_code})'
             tooltip += f'<div class="text-center fst-italic">{city}</div>'
         return tooltip
+
+    @property
+    def sort_key(self) -> tuple:
+        return (
+            self.postal_code or '',
+            self.city or '',
+            self.name,
+            self.code or '',
+        )
 
     def __lt__(self, other):
         if not isinstance(other, FRASchool):
             return NotImplemented
-        return self.full_name_without_code > other.full_name_without_code
+        return self.sort_key > other.sort_key
 
     def __eq__(self, other):
         if not isinstance(other, FRASchool):

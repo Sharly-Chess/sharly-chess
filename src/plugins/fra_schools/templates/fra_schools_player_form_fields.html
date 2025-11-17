@@ -11,7 +11,7 @@
                 tooltip_select=true,
                 search_placeholder=_(
                     'Search by: %(fields)s',
-                    fields=', '.join([_('Code'), _('City'), _('Name'), _('Department')])
+                    fields=', '.join([_('Code'), _('City'), _('Name'), _('Postal code')])
                 ),
                 data=data, errors=errors
             ) }}
@@ -47,6 +47,9 @@
                 id="fra-school-add-button"
                 type="button"
                 class="btn btn-outline-primary text-nowrap"
+                {% if show_fra_school_form %}
+                    style="display:none"
+                {% endif %}
                 {% if not fra_schools_database.exists() %}
                     disabled
                 {% endif %}
@@ -57,7 +60,13 @@
         </div>
     </div>
 
-    <div id="fra-school-form-container" class="form-fields-container" style="display:none">
+    <div
+        id="fra-school-form-container"
+        class="form-fields-container"
+        {% if not show_fra_school_form %}
+            style="display:none"
+        {% endif %}
+    >
         <div class="row mb-3">
             <div class="col-12">
                 <div class="input-group">
@@ -69,7 +78,7 @@
                         type="search"
                         placeholder="{{ _(
                             'Search by: %(fields)s',
-                            fields=', '.join([_('Code'), _('City'), _('Name'), _('Department')])
+                            fields=', '.join([_('Code'), _('City'), _('Name'), _('Postal code')])
                         ) }}"
                         hx-trigger="keyup changed delay:400ms,focus"
                         hx-target="#fra-schools-search-results"
@@ -101,7 +110,7 @@
                 <div class="col-12 col-md-4">
                     {{ admin_macros.text_input(
                         name='fra_school_code',
-                        label=_('%(string)s:', string=_('Code')),
+                        label=_('%(string)s:', string=_('Identifier')),
                         input_tooltip=_('This field is not editable.'),
                         disabled=true,
                         data=data, errors=errors
@@ -124,10 +133,9 @@
                     ) }}
                 </div>
                 <div class="col-12 col-md-6">
-                    {{ admin_macros.select_input(
-                        name='fra_school_department',
-                        label=_('%(string)s:', string=_('Department')),
-                        select_options=fra_schools_department_options,
+                    {{ admin_macros.number_input(
+                        name='fra_school_postal_code',
+                        label=_('%(string)s:', string=_('Postal code')),
                         data=data, errors=errors
                     ) }}
                 </div>
@@ -147,7 +155,6 @@
                     type="submit"
                     form="fra-schools-form"
                     class="btn btn-outline-primary btn-sm text-nowrap"
-                    disabled
                 >
                     <i class="bi-plus-circle pe-1"></i>
                     {{ _('Add') }}
@@ -157,7 +164,7 @@
     </div>
 
     <script>
-        $('#fra-school-input').on('blur', function () {
+        $('#fra-school-search').on('blur', function () {
             setTimeout(function () {
                 const results = $('#fra-schools-search-results');
                 const active = document.activeElement;
@@ -176,10 +183,6 @@
         $('#fra-school-cancel-button').click(function () {
             $('#fra-school-form-container').hide();
             $('#fra-school-add-button').show();
-        });
-
-        $('#fra-school-name').on('keyup', function () {
-            $('#fra-school-submit-button').prop('disabled', $(this).val() === '');
         });
     </script>
 </div>

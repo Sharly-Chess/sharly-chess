@@ -17,8 +17,8 @@
                     {{ team.school.name }}{% if team.label %}<span class="team-label"> {{ team.label }}</span>{% endif %}{% if team.school.city %},
                         <span class="school-city">
                             {{ team.school.city }}
-                            {% if team.school.department %}
-                                ({{ team.school.department }})
+                            {% if team.school.postal_code %}
+                                ({{ team.school.postal_code }})
                             {% endif %}
                         </span>
                     {% endif %}

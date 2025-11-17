@@ -1,4 +1,5 @@
 from functools import partial, cached_property
+from operator import attrgetter
 from types import UnionType
 from typing import Any, Counter, Callable
 
@@ -16,7 +17,6 @@ from data.player import Player
 from data.print_documents import PlayerSplitter
 from data.tournament import Tournament
 from plugins.fra_schools import PLUGIN_NAME
-from plugins.fra_schools.fra_schools_database import FRASchoolsDatabase
 from plugins.fra_schools.utils import FRASchoolsUtils, FRASchool
 from plugins.utils import PluginUtils
 
@@ -128,7 +128,10 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[FRASchool]:
-        return list(FRASchoolsUtils.get_event_plugin_data(tournament.event).fra_schools)
+        return sorted(
+            FRASchoolsUtils.get_event_plugin_data(tournament.event).fra_schools,
+            key=attrgetter('sort_key'),
+        )
 
     def get_player_counter(self, tournament: 'Tournament') -> Counter[FRASchool]:
         counter: Counter[FRASchool] = Counter[FRASchool]()
@@ -141,7 +144,7 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
         return str(object_.id)
 
     def get_name(self, object_: FRASchool) -> str:
-        return object_.name
+        return object_.short_name
 
     def get_tooltip(self, object_: FRASchool) -> str | None:
         return object_.tooltip
@@ -153,82 +156,3 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
         self._validate_list_type(int)
         if not self.value:
             raise OptionError(_('At least one school is expected.'), self)
-
-
-class FRADepartmentPlayerFilter(PlayerFilter):
-    @staticmethod
-    def static_id() -> str:
-        return f'{PLUGIN_NAME}-DEPARTMENT'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Department')
-
-    @staticmethod
-    def available_options() -> list[type[PlayerFilterOption]]:
-        return [
-            FRADepartmentsFilterOption,
-            ExcludeFilterOption,
-        ]
-
-    @cached_property
-    def is_player_included_function(self) -> Callable[[Player], bool]:
-        departments, exclude = self.get_option_values()
-        if exclude:
-            return lambda player: (
-                getattr(FRASchoolsUtils.get_player_school(player), 'department', None)
-                not in departments
-            )
-        else:
-            return lambda player: (
-                getattr(FRASchoolsUtils.get_player_school(player), 'department', None)
-                in departments
-            )
-
-    def full_name(self, tournament: 'Tournament') -> str:
-        departments, exclude = self.get_option_values()
-        option_str = ', '.join(departments)
-        if exclude:
-            option_str = _('Exclude: {values}').format(values=option_str)
-        return f'{self.name} ({option_str})'
-
-
-class FRADepartmentsFilterOption(SelectPlayerFilterOption[str]):
-    @staticmethod
-    def static_id() -> str:
-        return f'{PLUGIN_NAME}-DEPARTMENTS'
-
-    @property
-    def template_name(self) -> str:
-        return '/fra_schools_department_player_filter_option.html'
-
-    @property
-    def type(self) -> type | UnionType:
-        return list[str]
-
-    @property
-    def default_value(self) -> Any:
-        return []
-
-    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
-        return list(FRASchoolsDatabase.DEPARTMENTS or {})
-
-    def get_player_counter(self, tournament: 'Tournament') -> Counter[str]:
-        counter = Counter[str]()
-        for player in tournament.players:
-            school = FRASchoolsUtils.get_player_school(player)
-            if school and school.department:
-                counter[school.department] += 1
-        return counter
-
-    def get_key(self, object_: str) -> str:
-        return object_
-
-    def get_name(self, object_: str) -> str:
-        assert FRASchoolsDatabase.DEPARTMENTS is not None
-        return f'{object_} - {FRASchoolsDatabase.DEPARTMENTS[object_]}'
-
-    def validate(self):
-        self._validate_list_type(str)
-        if not self.value:
-            raise OptionError(_('At least one department is expected.'), self)

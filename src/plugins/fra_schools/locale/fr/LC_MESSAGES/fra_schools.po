@@ -11,9 +11,6 @@ msgstr "Ajouter un établissement aux options."
 msgid "Adds support for school competitions in France"
 msgstr "Ajoute la prise en charge des compétitions scolaires en France"
 
-msgid "At least one department is expected."
-msgstr "Au moins un département est attendu."
-
 msgid "At least one school is expected."
 msgstr "Au moins un établissement est attendu."
 
@@ -23,9 +20,6 @@ msgstr "Âge moyen : %(years)s ans"
 
 msgid "Cancel"
 msgstr "Annuler"
-
-msgid "Choose at least one department."
-msgstr "Choisir au moins un département."
 
 msgid "Choose at least one school."
 msgstr "Choisir au moins un établissement."
@@ -38,12 +32,6 @@ msgstr "Code"
 
 msgid "Complete Team"
 msgstr "Équipe complète"
-
-msgid "Department"
-msgstr "Département"
-
-msgid "Departments"
-msgstr "Départements"
 
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
@@ -60,8 +48,14 @@ msgstr "Établissements Scolaires"
 msgid "French school"
 msgstr "Établissement scolaire"
 
+msgid "Identifier"
+msgstr "Identifiant"
+
 msgid "Incomplete Team"
 msgstr "Équipe incomplète"
+
+msgid "Invalid format (expected: 5 digits)."
+msgstr "Format invalide (attendu : 5 chiffres)."
 
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
@@ -83,6 +77,9 @@ msgstr "OK"
 #, python-format
 msgid "Other missing players: %(count)d"
 msgstr "Autres joueur·euses manquant·es : %(count)d"
+
+msgid "Postal code"
+msgstr "Code postal"
 
 msgid "Ranking by school"
 msgstr "Classement par établissement"
@@ -116,6 +113,9 @@ msgstr "Le tournoi n'est pas encore commencé."
 
 msgid "This field is not editable."
 msgstr "Ce champ n'est pas modifiable."
+
+msgid "This field is required."
+msgstr "Ce champ est obligatoire."
 
 msgid "This round is not finished (last finished: #{round})."
 msgstr "Cette ronde n'est pas terminée (dernière ronde terminée : n°{round})."
