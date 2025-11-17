@@ -255,32 +255,32 @@ class Pairing:
         # Find matching probability (fallback to last)
         expected = find_win_probability(diff)
         delta = round(k_factor * (self.result.point_value - expected), 2)
-        new_rating = round(player.rating_used_by_fide.value + delta, 2)
+        new_rating = Utils.round_ranking(player.rating_used_by_fide.value + delta)
 
         comment = ''
-        opponent_rating_overriddent = not opponent.rating_is_overridden(
+        opponent_rating_overridden = not opponent.rating_is_overridden(
             player.tournament.rating, player.tournament.player_rating_type
-        ) and opponent.fide_will_override_with_standard_rating(
+        ) and opponent.will_fide_override_with_standard_rating(
             player.tournament.rating, player.tournament.player_rating_type
         )
-        player_rating_overriddent = not player.rating_is_overridden(
+        player_rating_overridden = not player.rating_is_overridden(
             player.tournament.rating, player.tournament.player_rating_type
-        ) and player.fide_will_override_with_standard_rating(
+        ) and player.will_fide_override_with_standard_rating(
             player.tournament.rating, player.tournament.player_rating_type
         )
 
-        if opponent_rating_overriddent and player_rating_overriddent:
+        if opponent_rating_overridden and player_rating_overridden:
             comment = _(
                 'The FIDE will the standard ratings of both players for this game ({rating_opponent} and {rating_player}).'
             ).format(
                 rating_opponent=opponent.rating_used_by_fide,
                 rating_player=player.rating_used_by_fide,
             )
-        elif opponent_rating_overriddent:
+        elif opponent_rating_overridden:
             comment = _(
                 "The FIDE will use the opponent's standard rating for this game ({rating})."
             ).format(rating=opponent.rating_used_by_fide)
-        elif player_rating_overriddent:
+        elif player_rating_overridden:
             comment = _(
                 "The FIDE will use the player's standard rating for this game ({rating})."
             ).format(rating=player.rating_used_by_fide)

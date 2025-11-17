@@ -333,7 +333,7 @@ class Player:
     def rating_str(self) -> str:
         return str(self._tournament_rating)
 
-    def fide_will_override_with_standard_rating(
+    def will_fide_override_with_standard_rating(
         self, tournament_rating: TournamentRating, player_rating_type: PlayerRatingType
     ) -> bool:
         if player_rating_type != PlayerRatingType.FIDE:
@@ -356,7 +356,7 @@ class Player:
     ) -> bool:
         return (
             self.tournament.override_unrated_rapid_blitz
-            and self.fide_will_override_with_standard_rating(
+            and self.will_fide_override_with_standard_rating(
                 tournament_rating, player_rating_type
             )
         )
@@ -367,7 +367,7 @@ class Player:
 
     @property
     def rating_used_by_fide(self) -> PlayerRatingAndType:
-        if self.fide_will_override_with_standard_rating(
+        if self.will_fide_override_with_standard_rating(
             self.tournament.rating, self.tournament.player_rating_type
         ):
             rating = self.ratings.get(TournamentRating.STANDARD)
