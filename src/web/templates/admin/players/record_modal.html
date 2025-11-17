@@ -91,12 +91,20 @@
                         <th scope="col" class="text-nowrap text-end">
                             {{ _('Rating') }}
                         </th>
+                        {% if tournament.player_rating_type == 3 %}
+                            <th scope="col" class="text-nowrap text-center">
+                                {{ _('Rating change') }}
+                            </th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody id="record-table-body">
                     <input type="hidden" name="max_byes" value="{{ admin_player.tournament.max_byes }}"/>
                     {% set can_set_hpb = client.can_set_half_point_bye(admin_player.tournament.id) %}
                     {% set can_set_fpb = client.can_set_full_point_bye(admin_player.tournament.id) %}
+                    {% set display_rating_change = tournament.player_rating_type == 3 and admin_player.tournament.started %}
+                    {% set k, k_is_estimated = admin_player.fide_rating_coefficient %}
+                    {% set ns = namespace(delta=0) %}
                     {% for round, pairing in admin_player.pairings.items() %}
                         {% set name='round_' ~ round ~ '_result' %}
                         {% set id=name|replace('_', '-') %}
@@ -229,8 +237,63 @@
                                     {{ rating }}
                                 </td>
                             {% endif %}
+                            {% if display_rating_change %}
+                                {% set rating_change = pairing.fide_rating_change(k) %}
+                                {% if rating_change.delta is none %}
+                                    <td
+                                        class="text-nowrap text-center"
+                                        {{ macros.tooltip_attributes(
+                                            'info', rating_change.comment, 'bottom'
+                                        ) if rating_change.comment }}
+                                    >-</td>
+                                {% else %}
+                                    {% set ns.delta = ns.delta + rating_change.delta %}
+                                    <td
+                                        class="text-nowrap text-center {% if rating_change.delta > 0 %}text-success{% elif rating_change.delta < 0 %}text-danger{% endif %} {% if rating_change.comment %}text-decoration-underline{% endif %}"
+                                        {{ macros.tooltip_attributes(
+                                            'info', rating_change.comment, 'bottom'
+                                        ) if rating_change.comment }}
+                                    >
+                                        {{ "%+.2f"|format(rating_change.delta) }}
+                                    </td>
+                                {% endif %}
+                            {% endif %}
                         </tr>
                     {% endfor %}
+                    {% if display_rating_change %}
+                        {% if admin_player.rating_used_by_fide.type != 3 %}
+                        <tr>
+                            {% set first_rating, comment = admin_player.first_fide_rating %}
+                            <td colspan="6" class="text-end">{{ _("First FIDE rating (based only on this tournament)") }}</td>
+                            <td
+                                class="text-nowrap text-end"
+                                {{ macros.tooltip_attributes(
+                                    'info', comment, 'bottom'
+                                ) if comment }}
+                            >
+                                {% if first_rating is not none %}{{ first_rating }} F{% else %}-{% endif %}
+                            </td>
+                            <td></td>
+                        </tr>
+                        {% else %}
+                            {% set delta = ns.delta|round|int %}
+                            <tr>
+                                <td colspan="6" class="text-end">
+                                    {% if k_is_estimated %}
+                                        {{ _("New FIDE rating (assuming <i>k</i> of <b>%(k)d</b>)", k=k) }}
+                                    {% else %}
+                                        {{ _("New FIDE rating (based on player's official <i>k</i> of <b>%(k)d</b>)", k=k) }}
+                                    {% endif %}
+                                </td>
+                                <td  class="text-nowrap text-end {% if delta > 0 %}text-success{% elif delta < 0 %}text-danger{% endif %}">
+                                    {{ admin_player.rating + delta }} F
+                                </td>
+                                <td class="text-nowrap text-center {% if delta > 0 %}text-success{% elif delta < 0 %}text-danger{% endif %}">
+                                    ({{ delta }})
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endif %}
                 </tbody>
             </table>
             <div>

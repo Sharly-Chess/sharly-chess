@@ -127,6 +127,9 @@ class FideDatabase(LocalSourcePlayerDatabase):
             'rapid_rating': ('rapid_rating', int),
             'blitz_rating': ('blitz_rating', int),
             'birthday': ('year_of_birth', lambda s: int(s) if s else 0),
+            'k': ('k_standard', lambda s: int(s) if s else None),
+            'rapid_k': ('k_rapid', lambda s: int(s) if s else None),
+            'blitz_k': ('k_blitz', lambda s: int(s) if s else None),
         }
         db_columns = [field[0] for field in fields.values() if field[0] != 'name']
         db_columns += ['first_name', 'last_name']
@@ -220,6 +223,9 @@ class FideDatabase(LocalSourcePlayerDatabase):
                 f'{row["year_of_birth"] or 1900}-01-01', '%Y-%m-%d'
             ).date(),
             gender=row['gender'],
+            k_standard=row.get('k_standard', None),
+            k_rapid=row.get('k_rapid', None),
+            k_blitz=row.get('k_blitz', None),
             mail='',
             phone='',
             comment='',
