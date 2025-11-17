@@ -15,6 +15,10 @@ English version below
 
 - Duplication des départages et des critères lors de la duplication d'un tournoi (3.3.0)
 
+## Joueur·euses
+
+- Calcul des variations de classement FIDE (3.3.0)
+
 ## Impression
 
 - Ajout des chevalets (3.3.0)
@@ -56,6 +60,10 @@ English version below
 ## Tournaments
 
 - Duplicate tie-breaks and criteria when duplicating a tournament (3.3.0)
+
+## Players
+
+- Calculation of FIDE rating changes (3.3.0)
 
 ## Printing
 
