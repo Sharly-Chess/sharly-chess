@@ -12,5 +12,8 @@ CREATE TABLE `player` (
     `rapid_rating` INTEGER NOT NULL,
     `blitz_rating` INTEGER NOT NULL,
     `year_of_birth` INTEGER NOT NULL,
+    `k_standard` INTEGER NOT NULL,
+    `k_rapid` INTEGER NOT NULL,
+    `k_blitz` INTEGER NOT NULL,
     PRIMARY KEY(`id` AUTOINCREMENT)
 );

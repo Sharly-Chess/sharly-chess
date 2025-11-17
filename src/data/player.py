@@ -409,6 +409,17 @@ class Player:
     @property
     def fide_rating_coefficient(self) -> int:
         """Make a best guess of the FIDE rating coefficient (k) for this player."""
+        match self.tournament.rating:
+            case TournamentRating.STANDARD:
+                if self.stored_player.k_standard is not None:
+                    return self.stored_player.k_standard
+            case TournamentRating.RAPID:
+                if self.stored_player.k_rapid is not None:
+                    return self.stored_player.k_rapid
+            case TournamentRating.BLITZ:
+                if self.stored_player.k_blitz is not None:
+                    return self.stored_player.k_blitz
+
         if self.rating_used_by_fide.type != PlayerRatingType.FIDE:
             return 40
         if self.rating_used_by_fide.value > 2400:
