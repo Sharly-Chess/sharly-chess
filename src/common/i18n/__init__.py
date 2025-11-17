@@ -137,28 +137,13 @@ _plugins_pattern: str = 'plugins' + os.sep
 _plugins_pattern_len: int = len(_plugins_pattern)
 
 
-def get_filename_plugin_name(
-    filename: str,
-    # debug: bool = False,
-) -> str:
+def get_filename_plugin_name(filename: str) -> str:
     pos: int = filename.rfind(_plugins_pattern)
     if pos != -1:
         relative_path: str = filename[pos + _plugins_pattern_len :]
         plugin_name: str = relative_path.split(os.sep, 1)[0]
         if plugin_name in _domain_names:
-            # if debug:
-            #    logger.debug(
-            #        f'get_filename_plugin_name({filename=}): {_plugins_pattern=} found, {plugin_name=} found in [{", ".join(_domain_names)}] => [{plugin_name}].'
-            #    )
             return plugin_name
-        # else:
-        # if debug:
-        #    logger.debug(
-        #        f'get_filename_plugin_name({filename=}): {_plugins_pattern=} found, {plugin_name=} not found in [{", ".join(_domain_names)}] => [{Domain.core_name}].'
-        #    )
-    # else:
-    # if debug:
-    #    logger.debug(f'gettext({filename=}): {_plugins_pattern=} not found.')
     return Domain.core_name
 
 
@@ -174,43 +159,20 @@ _i18n_pattern: str = (
 _jinja_pattern: str = 'jinja2' + os.sep
 
 
-def get_i18n_domain(
-    # debug: bool = False,
-) -> str:
+def get_i18n_domain() -> str:
     global _domain_names
     stack_summary: StackSummary = extract_stack()
     for frame_summary in reversed(stack_summary):
         if frame_summary.filename.rfind(_i18n_pattern) != -1:
-            # if debug:
-            #    logger.debug(
-            #        f'get_i18n_domain(): {frame_summary=}: pattern {_i18n_pattern=} found in {frame_summary.filename=}, ignoring the frame.'
-            #    )
             continue
         if frame_summary.filename.rfind(_jinja_pattern) != -1:
-            # if debug:
-            #    logger.debug(
-            #        f'get_i18n_domain(): {frame_summary=}: pattern {_jinja_pattern=} found in {frame_summary.filename=}, ignoring the frame.'
-            #    )
             continue
-        # we have our calling frame
-        # if debug:
-        #    logger.debug(
-        #        f'get_i18n_domain(): {frame_summary=}: pattern {_jinja_pattern=} found in {frame_summary.filename=}, calling get_filename_plugin_name()'
-        #    )
-        return get_filename_plugin_name(
-            frame_summary.filename,
-            # debug=debug,
-        )
-    # if debug:
-    #    logger.debug(f'get_i18n_domain(): should never happen => {Domain.core_name}')
+        return get_filename_plugin_name(frame_summary.filename)
     return Domain.core_name
 
 
 def gettext(message: str, locale: str | None = None):
     """Overrides the gettext.gettext() function to use the locale of the current thread."""
-    # debug: bool = False
-    # if debug:
-    #    logger.debug(f'gettext({message=}):')
     if locales:
         return _all_translations[
             get_i18n_domain(
