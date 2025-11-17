@@ -424,33 +424,31 @@ class PlayerAdminController(BaseEventAdminController):
                 return sortkey
 
             match sort_type:
-                case 'alpha':
-                    return player.last_name, player.first_name or ''
                 case 'rating_desc':
-                    return -player.rating, player.last_name, player.first_name or ''
+                    return -player.rating, player.last_name, player.first_name
                 case 'rating_asc':
-                    return player.rating, player.last_name, player.first_name or ''
+                    return player.rating, player.last_name, player.first_name
                 case 'yob_desc':
                     return (
                         -player.year_of_birth,
                         player.last_name,
-                        player.first_name or '',
+                        player.first_name,
                     )
                 case 'yob_asc':
                     return (
                         player.year_of_birth,
                         player.last_name,
-                        player.first_name or '',
+                        player.first_name,
                     )
                 case 'category_desc':
-                    return -player.category, player.last_name, player.first_name or ''
+                    return -player.category, player.last_name, player.first_name
                 case 'category_asc':
-                    return player.category, player.last_name, player.first_name or ''
+                    return player.category, player.last_name, player.first_name
                 case 'club':
                     return (
                         player.club,
                         player.last_name,
-                        player.first_name or '',
+                        player.first_name,
                     )
                 case 'tournament':
                     assert player.tournament is not None
@@ -458,10 +456,10 @@ class PlayerAdminController(BaseEventAdminController):
                         player.tournament.uniq_id,
                         -player.rating,
                         player.last_name,
-                        player.first_name or '',
+                        player.first_name,
                     )
-                case _:
-                    raise ValueError(f'sort={sort_type}')
+                case _:  # 'alpha' and default sort
+                    return player.last_name, player.first_name
 
         return [player.id for player in sorted(players, key=get_sort_key)]
 
