@@ -271,7 +271,7 @@ class Pairing:
 
         if opponent_rating_overridden and player_rating_overridden:
             comment = _(
-                'The FIDE will the standard ratings of both players for this game ({rating_opponent} and {rating_player}).'
+                'The FIDE will use the standard ratings of both players for this game ({rating_opponent} and {rating_player}).'
             ).format(
                 rating_opponent=opponent.rating_used_by_fide,
                 rating_player=player.rating_used_by_fide,
