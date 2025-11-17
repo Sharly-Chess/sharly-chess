@@ -10,6 +10,7 @@ CREATE TABLE `school` (
     `id` INTEGER NOT NULL,
     `code` TEXT NOT NULL,
     `name` TEXT NOT NULL,
+    `postal_code` TEXT NOT NULL,
     `department` TEXT REFERENCES department(id),
     `city` TEXT NOT NULL,
     `type` TEXT NOT NULL,

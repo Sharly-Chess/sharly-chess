@@ -29,23 +29,13 @@ class StoredSchool:
     code: str
     name: str
     department: str
+    postal_code: str
     city: str
     type: str
     private: int
 
 
 class FRASchoolsDatabase(LocalSourceDatabase):
-    DEPARTMENTS: dict[str, str] | None = None
-
-    def __init__(self, write: bool = False):
-        super().__init__(write)
-        if self.exists() and not self.DEPARTMENTS:
-            with self as database:
-                database.execute('SELECT * FROM `department`')
-                self.__class__.DEPARTMENTS = {
-                    row['id']: row['name'] for row in database.fetchall()
-                }
-
     @staticmethod
     def static_id() -> str:
         return 'fra_schools'
@@ -97,6 +87,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
                 {
                     'select': ','.join(
                         [
+                            'code_postal',
                             'code_departement',
                             'libelle_departement',
                             'nom_commune',
@@ -109,7 +100,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
                     'where': 'type_etablissement IN ("' + '" ,"'.join(types) + '")',
                     'order_by': ','.join(
                         [
-                            'code_departement',
+                            'code_postal',
                             'nom_commune',
                             'type_etablissement',
                             'statut_public_prive',
@@ -168,6 +159,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
                 lambda s: s[1:] if s.startswith('0') else s,
             ),
             'libelle_departement': ('department_name', None),
+            'code_postal': ('postal_code', None),
             'nom_commune': ('city', self.protect_string),
             'type_etablissement': ('type', None),
             'statut_public_prive': ('private', lambda s: s == 'Privé'),
@@ -178,6 +170,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
             'code',
             'name',
             'department',
+            'postal_code',
             'city',
             'type',
             'private',
@@ -220,6 +213,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
                         'code': row['code'],
                         'name': row['name'],
                         'department': row['department'],
+                        'postal_code': row['postal_code'],
                         'city': row['city'],
                         'type': row['type'],
                         'private': row['private'],
@@ -260,11 +254,9 @@ class FRASchoolsDatabase(LocalSourceDatabase):
                         s.name || ' ' ||
                         s.city || ' ' ||
                         s.type || ' ' ||
-                        s.department || ' ' ||
-                        d.name
+                        s.postal_code
                     )
-                FROM school s
-                LEFT JOIN department d ON s.department = d.id;
+                FROM school s;
             """
             )
             self.commit()
