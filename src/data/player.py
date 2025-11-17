@@ -32,7 +32,6 @@ from utils.types import (
     NormCheckResult,
     TieBreakValue,
 )
-from utils.fide_ratings import percentage_score_rating_difference
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
@@ -466,10 +465,9 @@ class Player:
         score = (
             sum(game.result.point_value for game in games) + Result.DRAW.point_value * 2
         )
-        average_score = score / num_games
-        rating_difference = percentage_score_rating_difference[
-            round(average_score * 100)
-        ]
+        rating_difference = Utils.performance_bonus(
+            Utils.round_ranking(100 * score / num_games) / 100
+        )
         return average_rating + rating_difference, None
 
     @property

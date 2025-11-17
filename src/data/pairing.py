@@ -12,7 +12,6 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPairing
 from utils import Utils
 from utils.enum import Result, BoardColor, PlayerRatingType
-from utils.fide_ratings import find_win_probability
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
@@ -253,7 +252,7 @@ class Pairing:
                 diff = -400
 
         # Find matching probability (fallback to last)
-        expected = find_win_probability(diff)
+        expected = Utils.win_probability(diff)
         delta = round(k_factor * (self.result.point_value - expected), 2)
         new_rating = Utils.round_ranking(player.rating_used_by_fide.value + delta)
 
