@@ -141,9 +141,6 @@ class StoredPlayer:
     club: str | None = None
     fixed: int | None = None
     check_in: bool = False
-    k_standard: int | None = None
-    k_rapid: int | None = None
-    k_blitz: int | None = None
     # TODO (Molrn - multi tournament) move to a list in StoredTournament
     stored_tournament_player: StoredTournamentPlayer = field(
         default_factory=StoredTournamentPlayer

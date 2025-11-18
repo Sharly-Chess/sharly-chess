@@ -408,17 +408,17 @@ class Player:
     @property
     def fide_rating_coefficient(self) -> tuple[int, bool]:
         """Returns the player's coefficient (k), or the best guess."""
-        match self.tournament.rating:
-            case TournamentRating.STANDARD:
-                if self.stored_player.k_standard is not None:
-                    return (self.stored_player.k_standard, False)
-            case TournamentRating.RAPID:
-                if self.stored_player.k_rapid is not None:
-                    return (self.stored_player.k_rapid, False)
-            case TournamentRating.BLITZ:
-                if self.stored_player.k_blitz is not None:
-                    return (self.stored_player.k_blitz, False)
+        from database.sqlite.fide.fide_database import FideDatabase
 
+        if self.fide_id and FideDatabase().exists():
+            with FideDatabase() as db:
+                k = (db.get_k_factors_by_fide_id(self.fide_id) or {}).get(
+                    self.tournament.rating
+                )
+                if k is not None:
+                    return k, False
+
+        # Make a best guess
         if self.rating_used_by_fide.type != PlayerRatingType.FIDE:
             return (40, True)
         if self.rating_used_by_fide.value > 2400:
