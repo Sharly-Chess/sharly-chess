@@ -1,8 +1,10 @@
+import re
 from dataclasses import dataclass, asdict
 from functools import partial, cached_property
 from typing import Self, Any, Counter, Collection
 
 from data.event import Player, Event
+from database.sqlite.event.event_database import EventDatabase
 from plugins.fra_schools import PLUGIN_NAME
 from plugins.utils import PluginUtils, PluginData
 from web.controllers.base_controller import WebContext
@@ -57,6 +59,16 @@ class FRASchool(PluginData):
                 'fra_school_postal_code': self.postal_code,
                 'fra_school_city': self.city,
             }
+        )
+
+    @classmethod
+    def from_source_row(cls, row: dict[str, Any]) -> Self:
+        return cls(
+            code=row['code'],
+            name=row['name'],
+            department=row['department'],
+            postal_code=row['postal_code'],
+            city=row['city'],
         )
 
     @property
@@ -228,3 +240,42 @@ class FRASchoolsUtils:
             player.tournament.event
         ).fra_schools_by_id
         return event_schools_by_id.get(player_school_id, None)
+
+    @classmethod
+    def add_event_school(
+        cls,
+        event: Event,
+        school: FRASchool,
+        update_existing: bool = False,
+        save: bool = True,
+    ) -> int:
+        """Add a school to the event, returning its ID.
+        If a school already exists with the same code:
+            - if *update_existing* it is updated
+            - otherwise it is ignored."""
+        plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
+        school_id = next(
+            (s.id for s in plugin_data.fra_schools if s.code == school.code),
+            None,
+        )
+        if not school_id:
+            school_id = (
+                max(plugin_data.fra_schools_by_id | {0: ''}) + 1
+                if plugin_data.fra_schools_by_id
+                else 1
+            )
+        elif not update_existing:
+            return school_id
+        school.id = school_id
+        plugin_data.fra_schools_by_id[school_id] = school
+        event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+        if save:
+            with EventDatabase(event.uniq_id, True) as database:
+                database.update_stored_event(event.stored_event)
+        return school_id
+
+    @staticmethod
+    def extract_school_code(school_str: str) -> str | None:
+        if re.match(r'^\d{7}[A-Z]', school_str):
+            return school_str[:8]
+        return None

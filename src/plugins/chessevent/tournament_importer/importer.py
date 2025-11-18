@@ -54,6 +54,7 @@ from plugins.chessevent.tournament_importer.mappers import (
 from plugins.chessevent.utils import ChessEventTournamentPluginData, ChessEventUtils
 from plugins.ffe.ffe import FfePlugin
 from plugins.ffe.utils import FfePlayerPluginData
+from plugins.manager import plugin_manager
 from utils.enum import TournamentRating, Result
 
 paris_tz = zoneinfo.ZoneInfo('Europe/Paris')
@@ -182,10 +183,20 @@ class ChessEventTournamentImporter(TournamentImporter):
             status=SuccessChessEventStatus().id,
             last_sync=time.time(),
         ).to_stored_value()
-        stored_players = [
-            self._read_chessevent_player(player, player_id)
-            for player_id, player in enumerate(tournament.players)
-        ]
+
+        stored_players: list[StoredPlayer] = []
+        for player_id, ce_player in enumerate(tournament.players):
+            stored_player = self._read_chessevent_player(ce_player, player_id)
+            plugin_manager.hook_for_event(
+                event, 'augment_stored_player_from_chessevent_player'
+            )(
+                event=event,
+                importer=self,
+                stored_player=stored_player,
+                chessevent_player=ce_player,
+            )
+            stored_players.append(stored_player)
+
         return stored_tournament, stored_players
 
     @staticmethod

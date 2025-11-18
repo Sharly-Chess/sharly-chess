@@ -35,6 +35,7 @@ class ChessEventPlayer:
     discount: str | int | float | None = None
     paid_before: str | int | float | None = None
     paid_site: str | int | float | None = None
+    school: str | None = None
     skipped_rounds: dict[int, int | float] = field(
         default_factory=dict[int, int | float]
     )

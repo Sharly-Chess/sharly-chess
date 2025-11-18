@@ -2,7 +2,6 @@ import json
 import re
 import urllib
 from contextlib import suppress
-from dataclasses import dataclass
 from logging import Logger
 from pathlib import Path
 from typing import Any, Callable, override
@@ -19,20 +18,10 @@ from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDe
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins import fra_schools
 from plugins.fra_schools import PLUGIN_DIR
+from plugins.fra_schools.utils import FRASchool
 from utils import Utils
 
 logger: Logger = get_logger()
-
-
-@dataclass
-class StoredSchool:
-    code: str
-    name: str
-    department: str
-    postal_code: str
-    city: str
-    type: str
-    private: int
 
 
 class FRASchoolsDatabase(LocalSourceDatabase):
@@ -260,3 +249,39 @@ class FRASchoolsDatabase(LocalSourceDatabase):
             """
             )
             self.commit()
+
+    def search_school(
+        self, search: str, page: int = 0, limit: int = 25
+    ) -> list[FRASchool]:
+        words = re.findall(r'\w+', search.strip().lower())
+        fts_query = ' '.join(f'{w}*' for w in words)
+        query: str = """
+            SELECT
+                s.code,
+                s.name,
+                s.department,
+                s.postal_code,
+                s.city
+            FROM school s
+            JOIN school_fts ON school_fts.rowid = s.id
+            WHERE school_fts MATCH ?
+            LIMIT ?
+        """
+        params: list[Any] = [
+            fts_query,
+            limit,
+        ]
+        if page:
+            query += ' OFFSET ?'
+            params += [
+                page * limit,
+            ]
+        self.execute(query, tuple(params))
+        rows = self.fetchall()
+        return [FRASchool.from_source_row(row) for row in rows]
+
+    def get_school_by_code(self, school_code: str) -> FRASchool | None:
+        self.execute('SELECT * FROM `school` WHERE `code` = ?', (school_code,))
+        if row := self.fetchone():
+            return FRASchool.from_source_row(row)
+        return None
