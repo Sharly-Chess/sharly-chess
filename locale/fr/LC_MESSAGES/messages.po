@@ -2861,7 +2861,7 @@ msgid "No marks"
 msgstr "Aucune marque"
 
 msgid "No organiser"
-msgstr "Aucun organisateur·trice"
+msgstr "Aucun organisateur·ice"
 
 msgid "No pairing found for this player in the current round."
 msgstr "Aucun appariement pour ce·tte joueur·euse pour la ronde courante."
@@ -3111,7 +3111,7 @@ msgid "Only one age category is expected with options including other categories
 msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autres catégories."
 
 msgid "Only required for users that need to connect to the server."
-msgstr "Uniquement requis pour les utilisateurs·trices devant se connecter au serveur."
+msgstr "Uniquement requis pour les utilisateur·ices devant se connecter au serveur."
 
 msgid "Open Admin Interface"
 msgstr "Ouvrir l'interface d'administration"
@@ -3151,10 +3151,10 @@ msgid "Opponents' records"
 msgstr "Historique des adversaires"
 
 msgid "Organiser"
-msgstr "Organisateur·trice"
+msgstr "Organisateur·ice"
 
 msgid "Organiser:"
-msgstr "Organisateur·trice :"
+msgstr "Organisateur·ice :"
 
 msgid "Organization"
 msgstr "Organisation"
@@ -3509,7 +3509,7 @@ msgid "Playing in tournament [%(uniq_id)s]"
 msgstr "Participe au tournoi [%(uniq_id)s]"
 
 msgid "Please ask your administrator to set a password."
-msgstr "Veuillez demander à votre administrateur·trice de définir un mot de passe."
+msgstr "Veuillez demander à votre administrateur·ice de définir un mot de passe."
 
 msgid "Please choose a federation"
 msgstr "Veuillez choisir une fédération"
