@@ -62,6 +62,7 @@
              <h4>
                 {{ _('Tournament record') }}
             </h4>
+            {% set display_rating_change = tournament.player_rating_type == 3 and admin_player.tournament.started %}
             <table
                 id="record-table"
                 class="table prominent table-striped table-sm w-100 bg-light mx-auto justify-content-center mt-2"
@@ -91,7 +92,7 @@
                         <th scope="col" class="text-nowrap text-end">
                             {{ _('Rating') }}
                         </th>
-                        {% if tournament.player_rating_type == 3 %}
+                        {% if display_rating_change %}
                             <th scope="col" class="text-nowrap text-center">
                                 {{ _('Rating change') }}
                             </th>
@@ -102,7 +103,6 @@
                     <input type="hidden" name="max_byes" value="{{ admin_player.tournament.max_byes }}"/>
                     {% set can_set_hpb = client.can_set_half_point_bye(admin_player.tournament.id) %}
                     {% set can_set_fpb = client.can_set_full_point_bye(admin_player.tournament.id) %}
-                    {% set display_rating_change = tournament.player_rating_type == 3 and admin_player.tournament.started %}
                     {% set k, k_is_estimated = admin_player.fide_rating_coefficient %}
                     {% set ns = namespace(delta=0) %}
                     {% for round, pairing in admin_player.pairings.items() %}
