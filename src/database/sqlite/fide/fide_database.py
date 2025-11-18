@@ -324,14 +324,15 @@ class FideDatabase(LocalSourcePlayerDatabase):
 
     def get_k_factors_by_fide_id(
         self, player_fide_id: int
-    ) -> tuple[int | None, int | None, int | None]:
+    ) -> dict[TournamentRating, int | None] | None:
         self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
         if player_row := self.fetchone():
-            k_standard = player_row.get('k_standard', None)
-            k_rapid = player_row.get('k_rapid', None)
-            k_blitz = player_row.get('k_blitz', None)
-            return (k_standard, k_rapid, k_blitz)
-        return (None, None, None)
+            return {
+                TournamentRating.STANDARD: player_row.get('k_standard', None),
+                TournamentRating.RAPID: player_row.get('k_rapid', None),
+                TournamentRating.BLITZ: player_row.get('k_blitz', None),
+            }
+        return None
 
     def get_stored_players_by_fide_id(
         self, player_fide_ids: list[int]
