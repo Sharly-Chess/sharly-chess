@@ -148,6 +148,18 @@ class Event:
         return self.stored_event.location
 
     @property
+    def organiser_name(self) -> str | None:
+        return self.stored_event.organiser_name
+
+    @property
+    def organiser_home_page(self) -> str | None:
+        return self.stored_event.organiser_home_page
+
+    @property
+    def organiser_email(self) -> str | None:
+        return self.stored_event.organiser_email
+
+    @property
     def background_color(self) -> str:
         return (
             self.stored_event.background_color

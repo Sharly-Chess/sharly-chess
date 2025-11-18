@@ -363,6 +363,9 @@ class BaseStoredEvent:
     override_unrated_rapid_blitz: bool | None = None
     three_points_for_a_win: bool = False
     pab_value: int = Result.WIN.value
+    organiser_name: str | None = None
+    organiser_home_page: str | None = None
+    organiser_email: str | None = None
 
     # Plugins can add their own event data
     plugin_data: dict[str, dict[str, Any]] = field(

@@ -99,6 +99,7 @@ class ChessResultsSession(Session):
         Build Chess-Results upload XML from a Sharly Chess Tournament.
         """
 
+        event = tournament.event
         root = ET.Element('chessresults')
 
         # --- Tournament section ---
@@ -125,9 +126,8 @@ class ChessResultsSession(Session):
                 'fideeventid': '',
                 'remark': f'#{ChessResultsUtils.resolve_remark(tournament)}'[:599],
                 'director': '',
-                'organiser': '',
+                'organiser': event.organiser_name or '',
                 'location': tournament.location or '',
-                'arbiter': '     ',
                 'rounds': str(tournament.rounds),
                 'currentround': str(tournament.current_round or 0),
                 'rankinground': str(
@@ -159,8 +159,8 @@ class ChessResultsSession(Session):
                 )
                 if tournament.deputy_arbiters
                 else '',
-                'homepageorganiser': '',
-                'mail': '',
+                'homepageorganiser': event.organiser_home_page or '',
+                'mail': event.organiser_email or '',
                 'federation': tournament.event.federation or 'FID',
                 'creator': creator_id,
             }

@@ -16,14 +16,14 @@
 {% block card_text %}
     <div class="d-flex flex-column gap-1">
         <div>
-            <i class="bi-question-circle pe-1" ></i>
+            <i class="bi-question-circle-fill pe-1" ></i>
             {{ _(
                 'Unique ID: %(uniq_id)s',
                 uniq_id=event.uniq_id
             ) }}
         </div>
         <div class="{% if not event.tournament_count %}text-secondary{% endif %}">
-            <i class="bi-diagram-3 pe-1" ></i>
+            <i class="bi-diagram-3-fill pe-1" ></i>
             {% if event.tournament_count %}
                 {{ _('Tournaments: %(num)d', num=event.tournament_count) }}
             {% else %}
@@ -31,7 +31,7 @@
             {% endif %}
         </div>
         <div class="{% if not event.player_count %}text-secondary{% endif %}">
-            <i class="bi-people pe-1" ></i>
+            <i class="bi-people-fill pe-1" ></i>
             {% if event.player_count %}
                 {{ _('Players: %(num)d', num=event.player_count) }}
             {% else %}
@@ -39,8 +39,32 @@
             {% endif %}
         </div>
         {% if admin_events_show_details %}
+            <div class="{% if not event.organiser_name %}text-secondary{% endif %}">
+                <i class="bi-person-bounding-box pe-1" ></i>
+                {% if event.organiser_name %}
+                    {{ _('Organiser:') }} {{ event.organiser_name }}
+                {% else %}
+                    {{ _('No organiser') }}
+                {% endif %}
+            </div>
+            <div class="{% if not event.organiser_home_page %}text-secondary{% endif %}">
+                <i class="bi-house-fill pe-1" ></i>
+                {% if event.organiser_home_page %}
+                    <a href="{{ event.organiser_home_page }}" target="_blank">{{ event.organiser_home_page }}</a>
+                {% else %}
+                    {{ _('No home page') }}
+                {% endif %}
+            </div>
+            <div class="{% if not event.organiser_email %}text-secondary{% endif %}">
+                <i class="bi-envelope-fill pe-1" ></i>
+                {% if event.organiser_email %}
+                    <a href="mailto:{{ event.organiser_email }}" target="_blank">{{ event.organiser_email }}</a>
+                {% else %}
+                    {{ _('No email') }}
+                {% endif %}
+            </div>
             <div class="{% if not event.timer_count %}text-secondary{% endif %}">
-                <i class="bi-clock pe-1" ></i>
+                <i class="bi-clock-fill pe-1" ></i>
                 {% if event.timer_count %}
                     {{ _(
                         'Timers: %(num)d',

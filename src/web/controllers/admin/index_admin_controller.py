@@ -10,6 +10,8 @@ from common import (
     format_timestamp_date,
     format_date_range,
     format_date,
+    is_http_url,
+    is_valid_email,
 )
 from common.exception import FormError
 from common.logger import get_logger
@@ -308,6 +310,9 @@ class IndexAdminController(BaseAdminController):
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
             location: str | None = None
+            organiser_name: str | None = None
+            organiser_home_page: str | None = None
+            organiser_email: str | None = None
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             event_enabled_plugins = [
                 plugin
@@ -330,6 +335,9 @@ class IndexAdminController(BaseAdminController):
             public = stored_event.public
             federation = stored_event.federation
             location = stored_event.location
+            organiser_name = stored_event.organiser_name
+            organiser_home_page = stored_event.organiser_home_page
+            organiser_email = stored_event.organiser_email
             player_rating_type = stored_event.player_rating_type
             stored_plugin_data = stored_event.plugin_data
             event_enabled_plugins = admin_event.enabled_plugins
@@ -358,6 +366,9 @@ class IndexAdminController(BaseAdminController):
                     'federation': federation,
                     'player_rating_type': player_rating_type,
                     'location': location,
+                    'organiser_name': organiser_name,
+                    'organiser_home_page': organiser_home_page,
+                    'organiser_email': organiser_email,
                     'date_range': date_range,
                 }
             )
@@ -408,6 +419,18 @@ class IndexAdminController(BaseAdminController):
 
         public = WebContext.form_data_to_bool(data, 'public')
         location = WebContext.form_data_to_str(data, 'location')
+        organiser_name = WebContext.form_data_to_str(data, 'organiser_name')
+
+        organiser_home_page = WebContext.form_data_to_str(
+            data, field := 'organiser_home_page'
+        )
+        if organiser_home_page and not is_http_url(organiser_home_page):
+            errors[field] = _('Please supply a valid URL (e.g. https://my.domain.com).')
+
+        organiser_email = WebContext.form_data_to_str(data, field := 'organiser_email')
+        if organiser_email and not is_valid_email(organiser_email):
+            errors[field] = _('Please supply a valid email address.')
+
         player_rating_type: int = (
             WebContext.form_data_to_int(data, 'player_rating_type')
             or PlayerRatingType.FIDE.value
@@ -452,6 +475,9 @@ class IndexAdminController(BaseAdminController):
             stop_date=stop_date,
             public=bool(public),
             location=location,
+            organiser_name=organiser_name,
+            organiser_home_page=organiser_home_page,
+            organiser_email=organiser_email,
             player_rating_type=player_rating_type,
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],

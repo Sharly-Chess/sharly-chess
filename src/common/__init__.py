@@ -7,6 +7,7 @@ from collections import namedtuple
 from datetime import datetime, date
 from functools import wraps
 from pathlib import Path
+from urllib.parse import urlparse
 from packaging.version import Version
 
 from common.exception import SharlyChessException
@@ -35,6 +36,8 @@ def experimental_features_enabled() -> bool:
 REQUEST_TIMEOUT: int = 10
 
 RGB = namedtuple('RGB', ['red', 'green', 'blue'])
+
+EMAIL_RE = re.compile(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 
 
 """ The temporary directory. """
@@ -164,6 +167,18 @@ def format_timestamp(ts: float | None = None, format_: str = '%Y-%m-%d %H:%M') -
     return datetime.strftime(
         datetime.fromtimestamp(ts if ts is not None else time.time()), format_
     )
+
+
+def is_valid_email(email: str) -> bool:
+    return EMAIL_RE.match(email) is not None
+
+
+def is_http_url(url: str) -> bool:
+    try:
+        r = urlparse(url)
+        return r.scheme in {'http', 'https'} and bool(r.netloc)
+    except ValueError:
+        return False
 
 
 def format_date(date_: date | None = None) -> str:
