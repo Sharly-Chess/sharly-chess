@@ -277,9 +277,6 @@ class PlayerAdminController(BaseEventAdminController):
                 ).stored_value
                 for tr in TournamentRating
             },
-            k_standard=WebContext.form_data_to_int(data, 'k_standard'),
-            k_rapid=WebContext.form_data_to_int(data, 'k_rapid'),
-            k_blitz=WebContext.form_data_to_int(data, 'k_blitz'),
             fide_id=WebContext.form_data_to_int(data, 'fide_id'),
             federation=WebContext.form_data_to_str(data, 'federation') or '',
             club=WebContext.form_data_to_str(data, 'club') or '',
@@ -714,9 +711,6 @@ class PlayerAdminController(BaseEventAdminController):
                     }
                     title: int = PlayerTitle.NONE.value
                     federation = admin_event.federation
-                    k_standard: int | None = None
-                    k_rapid: int | None = None
-                    k_blitz: int | None = None
                     club: str | None = None
                     fide_id: int | None = None
                     mail: str | None = None
@@ -740,9 +734,6 @@ class PlayerAdminController(BaseEventAdminController):
                             )
                         title = stored_player.title
                         federation = stored_player.federation
-                        k_standard = stored_player.k_standard
-                        k_rapid = stored_player.k_rapid
-                        k_blitz = stored_player.k_blitz
                         club = stored_player.club
                         fide_id = stored_player.fide_id or None
                         mail = stored_player.mail
@@ -800,9 +791,6 @@ class PlayerAdminController(BaseEventAdminController):
                             'title': title,
                             'federation': federation,
                             'fide_id': fide_id,
-                            'k_standard': k_standard,
-                            'k_rapid': k_rapid,
-                            'k_blitz': k_blitz,
                             'club': club,
                             'mail': mail,
                             'phone': phone,

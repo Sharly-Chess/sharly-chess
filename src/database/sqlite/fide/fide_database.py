@@ -223,9 +223,6 @@ class FideDatabase(LocalSourcePlayerDatabase):
                 f'{row["year_of_birth"] or 1900}-01-01', '%Y-%m-%d'
             ).date(),
             gender=row['gender'],
-            k_standard=row.get('k_standard', None),
-            k_rapid=row.get('k_rapid', None),
-            k_blitz=row.get('k_blitz', None),
             mail='',
             phone='',
             comment='',
@@ -324,6 +321,17 @@ class FideDatabase(LocalSourcePlayerDatabase):
         if player_row := self.fetchone():
             return self._get_player_from_row(player_row)
         return None
+
+    def get_k_factors_by_fide_id(
+        self, player_fide_id: int
+    ) -> tuple[int | None, int | None, int | None]:
+        self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
+        if player_row := self.fetchone():
+            k_standard = player_row.get('k_standard', None)
+            k_rapid = player_row.get('k_rapid', None)
+            k_blitz = player_row.get('k_blitz', None)
+            return (k_standard, k_rapid, k_blitz)
+        return (None, None, None)
 
     def get_stored_players_by_fide_id(
         self, player_fide_ids: list[int]

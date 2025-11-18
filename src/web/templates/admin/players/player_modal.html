@@ -259,9 +259,6 @@
                         ) }}
                     </div>
                 </div>
-                <input type="hidden" name="k_standard" value="{{ data['k_standard'] }}" />
-                <input type="hidden" name="k_rapid" value="{{ data['k_rapid'] }}" />
-                <input type="hidden" name="k_blitz" value="{{ data['k_blitz'] }}" />
                 {% for template in plugin_templates_by_section['fide'] %}
                     {% include template %}
                 {% endfor %}
