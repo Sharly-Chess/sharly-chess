@@ -43,6 +43,7 @@ from utils.option import OptionHandler
 class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
     def __init__(self, options: list[TournamentImporterOption] | None = None):
         super().__init__(options)
+        self.stored_event_modified = False
         self.post_import_task: list[Callable[[Tournament], None]] = []
         if self.reorder_boards:
             self.post_import_task.append(self._reorder_tournament_boards)
@@ -123,6 +124,8 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             tournament_id = self._write_stored_tournament(
                 stored_tournament, stored_players, database
             )
+            if self.stored_event_modified:
+                database.update_stored_event(event.stored_event)
         event = EventLoader().load_event(event.uniq_id)
         tournament = event.tournaments_by_id[tournament_id]
         tournament.set_players_pairing_numbers()

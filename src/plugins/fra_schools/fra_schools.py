@@ -6,19 +6,22 @@ from typing import TYPE_CHECKING, Any, Iterable, override
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
+from common.logger import get_logger
 from common.i18n import _
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import PlayerTableColumn, ColumnUsage
 from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
-from data.event import Player
+from data.event import Player, Event
+from data.input_output import TournamentImporter
 from data.print_documents import PlayerSplitter
 from data.print_documents.documents import PrintDocument, PlayerRankingPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
-from database.sqlite.event.event_store import StoredTournament
+from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins import PLUGINS_DIR
+from plugins.chessevent.tournament_importer.data import ChessEventPlayer
 from plugins.ffe.ffe import FfeLeagueTableColumn, FfePlugin
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.papi_converter import PapiPlayer
@@ -57,6 +60,9 @@ from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredTournament
+
+
+logger = get_logger()
 
 
 class FRASchoolsPlugin(Plugin):
@@ -303,3 +309,84 @@ class FRASchoolsPlugin(Plugin):
     def update_papi_player(self, papi_player: PapiPlayer, player: Player):
         school = FRASchoolsUtils.get_player_school(player)
         papi_player.club = school.full_name if school else ''
+
+    @hookimpl
+    def augment_stored_player_from_chessevent_player(
+        self,
+        event: Event,
+        importer: TournamentImporter,
+        stored_player: StoredPlayer,
+        chessevent_player: ChessEventPlayer,
+    ):
+        school_id: int | None = None
+        ce_school = chessevent_player.school
+        if ce_school and FRASchoolsDatabase.file_path().exists():
+            school_code = FRASchoolsUtils.extract_school_code(ce_school)
+            if not school_code:
+                logger.warning(
+                    'Player [%s %s] - School code not found in [%s] (ignored).',
+                    stored_player.last_name,
+                    stored_player.first_name,
+                    school_code,
+                )
+            else:
+                fra_schools = FRASchoolsUtils.get_event_plugin_data(event).fra_schools
+                school_id = next(
+                    (s.id for s in fra_schools if s.code == school_code),
+                    None,
+                )
+                if not school_id:
+                    with FRASchoolsDatabase() as database:
+                        school = database.get_school_by_code(school_code)
+                    if not school:
+                        logger.warning(
+                            'Player [%s %s] - No school found for code [%s] (ignored).',
+                            stored_player.last_name,
+                            stored_player.first_name,
+                            school_code,
+                        )
+                    else:
+                        importer.stored_event_modified = True
+                        school_id = FRASchoolsUtils.add_event_school(
+                            event, school, save=False
+                        )
+        stored_player.plugin_data[PLUGIN_NAME] = FRASchoolsPlayerPluginData(
+            school_id
+        ).to_stored_value()
+
+    @hookimpl
+    def augment_stored_player_on_papi_import(
+        self,
+        event: Event,
+        importer: TournamentImporter,
+        stored_player: StoredPlayer,
+    ):
+        school_id: int | None = None
+        if stored_player.club:
+            school_code = FRASchoolsUtils.extract_school_code(stored_player.club)
+            if school_code:
+                fra_schools = FRASchoolsUtils.get_event_plugin_data(event).fra_schools
+                school_id = next(
+                    (s.id for s in fra_schools if s.code == school_code),
+                    None,
+                )
+                if not school_id:
+                    with FRASchoolsDatabase() as database:
+                        school = database.get_school_by_code(school_code)
+                    if not school:
+                        logger.warning(
+                            'Player [%s %s] - No school found for code [%s] (ignored).',
+                            stored_player.last_name,
+                            stored_player.first_name,
+                            school_code,
+                        )
+                    else:
+                        importer.stored_event_modified = True
+                        school_id = FRASchoolsUtils.add_event_school(
+                            event, school, save=False
+                        )
+        if school_id:
+            stored_player.club = None
+        stored_player.plugin_data[PLUGIN_NAME] = FRASchoolsPlayerPluginData(
+            school_id
+        ).to_stored_value()

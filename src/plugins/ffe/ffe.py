@@ -109,6 +109,15 @@ class FfePluginHooks:
     def update_papi_player(self, papi_player: PapiPlayer, player: Player):
         """Called when a player is converted to Papi format"""
 
+    @hookspec
+    def augment_stored_player_on_papi_import(
+        self,
+        event: 'Event',
+        importer: TournamentImporter,
+        stored_player: StoredPlayer,
+    ):
+        """Augment player data when fetched from Papi."""
+
 
 class FfePlugin(Plugin):
     @staticmethod

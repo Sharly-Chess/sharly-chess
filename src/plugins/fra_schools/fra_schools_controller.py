@@ -1,4 +1,3 @@
-import re
 from functools import partial
 from operator import attrgetter
 from typing import Any, Annotated
@@ -11,9 +10,8 @@ from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from common.i18n import _
 from data.access_levels.actions import AuthAction
-from database.sqlite.event.event_database import EventDatabase
 from plugins.fra_schools import PLUGIN_NAME
-from plugins.fra_schools.fra_schools_database import FRASchoolsDatabase, StoredSchool
+from plugins.fra_schools.fra_schools_database import FRASchoolsDatabase
 from plugins.fra_schools.utils import FRASchoolsUtils, FRASchool
 from plugins.utils import PluginUtils
 from web.controllers.admin.base_event_admin_controller import (
@@ -28,18 +26,6 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 class FRASchoolsController(BaseEventAdminController):
     guards = []
-
-    @staticmethod
-    def _get_school_from_row(row: dict[str, Any]) -> StoredSchool:
-        return StoredSchool(
-            code=row['code'],
-            name=row['name'],
-            department=row['department'],
-            postal_code=row['postal_code'],
-            city=row['city'],
-            type=row['type'],
-            private=bool(row['private']),
-        )
 
     @classmethod
     def get_fra_school_template_context(
@@ -62,6 +48,8 @@ class FRASchoolsController(BaseEventAdminController):
             'fra_school_options': school_options,
         }
 
+    SEARCH_LIMIT = 25
+
     @get(
         path=[
             'fra-schools/search-player/{event_uniq_id:str}',
@@ -77,41 +65,13 @@ class FRASchoolsController(BaseEventAdminController):
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         database = FRASchoolsDatabase()
-        schools: list[StoredSchool] = []
-        limit: int = 25
+        schools: list[FRASchool] = []
 
-        words = re.findall(r'\w+', fra_schools_search.strip().lower())
-        fts_query = ' '.join(f'{w}*' for w in words)
         if fra_schools_search and database.file_path().exists():
             with database:
-                query: str = """
-                    SELECT
-                        s.code,
-                        s.name,
-                        s.department,
-                        s.postal_code,
-                        s.city,
-                        s.type,
-                        s.private
-                    FROM school s
-                    JOIN school_fts ON school_fts.rowid = s.id
-                    WHERE school_fts MATCH ?
-                    LIMIT ?
-                """
-                params: list[Any] = [
-                    fts_query,
-                    limit,
-                ]
-
-                if page:
-                    query += ' OFFSET ?'
-                    params += [
-                        page * limit,
-                    ]
-
-                database.execute(query, tuple(params))
-                rows = database.fetchall()
-                schools = [self._get_school_from_row(row) for row in rows]
+                schools = database.search_school(
+                    fra_schools_search, page, self.SEARCH_LIMIT
+                )
 
         return HTMXTemplate(
             template_name='/fra_schools_search_results.html',
@@ -119,7 +79,7 @@ class FRASchoolsController(BaseEventAdminController):
             | {
                 'search': fra_schools_search,
                 'search_results': schools,
-                'has_more_results': len(schools) == limit,
+                'has_more_results': len(schools) == self.SEARCH_LIMIT,
                 'page': page,
                 'connection_error': None,
             },
@@ -140,7 +100,6 @@ class FRASchoolsController(BaseEventAdminController):
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         event = web_context.get_admin_event()
-        plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
         school = FRASchool.from_form_data(data)
         errors: dict[str, str] = {}
         if not school.name:
@@ -150,21 +109,9 @@ class FRASchoolsController(BaseEventAdminController):
         ):
             errors['fra_school_postal_code'] = _('Invalid format (expected: 5 digits).')
         if not errors:
-            school_id = next(
-                (s.id for s in plugin_data.fra_schools if s.code == school.code),
-                None,
+            school_id = FRASchoolsUtils.add_event_school(
+                event, school, update_existing=True
             )
-            if not school_id:
-                school_id = (
-                    max(plugin_data.fra_schools_by_id | {0: ''}) + 1
-                    if plugin_data.fra_schools_by_id
-                    else 1
-                )
-            school.id = school_id
-            plugin_data.fra_schools_by_id[school_id] = school
-            event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
-            with EventDatabase(event.uniq_id, True) as database:
-                database.update_stored_event(event.stored_event)
             data |= FRASchool().to_form_data() | {
                 'fra_school': str(school_id),
             }

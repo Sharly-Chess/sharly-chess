@@ -2,14 +2,16 @@ from types import ModuleType
 from typing import Any, TYPE_CHECKING
 
 from packaging.version import Version
+from pluggy import PluginManager
 
 from common.i18n import _
 from data.input_output import TournamentImporter
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredTournament
+from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from plugins.chessevent import migrations, PLUGIN_NAME
 from plugins.chessevent.chessevent_controller import ChessEventController
+from plugins.chessevent.tournament_importer.data import ChessEventPlayer
 from plugins.chessevent.tournament_importer.importer import ChessEventTournamentImporter
 from plugins.chessevent.utils import (
     ChessEventEventPluginData,
@@ -17,13 +19,25 @@ from plugins.chessevent.utils import (
     ChessEventUtils,
 )
 from plugins.ffe.ffe import FfePlugin
-from plugins.hookspec import hookimpl
+from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.utils import Plugin, PluginData
 from web.controllers.base_controller import WebContext, BaseController
 
 if TYPE_CHECKING:
     from data.event import Event
+
+
+class ChessEventPluginHooks:
+    @hookspec
+    def augment_stored_player_from_chessevent_player(
+        self,
+        event: 'Event',
+        importer: TournamentImporter,
+        stored_player: StoredPlayer,
+        chessevent_player: ChessEventPlayer,
+    ):
+        """Augment player data when fetched from ChessEvent."""
 
 
 class ChessEventPlugin(Plugin):
@@ -57,6 +71,11 @@ class ChessEventPlugin(Plugin):
     @property
     def base_migration_module(self) -> ModuleType:
         return migrations
+
+    def init(self, plugin_manager: PluginManager):
+        super().init(plugin_manager)
+
+        plugin_manager.add_hookspecs(ChessEventPluginHooks)
 
     @property
     def event_form_fields_template(self) -> str:

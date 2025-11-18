@@ -11,6 +11,7 @@ from data.input_output.tournament_importers import FileTournamentImporter
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_converter import PapiConverter, PapiData
+from plugins.manager import plugin_manager
 from plugins.pairing_acceleration.utils import PairingAccelerationUtils
 
 
@@ -62,6 +63,25 @@ class FfeTournamentImporter(FileTournamentImporter):
                 ),
             )
 
+    def read_papi_data(
+        self,
+        event: Event,
+        papi_data: PapiData,
+        stored_tournament: StoredTournament | None,
+    ) -> tuple[StoredTournament, list[StoredPlayer]]:
+        stored_tournament, stored_players = PapiConverter().read_papi_data(
+            papi_data, stored_tournament
+        )
+        for stored_player in stored_players:
+            plugin_manager.hook_for_event(
+                event, 'augment_stored_player_on_papi_import'
+            )(
+                event=event,
+                importer=self,
+                stored_player=stored_player,
+            )
+        return stored_tournament, stored_players
+
 
 class PapiTournamentImporter(FfeTournamentImporter):
     @staticmethod
@@ -84,11 +104,10 @@ class PapiTournamentImporter(FfeTournamentImporter):
         self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         (file_path,) = self.get_option_values()
-        converter = PapiConverter()
         try:
-            papi_data = converter.read_papi_file(file_path)
+            papi_data = PapiConverter().read_papi_file(file_path)
             self._add_rating_threshold_task(papi_data)
-            return converter.read_papi_data(papi_data, stored_tournament)
+            return self.read_papi_data(event, papi_data, stored_tournament)
         except DictReaderException as exception:
             raise ImporterError(str(exception))
 
@@ -119,7 +138,7 @@ class PapiJsonTournamentImporter(FfeTournamentImporter):
                 papi_data_dict = json.load(file)
             papi_data = dict_to_dataclass(PapiData, papi_data_dict)
             self._add_rating_threshold_task(papi_data)
-            return PapiConverter().read_papi_data(papi_data, stored_tournament)
+            return self.read_papi_data(event, papi_data, stored_tournament)
         except (UnicodeDecodeError, JSONDecodeError) as error:
             raise SharlyChessException(f'Error while reading JSON file: {error}')
         except DictReaderException as exception:
