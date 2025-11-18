@@ -103,6 +103,10 @@
   width: max-content;   /* shrink to fit table */
 }
 
+.player-popover:has(.empty) {
+    display: none;
+}
+
 .search-results-dropdown {
     max-height: 400px;
     width: fit-content;

@@ -1520,6 +1520,27 @@ class PlayerAdminController(BaseEventAdminController):
             request, player_id=player_id, modal='record', reload_event=True
         )
 
+    @get(
+        path='/history-popover/{event_uniq_id:str}/{tournament_id:int}/{player_id:int}',
+        name='admin-player-history-popover',
+    )
+    async def htmx_admin_history_popover(
+        self, request: HTMXRequest, tournament_id: int, player_id: int
+    ) -> Template:
+        web_context: PlayerAdminWebContext = PlayerAdminWebContext(
+            request, player_id, tournament_id
+        )
+
+        tournament = web_context.get_admin_tournament()
+        tournament.compute_player_ranks()
+        return HTMXTemplate(
+            template_name='/admin/players/history_popover.html',
+            context=web_context.template_context
+            | {
+                'player': web_context.get_admin_player(),
+            },
+        )
+
     @delete(
         path='/player-delete/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-delete',
