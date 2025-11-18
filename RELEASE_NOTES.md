@@ -17,7 +17,7 @@ English version below
 
 ## Joueur·euses
 
-- Calcul des variations de classement FIDE (3.3.0)
+- Calcul des variations de classement _FIDE_ (3.3.0)
 
 ## Impression
 
@@ -63,7 +63,7 @@ English version below
 
 ## Players
 
-- Calculation of FIDE rating changes (3.3.0)
+- Calculation of _FIDE_ rating changes (3.3.0)
 
 ## Printing
 
