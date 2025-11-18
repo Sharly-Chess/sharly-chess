@@ -502,7 +502,8 @@ class FfePlugin(Plugin):
             return PlayerRatingAndType(ratings.fide, PlayerRatingType.FIDE)
         if ratings.national is not None:
             return PlayerRatingAndType(ratings.national, PlayerRatingType.NATIONAL)
-
+        if ratings.estimated is not None:
+            return PlayerRatingAndType(ratings.estimated, PlayerRatingType.ESTIMATED)
         value = 0
         match tournament_rating:
             case TournamentRating.RAPID:

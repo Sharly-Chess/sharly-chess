@@ -197,11 +197,6 @@ class Player:
             rating = player_ratings.national
             type_ = PlayerRatingType.NATIONAL
         if rating is None:
-            if player_ratings.estimated:
-                return PlayerRatingAndType(
-                    player_ratings.estimated, PlayerRatingType.ESTIMATED
-                )
-
             rating_and_type = plugin_manager.hook_for_event(
                 self.event, 'get_player_rating'
             )(
@@ -211,6 +206,10 @@ class Player:
             )
             if rating_and_type:
                 return rating_and_type
+            if player_ratings.estimated:
+                return PlayerRatingAndType(
+                    player_ratings.estimated, PlayerRatingType.ESTIMATED
+                )
 
         return PlayerRatingAndType(rating or 0, type_)
 
