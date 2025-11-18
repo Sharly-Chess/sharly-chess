@@ -555,6 +555,7 @@ body[data-bs-theme=light] .btn-primary {
     --bs-tertiary-bg-rgb: 43, 48, 53;
     --bs-primary-text-emphasis: #6ea8fe;
     --bs-secondary-text-emphasis: #a7acb1;
+    --bs-success-rgb: 36, 194, 121;
     --bs-success-text-emphasis: #75b798;
     --bs-info-text-emphasis: #6edff6;
     --bs-warning-text-emphasis: #ffda6a;

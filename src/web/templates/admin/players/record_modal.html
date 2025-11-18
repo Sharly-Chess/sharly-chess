@@ -249,7 +249,7 @@
                                 {% else %}
                                     {% set ns.delta = ns.delta + rating_change.delta %}
                                     <td
-                                        class="text-nowrap text-center {% if rating_change.delta > 0 %}text-success{% elif rating_change.delta < 0 %}text-danger{% endif %} {% if rating_change.comment %}text-decoration-underline{% endif %}"
+                                        class="text-nowrap text-center {% if rating_change.delta > 0 %}text-success{% elif rating_change.delta < 0 %}text-warning{% endif %} {% if rating_change.comment %}text-decoration-underline{% endif %}"
                                         {{ macros.tooltip_attributes(
                                             'info', rating_change.comment, 'bottom'
                                         ) if rating_change.comment }}
@@ -285,10 +285,10 @@
                                         {{ _("New FIDE rating (based on player's official <i>k</i> of <b>%(k)d</b>)", k=k) }}
                                     {% endif %}
                                 </td>
-                                <td  class="text-nowrap text-end {% if delta > 0 %}text-success{% elif delta < 0 %}text-danger{% endif %}">
+                                <td  class="text-nowrap text-end {% if delta > 0 %}text-success{% elif delta < 0 %}text-warning{% endif %}">
                                     {{ admin_player.rating + delta }} F
                                 </td>
-                                <td class="text-nowrap text-center {% if delta > 0 %}text-success{% elif delta < 0 %}text-danger{% endif %}">
+                                <td class="text-nowrap text-center {% if delta > 0 %}text-success{% elif delta < 0 %}text-warning{% endif %}">
                                     ({{ delta }})
                                 </td>
                             </tr>
