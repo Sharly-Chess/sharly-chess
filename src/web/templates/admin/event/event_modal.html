@@ -126,6 +126,7 @@
                             {{ admin_macros.text_input(
                                 name='organiser_name',
                                 label=_('Organiser:'),
+                                placeholder=_('E.g.: Sharly Chess Club'),
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors,
                             ) }}
@@ -138,7 +139,16 @@
                                 data=data, errors=errors,
                             ) }}
                         </div>
-                            <div class="col-12">
+                        <div class="col-12">
+                            {{ admin_macros.text_input(
+                                name='organiser_director',
+                                label=_('Director:'),
+                                placeholder=_('The director is the person in charge of the event.'),
+                                disabled=not client.can_update_event,
+                                data=data, errors=errors,
+                            ) }}
+                        </div>
+                        <div class="col-12">
                             {{ admin_macros.text_input(
                                 name='organiser_email',
                                 label=_('Contact email:'),

@@ -122,11 +122,11 @@ class ChessResultsSession(Session):
                     tournament.pairing_system
                 )
                 or '',
-                'name': tournament.full_name,
+                'name': tournament.full_name[:160],
                 'fideeventid': '',
                 'remark': f'#{ChessResultsUtils.resolve_remark(tournament)}'[:599],
-                'director': '',
-                'organiser': event.organiser_name or '',
+                'director': (event.organiser_director or '')[:80],
+                'organiser': (event.organiser_name or '')[:80],
                 'location': tournament.location or '',
                 'rounds': str(tournament.rounds),
                 'currentround': str(tournament.current_round or 0),
@@ -148,7 +148,7 @@ class ChessResultsSession(Session):
                 'homecolor': '',
                 'samecolor': '',
                 'playerperteam': '',
-                'category': '0',
+                'category': 'standard',
                 'ratingavg': str(round(tournament.average_player_rating)),
                 'endstatus': 'N',
                 'chiefarbiter': tournament.chief_arbiter.full_name_and_id
@@ -159,8 +159,8 @@ class ChessResultsSession(Session):
                 )
                 if tournament.deputy_arbiters
                 else '',
-                'homepageorganiser': event.organiser_home_page or '',
-                'mail': event.organiser_email or '',
+                'homepageorganiser': (event.organiser_home_page or '')[:80],
+                'mail': (event.organiser_email or '')[:80],
                 'federation': tournament.event.federation or 'FID',
                 'creator': creator_id,
             }
