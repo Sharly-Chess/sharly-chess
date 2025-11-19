@@ -4512,7 +4512,7 @@ msgid "The default federation for your events."
 msgstr "La fédération par défaut pour vos évènements."
 
 msgid "The director is the person in charge of the event."
-msgstr "Le·la directeur·trice est la personne responsable de l’événement."
+msgstr "Le·la directeur·ice est la personne responsable de l’événement."
 
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."

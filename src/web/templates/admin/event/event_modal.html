@@ -143,7 +143,7 @@
                             {{ admin_macros.text_input(
                                 name='organiser_director',
                                 label=_('Director:'),
-                                placeholder=_('The director is the person in charge of the event.'),
+                                tooltip_text=_('The director is the person in charge of the event.'),
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors,
                             ) }}
