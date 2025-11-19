@@ -416,11 +416,14 @@ class TournamentAdminController(BaseEventAdminController):
         stop_date: date | None = None
         rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
         tournament: Tournament | None = None
+
+        index = len(web_context.admin_event.tournaments)
         if rounds < 1:
             errors[field] = _('A positive integer is expected.')
         elif action == 'update':
             tournament = web_context.admin_tournament
             assert tournament is not None
+            index = tournament.index
             if rounds < tournament.last_paired_round:
                 errors['rounds'] = _(
                     'Impossible to set a round number lower '
@@ -532,6 +535,7 @@ class TournamentAdminController(BaseEventAdminController):
             ]
             else None,
             name=name,
+            index=index,
             time_control_trf25=time_control_trf25,
             record_illegal_moves=record_illegal_moves,
             rules=rules,
@@ -850,6 +854,31 @@ class TournamentAdminController(BaseEventAdminController):
             ),
         )
 
+        web_context = TournamentAdminWebContext(request, reload_event=True)
+        return self._admin_event_tournaments_render(web_context)
+
+    @patch(
+        path='/tournament-reorder/{event_uniq_id:str}',
+        name='admin-tournament-reorder',
+    )
+    async def htmx_admin_tournament_reorder(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, list[int]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request)
+        sorted_tournament_ids = data['item']
+        with EventDatabase(web_context.get_admin_event().uniq_id, True) as database:
+            for tournament in web_context.get_admin_event().tournaments_by_id.values():
+                if tournament.id not in sorted_tournament_ids:
+                    raise ValueError(f'Missing tournament id: {tournament.id}')
+                index = sorted_tournament_ids.index(tournament.id)
+                if index != tournament.index:
+                    tournament.stored_tournament.index = index
+                    database.update_stored_tournament(tournament.stored_tournament)
         web_context = TournamentAdminWebContext(request, reload_event=True)
         return self._admin_event_tournaments_render(web_context)
 

@@ -706,6 +706,7 @@ class EventDatabase(MigrationDatabase):
         stored_tournament = StoredTournament(
             id=row['id'],
             name=row['name'],
+            index=row['index'],
             time_control_trf25=row['time_control_trf25'],
             record_illegal_moves=row['record_illegal_moves'],
             rules=row['rules'],
@@ -781,6 +782,7 @@ class EventDatabase(MigrationDatabase):
             stored_tournament,
             [
                 'name',
+                'index',
                 'time_control_trf25',
                 'record_illegal_moves',
                 'rules',

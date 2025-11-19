@@ -129,19 +129,28 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    <div class="row gy-2 gx-3">
-        {% if admin_event.tournaments_by_uniq_id %}
-            {% for tournament in admin_event.tournaments_by_uniq_id.values() %}
-                {% include 'tournament_card.html' %}
-            {% endfor %}
-        {% else %}
-            <div class="mx-auto" style="max-width: 500px;">
-                <h5 class="mt-2 my-5 text-center">
-                    {{ _('No tournaments.') }}
-                </h5>
-            </div>
-        {% endif %}
-    </div>
+    <form
+        hx-patch="{{ url_for(
+            'admin-tournament-reorder',
+            event_uniq_id=admin_event.uniq_id
+        ) }}"
+        hx-target="body"
+        hx-trigger="end"
+    >
+        <div class="row gy-2 gx-3 sortable">
+            {% if admin_event.tournaments_sorted_by_index %}
+                {% for tournament in admin_event.tournaments_sorted_by_index %}
+                    {% include 'tournament_card.html' %}
+                {% endfor %}
+            {% else %}
+                <div class="mx-auto" style="max-width: 500px;">
+                    <h5 class="mt-2 my-5 text-center">
+                        {{ _('No tournaments.') }}
+                    </h5>
+                </div>
+            {% endif %}
+        </div>
+    </form>
     <script>
         $(document).ready(function() {
             document.querySelectorAll('.tc-human').forEach(el => {

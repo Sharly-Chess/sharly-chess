@@ -155,6 +155,7 @@ class StoredPlayer:
 class StoredTournament:
     id: int | None
     name: str
+    index: int = 0
     time_control_trf25: str | None = None
     record_illegal_moves: int | None = None
     rules: str | None = None
