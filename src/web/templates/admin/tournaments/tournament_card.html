@@ -1,7 +1,18 @@
 {% extends '../common/card.html' %}
 
 {% block card_header %}
-    {{ admin_macros.tournament_status_icon(tournament) }} {{ tournament.name }}
+    <input type='hidden' name='item' value='{{ tournament.id }}'/>
+    <div class="d-flex align-items-center">
+        <div>
+            <i class="bi-arrows-move invisible"></i>
+        </div>
+        <div class="flex-grow-1">
+             {{ admin_macros.tournament_status_icon(tournament) }} {{ tournament.name }}
+        </div>
+        <div>
+            <i class="bi-arrows-move"></i>
+        </div>
+    </div>
 {% endblock %}
 
 {% block card_title %}

@@ -77,7 +77,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
                 )
             self.admin_tournament = event.tournaments_by_id[tournament_id]
         elif event.tournaments:
-            self.admin_tournament = event.tournaments_sorted_by_uniq_id[0]
+            self.admin_tournament = event.tournaments_sorted_by_index[0]
 
         if prize_group_id:
             tournament = self.get_admin_tournament()

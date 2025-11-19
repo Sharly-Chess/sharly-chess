@@ -47,16 +47,16 @@
                 {% if admin_event.players_sorted_by_name %}
                     {% include 'download_players.html' %}
                 {% endif %}
-                {% if admin_event.not_finished_tournaments_sorted_by_uniq_id %}
+                {% if admin_event.not_finished_tournaments_sorted_by_index %}
                     {% include 'check_in_tournaments.html' %}
                 {% endif %}
                 {% include 'filter_columns.html' %}
                 <span
                     {% if not client.can_add_player %}
                         {{ macros.tooltip_attributes('warning', _('You are not allowed to add players to the event.'), 'top') }}
-                    {% elif admin_event.not_finished_tournaments_sorted_by_uniq_id %}
+                    {% elif admin_event.not_finished_tournaments_sorted_by_index %}
                         {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
-                    {% elif admin_event.tournaments_sorted_by_uniq_id %}
+                    {% elif admin_event.tournaments_sorted_by_index %}
                         {{ macros.tooltip_attributes('warning', _('Tournaments are finished, you can not add players any longer.'), 'top') }}
                     {% else %}
                         {{ macros.tooltip_attributes('warning', _('Add a tournament before adding players.'), 'top') }}
@@ -69,7 +69,7 @@
                         hx-indicator="#please-wait"
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
-                        {% if not client.can_add_player or not admin_event.not_finished_tournaments_sorted_by_uniq_id %}
+                        {% if not client.can_add_player or not admin_event.not_finished_tournaments_sorted_by_index %}
                             disabled
                         {% endif %}
                     >

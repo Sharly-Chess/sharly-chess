@@ -312,18 +312,18 @@ class Event:
         }
 
     @cached_property
-    def tournaments_sorted_by_uniq_id(self) -> list[Tournament]:
+    def tournaments_sorted_by_index(self) -> list[Tournament]:
         return sorted(
-            self.tournaments_by_id.values(), key=lambda tournament: tournament.uniq_id
+            self.tournaments_by_id.values(), key=lambda tournament: tournament.index
         )
 
     @cached_property
-    def not_finished_tournaments_sorted_by_uniq_id(self) -> list[Tournament]:
+    def not_finished_tournaments_sorted_by_index(self) -> list[Tournament]:
         """Returns the playing tournaments where the Papi file exists
         (useful not to create players when there is no Papi file)."""
         return [
             tournament
-            for tournament in self.tournaments_sorted_by_uniq_id
+            for tournament in self.tournaments_sorted_by_index
             if not tournament.finished
         ]
 
@@ -332,7 +332,7 @@ class Event:
         """List of tournaments in which players can be added."""
         return [
             tournament
-            for tournament in self.tournaments_sorted_by_uniq_id
+            for tournament in self.tournaments_sorted_by_index
             if tournament.can_add_players
         ]
 
