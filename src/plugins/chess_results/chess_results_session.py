@@ -22,6 +22,7 @@ from plugins.chess_results.utils import ChessResultsUtils
 from plugins.manager import plugin_manager
 from plugins.utils import PluginUtils
 from utils.enum import Result
+from utils.time_control import trf25_to_human_readable
 
 logger: Logger = get_logger()
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -144,7 +145,9 @@ class ChessResultsSession(Session):
                 'ratedfide': '-',
                 'ratednational': '-',
                 'replay': '1',
-                'timecontrol': tournament.time_control_trf25 or '',
+                'timecontrol': trf25_to_human_readable(tournament.time_control_trf25)
+                if tournament.time_control_trf25
+                else '',
                 'homecolor': '',
                 'samecolor': '',
                 'playerperteam': '',

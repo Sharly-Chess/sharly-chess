@@ -40,8 +40,8 @@ class TimeControlColumn(BoardColumn, ABC):
                 f'<span class="seconds">{time_control_initial_time_seconds}"</span>'
             )
 
-        if player.tournament.time_control_increment:
-            inner += f' + {player.tournament.time_control_increment}"{_("/move")}'
+        if transient_data.increment:
+            inner += f' + {transient_data.increment}"{_("/move")}'
         return f'<span class="{cls}">{inner}</span>'
 
     @property
