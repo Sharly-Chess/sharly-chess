@@ -14,6 +14,7 @@ English version below
 ## Tournois
 
 - Duplication des départages et des critères lors de la duplication d'un tournoi (3.3.0)
+- Ordonnancement manuel des tournois (3.3.1)
 
 ## Joueur·euses
 
@@ -37,6 +38,7 @@ English version below
 
 - Ajout d’une option pour mettre en ligne via le menu d’action de la fiche tournoi (3.3.0)
 - Ajout d’un module pour faciliter la gestion des compétitions scolaires en France (3.3.0)
+- Ajout des lycées dans la liste des établissements scolaires (3.3.1)
 
 ## _Chess-Results_
 
@@ -60,6 +62,7 @@ English version below
 ## Tournaments
 
 - Duplicate tie-breaks and criteria when duplicating a tournament (3.3.0)
+- Manual ordering of tournaments (3.3.1)
 
 ## Players
 
@@ -83,6 +86,7 @@ English version below
 
 - Added option to upload via the tournament card action menu (3.3.0)
 - Added a plugin to help manage school competitions in France (3.3.0)
+- Added colleges (in French: `Lycée`) to the list schools (3.3.1)
 
 ## _Chess-Results_
 
