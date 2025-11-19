@@ -105,7 +105,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             if session_tournament_id in event.tournaments_by_id:
                 self.admin_tournament = event.tournaments_by_id[session_tournament_id]
             else:
-                self.admin_tournament = event.tournaments_sorted_by_uniq_id[0]
+                self.admin_tournament = event.tournaments_sorted_by_index[0]
 
         self.display_rankings = self.admin_tournament and (
             self.admin_tournament.finished
@@ -259,7 +259,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
         tournament_ids = [
             tournament.id
-            for tournament in self.get_admin_event().tournaments_sorted_by_uniq_id
+            for tournament in self.get_admin_event().tournaments_sorted_by_index
         ]
         current_index = (
             tournament_ids.index(self.admin_tournament.id)

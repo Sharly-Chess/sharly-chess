@@ -4,7 +4,7 @@
     hx-trigger="ws:upload-event from:body"
     hx-swap="outerHTML"
 >
-    {% for tournament in admin_event.tournaments_sorted_by_uniq_id %}
+    {% for tournament in admin_event.tournaments_sorted_by_index %}
         {% set ffe_actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
         <tr>
             <td style="width: 0;" class="text-nowrap">

@@ -66,7 +66,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
         return Utils.age_in_months(self.updated_at)
 
     def _download_source_file(self) -> bool:
-        types: list[str] = ['Ecole', 'Collège']
+        types: list[str] = ['Ecole', 'Collège', 'Lycée']
         # See https://data.education.gouv.fr/api/v2/console
         base_url: str = 'https://data.education.gouv.fr/api/v2/catalog/datasets/fr-en-annuaire-education/exports/json'
         url: str = (

@@ -124,6 +124,10 @@ class Tournament:
         return self.name
 
     @property
+    def index(self) -> int:
+        return self.stored_tournament.index
+
+    @property
     def name(self) -> str:
         return self.stored_tournament.name
 

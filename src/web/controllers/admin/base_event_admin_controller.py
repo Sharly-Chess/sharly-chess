@@ -332,7 +332,7 @@ class BaseEventAdminWebContext(AdminWebContext):
         self, tournaments: list[Tournament] | None = None
     ) -> dict[str, str]:
         if not tournaments:
-            tournaments = self.get_admin_event().tournaments_sorted_by_uniq_id
+            tournaments = self.get_admin_event().tournaments_sorted_by_index
         return {
             self.value_to_form_data(tournament.id): tournament.name
             for tournament in tournaments

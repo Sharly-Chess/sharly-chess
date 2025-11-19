@@ -745,11 +745,11 @@ class PlayerAdminController(BaseEventAdminController):
                         stored_plugin_data = stored_player.plugin_data
                     if action == 'create':
                         if (
-                            len(admin_event.not_finished_tournaments_sorted_by_uniq_id)
+                            len(admin_event.not_finished_tournaments_sorted_by_index)
                             == 1
                         ):
                             tournament_id = (
-                                admin_event.not_finished_tournaments_sorted_by_uniq_id[
+                                admin_event.not_finished_tournaments_sorted_by_index[
                                     0
                                 ].id
                             )
