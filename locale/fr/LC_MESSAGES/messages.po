@@ -1465,6 +1465,9 @@ msgstr "Différent pour Blancs / Noirs"
 msgid "Direct encounter"
 msgstr "Confrontation directe"
 
+msgid "Director:"
+msgstr "Directeur·ice :"
+
 msgid "Disabled"
 msgstr "Désactivé"
 
@@ -1671,6 +1674,9 @@ msgstr "Ex. : Joueur·euses %%f-%%l"
 
 msgid "E.g.: Please keep quiet until the end of the round!"
 msgstr "Ex. : Merci de bien vouloir se mettre en place !"
+
+msgid "E.g.: Sharly Chess Club"
+msgstr "Ex. : Sharly Chess Club"
 
 msgid "E.g.: Start of check-in"
 msgstr "Ex. : Début du pointage :"
@@ -2829,6 +2835,9 @@ msgstr "Aucun critère."
 
 msgid "No current events."
 msgstr "Aucun évènement en cours."
+
+msgid "No director"
+msgstr "Aucun Directeur·ice "
 
 msgid "No display controllers"
 msgstr "Aucun pilote d'afficheurs"
@@ -4502,6 +4511,9 @@ msgstr "La date du premier horaire n'est pas définie (obligatoire)."
 msgid "The default federation for your events."
 msgstr "La fédération par défaut pour vos évènements."
 
+msgid "The director is the person in charge of the event."
+msgstr "Le·la directeur·ice est la personne responsable de l’événement."
+
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."
 msgstr[0] "La première ronde est ingorée."
@@ -5864,4 +5876,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-

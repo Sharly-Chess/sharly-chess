@@ -40,7 +40,7 @@
         </div>
         {% if admin_events_show_details %}
             <div class="{% if not event.organiser_name %}text-secondary{% endif %}">
-                <i class="bi-person-bounding-box pe-1" ></i>
+                <i class="bi-building-fill pe-1" ></i>
                 {% if event.organiser_name %}
                     {{ _('Organiser:') }} {{ event.organiser_name }}
                 {% else %}
@@ -48,11 +48,19 @@
                 {% endif %}
             </div>
             <div class="{% if not event.organiser_home_page %}text-secondary{% endif %}">
-                <i class="bi-house-fill pe-1" ></i>
+                <i class="bi-box-arrow-up-right pe-1" ></i>
                 {% if event.organiser_home_page %}
                     <a href="{{ event.organiser_home_page }}" target="_blank">{{ event.organiser_home_page }}</a>
                 {% else %}
                     {{ _('No home page') }}
+                {% endif %}
+            </div>
+            <div class="{% if not event.organiser_director %}text-secondary{% endif %}">
+                <i class="bi-person-bounding-box pe-1" ></i>
+                {% if event.organiser_director %}
+                    {{ event.organiser_director }}
+                {% else %}
+                    {{ _('No director') }}
                 {% endif %}
             </div>
             <div class="{% if not event.organiser_email %}text-secondary{% endif %}">

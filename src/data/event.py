@@ -160,6 +160,10 @@ class Event:
         return self.stored_event.organiser_email
 
     @property
+    def organiser_director(self) -> str | None:
+        return self.stored_event.organiser_director
+
+    @property
     def background_color(self) -> str:
         return (
             self.stored_event.background_color

@@ -85,6 +85,22 @@ class HandicapGamesPlugin(Plugin):
             {},
         )
 
+    def _get_handicap_tim_control_options(
+        self, time_control_trf25: str | None
+    ) -> tuple[int, int]:
+        initial_time = 0
+        increment = 0
+
+        # Parse time control
+        # For handicap games, we only support one period, and it must be symmetric
+        if time_control_trf25:
+            time_control = parse_time_control_trf25(time_control_trf25)
+            if time_control.black is None and len(time_control.white) == 1:
+                initial_time = time_control.white[0].seconds
+                increment = time_control.white[0].increment
+
+        return initial_time, increment
+
     @hookimpl
     def validate_tournament_form_fields(
         self,
@@ -98,7 +114,7 @@ class HandicapGamesPlugin(Plugin):
             data, 'handicap_games_penalty_value'
         )
 
-        initial_time, inc = parse_time_control_trf25(time_control_trf25)
+        initial_time, inc = self._get_handicap_tim_control_options(time_control_trf25)
         if initial_time == 0 and time_control_handicap_penalty_value:
             errors['handicap_games_penalty_value'] = _(
                 'Penalties require a time control with a single period.'
@@ -114,6 +130,10 @@ class HandicapGamesPlugin(Plugin):
         if not plugin_data.penalty_value:
             return
 
+        initial_time, increment = self._get_handicap_tim_control_options(
+            tournament.time_control_trf25
+        )
+
         for board in tournament.get_round_boards(round_):
             if not board.black_player:
                 continue
@@ -124,7 +144,7 @@ class HandicapGamesPlugin(Plugin):
                 key=attrgetter('rating'),
                 reverse=True,
             )
-            weak_time = tournament.time_control_initial_time or 0
+            weak_time = initial_time
             rating_diff = strong_player.rating - weak_player.rating
             if not plugin_data.penalty_step:
                 penalties = 0
@@ -136,14 +156,12 @@ class HandicapGamesPlugin(Plugin):
             )
             strong_player.transient_plugin_data[PLUGIN_NAME] = (
                 HandicapGamesTransientPlayerPluginData(
-                    strong_time, tournament.time_control_increment or 0, penalties > 0
+                    strong_time, increment, penalties > 0
                 )
             )
 
             weak_player.transient_plugin_data[PLUGIN_NAME] = (
-                HandicapGamesTransientPlayerPluginData(
-                    weak_time, tournament.time_control_increment or 0, False
-                )
+                HandicapGamesTransientPlayerPluginData(weak_time, increment, False)
             )
 
     # ---------------------------------------------------------------------------------

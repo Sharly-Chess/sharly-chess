@@ -313,6 +313,7 @@ class IndexAdminController(BaseAdminController):
             organiser_name: str | None = None
             organiser_home_page: str | None = None
             organiser_email: str | None = None
+            organiser_director: str | None = None
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             event_enabled_plugins = [
                 plugin
@@ -338,6 +339,7 @@ class IndexAdminController(BaseAdminController):
             organiser_name = stored_event.organiser_name
             organiser_home_page = stored_event.organiser_home_page
             organiser_email = stored_event.organiser_email
+            organiser_director = stored_event.organiser_director
             player_rating_type = stored_event.player_rating_type
             stored_plugin_data = stored_event.plugin_data
             event_enabled_plugins = admin_event.enabled_plugins
@@ -369,6 +371,7 @@ class IndexAdminController(BaseAdminController):
                     'organiser_name': organiser_name,
                     'organiser_home_page': organiser_home_page,
                     'organiser_email': organiser_email,
+                    'organiser_director': organiser_director,
                     'date_range': date_range,
                 }
             )
@@ -420,6 +423,7 @@ class IndexAdminController(BaseAdminController):
         public = WebContext.form_data_to_bool(data, 'public')
         location = WebContext.form_data_to_str(data, 'location')
         organiser_name = WebContext.form_data_to_str(data, 'organiser_name')
+        organiser_director = WebContext.form_data_to_str(data, 'organiser_director')
 
         organiser_home_page = WebContext.form_data_to_str(
             data, field := 'organiser_home_page'
@@ -478,6 +482,7 @@ class IndexAdminController(BaseAdminController):
             organiser_name=organiser_name,
             organiser_home_page=organiser_home_page,
             organiser_email=organiser_email,
+            organiser_director=organiser_director,
             player_rating_type=player_rating_type,
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
