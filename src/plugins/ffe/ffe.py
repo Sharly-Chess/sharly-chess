@@ -4,11 +4,10 @@ from collections import Counter, defaultdict
 from collections.abc import Callable
 from datetime import date
 from types import ModuleType
-from typing import Any, TYPE_CHECKING, Iterable, Optional, override
+from typing import Any, TYPE_CHECKING, Iterable, Optional
 
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
-from pluggy import PluginManager
 
 from common import TEST_ENV, DEVEL_ENV
 from common.i18n import _, ngettext
@@ -142,11 +141,9 @@ class FfePlugin(Plugin):
     def version(self) -> Version:
         return Version('0.1.1')
 
-    @override
-    def init(self, plugin_manager: PluginManager):
-        super().init(plugin_manager)
-
-        plugin_manager.add_hookspecs(FfePluginHooks)
+    @property
+    def hookspecs(self) -> type | None:
+        return FfePluginHooks
 
     @property
     def default_is_enabled(self) -> bool:

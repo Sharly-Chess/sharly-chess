@@ -2,7 +2,6 @@ from types import ModuleType
 from typing import Any, TYPE_CHECKING
 
 from packaging.version import Version
-from pluggy import PluginManager
 
 from common.i18n import _
 from data.input_output import TournamentImporter
@@ -72,10 +71,9 @@ class ChessEventPlugin(Plugin):
     def base_migration_module(self) -> ModuleType:
         return migrations
 
-    def init(self, plugin_manager: PluginManager):
-        super().init(plugin_manager)
-
-        plugin_manager.add_hookspecs(ChessEventPluginHooks)
+    @property
+    def hookspecs(self) -> type | None:
+        return ChessEventPluginHooks
 
     @property
     def event_form_fields_template(self) -> str:
