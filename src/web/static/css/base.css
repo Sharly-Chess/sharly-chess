@@ -819,6 +819,10 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     --bs-btn-close-white-filter: unset;
 }
 
+.alert.message-success {
+    --bs-success-rgb: 25, 135, 84;
+}
+
 .alert .btn-close {
     filter: var(--bs-btn-close-white-filter);
 }
