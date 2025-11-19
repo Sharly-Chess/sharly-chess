@@ -5,7 +5,6 @@ from pathlib import Path
 from types import ModuleType
 from typing import TYPE_CHECKING, Any, NamedTuple, Self
 
-from pluggy import PluginManager
 
 from common import TEST_ENV
 from packaging.version import Version
@@ -249,6 +248,11 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         return self.context.stored_plugin.is_enabled
 
     @property
+    def hookspecs(self) -> type | None:
+        """Hook specs to add to the plugin manager."""
+        return None
+
+    @property
     def form_key(self) -> str:
         return f'plugin_{self.id}'
 
@@ -290,10 +294,6 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
 
         assert self.base_migration_module is not None
         return PluginMigrationManager(database, self.base_migration_module, self)
-
-    def init(self, plugin_manager: PluginManager):
-        """Method called when the plugin is registered."""
-        pass
 
     def on_enable(self):
         """Method called when the plugin is enabled."""

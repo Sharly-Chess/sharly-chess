@@ -99,7 +99,6 @@ class AppPluginManager(PluginManager):
     def load_register(self):
         for plugin in self.enabled_plugins:
             self.register(plugin, plugin.id)
-            plugin.init(self)
 
     def reload_register(self):
         for plugin in self.all_plugins:
@@ -154,6 +153,9 @@ def get_plugin_manager() -> AppPluginManager:
     if _plugin_manager is None:
         _plugin_manager = AppPluginManager(APP_NAME)
         _plugin_manager.add_hookspecs(AppHookSpecs)
+        for plugin in _plugin_manager.all_plugins:
+            if plugin.hookspecs:
+                _plugin_manager.add_hookspecs(plugin.hookspecs)
         _plugin_manager.load_register()
         _plugin_manager.enable_dependencies()
     return _plugin_manager
