@@ -151,7 +151,7 @@ class ChessResultsSession(Session):
                 'homecolor': '',
                 'samecolor': '',
                 'playerperteam': '',
-                'category': 'standard',
+                'category': '0',
                 'ratingavg': str(round(tournament.average_player_rating)),
                 'endstatus': 'N',
                 'chiefarbiter': tournament.chief_arbiter.full_name_and_id
