@@ -313,6 +313,11 @@ class Player:
         if self.tournament:
             tournament_start = self.tournament.start_date
             tournament_end = self.tournament.stop_date
+
+            # If the event has a base date for the age categories, use it
+            if self.event.age_category_base_date:
+                tournament_start = self.event.age_category_base_date
+                tournament_end = self.event.age_category_base_date
         else:
             tournament_start, tournament_end = None, None
         return PlayerCategory.from_year_of_birth(

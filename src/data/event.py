@@ -136,6 +136,10 @@ class Event:
         return Result(self.stored_event.pab_value) or Result.WIN
 
     @property
+    def age_category_base_date(self) -> date | None:
+        return self.stored_event.age_category_base_date
+
+    @property
     def enabled_plugins(self) -> list[Plugin]:
         return [
             plugin

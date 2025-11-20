@@ -51,6 +51,9 @@ class TournamentConfigAdminController(BaseEventAdminController):
                 'override_unrated_rapid_blitz': stored_event.override_unrated_rapid_blitz,
                 'three_points_for_a_win': stored_event.three_points_for_a_win,
                 'pab_value': stored_event.pab_value,
+                'use_age_category_base_date': stored_event.age_category_base_date
+                is not None,
+                'age_category_base_date': stored_event.age_category_base_date,
             }
         )
 
@@ -81,6 +84,16 @@ class TournamentConfigAdminController(BaseEventAdminController):
             data, 'three_points_for_a_win'
         )
         pab_value = WebContext.form_data_to_int(data, 'pab_value') or Result.WIN.value
+        use_age_category_base_date = WebContext.form_data_to_bool(
+            data, 'use_age_category_base_date'
+        )
+        age_category_base_date = WebContext.form_data_to_date(
+            data, 'age_category_base_date'
+        )
+        if use_age_category_base_date and not age_category_base_date:
+            errors['age_category_base_date'] = _(
+                'Please choose the base date for the age categories.'
+            )
 
         if errors:
             return None, errors
@@ -94,6 +107,9 @@ class TournamentConfigAdminController(BaseEventAdminController):
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             three_points_for_a_win=three_points_for_a_win,
             pab_value=pab_value,
+            age_category_base_date=age_category_base_date
+            if use_age_category_base_date
+            else None,
         )
         return stored_event, errors
 

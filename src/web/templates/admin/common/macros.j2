@@ -453,7 +453,7 @@ with_indicator: display a loading indicator, optional
         {% else %}
             {% set value=data[name] %}
         {% endif %}
-        <div class="input-block position-relative">
+        <div id="{{id}}-wrapper" class="input-block position-relative">
             <div class="d-flex align-items-center">
                 {%- if label -%}
                     <span

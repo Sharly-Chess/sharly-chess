@@ -48,6 +48,47 @@
                 </div>
 
                 <h4>
+                    {{ _('Age categories') }}
+                </h4>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.switch_input(
+                            name='use_age_category_base_date',
+                            label='',
+                            placeholder=_('Specify a base date for the age categories'),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.date_input(
+                            name='age_category_base_date',
+                            label=_('Base date:'),
+                            disabled=not client.can_update_event,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="form-text">
+                        {{ _('Age categories are based on the start date of the tournament. You may choose to use another date instead, which can be useful if you want to keep the same age categories for a championship runs over a long period.') }}
+                    </div>
+                </div>
+
+                <script>
+                    $('#use-age-category-base-date').change(function() {
+                        console.log($(this).val());
+                        if ($(this).is(':checked')) {
+                            $('#age-category-base-date-wrapper').show();
+                        } else {
+                            console.log('off');
+                            $('#age-category-base-date-wrapper').hide();
+                        }
+                    });
+                    if ("{{ data.use_age_category_base_date }}" === "off") {
+                        $('#age-category-base-date-wrapper').hide();
+                    }
+                </script>
+
+                <h4>
                     {{ _('Rules') }}
                 </h4>
                 <div class="row gy-2 gx-3">

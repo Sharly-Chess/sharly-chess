@@ -350,6 +350,7 @@ class BaseStoredEvent:
     player_rating_type: int
     start_date: date
     stop_date: date
+    age_category_base_date: date | None = None
     public: bool = False
     location: str | None = None
     background_color: str | None = None
