@@ -94,7 +94,7 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
             return list(event.tournaments)
         return [
             event.tournaments_by_id[int(tournament_id)]
-            for tournament_id in tournament_ids.split(',')
+            for tournament_id in tournament_ids.split(';')
         ]
 
     @property

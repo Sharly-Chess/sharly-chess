@@ -1,7 +1,6 @@
 {# ========== BORDERS ========== #}
 .player-table { border-collapse:collapse; }
 {# ========== WIDTH, MARGINS, PADDING ==========#}
-.player-table { min-width: 750px; max-width: 75%;}
 .player-table { padding: 2px; border-spacing: 0; }
 {# ========== FONT SIZE ========== #}
 .crosstable .player-header *,

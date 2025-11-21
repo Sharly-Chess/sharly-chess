@@ -20,6 +20,8 @@
 ## Printing
 
 - Added place cards (3.3.0)
+- Fixed printing of the player table with multiple tournaments (3.3.2)
+- Fixed clipping of tables when printed (3.3.2)
 
 ## Prizes
 
