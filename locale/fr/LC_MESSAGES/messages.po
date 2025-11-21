@@ -272,6 +272,9 @@ msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %
 msgid "<b>Delete</b> from the tournament"
 msgstr "<b>Supprimer</b> du tournoi"
 
+msgid "<first> and <second>"
+msgstr "<first> et <second>"
+
 msgid "<first> then <second>"
 msgstr "<first> puis <second>"
 
@@ -281,8 +284,23 @@ msgstr "<first>, <second>"
 msgid "<side>: <text>"
 msgstr "<side> : <text>"
 
+msgid "<smart_count> day |||| <smart_count> days"
+msgstr "<smart_count> jour |||| <smart_count> jours"
+
+msgid "<smart_count> hour |||| <smart_count> hours"
+msgstr "<smart_count> heure |||| <smart_count> heures"
+
+msgid "<smart_count> minute |||| <smart_count> minutes"
+msgstr "<smart_count> minute |||| <smart_count> minutes"
+
 msgid "<smart_count> move |||| <smart_count> moves"
 msgstr "<smart_count> coup |||| <smart_count> coups"
+
+msgid "<smart_count> second |||| <smart_count> seconds"
+msgstr "<smart_count> seconde |||| <smart_count> secondes"
+
+msgid "<smart_count> week |||| <smart_count> weeks"
+msgstr "<smart_count> semaine |||| <smart_count> semaines"
 
 msgid "A URL, or the path to the rules file on the server, in PDF format."
 msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF."
@@ -5876,3 +5894,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
