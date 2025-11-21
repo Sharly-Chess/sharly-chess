@@ -55,7 +55,7 @@
                     </ol>
                     <div class="text-center">
                         <button
-                            class="btn btn-primary text-nowrap text-center"
+                            class="btn btn-outline-primary text-nowrap text-center"
                             hx-post="{{ url_for(
                                 'admin-create-default-tie-breaks',
                                 event_uniq_id=admin_event.uniq_id,
@@ -185,7 +185,11 @@
                 hx-indicator="#please-wait"
             >
                 <i class="bi-plus-square-fill pe-1"></i>
-                {{ _('Add') }}
+                {% if admin_tournament.tie_breaks %}
+                    {{ _('Add') }}
+                {% else %}
+                    {{ _('Choose my own') }}
+                {% endif %}
             </button>
         </div>
     </div>
