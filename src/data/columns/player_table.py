@@ -98,7 +98,7 @@ class NameColumn(PlayerTableColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'fw-bold text-start'
+        return 'fw-bold text-start text-nowrap'
 
 
 class RatingColumn(PlayerTableColumn):

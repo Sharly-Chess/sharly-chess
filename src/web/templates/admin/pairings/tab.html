@@ -361,7 +361,9 @@
 
         function searchPlayerHandler(e) {
             const value = normalizeText($("#search-player").val().trim());
-            $("table:not([id^='popover-content-'])").each(function() {
+            $("table").filter(function() {
+                return $(this).closest("div.popover-body").length === 0;
+            }).each(function() {
                 const $table = $(this);
                 const $rows = $table.find("tbody tr");
 
