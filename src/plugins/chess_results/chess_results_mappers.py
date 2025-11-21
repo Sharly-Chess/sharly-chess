@@ -5,7 +5,7 @@ from data.pairings import PairingSystem
 from data.pairings.systems import SwissPairingSystem, RoundRobinPairingSystem
 from data.tie_breaks import TieBreak, tie_breaks as tb
 from data.tie_breaks.cutters import TieBreakCutter
-from data.tournament import Tournament
+from data.tournament import Tournament, TournamentRating
 from plugins.ffe import ffe_tie_breaks as ffe_tb
 from plugins.ffe.ffe_tie_breaks import PapiBuchholzType
 from utils import CoreMapper
@@ -30,6 +30,16 @@ class ChessResultPairingSystem(CoreMapper[str, PairingSystem]):
         return {
             '0': SwissPairingSystem(),
             '1': RoundRobinPairingSystem(),
+        }
+
+
+class ChessResultTournamentRating(CoreMapper[str, TournamentRating]):
+    @classmethod
+    def _core_object_by_outer_value(cls) -> dict[str, TournamentRating]:
+        return {
+            '1': TournamentRating.STANDARD,
+            '2': TournamentRating.RAPID,
+            '3': TournamentRating.BLITZ,
         }
 
 
