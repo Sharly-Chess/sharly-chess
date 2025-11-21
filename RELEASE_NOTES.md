@@ -1,3 +1,5 @@
+# _Sharly Chess_ release notes
+
 ## Interface
 
 - Reduced the size of all forms (3.3.0)
@@ -22,6 +24,10 @@
 - Added place cards (3.3.0)
 - Fixed printing of the player table with multiple tournaments (3.3.2)
 - Fixed clipping of tables when printed (3.3.2)
+
+## Screens
+
+- Fixed timer translation (3.3.0)
 
 ## Prizes
 
