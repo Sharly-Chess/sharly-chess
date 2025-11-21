@@ -958,6 +958,9 @@ msgstr "Choisir au moins un type de classement."
 msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
 
+msgid "Choose my own"
+msgstr "Choisir le mien"
+
 msgid "Choose one, many or no players."
 msgstr "Choisissez aucun·e, un·e ou plusieurs joueur·euses."
 
