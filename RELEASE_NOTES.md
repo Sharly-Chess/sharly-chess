@@ -1,6 +1,3 @@
-# French
-English version below
-
 # Interface
 
 - Réduction de la taille des formulaires (3.3.0)
@@ -23,6 +20,7 @@ English version below
 ## Impression
 
 - Ajout des chevalets (3.3.0)
+- Fixed clipping of tables when printed (3.3.2)
 
 ## Prix
 
