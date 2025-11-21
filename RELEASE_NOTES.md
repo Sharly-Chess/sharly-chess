@@ -43,3 +43,4 @@
 
 - Added QR-codes to the tournaments online (3.3.0)
 - Added option to upload via the tournament card action menu (3.3.0)
+- Tournaments are now tagged with the time control type (Standard, Rapid, Blitz) (3.4.0)

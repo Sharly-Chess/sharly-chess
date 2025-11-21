@@ -958,6 +958,9 @@ msgstr ""
 msgid "Choose families to add"
 msgstr ""
 
+msgid "Choose my own"
+msgstr ""
+
 msgid "Choose one, many or no players."
 msgstr ""
 
