@@ -14,6 +14,7 @@ from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chess_results import PLUGIN_NAME, MAX_TIE_BREAKS
 from plugins.chess_results.chess_results_mappers import (
+    ChessResultTournamentRating,
     ChessResultsPlayerGender,
     ChessResultsTieBreak,
     ChessResultPairingSystem,
@@ -145,13 +146,16 @@ class ChessResultsSession(Session):
                 'ratedfide': '-',
                 'ratednational': '-',
                 'replay': '1',
+                'timetype': ChessResultTournamentRating.get_outer_value(
+                    tournament.rating
+                )
+                or '',
                 'timecontrol': trf25_to_human_readable(tournament.time_control_trf25)
                 if tournament.time_control_trf25
                 else '',
                 'homecolor': '',
                 'samecolor': '',
                 'playerperteam': '',
-                'category': '0',
                 'ratingavg': str(round(tournament.average_player_rating)),
                 'endstatus': 'N',
                 'chiefarbiter': tournament.chief_arbiter.full_name_and_id
