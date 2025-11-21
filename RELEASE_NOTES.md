@@ -1,54 +1,3 @@
-# French
-English version below
-
-# Interface
-
-- Réduction de la taille des formulaires (3.3.0)
-- Déplacement des champs par défaut vers les pages concernées (3.3.0)
-- Amélioration de la séléction des dates et heures (3.3.0)
-
-## Modules
-
-- Déplacement de la fonctionnalité de handicap vers un module (3.3.0)
-
-## Tournois
-
-- Duplication des départages et des critères lors de la duplication d'un tournoi (3.3.0)
-- Ordonnancement manuel des tournois (3.3.1)
-
-## Joueur·euses
-
-- Calcul des variations de classement _FIDE_ (3.3.0)
-
-## Impression
-
-- Ajout des chevalets (3.3.0)
-
-## Prix
-
-- Correction de la réorganisation des catégories (3.3.0)
-- Ajout d'un critère sélectionnant directement les joueur·euses (3.3.0)
-
-## Staff
-
-- Ajout des rôles d'_Arbitre principal·e_ et d'_Arbitre adjoint·e_ par tournoi (3.3.0)
-- Recherche des comptes dans les bases de données de joueur·euses (3.3.0)
-
-## FFE
-
-- Ajout d’une option pour mettre en ligne via le menu d’action de la fiche tournoi (3.3.0)
-- Ajout d’un module pour faciliter la gestion des compétitions scolaires en France (3.3.0)
-- Ajout des lycées dans la liste des établissements scolaires (3.3.1)
-
-## _Chess-Results_
-
-- Ajout de QR-codes vers les tournois en ligne (3.3.0)
-- Ajout d’une option pour mettre en ligne via le menu d’action de la fiche tournoi (3.3.0)
-
----
-
-# English
-
 ## Interface
 
 - Reduced the size of all forms (3.3.0)
@@ -71,6 +20,8 @@ English version below
 ## Printing
 
 - Added place cards (3.3.0)
+- Fixed printing of the player table with multiple tournaments (3.3.2)
+- Fixed clipping of tables when printed (3.3.2)
 
 ## Prizes
 
