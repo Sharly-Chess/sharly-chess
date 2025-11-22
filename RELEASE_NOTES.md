@@ -39,6 +39,7 @@
 
 - Added the _Chief Arbiter_ and _Deputy Chief Arbiter_ roles per tournament (3.3.0)
 - Search accounts from the player databases (3.3.0)
+- Fixed the account duplication (3.3.3)
 
 ## FFE
 
@@ -50,4 +51,4 @@
 
 - Added QR-codes to the tournaments online (3.3.0)
 - Added option to upload via the tournament card action menu (3.3.0)
-- Tournaments are now tagged with the time control type (Standard, Rapid, Blitz) (3.4.0)
+- Tournaments are now tagged with the time control type (Standard, Rapid, Blitz) (3.3.2)
