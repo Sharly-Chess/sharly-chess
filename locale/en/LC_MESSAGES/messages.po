@@ -488,6 +488,9 @@ msgstr ""
 msgid "Age categories"
 msgstr ""
 
+msgid "Age categories are based on the start date of the tournament. You may choose to use another date instead, which can be useful if you want to keep the same age categories for a championship runs over a long period."
+msgstr ""
+
 msgid "Alert message"
 msgstr ""
 
@@ -695,6 +698,9 @@ msgid "Background colour: %(color)s"
 msgstr ""
 
 msgid "Background image:"
+msgstr ""
+
+msgid "Base date:"
 msgstr ""
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
@@ -3550,6 +3556,9 @@ msgstr ""
 msgid "Please choose a player."
 msgstr ""
 
+msgid "Please choose the base date for the age categories."
+msgstr ""
+
 msgid "Please choose the document."
 msgstr ""
 
@@ -4367,6 +4376,9 @@ msgid "Source"
 msgstr ""
 
 msgid "Space-separated list of numbers. One prize is created per value in the list."
+msgstr ""
+
+msgid "Specify a base date for the age categories"
 msgstr ""
 
 msgid "Specifying the number of parts and the number of items per part is not possible."

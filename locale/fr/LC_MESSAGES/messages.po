@@ -488,6 +488,9 @@ msgstr "Age"
 msgid "Age categories"
 msgstr "Catégories d'age"
 
+msgid "Age categories are based on the start date of the tournament. You may choose to use another date instead, which can be useful if you want to keep the same age categories for a championship runs over a long period."
+msgstr "Les catégories d’âge sont basées sur la date de début du tournoi. Vous pouvez choisir d’utiliser une autre date, ce qui peut être utile si vous souhaitez conserver les mêmes catégories d’âge pour un championnat qui s’étend sur une longue période."
+
 msgid "Alert message"
 msgstr "Message d'alerte"
 
@@ -696,6 +699,9 @@ msgstr "Couleur de fond : %(color)s"
 
 msgid "Background image:"
 msgstr "Image de fond :"
+
+msgid "Base date:"
+msgstr "Date de référence :"
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Ech."
@@ -3550,6 +3556,9 @@ msgstr "Veuillez choisir une fédération."
 msgid "Please choose a player."
 msgstr "Veuillez choisir un·e joueur·euse."
 
+msgid "Please choose the base date for the age categories."
+msgstr "Veuillez choisir la date de référence pour les catégories d’âge."
+
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
 
@@ -4368,6 +4377,9 @@ msgstr "Source"
 
 msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr "Liste de nombres séparés par des espaces. Un prix est créé par valeur dans la liste."
+
+msgid "Specify a base date for the age categories"
+msgstr "Utiliser une date de référence pour les catégories d’âge"
 
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
