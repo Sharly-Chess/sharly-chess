@@ -8,6 +8,7 @@ from logging import Logger
 from pathlib import Path
 from pkgutil import iter_modules
 from types import ModuleType
+from typing import Any
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from PyInstaller.__main__ import run
@@ -49,6 +50,7 @@ class ProjectBuilder(ABC):
         self.spec_file: Path = BASE_DIR / f'{self.basename}.spec'
         self.src_dir: Path = BASE_DIR / 'src'
         self.licences_dir = self.project_dir / 'LICENSES'
+        self.control_file: Path = Path('tmp', 'control_file.json')
         self.zip_file: Path = self.export_dir / f'{self.basename}.zip'
         self.test_dir: Path = BASE_DIR / 'export-test' / self.basename
         self.clean_project_on_exit: bool = clean_project_on_exit
@@ -74,6 +76,8 @@ class ProjectBuilder(ABC):
     def run(self) -> bool:
         self.clean_on_startup()
         if not self.build_project():
+            return False
+        if not self.build_control_file():
             return False
         if not self.build_zip_file():
             return False
@@ -676,6 +680,28 @@ class ProjectBuilder(ABC):
 
     def hook_post_build_project(self) -> bool:
         """Executed after the project build, return True on success and False on failure."""
+        return True
+
+    def build_control_file(self) -> bool:
+        logger.info('Creating control file [%s]...', self.control_file)
+        self.zip_file.parent.mkdir(parents=True, exist_ok=True)
+        control_data: dict[str, Any] = {
+            'version': str(SHARLY_CHESS_VERSION),
+            'file_paths': [],
+        }
+        cwd: str = os.getcwd()
+        os.chdir(self.project_dir)
+        for folder_name, sub_folders, file_names in os.walk('.'):
+            for filename in file_names:
+                file_path: Path = Path(folder_name, filename)
+                control_data['file_paths'].append(str(file_path))
+        self.control_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.control_file, 'w', encoding='utf-8') as file:
+            json.dump(
+                control_data,
+                file,
+            )
+        os.chdir(cwd)
         return True
 
     def build_zip_file(self) -> bool:
