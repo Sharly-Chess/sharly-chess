@@ -14,7 +14,7 @@
 
 - Duplicate tie-breaks and criteria when duplicating a tournament (3.3.0)
 - Manual ordering of tournaments (3.3.1)
-- Add an options for specifiy the base date for the age categories (3.4.0)
+- Add an option for specifiy the base date for the age categories (3.4.0)
 
 ## Players
 

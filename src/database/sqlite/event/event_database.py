@@ -732,6 +732,7 @@ class EventDatabase(MigrationDatabase):
             last_player_update=row['last_player_update'],
             last_pairing_update=row['last_pairing_update'],
             start_date=cls.load_optional_date_from_database_field(row['start_date']),
+            stop_date=cls.load_optional_date_from_database_field(row['stop_date']),
             location=row['location'],
             player_rating_type=row['player_rating_type'],
             three_points_for_a_win=cls.load_bool_or_none_from_database_field(
