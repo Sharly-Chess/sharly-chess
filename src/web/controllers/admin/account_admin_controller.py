@@ -293,7 +293,7 @@ class AccountAdminController(BaseEventAdminController):
             return None, errors
 
         stored_account = StoredAccount(
-            id=account.id if account else None,
+            id=account.id if account and action == FormAction.UPDATE else None,
             active=WebContext.form_data_to_bool(flat_data, 'active'),
             last_name=last_name,
             first_name=first_name,
