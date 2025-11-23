@@ -184,11 +184,16 @@ Example of player:
 &nbsp;&nbsp;`'league': 'BRE',`<br/>
 &nbsp;&nbsp;`'club_id': 1918,`<br/>
 &nbsp;&nbsp;`'club': 'Echiquier Domloupéen',`<br/>
+&nbsp;&nbsp;`'school': '0790152L_Ecole  Ferdinand Buisson - 79000 Niort',`<br/>
 &nbsp;&nbsp;`'email': 'pascal.aubry@echecs35.fr',`<br/>
 &nbsp;&nbsp;`'phone': '0677939521',`<br/>
 &nbsp;&nbsp;`'fee': 25.0,`<br/>
-&nbsp;&nbsp;`'paid': 25.0,`<br/>
+&nbsp;&nbsp;`'initial_fee': 30.0,`<br/>
+&nbsp;&nbsp;`'discount': 5.0,`<br/>
+&nbsp;&nbsp;`'paid_before': 15.0,`<br/>
+&nbsp;&nbsp;`'paid_site': 10.0,`<br/>
 &nbsp;&nbsp;`'check_in': true,`<br/>
+&nbsp;&nbsp;`'board': 0,`<br/>
 &nbsp;&nbsp;`'board': 0,`<br/>
 &nbsp;&nbsp;`'skipped_rounds': {`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`1: 0.5,` # Half-Point Bye at round #1<br/>
