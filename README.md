@@ -10,7 +10,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 
 ### Technical appendices
 
-- [Detailed roadmap](docs/technical-appendices/detailed-roadmap.md)
+- [Roadmap](https://discord.gg/gE4Y7DVxdY) (on Discord)
 - [Files and folders](docs/technical-appendices/files.md)
 - [Interfacing _Sharly Chess_ with _ChessEvent_](docs/technical-appendices/chessevent-interfacing.md)
 - [Setting up a development environment](docs/technical-appendices/dev-setup.md)
