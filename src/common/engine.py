@@ -522,6 +522,34 @@ class Engine:
                 new_version_dir.mkdir()
                 with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
                     zip_ref.extractall(new_version_dir)
+                control_file: Path = new_version_dir / 'tmp' / 'control_file.json'
+                if control_file.exists():
+                    with open(control_file, 'r', encoding='utf8') as infile:
+                        control_data: dict[str, Any] = json.loads(infile.read())
+                    missing_files: list[str] = [
+                        file_path
+                        for file_path in control_data['file_paths']
+                        if not Path(file_path).is_file()
+                    ]
+                    if missing_files:
+                        logger.error(
+                            '\n'.join(
+                                [
+                                    f'Sharly Chess {version} has not been correctly installed, the following files are missing:',
+                                ]
+                                + [
+                                    f'- {missing_file}'
+                                    for missing_file in missing_files
+                                ]
+                                + [
+                                    'This is probably due to Windows Defender or any other antivirus sending files to quarantaine.',
+                                    'Recover the missing files from your quarantaine folder (depends on the antivirus you use) or manually install:',
+                                    f'1. Download Sharly Chess from https://github.com/Sharly-Chess/sharly-chess/releases/download/{version}/sharly-chess-{version}-windows.zip',
+                                    '2. Unzip the downloaded archive manually',
+                                ]
+                            )
+                        )
+                        return False
             else:
                 # For Mac: Handle the DMG file
                 mount_point = TMP_DIR / f'mount-{version}'
