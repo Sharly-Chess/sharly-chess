@@ -1,6 +1,7 @@
 import os.path
 import re
 import sqlite3
+import tempfile
 import zipfile
 from contextlib import suppress
 from datetime import datetime
@@ -69,8 +70,8 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         return PLUGIN_DIR / 'create_ffe.sql'
 
     @property
-    def _source_file_path(self) -> Path:
-        return ffe.TMP_DIR / 'Data.mdb'
+    def _source_file_name(self) -> str:
+        return 'Data.mdb'
 
     @override
     @property
@@ -81,45 +82,49 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             outdate_action=NotifOutdatedAction.static_id(),
         )
 
-    def _download_source_file(self) -> bool:
-        ffe_database_url: str = 'https://www.echecs.asso.fr/Papi/PapiData.zip'
-        local_zip_file: Path = ffe.TMP_DIR / os.path.basename(ffe_database_url)
-        with suppress(FileNotFoundError):
-            local_zip_file.unlink()
-        try:
-            response: Response = get(ffe_database_url, allow_redirects=True, timeout=5)
-            if response.status_code != 200:
+    def _download_source_file(self, source_file_dir: Path) -> bool:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_dir: Path = Path(tmpdir)
+            ffe_database_url: str = 'https://www.echecs.asso.fr/Papi/PapiData.zip'
+            local_zip_file: Path = tmp_dir / os.path.basename(ffe_database_url)
+            try:
+                response: Response = get(
+                    ffe_database_url, allow_redirects=True, timeout=5
+                )
+                if response.status_code != 200:
+                    logger.error(
+                        self.log_prefix + 'Could not download [%s], error code [%d].',
+                        ffe_database_url,
+                        response.status_code,
+                    )
+                    return False
+            except ConnectionError as ex:
                 logger.error(
-                    self.log_prefix + 'Could not download [%s], error code [%d].',
+                    self.log_prefix + 'Could not download [%s]: %s.',
                     ffe_database_url,
-                    response.status_code,
+                    ex,
                 )
                 return False
-        except ConnectionError as ex:
-            logger.error(
-                self.log_prefix + 'Could not download [%s]: %s.', ffe_database_url, ex
-            )
-            return False
-        local_zip_file.write_bytes(response.content)
-        if not local_zip_file.exists():
-            logger.error(
-                self.log_prefix + 'No data received from [%s].', ffe_database_url
-            )
-            return False
-        self._source_file_path.unlink(missing_ok=True)
-        with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
-            zip_ref.extractall(ffe.TMP_DIR)
-        local_zip_file.unlink()
-        if not self._source_file_path.exists():
-            logger.error(self.log_prefix + 'Could not unzip data.')
-            return False
-        return True
+            local_zip_file.write_bytes(response.content)
+            if not local_zip_file.exists():
+                logger.error(
+                    self.log_prefix + 'No data received from [%s].', ffe_database_url
+                )
+                return False
+            with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
+                zip_ref.extractall(source_file_dir)
+            if not Path(source_file_dir / self._source_file_name).exists():
+                logger.error(self.log_prefix + 'Could not unzip data.')
+                return False
+            return True
 
     def _use_external_generator(self):
         return True
 
-    def _generate_from_source_file(self, tmp_file: Path) -> bool:
-        PapiConverter().convert_player_database(self._source_file_path, tmp_file)
+    def _generate_from_source_file(
+        self, source_file_path: Path, tmp_file: Path
+    ) -> bool:
+        PapiConverter().convert_player_database(source_file_path, tmp_file)
         return True
 
     def _create_indexes(self):

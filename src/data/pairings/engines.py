@@ -2,13 +2,13 @@ from abc import ABC, abstractmethod
 from functools import cache
 from operator import attrgetter
 from pathlib import Path
+import tempfile
 from typing import TextIO, TYPE_CHECKING
 
 from data.pairings.bbp_history import TournamentHistory, parse_bbp_checklist_text
 import trf
 from typing_extensions import override
 
-from common import TMP_DIR
 from common.exception import SharlyChessException
 from common.i18n import _
 from common.logger import (
@@ -173,39 +173,40 @@ class BbpPairings(PairingEngine):
         round_: int,
         partial_pairings: bool = False,
     ) -> list[StoredBoard]:
-        pairings_dir = TMP_DIR / 'pairings'
-        pairings_dir.mkdir(exist_ok=True, parents=True)
-        trf_file_path = pairings_dir / f'{tournament.sanitized_name}.trfx'
-        pairings_file_path = pairings_dir / f'{tournament.sanitized_name}-pairings.txt'
-        pairings_file_path.unlink(missing_ok=True)
-        trf_tournament = tournament.to_trf(
-            TrfType.TRF_BX,
-            after_round=round_ - 1,
-            next_round_pairings_as_zpb=partial_pairings,
-        )
-        with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
-            trf.dump(trf_file, trf_tournament)
-        result = Utils.run_process(
-            [
-                self.executable_path,
-                '--dutch',
-                trf_file_path,
-                '-p',
-                pairings_file_path,
-            ],
-            capture_output=True,
-            encoding='utf-8',
-        )
-        if not pairings_file_path.exists():
-            raise SharlyChessException(
-                f'{tournament.log_prefix}round {round_} - Pairing generation '
-                f'with BbpPairings failed with status {result.returncode}.\n'
-                f'stdout: {result.stdout}\nstderr: {result.stderr}'
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pairings_dir: Path = Path(tmpdir)
+            trf_file_path = pairings_dir / f'{tournament.sanitized_name}.trfx'
+            pairings_file_path = (
+                pairings_dir / f'{tournament.sanitized_name}-pairings.txt'
             )
-        with open(pairings_file_path, encoding='utf-8') as pairing_file:
-            return self._boards_from_file(
-                pairing_file, tournament, round_, partial_pairings
+            trf_tournament = tournament.to_trf(
+                TrfType.TRF_BX,
+                after_round=round_ - 1,
+                next_round_pairings_as_zpb=partial_pairings,
             )
+            with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
+                trf.dump(trf_file, trf_tournament)
+            result = Utils.run_process(
+                [
+                    self.executable_path,
+                    '--dutch',
+                    trf_file_path,
+                    '-p',
+                    pairings_file_path,
+                ],
+                capture_output=True,
+                encoding='utf-8',
+            )
+            if not pairings_file_path.exists():
+                raise SharlyChessException(
+                    f'{tournament.log_prefix}round {round_} - Pairing generation '
+                    f'with BbpPairings failed with status {result.returncode}.\n'
+                    f'stdout: {result.stdout}\nstderr: {result.stderr}'
+                )
+            with open(pairings_file_path, encoding='utf-8') as pairing_file:
+                return self._boards_from_file(
+                    pairing_file, tournament, round_, partial_pairings
+                )
 
     @classmethod
     def _boards_from_file(
@@ -244,48 +245,50 @@ class BbpPairings(PairingEngine):
     def get_history(
         self, tournament: 'Tournament', round_: int
     ) -> tuple[TournamentHistory, list[StoredBoard]]:
-        pairings_dir = TMP_DIR / 'pairings'
-        pairings_dir.mkdir(exist_ok=True, parents=True)
-        trfx_file_path = pairings_dir / f'{tournament.sanitized_name}.trfx'
-        pairings_file_path = pairings_dir / f'{tournament.sanitized_name}.trf'
-        checklist_file_path = pairings_dir / f'{tournament.sanitized_name}-history.txt'
-        checklist_file_path.unlink(missing_ok=True)
-        trf_tournament = tournament.to_trf(
-            TrfType.TRF_BX,
-            after_round=round_ - 1,
-            next_round_pairings_as_zpb=False,
-        )
-        with open(trfx_file_path, 'w', encoding='utf-8') as trf_file:
-            trf.dump(trf_file, trf_tournament)
-        result = Utils.run_process(
-            [
-                self.executable_path,
-                '--dutch',
-                trfx_file_path,
-                # The only way to get a checklist is to actually pair the round....
-                '-p',
-                pairings_file_path,
-                # Request the checklist
-                '-l',
-                checklist_file_path,
-            ],
-            capture_output=True,
-            encoding='utf-8',
-        )
-        if not checklist_file_path.exists() or not pairings_file_path.exists():
-            raise SharlyChessException(
-                f'{tournament.log_prefix}round {round_} - Pairing history '
-                f'from BbpPairings failed with status {result.returncode}.\n'
-                f'stdout: {result.stdout}\nstderr: {result.stderr}'
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pairings_dir: Path = Path(tmpdir)
+            trfx_file_path = pairings_dir / f'{tournament.sanitized_name}.trfx'
+            pairings_file_path = pairings_dir / f'{tournament.sanitized_name}.trf'
+            checklist_file_path = (
+                pairings_dir / f'{tournament.sanitized_name}-history.txt'
             )
-        with open(checklist_file_path, 'r', encoding='utf-8') as file:
-            text_content = file.read()
-            history_data = parse_bbp_checklist_text(text_content)
+            checklist_file_path.unlink(missing_ok=True)
+            trf_tournament = tournament.to_trf(
+                TrfType.TRF_BX,
+                after_round=round_ - 1,
+                next_round_pairings_as_zpb=False,
+            )
+            with open(trfx_file_path, 'w', encoding='utf-8') as trf_file:
+                trf.dump(trf_file, trf_tournament)
+            result = Utils.run_process(
+                [
+                    self.executable_path,
+                    '--dutch',
+                    trfx_file_path,
+                    # The only way to get a checklist is to actually pair the round....
+                    '-p',
+                    pairings_file_path,
+                    # Request the checklist
+                    '-l',
+                    checklist_file_path,
+                ],
+                capture_output=True,
+                encoding='utf-8',
+            )
+            if not checklist_file_path.exists() or not pairings_file_path.exists():
+                raise SharlyChessException(
+                    f'{tournament.log_prefix}round {round_} - Pairing history '
+                    f'from BbpPairings failed with status {result.returncode}.\n'
+                    f'stdout: {result.stdout}\nstderr: {result.stderr}'
+                )
+            with open(checklist_file_path, 'r', encoding='utf-8') as file:
+                text_content = file.read()
+                history_data = parse_bbp_checklist_text(text_content)
 
-        with open(pairings_file_path, encoding='utf-8') as pairing_file:
-            boards = self._boards_from_file(pairing_file, tournament, round_, False)
+            with open(pairings_file_path, encoding='utf-8') as pairing_file:
+                boards = self._boards_from_file(pairing_file, tournament, round_, False)
 
-        return history_data, boards
+            return history_data, boards
 
 
 class RoundRobinPairingEngine(PairingEngine, ABC):
