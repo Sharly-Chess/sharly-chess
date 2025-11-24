@@ -102,6 +102,11 @@
                 </div>
             </div>
         {% endwith %}
+        <script>
+            $('.result-button,.admin-result-button').click(function(e) {
+                e.target.disabled = true;
+            });
+        </script>
     {% elif
         player
         and
