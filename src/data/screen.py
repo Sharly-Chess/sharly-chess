@@ -479,10 +479,9 @@ class Screen:
         match self.type:
             case ScreenType.INPUT:
                 if self.stored_screen:
-                    if self.stored_screen.input_exit_button is not None:
-                        return self.stored_screen.input_exit_button
-                    else:
-                        return SharlyChessConfig.default_input_exit_button
+                    exit_button = self.stored_screen.input_exit_button
+                    assert exit_button is not None
+                    return exit_button
                 else:
                     if self.family is None:
                         raise RuntimeError('Family reference unexpectedly None')
@@ -498,10 +497,9 @@ class Screen:
                 return True
             case ScreenType.PLAYERS:
                 if self.stored_screen:
-                    if self.stored_screen.players_show_unpaired is not None:
-                        return self.stored_screen.players_show_unpaired
-                    else:
-                        return SharlyChessConfig.default_players_show_unpaired
+                    show_unpaired = self.stored_screen.players_show_unpaired
+                    assert show_unpaired is not None
+                    return show_unpaired
                 else:
                     if self.family is None:
                         raise RuntimeError('Family reference unexpectedly None')
@@ -514,10 +512,9 @@ class Screen:
         match self.type:
             case ScreenType.PLAYERS:
                 if self.stored_screen:
-                    if self.stored_screen.players_show_opponent is not None:
-                        return self.stored_screen.players_show_opponent
-                    else:
-                        return SharlyChessConfig.default_players_show_opponent
+                    show_opponent = self.stored_screen.players_show_opponent
+                    assert show_opponent is not None
+                    return show_opponent
                 else:
                     if self.family is None:
                         raise RuntimeError('Family reference unexpectedly None')
