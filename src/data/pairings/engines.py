@@ -1,3 +1,4 @@
+import shutil
 from abc import ABC, abstractmethod
 from functools import cache
 from operator import attrgetter
@@ -5,6 +6,7 @@ from pathlib import Path
 import tempfile
 from typing import TextIO, TYPE_CHECKING
 
+from common import TMP_DIR
 from data.pairings.bbp_history import TournamentHistory, parse_bbp_checklist_text
 import trf
 from typing_extensions import override
@@ -175,10 +177,8 @@ class BbpPairings(PairingEngine):
     ) -> list[StoredBoard]:
         with tempfile.TemporaryDirectory() as tmpdir:
             pairings_dir: Path = Path(tmpdir)
-            trf_file_path = pairings_dir / f'{tournament.sanitized_name}.trfx'
-            pairings_file_path = (
-                pairings_dir / f'{tournament.sanitized_name}-pairings.txt'
-            )
+            trf_file_path = pairings_dir / 'pairings-input.trfx'
+            pairings_file_path = pairings_dir / 'pairings-output.txt'
             trf_tournament = tournament.to_trf(
                 TrfType.TRF_BX,
                 after_round=round_ - 1,
@@ -202,6 +202,15 @@ class BbpPairings(PairingEngine):
                     f'{tournament.log_prefix}round {round_} - Pairing generation '
                     f'with BbpPairings failed with status {result.returncode}.\n'
                     f'stdout: {result.stdout}\nstderr: {result.stderr}'
+                )
+            try:
+                bbp_tmp_dir = TMP_DIR / 'bbp-pairings'
+                bbp_tmp_dir.mkdir(exist_ok=True)
+                shutil.copy(trf_file_path, bbp_tmp_dir / 'pairings-input.trfx')
+                shutil.copy(pairings_file_path, bbp_tmp_dir / 'pairings-output.txt')
+            except PermissionError as e:
+                logger.error(
+                    'Error logging the BbpPairings input / output files: %s', e
                 )
             with open(pairings_file_path, encoding='utf-8') as pairing_file:
                 return self._boards_from_file(
@@ -247,11 +256,9 @@ class BbpPairings(PairingEngine):
     ) -> tuple[TournamentHistory, list[StoredBoard]]:
         with tempfile.TemporaryDirectory() as tmpdir:
             pairings_dir: Path = Path(tmpdir)
-            trfx_file_path = pairings_dir / f'{tournament.sanitized_name}.trfx'
-            pairings_file_path = pairings_dir / f'{tournament.sanitized_name}.trf'
-            checklist_file_path = (
-                pairings_dir / f'{tournament.sanitized_name}-history.txt'
-            )
+            trfx_file_path = pairings_dir / 'pairings-input.trfx'
+            pairings_file_path = pairings_dir / 'pairings-output.txt'
+            checklist_file_path = pairings_dir / 'checklist-output.txt'
             checklist_file_path.unlink(missing_ok=True)
             trf_tournament = tournament.to_trf(
                 TrfType.TRF_BX,
@@ -280,6 +287,16 @@ class BbpPairings(PairingEngine):
                     f'{tournament.log_prefix}round {round_} - Pairing history '
                     f'from BbpPairings failed with status {result.returncode}.\n'
                     f'stdout: {result.stdout}\nstderr: {result.stderr}'
+                )
+            try:
+                bbp_tmp_dir = TMP_DIR / 'bbp-pairings'
+                bbp_tmp_dir.mkdir(exist_ok=True)
+                shutil.copy(trfx_file_path, bbp_tmp_dir / 'pairings-input.trfx')
+                shutil.copy(pairings_file_path, bbp_tmp_dir / 'pairings-output.txt')
+                shutil.copy(checklist_file_path, bbp_tmp_dir / 'checklist-output.txt')
+            except PermissionError as e:
+                logger.error(
+                    'Error logging the BbpPairings input / output files: %s', e
                 )
             with open(checklist_file_path, 'r', encoding='utf-8') as file:
                 text_content = file.read()
