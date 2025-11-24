@@ -1,4 +1,5 @@
 import atexit
+import tempfile
 import time
 from abc import ABC, abstractmethod
 from datetime import datetime
@@ -82,12 +83,12 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
     @property
     @abstractmethod
-    def _source_file_path(self) -> Path:
-        """Path of the file containing the sources."""
+    def _source_file_name(self) -> str:
+        """Name of the file containing the sources."""
 
     @abstractmethod
-    def _download_source_file(self) -> bool:
-        """Download the source file to *source_file_path*.
+    def _download_source_file(self, source_file_dir: Path) -> bool:
+        """Download the source file to *source_file_dir*.
         Returns True if it succeeds and False if it fails."""
 
     def _use_external_generator(self) -> bool:
@@ -96,14 +97,18 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         # Default implementation - subclasses can override this
         return False
 
-    def _generate_from_source_file(self, tmp_file: Path) -> bool:
+    def _generate_from_source_file(
+        self, source_file_path: Path, tmp_file: Path
+    ) -> bool:
         """Creates the database at *tmp_file* from *source_file_path*."""
         # Default implementation - subclasses should override this if they use external generation
         raise NotImplementedError(
             'Subclass must implement _generate_from_source_file if _use_external_generator returns True'
         )
 
-    def _populate_from_source_file(self, database: SQLiteDatabase) -> bool:
+    def _populate_from_source_file(
+        self, source_file_path: Path, database: SQLiteDatabase
+    ) -> bool:
         """Populate the database from the source file at *source_file_path*.
         Database matches schema described at *schema_file_path*."""
         # Default implementation - subclasses should override this if they don't use external generation
@@ -258,38 +263,43 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             logger.warning(self.log_prefix + 'Not connected, impossible to update.')
             return self.stop_update(False)
         self.publish_database_status_updated()
-        logger.info(self.log_prefix + 'Downloading source file…')
-        if not self._download_source_file():
-            return self.stop_update(False)
-        if self.stop_event.is_set():
-            return self.stop_update(False)
-        logger.info(self.log_prefix + 'Storing data…')
-        tmp_file = self.file.with_suffix('.tmp')
-        tmp_file.unlink(missing_ok=True)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_dir: Path = Path(tmpdir)
+            logger.info(self.log_prefix + 'Downloading source file…')
+            if not self._download_source_file(tmp_dir):
+                return self.stop_update(False)
+            if self.stop_event.is_set():
+                return self.stop_update(False)
+            logger.info(self.log_prefix + 'Storing data…')
+            tmp_file = tmp_dir / 'db.tmp'
+            new_database = SQLiteDatabase(tmp_file, write=True)
+            source_file_path: Path = tmp_dir / self._source_file_name
 
-        new_database = SQLiteDatabase(tmp_file, write=True)
-
-        try:
-            success: bool
-            if self._use_external_generator():
-                success = self._generate_from_source_file(tmp_file)
-            else:
-                with open(self._schema_file_path, encoding='utf-8') as file:
-                    new_database._create(file.read())
-                success = self._populate_from_source_file(new_database)
-            if not success:
+            try:
+                success: bool
+                if self._use_external_generator():
+                    success = self._generate_from_source_file(
+                        source_file_path, tmp_file
+                    )
+                else:
+                    with open(self._schema_file_path, encoding='utf-8') as file:
+                        new_database._create(file.read())
+                    success = self._populate_from_source_file(
+                        source_file_path, new_database
+                    )
+                if not success:
+                    tmp_file.unlink(missing_ok=True)
+                    return self.stop_update(False)
+            except (OperationalError, IntegrityError) as ex:
+                logger.error(
+                    self.log_prefix + 'Error while creating the database: %s.', ex
+                )
                 tmp_file.unlink(missing_ok=True)
                 return self.stop_update(False)
-        except (OperationalError, IntegrityError) as ex:
-            logger.error(self.log_prefix + 'Error while creating the database: %s.', ex)
-            tmp_file.unlink(missing_ok=True)
-            return self.stop_update(False)
-        finally:
-            self._source_file_path.unlink(missing_ok=True)
 
-        # Copy the new database to its proper location
-        self.file.unlink(missing_ok=True)
-        tmp_file.rename(self.file)
+            # Copy the new database to its proper location
+            self.file.unlink(missing_ok=True)
+            tmp_file.rename(self.file)
 
         # Validate that the database file is actually a SQLite database before creating indexes
         try:

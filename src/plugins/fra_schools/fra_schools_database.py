@@ -1,7 +1,6 @@
 import json
 import re
 import urllib
-from contextlib import suppress
 from logging import Logger
 from pathlib import Path
 from typing import Any, Callable, override
@@ -46,8 +45,8 @@ class FRASchoolsDatabase(LocalSourceDatabase):
         return PLUGIN_DIR / 'create_fra_schools.sql'
 
     @property
-    def _source_file_path(self) -> Path:
-        return fra_schools.TMP_DIR / 'fra_schools.json'
+    def _source_file_name(self) -> str:
+        return 'fra_schools.json'
 
     @override
     @property
@@ -65,7 +64,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
             return 0
         return Utils.age_in_months(self.updated_at)
 
-    def _download_source_file(self) -> bool:
+    def _download_source_file(self, source_file_dir: Path) -> bool:
         types: list[str] = ['Ecole', 'Collège', 'Lycée']
         # See https://data.education.gouv.fr/api/v2/console
         base_url: str = 'https://data.education.gouv.fr/api/v2/catalog/datasets/fr-en-annuaire-education/exports/json'
@@ -103,10 +102,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
             )
         )
 
-        json_file: Path = self._source_file_path
-        with suppress(FileNotFoundError):
-            json_file.unlink()
-
+        json_file: Path = source_file_dir / self._source_file_name
         response: requests.Response = requests.get(url)
         json_file.write_bytes(response.content)
         if not json_file.exists():
@@ -139,7 +135,9 @@ class FRASchoolsDatabase(LocalSourceDatabase):
     def protect_string(string: str) -> str:
         return string.replace('`', "'")
 
-    def _populate_from_source_file(self, database: SQLiteDatabase) -> bool:
+    def _populate_from_source_file(
+        self, source_file_path: Path, database: SQLiteDatabase
+    ) -> bool:
         fields: dict[str, tuple[str, Callable[[Any], Any] | None]] = {
             'identifiant_de_l_etablissement': ('code', None),
             'nom_etablissement': ('name', self.normalize_name),
@@ -178,7 +176,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
         to_write_departments: list[dict[str, Any]] = []
 
         data: list[dict[str, Any]] = []
-        with open(self._source_file_path, 'r', encoding='utf-8') as f:
+        with open(source_file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
         with database:
