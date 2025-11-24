@@ -194,7 +194,6 @@ Example of player:
 &nbsp;&nbsp;`'paid_site': 10.0,`<br/>
 &nbsp;&nbsp;`'check_in': true,`<br/>
 &nbsp;&nbsp;`'board': 0,`<br/>
-&nbsp;&nbsp;`'board': 0,`<br/>
 &nbsp;&nbsp;`'skipped_rounds': {`<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`1: 0.5,` # Half-Point Bye at round #1<br/>
 &nbsp;&nbsp;&nbsp;&nbsp;`2: 0.0,` # Zero-Point Bye at round #3<br/>
