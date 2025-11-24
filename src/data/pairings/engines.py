@@ -206,8 +206,14 @@ class BbpPairings(PairingEngine):
             try:
                 bbp_tmp_dir = TMP_DIR / 'bbp-pairings'
                 bbp_tmp_dir.mkdir(exist_ok=True)
-                shutil.copy(trf_file_path, bbp_tmp_dir / 'pairings-input.trfx')
-                shutil.copy(pairings_file_path, bbp_tmp_dir / 'pairings-output.txt')
+                shutil.copy(
+                    trf_file_path,
+                    bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-input.trfx',
+                )
+                shutil.copy(
+                    pairings_file_path,
+                    bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-output.txt',
+                )
             except PermissionError as e:
                 logger.error(
                     'Error logging the BbpPairings input / output files: %s', e
@@ -291,9 +297,18 @@ class BbpPairings(PairingEngine):
             try:
                 bbp_tmp_dir = TMP_DIR / 'bbp-pairings'
                 bbp_tmp_dir.mkdir(exist_ok=True)
-                shutil.copy(trfx_file_path, bbp_tmp_dir / 'pairings-input.trfx')
-                shutil.copy(pairings_file_path, bbp_tmp_dir / 'pairings-output.txt')
-                shutil.copy(checklist_file_path, bbp_tmp_dir / 'checklist-output.txt')
+                shutil.copy(
+                    trfx_file_path,
+                    bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-input.trfx',
+                )
+                shutil.copy(
+                    pairings_file_path,
+                    bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-output.txt',
+                )
+                shutil.copy(
+                    pairings_file_path,
+                    bbp_tmp_dir / f'{tournament.sanitized_name}-checklist-output.txt',
+                )
             except PermissionError as e:
                 logger.error(
                     'Error logging the BbpPairings input / output files: %s', e
