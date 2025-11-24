@@ -108,6 +108,10 @@
 .board-row.last_result_updated > * {
     color: red !important;
 }
+h2.set-title {
+    font-size: 1.6rem;
+    margin-top: 0.8rem;
+}
 /*
 ###########################################################
 # PLAYERS SCREENS - ROWS
