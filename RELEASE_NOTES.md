@@ -28,6 +28,8 @@
 ## Screens
 
 - Fixed timer translation (3.3.0)
+- Fixed `Display exit button`, `Display unpaired players` and `Display opponents` options always activated (3.3.3)
+- Fixed `Display unpaired players` option hiding all the players (3.3.3)
 
 ## Prizes
 
