@@ -32,7 +32,7 @@ from database.sqlite.event.event_store import (
     StoredPairing,
     StoredTieBreak,
 )
-from plugins.ffe import TMP_DIR, PLUGIN_NAME
+from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_mappers import (
     PapiPairingVariation,
     PapiPlayerCategory,
@@ -224,27 +224,28 @@ class PapiConverter:
     def read_papi_file(self, source_file: Path) -> PapiData:
         """Read the papi file *source_file* into stored objects.
         Raises a SharlyChessException if the conversion fails."""
-        target_file = TMP_DIR / 'papi-converter-output.json'
-        target_file.unlink(missing_ok=True)
-        result = Utils.run_process(
-            [
-                self.executable_path,
-                source_file,
-                target_file,
-            ],
-            capture_output=True,
-            encoding='utf-8',
-        )
-        if not target_file.exists():
-            raise SharlyChessException(
-                f'Papi file conversion to JSON failed.'
-                f'PapiConverter failed with status {result.returncode}.\n'
-                f'stdout: {result.stdout}\nstderr: {result.stderr}'
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_dir: Path = Path(tmpdir)
+            target_file = tmp_dir / 'papi-converter-output.json'
+            result = Utils.run_process(
+                [
+                    self.executable_path,
+                    source_file,
+                    target_file,
+                ],
+                capture_output=True,
+                encoding='utf-8',
             )
+            if not target_file.exists():
+                raise SharlyChessException(
+                    f'Papi file conversion to JSON failed.'
+                    f'PapiConverter failed with status {result.returncode}.\n'
+                    f'stdout: {result.stdout}\nstderr: {result.stderr}'
+                )
 
-        with open(target_file, 'r', encoding='utf-8') as file:
-            papi_data_dict = json.load(file)
-        return dict_to_dataclass(PapiData, papi_data_dict)
+            with open(target_file, 'r', encoding='utf-8') as file:
+                papi_data_dict = json.load(file)
+            return dict_to_dataclass(PapiData, papi_data_dict)
 
     def read_papi_data(
         self,

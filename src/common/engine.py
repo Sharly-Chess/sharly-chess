@@ -2,6 +2,7 @@ import filecmp
 import json
 import re
 import shutil
+import tempfile
 import zipfile
 import platform
 import subprocess
@@ -16,7 +17,6 @@ from requests.exceptions import RequestException  # pylint: disable=redefined-bu
 from common import (
     SHARLY_CHESS_VERSION,
     TEST_ENV,
-    TMP_DIR,
     EVENTS_FOLDER,
     DEVEL_ENV,
     EVENTS_DIR,
@@ -498,110 +498,115 @@ class Engine:
             )
             return False
         try:
-            logger.info(
-                'Downloading release [%s] from GitHub ([%s])...', version, download_url
-            )
-            response: Response = get(download_url, allow_redirects=True, timeout=5)
-            response.raise_for_status()
-            if not response:
-                logger.error('No response from GitHub.')
-                return False
-            if response.status_code != 200:
-                logger.error('Downloading failed with code [%d].', response.status_code)
-                return False
-            # Determine downloaded file name based on platform
-            if platform.system() == 'Windows':
-                downloaded_file = TMP_DIR / f'sharly-chess-{version}-windows.zip'
-            else:
-                downloaded_file = TMP_DIR / f'sharly-chess-{version}-macos.dmg'
-            downloaded_file.write_bytes(response.content)
-            logger.debug('File downloaded: [%s].', downloaded_file)
-
-            if platform.system() == 'Windows':
-                # For Windows: Unzip the file
-                new_version_dir.mkdir()
-                with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
-                    zip_ref.extractall(new_version_dir)
-                control_file: Path = new_version_dir / 'tmp' / 'control_file.json'
-                if control_file.exists():
-                    with open(control_file, 'r', encoding='utf8') as infile:
-                        control_data: dict[str, Any] = json.loads(infile.read())
-                    missing_files: list[str] = [
-                        file_path
-                        for file_path in control_data['file_paths']
-                        if not Path(file_path).is_file()
-                    ]
-                    if missing_files:
-                        logger.error(
-                            '\n'.join(
-                                [
-                                    f'Sharly Chess {version} has not been correctly installed, the following files are missing:',
-                                ]
-                                + [
-                                    f'- {missing_file}'
-                                    for missing_file in missing_files
-                                ]
-                                + [
-                                    'This is probably due to Windows Defender or any other antivirus sending files to quarantaine.',
-                                    'Recover the missing files from your quarantaine folder (depends on the antivirus you use) or manually install:',
-                                    f'1. Download Sharly Chess from https://github.com/Sharly-Chess/sharly-chess/releases/download/{version}/sharly-chess-{version}-windows.zip',
-                                    '2. Unzip the downloaded archive manually',
-                                ]
-                            )
-                        )
-                        return False
-            else:
-                # For Mac: Handle the DMG file
-                mount_point = TMP_DIR / f'mount-{version}'
-                mount_point.mkdir(exist_ok=True)
-                try:
-                    # Mount the DMG
-                    subprocess.run(
-                        [
-                            'hdiutil',
-                            'attach',
-                            str(downloaded_file),
-                            '-mountpoint',
-                            str(mount_point),
-                        ],
-                        check=True,
+            with tempfile.TemporaryDirectory() as tmpdir:
+                tmp_dir: Path = Path(tmpdir)
+                logger.info(
+                    'Downloading release [%s] from GitHub ([%s])...',
+                    version,
+                    download_url,
+                )
+                response: Response = get(download_url, allow_redirects=True, timeout=5)
+                response.raise_for_status()
+                if not response:
+                    logger.error('No response from GitHub.')
+                    return False
+                if response.status_code != 200:
+                    logger.error(
+                        'Downloading failed with code [%d].', response.status_code
                     )
-                    dmg_content = list(mount_point.iterdir())
-                    if len(dmg_content) == 1 and dmg_content[0].is_dir():
-                        # Copy the folder from DMG to the new version directory
-                        # Use cp -R to preserve code signatures and extended attributes
+                    return False
+                # Determine downloaded file name based on platform
+                if platform.system() == 'Windows':
+                    downloaded_file = tmp_dir / f'sharly-chess-{version}-windows.zip'
+                else:
+                    downloaded_file = tmp_dir / f'sharly-chess-{version}-macos.dmg'
+                downloaded_file.write_bytes(response.content)
+                logger.debug('File downloaded: [%s].', downloaded_file)
+
+                if platform.system() == 'Windows':
+                    # For Windows: Unzip the file
+                    new_version_dir.mkdir()
+                    with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
+                        zip_ref.extractall(new_version_dir)
+                    control_file: Path = new_version_dir / 'tmp' / 'control_file.json'
+                    if control_file.exists():
+                        with open(control_file, 'r', encoding='utf8') as infile:
+                            control_data: dict[str, Any] = json.loads(infile.read())
+                        missing_files: list[str] = [
+                            file_path
+                            for file_path in control_data['file_paths']
+                            if not Path(file_path).is_file()
+                        ]
+                        if missing_files:
+                            logger.error(
+                                '\n'.join(
+                                    [
+                                        f'Sharly Chess {version} has not been correctly installed, the following files are missing:',
+                                    ]
+                                    + [
+                                        f'- {missing_file}'
+                                        for missing_file in missing_files
+                                    ]
+                                    + [
+                                        'This is probably due to Windows Defender or any other antivirus sending files to quarantaine.',
+                                        'Recover the missing files from your quarantaine folder (depends on the antivirus you use) or manually install:',
+                                        f'1. Download Sharly Chess from https://github.com/Sharly-Chess/sharly-chess/releases/download/{version}/sharly-chess-{version}-windows.zip',
+                                        '2. Unzip the downloaded archive manually',
+                                    ]
+                                )
+                            )
+                            return False
+                else:
+                    # For Mac: Handle the DMG file
+                    mount_point = tmp_dir / f'mount-{version}'
+                    try:
+                        # Mount the DMG
                         subprocess.run(
                             [
-                                'cp',
-                                '-R',
-                                str(dmg_content[0]),
-                                str(new_version_dir.parent),
+                                'hdiutil',
+                                'attach',
+                                str(downloaded_file),
+                                '-mountpoint',
+                                str(mount_point),
                             ],
                             check=True,
                         )
-                    else:
-                        logger.error(
-                            'DMG does not contain exactly one folder as expected.'
-                        )
-                        return False
-                finally:
-                    # Always try to unmount the DMG, even if copying failed
-                    try:
-                        subprocess.run(
-                            ['hdiutil', 'detach', str(mount_point)], check=True
-                        )
-                    except subprocess.CalledProcessError:
-                        logger.warning('Failed to unmount DMG at [%s]', mount_point)
-                    # Clean up the mount point directory
-                    if mount_point.exists():
-                        shutil.rmtree(mount_point, ignore_errors=True)
+                        dmg_content = list(mount_point.iterdir())
+                        if len(dmg_content) == 1 and dmg_content[0].is_dir():
+                            # Copy the folder from DMG to the new version directory
+                            # Use cp -R to preserve code signatures and extended attributes
+                            subprocess.run(
+                                [
+                                    'cp',
+                                    '-R',
+                                    str(dmg_content[0]),
+                                    str(new_version_dir.parent),
+                                ],
+                                check=True,
+                            )
+                        else:
+                            logger.error(
+                                'DMG does not contain exactly one folder as expected.'
+                            )
+                            return False
+                    finally:
+                        # Always try to unmount the DMG, even if copying failed
+                        try:
+                            subprocess.run(
+                                ['hdiutil', 'detach', str(mount_point)], check=True
+                            )
+                        except subprocess.CalledProcessError:
+                            logger.warning('Failed to unmount DMG at [%s]', mount_point)
+                        # Clean up the mount point directory
+                        if mount_point.exists():
+                            shutil.rmtree(mount_point, ignore_errors=True)
 
-            logger.info(
-                'New release [%s] has been installed in [%s].',
-                version,
-                new_version_dir.absolute(),
-            )
-            return True
+                logger.info(
+                    'New release [%s] has been installed in [%s].',
+                    version,
+                    new_version_dir.absolute(),
+                )
+                return True
         except RequestException as ex:
             logger.warning('Failed to read [%s]: [%s].', download_url, ex)
             return False
