@@ -33,9 +33,6 @@
                     {% else %}
                         {{ _('no') }}
                     {% endif %}
-                    {% if family.stored_family.input_exit_button is none %}
-                        {{ _('(by default)') }}
-                    {% endif %}
                 </div>
             {% endif %}
             {% if family.type == 'players' %}
@@ -45,18 +42,12 @@
                     {% else %}
                         {{ _('Unpaired: hidden') }}
                     {% endif %}
-                    {% if family.stored_family.players_show_unpaired is none %}
-                        {{ _('(by default)') }}
-                    {% endif %}
                 </div>
                 <div>
                     {% if family.players_show_opponent %}
                         {{ _('Players\' opponent: displayed') }}
                     {% else %}
                         {{ _('Players\' opponent: hidden') }}
-                    {% endif %}
-                    {% if family.stored_family.players_show_opponent is none %}
-                        {{ _('(by default)') }}
                     {% endif %}
                 </div>
             {% endif %}

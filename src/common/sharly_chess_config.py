@@ -410,15 +410,6 @@ class SharlyChessConfig(metaclass=Singleton):
     # The default background colour for the alert messages.
     default_message_background_color: str = '#FFFF00'
 
-    # True to show an exit button on input screens by default (may be changed for each screen).
-    default_input_exit_button: bool = True
-
-    # True to show unpaired players on players screens (may be changed for each screen).
-    default_players_show_unpaired: bool = True
-
-    # True to show the players' opponent on players screens (may be changed for each screen).
-    default_players_show_opponent: bool = True
-
     # The default delay between pages on rotators (in seconds).
     default_rotator_delay: int = 1 if TEST_ENV else 15
 

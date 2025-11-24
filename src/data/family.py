@@ -7,7 +7,6 @@ from _weakref import ReferenceType
 
 from common import format_timestamp_date_time
 from common.i18n import _
-from common.sharly_chess_config import SharlyChessConfig
 from data.screen import Screen
 from utils.enum import ScreenType
 from database.sqlite.event.event_store import StoredFamily
@@ -145,21 +144,21 @@ class Family:
 
     @property
     def input_exit_button(self) -> bool:
-        if self.stored_family.input_exit_button is None:
-            return SharlyChessConfig.default_input_exit_button
-        return self.stored_family.input_exit_button
+        exit_button = self.stored_family.input_exit_button
+        assert exit_button is not None
+        return exit_button
 
     @property
     def players_show_unpaired(self) -> bool:
-        if self.stored_family.players_show_unpaired is None:
-            return SharlyChessConfig.default_players_show_unpaired
-        return self.stored_family.players_show_unpaired
+        show_unpaired = self.stored_family.players_show_unpaired
+        assert show_unpaired is not None
+        return show_unpaired
 
     @property
     def players_show_opponent(self) -> bool:
-        if self.stored_family.players_show_opponent is None:
-            return SharlyChessConfig.default_players_show_opponent
-        return self.stored_family.players_show_opponent
+        show_opponent = self.stored_family.players_show_opponent
+        assert show_opponent is not None
+        return show_opponent
 
     @property
     def ranking_crosstable(self) -> bool:

@@ -690,8 +690,9 @@ class Tournament:
 
     @cached_property
     def players_by_name_without_unpaired(self) -> list[Player]:
+        unpaired_ids = [player.id for player in self.get_unpaired_players(self.boards)]
         return sorted(
-            [player for player in self.players if player not in self.unpaired_players],
+            [player for player in self.players if player.id not in unpaired_ids],
             key=by('last_name', 'first_name'),
         )
 
@@ -851,10 +852,6 @@ class Tournament:
     def boards_without_result(self, at_round: int) -> list[Board]:
         boards = self.get_round_boards(at_round)
         return [board for board in boards if board.result == Result.NO_RESULT]
-
-    @cached_property
-    def unpaired_players(self) -> list[Player]:
-        return self.get_unpaired_players(self.boards)
 
     @property
     def dependent_families(self) -> list[Family]:
