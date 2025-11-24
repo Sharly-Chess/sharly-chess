@@ -3,7 +3,7 @@
 | Location                         | Type              | Format        | Usage                                                                                                         |
 |----------------------------------|-------------------|---------------|---------------------------------------------------------------------------------------------------------------|
 | **`sharly-chess-<version>.exe`** | **Program**       | Windows EXE   | The _Sharly Chess_ program itself                                                                             |
-| **`events\.scc`**                | **Configuration** | SQLite        | The configuration of the _Sharly Chess_ application (`scc` stands for **S**harly **C**hess **C**onfiguration) |
-| **`events\*.sce`**               | **Data**          | SQLite        | The event files (one file by event, `sce` stands for **S**harly **C**hess **E**vent)                          |
-| `custom\*.*`                     | Custom            | Any           | The customization files (background images)                                                                   |
-| `tmp\*.*`                        | Temporary         | Any           | The temporary files used by _Sharly Chess_                                                                    |
+| **`events/.scc`**                | **Configuration** | SQLite        | The configuration of the _Sharly Chess_ application (`scc` stands for **S**harly **C**hess **C**onfiguration) |
+| **`events/*.sce`**               | **Data**          | SQLite        | The event files (one file by event, `sce` stands for **S**harly **C**hess **E**vent)                          |
+| `custom/place_cards/*.*`         | Custom            | Any           | The customization files (place card templates)                                                                |
+| `tmp/*.*`                        | Temporary         | Any           | The temporary files used by _Sharly Chess_                                                                    |

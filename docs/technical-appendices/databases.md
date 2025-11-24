@@ -2,7 +2,7 @@
 
 ## _Sharly Chess_ configuration database (`events/.scc`)
 
-### `info` (general application configuration)
+### `info` table (general application configuration)
 
 > [!NOTE]
 > :information_source: Table `info` contains only one line.
@@ -19,7 +19,7 @@
 | `locale`             | `TEXT`    |            | The default language used for users                                                                                          |
 | `experimental`       | `INTEGER` |            | Boolean:<br/>- `1`: Experimental features are enabled;<br/>- `0`: Experimental features are disabled (default)               |
 
-### `local_source_database` (local player databases)
+### `local_source_database` table (local player databases)
 
 | Field            | Type    | Constraint | Description                                                                          |
 |------------------|---------|------------|--------------------------------------------------------------------------------------|
@@ -28,14 +28,14 @@
 | `outdate_action` | `TEXT`  | NOT NULL   | The action to take when the database needs to be updated (`notif`, `auto_update`)    |
 | `updated_at`     | `FLOAT` |            | The last update date for the database                                                |
 
-### `metadata` (application metadata)
+### `metadata` table (application metadata)
 
 | Field       | Type   | Constraint                               | Description              |
 |-------------|--------|------------------------------------------|--------------------------|
 | `version`   | `TEXT` | NOT NULL                                 | The application version  |
 | `migration` | `TEXT` | NOT NULL<br/>DEFAULT 'm000_no_migration' | The last database update |
 
-### `plugin` (extensions)
+### `plugin` table (extensions)
 
 | Field        | Type      | Constraint | Description                                                                           |
 |--------------|-----------|------------|---------------------------------------------------------------------------------------|
@@ -56,8 +56,8 @@
 | Field                            | Type      | Constraint                | Description                                                                                                                                                                                                              |
 |----------------------------------|-----------|---------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `name`                           | `TEXT`    | NOT NULL<br> DEFAULT '?'  | The name of the event                                                                                                                                                                                                    |
-| `start`                          | `FLOAT`   | NOT NULL                  | The start date of the event (timestamp)                                                                                                                                                                                  |
-| `stop`                           | `FLOAT`   | NOT NULL                  | The end date of the event (timestamp)                                                                                                                                                                                    |
+| `start_date`                     | `TEXT`    |                           | The start date of the event (`YYYY-MM-DD`)                                                                                                                                                                               |
+| `stop_date`                      | `TEXT`    |                           | The end date of the event (`YYYY-MM-DD`)                                                                                                                                                                                 |
 | `public`                         | `INTEGER` |                           | Boolean:<br/>- `1`: the event is public (visible to users on the public interface);<br/>- `0`: the event is reserved for referees                                                                                        |
 | `path`                           | `TEXT`    |                           | The relative or absolute path to the event's tournament Papi files                                                                                                                                                       |
 | `background_color`               | `TEXT`    |                           | The background color of the event's screens in hexadecimal format '`#RRGGBB` (default `#E9ECEF`)                                                                                                                         |
@@ -74,15 +74,20 @@
 | `deprecated_chessevent_event_id` | `TEXT`    |                           | _Deprecated_                                                                                                                                                                                                             |
 | `override_unrated_rapid_blitz`   | `INTEGER` |                           | Boolean:<br/>- `0`: use estimated ratings for rapid/blitz unrated players<br/>- `1`: use standard ratings (by default)                                                                                                   |
 | `plugin_data`                    | `TEXT`    |                           | Additional data used by plugins, in JSON format                                                                                                                                                                          |
+| `enabled_plugins`                | `TEXT`    | NOT NULL<br/>DEFAULT '{}' | The list of the plugins enabled for the event                                                                                                                                                                            |
+| `organiser_name`                 | `TEXT`    |                           | The organiser's name                                                                                                                                                                                                     |
+| `organiser_home_page`            | `TEXT`    |                           | The organiser's home page                                                                                                                                                                                                |
+| `organiser_director`             | `TEXT`    |                           | The name of the organiser's director                                                                                                                                                                                     |
+| `age_category_base_date`         | `TEXT`    |                           | The base date to calculate the players' category (`YYYY-MM-DD`)                                                                                                                                                          |
 
-### `metadata` (event metadata)
+### `metadata` table (event metadata)
 
 | Field       | Type   | Constraint                               | Description                           |
 |-------------|--------|------------------------------------------|---------------------------------------|
 | `version`   | `TEXT` | NOT NULL                                 | The event database version            |
 | `migration` | `TEXT` | NOT NULL<br/>DEFAULT 'm000_no_migration' | The last update of the event database |
 
-### `plugin_metadata` (plugin metadata for the event)
+### `plugin_metadata` table (plugin metadata for the event)
 
 | Field       | Type   | Constraint                               | Description                                        |
 |-------------|--------|------------------------------------------|----------------------------------------------------|
@@ -90,7 +95,7 @@
 | `version`   | `TEXT` | NOT NULL                                 | The database version of the plugin for the event   |
 | `migration` | `TEXT` | NOT NULL<br/>DEFAULT 'm000_no_migration' | The latest extension database update for the event |
 
-### `timer` (timer configurations)
+### `timer` table (timer configurations)
 
 | Field     | Type      | Constraint                                 | Description                                                                                                                                                                                                                                                                                                                                                                                                    |
 |-----------|-----------|--------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -99,7 +104,7 @@
 | `colors`  | `TEXT`    |                                            | The colors used in JSON format (dictionary with keys `1'`, `2'`, and `3'`, each color is stored in hexadecimal format ``#RRGGBB``)                                                                                                                                                                                                                                                                             |
 | `delays`  | `TEXT`    |                                            | The delays used in JSON format (dictionary with keys `'1'`, `'2'` and `'3'`, each delay is stored as an integer, in seconds)                                                                                                                                                                                                                                                                                   |
 
-### `timer_hour` (timer hours)
+### `timer_hour` table (timer hours)
 
 | Field         | Type      | Constraint                                 | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 |---------------|-----------|--------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -113,7 +118,7 @@
 | `text_after`  | `TEXT`    |                                            | The text to display on the timer after the schedule                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
 |               |           | UNIQUE(`uniq_id`, `timer_id`)              |
 
-### `tournament` (tournaments)
+### `tournament` table (tournaments)
 
 | Field                                     | Type      | Constraint                                 | Description                                                                                                                                                |
 |-------------------------------------------|-----------|--------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -150,7 +155,7 @@
 | `plugin_data`                             | `TEXT`    |                                            | Additional data used by plugins, in JSON format                                                                                                            |
 
 
-### `tournament_criterion` (tournament criteria)
+### `tournament_criterion` table (tournament criteria)
 
 | Field               | Type      | Constraint                                                | Description                      |
 |---------------------|-----------|-----------------------------------------------------------|----------------------------------|
@@ -159,7 +164,7 @@
 | `type`              | `TEXT`    | NOT NULL                                                  | The criterion type               |
 | `options`           | `TEXT`    |                                                           | Criterion options in JSON format |
 
-### `player` (players)
+### `player` table (players)
 
 | Field           | Type      | Constraint                                 | Description                                             |
 |-----------------|-----------|--------------------------------------------|---------------------------------------------------------|
@@ -182,7 +187,7 @@
 | `check_in`      | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean: whether the player has checked in              |
 | `plugin_data`   | `TEXT`    | NOT NULL                                   | Additional data used by plugins, in JSON format         |
 
-### `tournament_player` (tournament player associations)
+### `tournament_player` table (tournament player associations)
 
 | Field            | Type      | Constraint                                                         | Description                               |
 |------------------|-----------|--------------------------------------------------------------------|-------------------------------------------|
@@ -190,7 +195,7 @@
 | `player_id`      | `INTEGER` | NOT NULL<br/>REFERENCES `player`(`id`)<br/>PRIMARY KEY             | The player ID                             |
 | `pairing_number` | `INTEGER` |                                                                    | The player's pairing number in tournament |
 
-### `board` (chess boards)
+### `board` table (chess boards)
 
 | Field                | Type      | Constraint                                                    | Description                                   |
 |----------------------|-----------|---------------------------------------------------------------|-----------------------------------------------|
@@ -200,7 +205,7 @@
 | `index`              | `INTEGER` | NOT NULL                                                      | The board number/index                        |
 | `last_result_update` | `FLOAT`   |                                                               | Timestamp of the last result update for board |
 
-### `pairing` (tournament pairings and results)
+### `pairing` table (tournament pairings and results)
 
 | Field           | Type      | Constraint                                                                           | Description                                             |
 |-----------------|-----------|--------------------------------------------------------------------------------------|---------------------------------------------------------|
@@ -211,7 +216,7 @@
 | `board_id`      | `INTEGER` | REFERENCES `board`(`id`)                                                             | The board ID where the game is played                   |
 | `illegal_moves` | `INTEGER` | NOT NULL<br/>DEFAULT 0                                                               | Number of illegal moves made by the player in the round |
 
-### `screen` (screens)
+### `screen` table (screens)
 
 | Field                    | Type      | Constraint                                 | Description                                                                                                                                                                                                       |
 |--------------------------|-----------|--------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -243,7 +248,7 @@
 | `message_text`           | `TEXT`    |                                            | The text of the screen's alert message (by default, no alert message is displayed)                                                                                                                                |
 | `last_update`            | `FLOAT`   | NOT NULL                                   | The date the screen was last modified                                                                                                                                                                             |
 
-### `screen_set` (screen sets)
+### `screen_set` table (screen sets)
 
 | Field              | Type      | Constraint                                 | Description                                                   |
 |--------------------|-----------|--------------------------------------------|---------------------------------------------------------------|
@@ -257,7 +262,7 @@
 | `fixed_boards_str` | `TEXT`    |                                            | Board numbers separated by commas                             |
 | `last_update`      | `FLOAT`   | NOT NULL                                   | The date the set was last modified                            |
 
-### `family` (screen families)
+### `family` table (screen families)
 
 | Field                   | Type      | Constraint                                 | Description                                                                                                                                                                                                                      |
 |-------------------------|-----------|--------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -284,7 +289,7 @@
 | `message_text`          | `TEXT`    |                                            | The text of the screen's alert message (by default, no alert message is displayed)                                                                                                                                               |
 | `last_update`           | `FLOAT`   | NOT NULL                                   | The last date the screen was modified                                                                                                                                                                                            |
 
-### `rotator` (rotators)
+### `rotator` table (rotators)
 
 | Field             | Type      | Constraint                                 | Description                                                                                                                                                                                                  |
 |-------------------|-----------|--------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -297,7 +302,7 @@
 | `message_default` | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | Boolean:<br/>- `1`: The event alert message is used (unless a message is defined for the screens);<br/>- `0`: The alert message for the rotating screen's screens is used instead of the event alert message |
 | `message_text`    | `TEXT`    |                                            | The screen's alert message text (by default, no alert message is displayed)                                                                                                                                  |
 
-### `rotating_screen` (rotating screens)
+### `rotating_screen` table (rotating screens)
 
 | Field             | Type      | Constraint                                 | Description                                                           |
 |-------------------|-----------|--------------------------------------------|-----------------------------------------------------------------------|
@@ -307,7 +312,7 @@
 | `family_id`       | `INTEGER` |                                            | The ID of the family, `NULL` if a basic screen                        |
 | `index`           | `INTEGER` | NOT NULL                                   | The order of the screen/family in the screens/families of the rotator |
 
-### `display_controller` (display controllers)
+### `display_controller` table (display controllers)
 
 | Field         | Type      | Constraint                                 | Description                                                                                                                        |
 |---------------|-----------|--------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
@@ -319,7 +324,7 @@
 | `rotator_id`  | `INTEGER` | REFERENCES `rotator`(`id`)                 | The rotator ID to display                                                                                                          |
 | `last_update` | `FLOAT`   |                                            | The date the controller was last updated                                                                                           |
 
-### `prize_group` (prize groups)
+### `prize_group` table (prize groups)
 
 | Field           | Type      | Constraint                                                | Description           |
 |-----------------|-----------|-----------------------------------------------------------|-----------------------|
@@ -327,7 +332,7 @@
 | `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`)                | The tournament ID     |
 | `name`          | `TEXT`    | NOT NULL                                                  | The prize group name  |
 
-### `prize_category` (prize categories)
+### `prize_category` table (prize categories)
 
 | Field               | Type      | Constraint                                                | Description                                       |
 |---------------------|-----------|-----------------------------------------------------------|---------------------------------------------------|
@@ -339,7 +344,7 @@
 | `is_main`           | `INTEGER` | NOT NULL<br/>DEFAULT 0                                    | Boolean: whether this is the main prize category  |
 | `index`             | `INTEGER` | NOT NULL                                                  | The ordering index of the category                |
 
-### `prize_criterion` (prize criteria)
+### `prize_criterion` table (prize criteria)
 
 | Field               | Type      | Constraint                                                | Description                        |
 |---------------------|-----------|-----------------------------------------------------------|------------------------------------|
@@ -348,7 +353,7 @@
 | `type`              | `TEXT`    | NOT NULL                                                  | The criterion type                 |
 | `options`           | `TEXT`    |                                                           | Criterion options in JSON format   |
 
-### `prize` (prizes)
+### `prize` table (prizes)
 
 | Field               | Type      | Constraint                                                | Description                               |
 |---------------------|-----------|-----------------------------------------------------------|-------------------------------------------|
@@ -357,3 +362,74 @@
 | `value`             | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                                  | The monetary value of the prize           |
 | `is_monetary`       | `INTEGER` | NOT NULL<br/>DEFAULT 1                                    | Boolean: whether the prize is monetary    |
 | `description`       | `TEXT`    |                                                           | The prize description                     |
+
+## FIDE Local Database (`tmp/fide.db`)
+
+### `player` table (players)
+
+| Field                | Type      | Constraint                                 | Description                                     |
+|----------------------|-----------|--------------------------------------------|-------------------------------------------------|
+| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID                        |
+| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's FFE ID                             |
+| `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                          |
+| `first_name`         | `TEXT`    |                                            | The player's first name                         |
+| `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code                    |
+| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Female, 2: Male)        |
+| `fide_title`         | `INTEGER` | NOT NULL                                   | The player's FIDE title                         |
+| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating                    |
+| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating                       |
+| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating                       |
+| `year_of_birth`      | `INTEGER` | NOT NULL                                   | The player's year of birth                      |
+
+## FFE Local Database (`tmp/ffe/ffe.db`)
+
+> [!NOTE]
+> :information_source: This database is managed by plugin `ffe`.
+
+### `player` table (players)
+
+| Field                | Type      | Constraint                                 | Description                                             |
+|----------------------|-----------|--------------------------------------------|---------------------------------------------------------|
+| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID                                |
+| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's FFE ID                                     |
+| `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                                  |
+| `first_name`         | `TEXT`    |                                            | The player's first name                                 |
+| `date_of_birth`      | `TEXT`    |                                            | The player's date of birth in YYYY-MM-DD format         |
+| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Male, 2: Female, 9: Other)      |
+| `ffe_licence_number` | `TEXT`    |                                            | The player's licence number (Xnnnnn)                    |
+| `ffe_licence`        | `INTEGER` | NOT NULL                                   | The player's licence type (1: None, 2: A, 3: B)         |
+| `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code                            |
+| `league`             | `TEXT`    |                                            | The player's FFE league (3-letter) code                 |
+| `city`               | `TEXT`    |                                            | The city of the player's club                           |
+| `club`               | `TEXT`    |                                            | The player's club name                                  |
+| `fide_id`            | `INTEGER` |                                            | The player's FIDE ID (if any)                           |
+| `fide_title`         | `INTEGER` | NOT NULL                                   | The player's FIDE title                                 |
+| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating                            |
+| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating                               |
+| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating                               |
+
+
+## FRA Schools Local Database (`tmp/fra_schools/fra_schools.db`)
+
+> [!NOTE]
+> :information_source: This database is managed by plugin `fra_schools`.
+
+### `department` table (French departments)
+
+| Field                | Type      | Constraint | Description                                           |
+|----------------------|-----------|------------|-------------------------------------------------------|
+| `id`                 | `TEXT`    | NOT NULL   | The department's ID (`01` to `988`)                   |
+| `name`               | `TEXT`    | NOT NULL   | The department's name (`Ain` to `Nouvelle Calédonie`) |
+
+### `school` table (schools)
+
+| Field                | Type      | Constraint | Description                                       |
+|----------------------|-----------|------------|---------------------------------------------------|
+| `id`                 | `INTEGER` | NOT NULL   | The school's internal ID                          |
+| `code`               | `TEXT`    | NOT NULL   | The school's code (`DEPnnnnL`)                    |
+| `name`               | `TEXT`    | NOT NULL   | The school's name                                 |
+| `postal_code`        | `TEXT`    | NOT NULL   | The school's postal code                          |
+| `department`         | `TEXT`    |            | The school's department (if any)                  |
+| `city`               | `TEXT`    | NOT NULL   | The school's city                                 |
+| `type`               | `TEXT`    | NOT NULL   | The school's type (`Ecole`, `Collège` or `Lycée`) |
+| `private`            | `INTEGER` | NOT NULL   | Boolean: `0` if public, `1` if private            |
