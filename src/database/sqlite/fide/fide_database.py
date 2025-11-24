@@ -1,5 +1,6 @@
 import os.path
 import re
+import tempfile
 from xml.etree import ElementTree
 import zipfile
 from contextlib import suppress
@@ -12,7 +13,6 @@ from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
-from common import TMP_DIR
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
@@ -63,8 +63,8 @@ class FideDatabase(LocalSourcePlayerDatabase):
         return SharlyChessConfig.database_sql_path / 'create_fide.sql'
 
     @property
-    def _source_file_path(self) -> Path:
-        return TMP_DIR / 'players_list_xml.xml'
+    def _source_file_name(self) -> str:
+        return 'players_list_xml.xml'
 
     @override
     @property
@@ -75,44 +75,49 @@ class FideDatabase(LocalSourcePlayerDatabase):
             outdate_action=NotifOutdatedAction.static_id(),
         )
 
-    def _download_source_file(self) -> bool:
+    def _download_source_file(self, source_file_dir: Path) -> bool:
         fide_database_url: str = (
             'https://ratings.fide.com/download/players_list_xml_legacy.zip'
         )
-        local_zip_file: Path = TMP_DIR / os.path.basename(fide_database_url)
-        with suppress(FileNotFoundError):
-            local_zip_file.unlink()
-        try:
-            response: Response = get(fide_database_url, allow_redirects=True, timeout=5)
-            if response.status_code != 200:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_dir: Path = Path(tmpdir)
+            local_zip_file: Path = tmp_dir / os.path.basename(fide_database_url)
+            try:
+                response: Response = get(
+                    fide_database_url, allow_redirects=True, timeout=5
+                )
+                if response.status_code != 200:
+                    logger.error(
+                        self.log_prefix + 'Could not download [%s], error code [%d].',
+                        fide_database_url,
+                        response.status_code,
+                    )
+                    return False
+            except ConnectionError as ex:
                 logger.error(
-                    self.log_prefix + 'Could not download [%s], error code [%d].',
+                    self.log_prefix + 'Could not download [%s]: %s.',
                     fide_database_url,
-                    response.status_code,
+                    ex,
                 )
                 return False
-        except ConnectionError as ex:
-            logger.error(
-                self.log_prefix + 'Could not download [%s]: %s.', fide_database_url, ex
-            )
-            return False
-        local_zip_file.write_bytes(response.content)
-        if not local_zip_file.exists():
-            logger.error(
-                self.log_prefix + 'No data received from [%s].', fide_database_url
-            )
-            return False
+            local_zip_file.write_bytes(response.content)
+            if not local_zip_file.exists():
+                logger.error(
+                    self.log_prefix + 'No data received from [%s].', fide_database_url
+                )
+                return False
 
-        self._source_file_path.unlink(missing_ok=True)
-        with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
-            zip_ref.extractall(TMP_DIR)
-        local_zip_file.unlink()
-        if not self._source_file_path.exists():
-            logger.error(self.log_prefix + 'Could not unzip data.')
-            return False
-        return True
+            with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
+                zip_ref.extractall(source_file_dir)
 
-    def _populate_from_source_file(self, database: SQLiteDatabase) -> bool:
+            if not Path(source_file_dir / self._source_file_name).exists():
+                logger.error(self.log_prefix + 'Could not unzip data.')
+                return False
+            return True
+
+    def _populate_from_source_file(
+        self, source_file_path: Path, database: SQLiteDatabase
+    ) -> bool:
         fields: dict[str, tuple[str, Callable[[Any], Any] | None]] = {
             'fideid': ('fide_id', lambda s: int(s.strip())),
             'name': ('name', None),
@@ -137,7 +142,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
         player_count: int = 0
         to_write = []
         data: dict[str, Any] = {}
-        context = ElementTree.iterparse(self._source_file_path, events=('start', 'end'))
+        context = ElementTree.iterparse(source_file_path, events=('start', 'end'))
         root = next(context)[1]
         with database:
             for event, elem in context:

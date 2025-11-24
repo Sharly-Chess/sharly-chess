@@ -5,11 +5,12 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from functools import cached_property
 from pathlib import Path
+import tempfile
 
 import requests
 from packaging.version import Version
 
-from common import DEVEL_ENV, REQUEST_TIMEOUT, BASE_DIR, TMP_DIR
+from common import DEVEL_ENV, REQUEST_TIMEOUT, BASE_DIR
 from common.i18n import _
 from common.logger import (
     get_logger,
@@ -163,55 +164,54 @@ class WebLibArchiveInstaller(WebLibInstaller):
         self.archive_filename: str = archive_filename.format(version=self.version)
 
     def install(self) -> bool:
-        self.version_install_dir.mkdir(parents=True, exist_ok=True)
-        archive_file: Path = TMP_DIR / self.archive_filename
-        self.download_file(self.archive_url, archive_file)
-        print_interactive_info(f'Installing to {self.version_install_dir}...')
-        shutil.unpack_archive(archive_file, TMP_DIR)
-        archive_dir: Path = TMP_DIR / self.version_folder_name
-        # Copy requested library files
-        for lib_file in self.lib_files:
-            src_file: Path = TMP_DIR / self.version_folder_name / lib_file
-            dst_file: Path = self.version_install_dir / lib_file
-            dst_dir: Path = dst_file.parent
-            dst_dir.mkdir(parents=True, exist_ok=True)
-            shutil.copy(src_file, dst_dir)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmp_dir: Path = Path(tmpdir)
+            self.version_install_dir.mkdir(parents=True, exist_ok=True)
+            archive_file: Path = tmp_dir / self.archive_filename
+            self.download_file(self.archive_url, archive_file)
+            print_interactive_info(f'Installing to {self.version_install_dir}...')
+            shutil.unpack_archive(archive_file, tmp_dir)
+            # Copy requested library files
+            for lib_file in self.lib_files:
+                src_file: Path = tmp_dir / self.version_folder_name / lib_file
+                dst_file: Path = self.version_install_dir / lib_file
+                dst_dir: Path = dst_file.parent
+                dst_dir.mkdir(parents=True, exist_ok=True)
+                shutil.copy(src_file, dst_dir)
 
-        # Copy specified licence files preserving their relative paths
-        if self.licence_files:
-            extracted_licence_files = []
-            for licence_file in self.licence_files:
-                # Handle licence file paths within the archive
-                src_file: Path = TMP_DIR / self.version_folder_name / licence_file
-                if src_file.exists():
-                    # Preserve the full relative path for the destination
-                    dst_file: Path = self.version_install_dir / licence_file
-                    dst_dir: Path = dst_file.parent
-                    dst_dir.mkdir(parents=True, exist_ok=True)
-                    try:
-                        shutil.copy2(src_file, dst_file)
-                        extracted_licence_files.append(licence_file)
-                        logger.debug(
-                            f'Extracted licence file: {licence_file} -> {licence_file} for {self.name}'
-                        )
-                    except Exception as e:
+            # Copy specified licence files preserving their relative paths
+            if self.licence_files:
+                extracted_licence_files = []
+                for licence_file in self.licence_files:
+                    # Handle licence file paths within the archive
+                    src_file: Path = tmp_dir / self.version_folder_name / licence_file
+                    if src_file.exists():
+                        # Preserve the full relative path for the destination
+                        dst_file: Path = self.version_install_dir / licence_file
+                        dst_dir: Path = dst_file.parent
+                        dst_dir.mkdir(parents=True, exist_ok=True)
+                        try:
+                            shutil.copy2(src_file, dst_file)
+                            extracted_licence_files.append(licence_file)
+                            logger.debug(
+                                f'Extracted licence file: {licence_file} -> {licence_file} for {self.name}'
+                            )
+                        except Exception as e:
+                            logger.warning(
+                                f'Failed to copy licence file {licence_file}: {e}'
+                            )
+                    else:
                         logger.warning(
-                            f'Failed to copy licence file {licence_file}: {e}'
+                            f'Licence file not found in archive: {licence_file} for {self.name}'
                         )
-                else:
-                    logger.warning(
-                        f'Licence file not found in archive: {licence_file} for {self.name}'
+
+                if extracted_licence_files:
+                    print_interactive_info(
+                        f'Extracted licence files for {self.name}: {extracted_licence_files}'
                     )
 
-            if extracted_licence_files:
-                print_interactive_info(
-                    f'Extracted licence files for {self.name}: {extracted_licence_files}'
-                )
-
-        archive_file.unlink(missing_ok=True)
-        shutil.rmtree(archive_dir)
-        print_interactive_success('Done.')
-        return self.is_installed
+            print_interactive_success('Done.')
+            return self.is_installed
 
 
 class WebLibFileInstaller(WebLibInstaller):
