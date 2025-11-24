@@ -49,18 +49,12 @@
                     {% else %}
                         {{ _('Unpaired: hidden') }}
                     {% endif %}
-                    {% if screen.stored_screen.players_show_unpaired is none %}
-                        {{ _('(by default)') }}
-                    {% endif %}
                 </div>
                 <div>
                     {% if screen.players_show_opponent %}
                         {{ _('Players\' opponent: displayed') }}
                     {% else %}
                         {{ _('Players\' opponent: hidden') }}
-                    {% endif %}
-                    {% if screen.stored_screen.players_show_opponent is none %}
-                        {{ _('(by default)') }}
                     {% endif %}
                 </div>
             {% endif %}
@@ -152,9 +146,6 @@
                         {{ _('yes') }}
                     {% else %}
                         {{ _('no') }}
-                    {% endif %}
-                    {% if screen.stored_screen.input_exit_button is none %}
-                        {{ _('(by default)') }}
                     {% endif %}
                 </div>
             {% endif %}

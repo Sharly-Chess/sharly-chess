@@ -190,14 +190,14 @@ class ScreenAdminController(BaseEventAdminController):
                     case ScreenType.BOARDS:
                         pass
                     case ScreenType.INPUT:
-                        input_exit_button = WebContext.form_data_to_bool_or_none(
+                        input_exit_button = WebContext.form_data_to_bool(
                             data, 'input_exit_button'
                         )
                     case ScreenType.PLAYERS:
-                        players_show_unpaired = WebContext.form_data_to_bool_or_none(
+                        players_show_unpaired = WebContext.form_data_to_bool(
                             data, 'players_show_unpaired'
                         )
-                        players_show_opponent = WebContext.form_data_to_bool_or_none(
+                        players_show_opponent = WebContext.form_data_to_bool(
                             data, 'players_show_opponent'
                         )
                     case ScreenType.RESULTS:
