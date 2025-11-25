@@ -3,7 +3,7 @@ from collections import defaultdict
 from typing import Iterable
 
 from common.i18n import _
-from data.player import Player
+from data.player import TournamentPlayer
 from utils.entity import IdentifiableEntity
 from utils.enum import PlayerCategory
 
@@ -11,7 +11,7 @@ from utils.enum import PlayerCategory
 class PlayerSplitter(IdentifiableEntity, ABC):
     @staticmethod
     @abstractmethod
-    def get_split_key(player: Player) -> str:
+    def get_split_key(tournament_player: TournamentPlayer) -> str:
         """Extract the split key from a player.
         Players will be grouped by split key."""
 
@@ -20,10 +20,14 @@ class PlayerSplitter(IdentifiableEntity, ABC):
         """Returns the split keys ordered. Defaults to alphabetical sort."""
         return sorted(split_keys)
 
-    def split_players(self, players: list[Player]) -> dict[str, list[Player]]:
+    def split_players(
+        self, tournament_players: list[TournamentPlayer]
+    ) -> dict[str, list[TournamentPlayer]]:
         split_players = defaultdict(list)
-        for player in players:
-            split_players[self.get_split_key(player)].append(player)
+        for tournament_player in tournament_players:
+            split_players[self.get_split_key(tournament_player)].append(
+                tournament_player
+            )
         return {
             key: split_players[key]
             for key in self.sorted_split_keys(split_players.keys())
@@ -40,7 +44,7 @@ class NoSplitPlayerSplitter(PlayerSplitter):
         return '-'
 
     @staticmethod
-    def get_split_key(player: Player) -> str:
+    def get_split_key(tournament_player: TournamentPlayer) -> str:
         return ''
 
 
@@ -54,8 +58,8 @@ class CategoryPlayerSplitter(PlayerSplitter):
         return _('Category')
 
     @staticmethod
-    def get_split_key(player: Player) -> str:
-        return player.category.short_name
+    def get_split_key(tournament_player: TournamentPlayer) -> str:
+        return tournament_player.category.short_name
 
     @staticmethod
     def sorted_split_keys(split_keys: Iterable[str]) -> list[str]:
@@ -73,8 +77,10 @@ class ClubPlayerSplitter(PlayerSplitter):
         return _('Club')
 
     @staticmethod
-    def get_split_key(player: Player) -> str:
-        return player.club.name if player.club else ''
+    def get_split_key(tournament_player: TournamentPlayer) -> str:
+        return (
+            tournament_player.player.club.name if tournament_player.player.club else ''
+        )
 
 
 class FederationPlayerSplitter(PlayerSplitter):
@@ -87,5 +93,5 @@ class FederationPlayerSplitter(PlayerSplitter):
         return _('Federation')
 
     @staticmethod
-    def get_split_key(player: Player) -> str:
-        return player.federation.name
+    def get_split_key(tournament_player: TournamentPlayer) -> str:
+        return tournament_player.player.federation.name

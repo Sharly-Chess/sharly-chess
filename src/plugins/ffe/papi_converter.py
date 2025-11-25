@@ -20,8 +20,7 @@ from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
     PairingVariation,
 )
-from data.player import Player
-from data.player import PlayerRating
+from data.player import TournamentPlayer, PlayerRating
 from data.tie_breaks.tie_breaks import ManualTieBreak, TieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_store import (
@@ -341,8 +340,8 @@ class PapiConverter:
                             ] = board_id
                     stored_pairing.board_id = board_id
                 stored_tournament_player.stored_pairings.append(stored_pairing)
-            stored_player.stored_tournament_player = stored_tournament_player
             stored_players.append(stored_player)
+            stored_tournament.stored_tournament_players.append(stored_tournament_player)
         stored_tournament.stored_boards_by_round = stored_boards_by_round
         return stored_tournament, stored_players
 
@@ -657,7 +656,7 @@ class PapiConverter:
             return rounds_blocker
 
         for round_ in range(1, tournament.rounds + 1):
-            for player in tournament.players:
+            for player in tournament.tournament_players:
                 if msg := cls.check_result(player.pairings[round_].result, tournament):
                     return msg
 
@@ -756,21 +755,22 @@ class PapiConverter:
 
         # Create mapping from internal player ID to index in PapiPlayer list
         player_id_to_index = {
-            player.id: index for index, player in enumerate(tournament.players)
+            tournament_player.player.id: index
+            for index, tournament_player in enumerate(tournament.tournament_players)
         }
 
         # Convert players
         papi_players: list[PapiPlayer] = []
-        for player in tournament.players:
+        for tournament_player in tournament.tournament_players:
             papi_player = self._player_to_papi_player(
-                player,
+                tournament_player,
                 player_id_to_index,
                 tournament.pab_value,
-                manual_tiebreak_by_player_id.get(player.id, None),
+                manual_tiebreak_by_player_id.get(tournament_player.player.id, None),
                 anonymize_player_data,
             )
             plugin_manager.hook_for_event(tournament.event, 'update_papi_player')(
-                papi_player=papi_player, player=player
+                papi_player=papi_player, tournament_player=tournament_player
             )
             papi_players.append(papi_player)
 
@@ -800,25 +800,32 @@ class PapiConverter:
             else:
                 papi_tiebreaks = papi_tiebreaks[:2]
                 papi_tiebreaks.append(PapiTieBreak.get_outer_value(ManualTieBreak()))
-            tournament.compute_player_ranks()
+            tournament.compute_tournament_player_ranks()
             player_count = tournament.player_count
-            for player in tournament.players:
-                manual_tiebreak_by_player_id[player.id] = player_count - player.rank + 1
+            for tournament_player in tournament.tournament_players:
+                manual_tiebreak_by_player_id[tournament_player.player.id] = (
+                    player_count - tournament_player.rank + 1
+                )
         elif len(papi_tiebreaks) < 3 and not manual_index:
             # If a spot is available, add a manual tie-break representing the start rank
             # This way, the rankings are the same on all rounds
             papi_tiebreaks.append(PapiTieBreak.get_outer_value(ManualTieBreak()))
             player_count = tournament.player_count
-            for index, player in enumerate(
-                sorted(tournament.players, key=lambda p: p.starting_rank_sort_key)
+            for index, tournament_player in enumerate(
+                sorted(
+                    tournament.tournament_players,
+                    key=lambda p: p.starting_rank_sort_key,
+                )
             ):
-                manual_tiebreak_by_player_id[player.id] = player_count - index
+                manual_tiebreak_by_player_id[tournament_player.player.id] = (
+                    player_count - index
+                )
         elif manual_index:
             # Setup the manual tie-break values from the stored value
             manual_tiebreak_by_player_id = {
-                player.id: player.manual_tiebreak
-                for player in tournament.players
-                if player.manual_tiebreak is not None
+                tournament_player.player.id: tournament_player.manual_tiebreak
+                for tournament_player in tournament.tournament_players
+                if tournament_player.manual_tiebreak is not None
             }
             # Those values can be negative, so to have a clean representation in Papi a delta is added
             if manual_tiebreak_by_player_id:
@@ -833,7 +840,7 @@ class PapiConverter:
 
     def _player_to_papi_player(
         self,
-        player: Player,
+        tournament_player: TournamentPlayer,
         player_id_to_index: dict[int, int],
         pab_value: Result,
         manual_tie_break_value: int | None,
@@ -841,21 +848,22 @@ class PapiConverter:
     ) -> PapiPlayer:
         """Convert a Player object to PapiPlayer."""
 
-        plugin_data = player.plugin_data[PLUGIN_NAME]
+        plugin_data = tournament_player.player.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfePlayerPluginData)
 
-        fixed_board: int | None = player.fixed
+        fixed_board: int | None = tournament_player.player.fixed
         if manual_tie_break_value is not None:
             # The relative order of the players is stored in the fixed table field with values above 1000
             fixed_board = manual_tie_break_value + 1000
 
+        player = tournament_player.player
         papi_player = PapiPlayer(
             lastName=player.last_name,
             firstName=player.first_name,
             birthDate=player.date_of_birth.strftime(PAPI_DATE_FORMAT)
             if player.date_of_birth
             else None,
-            category=PapiPlayerCategory.get_outer_value(player.category),
+            category=PapiPlayerCategory.get_outer_value(tournament_player.category),
             gender=PapiPlayerGender.get_outer_value(player.gender),
             email=None if anonymize_player_data else player.mail,
             phone=None if anonymize_player_data else player.phone,
@@ -868,20 +876,27 @@ class PapiConverter:
             club=player.club.name,
             fixedBoard=fixed_board,
             checkedIn=player.check_in,
-            elo=self._get_papi_elo(player, TournamentRating.STANDARD),
-            fideElo=self._get_papi_elo_type(player, TournamentRating.STANDARD),
-            rapidElo=self._get_papi_elo(player, TournamentRating.RAPID),
-            fideRapidElo=self._get_papi_elo_type(player, TournamentRating.RAPID),
-            blitzElo=self._get_papi_elo(player, TournamentRating.BLITZ),
-            fideBlitzElo=self._get_papi_elo_type(player, TournamentRating.BLITZ),
+            elo=self._get_papi_elo(tournament_player, TournamentRating.STANDARD),
+            fideElo=self._get_papi_elo_type(
+                tournament_player, TournamentRating.STANDARD
+            ),
+            rapidElo=self._get_papi_elo(tournament_player, TournamentRating.RAPID),
+            fideRapidElo=self._get_papi_elo_type(
+                tournament_player, TournamentRating.RAPID
+            ),
+            blitzElo=self._get_papi_elo(tournament_player, TournamentRating.BLITZ),
+            fideBlitzElo=self._get_papi_elo_type(
+                tournament_player, TournamentRating.BLITZ
+            ),
             licenceType=PapiPlayerFFELicence.get_outer_value(plugin_data.ffe_licence),
-            refFFE=plugin_data.ffe_id or (self.MOCK_FFE_ID_DELTA + player.id),
+            refFFE=plugin_data.ffe_id
+            or (self.MOCK_FFE_ID_DELTA + tournament_player.player.id),
             nrFFE=plugin_data.ffe_licence_number,
             league=plugin_data.league,
         )
 
         # Convert rounds/pairings
-        for round, pairing in player.pairings_by_round.items():
+        for round, pairing in tournament_player.pairings_by_round.items():
             papi_round = PapiRound.from_pairing(pairing, pab_value)
 
             # Get opponent index using the mapping from internal player ID to list index
@@ -893,21 +908,27 @@ class PapiConverter:
 
         return papi_player
 
-    def _get_papi_elo(self, player: Player, tournament_rating: TournamentRating) -> int:
+    def _get_papi_elo(
+        self, tournament_player: TournamentPlayer, tournament_rating: TournamentRating
+    ) -> int:
         # Override unrated rapid/blitz rating in the export
         # When exporting to Papi we can safely assume that the player type for the tournament rating is FIDE
-        if player.rating_is_overridden(tournament_rating, PlayerRatingType.FIDE):
+        if tournament_player.rating_is_overridden(
+            tournament_rating, PlayerRatingType.FIDE
+        ):
             tournament_rating = TournamentRating.STANDARD
-        return player.get_rating_and_type(
+        return tournament_player.player.get_rating_and_type(
             tournament_rating, PlayerRatingType.FIDE
         ).value
 
     def _get_papi_elo_type(
-        self, player: Player, tournament_rating: TournamentRating
+        self, tournament_player: TournamentPlayer, tournament_rating: TournamentRating
     ) -> str:
-        if player.rating_is_overridden(tournament_rating, PlayerRatingType.FIDE):
+        if tournament_player.rating_is_overridden(
+            tournament_rating, PlayerRatingType.FIDE
+        ):
             tournament_rating = TournamentRating.STANDARD
-        rating_and_type = player.get_rating_and_type(
+        rating_and_type = tournament_player.player.get_rating_and_type(
             tournament_rating, PlayerRatingType.FIDE
         )
         rating_type = rating_and_type.type

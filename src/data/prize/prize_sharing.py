@@ -3,7 +3,7 @@ from itertools import groupby
 from typing import override
 
 from common.i18n import _
-from data.player import Player
+from data.player import TournamentPlayer
 from data.prize.prize import Prize
 from data.prize.assigned_prize import AssignedPrize
 from utils.entity import IdentifiableEntity
@@ -17,7 +17,7 @@ class PrizeSharing(IdentifiableEntity, ABC):
     def calculate_prizes(
         self,
         prizes: list[Prize],
-        players: list[Player],
+        tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
         """Returns the prizes for each player"""
@@ -36,11 +36,11 @@ class NoPrizeSharing(PrizeSharing):
     def calculate_prizes(
         self,
         prizes: list[Prize],
-        players: list[Player],
+        tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
         resolved: list[AssignedPrize] = []
-        for place, (player, prize) in enumerate(zip(players, prizes)):
+        for place, (player, prize) in enumerate(zip(tournament_players, prizes)):
             resolved.append(
                 AssignedPrize(
                     prize=prize,
@@ -67,14 +67,14 @@ class AveragePrizeSharing(PrizeSharing):
     def calculate_prizes(
         self,
         prizes: list[Prize],
-        players: list[Player],
+        tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
         resolved: list[AssignedPrize] = []
         place_index = 0
         total_prizes = len(prizes)
         warning = False
-        for score, group in groupby(players, key=lambda p: -(p.points or 0)):
+        for score, group in groupby(tournament_players, key=lambda p: -(p.points or 0)):
             players_in_tie = list(group)
             prizes_to_share = prizes[place_index : place_index + len(players_in_tie)]
             total = sum(p.value for p in prizes_to_share)
@@ -123,14 +123,14 @@ class HortSystemPrizeSharing(PrizeSharing):
     def calculate_prizes(
         self,
         prizes: list[Prize],
-        players: list[Player],
+        tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
         resolved: list[AssignedPrize] = []
         place_index = 0
         total_prizes = len(prizes)
         warning = False
-        for score, group in groupby(players, key=lambda p: -(p.points or 0)):
+        for score, group in groupby(tournament_players, key=lambda p: -(p.points or 0)):
             players_in_tie = list(group)
             prizes_to_share = prizes[place_index : place_index + len(players_in_tie)]
             total = sum(p.value for p in prizes_to_share)

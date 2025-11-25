@@ -28,7 +28,8 @@
             </tr>
         </thead>
         <tbody>
-            {% for (player, opponent, result, score) in scores %}
+            {% for (tournament_player, opponent, result, score) in scores %}
+                {% set player=tournament_player.player %}
                 {% with row_class='even' if loop.index is even else 'odd' %}
                     <tr id="player-{{ player.id }}" class="player-row {{ row_class }}">
                         <td class="rank">
@@ -36,10 +37,10 @@
                         </td>
                         <td class="title">{{ player.title.short_name }}</td>
                         <td class="name">{{ player.full_name }}</td>
-                        <td class="rating">{{ player.rating_str }}</td>
+                        <td class="rating">{{ tournament_player.rating_str }}</td>
                         <td class="result">{{ result }}</td>
-                        <td class="title">{{ opponent.title.short_name }}</td>
-                        <td class="name">{{ opponent.full_name }}</td>
+                        <td class="title">{{ opponent.player.title.short_name }}</td>
+                        <td class="name">{{ opponent.player.full_name }}</td>
                         <td class="rating">{{ opponent.rating_str }}</td>
                         <td class="perf">{{"%+.2f" % score }}</td>
                     </tr>

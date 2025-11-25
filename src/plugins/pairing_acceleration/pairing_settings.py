@@ -148,7 +148,7 @@ class Base3GroupsSetting(PairingGroupSetting, ABC):
             - Group A: closest multiple of 4 to a third of the players
             - Group B: closest multiple of 2 of half of the remaining players
             - Group C: remaining players"""
-        player_count = len(tournament.players)
+        player_count = len(tournament.tournament_players)
         if player_count < 3:
             return {group: (0, 0) for group in AccelerationGroup}
         if player_count < 11:

@@ -236,9 +236,7 @@ class FRASchoolsUtils:
         player_school_id = cls.get_player_plugin_data(player).fra_school_id
         if not player_school_id:
             return None
-        event_schools_by_id = cls.get_event_plugin_data(
-            player.tournament.event
-        ).fra_schools_by_id
+        event_schools_by_id = cls.get_event_plugin_data(player.event).fra_schools_by_id
         return event_schools_by_id.get(player_school_id, None)
 
     @classmethod

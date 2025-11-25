@@ -47,7 +47,7 @@ class RankColumn(PlayerTableColumn):
         return _('Rk. *** RANK FOR TABLE HEADER')
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.rank
+        return player._temp_tournament_player.rank
 
     @property
     def shared_classes(self) -> str:
@@ -60,7 +60,7 @@ class RankOverallColumn(PlayerTableColumn):
         return _('Rk. O. *** RANK OVERALL FOR TABLE HEADER')
 
     def get_cell_content(self, player: Player) -> Any:
-        return f'({Utils.ordinal_integer(player.rank)})'
+        return f'({Utils.ordinal_integer(player._temp_tournament_player.rank)})'
 
     @property
     def is_cell_content_safe(self) -> bool:
@@ -107,7 +107,7 @@ class RatingColumn(PlayerTableColumn):
         return '/admin/print/headers/rating.html'
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.rating_str
+        return player._temp_tournament_player.rating_str
 
     def get_cell_classes(self, player: Player) -> str:
         return 'text-end'
@@ -119,7 +119,7 @@ class CategoryColumn(PlayerTableColumn):
         return _('Cat *** CATEGORY FOR TABLE HEADER')
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.category.short_name
+        return player._temp_tournament_player.category.short_name
 
     @property
     def shared_classes(self) -> str:
@@ -171,7 +171,7 @@ class PointsColumn(PlayerTableColumn):
         return _('Pts *** POINTS FOR TABLE HEADER')
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.points_str
+        return player._temp_tournament_player.points_str
 
     @property
     def shared_classes(self) -> str:
@@ -184,7 +184,7 @@ class AlphaPointsColumn(PlayerTableColumn):
         return ''
 
     def get_cell_content(self, player: Player) -> Any:
-        return f'[{player.points_str}]'
+        return f'[{player._temp_tournament_player.points_str}]'
 
     @property
     def shared_classes(self) -> str:
@@ -201,7 +201,7 @@ class RoundColumn(PlayerTableColumn):
         return _('R {round} *** ROUND FOR TABLE HEADER').format(round=self.round)
 
     def get_cell_content(self, player: Player) -> Any:
-        pairing = player.pairings_by_round[self.round]
+        pairing = player._temp_tournament_player.pairings_by_round[self.round]
         content = pairing.result.to_crosstable
         if opponent := pairing.opponent:
             content += str(opponent.rank).rjust(3, '\u00a0') + getattr(
@@ -220,7 +220,7 @@ class TournamentColumn(PlayerTableColumn):
         return _('Tournament *** TOURNAMENT FOR PLAYERS COLUMNS')
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.tournament.name
+        return player._temp_tournament_player.tournament.name
 
     @property
     def shared_classes(self) -> str:
@@ -243,7 +243,7 @@ class TieBreakColumn(PlayerTableColumn):
         return self.tournament.tie_breaks[self.index].acronym
 
     def get_cell_content(self, player: Player) -> Any:
-        return str(player.tie_break_values[self.index])
+        return str(player._temp_tournament_player.tie_break_values[self.index])
 
     @property
     def shared_classes(self) -> str:

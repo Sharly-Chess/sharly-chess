@@ -8,7 +8,7 @@ from plugins.manager import plugin_manager
 
 from data.board import Board
 from data.event import Event
-from data.player import Player
+from data.player import TournamentPlayer
 from data.tournament import Tournament
 
 logger: logging.Logger = get_logger()
@@ -19,7 +19,7 @@ class PlaceCardPlayer:
 
     def __init__(
         self,
-        player: Player | None = None,
+        tournament_player: TournamentPlayer | None = None,
         color: str = '',
     ):
         self.rating: str = ''
@@ -34,24 +34,24 @@ class PlaceCardPlayer:
         self.club: str = ''
         self.category: str = ''
         self.color: str = ''
-        if player:
-            if player.rating:
-                self.rating = str(player.rating)
-            self.rating_type = player.rating_type.short_name
-            self.full_name = player.full_name
-            self.first_name = player.first_name
-            self.last_name = player.last_name
-            if player.year_of_birth:
-                self.year_of_birth = str(player.year_of_birth)
-            self.gender = player.gender.short_name
-            self.title = player.title.short_name
-            self.federation = player.federation.name
-            self.club = player.club.name
-            self.category = player.category.short_name
+        if tournament_player:
+            if tournament_player.rating:
+                self.rating = str(tournament_player.rating)
+            self.rating_type = tournament_player.rating_type.short_name
+            self.full_name = tournament_player.player.full_name
+            self.first_name = tournament_player.player.first_name
+            self.last_name = tournament_player.player.last_name
+            if tournament_player.player.year_of_birth:
+                self.year_of_birth = str(tournament_player.player.year_of_birth)
+            self.gender = tournament_player.player.gender.short_name
+            self.title = tournament_player.player.title.short_name
+            self.federation = tournament_player.player.federation.name
+            self.club = tournament_player.player.club.name
+            self.category = tournament_player.category.short_name
             self.color = color
-            plugin_manager.hook_for_event(player.event, 'augment_place_card_player')(
-                player=player, place_card_player=self
-            )
+            plugin_manager.hook_for_event(
+                tournament_player.event, 'augment_place_card_player'
+            )(tournament_player=tournament_player, place_card_player=self)
 
     @property
     def federation_flag(self) -> str:
@@ -85,10 +85,12 @@ class PlaceCardPairing:
         if board:
             self.number = board.number
             self.white_player = PlaceCardPlayer(
-                board.white_player, color=_('W *** WHITE COLOR FOR PLACE CARDS')
+                board.white_tournament_player,
+                color=_('W *** WHITE COLOR FOR PLACE CARDS'),
             )
             self.black_player = PlaceCardPlayer(
-                board.black_player, color=_('B *** BLACK COLOR FOR PLACE CARDS')
+                board.black_tournament_player,
+                color=_('B *** BLACK COLOR FOR PLACE CARDS'),
             )
         else:
             self.number = 0

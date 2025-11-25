@@ -195,7 +195,7 @@ class ChessResultsSession(Session):
         pdata = ET.SubElement(root, 'players')
         prev_tb_values: list[str] | None = None
 
-        for p in tournament.players_by_pairing_number.values():
+        for p in tournament.tournament_players_by_pairing_number.values():
             # Get up to `MAX_TIE_BREAKS` tiebreak keys (pad with zeros if fewer)
             tb_values: list[str] = []
             for tbv in p.tie_break_values[:MAX_TIE_BREAKS]:
@@ -211,7 +211,7 @@ class ChessResultsSession(Session):
             )
             prev_tb_values = tb_values
 
-            ratings = p.ratings.get(tournament.rating)
+            ratings = p.player.ratings.get(tournament.rating)
             ET.SubElement(
                 pdata,
                 'player',
@@ -219,21 +219,22 @@ class ChessResultsSession(Session):
                     'no': str(
                         p.pairing_number if p.pairing_number is not None else p.rank
                     ),
-                    'id': str(p.id),
-                    'lastname': p.last_name,
-                    'firstname': p.first_name or '',
+                    'id': str(p.player.id),
+                    'lastname': p.player.last_name,
+                    'firstname': p.player.first_name or '',
                     'atitle': '',
-                    'title': p.title.short_name,
+                    'title': p.player.title.short_name,
                     'rtg': str(p.rating),
                     'rtgfide': str(getattr(ratings, 'fide', '') or ''),
                     'rtgnat': str(getattr(ratings, 'national', '') or ''),
-                    'dob': str(p.year_of_birth),
-                    'sex': ChessResultsPlayerGender.get_outer_value(p.gender) or '',
-                    'fed': p.federation.name,
+                    'dob': str(p.player.year_of_birth),
+                    'sex': ChessResultsPlayerGender.get_outer_value(p.player.gender)
+                    or '',
+                    'fed': p.player.federation.name,
                     'board': '',
                     'teamno': '0',
-                    'fideid': str(p.fide_id or ''),
-                    'clubname': p.club.name or '',
+                    'fideid': str(p.player.fide_id or ''),
+                    'clubname': p.player.club.name or '',
                     'typ': p.category.short_name,
                     'rank': str(p.rank),
                     'pts': str(p.points or 0),
@@ -251,7 +252,7 @@ class ChessResultsSession(Session):
         }
         for round_ in range(1, tournament.current_round + 1):
             tournament.set_for_round(round_)
-            tournament.compute_player_ranks(after_round=round_)
+            tournament.compute_tournament_player_ranks(after_round=round_)
             last_board_id = 0
             boards = tournament.get_round_boards(round_)
             for board in boards:
@@ -262,10 +263,10 @@ class ChessResultsSession(Session):
                         'round': str(round_),
                         'pairing': str(board.board_id),
                         'board': '1',
-                        'whiteno': str(board.white_player.pairing_number),
+                        'whiteno': str(board.white_tournament_player.pairing_number),
                         'blackno': str(
-                            board.black_player.pairing_number
-                            if board.black_player
+                            board.black_tournament_player.pairing_number
+                            if board.black_tournament_player
                             else -1
                         ),
                         'reswhite': str(
@@ -274,7 +275,7 @@ class ChessResultsSession(Session):
                         'resblack': str(
                             board.black_pairing.result.points(point_values) or ''
                         )
-                        if board.black_player
+                        if board.black_tournament_player
                         else '',
                         'forfeit': 'K'
                         if board.result
@@ -290,7 +291,7 @@ class ChessResultsSession(Session):
                 )
                 last_board_id = board.board_id
 
-            for player in tournament.get_unpaired_players(boards):
+            for player in tournament.get_unpaired_tournament_players(boards):
                 last_board_id += 1
                 result = player.pairings_by_round[round_].result
                 ET.SubElement(

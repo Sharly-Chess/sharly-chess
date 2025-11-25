@@ -21,7 +21,7 @@ from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
-from data.player import Player, PlayerRating, PlayerRatingAndType
+from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import StatisticsPrintDocument
 from data.print_documents.place_cards.data import PlaceCardPlayer
@@ -105,7 +105,9 @@ if TYPE_CHECKING:
 
 class FfePluginHooks:
     @hookspec
-    def update_papi_player(self, papi_player: PapiPlayer, player: Player):
+    def update_papi_player(
+        self, papi_player: PapiPlayer, tournament_player: TournamentPlayer
+    ):
         """Called when a player is converted to Papi format"""
 
     @hookspec
@@ -165,7 +167,9 @@ class FfePlugin(Plugin):
     def event_form_fields_template(self) -> str:
         return '/ffe_event_form_fields.html'
 
-    def used_by_stored_tournament(self, stored_tournament: 'StoredTournament') -> bool:
+    def used_by_stored_tournament(
+        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+    ) -> bool:
         ffe_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         if ffe_data.get('ffe_id', None):
             return True
@@ -362,9 +366,9 @@ class FfePlugin(Plugin):
             try:
                 ffe_id = WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
                 ffe_ids = [
-                    FFEUtils.get_player_plugin_data(p).ffe_id
-                    for p in tournament.players_by_id.values()
-                    if not player or p.id != player.id
+                    FFEUtils.get_player_plugin_data(p.player).ffe_id
+                    for p in tournament.tournament_players_by_id.values()
+                    if not player or p.player.id != player.id
                 ]
 
                 if ffe_id and ffe_id in ffe_ids:
@@ -393,9 +397,9 @@ class FfePlugin(Plugin):
             elif tournament:
                 # When adding a player, the tournament may not be chosen (in this case do not test)
                 ffe_licence_numbers = [
-                    FFEUtils.get_player_plugin_data(p).ffe_licence_number
-                    for p in tournament.players_by_id.values()
-                    if not player or p.id != player.id
+                    FFEUtils.get_player_plugin_data(p.player).ffe_licence_number
+                    for p in tournament.tournament_players_by_id.values()
+                    if not player or p.player.id != player.id
                 ]
                 if ffe_licence_number in ffe_licence_numbers:
                     errors[field] = _(
@@ -476,13 +480,13 @@ class FfePlugin(Plugin):
     @hookimpl
     def augment_place_card_player(
         self,
-        player: Player,
+        tournament_player: TournamentPlayer,
         place_card_player: PlaceCardPlayer,
     ):
         setattr(
             place_card_player,
             'ffe_league',
-            FFEUtils.get_player_plugin_data(player).league,
+            FFEUtils.get_player_plugin_data(tournament_player.player).league,
         )
 
     @hookimpl
@@ -490,11 +494,11 @@ class FfePlugin(Plugin):
         self,
         tournament_rating: TournamentRating,
         player_rating_type: PlayerRatingType,
-        player: 'Player',
+        tournament_player: 'TournamentPlayer',
     ) -> Optional[PlayerRatingAndType]:
         # In France, regardless of the player_rating_type of the tournament,
         # the FIDE rating is used, if available, falling back to the national rating
-        ratings = player.ratings[tournament_rating]
+        ratings = tournament_player.player.ratings[tournament_rating]
         if ratings.fide is not None:
             return PlayerRatingAndType(ratings.fide, PlayerRatingType.FIDE)
         if ratings.national is not None:
@@ -504,7 +508,7 @@ class FfePlugin(Plugin):
         value = 0
         match tournament_rating:
             case TournamentRating.RAPID:
-                match player.category:
+                match tournament_player.category:
                     case PlayerCategory.U8 | PlayerCategory.U10:
                         value = 799
                     case PlayerCategory.U12 | PlayerCategory.U14:
@@ -512,7 +516,7 @@ class FfePlugin(Plugin):
                     case _:
                         value = 1199
             case TournamentRating.BLITZ:
-                match player.category:
+                match tournament_player.category:
                     case PlayerCategory.U8 | PlayerCategory.U10:
                         value = 799
                     case PlayerCategory.U12 | PlayerCategory.U14:
@@ -520,7 +524,7 @@ class FfePlugin(Plugin):
                     case _:
                         value = 1199
             case TournamentRating.STANDARD:
-                match player.category:
+                match tournament_player.category:
                     case (
                         PlayerCategory.U8
                         | PlayerCategory.U10
@@ -537,15 +541,17 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def is_tournament_participation_possible(
-        self, tournament: 'Tournament', player: Player
+        self, tournament: 'Tournament', tournament_player: TournamentPlayer
     ) -> str | None:
-        plugin_data = FFEUtils.get_player_plugin_data(player)
+        plugin_data = FFEUtils.get_player_plugin_data(tournament_player.player)
         ffe_licence_number = plugin_data.ffe_licence_number
         ffe_id = plugin_data.ffe_id
         if ffe_licence_number and any(
-            FFEUtils.get_player_plugin_data(player_).ffe_licence_number
+            FFEUtils.get_player_plugin_data(
+                tournament_player_.player
+            ).ffe_licence_number
             == ffe_licence_number
-            for player_ in tournament.players_by_id.values()
+            for tournament_player_ in tournament.tournament_players_by_id.values()
         ):
             return _(
                 'FFE licence [{ffe_licence_number}] already '
@@ -556,8 +562,8 @@ class FfePlugin(Plugin):
             )
 
         if ffe_id and any(
-            FFEUtils.get_player_plugin_data(player_).ffe_id == ffe_id
-            for player_ in tournament.players_by_id.values()
+            FFEUtils.get_player_plugin_data(tournament_player_.player).ffe_id == ffe_id
+            for tournament_player_ in tournament.tournament_players_by_id.values()
         ):
             # This string is not translated because the error should never happen
             return f'FFE ID [{ffe_id}] already present in tournament [{tournament.uniq_id}].'
@@ -898,8 +904,9 @@ class FfePlugin(Plugin):
             counter = Counter[str](
                 league
                 for tournament in tournaments
-                for p in tournament.players
-                if (league := FFEUtils.get_player_plugin_data(p).league) is not None
+                for p in tournament.tournament_players
+                if (league := FFEUtils.get_player_plugin_data(p.player).league)
+                is not None
             )
 
             if not counter:

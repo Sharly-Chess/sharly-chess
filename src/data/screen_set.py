@@ -8,7 +8,7 @@ from _weakref import ReferenceType
 from common import format_timestamp_date_time
 from common.i18n import _
 from data.board import Board
-from data.player import Player
+from data.player import TournamentPlayer
 from utils.enum import ScreenType
 from database.sqlite.event.event_store import StoredScreenSet
 
@@ -69,9 +69,9 @@ class ScreenSet:
                             self.fixed_board_numbers.append(int(fixed_board_str))
                 else:
                     self.fixed_board_numbers = [
-                        player.fixed
-                        for player in self.tournament.players_by_id.values()
-                        if player.fixed
+                        tournament_player.player.fixed
+                        for tournament_player in self.tournament.tournament_players_by_id.values()
+                        if tournament_player.player.fixed
                     ]
             else:
                 if self.stored_screen_set.first:
@@ -99,10 +99,14 @@ class ScreenSet:
                     + self.family_part * self.family.calculated_number
                     - 1,
                 )
-        self.first_item: Any | None = None  # change this to Board | Player | None ?
-        self.last_item: Any | None = None  # change this to Board | Player | None ?
+        self.first_item: Any | None = (
+            None  # change this to Board | TournamentPlayer | None ?
+        )
+        self.last_item: Any | None = (
+            None  # change this to Board | TournamentPlayer | None ?
+        )
         self.items_lists: list[list[Any]] | None = (
-            None  # change this to Board | Player | None ?
+            None  # change this to Board | TournamentPlayer | None ?
         )
 
     @property
@@ -204,10 +208,14 @@ class ScreenSet:
             else:
                 name = '%t'
         name = name.replace('%t', str(self.tournament.name))
-        if self.first_player_by_name is not None:
-            name = name.replace('%f', self.first_player_by_name.last_name[:8])
-        if self.last_player_by_name is not None:
-            name = name.replace('%l', self.last_player_by_name.last_name[:8])
+        if self.first_tournament_player_by_name is not None:
+            name = name.replace(
+                '%f', self.first_tournament_player_by_name.player.last_name[:8]
+            )
+        if self.last_tournament_player_by_name is not None:
+            name = name.replace(
+                '%l', self.last_tournament_player_by_name.player.last_name[:8]
+            )
         return name
 
     @property
@@ -246,10 +254,10 @@ class ScreenSet:
                 else:
                     name = _('%t ranking')
         name = name.replace('%t', str(self.tournament.name))
-        if self.first_player_by_rank is not None:
-            name = name.replace(r'%f', str(self.first_player_by_rank.rank))
-        if self.last_player_by_rank is not None:
-            name = name.replace('%l', str(self.last_player_by_rank.rank))
+        if self.first_tournament_player_by_rank is not None:
+            name = name.replace(r'%f', str(self.first_tournament_player_by_rank.rank))
+        if self.last_tournament_player_by_rank is not None:
+            name = name.replace('%l', str(self.last_tournament_player_by_rank.rank))
         return name
 
     def _extract_data(self, items: list[Any]):
@@ -330,33 +338,43 @@ class ScreenSet:
     def _extract_players_by_name(self):
         if self.items_lists is None:
             if self.players_show_unpaired:
-                self._extract_data(self.tournament.players_by_name_with_unpaired)
+                self._extract_data(
+                    self.tournament.tournament_players_by_name_with_unpaired
+                )
             else:
-                self._extract_data(self.tournament.players_by_name_without_unpaired)
+                self._extract_data(
+                    self.tournament.tournament_players_by_name_without_unpaired
+                )
 
     @property
-    def players_by_name_lists(self) -> list[list[Player]]:
+    def tournament_players_by_name_lists(self) -> list[list[TournamentPlayer]]:
         self._extract_players_by_name()
         if TYPE_CHECKING:
             assert (
                 isinstance(self.items_lists, list)
                 and all(isinstance(item, list) for item in self.items_lists)
-                and all(isinstance(item, Player) for item in chain(*self.items_lists))
+                and all(
+                    isinstance(item, TournamentPlayer)
+                    for item in chain(*self.items_lists)
+                )
             )
         return self.items_lists
 
     @property
-    def players_by_name_tuple_lists(
+    def tournament_players_by_name_tuple_lists(
         self,
-    ) -> Iterable[tuple[list[Player], list[Player]]]:
+    ) -> Iterable[tuple[list[TournamentPlayer], list[TournamentPlayer]]]:
         self._extract_players_by_name()
         if TYPE_CHECKING:
             assert (
                 isinstance(self.items_lists, list)
                 and all(isinstance(item, list) for item in self.items_lists)
-                and all(isinstance(item, Player) for item in chain(*self.items_lists))
+                and all(
+                    isinstance(item, TournamentPlayer)
+                    for item in chain(*self.items_lists)
+                )
             )
-        players_by_name_lists: list[list[Player]] = self.items_lists
+        players_by_name_lists: list[list[TournamentPlayer]] = self.items_lists
         for players_by_name in players_by_name_lists:
             yield (
                 players_by_name[: (bound := math.ceil(len(players_by_name) / 2))],
@@ -364,17 +382,21 @@ class ScreenSet:
             )
 
     @property
-    def first_player_by_name(self) -> Player | None:
+    def first_tournament_player_by_name(self) -> TournamentPlayer | None:
         self._extract_players_by_name()
         if TYPE_CHECKING:
-            assert self.first_item is None or isinstance(self.first_item, Player)
+            assert self.first_item is None or isinstance(
+                self.first_item, TournamentPlayer
+            )
         return self.first_item
 
     @property
-    def last_player_by_name(self) -> Player | None:
+    def last_tournament_player_by_name(self) -> TournamentPlayer | None:
         self._extract_players_by_name()
         if TYPE_CHECKING:
-            assert self.last_item is None or isinstance(self.last_item, Player)
+            assert self.last_item is None or isinstance(
+                self.last_item, TournamentPlayer
+            )
         return self.last_item
 
     def _extract_players_by_rank(self):
@@ -382,7 +404,7 @@ class ScreenSet:
             self._extract_data(
                 [
                     player
-                    for player in self.tournament.players_by_rank.values()
+                    for player in self.tournament.tournament_players_by_rank.values()
                     if (
                         self.ranking_min_points is None
                         or (player.points or 0) >= self.ranking_min_points
@@ -395,28 +417,35 @@ class ScreenSet:
             )
 
     @property
-    def players_by_rank_lists(self) -> list[list[Player]]:
+    def tournament_players_by_rank_lists(self) -> list[list[TournamentPlayer]]:
         self._extract_players_by_rank()
         if TYPE_CHECKING:
             assert (
                 isinstance(self.items_lists, list)
                 and all(isinstance(item, list) for item in self.items_lists)
-                and all(isinstance(item, Player) for item in chain(*self.items_lists))
+                and all(
+                    isinstance(item, TournamentPlayer)
+                    for item in chain(*self.items_lists)
+                )
             )
         return self.items_lists
 
     @property
-    def first_player_by_rank(self) -> Player | None:
+    def first_tournament_player_by_rank(self) -> TournamentPlayer | None:
         self._extract_players_by_rank()
         if TYPE_CHECKING:
-            assert self.first_item is None or isinstance(self.first_item, Player)
+            assert self.first_item is None or isinstance(
+                self.first_item, TournamentPlayer
+            )
         return self.first_item
 
     @property
-    def last_player_by_rank(self) -> Player | None:
+    def last_tournament_player_by_rank(self) -> TournamentPlayer | None:
         self._extract_players_by_rank()
         if TYPE_CHECKING:
-            assert self.last_item is None or isinstance(self.last_item, Player)
+            assert self.last_item is None or isinstance(
+                self.last_item, TournamentPlayer
+            )
         return self.last_item
 
     @property

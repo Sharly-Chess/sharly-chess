@@ -23,7 +23,12 @@ if TYPE_CHECKING:
     from data.columns.player_table import PlayerTableColumn
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.pairings.variations import SwissVariation
-    from data.player import Player, PlayerRatingAndType, PlayerRatingType
+    from data.player import (
+        Player,
+        TournamentPlayer,
+        PlayerRatingAndType,
+        PlayerRatingType,
+    )
     from data.print_documents import PrintDocument, PlayerSplitter, QRCodeType
     from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
@@ -146,7 +151,7 @@ class AppHookSpecs:
     @hookspec
     def augment_place_card_player(
         self,
-        player: 'Player',
+        tournament_player: 'TournamentPlayer',
         place_card_player: 'PlaceCardPlayer',
     ):
         """Add plugin specific data to a player before printing place cards."""
@@ -156,13 +161,13 @@ class AppHookSpecs:
         self,
         tournament_rating: TournamentRating,
         player_rating_type: 'PlayerRatingType',
-        player: 'Player',
+        tournament_player: 'TournamentPlayer',
     ) -> Optional['PlayerRatingAndType']:
         """Get the estimated rating of a player."""
 
     @hookspec(firstresult=True)
     def is_tournament_participation_possible(
-        self, tournament: 'Tournament', player: 'Player'
+        self, tournament: 'Tournament', tournament_player: 'TournamentPlayer'
     ) -> str | None:
         """Test if a player can participate in a tournament"""
 

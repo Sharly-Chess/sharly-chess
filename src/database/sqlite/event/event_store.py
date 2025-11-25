@@ -141,10 +141,6 @@ class StoredPlayer:
     club: str | None = None
     fixed: int | None = None
     check_in: bool = False
-    # TODO (Molrn - multi tournament) move to a list in StoredTournament
-    stored_tournament_player: StoredTournamentPlayer = field(
-        default_factory=StoredTournamentPlayer
-    )
 
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]
@@ -189,8 +185,9 @@ class StoredTournament:
         default_factory=list[StoredPrizeGroup]
     )
 
-    # TODO (Molrn - multi tournament) move to StoredEvent
-    stored_players: list[StoredPlayer] = field(default_factory=list[StoredPlayer])
+    stored_tournament_players: list[StoredTournamentPlayer] = field(
+        default_factory=list[StoredTournamentPlayer]
+    )
 
     stored_boards_by_round: dict[int, list[StoredBoard]] = field(
         default_factory=dict[int, list[StoredBoard]]
@@ -379,10 +376,11 @@ class BaseStoredEvent:
 
 @dataclass
 class StoredEvent(BaseStoredEvent):
-    stored_timers: list[StoredTimer] = field(default_factory=list[StoredTimer])
+    stored_players: list[StoredPlayer] = field(default_factory=list[StoredPlayer])
     stored_tournaments: list[StoredTournament] = field(
         default_factory=list[StoredTournament]
     )
+    stored_timers: list[StoredTimer] = field(default_factory=list[StoredTimer])
     stored_screens: list[StoredScreen] = field(default_factory=list[StoredScreen])
     stored_families: list[StoredFamily] = field(default_factory=list[StoredFamily])
     stored_rotators: list[StoredRotator] = field(default_factory=list[StoredRotator])

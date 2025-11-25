@@ -26,7 +26,7 @@ from common.exception import SharlyChessException
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.board import Board
-from data.player import Player
+from data.player import TournamentPlayer
 from data.print_documents.documents import (
     PairingPrintDocument,
     PlayerRankingPrintDocument,
@@ -139,14 +139,16 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         )
 
         self.admin_boards: list[Board] = []
-        unpaired: list[Player] = []
+        unpaired: list[TournamentPlayer] = []
         if self.admin_tournament is not None:
             self.admin_tournament.set_for_round(self.admin_round)
             self.admin_boards = self.admin_tournament.get_round_boards(self.admin_round)
-            unpaired = self.admin_tournament.get_unpaired_players(self.admin_boards)
+            unpaired = self.admin_tournament.get_unpaired_tournament_players(
+                self.admin_boards
+            )
 
         if self.admin_tournament and self.display_rankings:
-            self.admin_tournament.compute_player_ranks()
+            self.admin_tournament.compute_tournament_player_ranks()
 
         if SessionHandler.get_session_admin_pairings_show_without_results(request):
             self.admin_filtered_boards = [
@@ -161,19 +163,19 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_tournament
             and self.admin_tournament.pairing_system.split_unpaired_and_bye_players
         ):
-            for player in sorted(unpaired, key=by('last_name')):
-                if player.pairings[self.admin_round] and player.pairings[
+            for tournament_player in sorted(unpaired, key=by('player.last_name')):
+                if tournament_player.pairings[
                     self.admin_round
-                ].result in (
+                ] and tournament_player.pairings[self.admin_round].result in (
                     Result.ZERO_POINT_BYE,
                     Result.HALF_POINT_BYE,
                     Result.FULL_POINT_BYE,
                 ):
-                    self.admin_bye_players.append(player)
+                    self.admin_bye_players.append(tournament_player)
                 else:
-                    self.admin_unpaired.append(player)
+                    self.admin_unpaired.append(tournament_player)
         else:
-            self.admin_unpaired = sorted(unpaired, key=by('last_name'))
+            self.admin_unpaired = sorted(unpaired, key=by('player.last_name'))
 
         self.admin_board: Board | None = None
         if board_id is not None:
@@ -181,11 +183,16 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 (b for b in self.admin_boards if b.board_id == board_id), None
             )
 
-        self.admin_player: Player | None = None
+        self.admin_player: TournamentPlayer | None = None
         if player_id is not None:
             assert self.admin_tournament is not None
             self.admin_player = next(
-                (p for p in self.admin_tournament.players if p.id == player_id), None
+                (
+                    p
+                    for p in self.admin_tournament.tournament_players
+                    if p.player.id == player_id
+                ),
+                None,
             )
 
         self.safety_mode = SafetyMode.SAFE
@@ -304,8 +311,12 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 )
             ),
             'board': self.admin_board,
-            'wp': self.admin_board.white_player if self.admin_board else None,
-            'bp': self.admin_board.black_player if self.admin_board else None,
+            'wtp': self.admin_board.white_tournament_player
+            if self.admin_board
+            else None,
+            'btp': self.admin_board.black_tournament_player
+            if self.admin_board
+            else None,
             'experimental_features_enabled': experimental_features_enabled(),
             'default_print_document': default_print_document,
         }
@@ -318,7 +329,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         assert self.admin_board is not None
         return self.admin_board
 
-    def get_admin_player(self) -> Player:
+    def get_admin_tournament_player(self) -> TournamentPlayer:
         assert self.admin_player is not None
         return self.admin_player
 
@@ -416,12 +427,12 @@ class PairingsAdminController(BaseEventAdminController):
         web_context = PairingsAdminWebContext(
             request, tournament_id, round, player_id=player_id
         )
-        admin_player = web_context.get_admin_player()
+        tournament_player = web_context.get_admin_tournament_player()
         admin_tournament = web_context.get_admin_tournament()
 
         byes: int = 0
-        for round_ in admin_player.pairings:
-            match admin_player.pairings[round_].result:
+        for round_ in tournament_player.pairings:
+            match tournament_player.pairings[round_].result:
                 case Result.HALF_POINT_BYE:
                     byes += 1
                 case Result.FULL_POINT_BYE:
@@ -431,9 +442,13 @@ class PairingsAdminController(BaseEventAdminController):
             web_context,
             {
                 'modal': 'unpaired-player',
-                'player': admin_player,
-                'exempt_player': next(
-                    (b.white_player for b in web_context.admin_boards if b.exempt),
+                'tournament_player': tournament_player,
+                'exempt_tournament_player': next(
+                    (
+                        b.white_tournament_player
+                        for b in web_context.admin_boards
+                        if b.exempt
+                    ),
                     None,
                 ),
                 'hpb_possible': byes < admin_tournament.max_byes,
@@ -654,7 +669,7 @@ class PairingsAdminController(BaseEventAdminController):
         success_message: str | None = None,
     ) -> Template:
         tournament = web_context.get_admin_tournament()
-        player = web_context.get_admin_player()
+        player = web_context.get_admin_tournament_player()
 
         # If there aren't any pairings, then the round for the bye is the first round
         round_for_participation = web_context.admin_round or 1
@@ -693,9 +708,9 @@ class PairingsAdminController(BaseEventAdminController):
             player_id=player_id,
             action=PairingAction.BYE_UPDATE,
         )
-        player = web_context.get_admin_player()
+        player = web_context.get_admin_tournament_player()
         message = _('Zero-Point Bye attributed to player [{player}].').format(
-            player=player.full_name
+            player=player.player.full_name
         )
         return self._set_player_participation(
             web_context, Result.ZERO_POINT_BYE, success_message=message
@@ -724,9 +739,9 @@ class PairingsAdminController(BaseEventAdminController):
             action=PairingAction.BYE_UPDATE,
         )
         tournament = web_context.get_admin_tournament()
-        player = web_context.get_admin_player()
+        tournament_player = web_context.get_admin_tournament_player()
         byes: int = 0
-        for pairing in player.pairings.values():
+        for pairing in tournament_player.pairings.values():
             match pairing.result:
                 case Result.HALF_POINT_BYE:
                     byes += 1
@@ -736,13 +751,13 @@ class PairingsAdminController(BaseEventAdminController):
             Message.error(
                 request,
                 _('Too many byes for player [{player_name}].').format(
-                    player_name=player.full_name
+                    player_name=tournament_player.player.full_name
                 ),
             )
             return self._admin_event_pairings_render(web_context)
         else:
             message = _('Half-Point Bye attributed to player [{player}].').format(
-                player=player.full_name
+                player=tournament_player.player.full_name
             )
             return self._set_player_participation(
                 web_context, Result.HALF_POINT_BYE, success_message=message
@@ -770,10 +785,10 @@ class PairingsAdminController(BaseEventAdminController):
             player_id=player_id,
             action=PairingAction.BYE_UPDATE,
         )
-        player = web_context.get_admin_player()
+        tournament_player = web_context.get_admin_tournament_player()
 
         message = _('Player [{player}] has returned for this round.').format(
-            player=player.full_name
+            player=tournament_player.player.full_name
         )
 
         return self._set_player_participation(
@@ -806,40 +821,40 @@ class PairingsAdminController(BaseEventAdminController):
         )
         pairing_round = web_context.admin_round or 1
         tournament = web_context.get_admin_tournament()
-        player = web_context.get_admin_player()
-        exempt_player = next(
-            (b.white_player for b in web_context.admin_boards if b.exempt),
+        tournament_player = web_context.get_admin_tournament_player()
+        exempt_tournament_player = next(
+            (b.white_tournament_player for b in web_context.admin_boards if b.exempt),
             None,
         )
-        if exempt_player is not None:
+        if exempt_tournament_player is not None:
             board = tournament.create_round_pairing(
                 pairing_round,
-                exempt_player.id,
-                player.id,
+                exempt_tournament_player.player.id,
+                tournament_player.player.id,
             )
             message = _(
                 'Player [{player}] has been paired against '
                 '[{opponent}] at board #{board}.'
             ).format(
-                player=player.full_name,
-                opponent=exempt_player.full_name,
+                player=tournament_player.player.full_name,
+                opponent=exempt_tournament_player.player.full_name,
                 board=board.number,
             )
         else:
             tournament.create_round_pairing(
                 pairing_round,
-                player.id,
+                tournament_player.player.id,
                 None,
             )
             message = _('Pairing-Allocated Bye assigned to player [{player}].').format(
-                player=player.full_name
+                player=tournament_player.player.full_name
             )
         Message.success(request, message)
         web_context = PairingsAdminWebContext(
             request,
             tournament_id=tournament_id,
             round_=round,
-            player_id=player.id,
+            player_id=tournament_player.player.id,
             reload_event=True,
         )
         return self._admin_event_pairings_render(web_context)
@@ -897,7 +912,8 @@ class PairingsAdminController(BaseEventAdminController):
         round_ = web_context.admin_round
         tournament.pairing_variation.engine.generate_pairings(tournament, round_, True)
         unpaired_count = sum(
-            player.pairings[round_].needs_pairing for player in tournament.players
+            player.pairings[round_].needs_pairing
+            for player in tournament.tournament_players
         )
         if unpaired_count:
             if unpaired_count == 1:
@@ -1141,9 +1157,9 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round,
         )
 
-        player = web_context.get_admin_player()
+        tournament_player = web_context.get_admin_tournament_player()
         tournament = web_context.get_admin_tournament()
-        tournament.check_in_player(player, bool(check_in))
+        tournament.check_in_player(tournament_player.player, bool(check_in))
         return self._admin_event_pairings_render(web_context)
 
     @get(
@@ -1283,7 +1299,7 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round,
         )
         tournament = web_context.get_admin_tournament()
-        player = web_context.get_admin_player()
+        player = web_context.get_admin_tournament_player()
         tournament.store_illegal_move(player)
         return self._admin_event_pairings_render(
             web_context=web_context,
@@ -1310,7 +1326,7 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round,
         )
         tournament = web_context.get_admin_tournament()
-        player = web_context.get_admin_player()
+        player = web_context.get_admin_tournament_player()
         tournament.delete_illegal_move(player)
         return self._admin_event_pairings_render(
             web_context=web_context,
@@ -1416,7 +1432,7 @@ class PairingsAdminController(BaseEventAdminController):
             {
                 'modal': 'pairing_info',
                 'pairing_history': grouped,
-                'players_by_pairing_number': tournament.players_by_pairing_number,
+                'players_by_pairing_number': tournament.tournament_players_by_pairing_number,
                 'warning': warning,
             },
         )
@@ -1444,9 +1460,11 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
         # Group players by manual_rank_key, preserving current order
-        by_rank: dict[object, list[Player]] = defaultdict(list)
-        for player in sorted(tournament.players, key=attrgetter('rank'), reverse=True):
-            by_rank[player.before_manual_rank_key].append(player)
+        by_rank: dict[object, list[TournamentPlayer]] = defaultdict(list)
+        for tournament_player in sorted(
+            tournament.tournament_players, key=attrgetter('rank'), reverse=True
+        ):
+            by_rank[tournament_player.before_manual_rank_key].append(tournament_player)
 
         players_to_update: dict[int, int | None] = {}
 
@@ -1454,13 +1472,15 @@ class PairingsAdminController(BaseEventAdminController):
         for group in by_rank.values():
             # Singletons never need manual tiebreak
             if len(group) <= 1:
-                for player in group:
-                    if player.manual_tiebreak is not None:
-                        players_to_update[player.id] = None
+                for tournament_player in group:
+                    if tournament_player.manual_tiebreak is not None:
+                        players_to_update[tournament_player.player.id] = None
                 continue
 
             # Current order (by manual_rank_key) and submitted order (restricted to this group)
-            current_group_ids = [player.id for player in group][::-1]
+            current_group_ids = [
+                tournament_player.player.id for tournament_player in group
+            ][::-1]
 
             new_group_ids = [
                 pid for pid in ordered_player_ids if pid in current_group_ids

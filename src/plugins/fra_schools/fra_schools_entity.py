@@ -13,7 +13,7 @@ from data.criteria.player_filter_options import (
     ExcludeFilterOption,
 )
 from data.criteria.player_filters import PlayerFilter
-from data.player import Player
+from data.player import Player, TournamentPlayer
 from data.print_documents import PlayerSplitter
 from data.tournament import Tournament
 from plugins.fra_schools import PLUGIN_NAME
@@ -33,9 +33,11 @@ class FraSchoolPlayerSplitter(PlayerSplitter):
         return _('French school')
 
     @staticmethod
-    def get_split_key(player: Player) -> str:
+    def get_split_key(tournament_player: TournamentPlayer) -> str:
         return getattr(
-            FRASchoolsUtils.get_player_school(player), 'full_name_without_code', ''
+            FRASchoolsUtils.get_player_school(tournament_player.player),
+            'full_name_without_code',
+            '',
         )
 
 
@@ -46,7 +48,9 @@ class FraSchoolTableColumn(PlayerTableColumn):
 
     def get_cell_content(self, player: Player) -> Any:
         return getattr(
-            FRASchoolsUtils.get_player_school(player), 'full_name_without_code', ''
+            FRASchoolsUtils.get_player_school(player),
+            'full_name_without_code',
+            '',
         )
 
     @property
@@ -80,19 +84,19 @@ class FRASchoolPlayerFilter(PlayerFilter):
         ]
 
     @cached_property
-    def is_player_included_function(self) -> Callable[[Player], bool]:
+    def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         school_ids, exclude = self.get_option_values()
         if exclude:
             return (
-                lambda player: FRASchoolsUtils.get_player_plugin_data(
-                    player
+                lambda tournament_player: FRASchoolsUtils.get_player_plugin_data(
+                    tournament_player.player
                 ).fra_school_id
                 not in school_ids
             )
         else:
             return (
-                lambda player: FRASchoolsUtils.get_player_plugin_data(
-                    player
+                lambda tournament_player: FRASchoolsUtils.get_player_plugin_data(
+                    tournament_player.player
                 ).fra_school_id
                 in school_ids
             )
@@ -133,10 +137,12 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
             key=attrgetter('sort_key'),
         )
 
-    def get_player_counter(self, tournament: 'Tournament') -> Counter[FRASchool]:
+    def get_tournament_player_counter(
+        self, tournament: 'Tournament'
+    ) -> Counter[FRASchool]:
         counter: Counter[FRASchool] = Counter[FRASchool]()
-        for player in tournament.players:
-            if school := FRASchoolsUtils.get_player_school(player):
+        for tournament_player in tournament.tournament_players:
+            if school := FRASchoolsUtils.get_player_school(tournament_player.player):
                 counter[school] += 1
         return counter
 

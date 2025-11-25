@@ -1,4 +1,5 @@
-{% set player = board.black_player if column.is_black else board.white_player %}
+{% set tournament_player = board.black_tournament_player if column.is_black else board.white_tournament_player %}
+{% set player = tournament_player.player %}
 <div class="
     {% if (
         screen.type == 'input' and
@@ -10,12 +11,12 @@
         last_illegal_move_updated
     {% endif %}"
 >
-    {% if player %}
+    {% if tournament_player %}
         {% set illegal_moves = board.black_pairing.illegal_moves if column.is_black else board.white_pairing.illegal_moves %}
         {% for _ in range([illegal_moves, tournament.record_illegal_moves]|min) %}
             <span class="illegal-move-flag-wrapper">
                 <i
-                    data-testid="illegal-move-icon-{{ player.color.value}}"
+                    data-testid="illegal-move-icon-{{ tournament_player.color.value}}"
                     class="
                         {% if board.result_str %}bi-file-fill{% else %}bi-file-excel-fill{% endif %}
                         illegal-move-flag
@@ -38,7 +39,7 @@
             {% if not board.result_str and illegal_moves < tournament.record_illegal_moves %}
                 <span class="illegal-move-flag-wrapper">
                     <i
-                        data-testid="add-illegal-move-button-{{ player.color.value}}"
+                        data-testid="add-illegal-move-button-{{ tournament_player.color.value}}"
                         class="bi-flag illegal-move-flag add player-{{ tournament.id }}-{{ player.id }}"
                         hx-target="body"
                         hx-put="{{ url_for(
