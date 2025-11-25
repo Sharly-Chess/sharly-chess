@@ -187,6 +187,10 @@ class ChessEventTournamentImporter(TournamentImporter):
         stored_players: list[StoredPlayer] = []
         for player_id, ce_player in enumerate(tournament.players):
             stored_player = self._read_chessevent_player(ce_player, player_id)
+            stored_tournament_player = StoredTournamentPlayer(
+                player_id=player_id,
+                stored_pairings=self._get_pairings(ce_player, player_id),
+            )
             plugin_manager.hook_for_event(
                 event, 'augment_stored_player_from_chessevent_player'
             )(
@@ -196,6 +200,7 @@ class ChessEventTournamentImporter(TournamentImporter):
                 chessevent_player=ce_player,
             )
             stored_players.append(stored_player)
+            stored_tournament.stored_tournament_players.append(stored_tournament_player)
 
         return stored_tournament, stored_players
 
@@ -333,10 +338,6 @@ class ChessEventTournamentImporter(TournamentImporter):
             fixed=player.board or None,
             check_in=bool(player.check_in),
             plugin_data={ffe.PLUGIN_NAME: ffe_plugin_data.to_stored_value()},
-            stored_tournament_player=StoredTournamentPlayer(
-                player_id=player_id,
-                stored_pairings=cls._get_pairings(player, player_id),
-            ),
         )
 
     @staticmethod

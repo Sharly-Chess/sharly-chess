@@ -298,6 +298,14 @@ class Utils:
             - (1 if end.day < start.day else 0)
         )
 
+    @staticmethod
+    def deep_getattr(obj, attr, default=None):
+        for part in attr.split('.'):
+            obj = getattr(obj, part, None)
+            if obj is None:
+                return default
+        return obj
+
 
 class SupportsEquals(Protocol):
     def __eq__(self, other: object) -> bool: ...

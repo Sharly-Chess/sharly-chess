@@ -7,7 +7,7 @@ from typing import Callable, Iterable
 from common.i18n import _
 from data.pairings.settings import PairingSetting
 from data.pairings.variations import SwissVariation
-from data.player import Player
+from data.player import TournamentPlayer
 from data.tournament import Tournament
 from plugins.pairing_acceleration import PLUGIN_NAME
 from plugins.pairing_acceleration.pairing_settings import (
@@ -93,7 +93,7 @@ class AccelerationSwissVariation(SwissVariation, ABC):
     @classmethod
     @abstractmethod
     def get_player_group(
-        cls, tournament: Tournament, player: Player
+        cls, tournament: Tournament, tournament_player: TournamentPlayer
     ) -> AccelerationGroup:
         """Get the acceleration group of a player in a tournament."""
 
@@ -108,10 +108,10 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
 
     @classmethod
     def get_player_group(
-        cls, tournament: Tournament, player: Player
+        cls, tournament: Tournament, tournament_player: TournamentPlayer
     ) -> AccelerationGroup:
         _, group_a_max = tournament.pairing_settings[GroupA2GroupsSetting.static_id()]
-        if player.pairing_number <= group_a_max:
+        if tournament_player.pairing_number <= group_a_max:
             return AccelerationGroup.A
         return AccelerationGroup.B
 
@@ -173,13 +173,13 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
 
     @classmethod
     def get_player_group(
-        cls, tournament: Tournament, player: Player
+        cls, tournament: Tournament, tournament_player: TournamentPlayer
     ) -> AccelerationGroup:
         _, group_a_max = tournament.pairing_settings[GroupA3GroupsSetting.static_id()]
-        if player.pairing_number <= group_a_max:
+        if tournament_player.pairing_number <= group_a_max:
             return AccelerationGroup.A
         _, group_b_max = tournament.pairing_settings[GroupB3GroupsSetting.static_id()]
-        if player.pairing_number <= group_b_max:
+        if tournament_player.pairing_number <= group_b_max:
             return AccelerationGroup.B
         return AccelerationGroup.C
 
@@ -304,11 +304,11 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
 
     @classmethod
     def compute_virtual_points(
-        cls, tournament: Tournament, player: Player, at_round: int
+        cls, tournament: Tournament, tournament_player: TournamentPlayer, at_round: int
     ) -> float:
         if at_round > cls.accelerated_rounds(tournament.rounds):
             return 0
-        rating_group = cls.get_player_group(tournament, player)
+        rating_group = cls.get_player_group(tournament, tournament_player)
         if at_round > cls.full_point_rounds(tournament.rounds):
             if rating_group == AccelerationGroup.A:
                 return Result.DRAW.points(tournament.point_values)
@@ -371,11 +371,11 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
     def compute_virtual_points(
         cls,
         tournament: Tournament,
-        player: Player,
+        tournament_player: TournamentPlayer,
         at_round: int,
     ) -> float:
         if at_round <= 2:
-            group = cls.get_player_group(tournament, player)
+            group = cls.get_player_group(tournament, tournament_player)
             if group == AccelerationGroup.A:
                 return Result.WIN.points(tournament.point_values)
         return 0.0
@@ -419,13 +419,13 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
     def compute_virtual_points(
         cls,
         tournament: Tournament,
-        player: Player,
+        tournament_player: TournamentPlayer,
         at_round: int,
     ) -> float:
         # Round 1: Group A gets 1 vpoint
         # Round 2: Group A gets 1 vpoint, Group B gets .5 vpoints
         if at_round <= 2:
-            group = cls.get_player_group(tournament, player)
+            group = cls.get_player_group(tournament, tournament_player)
             if group == AccelerationGroup.A:
                 return Result.WIN.points(tournament.point_values)
             elif at_round == 2:
@@ -493,7 +493,7 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
     def compute_virtual_points(
         cls,
         tournament: Tournament,
-        player: Player,
+        tournament_player: TournamentPlayer,
         at_round: int,
     ) -> float:
         if at_round >= tournament.rounds - 1:
@@ -501,9 +501,9 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
             # points, and use a simple Swiss Dutch system.
             return 0.0
         return cls._compute_virtual_points(
-            group=cls.get_player_group(tournament, player),
+            group=cls.get_player_group(tournament, tournament_player),
             tournament_rounds=tournament.rounds,
-            points=player.points_before(at_round),
+            points=tournament_player.points_before(at_round),
             draw_points=Result.DRAW.points(tournament.point_values),
             win_points=Result.WIN.points(tournament.point_values),
         )

@@ -7,7 +7,7 @@ from typing import Any, TYPE_CHECKING
 from common.exception import OptionError
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from data.player import Club, Federation, Player
+from data.player import Club, Federation, TournamentPlayer
 from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
 from utils.option import Option
 
@@ -49,8 +49,8 @@ class SelectPlayerFilterOption[T](PlayerFilterOption):
         """All the known values of type [T] for the tournament."""
 
     @abstractmethod
-    def get_player_counter(self, tournament: 'Tournament') -> Counter[T]:
-        """The number of players per object of type [T] in the tournament."""
+    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[T]:
+        """The number of tournament players per object of type [T] in the tournament."""
 
     @abstractmethod
     def get_key(self, object_: T) -> str:
@@ -82,14 +82,14 @@ class SelectPlayerFilterOption[T](PlayerFilterOption):
         to the existing options if they don't already exist."""
         from web.utils import SelectOption
 
-        player_counter = self.get_player_counter(tournament)
+        tournament_player_counter = self.get_tournament_player_counter(tournament)
         all_values = self.get_all_known_values(tournament)
         if split_tournament_others:
             ordered_counters = sorted(
-                player_counter.items(), key=lambda item: (-item[1], item[0])
+                tournament_player_counter.items(), key=lambda item: (-item[1], item[0])
             )
         else:
-            ordered_counters = list(player_counter.items())
+            ordered_counters = list(tournament_player_counter.items())
         tournament_options = {
             self.get_key(object_): SelectOption(
                 f'{self.get_name(object_)} ({player_count})',
@@ -144,7 +144,9 @@ class GenderOption(SelectPlayerFilterOption[PlayerGender]):
     def get_all_known_values(self, tournament: 'Tournament') -> list[PlayerGender]:
         return [gender for gender in PlayerGender if gender != PlayerGender.NONE]
 
-    def get_player_counter(self, tournament: 'Tournament') -> Counter[PlayerGender]:
+    def get_tournament_player_counter(
+        self, tournament: 'Tournament'
+    ) -> Counter[PlayerGender]:
         return tournament.gender_counts
 
     def get_key(self, object_: PlayerGender) -> str:
@@ -201,7 +203,9 @@ class AgeCategoriesOption(SelectPlayerFilterOption[PlayerCategory]):
     def default_value(self) -> Any:
         return []
 
-    def get_player_counter(self, tournament: 'Tournament') -> Counter[PlayerCategory]:
+    def get_tournament_player_counter(
+        self, tournament: 'Tournament'
+    ) -> Counter[PlayerCategory]:
         return tournament.category_counts
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[PlayerCategory]:
@@ -291,7 +295,9 @@ class RatingTypesFilterOption(SelectPlayerFilterOption[PlayerRatingType]):
     def default_value(self) -> Any:
         return []
 
-    def get_player_counter(self, tournament: 'Tournament') -> Counter[PlayerRatingType]:
+    def get_tournament_player_counter(
+        self, tournament: 'Tournament'
+    ) -> Counter[PlayerRatingType]:
         return tournament.rating_type_counts
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[PlayerRatingType]:
@@ -331,7 +337,7 @@ class ClubsFilterOption(SelectPlayerFilterOption[Club]):
         event_club_names = {player.club.name for player in tournament.event.players}
         return [Club(name) for name in sorted(event_club_names) if name]
 
-    def get_player_counter(self, tournament: 'Tournament') -> Counter[Club]:
+    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[Club]:
         counter = tournament.club_counts
         empty_club = Club('')
         if empty_club in counter:
@@ -366,7 +372,9 @@ class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
     def get_all_known_values(self, tournament: 'Tournament') -> list[Federation]:
         return [Federation(code) for code in SharlyChessConfig.federations.keys()]
 
-    def get_player_counter(self, tournament: 'Tournament') -> Counter[Federation]:
+    def get_tournament_player_counter(
+        self, tournament: 'Tournament'
+    ) -> Counter[Federation]:
         counter = tournament.federation_counts
         empty_federation = Federation('')
         if empty_federation in counter:
@@ -388,7 +396,7 @@ class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
             raise OptionError(_('At least one federation is expected.'), self)
 
 
-class PlayersFilterOption(SelectPlayerFilterOption[Player]):
+class PlayersFilterOption(SelectPlayerFilterOption[TournamentPlayer]):
     @staticmethod
     def static_id() -> str:
         return 'PLAYERS'
@@ -401,17 +409,19 @@ class PlayersFilterOption(SelectPlayerFilterOption[Player]):
     def default_value(self) -> Any:
         return []
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[Player]:
-        return sorted(tournament.players, key=attrgetter('full_name'))
+    def get_all_known_values(self, tournament: 'Tournament') -> list[TournamentPlayer]:
+        return sorted(tournament.tournament_players, key=attrgetter('full_name'))
 
-    def get_player_counter(self, tournament: 'Tournament') -> Counter[Player]:
-        return Counter[Player]()
+    def get_tournament_player_counter(
+        self, tournament: 'Tournament'
+    ) -> Counter[TournamentPlayer]:
+        return Counter[TournamentPlayer]()
 
-    def get_key(self, object_: Player) -> str:
-        return str(object_.id)
+    def get_key(self, object_: TournamentPlayer) -> str:
+        return str(object_.player.id)
 
-    def get_name(self, object_: Player) -> str:
-        return object_.full_name
+    def get_name(self, object_: TournamentPlayer) -> str:
+        return object_.player.full_name
 
     def validate(self):
         self._validate_list_type(int)

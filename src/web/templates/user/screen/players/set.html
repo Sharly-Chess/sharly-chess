@@ -10,7 +10,7 @@
             {% endif %}
         </h2>
         <div class="row gy-2 gx-3 screen-set-row mx-0 w-100">
-            {% for players in screen_set.players_by_name_lists %}
+            {% for tournament_players in screen_set.tournament_players_by_name_lists %}
                 <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
                     <div
                         class="d-grid grid-striped"
@@ -39,16 +39,17 @@
                                 {% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}
                             </div>
                         {% endif %}
-                        {% for player in players %}
+                        {% for tournament_player in tournament_players %}
+                            {% set player=tournament_player.player %}
                             {% if tournament.current_round %}
-                                {% with pairing=player.pairings[tournament.current_round] %}
+                                {% with pairing=tournament_player.pairings[tournament.current_round] %}
                                 {% with opponent_id=pairing.opponent_id %}
                                     <div class="player-row {% if not opponent_id %}not-paired fs-italic{% else %}paired fw-bold{% endif %}">
                                         <div
                                             class="player overflow-hidden text-nowrap"
                                             style="text-overflow: ellipsis;"
                                         >
-                                            {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }} [{{ player.vpoints_str }}]
+                                            {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ tournament_player.rating_str }} [{{ tournament_player.vpoints_str }}]
                                         </div>
                                         <div class="pairing text-nowrap">
                                             {% if pairing.exempt %}
@@ -56,9 +57,7 @@
                                             {% elif not opponent_id %}
                                                 {{ player.not_paired_str }}
                                             {% else %}
-                                                {% with opponent=tournament.players_by_id[opponent_id] %}
-                                                    {{ _('Board #%(board_number)d with %(color)s', board_number=player.board_number, color=player.color_str) }}
-                                                {% endwith %}
+                                                {{ _('Board #%(board_number)d with %(color)s', board_number=tournament_player.board_number, color=tournament_player.color_str) }}
                                             {% endif %}
                                         </div>
                                         {% if screen_set.players_show_opponent %}
@@ -69,8 +68,8 @@
                                                 {% if pairing.exempt %}
                                                 {% elif not opponent_id %}
                                                 {% else %}
-                                                    {% with opponent=tournament.players_by_id[opponent_id] %}
-                                                        {{ _('vs') }} {% if opponent.title.short_name %}{{ opponent.title.short_name }}&nbsp;{% endif %}{{ opponent.full_name }} {{ opponent.rating_str }} [{{ opponent.vpoints_str }}]
+                                                    {% with opponent=tournament.tournament_players_by_id[opponent_id] %}
+                                                        {{ _('vs') }} {% if opponent.player.title.short_name %}{{ opponent.player.title.short_name }}&nbsp;{% endif %}{{ opponent.player.full_name }} {{ opponent.rating_str }} [{{ opponent.vpoints_str }}]
                                                     {% endwith %}
                                                 {% endif %}
                                             </div>
@@ -85,16 +84,16 @@
                                         style="text-overflow: ellipsis;"
                                     >
                                         <i class="
-                                            {% if player.check_in %}
+                                            {% if tournament_player.check_in %}
                                                 bi-check-square-fill player-check-out
                                             {% else %}
                                                 bi-square player-check-in
                                             {% endif %}
                                             player-{{ tournament.id }}-{{ player.id }}"></i>
-                                        {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }}
+                                        {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ tournament_player.rating_str }}
                                     </div>
                                     <div class="pairing text-nowrap">
-                                        {{ player.not_paired_str }}
+                                        {{ tournament_player.not_paired_str }}
                                     </div>
                                     {% if screen_set.players_show_opponent %}
                                         <div class="opponent text-nowrap">

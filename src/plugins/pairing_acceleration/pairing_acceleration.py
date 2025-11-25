@@ -5,7 +5,7 @@ from packaging.version import Version
 from common.i18n import _
 from data.pairings.variations import SwissVariation, StandardSwissVariation
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredTournament
+from database.sqlite.event.event_store import StoredEvent, StoredTournament
 from plugins.hookspec import hookimpl
 from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration import PLUGIN_NAME, migrations
@@ -39,7 +39,9 @@ class PairingAccelerationPlugin(Plugin):
     def base_migration_module(self) -> ModuleType:
         return migrations
 
-    def used_by_stored_tournament(self, stored_tournament: StoredTournament) -> bool:
+    def used_by_stored_tournament(
+        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+    ) -> bool:
         return any(
             stored_tournament.pairing == variation_type.static_id()
             for variation_type in self._pairing_variation_types

@@ -122,10 +122,11 @@ class PairingEngine(ABC):
                 pairings_diff.append((real, None))
                 continue
             expected = expected_boards[i]
-            real_black_id = getattr(real.black_player, 'id', None)
-            expected_black_id = getattr(expected.black_player, 'id', None)
+            real_black_id = getattr(real.black_tournament_player, 'id', None)
+            expected_black_id = getattr(expected.black_tournament_player, 'id', None)
             if (
-                real.white_player.id != expected.white_player.id
+                real.white_tournament_player.player.id
+                != expected.white_tournament_player.player.id
                 or real_black_id != expected_black_id
             ):
                 pairings_diff.append((real, expected))
@@ -236,9 +237,11 @@ class BbpPairings(PairingEngine):
         has_pab = tournament.round_has_pab(round_)
         for raw_pairing in file.readlines():
             (white_trf_id, black_trf_id) = map(int, raw_pairing.split(' '))
-            white_player = tournament.players_by_pairing_number[white_trf_id]
+            white_player = tournament.tournament_players_by_pairing_number[white_trf_id]
             if black_trf_id != cls.BYE_ID:
-                black_player_id = tournament.players_by_pairing_number[black_trf_id].id
+                black_player_id = tournament.tournament_players_by_pairing_number[
+                    black_trf_id
+                ].player.id
             elif not (
                 white_player.pairings[round_].next_round_bye
                 or (partial_pairings and has_pab)
@@ -250,7 +253,7 @@ class BbpPairings(PairingEngine):
             stored_boards.append(
                 StoredBoard(
                     id=None,
-                    white_player_id=white_player.id,
+                    white_player_id=white_player.player.id,
                     black_player_id=black_player_id,
                     index=0,
                 )

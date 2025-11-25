@@ -4,6 +4,7 @@ from typing import Any
 from common.i18n import _
 from data.board import Board
 from web.utils import Column, ColumnUsage
+from utils import Utils
 
 
 class BoardColumn(Column[Board], ABC):
@@ -41,7 +42,7 @@ class WhitePointsColumn(BoardColumn):
         return _('Pts *** POINTS FOR TABLE HEADER')
 
     def get_cell_content(self, board: Board) -> Any:
-        return board.white_player.vpoints_str
+        return board.white_tournament_player.vpoints_str
 
     @property
     def shared_classes(self) -> str:
@@ -54,7 +55,7 @@ class WhiteRealPointsColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        return f'[{board.white_player.points_str}]'
+        return f'[{board.white_tournament_player.points_str}]'
 
     @property
     def shared_classes(self) -> str:
@@ -92,7 +93,7 @@ class WhiteTitleColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        return board.white_player.title.short_name
+        return board.white_tournament_player.player.title.short_name
 
 
 class WhiteNameColumn(BoardColumn):
@@ -105,7 +106,7 @@ class WhiteNameColumn(BoardColumn):
         return _('White')
 
     def get_cell_content(self, board: Board) -> Any:
-        return board.white_player.full_name
+        return board.white_tournament_player.player.full_name
 
     @property
     def shared_classes(self) -> str:
@@ -121,7 +122,7 @@ class WhiteRatingColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        return board.white_player.rating_str
+        return board.white_tournament_player.rating_str
 
     @property
     def shared_classes(self) -> str:
@@ -173,10 +174,10 @@ class BlackTitleColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        player = board.black_player
-        if not player:
+        tournament_player = board.black_tournament_player
+        if not tournament_player:
             return ''
-        return player.title.short_name
+        return tournament_player.player.title.short_name
 
 
 class BlackNameColumn(BoardColumn):
@@ -193,8 +194,10 @@ class BlackNameColumn(BoardColumn):
         return 'text-start'
 
     def get_cell_content(self, board: Board) -> Any:
-        return getattr(
-            board.black_player, 'full_name', board.white_player.exempt_str.upper()
+        return Utils.deep_getattr(
+            board.black_tournament_player,
+            'player.full_name',
+            board.white_tournament_player.player.exempt_str.upper(),
         )
 
     def get_cell_classes(self, board: Board) -> str:
@@ -209,7 +212,7 @@ class BlackRatingColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        return getattr(board.black_player, 'rating_str', '')
+        return getattr(board.black_tournament_player, 'rating_str', '')
 
     @property
     def shared_classes(self) -> str:
@@ -222,7 +225,7 @@ class BlackRealPointsColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        real_points = getattr(board.black_player, 'points_str', '')
+        real_points = getattr(board.black_tournament_player, 'points_str', '')
         return f'[{real_points}]' if real_points else ''
 
     @property
@@ -236,7 +239,7 @@ class BlackPointsColumn(BoardColumn):
         return _('Pts *** POINTS FOR TABLE HEADER')
 
     def get_cell_content(self, board: Board) -> Any:
-        return getattr(board.black_player, 'vpoints_str', '')
+        return getattr(board.black_tournament_player, 'vpoints_str', '')
 
     @property
     def shared_classes(self) -> str:

@@ -35,10 +35,10 @@
                                 {% endfor %}
 
                                 {% for board in boards %}
-                                    {% with wp=board.white_player, bp=board.black_player %}
+                                    {% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
                                     {% set editable =
                                         screen.type == 'input'
-                                        and board.black_player
+                                        and board.black_tournament_player
                                         and (
                                             client.can_update_results(tournament.id)
                                             or

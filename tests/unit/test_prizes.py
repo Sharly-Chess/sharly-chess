@@ -126,7 +126,7 @@ class PrizesTestCase(TestCase):
                     current_round=ROUNDS,
                     rounds=ROUNDS,
                     stored_prize_groups=[self.stored_prize_group],
-                    stored_players=stored_players,
+                    stored_tournament_players=stored_players,
                 ),
             )
             return self.tournament.prize_groups_by_id[1].assign_prizes()

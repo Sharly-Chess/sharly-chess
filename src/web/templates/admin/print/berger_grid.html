@@ -28,7 +28,7 @@
                     class="row gy-2 gx-3 {% if loop.index is even %}even{% else %}odd{% endif %}"
                 >
                     <td class=number">{{ grid_id_by_player_id[player_id] }}</td>
-                    {% with player=tournament.players_by_id[player_id] %}
+                    {% with player=tournament.tournament_players_by_id[player_id] %}
                         <td class="player-title">{{ player.title }}</td>
                         <td class="player">{{ player.full_name }}</td>
                         <td class="federation">{{ player.federation }}</td>
@@ -51,7 +51,7 @@
                         {% endif %}
                     {% endfor %}
                     <td class="result">{{ document.grid_results_points(results) }}</td>
-                    {% with player=tournament.players_by_id[player_id] %}
+                    {% with player=tournament.tournament_players_by_id[player_id] %}
                         {% for tie_break_value in player.tie_break_values %}
                             <td class="tie-break">
                                 {{ tie_break_value }}

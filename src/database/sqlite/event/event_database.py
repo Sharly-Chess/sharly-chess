@@ -345,6 +345,7 @@ class EventDatabase(MigrationDatabase):
         stored_event: StoredEvent = self._row_to_base_stored_event(
             self.fetchone(), StoredEvent
         )
+        stored_event.stored_players = self.load_stored_players()
         stored_event.stored_tournaments = self.load_stored_tournaments()
         stored_event.stored_timers = list(self.load_stored_timers())
         stored_event.stored_families = list(self.load_stored_families())
@@ -773,7 +774,9 @@ class EventDatabase(MigrationDatabase):
             stored_tournament.stored_prize_groups = (
                 self.load_tournament_stored_prize_groups(id_)
             )
-            stored_tournament.stored_players = self.load_tournament_stored_players(id_)
+            stored_tournament.stored_tournament_players = (
+                self.load_stored_tournament_players(id_)
+            )
             stored_tournament.stored_boards_by_round = (
                 self.load_tournament_stored_boards_by_round(id_)
             )
@@ -1061,22 +1064,14 @@ class EventDatabase(MigrationDatabase):
             plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
         )
 
-    def load_tournament_stored_players(self, tournament_id: int) -> list[StoredPlayer]:
+    def load_stored_players(self) -> list[StoredPlayer]:
         self.execute(
-            (
-                'SELECT `player`.* FROM `player` '
-                'INNER JOIN `tournament_player` ON `player`.`id` = `player_id`'
-                'WHERE `tournament_id` = ?'
-            ),
-            (tournament_id,),
+            ('SELECT `player`.* FROM `player`'),
         )
         stored_players: list[StoredPlayer] = []
         for row in self.fetchall():
             player = self._row_to_stored_player(row)
             assert player.id is not None
-            player.stored_tournament_player = self.load_player_stored_tournament_player(
-                player.id
-            )
             stored_players.append(player)
         return stored_players
 
@@ -1176,18 +1171,29 @@ class EventDatabase(MigrationDatabase):
             manual_tiebreak=row['manual_tiebreak'],
         )
 
-    def load_player_stored_tournament_player(
-        self, player_id: int
-    ) -> StoredTournamentPlayer:
+    def load_stored_tournament_players(
+        self, tournament_id: int
+    ) -> list[StoredTournamentPlayer]:
         self.execute(
-            'SELECT * FROM `tournament_player` WHERE `player_id` = ?',
-            (player_id,),
+            (
+                'SELECT `tournament_player`.* FROM `tournament_player` '
+                'WHERE `tournament_id` = ?'
+            ),
+            (tournament_id,),
         )
-        tournament_player = self._row_to_stored_tournament_player(self.fetchone())
-        tournament_player.stored_pairings = self.load_tournament_player_stored_pairings(
-            tournament_player.tournament_id, player_id
-        )
-        return tournament_player
+        stored_tournament_players: list[StoredTournamentPlayer] = []
+        for row in self.fetchall():
+            stored_tournament_player = self._row_to_stored_tournament_player(row)
+            stored_tournament_player.stored_pairings = (
+                self.load_tournament_player_stored_pairings(
+                    stored_tournament_player.tournament_id,
+                    stored_tournament_player.player_id,
+                )
+            )
+
+            assert stored_tournament_player.player_id is not None
+            stored_tournament_players.append(stored_tournament_player)
+        return stored_tournament_players
 
     def add_stored_tournament_player(
         self, stored_tournament_player: StoredTournamentPlayer

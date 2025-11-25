@@ -33,7 +33,7 @@
                 <th class="round text-center">{{ _('R %(round)d *** ROUND FOR TABLE HEADER', round=round) }}</th>
                 {%with pairing = player.pairings[round], opponent_id = player.pairings[round].opponent_id %}
                     {% if opponent_id %}
-                        {%with opponent = player.tournament.players_by_id[opponent_id] %}
+                        {%with opponent = player.tournament.tournament_players_by_id[opponent_id] %}
                             <td>{{ pairing.color.to_crosstable }}</td>
                             <td class='text-center'>{{ pairing.result }}</td>
                             <td class='text-center'>{{ opponent.rank }}</td>

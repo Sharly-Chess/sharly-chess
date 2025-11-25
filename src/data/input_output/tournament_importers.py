@@ -128,7 +128,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 database.update_stored_event(event.stored_event)
         event = EventLoader().load_event(event.uniq_id)
         tournament = event.tournaments_by_id[tournament_id]
-        tournament.set_players_pairing_numbers()
+        tournament.set_tournament_players_pairing_numbers()
         for task in self.post_import_task:
             task(tournament)
         return tournament.id
@@ -187,8 +187,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 stored_board.id = board_id
 
         # Tournament players
-        for stored_player in stored_players:
-            stored_tournament_player = stored_player.stored_tournament_player
+        for stored_tournament_player in stored_tournament.stored_tournament_players:
             stored_tournament_player.tournament_id = tournament_id
             stored_tournament_player.player_id = player_id_by_external_id[
                 stored_tournament_player.player_id
@@ -235,11 +234,11 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         If the incoherence can be rectified, it is,
         otherwise raises an ImporterError."""
         pairings_by_round_by_player_id = {
-            stored_player.id: {
+            stored_tournament_player.player_id: {
                 stored_pairing.round_: stored_pairing
-                for stored_pairing in stored_player.stored_tournament_player.stored_pairings
+                for stored_pairing in stored_tournament_player.stored_pairings
             }
-            for stored_player in stored_tournament.stored_players
+            for stored_tournament_player in stored_tournament.stored_tournament_players
         }
         boards_by_id: dict[int, StoredBoard] = {}
         for round_, stored_boards in stored_tournament.stored_boards_by_round.items():
@@ -464,8 +463,8 @@ class TrfTournamentImporter(FileTournamentImporter):
                             ] = board_id
                     stored_pairing.board_id = board_id
                 stored_tournament_player.stored_pairings.append(stored_pairing)
-            stored_player.stored_tournament_player = stored_tournament_player
             stored_players.append(stored_player)
+            stored_tournament.stored_tournament_players.append(stored_tournament_player)
         stored_tournament.stored_boards_by_round = stored_boards_by_round
         if stored_boards_by_round:
             stored_tournament.rounds = max(tuple(stored_boards_by_round))

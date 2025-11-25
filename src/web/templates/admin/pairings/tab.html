@@ -193,7 +193,7 @@
                         {% include '/admin/pairings/pairing_table_header.html' %}
                         <tbody>
                             {% for board in admin_filtered_boards %}
-                                {% with wp=board.white_player, bp=board.black_player %}
+                                {% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
                                     {% include '/admin/pairings/pairing_row.html' %}
                                 {% endwith %}
                             {% endfor %}

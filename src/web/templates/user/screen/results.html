@@ -20,14 +20,14 @@
                     <tr class="result-row">
                         <td scope="row gy-2 gx-3" class="time bg-transparent text-center">{{ board.last_result_update_str }}</td>
                         {% with tournament=board.tournament %}
-                        {% with players_by_id=tournament.players_by_id %}
-                        {% with white_player=board.white_player %}
-                         {% with black_player=board.black_player %}
+                        {% with players_by_id=tournament.tournament_players_by_id %}
+                        {% with wtp=board.white_tournament_player %}
+                        {% with btp=board.black_tournament_player %}
                         {% if print_tournament %}<td scope="row gy-2 gx-3" class="tournament bg-transparent">{{ tournament.uniq_id }}</td>{% endif %}
                         <td scope="row gy-2 gx-3" class="board-number bg-transparent text-center">{{ board.round }}.{{ board.number }}</td>
-                        <td scope="row gy-2 gx-3" class="player bg-transparent">{{ white_player.full_name }} {{ white_player.rating_str }}</td>
+                        <td scope="row gy-2 gx-3" class="player bg-transparent">{{ wtp.player.full_name }} {{ wtp.rating_str }}</td>
                         <td scope="row gy-2 gx-3" class="score bg-transparent text-center">{{ board.result_str }}</td>
-                        <td scope="row gy-2 gx-3" class="player bg-transparent">{{ black_player.full_name }} {{ black_player.rating_str }}</td>
+                        <td scope="row gy-2 gx-3" class="player bg-transparent">{{ btp.player.full_name }} {{ btp.rating_str }}</td>
                         {% endwith %}
                         {% endwith %}
                         {% endwith %}

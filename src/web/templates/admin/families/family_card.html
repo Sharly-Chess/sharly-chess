@@ -134,8 +134,8 @@
                             {{ _('Players (none now)') }}
                         {% endif %}
                     {% else %} {# family.type == 'ranking' #}
-                        {% if screen_set.first_player_by_rank %}
-                            {{ _('Players from #%(first)d to #%(last)d', first=screen_set.first_player_by_rank.rank, last=screen_set.last_player_by_rank.rank) }}
+                        {% if screen_set.first_tournament_player_by_rank %}
+                            {{ _('Players from #%(first)d to #%(last)d', first=screen_set.first_tournament_player_by_rank.rank, last=screen_set.last_tournament_player_by_rank.rank) }}
                         {% else %}
                             {{ _('Players (none now)') }}
                         {% endif %}

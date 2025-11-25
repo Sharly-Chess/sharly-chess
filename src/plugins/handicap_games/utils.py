@@ -5,7 +5,7 @@ from typing import Any, Self
 
 
 from common.logger import get_logger
-from data.event import Player
+from data.player import TournamentPlayer
 from data.tournament import Tournament
 from plugins.handicap_games import PLUGIN_NAME
 from plugins.utils import PluginData, PluginUtils
@@ -28,9 +28,9 @@ class HandicapGameUtils:
 
     @staticmethod
     def get_transient_player_plugin_data(
-        player: Player,
+        tournament_player: TournamentPlayer,
     ) -> 'HandicapGamesTransientPlayerPluginData':
-        plugin_data = player.transient_plugin_data.get(
+        plugin_data = tournament_player.transient_plugin_data.get(
             PLUGIN_NAME, HandicapGamesTransientPlayerPluginData()
         )
         assert isinstance(plugin_data, HandicapGamesTransientPlayerPluginData)

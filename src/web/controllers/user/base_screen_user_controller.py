@@ -161,7 +161,9 @@ class BaseScreenUserController(BaseUserController):
                     ranking_round = tournament.correct_ranking_round(
                         screen.ranking_round
                     )
-                    tournament.compute_player_ranks(after_round=ranking_round)
+                    tournament.compute_tournament_player_ranks(
+                        after_round=ranking_round
+                    )
                     column_handler = PlayerColumnHandler(event, ColumnUsage.SCREEN)
                     if screen.ranking_crosstable:
                         columns = column_handler.get_player_crosstable_columns(

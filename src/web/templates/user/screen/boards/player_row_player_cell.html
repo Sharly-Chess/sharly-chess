@@ -1,14 +1,14 @@
 <div
-        class="
-            player-cell
-            {% if screen.type == 'input' and last_check_in_updated and last_check_in_updated.expiration > now and last_check_in_updated.tournament_id == tournament.id and last_check_in_updated.player_id == player.id %}
-                last_check_in_updated
-            {% endif %}
-            {% if screen.type == 'input' and tournament.check_in_open %}
-                cursor-pointer
-            {% endif %}
-            overflow-hidden text-nowrap"
-        style="text-overflow: ellipsis;"
+    class="
+        player-cell
+        {% if screen.type == 'input' and last_check_in_updated and last_check_in_updated.expiration > now and last_check_in_updated.tournament_id == tournament.id and last_check_in_updated.player_id == player.id %}
+            last_check_in_updated
+        {% endif %}
+        {% if screen.type == 'input' and tournament.check_in_open %}
+            cursor-pointer
+        {% endif %}
+        overflow-hidden text-nowrap"
+    style="text-overflow: ellipsis;"
     {% if
         screen.type == 'input'
         and client.can_check_in_players(tournament.id)

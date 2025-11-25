@@ -334,8 +334,8 @@
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 <td
-                                        scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
-                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.federation.name, new=match_player.federation.name), 'top') }}{% endif %}
+                                    scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
+                                    {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.federation.name, new=match_player.federation.name), 'top') }}{% endif %}
                                 >
                                     {{ match_player.federation }}
                                 </td>
@@ -344,8 +344,8 @@
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 <td
-                                        scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}"
-                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.club.name, new=match_player.club.name), 'top') }}{% endif %}
+                                    scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}"
+                                    {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.club.name, new=match_player.club.name), 'top') }}{% endif %}
                                 >
                                     {{ match_player.club.name if match_player.club.name else player.club.name }}
                                 </td>

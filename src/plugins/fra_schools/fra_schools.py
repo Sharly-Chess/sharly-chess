@@ -15,10 +15,15 @@ from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterO
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.event import Player, Event
 from data.input_output import TournamentImporter
+from data.player import TournamentPlayer
 from data.print_documents import PlayerSplitter
 from data.print_documents.documents import PrintDocument, PlayerRankingPrintDocument
 from data.print_documents.player_splitters import ClubPlayerSplitter
-from database.sqlite.event.event_store import StoredTournament, StoredPlayer
+from database.sqlite.event.event_store import (
+    StoredEvent,
+    StoredTournament,
+    StoredPlayer,
+)
 from database.sqlite.local_source_database import LocalSourceDatabase
 from plugins import PLUGINS_DIR
 from plugins.chessevent.tournament_importer.data import ChessEventPlayer
@@ -96,9 +101,16 @@ class FRASchoolsPlugin(Plugin):
     def federation(self) -> str | None:
         return 'FRA'
 
-    def used_by_stored_tournament(self, stored_tournament: StoredTournament) -> bool:
-        players = stored_tournament.stored_players
-        for stored_player in players:
+    def used_by_stored_tournament(
+        self, stored_event: 'StoredEvent', stored_tournament: StoredTournament
+    ) -> bool:
+        tournament_players = stored_tournament.stored_tournament_players
+        for stored_tournament_player in tournament_players:
+            stored_player = next(
+                stored_player
+                for stored_player in stored_event.stored_players
+                if stored_player.id == stored_tournament_player.player_id
+            )
             data = stored_player.plugin_data.get(PLUGIN_NAME, {})
             if data.get('fra_school_id', None) is not None:
                 return True
@@ -306,8 +318,10 @@ class FRASchoolsPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def update_papi_player(self, papi_player: PapiPlayer, player: Player):
-        school = FRASchoolsUtils.get_player_school(player)
+    def update_papi_player(
+        self, papi_player: PapiPlayer, tournament_player: TournamentPlayer
+    ):
+        school = FRASchoolsUtils.get_player_school(tournament_player.player)
         papi_player.club = school.full_name if school else ''
 
     @hookimpl

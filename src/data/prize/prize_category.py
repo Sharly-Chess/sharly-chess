@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from common.logger import get_logger
 from common.i18n import _
-from data.player import Player
+from data.player import TournamentPlayer
 from data.prize.managers import PrizeSharingManager
 from data.prize.prize_criterion import PrizeCriterion
 from data.prize.prize import Prize
@@ -122,24 +122,27 @@ class PrizeCategory:
             )
         return f'{_("Shared prizes")} ({self.prize_sharing.name}{threshold_str})'
 
-    def player_matches_criteria(self, player: Player) -> bool:
+    def player_matches_criteria(self, tournament_player: TournamentPlayer) -> bool:
         """Check if the player matches all criteria of this category."""
         return all(
-            criterion.player_filter.is_player_included_function(player)
+            criterion.player_filter.is_player_included_function(tournament_player)
             for criterion in self.criteria
         )
 
     @property
-    def players(self) -> list[Player]:
+    def tournament_players(self) -> list[TournamentPlayer]:
         return [
-            player
-            for player in self.prize_group.tournament.players
-            if self.player_matches_criteria(player)
+            tournament_player
+            for tournament_player in self.prize_group.tournament.tournament_players
+            if self.player_matches_criteria(tournament_player)
         ]
 
     @property
-    def sorted_players(self) -> list[Player]:
-        return sorted(self.players, key=lambda player: player.rank)
+    def sorted_tournament_players(self) -> list[TournamentPlayer]:
+        return sorted(
+            self.tournament_players,
+            key=lambda tournament_player: tournament_player.rank,
+        )
 
     @property
     def criteria_string(self) -> str:
