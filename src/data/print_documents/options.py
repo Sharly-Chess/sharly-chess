@@ -110,7 +110,7 @@ class PlayerPrintOption(PrintOption):
         return {
             tournament.id: [
                 {
-                    'id': tournament_player.player.id,
+                    'id': tournament_player.id,
                     'full_name': tournament_player.player.full_name,
                 }
                 for tournament_player in tournament.tournament_players_by_name_with_unpaired
@@ -145,7 +145,7 @@ class PlayersPrintOption(PrintOption):
         return {
             tournament.id: [
                 {
-                    'id': tournament_player.player.id,
+                    'id': tournament_player.id,
                     'full_name': tournament_player.player.full_name,
                 }
                 for tournament_player in tournament.tournament_players_by_name_with_unpaired

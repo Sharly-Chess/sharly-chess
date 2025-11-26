@@ -225,7 +225,7 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
     @classmethod
     def default_value(cls, tournament: 'Tournament') -> dict[int, int]:
         return {
-            tournament_player.player.id: rank
+            tournament_player.id: rank
             for rank, tournament_player in tournament.tournament_players_by_starting_rank.items()
         }
 
@@ -235,9 +235,9 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
         if len(set(berger_numbers.values())) != len(set(berger_numbers.keys())):
             return False
         for tournament_player in tournament.tournament_players:
-            if tournament_player.player.id not in berger_numbers:
+            if tournament_player.id not in berger_numbers:
                 return False
-            if berger_numbers[tournament_player.player.id] > tournament.player_count:
+            if berger_numbers[tournament_player.id] > tournament.player_count:
                 return False
         return True
 

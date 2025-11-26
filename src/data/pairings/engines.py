@@ -125,8 +125,7 @@ class PairingEngine(ABC):
             real_black_id = getattr(real.black_tournament_player, 'id', None)
             expected_black_id = getattr(expected.black_tournament_player, 'id', None)
             if (
-                real.white_tournament_player.player.id
-                != expected.white_tournament_player.player.id
+                real.white_tournament_player.id != expected.white_tournament_player.id
                 or real_black_id != expected_black_id
             ):
                 pairings_diff.append((real, expected))

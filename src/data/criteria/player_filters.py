@@ -301,18 +301,16 @@ class PlayerIdPlayerFilter(PlayerFilter):
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         player_ids, exclude = self.get_option_values()
         if exclude:
-            return (
-                lambda tournament_player: tournament_player.player.id not in player_ids
-            )
+            return lambda tournament_player: tournament_player.id not in player_ids
         else:
-            return lambda tournament_player: tournament_player.player.id in player_ids
+            return lambda tournament_player: tournament_player.id in player_ids
 
     def full_name(self, tournament: 'Tournament') -> str:
         player_ids, exclude = self.get_option_values()
         player_names = [
             tournament_player.player.full_name
             for tournament_player in tournament.tournament_players
-            if tournament_player.player.id in player_ids
+            if tournament_player.id in player_ids
         ]
         option_str = ', '.join(sorted(player_names))
         if exclude:

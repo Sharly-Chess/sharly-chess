@@ -34,7 +34,7 @@ class CheckerPlayer:
     ) -> Optional['CheckerPlayer']:
         return (
             CheckerPlayer(
-                tournament_player.player.id,
+                tournament_player.id,
                 tournament_player.player.last_name,
                 tournament_player.player.first_name,
                 tournament_player.rating,

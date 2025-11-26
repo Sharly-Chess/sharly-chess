@@ -496,7 +496,7 @@ class Tournament:
         for tournament_player in self.tournament_players:
             if tournament_player.manual_tiebreak is not None:
                 tournament_player.stored_tournament_player.manual_tiebreak = None
-                manual_updates[tournament_player.player.id] = None
+                manual_updates[tournament_player.id] = None
         database.set_tournament_players_manual_tiebreak(self.id, manual_updates)
 
     @property
@@ -702,14 +702,14 @@ class Tournament:
     @cached_property
     def tournament_players_by_name_without_unpaired(self) -> list[TournamentPlayer]:
         unpaired_ids = [
-            tournament_player.player.id
+            tournament_player.id
             for tournament_player in self.get_unpaired_tournament_players(self.boards)
         ]
         return sorted(
             [
                 tournament_player
                 for tournament_player in self.tournament_players
-                if tournament_player.player.id not in unpaired_ids
+                if tournament_player.id not in unpaired_ids
             ],
             key=by('player.last_name', 'player.first_name'),
         )
@@ -1027,7 +1027,7 @@ class Tournament:
             stored_tournament_player
         ) in self.stored_tournament.stored_tournament_players:
             tournament_player = TournamentPlayer(self, stored_tournament_player)
-            players_by_id[tournament_player.player.id] = tournament_player
+            players_by_id[tournament_player.id] = tournament_player
         return players_by_id
 
     def _get_boards_by_id(self) -> dict[int, Board]:
@@ -1062,13 +1062,13 @@ class Tournament:
     ) -> list[TournamentPlayer]:
         paired_player_ids: list[int] = []
         for board in boards:
-            paired_player_ids.append(board.white_tournament_player.player.id)
+            paired_player_ids.append(board.white_tournament_player.id)
             if board.black_tournament_player:
-                paired_player_ids.append(board.black_tournament_player.player.id)
+                paired_player_ids.append(board.black_tournament_player.id)
         return [
             tournament_player
             for tournament_player in self.tournament_players
-            if tournament_player.player.id not in paired_player_ids
+            if tournament_player.id not in paired_player_ids
         ]
 
     def set_for_round(self, round_: int | None = None):
@@ -1555,7 +1555,7 @@ class Tournament:
                 round_boards = self.get_round_boards(round_nb)
                 stored_board = StoredBoard(
                     id=None,
-                    white_player_id=white_tournament_player.player.id,
+                    white_player_id=white_tournament_player.id,
                     black_player_id=None,
                     index=round_boards[-1].index + 1 if round_boards else 0,
                 )
@@ -1624,7 +1624,7 @@ class Tournament:
                 self.current_round + 1, None
             )
             if not pairing or not pairing.result.is_bye:
-                present_player_ids.append(tournament_player.player.id)
+                present_player_ids.append(tournament_player.id)
                 tournament_player.player.stored_player.check_in = False
 
         with EventDatabase(self.event.uniq_id, write=True) as database:
@@ -1652,7 +1652,7 @@ class Tournament:
             if delete:
                 for tournament_player in self.not_checked_in_players:
                     database.delete_stored_tournament_player(
-                        self.id, tournament_player.player.id
+                        self.id, tournament_player.id
                     )
             if zpb_rounds:
                 for tournament_player in self.not_checked_in_players:
