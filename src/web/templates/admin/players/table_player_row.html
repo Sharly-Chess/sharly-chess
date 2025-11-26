@@ -130,7 +130,7 @@
                 {% elif not tournament_player.tournament.check_in_open %}
                     class="bi-ban text-secondary"
                     {{ macros.tooltip_attributes('warning', _('Check-in is closed for tournament [%(tournament)s].', tournament=tournament_player.tournament.name), 'right') }}
-                {% elif not player.can_check_in_out %}
+                {% elif not tournament_player.can_check_in_out %}
                     class="bi-ban text-secondary"
                     {{ macros.tooltip_attributes('warning', _('Player [%(player)s] is absent for the next round in tournament [%(tournament)s].', player=player.full_name, tournament=tournament_player.tournament.name), 'right') }}
                 {% else %}
