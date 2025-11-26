@@ -33,7 +33,7 @@ from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
 from data.input_output.data_source import PlayerComparator, DataSource
 from data.input_output.managers import DataSourceManager
-from data.player import Player, Federation, Club, PlayerRating
+from data.player import Player, Federation, Club, PlayerRating, TournamentPlayer
 from data.print_documents.documents import (
     PlayerListPrintDocument,
     PlayerCheckinListPrintDocument,
@@ -529,16 +529,16 @@ class PlayerAdminController(BaseEventAdminController):
 
     @staticmethod
     def _get_bye_options(
-        client: Client, player: Player, round_: int
+        client: Client, tournament_player: TournamentPlayer, round_: int
     ) -> dict[str, SelectOption]:
-        tournament = player.single_tournament_player.tournament
+        tournament = tournament_player.tournament
         hpb_disabled_message: str | None = None
         fpb_disabled_message: str | None = None
         if not client.can_set_half_point_bye(tournament.id):
             hpb_disabled_message = _('You are not allowed to set Half-Point Byes.')
         if not client.can_set_full_point_bye(tournament.id):
             fpb_disabled_message = _('You are not allowed to set Full-Point Byes.')
-        current_byes = player.single_tournament_player.byes_count
+        current_byes = tournament_player.byes_count
         if current_byes + 1 > tournament.max_byes:
             hpb_disabled_message = _(
                 'Not enough byes available to set a Half-Point Bye (required: 1).'
