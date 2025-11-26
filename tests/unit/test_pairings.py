@@ -309,8 +309,8 @@ class PairingTestCase(TestCase):
             16: 'STEPHAN',
         }
         player_name_by_pairing_number = {
-            pairing_number: player.last_name
-            for pairing_number, player in tournament.tournament_players_by_pairing_number.items()
+            pairing_number: tournament_player.player.last_name
+            for pairing_number, tournament_player in tournament.tournament_players_by_pairing_number.items()
         }
         self.assertEqual(
             player_name_by_pairing_number,
@@ -319,43 +319,46 @@ class PairingTestCase(TestCase):
 
     def test_pairing_numbers_reordered_on_starting_rank_change(self):
         tournament = self._tournament_from_json('tec-swiss-unpaired')
-        player = tournament.tournament_players_by_pairing_number[9]
-        player.stored_player.ratings |= {
+        tournament_player = tournament.tournament_players_by_pairing_number[9]
+        tournament_player.player.stored_player.ratings |= {
             1: {
                 'fide': 2250,
             }
         }
         with EventDatabase(EVENT_ID, True) as database:
-            database.update_stored_player(player.stored_player)
+            database.update_stored_player(tournament_player.player.stored_player)
 
         tournament = self._reload_tournament()
         players_by_pairing_number = tournament.tournament_players_by_pairing_number
-        self.assertEqual(player.last_name, 'JESSICA')
-        self.assertEqual(players_by_pairing_number[9].last_name, 'IRINA')
-        self.assertEqual(players_by_pairing_number[1].last_name, 'JESSICA')
+        self.assertEqual(players_by_pairing_number[9].player.last_name, 'IRINA')
+        self.assertEqual(players_by_pairing_number[1].player.last_name, 'JESSICA')
 
     def test_pairing_numbers_not_reordered_on_starting_rank_change_after_round_4(self):
         tournament = self._tournament_from_json('tec-swiss')
-        player = tournament.tournament_players_by_pairing_number[9]
-        player.stored_player.ratings |= {
+        tournament_player = tournament.tournament_players_by_pairing_number[9]
+        tournament_player.player.stored_player.ratings |= {
             1: {
                 'value': 2250,
                 'type': 3,
             }
         }
         with EventDatabase(EVENT_ID, True) as database:
-            database.update_stored_player(player.stored_player)
+            database.update_stored_player(tournament_player.player.stored_player)
 
         tournament = self._reload_tournament()
+        tournament_player = tournament.tournament_players_by_pairing_number[9]
         players_by_pairing_number = tournament.tournament_players_by_pairing_number
-        self.assertEqual(players_by_pairing_number[9].last_name, player.last_name)
+        self.assertEqual(
+            players_by_pairing_number[9].player.last_name,
+            tournament_player.player.last_name,
+        )
 
     def test_pairing_numbers_reordered_on_player_deletion(self):
         tournament = self._tournament_from_json('tec-swiss')
-        player = tournament.tournament_players_by_pairing_number[9]
+        tournament_player = tournament.tournament_players_by_pairing_number[9]
 
         with EventDatabase(EVENT_ID, True) as database:
-            database.delete_stored_player(player.id)
+            database.delete_stored_player(tournament_player.id)
 
         tournament = self._reload_tournament()
         expected_player_name_by_pairing_number = {
@@ -376,8 +379,8 @@ class PairingTestCase(TestCase):
             15: 'STEPHAN',
         }
         player_name_by_pairing_number = {
-            pairing_number: player.last_name
-            for pairing_number, player in tournament.tournament_players_by_pairing_number.items()
+            pairing_number: tournament_player.player.last_name
+            for pairing_number, tournament_player in tournament.tournament_players_by_pairing_number.items()
         }
         self.assertEqual(
             player_name_by_pairing_number,
@@ -386,8 +389,8 @@ class PairingTestCase(TestCase):
 
     def test_pairing_numbers_reordered_on_player_insertion(self):
         tournament = self._tournament_from_json('tec-swiss')
-        player = tournament.tournament_players_by_pairing_number[9]
-        new_stored_player = player.stored_player
+        tournament_player = tournament.tournament_players_by_pairing_number[9]
+        new_stored_player = tournament_player.player.stored_player
         new_stored_player.id = None
         new_stored_player.last_name = 'PIERRE'
         new_stored_player.ratings |= {
@@ -422,8 +425,8 @@ class PairingTestCase(TestCase):
             17: 'STEPHAN',
         }
         player_name_by_pairing_number = {
-            pairing_number: player.last_name
-            for pairing_number, player in tournament.tournament_players_by_pairing_number.items()
+            pairing_number: tournament_player.player.last_name
+            for pairing_number, tournament_player in tournament.tournament_players_by_pairing_number.items()
         }
         self.assertEqual(
             player_name_by_pairing_number,
