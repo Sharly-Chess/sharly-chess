@@ -851,31 +851,32 @@ class PapiConverter:
         plugin_data = tournament_player.player.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfePlayerPluginData)
 
-        fixed_board: int | None = tournament_player.player.fixed
+        fixed_board: int | None = tournament_player.fixed
         if manual_tie_break_value is not None:
             # The relative order of the players is stored in the fixed table field with values above 1000
             fixed_board = manual_tie_break_value + 1000
 
-        player = tournament_player.player
         papi_player = PapiPlayer(
-            lastName=player.last_name,
-            firstName=player.first_name,
-            birthDate=player.date_of_birth.strftime(PAPI_DATE_FORMAT)
-            if player.date_of_birth
+            lastName=tournament_player.last_name,
+            firstName=tournament_player.first_name,
+            birthDate=tournament_player.date_of_birth.strftime(PAPI_DATE_FORMAT)
+            if tournament_player.date_of_birth
             else None,
             category=PapiPlayerCategory.get_outer_value(tournament_player.category),
-            gender=PapiPlayerGender.get_outer_value(player.gender),
-            email=None if anonymize_player_data else player.mail,
-            phone=None if anonymize_player_data else player.phone,
-            comment=player.comment,
-            owed=player.owed if player.owed != 0 else None,
-            paid=player.paid if player.paid != 0 else None,
-            fideTitle=PapiPlayerTitle.get_outer_value(player.title),
-            fideCode=str(player.fide_id) if player.fide_id else None,
-            federation=player.federation.name,
-            club=player.club.name,
+            gender=PapiPlayerGender.get_outer_value(tournament_player.gender),
+            email=None if anonymize_player_data else tournament_player.mail,
+            phone=None if anonymize_player_data else tournament_player.phone,
+            comment=tournament_player.comment,
+            owed=tournament_player.owed if tournament_player.owed != 0 else None,
+            paid=tournament_player.paid if tournament_player.paid != 0 else None,
+            fideTitle=PapiPlayerTitle.get_outer_value(tournament_player.title),
+            fideCode=str(tournament_player.fide_id)
+            if tournament_player.fide_id
+            else None,
+            federation=tournament_player.federation.name,
+            club=tournament_player.club.name,
             fixedBoard=fixed_board,
-            checkedIn=player.check_in,
+            checkedIn=tournament_player.check_in,
             elo=self._get_papi_elo(tournament_player, TournamentRating.STANDARD),
             fideElo=self._get_papi_elo_type(
                 tournament_player, TournamentRating.STANDARD

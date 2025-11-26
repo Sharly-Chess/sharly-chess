@@ -69,9 +69,9 @@ class ScreenSet:
                             self.fixed_board_numbers.append(int(fixed_board_str))
                 else:
                     self.fixed_board_numbers = [
-                        tournament_player.player.fixed
+                        tournament_player.fixed
                         for tournament_player in self.tournament.tournament_players_by_id.values()
-                        if tournament_player.player.fixed
+                        if tournament_player.fixed
                     ]
             else:
                 if self.stored_screen_set.first:

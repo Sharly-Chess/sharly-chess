@@ -21,7 +21,7 @@ class CheckinColumn(TournamentPlayerTableColumn):
         return ''
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return '☑' if tournament_player.player.check_in else '☐'
+        return '☑' if tournament_player.check_in else '☐'
 
     def get_cell_classes(self, tournament_player: TournamentPlayer) -> str:
         return 'checkin'
@@ -77,7 +77,7 @@ class TitleColumn(TournamentPlayerTableColumn):
         return '\u00a0'
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.player.title.short_name
+        return tournament_player.title.short_name
 
     @property
     def shared_classes(self) -> str:
@@ -94,7 +94,7 @@ class NameColumn(TournamentPlayerTableColumn):
         return _('Name *** NAME FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.player.full_name
+        return tournament_player.full_name
 
     @property
     def shared_classes(self) -> str:
@@ -132,7 +132,7 @@ class GenderColumn(TournamentPlayerTableColumn):
         return _('Gen *** GENDER FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.player.gender.short_name
+        return tournament_player.gender.short_name
 
     @property
     def shared_classes(self) -> str:
@@ -145,7 +145,7 @@ class FederationColumn(TournamentPlayerTableColumn):
         return _('Fed *** FEDERATION FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.player.federation.name
+        return tournament_player.federation.name
 
     @property
     def shared_classes(self) -> str:
@@ -158,7 +158,7 @@ class ClubColumn(TournamentPlayerTableColumn):
         return _('Club *** CLUB FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.player.club.name
+        return tournament_player.club.name
 
     @property
     def shared_classes(self) -> str:
@@ -256,7 +256,7 @@ class PaidColumn(TournamentPlayerTableColumn):
         return _('Paid *** PAID COLUMN HEADER FOR PLAYERS')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return str(tournament_player.player.paid)
+        return str(tournament_player.paid)
 
     @property
     def shared_classes(self) -> str:
@@ -269,7 +269,7 @@ class OwedColumn(TournamentPlayerTableColumn):
         return _('Owed *** OWED COLUMN HEADER FOR PLAYERS')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return str(tournament_player.player.owed)
+        return str(tournament_player.owed)
 
     @property
     def shared_classes(self) -> str:
@@ -282,7 +282,7 @@ class CommentsColumn(TournamentPlayerTableColumn):
         return _('Comments *** COMMENTS FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.player.comment or ''
+        return tournament_player.comment or ''
 
     @property
     def shared_classes(self) -> str:
@@ -295,7 +295,7 @@ class PlayerColumn(TournamentPlayerTableColumn):
         return _('Player')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.player.full_name
+        return tournament_player.full_name
 
     @property
     def shared_classes(self) -> str:
@@ -308,7 +308,7 @@ class OpponentColumn(TournamentPlayerTableColumn):
         return _('Opponent')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.player.full_name
+        return tournament_player.full_name
 
     @property
     def shared_classes(self) -> str:

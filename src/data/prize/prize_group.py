@@ -214,7 +214,7 @@ class PrizeGroup:
                 unassigned_prizes.append(prize_slot)
                 continue
 
-            current = assigned_prizes.get(tournament_player.player.id)
+            current = assigned_prizes.get(tournament_player.id)
             is_upgrade = not current or next_prize.value > current.value or 0
             if not is_upgrade:
                 continue
@@ -226,7 +226,7 @@ class PrizeGroup:
                 if current.is_main:
                     # The player has currently won a less valuable main prize
                     # Remove the player from the main group
-                    removed_from_main_set.add(tournament_player.player.id)
+                    removed_from_main_set.add(tournament_player.id)
                     iterate = True
 
                     new_top_players: list[TournamentPlayer] = []
@@ -243,7 +243,7 @@ class PrizeGroup:
                         ]
 
                         new_top_player_ids = [
-                            tournament_player.player.id
+                            tournament_player.id
                             for tournament_player in new_top_players
                         ]
                         iterate = False
@@ -251,7 +251,7 @@ class PrizeGroup:
                         newly_entered_players_ids = list(
                             set(new_top_player_ids)
                             - set(
-                                tournament_player.player.id
+                                tournament_player.id
                                 for tournament_player in top_tournament_players
                             )
                         )
@@ -359,10 +359,10 @@ class PrizeGroup:
                         ),
                     )
                 )
-                del assigned_prizes[tournament_player.player.id]
+                del assigned_prizes[tournament_player.id]
 
             # Assign the new prize
-            assigned_prizes[tournament_player.player.id] = AssignedPrize(
+            assigned_prizes[tournament_player.id] = AssignedPrize(
                 prize=prize_slot.prize,
                 priority=prize_slot.priority,
                 place_index=prize_slot.place_index,

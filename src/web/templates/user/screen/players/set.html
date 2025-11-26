@@ -40,7 +40,6 @@
                             </div>
                         {% endif %}
                         {% for tournament_player in tournament_players %}
-                            {% set player=tournament_player.player %}
                             {% if tournament.current_round %}
                                 {% with pairing=tournament_player.pairings[tournament.current_round] %}
                                 {% with opponent_id=pairing.opponent_id %}
@@ -49,13 +48,13 @@
                                             class="player overflow-hidden text-nowrap"
                                             style="text-overflow: ellipsis;"
                                         >
-                                            {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ tournament_player.rating_str }} [{{ tournament_player.vpoints_str }}]
+                                            {% if tournament_player.title.short_name %}{{ tournament_player.title.short_name }}&nbsp;{% endif %}{{ tournament_player.full_name }} {{ tournament_player.rating_str }} [{{ tournament_player.vpoints_str }}]
                                         </div>
                                         <div class="pairing text-nowrap">
                                             {% if pairing.exempt %}
-                                                {{ player.exempt_str }}
+                                                {{ tournament_player.exempt_str }}
                                             {% elif not opponent_id %}
-                                                {{ player.not_paired_str }}
+                                                {{ tournament_player.not_paired_str }}
                                             {% else %}
                                                 {{ _('Board #%(board_number)d with %(color)s', board_number=tournament_player.board_number, color=tournament_player.color_str) }}
                                             {% endif %}
@@ -69,7 +68,7 @@
                                                 {% elif not opponent_id %}
                                                 {% else %}
                                                     {% with opponent=tournament.tournament_players_by_id[opponent_id] %}
-                                                        {{ _('vs') }} {% if opponent.player.title.short_name %}{{ opponent.player.title.short_name }}&nbsp;{% endif %}{{ opponent.player.full_name }} {{ opponent.rating_str }} [{{ opponent.vpoints_str }}]
+                                                        {{ _('vs') }} {% if opponent.title.short_name %}{{ opponent.title.short_name }}&nbsp;{% endif %}{{ opponent.full_name }} {{ opponent.rating_str }} [{{ opponent.vpoints_str }}]
                                                     {% endwith %}
                                                 {% endif %}
                                             </div>
@@ -89,8 +88,8 @@
                                             {% else %}
                                                 bi-square player-check-in
                                             {% endif %}
-                                            player-{{ tournament.id }}-{{ player.id }}"></i>
-                                        {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ tournament_player.rating_str }}
+                                            player-{{ tournament.id }}-{{ tournament_player.id }}"></i>
+                                        {% if tournament_player.title.short_name %}{{ tournament_player.title.short_name }}&nbsp;{% endif %}{{ tournament_player.full_name }} {{ tournament_player.rating_str }}
                                     </div>
                                     <div class="pairing text-nowrap">
                                         {{ tournament_player.not_paired_str }}

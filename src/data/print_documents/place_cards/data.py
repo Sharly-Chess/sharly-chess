@@ -38,15 +38,15 @@ class PlaceCardPlayer:
             if tournament_player.rating:
                 self.rating = str(tournament_player.rating)
             self.rating_type = tournament_player.rating_type.short_name
-            self.full_name = tournament_player.player.full_name
-            self.first_name = tournament_player.player.first_name
-            self.last_name = tournament_player.player.last_name
-            if tournament_player.player.year_of_birth:
-                self.year_of_birth = str(tournament_player.player.year_of_birth)
-            self.gender = tournament_player.player.gender.short_name
-            self.title = tournament_player.player.title.short_name
-            self.federation = tournament_player.player.federation.name
-            self.club = tournament_player.player.club.name
+            self.full_name = tournament_player.full_name
+            self.first_name = tournament_player.first_name
+            self.last_name = tournament_player.last_name
+            if tournament_player.year_of_birth:
+                self.year_of_birth = str(tournament_player.year_of_birth)
+            self.gender = tournament_player.gender.short_name
+            self.title = tournament_player.title.short_name
+            self.federation = tournament_player.federation.name
+            self.club = tournament_player.club.name
             self.category = tournament_player.category.short_name
             self.color = color
             plugin_manager.hook_for_event(

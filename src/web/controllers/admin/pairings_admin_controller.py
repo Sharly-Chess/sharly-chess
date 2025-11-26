@@ -708,9 +708,9 @@ class PairingsAdminController(BaseEventAdminController):
             player_id=player_id,
             action=PairingAction.BYE_UPDATE,
         )
-        player = web_context.get_admin_tournament_player()
+        tournament_player = web_context.get_admin_tournament_player()
         message = _('Zero-Point Bye attributed to player [{player}].').format(
-            player=player.player.full_name
+            player=tournament_player.full_name
         )
         return self._set_player_participation(
             web_context, Result.ZERO_POINT_BYE, success_message=message
@@ -751,13 +751,13 @@ class PairingsAdminController(BaseEventAdminController):
             Message.error(
                 request,
                 _('Too many byes for player [{player_name}].').format(
-                    player_name=tournament_player.player.full_name
+                    player_name=tournament_player.full_name
                 ),
             )
             return self._admin_event_pairings_render(web_context)
         else:
             message = _('Half-Point Bye attributed to player [{player}].').format(
-                player=tournament_player.player.full_name
+                player=tournament_player.full_name
             )
             return self._set_player_participation(
                 web_context, Result.HALF_POINT_BYE, success_message=message
@@ -788,7 +788,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_player = web_context.get_admin_tournament_player()
 
         message = _('Player [{player}] has returned for this round.').format(
-            player=tournament_player.player.full_name
+            player=tournament_player.full_name
         )
 
         return self._set_player_participation(
@@ -836,8 +836,8 @@ class PairingsAdminController(BaseEventAdminController):
                 'Player [{player}] has been paired against '
                 '[{opponent}] at board #{board}.'
             ).format(
-                player=tournament_player.player.full_name,
-                opponent=exempt_tournament_player.player.full_name,
+                player=tournament_player.full_name,
+                opponent=exempt_tournament_player.full_name,
                 board=board.number,
             )
         else:
@@ -847,7 +847,7 @@ class PairingsAdminController(BaseEventAdminController):
                 None,
             )
             message = _('Pairing-Allocated Bye assigned to player [{player}].').format(
-                player=tournament_player.player.full_name
+                player=tournament_player.full_name
             )
         Message.success(request, message)
         web_context = PairingsAdminWebContext(
@@ -1299,8 +1299,8 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round,
         )
         tournament = web_context.get_admin_tournament()
-        player = web_context.get_admin_tournament_player()
-        tournament.store_illegal_move(player)
+        tournament_player = web_context.get_admin_tournament_player()
+        tournament.store_illegal_move(tournament_player)
         return self._admin_event_pairings_render(
             web_context=web_context,
         )
@@ -1326,8 +1326,8 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round,
         )
         tournament = web_context.get_admin_tournament()
-        player = web_context.get_admin_tournament_player()
-        tournament.delete_illegal_move(player)
+        tournament_player = web_context.get_admin_tournament_player()
+        tournament.delete_illegal_move(tournament_player)
         return self._admin_event_pairings_render(
             web_context=web_context,
         )

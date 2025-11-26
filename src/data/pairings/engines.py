@@ -252,7 +252,7 @@ class BbpPairings(PairingEngine):
             stored_boards.append(
                 StoredBoard(
                     id=None,
-                    white_player_id=white_player.player.id,
+                    white_player_id=white_player.id,
                     black_player_id=black_player_id,
                     index=0,
                 )

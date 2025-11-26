@@ -18,30 +18,29 @@
     <tbody>
         {% set can_check_in=client.can_check_in_players(admin_tournament.id) %}
         {% for tournament_player in unpaired %}
-            {% set player=tournament_player.player %}
             {% with pairing=tournament_player.pairings[admin_round], class="bye" if admin_round and pairing and (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) else '' %}
-                <tr id="player-{{ player.id }}" class="player-row" data-player-id="{{ player.id }}">
+                <tr id="player-{{ tournament_player.id }}" class="player-row" data-player-id="{{ tournament_player.id }}">
                     <td class="{{ class }}">
                         <div class="d-flex align-items-center gap-2">
                         {% if not (pairing.zero_point_bye or pairing.half_point_bye or pairing.full_point_bye) and admin_tournament.check_in_open and (admin_round >= admin_tournament.current_round) %}
                             <i
                                 data-testid="check-in-cell"
                                 {% if can_check_in %}
-                                    {% if player.check_in %}
+                                    {% if tournament_player.check_in %}
                                         class="bi-check-circle-fill text-success cursor-pointer"
                                         {{ macros.tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
-                                        hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=0) }}"
+                                        hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=tournament_player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=0) }}"
                                     {% else %}
                                         class="bi-circle-fill text-warning cursor-pointer"
                                         {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
-                                        hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=1) }}"
+                                        hx-post="{{ url_for('admin-pairings-check-in-out', event_uniq_id=admin_event.uniq_id, player_id=tournament_player.id, tournament_id=admin_tournament.id, round=admin_round, check_in=1) }}"
                                     {% endif %}
-                                    hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                                    hx-on::before-request="$('#player-{{ tournament_player.id }} td').addClass('text-secondary');"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 {% else %}
                                     disabled
-                                    {% if player.check_in %}
+                                    {% if tournament_player.check_in %}
                                         class="bi-check-circle-fill text-success"
                                         {{ macros.tooltip_attributes('info', _('You are not allowed to check-out the player.'), 'right') }}
                                     {% else %}
@@ -54,7 +53,7 @@
                         {% include '/admin/player_link.html' %}
                         </div>
                     </td>
-                    <td class="{{ class }} text-end">{{ player.get_rating_and_type(admin_tournament.rating, admin_tournament.player_rating_type, tournament_player.category) }}</td>
+                    <td class="{{ class }} text-end">{{ tournament_player.get_rating_and_type(admin_tournament.rating, admin_tournament.player_rating_type, tournament_player.category) }}</td>
                     {% if admin_tournament.pairing_system.show_unpaired_player_modal %}
                         <td class="{{ class }} text-center" width="1">
                             <div
@@ -71,7 +70,7 @@
                                 <button
                                     class="btn btn-sm btn-outline-primary py-2"
                                     style="width: 2rem; line-height: 0;"
-                                    hx-get="{{ url_for('admin-event-unpaired-player-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=player.id) }}"
+                                    hx-get="{{ url_for('admin-event-unpaired-player-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, player_id=tournament_player.id) }}"
                                     hx-trigger="click"
                                     hx-target="body"
                                     hx-indicator="#please-wait"

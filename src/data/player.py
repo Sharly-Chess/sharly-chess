@@ -316,6 +316,74 @@ class TournamentPlayer:
     def pairing_number(self) -> int | None:
         return self.stored_tournament_player.pairing_number
 
+    @property
+    def last_name(self) -> str:
+        return self.player.last_name
+
+    @property
+    def first_name(self) -> str:
+        return self.player.first_name
+
+    @property
+    def full_name(self) -> str:
+        return self.player.full_name
+
+    @property
+    def date_of_birth(self) -> date | None:
+        return self.player.date_of_birth
+
+    @property
+    def year_of_birth(self) -> int:
+        return self.player.year_of_birth
+
+    @property
+    def gender(self) -> PlayerGender:
+        return self.player.gender
+
+    @property
+    def mail(self) -> str | None:
+        return self.player.mail
+
+    @property
+    def phone(self) -> str | None:
+        return self.player.phone
+
+    @property
+    def comment(self) -> str | None:
+        return self.player.comment
+
+    @property
+    def owed(self) -> float:
+        return self.player.owed
+
+    @property
+    def paid(self) -> float:
+        return self.player.paid
+
+    @property
+    def title(self) -> PlayerTitle:
+        return self.player.title
+
+    @property
+    def fide_id(self) -> int | None:
+        return self.player.fide_id
+
+    @property
+    def federation(self) -> Federation:
+        return self.player.federation
+
+    @property
+    def club(self) -> Club:
+        return self.player.club
+
+    @property
+    def fixed(self) -> int | None:
+        return self.player.fixed
+
+    @property
+    def check_in(self) -> bool:
+        return self.player.check_in
+
     def _get_default_pairing(self, round_: int) -> Pairing:
         return Pairing(
             self,
@@ -380,6 +448,14 @@ class TournamentPlayer:
     @property
     def rating_str(self) -> str:
         return str(self._tournament_rating)
+
+    @property
+    def not_paired_str(self) -> str:
+        return self.player.not_paired_str
+
+    @property
+    def exempt_str(self) -> str:
+        return self.player.exempt_str
 
     def will_fide_override_with_standard_rating(
         self, tournament_rating: TournamentRating, player_rating_type: PlayerRatingType
