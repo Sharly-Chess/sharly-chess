@@ -79,8 +79,8 @@ class PairingTestCase(TestCase):
         if not board:
             return f'{"":<14} - {"":<10}'
         return (
-            f'{board.index:>2}. {board.white_tournament_player.full_name:<10}'
-            f' - {Utils._getattr(board.black_tournament_player, "player.full_name", ""):<10}'
+            f'{board.index:>2}. {board.white_tournament_player.player.full_name:<10}'
+            f' - {Utils.deep_getattr(board.black_tournament_player, "player.full_name", ""):<10}'
         )
 
     # ---------------------------------------------------------------------------------
