@@ -564,8 +564,8 @@ class Tournament:
         """Return the number of players matching all criteria of this tournament."""
         return sum(
             1
-            for player in self.tournament_players_by_id.values()
-            if not self.player_matches_criteria(player)
+            for tournament_player in self.tournament_players_by_id.values()
+            if not self.player_matches_criteria(tournament_player)
         )
 
     @property
