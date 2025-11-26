@@ -77,7 +77,7 @@ class PlayerUserWebContext(TournamentUserWebContext):
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'player': self.tournament_player,
+            'tournament_player': self.tournament_player,
             'board': self.board,
         }
 
