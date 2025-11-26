@@ -9,7 +9,7 @@ from common.exception import OptionError
 from common.i18n import _
 from data.columns import player_table as columns
 from data.columns.handlers import PlayerColumnHandler
-from data.columns.player_table import PlayerTableColumn
+from data.columns.player_table import TournamentPlayerTableColumn
 from data.player import TournamentPlayer, Utils
 from data.print_documents import PrintOption
 from data.print_documents.documents import (
@@ -248,9 +248,9 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
             )
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         tournament = self.tournament
-        column_types: list[Callable[[ColumnUsage], PlayerTableColumn]] = [
+        column_types: list[Callable[[ColumnUsage], TournamentPlayerTableColumn]] = [
             columns.RankColumn,
             columns.NameColumn,
             columns.CategoryColumn,

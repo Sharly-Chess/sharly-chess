@@ -6,7 +6,7 @@ from typing import Any, Counter, Callable
 from common.exception import OptionError
 from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
-from data.columns.player_table import PlayerTableColumn
+from data.columns.player_table import TournamentPlayerTableColumn
 from data.criteria.player_filter_options import (
     SelectPlayerFilterOption,
     PlayerFilterOption,
@@ -41,14 +41,14 @@ class FraSchoolPlayerSplitter(PlayerSplitter):
         )
 
 
-class FraSchoolTableColumn(PlayerTableColumn):
+class FraSchoolTableColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('School *** SCHOOL FOR TABLE HEADER')
 
-    def get_cell_content(self, player: Player) -> Any:
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return getattr(
-            FRASchoolsUtils.get_player_school(player),
+            FRASchoolsUtils.get_player_school(tournament_player.player),
             'full_name_without_code',
             '',
         )

@@ -20,7 +20,7 @@ from utils.enum import Result, TournamentRating
 if TYPE_CHECKING:
     from data.columns.player_datasheet import DatasheetColumn
     from data.columns.board_table import BoardColumn
-    from data.columns.player_table import PlayerTableColumn
+    from data.columns.player_table import TournamentPlayerTableColumn
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.pairings.variations import SwissVariation
     from data.player import (
@@ -337,7 +337,7 @@ class AppHookSpecs:
     def alter_print_and_screen_player_columns(
         self,
         usage: 'ColumnUsage',
-        player_columns: list['PlayerTableColumn'],
+        player_columns: list['TournamentPlayerTableColumn'],
     ):
         """Alter the player columns of print documents and screens."""
 

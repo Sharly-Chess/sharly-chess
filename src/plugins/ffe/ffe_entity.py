@@ -9,7 +9,7 @@ from common.exception import SharlyChessException, OptionError
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from data.columns.player_datasheet import DatasheetColumn
-from data.columns.player_table import PlayerTableColumn
+from data.columns.player_table import TournamentPlayerTableColumn
 from data.criteria.player_filter_options import (
     PlayerFilterOption,
     SelectPlayerFilterOption,
@@ -613,13 +613,13 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
             raise OptionError(_('At least one licence type is expected.'), self)
 
 
-class FfeLeagueTableColumn(PlayerTableColumn):
+class FfeLeagueTableColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('League *** LEAGUE FOR TABLE HEADER')
 
-    def get_cell_content(self, player: Player) -> Any:
-        return FFEUtils.get_player_plugin_data(player).league or ''
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        return FFEUtils.get_player_plugin_data(tournament_player.player).league or ''
 
     @property
     def shared_classes(self) -> str:

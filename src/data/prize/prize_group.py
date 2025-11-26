@@ -154,7 +154,7 @@ class PrizeGroup:
             )
 
         top_prizes = calculate_main_category_prizes(sorted_tournament_players)
-        top_players = [
+        top_tournament_players = [
             assigned_prize.assigned_to
             for assigned_prize in top_prizes
             if assigned_prize.assigned_to
@@ -192,7 +192,7 @@ class PrizeGroup:
         )
 
         # Find eligible player for a prize
-        def find_eligible_player(prize_: Prize):
+        def find_eligible_tournament_player(prize_: Prize):
             for tournament_player_ in sorted_tournament_players:
                 if not prize_.prize_category.player_matches_criteria(
                     tournament_player_
@@ -209,12 +209,12 @@ class PrizeGroup:
             next_prize = prize_slot.prize
             assert next_prize is not None, 'Prize slot must have a prize'
 
-            player = find_eligible_player(next_prize)
-            if not player:
+            tournament_player = find_eligible_tournament_player(next_prize)
+            if not tournament_player:
                 unassigned_prizes.append(prize_slot)
                 continue
 
-            current = assigned_prizes.get(player.id)
+            current = assigned_prizes.get(tournament_player.player.id)
             is_upgrade = not current or next_prize.value > current.value or 0
             if not is_upgrade:
                 continue
@@ -226,7 +226,7 @@ class PrizeGroup:
                 if current.is_main:
                     # The player has currently won a less valuable main prize
                     # Remove the player from the main group
-                    removed_from_main_set.add(player.id)
+                    removed_from_main_set.add(tournament_player.player.id)
                     iterate = True
 
                     new_top_players: list[TournamentPlayer] = []
@@ -252,7 +252,7 @@ class PrizeGroup:
                             set(new_top_player_ids)
                             - set(
                                 tournament_player.player.id
-                                for tournament_player in top_players
+                                for tournament_player in top_tournament_players
                             )
                         )
 
@@ -294,10 +294,10 @@ class PrizeGroup:
                                 else:
                                     # Otherwise if the current prize is higher than the new one, we remove the player
                                     # from the main group and continue to add new players to the group if needed
-                                    removed_from_main_set.add(player.id)
+                                    removed_from_main_set.add(tournament_player.id)
                                     iterate = True
 
-                    top_players = new_top_players
+                    top_tournament_players = new_top_players
                     for assigned_prize in new_top_prizes:
                         if assigned_prize.assigned_to:
                             assigned_prizes[assigned_prize.assigned_to.player.id] = (
@@ -312,7 +312,8 @@ class PrizeGroup:
                             if assigned_prize.is_main
                             and assigned_prize.place_index == current.place_index
                             and assigned_prize.assigned_to
-                            and assigned_prize.assigned_to.player.id != player.id
+                            and assigned_prize.assigned_to.player.id
+                            != tournament_player.id
                         ),
                         None,
                     )
@@ -330,7 +331,7 @@ class PrizeGroup:
                             'the prize share for the place they were in is now '
                             'worth {new_share}.'
                         ).format(
-                            player=player,
+                            player=tournament_player,
                             previous_value=Utils.currency_value_str(
                                 current.value, currency
                             ),
@@ -358,14 +359,14 @@ class PrizeGroup:
                         ),
                     )
                 )
-                del assigned_prizes[player.id]
+                del assigned_prizes[tournament_player.player.id]
 
             # Assign the new prize
-            assigned_prizes[player.id] = AssignedPrize(
+            assigned_prizes[tournament_player.player.id] = AssignedPrize(
                 prize=prize_slot.prize,
                 priority=prize_slot.priority,
                 place_index=prize_slot.place_index,
-                assigned_to=player,
+                assigned_to=tournament_player,
                 value=next_prize.value,
                 warning=warning,
             )

@@ -12,7 +12,7 @@ from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from data.board import Board
 from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
-from data.columns.player_table import ColumnUsage, PlayerTableColumn
+from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
 from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
 from data.event import Event
 from data.pairings.engines import RoundRobinPairingEngine
@@ -173,7 +173,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
 
     @property
     @abstractmethod
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         """List of all the columns to display in the tables of the document."""
 
     @property
@@ -211,7 +211,7 @@ class PlayerListPrintDocument(PlayerPrintDocument):
         ]
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_list_columns(len(self.tournaments) > 1)
 
 
@@ -238,7 +238,7 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
         ]
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_checkin_list_columns(
             len(self.tournaments) > 1
         )
@@ -307,7 +307,7 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
         return _('Ranking after round #{round}').format(round=self.ranking_round)
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_ranking_columns(self.tournament)
 
 
@@ -327,7 +327,7 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
         return _('Crosstable after round #{round}').format(round=self.ranking_round)
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_crosstable_columns(
             self.tournament, self.ranking_round
         )
@@ -563,11 +563,11 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
         return self.tournament.tournament_players_by_name_with_unpaired
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_alpha_board_player_columns()
 
     @property
-    def opponent_columns(self) -> list[PlayerTableColumn]:
+    def opponent_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_alpha_board_opponent_columns()
 
     @property
@@ -784,7 +784,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         }
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         assert self.event is not None
         return PlayerColumnHandler(
             self.event, ColumnUsage.PRINT
