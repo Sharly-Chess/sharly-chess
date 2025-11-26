@@ -47,11 +47,11 @@
                             </div>
                             {% if tournament_player %}
                                 {% for column in player_columns %}
-                                    <div class="cell {{ column.get_cell_classes(player) }}">
+                                    <div class="cell {{ column.get_cell_classes(tournament_player) }}">
                                         {% if column.cell_template %}
                                             {% include column.cell_template %}
                                         {% else %}
-                                            {{ macros.column_cell(column, player) }}
+                                            {{ macros.column_cell(column, tournament_player) }}
                                         {% endif %}
                                     </div>
                                 {% endfor %}

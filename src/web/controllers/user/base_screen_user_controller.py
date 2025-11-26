@@ -8,7 +8,7 @@ from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.columns.board_table import BoardColumn, ScreenResultColumn
-from data.columns.player_table import PlayerTableColumn, ColumnUsage
+from data.columns.player_table import TournamentPlayerTableColumn, ColumnUsage
 from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
 from data.display_controller import DisplayController
 from data.family import Family
@@ -146,7 +146,7 @@ class BaseScreenUserController(BaseUserController):
         cls, web_context: ScreenEntityUserWebContext
     ) -> HTMXTemplate:
         columns_by_tournament_id: dict[
-            int, list[PlayerTableColumn] | list[BoardColumn]
+            int, list[TournamentPlayerTableColumn] | list[BoardColumn]
         ] = {}
         event = web_context.user_event
         if web_context.screen:

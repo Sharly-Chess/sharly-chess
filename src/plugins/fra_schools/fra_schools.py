@@ -10,7 +10,7 @@ from common.logger import get_logger
 from common.i18n import _
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
-from data.columns.player_table import PlayerTableColumn, ColumnUsage
+from data.columns.player_table import TournamentPlayerTableColumn, ColumnUsage
 from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.event import Player, Event
@@ -269,7 +269,7 @@ class FRASchoolsPlugin(Plugin):
     def alter_print_and_screen_player_columns(
         self,
         usage: ColumnUsage,
-        player_columns: list['PlayerTableColumn'],
+        player_columns: list['TournamentPlayerTableColumn'],
     ):
         # Remove FederationColumn and LeagueColumn
         player_columns[:] = [
