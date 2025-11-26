@@ -53,7 +53,7 @@
                         {% include '/admin/player_link.html' %}
                         </div>
                     </td>
-                    <td class="{{ class }} text-end">{{ tournament_player.get_rating_and_type(admin_tournament.rating, admin_tournament.player_rating_type, tournament_player.category) }}</td>
+                    <td class="{{ class }} text-end">{{ tournament_player.player.get_rating_and_type(admin_tournament.rating, admin_tournament.player_rating_type, tournament_player.category) }}</td>
                     {% if admin_tournament.pairing_system.show_unpaired_player_modal %}
                         <td class="{{ class }} text-center" width="1">
                             <div
