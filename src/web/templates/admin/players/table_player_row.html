@@ -163,7 +163,7 @@
     {{ admin_macros.extra_admin_column_cell("elo", player, admin_players_extra_columns)}}
     <td class="text-nowrap text-center">
         {% if tournament_player.rating_is_overridden(tournament_player.tournament.rating, tournament_player.tournament.player_rating_type) %}
-            <span {{ macros.tooltip_attributes('info', _('Standard rating used.'), 'right') }}>{{ player.rating_str }} <sup>*</sup></span>
+            <span {{ macros.tooltip_attributes('info', _('Standard rating used.'), 'right') }}>{{ tournament_player.rating_str }} <sup>*</sup></span>
         {% else %}
             {{ tournament_player.rating_str }}
         {% endif %}
