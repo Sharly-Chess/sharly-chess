@@ -205,9 +205,9 @@ class PlayerListPrintDocument(PlayerPrintDocument):
     def ordered_tournament_players(self) -> list[TournamentPlayer]:
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
-            player._temp_tournament_player
+            player.single_tournament_player
             for player in self.get_event().players_sorted_by_name
-            if player._temp_tournament_player.tournament.id in tournament_ids
+            if player.single_tournament_player.tournament.id in tournament_ids
         ]
 
     @property
@@ -232,9 +232,9 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
     def ordered_tournament_players(self) -> list[TournamentPlayer]:
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
-            player._temp_tournament_player
+            player.single_tournament_player
             for player in self.get_event().players_sorted_by_name
-            if player._temp_tournament_player.tournament.id in tournament_ids
+            if player.single_tournament_player.tournament.id in tournament_ids
         ]
 
     @property
