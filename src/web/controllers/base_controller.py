@@ -262,7 +262,7 @@ class WebContext:
         data[field] = data.get(field, '').strip()
         if not data[field]:
             return None
-        if '/' not in data[field]:
+        if ' / ' not in data[field]:
             try:
                 date_ = datetime.strptime(data[field], '%Y-%m-%d').date()
                 return date_, date_
@@ -272,14 +272,14 @@ class WebContext:
                         format='YYYY-MM-DD'
                     )
                 )
-        start_date_str, stop_date_str = data[field].split('/', 1)
+        start_date_str, stop_date_str = data[field].split(' / ', 1)
         try:
             start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
             stop_date = datetime.strptime(stop_date_str, '%Y-%m-%d').date()
         except ValueError:
             raise FormError(
                 _('Invalid date format (expected: {format}).').format(
-                    format='YYYY-MM-DD/YYYY-MM-DD'
+                    format='YYYY-MM-DD / YYYY-MM-DD'
                 )
             )
         if start_date > stop_date:

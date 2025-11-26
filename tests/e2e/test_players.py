@@ -32,7 +32,7 @@ class TestPlayersFunctionality:
         expect(modal).to_be_visible()
         modal.get_by_test_id('last-name').fill('doe')
         modal.get_by_test_id('first-name').fill('john')
-        modal.get_by_test_id('date-of-birth').fill('2000/10/30')
+        modal.get_by_test_id('date-of-birth').fill('2000-10-30')
         modal.get_by_test_id('gender').select_option(
             str(PlayerGender.MALE.value), force=True
         )

@@ -315,8 +315,8 @@ function getAirDatePickerSelectedDates(value, inputType) {
         if (dateRegex.test(value)) return [value];
     } else if (inputType === 'date-range') {
         if (dateRegex.test(value)) return [value];
-        if (value.includes('/')) {
-            const [start, stop] = value.split('/');
+        if (value.includes(' / ')) {
+            const [start, stop] = value.split(' / ');
             if (dateRegex.test(start) && dateRegex.test(stop)) {
                 return [start, stop];
             }
