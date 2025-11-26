@@ -193,7 +193,10 @@ class Player:
         }
 
     def get_rating_and_type(
-        self, tournament_rating: TournamentRating, player_rating_type: PlayerRatingType
+        self,
+        tournament_rating: TournamentRating,
+        player_rating_type: PlayerRatingType,
+        category: PlayerCategory,
     ) -> PlayerRatingAndType:
         player_ratings = self.ratings[tournament_rating]
         rating: int | None = None
@@ -210,7 +213,8 @@ class Player:
             )(
                 tournament_rating=tournament_rating,
                 player_rating_type=player_rating_type,
-                tournament_player=self._temp_tournament_player,
+                player=self,
+                category=category,
             )
             if rating_and_type:
                 return rating_and_type
@@ -232,11 +236,11 @@ class Player:
     def first_real_rating_str(self) -> str:
         for tournament_rating in TournamentRating:
             rating_and_type = self.get_rating_and_type(
-                tournament_rating, PlayerRatingType.FIDE
+                tournament_rating, PlayerRatingType.FIDE, self.category
             )
             if rating_and_type.type == PlayerRatingType.ESTIMATED:
                 rating_and_type = self.get_rating_and_type(
-                    tournament_rating, PlayerRatingType.NATIONAL
+                    tournament_rating, PlayerRatingType.NATIONAL, self.category
                 )
             if rating_and_type.type != PlayerRatingType.ESTIMATED:
                 return f'{rating_and_type} ({tournament_rating.acronym})'
@@ -419,7 +423,7 @@ class TournamentPlayer:
             return PlayerRatingAndType(rating.fide, PlayerRatingType.FIDE)
 
         return self.player.get_rating_and_type(
-            self.tournament.rating, self.tournament.player_rating_type
+            self.tournament.rating, self.tournament.player_rating_type, self.category
         )
 
     @property
@@ -433,7 +437,7 @@ class TournamentPlayer:
             return PlayerRatingAndType(rating.fide, PlayerRatingType.FIDE)
 
         return self.player.get_rating_and_type(
-            self.tournament.rating, self.tournament.player_rating_type
+            self.tournament.rating, self.tournament.player_rating_type, self.category
         )
 
     @property
@@ -442,7 +446,9 @@ class TournamentPlayer:
             [
                 str(
                     self.player.get_rating_and_type(
-                        tournament_rating, self.tournament.player_rating_type
+                        tournament_rating,
+                        self.tournament.player_rating_type,
+                        self.category,
                     )
                 )
                 for tournament_rating in TournamentRating
@@ -1200,7 +1206,7 @@ class TournamentPlayer:
 
     def __le__(self, other: 'TournamentPlayer') -> bool:
         # p1 <= p2 calls p1.__le__(p2)
-        if not isinstance(other, Player):
+        if not isinstance(other, TournamentPlayer):
             return NotImplemented
         return self.board_number_sort_key > other.board_number_sort_key
 

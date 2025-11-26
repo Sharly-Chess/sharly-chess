@@ -28,6 +28,7 @@ if TYPE_CHECKING:
         TournamentPlayer,
         PlayerRatingAndType,
         PlayerRatingType,
+        PlayerCategory,
     )
     from data.print_documents import PrintDocument, PlayerSplitter, QRCodeType
     from data.print_documents.place_cards.data import PlaceCardPlayer
@@ -161,7 +162,8 @@ class AppHookSpecs:
         self,
         tournament_rating: TournamentRating,
         player_rating_type: 'PlayerRatingType',
-        tournament_player: 'TournamentPlayer',
+        player: 'Player',
+        category: 'PlayerCategory',
     ) -> Optional['PlayerRatingAndType']:
         """Get the estimated rating of a player."""
 
