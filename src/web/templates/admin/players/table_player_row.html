@@ -108,10 +108,10 @@
         {% with last_name_first=true %}
             {% include '/admin/player_link.html' %}
         {% endwith %}
-        {% if not tournament_player.tournament.player_matches_criteria(player) %}
+        {% if not tournament_player.tournament.player_matches_criteria(tournament_player) %}
             <i
                 class="bi-exclamation-triangle-fill text-warning ps-2"
-                {{ macros.tooltip_attributes('info', _("Player does not match tournament criteria: {names}").format(names=tournament_player.tournament.failing_criteria_message(player)), 'top') }}
+                {{ macros.tooltip_attributes('info', _("Player does not match tournament criteria: {names}").format(names=tournament_player.tournament.failing_criteria_message(tournament_player)), 'top') }}
             ></i>
         {% endif %}
     </td>
