@@ -4,7 +4,6 @@ from unittest.mock import patch, PropertyMock
 import pytest
 from unittest import TestCase
 
-from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from data.player import Federation, PlayerRating, Club
@@ -64,11 +63,13 @@ ROUNDS = 6
 
 @pytest.mark.unit
 class PrizesTestCase(TestCase):
-    event: Event
+    def setUp(self):
+        self.category_index = 1
+        self.criterion_index = 1
+        self.prize_index = 1
+        self.stored_prize_group = StoredPrizeGroup(id=1, tournament_id=1, name='test')
+        self.tournament: Tournament | None = None
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
         TestUtils.create_event(
             'test-prizes-event',
             overrides={
@@ -76,19 +77,11 @@ class PrizesTestCase(TestCase):
                 'stop_date': date(2025, 1, 1),
             },
         )
-        cls.event = EventLoader().load_event('test-prizes-event')
+        self.event = EventLoader().load_event('test-prizes-event')
 
-    @classmethod
-    def tearDownClass(cls):
+    def tearDown(self):
         TestUtils.delete_event('test-prizes-event')
-        super().tearDownClass()
-
-    def setUp(self):
-        self.category_index = 1
-        self.criterion_index = 1
-        self.prize_index = 1
-        self.stored_prize_group = StoredPrizeGroup(id=1, tournament_id=1, name='test')
-        self.tournament: Tournament | None = None
+        return super().tearDown()
 
     def get_prizes(self, category_id: int = 1) -> list[Prize]:
         assert self.tournament is not None
@@ -101,19 +94,20 @@ class PrizesTestCase(TestCase):
     def assign_prizes(
         self,
         stored_categories: list[StoredPrizeCategory],
-        stored_players: list[StoredPlayer],
+        players: list[tuple[StoredPlayer, StoredTournamentPlayer]],
     ):
         self.stored_prize_group.stored_prize_categories = stored_categories
+        stored_tournament_players = []
         for index, stored_category in enumerate(stored_categories):
             stored_category.index = index
-        for index, stored_player in enumerate(stored_players):
+        for index, (stored_player, stored_tournament_player) in enumerate(players):
             id_ = 1001 + index
             stored_player.id = id_
-            stored_player.stored_tournament_player.player_id = id_
-            for (
-                stored_pairing
-            ) in stored_player.stored_tournament_player.stored_pairings:
+            stored_tournament_player.player_id = id_
+            self.event.stored_event.stored_players.append(stored_player)
+            for stored_pairing in stored_tournament_player.stored_pairings:
                 stored_pairing.player_id = id_
+            stored_tournament_players.append(stored_tournament_player)
         with patch(
             'data.tournament.Tournament.rounds', new_callable=PropertyMock
         ) as mock_rounds:
@@ -126,7 +120,7 @@ class PrizesTestCase(TestCase):
                     current_round=ROUNDS,
                     rounds=ROUNDS,
                     stored_prize_groups=[self.stored_prize_group],
-                    stored_tournament_players=stored_players,
+                    stored_tournament_players=stored_tournament_players,
                 ),
             )
             return self.tournament.prize_groups_by_id[1].assign_prizes()
@@ -141,19 +135,7 @@ class PrizesTestCase(TestCase):
         federation: str = 'FRA',
         club: str = '',
         ffe_league: str = '',
-    ) -> StoredPlayer:
-        stored_pairings: list[StoredPairing] = []
-        for round_ in range(1, 7):
-            result = Result.WIN if round_ <= points else Result.LOSS
-            stored_pairings.append(
-                StoredPairing(
-                    tournament_id=1,
-                    player_id=0,
-                    round_=round_,
-                    result=result.value,
-                    board_id=None,
-                )
-            )
+    ) -> tuple[StoredPlayer, StoredTournamentPlayer]:
         stored_player = StoredPlayer(
             id=None,
             first_name='A',
@@ -176,12 +158,27 @@ class PrizesTestCase(TestCase):
             fixed=False,
             check_in=False,
             plugin_data={'ffe': {'league': ffe_league}},
-            stored_tournament_player=StoredTournamentPlayer(
-                tournament_id=1,
-                stored_pairings=stored_pairings,
-            ),
         )
-        return stored_player
+
+        stored_pairings: list[StoredPairing] = []
+        for round_ in range(1, 7):
+            result = Result.WIN if round_ <= points else Result.LOSS
+            stored_pairings.append(
+                StoredPairing(
+                    tournament_id=1,
+                    player_id=0,
+                    round_=round_,
+                    result=result.value,
+                    board_id=None,
+                )
+            )
+
+        stored_tournament_player = StoredTournamentPlayer(
+            tournament_id=1,
+            stored_pairings=stored_pairings,
+        )
+
+        return (stored_player, stored_tournament_player)
 
     def stored_category(
         self,
@@ -237,7 +234,7 @@ class PrizesTestCase(TestCase):
 
     def assert_has_prize(
         self,
-        stored_player: StoredPlayer,
+        player: tuple[StoredPlayer, StoredTournamentPlayer],
         prize: Prize | StoredPrize,
         prize_list: list[AssignedPrize],
         has_warning: bool = False,
@@ -246,7 +243,7 @@ class PrizesTestCase(TestCase):
             (
                 prize
                 for prize in prize_list
-                if prize.assigned_to and prize.assigned_to.id == stored_player.id
+                if prize.assigned_to and prize.assigned_to.id == player[0].id
             ),
             None,
         )
@@ -258,7 +255,7 @@ class PrizesTestCase(TestCase):
 
     def assert_has_prize_value(
         self,
-        stored_player: StoredPlayer,
+        player: tuple[StoredPlayer, StoredTournamentPlayer],
         value: float,
         prize_list: list[AssignedPrize],
         has_warning: bool = False,
@@ -267,25 +264,27 @@ class PrizesTestCase(TestCase):
             (
                 prize
                 for prize in prize_list
-                if prize.assigned_to and prize.assigned_to.id == stored_player.id
+                if prize.assigned_to and prize.assigned_to.id == player[0].id
             ),
             None,
         )
         assert assigned_prize is not None, (
-            f'No assigned prize for player {stored_player.id}'
+            f'No assigned prize for player {player[0].id}'
         )
         self.assertEqual(bool(assigned_prize.warning), has_warning)
         self.assertIn(
-            stored_player.id,
+            player[0].id,
             [prize.assigned_to.id for prize in prize_list if prize.assigned_to],
         )
         self.assertEqual(assigned_prize.value, value)
 
     def assert_has_no_prize(
-        self, stored_player: StoredPlayer, prize_list: list[AssignedPrize]
+        self,
+        player: tuple[StoredPlayer, StoredTournamentPlayer],
+        prize_list: list[AssignedPrize],
     ):
         self.assertNotIn(
-            stored_player.id,
+            player[0].id,
             [prize.assigned_to.id for prize in prize_list if prize.assigned_to],
         )
 

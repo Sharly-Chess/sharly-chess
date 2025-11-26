@@ -331,7 +331,7 @@ class PrizeGroup:
                             'the prize share for the place they were in is now '
                             'worth {new_share}.'
                         ).format(
-                            player=tournament_player,
+                            player=tournament_player.player,
                             previous_value=Utils.currency_value_str(
                                 current.value, currency
                             ),
