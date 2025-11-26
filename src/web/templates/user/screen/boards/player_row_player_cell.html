@@ -1,3 +1,4 @@
+{% set player=tournament_player.player %}
 <div
     class="
         player-cell
@@ -26,5 +27,5 @@
             class="{% if player.check_in %}bi-check-square-fill{% else %}bi-square{% endif %}"
         ></i>
     {% endif %}
-    {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ player.rating_str }}
+    {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ tournament_player.rating_str }}
 </div>

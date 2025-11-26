@@ -108,10 +108,11 @@
             });
         </script>
     {% elif
-        player
+        tournament_player
         and
-        client.can_check_in_players(player.tournament.id)
+        client.can_check_in_players(tournament_player.tournament.id)
     %}
+        {% set player=tournament_player.player %}
         <div class="modal-dialog input-screen-result-modal">
             <div class="modal-content bg-secondary-subtle">
                 <div class="modal-header">
@@ -125,7 +126,7 @@
                             hx-patch="{{ url_for('user-toggle-check-in', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
-                        >{% if not player.check_in %}{{ _('CHECK-IN') }}{% else %}{{ _('CHECK-OUT') }}{% endif %}<br/><br/>{{ player.last_name }}<br/>{{ player.first_name }}<br/>{{ player.rating_str }}</button>
+                        >{% if not tournament_player.check_in %}{{ _('CHECK-IN') }}{% else %}{{ _('CHECK-OUT') }}{% endif %}<br/><br/>{{ player.last_name }}<br/>{{ player.first_name }}<br/>{{ tournament_player.rating_str }}</button>
                     </div>
                 </div>
                 <div class="modal-footer row d-flex align-items-center justify-content-center">
