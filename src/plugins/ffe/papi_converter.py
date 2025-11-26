@@ -755,7 +755,7 @@ class PapiConverter:
 
         # Create mapping from internal player ID to index in PapiPlayer list
         player_id_to_index = {
-            tournament_player.player.id: index
+            tournament_player.id: index
             for index, tournament_player in enumerate(tournament.tournament_players)
         }
 
@@ -766,7 +766,7 @@ class PapiConverter:
                 tournament_player,
                 player_id_to_index,
                 tournament.pab_value,
-                manual_tiebreak_by_player_id.get(tournament_player.player.id, None),
+                manual_tiebreak_by_player_id.get(tournament_player.id, None),
                 anonymize_player_data,
             )
             plugin_manager.hook_for_event(tournament.event, 'update_papi_player')(
@@ -803,7 +803,7 @@ class PapiConverter:
             tournament.compute_tournament_player_ranks()
             player_count = tournament.player_count
             for tournament_player in tournament.tournament_players:
-                manual_tiebreak_by_player_id[tournament_player.player.id] = (
+                manual_tiebreak_by_player_id[tournament_player.id] = (
                     player_count - tournament_player.rank + 1
                 )
         elif len(papi_tiebreaks) < 3 and not manual_index:
@@ -817,13 +817,13 @@ class PapiConverter:
                     key=lambda p: p.starting_rank_sort_key,
                 )
             ):
-                manual_tiebreak_by_player_id[tournament_player.player.id] = (
+                manual_tiebreak_by_player_id[tournament_player.id] = (
                     player_count - index
                 )
         elif manual_index:
             # Setup the manual tie-break values from the stored value
             manual_tiebreak_by_player_id = {
-                tournament_player.player.id: tournament_player.manual_tiebreak
+                tournament_player.id: tournament_player.manual_tiebreak
                 for tournament_player in tournament.tournament_players
                 if tournament_player.manual_tiebreak is not None
             }
@@ -890,7 +890,7 @@ class PapiConverter:
             ),
             licenceType=PapiPlayerFFELicence.get_outer_value(plugin_data.ffe_licence),
             refFFE=plugin_data.ffe_id
-            or (self.MOCK_FFE_ID_DELTA + tournament_player.player.id),
+            or (self.MOCK_FFE_ID_DELTA + tournament_player.id),
             nrFFE=plugin_data.ffe_licence_number,
             league=plugin_data.league,
         )

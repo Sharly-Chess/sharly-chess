@@ -640,7 +640,7 @@ class TournamentAdminController(BaseEventAdminController):
                             database.add_stored_pairing(
                                 StoredPairing(
                                     tournament_id=tournament.id,
-                                    player_id=tournament_player.player.id,
+                                    player_id=tournament_player.id,
                                     round_=round_,
                                     result=Result.ZERO_POINT_BYE.value,
                                     board_id=None,
@@ -1661,13 +1661,11 @@ class TournamentAdminController(BaseEventAdminController):
                     for b in admin_tournament.boards
                     if (
                         b.white_tournament_player is not None
-                        and b.white_tournament_player.player.id
-                        == random_tournament_player.player.id
+                        and b.white_tournament_player.id == random_tournament_player.id
                     )
                     or (
                         b.black_tournament_player is not None
-                        and b.black_tournament_player.player.id
-                        == random_tournament_player.player.id
+                        and b.black_tournament_player.id == random_tournament_player.id
                     )
                 ),
                 None,
@@ -1677,14 +1675,12 @@ class TournamentAdminController(BaseEventAdminController):
         if random_tournament_player and board is not None:
             if (
                 board.white_tournament_player
-                and board.white_tournament_player.player.id
-                != random_tournament_player.player.id
+                and board.white_tournament_player.id != random_tournament_player.id
             ):
                 opponent = board.white_tournament_player
             elif (
                 board.black_tournament_player
-                and board.black_tournament_player.player.id
-                != random_tournament_player.player.id
+                and board.black_tournament_player.id != random_tournament_player.id
             ):
                 opponent = board.black_tournament_player
 

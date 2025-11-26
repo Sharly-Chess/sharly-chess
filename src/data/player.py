@@ -163,7 +163,7 @@ class Player:
         tournaments = self.event.tournaments_by_id
         for tournament in tournaments.values():
             for tournament_player in tournament.tournament_players:
-                if tournament_player.player.id == self.id:
+                if tournament_player.id == self.id:
                     return tournament
 
         raise RuntimeError('Player not assigned to a tournament')
@@ -298,6 +298,10 @@ class TournamentPlayer:
     @property
     def event(self) -> 'Event':
         return self.tournament.event
+
+    @property
+    def id(self) -> int:
+        return self.stored_tournament_player.player_id
 
     @property
     def player(self) -> 'Player':

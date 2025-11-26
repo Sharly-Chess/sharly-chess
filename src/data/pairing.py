@@ -92,7 +92,7 @@ class Pairing:
             self.update(event_database)
             logger.info(
                 'An illegal move has been recorded for player [%s].',
-                self.tournament_player.player.id,
+                self.tournament_player.id,
             )
             return True
         return False
@@ -103,13 +103,13 @@ class Pairing:
             self.update(event_database)
             logger.info(
                 'An illegal move has been deleted for player [%s].',
-                self.tournament_player.player.id,
+                self.tournament_player.id,
             )
             return True
         else:
             logger.info(
                 'No illegal move found for player [%s].',
-                self.tournament_player.player.id,
+                self.tournament_player.id,
             )
             return False
 
@@ -221,8 +221,7 @@ class Pairing:
             return None
         return (
             BoardColor.WHITE
-            if board.white_tournament_player.player.id
-            == self.tournament_player.player.id
+            if board.white_tournament_player.id == self.tournament_player.id
             else BoardColor.BLACK
         )
 

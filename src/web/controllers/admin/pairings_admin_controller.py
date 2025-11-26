@@ -829,8 +829,8 @@ class PairingsAdminController(BaseEventAdminController):
         if exempt_tournament_player is not None:
             board = tournament.create_round_pairing(
                 pairing_round,
-                exempt_tournament_player.player.id,
-                tournament_player.player.id,
+                exempt_tournament_player.id,
+                tournament_player.id,
             )
             message = _(
                 'Player [{player}] has been paired against '
@@ -843,7 +843,7 @@ class PairingsAdminController(BaseEventAdminController):
         else:
             tournament.create_round_pairing(
                 pairing_round,
-                tournament_player.player.id,
+                tournament_player.id,
                 None,
             )
             message = _('Pairing-Allocated Bye assigned to player [{player}].').format(
@@ -854,7 +854,7 @@ class PairingsAdminController(BaseEventAdminController):
             request,
             tournament_id=tournament_id,
             round_=round,
-            player_id=tournament_player.player.id,
+            player_id=tournament_player.id,
             reload_event=True,
         )
         return self._admin_event_pairings_render(web_context)
@@ -1474,13 +1474,13 @@ class PairingsAdminController(BaseEventAdminController):
             if len(group) <= 1:
                 for tournament_player in group:
                     if tournament_player.manual_tiebreak is not None:
-                        players_to_update[tournament_player.player.id] = None
+                        players_to_update[tournament_player.id] = None
                 continue
 
             # Current order (by manual_rank_key) and submitted order (restricted to this group)
-            current_group_ids = [
-                tournament_player.player.id for tournament_player in group
-            ][::-1]
+            current_group_ids = [tournament_player.id for tournament_player in group][
+                ::-1
+            ]
 
             new_group_ids = [
                 pid for pid in ordered_player_ids if pid in current_group_ids

@@ -634,7 +634,7 @@ class BergerGridPrintDocument(PrintDocument):
     def grid_id_by_player_id(self) -> dict[int, int]:
         player_sorter = self._get_option(PlayerSortPrintOption).player_sorter
         return {
-            tournament_player.player.id: index + 1
+            tournament_player.id: index + 1
             for index, tournament_player in enumerate(
                 player_sorter.sorted_tournament_players(self.tournament)
             )
@@ -655,7 +655,7 @@ class BergerGridPrintDocument(PrintDocument):
         pairing_engine = self.tournament.pairing_variation.engine
         assert isinstance(pairing_engine, RoundRobinPairingEngine)
         result_grid: dict[int, list[list[Result | None]]] = {
-            tournament_player.player.id: [
+            tournament_player.id: [
                 [None] * pairing_engine.player_encounters
                 for __ in range(self.tournament.player_count)
             ]
@@ -670,7 +670,7 @@ class BergerGridPrintDocument(PrintDocument):
                     continue
                 opponent_grid_id = self.grid_id_by_player_id[pairing.opponent_id]
                 if not self._set_encounter_result(
-                    tournament_player.player.id,
+                    tournament_player.id,
                     opponent_grid_id,
                     pairing.result,
                     result_grid,
@@ -679,7 +679,7 @@ class BergerGridPrintDocument(PrintDocument):
                         pairing.opponent_id
                     ]
                     raise SharlyChessException(
-                        f'More than {len(result_grid[tournament_player.player.id][opponent_grid_id - 1])} encounters between '
+                        f'More than {len(result_grid[tournament_player.id][opponent_grid_id - 1])} encounters between '
                         f'players {tournament_player.player.full_name} and {opponent.player.full_name}.'
                     )
         return result_grid

@@ -629,8 +629,8 @@ class Screen:
                     pairing = tournament_player.pairings[round_]
                     if (
                         pairing.board
-                        and pairing.board.white_tournament_player.player.id
-                        == tournament_player.player.id
+                        and pairing.board.white_tournament_player.id
+                        == tournament_player.id
                     ):
                         if (
                             pairing.board.last_result_update

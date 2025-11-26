@@ -215,7 +215,7 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
         for points, test_group in players_by_points.items():
             estimation = level_estimations[points]
             for tournament_player in test_group:
-                estimation_by_player_id[tournament_player.player.id] = estimation
+                estimation_by_player_id[tournament_player.id] = estimation
         return estimation_by_player_id
 
     def _get_player_estimation(self, tournament_player: 'TournamentPlayer') -> int:

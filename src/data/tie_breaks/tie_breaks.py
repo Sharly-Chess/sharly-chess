@@ -1646,7 +1646,7 @@ class DirectEncounterTieBreak(TieBreak):
             return
 
         min_max_by_player_id = {
-            tournament_player.player.id: self._compute_player_min_max_points(
+            tournament_player.id: self._compute_player_min_max_points(
                 tournament_player,
                 tournament_player_group,
                 after_round,
@@ -1661,7 +1661,7 @@ class DirectEncounterTieBreak(TieBreak):
             return
 
         tournament_players_by_id = {
-            tournament_player.player.id: tournament_player
+            tournament_player.id: tournament_player
             for tournament_player in tournament_player_group
         }
 
@@ -1714,7 +1714,7 @@ class DirectEncounterTieBreak(TieBreak):
         """Compute the min and max possible points a tournament_player
         can achieve against other players of the group."""
         group_player_ids = tuple(
-            tournament_player.player.id for tournament_player in player_group
+            tournament_player.id for tournament_player in player_group
         )
         group_pairings = [
             pairing

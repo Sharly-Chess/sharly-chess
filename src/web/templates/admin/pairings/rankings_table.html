@@ -139,7 +139,7 @@
 </form>
 
 {% for tournament_player in admin_tournament.tournament_players_by_rank.values() %}
-    <div id="popover-content-{{ tournament_player.player.id }}" class="d-none">
+    <div id="popover-content-{{ tournament_player.id }}" class="d-none">
         <div class="empty"></div>
     </div>
 {% endfor %}

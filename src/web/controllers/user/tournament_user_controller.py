@@ -118,7 +118,7 @@ class CheckInUserController(BaseInputUserController):
         event_uniq_id: str,
     ) -> Template:
         player_web_context = PlayerUserWebContext(request)
-        assert player_web_context.tournament_player.player.id is not None
+        assert player_web_context.tournament_player.id is not None
         player_web_context.tournament.check_in_player(
             player_web_context.tournament_player.player,
             not player_web_context.tournament_player.player.check_in,
@@ -129,7 +129,7 @@ class CheckInUserController(BaseInputUserController):
         SessionHandler.set_session_user_last_check_in_updated(
             request,
             player_web_context.tournament.id,
-            player_web_context.tournament_player.player.id,
+            player_web_context.tournament_player.id,
         )
         web_context = BasicScreenOrFamilyUserWebContext(request)
         return self._user_screen_render(web_context)
@@ -146,7 +146,7 @@ class IllegalMoveUserController(BaseInputUserController):
             SessionHandler.set_session_user_last_illegal_move_updated(
                 request,
                 player_web_context.tournament.id,
-                player_web_context.tournament_player.player.id,
+                player_web_context.tournament_player.id,
             )
         else:
             if not player_web_context.tournament.delete_illegal_move(
@@ -154,13 +154,13 @@ class IllegalMoveUserController(BaseInputUserController):
             ):
                 Message.error(
                     request,
-                    f'Player [{player_web_context.tournament_player.player.id}] has no illegal move recorded.',
+                    f'Player [{player_web_context.tournament_player.id}] has no illegal move recorded.',
                 )
             else:
                 SessionHandler.set_session_user_last_illegal_move_updated(
                     request,
                     player_web_context.tournament.id,
-                    player_web_context.tournament_player.player.id,
+                    player_web_context.tournament_player.id,
                 )
         web_context = BasicScreenOrFamilyUserWebContext(request)
         return self._user_screen_render(web_context)

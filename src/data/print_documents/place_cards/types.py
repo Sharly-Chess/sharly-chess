@@ -150,7 +150,7 @@ class PlayerCardType(PlaceCardType):
             tournament_players = [
                 tournament_player
                 for tournament_player in tournament_players
-                if tournament_player.player.id in player_ids
+                if tournament_player.id in player_ids
             ]
         return [PlaceCardPlayer(player) for player in tournament_players]
 
