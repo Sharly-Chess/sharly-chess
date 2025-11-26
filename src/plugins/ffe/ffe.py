@@ -494,11 +494,12 @@ class FfePlugin(Plugin):
         self,
         tournament_rating: TournamentRating,
         player_rating_type: PlayerRatingType,
-        tournament_player: 'TournamentPlayer',
+        player: 'Player',
+        category: 'PlayerCategory',
     ) -> Optional[PlayerRatingAndType]:
         # In France, regardless of the player_rating_type of the tournament,
         # the FIDE rating is used, if available, falling back to the national rating
-        ratings = tournament_player.player.ratings[tournament_rating]
+        ratings = player.ratings[tournament_rating]
         if ratings.fide is not None:
             return PlayerRatingAndType(ratings.fide, PlayerRatingType.FIDE)
         if ratings.national is not None:
@@ -508,7 +509,7 @@ class FfePlugin(Plugin):
         value = 0
         match tournament_rating:
             case TournamentRating.RAPID:
-                match tournament_player.category:
+                match category:
                     case PlayerCategory.U8 | PlayerCategory.U10:
                         value = 799
                     case PlayerCategory.U12 | PlayerCategory.U14:
@@ -516,7 +517,7 @@ class FfePlugin(Plugin):
                     case _:
                         value = 1199
             case TournamentRating.BLITZ:
-                match tournament_player.category:
+                match category:
                     case PlayerCategory.U8 | PlayerCategory.U10:
                         value = 799
                     case PlayerCategory.U12 | PlayerCategory.U14:
@@ -524,7 +525,7 @@ class FfePlugin(Plugin):
                     case _:
                         value = 1199
             case TournamentRating.STANDARD:
-                match tournament_player.category:
+                match category:
                     case (
                         PlayerCategory.U8
                         | PlayerCategory.U10

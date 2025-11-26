@@ -22,7 +22,7 @@
             {{ macros.tooltip_attributes('info', _('Number of players: %(num)d', num=tournament.tournament_players_by_id|length), 'top') }}
         >
             <i class="bi-people-fill pe-1"></i>
-            {{ tournament.players_by_id|length }}
+            {{ tournament.tournament_players_by_id|length }}
         </div>
         <div
             class="text-nowrap"

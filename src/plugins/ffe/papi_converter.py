@@ -918,7 +918,7 @@ class PapiConverter:
         ):
             tournament_rating = TournamentRating.STANDARD
         return tournament_player.player.get_rating_and_type(
-            tournament_rating, PlayerRatingType.FIDE
+            tournament_rating, PlayerRatingType.FIDE, tournament_player.category
         ).value
 
     def _get_papi_elo_type(
@@ -929,7 +929,7 @@ class PapiConverter:
         ):
             tournament_rating = TournamentRating.STANDARD
         rating_and_type = tournament_player.player.get_rating_and_type(
-            tournament_rating, PlayerRatingType.FIDE
+            tournament_rating, PlayerRatingType.FIDE, tournament_player.category
         )
         rating_type = rating_and_type.type
         default_rating = PapiPlayerRatingType.get_outer_value(
