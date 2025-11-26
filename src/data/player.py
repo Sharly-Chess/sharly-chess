@@ -158,8 +158,9 @@ class Player:
     def check_in(self) -> bool:
         return self.stored_player.check_in
 
-    @property
-    def _temp_tournament(self) -> 'Tournament':
+    @cached_property
+    def single_tournament(self) -> 'Tournament':
+        """The tournament this player is assigned to (for single tournament events)"""
         tournaments = self.event.tournaments_by_id
         for tournament in tournaments.values():
             for tournament_player in tournament.tournament_players:
@@ -169,8 +170,8 @@ class Player:
         raise RuntimeError('Player not assigned to a tournament')
 
     @property
-    def _temp_tournament_player(self) -> 'TournamentPlayer':
-        return self._temp_tournament.tournament_players_by_id[self.id]
+    def single_tournament_player(self) -> 'TournamentPlayer':
+        return self.single_tournament.tournament_players_by_id[self.id]
 
     def replace_stored_player(self, stored_player: StoredPlayer):
         self.stored_player = stored_player

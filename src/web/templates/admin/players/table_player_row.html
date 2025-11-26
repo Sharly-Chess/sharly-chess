@@ -4,7 +4,7 @@
         hx-swap-oob="outerHTML:#player-{{ old_player_id or player.id}}"
     {% endif %}
 >
-    {% set tournament_player=player._temp_tournament_player %}
+    {% set tournament_player=player.single_tournament_player %}
     <td class="text-nowrap text-start compact-col ps-2">
         {% set can_update = client.can_update_players %}
         {% set can_update_history=client.can_update_players_history(tournament_player.tournament.id) %}

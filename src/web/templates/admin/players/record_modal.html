@@ -1,5 +1,5 @@
-{% set bye_definition_allowed=admin_player._temp_tournament_player.tournament.pairing_system.allow_bye_definition %}
-{% set tournament_player=admin_player._temp_tournament_player %}
+{% set bye_definition_allowed=admin_player.single_tournament_player.tournament.pairing_system.allow_bye_definition %}
+{% set tournament_player=admin_player.single_tournament_player %}
 <div id="player-record-modal" class="modal-dialog modal-dialog-scrollable admin-record-edit-modal">
     <div class="modal-content">
         <div class="modal-header d-flex justify-content-between align-items-end">
