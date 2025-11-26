@@ -518,7 +518,7 @@ class PapiConverter:
         if papi_player.licenceType:
             try:
                 ffe_licence = PapiPlayerFFELicence.get_core_object(
-                    papi_player.licenceType
+                    papi_player.licenceType, papi_player.nrFFE
                 )
             except KeyError:
                 raise_unknown_value('licenceType', papi_player.licenceType)
@@ -874,7 +874,9 @@ class PapiConverter:
             fideRapidElo=self._get_papi_elo_type(player, TournamentRating.RAPID),
             blitzElo=self._get_papi_elo(player, TournamentRating.BLITZ),
             fideBlitzElo=self._get_papi_elo_type(player, TournamentRating.BLITZ),
-            licenceType=PapiPlayerFFELicence.get_outer_value(plugin_data.ffe_licence),
+            licenceType=PapiPlayerFFELicence.get_outer_value(
+                plugin_data.ffe_licence, plugin_data.ffe_licence_number
+            ),
             refFFE=plugin_data.ffe_id or (self.MOCK_FFE_ID_DELTA + player.id),
             nrFFE=plugin_data.ffe_licence_number,
             league=plugin_data.league,
