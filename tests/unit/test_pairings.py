@@ -79,8 +79,8 @@ class PairingTestCase(TestCase):
         if not board:
             return f'{"":<14} - {"":<10}'
         return (
-            f'{board.index:>2}. {board.white_tournament_player.player.full_name:<10}'
-            f' - {Utils.deep_getattr(board.black_tournament_player, "player.full_name", ""):<10}'
+            f'{board.index:>2}. {board.white_tournament_player.full_name:<10}'
+            f' - {Utils.deep_getattr(board.black_tournament_player, "full_name", ""):<10}'
         )
 
     # ---------------------------------------------------------------------------------
@@ -309,7 +309,7 @@ class PairingTestCase(TestCase):
             16: 'STEPHAN',
         }
         player_name_by_pairing_number = {
-            pairing_number: tournament_player.player.last_name
+            pairing_number: tournament_player.last_name
             for pairing_number, tournament_player in tournament.tournament_players_by_pairing_number.items()
         }
         self.assertEqual(
@@ -330,8 +330,8 @@ class PairingTestCase(TestCase):
 
         tournament = self._reload_tournament()
         players_by_pairing_number = tournament.tournament_players_by_pairing_number
-        self.assertEqual(players_by_pairing_number[9].player.last_name, 'IRINA')
-        self.assertEqual(players_by_pairing_number[1].player.last_name, 'JESSICA')
+        self.assertEqual(players_by_pairing_number[9].last_name, 'IRINA')
+        self.assertEqual(players_by_pairing_number[1].last_name, 'JESSICA')
 
     def test_pairing_numbers_not_reordered_on_starting_rank_change_after_round_4(self):
         tournament = self._tournament_from_json('tec-swiss')
@@ -349,8 +349,8 @@ class PairingTestCase(TestCase):
         tournament_player = tournament.tournament_players_by_pairing_number[9]
         players_by_pairing_number = tournament.tournament_players_by_pairing_number
         self.assertEqual(
-            players_by_pairing_number[9].player.last_name,
-            tournament_player.player.last_name,
+            players_by_pairing_number[9].last_name,
+            tournament_player.last_name,
         )
 
     def test_pairing_numbers_reordered_on_player_deletion(self):
@@ -379,7 +379,7 @@ class PairingTestCase(TestCase):
             15: 'STEPHAN',
         }
         player_name_by_pairing_number = {
-            pairing_number: tournament_player.player.last_name
+            pairing_number: tournament_player.last_name
             for pairing_number, tournament_player in tournament.tournament_players_by_pairing_number.items()
         }
         self.assertEqual(
@@ -425,7 +425,7 @@ class PairingTestCase(TestCase):
             17: 'STEPHAN',
         }
         player_name_by_pairing_number = {
-            pairing_number: tournament_player.player.last_name
+            pairing_number: tournament_player.last_name
             for pairing_number, tournament_player in tournament.tournament_players_by_pairing_number.items()
         }
         self.assertEqual(

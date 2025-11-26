@@ -121,7 +121,7 @@ class CheckInUserController(BaseInputUserController):
         assert player_web_context.tournament_player.id is not None
         player_web_context.tournament.check_in_player(
             player_web_context.tournament_player.player,
-            not player_web_context.tournament_player.player.check_in,
+            not player_web_context.tournament_player.check_in,
         )
         PlayerAdminController.publish_new_checkin(
             channels, event_uniq_id, player_web_context.tournament_player.player

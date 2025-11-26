@@ -680,7 +680,7 @@ class BergerGridPrintDocument(PrintDocument):
                     ]
                     raise SharlyChessException(
                         f'More than {len(result_grid[tournament_player.id][opponent_grid_id - 1])} encounters between '
-                        f'players {tournament_player.player.full_name} and {opponent.player.full_name}.'
+                        f'players {tournament_player.full_name} and {opponent.full_name}.'
                     )
         return result_grid
 
@@ -1063,8 +1063,7 @@ class NormReportPrintDocument(PrintDocument):
         norms = {
             norm_title: norm
             for norm_title, norm in tournament_player.achieves_any_title_norm().items()
-            if norm.meets_gender
-            and tournament_player.player.title < norm_title.player_title
+            if norm.meets_gender and tournament_player.title < norm_title.player_title
         }
         return {
             'event': self.event,

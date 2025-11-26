@@ -1,12 +1,11 @@
 {% set tournament_player = board.black_tournament_player if column.is_black else board.white_tournament_player %}
-{% set player = tournament_player.player %}
 <div class="
     {% if (
         screen.type == 'input' and
         last_illegal_move_updated and
         last_illegal_move_updated.expiration > now and
         last_illegal_move_updated.tournament_id == tournament.id and
-        last_illegal_move_updated.player_id == player.id
+        last_illegal_move_updated.player_id == tournament_player.id
     ) %}
         last_illegal_move_updated
     {% endif %}"
@@ -28,7 +27,7 @@
                             event_uniq_id=user_event.uniq_id,
                             screen_uniq_id=screen.uniq_id,
                             tournament_id=tournament.id,
-                            player_id=player.id
+                            player_id=tournament_player.id
                         ) }}"
                         hx-indicator="#please-wait"
                     {% endif %}
@@ -40,14 +39,14 @@
                 <span class="illegal-move-flag-wrapper">
                     <i
                         data-testid="add-illegal-move-button-{{ tournament_player.color.value}}"
-                        class="bi-flag illegal-move-flag add player-{{ tournament.id }}-{{ player.id }}"
+                        class="bi-flag illegal-move-flag add player-{{ tournament.id }}-{{ tournament_player.id }}"
                         hx-target="body"
                         hx-put="{{ url_for(
                             'user-add-illegal-move',
                             event_uniq_id=user_event.uniq_id,
                             screen_uniq_id=screen.uniq_id,
                             tournament_id=tournament.id,
-                            player_id=player.id
+                            player_id=tournament_player.id
                         ) }}"
                         hx-indicator="#please-wait"
                     ></i>

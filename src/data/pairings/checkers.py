@@ -35,8 +35,8 @@ class CheckerPlayer:
         return (
             CheckerPlayer(
                 tournament_player.id,
-                tournament_player.player.last_name,
-                tournament_player.player.first_name,
+                tournament_player.last_name,
+                tournament_player.first_name,
                 tournament_player.rating,
                 tournament_player.points or 0.0,
             )

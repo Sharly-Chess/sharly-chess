@@ -667,9 +667,9 @@ class Tournament:
     @cached_property
     def tournament_players_by_fide_id(self) -> dict[int, TournamentPlayer]:
         return {
-            tournament_player.player.fide_id: tournament_player
+            tournament_player.fide_id: tournament_player
             for tournament_player in self.tournament_players
-            if tournament_player.player.fide_id
+            if tournament_player.fide_id
         }
 
     @cached_property
@@ -719,7 +719,7 @@ class Tournament:
         return [
             tournament_player
             for tournament_player in self.tournament_players
-            if not tournament_player.player.check_in
+            if not tournament_player.check_in
         ]
 
     @cached_property
@@ -742,7 +742,7 @@ class Tournament:
                 if not tournament_player.can_check_in_out:
                     result[None].append(tournament_player)
                 else:
-                    result[tournament_player.player.check_in].append(tournament_player)
+                    result[tournament_player.check_in].append(tournament_player)
             return result
 
     @property
@@ -774,7 +774,7 @@ class Tournament:
         """Returns the number of players by gender."""
         counter: Counter[PlayerGender] = Counter[PlayerGender]()
         for tournament_player in self.tournament_players:
-            counter[tournament_player.player.gender] += 1
+            counter[tournament_player.gender] += 1
         return counter
 
     @cached_property
@@ -782,7 +782,7 @@ class Tournament:
         """Returns the number of players by federation."""
         counter: Counter[Federation] = Counter[Federation]()
         for tournament_player in self.tournament_players:
-            counter[tournament_player.player.federation] += 1
+            counter[tournament_player.federation] += 1
         return counter
 
     @cached_property
@@ -790,8 +790,8 @@ class Tournament:
         """Returns the number of players by club."""
         counter: Counter[Club] = Counter[Club]()
         for tournament_player in self.tournament_players:
-            if tournament_player.player.club is not None:
-                counter[tournament_player.player.club] += 1
+            if tournament_player.club is not None:
+                counter[tournament_player.club] += 1
         return counter
 
     @cached_property
@@ -820,7 +820,7 @@ class Tournament:
                 if not player.can_check_in_out:
                     counter[None] += 1
                 else:
-                    counter[player.player.check_in] += 1
+                    counter[player.check_in] += 1
         return counter
 
     @cached_property
@@ -1341,12 +1341,12 @@ class Tournament:
             self.uniq_id,
             board.round,
             board.id,
-            board.white_tournament_player.player.last_name,
-            board.white_tournament_player.player.first_name or '',
+            board.white_tournament_player.last_name,
+            board.white_tournament_player.first_name or '',
             board.white_tournament_player.rating,
             white_result,
-            board.black_tournament_player.player.last_name,
-            board.black_tournament_player.player.first_name or '',
+            board.black_tournament_player.last_name,
+            board.black_tournament_player.first_name or '',
             board.black_tournament_player.rating,
         )
 
@@ -1530,12 +1530,12 @@ class Tournament:
 
         if white_pairing.opponent_id:
             raise ValueError(
-                f'White player {white_tournament_player.player.full_name} already has an '
+                f'White player {white_tournament_player.full_name} already has an '
                 f'opponent (id: {white_pairing.opponent_id}) for round {round_nb}.'
             )
         if black_tournament_player and black_pairing and black_pairing.opponent_id:
             raise ValueError(
-                f'Black player {black_tournament_player.player.full_name} already has an '
+                f'Black player {black_tournament_player.full_name} already has an '
                 f'opponent (id: {black_pairing.opponent_id}) for round {round_nb}.'
             )
         with EventDatabase(self.event.uniq_id, True) as database:

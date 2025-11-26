@@ -93,7 +93,7 @@ class WhiteTitleColumn(BoardColumn):
         return ''
 
     def get_cell_content(self, board: Board) -> Any:
-        return board.white_tournament_player.player.title.short_name
+        return board.white_tournament_player.title.short_name
 
 
 class WhiteNameColumn(BoardColumn):
@@ -106,7 +106,7 @@ class WhiteNameColumn(BoardColumn):
         return _('White')
 
     def get_cell_content(self, board: Board) -> Any:
-        return board.white_tournament_player.player.full_name
+        return board.white_tournament_player.full_name
 
     @property
     def shared_classes(self) -> str:
@@ -177,7 +177,7 @@ class BlackTitleColumn(BoardColumn):
         tournament_player = board.black_tournament_player
         if not tournament_player:
             return ''
-        return tournament_player.player.title.short_name
+        return tournament_player.title.short_name
 
 
 class BlackNameColumn(BoardColumn):
@@ -197,7 +197,7 @@ class BlackNameColumn(BoardColumn):
         return Utils.deep_getattr(
             board.black_tournament_player,
             'player.full_name',
-            board.white_tournament_player.player.exempt_str.upper(),
+            board.white_tournament_player.exempt_str.upper(),
         )
 
     def get_cell_classes(self, board: Board) -> str:

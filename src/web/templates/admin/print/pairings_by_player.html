@@ -27,8 +27,7 @@
             </thead>
             <tbody>
                 {% for tournament_player in tournament_players[split_by] %}
-                    {% set player=tournament_player.player %}
-                    <tr id="player-{{ player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
+                    <tr id="player-{{ tournament_player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
                         {% for column in player_columns %}
                             <td class="{{ column.get_cell_classes(tournament_player) }}">
                                 {{ macros.column_cell(column, tournament_player) }}
@@ -47,7 +46,7 @@
                             {% endfor %}
                         {% else %}
                             <td colspan="{{ 1 + opponent_columns | length }}" class="plays">
-                                {{ player.exempt_str if pairing.exempt else player.not_paired_str }}
+                                {{ tournament_player.exempt_str if pairing.exempt else tournament_player.not_paired_str }}
                             <td>
                         {% endif %}
                     </tr>

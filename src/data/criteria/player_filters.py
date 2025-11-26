@@ -60,7 +60,7 @@ class GenderPlayerFilter(PlayerFilter):
     @cached_property
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         gender = self.get_gender()
-        return lambda tournament_player: tournament_player.player.gender == gender
+        return lambda tournament_player: tournament_player.gender == gender
 
     def full_name(self, tournament: 'Tournament') -> str:
         return _('Gender ({gender})').format(gender=self.get_gender().short_name)
@@ -222,9 +222,9 @@ class ClubPlayerFilter(PlayerFilter):
         club_query_params, exclude = self.get_option_values()
         clubs = self.get_clubs(club_query_params)
         if exclude:
-            return lambda tournament_player: tournament_player.player.club not in clubs
+            return lambda tournament_player: tournament_player.club not in clubs
         else:
-            return lambda tournament_player: tournament_player.player.club in clubs
+            return lambda tournament_player: tournament_player.club in clubs
 
     def full_name(self, tournament: 'Tournament') -> str:
         club_query_params, exclude = self.get_option_values()
@@ -263,14 +263,11 @@ class FederationPlayerFilter(PlayerFilter):
         federations = self.get_federations(federation_query_params)
         if exclude:
             return (
-                lambda tournament_player: tournament_player.player.federation
+                lambda tournament_player: tournament_player.federation
                 not in federations
             )
         else:
-            return (
-                lambda tournament_player: tournament_player.player.federation
-                in federations
-            )
+            return lambda tournament_player: tournament_player.federation in federations
 
     def full_name(self, tournament: 'Tournament') -> str:
         federation_query_params, exclude = self.get_option_values()
@@ -308,7 +305,7 @@ class PlayerIdPlayerFilter(PlayerFilter):
     def full_name(self, tournament: 'Tournament') -> str:
         player_ids, exclude = self.get_option_values()
         player_names = [
-            tournament_player.player.full_name
+            tournament_player.full_name
             for tournament_player in tournament.tournament_players
             if tournament_player.id in player_ids
         ]

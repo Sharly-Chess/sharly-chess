@@ -1,8 +1,7 @@
-{% set player=tournament_player.player %}
 <div
     class="
-        player-cell
-        {% if screen.type == 'input' and last_check_in_updated and last_check_in_updated.expiration > now and last_check_in_updated.tournament_id == tournament.id and last_check_in_updated.player_id == player.id %}
+        tournament_player-cell
+        {% if screen.type == 'input' and last_check_in_updated and last_check_in_updated.expiration > now and last_check_in_updated.tournament_id == tournament.id and last_check_in_updated.player_id == tournament_player.id %}
             last_check_in_updated
         {% endif %}
         {% if screen.type == 'input' and tournament.check_in_open %}
@@ -15,7 +14,7 @@
         and client.can_check_in_players(tournament.id)
         and tournament.check_in_open
     %}
-        hx-get="{{ url_for('user-checkin-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
+        hx-get="{{ url_for('user-checkin-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=tournament_player.id) }}"
         hx-target="body"
         hx-indicator="#please-wait"
         data-bs-toggle="modal"
@@ -24,8 +23,8 @@
 >
     {% if tournament.check_in_open %}
         <i
-            class="{% if player.check_in %}bi-check-square-fill{% else %}bi-square{% endif %}"
+            class="{% if tournament_player.check_in %}bi-check-square-fill{% else %}bi-square{% endif %}"
         ></i>
     {% endif %}
-    {% if player.title.short_name %}{{ player.title.short_name }}&nbsp;{% endif %}{{ player.full_name }} {{ tournament_player.rating_str }}
+    {% if tournament_player.title.short_name %}{{ tournament_player.title.short_name }}&nbsp;{% endif %}{{ tournament_player.full_name }} {{ tournament_player.rating_str }}
 </div>

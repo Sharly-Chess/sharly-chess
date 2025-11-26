@@ -208,9 +208,9 @@ class BoardCardType(PlaceCardType):
                         for number in range(tournament.player_count // 2)
                     ]
                     + [
-                        tournament_player.player.fixed
+                        tournament_player.fixed
                         for tournament_player in tournament.tournament_players_by_id.values()
-                        if tournament_player.player.fixed
+                        if tournament_player.fixed
                     ]
                 )
             ]

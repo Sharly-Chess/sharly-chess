@@ -2,13 +2,12 @@
 
 {% with
     no_bye_possible = admin_round >= tournament_player.tournament.rounds - tournament_player.tournament.last_rounds_no_byes,
-    player = tournament_player.player,
     pairing = tournament_player.pairings[admin_round]
 %}
     <div style="--bs-modal-width: min(90vw, 400px);" class="modal-dialog pairing-modal">
         <div class="modal-content bg-secondary-subtle">
             <div class="modal-header">
-                <div class="modal-title fs-4 fw-bold">{{ _('%(player)s - Round %(num)s', player=player.full_name, num=admin_round) }}</div>
+                <div class="modal-title fs-4 fw-bold">{{ _('%(player)s - Round %(num)s', player=tournament_player.full_name, num=admin_round) }}</div>
             </div>
             <div class="modal-body">
                 <div class="d-flex flex-column align-items-center justify-content-center gap-2">
@@ -19,7 +18,7 @@
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
-                            player_id=player.id,
+                            player_id=tournament_player.id,
                         ) %}
                         <span
                             class="w-100"
@@ -58,7 +57,7 @@
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
-                            player_id=player.id,
+                            player_id=tournament_player.id,
                         ) %}
                         <span
                             class="w-100"
@@ -98,7 +97,7 @@
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
-                            player_id=player.id,
+                            player_id=tournament_player.id,
                         ) %}
                         <span
                             class="w-100"
@@ -147,7 +146,7 @@
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=admin_tournament.id,
                                 round=admin_round,
-                                player_id=player.id,
+                                player_id=tournament_player.id,
                             ) %}
                             <button
                                 class="btn btn-outline-primary w-100"
@@ -185,7 +184,7 @@
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
                         round=admin_round,
-                        player_id=player.id,
+                        player_id=tournament_player.id,
                     ) %}
                     {% if action in existing_actions %}
                         <span
@@ -224,7 +223,7 @@
                                 {% if exempt_tournament_player %}
                                     {{ _('Pair as BLACK') }}
                                     <div>
-                                        {{ _('vs %(player)s', player=exempt_tournament_player.player.full_name) }}
+                                        {{ _('vs %(player)s', player=exempt_tournament_player.full_name) }}
                                     </div>
                                     <div class="text-danger italic" style="font-size: 0.9rem;">
                                         {% set round_played_against = tournament_player.round_played_against(exempt_tournament_player.id) %}

@@ -78,9 +78,7 @@ class ClubPlayerSplitter(PlayerSplitter):
 
     @staticmethod
     def get_split_key(tournament_player: TournamentPlayer) -> str:
-        return (
-            tournament_player.player.club.name if tournament_player.player.club else ''
-        )
+        return tournament_player.club.name if tournament_player.club else ''
 
 
 class FederationPlayerSplitter(PlayerSplitter):
@@ -94,4 +92,4 @@ class FederationPlayerSplitter(PlayerSplitter):
 
     @staticmethod
     def get_split_key(tournament_player: TournamentPlayer) -> str:
-        return tournament_player.player.federation.name
+        return tournament_player.federation.name

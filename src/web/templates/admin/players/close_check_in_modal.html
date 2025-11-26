@@ -33,7 +33,7 @@
                         <div class="{% if num_players > max_players_before_collapse %}collapse{% endif %}" id="not-checked-in-players">
                             <ul>
                                 {% for tournament_player in admin_tournament.tournament_players_by_check_in_status[false] %}
-                                    <li>{{ tournament_player.player.full_name }}</li>
+                                    <li>{{ tournament_player.full_name }}</li>
                                 {% endfor %}
                             </ul>
                         </div>

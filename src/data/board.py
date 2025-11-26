@@ -80,7 +80,7 @@ class Board:
 
     @property
     def fixed_number(self) -> int | None:
-        return self.white_tournament_player.player.fixed or Utils.deep_getattr(
+        return self.white_tournament_player.fixed or Utils.deep_getattr(
             self.black_tournament_player, 'player.fixed'
         )
 
@@ -135,10 +135,10 @@ class Board:
     ):
         if player_color == 'white':
             self._white_player_ref = weakref.ref(new_player)
-            self.stored_board.white_player_id = new_player.player.id
+            self.stored_board.white_player_id = new_player.id
         else:
             self._black_player_ref = weakref.ref(new_player)
-            self.stored_board.black_player_id = new_player.player.id
+            self.stored_board.black_player_id = new_player.id
 
     def permute_colors(self):
         white_player = self.white_tournament_player
@@ -196,16 +196,14 @@ class Board:
             if tournament_player.rating_type == PlayerRatingType.FIDE
             else '0'
         )
-        name = tournament_player.player.last_name + (
-            f', {tournament_player.player.first_name}'
-            if tournament_player.player.first_name
-            else ''
+        name = tournament_player.last_name + (
+            f', {tournament_player.first_name}' if tournament_player.first_name else ''
         )
         return (
             f'[{field_prefix} "{cls._format_pgn_string(name)}"]\n'
             + (
-                f'[{field_prefix}Title "{tournament_player.player.title.to_fide_value}"]\n'
-                if tournament_player.player.title.to_fide_value
+                f'[{field_prefix}Title "{tournament_player.title.to_fide_value}"]\n'
+                if tournament_player.title.to_fide_value
                 else ''
             )
             + f'[{field_prefix}Elo "{rating}"]\n'

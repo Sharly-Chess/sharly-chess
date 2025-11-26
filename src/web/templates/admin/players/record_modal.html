@@ -111,11 +111,10 @@
                         {% set id=name|replace('_', '-') %}
                         {% set bye_modifiable_for_round = round >= tournament_player.tournament.current_round and not pairing.board %}
                         {% if pairing.opponent_id %}
-                            {% set opponent_tournament_player=tournament_player.tournament.tournament_players_by_id[pairing.opponent_id] %}
-                            {% set opponent_player = opponent_tournament_player.player %}
-                            {% set opponent = opponent_player.title.short_name ~ ' ' ~ opponent_player.full_name %}
-                            {% set federation=opponent_player.federation %}
-                            {% set rating=opponent_tournament_player.rating_str %}
+                            {% set opp=tournament_player.tournament.tournament_players_by_id[pairing.opponent_id] %}
+                            {% set opponent = opp.title.short_name ~ ' ' ~ opp.full_name %}
+                            {% set federation=opp.federation %}
+                            {% set rating=opp.rating_str %}
                             {% set color=pairing.color %}
                         {% else %}
                             {% set opponent='' %}
