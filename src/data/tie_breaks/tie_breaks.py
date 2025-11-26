@@ -175,7 +175,6 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         Only adjusts them in case of requested byes followed by all VUR.
         If *adjust_fore* is True, the adjusted score for Fore Buchholz is computed:
         games for the last round not determined over the board are considered as draws."""
-        assert tournament_player.tournament is not None
         tournament: 'Tournament' = tournament_player.tournament
         if tournament.pairing_system == RoundRobinPairingSystem():
             return tournament_player.points_after(after_round)

@@ -410,7 +410,7 @@ class PlayersFilterOption(SelectPlayerFilterOption[TournamentPlayer]):
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[TournamentPlayer]:
-        return sorted(tournament.tournament_players, key=attrgetter('full_name'))
+        return sorted(tournament.tournament_players, key=attrgetter('player.full_name'))
 
     def get_tournament_player_counter(
         self, tournament: 'Tournament'
