@@ -9,9 +9,11 @@
         <div class="flex-grow-1">
              {{ admin_macros.tournament_status_icon(tournament) }} {{ tournament.name }}
         </div>
-        <div>
-            <i class="bi-arrows-move"></i>
-        </div>
+        {% if sortable %}
+            <div>
+                <i class="bi-arrows-move"></i>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
 

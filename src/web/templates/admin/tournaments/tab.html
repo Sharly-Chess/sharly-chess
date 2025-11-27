@@ -129,15 +129,18 @@
 {% endblock %}
 
 {% block cards_container_cards %}
+    {% set sortable = admin_event.tournaments|length > 1 %}
     <form
-        hx-patch="{{ url_for(
-            'admin-tournament-reorder',
-            event_uniq_id=admin_event.uniq_id
-        ) }}"
-        hx-target="body"
-        hx-trigger="end"
+        {% if sortable %}
+            hx-patch="{{ url_for(
+                'admin-tournament-reorder',
+                event_uniq_id=admin_event.uniq_id
+            ) }}"
+            hx-target="body"
+            hx-trigger="end"
+        {% endif %}
     >
-        <div class="row gy-2 gx-3 sortable">
+        <div class="row gy-2 gx-3 {% if sortable %}sortable{% endif %}">
             {% if admin_event.tournaments_sorted_by_index %}
                 {% for tournament in admin_event.tournaments_sorted_by_index %}
                     {% include 'tournament_card.html' %}
