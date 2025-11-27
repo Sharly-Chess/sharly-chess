@@ -83,7 +83,9 @@ class Migration(BaseMigration):
                 HandicapGamesPlugin
             )
             if any(
-                handicap_games_plugin.used_by_stored_tournament(stored_tournament)
+                handicap_games_plugin.used_by_stored_tournament(
+                    stored_event, stored_tournament
+                )
                 for stored_tournament in stored_event.stored_tournaments
             ):
                 event_plugins.append(handicap_games_plugin.id)

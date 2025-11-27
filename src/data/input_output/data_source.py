@@ -34,7 +34,7 @@ class PlayerComparator(ABC):
         self.match_player: Player | None = None
         if match_stored_player:
             match_stored_player.id = 0
-            self.match_player = Player(player.tournament, match_stored_player)
+            self.match_player = Player(player.event, match_stored_player)
 
     @property
     @abstractmethod

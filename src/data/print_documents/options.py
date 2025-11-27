@@ -109,8 +109,11 @@ class PlayerPrintOption(PrintOption):
         tournaments = [tournament for tournament in self.event.tournaments]
         return {
             tournament.id: [
-                {'id': player.id, 'full_name': player.full_name}
-                for player in tournament.players_by_name_with_unpaired
+                {
+                    'id': tournament_player.id,
+                    'full_name': tournament_player.full_name,
+                }
+                for tournament_player in tournament.tournament_players_by_name_with_unpaired
             ]
             for tournament in tournaments
         }
@@ -141,8 +144,11 @@ class PlayersPrintOption(PrintOption):
         tournaments = [tournament for tournament in self.event.tournaments]
         return {
             tournament.id: [
-                {'id': player.id, 'full_name': player.full_name}
-                for player in tournament.players_by_name_with_unpaired
+                {
+                    'id': tournament_player.id,
+                    'full_name': tournament_player.full_name,
+                }
+                for tournament_player in tournament.tournament_players_by_name_with_unpaired
             ]
             for tournament in tournaments
         }

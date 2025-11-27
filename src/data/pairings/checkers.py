@@ -12,7 +12,7 @@ from common.logger import (
 )
 from data.board import Board
 from data.pairings.engines import BbpPairings
-from data.player import Player
+from data.player import TournamentPlayer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 
@@ -30,17 +30,17 @@ class CheckerPlayer:
     @classmethod
     def from_object(
         cls,
-        player: Player,
+        tournament_player: TournamentPlayer,
     ) -> Optional['CheckerPlayer']:
         return (
             CheckerPlayer(
-                player.id,
-                player.last_name,
-                player.first_name,
-                player.rating,
-                player.points or 0.0,
+                tournament_player.id,
+                tournament_player.last_name,
+                tournament_player.first_name,
+                tournament_player.rating,
+                tournament_player.points or 0.0,
             )
-            if player
+            if tournament_player
             else None
         )
 
@@ -89,11 +89,11 @@ class CheckerBoard:
         return (
             CheckerBoard(
                 board.id,
-                CheckerPlayer.from_object(board.white_player)
-                if board.white_player
+                CheckerPlayer.from_object(board.white_tournament_player)
+                if board.white_tournament_player
                 else None,
-                CheckerPlayer.from_object(board.black_player)
-                if board.black_player
+                CheckerPlayer.from_object(board.black_tournament_player)
+                if board.black_tournament_player
                 else None,
             )
             if board

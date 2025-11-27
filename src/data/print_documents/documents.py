@@ -12,12 +12,12 @@ from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
 from data.board import Board
 from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
-from data.columns.player_table import ColumnUsage, PlayerTableColumn
+from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
 from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
 from data.event import Event
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
-from data.player import Player, TournamentRating
+from data.player import TournamentPlayer, TournamentRating
 from data.print_documents.options import (
     PairingStylePrintOption,
     PlayerPrintOption,
@@ -143,13 +143,13 @@ class PlayerPrintDocument(PrintDocument, ABC):
 
     @property
     @abstractmethod
-    def ordered_players(self) -> list[Player]:
+    def ordered_tournament_players(self) -> list[TournamentPlayer]:
         """List of players in the order they should appear in the document."""
 
     @property
-    def ordered_split_players(self) -> dict[str, list[Player]]:
+    def ordered_split_players(self) -> dict[str, list[TournamentPlayer]]:
         splitter = self._get_option(PlayerSplitPrintOption).player_splitter
-        return splitter.split_players(self.ordered_players)
+        return splitter.split_players(self.ordered_tournament_players)
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -173,7 +173,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
 
     @property
     @abstractmethod
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         """List of all the columns to display in the tables of the document."""
 
     @property
@@ -182,7 +182,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
             'tournament': self.tournament,
             'tournaments': self.tournaments,
             'subtitle': self.subtitle,
-            'players': self.ordered_split_players,
+            'tournament_players': self.ordered_split_players,
             'player_columns': self.player_columns,
             'row_count': [1],
         }
@@ -202,16 +202,16 @@ class PlayerListPrintDocument(PlayerPrintDocument):
         return _('List of players')
 
     @property
-    def ordered_players(self) -> list[Player]:
+    def ordered_tournament_players(self) -> list[TournamentPlayer]:
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
-            player
+            player.single_tournament_player
             for player in self.get_event().players_sorted_by_name
-            if player.tournament.id in tournament_ids
+            if player.single_tournament_player.tournament.id in tournament_ids
         ]
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_list_columns(len(self.tournaments) > 1)
 
 
@@ -229,16 +229,16 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
         return _('Players check-in list')
 
     @property
-    def ordered_players(self) -> list[Player]:
+    def ordered_tournament_players(self) -> list[TournamentPlayer]:
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
-            player
+            player.single_tournament_player
             for player in self.get_event().players_sorted_by_name
-            if player.tournament.id in tournament_ids
+            if player.single_tournament_player.tournament.id in tournament_ids
         ]
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_checkin_list_columns(
             len(self.tournaments) > 1
         )
@@ -253,9 +253,9 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
         )
 
     @property
-    def ordered_players(self) -> list[Player]:
+    def ordered_tournament_players(self) -> list[TournamentPlayer]:
         return list(
-            self.tournament.compute_player_ranks(
+            self.tournament.compute_tournament_player_ranks(
                 after_round=self.ranking_round
             ).values()
         )
@@ -307,7 +307,7 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
         return _('Ranking after round #{round}').format(round=self.ranking_round)
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_ranking_columns(self.tournament)
 
 
@@ -327,7 +327,7 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
         return _('Crosstable after round #{round}').format(round=self.ranking_round)
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_crosstable_columns(
             self.tournament, self.ranking_round
         )
@@ -364,20 +364,24 @@ class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
         return '/admin/print/round_performance.html'
 
     @property
-    def ordered_players(self) -> list[tuple[Player, Player, Result, float]]:
+    def ordered_players(
+        self,
+    ) -> list[tuple[TournamentPlayer, TournamentPlayer, Result, float]]:
         ranking_round = self.ranking_round
         if not ranking_round:
             return []
-        results: list[tuple[Player, Player, Result, float]] = []
-        for player in self.tournament.players:
-            pairing = player.pairings[ranking_round]
+        results: list[tuple[TournamentPlayer, TournamentPlayer, Result, float]] = []
+        for tournament_player in self.tournament.tournament_players:
+            pairing = tournament_player.pairings[ranking_round]
             if pairing.opponent_id and pairing.played:
-                opponent = self.tournament.players_by_id[pairing.opponent_id]
+                opponent = self.tournament.tournament_players_by_id[pairing.opponent_id]
                 expected_score = 1 / (
-                    1 + 10 ** ((opponent.rating - player.rating) / 400)
+                    1 + 10 ** ((opponent.rating - tournament_player.rating) / 400)
                 )
                 rating_change = 20 * (pairing.result.points() - expected_score)
-                results.append((player, opponent, pairing.result, rating_change))
+                results.append(
+                    (tournament_player, opponent, pairing.result, rating_change)
+                )
         return sorted(results, key=lambda p: -p[3])
 
     @override
@@ -554,16 +558,16 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
 
     @override
     @property
-    def ordered_players(self) -> list[Player]:
+    def ordered_tournament_players(self) -> list[TournamentPlayer]:
         self.tournament.set_for_round(self.at_round)
-        return self.tournament.players_by_name_with_unpaired
+        return self.tournament.tournament_players_by_name_with_unpaired
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_alpha_board_player_columns()
 
     @property
-    def opponent_columns(self) -> list[PlayerTableColumn]:
+    def opponent_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_alpha_board_opponent_columns()
 
     @property
@@ -630,9 +634,9 @@ class BergerGridPrintDocument(PrintDocument):
     def grid_id_by_player_id(self) -> dict[int, int]:
         player_sorter = self._get_option(PlayerSortPrintOption).player_sorter
         return {
-            player.id: index + 1
-            for index, player in enumerate(
-                player_sorter.sorted_players(self.tournament)
+            tournament_player.id: index + 1
+            for index, tournament_player in enumerate(
+                player_sorter.sorted_tournament_players(self.tournament)
             )
         }
 
@@ -651,30 +655,32 @@ class BergerGridPrintDocument(PrintDocument):
         pairing_engine = self.tournament.pairing_variation.engine
         assert isinstance(pairing_engine, RoundRobinPairingEngine)
         result_grid: dict[int, list[list[Result | None]]] = {
-            player.id: [
+            tournament_player.id: [
                 [None] * pairing_engine.player_encounters
                 for __ in range(self.tournament.player_count)
             ]
-            for player in sorted(
-                self.tournament.players,
+            for tournament_player in sorted(
+                self.tournament.tournament_players,
                 key=lambda p: self.grid_id_by_player_id[p.id],
             )
         }
-        for player in self.tournament.players:
-            for pairing in player.pairings.values():
+        for tournament_player in self.tournament.tournament_players:
+            for pairing in tournament_player.pairings.values():
                 if not pairing.opponent_id:
                     continue
                 opponent_grid_id = self.grid_id_by_player_id[pairing.opponent_id]
                 if not self._set_encounter_result(
-                    player.id,
+                    tournament_player.id,
                     opponent_grid_id,
                     pairing.result,
                     result_grid,
                 ):
-                    opponent = self.tournament.players_by_id[pairing.opponent_id]
+                    opponent = self.tournament.tournament_players_by_id[
+                        pairing.opponent_id
+                    ]
                     raise SharlyChessException(
-                        f'More than {len(result_grid[player.id][opponent_grid_id - 1])} encounters between '
-                        f'players {player.full_name} and {opponent.full_name}.'
+                        f'More than {len(result_grid[tournament_player.id][opponent_grid_id - 1])} encounters between '
+                        f'players {tournament_player.full_name} and {opponent.full_name}.'
                     )
         return result_grid
 
@@ -695,7 +701,7 @@ class BergerGridPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        self.tournament.compute_player_ranks()
+        self.tournament.compute_tournament_player_ranks()
         return {
             'document': self,
             'tournament': self.tournament,
@@ -778,7 +784,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         }
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         assert self.event is not None
         return PlayerColumnHandler(
             self.event, ColumnUsage.PRINT
@@ -829,7 +835,7 @@ class StatisticsPrintDocument(PrintDocument):
         values = [
             value
             for tournament in self.tournaments
-            for p in tournament.players
+            for p in tournament.tournament_players
             if (value := getattr(p, attr_name)) is not None
             and (filter_func(value) if filter_func else True)
         ]
@@ -855,7 +861,7 @@ class StatisticsPrintDocument(PrintDocument):
         )
 
     def rating_range_section(self) -> StatisticsSection | None:
-        all_players = [p for t in self.tournaments for p in t.players]
+        all_players = [p for t in self.tournaments for p in t.tournament_players]
 
         ratings = [p.rating for p in all_players if not p.estimated]
         estimated_count = sum(1 for p in all_players if p.estimated)
@@ -892,7 +898,7 @@ class StatisticsPrintDocument(PrintDocument):
         non_estimated_players = [
             player
             for tournament in self.tournaments
-            for player in tournament.players
+            for player in tournament.tournament_players
             if not player.estimated
         ]
         average_rating = (
@@ -953,7 +959,14 @@ class StatisticsPrintDocument(PrintDocument):
                 None,
                 None,
             ),
-            ('gender', _('Genders'), lambda item: item[0].value, None, None, None),
+            (
+                'gender',
+                _('Genders'),
+                lambda item: item[0].value,
+                None,
+                None,
+                None,
+            ),
             (
                 'federation',
                 _('Federations'),
@@ -1046,11 +1059,11 @@ class NormReportPrintDocument(PrintDocument):
     @property
     def template_context(self) -> dict[str, Any]:
         player_id = self._get_option(PlayerPrintOption).value
-        player = self.tournament.players_by_id[player_id]
+        tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm
-            for norm_title, norm in player.achieves_any_title_norm().items()
-            if norm.meets_gender and player.title < norm_title.player_title
+            for norm_title, norm in tournament_player.achieves_any_title_norm().items()
+            if norm.meets_gender and tournament_player.title < norm_title.player_title
         }
         return {
             'event': self.event,
@@ -1059,7 +1072,7 @@ class NormReportPrintDocument(PrintDocument):
             'start': self.tournament.start_date.strftime('%Y.%m.%d'),
             'end': self.tournament.stop_date.strftime('%Y.%m.%d'),
             'norms': norms,
-            'player': player,
+            'tournament_player': tournament_player,
         }
 
 

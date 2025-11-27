@@ -450,7 +450,7 @@ class FFESession(Session):
                 # This fixes a display issue on the FFE website."""
                 if not tmp_tournament.has_pairings:
                     logger.info('Deleting ZPBs...')
-                    for player in tmp_tournament.players:
+                    for player in tmp_tournament.tournament_players:
                         for pairing in player.pairings.values():
                             if pairing.zero_point_bye:
                                 tmp_event_database.delete_stored_pairing(

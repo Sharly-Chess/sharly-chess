@@ -37,7 +37,7 @@
 {% macro player_record(player) %}
     <!-- player_record() -->
     <div class="d-flex gap-1 h-100 align-items-center">
-        {% for pairing in player.pairings.values() %}
+        {% for pairing in player.single_tournament_player.pairings.values() %}
             {% set _box_class='bg-white border border-white text-dark' if pairing.color == 'W' else 'bg-dark border border-white text-white' %}
             {% set _text_style='line-height: 0;' %}
             {% if pairing.zero_point_bye %}

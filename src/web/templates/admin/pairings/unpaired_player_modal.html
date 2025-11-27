@@ -1,13 +1,13 @@
 {% import '/common/macros.j2' as macros with context %}
 
 {% with
-    no_bye_possible = admin_round >= player.tournament.rounds - player.tournament.last_rounds_no_byes,
-    pairing = player.pairings[admin_round]
+    no_bye_possible = admin_round >= tournament_player.tournament.rounds - tournament_player.tournament.last_rounds_no_byes,
+    pairing = tournament_player.pairings[admin_round]
 %}
     <div style="--bs-modal-width: min(90vw, 400px);" class="modal-dialog pairing-modal">
         <div class="modal-content bg-secondary-subtle">
             <div class="modal-header">
-                <div class="modal-title fs-4 fw-bold">{{ _('%(player)s - Round %(num)s', player=player.full_name, num=admin_round) }}</div>
+                <div class="modal-title fs-4 fw-bold">{{ _('%(player)s - Round %(num)s', player=tournament_player.full_name, num=admin_round) }}</div>
             </div>
             <div class="modal-body">
                 <div class="d-flex flex-column align-items-center justify-content-center gap-2">
@@ -18,7 +18,7 @@
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
-                            player_id=player.id,
+                            player_id=tournament_player.id,
                         ) %}
                         <span
                             class="w-100"
@@ -57,7 +57,7 @@
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
-                            player_id=player.id,
+                            player_id=tournament_player.id,
                         ) %}
                         <span
                             class="w-100"
@@ -97,7 +97,7 @@
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round,
-                            player_id=player.id,
+                            player_id=tournament_player.id,
                         ) %}
                         <span
                             class="w-100"
@@ -136,9 +136,9 @@
                             {% if not client.can_set_half_point_bye(admin_tournament.id) %}
                                 {{ macros.tooltip_attributes('warning', _('You are not allowed to set/unset Half-Point Byes.'), 'right') }}
                             {% elif no_bye_possible %}
-                                {{ macros.tooltip_attributes('info', _('Impossible to set a bye in the last %(rounds)d rounds of the tournament', rounds=player.tournament.last_rounds_no_byes), 'top') }}
+                                {{ macros.tooltip_attributes('info', _('Impossible to set a bye in the last %(rounds)d rounds of the tournament', rounds=tournament_player.tournament.last_rounds_no_byes), 'top') }}
                             {% elif not hpb_possible %}
-                                {{ macros.tooltip_attributes('info', _('Bye limit (%(limit)d) is already reached for this tournament.', limit=player.tournament.max_byes), 'top') }}
+                                {{ macros.tooltip_attributes('info', _('Bye limit (%(limit)d) is already reached for this tournament.', limit=tournament_player.tournament.max_byes), 'top') }}
                             {% endif %}
                         >
                             {% set action_route = url_for(
@@ -146,7 +146,7 @@
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=admin_tournament.id,
                                 round=admin_round,
-                                player_id=player.id,
+                                player_id=tournament_player.id,
                             ) %}
                             <button
                                 class="btn btn-outline-primary w-100"
@@ -184,7 +184,7 @@
                         event_uniq_id=admin_event.uniq_id,
                         tournament_id=admin_tournament.id,
                         round=admin_round,
-                        player_id=player.id,
+                        player_id=tournament_player.id,
                     ) %}
                     {% if action in existing_actions %}
                         <span
@@ -196,7 +196,7 @@
                             {% endif %}
                         >
                             <button
-                                class="btn btn-outline-primary w-100 {% if exempt_player %}d-flex flex-column align-items-center gap-1{% endif %}"
+                                class="btn btn-outline-primary w-100 {% if exempt_tournament_player %}d-flex flex-column align-items-center gap-1{% endif %}"
                                 {% if
                                     not client.can_manually_pair_players(admin_tournament.id)
                                     or admin_tournament.check_in_open
@@ -220,13 +220,13 @@
                                     hx-indicator="#please-wait"
                                 {% endif %}
                             >
-                                {% if exempt_player %}
+                                {% if exempt_tournament_player %}
                                     {{ _('Pair as BLACK') }}
                                     <div>
-                                        {{ _('vs %(player)s', player=exempt_player.full_name) }}
+                                        {{ _('vs %(player)s', player=exempt_tournament_player.full_name) }}
                                     </div>
                                     <div class="text-danger italic" style="font-size: 0.9rem;">
-                                        {% set round_played_against = player.round_played_against(exempt_player.id) %}
+                                        {% set round_played_against = tournament_player.round_played_against(exempt_tournament_player.id) %}
                                         {% if round_played_against %}
                                             {{ _('Encounter already happened at round #%(round)d', round=round_played_against) }}
                                         {% endif %}

@@ -5,7 +5,7 @@ from datetime import datetime
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
-from data.player import Player
+from data.player import Player, TournamentPlayer
 from data.print_documents.place_cards.data import (
     PlaceCardPlayer,
     PlaceCardBoard,
@@ -73,7 +73,7 @@ class PlaceCardType(IdentifiableEntity, ABC):
         return place_card_player
 
     @classmethod
-    def players(
+    def tournament_players(
         cls,
         tournament: Tournament,
         player_ids: list[int] | None = None,
@@ -138,15 +138,21 @@ class PlayerCardType(PlaceCardType):
         ]
 
     @classmethod
-    def players(
+    def tournament_players(
         cls,
         tournament: Tournament,
         player_ids: list[int] | None = None,
     ) -> list[PlaceCardPlayer]:
-        players: list[Player] = list(tournament.players_by_starting_rank.values())
+        tournament_players: list[TournamentPlayer] = list(
+            tournament.tournament_players_by_starting_rank.values()
+        )
         if player_ids:
-            players = [player for player in players if player.id in player_ids]
-        return [PlaceCardPlayer(player) for player in players]
+            tournament_players = [
+                tournament_player
+                for tournament_player in tournament_players
+                if tournament_player.id in player_ids
+            ]
+        return [PlaceCardPlayer(player) for player in tournament_players]
 
     @classmethod
     def preview_players(
@@ -202,9 +208,9 @@ class BoardCardType(PlaceCardType):
                         for number in range(tournament.player_count // 2)
                     ]
                     + [
-                        player.fixed
-                        for player in tournament.players_by_id.values()
-                        if player.fixed
+                        tournament_player.fixed
+                        for tournament_player in tournament.tournament_players_by_id.values()
+                        if tournament_player.fixed
                     ]
                 )
             ]

@@ -60,8 +60,8 @@
 
         {# ---- Create a tbody for each point group for nice sortable behaviour ---- #}
         {% set ns = namespace(current_key=None) %}
-        {% for player in admin_tournament.players_by_rank.values() %}
-        {% set group_key = player.before_manual_rank_key %}
+        {% for tournament_player in admin_tournament.tournament_players_by_rank.values() %}
+        {% set group_key = tournament_player %}
         {% set row_class='even' if loop.index is even else 'odd' %}
 
         {% if ns.current_key != group_key %}
@@ -73,33 +73,33 @@
         {% set same_as_prev = loop.previtem and loop.previtem.before_manual_rank_key == group_key %}
         {% set same_as_next = loop.nextitem and loop.nextitem.before_manual_rank_key == group_key %}
         {% set sortable = same_as_prev or same_as_next %}
-        {% set new_point_group = loop.previtem and loop.previtem.points != player.points %}
+        {% set new_point_group = loop.previtem and loop.previtem.points != tournament_player.points %}
 
-        <tr id="player-{{ player.id }}" class="player-row {{ row_class }} {% if not sortable %}non-sortable{% endif %} {% if new_point_group %}separator{% endif %}">
-            <td class="rank text-end">{{ player.rank }}</td>
-            <td class="title text-end">{{ player.title.short_name }}</td>
+        <tr id="player-{{ tournament_player.id }}" class="player-row {{ row_class }} {% if not sortable %}non-sortable{% endif %} {% if new_point_group %}separator{% endif %}">
+            <td class="rank text-end">{{ tournament_player.rank }}</td>
+            <td class="title text-end">{{ tournament_player.title.short_name }}</td>
             <td class="name text-start">
                 {% include '/admin/player_link.html' %}
                 <button
                     type="button"
                     class="btn player-info p-1"
-                    data-content-id="popover-content-{{ player.id }}"
+                    data-content-id="popover-content-{{ tournament_player.id }}"
                     aria-label="More info"
-                    hx-get="{{ url_for('admin-player-history-popover', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, player_id=player.id) }}" -
+                    hx-get="{{ url_for('admin-player-history-popover', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, player_id=tournament_player.id) }}" -
                     hx-trigger="mouseover once, focus once"
-                    hx-target="#popover-content-{{ player.id }}"
+                    hx-target="#popover-content-{{ tournament_player.id }}"
                     hx-swap="innerHTML"
                 >
                     <i class="bi-info-circle ps-2"></i>
                 </button>
             </td>
-            <td class="rating text-{{ 'start' if pairings_list else 'end' }}">{{ player.rating_str }}</td>
-            <td class="category text-center">{{ player.category.short_name }}</td>
-            <td class="category text-center">{{ player.gender.short_name }}</td>
-            <td class="federation text-center">{{ player.federation }}</td>
-            <td class="points text-center fw-bold">{{ player.points_str }}</td>
+            <td class="rating text-{{ 'start' if pairings_list else 'end' }}">{{ tournament_player.rating_str }}</td>
+            <td class="category text-center">{{ tournament_player.category.short_name }}</td>
+            <td class="category text-center">{{ tournament_player.gender.short_name }}</td>
+            <td class="federation text-center">{{ tournament_player.federation }}</td>
+            <td class="points text-center fw-bold">{{ tournament_player.points_str }}</td>
 
-            {% for tie_break_value in player.tie_break_values %}
+            {% for tie_break_value in tournament_player.tie_break_values %}
                 <td class="tie-break text-center compact-col {% if tie_break_value.tie_break.is_manual and sortable %}cursor-grap{% endif %}">
 
                     <span
@@ -123,12 +123,12 @@
                         {{ tie_break_value }}
                     </span>
                     {% if tie_break_value.tie_break.is_manual and sortable %}
-                        <i class="bi-grip-horizontal ps-2 handle {% if player.manual_tiebreak %}text-warning{% endif %}"></i>
+                        <i class="bi-grip-horizontal ps-2 handle {% if tournament_player.manual_tiebreak %}text-warning{% endif %}"></i>
                     {% endif %}
                 </td>
             {% endfor %}
 
-            <input type="hidden" name="player" value="{{ player.id }}">
+            <input type="hidden" name="player" value="{{ tournament_player.id }}">
         </tr>
 
         {# if this is the last player overall, close the final TBODY #}
@@ -137,8 +137,8 @@
     </table>
 </form>
 
-{% for player in admin_tournament.players_by_rank.values() %}
-    <div id="popover-content-{{ player.id }}" class="d-none">
+{% for tournament_player in admin_tournament.tournament_players_by_rank.values() %}
+    <div id="popover-content-{{ tournament_player.id }}" class="d-none">
         <div class="empty"></div>
     </div>
 {% endfor %}

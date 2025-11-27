@@ -9,9 +9,8 @@ from common.exception import OptionError
 from common.i18n import _
 from data.columns import player_table as columns
 from data.columns.handlers import PlayerColumnHandler
-from data.columns.player_table import PlayerTableColumn
-from data.event import Player
-from data.player import Utils
+from data.columns.player_table import TournamentPlayerTableColumn
+from data.player import TournamentPlayer, Utils
 from data.print_documents import PrintOption
 from data.print_documents.documents import (
     PrintDocument,
@@ -27,7 +26,7 @@ from web.utils import ColumnUsage
 class SchoolTeam:
     school: FRASchool
     label: str
-    players: list[Player]
+    players: list[TournamentPlayer]
     total_points: float
     is_complete: bool
 
@@ -68,7 +67,9 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
     def template_name(self) -> str:
         return 'print/fra_schools_ranking.html'
 
-    def _team_from_pool(self, pool_in_order: list[Player]) -> tuple[list[Player], dict]:
+    def _team_from_pool(
+        self, pool_in_order: list[TournamentPlayer]
+    ) -> tuple[list[TournamentPlayer], dict]:
         """
         Build one team (up to 8 contributors) from a school's pool using the 2G/2B/4ANY rule.
         Returns (selected_players, meta).
@@ -76,7 +77,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
         girls = [p for p in pool_in_order if p.gender == PlayerGender.FEMALE]
         boys = [p for p in pool_in_order if p.gender == PlayerGender.MALE]
 
-        selected: list[Player] = []
+        selected: list[TournamentPlayer] = []
 
         # Reserve slots
         GIRL_SLOTS = 2
@@ -120,14 +121,14 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
 
         assert self.event is not None
         plugin_data = FRASchoolsUtils.get_event_plugin_data(self.event)
-        ordered_players: list[Player] = list(
-            self.tournament.compute_player_ranks(
+        ordered_players: list[TournamentPlayer] = list(
+            self.tournament.compute_tournament_player_ranks(
                 after_round=self.ranking_round
             ).values()
         )
 
         # Group by school
-        schools: dict[int, list[Player]] = {}
+        schools: dict[int, list[TournamentPlayer]] = {}
         for p in ordered_players:
             player_plugin_data = FRASchoolsUtils.get_player_plugin_data(p)
             school = player_plugin_data.fra_school_id
@@ -247,9 +248,9 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
             )
 
     @property
-    def player_columns(self) -> list[PlayerTableColumn]:
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
         tournament = self.tournament
-        column_types: list[Callable[[ColumnUsage], PlayerTableColumn]] = [
+        column_types: list[Callable[[ColumnUsage], TournamentPlayerTableColumn]] = [
             columns.RankColumn,
             columns.NameColumn,
             columns.CategoryColumn,

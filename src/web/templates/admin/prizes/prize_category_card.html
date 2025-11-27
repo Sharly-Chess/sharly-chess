@@ -26,7 +26,7 @@
 {% endblock %}
 
 {% block card_title %}
-    {% set player_count=prize_category.players|length %}
+    {% set player_count=prize_category.tournament_players|length %}
     {% set prize_count=prize_category.prizes|length %}
     <div class="d-flex gap-2 align-items-center justify-content-center">
         <div

@@ -1,4 +1,5 @@
-{% set bye_definition_allowed=admin_player.tournament.pairing_system.allow_bye_definition %}
+{% set bye_definition_allowed=admin_player.single_tournament_player.tournament.pairing_system.allow_bye_definition %}
+{% set tournament_player=admin_player.single_tournament_player %}
 <div id="player-record-modal" class="modal-dialog modal-dialog-scrollable admin-record-edit-modal">
     <div class="modal-content">
         <div class="modal-header d-flex justify-content-between align-items-end">
@@ -7,23 +8,23 @@
                     {{admin_player.title.short_name}} {{ admin_player.full_name }}
                 </h2>
                 <div>{{ admin_player.club }}</div>
-                {% set category = admin_player.category.short_name %}
-                <div>{{ admin_player.federation }}, {{ admin_player.rating_str }}{% if category %}, {{ category }}{% endif %}</div>
+                {% set category = tournament_player.category.short_name %}
+                <div>{{ admin_player.federation }}, {{ tournament_player.rating_str }}{% if category %}, {{ category }}{% endif %}</div>
             </div>
             <div>
-                {% set tournament = admin_player.tournament %}
+                {% set tournament = tournament_player.tournament %}
                 {% if tournament.pairing_system.allow_bye_definition and not tournament.finished %}
-                    {% if admin_player.has_withdrawn %}
+                    {% if tournament_player.has_withdrawn %}
                         <button
                             class="btn btn-sm btn-outline-primary w-100"
-                            {% if not client.can_set_zero_point_bye(admin_player.tournament.id) %}
+                            {% if not client.can_set_zero_point_bye(tournament_player.tournament.id) %}
                                 disabled
                             {% else %}
                                 hx-patch="{{ url_for(
                                     'admin-player-return-player',
                                     event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_player.tournament.id,
-                                    round=admin_player.tournament.current_round,
+                                    tournament_id=tournament_player.tournament.id,
+                                    round=tournament_player.tournament.current_round,
                                     player_id=admin_player.id,
                                 ) }}"
                                 hx-target="body"
@@ -34,18 +35,18 @@
                         </button>
                     {% elif (
                         tournament.current_round < tournament.rounds
-                        or admin_player.pairings_by_round[tournament.current_round].needs_pairing_or_has_bye
+                        or tournament_player.pairings_by_round[tournament.current_round].needs_pairing_or_has_bye
                     ) %}
                         <button
                             class="btn btn-sm btn-outline-primary w-100"
-                            {% if not client.can_set_zero_point_bye(admin_player.tournament.id) %}
+                            {% if not client.can_set_zero_point_bye(tournament_player.tournament.id) %}
                                 disabled
                             {% else %}
                                 hx-patch="{{ url_for(
                                     'admin-player-withdraw-player',
                                     event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_player.tournament.id,
-                                    round=admin_player.tournament.current_round,
+                                    tournament_id=tournament_player.tournament.id,
+                                    round=tournament_player.tournament.current_round,
                                     player_id=admin_player.id,
                                 ) }}"
                                 hx-target="body"
@@ -62,7 +63,7 @@
              <h4>
                 {{ _('Tournament record') }}
             </h4>
-            {% set display_rating_change = tournament.player_rating_type == 3 and admin_player.tournament.started %}
+            {% set display_rating_change = tournament.player_rating_type == 3 and tournament_player.tournament.started %}
             <table
                 id="record-table"
                 class="table prominent table-striped table-sm w-100 bg-light mx-auto justify-content-center mt-2"
@@ -100,20 +101,20 @@
                     </tr>
                 </thead>
                 <tbody id="record-table-body">
-                    <input type="hidden" name="max_byes" value="{{ admin_player.tournament.max_byes }}"/>
-                    {% set can_set_hpb = client.can_set_half_point_bye(admin_player.tournament.id) %}
-                    {% set can_set_fpb = client.can_set_full_point_bye(admin_player.tournament.id) %}
-                    {% set k, k_is_estimated = admin_player.fide_rating_coefficient %}
+                    <input type="hidden" name="max_byes" value="{{ tournament_player.tournament.max_byes }}"/>
+                    {% set can_set_hpb = client.can_set_half_point_bye(tournament_player.tournament.id) %}
+                    {% set can_set_fpb = client.can_set_full_point_bye(tournament_player.tournament.id) %}
+                    {% set k, k_is_estimated = tournament_player.fide_rating_coefficient %}
                     {% set ns = namespace(delta=0) %}
-                    {% for round, pairing in admin_player.pairings.items() %}
+                    {% for round, pairing in tournament_player.pairings.items() %}
                         {% set name='round_' ~ round ~ '_result' %}
                         {% set id=name|replace('_', '-') %}
-                        {% set bye_modifiable_for_round = round >= admin_player.tournament.current_round and not pairing.board %}
+                        {% set bye_modifiable_for_round = round >= tournament_player.tournament.current_round and not pairing.board %}
                         {% if pairing.opponent_id %}
-                            {% set opponent_player=admin_player.tournament.players_by_id[pairing.opponent_id] %}
-                            {% set opponent = opponent_player.title.short_name ~ ' ' ~ opponent_player.full_name %}
-                            {% set federation=opponent_player.federation %}
-                            {% set rating=opponent_player.rating_str %}
+                            {% set opp=tournament_player.tournament.tournament_players_by_id[pairing.opponent_id] %}
+                            {% set opponent = opp.title.short_name ~ ' ' ~ opp.full_name %}
+                            {% set federation=opp.federation %}
+                            {% set rating=opp.rating_str %}
                             {% set color=pairing.color %}
                         {% else %}
                             {% set opponent='' %}
@@ -135,7 +136,7 @@
                         {% elif pairing.needs_pairing %}
                             {% set text = '' %}
                         {% elif pairing.paired_no_result %}
-                            {% if admin_player.tournament.current_round == round %}
+                            {% if tournament_player.tournament.current_round == round %}
                                 {% set text=_('Playing') %}
                             {% else %}
                                 {% set text=_('Pending') %}
@@ -167,7 +168,7 @@
                         {% else %}
                             {% set text='???' %}
                         {% endif %}
-                        <tr id="round-{{ round }}" class="{{ 'highlight' if round == admin_player.tournament.current_round and admin_player.tournament.playing else '' }}">
+                        <tr id="round-{{ round }}" class="{{ 'highlight' if round == tournament_player.tournament.current_round and tournament_player.tournament.playing else '' }}">
                             <th scope="row gy-2 gx-3" class="text-nowrap text-center">
                                 {{ round }}
                             </th>
@@ -180,7 +181,7 @@
                                         {{ admin_macros.select_input(
                                             name=name,
                                             label='',
-                                            select_options=get_bye_options(client, admin_player, round),
+                                            select_options=get_bye_options(client, tournament_player, round),
                                             tooltip_select=true,
                                             disabled=(
                                                 (pairing.half_point_bye and not can_set_hpb)
@@ -211,7 +212,7 @@
                                             });
                                         </script>
                                     {% else %}
-                                        {{ admin_player.not_paired_str }}
+                                        {{ tournament_player.not_paired_str }}
                                     {% endif %}
                                 </td>
                             {% else %}
@@ -261,9 +262,9 @@
                         </tr>
                     {% endfor %}
                     {% if display_rating_change %}
-                        {% if admin_player.rating_used_by_fide.type != 3 %}
+                        {% if tournament_player.rating_used_by_fide.type != 3 %}
                         <tr>
-                            {% set first_rating, comment = admin_player.first_fide_rating %}
+                            {% set first_rating, comment = tournament_player.first_fide_rating %}
                             <td colspan="6" class="text-end">{{ _("First FIDE rating (based only on this tournament)") }}</td>
                             <td
                                 class="text-nowrap text-end"
@@ -286,7 +287,7 @@
                                     {% endif %}
                                 </td>
                                 <td  class="text-nowrap text-end {% if delta > 0 %}text-success{% elif delta < 0 %}text-warning{% endif %}">
-                                    {{ admin_player.rating + delta }} F
+                                    {{ tournament_player.rating + delta }} F
                                 </td>
                                 <td class="text-nowrap text-center {% if delta > 0 %}text-success{% elif delta < 0 %}text-warning{% endif %}">
                                     ({{ delta }})
@@ -300,8 +301,8 @@
                 <span class="fst-italic">
                     {{ _(
                         'Number of byes: %(byes)d (maximum: %(max_byes)d)',
-                        byes=admin_player.byes_count,
-                        max_byes=admin_player.tournament.max_byes
+                        byes=tournament_player.byes_count,
+                        max_byes=tournament_player.tournament.max_byes
                     ) }}
                 </span>
                 <i

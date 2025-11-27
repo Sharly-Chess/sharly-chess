@@ -132,7 +132,7 @@ class ColorSeedSetting(PairingSetting[BoardColor]):
             (
                 player.pairings[1].color
                 for player in sorted(
-                    tournament.players,
+                    tournament.tournament_players,
                     key=lambda player: player.starting_rank_sort_key,
                 )
                 if 1 in player.pairings and player.pairings[1].color is not None
@@ -225,8 +225,8 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
     @classmethod
     def default_value(cls, tournament: 'Tournament') -> dict[int, int]:
         return {
-            player.id: rank
-            for rank, player in tournament.players_by_starting_rank.items()
+            tournament_player.id: rank
+            for rank, tournament_player in tournament.tournament_players_by_starting_rank.items()
         }
 
     @classmethod
@@ -234,10 +234,10 @@ class BergerNumbersSetting(PairingSetting[dict[int, int]]):
         berger_numbers = value
         if len(set(berger_numbers.values())) != len(set(berger_numbers.keys())):
             return False
-        for player in tournament.players:
-            if player.id not in berger_numbers:
+        for tournament_player in tournament.tournament_players:
+            if tournament_player.id not in berger_numbers:
                 return False
-            if berger_numbers[player.id] > tournament.player_count:
+            if berger_numbers[tournament_player.id] > tournament.player_count:
                 return False
         return True
 

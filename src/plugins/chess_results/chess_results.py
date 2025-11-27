@@ -64,7 +64,9 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     def event_form_fields_template(self) -> str:
         return '/chess_results_event_form_fields.html'
 
-    def used_by_stored_tournament(self, stored_tournament: 'StoredTournament') -> bool:
+    def used_by_stored_tournament(
+        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+    ) -> bool:
         cr_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         return cr_data.get('tnr', None) is not None
 

@@ -2,14 +2,16 @@ from abc import ABC, abstractmethod
 
 from common.i18n import _
 from data.pairings.settings import BergerNumbersSetting
-from data.player import Player
+from data.player import TournamentPlayer
 from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
 
 
 class PlayerSorter(IdentifiableEntity, ABC):
     @abstractmethod
-    def sorted_players(self, tournament: Tournament) -> list[Player]:
+    def sorted_tournament_players(
+        self, tournament: Tournament
+    ) -> list[TournamentPlayer]:
         """Get a sorted list of all the players in a tournament."""
 
 
@@ -22,8 +24,10 @@ class NamePlayerSorter(PlayerSorter):
     def static_name() -> str:
         return _('Name')
 
-    def sorted_players(self, tournament: Tournament) -> list[Player]:
-        return tournament.players_by_name_with_unpaired
+    def sorted_tournament_players(
+        self, tournament: Tournament
+    ) -> list[TournamentPlayer]:
+        return tournament.tournament_players_by_name_with_unpaired
 
 
 class RankPlayerSorter(PlayerSorter):
@@ -35,10 +39,12 @@ class RankPlayerSorter(PlayerSorter):
     def static_name() -> str:
         return _('Rank')
 
-    def sorted_players(self, tournament: Tournament) -> list[Player]:
+    def sorted_tournament_players(
+        self, tournament: Tournament
+    ) -> list[TournamentPlayer]:
         return [
-            player
-            for player in tournament.compute_player_ranks(
+            tournament_player
+            for tournament_player in tournament.compute_tournament_player_ranks(
                 after_round=tournament.rounds
             ).values()
         ]
@@ -53,8 +59,13 @@ class StartingRankPlayerSorter(PlayerSorter):
     def static_name() -> str:
         return _('Starting rank')
 
-    def sorted_players(self, tournament: Tournament) -> list[Player]:
-        return [player for player in tournament.players_by_starting_rank.values()]
+    def sorted_tournament_players(
+        self, tournament: Tournament
+    ) -> list[TournamentPlayer]:
+        return [
+            tournament_player
+            for tournament_player in tournament.tournament_players_by_starting_rank.values()
+        ]
 
 
 class PairingNumberPlayerSorter(PlayerSorter):
@@ -66,9 +77,11 @@ class PairingNumberPlayerSorter(PlayerSorter):
     def static_name() -> str:
         return _('Pairing number')
 
-    def sorted_players(self, tournament: Tournament) -> list[Player]:
+    def sorted_tournament_players(
+        self, tournament: Tournament
+    ) -> list[TournamentPlayer]:
         berger_nb_by_player_id = BergerNumbersSetting.get_value(tournament)
         return sorted(
-            tournament.players,
+            tournament.tournament_players,
             key=lambda p: berger_nb_by_player_id[p.id],
         )

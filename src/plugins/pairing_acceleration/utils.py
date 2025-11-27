@@ -16,8 +16,8 @@ class PairingAccelerationUtils:
     def set_pairing_settings_from_rating_threshold(
         cls, tournament: Tournament, rating_threshold: int
     ):
-        tournament.set_players_pairing_numbers()
-        sorted_players = sorted(tournament.players, key=attrgetter('rating'))
+        tournament.set_tournament_players_pairing_numbers()
+        sorted_players = sorted(tournament.tournament_players, key=attrgetter('rating'))
         max_a = next(
             (
                 player.pairing_number
@@ -44,8 +44,8 @@ class PairingAccelerationUtils:
         upper_rating_threshold: int,
         lower_rating_threshold: int,
     ):
-        tournament.set_players_pairing_numbers()
-        sorted_players = sorted(tournament.players, key=attrgetter('rating'))
+        tournament.set_tournament_players_pairing_numbers()
+        sorted_players = sorted(tournament.tournament_players, key=attrgetter('rating'))
         max_a = next(
             (
                 player.pairing_number

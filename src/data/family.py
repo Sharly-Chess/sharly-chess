@@ -267,7 +267,7 @@ class Family:
                 else:
                     players_instead_of_boards = True
                     cut_items_number = len(
-                        self.tournament.players_by_name_with_unpaired
+                        self.tournament.tournament_players_by_name_with_unpaired
                     )
                     if cut_items_number:
                         self._calculated_first = 1
@@ -278,18 +278,18 @@ class Family:
                     if self.tournament.current_round:
                         if self.players_show_unpaired:
                             total_items_number = len(
-                                self.tournament.players_by_name_with_unpaired
+                                self.tournament.tournament_players_by_name_with_unpaired
                             )
                         else:
                             total_items_number = len(
-                                self.tournament.players_by_name_without_unpaired
+                                self.tournament.tournament_players_by_name_without_unpaired
                             )
                     else:
                         total_items_number = len(
-                            self.tournament.players_by_name_with_unpaired
+                            self.tournament.tournament_players_by_name_with_unpaired
                         )
                 else:
-                    self.tournament.compute_player_ranks(
+                    self.tournament.compute_tournament_player_ranks(
                         after_round=self.tournament.correct_ranking_round(
                             self.ranking_round
                         )
@@ -297,7 +297,7 @@ class Family:
                     total_items_number = len(
                         [
                             player
-                            for player in self.tournament.players_by_rank.values()
+                            for player in self.tournament.tournament_players_by_rank.values()
                             if (
                                 self.ranking_min_points is None
                                 or (player.points or 0) >= self.ranking_min_points

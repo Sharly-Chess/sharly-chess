@@ -35,7 +35,7 @@
                             class="{{ name }}"
                         />
                         <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                            {{ tournament.uniq_id }} ({{ tournament.players_by_id|length }})
+                            {{ tournament.uniq_id }} ({{ tournament.tournament_players_by_id|length }})
                         </label>
                     </li>
                 {% endfor %}

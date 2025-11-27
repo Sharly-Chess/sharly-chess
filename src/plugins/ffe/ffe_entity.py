@@ -9,7 +9,7 @@ from common.exception import SharlyChessException, OptionError
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from data.columns.player_datasheet import DatasheetColumn
-from data.columns.player_table import PlayerTableColumn
+from data.columns.player_table import TournamentPlayerTableColumn
 from data.criteria.player_filter_options import (
     PlayerFilterOption,
     SelectPlayerFilterOption,
@@ -24,7 +24,7 @@ from data.input_output.data_source import (
     LocalDataSource,
     OnlineDataSource,
 )
-from data.player import Player
+from data.player import Player, TournamentPlayer
 from data.print_documents import PlayerSplitter
 from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
 from data.print_documents.qrcode_types import QRCodeType
@@ -291,8 +291,8 @@ class LeaguePlayerSplitter(PlayerSplitter):
         return _('League')
 
     @staticmethod
-    def get_split_key(player: Player) -> str:
-        return FFEUtils.get_player_plugin_data(player).league or ''
+    def get_split_key(tournament_player: TournamentPlayer) -> str:
+        return FFEUtils.get_player_plugin_data(tournament_player).league or ''
 
 
 class FFESiteQRCodeType(QRCodeType):
@@ -359,7 +359,7 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
     def compute_virtual_points(
         cls,
         tournament: Tournament,
-        player: Player,
+        tournament_player: TournamentPlayer,
         at_round: int,
     ) -> float:
         if at_round >= tournament.rounds - 1:
@@ -367,8 +367,8 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
             # points, and use a simple Swiss Dutch system.
             return 0.0
         return cls._compute_virtual_points(
-            group=cls.get_player_group(tournament, player),
-            points=player.points_before(at_round),
+            group=cls.get_player_group(tournament, tournament_player),
+            points=tournament_player.points_before(at_round),
             tournament_rounds=tournament.rounds,
             draw_points=Result.DRAW.points(tournament.point_values),
             win_points=Result.WIN.points(tournament.point_values),
@@ -468,16 +468,21 @@ class FfeLeaguePlayerFilter(PlayerFilter):
         ]
 
     @cached_property
-    def is_player_included_function(self) -> Callable[[Player], bool]:
+    def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         leagues, exclude = self.get_option_values()
         if exclude:
             return (
-                lambda player: FFEUtils.get_player_plugin_data(player).league
+                lambda tournament_player: FFEUtils.get_player_plugin_data(
+                    tournament_player
+                ).league
                 not in leagues
             )
         else:
             return (
-                lambda player: FFEUtils.get_player_plugin_data(player).league in leagues
+                lambda tournament_player: FFEUtils.get_player_plugin_data(
+                    tournament_player
+                ).league
+                in leagues
             )
 
     def full_name(self, tournament: 'Tournament') -> str:
@@ -510,10 +515,10 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
 
         return list(FfePlugin.FFE_LEAGUES)
 
-    def get_player_counter(self, tournament: 'Tournament') -> Counter[str]:
+    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
         counter: Counter[str] = Counter[str]()
-        for player in tournament.players:
-            if league := FFEUtils.get_player_plugin_data(player).league:
+        for tournament_player in tournament.tournament_players:
+            if league := FFEUtils.get_player_plugin_data(tournament_player).league:
                 counter[league] += 1
         return counter
 
@@ -547,10 +552,12 @@ class FfeLicencePlayerFilter(PlayerFilter):
         return [FfeLicenceFilterOption]
 
     @cached_property
-    def is_player_included_function(self) -> Callable[[Player], bool]:
+    def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         licences = self.get_option_values()[0]
         return (
-            lambda player: FFEUtils.get_player_plugin_data(player).ffe_licence
+            lambda tournament_player: FFEUtils.get_player_plugin_data(
+                tournament_player
+            ).ffe_licence
             in licences
         )
 
@@ -582,10 +589,12 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
     def get_all_known_values(self, tournament: 'Tournament') -> list[int]:
         return [licence.value for licence in PlayerFFELicence]
 
-    def get_player_counter(self, tournament: 'Tournament') -> Counter[int]:
+    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[int]:
         counter: Counter[int] = Counter[int]()
-        for player in tournament.players:
-            if ffe_licence := FFEUtils.get_player_plugin_data(player).ffe_licence:
+        for tournament_player in tournament.tournament_players:
+            if ffe_licence := FFEUtils.get_player_plugin_data(
+                tournament_player
+            ).ffe_licence:
                 counter[ffe_licence] += 1
         return counter
 
@@ -602,13 +611,13 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
             raise OptionError(_('At least one licence type is expected.'), self)
 
 
-class FfeLeagueTableColumn(PlayerTableColumn):
+class FfeLeagueTableColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
         return _('League *** LEAGUE FOR TABLE HEADER')
 
-    def get_cell_content(self, player: Player) -> Any:
-        return FFEUtils.get_player_plugin_data(player).league or ''
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        return FFEUtils.get_player_plugin_data(tournament_player).league or ''
 
     @property
     def shared_classes(self) -> str:

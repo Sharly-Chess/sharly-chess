@@ -18,7 +18,7 @@ from data.board import Board
 from data.display_controller import DisplayController
 from data.event import Event
 from data.loader import EventLoader
-from data.player import Player
+from data.player import TournamentPlayer
 from data.rotator import Rotator
 from data.screen import Screen
 from data.tournament import Tournament
@@ -206,14 +206,14 @@ class RequestUtils:
     PLAYER_ID_PARAM: str = 'player_id'
 
     @classmethod
-    def get_player(cls, request: HTMXRequest) -> Player:
+    def get_tournament_player(cls, request: HTMXRequest) -> TournamentPlayer:
         if cls.REQUEST_PLAYER_ATTR in request.state:
             return request.state[cls.REQUEST_PLAYER_ATTR]
         player_id = cls._get_request_param(request, cls.PLAYER_ID_PARAM)
         try:
             request.state[cls.REQUEST_PLAYER_ATTR] = cls.get_tournament(
                 request
-            ).players_by_id[player_id]
+            ).tournament_players_by_id[player_id]
         except KeyError:
             raise NotFoundException(f'Player [{player_id}] not found.')
         return request.state[cls.REQUEST_PLAYER_ATTR]

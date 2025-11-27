@@ -30,7 +30,7 @@ class Migration(BaseMigration):
             fra_required = False
             for plugin in plugin_manager.enabled_plugins:
                 if any(
-                    plugin.used_by_stored_tournament(stored_tournament)
+                    plugin.used_by_stored_tournament(stored_event, stored_tournament)
                     for stored_tournament in stored_event.stored_tournaments
                 ):
                     if plugin.federation == 'FRA':

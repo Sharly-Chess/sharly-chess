@@ -9,7 +9,7 @@ from litestar.channels import ChannelsPlugin
 
 from data.access_levels.actions import AuthAction
 from data.board import Board
-from data.player import Player
+from data.player import TournamentPlayer
 from data.tournament import Tournament
 from utils.enum import Result
 from web.controllers.admin.pairings_admin_controller import PairingsAdminController
@@ -65,17 +65,19 @@ class ResultUserWebContext(BoardUserWebContext):
 class PlayerUserWebContext(TournamentUserWebContext):
     def __init__(self, request: HTMXRequest):
         super().__init__(request)
-        self.player: Player = RequestUtils.get_player(request)
+        self.tournament_player: TournamentPlayer = RequestUtils.get_tournament_player(
+            request
+        )
         self.board: Board | None = (
-            self.tournament.boards[self.player.board_id - 1]
-            if self.player.board_id
+            self.tournament.boards[self.tournament_player.board_id - 1]
+            if self.tournament_player.board_id
             else None
         )
 
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'player': self.player,
+            'tournament_player': self.tournament_player,
             'board': self.board,
         }
 
@@ -116,15 +118,18 @@ class CheckInUserController(BaseInputUserController):
         event_uniq_id: str,
     ) -> Template:
         player_web_context = PlayerUserWebContext(request)
-        assert player_web_context.player.id is not None
+        assert player_web_context.tournament_player.id is not None
         player_web_context.tournament.check_in_player(
-            player_web_context.player, not player_web_context.player.check_in
+            player_web_context.tournament_player,
+            not player_web_context.tournament_player.check_in,
         )
         PlayerAdminController.publish_new_checkin(
-            channels, event_uniq_id, player_web_context.player
+            channels, event_uniq_id, player_web_context.tournament_player
         )
         SessionHandler.set_session_user_last_check_in_updated(
-            request, player_web_context.tournament.id, player_web_context.player.id
+            request,
+            player_web_context.tournament.id,
+            player_web_context.tournament_player.id,
         )
         web_context = BasicScreenOrFamilyUserWebContext(request)
         return self._user_screen_render(web_context)
@@ -135,23 +140,27 @@ class IllegalMoveUserController(BaseInputUserController):
         player_web_context = PlayerUserWebContext(request)
 
         if add:
-            player_web_context.tournament.store_illegal_move(player_web_context.player)
+            player_web_context.tournament.store_illegal_move(
+                player_web_context.tournament_player
+            )
             SessionHandler.set_session_user_last_illegal_move_updated(
-                request, player_web_context.tournament.id, player_web_context.player.id
+                request,
+                player_web_context.tournament.id,
+                player_web_context.tournament_player.id,
             )
         else:
             if not player_web_context.tournament.delete_illegal_move(
-                player_web_context.player
+                player_web_context.tournament_player
             ):
                 Message.error(
                     request,
-                    f'Player [{player_web_context.player.id}] has no illegal move recorded.',
+                    f'Player [{player_web_context.tournament_player.id}] has no illegal move recorded.',
                 )
             else:
                 SessionHandler.set_session_user_last_illegal_move_updated(
                     request,
                     player_web_context.tournament.id,
-                    player_web_context.player.id,
+                    player_web_context.tournament_player.id,
                 )
         web_context = BasicScreenOrFamilyUserWebContext(request)
         return self._user_screen_render(web_context)

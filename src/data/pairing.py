@@ -15,7 +15,7 @@ from utils.enum import Result, BoardColor, PlayerRatingType
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
-    from data.player import Player
+    from data.player import TournamentPlayer
 
 logger: Logger = get_logger()
 
@@ -24,12 +24,17 @@ RatingChange = namedtuple('RatingChange', ['delta', 'new_rating', 'comment'])
 
 
 class Pairing:
-    """A pairing (from the point of view of the `Player` class)"""
+    """A pairing (from the point of view of the `TournamentPlayer` class)"""
 
     def __init__(
-        self, player: 'Player', stored_pairing: StoredPairing, exists: bool = True
+        self,
+        tournament_player: 'TournamentPlayer',
+        stored_pairing: StoredPairing,
+        exists: bool = True,
     ):
-        self._player_ref: 'ReferenceType[Player]' = weakref.ref(player)
+        self._tournament_player_ref: 'ReferenceType[TournamentPlayer]' = weakref.ref(
+            tournament_player
+        )
         self.stored_pairing = stored_pairing
 
         # NOTE (Molrn) Flag indicating if the stored object exists in the database or not.
@@ -39,16 +44,16 @@ class Pairing:
         self.exists = exists
 
     @property
-    def player(self) -> 'Player':
-        if (player := self._player_ref()) is None:
+    def tournament_player(self) -> 'TournamentPlayer':
+        if (tournament_player := self._tournament_player_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
-        return player
+        return tournament_player
 
     @property
     def board(self) -> Board | None:
         if not (board_id := self.stored_pairing.board_id):
             return None
-        return self.player.tournament.boards_by_id[board_id]
+        return self.tournament_player.tournament.boards_by_id[board_id]
 
     @property
     def round(self) -> int:
@@ -60,7 +65,7 @@ class Pairing:
 
     @property
     def points(self) -> float:
-        return self.result.points(self.player.point_values)
+        return self.result.points(self.tournament_player.point_values)
 
     @property
     def points_str(self) -> str:
@@ -82,11 +87,12 @@ class Pairing:
             self.exists = True
 
     def add_illegal_move(self, event_database: EventDatabase):
-        if self.illegal_moves < self.player.tournament.record_illegal_moves:
+        if self.illegal_moves < self.tournament_player.tournament.record_illegal_moves:
             self.stored_pairing.illegal_moves += 1
             self.update(event_database)
             logger.info(
-                'An illegal move has been recorded for player [%s].', self.player.id
+                'An illegal move has been recorded for player [%s].',
+                self.tournament_player.id,
             )
             return True
         return False
@@ -96,11 +102,15 @@ class Pairing:
             self.stored_pairing.illegal_moves -= 1
             self.update(event_database)
             logger.info(
-                'An illegal move has been deleted for player [%s].', self.player.id
+                'An illegal move has been deleted for player [%s].',
+                self.tournament_player.id,
             )
             return True
         else:
-            logger.info('No illegal move found for player [%s].', self.player.id)
+            logger.info(
+                'No illegal move found for player [%s].',
+                self.tournament_player.id,
+            )
             return False
 
     @property
@@ -211,41 +221,50 @@ class Pairing:
             return None
         return (
             BoardColor.WHITE
-            if board.white_player.id == self.player.id
+            if board.white_tournament_player.id == self.tournament_player.id
             else BoardColor.BLACK
         )
 
     @property
-    def opponent(self) -> Optional['Player']:
+    def opponent(self) -> Optional['TournamentPlayer']:
         board = self.board
-        if not board or not board.black_player:
+        if not board or not board.black_tournament_player:
             return None
         return (
-            board.black_player if self.color == BoardColor.WHITE else board.white_player
+            board.black_tournament_player
+            if self.color == BoardColor.WHITE
+            else board.white_tournament_player
         )
 
     def fide_rating_change(self, k_factor: int):
-        player = self.player
+        tournament_player = self.tournament_player
         opponent = self.opponent
         if self.unplayed:
-            return RatingChange(None, player.rating_used_by_fide.value, '')
+            return RatingChange(None, tournament_player.rating_used_by_fide.value, '')
 
         assert opponent is not None
-        if player.rating_used_by_fide.type != PlayerRatingType.FIDE:
+        if tournament_player.rating_used_by_fide.type != PlayerRatingType.FIDE:
             return RatingChange(
-                None, player.rating_used_by_fide.value, _('Player is not yet rated.')
+                None,
+                tournament_player.rating_used_by_fide.value,
+                _('Player is not yet rated.'),
             )
 
         if opponent.rating_used_by_fide.type != PlayerRatingType.FIDE:
             return RatingChange(
-                None, player.rating_used_by_fide.value, _('Unrated opponent.')
+                None,
+                tournament_player.rating_used_by_fide.value,
+                _('Unrated opponent.'),
             )
 
-        diff = opponent.rating_used_by_fide.value - player.rating_used_by_fide.value
+        diff = (
+            opponent.rating_used_by_fide.value
+            - tournament_player.rating_used_by_fide.value
+        )
 
         # - For players rated below 2650, clamp |diff| to 400.
         # - For players rated 2650 and above, use full difference.
-        if player.rating_used_by_fide.value < 2650:
+        if tournament_player.rating_used_by_fide.value < 2650:
             if diff > 400:
                 diff = 400
             elif diff < -400:
@@ -254,18 +273,24 @@ class Pairing:
         # Find matching probability (fallback to last)
         expected = Utils.win_probability(diff)
         delta = round(k_factor * (self.result.point_value - expected), 2)
-        new_rating = Utils.round_ranking(player.rating_used_by_fide.value + delta)
+        new_rating = Utils.round_ranking(
+            tournament_player.rating_used_by_fide.value + delta
+        )
 
         comment = ''
         opponent_rating_overridden = not opponent.rating_is_overridden(
-            player.tournament.rating, player.tournament.player_rating_type
+            tournament_player.tournament.rating,
+            tournament_player.tournament.player_rating_type,
         ) and opponent.will_fide_override_with_standard_rating(
-            player.tournament.rating, player.tournament.player_rating_type
+            tournament_player.tournament.rating,
+            tournament_player.tournament.player_rating_type,
         )
-        player_rating_overridden = not player.rating_is_overridden(
-            player.tournament.rating, player.tournament.player_rating_type
-        ) and player.will_fide_override_with_standard_rating(
-            player.tournament.rating, player.tournament.player_rating_type
+        player_rating_overridden = not tournament_player.rating_is_overridden(
+            tournament_player.tournament.rating,
+            tournament_player.tournament.player_rating_type,
+        ) and tournament_player.will_fide_override_with_standard_rating(
+            tournament_player.tournament.rating,
+            tournament_player.tournament.player_rating_type,
         )
 
         if opponent_rating_overridden and player_rating_overridden:
@@ -273,7 +298,7 @@ class Pairing:
                 'The FIDE will use the standard ratings of both players for this game ({rating_opponent} and {rating_player}).'
             ).format(
                 rating_opponent=opponent.rating_used_by_fide,
-                rating_player=player.rating_used_by_fide,
+                rating_player=tournament_player.rating_used_by_fide,
             )
         elif opponent_rating_overridden:
             comment = _(
@@ -282,7 +307,7 @@ class Pairing:
         elif player_rating_overridden:
             comment = _(
                 "The FIDE will use the player's standard rating for this game ({rating})."
-            ).format(rating=player.rating_used_by_fide)
+            ).format(rating=tournament_player.rating_used_by_fide)
 
         return RatingChange(delta, new_rating, comment)
 
@@ -295,4 +320,4 @@ class Pairing:
         return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'
 
     def __repr__(self):
-        return f'{self.__class__.__name__}(player={self.player!r}, stored_pairing={self.stored_pairing!r}, exists={self.exists!r})'
+        return f'{self.__class__.__name__}(player={self.tournament_player!r}, stored_pairing={self.stored_pairing!r}, exists={self.exists!r})'
