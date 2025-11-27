@@ -210,12 +210,10 @@ class ScreenSet:
         name = name.replace('%t', str(self.tournament.name))
         if self.first_tournament_player_by_name is not None:
             name = name.replace(
-                '%f', self.first_tournament_player_by_name.player.last_name[:8]
+                '%f', self.first_tournament_player_by_name.last_name[:8]
             )
         if self.last_tournament_player_by_name is not None:
-            name = name.replace(
-                '%l', self.last_tournament_player_by_name.player.last_name[:8]
-            )
+            name = name.replace('%l', self.last_tournament_player_by_name.last_name[:8])
         return name
 
     @property

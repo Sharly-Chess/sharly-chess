@@ -35,7 +35,7 @@ class FraSchoolPlayerSplitter(PlayerSplitter):
     @staticmethod
     def get_split_key(tournament_player: TournamentPlayer) -> str:
         return getattr(
-            FRASchoolsUtils.get_player_school(tournament_player.player),
+            FRASchoolsUtils.get_player_school(tournament_player),
             'full_name_without_code',
             '',
         )
@@ -48,7 +48,7 @@ class FraSchoolTableColumn(TournamentPlayerTableColumn):
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return getattr(
-            FRASchoolsUtils.get_player_school(tournament_player.player),
+            FRASchoolsUtils.get_player_school(tournament_player),
             'full_name_without_code',
             '',
         )
@@ -89,14 +89,14 @@ class FRASchoolPlayerFilter(PlayerFilter):
         if exclude:
             return (
                 lambda tournament_player: FRASchoolsUtils.get_player_plugin_data(
-                    tournament_player.player
+                    tournament_player
                 ).fra_school_id
                 not in school_ids
             )
         else:
             return (
                 lambda tournament_player: FRASchoolsUtils.get_player_plugin_data(
-                    tournament_player.player
+                    tournament_player
                 ).fra_school_id
                 in school_ids
             )
@@ -142,7 +142,7 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
     ) -> Counter[FRASchool]:
         counter: Counter[FRASchool] = Counter[FRASchool]()
         for tournament_player in tournament.tournament_players:
-            if school := FRASchoolsUtils.get_player_school(tournament_player.player):
+            if school := FRASchoolsUtils.get_player_school(tournament_player):
                 counter[school] += 1
         return counter
 

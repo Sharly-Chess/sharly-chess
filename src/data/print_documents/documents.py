@@ -661,7 +661,7 @@ class BergerGridPrintDocument(PrintDocument):
             ]
             for tournament_player in sorted(
                 self.tournament.tournament_players,
-                key=lambda p: self.grid_id_by_player_id[p.player.id],
+                key=lambda p: self.grid_id_by_player_id[p.id],
             )
         }
         for tournament_player in self.tournament.tournament_players:
@@ -836,7 +836,7 @@ class StatisticsPrintDocument(PrintDocument):
             value
             for tournament in self.tournaments
             for p in tournament.tournament_players
-            if (value := Utils.deep_getattr(p, attr_name)) is not None
+            if (value := getattr(p, attr_name)) is not None
             and (filter_func(value) if filter_func else True)
         ]
 
@@ -936,7 +936,7 @@ class StatisticsPrintDocument(PrintDocument):
                 None,
             ),
             (
-                'player.title',
+                'title',
                 _('Titled players'),
                 lambda item: -item[0].value,
                 None,
@@ -960,7 +960,7 @@ class StatisticsPrintDocument(PrintDocument):
                 None,
             ),
             (
-                'player.gender',
+                'gender',
                 _('Genders'),
                 lambda item: item[0].value,
                 None,
@@ -968,7 +968,7 @@ class StatisticsPrintDocument(PrintDocument):
                 None,
             ),
             (
-                'player.federation',
+                'federation',
                 _('Federations'),
                 lambda item: (-item[1], item[0].name),
                 None,
@@ -980,7 +980,7 @@ class StatisticsPrintDocument(PrintDocument):
                 ).format(count=count),
             ),
             (
-                'player.club',
+                'club',
                 _('Clubs'),
                 lambda item: (
                     -item[1],

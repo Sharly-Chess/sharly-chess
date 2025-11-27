@@ -4,7 +4,6 @@ from typing import Any
 from common.i18n import _
 from data.board import Board
 from web.utils import Column, ColumnUsage
-from utils import Utils
 
 
 class BoardColumn(Column[Board], ABC):
@@ -194,9 +193,9 @@ class BlackNameColumn(BoardColumn):
         return 'text-start'
 
     def get_cell_content(self, board: Board) -> Any:
-        return Utils.deep_getattr(
+        return getattr(
             board.black_tournament_player,
-            'player.full_name',
+            'full_name',
             board.white_tournament_player.exempt_str.upper(),
         )
 

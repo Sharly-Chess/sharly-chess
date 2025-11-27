@@ -83,5 +83,5 @@ class PairingNumberPlayerSorter(PlayerSorter):
         berger_nb_by_player_id = BergerNumbersSetting.get_value(tournament)
         return sorted(
             tournament.tournament_players,
-            key=lambda p: berger_nb_by_player_id[p.player.id],
+            key=lambda p: berger_nb_by_player_id[p.id],
         )

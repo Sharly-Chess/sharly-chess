@@ -211,7 +211,7 @@ class ChessResultsSession(Session):
             )
             prev_tb_values = tb_values
 
-            ratings = p.player.ratings.get(tournament.rating)
+            ratings = p.ratings.get(tournament.rating)
             ET.SubElement(
                 pdata,
                 'player',
@@ -219,22 +219,21 @@ class ChessResultsSession(Session):
                     'no': str(
                         p.pairing_number if p.pairing_number is not None else p.rank
                     ),
-                    'id': str(p.player.id),
-                    'lastname': p.player.last_name,
-                    'firstname': p.player.first_name or '',
+                    'id': str(p.id),
+                    'lastname': p.last_name,
+                    'firstname': p.first_name or '',
                     'atitle': '',
-                    'title': p.player.title.short_name,
+                    'title': p.title.short_name,
                     'rtg': str(p.rating),
                     'rtgfide': str(getattr(ratings, 'fide', '') or ''),
                     'rtgnat': str(getattr(ratings, 'national', '') or ''),
-                    'dob': str(p.player.year_of_birth),
-                    'sex': ChessResultsPlayerGender.get_outer_value(p.player.gender)
-                    or '',
-                    'fed': p.player.federation.name,
+                    'dob': str(p.year_of_birth),
+                    'sex': ChessResultsPlayerGender.get_outer_value(p.gender) or '',
+                    'fed': p.federation.name,
                     'board': '',
                     'teamno': '0',
-                    'fideid': str(p.player.fide_id or ''),
-                    'clubname': p.player.club.name or '',
+                    'fideid': str(p.fide_id or ''),
+                    'clubname': p.club.name or '',
                     'typ': p.category.short_name,
                     'rank': str(p.rank),
                     'pts': str(p.points or 0),

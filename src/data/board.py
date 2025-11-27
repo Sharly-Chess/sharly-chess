@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Optional, Literal
 from common import format_timestamp
 from database.sqlite.event.event_store import StoredBoard
 from database.sqlite.event.event_database import EventDatabase
-from utils import Utils
 from utils.enum import Result, PlayerRatingType
 
 if TYPE_CHECKING:
@@ -80,8 +79,8 @@ class Board:
 
     @property
     def fixed_number(self) -> int | None:
-        return self.white_tournament_player.fixed or Utils.deep_getattr(
-            self.black_tournament_player, 'player.fixed'
+        return self.white_tournament_player.fixed or getattr(
+            self.black_tournament_player, 'fixed', None
         )
 
     @property

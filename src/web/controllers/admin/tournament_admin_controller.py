@@ -1691,7 +1691,7 @@ class TournamentAdminController(BaseEventAdminController):
                 if random_tournament_player
                 else None,
                 'random_player': random_tournament_player,
-                'opponent_name': opponent.player.full_name if opponent else None,
+                'opponent_name': opponent.full_name if opponent else None,
                 'tournament': admin_tournament,
                 'admin_event': admin_event,
                 'board': board,

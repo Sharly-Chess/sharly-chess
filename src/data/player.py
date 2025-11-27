@@ -272,12 +272,15 @@ class Player:
 
 
 @total_ordering
-class TournamentPlayer:
+class TournamentPlayer(Player):
     def __init__(
         self,
         tournament: 'Tournament',
         stored_tournament_player: StoredTournamentPlayer,
     ):
+        player_id = stored_tournament_player.player_id
+        stored_player = tournament.event.players_by_id[player_id].stored_player
+        super().__init__(tournament.event, stored_player)
         self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
         self.stored_tournament_player = stored_tournament_player
 
@@ -305,91 +308,15 @@ class TournamentPlayer:
         return self.tournament.event
 
     @property
-    def id(self) -> int:
-        return self.stored_tournament_player.player_id
-
-    @property
-    def player(self) -> 'Player':
-        return self.event.players_by_id[self.stored_tournament_player.player_id]
-
-    @property
     def pairing_number(self) -> int | None:
         return self.stored_tournament_player.pairing_number
-
-    @property
-    def last_name(self) -> str:
-        return self.player.last_name
-
-    @property
-    def first_name(self) -> str:
-        return self.player.first_name
-
-    @property
-    def full_name(self) -> str:
-        return self.player.full_name
-
-    @property
-    def date_of_birth(self) -> date | None:
-        return self.player.date_of_birth
-
-    @property
-    def year_of_birth(self) -> int:
-        return self.player.year_of_birth
-
-    @property
-    def gender(self) -> PlayerGender:
-        return self.player.gender
-
-    @property
-    def mail(self) -> str | None:
-        return self.player.mail
-
-    @property
-    def phone(self) -> str | None:
-        return self.player.phone
-
-    @property
-    def comment(self) -> str | None:
-        return self.player.comment
-
-    @property
-    def owed(self) -> float:
-        return self.player.owed
-
-    @property
-    def paid(self) -> float:
-        return self.player.paid
-
-    @property
-    def title(self) -> PlayerTitle:
-        return self.player.title
-
-    @property
-    def fide_id(self) -> int | None:
-        return self.player.fide_id
-
-    @property
-    def federation(self) -> Federation:
-        return self.player.federation
-
-    @property
-    def club(self) -> Club:
-        return self.player.club
-
-    @property
-    def fixed(self) -> int | None:
-        return self.player.fixed
-
-    @property
-    def check_in(self) -> bool:
-        return self.player.check_in
 
     def _get_default_pairing(self, round_: int) -> Pairing:
         return Pairing(
             self,
             StoredPairing(
                 tournament_id=self.tournament.id,
-                player_id=self.player.id,
+                player_id=self.id,
                 round_=round_,
                 result=Result.NO_RESULT.value,
                 board_id=None,
@@ -434,7 +361,7 @@ class TournamentPlayer:
         else:
             tournament_start, tournament_end = None, None
         return PlayerCategory.from_year_of_birth(
-            self.event, self.player.year_of_birth, tournament_start, tournament_end
+            self.event, self.year_of_birth, tournament_start, tournament_end
         )
 
     @property
@@ -449,14 +376,6 @@ class TournamentPlayer:
     def rating_str(self) -> str:
         return str(self._tournament_rating)
 
-    @property
-    def not_paired_str(self) -> str:
-        return self.player.not_paired_str
-
-    @property
-    def exempt_str(self) -> str:
-        return self.player.exempt_str
-
     def will_fide_override_with_standard_rating(
         self, tournament_rating: TournamentRating, player_rating_type: PlayerRatingType
     ) -> bool:
@@ -464,12 +383,12 @@ class TournamentPlayer:
             # We only override for tournament that are using the FIDE ratings
             return False
 
-        ratings = self.player.ratings.get(tournament_rating, None)
+        ratings = self.ratings.get(tournament_rating, None)
         if ratings and ratings.fide is not None:
             return False
 
         if tournament_rating != TournamentRating.STANDARD:
-            ratings = self.player.ratings.get(TournamentRating.STANDARD, None)
+            ratings = self.ratings.get(TournamentRating.STANDARD, None)
             if ratings and ratings.fide is not None:
                 return True
 
@@ -494,12 +413,12 @@ class TournamentPlayer:
         if self.will_fide_override_with_standard_rating(
             self.tournament.rating, self.tournament.player_rating_type
         ):
-            rating = self.player.ratings.get(TournamentRating.STANDARD)
+            rating = self.ratings.get(TournamentRating.STANDARD)
             assert rating is not None
             assert rating.fide is not None
             return PlayerRatingAndType(rating.fide, PlayerRatingType.FIDE)
 
-        return self.player.get_rating_and_type(
+        return self.get_rating_and_type(
             self.tournament.rating, self.tournament.player_rating_type, self.category
         )
 
@@ -508,12 +427,12 @@ class TournamentPlayer:
         if self.rating_is_overridden(
             self.tournament.rating, self.tournament.player_rating_type
         ):
-            rating = self.player.ratings.get(TournamentRating.STANDARD)
+            rating = self.ratings.get(TournamentRating.STANDARD)
             assert rating is not None
             assert rating.fide is not None
             return PlayerRatingAndType(rating.fide, PlayerRatingType.FIDE)
 
-        return self.player.get_rating_and_type(
+        return self.get_rating_and_type(
             self.tournament.rating, self.tournament.player_rating_type, self.category
         )
 
@@ -522,7 +441,7 @@ class TournamentPlayer:
         return '/'.join(
             [
                 str(
-                    self.player.get_rating_and_type(
+                    self.get_rating_and_type(
                         tournament_rating,
                         self.tournament.player_rating_type,
                         self.category,
@@ -537,9 +456,9 @@ class TournamentPlayer:
         """Returns the player's coefficient (k), or the best guess."""
         from database.sqlite.fide.fide_database import FideDatabase
 
-        if self.player.fide_id and FideDatabase().exists():
+        if self.fide_id and FideDatabase().exists():
             with FideDatabase() as db:
-                k = (db.get_k_factors_by_fide_id(self.player.fide_id) or {}).get(
+                k = (db.get_k_factors_by_fide_id(self.fide_id) or {}).get(
                     self.tournament.rating
                 )
                 if k is not None:
@@ -550,14 +469,14 @@ class TournamentPlayer:
             return (40, True)
         if self.rating_used_by_fide.value > 2400:
             return (10, True)
-        if isinstance(self.player.date_of_birth, date):
+        if isinstance(self.date_of_birth, date):
             today = date.today()
             age = (
                 today.year
-                - self.player.date_of_birth.year
+                - self.date_of_birth.year
                 - (
                     (today.month, today.day)
-                    < (self.player.date_of_birth.month, self.player.date_of_birth.day)
+                    < (self.date_of_birth.month, self.date_of_birth.day)
                 )
             )
             if age < 18:
@@ -702,16 +621,14 @@ class TournamentPlayer:
 
         return TrfPlayer(
             startrank=self.pairing_number,
-            name=f'{self.player.last_name}, {self.player.first_name or ""}'[:32],
-            sex=TrfPlayerGender.get_outer_value(self.player.gender),
-            title=TrfPlayerTitle.get_outer_value(self.player.title),
+            name=f'{self.last_name}, {self.first_name or ""}'[:32],
+            sex=TrfPlayerGender.get_outer_value(self.gender),
+            title=TrfPlayerTitle.get_outer_value(self.title),
             rating=self.rating,
-            fed=self.player.federation.name,
-            id=self.player.fide_id,
+            fed=self.federation.name,
+            id=self.fide_id,
             birthdate=(
-                self.player.date_of_birth.strftime('%Y/%m/%d')
-                if self.player.date_of_birth
-                else ''
+                self.date_of_birth.strftime('%Y/%m/%d') if self.date_of_birth else ''
             ),
             points=self.points_after(after_round),
             rank=self.rank,
@@ -736,7 +653,7 @@ class TournamentPlayer:
         results: dict[TitleNorm, NormCheckResult] = {
             tn: NormCheckResult(
                 title_norm=tn,
-                meets_gender=tn.satisfies_gender_requirement(self.player.gender),
+                meets_gender=tn.satisfies_gender_requirement(self.gender),
             )
             for tn in TitleNorm.values()
         }
@@ -774,18 +691,18 @@ class TournamentPlayer:
                             scored_zero_against_rated = True
                             break
                     if scored_zero_against_rated:
-                        ignored_opponents_ids.add(opponent.player.id)
+                        ignored_opponents_ids.add(opponent.id)
                         continue
 
                 # 1.4.2a (Ignore games against opponents who do not belong to FIDE federations)
-                if opponent.player.federation == 'NON':
-                    ignored_opponents_ids.add(opponent.player.id)
+                if opponent.federation == 'NON':
+                    ignored_opponents_ids.add(opponent.id)
                     continue
                 else:
-                    federations_counter[opponent.player.federation] += 1
+                    federations_counter[opponent.federation] += 1
 
-                if opponent.player.title != PlayerTitle.NONE:
-                    titles_counter[opponent.player.title] += 1
+                if opponent.title != PlayerTitle.NONE:
+                    titles_counter[opponent.title] += 1
                 results_list.append(pairing.result)
                 opponents.append(opponent)
 
@@ -815,7 +732,7 @@ class TournamentPlayer:
             res.played_games = played_games
 
             # Federation criterion
-            own_count = federations_counter.get(self.player.federation, 0)
+            own_count = federations_counter.get(self.federation, 0)
             num_feds = len(federations_counter)
             msg = _(
                 '<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt.'
@@ -976,8 +893,8 @@ class TournamentPlayer:
             if p.rating_type != PlayerRatingType.FIDE:
                 continue
             if (
-                p.player.federation == Federation(self.tournament.event.federation)
-                or p.player.federation == 'NON'  # 1.4.2a
+                p.federation == Federation(self.tournament.event.federation)
+                or p.federation == 'NON'  # 1.4.2a
             ):
                 continue
             missed_rounds = 0
@@ -1014,11 +931,11 @@ class TournamentPlayer:
                     present.append(p)
 
             n_players = len(present)
-            n_titled = sum(1 for p in present if p.player.title != PlayerTitle.NONE)
+            n_titled = sum(1 for p in present if p.title != PlayerTitle.NONE)
 
             # 1.4.2a
-            present_not_fid = [p for p in present if p.player.federation != 'FID']
-            n_feds = len({p.player.federation for p in present_not_fid})
+            present_not_fid = [p for p in present if p.federation != 'FID']
+            n_feds = len({p.federation for p in present_not_fid})
 
             # Track worst (minimum) across rounds
             worst_players = min(worst_players, n_players)
@@ -1061,7 +978,7 @@ class TournamentPlayer:
             if p.rating_type != PlayerRatingType.FIDE:
                 continue
             if (
-                p.player.federation == 'NON'  # 1.4.2a
+                p.federation == 'NON'  # 1.4.2a
             ):
                 continue
 
@@ -1079,7 +996,7 @@ class TournamentPlayer:
             eligible_players.append(p)
 
         for rnd in range(1, self.tournament.rounds + 1):
-            present: list[Player] = []
+            present: list[TournamentPlayer] = []
             for p in eligible_players:
                 pairing: Pairing | None = p.pairings_by_round.get(rnd)
                 if pairing and (
@@ -1232,9 +1149,9 @@ class TournamentPlayer:
     def starting_rank_sort_key(self) -> tuple:
         return (
             -self.rating,
-            -self.player.title,
-            self.player.last_name,
-            self.player.first_name or '',
+            -self.title,
+            self.last_name,
+            self.first_name or '',
         )
 
     @property
@@ -1295,9 +1212,9 @@ class TournamentPlayer:
 
     def __str__(self):
         return (
-            f'(#{self.player.id} rank={self._rank} ratings={self.ratings_str} '
-            f'title={self.player.title.value} gender={self.player.gender.value} '
-            f'name={self.player.last_name} {self.player.first_name} points={self.points})'
+            f'(#{self.id} rank={self._rank} ratings={self.ratings_str} '
+            f'title={self.title.value} gender={self.gender.value} '
+            f'name={self.last_name} {self.first_name} points={self.points})'
         )
 
     def __repr__(self):

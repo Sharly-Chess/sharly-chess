@@ -314,7 +314,7 @@ class Pairing:
     @property
     def opponent_id(self) -> int | None:
         opponent = self.opponent
-        return opponent.player.id if opponent else None
+        return opponent.id if opponent else None
 
     def __str__(self):
         return f'{self.__class__.__name__}({self.color} {self.opponent_id} {self.result.to_trf})'

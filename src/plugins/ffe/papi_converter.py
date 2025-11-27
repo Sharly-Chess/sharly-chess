@@ -848,7 +848,7 @@ class PapiConverter:
     ) -> PapiPlayer:
         """Convert a Player object to PapiPlayer."""
 
-        plugin_data = tournament_player.player.plugin_data[PLUGIN_NAME]
+        plugin_data = tournament_player.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfePlayerPluginData)
 
         fixed_board: int | None = tournament_player.fixed
@@ -918,7 +918,7 @@ class PapiConverter:
             tournament_rating, PlayerRatingType.FIDE
         ):
             tournament_rating = TournamentRating.STANDARD
-        return tournament_player.player.get_rating_and_type(
+        return tournament_player.get_rating_and_type(
             tournament_rating, PlayerRatingType.FIDE, tournament_player.category
         ).value
 
@@ -929,7 +929,7 @@ class PapiConverter:
             tournament_rating, PlayerRatingType.FIDE
         ):
             tournament_rating = TournamentRating.STANDARD
-        rating_and_type = tournament_player.player.get_rating_and_type(
+        rating_and_type = tournament_player.get_rating_and_type(
             tournament_rating, PlayerRatingType.FIDE, tournament_player.category
         )
         rating_type = rating_and_type.type
