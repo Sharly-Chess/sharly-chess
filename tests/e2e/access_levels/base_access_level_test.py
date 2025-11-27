@@ -2,7 +2,7 @@ from enum import IntEnum
 import re
 
 from data.event import Event
-from database.sqlite.event.event_store import StoredScreen, StoredTournament
+from database.sqlite.event.event_store import StoredScreen
 import pytest
 from playwright.sync_api import Browser, Page, expect, APIRequestContext
 from database.sqlite.event.event_database import EventDatabase
@@ -24,13 +24,6 @@ class DisplayMode(IntEnum):
 
 
 class BaseAccessLevelTest:
-    def __init__(self):
-        self.paired_tournament: StoredTournament | None = None
-        self.unpaired_tournament: StoredTournament | None = None
-        self.paired_screen: StoredScreen | None = None
-        self.unpaired_screen: StoredScreen | None = None
-        self.private_input_screen: StoredScreen | None = None
-
     @pytest.fixture(scope='class', autouse=True)
     def auth_page(
         self,
