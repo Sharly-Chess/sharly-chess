@@ -478,7 +478,7 @@ class TournamentAdminController(BaseEventAdminController):
         if not name:
             errors['name'] = _('This field is required.')
         else:
-            used_names = list(event.tournaments_by_uniq_id.keys())
+            used_names = list(event.tournaments_by_name.keys())
             if action == 'update':
                 used_names.remove(web_context.get_admin_tournament().name)
             if name in used_names:

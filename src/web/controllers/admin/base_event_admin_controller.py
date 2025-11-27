@@ -190,14 +190,14 @@ class BaseEventAdminWebContext(AdminWebContext):
                 screens_by_screen_type_sorted_by_uniq_id = (
                     event.screens_by_screen_type_sorted_by_uniq_id
                 )
-                rotators = event.rotators_sorted_by_uniq_id
-                display_controllers = event.display_controllers_sorted_by_uniq_id
+                rotators = event.rotators_sorted_by_name
+                display_controllers = event.display_controllers_sorted_by_name
             else:
                 screens_by_screen_type_sorted_by_uniq_id = (
                     event.public_screens_by_screen_type_sorted_by_uniq_id
                 )
-                rotators = event.public_rotators_sorted_by_uniq_id
-                display_controllers = event.public_display_controllers_sorted_by_uniq_id
+                rotators = event.public_rotators_sorted_by_name
+                display_controllers = event.public_display_controllers_sorted_by_name
             screens: list[Screen]
             screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.BOARDS]
             nav_tabs |= {

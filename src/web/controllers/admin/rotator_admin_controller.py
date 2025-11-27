@@ -43,9 +43,9 @@ class RotatorAdminWebContext(BaseEventAdminWebContext):
         event = self.get_admin_event()
         admin_rotators: list[Rotator] = []
         if self.client.can_view_private_screens:
-            admin_rotators = event.rotators_sorted_by_uniq_id
+            admin_rotators = event.rotators_sorted_by_name
         elif self.client.can_view_public_screens:
-            admin_rotators = event.public_rotators_sorted_by_uniq_id
+            admin_rotators = event.public_rotators_sorted_by_name
         return super().template_context | {
             'admin_event_tab': 'admin-event-rotators-tab',
             'admin_rotators_show_details': (
@@ -254,7 +254,7 @@ class RotatorAdminController(BaseEventAdminController):
         if not name:
             errors[field] = _('This field is required.')
         else:
-            used_names = list(event.rotators_by_uniq_id.keys())
+            used_names = list(event.rotators_by_name.keys())
             if action == FormAction.UPDATE:
                 used_names.remove(web_context.get_admin_rotator().name)
             if name in used_names:

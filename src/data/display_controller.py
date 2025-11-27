@@ -42,11 +42,6 @@ class DisplayController:
         return self.stored_display_controller.public
 
     @property
-    def uniq_id(self) -> str:
-        # TODO (Molrn) replace all the uniq_id usages by the name
-        return self.name
-
-    @property
     def name(self) -> str:
         return self.stored_display_controller.name
 
@@ -98,14 +93,14 @@ class DisplayController:
         if assigned_object is None:
             return None
 
-        assert assigned_object.uniq_id is not None
+        assert assigned_object.name is not None
         if self.assigned_type == 'screen':
-            return _('Currently displaying screen [{uniq_id}]').format(
-                uniq_id=assigned_object.uniq_id
+            return _('Currently displaying screen [{name}]').format(
+                name=assigned_object.name
             )
         elif self.assigned_type == 'rotator':
-            return _('Currently displaying rotator [{uniq_id}]').format(
-                uniq_id=assigned_object.uniq_id
+            return _('Currently displaying rotator [{name}]').format(
+                name=assigned_object.name
             )
         else:
             return None

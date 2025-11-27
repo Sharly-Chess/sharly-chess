@@ -134,7 +134,7 @@
             </div>
             <div class="{% if not screen.timer %}text-secondary{% endif %}">
                 <i class="bi-clock-fill pe-1"></i>
-                {% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.uniq_id) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
+                {% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.name) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
             </div>
         {% endif %}
         {% if admin_screens_show_details and client.can_manage_screens %}
@@ -214,7 +214,7 @@
                     <i class="bi bi-eye"></i>
                 </a>
             </span>
-            {{ admin_macros.display_controller_assign_dropdown(admin_event.display_controllers_sorted_by_uniq_id, 'screen', screen.uniq_id) }}
+            {{ admin_macros.display_controller_assign_dropdown(admin_event.display_controllers_sorted_by_name, 'screen', screen.uniq_id) }}
         {% endif %}
     {% endif %}
 {% endblock %}

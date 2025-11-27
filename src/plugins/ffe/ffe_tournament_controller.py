@@ -9,6 +9,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
+from data.tournament import Tournament
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import (
@@ -197,14 +198,9 @@ class FfeAdminTournamentController(BaseEventAdminController):
         return self.render_messages(request)
 
     @staticmethod
-    def tournament_fees_file(
-        tournament,
-    ) -> Path:
+    def tournament_fees_file(tournament: Tournament) -> Path:
         return (
-            ffe.TMP_DIR
-            / 'fees'
-            / tournament.event.uniq_id
-            / f'{tournament.uniq_id}.html'
+            ffe.TMP_DIR / 'fees' / tournament.event.uniq_id / f'{tournament.name}.html'
         )
 
     @get(
@@ -297,5 +293,5 @@ class FfeAdminTournamentController(BaseEventAdminController):
         file: Path = self.tournament_fees_file(tournament)
         return File(
             path=file,
-            filename=f'{event_uniq_id}-{tournament.uniq_id}-fees.html',
+            filename=f'{event_uniq_id}-{tournament.name}-fees.html',
         )

@@ -50,7 +50,7 @@ class EventAdminController(BaseEventAdminController):
             raise RuntimeError('admin_event not defined')
         started_tournaments: list[Tournament] = [
             tournament
-            for tournament in web_context.admin_event.tournaments_by_uniq_id.values()
+            for tournament in web_context.admin_event.tournaments_by_name.values()
             if tournament.started
         ]
         if len(started_tournaments) > 0 and web_context.client.can_view_pairings_tab:
@@ -92,9 +92,9 @@ class EventAdminController(BaseEventAdminController):
         if web_context.client.can_view_public_screens:
             rotators: list[Rotator]
             if web_context.client.can_view_private_screens:
-                rotators = web_context.admin_event.rotators_sorted_by_uniq_id
+                rotators = web_context.admin_event.rotators_sorted_by_name
             else:
-                rotators = web_context.admin_event.public_rotators_sorted_by_uniq_id
+                rotators = web_context.admin_event.public_rotators_sorted_by_name
             if rotators:
                 return Redirect(
                     path=request.app.route_reverse(
@@ -106,11 +106,11 @@ class EventAdminController(BaseEventAdminController):
             display_controllers: list[DisplayController]
             if web_context.client.can_view_private_screens:
                 display_controllers = (
-                    web_context.admin_event.display_controllers_sorted_by_uniq_id
+                    web_context.admin_event.display_controllers_sorted_by_name
                 )
             else:
                 display_controllers = (
-                    web_context.admin_event.public_display_controllers_sorted_by_uniq_id
+                    web_context.admin_event.public_display_controllers_sorted_by_name
                 )
             if display_controllers:
                 return Redirect(

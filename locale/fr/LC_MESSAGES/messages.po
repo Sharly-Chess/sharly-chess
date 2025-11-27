@@ -1301,10 +1301,10 @@ msgstr "Ronde en cours"
 msgid "Current round: %(round)d"
 msgstr "Ronde courante : %(round)d"
 
-msgid "Currently displaying rotator [{uniq_id}]"
+msgid "Currently displaying rotator [{name}]"
 msgstr "Affiche actuellement l'écran rotatif [{uniq_id}]"
 
-msgid "Currently displaying screen [{uniq_id}]"
+msgid "Currently displaying screen [{name}]"
 msgstr "Affiche actuellement l'écran [{uniq_id}]"
 
 msgid "Cut values"
@@ -3541,7 +3541,7 @@ msgid "Playing"
 msgstr "En cours"
 
 #, python-format
-msgid "Playing in tournament [%(uniq_id)s]"
+msgid "Playing in tournament [%(name)s]"
 msgstr "Participe au tournoi [%(uniq_id)s]"
 
 msgid "Please ask your administrator to set a password."
@@ -5909,4 +5909,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-

@@ -119,11 +119,6 @@ class Tournament:
         return self.stored_tournament.id
 
     @property
-    def uniq_id(self) -> str:
-        # TODO (Molrn) replace all the uniq_id usages by the name
-        return self.name
-
-    @property
     def index(self) -> int:
         return self.stored_tournament.index
 
@@ -145,7 +140,7 @@ class Tournament:
 
     @property
     def log_prefix(self) -> str:
-        return f'Event [{self.event.uniq_id}] - Tournament [{self.uniq_id}] - '
+        return f'Event [{self.event.uniq_id}] - Tournament [{self.name}] - '
 
     @property
     def start_date(self) -> date:
@@ -522,7 +517,7 @@ class Tournament:
                 logger.warning(
                     'Criterion [%s] not found for tournament [%s]: %s',
                     stored_criterion.id,
-                    self.uniq_id,
+                    self.name,
                     e,
                 )
                 pass
@@ -1338,7 +1333,7 @@ class Tournament:
         logger.info(
             'Added result: %s %s %d.%d %s %s %d %s %s %s %d.',
             self.event.uniq_id,
-            self.uniq_id,
+            self.name,
             board.round,
             board.id,
             board.white_tournament_player.last_name,
@@ -1363,7 +1358,7 @@ class Tournament:
         logger.info(
             'Removed result: %s %s %d.%d.',
             self.event.uniq_id,
-            self.uniq_id,
+            self.name,
             board.round,
             board.id,
         )
@@ -1612,10 +1607,10 @@ class Tournament:
     def open_check_in(self):
         """Opens the check-in for the tournament and sets all the present players
         as not checked-in for the next round."""
-        assert not self.finished, f'Tournament [{self.uniq_id}] is finished.'
-        assert not self.playing, f'Games are played for tournament [{self.uniq_id}].'
+        assert not self.finished, f'Tournament [{self.name}] is finished.'
+        assert not self.playing, f'Games are played for tournament [{self.name}].'
         assert not self.check_in_open, (
-            f'Check-in already open for tournament [{self.uniq_id}].'
+            f'Check-in already open for tournament [{self.name}].'
         )
         self.stored_tournament.check_in_open = True
         present_player_ids: list[int] = []
@@ -1637,7 +1632,7 @@ class Tournament:
         """Closes the check-in for the tournament and assigns a ZPB to all the players not checked-in
         for the next round (if zpbs_last_rounds, for the rest of the tournament)."""
         assert self.check_in_open, (
-            f'Check-in already closed for tournament [{self.uniq_id}].'
+            f'Check-in already closed for tournament [{self.name}].'
         )
         self.stored_tournament.check_in_open = False
 

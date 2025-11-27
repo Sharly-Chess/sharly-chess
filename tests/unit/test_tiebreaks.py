@@ -48,7 +48,7 @@ class TieBreakTestCase(TestCase, ABC):
 
     @property
     def tournament(self) -> Tournament:
-        return self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
+        return self.event.tournaments_by_name[TOURNAMENT_ID]
 
     def get_player_values(
         self,

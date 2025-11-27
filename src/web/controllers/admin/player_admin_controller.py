@@ -484,7 +484,7 @@ class PlayerAdminController(BaseEventAdminController):
                 case 'tournament':
                     assert player.single_tournament_player.tournament is not None
                     return (
-                        player.single_tournament_player.tournament.uniq_id,
+                        player.single_tournament_player.tournament.name,
                         -player.single_tournament_player.rating,
                         player.last_name,
                         player.first_name,
@@ -1472,7 +1472,7 @@ class PlayerAdminController(BaseEventAdminController):
         if not dst_tournament.can_add_players:
             raise ValueError(
                 _('Impossible to add players to tournament [{tournament}].').format(
-                    tournament=src_tournament.uniq_id
+                    tournament=src_tournament.name
                 )
             )
         if player.fide_id in dst_tournament.tournament_players_by_fide_id:

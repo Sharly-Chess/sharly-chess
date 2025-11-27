@@ -268,7 +268,7 @@
     {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
         <td class="text-nowrap text-start">
             {% if tournament_player.has_real_pairings or player_addable_tournaments|length <= 1 %}
-                {{ admin_event.tournaments_by_id[tournament_player.tournament.id].uniq_id }}
+                {{ admin_event.tournaments_by_id[tournament_player.tournament.id].name }}
             {% else %}
                 <span class="dropdown">
                     <button
@@ -277,7 +277,7 @@
                         data-bs-toggle="dropdown"
                         aria-expanded="false"
                     >
-                        {{ admin_event.tournaments_by_id[tournament_player.tournament.id].uniq_id }}
+                        {{ admin_event.tournaments_by_id[tournament_player.tournament.id].name }}
                     </button>
                     <ul
                         class="dropdown-menu table-dropdown-menu p-0"
@@ -296,7 +296,7 @@
                                     disabled
                                 {% endif %}
                             >
-                                {{ tournament.uniq_id }}
+                                {{ tournament.name }}
                             </li>
                         {% endfor %}
                     </ul>
