@@ -1289,7 +1289,7 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 player_id = event.add_player(stored_player, [tournament])
                 self.set_players_search_results(request)
-                player = tournament.tournament_players_by_id[player_id].player
+                player = tournament.tournament_players_by_id[player_id]
                 warning_message: str | None = None
                 if not tournament.player_matches_criteria(
                     player.single_tournament_player
@@ -1837,7 +1837,7 @@ class PlayerAdminController(BaseEventAdminController):
         player_matches: (
             list[PlayerComparator] | None
         ) = await data_source.get_player_matches(
-            [tournament_player.player for tournament_player in tournament_players],
+            tournament_players,
             field_ids,
             diff_only=False,
         )

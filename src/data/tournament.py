@@ -696,7 +696,7 @@ class Tournament:
     def tournament_players_by_name_with_unpaired(self) -> list[TournamentPlayer]:
         return sorted(
             self.tournament_players,
-            key=by('player.last_name', 'player.first_name'),
+            key=by('last_name', 'first_name'),
         )
 
     @cached_property
@@ -711,7 +711,7 @@ class Tournament:
                 for tournament_player in self.tournament_players
                 if tournament_player.id not in unpaired_ids
             ],
-            key=by('player.last_name', 'player.first_name'),
+            key=by('last_name', 'first_name'),
         )
 
     @property
@@ -1625,7 +1625,7 @@ class Tournament:
             )
             if not pairing or not pairing.result.is_bye:
                 present_player_ids.append(tournament_player.id)
-                tournament_player.player.stored_player.check_in = False
+                tournament_player.stored_player.check_in = False
 
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_check_in(self.id, True)

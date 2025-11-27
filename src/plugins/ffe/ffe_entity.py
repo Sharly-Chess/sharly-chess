@@ -292,7 +292,7 @@ class LeaguePlayerSplitter(PlayerSplitter):
 
     @staticmethod
     def get_split_key(tournament_player: TournamentPlayer) -> str:
-        return FFEUtils.get_player_plugin_data(tournament_player.player).league or ''
+        return FFEUtils.get_player_plugin_data(tournament_player).league or ''
 
 
 class FFESiteQRCodeType(QRCodeType):
@@ -473,14 +473,14 @@ class FfeLeaguePlayerFilter(PlayerFilter):
         if exclude:
             return (
                 lambda tournament_player: FFEUtils.get_player_plugin_data(
-                    tournament_player.player
+                    tournament_player
                 ).league
                 not in leagues
             )
         else:
             return (
                 lambda tournament_player: FFEUtils.get_player_plugin_data(
-                    tournament_player.player
+                    tournament_player
                 ).league
                 in leagues
             )
@@ -518,9 +518,7 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
     def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
         counter: Counter[str] = Counter[str]()
         for tournament_player in tournament.tournament_players:
-            if league := FFEUtils.get_player_plugin_data(
-                tournament_player.player
-            ).league:
+            if league := FFEUtils.get_player_plugin_data(tournament_player).league:
                 counter[league] += 1
         return counter
 
@@ -558,7 +556,7 @@ class FfeLicencePlayerFilter(PlayerFilter):
         licences = self.get_option_values()[0]
         return (
             lambda tournament_player: FFEUtils.get_player_plugin_data(
-                tournament_player.player
+                tournament_player
             ).ffe_licence
             in licences
         )
@@ -595,7 +593,7 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
         counter: Counter[int] = Counter[int]()
         for tournament_player in tournament.tournament_players:
             if ffe_licence := FFEUtils.get_player_plugin_data(
-                tournament_player.player
+                tournament_player
             ).ffe_licence:
                 counter[ffe_licence] += 1
         return counter
@@ -619,7 +617,7 @@ class FfeLeagueTableColumn(TournamentPlayerTableColumn):
         return _('League *** LEAGUE FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return FFEUtils.get_player_plugin_data(tournament_player.player).league or ''
+        return FFEUtils.get_player_plugin_data(tournament_player).league or ''
 
     @property
     def shared_classes(self) -> str:

@@ -410,7 +410,7 @@ class PlayersFilterOption(SelectPlayerFilterOption[TournamentPlayer]):
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[TournamentPlayer]:
-        return sorted(tournament.tournament_players, key=attrgetter('player.full_name'))
+        return sorted(tournament.tournament_players, key=attrgetter('full_name'))
 
     def get_tournament_player_counter(
         self, tournament: 'Tournament'
@@ -418,10 +418,10 @@ class PlayersFilterOption(SelectPlayerFilterOption[TournamentPlayer]):
         return Counter[TournamentPlayer]()
 
     def get_key(self, object_: TournamentPlayer) -> str:
-        return str(object_.player.id)
+        return str(object_.id)
 
     def get_name(self, object_: TournamentPlayer) -> str:
-        return object_.player.full_name
+        return object_.full_name
 
     def validate(self):
         self._validate_list_type(int)

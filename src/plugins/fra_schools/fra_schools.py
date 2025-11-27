@@ -321,7 +321,7 @@ class FRASchoolsPlugin(Plugin):
     def update_papi_player(
         self, papi_player: PapiPlayer, tournament_player: TournamentPlayer
     ):
-        school = FRASchoolsUtils.get_player_school(tournament_player.player)
+        school = FRASchoolsUtils.get_player_school(tournament_player)
         papi_player.club = school.full_name if school else ''
 
     @hookimpl

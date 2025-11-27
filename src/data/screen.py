@@ -305,9 +305,7 @@ class Screen:
                     text = text.replace(
                         '%f',
                         str(
-                            screen_set.first_tournament_player_by_name.player.last_name[
-                                :3
-                            ]
+                            screen_set.first_tournament_player_by_name.last_name[:3]
                         ).upper()
                         if screen_set.first_tournament_player_by_name
                         else '-',
@@ -315,9 +313,7 @@ class Screen:
                     text = text.replace(
                         '%l',
                         str(
-                            screen_set.last_tournament_player_by_name.player.last_name[
-                                :3
-                            ]
+                            screen_set.last_tournament_player_by_name.last_name[:3]
                         ).upper()
                         if screen_set.last_tournament_player_by_name
                         else '-',

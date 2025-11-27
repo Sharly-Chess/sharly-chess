@@ -1641,7 +1641,7 @@ class DirectEncounterTieBreak(TieBreak):
         Try to isolate different subgroups, and explore the subgroups with a narrower value range.
         Stop when a group can't be split or when a group only contains one player."""
         if len(tournament_player_group) == 1:
-            values_by_player_id[tournament_player_group[0].player.id] = min_value
+            values_by_player_id[tournament_player_group[0].id] = min_value
             return
 
         min_max_by_player_id = {

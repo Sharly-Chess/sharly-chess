@@ -163,7 +163,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_tournament
             and self.admin_tournament.pairing_system.split_unpaired_and_bye_players
         ):
-            for tournament_player in sorted(unpaired, key=by('player.last_name')):
+            for tournament_player in sorted(unpaired, key=by('last_name')):
                 if tournament_player.pairings[
                     self.admin_round
                 ] and tournament_player.pairings[self.admin_round].result in (
@@ -175,7 +175,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 else:
                     self.admin_unpaired.append(tournament_player)
         else:
-            self.admin_unpaired = sorted(unpaired, key=by('player.last_name'))
+            self.admin_unpaired = sorted(unpaired, key=by('last_name'))
 
         self.admin_board: Board | None = None
         if board_id is not None:
@@ -190,7 +190,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 (
                     p
                     for p in self.admin_tournament.tournament_players
-                    if p.player.id == player_id
+                    if p.id == player_id
                 ),
                 None,
             )
@@ -1159,7 +1159,7 @@ class PairingsAdminController(BaseEventAdminController):
 
         tournament_player = web_context.get_admin_tournament_player()
         tournament = web_context.get_admin_tournament()
-        tournament.check_in_player(tournament_player.player, bool(check_in))
+        tournament.check_in_player(tournament_player, bool(check_in))
         return self._admin_event_pairings_render(web_context)
 
     @get(

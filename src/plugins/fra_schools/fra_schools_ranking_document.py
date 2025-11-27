@@ -74,8 +74,8 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
         Build one team (up to 8 contributors) from a school's pool using the 2G/2B/4ANY rule.
         Returns (selected_players, meta).
         """
-        girls = [p for p in pool_in_order if p.player.gender == PlayerGender.FEMALE]
-        boys = [p for p in pool_in_order if p.player.gender == PlayerGender.MALE]
+        girls = [p for p in pool_in_order if p.gender == PlayerGender.FEMALE]
+        boys = [p for p in pool_in_order if p.gender == PlayerGender.MALE]
 
         selected: list[TournamentPlayer] = []
 
@@ -93,8 +93,8 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
         missing_boys = max(0, BOY_SLOTS - len(chosen_boys))
 
         # Fill ANY slots (do NOT compensate missing girl/boy with extra ANY; ANY is exactly 4)
-        already = set(p.player.id for p in selected)
-        remainder = [p for p in pool_in_order if p.player.id not in already]
+        already = set(p.id for p in selected)
+        remainder = [p for p in pool_in_order if p.id not in already]
         any_fillers = remainder[:ANY_SLOTS]
         selected.extend(any_fillers)
 
@@ -152,10 +152,10 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
 
                 total_points = sum(p.points_after(self.ranking_round) for p in selected)
                 girls_selected = sum(
-                    1 for p in selected if p.player.gender == PlayerGender.FEMALE
+                    1 for p in selected if p.gender == PlayerGender.FEMALE
                 )
                 boys_selected = sum(
-                    1 for p in selected if p.player.gender == PlayerGender.MALE
+                    1 for p in selected if p.gender == PlayerGender.MALE
                 )
                 is_complete = (
                     len(selected) == 8 and girls_selected >= 2 and boys_selected >= 2
@@ -173,7 +173,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
                 today = date.today()
                 ages = []
                 for p in selected:
-                    dob: date | None = p.player.date_of_birth
+                    dob: date | None = p.date_of_birth
                     if isinstance(dob, date):
                         # Compute precise age in years (fractional)
                         age = (today - dob).days / 365.2425  # average solar year
@@ -197,8 +197,8 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
                 )
 
                 # Consume used players for the next team (B, C, …)
-                used_ids = {p.player.id for p in selected}
-                remaining = [p for p in remaining if p.player.id not in used_ids]
+                used_ids = {p.id for p in selected}
+                remaining = [p for p in remaining if p.id not in used_ids]
 
         # Sort per rules: complete first, then total points desc, then TBs, then younger average age
         def sort_key(t: SchoolTeam):

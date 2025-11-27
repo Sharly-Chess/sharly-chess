@@ -120,11 +120,11 @@ class CheckInUserController(BaseInputUserController):
         player_web_context = PlayerUserWebContext(request)
         assert player_web_context.tournament_player.id is not None
         player_web_context.tournament.check_in_player(
-            player_web_context.tournament_player.player,
+            player_web_context.tournament_player,
             not player_web_context.tournament_player.check_in,
         )
         PlayerAdminController.publish_new_checkin(
-            channels, event_uniq_id, player_web_context.tournament_player.player
+            channels, event_uniq_id, player_web_context.tournament_player
         )
         SessionHandler.set_session_user_last_check_in_updated(
             request,

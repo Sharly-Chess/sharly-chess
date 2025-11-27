@@ -240,7 +240,7 @@ class BbpPairings(PairingEngine):
             if black_trf_id != cls.BYE_ID:
                 black_player_id = tournament.tournament_players_by_pairing_number[
                     black_trf_id
-                ].player.id
+                ].id
             elif not (
                 white_player.pairings[round_].next_round_bye
                 or (partial_pairings and has_pab)

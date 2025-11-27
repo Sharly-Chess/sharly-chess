@@ -59,11 +59,11 @@ class WhiteTimeControlColumn(TimeControlColumn):
     def get_cell_content(self, board: Board) -> Any:
         if not board.black_tournament_player:
             return ''
-        return self.get_cell_content_from_player(board.white_tournament_player.player)
+        return self.get_cell_content_from_player(board.white_tournament_player)
 
 
 class BlackTimeControlColumn(TimeControlColumn):
     def get_cell_content(self, board: Board) -> Any:
         if not board.black_tournament_player:
             return ''
-        return self.get_cell_content_from_player(board.black_tournament_player.player)
+        return self.get_cell_content_from_player(board.black_tournament_player)

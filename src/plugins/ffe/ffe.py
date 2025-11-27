@@ -366,9 +366,9 @@ class FfePlugin(Plugin):
             try:
                 ffe_id = WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
                 ffe_ids = [
-                    FFEUtils.get_player_plugin_data(p.player).ffe_id
+                    FFEUtils.get_player_plugin_data(p).ffe_id
                     for p in tournament.tournament_players_by_id.values()
-                    if not player or p.player.id != player.id
+                    if not player or p.id != player.id
                 ]
 
                 if ffe_id and ffe_id in ffe_ids:
@@ -397,9 +397,9 @@ class FfePlugin(Plugin):
             elif tournament:
                 # When adding a player, the tournament may not be chosen (in this case do not test)
                 ffe_licence_numbers = [
-                    FFEUtils.get_player_plugin_data(p.player).ffe_licence_number
+                    FFEUtils.get_player_plugin_data(p).ffe_licence_number
                     for p in tournament.tournament_players_by_id.values()
-                    if not player or p.player.id != player.id
+                    if not player or p.id != player.id
                 ]
                 if ffe_licence_number in ffe_licence_numbers:
                     errors[field] = _(
@@ -486,7 +486,7 @@ class FfePlugin(Plugin):
         setattr(
             place_card_player,
             'ffe_league',
-            FFEUtils.get_player_plugin_data(tournament_player.player).league,
+            FFEUtils.get_player_plugin_data(tournament_player).league,
         )
 
     @hookimpl
@@ -544,7 +544,7 @@ class FfePlugin(Plugin):
     def is_tournament_participation_possible(
         self, tournament: 'Tournament', tournament_player: TournamentPlayer
     ) -> str | None:
-        plugin_data = FFEUtils.get_player_plugin_data(tournament_player.player)
+        plugin_data = FFEUtils.get_player_plugin_data(tournament_player)
         ffe_licence_number = plugin_data.ffe_licence_number
         ffe_id = plugin_data.ffe_id
         if ffe_licence_number and any(
