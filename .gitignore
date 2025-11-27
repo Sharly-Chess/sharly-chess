@@ -19,8 +19,7 @@ __pycache__/
 /export-test/
 /scripts/i18n/models
 /bin/
-/tools/bbpPairings
-/tools/papi-converter
+/tools/*
 
 *.egg-info/
 

@@ -1,3 +1,5 @@
+import platform
+
 from common.i18n import _
 from common.logger import print_interactive_error
 from common.sharly_chess_config import SharlyChessConfig
@@ -8,6 +10,7 @@ from common.tool_installer import (
     BbpPairingsInstaller,
     ExecutableInstaller,
     PapiConverterInstaller,
+    UACInstaller,
 )
 
 
@@ -142,6 +145,14 @@ class InstallationChecker:
         BbpPairingsInstaller(),
         PapiConverterInstaller(),
     ]
+    system = platform.system()
+    match system:
+        case 'Windows':
+            executable_installers.append(UACInstaller())
+        case 'Darwin' | 'Linux':
+            pass
+        case _:
+            raise RuntimeError(f'Unsupported system [{system}].')
 
     @classmethod
     def check(cls) -> bool:

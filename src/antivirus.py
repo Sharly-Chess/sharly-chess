@@ -1,8 +1,12 @@
 import os
 import platform
+import subprocess
 import sys
 from abc import ABC
 from pathlib import Path
+
+from common import DEVEL_ENV, BASE_DIR
+from common.tool_installer import UACInstaller
 
 
 def control_files() -> None:
@@ -52,6 +56,35 @@ def control_files() -> None:
                 sys.exit(1)
             # Remove the control file not to check twice when no missing file the first time.
             control_file.unlink()
+
+
+class UAC:
+    """Wrapper on the Sharly Chess UAC
+    (see https://github.com/Sharly-Chess/sharly-chess-uac)"""
+
+    @property
+    def executable_path(self) -> Path:
+        return UACInstaller().executable_path
+
+    def windows_defender_exclude_sharly_chess_folder(self):
+        """Calls the Sharly Chess UAC to add a Windows Defender exclusion on the Sharly Chess folder."""
+        cmd: list[str] = [
+            str(self.executable_path),
+            '--windows-defender-exclude',
+            str(BASE_DIR),
+        ]
+        print(
+            f'Running command [{" ".join(cmd)}]...',
+        )
+        process = subprocess.run(cmd, capture_output=True, text=True)
+        print(f'Command returned [{process.returncode}].')
+        print(
+            f'stdout={"\n".join(line for line in map(lambda s: s.rstrip(), process.stdout.split("\n")) if line)}'
+        )
+        print(
+            f'stderr={"\n".join(line for line in map(lambda s: s.rstrip(), process.stderr.split("\n")) if line)}'
+        )
+        return process.returncode == 0
 
 
 # https://unprotect.it/snippet/adding-antivirus-exception/241/
@@ -119,6 +152,9 @@ if (
         ) -> bool:
             """Returns True if the folder is excluded by Windows Defender"""
 
+            # https://blog.fndsec.net/2024/10/04/uncovering-exclusion-paths-in-microsoft-defender-a-security-research-insight/#using-mpcmdrun-exe-to-identify-exclusions
+            # It is not possible with user privileges to get the list of all the Windows Defender
+            # exclusions so we just try to scan Sharly Chess folder and propose to add an exclusion on it.
             import subprocess
 
             cmd: list[str] = [
@@ -137,19 +173,20 @@ if (
             return process.returncode == 0
 
         def run(self) -> None:
-            # https://blog.fndsec.net/2024/10/04/uncovering-exclusion-paths-in-microsoft-defender-a-security-research-insight/#using-mpcmdrun-exe-to-identify-exclusions
-            # It is not possible with user privileges to get the list of all the
-            # Windows Defender exclusions so we just try to scan Sharly Chess
-            # folder and propose to add an exclusion on it.
             if mpcmdrun_exe := self._get_mpcmdrun_exe():
                 folder: Path = Path().absolute()
                 if self._folder_excluded(mpcmdrun_exe, folder):
                     print(
                         f'Folder [{folder}] already belongs to the Windows Defender exclusions.'
                     )
-                else:
+                elif UACInstaller().is_installed:
                     print(
-                        f'Folder [{folder}] should be added to the Windows Defender exclusions.'
+                        'Calling Sharly Chess UAC to add Sharly Chess folder to Windows Defender exclusions.'
+                    )
+                    UAC().windows_defender_exclude_sharly_chess_folder()
+                elif DEVEL_ENV:
+                    print(
+                        'Sharly Chess UAC not installed yet, can not add Sharly Chess folder to Windows Defender exclusions.'
                     )
 
     class AVG(WindowsAntivirus):
@@ -327,6 +364,7 @@ def detect_antivirus() -> list[Antivirus]:
         try:
             for proc in psutil.process_iter(attrs=['pid', 'name']):
                 for avs in [
+                    WindowsDefender(),
                     AVG(),
                     Avast(),
                     Sandboxie(),
@@ -344,7 +382,6 @@ def detect_antivirus() -> list[Antivirus]:
                     McAfee(),
                     FSecure(),
                     Kaspersky(),
-                    WindowsDefender(),
                 ]:
                     for signature in avs.signatures:
                         if signature.lower() in proc.info['name'].lower():
