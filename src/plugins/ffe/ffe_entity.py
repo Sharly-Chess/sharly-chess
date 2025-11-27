@@ -324,7 +324,7 @@ class FFESiteQRCodeType(QRCodeType):
 
         if not ffe_id:
             return False, _('No FFE ID defined for tournament [{tournament}].').format(
-                tournament=tournament.uniq_id
+                tournament=tournament.name
             )
         url = f'https://echecs.asso.fr/FicheTournoi.aspx?Ref={ffe_id}'
         return True, url

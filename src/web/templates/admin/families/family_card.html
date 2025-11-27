@@ -92,7 +92,7 @@
             </div>
             <div class="{% if not family.timer %}text-secondary{% endif %}">
                 <i class="bi-clock-fill pe-1"></i>
-                {% if family.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.uniq_id) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
+                {% if family.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=family.timer.name) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
             </div>
             {% if family.message_text %}
                 <div

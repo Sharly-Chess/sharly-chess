@@ -565,7 +565,9 @@ class FfePlugin(Plugin):
             for tournament_player_ in tournament.tournament_players_by_id.values()
         ):
             # This string is not translated because the error should never happen
-            return f'FFE ID [{ffe_id}] already present in tournament [{tournament.uniq_id}].'
+            return (
+                f'FFE ID [{ffe_id}] already present in tournament [{tournament.name}].'
+            )
 
         return None
 

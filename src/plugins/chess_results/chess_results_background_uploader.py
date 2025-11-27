@@ -192,7 +192,7 @@ class ChessResultsBackgroundUploader:
             _('Uploading tournament…'),
         )
 
-        logger.info('Uploading tournament [%s]...', tournament.uniq_id)
+        logger.info('Uploading tournament [%s]...', tournament.name)
 
         def report(
             tournament_: Tournament, status: ChessResultsUploadStatus, message: str
@@ -214,7 +214,7 @@ class ChessResultsBackgroundUploader:
                 ),
             ).upload()
         except Exception as e:
-            logger.error('Error uploading tournament [%s]: [%s]', tournament.uniq_id, e)
+            logger.error('Error uploading tournament [%s]: [%s]', tournament.name, e)
             cls.upload_status_messages[result_id] = ChessResultsUploadResult(
                 ChessResultsUploadStatus.ERROR,
                 _('Error uploading tournament'),

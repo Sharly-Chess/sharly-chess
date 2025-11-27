@@ -21,7 +21,7 @@
                 {% endif %}
                 {% if tournament %}
                     <div class="text-center">
-                        {{ _('Playing in tournament [%(uniq_id)s]', uniq_id=tournament.uniq_id) }}
+                        {{ _('Playing in tournament [%(name)s]', name=tournament.name) }}
                         {% if tournament.current_round and board is not none %}
                             <p>
                                 {{ _('Round %(round)d - Board %(board_number)d', round=tournament.current_round, board_number=board.number) }}

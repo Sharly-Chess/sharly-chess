@@ -42,7 +42,7 @@ class PairingTestCase(TestCase):
 
     def _reload_tournament(self):
         self.event = EventLoader().load_event(EVENT_ID)
-        return self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
+        return self.event.tournaments_by_name[TOURNAMENT_ID]
 
     def assert_no_pairings_diff_in_tournament(
         self,

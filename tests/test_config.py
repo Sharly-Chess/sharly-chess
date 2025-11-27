@@ -272,7 +272,7 @@ class TestUtils:
             else:
                 event = EventLoader().load_event(event_uniq_id)
                 importer = PapiJsonTournamentImporter([FileOption(json_path)])
-                importer.load_tournament(event, event.tournaments_by_uniq_id[name])
+                importer.load_tournament(event, event.tournaments_by_name[name])
 
         return stored_tournament
 

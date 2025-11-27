@@ -54,7 +54,7 @@ class TimerAdminWebContext(BaseEventAdminWebContext):
                 ]
             except KeyError:
                 raise NotFoundException(
-                    f'Hour [{timer_hour_id}] not found for timer [{self.admin_timer.uniq_id}].'
+                    f'Hour [{timer_hour_id}] not found for timer [{self.admin_timer.name}].'
                 )
 
     def get_admin_timer(self) -> Timer:
@@ -98,7 +98,7 @@ class TimerAdminController(BaseEventAdminController):
             if not name:
                 errors[field] = _('This field is required.')
             else:
-                used_names = list(event.timers_by_uniq_id.keys())
+                used_names = list(event.timers_by_name.keys())
                 if action == 'update':
                     used_names.remove(web_context.get_admin_timer().name)
                 if name in used_names:

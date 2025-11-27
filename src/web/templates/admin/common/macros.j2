@@ -1531,7 +1531,7 @@ with_indicator: display a loading indicator, optional
                         hx-patch="{{ url_for('admin-display-controller-assign', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id, type=object_type, object_uniq_id=object_uniq_id) }}"
                             hx-indicator="#please-wait"
                     >
-                        <b>{{ display_controller.name }}</b> {% if display_controller.assigned_object %}{{ _('(replace [%(object_uniq_id)s])', object_uniq_id=display_controller.assigned_object.uniq_id) }}{% endif %}
+                        <b>{{ display_controller.name }}</b> {% if display_controller.assigned_object %}{{ _('(replace [%(object_uniq_id)s])', object_uniq_id=display_controller.assigned_object.name) }}{% endif %}
                     </button>
                 </li>
             {% endfor %}

@@ -331,7 +331,7 @@ class ChessResultsSession(Session):
         assert self.tournament is not None
         logger.info(
             'Sending tournament (%s) to Chess-Results.com...',
-            self.tournament.uniq_id,
+            self.tournament.name,
         )
 
         sid = self._chess_results_init()

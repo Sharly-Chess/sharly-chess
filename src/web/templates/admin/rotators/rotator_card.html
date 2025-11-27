@@ -4,7 +4,7 @@
     {% if client.can_manage_screens %}
         {{ macros.rotator_visibility_icon(rotator, 'pe-1') }}
     {% endif %}
-    {{ rotator.uniq_id }}
+    {{ rotator.name }}
 {% endblock %}
 
 {% block card_title %}
@@ -132,9 +132,9 @@
                 </a>
             </span>
             {{ admin_macros.display_controller_assign_dropdown(
-                admin_event.display_controllers_sorted_by_uniq_id,
+                admin_event.display_controllers_sorted_by_name,
                 'rotator',
-                rotator.uniq_id,
+                rotator.name,
             ) }}
         {% endif %}
     {% endif %}

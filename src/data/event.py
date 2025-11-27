@@ -257,14 +257,14 @@ class Event:
         return public_screens_by_screen_type_sorted_by_uniq_id
 
     @cached_property
-    def rotators_sorted_by_uniq_id(self) -> list[Rotator]:
-        return sorted(self.rotators_by_id.values(), key=lambda rotator: rotator.uniq_id)
+    def rotators_sorted_by_name(self) -> list[Rotator]:
+        return sorted(self.rotators_by_id.values(), key=lambda rotator: rotator.name)
 
     @cached_property
-    def public_rotators_sorted_by_uniq_id(self) -> list[Rotator]:
+    def public_rotators_sorted_by_name(self) -> list[Rotator]:
         return sorted(
             filter(attrgetter('public'), self.rotators_by_id.values()),
-            key=attrgetter('uniq_id'),
+            key=attrgetter('name'),
         )
 
     @property
@@ -285,14 +285,14 @@ class Event:
         return timers_by_id
 
     @cached_property
-    def timers_by_uniq_id(self) -> dict[str, Timer]:
-        return {timer.uniq_id: timer for timer in self.timers_by_id.values()}
+    def timers_by_name(self) -> dict[str, Timer]:
+        return {timer.name: timer for timer in self.timers_by_id.values()}
 
     def get_unused_timer_name(self, base_name: str | None = None) -> str:
         """Returns the first unused timer name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""
         return Utils.get_unused_item_name(
-            base_name or _('New timer'), self.timers_by_uniq_id
+            base_name or _('New timer'), self.timers_by_name
         )
 
     @property
@@ -309,9 +309,9 @@ class Event:
         return tournaments_by_id
 
     @cached_property
-    def tournaments_by_uniq_id(self) -> dict[str, Tournament]:
+    def tournaments_by_name(self) -> dict[str, Tournament]:
         return {
-            tournament.uniq_id: tournament
+            tournament.name: tournament
             for tournament in self.tournaments_by_id.values()
         }
 
@@ -634,14 +634,14 @@ class Event:
         return rotators_by_id
 
     @cached_property
-    def rotators_by_uniq_id(self) -> dict[str, Rotator]:
-        return {rotator.uniq_id: rotator for rotator in self.rotators_by_id.values()}
+    def rotators_by_name(self) -> dict[str, Rotator]:
+        return {rotator.name: rotator for rotator in self.rotators_by_id.values()}
 
     def get_unused_rotator_name(self, base_name: str | None = None) -> str:
         """Returns the first unused rotator name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""
         return Utils.get_unused_item_name(
-            base_name or _('New rotator'), self.rotators_by_uniq_id
+            base_name or _('New rotator'), self.rotators_by_name
         )
 
     def create_rotator(self, stored_rotator: StoredRotator) -> Rotator:
@@ -682,24 +682,24 @@ class Event:
         return display_controllers_by_id
 
     @cached_property
-    def display_controllers_by_uniq_id(self) -> dict[str, DisplayController]:
+    def display_controllers_by_name(self) -> dict[str, DisplayController]:
         return {
-            display_controller.uniq_id: display_controller
+            display_controller.name: display_controller
             for display_controller in self.display_controllers_by_id.values()
         }
 
     @cached_property
-    def display_controllers_sorted_by_uniq_id(self) -> list[DisplayController]:
+    def display_controllers_sorted_by_name(self) -> list[DisplayController]:
         return sorted(
             self.display_controllers_by_id.values(),
-            key=attrgetter('uniq_id'),
+            key=attrgetter('name'),
         )
 
     @cached_property
-    def public_display_controllers_sorted_by_uniq_id(self) -> list[DisplayController]:
+    def public_display_controllers_sorted_by_name(self) -> list[DisplayController]:
         return sorted(
             filter(attrgetter('public'), self.display_controllers_by_id.values()),
-            key=attrgetter('uniq_id'),
+            key=attrgetter('name'),
         )
 
     def get_unused_display_controller_name(

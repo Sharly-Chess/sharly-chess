@@ -484,7 +484,7 @@ class PlayerAdminController(BaseEventAdminController):
                 case 'tournament':
                     assert player.single_tournament_player.tournament is not None
                     return (
-                        player.single_tournament_player.tournament.uniq_id,
+                        player.single_tournament_player.tournament.name,
                         -player.single_tournament_player.rating,
                         player.last_name,
                         player.first_name,
@@ -1472,7 +1472,7 @@ class PlayerAdminController(BaseEventAdminController):
         if not dst_tournament.can_add_players:
             raise ValueError(
                 _('Impossible to add players to tournament [{tournament}].').format(
-                    tournament=src_tournament.uniq_id
+                    tournament=src_tournament.name
                 )
             )
         if player.fide_id in dst_tournament.tournament_players_by_fide_id:
@@ -1932,10 +1932,6 @@ class PlayerAdminController(BaseEventAdminController):
         players: list[Player] = []
         connection_error: str | None = None
         if search:
-            # TODO (Molrn - multi tournament) Remove the tournament and use the Player wrapper
-            tournament = next(
-                tournament for tournament in web_context.get_admin_event().tournaments
-            )
             try:
                 stored_players = await data_source.search_player(
                     search,
@@ -1946,7 +1942,7 @@ class PlayerAdminController(BaseEventAdminController):
                 players = []
                 for stored_player in stored_players:
                     stored_player.id = 0
-                    players.append(Player(tournament.event, stored_player))
+                    players.append(Player(web_context.get_admin_event(), stored_player))
             except SharlyChessException as e:
                 connection_error = str(e)
             SessionHandler.set_session_admin_players_active_data_source(
