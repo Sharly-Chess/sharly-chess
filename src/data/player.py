@@ -175,7 +175,6 @@ class Player:
 
     def replace_stored_player(self, stored_player: StoredPlayer):
         self.stored_player = stored_player
-        self._tournament_ref = None
         self.plugin_data = self._get_plugin_data()
         self.ratings = self._get_ratings()
 
