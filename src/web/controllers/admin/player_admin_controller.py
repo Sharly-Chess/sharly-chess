@@ -1826,18 +1826,18 @@ class PlayerAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         data_source = web_context.get_admin_data_source()
         field_ids: list[str] = [field.id for field in data_source.player_updater_fields]
-        tournament_players = (
-            web_context.admin_tournament.tournament_players_by_name_with_unpaired
-            if web_context.admin_tournament
-            else [
-                player.single_tournament_player
-                for player in event.players_sorted_by_name
-            ]
-        )
+        players: list[Player] = []
+        if tournament := web_context.admin_tournament:
+            for (
+                tournament_player
+            ) in tournament.tournament_players_by_name_with_unpaired:
+                players.append(tournament_player)
+        else:
+            players = event.players_sorted_by_name
         player_matches: (
             list[PlayerComparator] | None
         ) = await data_source.get_player_matches(
-            tournament_players,
+            players,
             field_ids,
             diff_only=False,
         )

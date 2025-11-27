@@ -130,7 +130,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
         # Group by school
         schools: dict[int, list[TournamentPlayer]] = {}
         for p in ordered_players:
-            player_plugin_data = FRASchoolsUtils.get_player_plugin_data(p.player)
+            player_plugin_data = FRASchoolsUtils.get_player_plugin_data(p)
             school = player_plugin_data.fra_school_id
             if not school:
                 continue

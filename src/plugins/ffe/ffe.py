@@ -548,9 +548,7 @@ class FfePlugin(Plugin):
         ffe_licence_number = plugin_data.ffe_licence_number
         ffe_id = plugin_data.ffe_id
         if ffe_licence_number and any(
-            FFEUtils.get_player_plugin_data(
-                tournament_player_.player
-            ).ffe_licence_number
+            FFEUtils.get_player_plugin_data(tournament_player_).ffe_licence_number
             == ffe_licence_number
             for tournament_player_ in tournament.tournament_players_by_id.values()
         ):
@@ -563,7 +561,7 @@ class FfePlugin(Plugin):
             )
 
         if ffe_id and any(
-            FFEUtils.get_player_plugin_data(tournament_player_.player).ffe_id == ffe_id
+            FFEUtils.get_player_plugin_data(tournament_player_).ffe_id == ffe_id
             for tournament_player_ in tournament.tournament_players_by_id.values()
         ):
             # This string is not translated because the error should never happen
@@ -906,8 +904,7 @@ class FfePlugin(Plugin):
                 league
                 for tournament in tournaments
                 for p in tournament.tournament_players
-                if (league := FFEUtils.get_player_plugin_data(p.player).league)
-                is not None
+                if (league := FFEUtils.get_player_plugin_data(p).league) is not None
             )
 
             if not counter:
