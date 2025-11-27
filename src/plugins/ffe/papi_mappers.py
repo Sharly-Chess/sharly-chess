@@ -190,11 +190,26 @@ class PapiPlayerFFELicence(CoreMapper[str, PlayerFFELicence]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, PlayerFFELicence]:
         return {
-            '': PlayerFFELicence.NONE,
             'N': PlayerFFELicence.N,
             'A': PlayerFFELicence.A,
             'B': PlayerFFELicence.B,
         }
+
+    @classmethod
+    def get_outer_value(
+        cls, core_object: PlayerFFELicence, licence_number: str | None = None
+    ) -> str | None:
+        if not licence_number or core_object == PlayerFFELicence.NONE:
+            return 'N'
+        return super().get_outer_value(core_object)
+
+    @classmethod
+    def get_core_object(
+        cls, outer_value: str, licence_number: str | None = None
+    ) -> PlayerFFELicence:
+        if not licence_number or not outer_value:
+            return PlayerFFELicence.NONE
+        return super().get_core_object(outer_value)
 
 
 class PapiColor(StrEnum):
