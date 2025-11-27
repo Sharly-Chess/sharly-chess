@@ -5518,6 +5518,9 @@ msgstr "Y"
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
 
+msgid "YYYY-MM-DD"
+msgstr ""
+
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "YOB"
 

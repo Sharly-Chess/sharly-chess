@@ -182,13 +182,13 @@ def is_http_url(url: str) -> bool:
 
 
 def format_date(date_: date | None = None) -> str:
-    return (date_ or date.today()).strftime('%Y/%m/%d')
+    return (date_ or date.today()).strftime('%Y-%m-%d')
 
 
 def format_date_range(start_date: date, stop_date: date | None = None) -> str:
     if not stop_date or start_date == stop_date:
         return format_date(start_date)
-    return f'{format_date(start_date)} - {format_date(stop_date)}'
+    return f'{format_date(start_date)} / {format_date(stop_date)}'
 
 
 def get_date_timestamp(date_: date) -> float:

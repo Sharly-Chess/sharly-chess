@@ -675,7 +675,7 @@ with_indicator: display a loading indicator, optional
                         <script>
                             new AirDatepicker('#{{ id }}', {
                                 classes: 'dark',
-                                dateFormat: 'yyyy/MM/dd',
+                                dateFormat: 'yyyy-MM-dd',
                                 timeFormat: 'HH:mm',
                                 firstDay: 1,
                                 minDate: "{{ min_date }}",
@@ -683,7 +683,7 @@ with_indicator: display a loading indicator, optional
                                 selectedDates: getAirDatePickerSelectedDates(`{{ data[name] }}`, '{{ input_type }}'),
                                 {% if input_type == 'date-range' %}
                                     range: true,
-                                    multipleDatesSeparator: ' - ',
+                                    multipleDatesSeparator: ' / ',
                                 {% elif input_type == 'time' %}
                                     onlyTimepicker: true,
                                     timepicker: true,
