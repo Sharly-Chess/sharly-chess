@@ -114,7 +114,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
         if self.admin_tournament is None:
             self.admin_round = 0
-        elif round_ is not None:
+        elif round_:
             self.admin_round = round_
         elif session_round := SessionHandler.get_session_admin_pairings_selected_round(
             self.request,
