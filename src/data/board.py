@@ -10,7 +10,7 @@ from utils.enum import Result, PlayerRatingType
 if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.pairing import Pairing
-    from data.player import Player
+    from data.player import TournamentPlayer
     from data.tournament import Tournament
 
 
@@ -18,34 +18,36 @@ if TYPE_CHECKING:
 class Board:
     """The Board class, represented by its index in the board order and its
     display number (fixed tables).
-    Stores both players and the result of the match between the two."""
+    Stores both tournament players and the result of the match between the two."""
 
     def __init__(
         self, tournament: 'Tournament', round_: int, stored_board: StoredBoard
     ):
         self.round = round_
         self.stored_board = stored_board
-        self._white_player_ref: 'ReferenceType[Player]' = weakref.ref(
-            tournament.players_by_id[stored_board.white_player_id]
+        self._white_player_ref: 'ReferenceType[TournamentPlayer]' = weakref.ref(
+            tournament.tournament_players_by_id[stored_board.white_player_id]
         )
-        self._black_player_ref: Optional['ReferenceType[Player]'] = (
-            weakref.ref(tournament.players_by_id[stored_board.black_player_id])
+        self._black_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
+            weakref.ref(
+                tournament.tournament_players_by_id[stored_board.black_player_id]
+            )
             if stored_board.black_player_id
             else None
         )
 
     @property
     def tournament(self) -> 'Tournament':
-        return self.white_player.tournament
+        return self.white_tournament_player.tournament
 
     @property
-    def white_player(self) -> 'Player':
+    def white_tournament_player(self) -> 'TournamentPlayer':
         if (player := self._white_player_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return player
 
     @property
-    def black_player(self) -> Optional['Player']:
+    def black_tournament_player(self) -> Optional['TournamentPlayer']:
         if not self._black_player_ref:
             return None
         if (player := self._black_player_ref()) is None:
@@ -54,12 +56,12 @@ class Board:
 
     @property
     def white_pairing(self) -> 'Pairing':
-        return self.white_player.pairings_by_round[self.round]
+        return self.white_tournament_player.pairings_by_round[self.round]
 
     @property
     def black_pairing(self) -> 'Pairing':
-        assert self.black_player is not None
-        return self.black_player.pairings_by_round[self.round]
+        assert self.black_tournament_player is not None
+        return self.black_tournament_player.pairings_by_round[self.round]
 
     @property
     def identifier(self) -> int:
@@ -77,7 +79,9 @@ class Board:
 
     @property
     def fixed_number(self) -> int | None:
-        return self.white_player.fixed or getattr(self.black_player, 'fixed', None)
+        return self.white_tournament_player.fixed or getattr(
+            self.black_tournament_player, 'fixed', None
+        )
 
     @property
     def number(self) -> int:
@@ -126,7 +130,7 @@ class Board:
         )
 
     def replace_player(
-        self, new_player: 'Player', player_color: Literal['white', 'black']
+        self, new_player: 'TournamentPlayer', player_color: Literal['white', 'black']
     ):
         if player_color == 'white':
             self._white_player_ref = weakref.ref(new_player)
@@ -136,8 +140,8 @@ class Board:
             self.stored_board.black_player_id = new_player.id
 
     def permute_colors(self):
-        white_player = self.white_player
-        black_player = self.black_player
+        white_player = self.white_tournament_player
+        black_player = self.black_tournament_player
         assert black_player is not None
         self.replace_player(black_player, 'white')
         self.replace_player(white_player, 'black')
@@ -173,26 +177,32 @@ class Board:
             f'[Date "{tournament.start_date.strftime("%Y.%m.%d")}"]\n'
             f'[EventDate "{tournament.event.start_date.strftime("%Y.%m.%d")}"]\n'
             f'[Round "{round_}.{self.number}"]\n'
-            + self._player_to_pgn(self.white_player, True)
-            + self._player_to_pgn(self.black_player, False)
+            + self._player_to_pgn(self.white_tournament_player, True)
+            + self._player_to_pgn(self.black_tournament_player, False)
             + f'[Result "{result}"]\n'
             '\n*\n\n'
         )
 
     @classmethod
-    def _player_to_pgn(cls, player: Optional['Player'], is_white: bool) -> str:
+    def _player_to_pgn(
+        cls, tournament_player: Optional['TournamentPlayer'], is_white: bool
+    ) -> str:
         field_prefix = 'White' if is_white else 'Black'
-        if player is None:
+        if tournament_player is None:
             return f'[{field_prefix} ""]'
-        rating = player.rating if player.rating_type == PlayerRatingType.FIDE else '0'
-        name = player.last_name + (
-            f', {player.first_name}' if player.first_name else ''
+        rating = (
+            tournament_player.rating
+            if tournament_player.rating_type == PlayerRatingType.FIDE
+            else '0'
+        )
+        name = tournament_player.last_name + (
+            f', {tournament_player.first_name}' if tournament_player.first_name else ''
         )
         return (
             f'[{field_prefix} "{cls._format_pgn_string(name)}"]\n'
             + (
-                f'[{field_prefix}Title "{player.title.to_fide_value}"]\n'
-                if player.title.to_fide_value
+                f'[{field_prefix}Title "{tournament_player.title.to_fide_value}"]\n'
+                if tournament_player.title.to_fide_value
                 else ''
             )
             + f'[{field_prefix}Elo "{rating}"]\n'
@@ -206,31 +216,31 @@ class Board:
         # p1 < p2 calls p1.__lt__(p2)
         if not isinstance(other, Board):
             return NotImplemented
-        if self.black_player is None:
+        if self.black_tournament_player is None:
             # The pairing allocated bye board is last
             return True
-        elif other.black_player is None:
+        elif other.black_tournament_player is None:
             # The pairing allocated bye is last
             return False
         # Here we have no board id, so we need to compare
         # the highest-scoring players
-        self_player_1: Player
-        self_player_2: Player
-        if self.white_player < self.black_player:
-            self_player_1 = self.black_player
-            self_player_2 = self.white_player
+        self_player_1: TournamentPlayer
+        self_player_2: TournamentPlayer
+        if self.white_tournament_player < self.black_tournament_player:
+            self_player_1 = self.black_tournament_player
+            self_player_2 = self.white_tournament_player
         else:
-            self_player_1 = self.white_player
-            self_player_2 = self.black_player
+            self_player_1 = self.white_tournament_player
+            self_player_2 = self.black_tournament_player
         # Here self_player_1 is the strongest player of this board
-        other_player_1: Player
-        other_player_2: Player
-        if other.white_player < other.black_player:
-            other_player_1 = other.black_player
-            other_player_2 = other.white_player
+        other_player_1: TournamentPlayer
+        other_player_2: TournamentPlayer
+        if other.white_tournament_player < other.black_tournament_player:
+            other_player_1 = other.black_tournament_player
+            other_player_2 = other.white_tournament_player
         else:
-            other_player_1 = other.white_player
-            other_player_2 = other.black_player
+            other_player_1 = other.white_tournament_player
+            other_player_2 = other.black_tournament_player
 
         # We should have vpoints for all players at this point
         assert self_player_1.vpoints is not None, 'Self Player 1 has no vpoints.'
@@ -257,29 +267,32 @@ class Board:
         # p1 == p2 calls p1.__eq__(p2)
         if not isinstance(other, Board):
             return NotImplemented
-        if self.black_player is None or other.black_player is None:
+        if (
+            self.black_tournament_player is None
+            or other.black_tournament_player is None
+        ):
             raise ValueError('The black player is not defined.')
         # There is only one pairing allocated bye
-        self_player_1: Player
-        self_player_2: Player
-        if self.white_player < self.black_player:
-            self_player_1 = self.black_player
-            self_player_2 = self.white_player
+        self_player_1: TournamentPlayer
+        self_player_2: TournamentPlayer
+        if self.white_tournament_player < self.black_tournament_player:
+            self_player_1 = self.black_tournament_player
+            self_player_2 = self.white_tournament_player
         else:
-            self_player_1 = self.white_player
-            self_player_2 = self.black_player
-        other_player_1: Player
-        other_player_2: Player
-        if other.white_player < other.black_player:
-            other_player_1 = other.black_player
-            other_player_2 = other.white_player
+            self_player_1 = self.white_tournament_player
+            self_player_2 = self.black_tournament_player
+        other_player_1: TournamentPlayer
+        other_player_2: TournamentPlayer
+        if other.white_tournament_player < other.black_tournament_player:
+            other_player_1 = other.black_tournament_player
+            other_player_2 = other.white_tournament_player
         else:
-            other_player_1 = other.white_player
-            other_player_2 = other.black_player
+            other_player_1 = other.white_tournament_player
+            other_player_2 = other.black_tournament_player
         return self_player_1 == other_player_1 and self_player_2 == other_player_2
 
     def __str__(self):
-        return f'{self.__class__.__name__}({self.number}. {self.white_player} {self.result_str} {self.black_player})'
+        return f'{self.__class__.__name__}({self.number}. {self.white_tournament_player} {self.result_str} {self.black_tournament_player})'
 
     def __repr__(self):
         return f'{self.__class__.__name__}(tournament={self.tournament!r}, round_={self.round!r}, stored_board={self.stored_board!r})'
@@ -298,4 +311,4 @@ class Board:
 
     @property
     def exempt(self) -> bool:
-        return self.black_player is None
+        return self.black_tournament_player is None

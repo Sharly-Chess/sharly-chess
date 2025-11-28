@@ -15,7 +15,7 @@ from data.pairings.settings import (
     ColorSeedSetting,
     BergerNumbersSetting,
 )
-from data.player import Player
+from data.player import TournamentPlayer
 from utils.entity import IdentifiableEntity
 
 if TYPE_CHECKING:
@@ -90,7 +90,7 @@ class PairingVariation(IdentifiableEntity, ABC):
     def compute_virtual_points(
         cls,
         tournament: 'Tournament',
-        player: Player,
+        player: TournamentPlayer,
         at_round: int,
     ) -> float:
         """Compute the virtual points of a player for round *at_round*."""

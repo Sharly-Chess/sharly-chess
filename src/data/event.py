@@ -257,14 +257,14 @@ class Event:
         return public_screens_by_screen_type_sorted_by_uniq_id
 
     @cached_property
-    def rotators_sorted_by_uniq_id(self) -> list[Rotator]:
-        return sorted(self.rotators_by_id.values(), key=lambda rotator: rotator.uniq_id)
+    def rotators_sorted_by_name(self) -> list[Rotator]:
+        return sorted(self.rotators_by_id.values(), key=lambda rotator: rotator.name)
 
     @cached_property
-    def public_rotators_sorted_by_uniq_id(self) -> list[Rotator]:
+    def public_rotators_sorted_by_name(self) -> list[Rotator]:
         return sorted(
             filter(attrgetter('public'), self.rotators_by_id.values()),
-            key=attrgetter('uniq_id'),
+            key=attrgetter('name'),
         )
 
     @property
@@ -285,14 +285,14 @@ class Event:
         return timers_by_id
 
     @cached_property
-    def timers_by_uniq_id(self) -> dict[str, Timer]:
-        return {timer.uniq_id: timer for timer in self.timers_by_id.values()}
+    def timers_by_name(self) -> dict[str, Timer]:
+        return {timer.name: timer for timer in self.timers_by_id.values()}
 
     def get_unused_timer_name(self, base_name: str | None = None) -> str:
         """Returns the first unused timer name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""
         return Utils.get_unused_item_name(
-            base_name or _('New timer'), self.timers_by_uniq_id
+            base_name or _('New timer'), self.timers_by_name
         )
 
     @property
@@ -309,9 +309,9 @@ class Event:
         return tournaments_by_id
 
     @cached_property
-    def tournaments_by_uniq_id(self) -> dict[str, Tournament]:
+    def tournaments_by_name(self) -> dict[str, Tournament]:
         return {
-            tournament.uniq_id: tournament
+            tournament.name: tournament
             for tournament in self.tournaments_by_id.values()
         }
 
@@ -357,6 +357,7 @@ class Event:
             'player_count',
             'players_by_id',
             'players_sorted_by_name',
+            'single_tournament',
             'gender_counts',
             'federation_counts',
             'club_counts',
@@ -371,6 +372,8 @@ class Event:
     ) -> int:
         with EventDatabase(self.uniq_id, True) as database:
             stored_player.id = database.add_stored_player(stored_player)
+            self.stored_event.stored_players.append(stored_player)
+            self.clear_player_cache()
             for tournament in tournaments:
                 tournament.add_player_to_tournament(stored_player, database)
         return stored_player.id
@@ -391,22 +394,19 @@ class Event:
             for player in players:
                 database.update_stored_player(player.stored_player)
 
-    @cached_property
+    @property
     def player_count(self) -> int:
         return len(self.players_by_id)
 
     @cached_property
     def players_by_id(self) -> dict[int, Player]:
         return {
-            player_id: player
-            for tournament_players_id in [
-                tournament.players_by_id
-                for tournament in self.tournaments_by_id.values()
-            ]
-            for player_id, player in tournament_players_id.items()
+            stored_player.id: Player(self, stored_player)
+            for stored_player in self.stored_event.stored_players
+            if stored_player.id is not None
         }
 
-    @property
+    @cached_property
     def players(self) -> Collection[Player]:
         return self.players_by_id.values()
 
@@ -433,7 +433,7 @@ class Event:
                 counter[federation] += tournament.federation_counts[federation]
         return counter
 
-    @cached_property
+    @property
     def club_counts(self) -> Counter[Club]:
         counter: Counter[Club] = Counter[Club]()
         for tournament in self.tournaments_by_id.values():
@@ -445,7 +445,7 @@ class Event:
     def check_in_counts(self) -> Counter[bool | None]:
         counter: Counter[bool | None] = Counter[bool | None]()
         for tournament in self.tournaments_by_id.values():
-            for check_in in tournament.players_by_check_in_status:
+            for check_in in tournament.tournament_players_by_check_in_status:
                 counter[check_in] += tournament.check_in_counts[check_in]
         return counter
 
@@ -464,16 +464,14 @@ class Event:
         self, player: Player, destination_tournament: Tournament
     ):
         """Moves the given player from its current tournament to *destination_tournament*."""
-        source_tournament = player.tournament
+        source_tournament = player.single_tournament_player.tournament
         with EventDatabase(self.uniq_id, write=True) as database:
             destination_tournament.add_player_to_tournament(
                 player.stored_player, database
             )
             database.delete_stored_tournament_player(source_tournament.id, player.id)
-            del source_tournament.players_by_id[player.id]
-            player.stored_tournament_player = (
-                database.load_player_stored_tournament_player(player.id)
-            )
+            del source_tournament.tournament_players_by_id[player.id]
+        self.clear_player_cache()
 
     @cached_property
     def basic_screens_by_id(self) -> dict[int, Screen]:
@@ -636,14 +634,14 @@ class Event:
         return rotators_by_id
 
     @cached_property
-    def rotators_by_uniq_id(self) -> dict[str, Rotator]:
-        return {rotator.uniq_id: rotator for rotator in self.rotators_by_id.values()}
+    def rotators_by_name(self) -> dict[str, Rotator]:
+        return {rotator.name: rotator for rotator in self.rotators_by_id.values()}
 
     def get_unused_rotator_name(self, base_name: str | None = None) -> str:
         """Returns the first unused rotator name looking like base_name:
         base_name, or base_name (2), or base_name (n+1)..."""
         return Utils.get_unused_item_name(
-            base_name or _('New rotator'), self.rotators_by_uniq_id
+            base_name or _('New rotator'), self.rotators_by_name
         )
 
     def create_rotator(self, stored_rotator: StoredRotator) -> Rotator:
@@ -684,24 +682,24 @@ class Event:
         return display_controllers_by_id
 
     @cached_property
-    def display_controllers_by_uniq_id(self) -> dict[str, DisplayController]:
+    def display_controllers_by_name(self) -> dict[str, DisplayController]:
         return {
-            display_controller.uniq_id: display_controller
+            display_controller.name: display_controller
             for display_controller in self.display_controllers_by_id.values()
         }
 
     @cached_property
-    def display_controllers_sorted_by_uniq_id(self) -> list[DisplayController]:
+    def display_controllers_sorted_by_name(self) -> list[DisplayController]:
         return sorted(
             self.display_controllers_by_id.values(),
-            key=attrgetter('uniq_id'),
+            key=attrgetter('name'),
         )
 
     @cached_property
-    def public_display_controllers_sorted_by_uniq_id(self) -> list[DisplayController]:
+    def public_display_controllers_sorted_by_name(self) -> list[DisplayController]:
         return sorted(
             filter(attrgetter('public'), self.display_controllers_by_id.values()),
-            key=attrgetter('uniq_id'),
+            key=attrgetter('name'),
         )
 
     def get_unused_display_controller_name(

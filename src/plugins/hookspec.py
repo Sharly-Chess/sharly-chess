@@ -20,10 +20,16 @@ from utils.enum import Result, TournamentRating
 if TYPE_CHECKING:
     from data.columns.player_datasheet import DatasheetColumn
     from data.columns.board_table import BoardColumn
-    from data.columns.player_table import PlayerTableColumn
+    from data.columns.player_table import TournamentPlayerTableColumn
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.pairings.variations import SwissVariation
-    from data.player import Player, PlayerRatingAndType, PlayerRatingType
+    from data.player import (
+        Player,
+        TournamentPlayer,
+        PlayerRatingAndType,
+        PlayerRatingType,
+        PlayerCategory,
+    )
     from data.print_documents import PrintDocument, PlayerSplitter, QRCodeType
     from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
@@ -146,7 +152,7 @@ class AppHookSpecs:
     @hookspec
     def augment_place_card_player(
         self,
-        player: 'Player',
+        tournament_player: 'TournamentPlayer',
         place_card_player: 'PlaceCardPlayer',
     ):
         """Add plugin specific data to a player before printing place cards."""
@@ -157,12 +163,13 @@ class AppHookSpecs:
         tournament_rating: TournamentRating,
         player_rating_type: 'PlayerRatingType',
         player: 'Player',
+        category: 'PlayerCategory',
     ) -> Optional['PlayerRatingAndType']:
         """Get the estimated rating of a player."""
 
     @hookspec(firstresult=True)
     def is_tournament_participation_possible(
-        self, tournament: 'Tournament', player: 'Player'
+        self, tournament: 'Tournament', tournament_player: 'TournamentPlayer'
     ) -> str | None:
         """Test if a player can participate in a tournament"""
 
@@ -332,7 +339,7 @@ class AppHookSpecs:
     def alter_print_and_screen_player_columns(
         self,
         usage: 'ColumnUsage',
-        player_columns: list['PlayerTableColumn'],
+        player_columns: list['TournamentPlayerTableColumn'],
     ):
         """Alter the player columns of print documents and screens."""
 

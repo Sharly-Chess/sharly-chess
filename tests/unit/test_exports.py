@@ -27,7 +27,7 @@ class TournamentExporterTestCase(TestCase):
         TestUtils.create_event(EVENT_ID)
         TestUtils.create_tournament(EVENT_ID, TOURNAMENT_ID, json_file='tec-swiss')
         self.event = EventLoader().load_event(EVENT_ID)
-        self.tournament = self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
+        self.tournament = self.event.tournaments_by_name[TOURNAMENT_ID]
 
     def tearDown(self):
         TestUtils.delete_event(EVENT_ID)

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block content %}
-    {% for split_by in players.keys() %}
+    {% for split_by in tournament_players.keys() %}
         <div class="section-title">
             {{ split_by }}
         </div>
@@ -20,11 +20,11 @@
                 </tr>
             </thead>
             <tbody>
-                {% for player in players[split_by] %}
-                    <tr id="player-{{ player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
+                {% for tournament_player in tournament_players[split_by] %}
+                    <tr id="player-{{ tournament_player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
                         {% for column in player_columns %}
-                            <td class="{{ column.get_cell_classes(player) }}">
-                                {{ macros.column_cell(column, player) }}
+                            <td class="{{ column.get_cell_classes(tournament_player) }}">
+                                {{ macros.column_cell(column, tournament_player) }}
                             </td>
                         {% endfor %}
                     </tr>

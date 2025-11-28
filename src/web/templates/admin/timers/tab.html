@@ -42,8 +42,8 @@
 
 {% block cards_container_cards %}
     <div class="row gy-2 gx-3">
-        {% if admin_event.timers_by_uniq_id %}
-            {% for timer in admin_event.timers_by_uniq_id.values() %}
+        {% if admin_event.timers_by_name %}
+            {% for timer in admin_event.timers_by_name.values() %}
                 {% include 'timer_card.html' %}
             {% endfor %}
         {% else %}

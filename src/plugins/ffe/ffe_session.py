@@ -376,7 +376,7 @@ class FFESession(Session):
         if not ffe_id or not ffe_password:
             logger.warning(
                 'FFE certification number and password are not correctly set for tournament [%s], data can not be sent to the FFE website.',
-                self.tournament.uniq_id,
+                self.tournament.name,
             )
             return None, None
         else:
@@ -393,7 +393,7 @@ class FFESession(Session):
         logger.info(
             'Sending tournament [%d] (%s) to the FFE website...',
             ffe_id,
-            self.tournament.uniq_id,
+            self.tournament.name,
         )
         if not self._ffe_init():
             return
@@ -450,7 +450,7 @@ class FFESession(Session):
                 # This fixes a display issue on the FFE website."""
                 if not tmp_tournament.has_pairings:
                     logger.info('Deleting ZPBs...')
-                    for player in tmp_tournament.players:
+                    for player in tmp_tournament.tournament_players:
                         for pairing in player.pairings.values():
                             if pairing.zero_point_bye:
                                 tmp_event_database.delete_stored_pairing(
@@ -464,7 +464,7 @@ class FFESession(Session):
             try:
                 logger.debug(
                     'Converting [%s] to [%s]...',
-                    self.tournament.uniq_id,
+                    self.tournament.name,
                     tmp_papi_file,
                 )
                 PapiConverter().write_papi_file(

@@ -1,21 +1,21 @@
-{% set player = board.black_player if column.is_black else board.white_player %}
+{% set tournament_player = board.black_tournament_player if column.is_black else board.white_tournament_player %}
 <div class="
     {% if (
         screen.type == 'input' and
         last_illegal_move_updated and
         last_illegal_move_updated.expiration > now and
         last_illegal_move_updated.tournament_id == tournament.id and
-        last_illegal_move_updated.player_id == player.id
+        last_illegal_move_updated.player_id == tournament_player.id
     ) %}
         last_illegal_move_updated
     {% endif %}"
 >
-    {% if player %}
+    {% if tournament_player %}
         {% set illegal_moves = board.black_pairing.illegal_moves if column.is_black else board.white_pairing.illegal_moves %}
         {% for _ in range([illegal_moves, tournament.record_illegal_moves]|min) %}
             <span class="illegal-move-flag-wrapper">
                 <i
-                    data-testid="illegal-move-icon-{{ player.color.value}}"
+                    data-testid="illegal-move-icon-{{ tournament_player.color.value}}"
                     class="
                         {% if board.result_str %}bi-file-fill{% else %}bi-file-excel-fill{% endif %}
                         illegal-move-flag
@@ -27,7 +27,7 @@
                             event_uniq_id=user_event.uniq_id,
                             screen_uniq_id=screen.uniq_id,
                             tournament_id=tournament.id,
-                            player_id=player.id
+                            player_id=tournament_player.id
                         ) }}"
                         hx-indicator="#please-wait"
                     {% endif %}
@@ -38,15 +38,15 @@
             {% if not board.result_str and illegal_moves < tournament.record_illegal_moves %}
                 <span class="illegal-move-flag-wrapper">
                     <i
-                        data-testid="add-illegal-move-button-{{ player.color.value}}"
-                        class="bi-flag illegal-move-flag add player-{{ tournament.id }}-{{ player.id }}"
+                        data-testid="add-illegal-move-button-{{ tournament_player.color.value}}"
+                        class="bi-flag illegal-move-flag add player-{{ tournament.id }}-{{ tournament_player.id }}"
                         hx-target="body"
                         hx-put="{{ url_for(
                             'user-add-illegal-move',
                             event_uniq_id=user_event.uniq_id,
                             screen_uniq_id=screen.uniq_id,
                             tournament_id=tournament.id,
-                            player_id=player.id
+                            player_id=tournament_player.id
                         ) }}"
                         hx-indicator="#please-wait"
                     ></i>

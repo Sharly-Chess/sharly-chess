@@ -330,7 +330,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
             round_=round_,
             mirror=mirror,
             place_card_crop_marks=place_card_crop_marks,
-            players=self.type.players(tournament, player_ids=player_ids),
+            players=self.type.tournament_players(tournament, player_ids=player_ids),
             boards=self.type.boards(tournament, board_numbers=board_numbers),
             pairings=self.type.pairings(
                 tournament, round_, board_numbers=board_numbers

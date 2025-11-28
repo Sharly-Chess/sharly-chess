@@ -36,7 +36,7 @@ class ChessResultsQRCodeType(QRCodeType):
         if not tnr:
             return False, _(
                 'No Chess-Results ID defined for tournament [{tournament}].'
-            ).format(tournament=tournament.uniq_id)
+            ).format(tournament=tournament.name)
         url = f'https://chess-results.com/tnr{tnr}.aspx'
         return True, url
 

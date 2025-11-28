@@ -58,7 +58,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for player in admin_prize_category.sorted_players %}
+                    {% for player in admin_prize_category.sorted_tournament_players %}
                         {% set assigned_prize = assigned_prizes_by_player_id.get(player.id, none) %}
                         {% set assigned_prize_category = assigned_prize.prize.prize_category if assigned_prize else none %}
                         {% set has_category_prize = assigned_prize_category.id == admin_prize_category.id %}

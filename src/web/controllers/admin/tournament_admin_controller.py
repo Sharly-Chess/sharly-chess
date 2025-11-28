@@ -30,7 +30,7 @@ from data.input_output.tournament_importer_options import TournamentImporterOpti
 from data.input_output.tournament_importers import TournamentImporter
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem
-from data.player import Player
+from data.player import TournamentPlayer
 from data.criteria.managers import (
     PlayerFilter,
     TournamentPlayerFilterManager,
@@ -478,7 +478,7 @@ class TournamentAdminController(BaseEventAdminController):
         if not name:
             errors['name'] = _('This field is required.')
         else:
-            used_names = list(event.tournaments_by_uniq_id.keys())
+            used_names = list(event.tournaments_by_name.keys())
             if action == 'update':
                 used_names.remove(web_context.get_admin_tournament().name)
             if name in used_names:
@@ -629,8 +629,8 @@ class TournamentAdminController(BaseEventAdminController):
                     database.delete_stored_pairings_after_round(
                         tournament.id, tournament.rounds
                     )
-                    for player in tournament.players:
-                        if not player.pairings_by_round[
+                    for tournament_player in tournament.tournament_players:
+                        if not tournament_player.pairings_by_round[
                             tournament.rounds
                         ].zero_point_bye:
                             continue
@@ -640,7 +640,7 @@ class TournamentAdminController(BaseEventAdminController):
                             database.add_stored_pairing(
                                 StoredPairing(
                                     tournament_id=tournament.id,
-                                    player_id=player.id,
+                                    player_id=tournament_player.id,
                                     round_=round_,
                                     result=Result.ZERO_POINT_BYE.value,
                                     board_id=None,
@@ -1646,39 +1646,51 @@ class TournamentAdminController(BaseEventAdminController):
                 list(admin_event.tournaments_by_id.values())
             )
 
-        players = admin_tournament.players if admin_tournament else None
-        random_player = random.choice(list(players)) if players else None
+        tournament_players = (
+            admin_tournament.tournament_players if admin_tournament else None
+        )
+        random_tournament_player = (
+            random.choice(list(tournament_players)) if tournament_players else None
+        )
 
         board: Board | None = None
-        if random_player is not None:
+        if random_tournament_player is not None:
             board = next(
                 (
                     b
                     for b in admin_tournament.boards
                     if (
-                        b.white_player is not None
-                        and b.white_player.id == random_player.id
+                        b.white_tournament_player is not None
+                        and b.white_tournament_player.id == random_tournament_player.id
                     )
                     or (
-                        b.black_player is not None
-                        and b.black_player.id == random_player.id
+                        b.black_tournament_player is not None
+                        and b.black_tournament_player.id == random_tournament_player.id
                     )
                 ),
                 None,
             )
 
-        opponent: Player | None = None
-        if random_player and board is not None:
-            if board.white_player and board.white_player.id != random_player.id:
-                opponent = board.white_player
-            elif board.black_player and board.black_player.id != random_player.id:
-                opponent = board.black_player
+        opponent: TournamentPlayer | None = None
+        if random_tournament_player and board is not None:
+            if (
+                board.white_tournament_player
+                and board.white_tournament_player.id != random_tournament_player.id
+            ):
+                opponent = board.white_tournament_player
+            elif (
+                board.black_tournament_player
+                and board.black_tournament_player.id != random_tournament_player.id
+            ):
+                opponent = board.black_tournament_player
 
         return HTMXTemplate(
             template_name='admin/tournaments/random_player_modal.html',
             context={
-                'player_name': random_player.full_name if random_player else None,
-                'random_player': random_player,
+                'player_name': random_tournament_player.full_name
+                if random_tournament_player
+                else None,
+                'random_player': random_tournament_player,
                 'opponent_name': opponent.full_name if opponent else None,
                 'tournament': admin_tournament,
                 'admin_event': admin_event,

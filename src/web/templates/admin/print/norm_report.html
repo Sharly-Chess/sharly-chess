@@ -236,22 +236,22 @@
                     <div class="grid" style="grid-template-columns: 1fr 1fr;">
                         <div class="item">
                             <label>Name:</label>
-                            <input value="{{ player.last_name }}" />
+                            <input value="{{ tournament_player.last_name }}" />
                         </div>
 
                         <div class="item">
                             <label>First name:</label>
-                            <input value="{{ player.first_name }}" />
+                            <input value="{{ tournament_player.first_name }}" />
                         </div>
 
                         <div class="item">
                             <label>ID-number:</label>
-                            <input value="{{ player.fide_id }}" />
+                            <input value="{{ tournament_player.fide_id }}" />
                         </div>
 
                         <div class="item">
                             <label>Federation:</label>
-                            <input value="{{ player.federation }}" />
+                            <input value="{{ tournament_player.federation }}" />
                         </div>
                     </div>
                 </section>
@@ -434,13 +434,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for rnd, pairing in player.pairings_by_round.items() %}
+                    {% for rnd, pairing in tournament_player.pairings_by_round.items() %}
                         {% set opp = pairing.opponent %}
                         {% set adjusted_opp_rating = opp.rating if opp.rating_type == 3 else 1400 %}
                         {% if opp.id == norm.adjusted_player.id %}
                             {% set adjusted_opp_rating = norm.adjusted_player_rating %}
                         {% endif %}
-                        {% if not norm.is_143d_met and norm.too_many_own_federation and opp.federation == player.federation %}
+                        {% if not norm.is_143d_met and norm.too_many_own_federation and opp.federation == tournament_player.federation %}
                             {% set too_many_own = true %}
                             {% set err = norm.too_many_own_federation %}
                         {% elif not norm.is_143d_met and norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}

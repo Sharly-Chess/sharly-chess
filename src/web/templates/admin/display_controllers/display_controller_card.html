@@ -50,18 +50,18 @@
                         </button>
                     </li>
                 {% endfor %}
-                {% if admin_event.rotators_sorted_by_uniq_id|length > 0 and sorted_screens|length > 0 %}
+                {% if admin_event.rotators_sorted_by_name|length > 0 and sorted_screens|length > 0 %}
                    <li><hr class="dropdown-divider"></li>
                 {% endif %}
-                {% for rotator in admin_event.rotators_sorted_by_uniq_id %}
+                {% for rotator in admin_event.rotators_sorted_by_name %}
                     <li>
                         <button
                             class="dropdown-item text-start cursor-pointer"
-                            hx-patch="{{ url_for('admin-display-controller-assign', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id, type="rotator", object_uniq_id=rotator.uniq_id) }}"
+                            hx-patch="{{ url_for('admin-display-controller-assign', event_uniq_id=admin_event.uniq_id, display_controller_id=display_controller.id, type="rotator", object_uniq_id=rotator.name) }}"
                             hx-indicator="#please-wait"
                         >
                             {{ macros.rotator_icon() }}
-                            <b>{{ rotator.uniq_id }}</b>
+                            <b>{{ rotator.name }}</b>
                         </button>
                     </li>
                 {% endfor %}

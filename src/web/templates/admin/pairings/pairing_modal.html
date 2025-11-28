@@ -1,6 +1,6 @@
 {% import '/common/macros.j2' as macros with context %}
 
-{% with wp=board.white_player, bp=board.black_player %}
+{% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
     <div class="modal-dialog modal-dialog-scrollable pairing-modal">
         <div class="modal-content bg-secondary-subtle">
             <div class="modal-header">
@@ -45,7 +45,7 @@
                             hx-indicator="#please-wait"
                         {% endif %}
                     >
-                        <div class="text-center">{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wp.last_name }}<br/>{{ wp.first_name }}<br/>{{ wp.rating_str }}</div>
+                        <div class="text-center">{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wtp.last_name }}<br/>{{ wtp.first_name }}<br/>{{ wtp.rating_str }}</div>
                     </button>
                     {% set action_route = url_for(
                         'admin-pairings-set-result',
@@ -121,7 +121,7 @@
                             hx-indicator="#please-wait"
                         {% endif %}
                     >
-                        <div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating_str }}</div>
+                        <div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ btp.last_name }}<br/>{{ btp.first_name }}<br/>{{ btp.rating_str }}</div>
                     </button>
                 </div>
 

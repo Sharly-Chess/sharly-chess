@@ -287,15 +287,15 @@ class Screen:
                     if '%f' in text:
                         text = text.replace(
                             '%f',
-                            str(screen_set.first_player_by_rank.rank)
-                            if screen_set.first_player_by_rank
+                            str(screen_set.first_tournament_player_by_rank.rank)
+                            if screen_set.first_tournament_player_by_rank
                             else '-',
                         )
                     if '%l' in text:
                         text = text.replace(
                             '%l',
-                            str(screen_set.last_player_by_rank.rank)
-                            if screen_set.last_player_by_rank
+                            str(screen_set.last_tournament_player_by_rank.rank)
+                            if screen_set.last_tournament_player_by_rank
                             else '-',
                         )
                 elif (
@@ -304,14 +304,18 @@ class Screen:
                 ):
                     text = text.replace(
                         '%f',
-                        str(screen_set.first_player_by_name.last_name[:3]).upper()
-                        if screen_set.first_player_by_name
+                        str(
+                            screen_set.first_tournament_player_by_name.last_name[:3]
+                        ).upper()
+                        if screen_set.first_tournament_player_by_name
                         else '-',
                     )
                     text = text.replace(
                         '%l',
-                        str(screen_set.last_player_by_name.last_name[:3]).upper()
-                        if screen_set.last_player_by_name
+                        str(
+                            screen_set.last_tournament_player_by_name.last_name[:3]
+                        ).upper()
+                        if screen_set.last_tournament_player_by_name
                         else '-',
                     )
                 elif self.type in [
@@ -617,9 +621,13 @@ class Screen:
             ):
                 continue
             for round_ in range(1, tournament.current_round + 1):
-                for player in tournament.players_by_id.values():
-                    pairing = player.pairings[round_]
-                    if pairing.board and pairing.board.white_player.id == player.id:
+                for tournament_player in tournament.tournament_players_by_id.values():
+                    pairing = tournament_player.pairings[round_]
+                    if (
+                        pairing.board
+                        and pairing.board.white_tournament_player.id
+                        == tournament_player.id
+                    ):
                         if (
                             pairing.board.last_result_update
                             and pairing.board.last_result_update >= oldest

@@ -28,8 +28,8 @@ from web.utils import ColumnUsage
 if TYPE_CHECKING:
     from data.event import Event
     from data.tournament import Tournament
-    from data.event import Player
-    from database.sqlite.event.event_store import StoredTournament
+    from data.player import TournamentPlayer
+    from database.sqlite.event.event_store import StoredEvent, StoredTournament
 
 
 class HandicapGamesPlugin(Plugin):
@@ -59,7 +59,9 @@ class HandicapGamesPlugin(Plugin):
     def default_event_is_enabled(self) -> bool:
         return False
 
-    def used_by_stored_tournament(self, stored_tournament: 'StoredTournament') -> bool:
+    def used_by_stored_tournament(
+        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+    ) -> bool:
         handicap_games_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         if any(
             handicap_games_data.get(k)
@@ -135,17 +137,19 @@ class HandicapGamesPlugin(Plugin):
         )
 
         for board in tournament.get_round_boards(round_):
-            if not board.black_player:
+            if not board.black_tournament_player:
                 continue
-            strong_player: Player
-            weak_player: Player
-            strong_player, weak_player = sorted(
-                (board.white_player, board.black_player),
+            strong_tournament_player: TournamentPlayer
+            weak_tournament_player: TournamentPlayer
+            strong_tournament_player, weak_tournament_player = sorted(
+                (board.white_tournament_player, board.black_tournament_player),
                 key=attrgetter('rating'),
                 reverse=True,
             )
             weak_time = initial_time
-            rating_diff = strong_player.rating - weak_player.rating
+            rating_diff = (
+                strong_tournament_player.rating - weak_tournament_player.rating
+            )
             if not plugin_data.penalty_step:
                 penalties = 0
             else:
@@ -154,13 +158,13 @@ class HandicapGamesPlugin(Plugin):
                 weak_time - penalties * (plugin_data.penalty_value or 0),
                 plugin_data.min_time or 0,
             )
-            strong_player.transient_plugin_data[PLUGIN_NAME] = (
+            strong_tournament_player.transient_plugin_data[PLUGIN_NAME] = (
                 HandicapGamesTransientPlayerPluginData(
                     strong_time, increment, penalties > 0
                 )
             )
 
-            weak_player.transient_plugin_data[PLUGIN_NAME] = (
+            weak_tournament_player.transient_plugin_data[PLUGIN_NAME] = (
                 HandicapGamesTransientPlayerPluginData(weak_time, increment, False)
             )
 

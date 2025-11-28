@@ -7,7 +7,11 @@ from common.i18n import _
 from data.input_output import TournamentImporter
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredTournament, StoredPlayer
+from database.sqlite.event.event_store import (
+    StoredEvent,
+    StoredTournament,
+    StoredPlayer,
+)
 from plugins.chessevent import migrations, PLUGIN_NAME
 from plugins.chessevent.chessevent_controller import ChessEventController
 from plugins.chessevent.tournament_importer.data import ChessEventPlayer
@@ -79,7 +83,9 @@ class ChessEventPlugin(Plugin):
     def event_form_fields_template(self) -> str:
         return '/chessevent_event_form_fields.html'
 
-    def used_by_stored_tournament(self, stored_tournament: StoredTournament) -> bool:
+    def used_by_stored_tournament(
+        self, stored_event: StoredEvent, stored_tournament: StoredTournament
+    ) -> bool:
         ce_data = stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         return ce_data.get('tournament_name', None) is not None
 

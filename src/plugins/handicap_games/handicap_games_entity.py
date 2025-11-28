@@ -15,7 +15,9 @@ class TimeControlColumn(BoardColumn, ABC):
 
     @staticmethod
     def get_cell_content_from_player(player: Player) -> Any:
-        transient_data = HandicapGameUtils.get_transient_player_plugin_data(player)
+        transient_data = HandicapGameUtils.get_transient_player_plugin_data(
+            player.single_tournament_player
+        )
         time_control_initial_time_minutes = (
             transient_data.initial_time // 60 if transient_data.initial_time else None
         )
@@ -55,13 +57,13 @@ class TimeControlColumn(BoardColumn, ABC):
 
 class WhiteTimeControlColumn(TimeControlColumn):
     def get_cell_content(self, board: Board) -> Any:
-        if not board.black_player:
+        if not board.black_tournament_player:
             return ''
-        return self.get_cell_content_from_player(board.white_player)
+        return self.get_cell_content_from_player(board.white_tournament_player)
 
 
 class BlackTimeControlColumn(TimeControlColumn):
     def get_cell_content(self, board: Board) -> Any:
-        if not board.black_player:
+        if not board.black_tournament_player:
             return ''
-        return self.get_cell_content_from_player(board.black_player)
+        return self.get_cell_content_from_player(board.black_tournament_player)

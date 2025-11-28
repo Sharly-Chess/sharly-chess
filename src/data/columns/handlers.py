@@ -3,7 +3,7 @@ from typing import Callable
 
 from data.columns import player_table as pt, board_table as bt
 from data.columns.board_table import BoardColumn
-from data.columns.player_table import PlayerTableColumn
+from data.columns.player_table import TournamentPlayerTableColumn
 from data.event import Event
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
@@ -17,8 +17,8 @@ class PlayerColumnHandler:
 
     def get_columns(
         self,
-        column_types: list[Callable[[ColumnUsage], PlayerTableColumn]],
-    ) -> list[PlayerTableColumn]:
+        column_types: list[Callable[[ColumnUsage], TournamentPlayerTableColumn]],
+    ) -> list[TournamentPlayerTableColumn]:
         columns = [column_type(self.usage) for column_type in column_types]
         plugin_manager.hook_for_event(
             self.event, 'alter_print_and_screen_player_columns'
@@ -27,8 +27,8 @@ class PlayerColumnHandler:
 
     def get_player_list_columns(
         self, multiple_tournaments: bool
-    ) -> list[PlayerTableColumn]:
-        column_types: list[Callable[[ColumnUsage], PlayerTableColumn]] = [
+    ) -> list[TournamentPlayerTableColumn]:
+        column_types: list[Callable[[ColumnUsage], TournamentPlayerTableColumn]] = [
             pt.NumberColumn,
             pt.TitleColumn,
             pt.NameColumn,
@@ -44,8 +44,8 @@ class PlayerColumnHandler:
 
     def get_player_checkin_list_columns(
         self, multiple_tournaments: bool
-    ) -> list[PlayerTableColumn]:
-        column_types: list[Callable[[ColumnUsage], PlayerTableColumn]] = [
+    ) -> list[TournamentPlayerTableColumn]:
+        column_types: list[Callable[[ColumnUsage], TournamentPlayerTableColumn]] = [
             pt.CheckinColumn,
             pt.TitleColumn,
             pt.NameColumn,
@@ -66,7 +66,7 @@ class PlayerColumnHandler:
 
     def get_player_ranking_columns(
         self, tournament: Tournament
-    ) -> list[PlayerTableColumn]:
+    ) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
             [
                 pt.RankColumn,
@@ -89,7 +89,7 @@ class PlayerColumnHandler:
         self,
         tournament: Tournament,
         ranking_round: int,
-    ) -> list[PlayerTableColumn]:
+    ) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
             [
                 pt.RankColumn,
@@ -114,7 +114,7 @@ class PlayerColumnHandler:
             ]
         )
 
-    def get_alpha_board_player_columns(self) -> list[PlayerTableColumn]:
+    def get_alpha_board_player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
             [
                 pt.TitleColumn,
@@ -124,7 +124,7 @@ class PlayerColumnHandler:
             ]
         )
 
-    def get_alpha_board_opponent_columns(self) -> list[PlayerTableColumn]:
+    def get_alpha_board_opponent_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
             [
                 pt.TitleColumn,
@@ -134,7 +134,7 @@ class PlayerColumnHandler:
             ]
         )
 
-    def get_prize_assignment_columns(self) -> list[PlayerTableColumn]:
+    def get_prize_assignment_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
             [
                 pt.RankOverallColumn,

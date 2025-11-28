@@ -48,7 +48,7 @@ class TieBreakTestCase(TestCase, ABC):
 
     @property
     def tournament(self) -> Tournament:
-        return self.event.tournaments_by_uniq_id[TOURNAMENT_ID]
+        return self.event.tournaments_by_name[TOURNAMENT_ID]
 
     def get_player_values(
         self,
@@ -57,7 +57,7 @@ class TieBreakTestCase(TestCase, ABC):
         only_ids: list[int] | None = None,
     ) -> dict[int, Any]:
         player_values = {}
-        for player in self.tournament.players:
+        for player in self.tournament.tournament_players:
             if not (
                 (exclude_ids and player.id in exclude_ids)
                 or (only_ids and player.id not in only_ids)
@@ -80,7 +80,7 @@ class TieBreakTestCase(TestCase, ABC):
         )
 
     def get_direct_encounter_player_values(self):
-        self.tournament.compute_player_ranks()
+        self.tournament.compute_tournament_player_ranks()
         tie_break_ = tie_breaks.DirectEncounterTieBreak()
         return tie_break_.compute_all_player_values(
             self.tournament, 0, after_round=self.tournament.rounds

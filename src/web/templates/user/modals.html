@@ -6,9 +6,9 @@
         and
         not board.exempt
         and
-        client.can_enter_results(board.white_player.tournament.id)
+        client.can_enter_results(board.white_tournament_player.tournament.id)
     %}
-        {% with wp=board.white_player, bp=board.black_player %}
+        {% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
             <div class="modal-dialog input-screen-result-modal">
                 <div class="modal-content bg-secondary-subtle">
                     <div class="modal-header">
@@ -19,18 +19,18 @@
                             <button
                                 data-testid="white-wins-button"
                                 class="result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                {% if board.result and not client.can_update_results(wp.tournament.id) %}
+                                {% if board.result and not client.can_update_results(wtp.tournament.id) %}
                                     disabled
                                 {% else %}
                                     hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=3) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 {% endif %}
-                            >{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wp.last_name }}<br/>{{ wp.first_name }}<br/>{{ wp.rating_str }}</button>
+                            >{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wtp.last_name }}<br/>{{ wtp.first_name }}<br/>{{ wtp.rating_str }}</button>
                             <button
                                 data-testid="draw-button"
                                 class="result-button draw col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                {% if board.result and not client.can_update_results(wp.tournament.id) %}
+                                {% if board.result and not client.can_update_results(wtp.tournament.id) %}
                                     disabled
                                 {% else %}
                                     hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=2) }}"
@@ -41,16 +41,16 @@
                             <button
                                 data-testid="black-wins-button"
                                 class="result-button black text-white bg-black col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
-                                {% if board.result and not client.can_update_results(wp.tournament.id) %}
+                                {% if board.result and not client.can_update_results(wtp.tournament.id) %}
                                     disabled
                                 {% else %}
                                     hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=1) }}"
                                     hx-target="body"
                                     hx-indicator="#please-wait"
                                 {% endif %}
-                            >{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ bp.last_name }}<br/>{{ bp.first_name }}<br/>{{ bp.rating_str }}</button>
+                            >{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ btp.last_name }}<br/>{{ btp.first_name }}<br/>{{ btp.rating_str }}</button>
                         </div>
-                        {% if client.can_set_special_results(wp.tournament.id) %}
+                        {% if client.can_set_special_results(wtp.tournament.id) %}
                             <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center mt-3">
                                 <button
                                     data-testid="white-wins-by-forfeit-button"
@@ -77,7 +77,7 @@
                         {% endif %}
                     </div>
                     <div class="modal-footer row d-flex align-items-center justify-content-center">
-                        {% if client.can_update_results(wp.tournament.id) %}
+                        {% if client.can_update_results(wtp.tournament.id) %}
                             <button
                                 data-testid="clear-result-button"
                                 class="admin-result-button col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
@@ -108,9 +108,9 @@
             });
         </script>
     {% elif
-        player
+        tournament_player
         and
-        client.can_check_in_players(player.tournament.id)
+        client.can_check_in_players(tournament_player.tournament.id)
     %}
         <div class="modal-dialog input-screen-result-modal">
             <div class="modal-content bg-secondary-subtle">
@@ -122,10 +122,10 @@
                         <button
                             class="result-button white text-black bg-white ms-auto me-auto btn fs-4 fw-bold p-3"
                             style="width: fit-content;"
-                            hx-patch="{{ url_for('user-toggle-check-in', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=player.id) }}"
+                            hx-patch="{{ url_for('user-toggle-check-in', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=tournament_player.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
-                        >{% if not player.check_in %}{{ _('CHECK-IN') }}{% else %}{{ _('CHECK-OUT') }}{% endif %}<br/><br/>{{ player.last_name }}<br/>{{ player.first_name }}<br/>{{ player.rating_str }}</button>
+                        >{% if not tournament_player.check_in %}{{ _('CHECK-IN') }}{% else %}{{ _('CHECK-OUT') }}{% endif %}<br/><br/>{{ tournament_player.last_name }}<br/>{{ tournament_player.first_name }}<br/>{{ tournament_player.rating_str }}</button>
                     </div>
                 </div>
                 <div class="modal-footer row d-flex align-items-center justify-content-center">

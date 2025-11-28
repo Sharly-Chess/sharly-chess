@@ -83,7 +83,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                 if not name:
                     errors[field] = _('This field is required.')
                 else:
-                    used_names = list(event.display_controllers_by_uniq_id.keys())
+                    used_names = list(event.display_controllers_by_name.keys())
                     if action == 'update':
                         used_names.remove(
                             web_context.get_admin_display_controller().name
@@ -131,20 +131,22 @@ class DisplayControllerAdminController(BaseEventAdminController):
             ),
         )
 
-        admin_display_controllers_sorted_by_uniq_id: list[DisplayController]
+        admin_display_controllers_sorted_by_name: list[DisplayController]
         if web_context.client.can_view_private_screens:
-            admin_display_controllers_sorted_by_uniq_id = (
-                web_context.get_admin_event().display_controllers_sorted_by_uniq_id
+            admin_display_controllers_sorted_by_name = (
+                web_context.get_admin_event().display_controllers_sorted_by_name
             )
         elif web_context.client.can_view_public_screens:
-            admin_display_controllers_sorted_by_uniq_id = web_context.get_admin_event().public_display_controllers_sorted_by_uniq_id
+            admin_display_controllers_sorted_by_name = (
+                web_context.get_admin_event().public_display_controllers_sorted_by_name
+            )
         else:
-            admin_display_controllers_sorted_by_uniq_id = []
+            admin_display_controllers_sorted_by_name = []
 
         template_context: dict[str, Any] = web_context.template_context | {
             'admin_event_tab': 'admin-event-display-controllers-tab',
             'sorted_screens': sorted_screens,
-            'admin_display_controllers': admin_display_controllers_sorted_by_uniq_id,
+            'admin_display_controllers': admin_display_controllers_sorted_by_name,
         }
 
         match modal:
@@ -400,7 +402,7 @@ class DisplayControllerAdminController(BaseEventAdminController):
                     screen_uniq_id=screen.uniq_id,
                 )
             case 'rotator':
-                rotator: Rotator = web_context.admin_event.rotators_by_uniq_id[
+                rotator: Rotator = web_context.admin_event.rotators_by_name[
                     object_uniq_id
                 ]
                 web_context.admin_display_controller.rotator_id = rotator.id

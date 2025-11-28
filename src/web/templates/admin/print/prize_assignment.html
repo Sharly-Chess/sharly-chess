@@ -40,17 +40,17 @@
                         {% endfor %}
                         <div class="header">{{ _('Prize *** PRIZE FOR TABLE HEADER') }}</div>
                         {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
-                            {% set player=assigned_prize.assigned_to %}
+                            {% set tournament_player=assigned_prize.assigned_to %}
                             <div class="cell fw-bold">
                                 {{ ordinal_integer(loop.index)|safe }}
                             </div>
-                            {% if player %}
+                            {% if tournament_player %}
                                 {% for column in player_columns %}
-                                    <div class="cell {{ column.get_cell_classes(player) }}">
+                                    <div class="cell {{ column.get_cell_classes(tournament_player) }}">
                                         {% if column.cell_template %}
                                             {% include column.cell_template %}
                                         {% else %}
-                                            {{ macros.column_cell(column, player) }}
+                                            {{ macros.column_cell(column, tournament_player) }}
                                         {% endif %}
                                     </div>
                                 {% endfor %}

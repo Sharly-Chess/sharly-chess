@@ -4,7 +4,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Timer hours') }}{% if admin_event.timers_by_id|length > 1 %} [{{ admin_timer.uniq_id }}]{% endif %}
+                {{ _('Timer hours') }}{% if admin_event.timers_by_id|length > 1 %} [{{ admin_timer.name }}]{% endif %}
             </h2>
         </div>
         <div class="modal-body">
