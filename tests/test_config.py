@@ -2,7 +2,7 @@
 
 import time
 from urllib import parse
-from common import BASE_DIR, format_date
+from common import BASE_DIR
 from data.board import PlayerRatingType
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
@@ -20,6 +20,7 @@ from database.sqlite.event.event_store import (
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
 
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
+from utils.datetime import format_date
 from utils.enum import ScreenType
 
 

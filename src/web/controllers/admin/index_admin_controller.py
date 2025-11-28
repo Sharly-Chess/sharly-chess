@@ -7,9 +7,6 @@ from litestar.exceptions import ClientException, NotFoundException
 
 from common import (
     BASE_DIR,
-    format_timestamp_date,
-    format_date_range,
-    format_date,
     is_http_url,
     is_valid_email,
 )
@@ -21,6 +18,12 @@ from data.board import PlayerRatingType
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
+from utils.datetime import (
+    format_timestamp_date,
+    format_date_range,
+    format_date,
+    DateFormatterManager,
+)
 from utils.types import Federation
 
 from litestar import get, post, patch, delete
@@ -103,6 +106,13 @@ class IndexAdminController(BaseAdminController):
         if locale and locale not in locales:
             errors[field] = _('Invalid locale [{locale}].').format(locale=locale)
             data[field] = ''
+        date_formatter_id = (
+            WebContext.form_data_to_str(data, field := 'date_formatter') or ''
+        )
+        try:
+            DateFormatterManager().get_object(date_formatter_id)
+        except KeyError:
+            errors[field] = f'invalid date formatter [{date_formatter_id}].'
         return StoredConfig(
             force_edit=False,
             console_log_level=sharly_chess_config.console_log_level,
@@ -113,6 +123,7 @@ class IndexAdminController(BaseAdminController):
             launch_browser=launch_browser,
             federation=federation.name if federation else None,
             locale=locale,
+            date_formatter=date_formatter_id,
             errors=errors,
         )
 
@@ -851,6 +862,7 @@ class IndexAdminController(BaseAdminController):
                     'launch_browser': config.launch_browser,
                     'federation': config.stored_config.federation,
                     'locale': config.locale,
+                    'date_formatter': config.date_formatter.id,
                 }
             )
 
@@ -884,6 +896,7 @@ class IndexAdminController(BaseAdminController):
                 {} if data['federation'] else {'': _('Please choose a federation')}
             )
             | self._get_federation_options(),
+            'date_formatter_options': DateFormatterManager().options(),
             'modal': 'config',
             'data': data,
             'errors': errors,
@@ -933,7 +946,6 @@ class IndexAdminController(BaseAdminController):
                 template_context=template_context,
                 keep_modal_open=sharly_chess_config.force_edit,
             )
-
         with ConfigDatabase(write=True) as config_database:
             stored_config.force_edit = False
             config_database.update_stored_config(stored_config)

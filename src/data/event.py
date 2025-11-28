@@ -8,11 +8,6 @@ from operator import attrgetter
 from types import NotImplementedType
 from typing import Collection
 
-from common import (
-    format_timestamp_date_time,
-    format_date_range,
-    format_date,
-)
 from common.i18n import _
 from common.i18n.utils import by
 from common.logger import get_logger
@@ -30,6 +25,7 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from plugins.utils import PluginData, Plugin
 from utils import Utils
+from utils.datetime import format_date, format_date_range, format_timestamp_date_time
 from utils.enum import (
     Result,
     RoleType,

@@ -305,20 +305,27 @@ async function downloadFile(el) {
     }
 }
 
-const dateRegex = /^\d{4}\-\d{2}\-\d{2}$/;
-const timeRegex = /\d{2}:\d{2}$/;
-
-function getAirDatePickerSelectedDates(value, inputType) {
+function getAirDatePickerSelectedDates(
+    value,
+    inputType,
+    rangeSeparator,
+    valueToDate,
+    dateRegex,
+    timeRegex = /\d{2}:\d{2}$/,
+) {
+    console.log(dateRegex);
+    console.log(value);
+    console.log(dateRegex.test(value));
     if (inputType === 'time') {
         if (timeRegex.test(value)) return ['1970-01-01 ' + value];
     } else if (inputType === 'date') {
-        if (dateRegex.test(value)) return [value];
+        if (dateRegex.test(value)) return [valueToDate(value)];
     } else if (inputType === 'date-range') {
-        if (dateRegex.test(value)) return [value];
-        if (value.includes(' / ')) {
-            const [start, stop] = value.split(' / ');
+        if (dateRegex.test(value)) return [valueToDate(value)];
+        if (value.includes(rangeSeparator)) {
+            const [start, stop] = value.split(rangeSeparator);
             if (dateRegex.test(start) && dateRegex.test(stop)) {
-                return [start, stop];
+                return [valueToDate(start), valueToDate(stop)];
             }
         }
     }

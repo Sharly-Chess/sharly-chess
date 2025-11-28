@@ -73,7 +73,7 @@
                         {{ admin_macros.date_input(
                             name='date_of_birth',
                             label=_('Date of birth:'),
-                            placeholder=_('YYYY-MM-DD'),
+                            placeholder=sharly_chess_config.date_formatter.name,
                             data=data, errors=errors
                         ) }}
                     </div>

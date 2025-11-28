@@ -672,18 +672,29 @@ with_indicator: display a loading indicator, optional
                         ></i>
                     {% endif %}
                     {% if use_date_picker %}
+                        {% set formatter = sharly_chess_config.date_formatter %}
                         <script>
                             new AirDatepicker('#{{ id }}', {
                                 classes: 'dark',
-                                dateFormat: 'yyyy-MM-dd',
+                                dateFormat: `{{ formatter.air_date_picker_format }}`,
                                 timeFormat: 'HH:mm',
                                 firstDay: 1,
-                                minDate: "{{ min_date }}",
-                                maxDate: "{{ max_date }}",
-                                selectedDates: getAirDatePickerSelectedDates(`{{ data[name] }}`, '{{ input_type }}'),
+                                {% if min_date %}
+                                    minDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ min_date }}`),
+                                {% endif %}
+                                {% if max_date %}
+                                    maxDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ max_date }}`),
+                                {% endif %}
+                                selectedDates: getAirDatePickerSelectedDates(
+                                    value=`{{ data[name] }}`,
+                                    inputType='{{ input_type }}',
+                                    rangeSeparator=`{{ formatter.range_separator }}`,
+                                    valueToDate={{ formatter.value_to_date_js_function|safe }},
+                                    dateRegex=/{{ formatter.regex }}/,
+                                ),
                                 {% if input_type == 'date-range' %}
                                     range: true,
-                                    multipleDatesSeparator: ' / ',
+                                    multipleDatesSeparator: '{{ formatter.range_separator }}',
                                 {% elif input_type == 'time' %}
                                     onlyTimepicker: true,
                                     timepicker: true,

@@ -31,9 +31,11 @@ from common.logger import set_logging_config, get_logger
 from common.network import find_lan_interfaces, LOCALHOST_IP
 from common.singleton import Singleton
 from plugins.manager import plugin_manager
+from utils.date_formatter import DateFormatter
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
+from utils.datetime import DateFormatterManager
 
 if TYPE_CHECKING:
     from data.player import Federation
@@ -47,6 +49,7 @@ class SharlyChessConfig(metaclass=Singleton):
     def __init__(self):
         self.web_port: int | None = None
         self._stored_config: StoredConfig | None = None
+        self._date_formatter: DateFormatter | None = None
 
     @staticmethod
     def _get_system_user_locale() -> str | None:
@@ -165,6 +168,9 @@ class SharlyChessConfig(metaclass=Singleton):
             console_show_date=stored_config.console_show_date,
             console_show_level=stored_config.console_show_level,
         )
+        self._date_formatter = DateFormatterManager().get_object(
+            stored_config.date_formatter
+        )
         enable_experimental_features(stored_config.experimental)
         plugin_manager.reload_register()
         self._stored_config = stored_config
@@ -224,6 +230,11 @@ class SharlyChessConfig(metaclass=Singleton):
     @property
     def locale(self) -> str:
         return self.stored_config.locale or DEFAULT_LOCALE
+
+    @property
+    def date_formatter(self) -> DateFormatter:
+        assert self._date_formatter is not None
+        return self._date_formatter
 
     # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'

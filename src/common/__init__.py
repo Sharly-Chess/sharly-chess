@@ -2,10 +2,7 @@ import importlib.metadata
 import os
 import re
 import sys
-import time
 from collections import namedtuple
-from datetime import datetime, date
-from functools import wraps
 from pathlib import Path
 from urllib.parse import urlparse
 from packaging.version import Version
@@ -162,13 +159,6 @@ def rgb_to_hexa(rgb: RGB) -> str:
     return '#' + ''.join(f'{max(0, min(255, i)):02X}' for i in rgb)
 
 
-def format_timestamp(ts: float | None = None, format_: str = '%Y-%m-%d %H:%M') -> str:
-    """Formats a timestamp (now if None) to the given format."""
-    return datetime.strftime(
-        datetime.fromtimestamp(ts if ts is not None else time.time()), format_
-    )
-
-
 def is_valid_email(email: str) -> bool:
     return EMAIL_RE.match(email) is not None
 
@@ -179,57 +169,3 @@ def is_http_url(url: str) -> bool:
         return r.scheme in {'http', 'https'} and bool(r.netloc)
     except ValueError:
         return False
-
-
-def format_date(date_: date | None = None) -> str:
-    return (date_ or date.today()).strftime('%Y-%m-%d')
-
-
-def format_date_range(start_date: date, stop_date: date | None = None) -> str:
-    if not stop_date or start_date == stop_date:
-        return format_date(start_date)
-    return f'{format_date(start_date)} / {format_date(stop_date)}'
-
-
-def get_date_timestamp(date_: date) -> float:
-    return datetime.combine(date_, datetime.min.time()).timestamp()
-
-
-def format_timestamp_date_time(ts: float | None = None) -> str:
-    """Formats the given timestamp (now if None) to YYYY-mm-dd HH:MM format."""
-    return format_timestamp(ts)
-
-
-def format_timestamp_date(ts: float | None = None) -> str:
-    """Formats the given timestamp (now if None) to YYYY-mm-dd format."""
-    return format_timestamp(ts, '%Y-%m-%d')
-
-
-def format_timestamp_time(ts: float | None = None) -> str:
-    """Formats the given timestamp (now if None) to HH:MM format."""
-    return format_timestamp(ts, '%H:%M')
-
-
-def show_duration(func):
-    """This decorator prints the duration of methods."""
-
-    @wraps(func)
-    def show_duration_wrapper(*args, **kwargs):
-        from common.logger import get_logger
-
-        start_time = time.perf_counter()
-        result = func(*args, **kwargs)
-        end_time = time.perf_counter()
-        total_time = end_time - start_time
-        # first item in the args, ie `args[0]` is `self`
-        get_logger().warning(
-            '%.4fs %s.%s(%s %s)',
-            total_time,
-            args[0].__class__.__name__,
-            func.__name__,
-            args[1:],
-            kwargs,
-        )
-        return result
-
-    return show_duration_wrapper

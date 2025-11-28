@@ -11,8 +11,6 @@ from typing import Any, TYPE_CHECKING, Sequence, override, cast
 from packaging.version import Version
 
 from common import (
-    format_timestamp_date,
-    format_timestamp_time,
     DEVEL_ENV,
     EVENTS_DIR,
 )
@@ -47,6 +45,7 @@ from database.sqlite.event.event_store import (
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
 from plugins.manager import plugin_manager
+from utils.datetime import format_timestamp_date, format_timestamp_time
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
