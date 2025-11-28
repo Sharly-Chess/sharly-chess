@@ -3,13 +3,17 @@ import platform
 import subprocess
 import sys
 from abc import ABC
+from logging import Logger
 from pathlib import Path
 
 from common import DEVEL_ENV, BASE_DIR
+from common.logger import get_logger
 from common.tool_installer import UACInstaller
 
+logger: Logger = get_logger()
 
-def control_files() -> None:
+
+def search_missing_files() -> None:
     import sys
 
     if (
@@ -73,16 +77,24 @@ class UAC:
             '--windows-defender-exclude',
             str(BASE_DIR),
         ]
-        print(
-            f'Running command [{" ".join(cmd)}]...',
-        )
+        logger.debug('Running command [%s]...', ' '.join(cmd))
         process = subprocess.run(cmd, capture_output=True, text=True)
-        print(f'Command returned [{process.returncode}].')
-        print(
-            f'stdout={"\n".join(line for line in map(lambda s: s.rstrip(), process.stdout.split("\n")) if line)}'
+        logger.debug('Command returned [%d].', process.returncode)
+        logger.debug(
+            'stdout=%s',
+            '\n'.join(
+                line
+                for line in map(lambda s: s.rstrip(), process.stdout.split('\n'))
+                if line
+            ),
         )
-        print(
-            f'stderr={"\n".join(line for line in map(lambda s: s.rstrip(), process.stderr.split("\n")) if line)}'
+        logger.debug(
+            'stderr=%s',
+            '\n'.join(
+                line
+                for line in map(lambda s: s.rstrip(), process.stderr.split('\n'))
+                if line
+            ),
         )
         return process.returncode == 0
 
@@ -131,17 +143,20 @@ if (
             """Returns the MpCmdRun executable or None."""
             import os
 
-            if not (program_files_var := os.getenv('ProgramFiles')):
-                print('%ProgramFiles% not set.')
+            program_files_var_name: str = 'ProgramFiles'
+            if not (program_files_var := os.getenv(program_files_var_name)):
+                logger.warning(
+                    'Environment variable [%s] not set.', program_files_var_name
+                )
                 return None
             program_files_dir = Path(program_files_var)
             windows_defender_dir: Path = program_files_dir / 'Windows Defender'
             if not windows_defender_dir.is_dir():
-                print(f'Folder [{windows_defender_dir}] not found.')
+                logger.warning('Folder [%s] not found.', windows_defender_dir)
                 return None
             mpcmdrun_exe: Path = windows_defender_dir / 'MpCmdRun.exe'
             if not mpcmdrun_exe.is_file():
-                print(f'Executable [{mpcmdrun_exe}] not found.')
+                logger.warning('Executable [%s] not found.', mpcmdrun_exe)
                 return None
             return mpcmdrun_exe
 
@@ -165,39 +180,55 @@ if (
                 '-File',
                 f'{folder}\\|*',
             ]
-            # print(f'Running command [{' '.join(cmd)}]...', )
+            logger.debug('Running command [%s]...', ' '.join(cmd))
             process = subprocess.run(cmd, capture_output=True, text=True)
-            # print(f'Command returned [{process.returncode}].')
-            # print(f'stdout={'\n'.join(line for line in map(lambda s: s.rstrip(), process.stdout.split('\n')) if line)}')
-            # print(f'stderr={'\n'.join(line for line in map(lambda s: s.rstrip(), process.stderr.split('\n')) if line)}')
-            return process.returncode == 0
+            logger.debug('Command returned [%d].', process.returncode)
+            logger.debug(
+                'stdout=%s',
+                '\n'.join(
+                    line
+                    for line in map(lambda s: s.rstrip(), process.stdout.split('\n'))
+                    if line
+                ),
+            )
+            logger.debug(
+                'stderr=%s',
+                '\n'.join(
+                    line
+                    for line in map(lambda s: s.rstrip(), process.stderr.split('\n'))
+                    if line
+                ),
+            )
+            success: bool = process.returncode == 0
+            if not success:
+                logger.debug(
+                    'Scan failed, folder [%s] is not excluded by Windows Defender.',
+                    folder,
+                )
+            else:
+                logger.debug(
+                    'Scan succeeded, folder [%s] is already excluded by Windows Defender.',
+                    folder,
+                )
+            return success
 
         def run(self) -> None:
             if mpcmdrun_exe := self._get_mpcmdrun_exe():
                 folder: Path = Path().absolute()
                 if self._folder_excluded(mpcmdrun_exe, folder):
-                    print(
-                        f'Folder [{folder}] already belongs to the Windows Defender exclusions.'
+                    logger.debug(
+                        'Folder [%s] already belongs to the Windows Defender exclusions.',
+                        folder,
                     )
                 elif UACInstaller().is_installed:
-                    print(
-                        'Calling Sharly Chess UAC to add Sharly Chess folder to Windows Defender exclusions.'
+                    logger.info(
+                        'Calling Sharly Chess UAC to add Sharly Chess folder to Windows Defender exclusions...'
                     )
                     UAC().windows_defender_exclude_sharly_chess_folder()
                 elif DEVEL_ENV:
-                    print(
+                    logger.info(
                         'Sharly Chess UAC not installed yet, can not add Sharly Chess folder to Windows Defender exclusions.'
                     )
-
-    class AVG(WindowsAntivirus):
-        def __init__(self):
-            super().__init__(
-                'AVG',
-                [
-                    'avghookx.dll',
-                    'avghooka.dll',
-                ],
-            )
 
     class Avast(WindowsAntivirus):
         def __init__(self):
@@ -206,6 +237,16 @@ if (
                 [
                     'snxhk.dll',
                     'sf2.dll',
+                ],
+            )
+
+    class AVG(WindowsAntivirus):
+        def __init__(self):
+            super().__init__(
+                'AVG',
+                [
+                    'avghookx.dll',
+                    'avghooka.dll',
                 ],
             )
 
@@ -365,8 +406,8 @@ def detect_antivirus() -> list[Antivirus]:
             for proc in psutil.process_iter(attrs=['pid', 'name']):
                 for avs in [
                     WindowsDefender(),
-                    AVG(),
                     Avast(),
+                    AVG(),
                     Sandboxie(),
                     WindBG(),
                     IDefenseLab(),
@@ -388,14 +429,16 @@ def detect_antivirus() -> list[Antivirus]:
                             detected_antivirus_softwares.append(avs)
                             break
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
-            print(f'Could not detect antivirus softwares: {e}')
+            logger.warning('Could not detect antivirus softwares: %s', e)
             pass
         if detected_antivirus_softwares:
-            print('The following antivirus softwares have been detected:')
+            logger.debug('The following antivirus softwares have been detected:')
             for detected_antivirus_software in detected_antivirus_softwares:
-                print(f'- {detected_antivirus_software.name}')
+                logger.debug('- %s', detected_antivirus_software.name)
             for detected_antivirus_software in detected_antivirus_softwares:
-                # print(f'Running action for {detected_antivirus_software.name}...')
+                logger.debug(
+                    'Running action for [%s]...', detected_antivirus_software.name
+                )
                 detected_antivirus_software.run()
         return detected_antivirus_softwares
     else:
