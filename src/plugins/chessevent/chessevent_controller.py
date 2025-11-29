@@ -4,7 +4,7 @@ from litestar import get, patch
 from litestar.response import Template
 from litestar_htmx import HTMXRequest
 
-from common import format_timestamp_date_time, SharlyChessException
+from common import SharlyChessException
 from common.exception import ImporterError
 from common.i18n import _, ngettext
 from common.logger import get_logger
@@ -21,6 +21,7 @@ from plugins.chessevent.tournament_importer.options import (
     ChessEventTournamentOption,
 )
 from plugins.chessevent.utils import ChessEventUtils
+from utils.datetime import format_timestamp_date_time
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,

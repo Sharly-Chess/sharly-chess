@@ -38,6 +38,12 @@
                         select_options=federation_options,
                         data=data, errors=errors
                     ) }}
+                    {{ admin_macros.select_input(
+                        name='date_formatter',
+                        label=_('%(string)s:', string=_('Date format')),
+                        select_options=date_formatter_options,
+                        data=data, errors=errors
+                    ) }}
                     {% if sharly_chess_config.experimental_features %}
                         {% set ns = namespace(
                             experimental_features_help=_(

@@ -1310,6 +1310,9 @@ msgstr "Cut {value}"
 msgid "DCA"
 msgstr ""
 
+msgid "DD/MM/YYYY"
+msgstr ""
+
 msgid "DOUBLE"
 msgstr ""
 
@@ -1336,6 +1339,9 @@ msgid "Database [{database}] successfully updated."
 msgstr ""
 
 msgid "Date and time"
+msgstr ""
+
+msgid "Date format"
 msgstr ""
 
 msgid "Date of birth"
@@ -2565,6 +2571,9 @@ msgstr ""
 
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
+
+msgid "MM/DD/YYYY"
+msgstr ""
 
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
 msgstr "Mail"
@@ -5517,6 +5526,9 @@ msgstr "Y"
 
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
+
+msgid "YYYY-MM-DD"
+msgstr ""
 
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "YOB"
