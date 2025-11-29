@@ -237,6 +237,13 @@ if (
                 [
                     'snxhk.dll',
                     'sf2.dll',
+                    'AvastUI.exe',
+                    'aswToolsSvc.exe',
+                    'aswEngSrv.exe',
+                    'afwServ.exe',
+                    'wsc_proxy.exe',
+                    'AvastSvc.exe',
+                    'aswidsagent.exe',
                 ],
             )
 
@@ -401,45 +408,51 @@ def detect_antivirus() -> list[Antivirus]:
     ):
         import psutil
 
-        detected_antivirus_softwares: list[Antivirus] = []
+        detected_antivirus_programs: list[Antivirus] = []
         try:
-            for proc in psutil.process_iter(attrs=['pid', 'name']):
-                for avs in [
-                    WindowsDefender(),
-                    Avast(),
-                    AVG(),
-                    Sandboxie(),
-                    WindBG(),
-                    IDefenseLab(),
-                    SunbeltSandbox(),
-                    VirtualPC(),
-                    WPEPro(),
-                    ComodoContainer(),
-                    Software360(),
-                    UnknownSandbox(),
-                    ESET(),
-                    Avira(),
-                    Norton(),
-                    McAfee(),
-                    FSecure(),
-                    Kaspersky(),
-                ]:
-                    for signature in avs.signatures:
-                        if signature.lower() in proc.info['name'].lower():
-                            detected_antivirus_softwares.append(avs)
-                            break
+            logger.debug('Analysing running processes...')
+            process_names: list[str] = [
+                process.info['name'].lower()
+                for process in psutil.process_iter(attrs=['name'])
+            ]
+            for avs in [
+                WindowsDefender(),
+                Avast(),
+                AVG(),
+                Sandboxie(),
+                WindBG(),
+                IDefenseLab(),
+                SunbeltSandbox(),
+                VirtualPC(),
+                WPEPro(),
+                ComodoContainer(),
+                Software360(),
+                UnknownSandbox(),
+                ESET(),
+                Avira(),
+                Norton(),
+                McAfee(),
+                FSecure(),
+                Kaspersky(),
+            ]:
+                for signature in avs.signatures:
+                    if signature.lower() in process_names:
+                        logger.debug('Process [%s] identifies antivirus [%s].', signature, avs.name)
+                        detected_antivirus_programs.append(avs)
+                        break
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
-            logger.warning('Could not detect antivirus softwares: %s', e)
-            pass
-        if detected_antivirus_softwares:
-            logger.debug('The following antivirus softwares have been detected:')
-            for detected_antivirus_software in detected_antivirus_softwares:
-                logger.debug('- %s', detected_antivirus_software.name)
-            for detected_antivirus_software in detected_antivirus_softwares:
+            logger.warning('Could not detect antivirus programs: %s', e)
+        if detected_antivirus_programs:
+            logger.debug('The following antivirus program have been detected:')
+            for detected_antivirus_program in detected_antivirus_programs:
+                logger.debug('- %s', detected_antivirus_program.name)
+            for detected_antivirus_program in detected_antivirus_programs:
                 logger.debug(
-                    'Running action for [%s]...', detected_antivirus_software.name
+                    'Running action for [%s]...', detected_antivirus_program.name
                 )
-                detected_antivirus_software.run()
-        return detected_antivirus_softwares
+                detected_antivirus_program.run()
+        else:
+            logger.debug('No antivirus program has been detected.')
+        return detected_antivirus_programs
     else:
         return []
