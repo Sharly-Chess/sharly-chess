@@ -1,3 +1,4 @@
+import json
 import os
 import platform
 import subprocess
@@ -6,7 +7,7 @@ from abc import ABC
 from logging import Logger
 from pathlib import Path
 
-from common import DEVEL_ENV
+from common import DEVEL_ENV, TMP_DIR
 from common.logger import get_logger
 from common.tool_installer import UACInstaller
 
@@ -119,6 +120,8 @@ class Antivirus(ABC):
     ):
         self.name = name
         self.signatures: list[str] = signatures
+        self.tmp_dir = TMP_DIR / 'antivirus'
+        self.tmp_dir.mkdir(exist_ok=True)
 
     def run(self) -> None:
         """Executes an action to prevent the antivirus from interfering with the program's execution."""
@@ -233,12 +236,12 @@ if (
                     )
                 elif UACInstaller().is_installed:
                     logger.info(
-                        'Calling Sharly Chess UAC to add Sharly Chess folder to Windows Defender exclusions...'
+                        'Calling Sharly Chess UAC to add Sharly Chess folder to the Windows Defender exclusions...'
                     )
                     UAC().windows_defender_exclude_sharly_chess_folder()
                 elif DEVEL_ENV:
                     logger.info(
-                        'Sharly Chess UAC not installed yet, can not add Sharly Chess folder to Windows Defender exclusions.'
+                        'Sharly Chess UAC not installed yet, can not add Sharly Chess folder to the Windows Defender exclusions.'
                     )
 
     class Avast(WindowsAntivirus):
@@ -257,6 +260,33 @@ if (
                     'aswidsagent.exe',
                 ],
             )
+
+        def run(self) -> None:
+            # There is no way like with Windows Defender to know if the Sharly Chess folder
+            # already belongs to the Avast exclusions. So the best we can do is always calling
+            # UAC and marking the folder as excluded not to do it twice (if the user removes
+            # the exclusion we assume (s)he knows what (s)he does).
+            marker_file: Path = self.tmp_dir / f'{self.name}.json'
+            if marker_file.is_file():
+                with open(marker_file, 'r', encoding='utf-8') as file:
+                    folder: Path = Path().absolute()
+                    marked_folder: str = json.load(file)
+                    if marked_folder == str(folder):
+                        logger.debug(
+                            'Folder [%s] has already been add to the Avast exclusions.',
+                            folder,
+                        )
+                        return
+            if UACInstaller().is_installed:
+                logger.info(
+                    'Calling Sharly Chess UAC to add Sharly Chess folder to the Avast exclusions...'
+                )
+                UAC().avast_exclude_sharly_chess_folder()
+            elif DEVEL_ENV:
+                logger.info(
+                    'Sharly Chess UAC not installed yet, can not add Sharly Chess folder to the Avast exclusions.'
+                )
+
 
     class AVG(WindowsAntivirus):
         def __init__(self):
@@ -458,7 +488,7 @@ def detect_antivirus() -> list[Antivirus]:
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
             logger.warning('Could not detect antivirus programs: %s', e)
         if detected_antivirus_programs:
-            logger.debug('The following antivirus program have been detected:')
+            logger.debug('The following antivirus programs have been detected:')
             for detected_antivirus_program in detected_antivirus_programs:
                 logger.debug('- %s', detected_antivirus_program.name)
             for detected_antivirus_program in detected_antivirus_programs:
