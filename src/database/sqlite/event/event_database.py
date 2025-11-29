@@ -3,6 +3,7 @@ import time
 from collections import defaultdict
 from collections.abc import Iterator
 from contextlib import suppress
+from datetime import date
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
@@ -45,7 +46,7 @@ from database.sqlite.event.event_store import (
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
 from plugins.manager import plugin_manager
-from utils.datetime import format_timestamp_date, format_timestamp_time
+from utils.datetime import format_timestamp_time
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
@@ -546,7 +547,7 @@ class EventDatabase(MigrationDatabase):
             order=self.get_stored_timer_next_hour_order(timer_id),
         )
         if set_datetime:
-            stored_timer_hour.date_str = format_timestamp_date()
+            stored_timer_hour.date_str = self.dump_date_to_database_field(date.today())
             stored_timer_hour.time_str = format_timestamp_time(time.time())
         return self._write_stored_timer_hour(stored_timer_hour)
 
