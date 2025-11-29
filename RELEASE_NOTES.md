@@ -3,7 +3,7 @@
 # General
 
 - Make the date format configurable (3.3.4)
-- Increase the timeout of download requests (3.3.4)
+- Increase the timeout of database download requests (3.3.4)
 
 ## Interface
 
@@ -59,7 +59,7 @@
 - Added option to upload via the tournament card action menu (3.3.0)
 - Added a plugin to help manage school competitions in France (3.3.0)
 - Added colleges (in French: `Lycée`) to the list schools (3.3.1)
-- Fixed no licence considered as expired licences on PAPI import (3.3.4)
+- Fixed no licence considered as expired licences on _Papi_ import (3.3.4)
 
 ## _Chess-Results_
 
