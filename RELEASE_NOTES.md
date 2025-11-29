@@ -25,6 +25,10 @@
 
 - Calculation of _FIDE_ rating changes (3.3.0)
 
+## Pairings
+
+- Fixed the navigation to the current round (3.3.4)
+
 ## Printing
 
 - Added place cards (3.3.0)
