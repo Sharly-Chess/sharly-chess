@@ -5,6 +5,7 @@
 - Reduced the size of all forms (3.3.0)
 - Moved the default fields to the relevant pages (3.3.0)
 - Improve the date and time selection (3.3.0)
+- Make the date format configurable (3.3.4)
 
 ## Modules
 

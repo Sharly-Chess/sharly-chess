@@ -7,7 +7,6 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
-from common import format_timestamp_date_time
 from common.i18n import _
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
@@ -17,6 +16,7 @@ from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.utils import PluginUtils
+from utils.datetime import format_timestamp_date_time
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,

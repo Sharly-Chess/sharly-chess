@@ -3,7 +3,6 @@ from litestar import get, post
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
-from common import format_timestamp_date_time
 from data.access_levels.actions import AuthAction
 from plugins.chess_results import PLUGIN_NAME
 from plugins.chess_results.chess_results_background_uploader import (
@@ -11,6 +10,7 @@ from plugins.chess_results.chess_results_background_uploader import (
 )
 from plugins.chess_results.utils import ChessResultsUtils
 from plugins.utils import PluginUtils
+from utils.datetime import format_timestamp_date_time
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,

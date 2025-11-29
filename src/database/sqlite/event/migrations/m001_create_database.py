@@ -1,7 +1,6 @@
 import time
 from datetime import datetime
 
-from common import format_timestamp_date
 from database.sqlite.migration import BaseMigration
 
 
@@ -24,7 +23,7 @@ class Migration(BaseMigration):
             '    `last_update` FLOAT NOT NULL'
             ')'
         )
-        today_str: str = format_timestamp_date()
+        today_str: str = datetime.today().strftime('%Y-%m-%d')
         format_: str = '%Y-%m-%d %H:%M'
         event_start = time.mktime(
             datetime.strptime(f'{today_str} 00:00', format_).timetuple()

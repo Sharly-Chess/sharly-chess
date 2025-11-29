@@ -2,12 +2,12 @@
 
 import time
 from urllib import parse
-from common import BASE_DIR, format_date
+from common import BASE_DIR
 from data.board import PlayerRatingType
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from typing import Callable, Dict, Optional, Any
 import re
@@ -150,13 +150,13 @@ class TestUtils:
             'uniq_id': uniq_id,
             'name': uniq_id,
         }
-        today = date.today()
         if via_api_request_context:
             defaults |= {
-                'date_range': format_date(today),
+                'date_range': datetime.now().strftime('%Y-%m-%d'),
                 'plugin_ffe': 'on',
             }
         else:
+            today = date.today()
             defaults |= {
                 'start_date': today,
                 'stop_date': today,
