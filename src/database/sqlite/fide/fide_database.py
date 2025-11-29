@@ -84,7 +84,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             local_zip_file: Path = tmp_dir / os.path.basename(fide_database_url)
             try:
                 response: Response = get(
-                    fide_database_url, allow_redirects=True, timeout=5
+                    fide_database_url, allow_redirects=True, timeout=10
                 )
                 if response.status_code != 200:
                     logger.error(
