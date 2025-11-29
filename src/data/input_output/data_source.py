@@ -7,7 +7,7 @@ from functools import cached_property
 from logging import Logger
 from typing import override, ClassVar
 
-from common import format_timestamp_date_time, SharlyChessException
+from common import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -16,6 +16,7 @@ from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database.databases import LocalSourcePlayerDatabase
 from plugins.manager import plugin_manager
+from utils.datetime import format_timestamp_date_time
 from utils.entity import IdentifiableEntity
 from utils.enum import TournamentRating
 

@@ -6,7 +6,6 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
-from common import format_timestamp_date_time
 from common.background import inline_image_url
 from common.i18n import _
 from common.logger import get_logger
@@ -14,6 +13,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.screen_set import ScreenSet
 from data.timer import Timer
+from utils.datetime import format_timestamp_date_time
 from utils.enum import ScreenType
 from database.sqlite.event.event_store import StoredScreen
 

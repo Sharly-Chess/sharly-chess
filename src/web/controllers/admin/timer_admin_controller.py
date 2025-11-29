@@ -1,6 +1,6 @@
 import re
 import time
-from datetime import datetime
+from datetime import datetime, date
 from typing import Annotated, Any
 
 from litestar import post, get, delete, patch
@@ -18,6 +18,7 @@ from data.access_levels.actions import AuthAction
 from data.timer import Timer, TimerHour
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTimer, StoredTimerHour
+from utils.datetime import datetime_format, format_date
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -161,7 +162,7 @@ class TimerAdminController(BaseEventAdminController):
             )
             if not matches:
                 errors['time_str'] = _('Please enter a valid time.')
-        date_str: str | None = None
+        date_: date | None = None
         field = 'date_str'
         try:
             date_ = WebContext.form_data_to_date(data, field)
@@ -170,8 +171,6 @@ class TimerAdminController(BaseEventAdminController):
                     errors[field] = _(
                         'Time outside of event time range ({range}).'
                     ).format(range=event.date_range_str)
-                # TODO (Molrn) Use a date / datetime object to store the timer hour date
-                date_str = EventDatabase.dump_date_to_database_field(date_)
             elif not previous_valid_timer_hour:
                 errors[field] = _('Please enter the date of the first hour.')
         except FormError as e:
@@ -179,15 +178,15 @@ class TimerAdminController(BaseEventAdminController):
 
         if 'time_str' not in errors and 'date_str' not in errors:
             datetime_str: str
-            if date_str:
-                datetime_str = f'{date_str} {time_str}'
+            if date_:
+                datetime_str = f'{format_date(date_)} {time_str}'
             else:
                 assert previous_valid_timer_hour
                 datetime_str = f'{previous_valid_timer_hour.date_str} {time_str}'
             try:
                 timestamp: int = int(
                     time.mktime(
-                        datetime.strptime(datetime_str, '%Y-%m-%d %H:%M').timetuple()
+                        datetime.strptime(datetime_str, datetime_format()).timetuple()
                     )
                 )
                 if (
@@ -201,11 +200,11 @@ class TimerAdminController(BaseEventAdminController):
                         hour=datetime_str,
                         previous_hour=previous_valid_timer_hour.datetime_str,
                     )
-                    if date_str:
+                    if date_:
                         errors['date_str'] = errors['time_str']
             except ValueError:
                 errors['time_str'] = _('Please enter valid date and time.')
-                if date_str:
+                if date_:
                     errors['date_str'] = errors['time_str']
 
         timer = web_context.get_admin_timer()
@@ -230,6 +229,13 @@ class TimerAdminController(BaseEventAdminController):
                 errors['text_after'] = _(
                     'Please enter the text to display after the hour (mandatory except for rounds).'
                 )
+
+        # TODO (Molrn) Use a date / datetime object to store the timer hour date
+        date_str: str | None = None
+        if errors:
+            date_str = data.get('date_str', '')
+        elif date_:
+            date_str = EventDatabase.dump_date_to_database_field(date_)
 
         return StoredTimerHour(
             id=timer_hour.id,

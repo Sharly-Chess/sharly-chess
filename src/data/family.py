@@ -5,9 +5,9 @@ from math import ceil
 from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
-from common import format_timestamp_date_time
 from common.i18n import _
 from data.screen import Screen
+from utils.datetime import format_timestamp_date_time
 from utils.enum import ScreenType
 from database.sqlite.event.event_store import StoredFamily
 
