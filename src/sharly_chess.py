@@ -197,11 +197,10 @@ try:
         sys.exit(0)
 
     port = args.port or None
-    # allow option --debug for everybody
-    debug = args.debug  # if DEVEL_ENV else False
-    if debug:
+    if args.debug:
         # set the log level to DEBUG before loading the logging configuration of the application
         set_logging_config(console_log_level=logging.DEBUG)
+    debug = args.debug if DEVEL_ENV else False
     search_missing_files()
     detect_antivirus()
     # Check if GUI mode should be used

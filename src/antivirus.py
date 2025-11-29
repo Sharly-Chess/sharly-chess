@@ -6,7 +6,7 @@ from abc import ABC
 from logging import Logger
 from pathlib import Path
 
-from common import DEVEL_ENV, BASE_DIR
+from common import DEVEL_ENV
 from common.logger import get_logger
 from common.tool_installer import UACInstaller
 
@@ -70,12 +70,15 @@ class UAC:
     def executable_path(self) -> Path:
         return UACInstaller().executable_path
 
-    def windows_defender_exclude_sharly_chess_folder(self):
-        """Calls the Sharly Chess UAC to add a Windows Defender exclusion on the Sharly Chess folder."""
+    def _exclude_sharly_chess_folder(
+        self,
+        option_name: str,
+    ):
+        """Calls the Sharly Chess UAC to add an exclusion on the Sharly Chess folder."""
         cmd: list[str] = [
             str(self.executable_path),
-            '--windows-defender-exclude',
-            str(BASE_DIR),
+            option_name,
+            str(Path().absolute()),
         ]
         logger.debug('Running command [%s]...', ' '.join(cmd))
         process = subprocess.run(cmd, capture_output=True, text=True)
@@ -97,6 +100,14 @@ class UAC:
             ),
         )
         return process.returncode == 0
+
+    def windows_defender_exclude_sharly_chess_folder(self):
+        """Calls the Sharly Chess UAC to add a Windows Defender exclusion on the Sharly Chess folder."""
+        self._exclude_sharly_chess_folder('--windows-defender-exclude')
+
+    def avast_exclude_sharly_chess_folder(self):
+        """Calls the Sharly Chess UAC to add an Avast exclusion on the Sharly Chess folder."""
+        self._exclude_sharly_chess_folder('--avast-exclude')
 
 
 # https://unprotect.it/snippet/adding-antivirus-exception/241/
@@ -437,7 +448,11 @@ def detect_antivirus() -> list[Antivirus]:
             ]:
                 for signature in avs.signatures:
                     if signature.lower() in process_names:
-                        logger.debug('Process [%s] identifies antivirus [%s].', signature, avs.name)
+                        logger.debug(
+                            'Process [%s] identifies antivirus [%s].',
+                            signature,
+                            avs.name,
+                        )
                         detected_antivirus_programs.append(avs)
                         break
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess) as e:
