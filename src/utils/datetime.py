@@ -25,16 +25,16 @@ def _date_formatter() -> DateFormatter:
     return SharlyChessConfig().date_formatter
 
 
-def _date_format() -> str:
+def date_format() -> str:
     return _date_formatter().python_format
 
 
-def _time_format() -> str:
+def time_format() -> str:
     return '%H:%M'
 
 
-def _datetime_format() -> str:
-    return f'{_date_format()} {_time_format()}'
+def datetime_format() -> str:
+    return f'{date_format()} {time_format()}'
 
 
 def format_timestamp(ts: float | None, format_: str) -> str:
@@ -43,19 +43,19 @@ def format_timestamp(ts: float | None, format_: str) -> str:
 
 
 def format_timestamp_date_time(ts: float | None = None) -> str:
-    return format_timestamp(ts, _datetime_format())
+    return format_timestamp(ts, datetime_format())
 
 
 def format_timestamp_date(ts: float | None = None) -> str:
-    return format_timestamp(ts, _date_format())
+    return format_timestamp(ts, date_format())
 
 
 def format_timestamp_time(ts: float | None = None) -> str:
-    return format_timestamp(ts, _time_format())
+    return format_timestamp(ts, time_format())
 
 
 def format_date(date_: date | None = None) -> str:
-    return (date_ or date.today()).strftime(_date_format())
+    return (date_ or date.today()).strftime(date_format())
 
 
 def format_date_range(start_date: date, stop_date: date | None = None) -> str:

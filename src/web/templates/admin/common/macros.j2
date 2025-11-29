@@ -674,11 +674,12 @@ with_indicator: display a loading indicator, optional
                     {% if use_date_picker %}
                         {% set formatter = sharly_chess_config.date_formatter %}
                         <script>
-                            new AirDatepicker('#{{ id }}', {
+                            datePickers['{{ id }}'] = new AirDatepicker('#{{ id }}', {
                                 classes: 'dark',
                                 dateFormat: `{{ formatter.air_date_picker_format }}`,
                                 timeFormat: 'HH:mm',
                                 firstDay: 1,
+                                keyboardNav: false,
                                 {% if min_date %}
                                     minDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ min_date }}`),
                                 {% endif %}
@@ -739,6 +740,27 @@ with_indicator: display a loading indicator, optional
                                         "{{ _('Dec *** DECEMBER') }}"
                                     ],
                                 },
+                            });
+                            $('#{{ id }}').on('keyup', function () {
+                                const selected = getAirDatePickerSelectedDates(
+                                    value=$(this).val(),
+                                    inputType='{{ input_type }}',
+                                    rangeSeparator=`{{ formatter.range_separator }}`,
+                                    valueToDate={{ formatter.value_to_date_js_function|safe }},
+                                    dateRegex=/{{ formatter.regex }}/,
+                                );
+                                if (selected.length === 0) return;
+                                {% if min_date %}
+                                    const minDate = ({{ formatter.value_to_date_js_function|safe }})(`{{ min_date }}`);
+                                    if (!selected.every(date => date >= minDate)) return;
+                                {% endif %}
+                                {% if max_date %}
+                                    const maxDate = ({{ formatter.value_to_date_js_function|safe }})(`{{ max_date }}`);
+                                    if (!selected.every(date => date <= maxDate)) return;
+                                {% endif %}
+                                datePickers['{{ id }}'].selectDate(selected, {
+                                    updateTime: true,
+                                });
                             });
                         </script>
                     {% endif %}

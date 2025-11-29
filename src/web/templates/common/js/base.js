@@ -305,6 +305,8 @@ async function downloadFile(el) {
     }
 }
 
+const datePickers = {};
+
 function getAirDatePickerSelectedDates(
     value,
     inputType,
@@ -313,9 +315,6 @@ function getAirDatePickerSelectedDates(
     dateRegex,
     timeRegex = /\d{2}:\d{2}$/,
 ) {
-    console.log(dateRegex);
-    console.log(value);
-    console.log(dateRegex.test(value));
     if (inputType === 'time') {
         if (timeRegex.test(value)) return ['1970-01-01 ' + value];
     } else if (inputType === 'date') {
