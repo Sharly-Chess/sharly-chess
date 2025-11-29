@@ -10,6 +10,16 @@
 ###########################################################
 */
 
+.user-screen-content {
+    --font-size: 100;
+    font-size: calc(var(--font-size) * 1%)
+}
+
+.user-screen-content h2.set-title {
+    font-size: calc(var(--font-size) / 100 * 1.6rem);
+    margin-top: calc(var(--font-size) / 100 * 0.8rem);
+}
+
 .alert-message-text {
   display: inline-block;
   padding-right: 0;
@@ -107,10 +117,6 @@
 }
 .board-row.last_result_updated > * {
     color: red !important;
-}
-h2.set-title {
-    font-size: 1.6rem;
-    margin-top: 0.8rem;
 }
 /*
 ###########################################################
