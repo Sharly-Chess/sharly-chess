@@ -37,10 +37,10 @@
                             <td>{{ pairing.color.to_crosstable }}</td>
                             <td class='text-center'>{{ pairing.result }}</td>
                             <td class='text-center'>{{ opponent.rank }}</td>
-                            <td class='text-nowrap'>{{ opponent.player.title.short_name }} {{ opponent.player.full_name }}</td>
+                            <td class='text-nowrap'>{{ opponent.title.short_name }} {{ opponent.full_name }}</td>
                             <td>{{ opponent.rating_str }}</td>
                             <td>{{ opponent.category.short_name }}</td>
-                            <td>{{ opponent.player.federation }}</td>
+                            <td>{{ opponent.federation }}</td>
                             <td class='text-center'>{{ opponent.points_str }}</td>
                             {% for tie_break_value in opponent.tie_break_values %}
                                 <td class="tie-break text-center">
