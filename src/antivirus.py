@@ -83,22 +83,18 @@ class UAC:
         logger.debug('Running command [%s]...', ' '.join(cmd))
         process = subprocess.run(cmd, capture_output=True, text=True)
         logger.debug('Command returned [%d].', process.returncode)
-        logger.debug(
-            'stdout=%s',
-            '\n'.join(
-                line
-                for line in map(lambda s: s.rstrip(), process.stdout.split('\n'))
-                if line
-            ),
-        )
-        logger.debug(
-            'stderr=%s',
-            '\n'.join(
-                line
-                for line in map(lambda s: s.rstrip(), process.stderr.split('\n'))
-                if line
-            ),
-        )
+        if stdout_str := '\n'.join(
+            line
+            for line in map(lambda s: s.rstrip(), process.stdout.split('\n'))
+            if line
+        ):
+            logger.debug(stdout_str)
+        if stderr_str := '\n'.join(
+            line
+            for line in map(lambda s: s.rstrip(), process.stderr.split('\n'))
+            if line
+        ):
+            logger.warning(stderr_str)
         return process.returncode == 0
 
     def windows_defender_exclude_sharly_chess_folder(self):
