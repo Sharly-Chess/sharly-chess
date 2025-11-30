@@ -75,7 +75,7 @@ msgid "Cut *** TIE BREAK VARIATION"
 msgstr "Tronqué"
 
 msgid "DD/MM/YYYY"
-msgstr ""
+msgstr "JJ/MM/AAAA"
 
 msgid "Data is already displayed on the FFE website."
 msgstr "Les données sont déjà affichées sur le site web FFE."
