@@ -87,7 +87,7 @@ try:
         set_logging_config,
     )
     from gui.server_gui_toga import SharlyChessServerToga
-    from antivirus import search_missing_files, detect_antivirus
+    from antivirus import search_missing_files, detect_antivirus_and_add_exclusion
     from web.server_engine import ServerEngine
 
     logger = get_logger()
@@ -201,8 +201,16 @@ try:
         # set the log level to DEBUG before loading the logging configuration of the application
         set_logging_config(console_log_level=logging.DEBUG)
     debug = args.debug if DEVEL_ENV else False
-    search_missing_files(Path())
-    detect_antivirus(Path())
+    if error_message := search_missing_files(folder=Path(), delete_control_file=True):
+        import tkinter
+        from tkinter import messagebox
+
+        root = tkinter.Tk()
+        root.withdraw()
+        messagebox.showerror('Sharly Chess startup error', error_message)
+        root.destroy()
+        sys.exit(1)
+    detect_antivirus_and_add_exclusion(folder=Path())
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):
         # Create and run the Toga app - this should block until the app exits

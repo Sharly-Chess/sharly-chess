@@ -17,7 +17,10 @@ logger: Logger = get_logger()
 
 def search_missing_files(
     folder: Path,
-):
+    delete_control_file: bool,
+) -> str | None:
+    """Search for missing files in the given folder and delete the control file if wanted.
+    Returns an error message or None on success."""
     import sys
 
     if (
@@ -44,9 +47,9 @@ def search_missing_files(
             if missing_files:
                 import sys
 
-                message: str = '\n'.join(
+                return '\n'.join(
                     [
-                        'Sharly Chess can not start because the following files are missing:',
+                        f'Sharly Chess {version} has not been correctly installed in folder [{folder}], the following files are missing:',
                     ]
                     + [f'- {missing_file}' for missing_file in missing_files]
                     + [
@@ -56,16 +59,10 @@ def search_missing_files(
                         '2. Unzip the downloaded archive manually',
                     ]
                 )
-                import tkinter
-                from tkinter import messagebox
-
-                root = tkinter.Tk()
-                root.withdraw()
-                messagebox.showerror('Sharly Chess startup error', message)
-                root.destroy()
-                sys.exit(1)
-            # Remove the control file not to check twice when no missing file the first time.
-            control_file.unlink()
+            if delete_control_file:
+                # Remove the control file not to check twice when no missing file the first time.
+                control_file.unlink()
+    return None
 
 
 class UAC:
@@ -209,7 +206,7 @@ if (
                 '-ScanType',
                 '3',
                 '-File',
-                f'{folder}\\|*',
+                f'{folder.resolve()}\\|*',
             ]
             logger.debug('Running command [%s]...', ' '.join(cmd))
             process = subprocess.run(cmd, capture_output=True, text=True)
@@ -249,15 +246,15 @@ if (
         ) -> None:
             if mpcmdrun_exe := self._get_mpcmdrun_exe():
                 if not folder.is_absolute():
-                    folder = folder.absolute()
-                if self._folder_excluded(mpcmdrun_exe, folder.absolute()):
+                    folder = folder.resolve()
+                if self._folder_excluded(mpcmdrun_exe, folder.resolve()):
                     logger.debug(
                         'Folder [%s] already belongs to the Windows Defender exclusions.',
                         folder,
                     )
                 elif UACInstaller().is_installed:
                     logger.info(
-                        'Calling Sharly Chess UAC to add Sharly Chess folder to the Windows Defender exclusions...'
+                        f'Calling Sharly Chess UAC to add folder [{folder}] to the Windows Defender exclusions...'
                     )
                     UAC().windows_defender_exclude_sharly_chess_folder(folder)
                 elif DEVEL_ENV:
@@ -292,7 +289,7 @@ if (
             # the exclusion we assume (s)he knows what (s)he does).
             marker_file: Path = self.tmp_dir / f'{self.name}.json'
             if not folder.is_absolute():
-                folder = folder.absolute()
+                folder = folder.resolve()
             if marker_file.is_file():
                 with open(marker_file, 'r', encoding='utf-8') as file:
                     marked_folder: str = json.load(file)
@@ -304,7 +301,7 @@ if (
                         return
             if UACInstaller().is_installed:
                 logger.info(
-                    'Calling Sharly Chess UAC to add Sharly Chess folder to the Avast exclusions...'
+                    f'Calling Sharly Chess UAC to add folder [{folder}] to the Avast exclusions...'
                 )
                 UAC().avast_exclude_sharly_chess_folder(folder)
             elif DEVEL_ENV:
@@ -465,7 +462,7 @@ if (
             )
 
 
-def detect_antivirus(
+def detect_antivirus_and_add_exclusion(
     folder: Path,
 ) -> list[Antivirus]:
     """Detect antivirus programs running on the server and add exclusions for the given folder when possible."""

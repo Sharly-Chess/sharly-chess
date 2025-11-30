@@ -14,6 +14,7 @@ from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
+from antivirus import detect_antivirus_and_add_exclusion, search_missing_files
 from common import (
     SHARLY_CHESS_VERSION,
     TEST_ENV,
@@ -494,7 +495,7 @@ class Engine:
             logger.error(
                 'Version [%s] is already installed in directory [%s], please manually delete this folder before installing.',
                 version,
-                new_version_dir.absolute(),
+                new_version_dir.resolve(),
             )
             return False
         try:
@@ -524,38 +525,15 @@ class Engine:
                 logger.debug('File downloaded: [%s].', downloaded_file)
 
                 if platform.system() == 'Windows':
-                    # For Windows: Unzip the file
                     new_version_dir.mkdir()
+                    detect_antivirus_and_add_exclusion(folder=new_version_dir)
                     with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
                         zip_ref.extractall(new_version_dir)
-                    control_file: Path = new_version_dir / 'tmp' / 'control_file.json'
-                    if control_file.exists():
-                        with open(control_file, 'r', encoding='utf8') as infile:
-                            control_data: dict[str, Any] = json.loads(infile.read())
-                        missing_files: list[str] = [
-                            file_path
-                            for file_path in control_data['file_paths']
-                            if not Path(file_path).is_file()
-                        ]
-                        if missing_files:
-                            logger.error(
-                                '\n'.join(
-                                    [
-                                        f'Sharly Chess {version} has not been correctly installed, the following files are missing:',
-                                    ]
-                                    + [
-                                        f'- {missing_file}'
-                                        for missing_file in missing_files
-                                    ]
-                                    + [
-                                        'This is probably due to Windows Defender or any other antivirus sending files to quarantaine.',
-                                        'Recover the missing files from your quarantaine folder (depends on the antivirus you use) or manually install:',
-                                        f'1. Download Sharly Chess from https://github.com/Sharly-Chess/sharly-chess/releases/download/{version}/sharly-chess-{version}-windows.zip',
-                                        '2. Unzip the downloaded archive manually',
-                                    ]
-                                )
-                            )
-                            return False
+                    if error_message := search_missing_files(
+                        folder=new_version_dir, delete_control_file=False
+                    ):
+                        logger.error(error_message)
+                        return False
                 else:
                     # For Mac: Handle the DMG file
                     mount_point = tmp_dir / f'mount-{version}'
@@ -604,7 +582,7 @@ class Engine:
                 logger.info(
                     'New release [%s] has been installed in [%s].',
                     version,
-                    new_version_dir.absolute(),
+                    new_version_dir.resolve(),
                 )
                 return True
         except RequestException as ex:
