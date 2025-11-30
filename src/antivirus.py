@@ -7,6 +7,7 @@ from abc import ABC
 from logging import Logger
 from pathlib import Path
 
+
 from common import DEVEL_ENV, TMP_DIR
 from common.logger import get_logger
 from common.tool_installer import UACInstaller
@@ -14,7 +15,9 @@ from common.tool_installer import UACInstaller
 logger: Logger = get_logger()
 
 
-def search_missing_files() -> None:
+def search_missing_files(
+    folder: Path,
+):
     import sys
 
     if (
@@ -24,7 +27,7 @@ def search_missing_files() -> None:
         and Path(sys.argv[0]).stem != 'pytest'
     ):
         # Microsoft Defender sometimes sends files to quarantaine when unzipping downloaded archives.
-        control_file: Path = Path('tmp', 'control_file.json')
+        control_file: Path = folder / 'tmp/control_file.json'
         if control_file.is_file():
             import json
             from typing import Any
@@ -34,7 +37,9 @@ def search_missing_files() -> None:
             version: list[str] = control_data['version']
             file_paths: list[str] = control_data['file_paths']
             missing_files: list[str] = [
-                file_path for file_path in file_paths if not Path(file_path).is_file()
+                file_path
+                for file_path in file_paths
+                if not (folder / file_path).is_file()
             ]
             if missing_files:
                 import sys
@@ -73,13 +78,14 @@ class UAC:
 
     def _exclude_sharly_chess_folder(
         self,
+        folder: Path,
         option_name: str,
     ):
         """Calls the Sharly Chess UAC to add an exclusion on the Sharly Chess folder."""
         cmd: list[str] = [
             str(self.executable_path),
             option_name,
-            str(Path().absolute()),
+            str(folder),
         ]
         logger.debug('Running command [%s]...', ' '.join(cmd))
         process = subprocess.run(cmd, capture_output=True, text=True)
@@ -98,13 +104,25 @@ class UAC:
             logger.warning(stderr_str)
         return process.returncode == 0
 
-    def windows_defender_exclude_sharly_chess_folder(self):
-        """Calls the Sharly Chess UAC to add a Windows Defender exclusion on the Sharly Chess folder."""
-        self._exclude_sharly_chess_folder('--windows-defender-exclude')
+    def windows_defender_exclude_sharly_chess_folder(
+        self,
+        folder: Path,
+    ):
+        """Calls the Sharly Chess UAC to add a Windows Defender exclusion on the given folder."""
+        self._exclude_sharly_chess_folder(
+            folder,
+            '--windows-defender-exclude',
+        )
 
-    def avast_exclude_sharly_chess_folder(self):
-        """Calls the Sharly Chess UAC to add an Avast exclusion on the Sharly Chess folder."""
-        self._exclude_sharly_chess_folder('--avast-exclude')
+    def avast_exclude_sharly_chess_folder(
+        self,
+        folder: Path,
+    ):
+        """Calls the Sharly Chess UAC to add an Avast exclusion on the given folder."""
+        self._exclude_sharly_chess_folder(
+            folder,
+            '--avast-exclude',
+        )
 
 
 # https://unprotect.it/snippet/adding-antivirus-exception/241/
@@ -119,7 +137,10 @@ class Antivirus(ABC):
         self.tmp_dir = TMP_DIR / 'antivirus'
         self.tmp_dir.mkdir(exist_ok=True)
 
-    def run(self) -> None:
+    def run(
+        self,
+        folder: Path,
+    ) -> None:
         """Executes an action to prevent the antivirus from interfering with the program's execution."""
         pass
 
@@ -222,10 +243,14 @@ if (
                 )
             return success
 
-        def run(self) -> None:
+        def run(
+            self,
+            folder: Path,
+        ) -> None:
             if mpcmdrun_exe := self._get_mpcmdrun_exe():
-                folder: Path = Path().absolute()
-                if self._folder_excluded(mpcmdrun_exe, folder):
+                if not folder.is_absolute():
+                    folder = folder.absolute()
+                if self._folder_excluded(mpcmdrun_exe, folder.absolute()):
                     logger.debug(
                         'Folder [%s] already belongs to the Windows Defender exclusions.',
                         folder,
@@ -234,7 +259,7 @@ if (
                     logger.info(
                         'Calling Sharly Chess UAC to add Sharly Chess folder to the Windows Defender exclusions...'
                     )
-                    UAC().windows_defender_exclude_sharly_chess_folder()
+                    UAC().windows_defender_exclude_sharly_chess_folder(folder)
                 elif DEVEL_ENV:
                     logger.info(
                         'Sharly Chess UAC not installed yet, can not add Sharly Chess folder to the Windows Defender exclusions.'
@@ -257,15 +282,19 @@ if (
                 ],
             )
 
-        def run(self) -> None:
+        def run(
+            self,
+            folder: Path,
+        ) -> None:
             # There is no way like with Windows Defender to know if the Sharly Chess folder
             # already belongs to the Avast exclusions. So the best we can do is always calling
             # UAC and marking the folder as excluded not to do it twice (if the user removes
             # the exclusion we assume (s)he knows what (s)he does).
             marker_file: Path = self.tmp_dir / f'{self.name}.json'
+            if not folder.is_absolute():
+                folder = folder.absolute()
             if marker_file.is_file():
                 with open(marker_file, 'r', encoding='utf-8') as file:
-                    folder: Path = Path().absolute()
                     marked_folder: str = json.load(file)
                     if marked_folder == str(folder):
                         logger.debug(
@@ -277,12 +306,11 @@ if (
                 logger.info(
                     'Calling Sharly Chess UAC to add Sharly Chess folder to the Avast exclusions...'
                 )
-                UAC().avast_exclude_sharly_chess_folder()
+                UAC().avast_exclude_sharly_chess_folder(folder)
             elif DEVEL_ENV:
                 logger.info(
                     'Sharly Chess UAC not installed yet, can not add Sharly Chess folder to the Avast exclusions.'
                 )
-
 
     class AVG(WindowsAntivirus):
         def __init__(self):
@@ -437,7 +465,10 @@ if (
             )
 
 
-def detect_antivirus() -> list[Antivirus]:
+def detect_antivirus(
+    folder: Path,
+) -> list[Antivirus]:
+    """Detect antivirus programs running on the server and add exclusions for the given folder when possible."""
     if (
         platform.system() == 'Windows'
         and os.getenv('TEST_ENV') != 'true'
@@ -491,7 +522,7 @@ def detect_antivirus() -> list[Antivirus]:
                 logger.debug(
                     'Running action for [%s]...', detected_antivirus_program.name
                 )
-                detected_antivirus_program.run()
+                detected_antivirus_program.run(folder or Path())
         else:
             logger.debug('No antivirus program has been detected.')
         return detected_antivirus_programs

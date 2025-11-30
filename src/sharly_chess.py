@@ -201,8 +201,8 @@ try:
         # set the log level to DEBUG before loading the logging configuration of the application
         set_logging_config(console_log_level=logging.DEBUG)
     debug = args.debug if DEVEL_ENV else False
-    search_missing_files()
-    detect_antivirus()
+    search_missing_files(Path())
+    detect_antivirus(Path())
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):
         # Create and run the Toga app - this should block until the app exits
