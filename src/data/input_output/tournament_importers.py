@@ -1,7 +1,8 @@
+import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Callable
-from datetime import datetime
+from datetime import datetime, date
 
 import trf
 from trf import Game as TrfGame
@@ -497,11 +498,12 @@ class TrfTournamentImporter(FileTournamentImporter):
             try:
                 datetime.strptime(trf_player.birthdate, '%Y/%m/%d')
             except ValueError:
-                raise ImporterError(
-                    _('Invalid date format [{date}] (expected: {format})').format(
-                        date=trf_player.birthdate, format='YYYY/MM/DD'
+                if not re.match(r'^\d{4}/00/00$', trf_player.birthdate):
+                    raise ImporterError(
+                        _('Invalid date format [{date}] (expected: {format})').format(
+                            date=trf_player.birthdate, format=_('YYYY/MM/DD')
+                        )
                     )
-                )
 
     @staticmethod
     def _validate_trf_game(trf_game: TrfGame):
@@ -564,6 +566,17 @@ class TrfTournamentImporter(FileTournamentImporter):
         ratings[tournament_rating.value] = PlayerRating(
             fide=trf_player.rating or None
         ).stored_value
+        date_of_birth: date | None = None
+        year_of_birth: int | None = None
+        if trf_player.birthdate:
+            try:
+                date_of_birth = datetime.strptime(
+                    trf_player.birthdate, '%Y/%m/%d'
+                ).date()
+            except ValueError:
+                if re.match(r'^\d{4}/00/00$', trf_player.birthdate):
+                    year_of_birth = int(trf_player.birthdate.split('/')[0])
+
         return StoredPlayer(
             id=trf_player.startrank,
             last_name=trf_player.name.split(',')[0].strip().upper(),
@@ -576,11 +589,8 @@ class TrfTournamentImporter(FileTournamentImporter):
             gender=TrfPlayerGender.get_core_object(trf_player.sex).value,
             title=TrfPlayerTitle.get_core_object(trf_player.title).value,
             fide_id=trf_player.id,
-            date_of_birth=(
-                datetime.strptime(trf_player.birthdate, '%Y/%m/%d').date()
-                if trf_player.birthdate
-                else None
-            ),
+            date_of_birth=date_of_birth,
+            year_of_birth=year_of_birth,
             federation=trf_player.fed.upper() or 'FID',
         )
 

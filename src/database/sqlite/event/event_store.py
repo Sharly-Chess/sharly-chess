@@ -129,6 +129,7 @@ class StoredPlayer:
     ratings: dict[int, dict[str, int | None]]
     first_name: str | None = None
     date_of_birth: date | None = None
+    year_of_birth: int | None = None
     gender: int = 0
     mail: str | None = None
     phone: str | None = None

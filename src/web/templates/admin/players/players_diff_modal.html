@@ -286,8 +286,8 @@
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 {% set tooltip_text=_(
                                     'Replace [%(old)s] by [%(new)s]',
-                                    old=player.date_of_birth.strftime('%Y-%m-%d') if player.date_of_birth else '',
-                                    new=match_player.date_of_birth.strftime('%Y-%m-%d') if match_player.date_of_birth else '',
+                                    old=player.date_or_year_of_birth_str,
+                                    new=match_player.date_or_year_of_birth_str,
                                 ) %}
                                 <td
                                         scope="col"
