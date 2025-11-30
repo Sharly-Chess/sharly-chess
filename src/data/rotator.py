@@ -1,11 +1,12 @@
 from operator import attrgetter
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 import weakref
 from _weakref import ReferenceType
 
 from common.sharly_chess_config import SharlyChessConfig
 from data.family import Family
 from data.screen import Screen
+from data.timer import Timer
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredRotator, StoredRotatingScreen
 
@@ -117,6 +118,14 @@ class Rotator:
             if self.message_default
             else self.stored_rotator.message_text
         )
+
+    @property
+    def timer_id(self) -> int | None:
+        return self.stored_rotator.timer_id
+
+    @property
+    def timer(self) -> Optional['Timer']:
+        return self.event.timers_by_id[self.timer_id] if self.timer_id else None
 
     @property
     def stored_rotating_screens(self) -> list[StoredRotatingScreen]:

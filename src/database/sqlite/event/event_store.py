@@ -297,6 +297,7 @@ class StoredRotator:
     public: bool = True
     message_default: bool = True
     message_text: str | None = None
+    timer_id: int | None = None
     stored_rotating_screens: list[StoredRotatingScreen] = field(
         default_factory=list[StoredRotatingScreen]
     )

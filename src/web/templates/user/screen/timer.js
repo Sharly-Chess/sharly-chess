@@ -1,4 +1,3 @@
-{% with timer=screen.timer %}
 {% with color_1_r=timer.color_1_rgb.0, color_1_g=timer.color_1_rgb.1, color_1_b=timer.color_1_rgb.2 %}
 {% with color_2_r=timer.color_2_rgb.0, color_2_g=timer.color_2_rgb.1, color_2_b=timer.color_2_rgb.2 %}
 {% with color_3_r=timer.color_3_rgb.0, color_3_g=timer.color_3_rgb.1, color_3_b=timer.color_3_rgb.2 %}
@@ -131,7 +130,6 @@ $(document).ready(function(){
     start_update_timer_interval();
 });
 
-{% endwith %}
 {% endwith %}
 {% endwith %}
 {% endwith %}
