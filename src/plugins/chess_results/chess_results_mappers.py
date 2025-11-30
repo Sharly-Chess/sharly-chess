@@ -78,7 +78,7 @@ class ChessResultsTieBreak:
             case tb.ProgressiveScoresTieBreak:
                 return cls(86)
             case tb.RoundsElectedToPlayTieBreak:
-                return cls(80)
+                return cls(79)
             case tb.StandardBuchholzTieBreak:
                 return cls(
                     84,

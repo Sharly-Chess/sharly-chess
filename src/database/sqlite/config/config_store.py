@@ -15,6 +15,7 @@ class StoredConfig:
     console_show_level: bool
     experimental: bool
     launch_browser: bool
+    date_formatter: str
     federation: str | None = None
     locale: str | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])

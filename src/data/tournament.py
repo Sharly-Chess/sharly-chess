@@ -13,7 +13,6 @@ from _weakref import ReferenceType
 from common.i18n.utils import by
 from trf import Tournament as TrfTournament
 
-from common import format_date, format_date_range
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
@@ -44,6 +43,7 @@ from database.sqlite.event.event_store import (
 from plugins.utils import PluginData
 from plugins.manager import plugin_manager
 from utils import Utils
+from utils.datetime import format_date_range, format_date
 from utils.enum import (
     BoardColor,
     PlayerGender,

@@ -13,10 +13,8 @@ from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
 from common import (
-    format_timestamp_date_time,
     SHARLY_CHESS_VERSION,
     EVENTS_DIR,
-    get_date_timestamp,
 )
 from common.exception import SharlyChessException
 from common.sharly_chess_config import SharlyChessConfig
@@ -26,6 +24,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import EventMetadata
 from plugins.manager import plugin_manager
 from utils import Utils
+from utils.datetime import get_date_timestamp, format_timestamp_date_time
 
 logger: Logger = get_logger()
 

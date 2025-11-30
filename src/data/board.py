@@ -2,9 +2,9 @@ import weakref
 from functools import total_ordering
 from typing import TYPE_CHECKING, Optional, Literal
 
-from common import format_timestamp
 from database.sqlite.event.event_store import StoredBoard
 from database.sqlite.event.event_database import EventDatabase
+from utils.datetime import format_timestamp_date_time
 from utils.enum import Result, PlayerRatingType
 
 if TYPE_CHECKING:
@@ -126,7 +126,9 @@ class Board:
     @property
     def last_result_update_str(self) -> str:
         return (
-            format_timestamp(self.last_result_update) if self.last_result_update else ''
+            format_timestamp_date_time(self.last_result_update)
+            if self.last_result_update
+            else ''
         )
 
     def replace_player(

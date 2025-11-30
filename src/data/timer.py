@@ -6,16 +6,16 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 from _weakref import ReferenceType
 
-from common import (
-    RGB,
-    hexa_to_rgb,
-    format_timestamp_date_time,
-    format_timestamp_date,
-    format_timestamp_time,
-)
+from common import RGB, hexa_to_rgb
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.event.event_store import StoredTimerHour, StoredTimer
+from utils.datetime import (
+    format_timestamp_date_time,
+    format_timestamp_date,
+    format_timestamp_time,
+    format_timestamp,
+)
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -233,8 +233,11 @@ class Timer:
                             # but this might not be the case after a timer has been deleted or re-ordered.
                             # In that case we'll fall through to the ValueError exception below.
                             previous_valid_timer_hour_date_str = (
-                                previous_valid_timer_hour.date_str
+                                format_timestamp(
+                                    previous_valid_timer_hour.timestamp, '%Y-%m-%d'
+                                )
                                 if previous_valid_timer_hour
+                                and previous_valid_timer_hour.timestamp
                                 else '-'
                             )
                             datetime_str = f'{previous_valid_timer_hour_date_str} {stored_timer_hour.time_str}'

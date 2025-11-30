@@ -136,7 +136,7 @@ class FFESqlServer(SqlServer):
                 PLUGIN_NAME: FfePlayerPluginData(
                     ffe_id=row['Ref'],
                     ffe_licence=PapiPlayerFFELicence.get_core_object(
-                        row['AffType'] or ''
+                        row['AffType'] or '', row['NrFFE']
                     ),
                     ffe_licence_number=row['NrFFE'],
                     league=row['ClubLigue'],

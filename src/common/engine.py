@@ -506,7 +506,7 @@ class Engine:
                     version,
                     download_url,
                 )
-                response: Response = get(download_url, allow_redirects=True, timeout=5)
+                response: Response = get(download_url, allow_redirects=True, timeout=10)
                 response.raise_for_status()
                 if not response:
                     logger.error('No response from GitHub.')
