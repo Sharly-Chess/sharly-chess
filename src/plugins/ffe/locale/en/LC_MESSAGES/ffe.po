@@ -74,6 +74,9 @@ msgstr ""
 msgid "Cut *** TIE BREAK VARIATION"
 msgstr "Cut"
 
+msgid "DD/MM/YYYY"
+msgstr "JJ/MM/AAAA"
+
 msgid "Data is already displayed on the FFE website."
 msgstr ""
 
