@@ -173,8 +173,12 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
                 today = date.today()
                 ages = []
                 for p in selected:
-                    dob: date | None = p.date_of_birth
-                    if isinstance(dob, date):
+                    dob: date | None = None
+                    if p.date_of_birth:
+                        dob = p.date_of_birth
+                    elif p.year_of_birth:
+                        dob = date(p.year_of_birth, 1, 1)
+                    if dob:
                         # Compute precise age in years (fractional)
                         age = (today - dob).days / 365.2425  # average solar year
                         ages.append(age)

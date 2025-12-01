@@ -190,8 +190,17 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('This field is required.')
         try:
             WebContext.form_data_to_date(data, field := 'date_of_birth')
-        except FormError as e:
-            errors[field] = str(e)
+        except FormError:
+            year_str = data.get(field, '')
+            if year_str:
+                if not year_str.isdigit() or len(year_str) != 4:
+                    errors[field] = _(
+                        'Invalid date format (expected: {format}).'
+                    ).format(
+                        format=_('YYYY or {date_format}').format(
+                            date_format=SharlyChessConfig().date_formatter.name
+                        ),
+                    )
         try:
             if value := WebContext.form_data_to_int(data, field := 'gender'):
                 PlayerGender(value)
@@ -252,11 +261,19 @@ class PlayerAdminController(BaseEventAdminController):
 
     @classmethod
     def _stored_player_from_data(cls, data: dict[str, str]) -> StoredPlayer:
+        date_of_birth: date | None = None
+        year_of_birth: int | None = None
+        field = 'date_of_birth'
+        try:
+            date_of_birth = WebContext.form_data_to_date(data, field)
+        except FormError:
+            year_of_birth = WebContext.form_data_to_int(data, field)
         return StoredPlayer(
             id=None,
             first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
             last_name=(WebContext.form_data_to_str(data, 'last_name') or '').upper(),
-            date_of_birth=WebContext.form_data_to_date(data, 'date_of_birth'),
+            date_of_birth=date_of_birth,
+            year_of_birth=year_of_birth,
             gender=WebContext.form_data_to_int(data, 'gender')
             or PlayerGender.NONE.value,
             mail=WebContext.form_data_to_str(data, 'mail'),
@@ -284,7 +301,6 @@ class PlayerAdminController(BaseEventAdminController):
             federation=WebContext.form_data_to_str(data, 'federation') or '',
             club=WebContext.form_data_to_str(data, 'club') or '',
             fixed=WebContext.form_data_to_int(data, 'fixed'),
-            check_in=False,
             plugin_data={
                 plugin_id: plugin_data_class.from_form_data(data).to_stored_value()
                 for plugin_id, plugin_data_class in Player.plugin_data_class_by_plugin_id().items()
@@ -741,7 +757,7 @@ class PlayerAdminController(BaseEventAdminController):
                 if data is None:
                     first_name: str | None = None
                     last_name: str | None = None
-                    date_of_birth: date | None = None
+                    date_of_birth: str | None = None
                     gender: int = PlayerGender.NONE.value
                     ratings: dict[TournamentRating, PlayerRating] = {
                         tr: PlayerRating(estimated=0) for tr in TournamentRating
@@ -764,7 +780,11 @@ class PlayerAdminController(BaseEventAdminController):
                         first_name = stored_player.first_name
                         last_name = stored_player.last_name
                         gender = stored_player.gender
-                        date_of_birth = stored_player.date_of_birth
+                        date_of_birth = WebContext.value_to_date_form_data(
+                            stored_player.date_of_birth
+                        )
+                        if stored_player.year_of_birth:
+                            date_of_birth = str(stored_player.year_of_birth)
                         for tr_value, rating in stored_player.ratings.items():
                             ratings[TournamentRating(tr_value)] = (
                                 PlayerRating.from_stored_value(rating)

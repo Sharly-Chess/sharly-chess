@@ -1,5 +1,6 @@
 import re
 from contextlib import suppress
+from datetime import datetime, date
 from logging import Logger
 from pathlib import Path
 from typing import Any
@@ -104,17 +105,19 @@ class FFESqlServer(SqlServer):
 
     @staticmethod
     def _get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
+        date_of_birth: date | None = None
+        dob = row['NeLe']
+        if isinstance(dob, datetime):
+            date_of_birth = dob.date()
+        elif isinstance(dob, date):
+            date_of_birth = dob
+
         return StoredPlayer(
             id=None,
             first_name=row['Prenom'].title() if row['Prenom'] else '',
             last_name=row['Nom'].upper(),
-            date_of_birth=row['NeLe'],
+            date_of_birth=date_of_birth,
             gender=PapiPlayerGender.get_core_object(row['Sexe']),
-            mail='',
-            phone='',
-            comment='',
-            owed=0.0,
-            paid=0.0,
             title=PapiPlayerTitle.get_core_object(row['FideTitre'] or '').value,
             ratings={
                 TournamentRating.STANDARD.value: PlayerRating.from_type(
@@ -130,8 +133,6 @@ class FFESqlServer(SqlServer):
             fide_id=int(row['FideCode'].strip("' ")) if row['FideCode'] else 0,
             federation=row['Federation'],
             club=row['ClubNom'] if row['ClubNom'] else '',
-            fixed=0,
-            check_in=False,  # not taken into account when updating/creating/deleting the player
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
                     ffe_id=row['Ref'],

@@ -156,11 +156,6 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             last_name=row['last_name'].upper(),
             date_of_birth=datetime.strptime(row['date_of_birth'], '%Y-%m-%d').date(),
             gender=PlayerGender(row['gender']),
-            mail='',
-            phone='',
-            comment='',
-            owed=0.0,
-            paid=0.0,
             title=PlayerTitle(row['fide_title']),
             ratings={
                 TournamentRating.STANDARD.value: PlayerRating.from_type(
@@ -177,8 +172,6 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
             federation=row['federation'],
             club=row['club'],
-            fixed=0,
-            check_in=False,  # not taken into account when updating/creating/deleting the player
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
                     ffe_id=row['ffe_id'],

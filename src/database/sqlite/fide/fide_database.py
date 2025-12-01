@@ -4,7 +4,6 @@ import tempfile
 from xml.etree import ElementTree
 import zipfile
 from contextlib import suppress
-from datetime import datetime
 from logging import Logger
 from pathlib import Path
 from typing import Iterator, Any, Callable, override
@@ -224,22 +223,12 @@ class FideDatabase(LocalSourcePlayerDatabase):
             id=None,
             first_name=row['first_name'].title() if row['first_name'] else '',
             last_name=row['last_name'].upper(),
-            date_of_birth=datetime.strptime(
-                f'{row["year_of_birth"] or 1900}-01-01', '%Y-%m-%d'
-            ).date(),
+            year_of_birth=row['year_of_birth'],
             gender=row['gender'],
-            mail='',
-            phone='',
-            comment='',
-            owed=0.0,
-            paid=0.0,
             title=row['fide_title'],
             ratings=ratings,
             fide_id=row['fide_id'],
             federation=row['federation'],
-            club='',
-            fixed=0,
-            check_in=False,  # not taken into account when updating/creating/deleting the player
         )
 
     def search_player(
