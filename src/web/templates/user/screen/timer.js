@@ -3,10 +3,11 @@
 {% with color_3_r=timer.color_3_rgb.0, color_3_g=timer.color_3_rgb.1, color_3_b=timer.color_3_rgb.2 %}
 {% with delay_1=timer.delays.1, delay_2=timer.delays.2, delay_3=timer.delays.3 %}
 
-var timer;
-var timer_clock;
-var timer_text;
-var polyglot = new Polyglot({
+const timer = document.getElementById('timer');
+const timer_clock = document.getElementById('timer-clock');
+const timer_text = document.getElementById('timer-text');
+
+const polyglot = new Polyglot({
     locale: '{{ locale }}',
     phrases: {
         'seconds': '{{ _('<smart_count> second |||| <smart_count> seconds') }}',
@@ -22,13 +23,6 @@ var polyglot = new Polyglot({
     },
 });
 
-function start_update_timer_interval() {
-	timer = document.getElementById('timer');
-	timer_clock = document.getElementById('timer-clock');
-	timer_text = document.getElementById('timer-text');
-	update_timer();
-	setInterval('update_timer();', 1000);
-}
 function update_timer_values(clock_html, text_html, color) {
 	$('.timer-wrapper').removeClass('d-none');
 	if (timer_clock.innerHTML != clock_html) {
@@ -86,7 +80,7 @@ function update_timer() {
 {% for timer_hour in timer.timer_hours_sorted_by_order %}
   {% if not timer_hour.error %}
 	if (time < {{ timer_hour.timestamp_1 }}) { // {{ timer_hour.datetime_str_1 }} color_1 {{ timer_hour.text_before }}
-		color = 'rgb({{ color_1_r }},{{ color_1_g }},{{ color_1_b }})';
+		color = 'rgb({{ color_1_r }}, {{ color_1_g }}, {{ color_1_b }})';
 		dur = duration_string({{ timer_hour.timestamp }} - time);
 		text_html = '{{ timer_hour.text_before }}'.replace('%s', dur);
 		update_timer_values(clock_html, text_html, color);
@@ -96,7 +90,7 @@ function update_timer() {
 		color_r = Math.floor({{ color_1_r }} + (time - {{ timer_hour.timestamp_1 }})/({{ delay_1 * 60 }})*({{ color_2_r - color_1_r }}));
 		color_g = Math.floor({{ color_1_g }} + (time - {{ timer_hour.timestamp_1 }})/({{ delay_1 * 60 }})*({{ color_2_g - color_1_g }}));
 		color_b = Math.floor({{ color_1_b }} + (time - {{ timer_hour.timestamp_1 }})/({{ delay_1 * 60 }})*({{ color_2_b - color_1_b }}));
-		color = 'rgb(' + color_r + ',' + color_g + ',' + color_b + ')';
+		color = 'rgb(' + color_r + ', ' + color_g + ', ' + color_b + ')';
 		dur = duration_string({{ timer_hour.timestamp }} - time);
 		text_html = '{{ timer_hour.text_before }}'.replace('%s', dur);
 		update_timer_values(clock_html, text_html, color);
@@ -106,14 +100,14 @@ function update_timer() {
 		color_r = Math.floor({{ color_2_r }} + (time - {{ timer_hour.timestamp_2 }})/({{ delay_2 * 60 }})*({{ color_3_r - color_2_r }}));
 		color_g = Math.floor({{ color_2_g }} + (time - {{ timer_hour.timestamp_2 }})/({{ delay_2 * 60 }})*({{ color_3_g - color_2_g }}));
 		color_b = Math.floor({{ color_2_b }} + (time - {{ timer_hour.timestamp_2 }})/({{ delay_2 * 60 }})*({{ color_3_b - color_2_b }}));
-		color = 'rgb(' + color_r + ',' + color_g + ',' + color_b + ')';
+		color = 'rgb(' + color_r + ', ' + color_g + ', ' + color_b + ')';
 		dur = duration_string({{ timer_hour.timestamp }} - time);
 		text_html = '{{ timer_hour.text_before }}'.replace('%s', dur);
 		update_timer_values(clock_html, text_html, color);
 		return;
 	}
 	if (time < {{ timer_hour.timestamp_next }}) { // {{ timer_hour.datetime_str_next }} color_3 {{ timer_hour.text_after }}
-		color = 'rgb({{ color_3_r }},{{ color_3_g }},{{ color_3_b }})';
+		color = 'rgb({{ color_3_r }}, {{ color_3_g }}, {{ color_3_b }})';
 		dur = duration_string(time - {{ timer_hour.timestamp }});
 		text_html = '{{ timer_hour.text_after }}'.replace('%s', dur);
 		update_timer_values(clock_html, text_html, color);
@@ -126,9 +120,9 @@ function update_timer() {
   {% endif %}
 {% endfor %}
 }
-$(document).ready(function(){
-    start_update_timer_interval();
-});
+
+update_timer();
+setInterval('update_timer();', 1000);
 
 {% endwith %}
 {% endwith %}

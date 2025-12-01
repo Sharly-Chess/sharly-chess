@@ -881,7 +881,7 @@ class IndexAdminController(BaseAdminController):
         plugins_by_federation: dict[str | None, list[Plugin]] = defaultdict(list)
 
         for plugin in plugin_manager.all_plugins:
-            federation = getattr(plugin, 'federation', None)
+            federation = plugin.federation
             if federation:
                 plugins_by_federation[federation].append(plugin)
             else:

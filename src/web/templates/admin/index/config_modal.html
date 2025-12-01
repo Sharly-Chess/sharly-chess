@@ -114,7 +114,7 @@
                     {% for federation, plugins in federation_plugins.items() %}
                         <div class="ms-4">
                             <div class="text-body-secondary fw-bold text-uppercase pb-1">
-                                {{ federation }} ({{ plugins[0].federation }})
+                                {{ sharly_chess_config.federations[federation] }} ({{ plugins[0].federation }})
                             </div>
                             <div class="row gx-3 d-fex flex-column gap-2">
                                 {% for plugin in plugins %}
