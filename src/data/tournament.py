@@ -43,7 +43,7 @@ from database.sqlite.event.event_store import (
 from plugins.utils import PluginData
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.datetime import format_date_range, format_date
+from utils.date_time import format_date_range, format_date
 from utils.enum import (
     BoardColor,
     PlayerGender,

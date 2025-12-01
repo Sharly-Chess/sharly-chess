@@ -29,7 +29,7 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.client_tracker import ClientTracker
 from data.player import Federation, Club
-from utils.datetime import format_date, format_date_range, date_format
+from utils.date_time import format_date, format_date_range, date_format
 from web.messages import Message
 from web.session import SessionHandler
 from web.utils import RequestUtils
