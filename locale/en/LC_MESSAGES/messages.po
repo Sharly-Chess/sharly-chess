@@ -3158,6 +3158,9 @@ msgstr ""
 msgid "Only required for users that need to connect to the server."
 msgstr ""
 
+msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
+msgstr ""
+
 msgid "Open Admin Interface"
 msgstr ""
 
@@ -5539,7 +5542,13 @@ msgstr "Y"
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
 
+msgid "YYYY or {date_format}"
+msgstr ""
+
 msgid "YYYY-MM-DD"
+msgstr ""
+
+msgid "YYYY/MM/DD"
 msgstr ""
 
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"

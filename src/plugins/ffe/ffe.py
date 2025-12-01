@@ -467,10 +467,14 @@ class FfePlugin(Plugin):
                     )
             if not stored_player.date_of_birth or (
                 ffe_stored_player.date_of_birth
-                and stored_player.date_of_birth.year
-                == ffe_stored_player.date_of_birth.year
+                and (
+                    not stored_player.year_of_birth
+                    or stored_player.year_of_birth
+                    == ffe_stored_player.date_of_birth.year
+                )
             ):
                 stored_player.date_of_birth = ffe_stored_player.date_of_birth
+                stored_player.year_of_birth = None
             stored_player.comment = ffe_stored_player.comment
             stored_player.club = ffe_stored_player.club
             stored_player.plugin_data[self.id] = copy.copy(

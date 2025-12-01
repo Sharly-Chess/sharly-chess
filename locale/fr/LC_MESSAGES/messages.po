@@ -3158,6 +3158,9 @@ msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autr
 msgid "Only required for users that need to connect to the server."
 msgstr "Uniquement requis pour les utilisateur·ices devant se connecter au serveur."
 
+msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
+msgstr "Seule l'année de naissance est nécessaire pour la plupart des tournois. Il est donc recommandé de ne demander que l'année de naissance de vos joueur·euses afin de respecter leur vie privée."
+
 msgid "Open Admin Interface"
 msgstr "Ouvrir l'interface d'administration"
 
@@ -5539,8 +5542,14 @@ msgstr "O"
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "An."
 
+msgid "YYYY or {date_format}"
+msgstr "AAAA ou {date_format}"
+
 msgid "YYYY-MM-DD"
 msgstr "AAAA-MM-JJ"
+
+msgid "YYYY/MM/DD"
+msgstr "AAAA/MM/JJ"
 
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "Année de naissance"

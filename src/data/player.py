@@ -18,6 +18,7 @@ from database.sqlite.event.event_store import (
 from plugins.manager import plugin_manager
 from plugins.utils import PluginData
 from utils import Utils
+from utils.datetime import format_date
 from utils.enum import (
     PlayerGender,
     PlayerTitle,
@@ -102,7 +103,17 @@ class Player:
 
     @property
     def year_of_birth(self) -> int:
-        return self.date_of_birth.year if self.date_of_birth else 0
+        if self.date_of_birth:
+            return self.date_of_birth.year
+        return self.stored_player.year_of_birth or 0
+
+    @property
+    def date_or_year_of_birth_str(self) -> str:
+        if self.date_of_birth:
+            return format_date(self.date_of_birth)
+        if self.year_of_birth:
+            return str(self.year_of_birth)
+        return ''
 
     @property
     def gender(self) -> PlayerGender:
@@ -463,24 +474,16 @@ class TournamentPlayer(Player):
                 if k is not None:
                     return k, False
 
-        # Make a best guess
+        # Make the best guess according to Section B-02-8.3.3 of the FIDE handbook
         if self.rating_used_by_fide.type != PlayerRatingType.FIDE:
-            return (40, True)
+            return 40, True
         if self.rating_used_by_fide.value > 2400:
-            return (10, True)
-        if isinstance(self.date_of_birth, date):
-            today = date.today()
-            age = (
-                today.year
-                - self.date_of_birth.year
-                - (
-                    (today.month, today.day)
-                    < (self.date_of_birth.month, self.date_of_birth.day)
-                )
-            )
-            if age < 18:
-                return (40, True)
-        return (20, True)
+            return 10, True
+        if self.year_of_birth:
+            age = date.today().year - self.year_of_birth
+            if age <= 18 and self.rating_used_by_fide.value < 2300:
+                return 40, True
+        return 20, True
 
     @property
     def first_fide_rating(self) -> tuple[int | None, str | None]:
@@ -617,7 +620,11 @@ class TournamentPlayer(Player):
                             round=round_nb,
                         )
                     )
-
+        trf_dob = ''
+        if self.date_of_birth:
+            trf_dob = self.date_of_birth.strftime('%Y/%m/%d')
+        elif self.year_of_birth:
+            trf_dob = f'{self.year_of_birth}/00/00'
         return TrfPlayer(
             startrank=self.pairing_number,
             name=f'{self.last_name}, {self.first_name or ""}'[:32],
@@ -626,9 +633,7 @@ class TournamentPlayer(Player):
             rating=self.rating,
             fed=self.federation.name,
             id=self.fide_id,
-            birthdate=(
-                self.date_of_birth.strftime('%Y/%m/%d') if self.date_of_birth else ''
-            ),
+            birthdate=trf_dob,
             points=self.points_after(after_round),
             rank=self.rank,
             games=games,

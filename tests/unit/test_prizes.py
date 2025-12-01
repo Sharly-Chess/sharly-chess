@@ -140,23 +140,15 @@ class PrizesTestCase(TestCase):
             id=None,
             first_name='A',
             last_name='B' + str(elo),
-            date_of_birth=date(year_of_birth, 1, 1),
+            year_of_birth=year_of_birth,
             gender=gender,
-            fide_id=None,
             federation=federation,
             title=PlayerTitle.NONE,
-            mail=None,
-            phone=None,
-            comment=None,
-            owed=0,
-            paid=0,
             ratings={
                 rating: PlayerRating.from_type(elo, rating_type).stored_value
                 for rating in TournamentRating
             },
             club=club,
-            fixed=False,
-            check_in=False,
             plugin_data={'ffe': {'league': ffe_league}},
         )
 

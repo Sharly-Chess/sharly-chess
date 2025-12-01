@@ -1045,6 +1045,7 @@ class EventDatabase(MigrationDatabase):
             date_of_birth=cls.load_optional_date_from_database_field(
                 row['date_of_birth']
             ),
+            year_of_birth=row['year_of_birth'],
             gender=row['gender'],
             mail=row['mail'],
             phone=row['phone'],
@@ -1065,9 +1066,7 @@ class EventDatabase(MigrationDatabase):
         )
 
     def load_stored_players(self) -> list[StoredPlayer]:
-        self.execute(
-            ('SELECT `player`.* FROM `player`'),
-        )
+        self.execute('SELECT `player`.* FROM `player`')
         stored_players: list[StoredPlayer] = []
         for row in self.fetchall():
             player = self._row_to_stored_player(row)
@@ -1094,6 +1093,7 @@ class EventDatabase(MigrationDatabase):
                 'club',
                 'fixed',
                 'check_in',
+                'year_of_birth',
             ],
         ) | {
             'date_of_birth': cls.dump_date_to_database_field(

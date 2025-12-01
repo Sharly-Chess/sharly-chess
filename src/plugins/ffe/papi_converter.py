@@ -450,7 +450,7 @@ class PapiConverter:
                 raise_exception(
                     'birthDate',
                     _('Invalid date format [{date}] (expected: {format})').format(
-                        date=papi_player.birthDate, format='DD/MM/YYYY'
+                        date=papi_player.birthDate, format=_('DD/MM/YYYY')
                     ),
                 )
 
@@ -855,13 +855,15 @@ class PapiConverter:
         if manual_tie_break_value is not None:
             # The relative order of the players is stored in the fixed table field with values above 1000
             fixed_board = manual_tie_break_value + 1000
-
+        dob: date | None = None
+        if tournament_player.date_of_birth:
+            dob = tournament_player.date_of_birth
+        elif tournament_player.year_of_birth:
+            dob = date(tournament_player.year_of_birth, 1, 1)
         papi_player = PapiPlayer(
             lastName=tournament_player.last_name,
             firstName=tournament_player.first_name,
-            birthDate=tournament_player.date_of_birth.strftime(PAPI_DATE_FORMAT)
-            if tournament_player.date_of_birth
-            else None,
+            birthDate=dob.strftime(PAPI_DATE_FORMAT) if dob else None,
             category=PapiPlayerCategory.get_outer_value(tournament_player.category),
             gender=PapiPlayerGender.get_outer_value(tournament_player.gender),
             email=None if anonymize_player_data else tournament_player.mail,

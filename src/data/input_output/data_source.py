@@ -52,19 +52,18 @@ class PlayerComparator(ABC):
 
 class FidePlayerComparator(PlayerComparator):
     def match_date_differs(self) -> bool:
+        assert self.match_player is not None
         src_date = self.player.date_of_birth
-        match_date = self.match_player.date_of_birth if self.match_player else None
-        if src_date is None:
-            return match_date is not None
-        if match_date is None:
+        src_year = self.player.year_of_birth
+        match_date = self.match_player.date_of_birth
+        match_year = self.match_player.year_of_birth
+        if not match_date and not match_year:
             return False
-        if src_date.year != match_date.year:
+        if not src_date and not src_year:
             return True
-        if (match_date.month, match_date.day) == (1, 1):
-            return False
-        if (src_date.month, src_date.day) == (match_date.month, match_date.day):
-            return False
-        return True
+        if src_date and match_date:
+            return src_date != match_date
+        return bool(match_date) or src_year != match_year
 
     @cached_property
     def diff_field_ids(self) -> list[str] | None:
@@ -162,6 +161,7 @@ class FidePlayerComparator(PlayerComparator):
         if field_id in field_ids:
             if self.match_date_differs():
                 stored_player.date_of_birth = match_stored_player.date_of_birth
+                stored_player.year_of_birth = match_stored_player.year_of_birth
         field_id: str = 'fide_id'
         if field_id in field_ids:
             match_fide_id = match_stored_player.fide_id
