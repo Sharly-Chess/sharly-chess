@@ -35,7 +35,7 @@ from utils.date_formatter import DateFormatter
 from utils.enum import Result
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredConfig
-from utils.date_time import DateFormatterManager
+from utils.datetime import DateFormatterManager
 
 if TYPE_CHECKING:
     from data.player import Federation

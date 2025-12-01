@@ -21,7 +21,7 @@ from plugins.chessevent.tournament_importer.options import (
     ChessEventTournamentOption,
 )
 from plugins.chessevent.utils import ChessEventUtils
-from utils.date_time import format_timestamp_date_time
+from utils.datetime import format_timestamp_date_time
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,

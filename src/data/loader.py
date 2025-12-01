@@ -24,7 +24,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import EventMetadata
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.date_time import get_date_timestamp, format_timestamp_date_time
+from utils.datetime import get_date_timestamp, format_timestamp_date_time
 
 logger: Logger = get_logger()
 

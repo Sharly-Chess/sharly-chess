@@ -46,7 +46,7 @@ from database.sqlite.event.event_store import (
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
 from plugins.manager import plugin_manager
-from utils.date_time import format_timestamp_time
+from utils.datetime import format_timestamp_time
 
 if TYPE_CHECKING:
     from data.loader import EventBackup

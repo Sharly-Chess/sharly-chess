@@ -18,7 +18,7 @@ from data.board import PlayerRatingType
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
-from utils.date_time import (
+from utils.datetime import (
     format_timestamp_date,
     format_date_range,
     format_date,

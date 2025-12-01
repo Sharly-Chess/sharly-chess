@@ -18,7 +18,7 @@ from database.sqlite.event.event_store import (
 from plugins.manager import plugin_manager
 from plugins.utils import PluginData
 from utils import Utils
-from utils.date_time import format_date
+from utils.datetime import format_date
 from utils.enum import (
     PlayerGender,
     PlayerTitle,
