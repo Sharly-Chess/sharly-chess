@@ -13,7 +13,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.screen_set import ScreenSet
 from data.timer import Timer
-from utils.datetime import format_timestamp_date_time
+from utils.date_time import format_timestamp_date_time
 from utils.enum import ScreenType
 from database.sqlite.event.event_store import StoredScreen
 

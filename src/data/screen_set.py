@@ -8,7 +8,7 @@ from _weakref import ReferenceType
 from common.i18n import _
 from data.board import Board
 from data.player import TournamentPlayer
-from utils.datetime import format_timestamp_date_time
+from utils.date_time import format_timestamp_date_time
 from utils.enum import ScreenType
 from database.sqlite.event.event_store import StoredScreenSet
 
