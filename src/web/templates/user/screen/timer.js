@@ -3,11 +3,11 @@
 {% with color_3_r=timer.color_3_rgb.0, color_3_g=timer.color_3_rgb.1, color_3_b=timer.color_3_rgb.2 %}
 {% with delay_1=timer.delays.1, delay_2=timer.delays.2, delay_3=timer.delays.3 %}
 
-const timer = document.getElementById('timer');
-const timer_clock = document.getElementById('timer-clock');
-const timer_text = document.getElementById('timer-text');
+var timer = document.getElementById('timer');
+var timer_clock = document.getElementById('timer-clock');
+var timer_text = document.getElementById('timer-text');
 
-const polyglot = new Polyglot({
+var polyglot = new Polyglot({
     locale: '{{ locale }}',
     phrases: {
         'seconds': '{{ _('<smart_count> second |||| <smart_count> seconds') }}',
