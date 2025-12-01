@@ -16,7 +16,7 @@ from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.utils import PluginUtils
-from utils.datetime import format_timestamp_date_time
+from utils.date_time import format_timestamp_date_time
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,

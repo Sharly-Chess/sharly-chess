@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Optional, Literal
 
 from database.sqlite.event.event_store import StoredBoard
 from database.sqlite.event.event_database import EventDatabase
-from utils.datetime import format_timestamp_date_time
+from utils.date_time import format_timestamp_date_time
 from utils.enum import Result, PlayerRatingType
 
 if TYPE_CHECKING:

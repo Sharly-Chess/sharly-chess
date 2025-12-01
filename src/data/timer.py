@@ -10,7 +10,7 @@ from common import RGB, hexa_to_rgb
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.event.event_store import StoredTimerHour, StoredTimer
-from utils.datetime import (
+from utils.date_time import (
     format_timestamp_date_time,
     format_timestamp_date,
     format_timestamp_time,
