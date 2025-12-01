@@ -270,7 +270,7 @@ class PapiRound:
         if (
             pairing.result == Result.NO_RESULT and not pairing.board
         ) or pairing.result == Result.REST_GAME:
-            papi_color = PapiColor.UNPAIRED
+            papi_color = PapiColor.BYE
         elif pairing.result == Result.PAIRING_ALLOCATED_BYE and pab_value != Result.WIN:
             # Since Papi does not support custom PAB values, we convert these case to a Bye
             papi_color = PapiColor.BYE
