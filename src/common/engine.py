@@ -14,7 +14,10 @@ from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
-from antivirus import detect_antivirus_and_add_exclusion, search_missing_files
+from antivirus.control import search_missing_files
+from antivirus.detect import detect
+from antivirus.programs.antivirus import Antivirus
+from antivirus.protect import protect
 from common import (
     SHARLY_CHESS_VERSION,
     TEST_ENV,
@@ -526,7 +529,11 @@ class Engine:
 
                 if platform.system() == 'Windows':
                     new_version_dir.mkdir()
-                    detect_antivirus_and_add_exclusion(folder=new_version_dir)
+                    detected_antivirus_programs: list[Antivirus] = detect()
+                    protect(
+                        detected_antivirus_programs=detected_antivirus_programs,
+                        folder=new_version_dir,
+                    )
                     with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
                         zip_ref.extractall(new_version_dir)
                     if error_message := search_missing_files(

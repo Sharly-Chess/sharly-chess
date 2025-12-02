@@ -6,6 +6,11 @@ import warnings
 
 from pathvalidate import validate_filepath, ValidationError
 
+from antivirus.control import search_missing_files
+from antivirus.detect import detect
+from antivirus.programs.antivirus import Antivirus
+from antivirus.protect import protect
+
 # Nuclear option: Override warnings.warn to block specific messages
 # warnings.filterwarnings simply would not work
 _original_warn = warnings.warn
@@ -87,7 +92,6 @@ try:
         set_logging_config,
     )
     from gui.server_gui_toga import SharlyChessServerToga
-    from antivirus import search_missing_files, detect_antivirus_and_add_exclusion
     from web.server_engine import ServerEngine
 
     logger = get_logger()
@@ -210,7 +214,8 @@ try:
         messagebox.showerror('Sharly Chess startup error', error_message)
         root.destroy()
         sys.exit(1)
-    detect_antivirus_and_add_exclusion(folder=Path())
+    detected_antivirus_programs: list[Antivirus] = detect()
+    protect(detected_antivirus_programs=detected_antivirus_programs, folder=Path())
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):
         # Create and run the Toga app - this should block until the app exits
