@@ -70,13 +70,13 @@
     <div id="top-nav-wrapper" class="pt-0" style="background-color: {{ screen.background_color }}">
         {% if rotator and rotator.timer and not rotator.timer.error %}
             {% with timer = rotator.timer %}
-                <script>{% include 'screen/timer.js' %}</script>
                 {% include 'screen/timer.html' %}
+                <script>{% include 'screen/timer.js' %}</script>
             {% endwith %}
         {% elif screen.timer and not screen.timer.error %}
             {% with timer = screen.timer %}
-                <script>{% include 'screen/timer.js' %}</script>
                 {% include 'screen/timer.html' %}
+                <script>{% include 'screen/timer.js' %}</script>
             {% endwith %}
         {% endif %}
         <div id="top-nav-content">
