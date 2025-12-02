@@ -1,12 +1,9 @@
-import json
+import re
 from logging import Logger
 from pathlib import Path
 
-from antivirus.programs.windows import WindowsAntivirus
-from antivirus.uac import UACWrapper
-from common import DEVEL_ENV
+from antivirus.programs.windows import WindowsAntivirus, WinRegistry
 from common.logger import get_logger
-from common.tool_installer import UACInstaller
 
 logger: Logger = get_logger()
 
@@ -28,32 +25,46 @@ class Avast(WindowsAntivirus):
             ],
         )
 
+    @staticmethod
+    def _get_exclusions() -> list[str]:
+        """Returns all the Avast exclusions."""
+        exclusions: list[str] = []
+        value: str = WinRegistry.get_hklm_value(
+            r'SOFTWARE\Avast Software\Avast\properties\exclusions\Global',
+            'ExcludeFiles',
+        )
+        if value:
+            for string_part in value.split(';'):
+                if matches := re.match(r'^"([^"]+)"$', string_part):
+                    exclusions.append(matches.group(1))
+                else:
+                    logger.debug(f'Unrecognised string [{string_part}]')
+        if exclusions:
+            logger.debug('Avast exclusions are:')
+            for exclusion in exclusions:
+                logger.debug(f'- {exclusion}')
+        else:
+            logger.debug('No Avast exclusions found.')
+        return exclusions
+
     def run(
         self,
         folder: Path,
     ) -> None:
-        # There is no way like with Windows Defender to know if the Sharly Chess folder
-        # already belongs to the Avast exclusions. So the best we can do is always calling
-        # UAC and marking the folder as excluded not to do it twice (if the user removes
-        # the exclusion we assume (s)he knows what (s)he does).
-        marker_file: Path = self.tmp_dir / f'{self.name}.json'
+        self._get_exclusions()
         if not folder.is_absolute():
             folder = folder.resolve()
-        if marker_file.is_file():
-            with open(marker_file, 'r', encoding='utf-8') as file:
-                marked_folder: str = json.load(file)
-                if marked_folder == str(folder):
-                    logger.debug(
-                        'Folder [%s] has already been add to the Avast exclusions.',
-                        folder,
-                    )
-                    return
-        if UACInstaller().is_installed:
-            logger.info(
-                f'Calling Sharly Chess UAC to add folder [{folder}] to the Avast exclusions...'
-            )
-            UACWrapper().avast_exclude_sharly_chess_folder(folder)
-        elif DEVEL_ENV:
-            logger.info(
-                'Sharly Chess UAC not installed yet, can not add Sharly Chess folder to the Avast exclusions.'
-            )
+        lower_folder: str = str(folder).lower()
+        for exclusion in self._get_exclusions():
+            if lower_folder.startswith(exclusion):
+                logger.info(
+                    f'Sharly Chess folder [{folder}] belongs to the Avast exclusions.'
+                )
+                return
+        logger.warning(
+            f'========================================================================================\n'
+            f'Sharly Chess folder [{folder}] belongs to the Avast exclusions.\n'
+            f'You should add an exception in Avast to prevent you from arbitrary Avast file deletions.\n'
+            f'Please refer to https://sharly-chess.com/avast to learn how to add an exception in Avast.\n'
+            f'========================================================================================'
+        )

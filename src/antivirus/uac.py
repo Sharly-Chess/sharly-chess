@@ -53,13 +53,3 @@ class UACWrapper:
             folder,
             '--windows-defender-exclude',
         )
-
-    def avast_exclude_sharly_chess_folder(
-        self,
-        folder: Path,
-    ):
-        """Calls the Sharly Chess UAC to add an Avast exclusion on the given folder."""
-        self._exclude_sharly_chess_folder(
-            folder,
-            '--avast-exclude',
-        )

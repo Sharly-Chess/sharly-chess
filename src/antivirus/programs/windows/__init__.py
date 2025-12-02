@@ -21,7 +21,7 @@ class WinregistryException(Exception):
     pass
 
 
-class WinRegistryUtils:
+class WinRegistry:
     @classmethod
     def _set_value(
         cls,
