@@ -3,10 +3,8 @@
 {% with color_3_r=timer.color_3_rgb.0, color_3_g=timer.color_3_rgb.1, color_3_b=timer.color_3_rgb.2 %}
 {% with delay_1=timer.delays.1, delay_2=timer.delays.2, delay_3=timer.delays.3 %}
 
-var timer = document.getElementById('timer');
-var timer_clock = document.getElementById('timer-clock');
-var timer_text = document.getElementById('timer-text');
-
+var timer;
+var timerColor;
 var polyglot = new Polyglot({
     locale: '{{ locale }}',
     phrases: {
@@ -24,17 +22,13 @@ var polyglot = new Polyglot({
 });
 
 function update_timer_values(clock_html, text_html, color) {
-	$('.timer-wrapper').removeClass('d-none');
-	if (timer_clock.innerHTML != clock_html) {
-		timer_clock.innerHTML = clock_html;
-	}
-	if (timer.style.backgroundColor != color) {
-		timer.style.backgroundColor = color;
-	}
-	if (timer_text.innerHTML != text_html) {
-		timer_text.innerHTML = text_html;
-	}
+	$('#timer-wrapper').removeClass('d-none');
+    $('#timer-clock').text(clock_html);
+    $('#timer-text').text(text_html);
+    timerColor = color;
+    $('#timer').css('background-color', color);
 }
+
 function two_digits(n) {
 	return ('0' + n).slice(-2);
 }
@@ -114,15 +108,17 @@ function update_timer() {
 		return;
 	}
 	{% if timer_hour.last_valid %}
-		$('.timer-wrapper').addClass('d-none');
+		$('#timer-wrapper').addClass('d-none');
 		return;
 	{% endif %}
   {% endif %}
 {% endfor %}
 }
 
-update_timer();
-setInterval('update_timer();', 1000);
+$(document).ready(function(){
+    if (!timer) timer = setInterval('update_timer();', 1000);
+    update_timer();
+});
 
 {% endwith %}
 {% endwith %}
