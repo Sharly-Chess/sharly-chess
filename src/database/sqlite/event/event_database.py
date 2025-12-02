@@ -46,7 +46,7 @@ from database.sqlite.event.event_store import (
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
 from plugins.manager import plugin_manager
-from utils.date_time import format_timestamp_time
+from utils.datetime import format_timestamp_time
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
@@ -694,14 +694,6 @@ class EventDatabase(MigrationDatabase):
         return self._write_stored_timer(stored_timer)
 
     def delete_stored_timer(self, timer_id: int):
-        # NOTE (Molrn) The table definition of `family` and `screen` are missing
-        # the `ON DELETE SET NULL` clause, so it has to be done manually
-        self.execute(
-            'UPDATE `family` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,)
-        )
-        self.execute(
-            'UPDATE `screen` SET `timer_id` = NULL WHERE `timer_id` = ?;', (timer_id,)
-        )
         self.execute('DELETE FROM `timer` WHERE id = ?;', (timer_id,))
 
     # ---------------------------------------------------------------------------------
@@ -1957,6 +1949,7 @@ class EventDatabase(MigrationDatabase):
             delay=row['delay'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
+            timer_id=row['timer_id'],
         )
 
     def load_stored_rotators(self) -> list[StoredRotator]:
@@ -1979,6 +1972,7 @@ class EventDatabase(MigrationDatabase):
                 'delay',
                 'message_default',
                 'message_text',
+                'timer_id',
             ],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
@@ -2000,6 +1994,7 @@ class EventDatabase(MigrationDatabase):
                 'delay',
                 'message_default',
                 'message_text',
+                'timer_id',
             ],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)

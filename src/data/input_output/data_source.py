@@ -16,7 +16,7 @@ from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database.databases import LocalSourcePlayerDatabase
 from plugins.manager import plugin_manager
-from utils.date_time import format_timestamp_date_time
+from utils.datetime import format_timestamp_date_time
 from utils.entity import IdentifiableEntity
 from utils.enum import TournamentRating
 

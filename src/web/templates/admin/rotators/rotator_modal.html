@@ -1,5 +1,6 @@
 <div
     class="modal-dialog modal-dialog-scrollable admin-rotator-edit-modal"
+    style="--bs-modal-width: min(90vw, 500px);"
 >
     <div class="modal-content">
         <div class="modal-header">
@@ -33,20 +34,16 @@
                 hx-indicator="#please-wait"
             >
                 <div class="row gy-2 gx-3">
-                    <div class="d-flex">
+                    <div class="col-12">
                         {{ admin_macros.switch_input(
                             name='public',
                             label='',
+                            tooltip_text=_('Only allowed users can view private rotators.'),
                             placeholder=_('Define as public'),
                             data=data, errors=errors
                         ) }}
-                        <i class="bi bi-info-circle-fill"
-                            {{ macros.tooltip_attributes(
-                                'info', _('Only allowed users can view private rotators.'), 'top'
-                            ) }}
-                        ></i>
                     </div>
-                    <div class="col-12 col-md-6">
+                    <div class="col-12">
                         {{ admin_macros.text_input(
                             name='name',
                             label=_('%(string)s:', string=_('Name')),
@@ -55,7 +52,7 @@
                         ) }}
                     </div>
 
-                    <div class="col-12 col-md-6">
+                    <div class="col-12">
                         {{ admin_macros.number_input(
                             name='delay',
                             label=_('Delay (seconds):'),
@@ -63,6 +60,14 @@
                             tooltip_text=_('The rotating delay between two screens.'),
                             data=data, errors=errors,
                             min=1
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        {{ admin_macros.select_input(
+                            name='timer_id',
+                            label=_('Timer:'),
+                            select_options=timer_options,
+                            data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12">

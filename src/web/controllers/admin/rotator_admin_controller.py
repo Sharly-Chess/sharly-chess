@@ -83,6 +83,7 @@ class RotatorAdminController(BaseEventAdminController):
                 'delay': stored_rotator.delay,
                 'message_text_checkbox': stored_rotator.message_default,
                 'message_text': stored_rotator.message_text,
+                'timer_id': stored_rotator.timer_id,
             }
         )
 
@@ -105,8 +106,10 @@ class RotatorAdminController(BaseEventAdminController):
     # Modals
     # -------------------------------------------------------------------------
 
-    @staticmethod
+    @classmethod
     def _rotator_form_modal_context(
+        cls,
+        web_context: RotatorAdminWebContext,
         action: FormAction,
         data: dict[str, str],
         errors: dict[str, str] | None = None,
@@ -118,11 +121,13 @@ class RotatorAdminController(BaseEventAdminController):
                 'delay': None,
                 'message_text_checkbox': True,
                 'message_text': '',
+                'timer_id': None,
             }
         )
         return {
             'modal': 'rotator',
             'action': action,
+            'timer_options': cls._get_timer_options(web_context.get_admin_event()),
             'data': default_data | data,
             'errors': errors or {},
         }
@@ -178,7 +183,7 @@ class RotatorAdminController(BaseEventAdminController):
         web_context = RotatorAdminWebContext(request)
         name = web_context.get_admin_event().get_unused_rotator_name()
         template_context = self._rotator_form_modal_context(
-            FormAction.CREATE, {'name': name}
+            web_context, FormAction.CREATE, {'name': name}
         )
         return self._admin_event_rotator_render(web_context, template_context)
 
@@ -193,7 +198,9 @@ class RotatorAdminController(BaseEventAdminController):
         web_context = RotatorAdminWebContext(request)
         rotator = web_context.get_admin_rotator()
         data = self._rotator_form_data_from_rotator(rotator)
-        template_context = self._rotator_form_modal_context(FormAction.UPDATE, data)
+        template_context = self._rotator_form_modal_context(
+            web_context, FormAction.UPDATE, data
+        )
         return self._admin_event_rotator_render(web_context, template_context)
 
     @get(
@@ -209,7 +216,9 @@ class RotatorAdminController(BaseEventAdminController):
         rotator = web_context.get_admin_rotator()
         data = self._rotator_form_data_from_rotator(rotator)
         data |= {'name': event.get_unused_rotator_name(rotator.name)}
-        template_context = self._rotator_form_modal_context(FormAction.CLONE, data)
+        template_context = self._rotator_form_modal_context(
+            web_context, FormAction.CLONE, data
+        )
         return self._admin_event_rotator_render(web_context, template_context)
 
     @get(
@@ -272,6 +281,7 @@ class RotatorAdminController(BaseEventAdminController):
             delay=delay,
             message_default=WebContext.form_data_to_bool(data, 'message_text_checkbox'),
             message_text=WebContext.form_data_to_str(data, 'message_text'),
+            timer_id=WebContext.form_data_to_int(data, 'timer_id'),
         )
         return stored_rotator, errors
 
@@ -295,7 +305,9 @@ class RotatorAdminController(BaseEventAdminController):
         if not stored_rotator:
             return self._admin_event_rotator_render(
                 web_context,
-                self._rotator_form_modal_context(FormAction.CREATE, data, errors),
+                self._rotator_form_modal_context(
+                    web_context, FormAction.CREATE, data, errors
+                ),
             )
         event = web_context.get_admin_event()
         event.create_rotator(stored_rotator)
@@ -326,7 +338,9 @@ class RotatorAdminController(BaseEventAdminController):
         if not stored_rotator:
             return self._admin_event_rotator_render(
                 web_context,
-                self._rotator_form_modal_context(FormAction.CLONE, data, errors),
+                self._rotator_form_modal_context(
+                    web_context, FormAction.CLONE, data, errors
+                ),
             )
         event = web_context.get_admin_event()
         cloned_rotator = web_context.get_admin_rotator()
@@ -355,22 +369,22 @@ class RotatorAdminController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = RotatorAdminWebContext(request)
-        new_stored_rotator, errors = self._read_rotator_form_data(
+        stored_rotator, errors = self._read_rotator_form_data(
             data, web_context, FormAction.UPDATE
         )
-        if not new_stored_rotator:
+        if not stored_rotator:
             return self._admin_event_rotator_render(
                 web_context,
-                self._rotator_form_modal_context(FormAction.UPDATE, data, errors),
+                self._rotator_form_modal_context(
+                    web_context, FormAction.UPDATE, data, errors
+                ),
             )
         event = web_context.get_admin_event()
-        stored_rotator = web_context.get_admin_rotator().stored_rotator
-        stored_rotator.public = new_stored_rotator.public
-        stored_rotator.name = new_stored_rotator.name
-        stored_rotator.delay = new_stored_rotator.delay
-        stored_rotator.message_default = new_stored_rotator.message_default
-        stored_rotator.message_text = new_stored_rotator.message_text
+        rotator = web_context.get_admin_rotator()
+        stored_rotator.id = rotator.id
+        stored_rotator.stored_rotating_screens = rotator.stored_rotating_screens
         event.update_rotator(stored_rotator)
+        rotator.stored_rotator = stored_rotator
         Message.success(
             request,
             _('Rotator [{rotator}] has been updated.').format(

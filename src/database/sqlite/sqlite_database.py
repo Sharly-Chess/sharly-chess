@@ -56,8 +56,8 @@ class SQLiteDatabase:
             self.cursor.execute('PRAGMA busy_timeout=5000')
 
             if self.write:
-                if self.enable_foreign_keys:
-                    self.cursor.execute('PRAGMA foreign_keys=ON')
+                fk_status = 'ON' if self.enable_foreign_keys else 'OFF'
+                self.cursor.execute(f'PRAGMA foreign_keys={fk_status}')
                 self.cursor.execute('PRAGMA journal_mode=DELETE')
                 self.cursor.execute('BEGIN IMMEDIATE')
 

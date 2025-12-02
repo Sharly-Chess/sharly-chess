@@ -18,7 +18,7 @@ from data.board import PlayerRatingType
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
-from utils.date_time import (
+from utils.datetime import (
     format_timestamp_date,
     format_date_range,
     format_date,
@@ -881,7 +881,7 @@ class IndexAdminController(BaseAdminController):
         plugins_by_federation: dict[str | None, list[Plugin]] = defaultdict(list)
 
         for plugin in plugin_manager.all_plugins:
-            federation = getattr(plugin, 'federation', None)
+            federation = plugin.federation
             if federation:
                 plugins_by_federation[federation].append(plugin)
             else:
