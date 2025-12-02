@@ -61,9 +61,7 @@ class Avast(WindowsAntivirus):
                 )
                 return
         logger.error(
-            '========================================================================================\n'
-            f'Sharly Chess folder [{folder}] does not belong to the Avast exclusions.\n'
-            'You should add an exception in Avast to prevent you from arbitrary Avast file deletions.\n'
-            'Please refer to https://sharly-chess.com/antivirus/avast to learn how to add an exception in Avast.\n'
-            '========================================================================================'
+            f'Sharly Chess folder [{folder}] does not belong to the Avast path exceptions.\n'
+            'You should add a path exception in Avast to prevent you from arbitrary Avast file deletions.\n'
+            'Please refer to https://sharly-chess.com/antivirus/avast to learn how to add a path exception in Avast.\n'
         )
