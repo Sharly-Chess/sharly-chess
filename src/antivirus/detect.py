@@ -12,7 +12,7 @@ logger: Logger = get_logger()
 
 def detect() -> list[Antivirus]:
     """Return known antivirus programs running on the server."""
-    if os.getenv('TEST_ENV') != 'true' and Path(sys.argv[0]).stem != 'pytest':
+    if os.getenv('TEST_ENV') == 'true' or Path(sys.argv[0]).stem == 'pytest':
         return []
     match platform.system():
         case 'Windows':

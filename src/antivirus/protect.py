@@ -14,7 +14,7 @@ def protect(
     folder: Path,
 ):
     """Protect Sharly Chess from the given running antivirus programs (adds exclusions for the given folder when possible)."""
-    if os.getenv('TEST_ENV') != 'true' and Path(sys.argv[0]).stem != 'pytest':
+    if os.getenv('TEST_ENV') == 'true' or Path(sys.argv[0]).stem == 'pytest':
         return
     for detected_antivirus_program in detected_antivirus_programs:
         logger.debug('Running action for [%s]...', detected_antivirus_program.name)
