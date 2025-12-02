@@ -1072,6 +1072,9 @@ msgstr "Comment"
 msgid "Comment:"
 msgstr ""
 
+msgid "Comments *** COMMENTS FOR TABLE HEADER"
+msgstr "Comments"
+
 msgid "Complementary pairings"
 msgstr ""
 

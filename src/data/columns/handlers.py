@@ -60,6 +60,7 @@ class PlayerColumnHandler:
         column_types += [
             pt.PaidColumn,
             pt.OwedColumn,
+            pt.CommentsColumn,
         ]
         return self.get_columns(column_types)
 
