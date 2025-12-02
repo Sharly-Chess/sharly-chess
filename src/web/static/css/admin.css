@@ -94,6 +94,10 @@
     color: white;
 }
 
+.pairing-modal .berger-number-input .pw-input-group:has(input[type="number"]) {
+    width: auto;
+}
+
 [data-bs-theme=dark] table.prominent td.bye {
     color: var(--bs-secondary-color);
 }
