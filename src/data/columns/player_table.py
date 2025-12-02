@@ -276,19 +276,6 @@ class OwedColumn(TournamentPlayerTableColumn):
         return 'text-center'
 
 
-class CommentsColumn(TournamentPlayerTableColumn):
-    @property
-    def header_content(self) -> str:
-        return _('Comments *** COMMENTS FOR TABLE HEADER')
-
-    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.comment or ''
-
-    @property
-    def shared_classes(self) -> str:
-        return 'text-center'
-
-
 class PlayerColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:

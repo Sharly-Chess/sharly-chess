@@ -624,6 +624,19 @@ class FfeLeagueTableColumn(TournamentPlayerTableColumn):
         return 'text-center'
 
 
+class FfeLicenceTypeTableColumn(TournamentPlayerTableColumn):
+    @property
+    def header_content(self) -> str:
+        return _('Lic. *** LICENCE FOR TABLE HEADER')
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        return FFEUtils.get_player_plugin_data(tournament_player).ffe_licence.short_name
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
+
 class FfeIdDatasheetColumn(DatasheetColumn):
     @property
     def header_content(self) -> str:
