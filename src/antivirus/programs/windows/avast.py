@@ -51,7 +51,6 @@ class Avast(WindowsAntivirus):
         self,
         folder: Path,
     ) -> None:
-        self._get_exclusions()
         if not folder.is_absolute():
             folder = folder.resolve()
         lower_folder: str = str(folder).lower()
@@ -61,10 +60,10 @@ class Avast(WindowsAntivirus):
                     f'Sharly Chess folder [{folder}] belongs to the Avast exclusions.'
                 )
                 return
-        logger.warning(
-            f'========================================================================================\n'
-            f'Sharly Chess folder [{folder}] belongs to the Avast exclusions.\n'
-            f'You should add an exception in Avast to prevent you from arbitrary Avast file deletions.\n'
-            f'Please refer to https://sharly-chess.com/avast to learn how to add an exception in Avast.\n'
-            f'========================================================================================'
+        logger.error(
+            '========================================================================================\n'
+            f'Sharly Chess folder [{folder}] does not belong to the Avast exclusions.\n'
+            'You should add an exception in Avast to prevent you from arbitrary Avast file deletions.\n'
+            'Please refer to https://sharly-chess.com/antivirus/avast to learn how to add an exception in Avast.\n'
+            '========================================================================================'
         )
