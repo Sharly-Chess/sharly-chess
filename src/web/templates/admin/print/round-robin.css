@@ -18,7 +18,7 @@
 .rr-table .result { text-align: center; }
 
 .rr-table td.self-game {
-    background-color: #555;
+    background-color: #555 !important;
 }
 
 .rr-table tr:first-of-type td.self-game {
