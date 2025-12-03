@@ -25,7 +25,7 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from plugins.utils import PluginData, Plugin
 from utils import Utils
-from utils.datetime import format_date, format_date_range, format_timestamp_date_time
+from utils.date_time import format_date, format_date_range, format_timestamp_date_time
 from utils.enum import (
     Result,
     RoleType,
