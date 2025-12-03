@@ -85,7 +85,7 @@
                             <button
                                 type="submit"
                                 form="modal-form"
-                                class="text-nowrap white btn btn-primary"
+                                class="log-button text-nowrap white btn btn-primary"
                             >
                                 <i class="bi-person-check-fill pe-1"></i>
                                 {{ _('Log in') }}
@@ -108,7 +108,7 @@
                             <button
                                 type="submit"
                                 form="modal-form"
-                                class="text-nowrap white btn btn-primary"
+                                class="log-button text-nowrap white btn btn-primary"
                             >
                                 <i class="bi-person-fill-x pe-1"></i>
                                 {{ _('Log out') }}
@@ -177,4 +177,9 @@
     </div>
 </div>
 
-<script>requestRefresh()</script>
+<script>
+    requestRefresh();
+    $('.log-button').click(() => {
+        refreshRequested = false;
+    });
+</script>
