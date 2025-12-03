@@ -34,6 +34,13 @@ body {
     z-index: 5;
 }
 
+.sidebar h4 {
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .compact-sidebar #main-wrapper {
     --side-bar-width: 50px;
 }
