@@ -263,8 +263,8 @@ msgstr ""
 msgid "Leagues"
 msgstr ""
 
-msgid "Lic."
-msgstr ""
+msgid "Lic. *** LICENCE FOR TABLE HEADER"
+msgstr "Lic."
 
 msgid "Licence no. *** LICENCE NUMBER"
 msgstr "Licence no."
