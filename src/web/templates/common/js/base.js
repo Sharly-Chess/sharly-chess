@@ -313,10 +313,11 @@ function getAirDatePickerSelectedDates(
     rangeSeparator,
     valueToDate,
     dateRegex,
-    timeRegex = /\d{2}:\d{2}$/,
+    datetimeRegex,
 ) {
-    if (inputType === 'time') {
-        if (timeRegex.test(value)) return ['1970-01-01 ' + value];
+    if (inputType === 'datetime') {
+        console.log(value, datetimeRegex.test(value), valueToDate(value));
+        if (datetimeRegex.test(value)) return [valueToDate(value)];
     } else if (inputType === 'date') {
         if (dateRegex.test(value)) return [valueToDate(value)];
     } else if (inputType === 'date-range') {

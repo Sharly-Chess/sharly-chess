@@ -2,8 +2,6 @@ import shutil
 import time
 from collections import defaultdict
 from collections.abc import Iterator
-from contextlib import suppress
-from datetime import date
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
@@ -46,7 +44,6 @@ from database.sqlite.event.event_store import (
 from database.sqlite.event import migrations
 from database.sqlite.migration_database import MigrationDatabase
 from plugins.manager import plugin_manager
-from utils.date_time import format_timestamp_time
 
 if TYPE_CHECKING:
     from data.loader import EventBackup
@@ -427,15 +424,13 @@ class EventDatabase(MigrationDatabase):
     # StoredTimerHour
     # ---------------------------------------------------------------------------------
 
-    @staticmethod
-    def _row_to_stored_timer_hour(row: dict[str, Any]) -> StoredTimerHour:
+    @classmethod
+    def _row_to_stored_timer_hour(cls, row: dict[str, Any]) -> StoredTimerHour:
         return StoredTimerHour(
             id=row['id'],
             uniq_id=row['uniq_id'],
             timer_id=row['timer_id'],
-            order=row['order'],
-            date_str=row['date_str'],
-            time_str=row['time_str'],
+            triggered_at=cls.load_datetime_from_database_field(row['triggered_at']),
             text_before=row['text_before'],
             text_after=row['text_after'],
         )
@@ -450,163 +445,55 @@ class EventDatabase(MigrationDatabase):
             return self._row_to_stored_timer_hour(row)
         return None
 
-    def get_stored_timer_next_hour_order(self, timer_id: int) -> int:
-        self.execute(
-            'SELECT MAX(`order`) AS order_max FROM `timer_hour` WHERE `timer_id` = ?',
-            (timer_id,),
-        )
-        row: dict[str, Any] = self.fetchone()
-        return (row['order_max'] if row['order_max'] else 0) + 1
-
-    def get_stored_timer_next_round(self, timer_id: int) -> int:
-        self.execute(
-            'SELECT `uniq_id` FROM `timer_hour` WHERE `timer_id` = ?',
-            (timer_id,),
-        )
-        highest_round: int = 0
-        for row in self.fetchall():
-            with suppress(ValueError):
-                highest_round = max(highest_round, int(row['uniq_id']))
-        return highest_round + 1
-
     def load_stored_timer_hours(self, timer_id: int) -> Iterator[StoredTimerHour]:
         self.execute(
-            'SELECT * FROM `timer_hour` WHERE `timer_id` = ? ORDER BY `order`',
+            'SELECT * FROM `timer_hour` WHERE `timer_id` = ? ORDER BY `triggered_at`',
             (timer_id,),
         )
         yield from map(self._row_to_stored_timer_hour, self.fetchall())
 
-    def _write_stored_timer_hour(
-        self,
-        stored_timer_hour: StoredTimerHour,
-    ) -> StoredTimerHour:
-        fields: list[str] = [
-            'timer_id',
-            'uniq_id',
-            'order',
-            'date_str',
-            'time_str',
-            'text_before',
-            'text_after',
-        ]
-        params: list = [
-            stored_timer_hour.timer_id,
-            stored_timer_hour.uniq_id,
-            stored_timer_hour.order,
-            stored_timer_hour.date_str,
-            stored_timer_hour.time_str,
-            stored_timer_hour.text_before,
-            stored_timer_hour.text_after,
-        ]
-        if stored_timer_hour.id is None:
-            protected_fields = [f'`{f}`' for f in fields]
-            self.execute(
-                f'INSERT INTO `timer_hour`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-                tuple(params),
-            )
-            timer_hour_id: int | None = self._last_inserted_id()
-            if timer_hour_id is None:
-                raise RuntimeError('Timer hour insertion failed')
-            fetched_stored_timer_hour = self.get_stored_timer_hour(timer_hour_id)
-        else:
-            field_sets = [f'`{f}` = ?' for f in fields]
-            params += [stored_timer_hour.id]
-            self.execute(
-                f'UPDATE `timer_hour` SET {", ".join(field_sets)} WHERE `id` = ?',
-                tuple(params),
-            )
-            fetched_stored_timer_hour = self.get_stored_timer_hour(stored_timer_hour.id)
-        if fetched_stored_timer_hour is None:
-            raise RuntimeError('Timer hour write failed')
-        return fetched_stored_timer_hour
+    def _get_stored_timer_hour_fields(
+        self, stored_timer_hour: StoredTimerHour
+    ) -> dict[str, Any]:
+        return self._get_fields_dict(
+            stored_timer_hour,
+            [
+                'timer_id',
+                'uniq_id',
+                'triggered_at',
+                'text_before',
+                'text_after',
+            ],
+        ) | {
+            'triggered_at': self.dump_datetime_to_database_field(
+                stored_timer_hour.triggered_at
+            ),
+        }
 
-    def reorder_stored_timer_hours(
-        self,
-        timer_hour_ids: list[int],
-    ):
-        order: int = 1
-        for timer_hour_id in timer_hour_ids:
-            self.execute(
-                'UPDATE `timer_hour` SET `order` = ? WHERE `id` = ?',
-                (
-                    order,
-                    timer_hour_id,
-                ),
-            )
-            order += 1
-
-    def update_stored_timer_hour(
-        self,
-        stored_timer_hour: StoredTimerHour,
-    ) -> StoredTimerHour:
+    def update_stored_timer_hour(self, stored_timer_hour: StoredTimerHour):
+        fields = self._get_stored_timer_hour_fields(stored_timer_hour)
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_timer_hour.id is not None
-        return self._write_stored_timer_hour(stored_timer_hour)
-
-    def add_stored_timer_hour(
-        self,
-        timer_id: int,
-        set_datetime: bool = False,
-    ) -> StoredTimerHour:
-        stored_timer_hour: StoredTimerHour = StoredTimerHour(
-            id=None,
-            timer_id=timer_id,
-            uniq_id=str(self.get_stored_timer_next_round(timer_id)),
-            order=self.get_stored_timer_next_hour_order(timer_id),
+        self.execute(
+            f'UPDATE `timer_hour` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_timer_hour.id,),
         )
-        if set_datetime:
-            stored_timer_hour.date_str = self.dump_date_to_database_field(date.today())
-            stored_timer_hour.time_str = format_timestamp_time(time.time())
-        return self._write_stored_timer_hour(stored_timer_hour)
 
-    def clone_stored_timer_hour(self, timer_hour_id: int, timer_id: int | None = None):
-        stored_timer_hour = self.get_stored_timer_hour(timer_hour_id)
-        if stored_timer_hour is None:
-            raise RuntimeError('Unable to fetch timer hour to clone')
-        stored_timer_hour.id = None
-        if timer_id is None:
-            round_: int = 0
-            try:
-                round_ = int(stored_timer_hour.uniq_id)
-            except ValueError:
-                pass
-            stored_timer_hour.order = self.get_stored_timer_next_hour_order(
-                stored_timer_hour.timer_id
-            )
-            if round_:
-                stored_timer_hour.uniq_id = str(
-                    self.get_stored_timer_next_round(stored_timer_hour.timer_id)
-                )
-            else:
-                self.execute(
-                    'SELECT uniq_id FROM `timer_hour` WHERE `timer_id` = ?',
-                    (stored_timer_hour.timer_id,),
-                )
-                uniq_ids: list[str] = [row['uniq_id'] for row in self.fetchall()]
-                uniq_id: str = f'{stored_timer_hour.uniq_id}-clone'
-                clone_index: int = 1
-                stored_timer_hour.uniq_id = uniq_id
-                while stored_timer_hour.uniq_id in uniq_ids:
-                    clone_index += 1
-                    stored_timer_hour.uniq_id = f'{uniq_id}{clone_index}'
-        else:
-            stored_timer_hour.timer_id = timer_id
-        return self._write_stored_timer_hour(stored_timer_hour)
+    def add_stored_timer_hour(self, stored_timer_hour: StoredTimerHour) -> int:
+        fields = self._get_stored_timer_hour_fields(stored_timer_hour)
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `timer_hour`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        id_ = self._last_inserted_id()
+        if id_ is None:
+            raise RuntimeError('Timer hour insertion failed')
+        return id_
 
-    def delete_stored_timer_hour(self, timer_hour_id: int, timer_id: int):
-        self.execute('DELETE FROM `timer_hour` WHERE `id` = ?;', (timer_hour_id,))
-        order: int = 1
-        for stored_timer_hour in self.load_stored_timer_hours(timer_id):
-            self.execute(
-                'UPDATE `timer_hour` SET `order` = ? WHERE `id` = ?',
-                (
-                    order,
-                    stored_timer_hour.id,
-                ),
-            )
-            order += 1
-
-    def _delete_stored_timer_hours(self, timer_id: int):
-        self.execute('DELETE FROM `timer_hour` WHERE `timer_id` = ?;', (timer_id,))
+    def delete_stored_timer_hour(self, timer_hour_id: int):
+        self.execute('DELETE FROM `timer_hour` WHERE `id` = ?', (timer_hour_id,))
 
     # ---------------------------------------------------------------------------------
     # StoredTimer
@@ -649,49 +536,35 @@ class EventDatabase(MigrationDatabase):
             )
             yield stored_timer
 
-    def _write_stored_timer(
-        self,
-        stored_timer: StoredTimer,
-    ) -> StoredTimer:
+    def add_stored_timer(self, stored_timer: StoredTimer) -> int:
         fields = {
             'name': stored_timer.name,
             'colors': self.dump_to_json_database_timer_colors(stored_timer.colors),
             'delays': self.dump_to_json_database_timer_delays(stored_timer.delays),
         }
-        if stored_timer.id is None:
-            protected_fields = [f'`{f}`' for f in fields]
-            self.execute(
-                f'INSERT INTO `timer`({", ".join(protected_fields)}) VALUES ({", ".join(["?"] * len(fields))})',
-                tuple(fields.values()),
-            )
-            timer_id: int | None = self._last_inserted_id()
-            if timer_id is None:
-                raise RuntimeError('Timer insertion failed')
-            fetched_stored_timer = self.get_stored_timer(timer_id)
-        else:
-            field_sets = [f'`{f}` = ?' for f in fields]
-            self.execute(
-                f'UPDATE `timer` SET {", ".join(field_sets)} WHERE `id` = ?',
-                tuple(fields.values()) + (stored_timer.id,),
-            )
-            fetched_stored_timer = self.get_stored_timer(stored_timer.id)
-        if fetched_stored_timer is None:
-            raise RuntimeError('Timer write failed')
-        return fetched_stored_timer
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `timer`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        timer_id = self._last_inserted_id()
+        if timer_id is None:
+            raise RuntimeError('Timer insertion failed')
+        return timer_id
 
-    def add_stored_timer(
-        self,
-        stored_timer: StoredTimer,
-    ) -> StoredTimer:
-        assert stored_timer.id is None, f'stored_timer.id={stored_timer.id}'
-        return self._write_stored_timer(stored_timer)
-
-    def update_stored_timer(
-        self,
-        stored_timer: StoredTimer,
-    ) -> StoredTimer:
+    def update_stored_timer(self, stored_timer: StoredTimer):
+        fields = {
+            'name': stored_timer.name,
+            'colors': self.dump_to_json_database_timer_colors(stored_timer.colors),
+            'delays': self.dump_to_json_database_timer_delays(stored_timer.delays),
+        }
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_timer.id is not None
-        return self._write_stored_timer(stored_timer)
+        self.execute(
+            f'UPDATE `timer` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_timer.id,),
+        )
 
     def delete_stored_timer(self, timer_id: int):
         self.execute('DELETE FROM `timer` WHERE id = ?;', (timer_id,))

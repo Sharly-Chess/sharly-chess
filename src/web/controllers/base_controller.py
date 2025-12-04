@@ -29,7 +29,7 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.client_tracker import ClientTracker
 from data.player import Federation, Club
-from utils.date_time import format_date, format_date_range, date_format
+from utils.date_time import format_date, format_date_range, format_datetime
 from web.messages import Message
 from web.session import SessionHandler
 from web.utils import RequestUtils
@@ -247,12 +247,28 @@ class WebContext:
         data[field] = data.get(field, '').strip()
         if not data[field]:
             return None
+        formatter = SharlyChessConfig().date_formatter
         try:
-            return datetime.strptime(data[field], date_format()).date()
+            return datetime.strptime(data[field], formatter.python_format).date()
         except ValueError:
             raise FormError(
-                _('Invalid date format (expected: {format}).').format(
-                    format=SharlyChessConfig().date_formatter.name
+                _('Invalid format (expected: {format}).').format(
+                    format=formatter.humanized_format
+                )
+            )
+
+    @staticmethod
+    def form_data_to_datetime(data: dict[str, str], field: str) -> datetime | None:
+        data[field] = data.get(field, '').strip()
+        formatter = SharlyChessConfig().date_formatter
+        if not data[field]:
+            return None
+        try:
+            return datetime.strptime(data[field], formatter.datetime_python_format)
+        except ValueError:
+            raise FormError(
+                _('Invalid format (expected: {format}).').format(
+                    format=formatter.datetime_humanized_format
                 )
             )
 
@@ -265,24 +281,25 @@ class WebContext:
             return None
         formatter = SharlyChessConfig().date_formatter
         separator = formatter.range_separator
+        date_format = formatter.python_format
         if separator not in data[field]:
             try:
-                date_ = datetime.strptime(data[field], date_format()).date()
+                date_ = datetime.strptime(data[field], date_format).date()
                 return date_, date_
             except ValueError:
                 raise FormError(
-                    _('Invalid date format (expected: {format}).').format(
-                        format=formatter.name
+                    _('Invalid format (expected: {format}).').format(
+                        format=formatter.humanized_format
                     )
                 )
         start_date_str, stop_date_str = data[field].split(separator, 1)
         try:
-            start_date = datetime.strptime(start_date_str, date_format()).date()
-            stop_date = datetime.strptime(stop_date_str, date_format()).date()
+            start_date = datetime.strptime(start_date_str, date_format).date()
+            stop_date = datetime.strptime(stop_date_str, date_format).date()
         except ValueError:
             raise FormError(
-                _('Invalid date format (expected: {format}).').format(
-                    format=formatter.name + separator + formatter.name
+                _('Invalid format (expected: {format}).').format(
+                    format=formatter.range_humanized_format
                 )
             )
         if start_date > stop_date:
@@ -314,6 +331,8 @@ class WebContext:
             return str(value)
         if isinstance(value, float):
             return f'{value:.2f}'
+        if isinstance(value, datetime):
+            return format_datetime(value)
         if isinstance(value, date):
             return format_date(value)
         if isinstance(value, Path):

@@ -3,8 +3,9 @@ All the classes of this module are basic data classes stored in the event databa
 """
 
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, datetime
 from typing import Any
+
 
 from common.sharly_chess_config import SharlyChessConfig
 from utils.enum import Result
@@ -15,9 +16,7 @@ class StoredTimerHour:
     id: int | None
     uniq_id: str
     timer_id: int
-    order: int | None = None
-    date_str: str | None = None
-    time_str: str | None = None
+    triggered_at: datetime
     text_before: str | None = None
     text_after: str | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])
@@ -27,8 +26,8 @@ class StoredTimerHour:
 class StoredTimer:
     id: int | None
     name: str
-    colors: dict[int, str | None] | None
-    delays: dict[int, int | None] | None
+    colors: dict[int, str | None]
+    delays: dict[int, int | None]
     stored_timer_hours: list[StoredTimerHour] = field(
         default_factory=list[StoredTimerHour]
     )
@@ -355,8 +354,8 @@ class BaseStoredEvent:
     background_color: str | None = None
     record_illegal_moves: int | None = None
     rules: str | None = None
-    timer_colors: dict[int, str | None] | None = None
-    timer_delays: dict[int, int | None] | None = None
+    timer_colors: dict[int, str | None] = field(default_factory=dict[int, str | None])
+    timer_delays: dict[int, int | None] = field(default_factory=dict[int, str | None])
     message_text: str | None = None
     message_color: str | None = None
     message_background_color: str | None = None

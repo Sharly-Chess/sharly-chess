@@ -13,21 +13,30 @@
         <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ timer.colors[2] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes before', minutes=timer.delays[2]) }}</div></div>
         <div class="d-flex gap-2 align-items-center"><div style="background-color: {{ timer.colors[3] }}; width: 1rem; height: 1rem;"></div><div>{{ _('%(minutes)d minutes after', minutes=timer.delays[3]) }}</div></div>
         <hr/>
-        {% if timer.timer_hours_by_id|length > 0 %}
-            {% for timer_hour in timer.timer_hours_sorted_by_order %}
-                <div class="{% if timer_hour.error %}text-danger{% endif %}">
-                    {% if timer_hour.error %}<i class="bi-exclamation-triangle-fill"></i>{% endif %}
-                    {% if timer_hour.date_str %}{{ timer_hour.date_str }} {% endif %}
-                    {% if timer_hour.time_str %}{{ timer_hour.time_str }}{% else %}???{% endif %}
-                    {% if timer_hour.round %}{{ _('Round #%(round)d', round=timer_hour.round) }}{% else %}{{ timer_hour.uniq_id }}{% endif %}
-                </div>
-            {% endfor %}
-        {% else %}
+        {% if not timer.timer_hours %}
             <div class=" mb-2 text-danger">
                 <i class="bi-exclamation-triangle-fill pe-1"></i>
                 {{ _('No hours.') }}
             </div>
         {% endif %}
+        {% for date_str, timer_hours in timer.timer_hours_by_date_str.items() %}
+            {% if timer_hours|length == 1 %}
+                <div>
+                    <b>{{ timer_hours[0].triggered_at_str }} </b>
+                    {{ timer_hours[0].name }}
+                </div>
+            {% else %}
+                <b>{{ date_str }}</b>
+                {% for timer_hour in timer_hours %}
+                    <div class="d-flex gap-3 ms-2">
+                        <b class="text-end" style="min-width: 50px">
+                            {{ timer_hour.time_str }}
+                        </b>
+                        <span>{{ timer_hour.name }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
     </div>
 {% endblock %}
 
@@ -51,7 +60,7 @@
     <span {{ macros.tooltip_attributes('info', _('Edit the properties of the timer.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary"
-            hx-get="{{ url_for('admin-timer-modal', action='update', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
+            hx-get="{{ url_for('admin-timer-update-modal', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
             data-bs-toggle="modal"
@@ -63,7 +72,7 @@
     <span {{ macros.tooltip_attributes('info', _('Duplicate the timer.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-primary"
-            hx-get="{{ url_for('admin-timer-modal', action='clone', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
+            hx-get="{{ url_for('admin-timer-clone-modal', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
             data-bs-toggle="modal"
@@ -75,7 +84,7 @@
     <span {{ macros.tooltip_attributes('info', _('Delete the timer.'), 'top') }}>
         <button
             class="btn btn-sm btn-outline-danger"
-            hx-get="{{ url_for('admin-timer-modal', action='delete', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
+            hx-get="{{ url_for('admin-timer-delete-modal', event_uniq_id=admin_event.uniq_id, timer_id=timer.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
             data-bs-toggle="modal"

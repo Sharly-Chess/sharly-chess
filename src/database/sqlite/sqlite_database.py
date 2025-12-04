@@ -159,6 +159,14 @@ class SQLiteDatabase:
         return date_.strftime('%Y-%m-%d') if date_ else None
 
     @staticmethod
+    def load_datetime_from_database_field(data: str) -> datetime:
+        return datetime.strptime(data, '%Y-%m-%dT%H:%M')
+
+    @staticmethod
+    def dump_datetime_to_database_field(datetime_: datetime) -> str:
+        return datetime_.strftime('%Y-%m-%dT%H:%M')
+
+    @staticmethod
     def load_json_from_database_field(json_data: str | None, if_none=None) -> Any:
         """Decodes the JSON data `json_data` and returns the result.
         If `json_data` is None, returns `if_none`."""

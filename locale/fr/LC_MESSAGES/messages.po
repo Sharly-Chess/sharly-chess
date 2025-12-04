@@ -398,9 +398,6 @@ msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage du c
 msgid "Add a group to the list."
 msgstr "Ajouter un groupe à la liste"
 
-msgid "Add a hour"
-msgstr "Ajouter un horaire"
-
 msgid "Add a permission to the account."
 msgstr "Ajouter une permission au compte."
 
@@ -448,6 +445,9 @@ msgstr "Ajouter un tournoi à l'évènement."
 
 msgid "Add an account to the event."
 msgstr "Ajouter un compte à l'évènement."
+
+msgid "Add an hour to the timer."
+msgstr "Ajouter un horaire au chronomètre."
 
 msgid "Add families"
 msgstr "Ajouter des familles"
@@ -1219,6 +1219,9 @@ msgstr "Créer un pilote d'afficheurs"
 msgid "Create event"
 msgstr "Créer un évènement"
 
+msgid "Create hour"
+msgstr "Créer un horaire"
+
 msgid "Create permission"
 msgstr "Créer une permission"
 
@@ -1355,9 +1358,6 @@ msgstr "Date de naissance"
 
 msgid "Date of birth:"
 msgstr "Date de naissance :"
-
-msgid "Date:"
-msgstr "Date :"
 
 msgid "Dates"
 msgstr "Dates"
@@ -1586,9 +1586,6 @@ msgstr "Télécharger les vCards des joueur·euses (format VCF). Attention: les 
 msgid "Download tournament fees"
 msgstr "Télécharger les droits d'homologation"
 
-msgid "Drag the hours to order them."
-msgstr "Faites glisser les horaires pour les ordonner."
-
 msgid "Drag the sets to order them."
 msgstr "Faites glisser les ensembles pour les ordonner."
 
@@ -1712,7 +1709,7 @@ msgid "E.g.: Sharly Chess Club"
 msgstr "Ex. : Sharly Chess Club"
 
 msgid "E.g.: Start of check-in"
-msgstr "Ex. : Début du pointage :"
+msgstr "Ex. : Début du pointage"
 
 #, python-format
 msgid "E.g.: Start of check-in in %%s"
@@ -1763,6 +1760,9 @@ msgstr "Modifier le pilote d'afficheurs"
 
 msgid "Edit event"
 msgstr "Modifier l'évènement"
+
+msgid "Edit hour"
+msgstr "Modifier l'horaire"
 
 msgid "Edit permission"
 msgstr "Modifier la permission"
@@ -2261,11 +2261,11 @@ msgstr "Site web :"
 msgid "Hort system"
 msgstr "Système Hort"
 
-msgid "Hour [{uniq_id}] already exists."
-msgstr "L'horaire [{uniq_id}] existe déjà."
+msgid "Hour [{hour}] already exists."
+msgstr "L'horaire [{hour}] existe déjà."
 
-msgid "Hour:"
-msgstr "Horaire :"
+msgid "Hour [{hour}] has been created."
+msgstr "L'horaire [{hour}] a été créé."
 
 msgid "Hours"
 msgstr "Horaires"
@@ -2410,12 +2410,6 @@ msgstr "Numéro d'échiquier non valide [{fixed_board_str}]."
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
 msgstr "Couleur non valide [{color}] ([#RRGGBB] attendu)."
 
-msgid "Invalid date [{date_str}]."
-msgstr "Date non valide [{date_str}]."
-
-msgid "Invalid date and time [{datetime_str}]."
-msgstr "Date et heure non valides [{datetime_str}]."
-
 msgid "Invalid date format (expected: {format})."
 msgstr "Format de date invalide (attendu : {format})."
 
@@ -2434,8 +2428,8 @@ msgstr "Fédération [{federation}] non valide."
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr "Numéro d'échiquier [{fixed_board}] non valide."
 
-msgid "Invalid hour [{hour}] (before previous hour [{previous_hour}])."
-msgstr "Horaire non valide [{hour}] (avant l'horaire précédent [{previous_hour}])."
+msgid "Invalid format (expected: {format})."
+msgstr "Format invalide (attendu : {format})."
 
 msgid "Invalid locale [{locale}]."
 msgstr "Langue [{locale}] non valide."
@@ -2448,9 +2442,6 @@ msgstr "Mot de passe invalide."
 
 msgid "Invalid period:"
 msgstr "Période invalide :"
-
-msgid "Invalid time [{time_str}]."
-msgstr "Heure non valide [{time_str}]."
 
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
 msgstr "Type invalide [{type}] pour le champ [{field}] (attendu : {expected})."
@@ -2623,9 +2614,6 @@ msgstr "Gérer les groupes non-cumulables"
 
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr "Gérer les groupes de prix non-cumulables du tournoi (1 joueur·euse = 1 prix par groupe)."
-
-msgid "Mandatory for the first hour, optional for next hours."
-msgstr "Obligatoire pour le premier horaire, facultative pour les horaires suivants."
 
 msgid "Manual"
 msgstr "Manuel"
@@ -3013,9 +3001,6 @@ msgstr "Aucun évènement à venir."
 msgid "No updates found."
 msgstr "Aucun changement détecté."
 
-msgid "No valid hour defined."
-msgstr "Aucun horaire valide défini."
-
 msgid "No. *** NB FOR TABLE HEADER"
 msgstr "N°"
 
@@ -3060,6 +3045,9 @@ msgstr "Nov"
 
 msgid "November"
 msgstr "Novembre"
+
+msgid "Now"
+msgstr "Maintenant"
 
 msgid "Number"
 msgstr "Numéro"
@@ -3586,32 +3574,11 @@ msgstr "Veuillez choisir le tournoi."
 msgid "Please close the time control editor before saving."
 msgstr "Veuillez fermer l'éditeur de cadence avant d'enregistrer."
 
-msgid "Please enter a valid time."
-msgstr "Veuillez entrer une heure valide."
-
-msgid "Please enter the date of the first hour."
-msgstr "Veuillez entrer la date du premier horaire."
-
 msgid "Please enter the image URL."
 msgstr "Veuillez entrer l'URL de l'image."
 
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
-
-msgid "Please enter the round number or the hour ID."
-msgstr "Veuillez entrer le numéro de ronde ou l'identifiant de l'horaire."
-
-msgid "Please enter the text to display after the hour (mandatory except for rounds)."
-msgstr "Veuillez entrer le texte à afficher après l'horaire (obligatoire sauf pour les débuts de ronde)."
-
-msgid "Please enter the text to display before the hour (mandatory except for rounds)."
-msgstr "Veuillez entrer le texte à afficher avant l'horaire (obligatoire sauf pour les débuts de ronde)."
-
-msgid "Please enter the time."
-msgstr "Veuillez entrer l'heure."
-
-msgid "Please enter valid date and time."
-msgstr "Veuillez entrer une date et une heure valides."
 
 msgid "Please select a type of criterion."
 msgstr "Veuillez choisir un type de critère."
@@ -4050,15 +4017,18 @@ msgstr "La ronde %(round)d est terminée."
 msgid "Round #%(round)d is running."
 msgstr "La ronde %(round)d est en cours."
 
+msgid "Round #0 is forbidden."
+msgstr "La ronde n°0 est interdite."
+
+msgid "Round #{round}"
+msgstr "Ronde n°{round}"
+
 #, python-format
 msgid "Round %(round)d - Board %(board_number)d"
 msgstr "Ronde %(round)d – Echiquier %(board_number)d"
 
-msgid "Round number or text:"
-msgstr "Numéro de ronde ou texte :"
-
-msgid "Round numbers must be positive integers."
-msgstr "Les numéros de ronde doivent être des entiers positifs."
+msgid "Round number or name"
+msgstr "Numéro de ronde ou nom"
 
 msgid "Round performance indicators"
 msgstr "Indicateurs de performance pour la ronde"
@@ -4067,8 +4037,8 @@ msgid "Round skipped"
 msgstr "Absent·e"
 
 #, python-format
-msgid "Round {} started for %s"
-msgstr "Ronde {} commencée depuis %s"
+msgid "Round {} started for %%s"
+msgstr "Ronde {} commencée depuis %%s"
 
 msgid "Round-Robin"
 msgstr "Toutes rondes"
@@ -4118,9 +4088,6 @@ msgstr "Sa"
 
 msgid "Save"
 msgstr "Enregistrer"
-
-msgid "Save the hour or cancel."
-msgstr "Enregistrez l'horaire ou annulez."
 
 msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
@@ -4439,8 +4406,8 @@ msgid "Standard:"
 msgstr "Standard :"
 
 #, python-format
-msgid "Start of round {} in %s"
-msgstr "Début de la ronde {} dans %s"
+msgid "Start of round {} in %%s"
+msgstr "Début de la ronde {} dans %%s"
 
 msgid "Starting Sharly Chess server, Please wait…"
 msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
@@ -4549,9 +4516,6 @@ msgstr "La grille américaine montre tous les résultats des joueur·euses, tand
 
 msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
 msgstr "La monnaie utilisée pour représenter les prix (par défaut la monnaie de la fédération de l'évènement)."
-
-msgid "The date of the first hour is not defined (mandatory)."
-msgstr "La date du premier horaire n'est pas définie (obligatoire)."
 
 msgid "The default federation for your events."
 msgstr "La fédération par défaut pour vos évènements."
@@ -4788,6 +4752,12 @@ msgstr "Les valeurs à prendre en compte lors du calcul du départage."
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
 
+msgid "There already is an hour defined at this time."
+msgstr "Il y a déjà un horaire défini à cette heure-ci."
+
+msgid "There already is an hour for round #{round}."
+msgstr "Il y a déjà un horaire pour la ronde n°{round}."
+
 msgid "There are no pairings for this round (last round with pairings: #{round})."
 msgstr "Il n'y a pas d'appariement pour cette ronde (dernière ronde appariée : n°{round})."
 
@@ -4859,6 +4829,9 @@ msgstr "Ce champ ne peut être mis à jour après le début du tournoi."
 
 msgid "This field is not editable."
 msgstr "Ce champ n'est pas modifiable."
+
+msgid "This field is required (except for rounds)."
+msgstr "Ce champ est obligatoire (excepté pour les rondes)."
 
 msgid "This field is required."
 msgstr "Ce champ est obligatoire."
@@ -4951,9 +4924,6 @@ msgstr "Cadence"
 msgid "Time control:"
 msgstr "Cadence :"
 
-msgid "Time is not defined."
-msgstr "L'heure n'est pas définie."
-
 msgid "Time outside of event time range ({range})."
 msgstr "Horaire en dehors des horaires de l'évènement ({range})."
 
@@ -4974,9 +4944,6 @@ msgstr "Le chronomètre [{timer}] a été modifié."
 
 msgid "Timer defaults"
 msgstr "Paramètres par défaut des chronomètres"
-
-msgid "Timer hours"
-msgstr "Horaires du chronomètre"
 
 msgid "Timer:"
 msgstr "Chronomètre :"
@@ -5889,6 +5856,9 @@ msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] "{count} joueur·euse mis·e à jour."
 msgstr[1] "{count} joueur·euses mis·es à jour."
+
+msgid "{date_format} HH:MM"
+msgstr "{date_format} HH:MM"
 
 msgid "{days} days"
 msgstr "{days} jours"

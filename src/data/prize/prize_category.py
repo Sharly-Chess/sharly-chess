@@ -50,7 +50,6 @@ class PrizeCategory:
                     self.name,
                     e,
                 )
-                pass
         return criteria_by_id
 
     def _get_prizes_by_id(self) -> dict[int, Prize]:

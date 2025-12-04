@@ -648,3 +648,13 @@ class SessionHandler:
             ]
         except KeyError:
             return None
+
+    ADMIN_TIMER_ADD_OTHER_ACTIVE_KEY: str = 'admin_timer_add_other_active'
+
+    @classmethod
+    def set_session_admin_timer_add_other_active(cls, request: HTMXRequest, b: bool):
+        request.session[cls.ADMIN_TIMER_ADD_OTHER_ACTIVE_KEY] = b
+
+    @classmethod
+    def get_session_admin_timer_add_other_active(cls, request: HTMXRequest) -> bool:
+        return request.session.get(cls.ADMIN_TIMER_ADD_OTHER_ACTIVE_KEY, False)
