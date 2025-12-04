@@ -61,6 +61,7 @@
 - Fixed the usage of the `School Competitions` plugin (3.3.5)
 - Fixed no licence considered as expired licences on _Papi_ import (3.3.4)
 - Fixed FFE upload of Berger tournament with odd players (3.3.5)
+- Fixed Papi export of unpaired rounds (3.3.6)
 
 ## _Chess-Results_
 
