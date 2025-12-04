@@ -4449,7 +4449,7 @@ msgid "Su *** SUNDAY"
 msgstr "Di"
 
 msgid "Successfully logged in as [{account}]."
-msgstr "Connecté en tant que [{account}]."
+msgstr "Connecté·e en tant que [{account}]."
 
 msgid "Successfully logged out."
 msgstr "Déconnexion réussie."
