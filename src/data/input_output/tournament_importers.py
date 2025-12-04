@@ -2,6 +2,7 @@ import re
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from collections.abc import Callable
+from copy import copy
 from datetime import datetime, date
 
 import trf
@@ -111,8 +112,12 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         If tournament is provided, update this tournament, otherwise create a new one.
         Returns the ID of the tournament.
         Raises if the tournament already has players."""
+        existing_stored_tournament: StoredTournament | None = None
+        if tournament:
+            existing_stored_tournament = copy(tournament.stored_tournament)
+            existing_stored_tournament.stored_tournament_players = []
         stored_tournament, stored_players = self.load_stored_tournament(
-            event, tournament.stored_tournament if tournament else None
+            event, existing_stored_tournament
         )
         self.check_pairing_inconsistencies(stored_tournament)
         with EventDatabase(event.uniq_id, True) as database:
