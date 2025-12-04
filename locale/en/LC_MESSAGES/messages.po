@@ -4430,6 +4430,12 @@ msgstr ""
 msgid "Su *** SUNDAY"
 msgstr "Su"
 
+msgid "Successfully logged in as [{account}]."
+msgstr ""
+
+msgid "Successfully logged out."
+msgstr ""
+
 msgid "Sum of Buchholz"
 msgstr ""
 

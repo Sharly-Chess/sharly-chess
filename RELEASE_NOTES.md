@@ -4,6 +4,7 @@
 
 - Make the date format configurable (3.3.4)
 - Increase the timeout of database download requests (3.3.4)
+- Fixed unauthorized error on logout (3.3.6)
 
 ## Interface
 
