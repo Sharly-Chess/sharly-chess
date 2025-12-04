@@ -35,6 +35,13 @@ function closeTooltips () {
     $('body .tooltip-arrow').remove();
 }
 
+function closeAirPickers () {
+    if (!datePickers) return;
+    Object.values(datePickers).forEach((picker) => {
+        if (picker && !picker.isDestroyed) picker.hide();
+    });
+}
+
 // Enable Bootstrap tooltips cf https://getbootstrap.com/docs/5.3/components/tooltips/
 function activateTooltips () {
     if (typeof bootstrap !== 'undefined') {
@@ -133,6 +140,7 @@ window.addEventListener('htmx:afterSwap', function(event) {
     // Activate the tooltips after a swap
     activateTooltips();
     closeTooltips();
+    closeAirPickers();
 });
 
 window.addEventListener('htmx:afterSettle', function(event) {
@@ -316,7 +324,6 @@ function getAirDatePickerSelectedDates(
     datetimeRegex,
 ) {
     if (inputType === 'datetime') {
-        console.log(value, datetimeRegex.test(value), valueToDate(value));
         if (datetimeRegex.test(value)) return [valueToDate(value)];
     } else if (inputType === 'date') {
         if (dateRegex.test(value)) return [valueToDate(value)];
