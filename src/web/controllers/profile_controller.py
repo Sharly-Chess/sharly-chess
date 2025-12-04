@@ -6,7 +6,7 @@ from litestar import post, get
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template
+from litestar.response import Template, Redirect
 from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
@@ -17,7 +17,9 @@ from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebContext
 from web.controllers.base_controller import WebContext, BaseController
 from web.guards import EventGuard
+from web.messages import Message
 from web.session import SessionHandler
+from web.urls import admin_event_url
 
 
 class ProfileWebContext(BaseEventAdminWebContext):
@@ -92,7 +94,7 @@ class ProfileController(BaseController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template:
+    ) -> Template | Redirect:
         web_context = ProfileWebContext(request)
 
         errors: dict[str, str] = {}
@@ -156,14 +158,14 @@ class ProfileController(BaseController):
                             'Something went wrong. Please ask your administrator to recreate your account.'
                         )
                     else:
-                        SessionHandler.store_user_account(
+                        SessionHandler.store_user_account(request, admin_event, account)
+                        Message.success(
                             request,
-                            admin_event,
-                            account,
+                            _('Successfully logged in as [{account}].').format(
+                                account=account.full_name
+                            ),
                         )
-
-                        # Update the web context to reflect the login
-                        web_context = ProfileWebContext(request, reload_event=True)
+                        return Redirect(admin_event_url(request, event_uniq_id))
             except KeyError:
                 errors['account_id'] = _('Invalid account.')
 
@@ -181,21 +183,9 @@ class ProfileController(BaseController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> Template:
+    ) -> Redirect:
         web_context = ProfileWebContext(request)
-
-        assert web_context.admin_event is not None
-        SessionHandler.store_user_account(
-            request,
-            web_context.admin_event,
-            None,
-        )
-
-        # Update the web context to reflect the logout
-        web_context = ProfileWebContext(request, reload_event=True)
-
-        return self._render_profile_modal(web_context, data=data)
+        event = web_context.get_admin_event()
+        SessionHandler.store_user_account(request, event, None)
+        Message.success(request, _('Successfully logged out.'))
+        return Redirect(admin_event_url(request, event_uniq_id))
