@@ -54,15 +54,15 @@
 - Search accounts from the player databases (3.3.0)
 - Fixed the account duplication (3.3.3)
 
-## FFE
+## _FFE_
 
 - Added option to upload via the tournament card action menu (3.3.0)
 - Added a plugin to help manage school competitions in France (3.3.0)
 - Added colleges (in French: `Lycée`) to the list schools (3.3.1)
 - Fixed the usage of the `School Competitions` plugin (3.3.5)
 - Fixed no licence considered as expired licences on _Papi_ import (3.3.4)
-- Fixed FFE upload of Berger tournament with odd players (3.3.5)
-- Fixed Papi export of unpaired rounds (3.3.6)
+- Fixed _FFE_ upload of Berger tournament with odd players (3.3.5)
+- Fixed _Papi_ export of unpaired rounds (3.3.6)
 
 ## _Chess-Results_
 
