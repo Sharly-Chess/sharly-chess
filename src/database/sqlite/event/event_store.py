@@ -355,7 +355,7 @@ class BaseStoredEvent:
     record_illegal_moves: int | None = None
     rules: str | None = None
     timer_colors: dict[int, str | None] = field(default_factory=dict[int, str | None])
-    timer_delays: dict[int, int | None] = field(default_factory=dict[int, str | None])
+    timer_delays: dict[int, int | None] = field(default_factory=dict[int, int | None])
     message_text: str | None = None
     message_color: str | None = None
     message_background_color: str | None = None

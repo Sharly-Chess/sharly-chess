@@ -920,8 +920,7 @@ class EventDatabase(MigrationDatabase):
             title=row['title'],
             ratings=cls.set_dict_int_keys(
                 cls.load_json_from_database_field(row['ratings'])
-            )
-            or {},
+            ),
             fide_id=row['fide_id'],
             federation=row['federation'],
             club=row['club'],

@@ -173,13 +173,11 @@ class SQLiteDatabase:
         return json.loads(json_data) if json_data is not None else if_none
 
     @staticmethod
-    def set_dict_int_keys(string_dict: dict[str, Any] | None) -> dict[int, Any] | None:
+    def set_dict_int_keys(string_dict: dict[str, Any]) -> dict[int, Any]:
         """Maps the string keys to integer keys and returns the resulting dict.
         If `string_dict` is None, returns None."""
         # This method is needed because JSON turns all keys to strings
-        return (
-            None if string_dict is None else {int(k): v for k, v in string_dict.items()}
-        )
+        return {int(k): v for k, v in string_dict.items()}
 
     @staticmethod
     def dump_to_json_database_field(obj: Any, if_none=None) -> str | None:

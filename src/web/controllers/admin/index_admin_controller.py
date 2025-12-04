@@ -498,8 +498,16 @@ class IndexAdminController(BaseAdminController):
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
             # The following defaults are edited in other tabs.  We copy the values from the admin_event if it exists.
-            timer_colors=admin_event.stored_event.timer_colors if admin_event else None,
-            timer_delays=admin_event.stored_event.timer_delays if admin_event else None,
+            timer_colors=(
+                admin_event.timer_colors
+                if admin_event
+                else SharlyChessConfig().default_timer_colors
+            ),
+            timer_delays=(
+                admin_event.timer_delays
+                if admin_event
+                else SharlyChessConfig.default_timer_delays
+            ),
             background_color=admin_event.stored_event.background_color
             if admin_event
             else config.default_background_color,
