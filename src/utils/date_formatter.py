@@ -5,11 +5,40 @@ from utils.entity import IdentifiableEntity
 
 
 class DateFormatter(IdentifiableEntity, ABC):
+    @classmethod
+    def static_name(cls) -> str:
+        return cls._humanized_format()
+
+    @staticmethod
+    @abstractmethod
+    def _humanized_format() -> str:
+        """Localized and humanized format displayed to users."""
+
+    @property
+    def humanized_format(self) -> str:
+        return self._humanized_format()
+
+    @property
+    def datetime_humanized_format(self) -> str:
+        return _('{date_format} HH:MM').format(format=self.humanized_format)
+
+    @property
+    def range_humanized_format(self) -> str:
+        return self.humanized_format + self.range_separator + self.humanized_format
+
     @property
     @abstractmethod
     def python_format(self) -> str:
         """Format used to parse a string in python.
         https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes"""
+
+    @property
+    def time_python_format(self) -> str:
+        return '%H:%M'
+
+    @property
+    def datetime_python_format(self) -> str:
+        return self.python_format + ' ' + self.time_python_format
 
     @property
     @abstractmethod
@@ -21,6 +50,10 @@ class DateFormatter(IdentifiableEntity, ABC):
     @abstractmethod
     def regex(self) -> str:
         """Regex expression recognizing a string of the format."""
+
+    @property
+    def datetime_regex(self) -> str:
+        return self.regex.replace('$', r'\s\d{2}:\d{2}$')
 
     @property
     @abstractmethod
@@ -39,7 +72,7 @@ class ISODateFormatter(DateFormatter):
         return 'ISO'
 
     @staticmethod
-    def static_name() -> str:
+    def _humanized_format() -> str:
         return _('YYYY-MM-DD')
 
     @property
@@ -69,7 +102,7 @@ class EUDateFormatter(DateFormatter):
         return 'EU'
 
     @staticmethod
-    def static_name() -> str:
+    def _humanized_format() -> str:
         return _('DD/MM/YYYY')
 
     @property
@@ -90,12 +123,18 @@ class EUDateFormatter(DateFormatter):
 
     @property
     def value_to_date_js_function(self) -> str:
-        return (
-            '(value) => {'
-            '   const [day, month, year] = value.split("/");'
-            '   return new Date(+year, +month - 1, +day);'
-            '}'
-        )
+        return """
+            (value) => {
+
+                const [day, month, year] = value.split(' ')[0].split('/');
+                var hour = 0;
+                var minute = 0;
+                if (value.includes(':')) {
+                    [hour, minute] = value.split(' ')[1].split(':');
+                }
+                return new Date(+year, +month - 1, +day, +hour, +minute);
+            }
+            """
 
 
 class USDateFormatter(DateFormatter):
@@ -104,7 +143,7 @@ class USDateFormatter(DateFormatter):
         return 'US'
 
     @staticmethod
-    def static_name() -> str:
+    def _humanized_format() -> str:
         return _('MM/DD/YYYY')
 
     @property
@@ -125,9 +164,4 @@ class USDateFormatter(DateFormatter):
 
     @property
     def value_to_date_js_function(self) -> str:
-        return (
-            '(value) => {'
-            '   const [month, day, year] = value.split("/");'
-            '   return new Date(+year, +month - 1, +day);'
-            '}'
-        )
+        return '(value) => new Date(value)'

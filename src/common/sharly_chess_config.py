@@ -424,16 +424,6 @@ class SharlyChessConfig(metaclass=Singleton):
     # The default delay between pages on rotators (in seconds).
     default_rotator_delay: int = 1 if TEST_ENV else 15
 
-    @property
-    def default_timer_round_text_before(self) -> str:
-        """Returns the default text shown on timers before the start of a round."""
-        return _('Start of round {} in %s')
-
-    @property
-    def default_timer_round_text_after(self) -> str:
-        """Returns the default text shown on timers after the start of a round."""
-        return _('Round {} started for %s')
-
     # The delay before checking if the user index page has changed.
     user_index_update_delay: int = 1 if TEST_ENV else 10
 

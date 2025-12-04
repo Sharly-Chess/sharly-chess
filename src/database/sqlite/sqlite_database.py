@@ -159,19 +159,25 @@ class SQLiteDatabase:
         return date_.strftime('%Y-%m-%d') if date_ else None
 
     @staticmethod
+    def load_datetime_from_database_field(data: str) -> datetime:
+        return datetime.strptime(data, '%Y-%m-%dT%H:%M')
+
+    @staticmethod
+    def dump_datetime_to_database_field(datetime_: datetime) -> str:
+        return datetime_.strftime('%Y-%m-%dT%H:%M')
+
+    @staticmethod
     def load_json_from_database_field(json_data: str | None, if_none=None) -> Any:
         """Decodes the JSON data `json_data` and returns the result.
         If `json_data` is None, returns `if_none`."""
         return json.loads(json_data) if json_data is not None else if_none
 
     @staticmethod
-    def set_dict_int_keys(string_dict: dict[str, Any] | None) -> dict[int, Any] | None:
+    def set_dict_int_keys(string_dict: dict[str, Any]) -> dict[int, Any]:
         """Maps the string keys to integer keys and returns the resulting dict.
         If `string_dict` is None, returns None."""
         # This method is needed because JSON turns all keys to strings
-        return (
-            None if string_dict is None else {int(k): v for k, v in string_dict.items()}
-        )
+        return {int(k): v for k, v in string_dict.items()}
 
     @staticmethod
     def dump_to_json_database_field(obj: Any, if_none=None) -> str | None:

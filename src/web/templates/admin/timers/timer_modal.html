@@ -1,20 +1,11 @@
-<div
-    class="modal-dialog modal-dialog-scrollable admin-timer-edit-modal"
-    {% if action == 'delete' %}
-        style="--bs-modal-width: fit-content;"
-    {% endif %}
->
+<div class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {% if action in ['create', 'clone', ] %}
-                    {{ _('Create timer') }}
-                {% elif action == 'update' %}
+                {% if action == 'update' %}
                     {{ _('Edit timer') }}
-                {% elif action == 'delete' %}
-                    {{ _('Delete timer') }}
                 {% else %}
-                    ?
+                    {{ _('Create timer') }}
                 {% endif %}
             </h2>
         </div>
@@ -22,69 +13,66 @@
             <form
                 id="modal-form"
                 {% if action == 'create' %}
-                    hx-post="{{ url_for('admin-timer-' ~ action, event_uniq_id=admin_event.uniq_id) }}"
+                    hx-post="{{ url_for(
+                        'admin-timer-create', event_uniq_id=admin_event.uniq_id
+                    ) }}"
                 {% elif action == 'clone' %}
-                    hx-post="{{ url_for('admin-timer-' ~ action, event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id) }}"
+                    hx-post="{{ url_for(
+                        'admin-timer-clone',
+                        event_uniq_id=admin_event.uniq_id,
+                        timer_id=admin_timer.id,
+                    ) }}"
                 {% elif action == 'update' %}
-                    hx-patch="{{ url_for('admin-timer-' ~ action, event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id) }}"
-                {% elif action == 'delete' %}
-                    hx-delete="{{ url_for('admin-timer-' ~ action, event_uniq_id=admin_event.uniq_id, timer_id=admin_timer.id) }}"
-                {% else %}
-                    hx-get="{{ url_for('unknown-action-' ~ action) }}"
+                    hx-patch="{{ url_for(
+                        'admin-timer-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        timer_id=admin_timer.id,
+                    ) }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% if action == 'delete' %}
-                    <h4>
-                        {{ _('%(string)s: %(value)s', string=_('Timer'), value=admin_timer.name) }}
-                    </h4>
-                    <h4 class="text-danger">
-                        {{ _('Warning: the deletion is permanent!') }}
-                    </h4>
-                {% else %}
-                    <h4>
-                        {{ _('Properties') }}
-                    </h4>
-                    <div class="row gy-2 gx-3">
+                <h4>
+                    {{ _('Properties') }}
+                </h4>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.text_input(
+                            name='name',
+                            label=_('%(string)s:', string=_('Name')),
+                            placeholder=_('E.g.: %(string)s', string=_('My timer')),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <h4>
+                    {{ _('Colors and delays') }}
+                </h4>
+                <div class="row gy-2 gx-3">
+                    {% for num in [1, 2, 3] %}
                         <div class="col-12 col-md-6">
-                            {{ admin_macros.text_input(
-                                name='name',
-                                label=_('%(string)s:', string=_('Name')),
-                                placeholder=_('E.g.: %(string)s', string=_('My timer')),
+                            {{ admin_macros.color_input(
+                                name='color_'~num,
+                                label=_('Colour #%(num)d:', num=num),
+                                tooltip_text=timer_color_texts[num],
+                                default_checkbox=true,
+                                default_color=admin_event.timer_colors[num],
                                 data=data, errors=errors
                             ) }}
                         </div>
-                    </div>
-                    <h4>
-                        {{ _('Colors and delays') }}
-                    </h4>
-                    <div class="row gy-2 gx-3">
-                        {% for num in [1, 2, 3] %}
-                            <div class="col-12 col-md-6">
-                                {{ admin_macros.color_input(
-                                    name='color_'~num,
-                                    label=_('Colour #%(num)d:', num=num),
-                                    tooltip_text=timer_color_texts[num],
-                                    default_checkbox=true,
-                                    default_color=admin_event.timer_colors[num],
+
+                        <div class="col-12 col-md-6">
+                            {% with id='delay-'~num, name='delay_'~num %}
+                                {{ admin_macros.number_input(
+                                    name='delay_'~num,
+                                    label=_('Delay #%(num)d:', num=num),
+                                    placeholder=_('By default: %(minutes)d minutes', minutes=admin_event.timer_delays[num]),
                                     data=data, errors=errors
                                 ) }}
-                            </div>
-
-                            <div class="col-12 col-md-6">
-                                {% with id='delay-'~num, name='delay_'~num %}
-                                    {{ admin_macros.number_input(
-                                        name='delay_'~num,
-                                        label=_('Delay #%(num)d:', num=num),
-                                        placeholder=_('By default: %(minutes)d minutes', minutes=admin_event.timer_delays[num]),
-                                        data=data, errors=errors
-                                    ) }}
-                                {% endwith %}
-                            </div>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+                            {% endwith %}
+                        </div>
+                    {% endfor %}
+                </div>
             </form>
         </div>
         <div class="modal-footer">
@@ -99,20 +87,10 @@
             <button
                 type="submit"
                 form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                class="text-nowrap white btn btn-primary"
             >
-                {% if action in ['create', 'clone', ] %}
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Create') }}
-                {% elif action == 'update' %}
-                    <i class="bi-floppy-fill pe-1"></i>
-                    {{ _('Save') }}
-                {% elif action == 'delete' %}
-                    <i class="bi-trash pe-1"></i>
-                    {{ _('Delete') }}
-                {% else %}
-                    ?
-                {% endif %}
+                <i class="bi-floppy-fill pe-1"></i>
+                {{ _('Save') if action == 'update' else _('Create') }}
             </button>
         </div>
     </div>
