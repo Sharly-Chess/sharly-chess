@@ -481,7 +481,12 @@ class IndexAdminController(BaseAdminController):
 
         assert start_date is not None
         assert stop_date is not None
-
+        if admin_event:
+            timer_colors = admin_event.stored_event.timer_colors
+            timer_delays = admin_event.stored_event.timer_delays
+        else:
+            timer_colors = SharlyChessConfig.default_timer_colors  # type: ignore
+            timer_delays = SharlyChessConfig.default_timer_delays  # type: ignore
         stored_event = StoredEvent(
             uniq_id=uniq_id,
             name=name,
@@ -498,16 +503,8 @@ class IndexAdminController(BaseAdminController):
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
             # The following defaults are edited in other tabs.  We copy the values from the admin_event if it exists.
-            timer_colors=(
-                admin_event.timer_colors
-                if admin_event
-                else SharlyChessConfig().default_timer_colors
-            ),
-            timer_delays=(
-                admin_event.timer_delays
-                if admin_event
-                else SharlyChessConfig.default_timer_delays
-            ),
+            timer_colors=timer_colors,
+            timer_delays=timer_delays,
             background_color=admin_event.stored_event.background_color
             if admin_event
             else config.default_background_color,

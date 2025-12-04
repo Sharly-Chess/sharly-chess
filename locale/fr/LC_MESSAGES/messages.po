@@ -4027,8 +4027,8 @@ msgstr "Ronde n°{round}"
 msgid "Round %(round)d - Board %(board_number)d"
 msgstr "Ronde %(round)d – Echiquier %(board_number)d"
 
-msgid "Round number or name"
-msgstr "Numéro de ronde ou nom"
+msgid "Round number or text"
+msgstr "Numéro de ronde ou texte"
 
 msgid "Round performance indicators"
 msgstr "Indicateurs de performance pour la ronde"
