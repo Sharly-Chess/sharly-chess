@@ -4379,7 +4379,7 @@ msgid "Staff default configuration"
 msgstr "Staff configuré par défaut"
 
 msgid "Staff information"
-msgstr "Information"
+msgstr "Informations"
 
 msgid "Staff member roles"
 msgstr "Rôles"
@@ -4429,6 +4429,12 @@ msgstr "Préférence forte"
 
 msgid "Su *** SUNDAY"
 msgstr "Di"
+
+msgid "Successfully logged in as [{account}]."
+msgstr "Connecté·e en tant que [{account}]."
+
+msgid "Successfully logged out."
+msgstr "Déconnexion réussie."
 
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
