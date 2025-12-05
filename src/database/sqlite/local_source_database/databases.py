@@ -1,8 +1,9 @@
 import atexit
+import shutil
 import tempfile
 import time
 from abc import ABC, abstractmethod
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 import threading
 from sqlite3 import OperationalError, IntegrityError
@@ -10,7 +11,7 @@ from typing import override
 
 from packaging.version import Version
 
-from common import TMP_DIR
+from common import TMP_DIR, SharlyChessException
 from common.i18n import _, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -38,8 +39,11 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
     These databases are downloaded and stored locally as SQLite databases.
     They can be periodically updated, or notify the user when outdated."""
 
+    UPDATE_TIMEOUT = 10
+
     is_updating: bool = False
     update_status: bool | None = None
+    max_update_time: datetime | None = None
 
     def __init__(self, write: bool = False):
         super().__init__(self.file_path(), write)
@@ -58,6 +62,9 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 database.insert_stored_local_source_database(
                     self.stored_source_database
                 )
+        if self.max_update_time and datetime.now() > self.max_update_time:
+            logger.error(self.log_prefix + 'Update failed (timeout).')
+            self.stop_update(False)
 
     @staticmethod
     def _dir() -> Path:
@@ -204,14 +211,16 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             case _:
                 return _('{days} days ago').format(days=days_since_update)
 
-    @classmethod
-    def stop_update(cls, status: bool) -> None:
+    def stop_update(self, status: bool) -> None:
+        cls = self.__class__
         cls.is_updating = False
         cls.update_status = status
+        cls.max_update_time = None
+        logger.debug(self.log_prefix + f'Update stopped with status {int(status)}')
         # Only push the SSE event if the server is connected, otherwise we enter a loop where the client gets the SSE event,
         # re-requests the updated badge, fails dues to the lack of internet, and so on.
         if NetworkMonitor.connected():
-            cls.publish_database_status_updated()
+            self.publish_database_status_updated()
 
     @override
     def delete(self):
@@ -259,6 +268,10 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         set_locale(SharlyChessConfig().locale)
 
         self.__class__.is_updating = True
+        self.__class__.max_update_time = datetime.now() + timedelta(
+            minutes=self.UPDATE_TIMEOUT
+        )
+
         if not NetworkMonitor.connected():
             logger.warning(self.log_prefix + 'Not connected, impossible to update.')
             return self.stop_update(False)
@@ -288,18 +301,17 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                         source_file_path, new_database
                     )
                 if not success:
-                    tmp_file.unlink(missing_ok=True)
                     return self.stop_update(False)
-            except (OperationalError, IntegrityError) as ex:
+            except (OperationalError, IntegrityError, SharlyChessException) as ex:
                 logger.error(
                     self.log_prefix + 'Error while creating the database: %s.', ex
                 )
-                tmp_file.unlink(missing_ok=True)
                 return self.stop_update(False)
 
             # Copy the new database to its proper location
             self.file.unlink(missing_ok=True)
-            tmp_file.rename(self.file)
+            shutil.copy(tmp_file, self.file)
+            logger.debug(self.log_prefix + f'file moved to [{self.file}].')
 
         # Validate that the database file is actually a SQLite database before creating indexes
         try:
@@ -319,7 +331,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             return self.stop_update(False)
 
         self._create_indexes()
-
+        logger.debug(self.log_prefix + 'Indexes created.')
         self.stored_source_database.updated_at = time.time()
         with ConfigDatabase(write=True) as database:
             database.update_stored_local_source_database(self.stored_source_database)
