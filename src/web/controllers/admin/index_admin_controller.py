@@ -801,6 +801,34 @@ class IndexAdminController(BaseAdminController):
             )
         return ClientRedirect(redirect_to=admin_event_url(request, new_uniq_id))
 
+    @get(
+        path='/event-modal/share/{event_uniq_id:str}',
+        name='admin-event-share-modal',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_event_share_modal(
+        self, request: HTMXRequest, event_uniq_id: str
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        return HTMXTemplate(
+            template_name='admin/modals.html',
+            context=(
+                web_context.template_context
+                | {
+                    'modal': 'event-share',
+                    'data': WebContext.values_dict_to_form_data(
+                        {
+                            'include_players': True,
+                            'include_private_player_data': False,
+                            'include_connection_data': False,
+                        }
+                    ),
+                    'errors': {},
+                }
+            ),
+            re_target='#modal-wrapper',
+        )
+
     @post(
         path='/restore-archive/{archive_name:str}',
         name='admin-restore-archive',
