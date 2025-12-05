@@ -24,10 +24,9 @@ class TestTimersFunctionality:
         modal.get_by_test_id('name').fill(name)
         modal.locator('button[type=submit]').click()
 
-        hours_modal = page.locator('#admin-timer-hours-modal.modal-dialog')
+        hours_modal = page.locator('#admin-timer-hour-form-modal.modal-dialog')
         expect(hours_modal).to_be_visible()
-        TestUtils.button_by_text(hours_modal, 'Cancel').click()
-        TestUtils.button_by_text(hours_modal, 'Close').click()
+        TestUtils.button_by_text(hours_modal, 'Back').click()
 
         card = page.locator(f"div.card:has-text('{name}')")
         expect(card).to_be_visible()

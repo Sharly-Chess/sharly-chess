@@ -1,0 +1,143 @@
+<div
+    id="admin-timer-hour-form-modal"
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 550px);"
+>
+    <div class="modal-content">
+        {# Required for time pickers #}
+        <div tabindex="0" class="focus-honey-pot"></div>
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {% if action == 'update' %}
+                    {{ _('Edit hour') }}
+                {% else %}
+                     {{ _('Create hour') }}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if success_message %}
+                {% with type='success', message=success_message %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            <h4 class="mb-3">
+                {{ _('%(string)s:', string=_('Timer')) }}
+                {{ admin_timer.name }}
+            </h4>
+            <form
+                id="modal-form"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                {% if action == 'update' %}
+                    hx-patch="{{ url_for(
+                        'admin-timer-hour-update',
+                        event_uniq_id=admin_event.uniq_id,
+                        timer_id=admin_timer.id,
+                        timer_hour_id=admin_timer_hour.id,
+                    ) }}"
+                {% else %}
+                    hx-post="{{ url_for(
+                        'admin-timer-hour-create',
+                        event_uniq_id=admin_event.uniq_id,
+                        timer_id=admin_timer.id,
+                    ) }}"
+                {% endif %}
+            >
+                <div class="col-12 mb-2">
+                    {{ admin_macros.datetime_input(
+                        name='triggered_at',
+                        label=_('%(string)s:', string=_('Date and time')),
+                        min_date=admin_event.start_date_str,
+                        max_date=admin_event.stop_date_str,
+                        now_button=admin_event.current,
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="col-12 mb-2">
+                    {{ admin_macros.text_input(
+                        name='uniq_id',
+                        label=_('%(string)s:', string=_('Round number or text')),
+                        placeholder=_('E.g.: Start of check-in'),
+                        tooltip_text=_('Texts before and after the hour below are optional for round numbers, mandatory otherwise.'),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="col-12 mb-2">
+                    {{ admin_macros.text_input(
+                        name='text_before',
+                        label=_('Text before the hour:'),
+                        tooltip_text=_('%%s is replaced by the time left before the hour.'),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="col-12">
+                    {{ admin_macros.text_input(
+                        name='text_after',
+                        label=_('Text after the hour:'),
+                        tooltip_text=_('%%s is replaced by the time elapsed since the hour.'),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <script>
+                    $('#uniq-id').on('keyup', function () {
+                        const uniqId = $(this).val().trim().replace(/^0+/, '');
+                        const isRound = /^-?\d+$/.test(uniqId);
+                        $('#text-before').prop(
+                            'placeholder',
+                            isRound ? `{{
+                                _('Start of round {} in %%s')
+                            }}`.replace('{}', uniqId) : `{{
+                                _('E.g.: Start of check-in in %%s')
+                            }}`
+                        );
+                        $('#text-after').prop(
+                            'placeholder',
+                            isRound ? `{{
+                                _('Round {} started for %%s')
+                            }}`.replace('{}', uniqId) : `{{
+                                _('E.g.: Check-in started for %%s')
+                            }}`
+                        );
+                    });
+                    $('#uniq-id').trigger('keyup');
+                </script>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                {% if admin_timer.timer_hours %}
+                    hx-get="{{ url_for(
+                        'admin-timer-hours-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        timer_id=admin_timer.id,
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-target="#modal-wrapper"
+                {% else %}
+                    data-bs-dismiss="modal"
+                {% endif %}
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+            {% if action == 'update' %}
+                <button
+                    type="submit"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    <i class="bi bi-floppy-fill pe-1"></i>
+                    {{ _('Save') }}
+                </button>
+            {% else %}
+                {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

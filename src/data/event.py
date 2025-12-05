@@ -39,6 +39,7 @@ from database.sqlite.event.event_store import (
     StoredRotator,
     StoredPermission,
     StoredRole,
+    StoredTimer,
 )
 
 logger: Logger = get_logger()
@@ -280,7 +281,7 @@ class Event:
         }
         return timers_by_id
 
-    @cached_property
+    @property
     def timers_by_name(self) -> dict[str, Timer]:
         return {timer.name: timer for timer in self.timers_by_id.values()}
 
@@ -290,6 +291,26 @@ class Event:
         return Utils.get_unused_item_name(
             base_name or _('New timer'), self.timers_by_name
         )
+
+    def create_timer(self, stored_timer: StoredTimer) -> Timer:
+        with EventDatabase(self.uniq_id, True) as database:
+            timer_id = database.add_stored_timer(stored_timer)
+            stored_timer.id = timer_id
+            for stored_timer_hour in stored_timer.stored_timer_hours:
+                stored_timer_hour.timer_id = timer_id
+                stored_timer_hour.id = database.add_stored_timer_hour(stored_timer_hour)
+        self.stored_event.stored_timers.append(stored_timer)
+        timer = Timer(self, stored_timer)
+        self.timers_by_id[timer.id] = timer
+        return timer
+
+    def delete_timer(self, timer: Timer):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_timer(timer.id)
+        with suppress(ValueError):
+            self.stored_event.stored_timers.remove(timer.stored_timer)
+        if timer.id in self.timers_by_id:
+            del self.timers_by_id[timer.id]
 
     @property
     def tournaments(self) -> Collection[Tournament]:

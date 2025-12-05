@@ -1,10 +1,9 @@
-import re
-import time
-from datetime import datetime, date
+from copy import copy
+from datetime import datetime
 from typing import Annotated, Any
 
 from litestar import post, get, delete, patch
-from litestar.exceptions import NotFoundException, ClientException
+from litestar.exceptions import NotFoundException
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -18,7 +17,7 @@ from data.access_levels.actions import AuthAction
 from data.timer import Timer, TimerHour
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTimer, StoredTimerHour
-from utils.date_time import datetime_format, format_date
+from utils.enum import FormAction
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -26,6 +25,7 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard
 from web.messages import Message
+from web.session import SessionHandler
 
 
 class TimerAdminWebContext(BaseEventAdminWebContext):
@@ -71,6 +71,7 @@ class TimerAdminWebContext(BaseEventAdminWebContext):
         return super().template_context | {
             'admin_timer': self.admin_timer,
             'admin_timer_hour': self.admin_timer_hour,
+            'admin_event_tab': 'admin-event-timers-tab',
         }
 
 
@@ -80,316 +81,55 @@ class TimerAdminController(BaseEventAdminController):
         ActionGuard(AuthAction.MANAGE_SCREENS),
     ]
 
-    @staticmethod
-    def _admin_validate_timer_update_data(
-        action: str,
-        web_context: TimerAdminWebContext,
-        data: dict[str, str] | None = None,
-    ) -> StoredTimer:
-        event = web_context.get_admin_event()
-        errors: dict[str, str] = {}
-        if data is None:
-            data = {}
-        name: str = ''
-        colors: dict[int, str | None] = {i: None for i in range(1, 4)}
-        color_checkboxes: dict[int, bool | None] = {i: None for i in range(1, 4)}
-        delays: dict[int, int | None] = {i: None for i in range(1, 4)}
-        if action != 'delete':
-            name = WebContext.form_data_to_str(data, field := 'name') or ''
-            if not name:
-                errors[field] = _('This field is required.')
-            else:
-                used_names = list(event.timers_by_name.keys())
-                if action == 'update':
-                    used_names.remove(web_context.get_admin_timer().name)
-                if name in used_names:
-                    errors[field] = _('This name is already used.')
-
-            for i in range(1, 4):
-                field = f'color_{i}'
-                color_checkboxes[i] = WebContext.form_data_to_bool(
-                    data, field + '_checkbox'
-                )
-                if not color_checkboxes[i]:
-                    try:
-                        colors[i] = WebContext.form_data_to_rgb(data, field)
-                    except ValueError:
-                        errors[field] = _(
-                            'Invalid color [{color}] ([#RRGGBB] expected).'
-                        ).format(color={data[field]})
-                field = f'delay_{i}'
-                try:
-                    delays[i] = WebContext.form_data_to_int(data, field, minimum=1)
-                except ValueError:
-                    errors[field] = _(
-                        'Invalid delay [{delay}] (positive integer expected).'
-                    ).format(delay=data[field])
-
-        timer_id: int | None = None
-        if web_context.admin_timer and action not in [
-            'create',
-            'clone',
-        ]:
-            timer_id = web_context.admin_timer.id
-
-        return StoredTimer(
-            id=timer_id,
-            name=name,
-            colors=colors,
-            delays=delays,
-            errors=errors,
-        )
-
-    @staticmethod
-    def _admin_validate_timer_hour_update_data(
-        web_context: TimerAdminWebContext,
-        previous_valid_timer_hour: TimerHour | None,
-        data: dict[str, str] | None = None,
-    ) -> StoredTimerHour:
-        event = web_context.get_admin_event()
-        errors: dict[str, str] = {}
-        if data is None:
-            data = {}
-        uniq_id: str | None = WebContext.form_data_to_str(data, 'uniq_id')
-        if not uniq_id:
-            errors['uniq_id'] = _('Please enter the round number or the hour ID.')
-        time_str: str | None = WebContext.form_data_to_str(data, 'time_str')
-        if not time_str:
-            errors['time_str'] = _('Please enter the time.')
-        else:
-            matches = re.match(
-                '^(?P<hour>[0-9]{1,2}):(?P<minute>[0-9]{1,2})$', time_str
-            )
-            if not matches:
-                errors['time_str'] = _('Please enter a valid time.')
-        date_: date | None = None
-        field = 'date_str'
-        try:
-            date_ = WebContext.form_data_to_date(data, field)
-            if date_:
-                if not (event.start_date <= date_ <= event.stop_date):
-                    errors[field] = _(
-                        'Time outside of event time range ({range}).'
-                    ).format(range=event.date_range_str)
-            elif not previous_valid_timer_hour:
-                errors[field] = _('Please enter the date of the first hour.')
-        except FormError as e:
-            errors[field] = str(e)
-
-        if 'time_str' not in errors and 'date_str' not in errors:
-            datetime_str: str
-            if date_:
-                datetime_str = f'{format_date(date_)} {time_str}'
-            else:
-                assert previous_valid_timer_hour
-                datetime_str = f'{previous_valid_timer_hour.date_str} {time_str}'
-            try:
-                timestamp: int = int(
-                    time.mktime(
-                        datetime.strptime(datetime_str, datetime_format()).timetuple()
-                    )
-                )
-                if (
-                    previous_valid_timer_hour
-                    and previous_valid_timer_hour.timestamp
-                    and timestamp <= previous_valid_timer_hour.timestamp
-                ):
-                    errors['time_str'] = _(
-                        'Invalid hour [{hour}] (before previous hour [{previous_hour}]).'
-                    ).format(
-                        hour=datetime_str,
-                        previous_hour=previous_valid_timer_hour.datetime_str,
-                    )
-                    if date_:
-                        errors['date_str'] = errors['time_str']
-            except ValueError:
-                errors['time_str'] = _('Please enter valid date and time.')
-                if date_:
-                    errors['date_str'] = errors['time_str']
-
-        timer = web_context.get_admin_timer()
-        timer_hour = web_context.get_admin_timer_hour()
-        assert uniq_id is not None
-        if uniq_id != timer_hour.uniq_id and uniq_id in timer.timer_hour_uniq_ids:
-            errors['uniq_id'] = _('Hour [{uniq_id}] already exists.').format(
-                uniq_id=uniq_id
-            )
-        text_before: str | None = WebContext.form_data_to_str(data, 'text_before')
-        text_after: str | None = WebContext.form_data_to_str(data, 'text_after')
-        try:
-            round_: int = int(uniq_id)
-            if round_ <= 0:
-                errors['uniq_id'] = _('Round numbers must be positive integers.')
-        except (TypeError, ValueError, AssertionError):
-            if not text_before:
-                errors['text_before'] = _(
-                    'Please enter the text to display before the hour (mandatory except for rounds).'
-                )
-            if not text_after:
-                errors['text_after'] = _(
-                    'Please enter the text to display after the hour (mandatory except for rounds).'
-                )
-
-        # TODO (Molrn) Use a date / datetime object to store the timer hour date
-        date_str: str | None = None
-        if errors:
-            date_str = data.get('date_str', '')
-        elif date_:
-            date_str = EventDatabase.dump_date_to_database_field(date_)
-
-        return StoredTimerHour(
-            id=timer_hour.id,
-            order=timer_hour.order,
-            timer_id=timer.id,
-            uniq_id=uniq_id,
-            date_str=date_str,
-            time_str=time_str,
-            text_before=text_before,
-            text_after=text_after,
-            errors=errors,
-        )
-
     @classmethod
     def _admin_event_timers_render(
         cls,
-        request: HTMXRequest,
-        modal: str | None = None,
-        action: str | None = None,
-        timer_id: int | None = None,
-        timer_hour_id: int | None = None,
-        reload_event: bool = False,
-        data: dict[str, str] | None = None,
-        errors: dict[str, str] | None = None,
+        web_context: TimerAdminWebContext,
+        template_context: dict[str, Any] | None = None,
     ) -> Template:
-        web_context = TimerAdminWebContext(
-            request,
-            timer_id=timer_id,
-            timer_hour_id=timer_hour_id,
-            reload_event=reload_event,
+        return cls._admin_base_event_render(
+            web_context.template_context | (template_context or {})
         )
-        event = web_context.get_admin_event()
-        template_context = web_context.template_context | {
-            'admin_event_tab': 'admin-event-timers-tab',
-        }
-
-        match modal:
-            case None:
-                pass
-            case 'default-timers':
-                stored_event = event.stored_event
-                if data is None:
-                    assert stored_event.timer_colors is not None
-                    assert stored_event.timer_delays is not None
-                    colors = stored_event.timer_colors
-                    delays = stored_event.timer_delays
-                    data = (
-                        {
-                            f'color_{i}': WebContext.value_to_form_data(colors[i])
-                            for i in range(1, 4)
-                        }
-                        | {
-                            f'color_{i}_checkbox': WebContext.value_to_form_data(
-                                colors[i] is None
-                            )
-                            for i in range(1, 4)
-                        }
-                        | {
-                            f'delay_{i}': WebContext.value_to_form_data(delays[i])
-                            for i in range(1, 4)
-                        }
-                    )
-
-                template_context |= {
-                    'timer_color_texts': cls._get_timer_color_texts(
-                        SharlyChessConfig.default_timer_delays
-                    ),
-                    'modal': 'default-timers',
-                    'errors': errors or {},
-                    'data': data,
-                }
-            case 'timer':
-                if data is None:
-                    colors = {i: None for i in range(1, 4)}
-                    delays = {i: None for i in range(1, 4)}
-                    match action:
-                        case 'update' | 'clone':
-                            stored_timer = web_context.get_admin_timer().stored_timer
-                            name = stored_timer.name
-                            if action == 'clone':
-                                name = event.get_unused_timer_name(name)
-                            assert stored_timer.colors is not None
-                            assert stored_timer.delays is not None
-                            colors = stored_timer.colors
-                            delays = stored_timer.delays
-
-                        case 'create' | 'delete':
-                            name = event.get_unused_timer_name()
-                        case _:
-                            raise ValueError(f'action=[{action}]')
-                    data = (
-                        {'name': WebContext.value_to_form_data(name)}
-                        | {
-                            f'color_{i}': WebContext.value_to_form_data(colors[i])
-                            for i in range(1, 4)
-                        }
-                        | {
-                            f'color_{i}_checkbox': WebContext.value_to_form_data(
-                                colors[i] is None
-                            )
-                            for i in range(1, 4)
-                        }
-                        | {
-                            f'delay_{i}': WebContext.value_to_form_data(delays[i])
-                            for i in range(1, 4)
-                        }
-                    )
-                    stored_timer: StoredTimer = cls._admin_validate_timer_update_data(
-                        action, web_context, data
-                    )
-                    errors = stored_timer.errors
-                if errors is None:
-                    errors = {}
-                template_context |= {
-                    'timer_color_texts': cls._get_timer_color_texts(event.timer_delays),
-                    'modal': modal,
-                    'action': action,
-                    'data': data,
-                    'errors': errors,
-                }
-            case 'timer_hours':
-                if data is None:
-                    if web_context.admin_timer_hour:
-                        timer_hour = web_context.get_admin_timer_hour()
-                        stored_timer_hour = timer_hour.stored_timer_hour
-                        data = WebContext.values_dict_to_form_data(
-                            {
-                                'uniq_id': stored_timer_hour.uniq_id,
-                                'date_str': EventDatabase.load_optional_date_from_database_field(
-                                    stored_timer_hour.date_str
-                                ),
-                                'time_str': stored_timer_hour.time_str,
-                                'text_before': stored_timer_hour.text_before,
-                                'text_after': stored_timer_hour.text_after,
-                            }
-                        )
-                    else:
-                        data = {}
-                if errors is None:
-                    errors = {}
-                template_context |= {
-                    'modal': modal,
-                    'action': action,
-                    'data': data,
-                    'errors': errors,
-                }
-        return cls._admin_base_event_render(template_context)
 
     @get(
         path='/event/{event_uniq_id:str}/timers',
         name='admin-event-timers-tab',
     )
     async def htmx_admin_event_timers_tab(self, request: HTMXRequest) -> Template:
-        return self._admin_event_timers_render(request)
+        return self._admin_event_timers_render(TimerAdminWebContext(request))
+
+    # -------------------------------------------------------------------------
+    # Default timers
+    # -------------------------------------------------------------------------
+
+    @classmethod
+    def _default_timers_modal_context(
+        cls,
+        web_context: TimerAdminWebContext,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        stored_event = web_context.get_admin_event().stored_event
+        if data is None:
+            colors = stored_event.timer_colors
+            delays = stored_event.timer_delays
+            data = {}
+            for i in range(1, 4):
+                data |= WebContext.values_dict_to_form_data(
+                    {
+                        f'color_{i}': colors[i],
+                        f'color_{i}_checkbox': colors[i] is None,
+                        f'delay_{i}': delays[i],
+                    }
+                )
+        return {
+            'timer_color_texts': cls._get_timer_color_texts(
+                SharlyChessConfig.default_timer_delays
+            ),
+            'modal': 'default-timers',
+            'errors': errors or {},
+            'data': data,
+        }
 
     @get(
         path='/default-timers-modal/{event_uniq_id:str}',
@@ -399,7 +139,10 @@ class TimerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
     ) -> Template:
-        return self._admin_event_timers_render(request, modal='default-timers')
+        web_context = TimerAdminWebContext(request)
+        return self._admin_event_timers_render(
+            web_context, self._default_timers_modal_context(web_context)
+        )
 
     @patch(
         path='/default-timers-update/{event_uniq_id:str}',
@@ -440,10 +183,8 @@ class TimerAdminController(BaseEventAdminController):
 
         if errors:
             return self._admin_event_timers_render(
-                request,
-                modal='default-timers',
-                data=data,
-                errors=errors,
+                web_context,
+                self._default_timers_modal_context(web_context, data, errors),
             )
 
         stored_event.timer_colors = timer_colors
@@ -451,8 +192,105 @@ class TimerAdminController(BaseEventAdminController):
 
         with EventDatabase(event.uniq_id, write=True) as event_database:
             event_database.update_stored_event(stored_event)
+        web_context = TimerAdminWebContext(request, reload_event=True)
+        return self._admin_event_timers_render(web_context)
 
-        return self._admin_event_timers_render(request, reload_event=True)
+    # -------------------------------------------------------------------------
+    # Timer
+    # -------------------------------------------------------------------------
+
+    @classmethod
+    def _timer_form_modal_context(
+        cls,
+        web_context: TimerAdminWebContext,
+        action: FormAction,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> dict[str, Any]:
+        event = web_context.get_admin_event()
+        if data is None:
+            colors: dict[int, str | None]
+            delays: dict[int, int | None]
+            if action == FormAction.CREATE:
+                name = event.get_unused_timer_name()
+                colors = {i: None for i in range(1, 4)}
+                delays = {i: None for i in range(1, 4)}
+            else:
+                stored_timer = web_context.get_admin_timer().stored_timer
+                colors = stored_timer.colors
+                delays = stored_timer.delays
+                if action == FormAction.CLONE:
+                    name = event.get_unused_timer_name(stored_timer.name)
+                else:
+                    name = stored_timer.name
+            data = {'name': WebContext.value_to_form_data(name)}
+            for i in range(1, 4):
+                data |= WebContext.values_dict_to_form_data(
+                    {
+                        f'color_{i}': colors[i],
+                        f'color_{i}_checkbox': colors[i] is None,
+                        f'delay_{i}': delays[i],
+                    }
+                )
+        return {
+            'timer_color_texts': cls._get_timer_color_texts(event.timer_delays),
+            'modal': 'timer',
+            'action': action,
+            'data': data,
+            'errors': errors or {},
+        }
+
+    @staticmethod
+    def _read_timer_form_data(
+        web_context: TimerAdminWebContext,
+        action: FormAction,
+        data: dict[str, str],
+    ) -> tuple[StoredTimer | None, dict[str, str]]:
+        event = web_context.get_admin_event()
+        errors: dict[str, str] = {}
+        if data is None:
+            data = {}
+        colors: dict[int, str | None] = {i: None for i in range(1, 4)}
+        color_checkboxes: dict[int, bool | None] = {i: None for i in range(1, 4)}
+        delays: dict[int, int | None] = {i: None for i in range(1, 4)}
+        name = WebContext.form_data_to_str(data, field := 'name') or ''
+        if not name:
+            errors[field] = _('This field is required.')
+        else:
+            used_names = list(event.timers_by_name.keys())
+            if action == FormAction.UPDATE:
+                used_names.remove(web_context.get_admin_timer().name)
+            if name in used_names:
+                errors[field] = _('This name is already used.')
+
+        for i in range(1, 4):
+            field = f'color_{i}'
+            color_checkboxes[i] = WebContext.form_data_to_bool(
+                data, field + '_checkbox'
+            )
+            if not color_checkboxes[i]:
+                try:
+                    colors[i] = WebContext.form_data_to_rgb(data, field)
+                except ValueError:
+                    errors[field] = _(
+                        'Invalid color [{color}] ([#RRGGBB] expected).'
+                    ).format(color={data[field]})
+            field = f'delay_{i}'
+            try:
+                delays[i] = WebContext.form_data_to_int(data, field, minimum=1)
+            except ValueError:
+                errors[field] = _(
+                    'Invalid delay [{delay}] (positive integer expected).'
+                ).format(delay=data[field])
+        if errors:
+            return None, errors
+        return StoredTimer(
+            id=None,
+            name=name,
+            colors=colors,
+            delays=delays,
+            errors=errors,
+        ), {}
 
     @get(
         path='/timer-modal/create/{event_uniq_id:str}',
@@ -462,125 +300,56 @@ class TimerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
     ) -> Template:
+        web_context = TimerAdminWebContext(request)
         return self._admin_event_timers_render(
-            request,
-            modal='timer',
-            action='create',
+            web_context,
+            self._timer_form_modal_context(web_context, FormAction.CREATE),
         )
 
     @get(
-        path='/timer-modal/{action:str}/{event_uniq_id:str}/{timer_id:int}',
-        name='admin-timer-modal',
+        path='/timer-modal/update/{event_uniq_id:str}/{timer_id:int}',
+        name='admin-timer-update-modal',
     )
-    async def htmx_admin_timer_modal(
+    async def htmx_admin_timer_update_modal(
         self,
         request: HTMXRequest,
-        action: str,
-        timer_id: int | None,
+        timer_id: int,
     ) -> Template:
+        web_context = TimerAdminWebContext(request, timer_id)
         return self._admin_event_timers_render(
-            request,
-            modal='timer',
-            action=action,
-            timer_id=timer_id,
+            web_context,
+            self._timer_form_modal_context(web_context, FormAction.UPDATE),
         )
 
-    def _admin_timer_update(
+    @get(
+        path='/timer-modal/clone/{event_uniq_id:str}/{timer_id:int}',
+        name='admin-timer-clone-modal',
+    )
+    async def htmx_admin_timer_clone_modal(
         self,
         request: HTMXRequest,
-        action: str,
-        timer_id: int | None,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
+        timer_id: int,
     ) -> Template:
-        match action:
-            case 'update' | 'delete' | 'clone' | 'create':
-                web_context = TimerAdminWebContext(request, timer_id=timer_id)
-            case _:
-                raise ValueError(f'action=[{action}]')
-
-        event = web_context.get_admin_event()
-        stored_timer: StoredTimer | None = self._admin_validate_timer_update_data(
-            action, web_context, data
+        web_context = TimerAdminWebContext(request, timer_id)
+        return self._admin_event_timers_render(
+            web_context,
+            self._timer_form_modal_context(web_context, FormAction.CLONE),
         )
-        assert stored_timer is not None
-        if stored_timer.errors:
-            return self._admin_event_timers_render(
-                request,
-                modal='timer',
-                action=action,
-                timer_id=timer_id,
-                data=data,
-                errors=stored_timer.errors,
-            )
-        match action:
-            case 'create':
-                with EventDatabase(event.uniq_id, write=True) as event_database:
-                    stored_timer = event_database.add_stored_timer(stored_timer)
-                    assert stored_timer.id is not None
-                    stored_timer_hour: StoredTimerHour = (
-                        event_database.add_stored_timer_hour(
-                            stored_timer.id, set_datetime=True
-                        )
-                    )
-                Message.success(
-                    request,
-                    _('Timer [{timer}] has been created.').format(
-                        timer=stored_timer.name
-                    ),
-                )
-                return self._admin_event_timers_render(
-                    request,
-                    modal='timer_hours',
-                    timer_id=stored_timer.id,
-                    timer_hour_id=stored_timer_hour.id,
-                    reload_event=True,
-                )
-            case 'update':
-                with EventDatabase(event.uniq_id, write=True) as event_database:
-                    stored_timer = event_database.update_stored_timer(stored_timer)
-                Message.success(
-                    request,
-                    _('Timer [{timer}] has been updated.').format(
-                        timer=stored_timer.name
-                    ),
-                )
-                return self._admin_event_timers_render(request, reload_event=True)
-            case 'delete':
-                timer = web_context.get_admin_timer()
-                with EventDatabase(event.uniq_id, write=True) as event_database:
-                    event_database.delete_stored_timer(timer.id)
-                Message.success(
-                    request,
-                    _('Timer [{timer}] has been deleted.').format(timer=timer.name),
-                )
-                return self._admin_event_timers_render(request, reload_event=True)
-            case 'clone':
-                timer = web_context.get_admin_timer()
-                with EventDatabase(event.uniq_id, write=True) as event_database:
-                    stored_timer = event_database.add_stored_timer(stored_timer)
-                    assert stored_timer.id is not None
-                    for timer_hour in timer.timer_hours_sorted_by_order:
-                        event_database.clone_stored_timer_hour(
-                            timer_hour.id, stored_timer.id
-                        )
-                Message.success(
-                    request,
-                    _('Timer [{timer}] has been created.').format(
-                        timer=stored_timer.name
-                    ),
-                )
 
-                return self._admin_event_timers_render(
-                    request,
-                    modal='timer_hours',
-                    timer_id=stored_timer.id,
-                    reload_event=True,
-                )
-            case _:
-                raise ValueError(f'action=[{action}]')
+    @get(
+        path='/timer-modal/delete/{event_uniq_id:str}/{timer_id:int}',
+        name='admin-timer-delete-modal',
+    )
+    async def htmx_admin_timer_delete_modal(
+        self,
+        request: HTMXRequest,
+        timer_id: int,
+    ) -> Template:
+        web_context = TimerAdminWebContext(request, timer_id)
+        return self._admin_event_timers_render(
+            web_context,
+            {'modal': 'timer_delete'},
+        )
 
     @post(path='/timer-create/{event_uniq_id:str}', name='admin-timer-create')
     async def htmx_admin_timer_create(
@@ -591,11 +360,26 @@ class TimerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        return self._admin_timer_update(
-            request,
-            action='create',
-            timer_id=None,
-            data=data,
+        web_context = TimerAdminWebContext(request)
+        stored_timer, errors = self._read_timer_form_data(
+            web_context, FormAction.CREATE, data
+        )
+        if not stored_timer:
+            return self._admin_event_timers_render(
+                web_context,
+                self._timer_form_modal_context(
+                    web_context, FormAction.CREATE, data, errors
+                ),
+            )
+        event = web_context.get_admin_event()
+        timer = event.create_timer(stored_timer)
+        web_context.admin_timer = timer
+        message = _('Timer [{timer}] has been created.').format(timer=timer.name)
+        return self._admin_event_timers_render(
+            web_context,
+            self._timer_hour_form_modal_context(
+                web_context, FormAction.CREATE, success_message=message
+            ),
         )
 
     @post(
@@ -605,17 +389,32 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_clone(
         self,
         request: HTMXRequest,
-        timer_id: int | None,
+        timer_id: int,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        return self._admin_timer_update(
-            request,
-            action='clone',
-            timer_id=timer_id,
-            data=data,
+        web_context = TimerAdminWebContext(request, timer_id)
+        stored_timer, errors = self._read_timer_form_data(
+            web_context, FormAction.CLONE, data
+        )
+        if not stored_timer:
+            return self._admin_event_timers_render(
+                web_context,
+                self._timer_form_modal_context(
+                    web_context, FormAction.CLONE, data, errors
+                ),
+            )
+        event = web_context.get_admin_event()
+        cloned_timer = web_context.get_admin_timer()
+        stored_timer.stored_timer_hours = copy(
+            cloned_timer.stored_timer.stored_timer_hours
+        )
+        web_context.admin_timer = event.create_timer(stored_timer)
+        return self._admin_event_timers_render(
+            web_context,
+            self._timer_hours_modal_context(_('Timer [{timer}] has been created.')),
         )
 
     @patch(
@@ -625,19 +424,28 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_update(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
-        timer_id: int | None,
+        timer_id: int,
         data: Annotated[
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        return self._admin_timer_update(
-            request,
-            action='update',
-            timer_id=timer_id,
-            data=data,
+        web_context = TimerAdminWebContext(request, timer_id)
+        stored_timer, errors = self._read_timer_form_data(
+            web_context, FormAction.UPDATE, data
         )
+        if not stored_timer:
+            return self._admin_event_timers_render(
+                web_context,
+                self._timer_form_modal_context(
+                    web_context, FormAction.UPDATE, data, errors
+                ),
+            )
+        timer = web_context.get_admin_timer()
+        timer.update(stored_timer)
+        message = _('Timer [{timer}] has been updated.').format(timer=timer.name)
+        Message.success(request, message)
+        return self._admin_event_timers_render(web_context)
 
     @delete(
         path='/timer-delete/{event_uniq_id:str}/{timer_id:int}',
@@ -647,18 +455,85 @@ class TimerAdminController(BaseEventAdminController):
     async def htmx_admin_timer_delete(
         self,
         request: HTMXRequest,
-        timer_id: int | None,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
+        timer_id: int,
     ) -> Template:
-        return self._admin_timer_update(
+        web_context = TimerAdminWebContext(request, timer_id)
+        event = web_context.get_admin_event()
+        timer = web_context.get_admin_timer()
+        event.delete_timer(timer)
+        Message.success(
             request,
-            action='delete',
-            timer_id=timer_id,
-            data=data,
+            _('Timer [{timer}] has been deleted.').format(timer=timer.name),
         )
+        return self._admin_event_timers_render(web_context)
+
+    # -------------------------------------------------------------------------
+    # Timer Hour
+    # -------------------------------------------------------------------------
+
+    @classmethod
+    def _timer_hour_form_modal_context(
+        cls,
+        web_context: TimerAdminWebContext,
+        action: FormAction,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+        success_message: str | None = None,
+    ) -> dict[str, Any]:
+        event = web_context.get_admin_event()
+        timer = web_context.get_admin_timer()
+        if data is None:
+            if action == FormAction.CREATE:
+                uniq_id = str(timer.next_round)
+                if timer.timer_hours:
+                    triggered_at = timer.sorted_timer_hours[-1].triggered_at
+                else:
+                    triggered_at = datetime.combine(
+                        event.start_date, datetime.min.time()
+                    )
+                text_before: str | None = ''
+                text_after: str | None = ''
+            else:
+                hour = web_context.get_admin_timer_hour()
+                if action == FormAction.CLONE:
+                    if hour.uniq_id.isdigit():
+                        uniq_id = str(timer.next_round)
+                    else:
+                        uniq_id = timer.get_unused_hour_name(hour.uniq_id)
+                else:
+                    uniq_id = hour.uniq_id
+                triggered_at = hour.triggered_at
+                text_before = hour.stored_timer_hour.text_before
+                text_after = hour.stored_timer_hour.text_after
+            data = WebContext.values_dict_to_form_data(
+                {
+                    'uniq_id': uniq_id,
+                    'triggered_at': triggered_at,
+                    'text_before': text_before,
+                    'text_after': text_after,
+                }
+            )
+        return {
+            'modal': 'timer_hour_form',
+            'action': action,
+            'data': data,
+            'errors': errors or {},
+            'success_message': success_message,
+            'add_other_active': (
+                SessionHandler.get_session_admin_timer_add_other_active(
+                    web_context.request
+                )
+            ),
+        }
+
+    @staticmethod
+    def _timer_hours_modal_context(
+        success_message: str | None = None,
+    ) -> dict[str, Any]:
+        return {
+            'modal': 'timer_hours',
+            'success_message': success_message,
+        }
 
     @get(
         path='/timer-hours-modal/{event_uniq_id:str}/{timer_id:int}',
@@ -670,135 +545,139 @@ class TimerAdminController(BaseEventAdminController):
         timer_id: int,
     ) -> Template:
         return self._admin_event_timers_render(
-            request,
-            modal='timer_hours',
-            timer_id=timer_id,
-            timer_hour_id=None,
+            TimerAdminWebContext(request, timer_id),
+            self._timer_hours_modal_context(),
         )
 
     @get(
-        path='/timer-hours-hour-modal/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
-        name='admin-timer-hours-hour-modal',
+        path='/timer-hour-modal/create/{event_uniq_id:str}/{timer_id:int}',
+        name='admin-timer-hour-create-modal',
     )
-    async def htmx_admin_timer_hours_hour_modal(
+    async def htmx_admin_timer_hour_create_modal(
+        self,
+        request: HTMXRequest,
+        timer_id: int,
+    ) -> Template:
+        web_context = TimerAdminWebContext(request, timer_id)
+        return self._admin_event_timers_render(
+            web_context,
+            self._timer_hour_form_modal_context(web_context, FormAction.CREATE),
+        )
+
+    @get(
+        path=(
+            '/timer-hour-modal/update/{event_uniq_id:str}/'
+            '{timer_id:int}/{timer_hour_id:int}'
+        ),
+        name='admin-timer-hour-update-modal',
+    )
+    async def htmx_admin_timer_hour_update_modal(
         self,
         request: HTMXRequest,
         timer_id: int,
         timer_hour_id: int,
     ) -> Template:
+        web_context = TimerAdminWebContext(request, timer_id, timer_hour_id)
         return self._admin_event_timers_render(
-            request,
-            modal='timer_hours',
-            timer_id=timer_id,
-            timer_hour_id=timer_hour_id,
+            web_context,
+            self._timer_hour_form_modal_context(web_context, FormAction.UPDATE),
         )
 
-    def _admin_timer_hours_update(
+    @get(
+        path=(
+            '/timer-hour-modal/clone/{event_uniq_id:str}/'
+            '{timer_id:int}/{timer_hour_id:int}'
+        ),
+        name='admin-timer-hour-clone-modal',
+    )
+    async def htmx_admin_timer_hour_clone_modal(
         self,
         request: HTMXRequest,
         timer_id: int,
-        timer_hour_id: int | None,
-        action: str,
-        data: Annotated[
-            dict[str, Any],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
+        timer_hour_id: int,
     ) -> Template:
-        match action:
-            case 'delete' | 'clone' | 'update' | 'add' | 'reorder':
-                web_context: TimerAdminWebContext = TimerAdminWebContext(
-                    request,
-                    timer_id=timer_id,
-                    timer_hour_id=timer_hour_id,
-                )
-            case _:
-                raise ValueError(f'action=[{action}]')
-
-        if web_context.admin_event is None:
-            raise RuntimeError('admin_event not defined')
-        match action:
-            case 'delete':
-                assert web_context.admin_timer is not None
-                if len(web_context.admin_timer.timer_hours_by_id) <= 1:
-                    raise ClientException('The last hour of timer can not be deleted.')
-            case 'update' | 'clone' | 'add' | 'reorder':
-                pass
-            case _:
-                raise ValueError(f'action=[{action}]')
-        next_timer_hour_id: int | None = None
-        with EventDatabase(
-            web_context.admin_event.uniq_id, write=True
-        ) as event_database:
-            match action:
-                case 'update':
-                    assert web_context.admin_timer is not None
-                    assert web_context.admin_timer_hour is not None
-                    stored_timer_hour: StoredTimerHour = (
-                        self._admin_validate_timer_hour_update_data(
-                            web_context,
-                            web_context.admin_timer.get_previous_timer_hour(
-                                web_context.admin_timer_hour
-                            ),
-                            data,
-                        )
-                    )
-                    if stored_timer_hour.errors:
-                        return self._admin_event_timers_render(
-                            request,
-                            modal='timer_hours',
-                            timer_id=timer_id,
-                            timer_hour_id=timer_hour_id,
-                            data=data,
-                            errors=stored_timer_hour.errors,
-                        )
-                    event_database.update_stored_timer_hour(stored_timer_hour)
-                case 'delete':
-                    assert (
-                        web_context.admin_timer
-                        and web_context.admin_timer.id is not None
-                    )
-                    assert (
-                        web_context.admin_timer_hour
-                        and web_context.admin_timer_hour.id is not None
-                    )
-                    event_database.delete_stored_timer_hour(
-                        web_context.admin_timer_hour.id, web_context.admin_timer.id
-                    )
-                case 'clone':
-                    assert web_context.admin_timer is not None
-                    assert web_context.admin_timer_hour is not None
-                    assert web_context.admin_timer_hour.id is not None
-                    stored_timer_hour = event_database.clone_stored_timer_hour(
-                        web_context.admin_timer_hour.id
-                    )
-                    next_timer_hour_id = stored_timer_hour.id
-                case 'add':
-                    assert (
-                        web_context.admin_timer
-                        and web_context.admin_timer.id is not None
-                    )
-                    stored_timer_hour = event_database.add_stored_timer_hour(
-                        web_context.admin_timer.id
-                    )
-                    next_timer_hour_id = stored_timer_hour.id
-                case 'reorder':
-                    event_database.reorder_stored_timer_hours(data['item'])
-                case _:
-                    raise ValueError(f'action=[{action}]')
-
+        web_context = TimerAdminWebContext(request, timer_id, timer_hour_id)
         return self._admin_event_timers_render(
-            request,
-            modal='timer_hours',
-            timer_id=timer_id,
-            timer_hour_id=next_timer_hour_id,
-            reload_event=True,
+            web_context,
+            self._timer_hour_form_modal_context(web_context, FormAction.CLONE),
         )
 
+    @staticmethod
+    def _read_timer_hour_form_data(
+        web_context: TimerAdminWebContext,
+        action: FormAction,
+        data: dict[str, str],
+    ) -> tuple[StoredTimerHour | None, dict[str, str]]:
+        event = web_context.get_admin_event()
+        timer = web_context.get_admin_timer()
+        errors: dict[str, str] = {}
+        uniq_id = WebContext.form_data_to_str(data, field := 'uniq_id') or ''
+        if not uniq_id:
+            errors[field] = _('This field is required.')
+        else:
+            uniq_ids = timer.timer_hour_uniq_ids
+            if action == FormAction.UPDATE:
+                uniq_ids.remove(web_context.get_admin_timer_hour().uniq_id)
+            if uniq_id in uniq_ids:
+                if uniq_id.isdigit():
+                    errors[field] = _(
+                        'There already is an hour for round #{round}.'
+                    ).format(round=int(uniq_id))
+                else:
+                    errors[field] = _('Hour [{hour}] already exists.').format(
+                        hour=uniq_id
+                    )
+            if uniq_id.isdigit():
+                if int(uniq_id) == 0:
+                    errors[field] = _('Round #0 is forbidden.')
+                uniq_id = str(int(uniq_id))
+        triggered_at: datetime | None = None
+        try:
+            triggered_at = WebContext.form_data_to_datetime(
+                data, field := 'triggered_at'
+            )
+            if not triggered_at:
+                errors[field] = _('This field is required.')
+            else:
+                used_datetimes = [
+                    timer_hour.triggered_at for timer_hour in timer.timer_hours
+                ]
+                if action == FormAction.UPDATE:
+                    used_datetimes.remove(
+                        web_context.get_admin_timer_hour().triggered_at
+                    )
+                if triggered_at in used_datetimes:
+                    errors[field] = _('There already is an hour defined at this time.')
+                if not event.start_date <= triggered_at.date() <= event.stop_date:
+                    errors[field] = _(
+                        'Time outside of event time range ({range}).'
+                    ).format(range=event.date_range_str)
+        except FormError as e:
+            errors[field] = str(e)
+        text_before = WebContext.form_data_to_str(data, field := 'text_before')
+        if not uniq_id.isdigit() and not text_before:
+            errors[field] = _('This field is required (except for rounds).')
+        text_after = WebContext.form_data_to_str(data, field := 'text_after')
+        if not uniq_id.isdigit() and not text_after:
+            errors[field] = _('This field is required (except for rounds).')
+        if errors:
+            return None, errors
+        assert triggered_at is not None
+        return StoredTimerHour(
+            id=None,
+            timer_id=timer.id,
+            uniq_id=uniq_id,
+            triggered_at=triggered_at,
+            text_before=text_before,
+            text_after=text_after,
+            errors=errors,
+        ), {}
+
     @post(
-        path='/timer-hour-add/{event_uniq_id:str}/{timer_id:int}',
-        name='admin-timer-hour-add',
+        path='/timer-hour/create/{event_uniq_id:str}/{timer_id:int}',
+        name='admin-timer-hour-create',
     )
-    async def htmx_admin_timer_hour_add(
+    async def htmx_admin_timer_hour_create(
         self,
         request: HTMXRequest,
         timer_id: int,
@@ -807,38 +686,33 @@ class TimerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        return self._admin_timer_hours_update(
-            request,
-            action='add',
-            timer_id=timer_id,
-            timer_hour_id=None,
-            data=data,
+        web_context = TimerAdminWebContext(request, timer_id)
+        SessionHandler.set_session_admin_timer_add_other_active(
+            request, 'add_other' in data
         )
-
-    @post(
-        path='/timer-hour-clone/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
-        name='admin-timer-hour-clone',
-    )
-    async def htmx_admin_timer_hour_clone(
-        self,
-        request: HTMXRequest,
-        timer_id: int,
-        timer_hour_id: int,
-        data: Annotated[
-            dict[str, str | list[int]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> Template:
-        return self._admin_timer_hours_update(
-            request,
-            action='clone',
-            timer_id=timer_id,
-            timer_hour_id=timer_hour_id,
-            data=data,
+        stored_timer_hour, errors = self._read_timer_hour_form_data(
+            web_context, FormAction.CREATE, data
         )
+        if not stored_timer_hour:
+            return self._admin_event_timers_render(
+                web_context,
+                self._timer_hour_form_modal_context(
+                    web_context, FormAction.CREATE, data, errors
+                ),
+            )
+        timer = web_context.get_admin_timer()
+        timer_hour = timer.add_timer_hour(stored_timer_hour)
+        message = _('Hour [{hour}] has been created.').format(hour=timer_hour.name)
+        if 'add_other' in data:
+            template_context = self._timer_hour_form_modal_context(
+                web_context, FormAction.CREATE, success_message=message
+            )
+        else:
+            template_context = self._timer_hours_modal_context(message)
+        return self._admin_event_timers_render(web_context, template_context)
 
     @patch(
-        path='/timer-hour-update/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
+        path='/timer-hour/update/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
         name='admin-timer-hour-update',
     )
     async def htmx_admin_timer_hour_update(
@@ -847,20 +721,29 @@ class TimerAdminController(BaseEventAdminController):
         timer_id: int,
         timer_hour_id: int,
         data: Annotated[
-            dict[str, str | list[int]],
+            dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
-        return self._admin_timer_hours_update(
-            request,
-            action='update',
-            timer_id=timer_id,
-            timer_hour_id=timer_hour_id,
-            data=data,
+        web_context = TimerAdminWebContext(request, timer_id, timer_hour_id)
+        stored_timer_hour, errors = self._read_timer_hour_form_data(
+            web_context, FormAction.UPDATE, data
+        )
+        if not stored_timer_hour:
+            return self._admin_event_timers_render(
+                web_context,
+                self._timer_hour_form_modal_context(
+                    web_context, FormAction.UPDATE, data, errors
+                ),
+            )
+        timer_hour = web_context.get_admin_timer_hour()
+        timer_hour.update(stored_timer_hour)
+        return self._admin_event_timers_render(
+            web_context, self._timer_hours_modal_context()
         )
 
     @delete(
-        path='/timer-hour-delete/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
+        path='/timer-hour/delete/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',
         name='admin-timer-hour-delete',
         status_code=HTTP_200_OK,
     )
@@ -869,36 +752,9 @@ class TimerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         timer_id: int,
         timer_hour_id: int,
-        data: Annotated[
-            dict[str, str | list[int]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
     ) -> Template:
-        return self._admin_timer_hours_update(
-            request,
-            action='delete',
-            timer_id=timer_id,
-            timer_hour_id=timer_hour_id,
-            data=data,
-        )
-
-    @patch(
-        path='/timer-reorder-hours/{event_uniq_id:str}/{timer_id:int}',
-        name='admin-timer-reorder-hours',
-    )
-    async def htmx_admin_timer_reorder_hours(
-        self,
-        request: HTMXRequest,
-        timer_id: int,
-        data: Annotated[
-            dict[str, str | list[int]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-    ) -> Template:
-        return self._admin_timer_hours_update(
-            request,
-            action='reorder',
-            timer_id=timer_id,
-            timer_hour_id=None,
-            data=data,
+        web_context = TimerAdminWebContext(request, timer_id, timer_hour_id)
+        web_context.get_admin_timer().delete_timer_hour(timer_hour_id)
+        return self._admin_event_timers_render(
+            web_context, self._timer_hours_modal_context()
         )

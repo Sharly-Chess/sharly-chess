@@ -54,6 +54,7 @@ from plugins.ffe.ffe_entity import (
     FfeLicenceNumberDatasheetColumn,
     FfeLicenceDatasheetColumn,
     FfeLeagueDatasheetColumn,
+    FfeLicenceTypeTableColumn,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
 from plugins.ffe.ffe_session_handler import FFESessionHandler
@@ -887,6 +888,12 @@ class FfePlugin(Plugin):
             player_columns,
             FfeLeagueTableColumn(usage),
             player_table.FederationColumn,
+        )
+        PluginUtils.insert_on_isinstance(
+            player_columns,
+            FfeLicenceTypeTableColumn(usage),
+            player_table.PaidColumn,
+            after=False,
         )
 
     @hookimpl

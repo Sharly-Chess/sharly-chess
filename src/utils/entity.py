@@ -80,6 +80,6 @@ class EntityManager[T: IdentifiableEntity](ABC):
         return [type_.static_id() for type_ in self.entity_types()]
 
 
-class EventBoundEntityManager[T: IdentifiableEntity](EntityManager[T]):
+class EventBoundEntityManager[T: IdentifiableEntity](EntityManager[T], ABC):
     def __init__(self, event: Optional['Event']):
         self.event = event

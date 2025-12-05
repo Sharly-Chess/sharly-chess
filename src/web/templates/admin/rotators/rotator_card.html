@@ -32,12 +32,12 @@
     <div class="d-flex flex-column gap-1">
         <div>
             {{ _('Rotation delay: %(seconds)d sec.', seconds=rotator.delay) }}
-            {% if client.can_manage_screens %}
-                {%if rotator.stored_rotator.delay is none %}
-                    <span class="fst-italic pe-1">
-                        {{ _('(by default)') }}
-                    </span>
-                {%endif %}
+        </div>
+        <div>
+            {% if rotator.timer %}
+                {{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=rotator.timer.name) }}
+            {% else %}
+                <span class="fst-italic text-secondary">{{ _('Timer: none') }}</span>
             {% endif %}
         </div>
         {% if client.can_manage_screens %}
@@ -54,7 +54,7 @@
                     {% endif %}
                 </div>
             {% else %}
-                <div class="fst-italic">
+                <div class="fst-italic text-secondary">
                     {{ _('No alert message') }}
                     {% if rotator.message_default %}{{ _('(by default)') }}{% endif %}
                 </div>
