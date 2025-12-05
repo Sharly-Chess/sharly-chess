@@ -7,9 +7,7 @@
                 {% elif action == 'update' %}
                     {{ _('Edit player') }}
                 {% elif action == 'replace' %}
-                    {{ _('Replace player') }}
-                {% else %}
-                    ?
+                    {{ _('Replace player [%(player)s]', player=admin_player.full_name) }}
                 {% endif %}
             </h2>
         </div>
