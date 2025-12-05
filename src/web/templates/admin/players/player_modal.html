@@ -250,10 +250,10 @@
                         {{ admin_macros.number_input(
                             name='fide_id',
                             label=_('FIDE ID:'),
-                            disabled=true,
+                            disabled=action == 'update' or data['fide_id'] != '',
                             input_tooltip=_(
                                 'Replace the player to update this field.'
-                            ),
+                            ) if action == 'update' or data['fide_id'] != '' else '',
                             min=1,
                             data=data, errors=errors
                         ) }}
