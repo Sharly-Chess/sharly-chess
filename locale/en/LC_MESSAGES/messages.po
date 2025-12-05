@@ -5741,9 +5741,6 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-msgid "no background image"
-msgstr ""
-
 msgid "player already received a PAB in a previous round"
 msgstr ""
 
