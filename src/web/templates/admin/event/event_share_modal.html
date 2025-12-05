@@ -50,9 +50,14 @@
                 {{ _('Cancel') }}
             </button>
             <button
-                type="submit"
-                form="modal-form"
+                type="button"
                 class="text-nowrap white btn btn-primary"
+                class="dropdown-item text-start cursor-pointer"
+                data-export-url="{{ url_for(
+                    'admin-event-export',
+                    event_uniq_id=admin_event.uniq_id,
+                ) }}"
+                onclick="downloadFile(this, 'modal-form'); closeModal();"
             >
                 <i class="bi-save-fill pe-1"></i>
                 {{ _('Share') }}

@@ -276,8 +276,18 @@ $(document).on('select2:unselect', '.sharly-chess-select2', function (e) {
     }, 100);
 });
 
-async function downloadFile(el) {
-    const url = el.dataset.exportUrl;
+async function downloadFile(el, formId) {
+    const url = new URL(el.dataset.exportUrl, window.location.origin);
+
+    if (formId) {
+        const form = document.getElementById(formId);
+        if (form) {
+            const formData = new FormData(form);
+            for (const [key, value] of formData.entries()) {
+                url.searchParams.append(key, value.toString());
+            }
+        }
+    }
 
     try {
         const response = await fetch(url, { headers: { 'HX-Request': 'true' } });

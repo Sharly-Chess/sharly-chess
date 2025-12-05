@@ -1,6 +1,9 @@
 from collections import defaultdict
 from datetime import date
 from logging import Logger
+from pathlib import Path
+import shutil
+from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
 from litestar.exceptions import ClientException, NotFoundException
@@ -30,7 +33,7 @@ from litestar import get, post, patch, delete
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate, ClientRedirect, Reswap
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, Redirect
+from litestar.response import Template, Redirect, File
 from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import (
@@ -828,6 +831,57 @@ class IndexAdminController(BaseAdminController):
             ),
             re_target='#modal-wrapper',
         )
+
+    @get(
+        path='/event-export/{event_uniq_id:str}',
+        name='admin-event-export',
+    )
+    async def admin_tournament_export(
+        self,
+        request: HTMXRequest,
+        include_players: str | None = None,
+        include_private_player_data: str | None = None,
+        include_connection_data: str | None = None,
+    ) -> File | Template:
+        web_context = AdminWebContext(request)
+        event = web_context.get_admin_event()
+        temp_file = NamedTemporaryFile(
+            delete=False,
+            mode='wb',
+            suffix='.sce',
+        )
+
+        with EventDatabase(event.uniq_id, True) as database:
+            shutil.copy(database.file.resolve(), temp_file.name)
+
+        with EventDatabase(
+            file_path=Path(temp_file.name), write=True, check_dirty_tournaments=False
+        ) as tmp_event_database:
+            if include_players != 'on':
+                tmp_event_database.delete_all_stored_players()
+            elif include_private_player_data != 'on':
+                tmp_event_database.delete_players_personal_data()
+            if include_connection_data != 'on':
+                plugin_manager.hook.on_event_duplicated(
+                    event_database=tmp_event_database
+                )
+
+        try:
+            print(temp_file.name)
+            return File(
+                path=temp_file.name,
+                filename=database.file.resolve().name,
+            )
+        except Exception as exception:
+            logger.error(
+                'Error when exporting event [%s]:\n%s',
+                event.name,
+                exception,
+            )
+            Message.error(
+                request, _('An error occurred. Consult the logs for more details.')
+            )
+            return self.render_messages(request)
 
     @post(
         path='/restore-archive/{archive_name:str}',
