@@ -5753,9 +5753,6 @@ msgstr "mon-ecran"
 msgid "no"
 msgstr "non"
 
-msgid "no background image"
-msgstr "pas d'image de fond"
-
 msgid "player already received a PAB in a previous round"
 msgstr "le·la joueur·euse a déjà été exempt·e lors d'une ronde précédente"
 
