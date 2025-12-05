@@ -311,7 +311,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             # Copy the new database to its proper location
             self.file.unlink(missing_ok=True)
             shutil.copy(tmp_file, self.file)
-            logger.debug(self.log_prefix + f'file moved to [{self.file}].')
+            logger.debug(self.log_prefix + f'file copied to [{self.file}].')
 
         # Validate that the database file is actually a SQLite database before creating indexes
         try:
