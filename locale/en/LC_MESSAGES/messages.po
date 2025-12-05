@@ -3904,7 +3904,8 @@ msgstr ""
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr ""
 
-msgid "Replace player"
+#, python-format
+msgid "Replace player [%(player)s]"
 msgstr ""
 
 msgid "Replace the player to update this field."
