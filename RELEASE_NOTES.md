@@ -21,6 +21,7 @@
 - Duplicate tie-breaks and criteria when duplicating a tournament (3.3.0)
 - Manual ordering of tournaments (3.3.1)
 - Prevent manual reordering of 1 tournament (3.3.4)
+- Fixed the tie-break search (3.3.6)
 
 ## Players
 
