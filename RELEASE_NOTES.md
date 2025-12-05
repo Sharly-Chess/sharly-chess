@@ -44,7 +44,7 @@
 - Prevent double-click on results modal (3.3.3)
 - Fixed `Display exit button`, `Display unpaired players` and `Display opponents` options always activated (3.3.3)
 - Fixed `Display unpaired players` option hiding all the players (3.3.3)
-- Remove `Background image` option default checkbox (3.3.6)
+- Removed `Background image` option default checkbox (3.3.6)
 
 ## Prizes
 
