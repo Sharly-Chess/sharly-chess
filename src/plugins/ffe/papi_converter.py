@@ -20,6 +20,7 @@ from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
     PairingVariation,
 )
+from data.event import Event
 from data.player import TournamentPlayer, PlayerRating
 from data.tie_breaks.tie_breaks import ManualTieBreak, TieBreak
 from data.tournament import Tournament
@@ -52,6 +53,7 @@ from plugins.manager import plugin_manager
 from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
 from utils import Utils
 from utils.enum import (
+    PlayerCategory,
     TournamentRating,
     PlayerGender,
     PlayerTitle,
@@ -248,6 +250,7 @@ class PapiConverter:
 
     def read_papi_data(
         self,
+        event: Event,
         papi_data: PapiData,
         stored_tournament: StoredTournament | None = None,
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
@@ -282,7 +285,7 @@ class PapiConverter:
         stored_players: list[StoredPlayer] = []
         max_opponent_id = len(papi_data.players) - 1
         for player_id, papi_player in enumerate(papi_data.players):
-            stored_player = self._read_papi_player(player_id, papi_player)
+            stored_player = self._read_papi_player(event, player_id, papi_player)
             stored_player.id = player_id
             stored_tournament_player = StoredTournamentPlayer(player_id=player_id)
             round_keys = papi_player.rounds.keys()
@@ -430,7 +433,9 @@ class PapiConverter:
         return stored_tournament
 
     @staticmethod
-    def _read_papi_player(player_id: int, papi_player: PapiPlayer) -> StoredPlayer:
+    def _read_papi_player(
+        event: Event, player_id: int, papi_player: PapiPlayer
+    ) -> StoredPlayer:
         def raise_exception(field_: str, message: str):
             raise DictReaderException(['players', str(player_id), field_], message)
 
@@ -441,6 +446,7 @@ class PapiConverter:
             raise_exception('name', _('A non-empty string is expected'))
 
         date_of_birth: date | None = None
+        year_of_birth: int | None = None
         if papi_player.birthDate:
             try:
                 date_of_birth = datetime.strptime(
@@ -453,6 +459,13 @@ class PapiConverter:
                         date=papi_player.birthDate, format=_('DD/MM/YYYY')
                     ),
                 )
+        elif papi_player.category:
+            year_of_birth = PlayerCategory.representive_year_for_category(
+                event,
+                PapiPlayerCategory.get_core_object(papi_player.category),
+                tournament_start=event.start_date,
+                tournament_stop=event.stop_date,
+            )
 
         gender = PlayerGender.NONE
         if papi_player.gender:
@@ -526,6 +539,7 @@ class PapiConverter:
             last_name=papi_player.lastName,
             first_name=papi_player.firstName,
             date_of_birth=date_of_birth,
+            year_of_birth=year_of_birth,
             gender=gender.value,
             mail=papi_player.email,
             phone=papi_player.phone,

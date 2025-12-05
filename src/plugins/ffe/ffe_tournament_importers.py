@@ -70,7 +70,7 @@ class FfeTournamentImporter(FileTournamentImporter):
         stored_tournament: StoredTournament | None,
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         stored_tournament, stored_players = PapiConverter().read_papi_data(
-            papi_data, stored_tournament
+            event, papi_data, stored_tournament
         )
         for stored_player in stored_players:
             plugin_manager.hook_for_event(

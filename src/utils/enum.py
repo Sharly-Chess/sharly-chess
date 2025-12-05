@@ -654,16 +654,12 @@ class PlayerCategory(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @staticmethod
-    def from_year_of_birth(
+    def _reference_year(
         event: 'Event',
-        year_of_birth: int | None,
-        tournament_start: date | None = None,
-        tournament_stop: date | None = None,
-    ) -> 'PlayerCategory':
+        tournament_start: date | None,
+        tournament_stop: date | None,
+    ) -> int:
         from plugins.manager import plugin_manager
-
-        if not year_of_birth:
-            return PlayerCategory.NONE
 
         if tournament_start and tournament_stop:
             if (tournament_stop - tournament_start) > timedelta(days=30):
@@ -679,11 +675,28 @@ class PlayerCategory(IntEnum):
         else:
             ref_date = date.today()
 
-        ref_year: int = (
+        return (
             plugin_manager.hook_for_event(event, 'adjust_category_reference_year')(
                 reference_date=ref_date
             )
             or ref_date.year
+        )
+
+    @classmethod
+    def from_year_of_birth(
+        cls,
+        event: 'Event',
+        year_of_birth: int | None,
+        tournament_start: date | None = None,
+        tournament_stop: date | None = None,
+    ) -> 'PlayerCategory':
+        if not year_of_birth:
+            return PlayerCategory.NONE
+
+        ref_year = cls._reference_year(
+            event,
+            tournament_start=tournament_start,
+            tournament_stop=tournament_stop,
         )
 
         age = ref_year - year_of_birth
@@ -707,6 +720,40 @@ class PlayerCategory(IntEnum):
             return PlayerCategory.O50
         else:
             return PlayerCategory.O65
+
+    @classmethod
+    def representive_year_for_category(
+        cls,
+        event: 'Event',
+        category: Self,
+        tournament_start: date | None = None,
+        tournament_stop: date | None = None,
+    ) -> int | None:
+        MIN_MAX_AGE = {
+            PlayerCategory.U8: (0, 8),
+            PlayerCategory.U10: (9, 10),
+            PlayerCategory.U12: (11, 12),
+            PlayerCategory.U14: (13, 14),
+            PlayerCategory.U16: (15, 16),
+            PlayerCategory.U18: (17, 18),
+            PlayerCategory.U20: (19, 20),
+            PlayerCategory.O20: (21, 50),
+            PlayerCategory.O50: (51, 65),
+            PlayerCategory.O65: (66, 68),  # Make them young :)
+            PlayerCategory.NONE: (None, None),
+        }
+
+        min_age, max_age = MIN_MAX_AGE.get(category, (None, None))
+        if min_age is None or max_age is None:
+            return None
+
+        midpoint = (min_age + max_age) // 2
+        ref_year = cls._reference_year(
+            event,
+            tournament_start=tournament_start,
+            tournament_stop=tournament_stop,
+        )
+        return ref_year - midpoint
 
     def __str__(self) -> str:
         return self.short_name
