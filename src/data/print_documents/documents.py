@@ -791,6 +791,51 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         ).get_prize_assignment_columns()
 
 
+class PrizeSigningPrintDocument(PrintDocument):
+    @staticmethod
+    def static_id() -> str:
+        return 'prize-receipts'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Prize receipts')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentsPrintOption, ShowWarningsPrintOption]
+
+    @property
+    def title(self) -> str:
+        return _('Prize receipts')
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/prize_receipts.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        assert self.event is not None
+        prize_currency = self.event.prize_currency
+        return {
+            'tournaments': self.tournaments,
+            'show_warnings': self.get_option_values()[0],
+            'ordinal_integer': Utils.ordinal_integer,
+            'prize_currency': prize_currency,
+            'format_prize_value': partial(
+                Utils.currency_value_str,
+                currency=prize_currency,
+            ),
+            'player_columns': self.player_columns,
+        }
+
+    @property
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
+        assert self.event is not None
+        return PlayerColumnHandler(
+            self.event, ColumnUsage.PRINT
+        ).get_prize_receipts_columns()
+
+
 @dataclass
 class StatisticsSection:
     title: str

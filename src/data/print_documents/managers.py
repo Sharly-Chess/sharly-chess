@@ -44,6 +44,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.BergerGridPrintDocument,
             documents.PrizeListPrintDocument,
             documents.PrizeAssignmentPrintDocument,
+            documents.PrizeSigningPrintDocument,
             documents.StatisticsPrintDocument,
             documents.NormReportPrintDocument,
             documents.QRCodePrintDocument,
