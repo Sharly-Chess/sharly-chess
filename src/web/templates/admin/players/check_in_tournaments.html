@@ -28,13 +28,13 @@
                                 pairing_system=tournament.pairing_system.name
                             ), 'left') }}
                         {% elif tournament.finished %}
-                            {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament)s] is finished.', tournament=tournament.name), 'left') }}
+                            {{ macros.tooltip_attributes('warning', _('Tournament [<span translate="no">%(tournament)s</span>] is finished.', tournament=tournament.name), 'left') }}
                         {% elif tournament.playing %}
-                            {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament)s] is playing.', tournament=tournament.name), 'left') }}
+                            {{ macros.tooltip_attributes('warning', _('Tournament [<span translate="no">%(tournament)s</span>] is playing.', tournament=tournament.name), 'left') }}
                         {% elif tournament.check_in_open %}
-                            {{ macros.tooltip_attributes('info', _('Close check-in for tournament [%(tournament)s].', tournament=tournament.name), 'left') }}
+                            {{ macros.tooltip_attributes('info', _('Close check-in for tournament [<span translate="no">%(tournament)s</span>].', tournament=tournament.name), 'left') }}
                         {% else %}
-                            {{ macros.tooltip_attributes('info', _('Open check-in for tournament [%(tournament)s].', tournament=tournament.name), 'left') }}
+                            {{ macros.tooltip_attributes('info', _('Open check-in for tournament [<span translate="no">%(tournament)s</span>].', tournament=tournament.name), 'left') }}
                         {% endif %}
                     >
                         <div class="form-check form-switch d-inline-block my-0">
@@ -64,6 +64,7 @@
                             />
                         </div>
                         <label
+                            translate="no"
                             for="{{ id }}-{{ loop.index }}" class="form-label my-0"
                         >
                             {{ tournament.name }}

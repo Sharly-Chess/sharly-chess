@@ -57,7 +57,7 @@
                                     hx-indicator="#please-wait"
                                     data-bs-toggle="modal"
                                     data-bs-target="#modal-wrapper"
-                                    {{ macros.tooltip_attributes('info', _('Close check-in for tournament [%(tournament)s].', tournament=admin_tournament.name), 'top') }}
+                                    {{ macros.tooltip_attributes('info', _('Close check-in for tournament [<span translate="no">%(tournament)s</span>].', tournament=admin_tournament.name), 'top') }}
                                 >
                                     {{ _('Close check-in') }}
                                 </button>

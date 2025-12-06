@@ -35,13 +35,13 @@
                     {% if opponent_id %}
                         {%with opponent = player.single_tournament_player.tournament.tournament_players_by_id[opponent_id] %}
                             <td>{{ pairing.color.to_crosstable }}</td>
-                            <td class='text-center'>{{ pairing.result }}</td>
+                            <td class='text-center' translate="no">{{ pairing.result }}</td>
                             <td class='text-center'>{{ opponent.rank }}</td>
-                            <td class='text-nowrap'>{{ opponent.title.short_name }} {{ opponent.full_name }}</td>
-                            <td>{{ opponent.rating_str }}</td>
+                            <td class='text-nowrap' translate="no">{{ opponent.title.short_name }} {{ opponent.full_name }}</td>
+                            <td translate="no">{{ opponent.rating_str }}</td>
                             <td>{{ opponent.category.short_name }}</td>
-                            <td>{{ opponent.federation }}</td>
-                            <td class='text-center'>{{ opponent.points_str }}</td>
+                            <td translate="no">{{ opponent.federation }}</td>
+                            <td class='text-center' translate="no">{{ opponent.points_str }}</td>
                             {% for tie_break_value in opponent.tie_break_values %}
                                 <td class="tie-break text-center">
                                     {{ tie_break_value }}

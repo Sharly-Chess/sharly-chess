@@ -17,7 +17,7 @@
 
             <h4 class="mb-3">
                 {{ _('%(string)s:', string=_('Tournament')) }}
-                {{ admin_tournament.name }}
+                <span translate="no">{{ admin_tournament.name }}</span>
                 {% set warning_message = admin_tournament.tie_breaks_warning_message %}
                 {% if warning_message %}
                     <i

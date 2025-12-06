@@ -10,7 +10,7 @@
         {% if not loop.first %}
             <div class="separator"></div>
         {% endif %}
-        <div class="tournament-title">{{ tournament.name }}</div>
+        <div class="tournament-title" translate="no">{{ tournament.name }}</div>
         {% for prize_group in tournament.sorted_prize_groups %}
             {% if not loop.first %}
                 <div class="short-separator"></div>
@@ -47,11 +47,7 @@
                             {% if tournament_player %}
                                 {% for column in player_columns %}
                                     <div class="cell {{ column.get_cell_classes(tournament_player) }}">
-                                        {% if column.cell_template %}
-                                            {% include column.cell_template %}
-                                        {% else %}
-                                            {{ macros.column_cell(column, tournament_player) }}
-                                        {% endif %}
+                                        {{ macros.column_cell(column, tournament_player) }}
                                     </div>
                                 {% endfor %}
                             {% else %}

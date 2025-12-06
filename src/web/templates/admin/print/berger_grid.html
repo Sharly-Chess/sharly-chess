@@ -29,16 +29,16 @@
                 >
                     <td class=number">{{ grid_id_by_player_id[player_id] }}</td>
                     {% with player=tournament.tournament_players_by_id[player_id] %}
-                        <td class="player-title">{{ player.title }}</td>
-                        <td class="player">{{ player.full_name }}</td>
-                        <td class="federation">{{ player.federation }}</td>
-                        <td class="rating">{{ player.rating_str }}</td>
+                        <td class="player-title" translate="no">{{ player.title }}</td>
+                        <td class="player" translate="no">{{ player.full_name }}</td>
+                        <td class="federation" translate="no">{{ player.federation }}</td>
+                        <td class="rating" translate="no">{{ player.rating_str }}</td>
                     {% endwith %}
                     {% for round_results in results %}
                         {% if round_results[0] is none %}
                             <td class="result self-game"></td>
                         {% else %}
-                            <td class="result">
+                            <td class="result" translate="no">
                                 {% for result in round_results %}
                                     {% if result != 0 %}
                                         {% if not loop.first and result != 0 %}

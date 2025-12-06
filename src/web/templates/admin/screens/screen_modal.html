@@ -74,7 +74,7 @@
                                     label=_('Tournament:'),
                                     tooltip_text=_('The first tournament of the screen.'),
                                     select_options=tournament_options,
-                                    data=data, errors=errors
+                                    data=data, errors=errors, translation_allowed=false
                                 ) }}
                             </div>
                         {% endif %}
@@ -155,7 +155,7 @@
                                         placeholder=_('All the tournaments'),
                                         multiple_select=true,
                                         select_options=tournament_options,
-                                        data=data, errors=errors
+                                        data=data, errors=errors, translation_allowed=false
                                     ) }}
                                 </div>
                             {% endif %}
@@ -174,7 +174,7 @@
                                         label=_('Timer:'),
                                         tooltip_text=_('The timer displayed on the screen.'),
                                         select_options=timer_options,
-                                        data=data, errors=errors
+                                        data=data, errors=errors, translation_allowed=false
                                     ) }}
                                 </div>
                             {% endif %}

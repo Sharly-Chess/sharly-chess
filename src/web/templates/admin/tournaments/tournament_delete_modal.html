@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block object_name %}
-    {{ _('%(string)s: %(value)s', string=_('Tournament'), value=admin_tournament.name) }}
+    {{ _('%(string)s: <span translate="no">%(value)s</span>', string=_('Tournament'), value=admin_tournament.name) }}
 {% endblock %}
 
 {% block form_content %}

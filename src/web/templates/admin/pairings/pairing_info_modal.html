@@ -67,9 +67,9 @@
                             {% with player=players_by_pairing_number[player_history.id], row_class='even' if loop.index is even else 'odd' %}
                                 <tr id="player-{{ player.id }}" class="{{ row_class }}">
                                     <td class="compact-col">#{{ player_history.id }}</td>
-                                    <td class="compact-col text">{{ player.title.short_name }}</td>
-                                    <td>{{ player.full_name }}</td>
-                                    <td>{{ player.rating_str }}</td>
+                                    <td translate="no" class="compact-col text">{{ player.title.short_name }}</td>
+                                    <td translate="no">{{ player.full_name }}</td>
+                                    <td translate="no">{{ player.rating_str }}</td>
                                     <td class="compact-col text-center">
                                         {% with color_preference=player_history.color_preference, absolute=player_history.color_preference.absolute, strong=player_history.color_preference.strong %}
                                             <span
@@ -90,7 +90,7 @@
                                         <td class="text-center compact-col px-1">
                                             {% if opponent_id %}
                                                 <span
-                                                    {{ macros.tooltip_attributes('info', players_by_pairing_number[opponent_id].full_name) }}
+                                                    {{ macros.tooltip_attributes('info', '<span translate="no">' ~ players_by_pairing_number[opponent_id].full_name) ~ '</span>' }}
                                                 >
                                                     {{ opponent_id }}
                                                 </span>

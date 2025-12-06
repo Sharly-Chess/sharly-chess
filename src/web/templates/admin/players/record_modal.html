@@ -4,12 +4,12 @@
     <div class="modal-content">
         <div class="modal-header d-flex justify-content-between align-items-end">
             <div class="flex flex-column gap-0 align-items-start">
-                <h2 class="modal-title">
+                <h2 class="modal-title" translate="no">
                     {{admin_player.title.short_name}} {{ admin_player.full_name }}
                 </h2>
-                <div>{{ admin_player.club }}</div>
+                <div translate="no">{{ admin_player.club }}</div>
                 {% set category = tournament_player.category.short_name %}
-                <div>{{ admin_player.federation }}, {{ tournament_player.rating_str }}{% if category %}, {{ category }}{% endif %}</div>
+                <div><span translate="no">{{ admin_player.federation }}</span>, <span translate="no">{{ tournament_player.rating_str }}</span>{% if category %}, {{ category }}{% endif %}</div>
             </div>
             <div>
                 {% set tournament = tournament_player.tournament %}
@@ -172,7 +172,7 @@
                             <th scope="row gy-2 gx-3" class="text-nowrap text-center">
                                 {{ round }}
                             </th>
-                            <td class="text-nowrap text-center">
+                            <td class="text-nowrap text-center" translate="no">
                                 {{ score }}
                             </td>
                             {% if bye_modifiable_for_round %}
@@ -222,10 +222,10 @@
                                 <td class="text-nowrap text-start">
                                     {{ color }}
                                 </td>
-                                <td class="text-nowrap text-start">
+                                <td class="text-nowrap text-start" translate="no">
                                     {{ opponent }}
                                 </td>
-                                <td class="text-nowrap text-center">
+                                <td class="text-nowrap text-center" translate="no">
                                     {% if federation %}
                                         <img
                                             class="player-federation-flag pe-1"
@@ -234,7 +234,7 @@
                                         {{ federation }}
                                     {% endif %}
                                 </td>
-                                <td class="text-nowrap text-end">
+                                <td class="text-nowrap text-end" translate="no">
                                     {{ rating }}
                                 </td>
                             {% endif %}
@@ -267,6 +267,7 @@
                             {% set first_rating, comment = tournament_player.first_fide_rating %}
                             <td colspan="6" class="text-end">{{ _("First FIDE rating (based only on this tournament)") }}</td>
                             <td
+                                translate="no"
                                 class="text-nowrap text-end"
                                 {{ macros.tooltip_attributes(
                                     'info', comment, 'bottom'

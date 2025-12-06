@@ -34,13 +34,13 @@
                         <td class="rank">
                             {{ loop.index }}
                         </td>
-                        <td class="title">{{ tournament_player.title.short_name }}</td>
-                        <td class="name">{{ tournament_player.full_name }}</td>
-                        <td class="rating">{{ tournament_player.rating_str }}</td>
-                        <td class="result">{{ result }}</td>
-                        <td class="title">{{ opponent.title.short_name }}</td>
-                        <td class="name">{{ opponent.full_name }}</td>
-                        <td class="rating">{{ opponent.rating_str }}</td>
+                        <td class="title" translate="no">{{ tournament_player.title.short_name }}</td>
+                        <td class="name" translate="no">{{ tournament_player.full_name }}</td>
+                        <td class="rating" translate="no">{{ tournament_player.rating_str }}</td>
+                        <td class="result" translate="no">{{ result }}</td>
+                        <td class="title" translate="no">{{ opponent.title.short_name }}</td>
+                        <td class="name" translate="no">{{ opponent.full_name }}</td>
+                        <td class="rating" translate="no">{{ opponent.rating_str }}</td>
                         <td class="perf">{{"%+.2f" % score }}</td>
                     </tr>
                 {% endwith %}

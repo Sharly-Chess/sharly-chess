@@ -24,9 +24,9 @@
                         {% with btp=board.black_tournament_player %}
                         {% if print_tournament %}<td scope="row gy-2 gx-3" class="tournament bg-transparent">{{ tournament.name }}</td>{% endif %}
                         <td scope="row gy-2 gx-3" class="board-number bg-transparent text-center">{{ board.round }}.{{ board.number }}</td>
-                        <td scope="row gy-2 gx-3" class="player bg-transparent">{{ wtp.full_name }} {{ wtp.rating_str }}</td>
-                        <td scope="row gy-2 gx-3" class="score bg-transparent text-center">{{ board.result_str }}</td>
-                        <td scope="row gy-2 gx-3" class="player bg-transparent">{{ btp.full_name }} {{ btp.rating_str }}</td>
+                        <td scope="row gy-2 gx-3" class="player bg-transparent" translate="no">{{ wtp.full_name }} {{ wtp.rating_str }}</td>
+                        <td scope="row gy-2 gx-3" class="score bg-transparent text-center" translate="no">{{ board.result_str }}</td>
+                        <td scope="row gy-2 gx-3" class="player bg-transparent" translate="no">{{ btp.full_name }} {{ btp.rating_str }}</td>
                         {% endwith %}
                         {% endwith %}
                         {% endwith %}

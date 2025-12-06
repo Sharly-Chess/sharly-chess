@@ -29,20 +29,20 @@
                         name='locale',
                         label=_('Language:'),
                         select_options=locale_options,
-                        data=data, errors=errors
+                        data=data, errors=errors, translation_allowed=false
                     ) }}
                     {{ admin_macros.select_input(
                         name='federation',
                         label=_('Federation:'),
                         tooltip_text=_('The default federation for your events.'),
                         select_options=federation_options,
-                        data=data, errors=errors
+                        data=data, errors=errors, translation_allowed=false
                     ) }}
                     {{ admin_macros.select_input(
                         name='date_formatter',
                         label=_('%(string)s:', string=_('Date format')),
                         select_options=date_formatter_options,
-                        data=data, errors=errors
+                        data=data, errors=errors, translation_allowed=false
                     ) }}
                     {% if sharly_chess_config.experimental_features %}
                         {% set ns = namespace(
