@@ -24,7 +24,7 @@
 - Manual ordering of tournaments (3.3.1)
 - Prevent manual reordering of 1 tournament (3.3.4)
 - Fixed the tie-break search (3.3.6)
-- Add an option for specifiy the base date for the age categories (3.4.0)
+- Add an option for specify the base date for the age categories (3.4.0)
 
 ## Players
 
