@@ -228,6 +228,7 @@ class ChessResultsEventPluginData(PluginData):
     auto_upload: bool
     auto_upload_delay: int
     remark: str | None = None
+    state: int | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -237,6 +238,7 @@ class ChessResultsEventPluginData(PluginData):
                 'auto_upload_delay', CHESS_RESULTS_DEFAULT_UPLOAD_DELAY
             ),
             remark=stored_value.get('remark'),
+            state=stored_value.get('state'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -244,6 +246,7 @@ class ChessResultsEventPluginData(PluginData):
             'auto_upload': self.auto_upload,
             'auto_upload_delay': self.auto_upload_delay,
             'remark': self.remark,
+            'state': self.state,
         }
 
     @classmethod
@@ -254,18 +257,22 @@ class ChessResultsEventPluginData(PluginData):
         action: str | None = None,
     ) -> Self:
         return cls(
-            auto_upload=WebContext.form_data_to_bool(data, 'auto_upload'),
-            auto_upload_delay=WebContext.form_data_to_int(data, 'auto_upload_delay')
+            auto_upload=WebContext.form_data_to_bool(data, 'chess_results_auto_upload'),
+            auto_upload_delay=WebContext.form_data_to_int(
+                data, 'chess_results_auto_upload_delay'
+            )
             or CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
-            remark=WebContext.form_data_to_str(data, 'remark'),
+            remark=WebContext.form_data_to_str(data, 'chess_results_remark'),
+            state=WebContext.form_data_to_int(data, 'chess_results_state'),
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
             {
-                'auto_upload': self.auto_upload,
-                'auto_upload_delay': self.auto_upload_delay,
-                'remark': self.remark,
+                'chess_results_auto_upload': self.auto_upload,
+                'chess_results_auto_upload_delay': self.auto_upload_delay,
+                'chess_results_remark': self.remark,
+                'chess_results_state': self.state,
             }
         )
 
@@ -319,16 +326,20 @@ class ChessResultsTournamentPluginData(PluginData):
             tnr=tnr,
             creator_id=creator_id,
             last_upload=last_upload,
-            remark=WebContext.form_data_to_str(data, 'remark'),
-            remark_default=WebContext.form_data_to_bool(data, 'remark_checkbox'),
-            auto_upload=WebContext.form_data_to_bool_or_none(data, 'auto_upload'),
+            remark=WebContext.form_data_to_str(data, 'chess_results_remark'),
+            remark_default=WebContext.form_data_to_bool(
+                data, 'chess_results_remark_checkbox'
+            ),
+            auto_upload=WebContext.form_data_to_bool_or_none(
+                data, 'chess_results_auto_upload'
+            ),
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
             {
-                'auto_upload': self.auto_upload,
-                'remark': self.remark,
-                'remark_checkbox': self.remark_default,
+                'chess_results_auto_upload': self.auto_upload,
+                'chess_results_remark': self.remark,
+                'chess_results_remark_checkbox': self.remark_default,
             }
         )

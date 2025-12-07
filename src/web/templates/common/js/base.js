@@ -38,7 +38,11 @@ function closeTooltips () {
 function closeAirPickers () {
     if (!datePickers) return;
     Object.values(datePickers).forEach((picker) => {
-        if (picker && !picker.isDestroyed) picker.hide();
+        try {
+            if (picker && !picker.isDestroyed) picker.hide();
+        } catch (e) {
+            // ignore
+        }
     });
 }
 
