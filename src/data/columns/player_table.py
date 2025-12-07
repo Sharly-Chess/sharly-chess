@@ -77,7 +77,7 @@ class TitleColumn(TournamentPlayerTableColumn):
         return '\u00a0'
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'<span translate="no">{tournament_player.title.short_name}</span>'
+        return tournament_player.title.short_name
 
     @property
     def shared_classes(self) -> str:
@@ -94,7 +94,7 @@ class NameColumn(TournamentPlayerTableColumn):
         return _('Name *** NAME FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'<span translate="no">{tournament_player.full_name}</span>'
+        return tournament_player.full_name
 
     @property
     def shared_classes(self) -> str:
@@ -107,7 +107,7 @@ class RatingColumn(TournamentPlayerTableColumn):
         return '/admin/print/headers/rating.html'
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'<span translate="no">{tournament_player.rating_str}</span>'
+        return tournament_player.rating_str
 
     def get_cell_classes(self, tournament_player: TournamentPlayer) -> str:
         return 'text-end'
@@ -145,7 +145,7 @@ class FederationColumn(TournamentPlayerTableColumn):
         return _('Fed *** FEDERATION FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'<span translate="no">{tournament_player.federation.name}</span>'
+        return tournament_player.federation.name
 
     @property
     def shared_classes(self) -> str:
@@ -158,7 +158,7 @@ class ClubColumn(TournamentPlayerTableColumn):
         return _('Club *** CLUB FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'<span translate="no">{tournament_player.club.name}</span>'
+        return tournament_player.club.name
 
     @property
     def shared_classes(self) -> str:
@@ -171,7 +171,7 @@ class PointsColumn(TournamentPlayerTableColumn):
         return _('Pts *** POINTS FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'<span translate="no">{tournament_player.points_str}</span>'
+        return tournament_player.points_str
 
     @property
     def shared_classes(self) -> str:
@@ -184,7 +184,7 @@ class AlphaPointsColumn(TournamentPlayerTableColumn):
         return ''
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'[<span translate="no">{tournament_player.points_str}</span>]'
+        return f'[{tournament_player.points_str}]'
 
     @property
     def shared_classes(self) -> str:
@@ -220,7 +220,7 @@ class TournamentColumn(TournamentPlayerTableColumn):
         return _('Tournament *** TOURNAMENT FOR PLAYERS COLUMNS')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'<span translate="no">{tournament_player.tournament.name}</span>'
+        return tournament_player.tournament.name
 
     @property
     def shared_classes(self) -> str:
@@ -282,7 +282,7 @@ class CommentsColumn(TournamentPlayerTableColumn):
         return _('Comments *** COMMENTS FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'<span translate="no">{tournament_player.comment or ""}</span>'
+        return tournament_player.comment or ''
 
     @property
     def shared_classes(self) -> str:
@@ -295,7 +295,7 @@ class PlayerColumn(TournamentPlayerTableColumn):
         return _('Player')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'<span translate="no">{tournament_player.full_name}</span>'
+        return tournament_player.full_name
 
     @property
     def shared_classes(self) -> str:
@@ -308,7 +308,7 @@ class OpponentColumn(TournamentPlayerTableColumn):
         return _('Opponent')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return f'<span translate="no">{tournament_player.full_name}</span>'
+        return tournament_player.full_name
 
     @property
     def shared_classes(self) -> str:

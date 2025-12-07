@@ -1708,9 +1708,9 @@ class PlayerAdminController(BaseEventAdminController):
         )
         Message.success(
             request,
-            _(
-                'Check-in is closed for tournament [<span translate="no">{tournament}</span>].'
-            ).format(tournament=tournament.name),
+            _('Check-in is closed for tournament [{tournament}].').format(
+                tournament=tournament.name
+            ),
         )
         return HTMXTemplate(
             template_name='common/empty_modal_and_messages.html',

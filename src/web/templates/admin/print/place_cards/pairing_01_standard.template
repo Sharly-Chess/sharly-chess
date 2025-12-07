@@ -42,11 +42,9 @@ v_pos = 0.0
 [white_name]
 text = """
 {% with player = pairing.white_player %}
-    <span translate="no">
-        {{ player.last_name }}<<br/>
-        {{ player.first_name }}<br/>
-        {{ player.title }} {{ player.rating }}{{ player.rating_type }}
-    </span>
+    {{ player.last_name }}<<br/>
+    {{ player.first_name }}<br/>
+    {{ player.title }} {{ player.rating }}{{ player.rating_type }}
 {% endwith %}
 """
 width = 60.0
@@ -59,12 +57,10 @@ v_pos = 10.0
 [white_info]
 text = """
 {% with player = pairing.white_player %}
-    <span translate="no">
-        {% if player.club %}
-            {{ player.club }}
-        {% endif %}<br/>
-        {{ player.federation }}
-    </span>
+    {% if player.club %}
+        {{ player.club }}
+    {% endif %}<br/>
+    {{ player.federation }}
 {% endwith %}
 """
 font_size = 11.0
@@ -108,11 +104,9 @@ v_pos = 0.0
 [black_name]
 text = """
 {% with player = pairing.black_player %}
-    <span translate="no">
-        {{ player.last_name }}<br/>
-        {{ player.first_name }}<br/>
-        {{ player.title }} {{ player.rating }}{{ player.rating_type }}
-    </span>
+    {{ player.last_name }}<br/>
+    {{ player.first_name }}<br/>
+    {{ player.title }} {{ player.rating }}{{ player.rating_type }}
 {% endwith %}
 """
 width = 60.0
@@ -125,12 +119,10 @@ v_pos = 10.0
 [black_info]
 text = """
 {% with player = pairing.black_player %}
-    <span translate="no">
-        {% if player.club %}
-            {{ player.club }}
-        {% endif %}<br/>
-        {{ player.federation }}
-    </span>
+    {% if player.club %}
+        {{ player.club }}
+    {% endif %}<br/>
+    {{ player.federation }}
 {% endwith %}
 """
 font_size = 11.0

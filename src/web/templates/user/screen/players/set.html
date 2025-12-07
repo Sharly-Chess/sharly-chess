@@ -45,7 +45,6 @@
                                 {% with opponent_id=pairing.opponent_id %}
                                     <div class="player-row {% if not opponent_id %}not-paired fs-italic{% else %}paired fw-bold{% endif %}">
                                         <div
-                                            translate="no"
                                             class="player overflow-hidden text-nowrap"
                                             style="text-overflow: ellipsis;"
                                         >
@@ -62,7 +61,6 @@
                                         </div>
                                         {% if screen_set.players_show_opponent %}
                                             <div
-                                                translate="no"
                                                 class="opponent overflow-hidden text-nowrap"
                                                 style="text-overflow: ellipsis;"
                                             >
@@ -81,7 +79,6 @@
                             {% else %}
                                 <div class="player-row not-paired fs-italic">
                                     <div
-                                        translate="no"
                                         class="player overflow-hidden text-nowrap"
                                         style="text-overflow: ellipsis;"
                                     >

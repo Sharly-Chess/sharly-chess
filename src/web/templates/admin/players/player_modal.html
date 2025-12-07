@@ -7,7 +7,7 @@
                 {% elif action == 'update' %}
                     {{ _('Edit player') }}
                 {% elif action == 'replace' %}
-                    {{ _('Replace player [<span translate="no">%(player)s</span>]', player=admin_player.full_name) }}
+                    {{ _('Replace player [%(player)s]', player=admin_player.full_name) }}
                 {% endif %}
             </h2>
         </div>
@@ -34,7 +34,7 @@
                             {% endwith %}
                         {% else %}
                             {% with type='success', auto_remove=true, message=_(
-                                'Player [<span translate="no">%(player)s</span>] has been created.',
+                                'Player [%(player)s] has been created.',
                                 player=previous_player.full_name
                             )  %}
                                 {% include '/common/alert.html' %}
@@ -103,7 +103,7 @@
                             name='federation',
                             label=_('Federation:'),
                             select_options=federation_options,
-                            data=data, errors=errors, translation_allowed=false
+                            data=data, errors=errors
                         ) }}
                     </div>
                 </div>

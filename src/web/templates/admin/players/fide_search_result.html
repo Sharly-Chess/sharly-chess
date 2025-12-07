@@ -6,14 +6,14 @@
 />
 {{ player.fide_id }}
 <span class="fw-bold">
-    <span translate="no">{{ player.full_name }}</span>
+    {{ player.full_name }}
 </span>
 {% if player.year_of_birth %}
     ({{ player.year_of_birth }}, {{ player.category.short_name }})
 {% endif %}
 -
 {% if player.has_real_rating %}
-    <span translate="no">{{ player.first_real_rating_str }}</span>
+    {{ player.first_real_rating_str }}
 {% else %}
     <i>{{ _('Unrated *** SINGULAR') }}</i>
 {% endif %}

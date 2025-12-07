@@ -43,12 +43,11 @@ class PointsColumn(BoardColumn, ABC):
     def get_cell_content(self, board: Board) -> Any:
         if self.is_black:
             if real_points := getattr(board.black_tournament_player, 'vpoints_str', ''):
-                text = f'[{real_points}]'
+                return f'[{real_points}]'
             else:
-                text = ''
+                return ''
         else:
-            text = board.white_tournament_player.vpoints_str
-        return f'<span translate="no">{text}</span>'
+            return board.white_tournament_player.vpoints_str
 
     @property
     def shared_classes(self) -> str:
@@ -80,12 +79,11 @@ class RealPointsColumn(BoardColumn, ABC):
     def get_cell_content(self, board: Board) -> Any:
         if self.is_black:
             if points := getattr(board.black_tournament_player, 'vpoints_str', ''):
-                text = f'[{points}]'
+                return f'[{points}]'
             else:
-                text = ''
+                return ''
         else:
-            text = board.white_tournament_player.vpoints_str
-        return f'<span translate="no">{text}</span>'
+            return board.white_tournament_player.vpoints_str
 
     @property
     def shared_classes(self) -> str:
@@ -148,12 +146,11 @@ class TitleColumn(BoardColumn, ABC):
     def get_cell_content(self, board: Board) -> Any:
         if self.is_black:
             if player := board.black_tournament_player:
-                text = player.title.short_name
+                return player.title.short_name
             else:
-                text = ''
+                return ''
         else:
-            text = board.white_tournament_player.title.short_name
-        return f'<span translate="no">{text}</span>'
+            return board.white_tournament_player.title.short_name
 
     @property
     @abstractmethod
@@ -184,14 +181,13 @@ class NameColumn(BoardColumn, ABC):
 
     def get_cell_content(self, board: Board) -> Any:
         if self.is_black:
-            text = getattr(
+            return getattr(
                 board.black_tournament_player,
                 'full_name',
                 board.white_tournament_player.exempt_str.upper(),
             )
         else:
-            text = board.white_tournament_player.full_name
-        return f'<span translate="no">{text}</span>'
+            return board.white_tournament_player.full_name
 
     @property
     def shared_classes(self) -> str:
@@ -227,10 +223,9 @@ class RatingColumn(BoardColumn, ABC):
 
     def get_cell_content(self, board: Board) -> Any:
         if self.is_black:
-            text = getattr(board.black_tournament_player, 'rating_str', '')
+            return getattr(board.black_tournament_player, 'rating_str', '')
         else:
-            text = board.white_tournament_player.rating_str
-        return f'<span translate="no">{text}</span>'
+            return board.white_tournament_player.rating_str
 
     @property
     def shared_classes(self) -> str:
@@ -260,7 +255,7 @@ class ResultColumn(BoardColumn):
         return _('Res. ** RESULT FOR TABLE HEADER')
 
     def get_cell_content(self, board: Board) -> Any:
-        return f'<span translate="no">{board.result_str}</span>'
+        return board.result_str
 
 
 class NoResultColumn(BoardColumn):
@@ -269,7 +264,7 @@ class NoResultColumn(BoardColumn):
         return '\u00a0' * 6
 
     def get_cell_content(self, board: Board) -> Any:
-        return f'<span translate="no">{board.result_str if board.exempt else ""}</span>'
+        return board.result_str if board.exempt else ''
 
 
 class ScreenResultColumn(BoardColumn):

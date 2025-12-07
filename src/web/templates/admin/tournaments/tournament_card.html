@@ -7,7 +7,7 @@
             <i class="bi-arrows-move invisible"></i>
         </div>
         <div class="flex-grow-1">
-             {{ admin_macros.tournament_status_icon(tournament) }} <span translate="no">{{ tournament.name }}</span>
+             {{ admin_macros.tournament_status_icon(tournament) }} {{ tournament.name }}
         </div>
         {% if sortable %}
             <div>
@@ -121,7 +121,7 @@
                 <div>
                     {{ _('%(string)s:', string=_('Arbiter')) }}
                     {% if tournament.chief_arbiter %}
-                        <span translate="no">{{ tournament.chief_arbiter.full_name }}</span>
+                        {{ tournament.chief_arbiter.full_name }}
                     {% else %}
                         <span
                             class="text-secondary"
@@ -147,7 +147,7 @@
                     {% else %}
                         <ul>
                             {% for account in tournament.deputy_arbiters %}
-                                <li translate="no">{{ account.full_name }}</li>
+                                <li>{{ account.full_name }}</li>
                             {% endfor %}
                         </ul>
                     {% endif %}

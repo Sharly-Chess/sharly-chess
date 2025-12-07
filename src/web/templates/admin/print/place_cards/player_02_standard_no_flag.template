@@ -3,19 +3,19 @@ name = "{{ _('Standard (no flag)') }}"
 creator = "Sharly Chess <support@sharly-chess.com>"
 
 [player_name]
-text = """<span translate="no">{{ player.title }} {{ player.full_name }}</span>"""
+text = "{{ player.title }} {{ player.full_name }}"
 font_size = 18.0
 bold = true
 max_width = 92.0
 
 [player_rating]
-text = """{{ player.rating }}<span translate="no">{{ player.rating_type }}</span>"""
+text = "{{ player.rating }}{{ player.rating_type }}"
 font_size = 18.0
 bold = true
 h_align = "right"
 
 [player_origin]
-text = """"<span translate="no">{{ player.federation }} {% if player.club %}- {{ player.club }}{% endif %}</span>"""
+text = "{{ player.federation }} {% if player.club %}- {{ player.club }}{% endif %}"
 v_pos = 8.0
 
 [player_category]

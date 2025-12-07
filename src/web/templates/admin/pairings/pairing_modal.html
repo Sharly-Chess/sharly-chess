@@ -45,7 +45,7 @@
                             hx-indicator="#please-wait"
                         {% endif %}
                     >
-                        <div class="text-center">{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/><span translate="no">{{ wtp.last_name }}</span><br/><span translate="no">{{ wtp.first_name }}</span><br/><span translate="no">{{ wtp.rating_str }}</span></div>
+                        <div class="text-center">{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wtp.last_name }}<br/>{{ wtp.first_name }}<br/>{{ wtp.rating_str }}</div>
                     </button>
                     {% set action_route = url_for(
                         'admin-pairings-set-result',
@@ -83,7 +83,7 @@
                             hx-indicator="#please-wait"
                         {% endif %}
                     >
-                        <div>{{ _('DRAW') }}<br/><span translate="no">½ - ½</span></div>
+                        <div>{{ _('DRAW') }}<br/>½ - ½</div>
                     </button>
                     {% set action_route = url_for(
                         'admin-pairings-set-result',
@@ -121,7 +121,7 @@
                             hx-indicator="#please-wait"
                         {% endif %}
                     >
-                        <div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/><span translate="no">{{ btp.last_name }}</span><br/><span translate="no">{{ btp.first_name }}</span><br/><span translate="no">{{ btp.rating_str }}</span></div>
+                        <div>{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ btp.last_name }}<br/>{{ btp.first_name }}<br/>{{ btp.rating_str }}</div>
                     </button>
                 </div>
 

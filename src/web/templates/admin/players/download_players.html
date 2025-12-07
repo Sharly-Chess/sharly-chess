@@ -62,10 +62,10 @@
                                 src="{{ macros.federation_flag_url(player.federation) }}"
                                 {{ macros.tooltip_attributes('info', player.federation, 'left') }}
                             />
-                            <span translate="no">{{ player.full_name }}</span>
-                            <span translate="no">{% if player.mail %}/ {{ player.mail }}{% endif %}</span>
-                            <span translate="no">{% if player.phone %}/ {{ player.phone }}{% endif %}</span>
-                            <span translate="no">{% if player.club %}/ {{ player.club }}{% endif %}</span>
+                            {{ player.full_name }}
+                            {% if player.mail %}/ {{ player.mail }}{% endif %}
+                            {% if player.phone %}/ {{ player.phone }}{% endif %}
+                            {% if player.club %}/ {{ player.club }}{% endif %}
                         </label>
                     </li>
                 {% endfor %}

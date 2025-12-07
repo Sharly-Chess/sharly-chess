@@ -159,7 +159,7 @@
         {% if screen.type in ['boards', 'input', 'players', 'ranking', ] %}
             {% for screen_set in screen.screen_sets_sorted_by_order %}
                 <div>
-                    <span translate="no">{{ screen_set.tournament.name }}</span>
+                    {{ screen_set.tournament.name }}
                     ({{ screen_set.numbers_str }})
                 </div>
             {% endfor %}

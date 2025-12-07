@@ -95,7 +95,7 @@
                 </form>
             {% elif not client.account.anonymous %}
                 <h4>
-                    {{ _('Logged in as [<span translate="no">%(account_name)s</span>]', account_name=client.account.full_name) }}
+                    {{ _('Logged in as [%(account_name)s]', account_name=client.account.full_name) }}
                 </h4>
                 <form
                     id="modal-form"

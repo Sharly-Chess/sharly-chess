@@ -2,7 +2,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Close check-in for tournament [<span translate="no">%(tournament)s</span>]', tournament=admin_tournament.name) }}
+                {{ _('Close check-in for tournament [%(tournament)s]', tournament=admin_tournament.name) }}
             </h2>
         </div>
         <div class="modal-body">
@@ -33,7 +33,7 @@
                         <div class="{% if num_players > max_players_before_collapse %}collapse{% endif %}" id="not-checked-in-players">
                             <ul>
                                 {% for tournament_player in admin_tournament.tournament_players_by_check_in_status[false] %}
-                                    <li translate="no">{{ tournament_player.full_name }}</li>
+                                    <li>{{ tournament_player.full_name }}</li>
                                 {% endfor %}
                             </ul>
                         </div>

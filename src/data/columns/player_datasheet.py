@@ -23,7 +23,7 @@ class LastNameColumn(DatasheetColumn):
         return 'last_name'
 
     def get_cell_content(self, player: Player) -> Any:
-        return f'<span translate="no">{player.last_name}</span>'
+        return player.last_name
 
 
 class FirstNameColumn(DatasheetColumn):
@@ -32,7 +32,7 @@ class FirstNameColumn(DatasheetColumn):
         return 'first_name'
 
     def get_cell_content(self, player: Player) -> Any:
-        return f'<span translate="no">{player.first_name}</span>'
+        return player.first_name
 
 
 class YearOfBirthColumn(DatasheetColumn):
@@ -50,7 +50,7 @@ class MailColumn(DatasheetColumn):
         return 'mail'
 
     def get_cell_content(self, player: Player) -> Any:
-        return f'<span translate="no">{player.mail or ""}</span>'
+        return player.mail or ''
 
 
 class PhoneColumn(DatasheetColumn):
@@ -59,7 +59,7 @@ class PhoneColumn(DatasheetColumn):
         return 'phone'
 
     def get_cell_content(self, player: Player) -> Any:
-        return f'<span translate="no">{player.phone or ""}</span>'
+        return player.phone or ''
 
 
 class GenderColumn(DatasheetColumn):
@@ -86,7 +86,7 @@ class TournamentColumn(DatasheetColumn):
         return 'tournament'
 
     def get_cell_content(self, player: Player) -> Any:
-        return f'<span translate="no">{player.single_tournament_player.tournament.name}</span>'
+        return player.single_tournament_player.tournament.name
 
 
 class FederationColumn(DatasheetColumn):
@@ -95,7 +95,7 @@ class FederationColumn(DatasheetColumn):
         return 'federation'
 
     def get_cell_content(self, player: Player) -> Any:
-        return f'<span translate="no">{player.federation.name}</span>'
+        return player.federation.name
 
 
 class ClubColumn(DatasheetColumn):
@@ -104,7 +104,7 @@ class ClubColumn(DatasheetColumn):
         return 'club'
 
     def get_cell_content(self, player: Player) -> Any:
-        return f'<span translate="no">{player.club.name}</span>'
+        return player.club.name
 
 
 class OwedColumn(DatasheetColumn):
@@ -131,7 +131,7 @@ class CommentColumn(DatasheetColumn):
         return 'comment'
 
     def get_cell_content(self, player: Player) -> Any:
-        return f'<span translate="no">{player.comment or ""}</span>'
+        return player.comment or ''
 
 
 class RatingColumn(DatasheetColumn):
@@ -148,4 +148,6 @@ class RatingColumn(DatasheetColumn):
         return f'{tournament}_{rating}'.lower()
 
     def get_cell_content(self, player: Player) -> Any:
-        return f'<span translate="no">{player.ratings[self.tournament_type].get_type_value(self.rating_type) or ""}</span>'
+        return (
+            player.ratings[self.tournament_type].get_type_value(self.rating_type) or ''
+        )

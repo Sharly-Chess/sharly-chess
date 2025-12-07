@@ -450,7 +450,7 @@
                         {% set ignored = norm.ignored_opponents_ids and opp.id in norm.ignored_opponents_ids %}
                         <tr class="{{ 'ignored' if ignored }}">
                             <td>{{ rnd }}</td>
-                            <td><input class="name-cell" value="{{ opp.full_name }}" translate="no" /></td>
+                            <td><input class="name-cell" value="{{ opp.full_name }}" /></td>
                             <td><input class="center"size="12" value="{{ opp.fide_id }}"  /></td>
                             <td>
                                 <div class="{{ 'error' if too_many_own or too_many_one }}">

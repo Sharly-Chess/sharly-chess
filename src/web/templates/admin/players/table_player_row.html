@@ -123,16 +123,16 @@
                 data-testid="check-in-cell"
                 {% if tournament_player.tournament.finished %}
                     class="bi-ban text-secondary"
-                    {{ macros.tooltip_attributes('warning', _('Tournament [<span translate="no">%(tournament)s</span>] is finished.', tournament=tournament_player.tournament.name), 'right') }}
+                    {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament)s] is finished.', tournament=tournament_player.tournament.name), 'right') }}
                 {% elif tournament_player.tournament.playing %}
                     class="bi-ban text-secondary"
-                    {{ macros.tooltip_attributes('warning', _('Tournament [<span translate="no">%(tournament)s</span>] is playing.', tournament=tournament_player.tournament.name), 'right') }}
+                    {{ macros.tooltip_attributes('warning', _('Tournament [%(tournament)s] is playing.', tournament=tournament_player.tournament.name), 'right') }}
                 {% elif not tournament_player.tournament.check_in_open %}
                     class="bi-ban text-secondary"
-                    {{ macros.tooltip_attributes('warning', _('Check-in is closed for tournament [<span translate="no">%(tournament)s</span>].', tournament=tournament_player.tournament.name), 'right') }}
+                    {{ macros.tooltip_attributes('warning', _('Check-in is closed for tournament [%(tournament)s].', tournament=tournament_player.tournament.name), 'right') }}
                 {% elif not tournament_player.can_check_in_out %}
                     class="bi-ban text-secondary"
-                    {{ macros.tooltip_attributes('warning', _('Player [<span translate="no">%(player)s</span>] is absent for the next round in tournament [<span translate="no">%(tournament)s</span>].', player=player.full_name, tournament=tournament_player.tournament.name), 'right') }}
+                    {{ macros.tooltip_attributes('warning', _('Player [%(player)s] is absent for the next round in tournament [%(tournament)s].', player=player.full_name, tournament=tournament_player.tournament.name), 'right') }}
                 {% else %}
                     {% if can_check_in %}
                         {% if player.check_in %}
@@ -163,9 +163,9 @@
     {{ admin_macros.extra_admin_column_cell("elo", player, admin_players_extra_columns)}}
     <td class="text-nowrap text-center">
         {% if tournament_player.rating_is_overridden(tournament_player.tournament.rating, tournament_player.tournament.player_rating_type) %}
-            <span {{ macros.tooltip_attributes('info', _('Standard rating used.'), 'right') }} translate="no">{{ tournament_player.rating_str }} <sup>*</sup></span>
+            <span {{ macros.tooltip_attributes('info', _('Standard rating used.'), 'right') }}>{{ tournament_player.rating_str }} <sup>*</sup></span>
         {% else %}
-            <span translate="no">{{ tournament_player.rating_str }}</span>
+            {{ tournament_player.rating_str }}
         {% endif %}
     </td>
     {{ admin_macros.extra_admin_column_cell("federation", player, admin_players_extra_columns)}}
@@ -175,14 +175,14 @@
                 <img
                     class="player-federation-flag pe-1"
                     src="{{ macros.federation_flag_url(player.federation) }}"
-                    {{ macros.tooltip_attributes('info', '<span translate="no">' ~ player.federation ~ '</span>', 'left') }}
+                    {{ macros.tooltip_attributes('info', player.federation, 'left') }}
                 />
             </span>
         </td>
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("club", player, admin_players_extra_columns)}}
     {% if 'club' in admin_players_filter_columns %}
-        <td class="text-nowrap text-start compact-col" style="max-width: 15em; overflow: hidden; text-overflow: ellipsis;" translate="no">
+        <td class="text-nowrap text-start compact-col" style="max-width: 15em; overflow: hidden; text-overflow: ellipsis;">
             {{ player.club }}
         </td>
     {% endif %}
@@ -218,7 +218,7 @@
             <i
                 class="bi-telephone {% if player.phone %}text-body cursor-pointer{% else %}text-secondary{% endif %}"
                 {% if player.phone %}
-                    {{ macros.tooltip_attributes('info', _('Phone: <span translate="no">%(phone)s</span> (click to copy to the clipboard).', phone=player.phone), 'right') }}
+                    {{ macros.tooltip_attributes('info', _('Phone: %(phone)s(click to copy to the clipboard).', phone=player.phone), 'right') }}
                 {% else %}
                     {{ macros.tooltip_attributes('warning', _('No phone defined.'), 'right') }}
                 {% endif %}

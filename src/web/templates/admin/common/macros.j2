@@ -153,9 +153,9 @@
     {%- if _icon_class -%}<i class="{{ _icon_class }}"></i>{%- endif -%}
 {% endmacro %}
 
-{% macro _select_option(value, text_or_option, selected, translation_allowed) %}
+{% macro _select_option(value, text_or_option, selected) %}
     {% if text_or_option is string %}
-        <option value="{{ value }}" {% if selected %}selected{% endif %} {% if not translation_allowed %}translate="no"{% endif %}>
+        <option value="{{ value }}" {% if selected %}selected{% endif %}>
             {{ text_or_option }}
         </option>
     {% else %}
@@ -191,8 +191,7 @@
     error=false,
     tooltip_select=false,
     search_placeholder='',
-    onchange='',
-    translation_allowed=true
+    onchange=''
 ) %}
     <select
         name="{{ name }}"
@@ -224,11 +223,11 @@
             {% if text_or_option_or_options is mapping %}
                 <optgroup label="{{ key }}">
                     {% for value, text_or_option in text_or_option_or_options.items() %}
-                        {{ _select_option(value, text_or_option, value in selected, translation_allowed) }}
+                        {{ _select_option(value, text_or_option, value in selected) }}
                     {% endfor %}
                 </optgroup>
             {% else %}
-                {{ _select_option(key, text_or_option_or_options, key in selected, translation_allowed) }}
+                {{ _select_option(key, text_or_option_or_options, key in selected) }}
             {% endif %}
         {% endfor %}
     </select>
@@ -447,8 +446,7 @@ with_indicator: display a loading indicator, optional
     hx_on_before_request='',
     hx_on_after_request='',
     hx_sync='',
-    hx_vals='',
-    translation_allowed=true
+    hx_vals=''
 ) %}
     <!-- {{ input_type }}_input({{ name }}) -->
         {% set id=name|replace('_', '-') %}
@@ -511,7 +509,6 @@ with_indicator: display a loading indicator, optional
                         error=error or (name in errors),
                         tooltip_select=tooltip_select,
                         onchange=onchange,
-                        translation_allowed=translation_allowed,
                     ) }}
                 {% elif input_type == 'switch' or input_type == 'checkbox' %}
                     <span
@@ -1108,8 +1105,7 @@ with_indicator: display a loading indicator, optional
     select_all=false,
     placeholder='',
     disabled=false,
-    input_tooltip='',
-    translation_allowed=true
+    input_tooltip=''
 ) %}
     {{ _generic_input(
         name=name,
@@ -1129,8 +1125,7 @@ with_indicator: display a loading indicator, optional
         select_all=select_all,
         placeholder=placeholder,
         disabled=disabled,
-        input_tooltip=input_tooltip,
-        translation_allowed=translation_allowed
+        input_tooltip=input_tooltip
     ) }}
 {% endmacro %}
 

@@ -11,7 +11,7 @@
         <div class="modal-body">
             <h4 class="mb-3">
                 {{ _('%(string)s:', string=_('Account')) }}
-                <span translate="no">{{ admin_account.full_name }}</span>
+                {{ admin_account.full_name }}
             </h4>
             <div class="d-flex flex-column gap-2">
                 {% if not admin_account.permissions %}

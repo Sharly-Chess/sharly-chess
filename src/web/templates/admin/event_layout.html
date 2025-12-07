@@ -28,7 +28,7 @@
 {% endblock admin_header_back_button %}
 
 {% block admin_nav %}
-    <h4 class="w-100 px-2 fs-5 mt-2 text-center" translate="no">{{ admin_event.name }}</h4>
+    <h4 class="w-100 px-2 fs-5 mt-2 text-center">{{ admin_event.name }}</h4>
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% include '/admin/event_layout_nav_item.html' %}
     {% endfor %}

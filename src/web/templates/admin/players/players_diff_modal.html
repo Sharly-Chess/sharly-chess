@@ -9,7 +9,7 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {% if admin_tournament and admin_event.tournaments_by_id|length > 1 %}
-                    {{ _('Players update for tournament [<span translate="no">%(tournament)s</span>]', tournament=admin_tournament.name) }}
+                    {{ _('Players update for tournament [%(tournament)s]', tournament=admin_tournament.name) }}
                 {% else %}
                     {{ _('Players update') }}
                 {% endif %}
@@ -275,9 +275,8 @@
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 <td
-                                        translate="no"
                                         scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}"
-                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [<span translate="no">%(old)s</span>] by [<span translate="no">%(new)s</span>]', old=player.last_name ~ ' ' ~ player.first_name, new=match_player.last_name ~ ' ' ~ match_player.first_name), 'top') }}{% endif %}
+                                        {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.last_name ~ ' ' ~ player.first_name, new=match_player.last_name ~ ' ' ~ match_player.first_name), 'top') }}{% endif %}
                                 >
                                     {{ match_player.full_name }}
                                 </td>
@@ -336,7 +335,7 @@
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 <td
                                     scope="col" class="text-nowrap text-center {{ player_class }} {{ field_class }}"
-                                    {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [<span translate="no">%(old)s</span>] by [<span translate="no">%(new)s</span>]', old=player.federation.name, new=match_player.federation.name), 'top') }}{% endif %}
+                                    {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.federation.name, new=match_player.federation.name), 'top') }}{% endif %}
                                 >
                                     {{ match_player.federation }}
                                 </td>
@@ -346,9 +345,9 @@
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
                                 <td
                                     scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}"
-                                    {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [<span translate="no">%(old)s</span>] by [<span translate="no">%(new)s</span>]', old=player.club.name, new=match_player.club.name), 'top') }}{% endif %}
+                                    {% if field_updated %}{{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.club.name, new=match_player.club.name), 'top') }}{% endif %}
                                 >
-                                    <span translate="no">{{ match_player.club.name if match_player.club.name else player.club.name }}</span>
+                                    {{ match_player.club.name if match_player.club.name else player.club.name }}
                                 </td>
                                 {{ admin_macros.extra_admin_column_cell("end", player_context, admin_players_update_extra_columns)}}
                                 {% if show_tournament %}

@@ -12,7 +12,7 @@
                             name='tournament_id',
                             label=_('Tournament:'),
                             select_options=tournament_options,
-                            data=data, errors=errors, translation_allowed=false
+                            data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12 col-md-6 mb-2">
@@ -116,7 +116,7 @@
                     <div>
                         <b>
                             {% if screen_set.tournament %}
-                                {{ _('Tournament: <span translate="no">%(tournament_name)s</span>', tournament_name=screen_set.tournament.name) }}
+                                {{ _('Tournament: %(tournament_name)s', tournament_name=screen_set.tournament.name) }}
                             {% else %}
                                 <span class="text-danger">
                                     {{ _('Tournament: not set') }}

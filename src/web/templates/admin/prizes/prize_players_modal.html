@@ -78,10 +78,10 @@
                                     ({{ ordinal_integer(player.rank)|safe }})
                                 </td>
                             {% endif %}
-                            <td class="text-nowrap {{ prize_class }}" translate="no">
+                            <td class="text-nowrap {{ prize_class }}">
                                 {{ player.full_name }}
                             </td>
-                            <td class="{{ prize_class }}" translate="no">
+                            <td class="{{ prize_class }}">
                                 {{ player.rating_str }}
                             </td>
                             <td class="{{ prize_class }}">
@@ -90,13 +90,13 @@
                             <td class="{{ prize_class }}">
                                 {{ player.gender.short_name }}
                             </td>
-                            <td class="{{ prize_class }}" translate="no">
+                            <td class="{{ prize_class }}">
                                 {{ player.federation.name }}
                             </td>
-                            <td class="{{ prize_class }}" translate="no">
+                            <td class="{{ prize_class }}">
                                 {{ player.club.name }}
                             </td>
-                            <td class="{{ prize_class }}" translate="no">
+                            <td class="{{ prize_class }}">
                                 {{ player.points_str }}
                             </td>
                             <td class="{{ prize_class }}">

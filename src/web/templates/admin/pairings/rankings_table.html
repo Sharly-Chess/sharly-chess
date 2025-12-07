@@ -93,11 +93,11 @@
                     <i class="bi-info-circle ps-2"></i>
                 </button>
             </td>
-            <td class="rating text-{{ 'start' if pairings_list else 'end' }}" translate="no">{{ tournament_player.rating_str }}</td>
+            <td class="rating text-{{ 'start' if pairings_list else 'end' }}">{{ tournament_player.rating_str }}</td>
             <td class="category text-center">{{ tournament_player.category.short_name }}</td>
             <td class="category text-center">{{ tournament_player.gender.short_name }}</td>
-            <td class="federation text-center" translate="no">{{ tournament_player.federation }}</td>
-            <td class="points text-center fw-bold" translate="no">{{ tournament_player.points_str }}</td>
+            <td class="federation text-center">{{ tournament_player.federation }}</td>
+            <td class="points text-center fw-bold">{{ tournament_player.points_str }}</td>
 
             {% for tie_break_value in tournament_player.tie_break_values %}
                 <td class="tie-break text-center compact-col {% if tie_break_value.tie_break.is_manual and sortable %}cursor-grap{% endif %}">

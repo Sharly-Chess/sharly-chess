@@ -15,7 +15,7 @@
             {% if action == 'update' %}
                 <h4 class="mb-3">
                     {{ _('%(string)s:', string=_('Account')) }}
-                    <span translate="no">{{ admin_account.full_name }}</span>
+                    {{ admin_account.full_name }}
                 </h4>
             {% endif %}
             <form
@@ -84,7 +84,7 @@
                             select_options=tournament_options,
                             multiple_select=true,
                             placeholder=_('Choose one, many or no tournaments.'),
-                            data=data, errors=errors, translation_allowed=false
+                            data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12 col-md-6">
@@ -96,7 +96,7 @@
                             select_options=tournament_options,
                             multiple_select=true,
                             placeholder=_('Choose one, many or no tournaments.'),
-                            data=data, errors=errors, translation_allowed=false
+                            data=data, errors=errors
                         ) }}
                     </div>
                 </div>
