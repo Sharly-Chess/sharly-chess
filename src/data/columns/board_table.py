@@ -220,7 +220,7 @@ class BlackNameColumn(NameColumn):
         return True
 
 
-class RatingColumn(Column, ABC):
+class RatingColumn(BoardColumn, ABC):
     @property
     def header_content(self) -> str:
         return ''
