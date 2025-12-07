@@ -128,6 +128,10 @@ msgid "%(string)s: %(value)s"
 msgstr ""
 
 #, python-format
+msgid "%(string)s: <span translate=\"no\">%(value)s</span>"
+msgstr ""
+
+#, python-format
 msgid "%f to %l"
 msgstr ""
 
@@ -912,10 +916,10 @@ msgid "Check-in / Results entry ({tournament_name})"
 msgstr ""
 
 #, python-format
-msgid "Check-in is closed for tournament [%(tournament)s]."
+msgid "Check-in is closed for tournament [<span translate=\"no\">%(tournament)s</span>]."
 msgstr ""
 
-msgid "Check-in is closed for tournament [{tournament}]."
+msgid "Check-in is closed for tournament [<span translate=\"no\">{tournament}</span>]."
 msgstr ""
 
 #, python-format
@@ -1001,11 +1005,11 @@ msgid "Close check-in"
 msgstr ""
 
 #, python-format
-msgid "Close check-in for tournament [%(tournament)s]"
+msgid "Close check-in for tournament [<span translate=\"no\">%(tournament)s</span>]"
 msgstr ""
 
 #, python-format
-msgid "Close check-in for tournament [%(tournament)s]."
+msgid "Close check-in for tournament [<span translate=\"no\">%(tournament)s</span>]."
 msgstr ""
 
 msgid "Club"
@@ -1265,7 +1269,7 @@ msgid "Criteria list"
 msgstr ""
 
 #, python-format
-msgid "Criterion [%(criterion)s] successfully created!"
+msgid "Criterion [<span translate=\"no\">%(criterion)s</span>] successfully created!"
 msgstr ""
 
 msgid "Crop marks:"
@@ -2560,7 +2564,7 @@ msgid "Log-level specific colors"
 msgstr ""
 
 #, python-format
-msgid "Logged in as [%(account_name)s]"
+msgid "Logged in as [<span translate=\"no\">%(account_name)s</span>]"
 msgstr ""
 
 msgid "Loss"
@@ -3153,7 +3157,7 @@ msgid "Open Admin Interface"
 msgstr ""
 
 #, python-format
-msgid "Open check-in for tournament [%(tournament)s]."
+msgid "Open check-in for tournament [<span translate=\"no\">%(tournament)s</span>]."
 msgstr ""
 
 msgid "Open documentation"
@@ -3400,7 +3404,7 @@ msgid "Phone number:"
 msgstr ""
 
 #, python-format
-msgid "Phone: %(phone)s (click to copy to the clipboard)."
+msgid "Phone: <span translate=\"no\">%(phone)s</span> (click to copy to the clipboard)."
 msgstr ""
 
 msgid "Place Cards"
@@ -3425,11 +3429,11 @@ msgid "Player Elo [Pts]"
 msgstr ""
 
 #, python-format
-msgid "Player [%(player)s] has been created."
+msgid "Player [<span translate=\"no\">%(player)s</span>] has been created."
 msgstr ""
 
 #, python-format
-msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament)s]."
+msgid "Player [<span translate=\"no\">%(player)s</span>] is absent for the next round in tournament [<span translate=\"no\">%(tournament)s</span>]."
 msgstr ""
 
 msgid "Player [{player_id}] - round {round}: "
@@ -3524,7 +3528,7 @@ msgid "Players update"
 msgstr ""
 
 #, python-format
-msgid "Players update for tournament [%(tournament)s]"
+msgid "Players update for tournament [<span translate=\"no\">%(tournament)s</span>]"
 msgstr ""
 
 msgid "Players' opponent: displayed"
@@ -3884,7 +3888,11 @@ msgid "Replace [%(old)s] by [%(new)s]"
 msgstr ""
 
 #, python-format
-msgid "Replace player [%(player)s]"
+msgid "Replace [<span translate=\"no\">%(old)s</span>] by [<span translate=\"no\">%(new)s</span>]"
+msgstr ""
+
+#, python-format
+msgid "Replace player [<span translate=\"no\">%(player)s</span>]"
 msgstr ""
 
 msgid "Replace the player to update this field."
@@ -5010,11 +5018,11 @@ msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournament"
 
 #, python-format
-msgid "Tournament [%(tournament)s] is finished."
+msgid "Tournament [<span translate=\"no\">%(tournament)s</span>] is finished."
 msgstr ""
 
 #, python-format
-msgid "Tournament [%(tournament)s] is playing."
+msgid "Tournament [<span translate=\"no\">%(tournament)s</span>] is playing."
 msgstr ""
 
 msgid "Tournament [{tournament_id}] not found."
@@ -5068,6 +5076,10 @@ msgstr ""
 
 #, python-format
 msgid "Tournament: %(tournament_name)s"
+msgstr ""
+
+#, python-format
+msgid "Tournament: <span translate=\"no\">%(tournament_name)s</span>"
 msgstr ""
 
 msgid "Tournament: not set"

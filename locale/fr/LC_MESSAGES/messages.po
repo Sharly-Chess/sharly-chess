@@ -128,6 +128,10 @@ msgid "%(string)s: %(value)s"
 msgstr "%(string)s : %(value)s"
 
 #, python-format
+msgid "%(string)s: <span translate=\"no\">%(value)s</span>"
+msgstr "%(string)s : <span translate=\"no\">%(value)s</span>"
+
+#, python-format
 msgid "%f to %l"
 msgstr "%f à %l"
 
@@ -912,11 +916,11 @@ msgid "Check-in / Results entry ({tournament_name})"
 msgstr "Pointage / Saisie des résultats ({tournament_name})"
 
 #, python-format
-msgid "Check-in is closed for tournament [%(tournament)s]."
-msgstr "Le pointage est fermé pour le tournoi [%(tournament)s]."
+msgid "Check-in is closed for tournament [<span translate=\"no\">%(tournament)s</span>]."
+msgstr "Le pointage est fermé pour le tournoi [<span translate=\"no\">%(tournament)s</span>]."
 
-msgid "Check-in is closed for tournament [{tournament}]."
-msgstr "Le pointage est fermé pour le tournoi [{tournament}]."
+msgid "Check-in is closed for tournament [<span translate=\"no\">{tournament}</span>]."
+msgstr "Le pointage est fermé pour le tournoi [<span translate=\"no\">{tournament}</span>]."
 
 #, python-format
 msgid "Check-in is not allowed after the tournament has started for the [%(pairing_system)s] pairing system."
@@ -1001,12 +1005,12 @@ msgid "Close check-in"
 msgstr "Fermer le pointage"
 
 #, python-format
-msgid "Close check-in for tournament [%(tournament)s]"
-msgstr "Fermer le pointage pour le tournoi [%(tournament)s]"
+msgid "Close check-in for tournament [<span translate=\"no\">%(tournament)s</span>]"
+msgstr "Fermer le pointage pour le tournoi [<span translate=\"no\">%(tournament)s</span>]"
 
 #, python-format
-msgid "Close check-in for tournament [%(tournament)s]."
-msgstr "Fermer le pointage pour le tournoi [%(tournament)s]."
+msgid "Close check-in for tournament [<span translate=\"no\">%(tournament)s</span>]."
+msgstr "Fermer le pointage pour le tournoi [<span translate=\"no\">%(tournament)s</span>]."
 
 msgid "Club"
 msgstr "Club"
@@ -1265,8 +1269,8 @@ msgid "Criteria list"
 msgstr "Liste des critères"
 
 #, python-format
-msgid "Criterion [%(criterion)s] successfully created!"
-msgstr "Critère [%(criterion)s] créé avec succès!"
+msgid "Criterion [<span translate=\"no\">%(criterion)s</span>] successfully created!"
+msgstr "Critère [<span translate=\"no\">%(criterion)s</span>] créé avec succès!"
 
 msgid "Crop marks:"
 msgstr "Traits de coupe :"
@@ -2560,8 +2564,8 @@ msgid "Log-level specific colors"
 msgstr "Couleurs spécifiques au niveau de log"
 
 #, python-format
-msgid "Logged in as [%(account_name)s]"
-msgstr "Connecté en tant que [%(account_name)s]"
+msgid "Logged in as [<span translate=\"no\">%(account_name)s</span>]"
+msgstr "Connecté en tant que [<span translate=\"no\">%(account_name)s</span>]"
 
 msgid "Loss"
 msgstr "Défaite"
@@ -3153,8 +3157,8 @@ msgid "Open Admin Interface"
 msgstr "Ouvrir l'interface d'administration"
 
 #, python-format
-msgid "Open check-in for tournament [%(tournament)s]."
-msgstr "Ouvrir le pointage pour le tournoi [%(tournament)s]."
+msgid "Open check-in for tournament [<span translate=\"no\">%(tournament)s</span>]."
+msgstr "Ouvrir le pointage pour le tournoi [<span translate=\"no\">%(tournament)s</span>]."
 
 msgid "Open documentation"
 msgstr "Ouvrir la documentation"
@@ -3400,8 +3404,8 @@ msgid "Phone number:"
 msgstr "Numéro de téléphone :"
 
 #, python-format
-msgid "Phone: %(phone)s (click to copy to the clipboard)."
-msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
+msgid "Phone: <span translate=\"no\">%(phone)s</span> (click to copy to the clipboard)."
+msgstr "Téléphone : <span translate=\"no\">%(phone)s</span> (cliquer pour copier dans le presse-papier)."
 
 msgid "Place Cards"
 msgstr "Chevalets"
@@ -3425,12 +3429,12 @@ msgid "Player Elo [Pts]"
 msgstr "Joueur·euse Elo [Pts]"
 
 #, python-format
-msgid "Player [%(player)s] has been created."
-msgstr "Le·la joueur·euse [%(player)s] a été créé·e."
+msgid "Player [<span translate=\"no\">%(player)s</span>] has been created."
+msgstr "Le·la joueur·euse [<span translate=\"no\">%(player)s</span>] a été créé·e."
 
 #, python-format
-msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament)s]."
-msgstr "Le·la joueur·euse [%(player)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament)s]."
+msgid "Player [<span translate=\"no\">%(player)s</span>] is absent for the next round in tournament [<span translate=\"no\">%(tournament)s</span>]."
+msgstr "Le·la joueur·euse [<span translate=\"no\">%(player)s</span>] est forfait pour la prochaine ronde dans le tournoi [<span translate=\"no\">%(tournament)s</span>]."
 
 msgid "Player [{player_id}] - round {round}: "
 msgstr "Joueur·euse [{player_id}] - ronde {round} : "
@@ -3524,8 +3528,8 @@ msgid "Players update"
 msgstr "Mise à jour des joueur·euses"
 
 #, python-format
-msgid "Players update for tournament [%(tournament)s]"
-msgstr "Mise à jour des joueur·euses du tournoi [%(tournament)s]"
+msgid "Players update for tournament [<span translate=\"no\">%(tournament)s</span>]"
+msgstr "Mise à jour des joueur·euses du tournoi [<span translate=\"no\">%(tournament)s</span>]"
 
 msgid "Players' opponent: displayed"
 msgstr "Adversaires des joueur·euses : affichée·es"
@@ -3884,8 +3888,12 @@ msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "Remplacer [%(old)s] par [%(new)s]"
 
 #, python-format
-msgid "Replace player [%(player)s]"
-msgstr "Remplacer le·la joueur·euse [%(player)s]"
+msgid "Replace [<span translate=\"no\">%(old)s</span>] by [<span translate=\"no\">%(new)s</span>]"
+msgstr "Remplacer [<span translate=\"no\">%(old)s</span>] par [<span translate=\"no\">%(new)s</span>]"
+
+#, python-format
+msgid "Replace player [<span translate=\"no\">%(player)s</span>]"
+msgstr "Remplacer le·la joueur·euse [<span translate=\"no\">%(player)s</span>]"
 
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
@@ -5010,12 +5018,12 @@ msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournoi"
 
 #, python-format
-msgid "Tournament [%(tournament)s] is finished."
-msgstr "Le tournoi [%(tournament)s] est terminé."
+msgid "Tournament [<span translate=\"no\">%(tournament)s</span>] is finished."
+msgstr "Le tournoi [<span translate=\"no\">%(tournament)s</span>] est terminé."
 
 #, python-format
-msgid "Tournament [%(tournament)s] is playing."
-msgstr "Le tournoi [%(tournament)s] est en cours."
+msgid "Tournament [<span translate=\"no\">%(tournament)s</span>] is playing."
+msgstr "Le tournoi [<span translate=\"no\">%(tournament)s</span>] est en cours."
 
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
@@ -5069,6 +5077,10 @@ msgstr "Tournoi :"
 #, python-format
 msgid "Tournament: %(tournament_name)s"
 msgstr "Tournoi : %(tournament_name)s"
+
+#, python-format
+msgid "Tournament: <span translate=\"no\">%(tournament_name)s</span>"
+msgstr "Tournoi : <span translate=\"no\">%(tournament_name)s</span>"
 
 msgid "Tournament: not set"
 msgstr "Tournoi : non défini"

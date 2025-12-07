@@ -127,9 +127,6 @@ msgstr ""
 msgid "FFE Licence"
 msgstr ""
 
-msgid "FFE Licence type"
-msgstr ""
-
 msgid "FFE certification number and password not defined."
 msgstr ""
 
@@ -479,4 +476,7 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "FFE Licence type"
+#~ msgstr ""
 
