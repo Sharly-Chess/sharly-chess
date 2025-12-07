@@ -102,6 +102,12 @@ class Player:
         return self.stored_player.date_of_birth
 
     @property
+    def date_of_birth_str(self) -> str:
+        if self.date_of_birth:
+            return format_date(self.date_of_birth)
+        return ''
+
+    @property
     def year_of_birth(self) -> int:
         if self.date_of_birth:
             return self.date_of_birth.year
