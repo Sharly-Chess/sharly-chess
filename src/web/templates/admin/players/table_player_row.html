@@ -224,7 +224,7 @@
             <i
                 class="bi-telephone {% if player.phone %}text-body cursor-pointer{% else %}text-secondary{% endif %}"
                 {% if player.phone %}
-                    {{ macros.tooltip_attributes('info', _('Phone: %(phone)s(click to copy to the clipboard).', phone=player.phone), 'right') }}
+                    {{ macros.tooltip_attributes('info', _('Phone: %(phone)s (click to copy to the clipboard).', phone=player.phone), 'right') }}
                 {% else %}
                     {{ macros.tooltip_attributes('warning', _('No phone defined.'), 'right') }}
                 {% endif %}
