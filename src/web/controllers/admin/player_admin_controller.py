@@ -2020,6 +2020,7 @@ class PlayerAdminController(BaseEventAdminController):
             ds_columns.LastNameColumn(),
             ds_columns.FirstNameColumn(),
             ds_columns.YearOfBirthColumn(),
+            ds_columns.DateOfBirthColumn(),
             ds_columns.MailColumn(),
             ds_columns.PhoneColumn(),
             ds_columns.GenderColumn(),
