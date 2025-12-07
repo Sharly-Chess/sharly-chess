@@ -20,7 +20,7 @@
                     class="prize-table"
                     style="grid-template-columns: max-content {% for column in player_columns %}{{ column.grid_column_template }} {% endfor %} max-content;"
                 >
-                    {% set assigned_prizes_by_category_id=prize_group.get_assigned_prizes_by_category_id() %}
+                    {% set assigned_prizes_by_category_id=prize_group.get_assigned_prizes_by_category_id(false) %}
                     {% for prize_category in prize_group.sorted_categories %}
                         <div class="section-title">
                             {{ prize_category.name }}

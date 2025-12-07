@@ -28,6 +28,7 @@ from data.print_documents.options import (
     RoundPrintOption,
     PlayerSortPrintOption,
     ShowWarningsPrintOption,
+    MonetaryOnlyPrintOption,
     ClubThresholdPrintOption,
     TournamentPrintOption,
     TournamentsPrintOption,
@@ -791,7 +792,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         ).get_prize_assignment_columns()
 
 
-class PrizeSigningPrintDocument(PrintDocument):
+class PrizeReceiptsPrintDocument(PrintDocument):
     @staticmethod
     def static_id() -> str:
         return 'prize-receipts'
@@ -802,7 +803,10 @@ class PrizeSigningPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentsPrintOption, ShowWarningsPrintOption]
+        return [
+            TournamentsPrintOption,
+            MonetaryOnlyPrintOption,
+        ]
 
     @property
     def title(self) -> str:
@@ -818,7 +822,7 @@ class PrizeSigningPrintDocument(PrintDocument):
         prize_currency = self.event.prize_currency
         return {
             'tournaments': self.tournaments,
-            'show_warnings': self.get_option_values()[0],
+            'monetary_only': self.get_option_values()[0],
             'ordinal_integer': Utils.ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(

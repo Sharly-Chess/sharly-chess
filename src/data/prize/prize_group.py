@@ -377,12 +377,37 @@ class PrizeGroup:
         return sorted_prizes
 
     def get_assigned_prizes_by_category_id(self) -> dict[int, list[AssignedPrize]]:
+        """Returns all the prize assignments (monetary or not, assigned to a player or not), by category ID."""
         assigned_prizes_by_category_id: dict[int, list[AssignedPrize]] = {
             category.id: [] for category in self.categories
         }
         for assigned_prize in self.assign_prizes():
             category_id = assigned_prize.prize.prize_category.id
             assigned_prizes_by_category_id[category_id].append(assigned_prize)
+        for category_id in assigned_prizes_by_category_id:
+            assigned_prizes_by_category_id[category_id] = sorted(
+                assigned_prizes_by_category_id[category_id],
+                key=lambda prize: (
+                    prize.place_index,
+                    prize.assigned_to is None,
+                    prize.assigned_to.rank if prize.assigned_to else 0,
+                ),
+            )
+        return assigned_prizes_by_category_id
+
+    def get_prizes_assigned_to_players_by_category_id(
+        self,
+        monetary_only: bool,
+    ) -> dict[int, list[AssignedPrize]]:
+        """Returns the prizes assigned to a player (monetary or not depending on monetary_only), by category ID."""
+        assigned_prizes_by_category_id: dict[int, list[AssignedPrize]] = {}
+        for assigned_prize in self.assign_prizes():
+            if not monetary_only or assigned_prize.prize.is_monetary:
+                if assigned_prize.assigned_to:
+                    category_id = assigned_prize.prize.prize_category.id
+                    if category_id not in assigned_prizes_by_category_id:
+                        assigned_prizes_by_category_id[category_id] = []
+                    assigned_prizes_by_category_id[category_id].append(assigned_prize)
         for category_id in assigned_prizes_by_category_id:
             assigned_prizes_by_category_id[category_id] = sorted(
                 assigned_prizes_by_category_id[category_id],
