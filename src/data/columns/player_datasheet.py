@@ -44,6 +44,17 @@ class YearOfBirthColumn(DatasheetColumn):
         return player.year_of_birth or ''
 
 
+class DateOfBirthColumn(DatasheetColumn):
+    @property
+    def header_content(self) -> str:
+        return 'dob'
+
+    def get_cell_content(self, player: Player) -> Any:
+        if not player.date_of_birth:
+            return ''
+        return player.date_of_birth.strftime('%Y-%m-%d')
+
+
 class MailColumn(DatasheetColumn):
     @property
     def header_content(self) -> str:
