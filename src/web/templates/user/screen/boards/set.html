@@ -71,7 +71,11 @@
                                                     data-bs-target="#modal-wrapper"
                                                 {% endif %}
                                             >
-                                                {{ macros.column_cell(column, board) }}
+                                                {% if column.cell_template %}
+                                                    {% include column.cell_template %}
+                                                {% else %}
+                                                    {{ macros.column_cell(column, board) }}
+                                                {% endif %}
                                             </div>
                                         {% endfor %}
                                     </div>
