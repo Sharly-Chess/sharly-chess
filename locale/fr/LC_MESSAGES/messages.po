@@ -1148,10 +1148,10 @@ msgid "Create"
 msgstr "Créer"
 
 msgid "Create a Prize Bracket"
-msgstr "Créer un Groupe Non-Cumulable"
+msgstr "Créer un groupe non-cumulable"
 
 msgid "Create a Prize Bracket now to get started."
-msgstr "Créer un Groupe Non-Cumulable pour commencer."
+msgstr "Créer un groupe non-cumulable pour commencer."
 
 msgid "Create a Prize Category now to continue."
 msgstr "Créez une catégorie de prix pour continuer."
