@@ -42,7 +42,7 @@ def generate_doc(
                             template_sub_dir: str = (
                                 'src/web/templates/admin/print'
                                 if embedded
-                                else 'examples/place_cards'
+                                else 'examples'
                             )
                             template_download_url: str = f'https://raw.githubusercontent.com/Sharly-Chess/sharly-chess/refs/heads/dev/{template_sub_dir}/place_cards/{template.id}.template'
                             f.write(

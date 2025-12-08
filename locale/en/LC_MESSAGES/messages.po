@@ -3883,7 +3883,8 @@ msgstr ""
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr ""
 
-msgid "Replace player"
+#, python-format
+msgid "Replace player [%(player)s]"
 msgstr ""
 
 msgid "Replace the player to update this field."
@@ -4429,6 +4430,12 @@ msgstr ""
 
 msgid "Su *** SUNDAY"
 msgstr "Su"
+
+msgid "Successfully logged in as [{account}]."
+msgstr ""
+
+msgid "Successfully logged out."
+msgstr ""
 
 msgid "Sum of Buchholz"
 msgstr ""
@@ -5732,9 +5739,6 @@ msgid "my-screen"
 msgstr ""
 
 msgid "no"
-msgstr ""
-
-msgid "no background image"
 msgstr ""
 
 msgid "player already received a PAB in a previous round"

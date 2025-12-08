@@ -267,12 +267,12 @@ class PapiRound:
     @classmethod
     def from_pairing(cls, pairing: Pairing, pab_value: Result) -> Self:
         papi_color: PapiColor | None
-        if (
-            pairing.result == Result.NO_RESULT and not pairing.board
-        ) or pairing.result == Result.REST_GAME:
-            papi_color = PapiColor.BYE
-        elif pairing.result == Result.PAIRING_ALLOCATED_BYE and pab_value != Result.WIN:
+        if pairing.result == Result.NO_RESULT and not pairing.board:
+            papi_color = PapiColor.UNPAIRED
+        elif (
             # Since Papi does not support custom PAB values, we convert these case to a Bye
+            pairing.result == Result.PAIRING_ALLOCATED_BYE and pab_value != Result.WIN
+        ) or pairing.result == Result.REST_GAME:
             papi_color = PapiColor.BYE
         elif pairing.color == BoardColor.WHITE:
             papi_color = PapiColor.WHITE

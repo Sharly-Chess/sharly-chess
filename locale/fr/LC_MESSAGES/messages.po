@@ -3883,8 +3883,9 @@ msgstr "Remplacer"
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr "Remplacer [%(old)s] par [%(new)s]"
 
-msgid "Replace player"
-msgstr "Remplacer le·la joueur·euse"
+#, python-format
+msgid "Replace player [%(player)s]"
+msgstr "Remplacer le·la joueur·euse [%(player)s]"
 
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
@@ -4379,7 +4380,7 @@ msgid "Staff default configuration"
 msgstr "Staff configuré par défaut"
 
 msgid "Staff information"
-msgstr "Information"
+msgstr "Informations"
 
 msgid "Staff member roles"
 msgstr "Rôles"
@@ -4429,6 +4430,12 @@ msgstr "Préférence forte"
 
 msgid "Su *** SUNDAY"
 msgstr "Di"
+
+msgid "Successfully logged in as [{account}]."
+msgstr "Connecté·e en tant que [{account}]."
+
+msgid "Successfully logged out."
+msgstr "Déconnexion réussie."
 
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
@@ -5733,9 +5740,6 @@ msgstr "mon-ecran"
 
 msgid "no"
 msgstr "non"
-
-msgid "no background image"
-msgstr "pas d'image de fond"
 
 msgid "player already received a PAB in a previous round"
 msgstr "le·la joueur·euse a déjà été exempt·e lors d'une ronde précédente"

@@ -144,10 +144,6 @@
             <th scope="col" class="text-nowrap text-center">
                 <div class="d-flex align-items-center">
                     {{ _('Cat *** CATEGORY COLUMN HEADER FOR PLAYERS') }}
-                    {% if admin_players_categories|length > 1 %}
-                        {{ admin_macros.admin_players_sort_link(url, 'bi-sort-numeric-down-alt', 'category_desc', admin_players_sort) }}
-                        {{ admin_macros.admin_players_sort_link(url, 'bi-sort-numeric-down', 'category_asc', admin_players_sort) }}
-                    {% endif %}
                     {% include 'filter_categories.html' %}
                 </div>
             </th>

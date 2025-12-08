@@ -545,7 +545,7 @@ class FfeLicencePlayerFilter(PlayerFilter):
 
     @staticmethod
     def static_name() -> str:
-        return _('FFE Licence type')
+        return _('FFE Licence')
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
@@ -563,9 +563,7 @@ class FfeLicencePlayerFilter(PlayerFilter):
 
     def full_name(self, tournament: 'Tournament') -> str:
         option_values = self.get_option_values()[0]
-        licence_types = [
-            PlayerFFELicence(value).compact_name for value in option_values
-        ]
+        licence_types = [PlayerFFELicence(value).short_name for value in option_values]
         return f'{self.name} ({", ".join(licence_types)})'
 
 
