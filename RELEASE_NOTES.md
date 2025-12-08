@@ -6,6 +6,7 @@
 - Increase the timeout of database download requests (3.3.4)
 - Fixed unauthorized error on logout (3.3.6)
 - Fixed data sources update (3.3.6)
+- Prevent browser translations (3.4.0)
 
 ## Interface
 
@@ -23,7 +24,7 @@
 - Manual ordering of tournaments (3.3.1)
 - Prevent manual reordering of 1 tournament (3.3.4)
 - Fixed the tie-break search (3.3.6)
-- Add an option for specify the base date for the age categories (3.4.0)
+- Add an option to specify the base date for the age categories (3.4.0)
 
 ## Players
 
