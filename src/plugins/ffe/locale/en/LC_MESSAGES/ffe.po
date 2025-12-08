@@ -127,9 +127,6 @@ msgstr ""
 msgid "FFE Licence"
 msgstr ""
 
-msgid "FFE Licence type"
-msgstr ""
-
 msgid "FFE certification number and password not defined."
 msgstr ""
 

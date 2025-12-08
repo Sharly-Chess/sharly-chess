@@ -4325,12 +4325,6 @@ msgstr ""
 msgid "Sort by:"
 msgstr ""
 
-msgid "Sort the players by category (oldest first)."
-msgstr ""
-
-msgid "Sort the players by category (youngest first)."
-msgstr ""
-
 msgid "Sort the players by club."
 msgstr ""
 
