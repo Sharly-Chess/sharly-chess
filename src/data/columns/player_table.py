@@ -101,19 +101,6 @@ class NameColumn(TournamentPlayerTableColumn):
         return 'fw-bold text-start text-nowrap'
 
 
-class CompactNameColumn(TournamentPlayerTableColumn):
-    @property
-    def header_content(self) -> str:
-        return _('Name *** NAME FOR TABLE HEADER')
-
-    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.full_name
-
-    @property
-    def shared_classes(self) -> str:
-        return 'fw-bold text-start text-nowrap'
-
-
 class RatingColumn(TournamentPlayerTableColumn):
     @property
     def header_template(self) -> str | None:

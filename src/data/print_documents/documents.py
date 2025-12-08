@@ -829,15 +829,7 @@ class PrizeReceiptsPrintDocument(PrintDocument):
                 Utils.currency_value_str,
                 currency=prize_currency,
             ),
-            'player_columns': self.player_columns,
         }
-
-    @property
-    def player_columns(self) -> list[TournamentPlayerTableColumn]:
-        assert self.event is not None
-        return PlayerColumnHandler(
-            self.event, ColumnUsage.PRINT
-        ).get_prize_receipts_columns()
 
 
 @dataclass

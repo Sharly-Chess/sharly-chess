@@ -149,13 +149,6 @@ class PlayerColumnHandler:
             ],
         )
 
-    def get_prize_receipts_columns(self) -> list[TournamentPlayerTableColumn]:
-        return self.get_columns(
-            [
-                pt.CompactNameColumn,
-            ],
-        )
-
 
 class BoardColumnHandler:
     def __init__(self, usage: ColumnUsage):
