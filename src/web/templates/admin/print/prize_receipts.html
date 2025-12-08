@@ -15,13 +15,10 @@
         {% if prizes_assigned_to_players_by_group_id_by_category_id %}
             {% for prize_group_id in prizes_assigned_to_players_by_group_id_by_category_id %}
                 {% set prize_group=tournament.prize_groups_by_id[prize_group_id] %}
-                {% if not loop.first %}
-                    <div class="short-separator"></div>
-                {% endif %}
                 <div class="centered">
                     <div
                         class="prize-table"
-                        style="grid-template-columns: max-content max-content max-content 1fr;"
+                        style="grid-template-columns: max-content 2fr max-content max-content 1fr;"
                     >
                         {% set prizes_assigned_to_players_by_category_id=prizes_assigned_to_players_by_group_id_by_category_id[prize_group_id] %}
                         {% for prize_category_id in prizes_assigned_to_players_by_category_id %}
@@ -34,25 +31,42 @@
                                 {{ prize_category.format_shared_prizes(prize_currency) }}
                             </div>
                             <div class="header">{{ _('Rk. *** RANK FOR TABLE HEADER') }}</div>
-                            <div class="header">{{ _('Name *** NAME FOR TABLE HEADER') }}</div>
-                            <div class="header">{{ _('Prize *** PRIZE FOR TABLE HEADER') }}</div>
+                            <div class="header text-start">{{ _('Name *** NAME FOR TABLE HEADER') }}</div>
+                            <div class="header text-end">{{ _('Prize *** PRIZE FOR TABLE HEADER') }}</div>
+                            <div class="header">{{ _('Payment') }}</div>
                             <div class="header">{{ _('Signature') }}</div>
                             {% for prize_assigned_to_player in prizes_assigned_to_players %}
                                 {% set classes = 'first-row' if loop.first else '' %}
-                                <div class="cell fw-bold {{classes}}">
-                                    {{ ordinal_integer(loop.index)|safe }}
+                                <div class="cell number {{classes}}">
+                                    <span class="fw-bold text-start text-nowrap">
+                                        {{ ordinal_integer(loop.index)|safe }}
+                                    </span>
                                 </div>
-                                <div class="cell fw-bold text-start text-nowrap  {{classes}}">
-                                    {{ prize_assigned_to_player.assigned_to.full_name }}
+                                <div class="cell player {{classes}}">
+                                    <span class="fw-bold text-start text-nowrap">
+                                        {{ prize_assigned_to_player.assigned_to.full_name }}
+                                    </span>
                                 </div>
-                                <div class="cell fw-bold {{classes}}">
-                                    {% if prize_assigned_to_player.prize.is_monetary %}
-                                        {{ format_prize_value(prize_assigned_to_player.value) }}
-                                    {% else %}
-                                        {{ prize_assigned_to_player.prize.description }}
-                                    {% endif %}
+                                <div class="cell value {{classes}}">
+                                    <span class="fw-bold text-start text-nowrap">
+                                        {% if prize_assigned_to_player.prize.is_monetary %}
+                                            {{ format_prize_value(prize_assigned_to_player.value) }}
+                                        {% else %}
+                                            {{ prize_assigned_to_player.prize.description }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div class="cell payment {{classes}}">
+                                    <span class="text-start text-nowrap">
+                                        {% if prize_assigned_to_player.prize.is_monetary %}
+                                            ☐ {{ _('Check') }}<br/><br/>☐ {{ _('Cash') }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </span>
                                 </div>
                                 <div class="cell signature {{classes}}">
+                                    <span></span>
                                 </div>
                             {% endfor %}
                         {% endfor %}

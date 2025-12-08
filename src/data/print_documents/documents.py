@@ -774,7 +774,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
         prize_currency = self.event.prize_currency
         return {
             'tournaments': self.tournaments,
-            'show_warnings': self.get_option_values()[0],
+            'show_warnings': self._get_option(ShowWarningsPrintOption).value,
             'ordinal_integer': Utils.ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
@@ -822,7 +822,7 @@ class PrizeReceiptsPrintDocument(PrintDocument):
         prize_currency = self.event.prize_currency
         return {
             'tournaments': self.tournaments,
-            'monetary_only': self.get_option_values()[0],
+            'monetary_only': self._get_option(MonetaryOnlyPrintOption).value,
             'ordinal_integer': Utils.ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(

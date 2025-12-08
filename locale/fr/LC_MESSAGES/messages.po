@@ -868,6 +868,9 @@ msgstr "Candidat Maître"
 msgid "Cannot be both chief and deputy on the same tournament."
 msgstr "Impossible d’être à la fois arbitre principal·e et arbitre adjoint·e sur le même tournoi."
 
+msgid "Cash"
+msgstr "Espèces"
+
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 msgstr "Cat"
 
@@ -886,6 +889,9 @@ msgstr "La catégorie [%(category)s] créée avec succès !"
 
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
+
+msgid "Check"
+msgstr "Chèque"
 
 msgid "Check connection"
 msgstr "Vérifier la connexion"
@@ -3377,6 +3383,9 @@ msgstr "Évènements passés"
 
 msgid "Password:"
 msgstr "Mot de passe :"
+
+msgid "Payment"
+msgstr "Paiement"
 
 msgid "Pending"
 msgstr "À venir"

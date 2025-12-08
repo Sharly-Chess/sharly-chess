@@ -868,6 +868,9 @@ msgstr ""
 msgid "Cannot be both chief and deputy on the same tournament."
 msgstr ""
 
+msgid "Cash"
+msgstr ""
+
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 msgstr "Cat"
 
@@ -885,6 +888,9 @@ msgid "Category [%(category)s] successfully created!"
 msgstr ""
 
 msgid "Change the player's tournament."
+msgstr ""
+
+msgid "Check"
 msgstr ""
 
 msgid "Check connection"
@@ -3376,6 +3382,9 @@ msgid "Passed events"
 msgstr ""
 
 msgid "Password:"
+msgstr ""
+
+msgid "Payment"
 msgstr ""
 
 msgid "Pending"
