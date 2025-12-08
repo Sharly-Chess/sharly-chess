@@ -152,7 +152,7 @@ class PlayerColumnHandler:
     def get_prize_receipts_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
             [
-                pt.NameColumn,
+                pt.CompactNameColumn,
             ],
         )
 

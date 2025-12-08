@@ -45,10 +45,54 @@
 
 .cell {
     white-space: nowrap;
-    text-align: center;
+}
+
+.prize-receipts .page-content {
+    min-width: 700px;
+}
+
+.prize-receipts .prize-table {
+    width: 100%;
+    max-width: 100%;
+}
+
+@media print {
+    .prize-receipts .page-content {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .prize-receipts .prize-table {
+        width: 100%;
+        max-width: 100%;
+    }
+}
+
+.prize-receipts .prize-table {
+    gap: 0;
+}
+
+.prize-receipts .section-title {
+    margin-top: 2.5rem;
+}
+
+.prize-receipts .header {
+    padding: 0.5rem 1.3rem 0.5rem 1.3rem;
 }
 
 .prize-receipts .cell {
-    padding: 3em 0.5em;
-    border: 1px solid black;
+    border-bottom: 1px solid black;
+    border-left: 1px solid black;
+    padding: 1.3rem;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.prize-receipts .cell.signature {
+    border-right: 1px solid black;
+}
+
+.prize-receipts .cell.first-row {
+    border-top: 1px solid black;
 }

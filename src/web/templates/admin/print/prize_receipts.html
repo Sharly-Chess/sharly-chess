@@ -21,7 +21,7 @@
                 <div class="centered">
                     <div
                         class="prize-table"
-                        style="grid-template-columns: max-content {% for column in player_columns %}{{ column.grid_column_template }} {% endfor %} max-content max-content;"
+                        style="grid-template-columns: max-content {% for column in player_columns %}{{ column.grid_column_template }} {% endfor %} max-content 1fr;"
                     >
                         {% set prizes_assigned_to_players_by_category_id=prizes_assigned_to_players_by_group_id_by_category_id[prize_group_id] %}
                         {% for prize_category_id in prizes_assigned_to_players_by_category_id %}
@@ -46,11 +46,12 @@
                             <div class="header">{{ _('Prize *** PRIZE FOR TABLE HEADER') }}</div>
                             <div class="header">{{ _('Signature') }}</div>
                             {% for prize_assigned_to_player in prizes_assigned_to_players %}
-                                <div class="cell fw-bold">
+                                {% set classes = 'first-row' if loop.first else '' %}
+                                <div class="cell fw-bold {{classes}}">
                                     {{ ordinal_integer(loop.index)|safe }}
                                 </div>
                                 {% for column in player_columns %}
-                                    <div class="cell {{ column.get_cell_classes(tournament_player) }}">
+                                    <div class="cell {{classes}} {{ column.get_cell_classes(tournament_player) }}">
                                         {% if column.cell_template %}
                                             {% include column.cell_template %}
                                         {% else %}
@@ -58,14 +59,14 @@
                                         {% endif %}
                                     </div>
                                 {% endfor %}
-                                <div class="cell fw-bold">
+                                <div class="cell fw-bold {{classes}}">
                                     {% if prize_assigned_to_player.prize.is_monetary %}
                                         {{ format_prize_value(prize_assigned_to_player.value) }}
                                     {% else %}
                                         {{ prize_assigned_to_player.prize.description }}
                                     {% endif %}
                                 </div>
-                                <div class="cell fw-bold">
+                                <div class="cell signature {{classes}}">
                                 </div>
                             {% endfor %}
                         {% endfor %}
