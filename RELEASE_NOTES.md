@@ -2,8 +2,8 @@
 
 # General
 
-- Anonymized export of the events (3.4.0)
-- Prevent browser translations (3.4.0)
+- Export of events for sharing purposes (3.4.0)
+- Ask teh browser not to translate the interface (3.4.0)
 
 ## Interface
 
@@ -11,7 +11,7 @@
 
 ## Players
 
-- Added an option for specify the base date for the age categories (3.4.0)
+- Added an option to specify the base date for the age categories (3.4.0)
 
 ## Printing
 
@@ -23,4 +23,4 @@
 
 ## _Chess-Results_
 
-- Added "State" field to events (3.4.0)
+- Added "State" field to the Chess-Results export for certain federations (3.4.0)
