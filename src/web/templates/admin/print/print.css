@@ -85,6 +85,10 @@ tr td, tr th {
 }
 
 @media print {
+    body {
+        margin-left: 2.5rem;
+        margin-right: 2.5rem;
+    }
     .qr-code {
         max-width: 80%;
         width: 80%;

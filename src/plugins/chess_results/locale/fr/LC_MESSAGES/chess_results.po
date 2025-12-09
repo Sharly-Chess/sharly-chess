@@ -73,6 +73,9 @@ msgstr "Scannez pour accéder au tournoi sur le site Chess-Results.com."
 msgid "Site"
 msgstr "Site"
 
+msgid "State:"
+msgstr "État :"
+
 msgid "Status"
 msgstr "Statut"
 

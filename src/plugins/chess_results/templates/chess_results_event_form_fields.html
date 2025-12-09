@@ -1,7 +1,7 @@
 <div class="row gy-2 gx-3">
     <div class="col-12 col-md-6">
         {{ admin_macros.switch_input(
-            name='auto_upload',
+            name='chess_results_auto_upload',
             label='',
             placeholder=_('Auto-upload results'),
             disabled=not client.can_update_event,
@@ -10,7 +10,7 @@
     </div>
     <div class="col-12 col-md-6">
         {{ admin_macros.number_input(
-            name='auto_upload_delay',
+            name='chess_results_auto_upload_delay',
             label=_('Minimum delay between uploads (minutes):'),
             placeholder=CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
             disabled=not client.can_update_event,
@@ -20,11 +20,308 @@
     </div>
     <div class="col-12">
         {{ admin_macros.text_input(
-            name='remark',
+            name='chess_results_remark',
             label=_('Remark:'),
             placeholder=(_('E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible.')),
             disabled=not client.can_update_event,
             data=data, errors=errors,
         ) }}
     </div>
+    <div id="state-container" class="col-12">
+        {{ admin_macros.select_input(
+            name='chess_results_state',
+            label=_('State:'),
+            select_options={},
+            data=data, errors=errors
+            ) }}
+    </div>
 </div>
+
+<script>
+    var federationStates = {
+        AUT: [
+            { id: 1, name: "Wien" },
+            { id: 2, name: "Niederösterreich" },
+            { id: 3, name: "Burgenland" },
+            { id: 4, name: "Oberösterreich" },
+            { id: 5, name: "Salzburg" },
+            { id: 6, name: "Tirol" },
+            { id: 7, name: "Vorarlberg" },
+            { id: 8, name: "Steiermark" },
+            { id: 9, name: "Kärnten" },
+            { id: 10, name: "Überregional" },
+        ],
+
+        BRA: [
+            { id: 1, name: "Acre (AC)" },
+            { id: 2, name: "Alagoas (AL)" },
+            { id: 3, name: "Amapá (AP)" },
+            { id: 4, name: "Amazonas (AM)" },
+            { id: 5, name: "Bahia (BA)" },
+            { id: 6, name: "Ceara (CE)" },
+            { id: 7, name: "Distrito Federal (DF)" },
+            { id: 8, name: "Espirito Santo (ES)" },
+            { id: 9, name: "Goiás (GO)" },
+            { id: 10, name: "Maranhão (MA)" },
+            { id: 11, name: "Mato Grosso (MT)" },
+            { id: 12, name: "Mato Grosso do Sul (MS)" },
+            { id: 13, name: "Minas Gerais (MG)" },
+            { id: 14, name: "Pará (PA)" },
+            { id: 15, name: "Paraíba (PB)" },
+            { id: 16, name: "Paraná (PR)" },
+            { id: 17, name: "Pernambuco (PE)" },
+            { id: 18, name: "Piauí (PI)" },
+            { id: 19, name: "Rio de Janeiro (RJ)" },
+            { id: 20, name: "Rio Grande do Norte (RN)" },
+            { id: 21, name: "Rio Grande do Sul (RS)" },
+            { id: 22, name: "Rondônia (RO)" },
+            { id: 23, name: "Roraima (RR)" },
+            { id: 24, name: "Santa Catarina (SC)" },
+            { id: 25, name: "São Paulo (SP)" },
+            { id: 26, name: "Sergipe (SE)" },
+            { id: 27, name: "Tocantins (TO)" },
+        ],
+
+        INA: [
+            { id: 0, name: "Other" },
+            { id: 1, name: "Aceh" },
+            { id: 2, name: "North Sumatera" },
+            { id: 3, name: "South Sumatera" },
+            { id: 4, name: "West Sumatera" },
+            { id: 5, name: "Bengkulu" },
+            { id: 6, name: "Riau" },
+            { id: 7, name: "Kepulauan Riau" },
+            { id: 8, name: "Jambi" },
+            { id: 9, name: "Bangka Belitung" },
+            { id: 10, name: "Lampung" },
+            { id: 11, name: "West Kalimantan" },
+            { id: 12, name: "East Kalimantan" },
+            { id: 13, name: "South Kalimantan" },
+            { id: 14, name: "Central Kalimantan" },
+            { id: 15, name: "North Kalimantan" },
+            { id: 16, name: "Banten" },
+            { id: 17, name: "Dki Jakarta" },
+            { id: 18, name: "West Java" },
+            { id: 19, name: "Central Java" },
+            { id: 20, name: "D . I . Yogyakarta" },
+            { id: 21, name: "East Java" },
+            { id: 22, name: "Bali" },
+            { id: 23, name: "Gorontalo" },
+            { id: 24, name: "West Sulawesi" },
+            { id: 25, name: "Central Sulawesi" },
+            { id: 26, name: "North Sulawesi" },
+            { id: 27, name: "Southeast Sulawesi" },
+            { id: 28, name: "South Sulawesi" },
+            { id: 29, name: "West Nusa Tenggara" },
+            { id: 30, name: "East Nusa Tenggara" },
+            { id: 31, name: "North Maluku" },
+            { id: 32, name: "Maluku" },
+            { id: 33, name: "West Papua" },
+            { id: 34, name: "Papua" },
+            { id: 35, name: "Central Papua" },
+            { id: 36, name: "Mountains Papua" },
+            { id: 37, name: "South Papua" },
+            { id: 38, name: "Southwest Papua" },
+        ],
+
+        IND: [
+            { id: 1, name: "Andhra Pradesh / ఆంధ్రప్రదేశ్" },
+            { id: 2, name: "Arunachal Pradesh / अरुणाचल प्रदेश " },
+            { id: 3, name: "Assam / অসম" },
+            { id: 4, name: "Bihar / बिहार " },
+            { id: 5, name: "Chhattisgarh / छत्तीसगढ़ " },
+            { id: 6, name: "Goa / गोवा " },
+            { id: 7, name: "Gujarat / ગુજરાત" },
+            { id: 8, name: "Haryana / हरियाणा " },
+            { id: 9, name: "Himachal Pradesh / हिमाचल प्रदेश " },
+            { id: 10, name: "Jammu and Kashmir / जम्मु और कश्मीर " },
+            { id: 11, name: "Jharkhand / झारखण्ड " },
+            { id: 12, name: "Karnataka / ಕರ್ನಾಟಕ" },
+            { id: 13, name: "Kerala / കേരളം" },
+            { id: 14, name: "Madhya Pradesh / मध्य प्रदेश " },
+            { id: 15, name: "Maharashtra / महाराष्ट्र" },
+            { id: 16, name: "Manipur / मणिपुर " },
+            { id: 17, name: "Meghalaya / मेघालय " },
+            { id: 18, name: "Mizoram / मिजोरम " },
+            { id: 19, name: "Nagaland / नागालैंड " },
+            { id: 20, name: "Odisha / ଓଡିଶା" },
+            { id: 21, name: "Punjab / ਪੰਜਾਬ" },
+            { id: 22, name: "Rajasthan / राजस्थान " },
+            { id: 23, name: "Sikkim / सिक्किम " },
+            { id: 24, name: "Tamil Nadu / தமிழ்நாடு" },
+            { id: 25, name: "Telangana / తెలంగాణ" },
+            { id: 26, name: "Tripura / त्रिपुरा " },
+            { id: 27, name: "Uttar Pradesh / उत्तर प्रदेश " },
+            { id: 28, name: "Uttarakhand / उत्तराखंड" },
+            { id: 29, name: "West Bengal / পশ্চিমবঙ্গ" },
+            { id: 30, name: "Union territories" },
+            { id: 31, name: "Other / " },
+        ],
+
+        KAZ: [
+            { id: 0, name: "Other" },
+            { id: 1, name: "Abay region" },
+            { id: 2, name: "Akmola region" },
+            { id: 3, name: "Aktobe region" },
+            { id: 4, name: "Almaty" },
+            { id: 5, name: "Almaty region" },
+            { id: 6, name: "Astana" },
+            { id: 7, name: "Atyrau region" },
+            { id: 8, name: "Batys Kazakhstan region" },
+            { id: 9, name: "Karaganda region" },
+            { id: 10, name: "Kostanay region" },
+            { id: 11, name: "Kyzylorda region" },
+            { id: 12, name: "Mangystau region" },
+            { id: 13, name: "Pavlodar region" },
+            { id: 14, name: "Shygys Kazakhstan region" },
+            { id: 15, name: "Shymkent" },
+            { id: 16, name: "Soltustik Kazakhstan region" },
+            { id: 17, name: "Turkestan region" },
+            { id: 18, name: "Ulytau region" },
+            { id: 19, name: "Zhambyl region" },
+            { id: 20, name: "Zhetisu region" },
+        ],
+
+        KGZ: [
+            { id: 0, name: "Other" },
+            { id: 1, name: "Batken region " },
+            { id: 2, name: "Bishkek" },
+            { id: 3, name: "Chuy region " },
+            { id: 4, name: "Issyk-Kul region" },
+            { id: 5, name: "Jalal-Abad region " },
+            { id: 6, name: "Naryn region" },
+            { id: 7, name: "Osh" },
+            { id: 8, name: "Osh region " },
+            { id: 9, name: "Talas region" },
+        ],
+
+        MAS: [
+            { id: 0, name: "Other" },
+            { id: 1, name: "Johor" },
+            { id: 2, name: "Kedah" },
+            { id: 3, name: "Kelantan" },
+            { id: 4, name: "Kuala Lumpur" },
+            { id: 5, name: "Labuan" },
+            { id: 6, name: "Melaka" },
+            { id: 7, name: "Negeri Sembilan" },
+            { id: 8, name: "Pahang" },
+            { id: 9, name: "Perak" },
+            { id: 10, name: "Perlis" },
+            { id: 11, name: "Pulau Pinang" },
+            { id: 12, name: "Putrajaya" },
+            { id: 13, name: "Sabah" },
+            { id: 14, name: "Sarawak" },
+            { id: 15, name: "Selangor" },
+            { id: 16, name: "Terengganu" },
+        ],
+
+        MEX: [
+            { id: 1, name: "Aguascalientes" },
+            { id: 2, name: "Baja California" },
+            { id: 3, name: "Baja California Sur" },
+            { id: 4, name: "Campeche" },
+            { id: 5, name: "Coahuila" },
+            { id: 6, name: "Colima" },
+            { id: 7, name: "Chiapas" },
+            { id: 8, name: "Chihuahua" },
+            { id: 9, name: "Durango" },
+            { id: 10, name: "Ciudad de México" },
+            { id: 11, name: "Estado de México" },
+            { id: 12, name: "Guanajuato" },
+            { id: 13, name: "Guerrero" },
+            { id: 14, name: "Hidalgo" },
+            { id: 15, name: "Jalisco" },
+            { id: 16, name: "Michoacán" },
+            { id: 17, name: "Morelos" },
+            { id: 18, name: "Nayarit" },
+            { id: 19, name: "Nuevo León" },
+            { id: 20, name: "Oaxaca" },
+            { id: 21, name: "Puebla" },
+            { id: 22, name: "Querétaro" },
+            { id: 23, name: "Quintana Roo" },
+            { id: 24, name: "San Luis Potosí" },
+            { id: 25, name: "Sinaloa" },
+            { id: 26, name: "Sonora" },
+            { id: 27, name: "Tabasco" },
+            { id: 28, name: "Tamaulipas" },
+            { id: 29, name: "Tlaxcala" },
+            { id: 30, name: "Veracruz" },
+            { id: 31, name: "Yucatán" },
+            { id: 32, name: "Zacatecas" },
+            { id: 33, name: "Otros" },
+        ],
+
+        POR: [
+            { id: 0, name: "Other" },
+            { id: 1, name: "national championships" },
+            { id: 2, name: "Nacional" },
+            { id: 3, name: "Aveiro" },
+            { id: 4, name: "Beja" },
+            { id: 5, name: "Braga" },
+            { id: 6, name: "Bragança" },
+            { id: 7, name: "Castelo Branco" },
+            { id: 8, name: "Coimbra" },
+            { id: 9, name: "Évora" },
+            { id: 10, name: "Faro" },
+            { id: 11, name: "Guarda" },
+            { id: 12, name: "Leiria" },
+            { id: 13, name: "Lisboa" },
+            { id: 14, name: "Portalegre" },
+            { id: 15, name: "Porto" },
+            { id: 16, name: "Santarém" },
+            { id: 17, name: "Setúbal" },
+            { id: 18, name: "Viana do Castelo" },
+            { id: 19, name: "Vila Real" },
+            { id: 20, name: "Viseu" },
+            { id: 21, name: "Açores" },
+            { id: 22, name: "Madeira" },
+        ],
+
+        RSA: [
+            { id: 0, name: "Other" },
+            { id: 1, name: "Eastern Cape" },
+            { id: 2, name: "Free State" },
+            { id: 3, name: "Gauteng" },
+            { id: 4, name: "KwaZulu-Natal" },
+            { id: 5, name: "Limpopo" },
+            { id: 6, name: "Mpumalanga" },
+            { id: 7, name: "North West" },
+            { id: 8, name: "Northern Cape" },
+            { id: 9, name: "Western Cape" },
+        ],
+    };
+</script>
+<script>
+    var federationSelect = $('.modal #federation');
+    var stateSelect = $('.modal #chess-results-state');
+
+    function updateStates() {
+        const federation = federationSelect.val();
+        const states = federationStates[federation] || [];
+        const selectedState = "{{ data.chess_results_state }}" ? parseInt("{{ data.chess_results_state }}") : -1;
+
+        stateSelect.empty();
+        if (states.length > 0) {
+            states.forEach(state => {
+                stateSelect.append(
+                    $('<option>', {
+                        value: state.id,
+                        text: state.name,
+                        selected: state.id === selectedState && federation === "{{ data.federation }}",
+                    })
+                );
+                stateSelect.prop('disabled', false);
+            });
+            $('#state-container').show();
+        } else {
+            $('#state-container').hide();
+        }
+        stateSelect.trigger('change');
+        setTimeout(() => {
+            // Waits for the call stack to be cleared (i.e. the end of the `change` event)
+            $('.select2-search__field').css('width', '100%');
+        }, 0);
+    }
+    federationSelect.on('change', updateStates);
+    updateStates();
+</script>

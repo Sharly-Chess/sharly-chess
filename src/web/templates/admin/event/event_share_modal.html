@@ -1,0 +1,67 @@
+<div class="modal-dialog modal-dialog-scrollable" style="--bs-modal-width: min(90vw, 550px);">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Share event') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.switch_input(
+                            name='include_players',
+                            label='',
+                            placeholder=_('Include players'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        {{ admin_macros.switch_input(
+                            name='include_private_player_data',
+                            label='',
+                            placeholder=_('Include private player data (emails, phone numbers, etc.)'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12">
+                        {{ admin_macros.switch_input(
+                            name='include_connection_data',
+                            label='',
+                            placeholder=_('Include IDs and passwords for uploading results'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="button"
+                class="text-nowrap white btn btn-primary"
+                class="dropdown-item text-start cursor-pointer"
+                data-export-url="{{ url_for(
+                    'admin-event-export',
+                    event_uniq_id=admin_event.uniq_id,
+                ) }}"
+                onclick="downloadFile(this, 'modal-form'); closeModal();"
+            >
+                <i class="bi-save-fill pe-1"></i>
+                {{ _('Share') }}
+            </button>
+        </div>
+    </div>
+</div>
