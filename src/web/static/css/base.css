@@ -659,6 +659,10 @@ body[data-bs-theme=light] .btn-primary {
     --bs-btn-hover-bg: #36393d;
 }
 
+[data-bs-theme=dark] .card:has(button:focus), [data-bs-theme=dark] .card:has(button:active) {
+  outline: none;
+}
+
 [data-bs-theme=dark] .dropdown-menu {
     --bs-dropdown-bg: #515b5c;
     --bs-dropdown-link-color: var(--bs-body-color);
