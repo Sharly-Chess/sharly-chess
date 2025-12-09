@@ -43,7 +43,38 @@ class Migration(BaseMigration):
             )
             """
         )
-        self.database.execute('INSERT INTO `screen_copy` SELECT * FROM `screen`')
+        fields = [
+            'id',
+            'uniq_id',
+            'name',
+            'type',
+            'public',
+            'columns',
+            'menu_link',
+            'menu_text',
+            'menu',
+            'timer_id',
+            'players_show_unpaired',
+            'results_limit',
+            'results_tournament_ids',
+            'background_image',
+            'background_color',
+            'last_update',
+            'results_max_age',
+            'input_exit_button',
+            'message_default',
+            'message_text',
+            'ranking_crosstable',
+            'ranking_round',
+            'ranking_min_points',
+            'ranking_max_points',
+            'font_size',
+            'players_show_opponent',
+        ]
+        fields_str = ', '.join(f'`{field}`' for field in fields)
+        self.database.execute(
+            f'INSERT INTO `screen_copy` ({fields_str}) SELECT {fields_str} FROM `screen`'
+        )
         self.database.execute('DROP TRIGGER delete_screen_trigger')
         self.database.execute('DROP TABLE `screen`')
         self.database.execute('ALTER TABLE `screen_copy` RENAME TO `screen`')
@@ -101,7 +132,39 @@ class Migration(BaseMigration):
             )
             """
         )
-        self.database.execute('INSERT INTO `family_copy` SELECT * FROM `family`')
+        fields = [
+            'id',
+            'uniq_id',
+            'type',
+            'public',
+            'name',
+            'players_show_unpaired',
+            'columns',
+            'menu_link',
+            'menu_text',
+            'menu',
+            'timer_id',
+            'tournament_id',
+            'range',
+            'first',
+            'last',
+            'parts',
+            'number',
+            'last_update',
+            'input_exit_button',
+            'message_default',
+            'message_text',
+            'ranking_crosstable',
+            'ranking_round',
+            'ranking_min_points',
+            'ranking_max_points',
+            'font_size',
+            'players_show_opponent',
+        ]
+        fields_str = ', '.join(f'`{field}`' for field in fields)
+        self.database.execute(
+            f'INSERT INTO `family_copy` ({fields_str}) SELECT {fields_str} FROM `family`'
+        )
         self.database.execute('DROP TABLE `family`')
         self.database.execute('ALTER TABLE `family_copy` RENAME TO `family`')
 
@@ -122,10 +185,10 @@ class Migration(BaseMigration):
             )
             """
         )
+        fields = ['id', 'name', 'public', 'delay', 'message_default', 'message_text']
+        fields_str = ', '.join(f'`{field}`' for field in fields)
         self.database.execute(
-            'INSERT INTO `rotator_copy`('
-            '   `id`, `name`, `public`, `delay`, `message_default`, `message_text`'
-            ') SELECT * FROM `rotator`'
+            f'INSERT INTO `rotator_copy` ({fields_str}) SELECT {fields_str} FROM `rotator`'
         )
         self.database.execute('DROP TABLE `rotator`')
         self.database.execute('ALTER TABLE `rotator_copy` RENAME TO `rotator`')
@@ -145,10 +208,10 @@ class Migration(BaseMigration):
             )
             """
         )
+        fields = ['id', 'name', 'public', 'delay', 'message_default', 'message_text']
+        fields_str = ', '.join(f'`{field}`' for field in fields)
         self.database.execute(
-            'INSERT INTO `rotator_copy`('
-            '   `id`, `name`, `public`, `delay`, `message_default`, `message_text`'
-            ') SELECT * FROM `rotator`'
+            f'INSERT INTO `rotator_copy` ({fields_str}) SELECT {fields_str} FROM `rotator`'
         )
         self.database.execute('DROP TABLE `rotator`')
         self.database.execute('ALTER TABLE `rotator_copy` RENAME TO `rotator`')

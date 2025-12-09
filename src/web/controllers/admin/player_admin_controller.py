@@ -469,25 +469,21 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 case 'yob_desc':
                     return (
-                        -player.year_of_birth,
+                        date.today()
+                        - (
+                            player.date_of_birth
+                            or date(player.year_of_birth or date.today().year, 1, 1)
+                        ),
                         player.last_name,
                         player.first_name,
                     )
                 case 'yob_asc':
                     return (
-                        player.year_of_birth,
-                        player.last_name,
-                        player.first_name,
-                    )
-                case 'category_desc':
-                    return (
-                        -player.single_tournament_player.category,
-                        player.last_name,
-                        player.first_name,
-                    )
-                case 'category_asc':
-                    return (
-                        player.single_tournament_player.category,
+                        (
+                            player.date_of_birth
+                            or date(player.year_of_birth or 1900, 12, 31)
+                        )
+                        - date.today(),
                         player.last_name,
                         player.first_name,
                     )
@@ -2024,6 +2020,7 @@ class PlayerAdminController(BaseEventAdminController):
             ds_columns.LastNameColumn(),
             ds_columns.FirstNameColumn(),
             ds_columns.YearOfBirthColumn(),
+            ds_columns.DateOfBirthColumn(),
             ds_columns.MailColumn(),
             ds_columns.PhoneColumn(),
             ds_columns.GenderColumn(),

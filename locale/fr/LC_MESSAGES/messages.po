@@ -4340,12 +4340,6 @@ msgstr "Désolé, vous n'êtes pas autorisé·e à accéder à cette page."
 msgid "Sort by:"
 msgstr "Trier par :"
 
-msgid "Sort the players by category (oldest first)."
-msgstr "Trier les joueur·euses par catégorie (plus âgé·es en premier)."
-
-msgid "Sort the players by category (youngest first)."
-msgstr "Trier les joueur·euses par category (moins âgé·es en premier)."
-
 msgid "Sort the players by club."
 msgstr "Trier les joueur·euses par club (ordre alphabétique)."
 

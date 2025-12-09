@@ -1,4 +1,5 @@
 import re
+import traceback
 from abc import abstractmethod, ABC
 from dataclasses import dataclass, field
 from functools import cached_property
@@ -279,7 +280,8 @@ class MigrationManager[T: MigrationDatabase](ABC):
                 else:
                     self._upgrade(current_migration, target_migration)
                 logger.debug(self.log_prefix + 'Migration complete.')
-        except OperationalError as error:
+        except Exception as error:
+            logger.debug(self.log_prefix + traceback.format_exc())
             raise SharlyChessException(self.log_prefix + f'Migration failed: {error}')
 
     def _upgrade(self, current_migration: str, target_migration: str):
