@@ -4,7 +4,7 @@
 <div class="row gy-2 gx-3">
     <div class="col-12 col-md-6">
         {{ admin_macros.select_input(
-            name='auto_upload',
+            name='chess_results_auto_upload',
             label=_('Auto-upload:'),
             select_options=auto_upload_options,
             data=data, errors=errors
@@ -12,7 +12,7 @@
     </div>
     <div class="col-12">
         {{ admin_macros.text_input(
-            name='remark',
+            name='chess_results_remark',
             label=_('Remark:'),
             placeholder=(
                 admin_event.plugin_data.chess_results.remark

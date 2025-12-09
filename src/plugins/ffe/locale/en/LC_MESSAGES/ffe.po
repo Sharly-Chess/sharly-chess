@@ -477,3 +477,6 @@ msgid_plural "{count} leagues represented"
 msgstr[0] ""
 msgstr[1] ""
 
+#~ msgid "FFE Licence type"
+#~ msgstr ""
+
