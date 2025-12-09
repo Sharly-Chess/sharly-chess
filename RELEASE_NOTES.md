@@ -3,7 +3,7 @@
 # General
 
 - Export of events for sharing purposes (3.4.0)
-- Ask teh browser not to translate the interface (3.4.0)
+- Ask the browser not to translate the interface (3.4.0)
 
 ## Interface
 
