@@ -868,6 +868,9 @@ msgstr ""
 msgid "Cannot be both chief and deputy on the same tournament."
 msgstr ""
 
+msgid "Cash"
+msgstr ""
+
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 msgstr "Cat"
 
@@ -932,6 +935,9 @@ msgid "Check-in via public screens"
 msgstr ""
 
 msgid "Checked-in"
+msgstr ""
+
+msgid "Cheque"
 msgstr ""
 
 msgid "Chess"
@@ -2344,10 +2350,19 @@ msgstr ""
 msgid "In-tournament"
 msgstr ""
 
+msgid "Include IDs and passwords for uploading results"
+msgstr ""
+
 msgid "Include greater categories"
 msgstr ""
 
 msgid "Include lower categories"
+msgstr ""
+
+msgid "Include players"
+msgstr ""
+
+msgid "Include private player data (emails, phone numbers, etc.)"
 msgstr ""
 
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
@@ -2712,6 +2727,9 @@ msgstr ""
 msgid "Mo *** MONDAY"
 msgstr "Mo"
 
+msgid "Monetary prizes only"
+msgstr ""
+
 #, python-format
 msgid "Moved down %(num)d place"
 msgid_plural "Moved down %(num)d places"
@@ -2893,6 +2911,9 @@ msgstr ""
 msgid "No marks"
 msgstr ""
 
+msgid "No monetary prizes assigned to players for this tournament."
+msgstr ""
+
 msgid "No organiser"
 msgstr ""
 
@@ -2933,6 +2954,9 @@ msgid "No players."
 msgstr ""
 
 msgid "No prize brackets."
+msgstr ""
+
+msgid "No prizes assigned to players for this tournament."
 msgstr ""
 
 msgid "No prizes defined"
@@ -3369,6 +3393,9 @@ msgstr ""
 msgid "Password:"
 msgstr ""
 
+msgid "Payment"
+msgstr ""
+
 msgid "Pending"
 msgstr ""
 
@@ -3682,6 +3709,9 @@ msgstr ""
 msgid "Prize list"
 msgstr ""
 
+msgid "Prize receipts"
+msgstr ""
+
 msgid "Prize settings"
 msgstr ""
 
@@ -3710,6 +3740,9 @@ msgid "Properties"
 msgstr ""
 
 msgid "Protected pairings editing"
+msgstr ""
+
+msgid "Proxy (if any):"
 msgstr ""
 
 msgid "Pts *** POINTS FOR TABLE HEADER"
@@ -4235,6 +4268,12 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
+msgid "Share"
+msgstr ""
+
+msgid "Share event"
+msgstr ""
+
 msgid "Share the prizes"
 msgstr ""
 
@@ -4287,6 +4326,9 @@ msgid "Show warnings"
 msgstr ""
 
 msgid "Show/hide the screens created from screen families."
+msgstr ""
+
+msgid "Signature"
 msgstr ""
 
 msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
@@ -5084,6 +5126,9 @@ msgstr ""
 
 #, python-format
 msgid "Tournaments: %(num)d"
+msgstr ""
+
+msgid "Transfer"
 msgstr ""
 
 msgid "Trophy"
@@ -5898,4 +5943,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-

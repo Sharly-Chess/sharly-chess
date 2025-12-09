@@ -73,6 +73,9 @@ msgstr ""
 msgid "Site"
 msgstr ""
 
+msgid "State:"
+msgstr ""
+
 msgid "Status"
 msgstr ""
 

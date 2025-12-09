@@ -95,7 +95,12 @@ class ChessResultsSession(Session):
             raise RuntimeError('GETKEY failed: ' + resp.text)
 
     def build_tournament_xml(
-        self, tournament: Tournament, sid: str, tnr: str, creator_id: str
+        self,
+        tournament: Tournament,
+        sid: str,
+        tnr: str,
+        creator_id: str,
+        state: int | None,
     ) -> str:
         """
         Build Chess-Results upload XML from a Sharly Chess Tournament.
@@ -169,6 +174,7 @@ class ChessResultsSession(Session):
                 'homepageorganiser': (event.organiser_home_page or '')[:80],
                 'mail': (event.organiser_email or '')[:80],
                 'federation': tournament.event.federation or 'FID',
+                'federalstate': str(state) if state else '',
                 'creator': creator_id,
             }
             | {f'tb{i + 1}no': tb_details[i][0] for i in range(MAX_TIE_BREAKS)}
@@ -335,9 +341,14 @@ class ChessResultsSession(Session):
         )
 
         sid = self._chess_results_init()
-        plugin_data = ChessResultsUtils.get_tournament_plugin_data(self.tournament)
-        tnr = plugin_data.tnr
-        creator_id = plugin_data.creator_id
+        tournament_plugin_data = ChessResultsUtils.get_tournament_plugin_data(
+            self.tournament
+        )
+        event_plugin_data = ChessResultsUtils.get_event_plugin_data(
+            self.tournament.event
+        )
+        tnr = tournament_plugin_data.tnr
+        creator_id = tournament_plugin_data.creator_id
 
         if not tnr:
             # See if we have a creator_id stored in the config
@@ -382,7 +393,9 @@ class ChessResultsSession(Session):
                 )
 
         assert creator_id is not None
-        xml_data = self.build_tournament_xml(self.tournament, sid, tnr, creator_id)
+        xml_data = self.build_tournament_xml(
+            self.tournament, sid, tnr, creator_id, event_plugin_data.state
+        )
         logger.debug(xml_data)
 
         xml_sanitized = xml_data.replace('<', '{').replace('>', '}')
@@ -449,10 +462,10 @@ class ChessResultsSession(Session):
                     )
 
                 # Clear in-memory values too
-                plugin_data.tnr = None
-                plugin_data.creator_id = None
+                tournament_plugin_data.tnr = None
+                tournament_plugin_data.creator_id = None
                 self.tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
-                    plugin_data.to_stored_value()
+                    tournament_plugin_data.to_stored_value()
                 )
 
                 # Retry the upload once (fresh creation)

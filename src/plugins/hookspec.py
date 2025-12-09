@@ -221,10 +221,6 @@ class AppHookSpecs:
         Also provide the ID of the plugin."""
 
     @hookspec
-    def get_event_form_data(self, event: Optional['Event']) -> dict[str, Any]:
-        """Provide form data for the additional event form fields"""
-
-    @hookspec
     def validate_event_form_fields(
         self,
         action: str,

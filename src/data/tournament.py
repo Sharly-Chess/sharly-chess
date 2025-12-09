@@ -22,6 +22,7 @@ from data.board import Board
 from data.criteria.managers import PlayerFilter
 from data.family import Family
 from data.player import Player, Federation, Club, TournamentPlayer
+from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
 from data.screen import Screen
@@ -605,6 +606,19 @@ class Tournament:
                 group.id,
             ),
         )
+
+    def get_prizes_assigned_to_players_by_group_id_by_category_id(
+        self,
+        monetary_only: bool,
+    ) -> dict[int, dict[int, list[AssignedPrize]]]:
+        result: dict[int, dict[int, list[AssignedPrize]]] = {}
+        for prize_group in self.sorted_prize_groups:
+            prizes_assigned_to_players_by_category_id: dict[
+                int, list[AssignedPrize]
+            ] = prize_group.get_prizes_assigned_to_players_by_category_id(monetary_only)
+            if prizes_assigned_to_players_by_category_id:
+                result[prize_group.id] = prizes_assigned_to_players_by_category_id
+        return result
 
     @property
     def main_prize_category(self) -> PrizeCategory | None:
