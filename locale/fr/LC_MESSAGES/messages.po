@@ -2354,7 +2354,7 @@ msgid "Include lower categories"
 msgstr "Inclure les catégories inférieures"
 
 msgid "Include players"
-msgstr "Simple, direct, suitable for a checkbox label."
+msgstr "Inclure les joueur·euses"
 
 msgid "Include private player data (emails, phone numbers, etc.)"
 msgstr "Inclure les données privées des joueurs (emails, numéros de téléphone, etc.)"
