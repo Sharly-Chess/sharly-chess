@@ -890,7 +890,7 @@ msgstr "La catégorie [%(category)s] créée avec succès !"
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
-msgid "Check"
+msgid "Cheque"
 msgstr "Chèque"
 
 msgid "Check connection"

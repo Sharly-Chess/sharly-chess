@@ -890,7 +890,7 @@ msgstr ""
 msgid "Change the player's tournament."
 msgstr ""
 
-msgid "Check"
+msgid "Cheque"
 msgstr ""
 
 msgid "Check connection"
