@@ -868,6 +868,9 @@ msgstr "Candidat Maître"
 msgid "Cannot be both chief and deputy on the same tournament."
 msgstr "Impossible d’être à la fois arbitre principal·e et arbitre adjoint·e sur le même tournoi."
 
+msgid "Cash"
+msgstr "Espèces"
+
 msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
 msgstr "Cat"
 
@@ -933,6 +936,9 @@ msgstr "Pointage sur écrans publics"
 
 msgid "Checked-in"
 msgstr "Pointé·e"
+
+msgid "Cheque"
+msgstr "Chèque"
 
 msgid "Chess"
 msgstr "Échecs"
@@ -1148,10 +1154,10 @@ msgid "Create"
 msgstr "Créer"
 
 msgid "Create a Prize Bracket"
-msgstr "Créer un Groupe Non-Cumulable"
+msgstr "Créer un groupe non-cumulable"
 
 msgid "Create a Prize Bracket now to get started."
-msgstr "Créer un Groupe Non-Cumulable pour commencer."
+msgstr "Créer un groupe non-cumulable pour commencer."
 
 msgid "Create a Prize Category now to continue."
 msgstr "Créez une catégorie de prix pour continuer."
@@ -2721,6 +2727,9 @@ msgstr "Champ requis manquant [{field}]."
 msgid "Mo *** MONDAY"
 msgstr "Lu"
 
+msgid "Monetary prizes only"
+msgstr "Seulement les prix monétaires"
+
 #, python-format
 msgid "Moved down %(num)d place"
 msgid_plural "Moved down %(num)d places"
@@ -2902,6 +2911,9 @@ msgstr "Mél non défini."
 msgid "No marks"
 msgstr "Aucune marque"
 
+msgid "No monetary prizes assigned to players for this tournament."
+msgstr "Aucun prix monétaire assigné à une·e joueur·euse pour ce tournoi."
+
 msgid "No organiser"
 msgstr "Aucun organisateur·ice"
 
@@ -2943,6 +2955,9 @@ msgstr "Aucun·e joueur·euse."
 
 msgid "No prize brackets."
 msgstr "Aucun groupe non-cumulable."
+
+msgid "No prizes assigned to players for this tournament."
+msgstr "Aucun prix assigné à une·e joueur·euse pour ce tournoi."
 
 msgid "No prizes defined"
 msgstr "Aucun prix défini"
@@ -3378,6 +3393,9 @@ msgstr "Évènements passés"
 msgid "Password:"
 msgstr "Mot de passe :"
 
+msgid "Payment"
+msgstr "Paiement"
+
 msgid "Pending"
 msgstr "À venir"
 
@@ -3691,6 +3709,9 @@ msgstr "Le groupe de prix [{prize_group}] a été créé avec succès."
 msgid "Prize list"
 msgstr "Liste des prix"
 
+msgid "Prize receipts"
+msgstr "Reçus financiers"
+
 msgid "Prize settings"
 msgstr "Paramètres des prix"
 
@@ -3720,6 +3741,9 @@ msgstr "Propriétés"
 
 msgid "Protected pairings editing"
 msgstr "Édition d'appariements protégés"
+
+msgid "Proxy (if any):"
+msgstr "Mandataire (le cas échéant) :"
 
 msgid "Pts *** POINTS FOR TABLE HEADER"
 msgstr "Pts"
@@ -4303,6 +4327,9 @@ msgstr "Afficher les avertissements"
 
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
+
+msgid "Signature"
+msgstr "Signature"
 
 msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
 msgstr "Les classements étant utilisés pour le calcul des départages, il est important qu'ils soient représentatifs du niveau des joueur·euses. Pour cette raison ce départage est déconseillé avec des joueur·euses non-classé·es."
@@ -5100,6 +5127,9 @@ msgstr "Tournois :"
 #, python-format
 msgid "Tournaments: %(num)d"
 msgstr "Tournois : %(num)d"
+
+msgid "Transfer"
+msgstr "Virement"
 
 msgid "Trophy"
 msgstr "Trophée"
