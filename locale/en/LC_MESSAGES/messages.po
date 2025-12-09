@@ -2350,10 +2350,19 @@ msgstr ""
 msgid "In-tournament"
 msgstr ""
 
+msgid "Include IDs and passwords for uploading results"
+msgstr ""
+
 msgid "Include greater categories"
 msgstr ""
 
 msgid "Include lower categories"
+msgstr ""
+
+msgid "Include players"
+msgstr ""
+
+msgid "Include private player data (emails, phone numbers, etc.)"
 msgstr ""
 
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
@@ -4259,6 +4268,12 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
+msgid "Share"
+msgstr ""
+
+msgid "Share event"
+msgstr ""
+
 msgid "Share the prizes"
 msgstr ""
 
@@ -5928,10 +5943,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Sort the players by category (oldest first)."
-#~ msgstr ""
-
-#~ msgid "Sort the players by category (youngest first)."
-#~ msgstr ""
-

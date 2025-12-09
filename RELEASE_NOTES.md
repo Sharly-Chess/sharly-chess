@@ -76,3 +76,4 @@
 - Added option to upload via the tournament card action menu (3.3.0)
 - Tournaments are now tagged with the time control type (Standard, Rapid, Blitz) (3.3.2)
 - Fixed the upload of the `REP` tie-break (3.3.4)
+- Added "State" field to events (3.4.0)
