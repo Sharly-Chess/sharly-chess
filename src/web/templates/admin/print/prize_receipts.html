@@ -33,7 +33,7 @@
                             <div class="header">{{ _('Rk. *** RANK FOR TABLE HEADER') }}</div>
                             <div class="header text-start">{{ _('Name *** NAME FOR TABLE HEADER') }}</div>
                             <div class="header text-end">{{ _('Prize *** PRIZE FOR TABLE HEADER') }}</div>
-                            <div class="header">{{ _('Payment') }}</div>
+                            <div class="header text-start">{{ _('Payment') }}</div>
                             <div class="header">{{ _('Signature') }}</div>
                             {% for prize_assigned_to_player in prizes_assigned_to_players %}
                                 {% set classes = 'first-row' if loop.first else '' %}
@@ -59,7 +59,11 @@
                                 <div class="cell payment {{classes}}">
                                     <span class="text-start text-nowrap">
                                         {% if prize_assigned_to_player.prize.is_monetary %}
-                                            ☐ {{ _('Cheque') }}<br/><br/>☐ {{ _('Cash') }}
+                                            {{ _('Proxy (if any):') }}<br/>
+                                            <br/>
+                                            ☐ {{ _('Cash') }}<br/>
+                                            ☐ {{ _('Cheque') }}<br/>
+                                            ☐ {{ _('Transfer') }}
                                         {% else %}
                                             -
                                         {% endif %}

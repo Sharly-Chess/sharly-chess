@@ -82,7 +82,7 @@
 
 .prize-receipts .cell {
     border-bottom: 1px solid black;
-    padding: 1.3rem;
+    padding: 0.5rem 1.3rem 0.5rem 1.3rem;
     width: 100%;
     height: 100%;
     min-height: 8rem;
@@ -106,6 +106,13 @@
 }
 
 .prize-receipts .cell span {
-    vertical-align: middle;
     display: table-cell;
+}
+
+.prize-receipts .cell.number span, .prize-receipts .cell.player span, .prize-receipts .cell.value span {
+    vertical-align: middle;
+}
+
+.prize-receipts .cell.payment span {
+    vertical-align: top;
 }

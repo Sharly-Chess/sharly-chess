@@ -890,9 +890,6 @@ msgstr "La catégorie [%(category)s] créée avec succès !"
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
-msgid "Cheque"
-msgstr "Chèque"
-
 msgid "Check connection"
 msgstr "Vérifier la connexion"
 
@@ -939,6 +936,9 @@ msgstr "Pointage sur écrans publics"
 
 msgid "Checked-in"
 msgstr "Pointé·e"
+
+msgid "Cheque"
+msgstr "Chèque"
 
 msgid "Chess"
 msgstr "Échecs"
@@ -3733,6 +3733,9 @@ msgstr "Propriétés"
 msgid "Protected pairings editing"
 msgstr "Édition d'appariements protégés"
 
+msgid "Proxy (if any):"
+msgstr "Mandataire (le cas échéant) :"
+
 msgid "Pts *** POINTS FOR TABLE HEADER"
 msgstr "Pts"
 
@@ -5109,6 +5112,9 @@ msgstr "Tournois :"
 #, python-format
 msgid "Tournaments: %(num)d"
 msgstr "Tournois : %(num)d"
+
+msgid "Transfer"
+msgstr "Virement"
 
 msgid "Trophy"
 msgstr "Trophée"

@@ -890,9 +890,6 @@ msgstr ""
 msgid "Change the player's tournament."
 msgstr ""
 
-msgid "Cheque"
-msgstr ""
-
 msgid "Check connection"
 msgstr ""
 
@@ -938,6 +935,9 @@ msgid "Check-in via public screens"
 msgstr ""
 
 msgid "Checked-in"
+msgstr ""
+
+msgid "Cheque"
 msgstr ""
 
 msgid "Chess"
@@ -3733,6 +3733,9 @@ msgstr ""
 msgid "Protected pairings editing"
 msgstr ""
 
+msgid "Proxy (if any):"
+msgstr ""
+
 msgid "Pts *** POINTS FOR TABLE HEADER"
 msgstr "Pts"
 
@@ -5108,6 +5111,9 @@ msgstr ""
 
 #, python-format
 msgid "Tournaments: %(num)d"
+msgstr ""
+
+msgid "Transfer"
 msgstr ""
 
 msgid "Trophy"
