@@ -374,7 +374,6 @@ class Event:
             'player_count',
             'players_by_id',
             'players_sorted_by_name',
-            'single_tournament',
             'gender_counts',
             'federation_counts',
             'club_counts',
