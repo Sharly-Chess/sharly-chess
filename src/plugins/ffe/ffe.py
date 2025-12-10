@@ -22,6 +22,7 @@ from data.input_output.data_source import FideDataSource
 from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
+from data.player_categories import PlayerCategory, JuniorCategory
 from data.print_documents import PlayerSplitter, PrintDocument
 from data.print_documents.documents import StatisticsPrintDocument
 from data.print_documents.place_cards.data import PlaceCardPlayer
@@ -89,7 +90,6 @@ from plugins.utils import (
     PluginData,
 )
 from utils.enum import (
-    PlayerCategory,
     PlayerRatingType,
     Result,
     TournamentRating,
@@ -511,38 +511,18 @@ class FfePlugin(Plugin):
             return PlayerRatingAndType(ratings.national, PlayerRatingType.NATIONAL)
         if ratings.estimated is not None:
             return PlayerRatingAndType(ratings.estimated, PlayerRatingType.ESTIMATED)
-        value = 0
-        match tournament_rating:
-            case TournamentRating.RAPID:
-                match category:
-                    case PlayerCategory.U8 | PlayerCategory.U10:
-                        value = 799
-                    case PlayerCategory.U12 | PlayerCategory.U14:
-                        value = 999
-                    case _:
-                        value = 1199
-            case TournamentRating.BLITZ:
-                match category:
-                    case PlayerCategory.U8 | PlayerCategory.U10:
-                        value = 799
-                    case PlayerCategory.U12 | PlayerCategory.U14:
-                        value = 999
-                    case _:
-                        value = 1199
-            case TournamentRating.STANDARD:
-                match category:
-                    case (
-                        PlayerCategory.U8
-                        | PlayerCategory.U10
-                        | PlayerCategory.U12
-                        | PlayerCategory.U14
-                        | PlayerCategory.U16
-                        | PlayerCategory.U18
-                        | PlayerCategory.U20
-                    ):
-                        value = 1299
-                    case _:
-                        value = 1399
+        if tournament_rating == TournamentRating.STANDARD:
+            if isinstance(category, JuniorCategory):
+                value = 1299
+            else:
+                value = 1399
+        else:
+            value = 1199
+            if isinstance(category, JuniorCategory):
+                if category.age_limit <= 10:
+                    value = 799
+                elif category.age_limit <= 14:
+                    value = 999
         return PlayerRatingAndType(value, PlayerRatingType.ESTIMATED)
 
     @hookimpl

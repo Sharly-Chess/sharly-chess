@@ -348,7 +348,6 @@ class BaseStoredEvent:
     player_rating_type: int
     start_date: date
     stop_date: date
-    age_category_base_date: date | None = None
     public: bool = False
     location: str | None = None
     background_color: str | None = None
@@ -360,9 +359,11 @@ class BaseStoredEvent:
     message_color: str | None = None
     message_background_color: str | None = None
     prize_currency: str | None = None
-    override_unrated_rapid_blitz: bool | None = None
+    override_unrated_rapid_blitz: bool = True
     three_points_for_a_win: bool = False
     pab_value: int = Result.WIN.value
+    age_category_base_date: date | None = None
+    age_categories: list[str] | None = None
     organiser_name: str | None = None
     organiser_home_page: str | None = None
     organiser_email: str | None = None

@@ -300,9 +300,6 @@ class EventDatabase(MigrationDatabase):
             player_rating_type=row.get('player_rating_type', 3),
             start_date=self.load_date_from_database_field(row['start_date']),
             stop_date=self.load_date_from_database_field(row['stop_date']),
-            age_category_base_date=self.load_optional_date_from_database_field(
-                row['age_category_base_date']
-            ),
             public=self.load_bool_from_database_field(row['public']),
             location=row['location'],
             background_color=row['background_color'],
@@ -325,6 +322,10 @@ class EventDatabase(MigrationDatabase):
                 row['three_points_for_a_win']
             ),
             pab_value=row['pab_value'],
+            age_categories=self.load_json_from_database_field(row['age_categories']),
+            age_category_base_date=self.load_optional_date_from_database_field(
+                row['age_category_base_date']
+            ),
             organiser_name=row['organiser_name'],
             organiser_home_page=row['organiser_home_page'],
             organiser_email=row['organiser_email'],
@@ -400,6 +401,9 @@ class EventDatabase(MigrationDatabase):
             'stop_date': self.dump_date_to_database_field(stored_event.stop_date),
             'age_category_base_date': self.dump_date_to_database_field(
                 stored_event.age_category_base_date
+            ),
+            'age_categories': self.dump_to_json_database_field(
+                stored_event.age_categories
             ),
             'timer_colors': self.dump_to_json_database_timer_colors(
                 stored_event.timer_colors

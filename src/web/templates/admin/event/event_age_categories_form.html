@@ -1,0 +1,210 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<div id="age-categories-main-container">
+    <div class="d-flex gap-2 align-items-center gy-2 gx-3">
+        <div class="flex-grow-1">
+            {{ admin_macros.select_input(
+                name='age_categories',
+                label=_('Categories'),
+                placeholder=sharly_chess_config.default_player_category_set.name,
+                tooltip_text=_(
+                    'The age categories in which players are distributed. '
+                    'A category is added to represent the missing players '
+                    '(E.g.: U20 / 50+ → 20+).'
+                ),
+                select_options=player_category_options,
+                multiple_select=true,
+                disabled=not client.can_update_event,
+                data=data, errors=errors
+            ) }}
+        </div>
+        {% if client.can_manage_events %}
+            <div
+                {{ macros.tooltip_attributes(
+                    'info', _('Category sets are available for all events.'), 'top'
+                ) }}
+            >
+                <button
+                    id="age-category-sets-configure-button"
+                    type="button"
+                    class="btn btn-outline-primary text-nowrap"
+                    {% if age_category_sets_container_state != 'hidden' %}
+                        disabled
+                    {% endif %}
+                >
+                    <i class="bi-gear-fill pe-1"></i>
+                    {{ _('Configure category sets') }}
+                </button>
+            </div>
+        {% endif %}
+    </div>
+
+    <div
+        id="age-category-sets-container"
+        class="form-fields-container"
+        {% if age_category_sets_container_state == 'hidden' %}
+            style="display:none"
+        {% endif %}
+    >
+        <div
+            id="age-category-sets-list"
+            {% if age_category_sets_container_state != 'list' %}
+                style="display:none"
+            {% endif %}
+        >
+            <h4>{{ _('Category sets') }}</h4>
+            <div class="d-flex flex-column gap-2">
+                {% for category_set in player_category_sets %}
+                    <div class="border border-secondary bg-body-tertiary">
+                        <div class="p-2 d-flex align-items-center gap-4">
+
+                            <div class="text-start flex-grow-1">
+                                <b>{{ category_set.name }}</b>
+                                (<i>{{ category_set.categories_str }}</i>)
+                            </div>
+                            <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                <div
+                                    {% if category_set.is_default %}
+                                        {{ macros.tooltip_attributes(
+                                            'warning', _('Default sets can\'t be deleted.'), 'top'
+                                        ) }}
+                                    {% endif %}
+                                >
+                                    <button
+                                        class="btn btn-sm btn-outline-danger text-nowrap"
+                                        type="button"
+
+                                        {% if category_set.is_default %}
+                                            disabled
+                                        {% else %}
+                                            hx-delete="{{ url_for(
+                                                'player-category-set-delete',
+                                                player_category_set_id=category_set.id,
+                                            ) }}"
+                                            hx-vals='js:{age_categories: $("#age-categories").val()}'
+                                            hx-target="#age-categories-main-container"
+                                            hx-swap="outerHTML"
+                                            hx-indicator="#please-wait"
+                                            data-bs-target="#modal-wrapper"
+                                        {% endif %}
+                                    >
+                                        <i class="bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <div class="flex-grow-1"></div>
+                <button
+                    id="age-category-sets-cancel-button"
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm text-nowrap"
+                >
+                    <i class="bi-x-circle pe-1"></i>
+                    {{ _('Cancel') }}
+                </button>
+                <button
+                    id="age-category-sets-add-button"
+                    type="button"
+                    class="btn btn-outline-primary btn-sm text-nowrap"
+                >
+                    <i class="bi-plus-circle pe-1"></i>
+                    {{ _('Add') }}
+                </button>
+            </div>
+        </div>
+        <form
+            id="age-category-set-form"
+            hx-indicator="#please-wait"
+            hx-post="{{ url_for('player-category-set-create') }}"
+            hx-vals='js:{age_categories: $("#age-categories").val()}'
+            hx-target="#age-categories-main-container"
+            hx-swap="outerHTML"
+            {% if age_category_sets_container_state != 'form' %}
+                style="display:none"
+            {% endif %}
+        >
+            <h4>{{ _('Create category set') }}</h4>
+            <div class="row gy-2 gx-3">
+                <div class="col-12 col-md-4">
+                    {{ admin_macros.text_input(
+                        name='category_set_name',
+                        label=_('%(string)s:', string=_('Name')),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div class="col-12 col-md-8">
+                    {{ admin_macros.select_input(
+                        name='category_set_categories',
+                        label=_('Categories'),
+                        placeholder=_('Choose at least one category.'),
+                        select_options=player_category_options,
+                        multiple_select=true,
+                        data=data, errors=errors
+                    ) }}
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-4">
+                <div class="flex-grow-1"></div>
+                <button
+                    id="age-category-set-back-button"
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm text-nowrap"
+                >
+                    <i class="bi-arrow-left-circle-fill pe-1"></i>
+                    {{ _('Back') }}
+                </button>
+                <button
+                    id="age-category-set-submit-button"
+                    type="submit"
+                    form="age-category-set-form"
+                    class="btn btn-outline-primary btn-sm text-nowrap"
+                >
+                    <i class="bi-floppy-fill pe-1"></i>
+                    {{ _('Create') }}
+                </button>
+            </div>
+        </form>
+    </div>
+    <script>
+        console.log()
+        var categorySetValuesByKey = {
+            {% for category_set in player_category_sets %}
+                '{{ category_set.form_key }}': {{ category_set.category_ids|tojson }},
+            {% endfor %}
+        };
+        $('#age-categories,#category-set-categories').change(function () {
+            $(this).val().forEach((selected) => {
+                if (!(selected in categorySetValuesByKey)) return;
+                $(this).val(categorySetValuesByKey[selected]);
+                $(this).trigger('change');
+            });
+        });
+        $('#age-category-sets-configure-button').click(function () {
+            $(this).prop('disabled', true);
+            $('#age-category-sets-list').show();
+            $('#age-category-sets-container').show();
+        });
+        $('#age-category-sets-cancel-button').click(function () {
+            $('#age-category-sets-configure-button').prop('disabled', false);
+            $('#age-category-sets-container').hide();
+        });
+        $('#age-category-sets-add-button').click(function () {
+            $('#age-category-sets-list').hide();
+            $('#age-category-set-form').show();
+        });
+        $('#age-category-set-back-button').click(function () {
+            $('#age-category-set-form').hide();
+            $('#age-category-sets-list').show();
+        });
+        $('#category-set-name').keyup(function () {
+            $('#age-category-set-submit-button').prop('disabled', !$(this).val());
+        });
+        $('#category-set-name').trigger('keyup');
+    </script>
+</div>

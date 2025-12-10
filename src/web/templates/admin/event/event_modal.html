@@ -105,11 +105,65 @@
                         ) }}
                     </div>
                 </div>
-
-                {% set force_open = errors.get('organiser_name') or errors.get('organiser_home_page') or errors.get('organiser_email') %}
                 <button
                     type="button"
-                    class="collapse-button {% if not force_open %}collapsed{% endif %} mt-3"
+                    class="collapse-button {% if not force_categories_open %}collapsed{% endif %} row mt-3"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#categories-section"
+                    aria-expanded="false"
+                >
+                    <h4 class="form-check-label d-inline-flex align-items-center gap-2">
+                        <i class="bi-chevron-down text-body"></i>
+                        {{ _('Age categories') }}
+                    </h4>
+                </button>
+                <div id="categories-section" class="{% if not force_categories_open %}collapse{% endif %}">
+                    {% include 'event_age_categories_form.html' %}
+                    <div class="row gy-2 gx-3 mt-2">
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.switch_input(
+                                name='use_age_category_base_date',
+                                placeholder=_('Specify a base date for the categories'),
+                                tooltip_text=_(
+                                    'Age categories are based on the start date of the tournament. '
+                                    'You may choose to use another date instead, which can be useful '
+                                    'if you want to keep the same age categories for a championship '
+                                    'runs over a long period.'
+                                ),
+                                disabled=not client.can_update_event,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.date_input(
+                                name='age_category_base_date',
+                                label=_('Base date:'),
+                                placeholder=sharly_chess_config.date_formatter.name,
+                                disabled=not client.can_update_event,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+
+                    <script>
+                        $('#use-age-category-base-date').change(function() {
+                            console.log($(this).val());
+                            if ($(this).is(':checked')) {
+                                $('#age-category-base-date-wrapper').show();
+                            } else {
+                                console.log('off');
+                                $('#age-category-base-date-wrapper').hide();
+                            }
+                        });
+                        if ("{{ data.use_age_category_base_date }}" === "off") {
+                            $('#age-category-base-date-wrapper').hide();
+                        }
+                    </script>
+                </div>
+
+                <button
+                    type="button"
+                    class="collapse-button {% if not force_organiser_open %}collapsed{% endif %} mt-3"
                     data-bs-toggle="collapse"
                     data-bs-target="#organiser-section"
                     aria-expanded="false"
@@ -120,7 +174,7 @@
                     </h4>
                 </button>
 
-                <div id="organiser-section" class="{% if not force_open %}collapse{% endif %}">
+                <div id="organiser-section" class="{% if not force_organiser_open %}collapse{% endif %}">
                     <div class="row gy-2 gx-3">
                         <div class="col-12">
                             {{ admin_macros.text_input(
