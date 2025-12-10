@@ -168,7 +168,7 @@ class Event:
 
     @property
     def override_unrated_rapid_blitz(self) -> bool:
-        return self.stored_event.override_unrated_rapid_blitz or False
+        return self.stored_event.override_unrated_rapid_blitz
 
     @property
     def three_points_for_a_win(self) -> bool:

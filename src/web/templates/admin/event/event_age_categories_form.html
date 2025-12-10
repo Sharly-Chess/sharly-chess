@@ -22,7 +22,7 @@
         {% if client.can_manage_events %}
             <div
                 {{ macros.tooltip_attributes(
-                    'info', _('Category sets are available for all events.'), 'top'
+                    'info', _('Configure the category sets, which are available for all events.'), 'top'
                 ) }}
             >
                 <button
@@ -34,7 +34,7 @@
                     {% endif %}
                 >
                     <i class="bi-gear-fill pe-1"></i>
-                    {{ _('Configure category sets') }}
+                    {{ _('Category sets') }}
                 </button>
             </div>
         {% endif %}
@@ -182,6 +182,7 @@
                 if (!(selected in categorySetValuesByKey)) return;
                 $(this).val(categorySetValuesByKey[selected]);
                 $(this).trigger('change');
+                $(this).select2('close');
             });
         });
         $('#age-category-sets-configure-button').click(function () {

@@ -887,9 +887,6 @@ msgstr "La catégorie [%(category)s] créée avec succès !"
 msgid "Category sets"
 msgstr "Ensembles de catégories"
 
-msgid "Category sets are available for all events."
-msgstr "Les ensembles de catégories sont disponibles pour tous les évènements."
-
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
 
@@ -1096,8 +1093,8 @@ msgstr "Appariements complémentaires générés avec succès !"
 msgid "Configuration"
 msgstr "Configuration"
 
-msgid "Configure category sets"
-msgstr "Configurer les ensembles de catégories"
+msgid "Configure the category sets, which are available for all events."
+msgstr "Configurer les ensembles de catégories, qui sont disponibles pour tous les évènements."
 
 msgid "Configure the tie-breaks of the tournament."
 msgstr "Configurer les départages du tournoi."

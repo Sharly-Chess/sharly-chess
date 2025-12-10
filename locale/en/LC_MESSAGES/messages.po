@@ -887,9 +887,6 @@ msgstr ""
 msgid "Category sets"
 msgstr ""
 
-msgid "Category sets are available for all events."
-msgstr ""
-
 msgid "Change the player's tournament."
 msgstr ""
 
@@ -1096,7 +1093,7 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
-msgid "Configure category sets"
+msgid "Configure the category sets, which are available for all events."
 msgstr ""
 
 msgid "Configure the tie-breaks of the tournament."
