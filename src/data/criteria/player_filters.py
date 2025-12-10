@@ -132,12 +132,12 @@ class AgePlayerFilter(PlayerFilter):
         if lower:
             category = categories[0]
             return lambda tournament_player: (
-                tournament_player.category <= category
+                tournament_player.category <= category  # type: ignore
                 and tournament_player.category != NoCategory()
             )
         if greater:
             category = categories[0]
-            return lambda tournament_player: tournament_player.category >= category
+            return lambda tournament_player: tournament_player.category >= category  # type: ignore
         return lambda player: player.category in categories
 
     def full_name(self, tournament: 'Tournament') -> str:

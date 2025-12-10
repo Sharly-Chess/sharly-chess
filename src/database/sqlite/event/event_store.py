@@ -359,7 +359,7 @@ class BaseStoredEvent:
     message_color: str | None = None
     message_background_color: str | None = None
     prize_currency: str | None = None
-    override_unrated_rapid_blitz: bool = False
+    override_unrated_rapid_blitz: bool = True
     three_points_for_a_win: bool = False
     pab_value: int = Result.WIN.value
     age_category_base_date: date | None = None
