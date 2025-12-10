@@ -3,9 +3,9 @@ from collections import defaultdict
 from typing import Iterable
 
 from common.i18n import _
+from data.event import Event
 from data.player import TournamentPlayer
 from utils.entity import IdentifiableEntity
-from utils.enum import PlayerCategory
 
 
 class PlayerSplitter(IdentifiableEntity, ABC):
@@ -16,12 +16,12 @@ class PlayerSplitter(IdentifiableEntity, ABC):
         Players will be grouped by split key."""
 
     @staticmethod
-    def sorted_split_keys(split_keys: Iterable[str]) -> list[str]:
+    def sorted_split_keys(event: Event, split_keys: Iterable[str]) -> list[str]:
         """Returns the split keys ordered. Defaults to alphabetical sort."""
         return sorted(split_keys)
 
     def split_players(
-        self, tournament_players: list[TournamentPlayer]
+        self, event: Event, tournament_players: list[TournamentPlayer]
     ) -> dict[str, list[TournamentPlayer]]:
         split_players = defaultdict(list)
         for tournament_player in tournament_players:
@@ -30,7 +30,7 @@ class PlayerSplitter(IdentifiableEntity, ABC):
             )
         return {
             key: split_players[key]
-            for key in self.sorted_split_keys(split_players.keys())
+            for key in self.sorted_split_keys(event, split_players.keys())
         }
 
 
@@ -59,11 +59,11 @@ class CategoryPlayerSplitter(PlayerSplitter):
 
     @staticmethod
     def get_split_key(tournament_player: TournamentPlayer) -> str:
-        return tournament_player.category.short_name
+        return tournament_player.category.name
 
     @staticmethod
-    def sorted_split_keys(split_keys: Iterable[str]) -> list[str]:
-        ordered_keys = [category.short_name for category in PlayerCategory]
+    def sorted_split_keys(event: Event, split_keys: Iterable[str]) -> list[str]:
+        ordered_keys = [category.name for category in event.player_categories]
         return sorted(split_keys, key=lambda key: ordered_keys.index(key))
 
 

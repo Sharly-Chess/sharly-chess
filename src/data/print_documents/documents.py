@@ -150,7 +150,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
     @property
     def ordered_split_players(self) -> dict[str, list[TournamentPlayer]]:
         splitter = self._get_option(PlayerSplitPrintOption).player_splitter
-        return splitter.split_players(self.ordered_tournament_players)
+        return splitter.split_players(self.get_event(), self.ordered_tournament_players)
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:

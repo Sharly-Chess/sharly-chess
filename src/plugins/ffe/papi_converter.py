@@ -22,6 +22,7 @@ from data.pairings.variations import (
 )
 from data.event import Event
 from data.player import TournamentPlayer, PlayerRating
+from data.player_categories import PlayerCategory
 from data.tie_breaks.tie_breaks import ManualTieBreak, TieBreak
 from data.tournament import Tournament
 from database.sqlite.event.event_store import (
@@ -53,7 +54,6 @@ from plugins.manager import plugin_manager
 from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
 from utils import Utils
 from utils.enum import (
-    PlayerCategory,
     TournamentRating,
     PlayerGender,
     PlayerTitle,
@@ -460,11 +460,9 @@ class PapiConverter:
                     ),
                 )
         elif papi_player.category:
-            year_of_birth = PlayerCategory.representive_year_for_category(
-                event,
-                PapiPlayerCategory.get_core_object(papi_player.category),
-                tournament_start=event.start_date,
-                tournament_stop=event.stop_date,
+            category = PapiPlayerCategory.get_core_object(papi_player.category)
+            year_of_birth = category.representative_year(
+                event, event.start_date, event.stop_date
             )
 
         gender = PlayerGender.NONE
@@ -874,11 +872,24 @@ class PapiConverter:
             dob = tournament_player.date_of_birth
         elif tournament_player.year_of_birth:
             dob = date(tournament_player.year_of_birth, 1, 1)
+        papi_category = ''
+        if tournament_player.year_of_birth:
+            category = PlayerCategory.from_year_of_birth(
+                tournament_player.event,
+                tournament_player.year_of_birth,
+                tournament_player.tournament.start_date,
+                tournament_player.tournament.stop_date,
+                junior_categories=PlayerCategory.get_junior_categories(
+                    [8, 10, 12, 14, 16, 18, 20]
+                ),
+                senior_categories=PlayerCategory.get_senior_categories([20, 50, 65]),
+            )
+            papi_category = PapiPlayerCategory.get_outer_value(category) or ''
         papi_player = PapiPlayer(
             lastName=tournament_player.last_name,
             firstName=tournament_player.first_name,
             birthDate=dob.strftime(PAPI_DATE_FORMAT) if dob else None,
-            category=PapiPlayerCategory.get_outer_value(tournament_player.category),
+            category=papi_category,
             gender=PapiPlayerGender.get_outer_value(tournament_player.gender),
             email=None if anonymize_player_data else tournament_player.mail,
             phone=None if anonymize_player_data else tournament_player.phone,

@@ -5,6 +5,9 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
+msgid "Add a french school"
+msgstr ""
+
 msgid "Add a school to the options."
 msgstr ""
 

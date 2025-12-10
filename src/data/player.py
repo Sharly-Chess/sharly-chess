@@ -9,6 +9,7 @@ from trf.Player import Game as TrfGame
 
 from common.i18n import _
 from data.pairing import Pairing
+from data.player_categories import PlayerCategory
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredPlayer,
@@ -27,7 +28,6 @@ from utils.enum import (
     TitleNorm,
     TournamentRating,
     PlayerRatingType,
-    PlayerCategory,
 )
 from utils.types import (
     Federation,
@@ -366,16 +366,13 @@ class TournamentPlayer(Player):
 
     @cached_property
     def category(self) -> PlayerCategory:
-        if self.tournament:
+        # If the event has a base date for the age categories, use it
+        if self.event.age_category_base_date:
+            tournament_start = self.event.age_category_base_date
+            tournament_end = self.event.age_category_base_date
+        else:
             tournament_start = self.tournament.start_date
             tournament_end = self.tournament.stop_date
-
-            # If the event has a base date for the age categories, use it
-            if self.event.age_category_base_date:
-                tournament_start = self.event.age_category_base_date
-                tournament_end = self.event.age_category_base_date
-        else:
-            tournament_start, tournament_end = None, None
         return PlayerCategory.from_year_of_birth(
             self.event, self.year_of_birth, tournament_start, tournament_end
         )
@@ -1198,7 +1195,7 @@ class TournamentPlayer(Player):
             for index, tie_break_value in enumerate(self.tie_break_values)
             if index != tie_break_index
         )
-
+        assert self.pairing_number is not None
         return (-(self.points or 0.0),) + tie_break_sort_key + (self.pairing_number,)
 
     @property

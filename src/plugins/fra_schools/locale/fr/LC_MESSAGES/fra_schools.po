@@ -5,6 +5,9 @@ msgstr "%(string)s :"
 msgid "Add"
 msgstr "Ajouter"
 
+msgid "Add a french school"
+msgstr "Ajouter un établissement scolaire"
+
 msgid "Add a school to the options."
 msgstr "Ajouter un établissement aux options."
 

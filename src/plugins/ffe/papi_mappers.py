@@ -9,6 +9,7 @@ from data.pairings.systems import (
     SwissPairingSystem,
     PairingSystem,
 )
+from data.player_categories import PlayerCategory, JuniorCategory, SeniorCategory
 from data.tie_breaks import tie_breaks, TieBreak
 from data.tournament import Tournament
 from plugins.ffe import ffe_tie_breaks
@@ -25,7 +26,6 @@ from utils.enum import (
     TournamentRating,
     PlayerGender,
     PlayerTitle,
-    PlayerCategory,
     PlayerRatingType,
     Result,
     BoardColor,
@@ -154,17 +154,16 @@ class PapiPlayerCategory(CoreMapper[str, PlayerCategory]):
     @staticmethod
     def _core_object_by_outer_value() -> dict[str, PlayerCategory]:
         return {
-            '': PlayerCategory.NONE,
-            'Ppo': PlayerCategory.U8,
-            'Pou': PlayerCategory.U10,
-            'Pup': PlayerCategory.U12,
-            'Ben': PlayerCategory.U14,
-            'Min': PlayerCategory.U16,
-            'Cad': PlayerCategory.U18,
-            'Jun': PlayerCategory.U20,
-            'Sen': PlayerCategory.O20,
-            'Sep': PlayerCategory.O50,
-            'Vet': PlayerCategory.O65,
+            'Ppo': JuniorCategory(8),
+            'Pou': JuniorCategory(10),
+            'Pup': JuniorCategory(12),
+            'Ben': JuniorCategory(14),
+            'Min': JuniorCategory(16),
+            'Cad': JuniorCategory(18),
+            'Jun': JuniorCategory(20),
+            'Sen': SeniorCategory(20),
+            'Sep': SeniorCategory(50),
+            'Vet': SeniorCategory(65),
         }
 
 
