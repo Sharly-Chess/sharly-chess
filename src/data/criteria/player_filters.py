@@ -21,7 +21,8 @@ from data.criteria.player_filter_options import (
     PlayersFilterOption,
     ExcludeFilterOption,
 )
-from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
+from data.player_categories import NoCategory, PlayerCategory
+from utils.enum import PlayerGender, PlayerRatingType
 from utils.option import OptionHandler
 
 if TYPE_CHECKING:
@@ -127,22 +128,22 @@ class AgePlayerFilter(PlayerFilter):
     @cached_property
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         age_categories, lower, greater = self.get_option_values()
-        categories = [PlayerCategory(category) for category in age_categories]
+        categories = [PlayerCategory.from_id(category) for category in age_categories]
         if lower:
             category = categories[0]
             return lambda tournament_player: (
-                tournament_player.category <= category
-                and tournament_player.category != PlayerCategory.NONE
+                tournament_player.category <= category  # type: ignore
+                and tournament_player.category != NoCategory()
             )
         if greater:
             category = categories[0]
-            return lambda tournament_player: tournament_player.category >= category
+            return lambda tournament_player: tournament_player.category >= category  # type: ignore
         return lambda player: player.category in categories
 
     def full_name(self, tournament: 'Tournament') -> str:
         age_categories, lower, greater = self.get_option_values()
         categories = [
-            PlayerCategory(category).short_name for category in age_categories
+            PlayerCategory.from_id(category).name for category in age_categories
         ]
         if lower:
             return f'{self.name} ≤ {categories[0]}'

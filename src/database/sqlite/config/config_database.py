@@ -13,6 +13,7 @@ from database.sqlite.config.config_store import (
     StoredConfig,
     StoredPlugin,
     StoredLocalSourceDatabase,
+    StoredPlayerCategorySet,
 )
 from database.sqlite.migration_database import MigrationDatabase
 
@@ -102,7 +103,9 @@ class ConfigDatabase(MigrationDatabase):
     def _get_stored_config(self) -> StoredConfig:
         """Gets all the information about the config and returns a corresponding StoredConfig record."""
         self.execute('SELECT * FROM `info`')
-        return self._row_to_stored_config(self.fetchone())
+        stored_config = self._row_to_stored_config(self.fetchone())
+        stored_config.stored_player_category_sets = self.load_player_category_sets()
+        return stored_config
 
     def load_stored_config(self) -> StoredConfig:
         return self._get_stored_config()
@@ -241,4 +244,47 @@ class ConfigDatabase(MigrationDatabase):
             f'INSERT INTO `local_source_database` ({fields_str}) '
             f'VALUES ({", ".join("?" for _ in params)})',
             params,
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredPlayerCategorySet
+    # ---------------------------------------------------------------------------------
+
+    def _row_to_stored_player_category_set(
+        self, row: dict[str, Any]
+    ) -> StoredPlayerCategorySet:
+        return StoredPlayerCategorySet(
+            id=row['id'],
+            name=row['name'],
+            categories=self.load_json_from_database_field(row['categories']),
+        )
+
+    def load_player_category_sets(self) -> list[StoredPlayerCategorySet]:
+        self.execute('SELECT * FROM `player_category_set`')
+        return [self._row_to_stored_player_category_set(row) for row in self.fetchall()]
+
+    def add_stored_player_category_set(
+        self, stored_player_category_set: StoredPlayerCategorySet
+    ) -> int:
+        fields = {
+            'name': stored_player_category_set.name,
+            'categories': self.dump_to_json_database_field(
+                stored_player_category_set.categories
+            ),
+        }
+        fields_str = ', '.join(f'`{field}`' for field in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `player_category_set` ({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        id_ = self._last_inserted_id()
+        if id_ is None:
+            raise RuntimeError('Player category set insertion failed')
+        return id_
+
+    def delete_stored_player_category_set(self, player_category_set_id: int):
+        self.execute(
+            'DELETE FROM`player_category_set` WHERE `id` = ?',
+            (player_category_set_id,),
         )

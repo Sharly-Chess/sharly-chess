@@ -10,8 +10,9 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account
 from data.input_output import DataSourceManager
 from data.player import Federation, Club
+from data.player_categories import PlayerCategory
 from data.safety_mode import SafetyMode
-from utils.enum import PlayerGender, PlayerCategory
+from utils.enum import PlayerGender
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -425,7 +426,7 @@ class SessionHandler:
         cls, request: HTMXRequest, categories: list[PlayerCategory]
     ):
         request.session[cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY] = [
-            category.value for category in categories
+            category.id for category in categories
         ]
 
     @classmethod
@@ -433,7 +434,7 @@ class SessionHandler:
         cls, request: HTMXRequest
     ) -> list[PlayerCategory]:
         return [
-            PlayerCategory(category_value)
+            PlayerCategory.from_id(category_value)
             for category_value in request.session.get(
                 cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY, []
             )

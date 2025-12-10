@@ -201,7 +201,7 @@
     {{ admin_macros.extra_admin_column_cell("category", player, admin_players_extra_columns)}}
     {% if 'category' in admin_players_filter_columns %}
         <td class="text-nowrap text-center">
-            {{ tournament_player.category.short_name }}
+            {{ tournament_player.category.name }}
         </td>
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("mail", player, admin_players_extra_columns)}}
