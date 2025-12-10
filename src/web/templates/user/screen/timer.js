@@ -72,7 +72,6 @@ function update_timer() {
 	time = Math.floor(now.getTime() / 1000);
 	clock_html = two_digits(now.getHours())+':'+two_digits(now.getMinutes())+':'+two_digits(now.getSeconds());
 {% for timer_hour in timer.timer_hours %}
-  {% if not timer_hour.error %}
 	if (time < {{ timer_hour.timestamp_1 }}) {
 		color = 'rgb({{ color_1_r }}, {{ color_1_g }}, {{ color_1_b }})';
 		dur = duration_string({{ timer_hour.timestamp }} - time);
@@ -107,12 +106,8 @@ function update_timer() {
 		update_timer_values(clock_html, text_html, color);
 		return;
 	}
-	{% if timer_hour.last_valid %}
-		$('#timer-wrapper').addClass('d-none');
-		return;
-	{% endif %}
-  {% endif %}
 {% endfor %}
+    $('#timer-wrapper').addClass('d-none');
 }
 
 $(document).ready(function(){
