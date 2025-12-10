@@ -5083,6 +5083,9 @@ msgstr ""
 msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
+msgid "Tournament default settings"
+msgstr ""
+
 msgid "Tournament defaults"
 msgstr ""
 
@@ -5919,3 +5922,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+

@@ -56,6 +56,25 @@
             </ul>
         </div>
     {% endif %}
+    {% if client.can_manage_events %}
+        <span {{ macros.tooltip_attributes('info', _('Tournament default settings'), 'bottom') }}
+            <button
+                class="btn btn-outline-primary text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-tournament-config-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                ) }}"
+                hx-trigger="click"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                hx-target="body"
+                hx-indicator="#please-wait"
+
+            >
+                <i class="bi-gear-fill"></i>
+            </button>
+        </span>
+    {% endif %}
     {% if client.can_add_tournament %}
         <span
             class="dropdown-end"

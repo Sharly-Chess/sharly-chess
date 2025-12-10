@@ -172,7 +172,6 @@
         </form>
     </div>
     <script>
-        console.log()
         var categorySetValuesByKey = {
             {% for category_set in player_category_sets %}
                 '{{ category_set.form_key }}': {{ category_set.category_ids|tojson }},

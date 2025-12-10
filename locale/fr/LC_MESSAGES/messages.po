@@ -2501,7 +2501,7 @@ msgid "June"
 msgstr "Juin"
 
 msgid "Junior categories"
-msgstr "atégories jeune"
+msgstr "Catégories jeunes"
 
 msgid "Kashdan"
 msgstr "Kashdan"
@@ -5083,6 +5083,9 @@ msgstr "Le tournoi [{tournament}] est terminé, on ne peut plus y ajouter de jou
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
 
+msgid "Tournament default settings"
+msgstr "Paramètres par défaut des tournois"
+
 msgid "Tournament defaults"
 msgstr "Paramètres par défaut des tournois"
 
@@ -5919,3 +5922,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
