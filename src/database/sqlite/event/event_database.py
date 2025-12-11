@@ -591,10 +591,10 @@ class EventDatabase(MigrationDatabase):
             stop_date=cls.load_optional_date_from_database_field(row['stop_date']),
             location=row['location'],
             player_rating_type=row['player_rating_type'],
-            three_points_for_a_win=cls.load_bool_or_none_from_database_field(
+            three_points_for_a_win=cls.load_bool_from_database_field(
                 row['three_points_for_a_win']
             ),
-            override_unrated_rapid_blitz=cls.load_bool_or_none_from_database_field(
+            override_unrated_rapid_blitz=cls.load_bool_from_database_field(
                 row['override_unrated_rapid_blitz']
             ),
             pab_value=row['pab_value'],
