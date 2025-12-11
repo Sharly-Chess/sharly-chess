@@ -11,6 +11,8 @@ class ESET(WindowsAntivirus):
         super().__init__(
             'ESET',
             [
+                'Efwd.exe',
                 'ekrn.exe',
+                'eServiceHost.exe',
             ],
         )
