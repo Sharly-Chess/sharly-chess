@@ -25,8 +25,9 @@ class ESET(WindowsAntivirus):
         if not folder.is_absolute():
             folder = folder.resolve()
         logger.warning(
-            'Sharly Chess has no way to know the exclusions set in ESET, so you should (if not already done) add '
-            'an ESET exclusion for the following folder to prevent you from arbitrary ESET file deletions:\n'
+            'Antivirus ESET has been detected and Sharly Chess has no way to know the exclusions set in ESET.\n'
+            'So you should (if not already done) add an exclusion in ESET for the following folder to prevent\n'
+            'you from arbitrary ESET file deletions:\n'
             f'- [{folder}]\n'
-            'Please refer to https://sharly-chess.com/antivirus/eset to learn how to add a path exception in ESET.\n'
+            'Please refer to https://sharly-chess.com/antivirus/eset to learn how to add a path exception in ESET.'
         )
