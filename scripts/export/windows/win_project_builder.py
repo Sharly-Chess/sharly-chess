@@ -30,6 +30,7 @@ class WinProjectBuilder(ProjectBuilder):
         self.signtool_dir: Path = Path(
             f'C:/Program Files (x86)/Windows Kits/10/bin/{signtool_version}/x64'
         )
+        self.signtool_exe: Path = self.signtool_dir / 'signtool.exe'
 
     def hook_extend_sys_path(
         self,
@@ -80,8 +81,14 @@ class WinProjectBuilder(ProjectBuilder):
         ]
 
     def hook_post_build_project(self) -> bool:
-        if self.signtool_cert_fingerprint and not self._sign_files():
-            return False
+        if self.signtool_cert_fingerprint:
+            if not self.signtool_exe.is_file():
+                logger.error(
+                    f'SignTool program [{self.signtool_exe}] not found, please install the Windows Software Development Kit (SDK) to sign files (details at https://learn.microsoft.com/en-us/windows/win32/seccrypto/signtool).'
+                )
+                return False
+            if not self._sign_files():
+                return False
         Path(self.project_dir / '_internal' / '.unblock_files').touch()
         return True
 
@@ -107,7 +114,7 @@ class WinProjectBuilder(ProjectBuilder):
         import subprocess
 
         cmd: list[str] = [
-            str(self.signtool_dir / 'signtool.exe'),
+            str(self.signtool_exe),
         ] + params
         logger.info('Running command [%s]...', ' '.join(cmd))
         process = subprocess.run(cmd, capture_output=True, text=True)
