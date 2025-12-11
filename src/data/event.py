@@ -17,6 +17,12 @@ from data.board import PlayerRatingType
 from data.display_controller import DisplayController
 from data.family import Family
 from data.player import Player, Club, Federation
+from data.player_categories import (
+    PlayerCategory,
+    NoCategory,
+    JuniorCategory,
+    SeniorCategory,
+)
 from data.rotator import Rotator
 from data.screen import Screen
 from data.timer import Timer
@@ -120,9 +126,49 @@ class Event:
             return plugin
         return SharlyChessConfig.default_prize_currency
 
+    @cached_property
+    def player_categories(self) -> list[PlayerCategory]:
+        categories: list[PlayerCategory]
+        if self.stored_event.age_categories:
+            categories = sorted(
+                PlayerCategory.from_id(category_id)
+                for category_id in self.stored_event.age_categories
+            )
+
+        else:
+            categories = SharlyChessConfig().default_player_category_set.categories
+        # Insert a category as filler for all the players not represented in the categories
+        index: int = 0
+        while index < len(categories) and isinstance(categories[index], JuniorCategory):
+            index += 1
+        if index == 0:  # No youth category
+            # Add a youth category matching the min senior category's limit
+            categories.insert(0, JuniorCategory(categories[0].age_limit))
+        else:
+            # Add a senior category matching the max youth category's limit
+            categories.insert(index, SeniorCategory(categories[index - 1].age_limit))
+        categories.insert(0, NoCategory())
+        return categories
+
+    @cached_property
+    def junior_categories(self) -> list[JuniorCategory]:
+        return [
+            category
+            for category in self.player_categories
+            if isinstance(category, JuniorCategory)
+        ]
+
+    @cached_property
+    def senior_categories(self) -> list[SeniorCategory]:
+        return [
+            category
+            for category in self.player_categories
+            if isinstance(category, SeniorCategory)
+        ]
+
     @property
     def override_unrated_rapid_blitz(self) -> bool:
-        return self.stored_event.override_unrated_rapid_blitz or False
+        return self.stored_event.override_unrated_rapid_blitz
 
     @property
     def three_points_for_a_win(self) -> bool:
@@ -463,6 +509,13 @@ class Event:
         for tournament in self.tournaments_by_id.values():
             for check_in in tournament.tournament_players_by_check_in_status:
                 counter[check_in] += tournament.check_in_counts[check_in]
+        return counter
+
+    @cached_property
+    def category_counts(self) -> Counter[PlayerCategory]:
+        counter: Counter[PlayerCategory] = Counter[PlayerCategory]()
+        for player in self.players:
+            counter[player.category] += 1
         return counter
 
     def get_unused_tournament_name(

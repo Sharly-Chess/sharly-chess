@@ -8,7 +8,7 @@
                     {{admin_player.title.short_name}} {{ admin_player.full_name }}
                 </h2>
                 <div>{{ admin_player.club }}</div>
-                {% set category = tournament_player.category.short_name %}
+                {% set category = tournament_player.category.name %}
                 <div>{{ admin_player.federation }}, {{ tournament_player.rating_str }}{% if category %}, {{ category }}{% endif %}</div>
             </div>
             <div>

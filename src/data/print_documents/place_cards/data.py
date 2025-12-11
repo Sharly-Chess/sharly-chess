@@ -47,7 +47,7 @@ class PlaceCardPlayer:
             self.title = tournament_player.title.short_name
             self.federation = tournament_player.federation.name
             self.club = tournament_player.club.name
-            self.category = tournament_player.category.short_name
+            self.category = tournament_player.category.name
             self.color = color
             plugin_manager.hook_for_event(
                 tournament_player.event, 'augment_place_card_player'

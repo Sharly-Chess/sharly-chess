@@ -7,6 +7,13 @@ from typing import Any
 
 
 @dataclass
+class StoredPlayerCategorySet:
+    id: int | None
+    name: str
+    categories: list[str]
+
+
+@dataclass
 class StoredConfig:
     force_edit: bool
     console_log_level: int | None
@@ -18,6 +25,9 @@ class StoredConfig:
     date_formatter: str
     federation: str | None = None
     locale: str | None = None
+    stored_player_category_sets: list[StoredPlayerCategorySet] = field(
+        default_factory=list[StoredPlayerCategorySet]
+    )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

@@ -212,9 +212,6 @@ msgstr ""
 msgid "1st day of the month"
 msgstr ""
 
-msgid "20+"
-msgstr ""
-
 msgid "400 - Bad request"
 msgstr ""
 
@@ -231,13 +228,7 @@ msgstr ""
 msgid "50%% of the maximum possible score"
 msgstr ""
 
-msgid "50+"
-msgstr ""
-
 msgid "500 - Internal Server Error"
-msgstr ""
-
-msgid "65+"
 msgstr ""
 
 msgid "<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt."
@@ -315,6 +306,9 @@ msgid "A positive integer is expected."
 msgstr ""
 
 msgid "A positive value is expected."
+msgstr ""
+
+msgid "A set with this name already existe."
 msgstr ""
 
 msgid "A value is expected."
@@ -877,6 +871,9 @@ msgstr "Cat"
 msgid "Cat *** CATEGORY FOR TABLE HEADER"
 msgstr "Cat."
 
+msgid "Categories"
+msgstr ""
+
 msgid "Category"
 msgstr ""
 
@@ -885,6 +882,9 @@ msgstr "Category"
 
 #, python-format
 msgid "Category [%(category)s] successfully created!"
+msgstr ""
+
+msgid "Category sets"
 msgstr ""
 
 msgid "Change the player's tournament."
@@ -1093,6 +1093,9 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
+msgid "Configure the category sets, which are available for all events."
+msgstr ""
+
 msgid "Configure the tie-breaks of the tournament."
 msgstr ""
 
@@ -1214,6 +1217,9 @@ msgid "Create and add another"
 msgstr ""
 
 msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
+msgstr ""
+
+msgid "Create category set"
 msgstr ""
 
 msgid "Create criterion"
@@ -1378,6 +1384,9 @@ msgid "Default accounts have been created."
 msgstr ""
 
 msgid "Default handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
+msgstr ""
+
+msgid "Default sets can't be deleted."
 msgstr ""
 
 msgid "Default timer settings"
@@ -2488,6 +2497,9 @@ msgstr "Jun"
 msgid "June"
 msgstr ""
 
+msgid "Junior categories"
+msgstr ""
+
 msgid "Kashdan"
 msgstr ""
 
@@ -2863,9 +2875,6 @@ msgstr ""
 msgid "No archived events."
 msgstr ""
 
-msgid "No category"
-msgstr ""
-
 msgid "No criteria defined."
 msgstr ""
 
@@ -3229,15 +3238,6 @@ msgid "Other players in this score group are not awarded prizes, as their share 
 msgstr ""
 
 msgid "Others"
-msgstr ""
-
-msgid "Over 20"
-msgstr ""
-
-msgid "Over 50"
-msgstr ""
-
-msgid "Over 65"
 msgstr ""
 
 msgid "Overwrite"
@@ -4235,6 +4235,9 @@ msgstr ""
 msgid "Selection: %(selection)s"
 msgstr ""
 
+msgid "Senior categories"
+msgstr ""
+
 msgid "Sep *** SEPTEMBER"
 msgstr "Sep"
 
@@ -4394,7 +4397,7 @@ msgstr ""
 msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr ""
 
-msgid "Specify a base date for the age categories"
+msgid "Specify a base date for the categories"
 msgstr ""
 
 msgid "Specifying the number of parts and the number of items per part is not possible."
@@ -4537,6 +4540,9 @@ msgid "The account of the user accessing Sharly Chess directly from the server."
 msgstr ""
 
 msgid "The administrator has all the permissions."
+msgstr ""
+
+msgid "The age categories in which players are distributed. A category is added to represent the missing players (E.g.: U20 / 50+ → 20+)."
 msgstr ""
 
 msgid "The average of the [{tie_break}] scores of the opponents played over the board."
@@ -5151,25 +5157,10 @@ msgstr ""
 msgid "Type: %(screen_type)s"
 msgstr ""
 
-msgid "U10"
+msgid "U7-U19 / 50+ / 65+"
 msgstr ""
 
-msgid "U12"
-msgstr ""
-
-msgid "U14"
-msgstr ""
-
-msgid "U16"
-msgstr ""
-
-msgid "U18"
-msgstr ""
-
-msgid "U20"
-msgstr ""
-
-msgid "U8"
+msgid "U8-U20 / 50+ / 65+"
 msgstr ""
 
 msgid "UNPAIR"
@@ -5198,27 +5189,6 @@ msgstr "Undefined"
 
 msgid "Undefined *** SINGULAR"
 msgstr "Undefined"
-
-msgid "Under 10"
-msgstr ""
-
-msgid "Under 12"
-msgstr ""
-
-msgid "Under 14"
-msgstr ""
-
-msgid "Under 16"
-msgstr ""
-
-msgid "Under 18"
-msgstr ""
-
-msgid "Under 20"
-msgstr ""
-
-msgid "Under 8"
-msgstr ""
 
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
@@ -5381,6 +5351,9 @@ msgid "Used by %(num)d tournament."
 msgid_plural "Used by %(num)d tournaments."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "U{age_limit} *** YOUTH AGE CATEGORY"
+msgstr "U{age_limit}"
 
 msgid "Validate"
 msgstr ""
@@ -5879,6 +5852,9 @@ msgstr ""
 
 msgid "yes"
 msgstr ""
+
+msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
+msgstr "{age_limit}+"
 
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"

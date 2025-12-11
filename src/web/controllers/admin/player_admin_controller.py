@@ -34,6 +34,7 @@ from data.access_levels.client import Client
 from data.input_output.data_source import PlayerComparator, DataSource
 from data.input_output.managers import DataSourceManager
 from data.player import Player, Federation, Club, PlayerRating, TournamentPlayer
+from data.player_categories import PlayerCategory
 from data.print_documents.documents import (
     PlayerListPrintDocument,
     PlayerCheckinListPrintDocument,
@@ -42,7 +43,6 @@ from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from utils import Utils
 from utils.enum import (
-    PlayerCategory,
     PlayerGender,
     TournamentRating,
     PlayerRatingType,
@@ -1029,7 +1029,7 @@ class PlayerAdminController(BaseEventAdminController):
         admin_players_filter_genders: list[int] | None = None,
         admin_players_filter_check_ins: list[int] | None = None,
         admin_players_filter_tournaments: list[int] | None = None,
-        admin_players_filter_categories: list[int] | None = None,
+        admin_players_filter_categories: list[str] | None = None,
         admin_players_filter_name: str | None = None,
         admin_players_clear_filters: int | None = None,
     ) -> Template:
@@ -1098,9 +1098,9 @@ class PlayerAdminController(BaseEventAdminController):
             SessionHandler.set_session_admin_players_filter_categories(
                 request,
                 [
-                    PlayerCategory(query_param)
+                    PlayerCategory.from_id(query_param)
                     for query_param in admin_players_filter_categories
-                    if query_param >= 0  # -1 must be ignored
+                    if query_param  # '' must be ignored
                 ],
             )
         elif admin_players_filter_name is not None:

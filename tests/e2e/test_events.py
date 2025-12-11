@@ -15,7 +15,7 @@ class TestEventFunctionality:
         expect(modal).to_be_visible()
         modal.get_by_test_id('federation').select_option('FRA', force=True)
         modal.get_by_test_id('name').fill(EVENT_ID)
-        modal.locator('button[type=submit]').click()
+        modal.get_by_test_id('event-form-submit-button').click()
         expect(page).to_have_url(f'/event/{EVENT_ID}/tournaments')
 
         page.goto('/current_events')

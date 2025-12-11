@@ -8,7 +8,8 @@ from common.exception import OptionError
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.player import Club, Federation, TournamentPlayer
-from utils.enum import PlayerGender, PlayerCategory, PlayerRatingType
+from data.player_categories import PlayerCategory, NoCategory
+from utils.enum import PlayerGender, PlayerRatingType
 from utils.option import Option
 
 if TYPE_CHECKING:
@@ -197,7 +198,7 @@ class AgeCategoriesOption(SelectPlayerFilterOption[PlayerCategory]):
 
     @property
     def type(self) -> type | UnionType:
-        return list[int]
+        return list[str]
 
     @property
     def default_value(self) -> Any:
@@ -206,26 +207,29 @@ class AgeCategoriesOption(SelectPlayerFilterOption[PlayerCategory]):
     def get_tournament_player_counter(
         self, tournament: 'Tournament'
     ) -> Counter[PlayerCategory]:
-        return tournament.category_counts
+        counter = tournament.category_counts
+        if NoCategory() in counter:
+            del counter[NoCategory()]
+        return counter
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[PlayerCategory]:
-        return [
-            category for category in PlayerCategory if category != PlayerCategory.NONE
-        ]
+        categories = tournament.event.player_categories
+        categories.pop(0)
+        return categories
 
     def get_key(self, object_: PlayerCategory) -> str:
-        return str(object_.value)
+        return object_.id
 
     def get_name(self, object_: PlayerCategory) -> str:
-        return object_.short_name
+        return object_.name
 
     def validate(self):
-        self._validate_list_type(int)
+        self._validate_list_type(str)
         if not self.value:
             raise OptionError(_('At least one age category is expected.'), self)
         for category in self.value:
             try:
-                PlayerCategory(category)
+                PlayerCategory.from_id(category)
             except ValueError:
                 raise OptionError(f'Unknown category [{category}]', self)
 

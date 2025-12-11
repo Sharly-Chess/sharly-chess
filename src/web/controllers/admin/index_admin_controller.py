@@ -4,7 +4,7 @@ from logging import Logger
 from pathlib import Path
 import shutil
 from tempfile import NamedTemporaryFile
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from litestar.exceptions import ClientException, NotFoundException
 
@@ -21,6 +21,11 @@ from data.board import PlayerRatingType
 from data.event import Event
 from data.input_output import OnlineDataSourceManager
 from data.loader import ArchiveLoader, EventLoader
+from data.player_categories import (
+    SELECTABLE_JUNIOR_CATEGORIES,
+    SELECTABLE_SENIOR_CATEGORIES,
+    PlayerCategory,
+)
 from utils.date_time import (
     format_timestamp_date,
     format_date_range,
@@ -46,6 +51,7 @@ from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import (
     StoredConfig,
     StoredPlugin,
+    StoredPlayerCategorySet,
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredEvent
@@ -65,7 +71,7 @@ from database.sqlite.local_source_database.delays import (
 )
 from plugins.manager import Plugin, plugin_manager
 from utils import Utils
-from utils.enum import FormAction, Result
+from utils.enum import FormAction
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -127,6 +133,9 @@ class IndexAdminController(BaseAdminController):
             federation=federation.name if federation else None,
             locale=locale,
             date_formatter=date_formatter_id,
+            stored_player_category_sets=(
+                sharly_chess_config.stored_config.stored_player_category_sets
+            ),
             errors=errors,
         )
 
@@ -308,6 +317,40 @@ class IndexAdminController(BaseAdminController):
 
         return self._admin_render(web_context=web_context)
 
+    @staticmethod
+    def _age_category_sets_form_context(
+        data: dict[str, str],
+        errors: dict[str, str] | None = None,
+        sets_container_state: Literal['hidden', 'list', 'form'] = 'hidden',
+    ) -> dict[str, Any]:
+        default_data = WebContext.values_dict_to_form_data(
+            {
+                'category_set_name': '',
+                'category_set_categories': [],
+                'age_categories': [],
+            }
+        )
+        category_sets = SharlyChessConfig().player_category_sets
+        category_options: dict[str, dict[str, str]] = {
+            _('Category sets'): {
+                category_set.form_key: category_set.name
+                for category_set in category_sets
+            },
+            _('Junior categories'): {
+                category.id: category.name for category in SELECTABLE_JUNIOR_CATEGORIES
+            },
+            _('Senior categories'): {
+                category.id: category.name for category in SELECTABLE_SENIOR_CATEGORIES
+            },
+        }
+        return {
+            'age_category_sets_container_state': sets_container_state,
+            'player_category_options': category_options,
+            'player_category_sets': category_sets,
+            'errors': errors or {},
+            'data': default_data | data,
+        }
+
     @classmethod
     def _prepare_event_modal_data(
         cls,
@@ -324,6 +367,8 @@ class IndexAdminController(BaseAdminController):
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
             location: str | None = None
+            age_category_base_date: date | None = None
+            age_categories: list[str] | None = None
             organiser_name: str | None = None
             organiser_home_page: str | None = None
             organiser_email: str | None = None
@@ -350,6 +395,8 @@ class IndexAdminController(BaseAdminController):
             public = stored_event.public
             federation = stored_event.federation
             location = stored_event.location
+            age_category_base_date = stored_event.age_category_base_date
+            age_categories = stored_event.age_categories
             organiser_name = stored_event.organiser_name
             organiser_home_page = stored_event.organiser_home_page
             organiser_email = stored_event.organiser_email
@@ -387,6 +434,9 @@ class IndexAdminController(BaseAdminController):
                     'organiser_email': organiser_email,
                     'organiser_director': organiser_director,
                     'date_range': date_range,
+                    'age_category_base_date': age_category_base_date,
+                    'use_age_category_base_date': age_category_base_date is not None,
+                    'age_categories': age_categories,
                 }
             )
             | plugin_form_data
@@ -454,6 +504,20 @@ class IndexAdminController(BaseAdminController):
             or PlayerRatingType.FIDE.value
         )
 
+        age_categories = WebContext.form_data_to_list_str(data, 'age_categories')
+        use_age_category_base_date = WebContext.form_data_to_bool(
+            data, 'use_age_category_base_date'
+        )
+        age_category_base_date: date | None = None
+        try:
+            age_category_base_date = WebContext.form_data_to_date(
+                data, field := 'age_category_base_date'
+            )
+            if use_age_category_base_date and not age_category_base_date:
+                errors[field] = _('Please choose the base date for the age categories.')
+        except FormError as e:
+            errors[field] = str(e)
+
         enabled_plugins = plugin_manager.get_plugins_with_dependencies(
             [
                 plugin
@@ -484,12 +548,7 @@ class IndexAdminController(BaseAdminController):
 
         assert start_date is not None
         assert stop_date is not None
-        if admin_event:
-            timer_colors = admin_event.stored_event.timer_colors
-            timer_delays = admin_event.stored_event.timer_delays
-        else:
-            timer_colors = SharlyChessConfig.default_timer_colors  # type: ignore
-            timer_delays = SharlyChessConfig.default_timer_delays  # type: ignore
+
         stored_event = StoredEvent(
             uniq_id=uniq_id,
             name=name,
@@ -502,39 +561,39 @@ class IndexAdminController(BaseAdminController):
             organiser_home_page=organiser_home_page,
             organiser_email=organiser_email,
             organiser_director=organiser_director,
+            age_category_base_date=age_category_base_date,
+            age_categories=age_categories,
             player_rating_type=player_rating_type,
             plugin_data=plugin_data,
             enabled_plugins=[plugin.id for plugin in enabled_plugins],
-            # The following defaults are edited in other tabs.  We copy the values from the admin_event if it exists.
-            timer_colors=timer_colors,
-            timer_delays=timer_delays,
-            background_color=admin_event.stored_event.background_color
-            if admin_event
-            else config.default_background_color,
-            message_background_color=admin_event.message_background_color
-            if admin_event
-            else config.default_message_background_color,
-            message_color=admin_event.message_color
-            if admin_event
-            else config.default_message_color,
-            message_text=admin_event.message_text if admin_event else None,
-            record_illegal_moves=admin_event.stored_event.record_illegal_moves
-            if admin_event
-            else None,
-            rules=admin_event.stored_event.rules if admin_event else None,
-            override_unrated_rapid_blitz=admin_event.stored_event.override_unrated_rapid_blitz
-            if admin_event
-            else True,
-            three_points_for_a_win=admin_event.stored_event.three_points_for_a_win
-            if admin_event
-            else False,
-            pab_value=admin_event.stored_event.pab_value
-            if admin_event
-            else Result.WIN.value,
-            prize_currency=admin_event.stored_event.prize_currency
-            if admin_event
-            else None,
+            # Defaults edited in other tabs
+            timer_colors=config.default_timer_colors,  # type: ignore
+            timer_delays=config.default_timer_delays,  # type: ignore
+            background_color=config.default_background_color,
+            message_background_color=config.default_message_background_color,
+            message_color=config.default_message_color,
         )
+        if admin_event:
+            # Defaults edited in other tabs
+            stored_event.timer_colors = admin_event.stored_event.timer_colors
+            stored_event.timer_delays = admin_event.stored_event.timer_delays
+            stored_event.background_color = admin_event.stored_event.background_color
+            stored_event.message_background_color = admin_event.message_background_color
+            stored_event.message_color = admin_event.message_color
+            stored_event.message_text = admin_event.message_text
+            stored_event.record_illegal_moves = (
+                admin_event.stored_event.record_illegal_moves
+            )
+            stored_event.rules = admin_event.stored_event.rules
+            stored_event.override_unrated_rapid_blitz = (
+                admin_event.override_unrated_rapid_blitz
+            )
+            stored_event.three_points_for_a_win = (
+                admin_event.stored_event.three_points_for_a_win
+            )
+            stored_event.pab_value = admin_event.pab_value.value
+            stored_event.prize_currency = admin_event.stored_event.prize_currency
+
         return stored_event, errors
 
     def _event_modal_context(
@@ -553,7 +612,8 @@ class IndexAdminController(BaseAdminController):
                 if plugin.used_by_tournaments_count(event):
                     federation_plugin_used = True
                     break
-        return {
+        errors = errors or {}
+        template_context = {
             'federation_options': self._get_federation_options(),
             'timer_color_texts': self._get_timer_color_texts(
                 SharlyChessConfig.default_timer_delays
@@ -568,10 +628,20 @@ class IndexAdminController(BaseAdminController):
                     'National *** NAME FOR RATING TYPE NATIONAL'
                 ),
             },
+            'force_organiser_open': any(
+                field in errors
+                for field in [
+                    'organiser_name',
+                    'organiser_home_page',
+                    'organiser_email',
+                ]
+            ),
+            'force_categories_open': any(field in errors for field in ['']),
             'action': action,
             'data': data,
-            'errors': errors or {},
+            'errors': errors,
         }
+        return template_context | self._age_category_sets_form_context(data, errors)
 
     @get(
         path=[
@@ -590,11 +660,7 @@ class IndexAdminController(BaseAdminController):
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
         data = self._prepare_event_modal_data(action, request, web_context.admin_event)
-        template_context = self._event_modal_context(
-            web_context,
-            action,
-            data,
-        )
+        template_context = self._event_modal_context(web_context, action, data)
 
         return self._admin_render(
             web_context=web_context,
@@ -610,18 +676,19 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         admin_tab: str,
     ) -> Template | Redirect:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
+        flat_data = WebContext.flatten_list_data(data)
         stored_event, errors = self._read_event_form_data(
-            FormAction.CREATE, web_context, None, data
+            FormAction.CREATE, web_context, None, flat_data
         )
         if not stored_event:
             template_context = self._event_modal_context(
-                web_context, FormAction.CREATE, data, errors=errors
+                web_context, FormAction.CREATE, flat_data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -682,17 +749,19 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template | ClientRedirect:
         web_context = AdminWebContext(request)
+        flat_data = WebContext.flatten_list_data(data)
+        event = web_context.get_admin_event()
         stored_event, errors = self._read_event_form_data(
-            FormAction.CLONE, web_context, web_context.admin_event, data
+            FormAction.CLONE, web_context, event, flat_data
         )
         if not stored_event:
             template_context = self._event_modal_context(
-                web_context, FormAction.CLONE, data, errors=errors
+                web_context, FormAction.CLONE, flat_data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -700,7 +769,6 @@ class IndexAdminController(BaseAdminController):
             )
 
         uniq_id: str = stored_event.uniq_id
-        event = web_context.get_admin_event()
         EventDatabase(event.uniq_id).clone(new_uniq_id=uniq_id)
         with EventDatabase(uniq_id, write=True) as database:
             database.update_stored_event(stored_event)
@@ -726,18 +794,20 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         admin_tab: str | None,
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
+        flat_data = WebContext.flatten_list_data(data)
+        event = web_context.get_admin_event()
         stored_event, errors = self._read_event_form_data(
-            FormAction.UPDATE, web_context, web_context.admin_event, data
+            FormAction.UPDATE, web_context, event, flat_data
         )
         if not stored_event:
             template_context = self._event_modal_context(
-                web_context, FormAction.UPDATE, data, errors=errors
+                web_context, FormAction.UPDATE, flat_data, errors=errors
             )
             return self._admin_render(
                 web_context=web_context,
@@ -803,6 +873,86 @@ class IndexAdminController(BaseAdminController):
                 ),
             )
         return ClientRedirect(redirect_to=admin_event_url(request, new_uniq_id))
+
+    @post(
+        path='/player-category-set/create',
+        name='player-category-set-create',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_create_player_category_set(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        flat_data = WebContext.flatten_list_data(data)
+        errors: dict[str, str] = {}
+        category_sets = SharlyChessConfig().player_category_sets
+        name = (
+            WebContext.form_data_to_str(flat_data, field := 'category_set_name') or ''
+        )
+        if not name:
+            errors[field] = _('This field is required.')
+        elif name in (category_set.name for category_set in category_sets):
+            errors[field] = _('A set with this name already existe.')
+        category_ids = WebContext.form_data_to_list_str(
+            flat_data, field := 'category_set_categories'
+        )
+        if not category_ids:
+            errors[field] = _('This field is required.')
+        for category in category_ids:
+            try:
+                PlayerCategory.from_id(category)
+            except ValueError:
+                errors[field] = f'Unknown category [{category}].'
+        if not errors:
+            with ConfigDatabase(True) as database:
+                database.add_stored_player_category_set(
+                    StoredPlayerCategorySet(id=None, name=name, categories=category_ids)
+                )
+            SharlyChessConfig().load_and_set_env()
+            flat_data = {'age_categories': flat_data['age_categories']}
+        return HTMXTemplate(
+            template_name='/admin/event/event_age_categories_form.html',
+            context=(
+                web_context.template_context
+                | self._age_category_sets_form_context(
+                    flat_data,
+                    errors,
+                    sets_container_state='form' if errors else 'list',
+                )
+            ),
+        )
+
+    @delete(
+        path='/player-category-set/delete/{player_category_set_id:int}',
+        name='player-category-set-delete',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_delete_player_category_set(
+        self,
+        request: HTMXRequest,
+        player_category_set_id: int,
+        age_categories: list[str] | None = None,
+    ) -> Template:
+        web_context = AdminWebContext(request)
+        with ConfigDatabase(True) as database:
+            database.delete_stored_player_category_set(player_category_set_id)
+        SharlyChessConfig().load_and_set_env()
+        data = WebContext.flatten_list_data({'age_categories': age_categories or []})
+        return HTMXTemplate(
+            template_name='/admin/event/event_age_categories_form.html',
+            context=(
+                web_context.template_context
+                | self._age_category_sets_form_context(
+                    data, sets_container_state='list'
+                )
+            ),
+        )
 
     @get(
         path='/event-modal/share/{event_uniq_id:str}',

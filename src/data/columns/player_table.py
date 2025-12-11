@@ -119,7 +119,7 @@ class CategoryColumn(TournamentPlayerTableColumn):
         return _('Cat *** CATEGORY FOR TABLE HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.category.short_name
+        return tournament_player.category.name
 
     @property
     def shared_classes(self) -> str:
