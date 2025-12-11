@@ -1383,9 +1383,6 @@ msgstr ""
 msgid "Default accounts have been created."
 msgstr ""
 
-msgid "Default handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
-msgstr ""
-
 msgid "Default sets can't be deleted."
 msgstr ""
 
@@ -1736,9 +1733,6 @@ msgstr ""
 msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
 msgstr ""
 
-msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
-msgstr ""
-
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr ""
 
@@ -1995,9 +1989,6 @@ msgstr "FM"
 msgid "FORFEIT"
 msgstr ""
 
-msgid "Fallback to estimated ratings"
-msgstr ""
-
 msgid "Families"
 msgstr ""
 
@@ -2139,6 +2130,9 @@ msgid "For non-monetary prizes, the value is used for reward priority."
 msgstr ""
 
 msgid "For players who have not checked-in:"
+msgstr ""
+
+msgid "For players without a rapid or blitz FIDE rating, use instead their standard FIDE rating."
 msgstr ""
 
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
@@ -2351,9 +2345,6 @@ msgid "Impossible to set a round number lower than the last round with pairings 
 msgstr ""
 
 msgid "In play"
-msgstr ""
-
-msgid "In rapid/blitz tournaments, use the standard rating for unrated players"
 msgstr ""
 
 msgid "In-tournament"
@@ -3631,9 +3622,6 @@ msgstr ""
 msgid "Plugins"
 msgstr ""
 
-msgid "Point counting"
-msgstr ""
-
 #, python-format
 msgid "Points: %(min)s or more"
 msgstr ""
@@ -4216,9 +4204,6 @@ msgstr ""
 msgid "Seed color"
 msgstr ""
 
-msgid "Seeding of unrated rapid/blitz"
-msgstr ""
-
 msgid "Select All"
 msgstr ""
 
@@ -4428,9 +4413,6 @@ msgid "Standard"
 msgstr ""
 
 msgid "Standard (no flag)"
-msgstr ""
-
-msgid "Standard points (1-0.5-0)"
 msgstr ""
 
 msgid "Standard rating"
@@ -4948,9 +4930,6 @@ msgstr ""
 msgid "Three points for a win"
 msgstr ""
 
-msgid "Three points for a win (3-1-0)"
-msgstr ""
-
 #, python-format
 msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr ""
@@ -5078,15 +5057,6 @@ msgid "Tournament [{tournament}] is finished, you can not add players any longer
 msgstr ""
 
 msgid "Tournament [{tournament}] successfully imported."
-msgstr ""
-
-msgid "Tournament default settings"
-msgstr ""
-
-msgid "Tournament defaults"
-msgstr ""
-
-msgid "Tournament defaults have been updated."
 msgstr ""
 
 msgid "Tournament name"
@@ -5328,9 +5298,6 @@ msgstr ""
 msgid "Use pairing engines"
 msgstr ""
 
-msgid "Use standard ratings"
-msgstr ""
-
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
 msgstr ""
 
@@ -5338,6 +5305,9 @@ msgid "Use the Staff tab to declare arbiters."
 msgstr ""
 
 msgid "Use the recommended tie-breaks"
+msgstr ""
+
+msgid "Use the standard FIDE rating for unrated players"
 msgstr ""
 
 #, python-format

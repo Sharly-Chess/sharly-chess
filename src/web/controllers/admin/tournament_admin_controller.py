@@ -331,18 +331,6 @@ class TournamentAdminController(BaseEventAdminController):
             key: value for __, data in plugin_results for key, value in data.items()
         }
 
-        override_unrated_rapid_blitz_options = {
-            '': '',
-            WebContext.value_to_form_data(True): _('Use standard ratings'),
-            WebContext.value_to_form_data(False): _('Fallback to estimated ratings'),
-        }
-
-        override_unrated_rapid_blitz_options[''] = _('Use default - {option}').format(
-            option=override_unrated_rapid_blitz_options[
-                WebContext.value_to_form_data(admin_event.override_unrated_rapid_blitz)
-            ]
-        )
-
         player_rating_type_options: dict[str, str] = {
             '': '',
             str(PlayerRatingType.FIDE.value): _('FIDE'),
@@ -354,32 +342,14 @@ class TournamentAdminController(BaseEventAdminController):
             option=player_rating_type_options[str(admin_event.player_rating_type.value)]
         )
 
-        three_points_for_a_win_options = {
-            '': '',
-            WebContext.value_to_form_data(True): _('Three points for a win (3-1-0)'),
-            WebContext.value_to_form_data(False): _('Standard points (1-0.5-0)'),
-        }
-        three_points_for_a_win_options[''] = _('Use default - {option}').format(
-            option=three_points_for_a_win_options[
-                WebContext.value_to_form_data(
-                    admin_event.three_points_for_a_win or False
-                )
-            ]
-        )
-
         pab_value_options = {
-            '': '',
             str(Result.WIN.value): _('Win'),
             str(Result.DRAW.value): _('Draw'),
             str(Result.LOSS.value): _('Loss'),
         }
-        pab_value_options[''] = _('Use default - {option}').format(
-            option=pab_value_options[str(admin_event.pab_value.value)]
-        )
 
         template_context = {
             'rating_options': cls._get_rating_options(),
-            'override_unrated_rapid_blitz_options': override_unrated_rapid_blitz_options,
             'pairing_systems': pairing_systems,
             'pairing_system_options': PairingSystemManager(admin_event).options(),
             'plugin_form_fields_templates': plugin_form_fields_templates,
@@ -391,7 +361,6 @@ class TournamentAdminController(BaseEventAdminController):
             else None,
             'player_rating_type_options': player_rating_type_options,
             'pab_value_options': pab_value_options,
-            'three_points_for_a_win_options': three_points_for_a_win_options,
             'modal': 'tournament',
             'action': action,
             'data': data,
@@ -494,10 +463,10 @@ class TournamentAdminController(BaseEventAdminController):
         last_rounds_no_byes = WebContext.form_data_to_int(data, 'last_rounds_no_byes')
         location = WebContext.form_data_to_str(data, 'location')
         player_rating_type = WebContext.form_data_to_int(data, 'player_rating_type')
-        three_points_for_a_win = WebContext.form_data_to_bool_or_none(
+        three_points_for_a_win = WebContext.form_data_to_bool(
             data, 'three_points_for_a_win'
         )
-        override_unrated_rapid_blitz = WebContext.form_data_to_bool_or_none(
+        override_unrated_rapid_blitz = WebContext.form_data_to_bool(
             data, 'override_unrated_rapid_blitz'
         )
         pab_value = WebContext.form_data_to_int(data, 'pab_value')

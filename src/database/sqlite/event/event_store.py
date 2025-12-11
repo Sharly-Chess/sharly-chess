@@ -172,9 +172,9 @@ class StoredTournament:
     last_update: float = 0.0
     last_player_update: float = 0.0
     last_pairing_update: float = 0.0
-    three_points_for_a_win: bool | None = False
-    pab_value: int | None = None
-    override_unrated_rapid_blitz: bool | None = None
+    three_points_for_a_win: bool = False
+    override_unrated_rapid_blitz: bool = True
+    pab_value: int = Result.WIN.value
     stored_tie_breaks: list[StoredTieBreak] = field(
         default_factory=list[StoredTieBreak]
     )
@@ -351,17 +351,12 @@ class BaseStoredEvent:
     public: bool = False
     location: str | None = None
     background_color: str | None = None
-    record_illegal_moves: int | None = None
-    rules: str | None = None
     timer_colors: dict[int, str | None] = field(default_factory=dict[int, str | None])
     timer_delays: dict[int, int | None] = field(default_factory=dict[int, int | None])
     message_text: str | None = None
     message_color: str | None = None
     message_background_color: str | None = None
     prize_currency: str | None = None
-    override_unrated_rapid_blitz: bool = True
-    three_points_for_a_win: bool = False
-    pab_value: int = Result.WIN.value
     age_category_base_date: date | None = None
     age_categories: list[str] | None = None
     organiser_name: str | None = None

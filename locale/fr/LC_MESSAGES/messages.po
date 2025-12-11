@@ -1383,9 +1383,6 @@ msgstr "Décembre"
 msgid "Default accounts have been created."
 msgstr "Les comptes par défault ont été créés."
 
-msgid "Default handling of players without a FIDE rapid/blitz rating. For rating calculation, FIDE considers such players rated with their standard rating. If checked, this rating will also be used for seeding and pairings. If unchecked, they will be treated as unrated and require an estimated rating."
-msgstr "Gestion par défaut des joueur·euses sans classement FIDE rapide/blitz. Pour le calcul des classements FIDE, ces joueur·euses sont considérées comme classé·es avec leur classement FIDE standard. Lorsque cette case est cochée (par défaut), ce classement sera également utilisé pour le classement initial et les appariements. Lorsque non cochée, les joueur·euses seront traité·es comme non classé·es et nécessiteront une estimation."
-
 msgid "Default sets can't be deleted."
 msgstr "Les ensembles par défaut ne peuvent être supprimés."
 
@@ -1736,9 +1733,6 @@ msgstr "Ex.: Championnat du monde"
 msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
 msgstr "Ex. : c:\\echecs\\tournois\\principal\\reglement.pdf"
 
-msgid "E.g.: c:\\chess\\tournaments\\my_tournament\\rules.pdf"
-msgstr "Ex. : c:\\echecs\\tournois\\mon_tournoi\\reglement.pdf"
-
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Ex. : https://mon.club.fr/affiche.jpg"
 
@@ -1995,9 +1989,6 @@ msgstr "MF"
 msgid "FORFEIT"
 msgstr "FORFAIT"
 
-msgid "Fallback to estimated ratings"
-msgstr "Utilisation de classements estimés"
-
 msgid "Families"
 msgstr "Familles"
 
@@ -2140,6 +2131,9 @@ msgstr "Pour les prix non-monétaires, la valeur est utiliée pour prioriser les
 
 msgid "For players who have not checked-in:"
 msgstr "Pour les joueur·euses qui ne se sont pas pointé·es :"
+
+msgid "For players without a rapid or blitz FIDE rating, use instead their standard FIDE rating."
+msgstr "Pour les joueur·euses n'ayant pas de classement FIDE en rapide ou en blitz, utiliser à la place leur classement FIDE standard."
 
 msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
 msgstr "Pour ces raisons, il est fortement déconseillé de désapparier une ronde. Il est à la place recommandé d'utiliser les appariements manuels pour gérer les situations inhabituelles."
@@ -2352,9 +2346,6 @@ msgstr "Impossible d'attribuer un nombre de rondes inférieur à la dernière ro
 
 msgid "In play"
 msgstr "En jeu"
-
-msgid "In rapid/blitz tournaments, use the standard rating for unrated players"
-msgstr "Dans les tournois rapides/blitz, utiliser le classement standard pour les joueur·euses non classé·es"
 
 msgid "In-tournament"
 msgstr "Dans le tournoi"
@@ -3631,9 +3622,6 @@ msgstr "Veuillez patienter…"
 msgid "Plugins"
 msgstr "Plug-ins"
 
-msgid "Point counting"
-msgstr "Comptage des points"
-
 #, python-format
 msgid "Points: %(min)s or more"
 msgstr "Points: %(min)s ou plus"
@@ -4216,9 +4204,6 @@ msgstr "Voir les informations d’appariement pour le début de cette ronde."
 msgid "Seed color"
 msgstr "Couleur initiale"
 
-msgid "Seeding of unrated rapid/blitz"
-msgstr "Classement des joueur·euses sans classement FIDE rapide/blitz"
-
 msgid "Select All"
 msgstr "Tout sélectionner"
 
@@ -4429,9 +4414,6 @@ msgstr "Standard"
 
 msgid "Standard (no flag)"
 msgstr "Standard (pas de drapeau)"
-
-msgid "Standard points (1-0.5-0)"
-msgstr "Barème standard (1-0.5-0)"
 
 msgid "Standard rating"
 msgstr "Classement standard"
@@ -4948,9 +4930,6 @@ msgstr "Cet identifiant unique est déjà utilisé."
 msgid "Three points for a win"
 msgstr "Victoire à 3 points"
 
-msgid "Three points for a win (3-1-0)"
-msgstr "Victoire à trois points (3-1-0)"
-
 #, python-format
 msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr "Le départage [%(tie_break)s] a été créé avec succès !"
@@ -5079,15 +5058,6 @@ msgstr "Le tournoi [{tournament}] est terminé, on ne peut plus y ajouter de jou
 
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
-
-msgid "Tournament default settings"
-msgstr "Paramètres par défaut des tournois"
-
-msgid "Tournament defaults"
-msgstr "Paramètres par défaut des tournois"
-
-msgid "Tournament defaults have been updated."
-msgstr "Les paramètres par défaut du tournoi ont été mis à jour."
 
 msgid "Tournament name"
 msgstr "Nom du tournoi"
@@ -5328,9 +5298,6 @@ msgstr "Par défaut – {option}"
 msgid "Use pairing engines"
 msgstr "Utiliser les moteurs d'appariement"
 
-msgid "Use standard ratings"
-msgstr "Utiliser les Elos standard"
-
 msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
 msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/0."
 
@@ -5339,6 +5306,9 @@ msgstr "Utilisez l’onglet Staff pour déclarer les arbitres."
 
 msgid "Use the recommended tie-breaks"
 msgstr "Utiliser les départages recommandés"
+
+msgid "Use the standard FIDE rating for unrated players"
+msgstr "Utiliser le classement FIDE standard pour les joueur·euses non-classé·es"
 
 #, python-format
 msgid "Used by %(num)d event."
