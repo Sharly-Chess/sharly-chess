@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 
-from utils.enum import PlayerGender, PlayerCategory, TournamentRating
+from utils.enum import PlayerGender, TournamentRating
 
 
 @dataclass
@@ -30,7 +30,7 @@ class ChessEventPlayer:
     gender: PlayerGender = PlayerGender.NONE
     ffe_club_id: int = 0
     ffe_club: str = ''
-    category: PlayerCategory = PlayerCategory.NONE
+    category: int = 0
     initial_fee: str | int | float | None = None
     discount: str | int | float | None = None
     paid_before: str | int | float | None = None

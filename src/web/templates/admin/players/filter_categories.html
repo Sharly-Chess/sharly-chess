@@ -10,12 +10,12 @@
             <ul class="dropdown-menu table-dropdown-menu p-0">
                 {% with name='admin_players_filter_categories' %}
                     {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
-                    <input type="hidden" name="{{ name }}" value="-1" checked />
+                    <input type="hidden" name="{{ name }}" value="" checked />
                     <li class="dropdown-item title text-nowrap">
                         <input
                             type="checkbox"
                             {% if admin_players_filter_categories|length == admin_players_categories|length %}checked{% endif %}
-                            onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
+                            onclick="$('input.{{ name }}').prop('checked', this.checked)"
                         />
                         <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
                             <i class="bi-check-lg pe-1"></i>
@@ -29,12 +29,12 @@
                                 type="checkbox"
                                 id="{{ name }}-{{ loop.index }}"
                                 name="{{ name }}"
-                                value="{{ category.value }}"
+                                value="{{ category.id }}"
                                 {% if category in admin_players_filter_categories %}checked{% endif %}
                                 class="{{ name }}"
                             />
                             <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                                {{ category.short_name }} ({{ category.name }})
+                                {{ category.name }} ({{ admin_event.category_counts[category] }})
                             </label>
                         </li>
                     {% endfor %}

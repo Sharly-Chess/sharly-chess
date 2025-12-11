@@ -240,7 +240,7 @@ class ChessResultsSession(Session):
                     'teamno': '0',
                     'fideid': str(p.fide_id or ''),
                     'clubname': p.club.name or '',
-                    'typ': p.category.short_name,
+                    'typ': p.category.name,
                     'rank': str(p.rank),
                     'pts': str(p.points or 0),
                     'equal': 'J' if same_as_previous else 'N',

@@ -13,7 +13,7 @@ from data.print_documents.place_cards.data import (
 )
 from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
-from utils.enum import PlayerRatingType, PlayerGender, PlayerTitle, PlayerCategory
+from utils.enum import PlayerRatingType, PlayerGender, PlayerTitle
 
 
 class PlaceCardType(IdentifiableEntity, ABC):
@@ -62,13 +62,12 @@ class PlaceCardType(IdentifiableEntity, ABC):
         place_card_player.title = PlayerTitle(
             random.choice(PlayerTitle.values())
         ).short_name
-        place_card_player.federation = random.choice(
-            list(SharlyChessConfig().federations.keys())
-        )
+        config = SharlyChessConfig()
+        place_card_player.federation = random.choice(list(config.federations.keys()))
         place_card_player.club = _("Player's club")
-        place_card_player.category = PlayerCategory(
-            random.choice(PlayerCategory.values())
-        ).short_name
+        place_card_player.category = random.choice(
+            config.default_player_category_set.categories
+        ).name
         place_card_player.color = color
         return place_card_player
 

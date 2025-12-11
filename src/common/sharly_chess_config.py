@@ -39,6 +39,7 @@ from utils.date_time import DateFormatterManager
 
 if TYPE_CHECKING:
     from data.player import Federation
+    from data.player_categories import PlayerCategorySet
 
 logger: logging.Logger = get_logger()
 
@@ -235,6 +236,45 @@ class SharlyChessConfig(metaclass=Singleton):
     def date_formatter(self) -> DateFormatter:
         assert self._date_formatter is not None
         return self._date_formatter
+
+    @property
+    def default_player_category_set(self) -> 'PlayerCategorySet':
+        from data.player_categories import PlayerCategorySet, EVEN_PRESET_CATEGORIES
+
+        return PlayerCategorySet(
+            id=-1,
+            name=_('U8-U20 / 50+ / 65+'),
+            categories=EVEN_PRESET_CATEGORIES,
+            is_default=True,
+        )
+
+    @property
+    def player_category_sets(self) -> list['PlayerCategorySet']:
+        from data.player_categories import (
+            PlayerCategory,
+            PlayerCategorySet,
+            ODD_PRESET_CATEGORIES,
+        )
+
+        return [
+            self.default_player_category_set,
+            PlayerCategorySet(
+                id=-2,
+                name=_('U7-U19 / 50+ / 65+'),
+                categories=ODD_PRESET_CATEGORIES,
+                is_default=True,
+            ),
+        ] + [
+            PlayerCategorySet(
+                id=stored_set.id or 0,
+                name=stored_set.name,
+                categories=sorted(
+                    PlayerCategory.from_id(category_id)
+                    for category_id in stored_set.categories
+                ),
+            )
+            for stored_set in self.stored_config.stored_player_category_sets
+        ]
 
     # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'

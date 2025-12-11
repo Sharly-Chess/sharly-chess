@@ -5,6 +5,7 @@ import pytest
 from unittest import TestCase
 
 from data.loader import EventLoader
+from data.player_categories import JuniorCategory, SeniorCategory
 from data.tournament import Tournament
 from data.player import Federation, PlayerRating, Club
 from data.criteria.player_filter_options import (
@@ -55,7 +56,6 @@ from utils.enum import (
     PlayerTitle,
     Result,
     TournamentRating,
-    PlayerCategory,
 )
 
 ROUNDS = 6
@@ -872,7 +872,7 @@ class PrizesTestCase(TestCase):
             self.stored_prize(100),
         ]
         criterion = self.stored_criterion(
-            AgePlayerFilter([AgeCategoriesOption([PlayerCategory.U14.value])])
+            AgePlayerFilter([AgeCategoriesOption([JuniorCategory(14).id])])
         )
         category = self.stored_category(
             stored_prizes=prizes, stored_prize_criteria=[criterion]
@@ -899,11 +899,7 @@ class PrizesTestCase(TestCase):
         ]
         criterion = self.stored_criterion(
             AgePlayerFilter(
-                [
-                    AgeCategoriesOption(
-                        [PlayerCategory.U14.value, PlayerCategory.U12.value]
-                    )
-                ]
+                [AgeCategoriesOption([JuniorCategory(14).id, JuniorCategory(12).id])]
             )
         )
         category = self.stored_category(
@@ -932,7 +928,7 @@ class PrizesTestCase(TestCase):
         criterion = self.stored_criterion(
             AgePlayerFilter(
                 [
-                    AgeCategoriesOption([PlayerCategory.U14.value]),
+                    AgeCategoriesOption([JuniorCategory(14).id]),
                     AgeLowerOption(True),
                 ]
             )
@@ -963,7 +959,7 @@ class PrizesTestCase(TestCase):
         criterion = self.stored_criterion(
             AgePlayerFilter(
                 [
-                    AgeCategoriesOption([PlayerCategory.O50.value]),
+                    AgeCategoriesOption([SeniorCategory(50).id]),
                     AgeGreaterOption(True),
                 ]
             )

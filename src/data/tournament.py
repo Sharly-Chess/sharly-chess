@@ -22,6 +22,7 @@ from data.board import Board
 from data.criteria.managers import PlayerFilter
 from data.family import Family
 from data.player import Player, Federation, Club, TournamentPlayer
+from data.player_categories import PlayerCategory
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
@@ -51,7 +52,6 @@ from utils.enum import (
     Result,
     TournamentRating,
     TrfType,
-    PlayerCategory,
     PlayerRatingType,
     ScreenType,
     RoleType,
