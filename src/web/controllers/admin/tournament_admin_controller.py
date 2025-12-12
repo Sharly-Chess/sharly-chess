@@ -248,7 +248,7 @@ class TournamentAdminController(BaseEventAdminController):
             }
             three_points_for_a_win: bool | None = None
             pab_value: int | None = None
-            override_unrated_rapid_blitz: bool | None = None
+            override_unrated_rapid_blitz: bool = True
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             if action == 'create':
                 rounds = 7
