@@ -28,14 +28,14 @@
                 $('#player-rating-type').val('3').trigger('change');
                 const ratingTypeContainer = document.getElementById('player-rating-type-input-container');
                 ratingTypeTooltip = new bootstrap.Tooltip(ratingTypeContainer, {
-                    title: '{{ _('The FFE always uses the FIDE rating when available.') }}',
+                    title: `{{ _('The FFE always uses the FIDE rating when available.') }}`,
                     placement: 'top',
                 });
 
                 $('#age-category-change-month').val('9').trigger('change');
                 const changeMonthContainer = document.getElementById('age-category-change-month-input-container');
                 changeMonthTooltip = new bootstrap.Tooltip(changeMonthContainer, {
-                    title: '{{ _('The FFE changes the age categories in September.') }}',
+                    title: `{{ _('The FFE changes the age categories in September.') }}`,
                     placement: 'top',
                 });
             } else {
