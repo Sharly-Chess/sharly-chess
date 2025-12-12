@@ -170,6 +170,10 @@ class Event:
         return self.stored_event.age_category_base_date
 
     @property
+    def age_category_change_month(self) -> int:
+        return self.stored_event.age_category_change_month
+
+    @property
     def enabled_plugins(self) -> list[Plugin]:
         return [
             plugin

@@ -482,9 +482,6 @@ msgstr "Age"
 msgid "Age categories"
 msgstr "Catégories d'age"
 
-msgid "Age categories are based on the start date of the tournament. You may choose to use another date instead, which can be useful if you want to keep the same age categories for a championship runs over a long period."
-msgstr "Les catégories d’âge sont basées sur la date de début du tournoi. Vous pouvez choisir d’utiliser une autre date, ce qui peut être utile si vous souhaitez conserver les mêmes catégories d’âge pour un championnat qui s’étend sur une longue période."
-
 msgid "Alert message"
 msgstr "Message d'alerte"
 
@@ -694,8 +691,8 @@ msgstr "Couleur de fond : %(color)s"
 msgid "Background image:"
 msgstr "Image de fond :"
 
-msgid "Base date:"
-msgstr "Date de référence :"
+msgid "Base year"
+msgstr "Année de référence"
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Ech."
@@ -886,6 +883,9 @@ msgstr "La catégorie [%(category)s] créée avec succès !"
 
 msgid "Category sets"
 msgstr "Ensembles de catégories"
+
+msgid "Change month"
+msgstr "Mois de changement"
 
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
@@ -2737,6 +2737,9 @@ msgstr "Lu"
 msgid "Monetary prizes only"
 msgstr "Seulement les prix monétaires"
 
+msgid "Month at which players change categories."
+msgstr "Mois auquel les joueur·euses changent de catégorie."
+
 #, python-format
 msgid "Moved down %(num)d place"
 msgid_plural "Moved down %(num)d places"
@@ -3578,9 +3581,6 @@ msgstr "Veuillez choisir une fédération."
 msgid "Please choose a player."
 msgstr "Veuillez choisir un·e joueur·euse."
 
-msgid "Please choose the base date for the age categories."
-msgstr "Veuillez choisir la date de référence pour les catégories d’âge."
-
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
 
@@ -4390,9 +4390,6 @@ msgstr "Source"
 msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr "Liste de nombres séparés par des espaces. Un prix est créé par valeur dans la liste."
 
-msgid "Specify a base date for the categories"
-msgstr "Utiliser une date de référence pour les catégories"
-
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
 
@@ -4540,6 +4537,12 @@ msgstr "La moyenne du score [{tie_break}] des adversaires joué·es sur l'échiq
 
 msgid "The average of the ratings of the opponents played over the board."
 msgstr "La moyenne des classements des adversaires joué·es sur l'échiquier."
+
+msgid "The base year has to be at least one year prior to the start of the event."
+msgstr "L'année de référence doit être un moins un an avant le début de l'évènement."
+
+msgid "The base year has to be at most one year after the end of the event."
+msgstr "L'année de référence doit être au plus un an après la fin de l'évènement."
 
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "Le numéro de l'échiquier qui sera assigné au·à la joueur·euse (à utiliser pour les personnes handicapées)."
@@ -4934,6 +4937,9 @@ msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es (
 
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
+
+msgid "This value is by default based on each tournament's start and stop dates. Defining it here allows you to keep the same age categories across all the tournaments, as it was on january 1st of that year."
+msgstr "Cette valeur est par défaut basée sur les dates de début et de fin de chaque tournoi. La définir ici permet de conserver les mêmes catégories pour tous les tournois, telles qu'elles étaient au premier janvier de l'année."
 
 msgid "Three points for a win"
 msgstr "Victoire à 3 points"

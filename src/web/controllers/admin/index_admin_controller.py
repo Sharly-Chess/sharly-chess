@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import date
+from datetime import date, timedelta
 from logging import Logger
 from pathlib import Path
 import shutil
@@ -368,6 +368,7 @@ class IndexAdminController(BaseAdminController):
             player_rating_type = PlayerRatingType.FIDE.value
             location: str | None = None
             age_category_base_date: date | None = None
+            age_category_change_month: int = 1
             age_categories: list[str] | None = None
             organiser_name: str | None = None
             organiser_home_page: str | None = None
@@ -396,6 +397,7 @@ class IndexAdminController(BaseAdminController):
             federation = stored_event.federation
             location = stored_event.location
             age_category_base_date = stored_event.age_category_base_date
+            age_category_change_month = stored_event.age_category_change_month
             age_categories = stored_event.age_categories
             organiser_name = stored_event.organiser_name
             organiser_home_page = stored_event.organiser_home_page
@@ -435,7 +437,7 @@ class IndexAdminController(BaseAdminController):
                     'organiser_director': organiser_director,
                     'date_range': date_range,
                     'age_category_base_date': age_category_base_date,
-                    'use_age_category_base_date': age_category_base_date is not None,
+                    'age_category_change_month': age_category_change_month,
                     'age_categories': age_categories,
                 }
             )
@@ -505,18 +507,27 @@ class IndexAdminController(BaseAdminController):
         )
 
         age_categories = WebContext.form_data_to_list_str(data, 'age_categories')
-        use_age_category_base_date = WebContext.form_data_to_bool(
-            data, 'use_age_category_base_date'
+        age_category_base_date = WebContext.form_data_to_date(
+            data, field := 'age_category_base_date'
         )
-        age_category_base_date: date | None = None
-        try:
-            age_category_base_date = WebContext.form_data_to_date(
-                data, field := 'age_category_base_date'
-            )
-            if use_age_category_base_date and not age_category_base_date:
-                errors[field] = _('Please choose the base date for the age categories.')
-        except FormError as e:
-            errors[field] = str(e)
+        if age_category_base_date:
+            if start_date and age_category_base_date < date(
+                start_date.year - 1, start_date.month, start_date.day
+            ):
+                errors[field] = _(
+                    'The base date has to be at most one year '
+                    'prior to the start of the event.'
+                )
+            elif stop_date and age_category_base_date > date(
+                stop_date.year + 1, stop_date.month, stop_date.day
+            ):
+                errors[field] = _(
+                    'The base date has to be at most one year '
+                    'after the end of the event.'
+                )
+        age_category_change_month = WebContext.form_data_to_int(
+            data, 'age_category_change_month'
+        )
 
         enabled_plugins = plugin_manager.get_plugins_with_dependencies(
             [
@@ -562,6 +573,7 @@ class IndexAdminController(BaseAdminController):
             organiser_email=organiser_email,
             organiser_director=organiser_director,
             age_category_base_date=age_category_base_date,
+            age_category_change_month=age_category_change_month,
             age_categories=age_categories,
             player_rating_type=player_rating_type,
             plugin_data=plugin_data,
@@ -604,9 +616,7 @@ class IndexAdminController(BaseAdminController):
         errors = errors or {}
         template_context = {
             'federation_options': self._get_federation_options(),
-            'timer_color_texts': self._get_timer_color_texts(
-                SharlyChessConfig.default_timer_delays
-            ),
+            'months_options': self._months_options(),
             'modal': 'event',
             'event_uniq_ids': list(EventLoader().event_uniq_ids),
             'plugins': plugin_manager.enabled_plugins,
@@ -625,7 +635,14 @@ class IndexAdminController(BaseAdminController):
                     'organiser_email',
                 ]
             ),
-            'force_categories_open': any(field in errors for field in ['']),
+            'force_categories_open': any(
+                field in errors
+                for field in [
+                    'age_categories',
+                    'age_category_base_date',
+                    'age_category_change_month',
+                ]
+            ),
             'action': action,
             'data': data,
             'errors': errors,

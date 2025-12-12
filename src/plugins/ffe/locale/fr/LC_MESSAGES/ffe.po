@@ -357,6 +357,9 @@ msgstr "L'identifiant FFE est un entier positif."
 msgid "The FFE always uses the FIDE rating when available."
 msgstr "La FFE utilise toujours le classement FIDE lorsqu’il est disponible."
 
+msgid "The FFE changes the age categories in September."
+msgstr "La FFE modifie les catégories d'âge en Septembre."
+
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr "Le format PAPI ne supporte pas {rounds} rounds (maximum : {max})."
 

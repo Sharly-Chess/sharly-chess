@@ -1,6 +1,5 @@
 from collections import defaultdict
 from collections.abc import Callable
-from datetime import date
 from collections.abc import Iterable
 from typing import Any, TYPE_CHECKING, Optional
 
@@ -202,10 +201,6 @@ class AppHookSpecs:
     @hookspec
     def get_extra_players_update_columns(self) -> Iterable[ExtraAdminColumn]:
         """Provide additional columns for the players update view"""
-
-    @hookspec(firstresult=True)
-    def adjust_category_reference_year(self, reference_date: date) -> int | None:
-        """Adjust the reference date for the category"""
 
     # ---------------------------------------------------------------------------------
     # Events

@@ -6,7 +6,6 @@ from functools import total_ordering
 from typing import TYPE_CHECKING
 
 from common.i18n import _
-from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -67,7 +66,9 @@ class PlayerCategory(ABC):
         tournament_start: date,
         tournament_stop: date,
     ) -> int:
-        if tournament_start and tournament_stop:
+        if event.age_category_base_date:
+            ref_date = event.age_category_base_date
+        else:
             if (tournament_stop - tournament_start) > timedelta(days=30):
                 base = date.today()
                 if base < tournament_start:
@@ -78,12 +79,10 @@ class PlayerCategory(ABC):
                     ref_date = base
             else:
                 ref_date = tournament_start
-        else:
-            ref_date = date.today()
-        plugin_year = plugin_manager.hook_for_event(
-            event, 'adjust_category_reference_year'
-        )(reference_date=ref_date)
-        return plugin_year or ref_date.year
+        ref_year = ref_date.year
+        if ref_date.month >= event.age_category_change_month:
+            ref_year += 1
+        return ref_year
 
     @classmethod
     def from_year_of_birth(

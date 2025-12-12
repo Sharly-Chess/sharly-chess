@@ -2,7 +2,6 @@ import copy
 import re
 from collections import Counter, defaultdict
 from collections.abc import Callable
-from datetime import date
 from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable, Optional
 
@@ -656,13 +655,6 @@ class FfePlugin(Plugin):
                 cell_template='/ffe_players_update/league_cell.html',
             ),
         ]
-
-    @hookimpl
-    def adjust_category_reference_year(self, reference_date: date) -> int | None:
-        # FFE rule: if month >= September, shift ref to next January 1
-        return (
-            reference_date.year if reference_date.month < 9 else reference_date.year + 1
-        )
 
     # ---------------------------------------------------------------------------------
     # Events

@@ -314,9 +314,10 @@ class EventDatabase(MigrationDatabase):
             message_background_color=row['message_background_color'],
             prize_currency=row['prize_currency'],
             age_categories=self.load_json_from_database_field(row['age_categories']),
-            age_category_base_date=self.load_optional_date_from_database_field(
+            age_category_base_date=self.load_date_from_database_field(
                 row['age_category_base_date']
             ),
+            age_category_change_month=row['age_category_change_month'],
             organiser_name=row['organiser_name'],
             organiser_home_page=row['organiser_home_page'],
             organiser_email=row['organiser_email'],
@@ -377,6 +378,7 @@ class EventDatabase(MigrationDatabase):
                 'message_color',
                 'message_background_color',
                 'prize_currency',
+                'age_category_change_month',
                 'organiser_name',
                 'organiser_home_page',
                 'organiser_email',
