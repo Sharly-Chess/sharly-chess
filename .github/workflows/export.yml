@@ -88,6 +88,191 @@ jobs:
           path: |
             export/sharly-chess-${{ steps.version.outputs.version }}.zip
 
+  export-sharly-chess-linux:
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    strategy:
+      matrix:
+        arch: [x86_64, arm64]
+    steps:
+      # Get the current date to set the title of the release
+      - name: Get current date
+        id: date
+        uses: Kaven-Universe/github-action-current-date-time@v1
+        with:
+          format: "YYYY_MM_DD HH_mm_ss_SSS"
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+      - name: Setup Python
+        uses: actions/setup-python@v5.5.0
+        with:
+          python-version: 3.13
+      - name: Install system dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-3-dev \
+            libgirepository1.0-dev \
+            gobject-introspection \
+            libcairo2-dev \
+            libpango1.0-dev \
+            libatk1.0-dev \
+            libwebkit2gtk-4.1-dev \
+            python3-dev \
+            python3-cairo-dev \
+            pkg-config \
+            meson \
+            ninja-build \
+            wget \
+            fuse \
+            desktop-file-utils
+          # Install libgirepository-2.0-dev (available on Ubuntu 24.04, required for pygobject)
+          # On Ubuntu 22.04, this package doesn't exist, which is why we use Ubuntu 24.04 for ARM64
+          sudo apt-get install -y libgirepository-2.0-dev || {
+            echo "Warning: libgirepository-2.0-dev not available"
+            echo "This is required for pygobject. Checking alternatives..."
+            apt-cache search girepository | grep -i "2.0" || true
+          }
+          # Download and install appimagetool (architecture-specific)
+          if [ "${{ matrix.arch }}" = "arm64" ]; then
+            APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-aarch64.AppImage"
+          else
+            APPIMAGETOOL_URL="https://github.com/AppImage/appimagetool/releases/download/1.9.1/appimagetool-x86_64.AppImage"
+          fi
+          wget -q "$APPIMAGETOOL_URL" -O /tmp/appimagetool
+          chmod +x /tmp/appimagetool
+          sudo mv /tmp/appimagetool /usr/local/bin/appimagetool
+          # Check which package provides girepository-2.0.pc
+          echo "Checking for girepository-2.0.pc..."
+          GI_PC_FILE=""
+          # Check each package individually to avoid errors
+          for pkg in libgirepository-2.0-dev gobject-introspection libgirepository-2.0-0 libgirepository1.0-dev; do
+            if dpkg -l "$pkg" >/dev/null 2>&1; then
+              echo "Checking package $pkg..."
+              PC_CHECK=$(dpkg -L "$pkg" 2>/dev/null | grep "girepository-2.0.pc" | head -1 || true)
+              if [ -n "$PC_CHECK" ] && [ -f "$PC_CHECK" ]; then
+                GI_PC_FILE="$PC_CHECK"
+                echo "Found girepository-2.0.pc via package $pkg: $GI_PC_FILE"
+                break
+              fi
+            fi
+          done
+          # Fallback: search filesystem more thoroughly
+          if [ -z "$GI_PC_FILE" ]; then
+            echo "Searching filesystem for girepository-2.0.pc..."
+            # Check architecture-specific paths first
+            ARCH=$(uname -m)
+            if [ "$ARCH" = "aarch64" ]; then
+              SEARCH_PATHS="/usr/lib/aarch64-linux-gnu/pkgconfig /usr/share/pkgconfig /usr/lib/pkgconfig"
+            else
+              SEARCH_PATHS="/usr/lib/x86_64-linux-gnu/pkgconfig /usr/share/pkgconfig /usr/lib/pkgconfig"
+            fi
+            for search_path in $SEARCH_PATHS; do
+              if [ -f "$search_path/girepository-2.0.pc" ]; then
+                GI_PC_FILE="$search_path/girepository-2.0.pc"
+                echo "Found girepository-2.0.pc in: $GI_PC_FILE"
+                break
+              fi
+            done
+            # If still not found, do a broader search
+            if [ -z "$GI_PC_FILE" ]; then
+              GI_PC_FILE=$(find /usr /usr/local -name "girepository-2.0.pc" 2>/dev/null | head -1 || true)
+            fi
+          fi
+          if [ -n "$GI_PC_FILE" ] && [ -f "$GI_PC_FILE" ]; then
+            GI_PC_DIR=$(dirname "$GI_PC_FILE")
+            echo "Found girepository-2.0.pc in: $GI_PC_DIR"
+          else
+            echo "Warning: girepository-2.0.pc not found"
+            echo "Searching for any girepository .pc files:"
+            find /usr -name "*girepository*.pc" 2>/dev/null | head -10 || true
+            echo "Checking installed packages:"
+            dpkg -l | grep -i girepository || true
+            echo "Checking available packages:"
+            apt-cache search girepository | head -10 || true
+            echo "Checking architecture-specific pkgconfig directories:"
+            ARCH=$(uname -m)
+            if [ "$ARCH" = "aarch64" ]; then
+              ls -la /usr/lib/aarch64-linux-gnu/pkgconfig/ | grep -i girepository || echo "No girepository files in aarch64 pkgconfig"
+            else
+              ls -la /usr/lib/x86_64-linux-gnu/pkgconfig/ | grep -i girepository || echo "No girepository files in x86_64 pkgconfig"
+            fi
+            GI_PC_DIR=""
+          fi
+          # Set PKG_CONFIG_PATH to include system pkg-config directories FIRST
+          # This ensures pkg-config finds system .pc files before Python-specific ones
+          # Detect architecture and include appropriate paths
+          ARCH=$(uname -m)
+          if [ "$ARCH" = "aarch64" ]; then
+            SYSTEM_PKG_CONFIG="/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig"
+          else
+            SYSTEM_PKG_CONFIG="/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig"
+          fi
+          # If we found the .pc file, prepend its directory
+          if [ -n "$GI_PC_DIR" ]; then
+            SYSTEM_PKG_CONFIG="${GI_PC_DIR}:${SYSTEM_PKG_CONFIG}"
+          fi
+          # Set PKG_CONFIG_PATH for current shell session AND for subsequent steps
+          export PKG_CONFIG_PATH="${SYSTEM_PKG_CONFIG}:${PKG_CONFIG_PATH:-}"
+          echo "PKG_CONFIG_PATH=${PKG_CONFIG_PATH}" >> $GITHUB_ENV
+          echo "Updated PKG_CONFIG_PATH: $PKG_CONFIG_PATH"
+          # Verify pkg-config can find required packages
+          echo "Checking pkg-config configuration..."
+          pkg-config --modversion cairo || echo "Warning: pkg-config cannot find cairo"
+          pkg-config --modversion girepository-2.0 || echo "Warning: pkg-config cannot find girepository-2.0"
+          pkg-config --modversion gtk+-3.0 || echo "Warning: pkg-config cannot find gtk+-3.0"
+      - name: Install dependencies
+        shell: bash
+        run: |
+          # Try to install pycairo from a pre-built wheel first to avoid build issues
+          pip install --only-binary=:all: pycairo || pip install pycairo
+          pip install -e .[export]
+      - name: Generate i18n files
+        shell: bash
+        run: |
+          python scripts/i18n/i18n_update.py
+      - name: Generate Chess-Results credentials
+        shell: bash
+        env:
+          CHESS_RESULTS_AES_KEY: ${{ secrets.CHESS_RESULTS_AES_KEY }}
+          CHESS_RESULTS_AES_IV: ${{ secrets.CHESS_RESULTS_AES_IV }}
+        run: |
+          python scripts/chess_results/generate_chess_results_credentials.py --key="$CHESS_RESULTS_AES_KEY" --iv="$CHESS_RESULTS_AES_IV"
+      - name: Generate FFE SQL credentials
+        shell: bash
+        env:
+          FFE_HOST: ${{ secrets.FFE_HOSTNAME }}
+          FFE_USER: ${{ secrets.FFE_USER }}
+          FFE_PASSWORD: ${{ secrets.FFE_PASSWORD }}
+          FFE_DATABASE: ${{ secrets.FFE_DATABASE }}
+        run: |
+          python scripts/ffe/generate_ffe_sql_server_credentials.py --github --host="$FFE_HOST" --user="$FFE_USER" --password="$FFE_PASSWORD" --database="$FFE_DATABASE"
+      - name: Set version variable
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${{ github.ref_name }}"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Using version: ${VERSION}"
+      - name: Build Linux AppImage
+        shell: bash
+        env:
+          # Set BUILD_ARCH to match the runner architecture
+          # This ensures tool installers download the correct architecture-specific binaries
+          BUILD_ARCH: ${{ matrix.arch }}
+        run: |
+          python scripts/export/export.py --github="${{ steps.version.outputs.version }}"
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sharly-chess-${{ steps.version.outputs.version }}-linux-${{ matrix.arch }}
+          path: |
+            export/sharly-chess-${{ steps.version.outputs.version }}-${{ matrix.arch }}.zip
+
   export-sharly-chess-macos:
     runs-on: macos-latest
     steps:
@@ -174,7 +359,7 @@ jobs:
             export/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
 
   create-release:
-    needs: [tests, export-sharly-chess-windows, export-sharly-chess-macos]
+    needs: [tests, export-sharly-chess-windows, export-sharly-chess-macos, export-sharly-chess-linux]
     runs-on: ubuntu-latest
     steps:
       - name: Get current date
@@ -205,6 +390,11 @@ jobs:
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: export-macos/
+      - name: Download Linux artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: sharly-chess-${{ steps.version.outputs.version }}-linux-*
+          path: export-linux/
       - name: Rename artifacts with platform suffix
         run: |
           VERSION="${{ steps.version.outputs.version }}"
@@ -213,6 +403,9 @@ jobs:
           cp export-windows/sharly-chess-${VERSION}.zip release-files/sharly-chess-${VERSION}-windows.zip
           # macOS files - only sharly-chess
           cp export-macos/sharly-chess-${VERSION}-macos.dmg release-files/sharly-chess-${VERSION}-macos.dmg
+          # Linux files - both architectures
+          cp export-linux/sharly-chess-3.4.0b2-linux-x86_64/sharly-chess-${VERSION}-x86_64.zip release-files/sharly-chess-${VERSION}-linux-x86_64.zip 2>/dev/null || true
+          cp export-linux/sharly-chess-3.4.0b2-linux-arm64/sharly-chess-${VERSION}-arm64.zip release-files/sharly-chess-${VERSION}-linux-arm64.zip 2>/dev/null || true
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
@@ -223,4 +416,6 @@ jobs:
           files: |
             release-files/sharly-chess-${{ steps.version.outputs.version }}-windows.zip
             release-files/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
+            release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-x86_64.zip
+            release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-arm64.zip
           body_path: RELEASE_NOTES.md
