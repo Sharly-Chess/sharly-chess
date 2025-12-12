@@ -525,8 +525,8 @@ class IndexAdminController(BaseAdminController):
                     'The base date has to be at most one year '
                     'after the end of the event.'
                 )
-        age_category_change_month = WebContext.form_data_to_int(
-            data, 'age_category_change_month'
+        age_category_change_month = (
+            WebContext.form_data_to_int(data, 'age_category_change_month') or 1
         )
 
         enabled_plugins = plugin_manager.get_plugins_with_dependencies(
