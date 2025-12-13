@@ -1,9 +1,12 @@
+import json
 import os
 import sys
 from argparse import ArgumentParser, Namespace
 from logging import Logger
 from pathlib import Path
+from typing import Any
 
+from common import SHARLY_CHESS_VERSION
 from common.logger import get_logger
 from common.tool_installer import BbpPairingsInstaller, PapiConverterInstaller
 from scripts.export.project_builder import ProjectBuilder
@@ -90,6 +93,28 @@ class WinProjectBuilder(ProjectBuilder):
             if not self._sign_files():
                 return False
         Path(self.project_dir / '_internal' / '.unblock_files').touch()
+        return True
+
+    def build_control_file(self) -> bool:
+        logger.info('Creating control file [%s]...', self.control_file)
+        self.control_file.parent.mkdir(parents=True, exist_ok=True)
+        control_data: dict[str, Any] = {
+            'version': str(SHARLY_CHESS_VERSION),
+            'file_paths': [],
+        }
+        cwd: str = os.getcwd()
+        os.chdir(self.project_dir)
+        for folder_name, sub_folders, file_names in os.walk('.'):
+            for filename in file_names:
+                file_path: Path = Path(folder_name, filename)
+                control_data['file_paths'].append(str(file_path))
+        self.control_file.parent.mkdir(parents=True, exist_ok=True)
+        with open(self.control_file, 'w', encoding='utf-8') as file:
+            json.dump(
+                control_data,
+                file,
+            )
+        os.chdir(cwd)
         return True
 
     @staticmethod
