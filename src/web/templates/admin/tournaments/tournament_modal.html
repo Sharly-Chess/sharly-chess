@@ -85,8 +85,6 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    {# Still send a true value for standard rapid such that it defaults to True if the user switches #}
-                    <input id="hidden-unrated-override" name="override_unrated_rapid_blitz" type="hidden" value="on">
                     <script>
                         $('#rating,#player-rating-type').change(function() {
                             const fideRatingValues = ['3'];

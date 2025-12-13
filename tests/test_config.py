@@ -20,7 +20,7 @@ from database.sqlite.event.event_store import (
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
 
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
-from utils.enum import ScreenType
+from utils.enum import ScreenType, Result
 
 
 class TestConfig:
@@ -226,7 +226,7 @@ class TestUtils:
             'rating': 1,
             'stored_prize_groups': [],
             'plugin_data': None,
-            'pab_value': 3,
+            'pab_value': Result.WIN.value,
         }
 
         # Merge overrides
