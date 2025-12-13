@@ -73,6 +73,38 @@
                         ) }}
                     </div>
                 </div>
+                <div id="estimated-ratings" class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.switch_input(
+                            name='override_unrated_rapid_blitz',
+                            placeholder=_('Use the standard FIDE rating for unrated players'),
+                            tooltip_text=_(
+                                'For players without a rapid or blitz FIDE rating, '
+                                'use instead their standard FIDE rating.'
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    {# Still send a true value for standard rapid such that it defaults to True if the user switches #}
+                    <input id="hidden-unrated-override" name="override_unrated_rapid_blitz" type="hidden" value="on">
+                    <script>
+                        $('#rating,#player-rating-type').change(function() {
+                            const fideRatingValues = ['3'];
+                            {% if admin_event.player_rating_type == 3 %}
+                                fideRatingValues.push('');
+                            {% endif %}
+                            if ($('#rating').val() !== '1' && fideRatingValues.includes($('#player-rating-type').val())) {
+                                $('#estimated-ratings').show();
+                                $('#hidden-unrated-override').prop('disabled', true);
+                            } else {
+                                $('#estimated-ratings').hide();
+                                $('#hidden-unrated-override').prop('disabled', false);
+                            }
+                        });
+                        $('#rating').trigger('change');
+                    </script>
+                </div>
+
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.date_range_input(
@@ -94,35 +126,6 @@
                         ) }}
                     </div>
                 </div>
-
-                <h4 class="estimated-ratings">
-                    {{ _('Unrated players') }}
-                </h4>
-
-                <div class="row gy-2 gx-3 estimated-ratings">
-                    <div class="col-12">
-                        {{ admin_macros.select_input(
-                            name='override_unrated_rapid_blitz',
-                            label=_('Seeding of unrated rapid/blitz'),
-                            doc_icon='standard-rating',
-                            select_options=override_unrated_rapid_blitz_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-
-                <script>
-                    $('#rating').change(function() {
-                        if ($(this).val() === "1") {
-                            $('.estimated-ratings').hide();
-                        } else {
-                            $('.estimated-ratings').show();
-                        }
-                    });
-                    if ({{ data.rating }} === 1) {
-                        $('.estimated-ratings').hide();
-                    }
-                </script>
 
                 <h4>
                     {{ _('Pairings') }}
@@ -268,11 +271,7 @@
                         {{ admin_macros.text_input(
                             name='rules',
                             label=_('Rules file location:'),
-                            placeholder=(
-                                admin_event.rules
-                                if admin_event.rules else
-                                _('E.g.: c:\\chess\\tournaments\\main\\rules.pdf')
-                            ),
+                            placeholder=_('E.g.: c:\\chess\\tournaments\\main\\rules.pdf'),
                             tooltip_text=_('A URL, or the path to the rules file on the server, in PDF format.'),
                             data=data, errors=errors
                         ) }}
@@ -281,7 +280,7 @@
                         {{ admin_macros.number_input(
                             name='record_illegal_moves',
                             label=_('Illegal moves recording:'),
-                            placeholder=admin_event.record_illegal_moves,
+                            placeholder=sharly_chess_config.default_record_illegal_moves,
                             min=0,
                             max=3,
                             tooltip_text=_(
@@ -294,10 +293,10 @@
                 </div>
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
+                        {{ admin_macros.switch_input(
                             name='three_points_for_a_win',
-                            label=_('%(string)s:', string=_('Point counting')),
-                            select_options=three_points_for_a_win_options,
+                            placeholder=_('Three points for a win'),
+                            tooltip_text=_('Use the 3/1/0 points system instead of the standard 1/0.5/0 system.'),
                             data=data, errors=errors
                         ) }}
                     </div>

@@ -185,13 +185,11 @@ class Tournament:
     def record_illegal_moves(self) -> int:
         if self.stored_tournament.record_illegal_moves is not None:
             return self.stored_tournament.record_illegal_moves
-        return self.event.record_illegal_moves
+        return SharlyChessConfig.default_record_illegal_moves
 
     @property
     def rules(self) -> str | None:
-        if self.stored_tournament.rules is not None:
-            return self.stored_tournament.rules
-        return self.event.rules
+        return self.stored_tournament.rules
 
     @property
     def check_in_open(self) -> bool:
@@ -267,21 +265,15 @@ class Tournament:
 
     @property
     def override_unrated_rapid_blitz(self) -> bool:
-        if self.stored_tournament.override_unrated_rapid_blitz is not None:
-            return self.stored_tournament.override_unrated_rapid_blitz
-        return self.event.override_unrated_rapid_blitz
+        return self.stored_tournament.override_unrated_rapid_blitz
 
     @property
     def three_points_for_a_win(self) -> bool:
-        if self.stored_tournament.three_points_for_a_win is not None:
-            return self.stored_tournament.three_points_for_a_win
-        return self.event.three_points_for_a_win
+        return self.stored_tournament.three_points_for_a_win
 
     @property
     def pab_value(self) -> Result:
-        if self.stored_tournament.pab_value is not None:
-            return Result(self.stored_tournament.pab_value)
-        return self.event.pab_value
+        return Result(self.stored_tournament.pab_value)
 
     # -------------------------------------------------------------------------
     # Pairing settings

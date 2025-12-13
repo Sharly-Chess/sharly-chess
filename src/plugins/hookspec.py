@@ -257,10 +257,6 @@ class AppHookSpecs:
         """Provide a path to the template containing additional tournament form fields"""
 
     @hookspec
-    def get_tournament_config_template(self) -> str:
-        """Provide a path to a template to render in the tournament config modal"""
-
-    @hookspec
     def validate_tournament_form_fields(
         self,
         action: str,

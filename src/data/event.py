@@ -33,7 +33,6 @@ from plugins.utils import PluginData, Plugin
 from utils import Utils
 from utils.date_time import format_date, format_date_range, format_timestamp_date_time
 from utils.enum import (
-    Result,
     RoleType,
     ScreenType,
     PlayerGender,
@@ -167,18 +166,6 @@ class Event:
         ]
 
     @property
-    def override_unrated_rapid_blitz(self) -> bool:
-        return self.stored_event.override_unrated_rapid_blitz
-
-    @property
-    def three_points_for_a_win(self) -> bool:
-        return self.stored_event.three_points_for_a_win or False
-
-    @property
-    def pab_value(self) -> Result:
-        return Result(self.stored_event.pab_value) or Result.WIN
-
-    @property
     def age_category_base_date(self) -> date | None:
         return self.stored_event.age_category_base_date
 
@@ -216,17 +203,6 @@ class Event:
             self.stored_event.background_color
             or SharlyChessConfig.default_background_color
         )
-
-    @cached_property
-    def record_illegal_moves(self) -> int:
-        return (
-            self.stored_event.record_illegal_moves
-            or SharlyChessConfig.default_record_illegal_moves_number
-        )
-
-    @property
-    def rules(self) -> str | None:
-        return self.stored_event.rules
 
     @cached_property
     def timer_colors(self) -> dict[int, str]:
