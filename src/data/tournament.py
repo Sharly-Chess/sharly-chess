@@ -1384,6 +1384,11 @@ class Tournament:
         event_database: EventDatabase | None = None,
     ):
         assert stored_player.id is not None
+        last_zpb_round: int = (
+            self.current_round
+            if self.is_round_finished(self.current_round)
+            else self.current_round - 1
+        )
         stored_tournament_player = StoredTournamentPlayer(
             tournament_id=self.id,
             player_id=stored_player.id,
@@ -1397,7 +1402,7 @@ class Tournament:
                     result=Result.ZERO_POINT_BYE,
                     board_id=None,
                 )
-                for round_ in range(1, self.current_round)
+                for round_ in range(1, last_zpb_round + 1)
             ],
         )
         if event_database:
