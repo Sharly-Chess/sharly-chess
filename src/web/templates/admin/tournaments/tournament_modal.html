@@ -93,10 +93,8 @@
                             {% endif %}
                             if ($('#rating').val() !== '1' && fideRatingValues.includes($('#player-rating-type').val())) {
                                 $('#estimated-ratings').show();
-                                $('#hidden-unrated-override').prop('disabled', true);
                             } else {
                                 $('#estimated-ratings').hide();
-                                $('#hidden-unrated-override').prop('disabled', false);
                             }
                         });
                         $('#rating').trigger('change');
