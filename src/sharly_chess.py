@@ -118,6 +118,45 @@ if platform.system() == 'Darwin':
         'Prevent App Nap',
     )
 
+if platform.system() == 'Linux':
+    # Patch gi.require_version to handle "already required" case gracefully
+    # This prevents errors when GTK is required multiple times (e.g., by runtime hook and toga_gtk)
+    try:
+        import gi  # type: ignore[import-not-found]
+
+        _original_require_version = gi.require_version
+
+        def _patched_require_version(namespace, version):
+            """Patched version that handles 'already required' or 'already loaded' gracefully."""
+            try:
+                return _original_require_version(namespace, version)
+            except ValueError as e:
+                error_str = str(e)
+                # If the error is "already requires version" or "already loaded", that's fine - continue
+                # This happens when GTK is required multiple times (e.g., by pre-check and toga_gtk)
+                if (
+                    'already requires version' in error_str
+                    or 'already loaded' in error_str
+                ):
+                    return
+                # Otherwise, re-raise the error
+                raise
+
+        gi.require_version = _patched_require_version
+        # Note: We don't force GTK4 here because Toga's WebView requires GTK3
+        # Toga will automatically use the appropriate GTK version based on what's available
+        # We only require GObject to ensure it's available
+        try:
+            gi.require_version('GObject', '2.0')
+            # Don't force GTK4 - let Toga choose (it needs GTK3 for WebView)
+            # gi.require_version('Gtk', '4.0')  # Commented out - Toga needs GTK3 for WebView
+        except (ImportError, ValueError):
+            # gi not available or already required, that's fine
+            pass
+    except ImportError:
+        # gi not available, skip patching
+        pass
+
 try:
     import argparse
     import asyncio
@@ -249,10 +288,127 @@ try:
     debug = args.debug if DEVEL_ENV else False
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):
+        # Pre-check GTK availability on Linux before trying to create the app
+        gtk_available = True
+        if platform.system() == 'Linux':
+            logger.info('Performing GTK3 pre-check before GUI initialization...')
+            try:
+                import os
+                import gi  # type: ignore[import-not-found]
+
+                # Require GTK3 (needed for WebView support - GTK4 doesn't support WebView yet)
+                try:
+                    gi.require_version('Gtk', '3.0')
+                    gi.require_version(
+                        'Gdk', '3.0'
+                    )  # Also require Gdk 3.0 to match Gtk 3.0
+                    gtk_version = '3.0'
+                    logger.debug('GTK3 available (required for WebView support)')
+                except (ImportError, ValueError) as e:
+                    logger.error(
+                        'GTK3 is required for WebView support but is not available. '
+                        'Please install GTK3 development libraries (e.g., libgtk-3-dev on Ubuntu/Debian).'
+                    )
+                    raise ImportError('GTK3 is required but not available') from e
+
+                from gi.repository import Gdk  # type: ignore[import-not-found]
+
+                # Log environment variables for debugging
+                logger.debug('DISPLAY: %s', os.environ.get('DISPLAY'))
+                logger.debug('GDK_BACKEND: %s', os.environ.get('GDK_BACKEND'))
+                logger.debug(
+                    'LD_LIBRARY_PATH: %s', os.environ.get('LD_LIBRARY_PATH', '')[:200]
+                )
+                logger.debug('GTK version: %s', gtk_version)
+
+                # Try to open the display explicitly if DISPLAY is set
+                display = None
+                display_name = os.environ.get('DISPLAY')
+                if display_name:
+                    try:
+                        # Try to open the display explicitly
+                        display = Gdk.Display.open(display_name)
+                        logger.debug('Successfully opened display: %s', display_name)
+                    except Exception as e:
+                        logger.debug('Failed to open display explicitly: %s', e)
+                        # Fall back to getting default display
+                        display = Gdk.Display.get_default()
+                else:
+                    # No DISPLAY set, try default
+                    display = Gdk.Display.get_default()
+
+                if display is None:
+                    logger.warning(
+                        f'GTK{gtk_version} cannot access display (Gdk.Display.get_default() returned None). '
+                        'Falling back to CLI mode.'
+                    )
+                    gtk_available = False
+                else:
+                    logger.info(
+                        f'GTK{gtk_version} display check passed, proceeding with GUI initialization'
+                    )
+                    logger.debug(
+                        'GTK display name: %s',
+                        display.get_name() if display else 'None',
+                    )
+            except Exception as e:
+                logger.warning(
+                    'GTK pre-check failed: %s. Falling back to CLI mode.',
+                    e,
+                    exc_info=True,
+                )
+                gtk_available = False
+
         # Create and run the Toga app - this should block until the app exits
-        app = SharlyChessServerToga(debug=debug, port=port)
-        app.main_loop()
-        sys.exit(0)
+        if gtk_available:
+            logger.info('Creating Toga application...')
+            try:
+                app = SharlyChessServerToga(debug=debug, port=port)
+                logger.info(
+                    'Toga application created successfully, starting main loop...'
+                )
+                app.main_loop()
+                sys.exit(0)
+            except RuntimeError as e:
+                # Catch GTK display errors and fall back to CLI mode
+                error_str = str(e)
+                if (
+                    'Cannot identify an active display' in error_str
+                    or 'display' in error_str.lower()
+                ):
+                    logger.warning(
+                        'GUI mode failed (display error): %s. Falling back to CLI mode.',
+                        error_str,
+                    )
+                    # Log additional diagnostic information
+                    import os
+
+                    logger.debug(
+                        'DISPLAY environment variable: %s', os.environ.get('DISPLAY')
+                    )
+                    logger.debug(
+                        'GDK_BACKEND environment variable: %s',
+                        os.environ.get('GDK_BACKEND'),
+                    )
+                    logger.debug(
+                        'LD_LIBRARY_PATH: %s',
+                        os.environ.get('LD_LIBRARY_PATH', '')[:200],
+                    )
+                    logger.info(
+                        'To use GUI mode, ensure DISPLAY is set and X11 is accessible. '
+                        'You can also use --cli to force CLI mode.'
+                    )
+                    # Fall through to CLI mode below
+                else:
+                    raise
+            except Exception as e:
+                # Log any other GUI initialization errors for debugging
+                logger.error(
+                    'GUI initialization failed with unexpected error: %s',
+                    e,
+                    exc_info=True,
+                )
+                raise
 
     # Original console mode
     try:
