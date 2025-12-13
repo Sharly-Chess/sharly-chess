@@ -4,6 +4,7 @@ import re
 import shutil
 import tempfile
 import zipfile
+import os
 import platform
 import subprocess
 from json import JSONDecodeError
@@ -414,13 +415,31 @@ class Engine:
                     continue
                 download_url: str | None = None
                 for asset in assets:
-                    if platform.system() == 'Windows':
-                        valid_asset_names: list[str] = [
-                            f'sharly-chess-{version}-windows.zip',
-                            f'sharly-chess-{version}.zip',
-                        ]
-                    else:
-                        valid_asset_names = [f'sharly-chess-{version}-macos.dmg']
+                    system = platform.system()
+                    match system:
+                        case 'Windows':
+                            valid_asset_names: list[str] = [
+                                f'sharly-chess-{version}-windows.zip',
+                                f'sharly-chess-{version}.zip',
+                            ]
+                        case 'Darwin':
+                            valid_asset_names = [f'sharly-chess-{version}-macos.dmg']
+                        case 'Linux':
+                            # Detect architecture for Linux
+                            # Allow override via BUILD_ARCH environment variable (useful for cross-compilation/QEMU)
+                            build_arch = os.environ.get('BUILD_ARCH')
+                            if build_arch:
+                                machine = build_arch.lower()
+                            else:
+                                machine = platform.machine().lower()
+                            if machine in ('aarch64', 'arm64'):
+                                valid_asset_names = [
+                                    f'sharly-chess-{version}-linux-arm64.zip'
+                                ]
+                            elif machine in ('x86_64', 'amd64'):
+                                valid_asset_names = [
+                                    f'sharly-chess-{version}-linux-x86_64.zip'
+                                ]
 
                     if (
                         asset_name := asset.get('name', 'undefined')
@@ -516,10 +535,29 @@ class Engine:
                     )
                     return False
                 # Determine downloaded file name based on platform
-                if platform.system() == 'Windows':
-                    downloaded_file = tmp_dir / f'sharly-chess-{version}-windows.zip'
-                else:
-                    downloaded_file = tmp_dir / f'sharly-chess-{version}-macos.dmg'
+                system = platform.system()
+                match system:
+                    case 'Windows':
+                        downloaded_file = (
+                            tmp_dir / f'sharly-chess-{version}-windows.zip'
+                        )
+                    case 'Darwin':
+                        downloaded_file = tmp_dir / f'sharly-chess-{version}-macos.dmg'
+                    case 'Linux':
+                        build_arch = os.environ.get('BUILD_ARCH')
+                        if build_arch:
+                            machine = build_arch.lower()
+                        else:
+                            machine = platform.machine().lower()
+                            if machine in ('aarch64', 'arm64'):
+                                downloaded_file = (
+                                    tmp_dir / f'sharly-chess-{version}-linux-arm64.zip'
+                                )
+                            elif machine in ('x86_64', 'amd64'):
+                                downloaded_file = (
+                                    tmp_dir / f'sharly-chess-{version}-linux-x86_64.zip'
+                                )
+
                 downloaded_file.write_bytes(response.content)
                 logger.debug('File downloaded: [%s].', downloaded_file)
 
@@ -556,7 +594,7 @@ class Engine:
                                 )
                             )
                             return False
-                else:
+                elif platform.system() == 'Darwin':
                     # For Mac: Handle the DMG file
                     mount_point = tmp_dir / f'mount-{version}'
                     try:
@@ -600,6 +638,11 @@ class Engine:
                         # Clean up the mount point directory
                         if mount_point.exists():
                             shutil.rmtree(mount_point, ignore_errors=True)
+                else:
+                    # For Linux, just unzip
+                    new_version_dir.mkdir()
+                    with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
+                        zip_ref.extractall(new_version_dir)
 
                 logger.info(
                     'New release [%s] has been installed in [%s].',
