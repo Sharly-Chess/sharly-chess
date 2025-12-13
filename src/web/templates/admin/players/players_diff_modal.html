@@ -257,8 +257,19 @@
                                 {{ admin_macros.extra_admin_column_cell(field_id, player_context, admin_players_update_extra_columns)}}
                                 {% set field_updated=player_updated and field_id in diff_field_ids %}
                                 {% set field_class=field_updated_class if field_updated else field_unchanged_class %}
-                                <td scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}">
-                                    {{ player.fide_id or '-' }}
+                                <td
+                                        scope="col" class="text-nowrap text-start {{ player_class }} {{ field_class }}"
+                                        {% if field_updated %}
+                                            {% if not player.fide_id %}
+                                                {{ macros.tooltip_attributes('info', _('Set FIDE ID [%(new)s]', new=match_player.fide_id), 'top') }}
+                                            {% elif not match_player.fide_id %}
+                                                {{ macros.tooltip_attributes('info', _('Delete FIDE ID [%(old)s]', old=player.fide_id), 'top') }}
+                                            {% else %}
+                                                {{ macros.tooltip_attributes('info', _('Replace [%(old)s] by [%(new)s]', old=player.title.short_name, new=match_player.title.short_name), 'top') }}
+                                            {% endif %}
+                                        {% endif %}
+                                >
+                                    {{ match_player.fide_id or '-' }}
                                 </td>
                                 {% set field_id='title' %}
                                 {{ admin_macros.extra_admin_column_cell(field_id, player_context, admin_players_update_extra_columns)}}
