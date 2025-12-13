@@ -157,26 +157,10 @@ class LinuxProjectBuilder(ProjectBuilder):
             # Change to project_dir so paths are relative
             os.chdir(self.project_dir)
 
-            # Debug: List all items in project_dir before iterating
-            logger.info(f'Contents of project_dir ({self.project_dir}):')
-            for item in Path('.').iterdir():
-                logger.info(f'  - {item.name} ({item.is_dir() and "dir" or "file"})')
-                if item.suffix == '.zip':
-                    logger.warning(
-                        f'  WARNING: Found zip file in project_dir: {item.name}'
-                    )
-
             items_added = []
             for item in Path('.').iterdir():
                 if item.name in exclude_items:
                     logger.debug(f'Skipping excluded item: {item.name}')
-                    continue
-
-                # Explicitly skip zip files (shouldn't be any, but be safe)
-                if item.suffix == '.zip':
-                    logger.warning(
-                        f'Skipping zip file found in project_dir: {item.name}'
-                    )
                     continue
 
                 if item.is_dir():
@@ -184,8 +168,6 @@ class LinuxProjectBuilder(ProjectBuilder):
                     # Walk from the item (which is now relative to project_dir)
                     file_count = 0
                     for root, dirs, files in os.walk(item):
-                        # Filter out zip files from the walk
-                        files = [f for f in files if not f.endswith('.zip')]
                         # root is already relative to project_dir (since we chdir'd)
                         # Write directory entry
                         zip_file.write(root, root)
@@ -208,33 +190,6 @@ class LinuxProjectBuilder(ProjectBuilder):
         if self.appimage.exists():
             logger.info(f'Deleting AppImage file: {self.appimage}')
             self.appimage.unlink()
-
-        # Debug: List contents of the created zip file to verify it doesn't contain itself
-        logger.info('Verifying zip file contents...')
-        try:
-            with ZipFile(self.zip_file, 'r') as verify_zip:
-                zip_contents = verify_zip.namelist()
-                logger.info(f'Zip file contains {len(zip_contents)} items:')
-                for name in sorted(zip_contents)[:20]:  # Show first 20 items
-                    logger.info(f'  - {name}')
-                if len(zip_contents) > 20:
-                    logger.info(f'  ... and {len(zip_contents) - 20} more items')
-
-                # Check if zip file contains itself or another zip file
-                zip_files_in_zip = [
-                    name for name in zip_contents if name.endswith('.zip')
-                ]
-                if zip_files_in_zip:
-                    logger.error(
-                        f'ERROR: Zip file contains {len(zip_files_in_zip)} zip file(s):'
-                    )
-                    for zip_name in zip_files_in_zip:
-                        logger.error(f'  - {zip_name}')
-                    logger.error(
-                        'This should not happen! The zip file should not contain zip files.'
-                    )
-        except Exception as e:
-            logger.warning(f'Could not verify zip file contents: {e}')
 
         logger.info(f'Archive created successfully: {self.zip_file}')
         return True
@@ -280,17 +235,6 @@ class LinuxProjectBuilder(ProjectBuilder):
             else:
                 shutil.copy2(item, dest)
 
-        # Note: We do NOT copy X11 libraries into the AppImage
-        # X11 libraries are core system components that should be provided by the host system
-        # Copying them can cause compatibility issues across different Linux distributions
-        # Instead, we rely on system libraries via LD_LIBRARY_PATH (set in AppRun)
-        # This is the standard AppImage approach and ensures better portability
-
-        logger.info(
-            'Relying on system X11 libraries via LD_LIBRARY_PATH '
-            '(standard AppImage practice for better portability)'
-        )
-
         return True
 
     def _create_apprun(self) -> bool:
@@ -308,7 +252,6 @@ APPDIR="$(cd "$(dirname "${{BASH_SOURCE[0]}}")" && pwd)"
 export PATH="$APPDIR/usr/bin:$PATH"
 export APPDIR
 
-# Note: Toga's WebView requires GTK3, so we don't force GTK4
 # Toga will automatically use GTK3 when WebView is needed
 # Set environment variables for GTK
 export GTK_THEME="Adwaita"
@@ -319,7 +262,6 @@ export GDK_BACKEND="x11"
 
 # Library path: prioritize system libraries (X11) before AppImage libraries
 # This ensures GTK can find system X11 libraries to connect to the display
-# System libraries must come first so X11 client libraries are accessible
 # Also add common library paths that might contain X11/GTK libraries
 export LD_LIBRARY_PATH="/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/aarch64-linux-gnu:/lib:/lib/x86_64-linux-gnu:/lib/aarch64-linux-gnu:/usr/local/lib:/usr/local/lib/x86_64-linux-gnu:/usr/local/lib/aarch64-linux-gnu:$APPDIR/usr/lib/x86_64-linux-gnu:$APPDIR/usr/lib/aarch64-linux-gnu:$APPDIR/usr/lib:${{LD_LIBRARY_PATH}}"
 
@@ -518,7 +460,7 @@ GenericName=Chess Tournament Manager
 Comment=Chess tournament management software
 Exec={self.executable_name}
 Icon={self.project_name}
-Categories=Game;
+Categories=Utility;
 Terminal=false
 StartupNotify=true
 """
@@ -586,203 +528,6 @@ StartupNotify=true
         # Remove existing AppImage if it exists
         if self.appimage.exists():
             self.appimage.unlink()
-
-        # Diagnostic: Check architectures in AppDir (for debugging)
-        logger.info('Checking architectures in AppDir...')
-        architectures_found = set()
-
-        # Also check parent directory - appimagetool might be scanning it
-        logger.info('Checking AppDir parent directory for ELF files...')
-        try:
-            parent_elf_result = subprocess.run(
-                [
-                    'find',
-                    str(self.appdir.parent),
-                    '-maxdepth',
-                    '1',
-                    '-type',
-                    'f',
-                    '-executable',
-                ],
-                capture_output=True,
-                text=True,
-            )
-            if parent_elf_result.returncode == 0 and parent_elf_result.stdout.strip():
-                parent_files = parent_elf_result.stdout.strip().split('\n')
-                parent_x86 = 0
-                parent_arm = 0
-                for pf in parent_files:
-                    if pf and pf != str(self.appdir):
-                        pf_result = subprocess.run(
-                            ['file', pf],
-                            capture_output=True,
-                            text=True,
-                        )
-                        if pf_result.returncode == 0:
-                            pf_output = pf_result.stdout
-                            if 'ELF' in pf_output:
-                                if 'x86-64' in pf_output or 'x86_64' in pf_output:
-                                    parent_x86 += 1
-                                    logger.warning(
-                                        f'x86_64 ELF file in parent directory: {pf}'
-                                    )
-                                elif (
-                                    'aarch64' in pf_output or 'ARM aarch64' in pf_output
-                                ):
-                                    parent_arm += 1
-                if parent_x86 > 0 or parent_arm > 0:
-                    logger.info(
-                        f'Parent directory ELF files: x86_64={parent_x86}, ARM64={parent_arm}'
-                    )
-        except Exception as e:
-            logger.debug(f'Could not check parent directory: {e}')
-
-        try:
-            # Use file command to check binary architectures
-            # Check ALL files (not just executables) to see what appimagetool might detect
-            result = subprocess.run(
-                ['find', str(self.appdir), '-type', 'f'],
-                capture_output=True,
-                text=True,
-            )
-            if result.returncode == 0 and result.stdout.strip():
-                all_files = result.stdout.strip().split('\n')
-                logger.info(f'Found {len(all_files)} total files in AppDir')
-
-                # Check all ELF files for architecture (appimagetool checks ELF files)
-                x86_64_count = 0
-                arm64_count = 0
-                other_count = 0
-                elf_files_checked = 0
-
-                for file_path in all_files:
-                    file_result = subprocess.run(
-                        ['file', file_path],
-                        capture_output=True,
-                        text=True,
-                    )
-                    if file_result.returncode == 0:
-                        file_output = file_result.stdout.strip()
-                        # Only check ELF files (binaries and shared libraries)
-                        if 'ELF' in file_output:
-                            elf_files_checked += 1
-                            # Check for architecture indicators
-                            if (
-                                'x86-64' in file_output
-                                or 'x86_64' in file_output
-                                or 'Intel 80386' in file_output
-                            ):
-                                architectures_found.add('x86_64')
-                                x86_64_count += 1
-                                if x86_64_count <= 5:  # Log first few
-                                    logger.warning(
-                                        f'x86_64 ELF file found: {file_path}'
-                                    )
-                            elif (
-                                'aarch64' in file_output
-                                or 'ARM aarch64' in file_output
-                                or 'ARM64' in file_output
-                            ):
-                                architectures_found.add('aarch64')
-                                arm64_count += 1
-                                if arm64_count <= 5:  # Log first few
-                                    logger.debug(f'ARM64 ELF file found: {file_path}')
-                            else:
-                                architectures_found.add('other')
-                                other_count += 1
-                                if other_count <= 5:  # Log first few
-                                    logger.warning(
-                                        f'Other architecture ELF file: {file_path} - {file_output}'
-                                    )
-
-                logger.info(f'Checked {elf_files_checked} ELF files')
-
-                logger.info(
-                    f'Architecture summary: x86_64={x86_64_count}, ARM64={arm64_count}, other={other_count}'
-                )
-
-                # Check what libraries the main executable depends on
-                # This might reveal if it's finding x86_64 libraries
-                main_executable = self.appdir / 'usr' / 'bin' / self.executable_name
-                if main_executable.exists():
-                    logger.info('Checking library dependencies of main executable...')
-                    try:
-                        exec_ldd_result = subprocess.run(
-                            ['ldd', str(main_executable)],
-                            capture_output=True,
-                            text=True,
-                        )
-                        if exec_ldd_result.returncode == 0:
-                            # Check if any dependencies point to x86_64 libraries
-                            exec_lib_paths = []
-                            for line in exec_ldd_result.stdout.split('\n'):
-                                if '=>' in line:
-                                    lib_path = line.split('=>')[1].strip().split()[0]
-                                    if (
-                                        lib_path
-                                        and lib_path != 'not'
-                                        and lib_path.startswith('/')
-                                    ):
-                                        exec_lib_paths.append(lib_path)
-
-                            # Check architectures of these libraries
-                            exec_lib_x86 = 0
-                            exec_lib_arm = 0
-                            for lib_path in exec_lib_paths[:10]:  # Check first 10
-                                try:
-                                    lib_file_result = subprocess.run(
-                                        ['file', lib_path],
-                                        capture_output=True,
-                                        text=True,
-                                    )
-                                    if lib_file_result.returncode == 0:
-                                        lib_output = lib_file_result.stdout
-                                        if (
-                                            'x86-64' in lib_output
-                                            or 'x86_64' in lib_output
-                                        ):
-                                            exec_lib_x86 += 1
-                                            logger.warning(
-                                                f'Main executable depends on x86_64 library: {lib_path}'
-                                            )
-                                        elif (
-                                            'aarch64' in lib_output
-                                            or 'ARM aarch64' in lib_output
-                                        ):
-                                            exec_lib_arm += 1
-                                except Exception:
-                                    pass
-                            if exec_lib_x86 > 0:
-                                logger.warning(
-                                    f'Main executable has {exec_lib_x86} x86_64 library dependencies - this might confuse appimagetool'
-                                )
-                            logger.info(
-                                f'Main executable library architectures: x86_64={exec_lib_x86}, ARM64={exec_lib_arm}'
-                            )
-                    except Exception as e:
-                        logger.debug(f'Could not check main executable libraries: {e}')
-
-                # Report errors if wrong architectures are found
-                if len(architectures_found) > 1:
-                    logger.error(
-                        f'ERROR: Multiple architectures detected in AppDir: {architectures_found}. '
-                        f'This should not happen - all binaries should be {self.arch}.'
-                    )
-                    logger.error(
-                        f'Expected architecture: {self.arch}, but found: {architectures_found}'
-                    )
-                elif self.arch == 'arm64' and x86_64_count > 0:
-                    logger.error(
-                        f'ERROR: Building ARM64 but found {x86_64_count} x86_64 binaries. '
-                        'This indicates PyInstaller bundled wrong architecture libraries.'
-                    )
-                elif self.arch == 'x86_64' and arm64_count > 0:
-                    logger.error(
-                        f'ERROR: Building x86_64 but found {arm64_count} ARM64 binaries. '
-                        'This indicates a configuration issue.'
-                    )
-        except Exception as e:
-            logger.warning(f'Could not check AppDir architectures: {e}')
 
         # Set ARCH environment variable to match the target architecture
         # appimagetool expects 'aarch64' for ARM64, not 'arm64'
@@ -882,107 +627,6 @@ StartupNotify=true
                         logger.info(f'Using AppRun script: {extracted_binary}')
 
                     extracted_binary.chmod(0o755)
-
-                    # Check what libraries the extracted appimagetool binary depends on
-                    # This might reveal if it's finding x86_64 libraries
-                    logger.info('Checking libraries that appimagetool depends on...')
-                    try:
-                        ldd_result = subprocess.run(
-                            ['ldd', str(extracted_binary)],
-                            capture_output=True,
-                            text=True,
-                        )
-                        if ldd_result.returncode == 0:
-                            logger.info(
-                                f'appimagetool library dependencies:\n{ldd_result.stdout}'
-                            )
-                            # Check if any dependencies point to x86_64 libraries
-                            if (
-                                'x86_64' in ldd_result.stdout
-                                or 'x86-64' in ldd_result.stdout
-                            ):
-                                logger.warning(
-                                    'appimagetool depends on x86_64 libraries - this might cause architecture detection issues'
-                                )
-                            # Check what architectures the libraries are
-                            lib_archs = set()
-                            for line in ldd_result.stdout.split('\n'):
-                                if '=>' in line:
-                                    # Extract library path
-                                    lib_path = line.split('=>')[1].strip().split()[0]
-                                    if lib_path and lib_path != 'not':
-                                        try:
-                                            lib_file_result = subprocess.run(
-                                                ['file', lib_path],
-                                                capture_output=True,
-                                                text=True,
-                                            )
-                                            if lib_file_result.returncode == 0:
-                                                lib_output = lib_file_result.stdout
-                                                if (
-                                                    'x86-64' in lib_output
-                                                    or 'x86_64' in lib_output
-                                                ):
-                                                    lib_archs.add('x86_64')
-                                                    logger.warning(
-                                                        f'Found x86_64 library dependency: {lib_path}'
-                                                    )
-                                                elif (
-                                                    'aarch64' in lib_output
-                                                    or 'ARM aarch64' in lib_output
-                                                ):
-                                                    lib_archs.add('aarch64')
-                                            logger.info(
-                                                f'appimagetool library architectures: {lib_archs}'
-                                            )
-                                        except Exception:
-                                            pass
-                    except Exception as e:
-                        logger.debug(f'Could not check library dependencies: {e}')
-
-                    # Check if extracted appimagetool directory has mixed architectures
-                    # This might be what appimagetool is detecting
-                    logger.info(
-                        'Checking extracted appimagetool directory for architectures...'
-                    )
-                    try:
-                        extract_check_result = subprocess.run(
-                            ['find', str(squashfs_root), '-type', 'f', '-executable'],
-                            capture_output=True,
-                            text=True,
-                        )
-                        if extract_check_result.returncode == 0:
-                            extract_files = extract_check_result.stdout.strip().split(
-                                '\n'
-                            )
-                            extract_x86 = 0
-                            extract_arm = 0
-                            for ef in extract_files:
-                                if ef:
-                                    ef_result = subprocess.run(
-                                        ['file', ef],
-                                        capture_output=True,
-                                        text=True,
-                                    )
-                                    if ef_result.returncode == 0:
-                                        ef_output = ef_result.stdout
-                                        if (
-                                            'x86-64' in ef_output
-                                            or 'x86_64' in ef_output
-                                        ):
-                                            extract_x86 += 1
-                                        elif (
-                                            'aarch64' in ef_output
-                                            or 'ARM aarch64' in ef_output
-                                        ):
-                                            extract_arm += 1
-                            logger.info(
-                                f'Extracted appimagetool: x86_64={extract_x86}, ARM64={extract_arm}'
-                            )
-                    except Exception as e:
-                        logger.debug(
-                            f'Could not check extracted appimagetool architectures: {e}'
-                        )
 
                     # Use the extracted binary with ARCH explicitly set
                     # Use absolute paths and ensure we're in a clean directory
