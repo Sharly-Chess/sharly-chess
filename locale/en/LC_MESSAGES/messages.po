@@ -1402,6 +1402,10 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+#, python-format
+msgid "Delete FIDE ID [%(old)s]"
+msgstr ""
+
 msgid "Delete account"
 msgstr ""
 
@@ -4233,6 +4237,10 @@ msgid "Server Setup"
 msgstr ""
 
 msgid "Server is already running!"
+msgstr ""
+
+#, python-format
+msgid "Set FIDE ID [%(new)s]"
 msgstr ""
 
 msgid "Set Full-Points Byes"

@@ -1402,6 +1402,10 @@ msgstr "Délai (secondes) :"
 msgid "Delete"
 msgstr "Supprimer"
 
+#, python-format
+msgid "Delete FIDE ID [%(old)s]"
+msgstr "Supprimer l'identifiant FIDE [%(old)s]"
+
 msgid "Delete account"
 msgstr "Supprimer le compte"
 
@@ -4234,6 +4238,10 @@ msgstr "Configuration du serveur"
 
 msgid "Server is already running!"
 msgstr "Le serveur est déjà en cours d'exécution !"
+
+#, python-format
+msgid "Set FIDE ID [%(new)s]"
+msgstr "Initialiser l'identifiant FIDE [%(new)s]"
 
 msgid "Set Full-Points Byes"
 msgstr "Allouer des points joker"
