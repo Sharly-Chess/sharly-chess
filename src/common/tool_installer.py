@@ -1,3 +1,4 @@
+import os
 import platform
 import stat
 import shutil
@@ -329,7 +330,7 @@ class BbpPairingsInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
-        return Version('5.0.1')
+        return Version('5.0.2')
 
     @cached_property
     def system_handler(self) -> SystemHandler:
@@ -348,10 +349,27 @@ class BbpPairingsInstaller(ExecutableInstaller):
                     archive_filename='bbpPairings-macOS.zip',
                 )
             case 'Linux':
+                # Detect architecture for Linux
+                # Allow override via BUILD_ARCH environment variable (useful for cross-compilation/QEMU)
+                build_arch = os.environ.get('BUILD_ARCH')
+                if build_arch:
+                    machine = build_arch.lower()
+                else:
+                    machine = platform.machine().lower()
+                if machine in ('aarch64', 'arm64'):
+                    archive_filename = 'bbpPairings-Linux-ARM64.zip'
+                    executable_filename = 'bbpPairings-linux-arm64'
+                elif machine in ('x86_64', 'amd64'):
+                    archive_filename = 'bbpPairings-Linux-x86_64.zip'
+                    executable_filename = 'bbpPairings-linux-x86_64'
+                else:
+                    raise OSError(
+                        f'{self._name} is not available for Linux architecture: {machine}'
+                    )
                 return SystemHandler(
                     executable_dir=f'bbpPairings-v{self.version}',
-                    executable_filename='bbpPairings-linux',
-                    archive_filename='bbpPairings-Linux.zip',
+                    executable_filename=executable_filename,
+                    archive_filename=archive_filename,
                 )
             case _:
                 raise OSError(
@@ -408,6 +426,29 @@ class PapiConverterInstaller(ExecutableInstaller):
                     executable_filename='papi-converter',
                     archive_filename='papi-converter-mac.tar.gz',
                 )
+            case 'Linux':
+                # Detect architecture for Linux
+                # Allow override via BUILD_ARCH environment variable (useful for cross-compilation/QEMU)
+                build_arch = os.environ.get('BUILD_ARCH')
+                if build_arch:
+                    machine = build_arch.lower()
+                else:
+                    machine = platform.machine().lower()
+                if machine in ('aarch64', 'arm64'):
+                    archive_filename = 'papi-converter-linux-arm64.tar.gz'
+                    executable_dir = 'papi-converter-linux-arm64'
+                elif machine in ('x86_64', 'amd64'):
+                    archive_filename = 'papi-converter-linux-x86_64.tar.gz'
+                    executable_dir = 'papi-converter-linux-x86_64'
+                else:
+                    raise OSError(
+                        f'{self._name} is not available for Linux architecture: {machine}'
+                    )
+                return SystemHandler(
+                    executable_dir=executable_dir,
+                    executable_filename='papi-converter',
+                    archive_filename=archive_filename,
+                )
             case _:
                 raise OSError(
                     f'{self._name} is not available for the current system: {system}'
@@ -419,7 +460,7 @@ class PapiConverterInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
-        return Version('1.1.9')
+        return Version('1.2.0')
 
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename

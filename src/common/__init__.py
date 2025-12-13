@@ -43,10 +43,11 @@ TMP_DIR: Path = Path('tmp')
 
 def app_base_dir() -> Path:
     """
-    Return the directory that holds bundled resources for:
-      - Dev:      repo/source tree
+    Return the directory that holds bundled resources (project root with pyproject.toml):
+      - Dev:      repo/source tree (where pyproject.toml is)
       - Onefile:  sys._MEIPASS
       - macOS .app onedir: .../My.app/Contents/Resources
+      - Linux AppImage: AppDir/usr/share (bundled resources)
       - Other frozen onedir: directory next to the executable
     """
 
@@ -67,11 +68,27 @@ def app_base_dir() -> Path:
     except Exception:
         pass
 
+    # Linux AppImage - return AppDir/usr/share (bundled resources)
+    if getattr(sys, 'frozen', False):
+        try:
+            # Check if we're running from AppImage (APPDIR is set by AppImage runtime)
+            appdir = os.environ.get('APPDIR')
+            if appdir:
+                # AppImage sets APPDIR to the mount point
+                # Bundled resources are in usr/share
+                usr_share = Path(appdir) / 'usr' / 'share'
+                if usr_share.exists():
+                    return usr_share
+                # Fallback to APPDIR itself
+                return Path(appdir)
+        except Exception:
+            pass
+
     # Other frozen (non-.app) onedir
     if getattr(sys, 'frozen', False):
         return Path(sys.executable).resolve().parent
 
-    # Dev: project / package root (adjust levels to your layout)
+    # Dev: project / package root (where pyproject.toml is)
     return Path(__file__).resolve().parents[2]
 
 
