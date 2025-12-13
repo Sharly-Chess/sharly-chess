@@ -26,7 +26,7 @@ from web.utils import ColumnUsage
 class SchoolTeam:
     school: FRASchool
     label: str
-    players: list[TournamentPlayer]
+    tournament_players: list[TournamentPlayer]
     total_points: float
     is_complete: bool
 
@@ -189,7 +189,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
                     SchoolTeam(
                         school=plugin_data.fra_schools_by_id[school_id],
                         label=label,
-                        players=selected,
+                        tournament_players=selected,
                         total_points=total_points,
                         is_complete=is_complete,
                         tie_break_sums=tb_sums,

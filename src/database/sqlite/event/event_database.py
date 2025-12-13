@@ -303,8 +303,6 @@ class EventDatabase(MigrationDatabase):
             public=self.load_bool_from_database_field(row['public']),
             location=row['location'],
             background_color=row['background_color'],
-            record_illegal_moves=row['record_illegal_moves'],
-            rules=row['rules'],
             timer_colors=self.set_dict_int_keys(
                 self.load_json_from_database_field(row['timer_colors'])
             ),
@@ -315,13 +313,6 @@ class EventDatabase(MigrationDatabase):
             message_color=row['message_color'],
             message_background_color=row['message_background_color'],
             prize_currency=row['prize_currency'],
-            override_unrated_rapid_blitz=self.load_bool_from_database_field(
-                row['override_unrated_rapid_blitz']
-            ),
-            three_points_for_a_win=self.load_bool_from_database_field(
-                row['three_points_for_a_win']
-            ),
-            pab_value=row['pab_value'],
             age_categories=self.load_json_from_database_field(row['age_categories']),
             age_category_base_date=self.load_optional_date_from_database_field(
                 row['age_category_base_date']
@@ -382,15 +373,10 @@ class EventDatabase(MigrationDatabase):
                 'location',
                 'player_rating_type',
                 'background_color',
-                'record_illegal_moves',
-                'rules',
                 'message_text',
                 'message_color',
                 'message_background_color',
                 'prize_currency',
-                'override_unrated_rapid_blitz',
-                'three_points_for_a_win',
-                'pab_value',
                 'organiser_name',
                 'organiser_home_page',
                 'organiser_email',
@@ -605,10 +591,10 @@ class EventDatabase(MigrationDatabase):
             stop_date=cls.load_optional_date_from_database_field(row['stop_date']),
             location=row['location'],
             player_rating_type=row['player_rating_type'],
-            three_points_for_a_win=cls.load_bool_or_none_from_database_field(
+            three_points_for_a_win=cls.load_bool_from_database_field(
                 row['three_points_for_a_win']
             ),
-            override_unrated_rapid_blitz=cls.load_bool_or_none_from_database_field(
+            override_unrated_rapid_blitz=cls.load_bool_from_database_field(
                 row['override_unrated_rapid_blitz']
             ),
             pab_value=row['pab_value'],

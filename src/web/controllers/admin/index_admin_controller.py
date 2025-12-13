@@ -581,17 +581,6 @@ class IndexAdminController(BaseAdminController):
             stored_event.message_background_color = admin_event.message_background_color
             stored_event.message_color = admin_event.message_color
             stored_event.message_text = admin_event.message_text
-            stored_event.record_illegal_moves = (
-                admin_event.stored_event.record_illegal_moves
-            )
-            stored_event.rules = admin_event.stored_event.rules
-            stored_event.override_unrated_rapid_blitz = (
-                admin_event.override_unrated_rapid_blitz
-            )
-            stored_event.three_points_for_a_win = (
-                admin_event.stored_event.three_points_for_a_win
-            )
-            stored_event.pab_value = admin_event.pab_value.value
             stored_event.prize_currency = admin_event.stored_event.prize_currency
 
         return stored_event, errors

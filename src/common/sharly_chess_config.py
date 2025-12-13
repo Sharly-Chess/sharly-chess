@@ -439,7 +439,7 @@ class SharlyChessConfig(metaclass=Singleton):
         return self.app_url(self.local_ip)
 
     # The default number of illegal moves to record.
-    default_record_illegal_moves_number: int = 0
+    default_record_illegal_moves: int = 0
 
     # The default colors for the timers.
     default_timer_colors: dict[int, str] = {

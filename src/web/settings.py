@@ -43,9 +43,6 @@ from web.controllers.admin.prize_admin_controller import PrizeAdminController
 from web.controllers.admin.prize_config_admin_controller import (
     PrizeConfigAdminController,
 )
-from web.controllers.admin.tournament_config_admin_controller import (
-    TournamentConfigAdminController,
-)
 from web.controllers.profile_controller import ProfileController
 from web.controllers.admin.rotator_admin_controller import RotatorAdminController
 from web.controllers.admin.screen_config_admin_controller import (
@@ -92,7 +89,6 @@ route_handlers: Sequence[ControllerRouterHandler] = [
     IndexAdminController,
     EventAdminController,
     EventPrintController,
-    TournamentConfigAdminController,
     TournamentAdminController,
     PairingsAdminController,
     PrizeConfigAdminController,

@@ -56,8 +56,6 @@ class TestUtils:
         'location': 'Paris',
         'player_rating_type': PlayerRatingType.FIDE.value,
         'background_color': '#ffffff',
-        'record_illegal_moves': 0,
-        'rules': '',
         'message_text': '',
         'message_color': '#000000',
         'message_background_color': '#ffffff',
