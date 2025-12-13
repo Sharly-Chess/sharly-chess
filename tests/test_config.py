@@ -226,6 +226,7 @@ class TestUtils:
             'rating': 1,
             'stored_prize_groups': [],
             'plugin_data': None,
+            'pab_value': 3,
         }
 
         # Merge overrides

@@ -469,7 +469,7 @@ class TournamentAdminController(BaseEventAdminController):
         override_unrated_rapid_blitz = WebContext.form_data_to_bool(
             data, 'override_unrated_rapid_blitz'
         )
-        pab_value = WebContext.form_data_to_int(data, 'pab_value') or 0
+        pab_value = WebContext.form_data_to_int(data, 'pab_value')
 
         # Validate
         plugin_manager.hook_for_event(
@@ -521,7 +521,7 @@ class TournamentAdminController(BaseEventAdminController):
             rating=rating or TournamentRating.STANDARD.value,
             pairing=pairing or '',
             three_points_for_a_win=three_points_for_a_win,
-            pab_value=pab_value,
+            pab_value=pab_value or Result.WIN.value,
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             plugin_data=plugin_data,
         )
