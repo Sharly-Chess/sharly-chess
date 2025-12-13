@@ -1,6 +1,5 @@
 import os
 import platform
-import shlex
 import shutil
 import subprocess
 import sys
@@ -503,7 +502,6 @@ StartupNotify=true
 
         # Check if appimagetool is available in PATH (e.g., installed by CI)
         appimagetool_cmd = shutil.which('appimagetool')
-        downloaded = False
 
         # Download appimagetool if not found in PATH
         # Since we're using native runners, host architecture matches target architecture
@@ -519,7 +517,6 @@ StartupNotify=true
                 )
                 return False
             appimagetool_cmd = str(self.project_dir / 'appimagetool')
-            downloaded = True
             Path(appimagetool_cmd).chmod(0o755)
 
         # Create the AppImage
@@ -539,162 +536,13 @@ StartupNotify=true
         env['ARCH'] = arch_env
         logger.info(f'Setting ARCH environment variable to: {arch_env}')
 
-        # Build command
-        # If appimagetool is an AppImage, extract it and run the binary directly
-        # This ensures ARCH environment variable is properly passed
-        original_appimagetool_cmd = appimagetool_cmd
-        wrapper_script_path = None  # Track wrapper script for cleanup
-
-        # Check if appimagetool is an AppImage (even if found in PATH)
-        # AppImages need to be extracted to properly pass ARCH environment variable
-        is_appimage = False
-        if isinstance(appimagetool_cmd, str):
-            # Check architecture of appimagetool itself
-            try:
-                file_result = subprocess.run(
-                    ['file', appimagetool_cmd],
-                    capture_output=True,
-                    text=True,
-                )
-                if file_result.returncode == 0:
-                    logger.info(f'appimagetool file type: {file_result.stdout.strip()}')
-            except Exception:
-                pass
-
-            if appimagetool_cmd.endswith('.AppImage'):
-                is_appimage = True
-            else:
-                # Check if it's an AppImage by testing for AppImage support
-                try:
-                    test_result = subprocess.run(
-                        [appimagetool_cmd, '--appimage-version'],
-                        capture_output=True,
-                        text=True,
-                        timeout=5,
-                    )
-                    if test_result.returncode == 0:
-                        is_appimage = True
-                        logger.info('Detected appimagetool as AppImage')
-                except (subprocess.TimeoutExpired, FileNotFoundError, Exception):
-                    # Not an AppImage or can't determine
-                    pass
-
-        if downloaded or is_appimage:
-            # For AppImages, manually extract and run the binary directly
-            # This avoids appimagetool scanning its own extraction directory
-            import tempfile
-
-            extract_dir = tempfile.mkdtemp(prefix='appimagetool_')
-            logger.info(f'Extracting appimagetool to {extract_dir}...')
-            try:
-                # Extract the AppImage
-                original_cwd = os.getcwd()
-                os.chdir(extract_dir)
-                try:
-                    extract_cmd = [original_appimagetool_cmd, '--appimage-extract']
-                    subprocess.run(
-                        extract_cmd,
-                        check=True,
-                        capture_output=True,
-                        text=True,
-                    )
-                    # Find the actual appimagetool binary (not AppRun)
-                    squashfs_root = Path(extract_dir) / 'squashfs-root'
-                    extracted_binary = None
-
-                    # Try common locations for the appimagetool binary
-                    possible_paths = [
-                        squashfs_root / 'usr' / 'bin' / 'appimagetool',
-                        squashfs_root / 'usr' / 'lib' / 'appimagetool',
-                        squashfs_root / 'appimagetool',
-                    ]
-
-                    for path in possible_paths:
-                        if path.exists() and path.is_file():
-                            extracted_binary = path
-                            logger.info(
-                                f'Found appimagetool binary at: {extracted_binary}'
-                            )
-                            break
-
-                    # Fallback to AppRun if binary not found
-                    if extracted_binary is None:
-                        extracted_binary = squashfs_root / 'AppRun'
-                        if not extracted_binary.exists():
-                            raise FileNotFoundError(
-                                'Could not find extracted appimagetool binary or AppRun'
-                            )
-                        logger.info(f'Using AppRun script: {extracted_binary}')
-
-                    extracted_binary.chmod(0o755)
-
-                    # Use the extracted binary with ARCH explicitly set
-                    # Use absolute paths and ensure we're in a clean directory
-                    appdir_abs = str(self.appdir.resolve())
-                    appimage_abs = str(self.appimage.resolve())
-                    extracted_binary_abs = str(extracted_binary.resolve())
-
-                    # Create a wrapper script to ensure ARCH is definitely set
-                    # This is more reliable than bash -c for ensuring environment variables
-                    import tempfile
-
-                    wrapper_script = tempfile.NamedTemporaryFile(
-                        mode='w', suffix='.sh', delete=False
-                    )
-                    wrapper_script.write(f"""#!/bin/bash
-set -e
-export ARCH={arch_env}
-# Debug: verify ARCH is set
-echo "Wrapper script: ARCH is set to: $ARCH"
-# Verify ARCH is actually exported (important for appimagetool)
-if [ -z "$ARCH" ]; then
-    echo "ERROR: ARCH is not set!" >&2
-    exit 1
-fi
-# Change to /tmp to avoid scanning any build directories
-cd /tmp
-# Ensure we're in a clean environment - unset any conflicting variables
-unset BUILD_ARCH 2>/dev/null || true
-# Restrict LD_LIBRARY_PATH to only aarch64 paths to prevent appimagetool
-# from detecting x86_64 libraries (important for dynamically linked appimagetool on GitHub)
-# This ensures appimagetool only finds ARM64 libraries
-if [ "{arch_env}" = "aarch64" ]; then
-    export LD_LIBRARY_PATH="/lib/aarch64-linux-gnu:/usr/lib/aarch64-linux-gnu:/usr/local/lib/aarch64-linux-gnu"
-else
-    export LD_LIBRARY_PATH="/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/local/lib/x86_64-linux-gnu"
-fi
-# Run appimagetool with absolute paths
-# Use exec to ensure ARCH is definitely passed
-exec env ARCH={arch_env} LD_LIBRARY_PATH="$LD_LIBRARY_PATH" {shlex.quote(extracted_binary_abs)} {shlex.quote(appdir_abs)} {shlex.quote(appimage_abs)}
-""")
-                    wrapper_script.close()
-                    wrapper_path = Path(wrapper_script.name)
-                    wrapper_path.chmod(0o755)
-                    wrapper_script_path = wrapper_path  # Store for cleanup
-                    cmd = ['bash', str(wrapper_path)]
-                finally:
-                    os.chdir(original_cwd)
-            except Exception as e:
-                logger.warning(f'Failed to extract appimagetool: {e}')
-                # Fallback: use --appimage-extract-and-run
-                appdir_str = shlex.quote(str(self.appdir))
-                appimage_str = shlex.quote(str(self.appimage))
-                appimagetool_str = shlex.quote(original_appimagetool_cmd)
-                cmd = [
-                    'bash',
-                    '-c',
-                    f'export ARCH={arch_env} && {appimagetool_str} --appimage-extract-and-run {appdir_str} {appimage_str}',
-                ]
-        else:
-            # Regular binary - prepend env to ensure ARCH is set
-            # This is important for AppImages that might not inherit env vars correctly
-            cmd = [
-                'env',
-                f'ARCH={arch_env}',
-                appimagetool_cmd,
-                str(self.appdir),
-                str(self.appimage),
-            ]
+        cmd = [
+            'env',
+            f'ARCH={arch_env}',
+            appimagetool_cmd,
+            str(self.appdir),
+            str(self.appimage),
+        ]
 
         logger.info(f'Running: {" ".join(cmd)}')
         logger.info(f'ARCH will be set to: {arch_env}')
@@ -747,13 +595,6 @@ exec env ARCH={arch_env} LD_LIBRARY_PATH="$LD_LIBRARY_PATH" {shlex.quote(extract
         except FileNotFoundError:
             logger.error('appimagetool not found. Please install appimagetool.')
             return False
-        finally:
-            # Clean up wrapper script if it was created
-            if wrapper_script_path and Path(wrapper_script_path).exists():
-                try:
-                    Path(wrapper_script_path).unlink()
-                except Exception as e:
-                    logger.debug(f'Could not clean up wrapper script: {e}')
 
     def _download_appimagetool(self, host_is_arm64: bool = False) -> bool:
         """Download appimagetool matching the native runner architecture."""
