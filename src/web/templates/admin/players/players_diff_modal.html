@@ -301,7 +301,7 @@
                                         class="text-nowrap text-center {{ player_class }} {{ field_class }}"
                                         {% if field_updated %}{{ macros.tooltip_attributes('info', tooltip_text, 'top') }}{% endif %}
                                 >
-                                    {{ match_player.category }}
+                                    {{ match_player.category.name }}
                                 </td>
                                 {% set field_id='gender' %}
                                 {{ admin_macros.extra_admin_column_cell(field_id, player_context, admin_players_update_extra_columns)}}
