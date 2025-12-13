@@ -268,7 +268,7 @@ class SharlyChessServerToga(toga.App):
             case 'Darwin':
                 icon_file_name = 'sharly-chess.icns'
             case 'Linux':
-                raise NotImplementedError()
+                icon_file_name = 'sharly-chess.png'
             case _:
                 raise NotImplementedError(f'{system=}')
         super().__init__(
@@ -590,7 +590,8 @@ class SharlyChessServerToga(toga.App):
         # IMPORTANT: bypass Toga's event-loop policy in this *background* thread
         self.server_loop = asyncio.SelectorEventLoop()
         loop = self.server_loop
-        asyncio.set_event_loop(loop)
+        if platform.system() != 'Linux':
+            asyncio.set_event_loop(loop)
 
         def schedule_ready():
             self.gui_loop.call_soon_threadsafe(self.on_server_ready)

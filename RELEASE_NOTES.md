@@ -11,6 +11,7 @@
 - Added the possibility to supply the year of birth only (3.4.0)
 - Allow custom player age categories (3.4.0)
 - Fixed FIDE ID display on player update (3.4.0)
+- Fixed late entries ZPBs (3.4.0)
 
 ## Printing
 
