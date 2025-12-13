@@ -27,6 +27,7 @@
 ## Players
 
 - Calculation of _FIDE_ rating changes (3.3.0)
+- Fixed late entries ZPBs (3.3.7)
 
 ## Pairings
 
