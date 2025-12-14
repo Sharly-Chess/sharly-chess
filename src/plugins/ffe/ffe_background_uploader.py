@@ -83,8 +83,10 @@ class FfeBackgroundUploader:
                 FfeUploadStatus.SETTINGS_ERROR, unavailable_message
             )
             cls.upload_status_messages[result_id] = result
-        elif not FFEUtils.resolve_auto_upload(tournament) and cls.ffe_upload_needed(
-            tournament
+        elif (
+            not FFEUtils.resolve_auto_upload(tournament)
+            and result.status != FfeUploadStatus.NEVER
+            and cls.ffe_upload_needed(tournament)
         ):
             # For manual updates tell the user that the tournament has been modified
             # For auto uploads, schedule_upload should have already an appropriate message
@@ -176,7 +178,11 @@ class FfeBackgroundUploader:
             return current_result
 
         result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
-        if not force and not FFEUtils.resolve_auto_upload(tournament):
+        if (
+            not force
+            and not FFEUtils.resolve_auto_upload(tournament)
+            and current_result.status != FfeUploadStatus.NEVER
+        ):
             # Auto upload has been disabled since it was scheduled
             cls.upload_status_messages[result_id] = FfeUploadResult(
                 FfeUploadStatus.CHANGED,
