@@ -286,6 +286,7 @@ class SharlyChessServerToga(toga.App):
 
         # State
         self.server_thread: Optional[threading.Thread] = None
+        self.serve_task: asyncio.Task | None = None
         self.server_running = False
         self.sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
 
@@ -428,7 +429,8 @@ class SharlyChessServerToga(toga.App):
         )
         self.info_view.add(self.launch_browser_switch)
 
-        self.progress_bar = toga.ProgressBar(max=None, style=Pack(margin_top=10))
+        self.progress_bar = toga.ProgressBar(style=Pack(margin_top=10))
+        self.progress_bar.max = None
         self.info_view.add(self.progress_bar)
 
         self.main_buttons_section = toga.Box(
@@ -469,6 +471,8 @@ class SharlyChessServerToga(toga.App):
         self.html_view.set_content('about:blank', LOG_HTML)
         self.gui_handler = GUILogHandler(self)
         self.gui_handler.setLevel(logging.DEBUG)
+
+        assert self.progress_bar is not None
         self.progress_bar.value = 1
         self.progress_bar.start()
 
@@ -485,9 +489,13 @@ class SharlyChessServerToga(toga.App):
     def on_server_ready(self):
         assert self.browser_btn is not None
         self.browser_btn.enabled = True
+
+        assert self.progress_bar is not None
+        assert self.info_view is not None
         self.progress_bar.stop()
         self.info_view.remove(self.progress_bar)
 
+        assert self.main_buttons_section is not None
         main_buttons_wrapper = toga.Box(style=Pack(direction=ROW, align_items='center'))
         main_buttons_wrapper.add(self.main_buttons_section)
         self.info_view.add(main_buttons_wrapper)
@@ -613,7 +621,7 @@ class SharlyChessServerToga(toga.App):
             handle_signals=False,
             on_port_chosen=schedule_ready,
         )
-        loop.create_task(engine.serve())
+        self.serve_task = loop.create_task(engine.serve())
 
         try:
             loop.run_forever()
@@ -627,6 +635,8 @@ class SharlyChessServerToga(toga.App):
                 loop.run_until_complete(loop.shutdown_asyncgens())
             finally:
                 loop.close()
+                assert self.app is not None
+                self.gui_loop.call_soon_threadsafe(self.app.exit)
 
     def _open_browser(self, widget: Any = None, **kwargs) -> None:
         try:
@@ -823,6 +833,20 @@ class SharlyChessServerToga(toga.App):
             return fut.result()
         except Exception:
             return None
+
+    def quit_app(self) -> None:
+        loop = self.server_loop
+        if loop is None or loop.is_closed():
+            return
+
+        def _stop() -> None:
+            # Cancel the main server task
+            task = self.serve_task
+            if task is not None and not task.done():
+                task.cancel()
+            loop.stop()
+
+        loop.call_soon_threadsafe(_stop)
 
     def _on_logview_load(self, widget, **kwargs: Any):
         # Wait one loop turn so the inline <script> in LOG_HTML actually runs
