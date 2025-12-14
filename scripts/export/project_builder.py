@@ -56,7 +56,6 @@ class ProjectBuilder(ABC):
         parser = ArgumentParser(description='Export Sharly Chess.')
         # option --github is used when generating the EXE file from a GITHUB action
         # to verify that the name of the tag matches the Sharly Chess version.
-        # option --preserve-build is used to skip cleanup for signing purposes
         parser.add_argument('--github', type=str)
         self.hook_add_params(parser)
         args: Namespace = parser.parse_args()
