@@ -444,23 +444,38 @@ class LinuxProjectBuilder(ProjectBuilder):
 
         This prevents version conflicts where system libraries require newer versions
         than what was bundled (e.g., system libcurl requiring newer OpenSSL).
-        """
-        usr_lib = self.appdir / 'usr' / 'lib'
-        if not usr_lib.exists():
-            return
 
+        Removes libraries from both usr/lib (linuxdeploy) and usr/bin/_internal (PyInstaller).
+        """
         removed_count = 0
-        for lib_name in library_names:
-            # Find all matching libraries (including versioned ones like libssl.so.3, libssl.so.3.2, etc.)
-            for lib_file in usr_lib.rglob(f'{lib_name}.so*'):
-                try:
-                    logger.info(
-                        f'Removing bundled library to use system version: {lib_file.name}'
-                    )
-                    lib_file.unlink()
-                    removed_count += 1
-                except Exception as e:
-                    logger.debug(f'Could not remove {lib_file}: {e}')
+
+        # Remove from usr/lib (where linuxdeploy puts libraries)
+        usr_lib = self.appdir / 'usr' / 'lib'
+        if usr_lib.exists():
+            for lib_name in library_names:
+                for lib_file in usr_lib.rglob(f'{lib_name}.so*'):
+                    try:
+                        logger.info(
+                            f'Removing bundled library from usr/lib to use system version: {lib_file.name}'
+                        )
+                        lib_file.unlink()
+                        removed_count += 1
+                    except Exception as e:
+                        logger.debug(f'Could not remove {lib_file}: {e}')
+
+        # Remove from usr/bin/_internal (where PyInstaller puts libraries)
+        usr_bin_internal = self.appdir / 'usr' / 'bin' / '_internal'
+        if usr_bin_internal.exists():
+            for lib_name in library_names:
+                for lib_file in usr_bin_internal.rglob(f'{lib_name}.so*'):
+                    try:
+                        logger.info(
+                            f'Removing bundled library from _internal to use system version: {lib_file.name}'
+                        )
+                        lib_file.unlink()
+                        removed_count += 1
+                    except Exception as e:
+                        logger.debug(f'Could not remove {lib_file}: {e}')
 
         if removed_count > 0:
             logger.info(
