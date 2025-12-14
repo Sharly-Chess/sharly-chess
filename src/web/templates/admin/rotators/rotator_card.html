@@ -25,6 +25,17 @@
             <i class="bi-window-split pe-1"></i>
             {{ rotator.families|length }}
         </div>
+        {% if not rotator.rotating_screens_by_id %}
+            <i
+                class="bi-exclamation-triangle-fill text-danger"
+                {{ macros.tooltip_attributes(
+                    'info', _(
+                        'There needs to be at least one screen or family '
+                        'defined for the rotator to be accessible.'
+                    ), 'top'
+                ) }}
+            ></i>
+        {% endif %}
     </div>
 {% endblock %}
 
@@ -121,7 +132,7 @@
             <i class="bi-window-stack pe-1"></i>
             {{ _('Screens') }}
         </button>
-        {% if rotator.families or rotator.screens %}
+        {% if rotator.rotating_screens_by_id %}
             <span {{ macros.tooltip_attributes('info', _('Go to the rotator.'), 'top') }}>
                 <a
                     class="btn btn-sm btn-outline-primary"

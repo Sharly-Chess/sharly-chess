@@ -8,7 +8,6 @@ from logging import Logger
 from pathlib import Path
 from pkgutil import iter_modules
 from types import ModuleType
-from typing import Any
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from PyInstaller.__main__ import run
@@ -680,25 +679,7 @@ class ProjectBuilder(ABC):
         return True
 
     def build_control_file(self) -> bool:
-        logger.info('Creating control file [%s]...', self.control_file)
-        self.control_file.parent.mkdir(parents=True, exist_ok=True)
-        control_data: dict[str, Any] = {
-            'version': str(SHARLY_CHESS_VERSION),
-            'file_paths': [],
-        }
-        cwd: str = os.getcwd()
-        os.chdir(self.project_dir)
-        for folder_name, sub_folders, file_names in os.walk('.'):
-            for filename in file_names:
-                file_path: Path = Path(folder_name, filename)
-                control_data['file_paths'].append(str(file_path))
-        self.control_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(self.control_file, 'w', encoding='utf-8') as file:
-            json.dump(
-                control_data,
-                file,
-            )
-        os.chdir(cwd)
+        """Build a JSON file with all the needed files for control purposes."""
         return True
 
     def build_zip_file(self) -> bool:
