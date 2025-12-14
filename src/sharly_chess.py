@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 import platform
@@ -170,6 +171,7 @@ try:
         get_logger,
         print_interactive_warning,
         print_interactive_error,
+        set_logging_config,
     )
     from gui.server_gui_toga import SharlyChessServerToga
     from web.server_engine import ServerEngine
@@ -285,6 +287,9 @@ try:
         sys.exit(0)
 
     port = args.port or None
+    if args.debug:
+        # set the log level to DEBUG before loading the logging configuration of the application
+        set_logging_config(console_log_level=logging.DEBUG)
     debug = args.debug if DEVEL_ENV else False
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):
