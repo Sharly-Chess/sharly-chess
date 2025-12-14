@@ -73,11 +73,13 @@ class TestRotator:
         expect(modal).to_be_visible()
         modal.get_by_test_id('name').fill(ROTATOR_NAME)
         modal.locator('button[type=submit]').click()
+        TestUtils.button_by_text(modal, 'Close').click()
 
         card = page.locator(f"div.card:has-text('{ROTATOR_NAME}')")
         expect(card).to_be_visible()
 
         card.locator('button[hx-get*="delete"]').click()
+        expect(modal).to_be_visible()
         TestUtils.button_by_text(modal, 'Delete').click()
         expect(
             page.locator(f"div.card:has-text('{ROTATOR_NAME}')")

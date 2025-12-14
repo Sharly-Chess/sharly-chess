@@ -4812,6 +4812,9 @@ msgstr "Aucun écran public n’est disponible pour cet évènement."
 msgid "There can only be one main category."
 msgstr "Il ne peut y avoir qu'une seule catégorie générale."
 
+msgid "There needs to be at least one screen or family defined for the rotator to be accessible."
+msgstr "Il doit y avoir au moins un écran ou une famille d'écrans définie pour que l'écran rotatif soit accessible."
+
 msgid "These plugins can only be activated on events of their federation."
 msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur fédération."
 

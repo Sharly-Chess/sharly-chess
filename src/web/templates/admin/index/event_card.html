@@ -120,21 +120,23 @@
 {% endblock %}
 
 {% block card_buttons_left %}
-    <div class="dropup">
-        <button
-            class="btn btn-sm btn-outline-primary"
-            hx-get="{{ url_for('admin-event-share-modal', event_uniq_id=event.uniq_id) }}"
-            hx-push-url="false"
-            hx-target="body"
-            hx-indicator="#please-wait"
-            data-bs-toggle="modal"
-            data-bs-target="#modal-wrapper"
-            onclick="event.stopPropagation();"
-        >
-            <i class="bi bi-save-fill pe-1"></i>
-            {{ _('Share') }}
-        </button>
-    </div>
+    {% if client.can_manage_events %}
+        <div class="dropup">
+            <button
+                class="btn btn-sm btn-outline-primary"
+                hx-get="{{ url_for('admin-event-share-modal', event_uniq_id=event.uniq_id) }}"
+                hx-push-url="false"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                onclick="event.stopPropagation();"
+            >
+                <i class="bi bi-save-fill pe-1"></i>
+                {{ _('Share') }}
+            </button>
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block card_buttons_right %}
