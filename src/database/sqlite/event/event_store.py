@@ -358,6 +358,7 @@ class BaseStoredEvent:
     message_background_color: str | None = None
     prize_currency: str | None = None
     age_category_base_date: date | None = None
+    age_category_change_month: int = 1
     age_categories: list[str] | None = None
     organiser_name: str | None = None
     organiser_home_page: str | None = None

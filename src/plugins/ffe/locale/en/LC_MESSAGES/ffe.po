@@ -357,6 +357,9 @@ msgstr ""
 msgid "The FFE always uses the FIDE rating when available."
 msgstr ""
 
+msgid "The FFE sporting season starts in September."
+msgstr ""
+
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
 msgstr ""
 
@@ -476,7 +479,4 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "FFE Licence type"
-#~ msgstr ""
 

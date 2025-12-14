@@ -136,6 +136,7 @@ class RotatorAdminController(BaseEventAdminController):
     def _rotator_screens_modal_context(
         cls,
         web_context: RotatorAdminWebContext,
+        success_message: str | None = None,
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
         rotator = web_context.get_admin_rotator()
@@ -148,6 +149,7 @@ class RotatorAdminController(BaseEventAdminController):
             'family_options': cls._screen_or_family_options(
                 event.families_by_screen_type, rotator.families
             ),
+            'success_message': success_message,
         }
 
     @staticmethod
@@ -310,14 +312,15 @@ class RotatorAdminController(BaseEventAdminController):
                 ),
             )
         event = web_context.get_admin_event()
-        event.create_rotator(stored_rotator)
-        Message.success(
-            request,
+        web_context.admin_rotator = event.create_rotator(stored_rotator)
+
+        template_context = self._rotator_screens_modal_context(
+            web_context,
             _('Rotator [{rotator}] has been created.').format(
                 rotator=stored_rotator.name
             ),
         )
-        return self._admin_event_rotator_render(web_context)
+        return self._admin_event_rotator_render(web_context, template_context)
 
     @post(
         path='/rotator-clone/{event_uniq_id:str}/{rotator_id:int}',

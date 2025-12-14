@@ -9,6 +9,11 @@
             </h2>
         </div>
         <div class="modal-body">
+            {% if success_message %}
+                {% with type='success', message=success_message %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
             <div
                 id="screens-form-container"
                 data-testid="screens-form-container"

@@ -121,44 +121,34 @@
                     {% include 'event_age_categories_form.html' %}
                     <div class="row gy-2 gx-3 mt-2">
                         <div class="col-12 col-md-6">
-                            {{ admin_macros.switch_input(
-                                name='use_age_category_base_date',
-                                placeholder=_('Specify a base date for the categories'),
+                            {{ admin_macros.date_input(
+                                name='age_category_base_date',
+                                label=_('%(string)s:', string=_('Base date')),
+                                placeholder=sharly_chess_config.date_formatter.name,
                                 tooltip_text=_(
-                                    'Age categories are based on the start date of the tournament. '
-                                    'You may choose to use another date instead, which can be useful '
-                                    'if you want to keep the same age categories for a championship '
-                                    'runs over a long period.'
+                                    'Categories are by default based on the start date of '
+                                    'each tournament. Choosing a base date uses the '
+                                    'categories as they were on this date (usage: long '
+                                    'events crossing 2 sporting seasons).'
                                 ),
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors
                             ) }}
                         </div>
                         <div class="col-12 col-md-6">
-                            {{ admin_macros.date_input(
-                                name='age_category_base_date',
-                                label=_('Base date:'),
-                                placeholder=sharly_chess_config.date_formatter.name,
+                            {{ admin_macros.select_input(
+                                name='age_category_change_month',
+                                label=_('%(string)s:', string=_('Start of the sporting season')),
+                                tooltip_text=_(
+                                    'Categories are based on the age of the players before '
+                                    'January 1st of the current sporting season.'
+                                ),
+                                select_options=months_options,
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors
                             ) }}
                         </div>
                     </div>
-
-                    <script>
-                        $('#use-age-category-base-date').change(function() {
-                            console.log($(this).val());
-                            if ($(this).is(':checked')) {
-                                $('#age-category-base-date-wrapper').show();
-                            } else {
-                                console.log('off');
-                                $('#age-category-base-date-wrapper').hide();
-                            }
-                        });
-                        if ("{{ data.use_age_category_base_date }}" === "off") {
-                            $('#age-category-base-date-wrapper').hide();
-                        }
-                    </script>
                 </div>
 
                 <button
