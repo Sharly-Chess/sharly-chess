@@ -89,6 +89,7 @@ class LinuxProjectBuilder(ProjectBuilder):
                 '--hidden-import=gi.repository.GObject',
                 '--hidden-import=gi.repository.Gtk',
                 '--hidden-import=gi.repository.Gdk',
+                '--hidden-import=gi.repository.WebKit2',  # WebKitGTK for WebView
             ]
         )
 
@@ -112,13 +113,20 @@ class LinuxProjectBuilder(ProjectBuilder):
         if not self._create_apprun():
             return False
 
-        # Create .desktop file
+        # Create .desktop file (needed by linuxdeploy)
         if not self._create_desktop_file():
             return False
 
-        # Copy icon
+        # Copy icon (needed by linuxdeploy)
         if not self._copy_icon():
             return False
+
+        # Use linuxdeploy to bundle dependencies (runs after desktop/icon are created)
+        # This ensures all required libraries (WebKitGTK, GLib, etc.) are properly bundled
+        if not self._bundle_dependencies_with_linuxdeploy():
+            logger.warning(
+                'Failed to bundle dependencies with linuxdeploy - AppImage may have compatibility issues'
+            )
 
         # Create AppImage using appimagetool
         if not self._create_appimage():
@@ -236,6 +244,191 @@ class LinuxProjectBuilder(ProjectBuilder):
 
         return True
 
+    def _download_linuxdeploy(self) -> Path | None:
+        """Download linuxdeploy for the current architecture.
+
+        Returns Path to linuxdeploy executable, or None if not available.
+        """
+        # First check if linuxdeploy is already in PATH
+        linuxdeploy_in_path = shutil.which('linuxdeploy')
+        if linuxdeploy_in_path:
+            logger.info(f'Found linuxdeploy in PATH: {linuxdeploy_in_path}')
+            return Path(linuxdeploy_in_path)
+
+        try:
+            import urllib.request
+        except ImportError:
+            logger.error('urllib.request not available. Cannot download linuxdeploy.')
+            return None
+
+        # Determine architecture for linuxdeploy download
+        if self.arch == 'arm64':
+            arch_name = 'aarch64'
+            linuxdeploy_url = 'https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-aarch64.AppImage'
+        else:
+            arch_name = 'x86_64'
+            linuxdeploy_url = 'https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage'
+
+        linuxdeploy_path = self.project_dir / 'linuxdeploy'
+
+        if linuxdeploy_path.exists():
+            logger.info('linuxdeploy already downloaded')
+            return linuxdeploy_path
+
+        try:
+            logger.info(
+                f'Downloading linuxdeploy ({arch_name}) from {linuxdeploy_url}...'
+            )
+            urllib.request.urlretrieve(linuxdeploy_url, linuxdeploy_path)
+            linuxdeploy_path.chmod(0o755)
+            logger.info('linuxdeploy downloaded successfully')
+            return linuxdeploy_path
+        except Exception as e:
+            logger.error(f'Failed to download linuxdeploy: {e}')
+            return None
+
+    def _bundle_dependencies_with_linuxdeploy(self) -> bool:
+        """Use linuxdeploy to bundle dependencies properly.
+
+        Linuxdeploy automatically uses ldd to find and copy all library dependencies,
+        handling symlinks and transitive dependencies correctly. This is more robust
+        than manual copying.
+        """
+        logger.info('Bundling dependencies with linuxdeploy...')
+
+        # Download linuxdeploy
+        linuxdeploy_path = self._download_linuxdeploy()
+        if not linuxdeploy_path:
+            logger.warning('linuxdeploy not available, skipping dependency bundling')
+            return False
+
+        # Prepare environment for linuxdeploy
+        env = os.environ.copy()
+        env['APPIMAGE_EXTRACT_AND_RUN'] = '1'  # Extract AppImages before running
+
+        # Build linuxdeploy command
+        executable_path = self.appdir / 'usr' / 'bin' / self.executable_name
+        if not executable_path.exists():
+            logger.warning('Executable not found, skipping linuxdeploy')
+            return False
+
+        cmd = [
+            str(linuxdeploy_path),
+            '--appdir',
+            str(self.appdir),
+            '--executable',
+            str(executable_path),
+        ]
+
+        # Add desktop file and icon if they exist
+        desktop_file = self.appdir / f'{self.project_name}.desktop'
+        if desktop_file.exists():
+            cmd.extend(['--desktop-file', str(desktop_file)])
+
+        icon_file = self.appdir / f'{self.project_name}.png'
+        if not icon_file.exists():
+            # Try .svg or .ico
+            for ext in ['.svg', '.ico']:
+                alt_icon = self.appdir / f'{self.project_name}{ext}'
+                if alt_icon.exists():
+                    icon_file = alt_icon
+                    break
+
+        # Check if icon is a valid size for linuxdeploy
+        # Linuxdeploy expects standard icon sizes: 8x8, 16x16, 20x20, 22x22, 24x24, 28x28, 32x32, 36x36, 42x42, 48x48, 64x64, 72x72, 96x96, 128x128, 160x160, 192x192, 256x256, 384x384, 480x480, 512x512
+        # SVG icons are always valid
+        if icon_file.exists():
+            if icon_file.suffix.lower() == '.svg':
+                # SVG icons are always valid
+                cmd.extend(['--icon-file', str(icon_file)])
+            else:
+                # Check PNG/ICO dimensions
+                try:
+                    from PIL import Image
+
+                    with Image.open(icon_file) as img:
+                        width, height = img.size
+                        valid_sizes = [
+                            8,
+                            16,
+                            20,
+                            22,
+                            24,
+                            28,
+                            32,
+                            36,
+                            42,
+                            48,
+                            64,
+                            72,
+                            96,
+                            128,
+                            160,
+                            192,
+                            256,
+                            384,
+                            480,
+                            512,
+                        ]
+                        if width == height and width in valid_sizes:
+                            cmd.extend(['--icon-file', str(icon_file)])
+                        else:
+                            logger.warning(
+                                f'Icon {icon_file} has invalid size {width}x{height} for linuxdeploy. '
+                                f'Skipping icon deployment (icon will still be in AppDir for appimagetool).'
+                            )
+                except ImportError:
+                    # PIL not available, skip size check but warn
+                    logger.warning(
+                        'PIL not available, cannot check icon size. Attempting to use icon anyway.'
+                    )
+                    cmd.extend(['--icon-file', str(icon_file)])
+                except Exception as e:
+                    logger.warning(
+                        f'Could not check icon size: {e}. Skipping icon deployment.'
+                    )
+
+        logger.info(f'Running linuxdeploy: {" ".join(cmd)}')
+        logger.info('linuxdeploy will automatically bundle all library dependencies')
+        try:
+            result = subprocess.run(
+                cmd,
+                check=False,  # Don't fail on non-zero return - icon errors shouldn't stop library bundling
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+            logger.info('linuxdeploy output:')
+            if result.stdout:
+                logger.info(result.stdout)
+            if result.stderr:
+                logger.info(result.stderr)
+
+            # Check if the failure was just due to icon issues
+            if result.returncode != 0:
+                if 'icon' in result.stdout.lower() or 'icon' in result.stderr.lower():
+                    logger.warning(
+                        'linuxdeploy failed due to icon issues, but libraries may have been bundled. '
+                        'Continuing with AppImage creation (appimagetool will handle the icon).'
+                    )
+                    # Still return True - libraries were likely bundled successfully
+                    return True
+                else:
+                    logger.error(
+                        f'linuxdeploy failed with return code {result.returncode}'
+                    )
+                    if result.stdout:
+                        logger.error(f'stdout: {result.stdout}')
+                    if result.stderr:
+                        logger.error(f'stderr: {result.stderr}')
+                    return False
+
+            logger.info('Dependencies bundled successfully with linuxdeploy')
+            return True
+        except FileNotFoundError:
+            logger.warning('linuxdeploy not found in PATH')
+            return False
+
     def _create_apprun(self) -> bool:
         """Create the AppRun script."""
         logger.info('Creating AppRun script...')
@@ -259,10 +452,10 @@ export GTK_THEME="Adwaita"
 # This is critical - if GDK_BACKEND is set to wayland or not set, GTK might fail to connect
 export GDK_BACKEND="x11"
 
-# Library path: prioritize system libraries (X11) before AppImage libraries
-# This ensures GTK can find system X11 libraries to connect to the display
-# Also add common library paths that might contain X11/GTK libraries
-export LD_LIBRARY_PATH="/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/aarch64-linux-gnu:/lib:/lib/x86_64-linux-gnu:/lib/aarch64-linux-gnu:/usr/local/lib:/usr/local/lib/x86_64-linux-gnu:/usr/local/lib/aarch64-linux-gnu:$APPDIR/usr/lib/x86_64-linux-gnu:$APPDIR/usr/lib/aarch64-linux-gnu:$APPDIR/usr/lib:${{LD_LIBRARY_PATH}}"
+# Library path: prioritize bundled AppImage libraries to avoid ABI mismatches
+# Bundle libraries (WebKitGTK, GLib, etc.) come first to ensure compatibility
+# System libraries come after for X11 and other system components
+export LD_LIBRARY_PATH="$APPDIR/usr/lib/x86_64-linux-gnu:$APPDIR/usr/lib/aarch64-linux-gnu:$APPDIR/usr/lib:/usr/lib:/usr/lib/x86_64-linux-gnu:/usr/lib/aarch64-linux-gnu:/lib:/lib/x86_64-linux-gnu:/lib/aarch64-linux-gnu:/usr/local/lib:/usr/local/lib/x86_64-linux-gnu:/usr/local/lib/aarch64-linux-gnu:${{LD_LIBRARY_PATH}}"
 
 # GTK-specific environment variables
 # Ensure GTK can find its settings and modules
