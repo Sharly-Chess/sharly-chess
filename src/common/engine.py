@@ -629,7 +629,7 @@ class Engine:
                     logger.info(
                         'New release [%s] has been installed in [%s].',
                         version,
-                        new_version_dir.absolute(),
+                        new_version_dir.resolve(),
                     )
             except RequestException as ex:
                 logger.warning('Failed to read [%s]: [%s].', download_url, ex)
