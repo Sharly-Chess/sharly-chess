@@ -4806,6 +4806,9 @@ msgstr ""
 msgid "There can only be one main category."
 msgstr ""
 
+msgid "There needs to be at least one screen or family defined for the rotator to be accessible."
+msgstr ""
+
 msgid "These plugins can only be activated on events of their federation."
 msgstr ""
 

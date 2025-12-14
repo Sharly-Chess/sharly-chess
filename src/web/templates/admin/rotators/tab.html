@@ -63,7 +63,15 @@
         {% if admin_rotators %}
             {% for rotator in admin_rotators %}
                 {% with
-                    card_url='' if client.can_manage_screens else url_for('user-rotator', event_uniq_id=admin_event.uniq_id, rotator_id=rotator.id, rotator_screen_index=0),
+                    card_url=(
+                        '' if client.can_manage_screens and rotator.rotating_screens_by_id
+                        else url_for(
+                            'user-rotator',
+                            event_uniq_id=admin_event.uniq_id,
+                            rotator_id=rotator.id,
+                            rotator_screen_index=0
+                        )
+                    ),
                     card_class='border-danger' if rotator.private else ''
                 %}
                     {% include 'rotator_card.html' %}
