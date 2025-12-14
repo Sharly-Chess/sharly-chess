@@ -168,7 +168,6 @@ try:
     from common import DEVEL_ENV, TEST_ENV
     from common.logger import (
         get_logger,
-        print_interactive_warning,
         print_interactive_error,
     )
     from gui.server_gui_toga import SharlyChessServerToga
@@ -230,9 +229,6 @@ try:
     )
 
     args = parser.parse_args(arguments)
-
-    if args.server:
-        print_interactive_warning('Argument --server is deprecated, ignored.')
 
     if args.generate_tournament or args.check_tournament:
         trf_input_file_path: Path
