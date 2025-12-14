@@ -1,5 +1,7 @@
+let ignoreNextModalClose = false;
 
 function closeModal() {
+    ignoreNextModalClose = false;
     var myModalEl = document.getElementById('modal-wrapper');
     var modal = bootstrap.Modal.getInstance(myModalEl);
     if (modal) {
@@ -64,7 +66,6 @@ window.addEventListener("close_modal", function(event) {
     closeModal()
 });
 
-let ignoreNextModalClose = false;
 var refreshRequested = false;
 
 function requestRefresh() {
