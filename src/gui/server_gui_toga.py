@@ -315,6 +315,7 @@ class SharlyChessServerToga(toga.App):
         self.main_buttons_section: Optional[toga.Box] = None
         self.networks_section: Optional[toga.Box] = None
         self.networks_view: Optional[toga.Box] = None
+        self.progress_bar: Optional[toga.ProgressBar] = None
 
     # --- Toga lifecycle ---
     def startup(self):
@@ -349,7 +350,6 @@ class SharlyChessServerToga(toga.App):
         )
 
         for b in (
-            self.browser_btn,
             self.website_btn,
             self.clear_btn,
             self.toggle_log_btn,
@@ -428,18 +428,19 @@ class SharlyChessServerToga(toga.App):
         )
         self.info_view.add(self.launch_browser_switch)
 
-        main_buttons_wrapper = toga.Box(style=Pack(direction=ROW, align_items='center'))
+        self.progress_bar = toga.ProgressBar(max=None, style=Pack(margin_top=10))
+        self.info_view.add(self.progress_bar)
+
         self.main_buttons_section = toga.Box(
             style=Pack(direction=COLUMN, margin_top=10, align_items='center')
         )
+
         section_buttons = toga.Box(
             style=Pack(direction=COLUMN, margin_top=10, gap=5, align_items='center')
         )
         section_buttons.add(self.browser_btn)
         section_buttons.add(self.network_btn)
         self.main_buttons_section.add(section_buttons)
-        main_buttons_wrapper.add(self.main_buttons_section)
-        self.info_view.add(main_buttons_wrapper)
 
         self.networks_section = toga.Box(
             style=Pack(direction=COLUMN, margin_top=10, align_items='center')
@@ -468,6 +469,8 @@ class SharlyChessServerToga(toga.App):
         self.html_view.set_content('about:blank', LOG_HTML)
         self.gui_handler = GUILogHandler(self)
         self.gui_handler.setLevel(logging.DEBUG)
+        self.progress_bar.value = 1
+        self.progress_bar.start()
 
         # Start message processing and kick the server immediately
         asyncio.create_task(self._process_message_queue())
@@ -482,6 +485,13 @@ class SharlyChessServerToga(toga.App):
     def on_server_ready(self):
         assert self.browser_btn is not None
         self.browser_btn.enabled = True
+        self.progress_bar.stop()
+        self.info_view.remove(self.progress_bar)
+
+        main_buttons_wrapper = toga.Box(style=Pack(direction=ROW, align_items='center'))
+        main_buttons_wrapper.add(self.main_buttons_section)
+        self.info_view.add(main_buttons_wrapper)
+
         config = SharlyChessConfig()
         if config.lan_ifaces:
             assert self.networks_section is not None
