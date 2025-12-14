@@ -1302,6 +1302,35 @@ with_indicator: display a loading indicator, optional
     ) }}
 {% endmacro %}
 
+{% macro year_input(
+    name,
+    label='NO LABEL',
+    help_text='',
+    tooltip_text='',
+    placeholder='',
+    min_date='',
+    max_date='',
+    data={},
+    errors={},
+    error=false,
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='year',
+        label=label,
+        placeholder=placeholder,
+        help_text=help_text,
+        tooltip_text=tooltip_text,
+        min_date=min_date,
+        max_date=max_date,
+        data=data,
+        errors=errors,
+        error=error,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
 {% macro integer_range_input(
     name,
     label='NO LABEL',

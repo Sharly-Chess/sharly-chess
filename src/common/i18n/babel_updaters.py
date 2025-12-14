@@ -419,8 +419,10 @@ class BabelUpdater:
     ):
         """For (the core and) all the plugins, update all the files that need to updated (POT, PO, MO), and check the translations."""
         ok: bool = all(
-            babel_domain_updater.update(clean=clean)
-            for babel_domain_updater in self.babel_domain_updaters.values()
+            [
+                babel_domain_updater.update(clean=clean)
+                for babel_domain_updater in self.babel_domain_updaters.values()
+            ]
         )
         if generate_doc:
             self.write_markdown()

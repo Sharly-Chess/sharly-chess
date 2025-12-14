@@ -482,9 +482,6 @@ msgstr ""
 msgid "Age categories"
 msgstr ""
 
-msgid "Age categories are based on the start date of the tournament. You may choose to use another date instead, which can be useful if you want to keep the same age categories for a championship runs over a long period."
-msgstr ""
-
 msgid "Alert message"
 msgstr ""
 
@@ -694,7 +691,7 @@ msgstr ""
 msgid "Background image:"
 msgstr ""
 
-msgid "Base date:"
+msgid "Base date"
 msgstr ""
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
@@ -872,6 +869,12 @@ msgid "Cat *** CATEGORY FOR TABLE HEADER"
 msgstr "Cat."
 
 msgid "Categories"
+msgstr ""
+
+msgid "Categories are based on the age of the players before January 1st of the current sporting season."
+msgstr ""
+
+msgid "Categories are by default based on the start date of each tournament. Choosing a base date uses the categories as they were on this date (usage: long events crossing 2 sporting seasons)."
 msgstr ""
 
 msgid "Category"
@@ -3578,9 +3581,6 @@ msgstr ""
 msgid "Please choose a player."
 msgstr ""
 
-msgid "Please choose the base date for the age categories."
-msgstr ""
-
 msgid "Please choose the document."
 msgstr ""
 
@@ -4390,9 +4390,6 @@ msgstr ""
 msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr ""
 
-msgid "Specify a base date for the categories"
-msgstr ""
-
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr ""
 
@@ -4437,6 +4434,9 @@ msgstr ""
 
 #, python-format
 msgid "Start of round {} in %%s"
+msgstr ""
+
+msgid "Start of the sporting season"
 msgstr ""
 
 msgid "Starting Sharly Chess server, Please wait…"
@@ -4539,6 +4539,12 @@ msgid "The average of the [{tie_break}] scores of the opponents played over the 
 msgstr ""
 
 msgid "The average of the ratings of the opponents played over the board."
+msgstr ""
+
+msgid "The base date has to be at most one year after the end of the event."
+msgstr ""
+
+msgid "The base date has to be at most one year prior to the start of the event."
 msgstr ""
 
 msgid "The board number the player will always be assigned to (use it for disabled people)."

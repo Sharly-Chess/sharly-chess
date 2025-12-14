@@ -482,9 +482,6 @@ msgstr "Age"
 msgid "Age categories"
 msgstr "Catégories d'age"
 
-msgid "Age categories are based on the start date of the tournament. You may choose to use another date instead, which can be useful if you want to keep the same age categories for a championship runs over a long period."
-msgstr "Les catégories d’âge sont basées sur la date de début du tournoi. Vous pouvez choisir d’utiliser une autre date, ce qui peut être utile si vous souhaitez conserver les mêmes catégories d’âge pour un championnat qui s’étend sur une longue période."
-
 msgid "Alert message"
 msgstr "Message d'alerte"
 
@@ -694,8 +691,8 @@ msgstr "Couleur de fond : %(color)s"
 msgid "Background image:"
 msgstr "Image de fond :"
 
-msgid "Base date:"
-msgstr "Date de référence :"
+msgid "Base date"
+msgstr "Date de référence"
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Ech."
@@ -873,6 +870,12 @@ msgstr "Cat."
 
 msgid "Categories"
 msgstr "Catégories"
+
+msgid "Categories are based on the age of the players before January 1st of the current sporting season."
+msgstr "Les catégories sont basées sur l'âge des joueur·euses avant le 1er Janvier de la saison sportive en cours."
+
+msgid "Categories are by default based on the start date of each tournament. Choosing a base date uses the categories as they were on this date (usage: long events crossing 2 sporting seasons)."
+msgstr "Les catégories sont par défaut basées sur la date de début de chaque tournoi. Choisir une date de référence utilise les catégories telles qu'elles étaient à cette date (usage : évènements longs à cheval entre 2 saisons sportives)."
 
 msgid "Category"
 msgstr "Catégorie"
@@ -3578,9 +3581,6 @@ msgstr "Veuillez choisir une fédération."
 msgid "Please choose a player."
 msgstr "Veuillez choisir un·e joueur·euse."
 
-msgid "Please choose the base date for the age categories."
-msgstr "Veuillez choisir la date de référence pour les catégories d’âge."
-
 msgid "Please choose the document."
 msgstr "Veuillez choisir le document."
 
@@ -4390,9 +4390,6 @@ msgstr "Source"
 msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr "Liste de nombres séparés par des espaces. Un prix est créé par valeur dans la liste."
 
-msgid "Specify a base date for the categories"
-msgstr "Utiliser une date de référence pour les catégories"
-
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
 
@@ -4438,6 +4435,9 @@ msgstr "Standard :"
 #, python-format
 msgid "Start of round {} in %%s"
 msgstr "Début de la ronde {} dans %%s"
+
+msgid "Start of the sporting season"
+msgstr "Début de la saison sportive"
 
 msgid "Starting Sharly Chess server, Please wait…"
 msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
@@ -4533,13 +4533,19 @@ msgid "The administrator has all the permissions."
 msgstr "L'administrateur·ice a toutes les permissions."
 
 msgid "The age categories in which players are distributed. A category is added to represent the missing players (E.g.: U20 / 50+ → 20+)."
-msgstr "Les catégories d'âge selon lesquelles les joueur·euses sont réparti·es. Une catégorie est ajoutéer pour représenter les joueur·euses manquants (ex : U20 / 50+ → 20+)."
+msgstr "Les catégories d'âge selon lesquelles les joueur·euses sont réparti·es. Une catégorie est ajoutée pour représenter les joueur·euses manquants (ex : U20 / 50+ → 20+)."
 
 msgid "The average of the [{tie_break}] scores of the opponents played over the board."
 msgstr "La moyenne du score [{tie_break}] des adversaires joué·es sur l'échiquier."
 
 msgid "The average of the ratings of the opponents played over the board."
 msgstr "La moyenne des classements des adversaires joué·es sur l'échiquier."
+
+msgid "The base date has to be at most one year after the end of the event."
+msgstr "La date de référence doit être au plus un an après la fin de l'évènement."
+
+msgid "The base date has to be at most one year prior to the start of the event."
+msgstr "La date de référence doit être au plus un an avant le début de l'évènement."
 
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "Le numéro de l'échiquier qui sera assigné au·à la joueur·euse (à utiliser pour les personnes handicapées)."

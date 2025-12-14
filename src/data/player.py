@@ -152,7 +152,10 @@ class Player:
     @cached_property
     def category(self) -> PlayerCategory:
         return PlayerCategory.from_year_of_birth(
-            self.event, self.year_of_birth, self.event.start_date, self.event.stop_date
+            self.event,
+            self.year_of_birth,
+            self.event.start_date,
+            self.event.stop_date,
         )
 
     @property
@@ -366,15 +369,11 @@ class TournamentPlayer(Player):
 
     @cached_property
     def category(self) -> PlayerCategory:
-        # If the event has a base date for the age categories, use it
-        if self.event.age_category_base_date:
-            tournament_start = self.event.age_category_base_date
-            tournament_end = self.event.age_category_base_date
-        else:
-            tournament_start = self.tournament.start_date
-            tournament_end = self.tournament.stop_date
         return PlayerCategory.from_year_of_birth(
-            self.event, self.year_of_birth, tournament_start, tournament_end
+            self.event,
+            self.year_of_birth,
+            self.tournament.start_date,
+            self.tournament.stop_date,
         )
 
     @property
