@@ -306,6 +306,9 @@ class LinuxProjectBuilder(ProjectBuilder):
         env = os.environ.copy()
         env['APPIMAGE_EXTRACT_AND_RUN'] = '1'  # Extract AppImages before running
 
+        # Note: OpenSSL and libcurl will be excluded after bundling
+        # to avoid version conflicts (system libcurl may require newer OpenSSL)
+
         # Build linuxdeploy command
         executable_path = self.appdir / 'usr' / 'bin' / self.executable_name
         if not executable_path.exists():
@@ -424,10 +427,45 @@ class LinuxProjectBuilder(ProjectBuilder):
                     return False
 
             logger.info('Dependencies bundled successfully with linuxdeploy')
+
+            # Remove OpenSSL and libcurl libraries to use system versions
+            # This prevents version conflicts (e.g., system libcurl requiring newer OpenSSL)
+            self._remove_system_libraries_from_appdir(
+                ['libssl', 'libcrypto', 'libcurl']
+            )
+
             return True
         except FileNotFoundError:
             logger.warning('linuxdeploy not found in PATH')
             return False
+
+    def _remove_system_libraries_from_appdir(self, library_names: list[str]) -> None:
+        """Remove specified system libraries from AppDir to use system versions instead.
+
+        This prevents version conflicts where system libraries require newer versions
+        than what was bundled (e.g., system libcurl requiring newer OpenSSL).
+        """
+        usr_lib = self.appdir / 'usr' / 'lib'
+        if not usr_lib.exists():
+            return
+
+        removed_count = 0
+        for lib_name in library_names:
+            # Find all matching libraries (including versioned ones like libssl.so.3, libssl.so.3.2, etc.)
+            for lib_file in usr_lib.rglob(f'{lib_name}.so*'):
+                try:
+                    logger.info(
+                        f'Removing bundled library to use system version: {lib_file.name}'
+                    )
+                    lib_file.unlink()
+                    removed_count += 1
+                except Exception as e:
+                    logger.debug(f'Could not remove {lib_file}: {e}')
+
+        if removed_count > 0:
+            logger.info(
+                f'Removed {removed_count} system libraries - will use system versions instead'
+            )
 
     def _create_apprun(self) -> bool:
         """Create the AppRun script."""
