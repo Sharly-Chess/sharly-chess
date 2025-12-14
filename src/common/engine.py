@@ -548,16 +548,14 @@ class Engine:
                                 machine = build_arch.lower()
                             else:
                                 machine = platform.machine().lower()
-                                if machine in ('aarch64', 'arm64'):
-                                    downloaded_file = (
-                                        tmp_dir
-                                        / f'sharly-chess-{version}-linux-arm64.zip'
-                                    )
-                                elif machine in ('x86_64', 'amd64'):
-                                    downloaded_file = (
-                                        tmp_dir
-                                        / f'sharly-chess-{version}-linux-x86_64.zip'
-                                    )
+                            if machine in ('aarch64', 'arm64'):
+                                downloaded_file = (
+                                    tmp_dir / f'sharly-chess-{version}-linux-arm64.zip'
+                                )
+                            elif machine in ('x86_64', 'amd64'):
+                                downloaded_file = (
+                                    tmp_dir / f'sharly-chess-{version}-linux-x86_64.zip'
+                                )
 
                     downloaded_file.write_bytes(response.content)
                     logger.debug('File downloaded: [%s].', downloaded_file)
