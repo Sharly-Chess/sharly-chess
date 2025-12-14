@@ -64,7 +64,7 @@
             {% for rotator in admin_rotators %}
                 {% with
                     card_url=(
-                        '' if client.can_manage_screens and rotator.rotating_screens_by_id
+                        '' if client.can_manage_screens or not rotator.rotating_screens_by_id
                         else url_for(
                             'user-rotator',
                             event_uniq_id=admin_event.uniq_id,
