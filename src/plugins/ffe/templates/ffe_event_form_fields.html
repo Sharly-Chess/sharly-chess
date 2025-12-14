@@ -23,6 +23,7 @@
     <script>
         var ratingTypeTooltip = null;
         var changeMonthTooltip = null;
+        var previousFfeEnabled = null;
         $('#{{ plugin.form_key }}').change(function () {
             if (this.checked) {
                 $('#player-rating-type').val('3').trigger('change');
@@ -35,7 +36,7 @@
                 $('#age-category-change-month').val('9').trigger('change');
                 const changeMonthContainer = document.getElementById('age-category-change-month-input-container');
                 changeMonthTooltip = new bootstrap.Tooltip(changeMonthContainer, {
-                    title: `{{ _('The FFE changes the age categories in September.') }}`,
+                    title: `{{ _('The FFE sporting season starts in September.') }}`,
                     placement: 'top',
                 });
             } else {
@@ -47,8 +48,11 @@
                     changeMonthTooltip.dispose();
                     changeMonthTooltip = null;
                 }
-                $('#age-category-change-month').val('1').trigger('change');
+                if (previousFfeEnabled) {
+                    $('#age-category-change-month').val('1').trigger('change');
+                }
             }
+            previousFfeEnabled = this.checked;
             $('#player-rating-type').prop('disabled', this.checked);
             $('#player-rating-type-hidden').prop('disabled', !this.checked);
             $('#age-category-change-month').prop('disabled', this.checked);

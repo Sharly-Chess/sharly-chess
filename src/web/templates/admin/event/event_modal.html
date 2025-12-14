@@ -126,10 +126,10 @@
                                 label=_('%(string)s:', string=_('Base date')),
                                 placeholder=sharly_chess_config.date_formatter.name,
                                 tooltip_text=_(
-                                    'This value is by default based on each tournament\'s '
-                                    'start and stop dates. Defining it here allows you to '
-                                    'keep the same age categories across all the tournaments, '
-                                    'as it was on january 1st of that year.'
+                                    'Categories are by default based on the start date of '
+                                    'each tournament. Choosing a base date uses the '
+                                    'categories as they were on this date (usage: long '
+                                    'events crossing 2 sporting seasons).'
                                 ),
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors
@@ -138,8 +138,11 @@
                         <div class="col-12 col-md-6">
                             {{ admin_macros.select_input(
                                 name='age_category_change_month',
-                                label=_('%(string)s:', string=_('Change month')),
-                                tooltip_text=_('Month at which players change categories.'),
+                                label=_('%(string)s:', string=_('Start of the sporting season')),
+                                tooltip_text=_(
+                                    'Categories are based on the age of the players before '
+                                    'January 1st of the current sporting season.'
+                                ),
                                 select_options=months_options,
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors

@@ -691,8 +691,8 @@ msgstr "Couleur de fond : %(color)s"
 msgid "Background image:"
 msgstr "Image de fond :"
 
-msgid "Base year"
-msgstr "Année de référence"
+msgid "Base date"
+msgstr "Date de référence"
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
 msgstr "Ech."
@@ -871,6 +871,12 @@ msgstr "Cat."
 msgid "Categories"
 msgstr "Catégories"
 
+msgid "Categories are based on the age of the players before January 1st of the current sporting season."
+msgstr "Les catégories sont basées sur l'âge des joueur·euses avant le 1er Janvier de la saison sportive en cours."
+
+msgid "Categories are by default based on the start date of each tournament. Choosing a base date uses the categories as they were on this date (usage: long events crossing 2 sporting seasons)."
+msgstr "Les catégories sont par défaut basées sur la date de début de chaque tournoi. Choisir une date de référence utilise les catégories telles qu'elles étaient à cette date (usage : évènements longs à cheval entre 2 saisons sportives)."
+
 msgid "Category"
 msgstr "Catégorie"
 
@@ -883,9 +889,6 @@ msgstr "La catégorie [%(category)s] créée avec succès !"
 
 msgid "Category sets"
 msgstr "Ensembles de catégories"
-
-msgid "Change month"
-msgstr "Mois de changement"
 
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
@@ -2737,9 +2740,6 @@ msgstr "Lu"
 msgid "Monetary prizes only"
 msgstr "Seulement les prix monétaires"
 
-msgid "Month at which players change categories."
-msgstr "Mois auquel les joueur·euses changent de catégorie."
-
 #, python-format
 msgid "Moved down %(num)d place"
 msgid_plural "Moved down %(num)d places"
@@ -4436,6 +4436,9 @@ msgstr "Standard :"
 msgid "Start of round {} in %%s"
 msgstr "Début de la ronde {} dans %%s"
 
+msgid "Start of the sporting season"
+msgstr "Début de la saison sportive"
+
 msgid "Starting Sharly Chess server, Please wait…"
 msgstr "Démarrage du serveur Sharly Chess, veuillez patienter…"
 
@@ -4530,7 +4533,7 @@ msgid "The administrator has all the permissions."
 msgstr "L'administrateur·ice a toutes les permissions."
 
 msgid "The age categories in which players are distributed. A category is added to represent the missing players (E.g.: U20 / 50+ → 20+)."
-msgstr "Les catégories d'âge selon lesquelles les joueur·euses sont réparti·es. Une catégorie est ajoutéer pour représenter les joueur·euses manquants (ex : U20 / 50+ → 20+)."
+msgstr "Les catégories d'âge selon lesquelles les joueur·euses sont réparti·es. Une catégorie est ajoutée pour représenter les joueur·euses manquants (ex : U20 / 50+ → 20+)."
 
 msgid "The average of the [{tie_break}] scores of the opponents played over the board."
 msgstr "La moyenne du score [{tie_break}] des adversaires joué·es sur l'échiquier."
@@ -4538,11 +4541,11 @@ msgstr "La moyenne du score [{tie_break}] des adversaires joué·es sur l'échiq
 msgid "The average of the ratings of the opponents played over the board."
 msgstr "La moyenne des classements des adversaires joué·es sur l'échiquier."
 
-msgid "The base year has to be at least one year prior to the start of the event."
-msgstr "L'année de référence doit être un moins un an avant le début de l'évènement."
+msgid "The base date has to be at most one year after the end of the event."
+msgstr "La date de référence doit être au plus un an après la fin de l'évènement."
 
-msgid "The base year has to be at most one year after the end of the event."
-msgstr "L'année de référence doit être au plus un an après la fin de l'évènement."
+msgid "The base date has to be at most one year prior to the start of the event."
+msgstr "La date de référence doit être au plus un an avant le début de l'évènement."
 
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "Le numéro de l'échiquier qui sera assigné au·à la joueur·euse (à utiliser pour les personnes handicapées)."
@@ -4937,9 +4940,6 @@ msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es (
 
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
-
-msgid "This value is by default based on each tournament's start and stop dates. Defining it here allows you to keep the same age categories across all the tournaments, as it was on january 1st of that year."
-msgstr "Cette valeur est par défaut basée sur les dates de début et de fin de chaque tournoi. La définir ici permet de conserver les mêmes catégories pour tous les tournois, telles qu'elles étaient au premier janvier de l'année."
 
 msgid "Three points for a win"
 msgstr "Victoire à 3 points"

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from datetime import date, timedelta
+from datetime import date
 from logging import Logger
 from pathlib import Path
 import shutil
@@ -507,9 +507,13 @@ class IndexAdminController(BaseAdminController):
         )
 
         age_categories = WebContext.form_data_to_list_str(data, 'age_categories')
-        age_category_base_date = WebContext.form_data_to_date(
-            data, field := 'age_category_base_date'
-        )
+        age_category_base_date: date | None = None
+        try:
+            age_category_base_date = WebContext.form_data_to_date(
+                data, field := 'age_category_base_date'
+            )
+        except FormError as e:
+            errors[field] = str(e)
         if age_category_base_date:
             if start_date and age_category_base_date < date(
                 start_date.year - 1, start_date.month, start_date.day

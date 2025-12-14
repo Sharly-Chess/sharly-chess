@@ -80,7 +80,7 @@ class PlayerCategory(ABC):
             else:
                 ref_date = tournament_start
         ref_year = ref_date.year
-        if ref_date.month >= event.age_category_change_month:
+        if 1 < event.age_category_change_month <= ref_date.month:
             ref_year += 1
         return ref_year
 

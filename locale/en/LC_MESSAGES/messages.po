@@ -691,7 +691,7 @@ msgstr ""
 msgid "Background image:"
 msgstr ""
 
-msgid "Base year"
+msgid "Base date"
 msgstr ""
 
 msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
@@ -871,6 +871,12 @@ msgstr "Cat."
 msgid "Categories"
 msgstr ""
 
+msgid "Categories are based on the age of the players before January 1st of the current sporting season."
+msgstr ""
+
+msgid "Categories are by default based on the start date of each tournament. Choosing a base date uses the categories as they were on this date (usage: long events crossing 2 sporting seasons)."
+msgstr ""
+
 msgid "Category"
 msgstr ""
 
@@ -882,9 +888,6 @@ msgid "Category [%(category)s] successfully created!"
 msgstr ""
 
 msgid "Category sets"
-msgstr ""
-
-msgid "Change month"
 msgstr ""
 
 msgid "Change the player's tournament."
@@ -2737,9 +2740,6 @@ msgstr "Mo"
 msgid "Monetary prizes only"
 msgstr ""
 
-msgid "Month at which players change categories."
-msgstr ""
-
 #, python-format
 msgid "Moved down %(num)d place"
 msgid_plural "Moved down %(num)d places"
@@ -4436,6 +4436,9 @@ msgstr ""
 msgid "Start of round {} in %%s"
 msgstr ""
 
+msgid "Start of the sporting season"
+msgstr ""
+
 msgid "Starting Sharly Chess server, Please wait…"
 msgstr ""
 
@@ -4538,10 +4541,10 @@ msgstr ""
 msgid "The average of the ratings of the opponents played over the board."
 msgstr ""
 
-msgid "The base year has to be at least one year prior to the start of the event."
+msgid "The base date has to be at most one year after the end of the event."
 msgstr ""
 
-msgid "The base year has to be at most one year after the end of the event."
+msgid "The base date has to be at most one year prior to the start of the event."
 msgstr ""
 
 msgid "The board number the player will always be assigned to (use it for disabled people)."
@@ -4936,9 +4939,6 @@ msgid "This tie-break is not recommended with estimated players ({count} in the 
 msgstr ""
 
 msgid "This unique ID is already used."
-msgstr ""
-
-msgid "This value is by default based on each tournament's start and stop dates. Defining it here allows you to keep the same age categories across all the tournaments, as it was on january 1st of that year."
 msgstr ""
 
 msgid "Three points for a win"
@@ -5903,16 +5903,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Age categories are based on the start date of the tournament. You may choose to use another date instead, which can be useful if you want to keep the same age categories for a championship runs over a long period."
-#~ msgstr ""
-
-#~ msgid "Base date:"
-#~ msgstr ""
-
-#~ msgid "Please choose the base date for the age categories."
-#~ msgstr ""
-
-#~ msgid "Specify a base date for the categories"
-#~ msgstr ""
 
