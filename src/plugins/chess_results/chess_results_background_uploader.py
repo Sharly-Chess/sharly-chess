@@ -79,9 +79,11 @@ class ChessResultsBackgroundUploader:
                 )
             cls.upload_status_messages[result_id] = result
 
-        if not ChessResultsUtils.resolve_auto_upload(
-            tournament
-        ) and cls.chess_results_upload_needed(tournament):
+        if (
+            not ChessResultsUtils.resolve_auto_upload(tournament)
+            and cls.chess_results_upload_needed(tournament)
+            and result.status != ChessResultsUploadStatus.NEVER
+        ):
             # For manual updates tell the user that the tournament has been modified
             # For auto uploads, schedule_upload should have already an appropriate message
             result = ChessResultsUploadResult(
@@ -170,7 +172,11 @@ class ChessResultsBackgroundUploader:
             return current_result
 
         result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
-        if not force and not ChessResultsUtils.resolve_auto_upload(tournament):
+        if (
+            not force
+            and not ChessResultsUtils.resolve_auto_upload(tournament)
+            and current_result.status != ChessResultsUploadStatus.NEVER
+        ):
             # Auto upload has been disabled since it was scheduled
             cls.upload_status_messages[result_id] = ChessResultsUploadResult(
                 ChessResultsUploadStatus.CHANGED,
