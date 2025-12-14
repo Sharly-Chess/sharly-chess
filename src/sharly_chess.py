@@ -1,12 +1,12 @@
-from pathlib import Path
+import os
 import platform
 import sys
+import warnings
+from pathlib import Path
+
+from pathvalidate import validate_filepath, ValidationError
 
 from antivirus.control import search_missing_files
-
-import os
-import warnings
-from pathvalidate import validate_filepath, ValidationError
 
 # Nuclear option: Override warnings.warn to block specific messages
 # warnings.filterwarnings simply would not work
