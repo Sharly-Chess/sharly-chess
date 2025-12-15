@@ -6,7 +6,7 @@
 # certificates provided via environment variables.
 #
 # Prerequisites:
-#   1. Build the app first: python scripts/export/export.py --preserve-build
+#   1. Build the app first: python scripts/export/export.py
 #   2. Set up .env file with signing certificates and Apple notarization credentials.
 #      Required variables: MACOS_SIGNING_CERT_BASE64, MACOS_SIGNING_CERT_PASSWORD,
 #      APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID
@@ -90,7 +90,7 @@ echo
 
 echo "--- Section 2: Checking for Pre-built Application ---"
 echo "Note: This script requires you to build the application first using:"
-echo "  python scripts/export/export.py --preserve-build"
+echo "  python scripts/export/export.py"
 echo
 
 # Find the project directory (not the .app bundle)

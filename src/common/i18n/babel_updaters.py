@@ -424,7 +424,7 @@ class BabelUpdater:
                 for babel_domain_updater in self.babel_domain_updaters.values()
             ]
         )
-        if generate_doc:
+        if ok and generate_doc:
             self.write_markdown()
         return ok
 
