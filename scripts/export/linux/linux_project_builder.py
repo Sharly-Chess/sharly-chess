@@ -668,11 +668,11 @@ if [ -n "$XAUTHORITY" ]; then
 fi
 
 # Suppress harmless warnings
-# Redirect snapd mount namespace warnings to /dev/null (they're harmless)
-exec 2> >(grep -v "update.go.*cannot change mount namespace" >&2 || true)
-
-# Suppress GTK atk-bridge warning (harmless - GTK provides this natively)
-export GTK_DEBUG=no-css-cache
+# Redirect snapd mount namespace warnings and GTK module warnings to /dev/null (they're harmless)
+# canberra-gtk-module is optional (sound/notifications) and the warning can be safely ignored
+# atk-bridge warning is harmless - GTK provides the functionality natively
+# EGL/MESA warnings are harmless - WebKitGTK falls back to software rendering if hardware acceleration isn't available
+exec 2> >(grep -v -E "(update.go.*cannot change mount namespace|Failed to load module.*canberra|Not loading module.*atk-bridge|libEGL warning.*egl.*failed to create dri2 screen|libEGL warning.*DRI2.*failed to create screen|MESA.*error.*ZINK.*failed to choose pdev)" >&2 || true)
 
 # Run the application - explicitly pass environment variables to ensure they're available
 # Use env to ensure all environment variables are passed to the executable
