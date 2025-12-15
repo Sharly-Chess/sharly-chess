@@ -662,12 +662,12 @@ class Engine:
                 return False
             except subprocess.CalledProcessError as ex:
                 print_interactive_message(
-                    _('Failed to process DMG file: [{ex}]').format(ex=ex)
+                    _('Failed to process DMG file: [{ex}].').format(ex=ex)
                 )
                 return False
             except Exception as ex:
                 print_interactive_message(
-                    _('Unexpected error during installation: [{ex}]').format(ex=ex)
+                    _('Unexpected error during installation: [{ex}].').format(ex=ex)
                 )
                 return False
 

@@ -841,7 +841,7 @@ class SharlyChessServerToga(toga.App):
             # Show the dialog on the main window; returns True/False
             assert isinstance(self.main_window, toga.MainWindow)
             dialog = toga.InfoDialog(
-                title=_('Sharly Chess'),
+                title='Sharly Chess',
                 message=message,
             )
             return await self.main_window.dialog(dialog)
