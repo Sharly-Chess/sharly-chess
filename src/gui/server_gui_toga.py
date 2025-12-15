@@ -286,6 +286,7 @@ class SharlyChessServerToga(toga.App):
 
         # State
         self.server_thread: Optional[threading.Thread] = None
+        self.serve_task: asyncio.Task | None = None
         self.server_running = False
         self.sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
 
@@ -315,6 +316,7 @@ class SharlyChessServerToga(toga.App):
         self.main_buttons_section: Optional[toga.Box] = None
         self.networks_section: Optional[toga.Box] = None
         self.networks_view: Optional[toga.Box] = None
+        self.progress_bar: Optional[toga.ProgressBar] = None
 
     # --- Toga lifecycle ---
     def startup(self):
@@ -349,7 +351,6 @@ class SharlyChessServerToga(toga.App):
         )
 
         for b in (
-            self.browser_btn,
             self.website_btn,
             self.clear_btn,
             self.toggle_log_btn,
@@ -428,18 +429,20 @@ class SharlyChessServerToga(toga.App):
         )
         self.info_view.add(self.launch_browser_switch)
 
-        main_buttons_wrapper = toga.Box(style=Pack(direction=ROW, align_items='center'))
+        self.progress_bar = toga.ProgressBar(style=Pack(margin_top=10))
+        self.progress_bar.max = None
+        self.info_view.add(self.progress_bar)
+
         self.main_buttons_section = toga.Box(
             style=Pack(direction=COLUMN, margin_top=10, align_items='center')
         )
+
         section_buttons = toga.Box(
             style=Pack(direction=COLUMN, margin_top=10, gap=5, align_items='center')
         )
         section_buttons.add(self.browser_btn)
         section_buttons.add(self.network_btn)
         self.main_buttons_section.add(section_buttons)
-        main_buttons_wrapper.add(self.main_buttons_section)
-        self.info_view.add(main_buttons_wrapper)
 
         self.networks_section = toga.Box(
             style=Pack(direction=COLUMN, margin_top=10, align_items='center')
@@ -469,6 +472,10 @@ class SharlyChessServerToga(toga.App):
         self.gui_handler = GUILogHandler(self)
         self.gui_handler.setLevel(logging.DEBUG)
 
+        assert self.progress_bar is not None
+        self.progress_bar.value = 1
+        self.progress_bar.start()
+
         # Start message processing and kick the server immediately
         asyncio.create_task(self._process_message_queue())
         if not self.server_running:
@@ -482,6 +489,17 @@ class SharlyChessServerToga(toga.App):
     def on_server_ready(self):
         assert self.browser_btn is not None
         self.browser_btn.enabled = True
+
+        assert self.progress_bar is not None
+        assert self.info_view is not None
+        self.progress_bar.stop()
+        self.info_view.remove(self.progress_bar)
+
+        assert self.main_buttons_section is not None
+        main_buttons_wrapper = toga.Box(style=Pack(direction=ROW, align_items='center'))
+        main_buttons_wrapper.add(self.main_buttons_section)
+        self.info_view.add(main_buttons_wrapper)
+
         config = SharlyChessConfig()
         if config.lan_ifaces:
             assert self.networks_section is not None
@@ -604,7 +622,7 @@ class SharlyChessServerToga(toga.App):
             handle_signals=False,
             on_port_chosen=schedule_ready,
         )
-        loop.create_task(engine.serve())
+        self.serve_task = loop.create_task(engine.serve())
 
         try:
             loop.run_forever()
@@ -618,6 +636,8 @@ class SharlyChessServerToga(toga.App):
                 loop.run_until_complete(loop.shutdown_asyncgens())
             finally:
                 loop.close()
+                assert self.app is not None
+                self.gui_loop.call_soon_threadsafe(self.app.exit)
 
     def _open_browser(self, widget: Any = None, **kwargs) -> None:
         try:
@@ -814,6 +834,39 @@ class SharlyChessServerToga(toga.App):
             return fut.result()
         except Exception:
             return None
+
+    def handle_interactive_message(self, message: str) -> bool:
+        """Blocking Yes/No prompt callable from background threads."""
+
+        async def _message_on_ui():
+            # Show the dialog on the main window; returns True/False
+            assert isinstance(self.main_window, toga.MainWindow)
+            dialog = toga.InfoDialog(
+                title='Sharly Chess',
+                message=message,
+            )
+            return await self.main_window.dialog(dialog)
+
+        # Schedule the coroutine on the UI loop and wait for the result
+        fut = asyncio.run_coroutine_threadsafe(_message_on_ui(), self.loop)
+        try:
+            return fut.result() is None
+        except Exception:
+            return False
+
+    def quit_app(self) -> None:
+        loop = self.server_loop
+        if loop is None or loop.is_closed():
+            return
+
+        def _stop() -> None:
+            # Cancel the main server task
+            task = self.serve_task
+            if task is not None and not task.done():
+                task.cancel()
+            loop.stop()
+
+        loop.call_soon_threadsafe(_stop)
 
     def _on_logview_load(self, widget, **kwargs: Any):
         # Wait one loop turn so the inline <script> in LOG_HTML actually runs

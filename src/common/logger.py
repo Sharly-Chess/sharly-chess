@@ -281,3 +281,20 @@ def input_interactive_yn(question: str, yes_is_default: bool = False) -> bool:
             return True
         if result == no_answer or (result == '' and not yes_is_default):
             return False
+
+
+def print_interactive_message(message: str) -> bool:
+    __flush_logger()
+
+    if GUILogHandler.instance:
+        return GUILogHandler.instance.gui.handle_interactive_message(message)
+
+    print(Fore.CYAN + Style.BRIGHT + message + Style.RESET_ALL, end='')
+    return True
+
+
+def quit_app() -> None:
+    if GUILogHandler.instance:
+        return GUILogHandler.instance.gui.quit_app()
+
+    sys.exit(0)

@@ -15,6 +15,7 @@ from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
+from antivirus.control import search_missing_files
 from common import (
     SHARLY_CHESS_VERSION,
     TEST_ENV,
@@ -28,6 +29,8 @@ from common.logger import (
     get_logger,
     input_interactive_choices,
     input_interactive_yn,
+    print_interactive_message,
+    quit_app,
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -81,10 +84,14 @@ class Engine:
             ):
                 self.error = True
                 if not self._install_new_version(more_recent_version, download_url):
-                    logger.error(
-                        'The installation of release [%s] failed.',
-                        more_recent_version,
-                    )
+                    if print_interactive_message(
+                        _(
+                            'Installation of release [{version}] failed, exiting.'
+                        ).format(
+                            version=more_recent_version,
+                        ),
+                    ):
+                        quit_app()
                 return
 
         if not EventLoader().event_uniq_ids:
@@ -440,6 +447,7 @@ class Engine:
                     continue
                 download_url: str | None = None
                 for asset in assets:
+                    valid_asset_names: list[str] = []
                     system = platform.system()
                     match system:
                         case 'Windows':
@@ -465,6 +473,8 @@ class Engine:
                                 valid_asset_names = [
                                     f'sharly-chess-{version}-linux-x86_64.zip'
                                 ]
+                        case _:
+                            raise NotImplementedError(f'{system=}')
 
                     if (
                         asset_name := asset.get('name', 'undefined')
@@ -536,44 +546,49 @@ class Engine:
         new_version_dir: Path = Path('..') / f'sharly-chess-{version}'
         if new_version_dir.exists():
             logger.error(
-                'Version [%s] is already installed in directory [%s], please manually delete this folder before installing.',
+                'Version [%s] could not be installed because directory [%s] already exists.',
                 version,
-                new_version_dir.absolute(),
+                new_version_dir.resolve(),
             )
             return False
-        try:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                tmp_dir: Path = Path(tmpdir)
-                logger.info(
-                    'Downloading release [%s] from GitHub ([%s])...',
-                    version,
-                    download_url,
-                )
-                response: Response = get(download_url, allow_redirects=True, timeout=10)
-                response.raise_for_status()
-                if not response:
-                    logger.error('No response from GitHub.')
-                    return False
-                if response.status_code != 200:
-                    logger.error(
-                        'Downloading failed with code [%d].', response.status_code
+        else:
+            try:
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    tmp_dir: Path = Path(tmpdir)
+                    logger.info(
+                        'Downloading release [%s] from GitHub ([%s])...',
+                        version,
+                        download_url,
                     )
-                    return False
-                # Determine downloaded file name based on platform
-                system = platform.system()
-                match system:
-                    case 'Windows':
-                        downloaded_file = (
-                            tmp_dir / f'sharly-chess-{version}-windows.zip'
+                    response: Response = get(
+                        download_url, allow_redirects=True, timeout=10
+                    )
+                    response.raise_for_status()
+                    if not response:
+                        logger.error('No response from GitHub.')
+                        return False
+                    if response.status_code != 200:
+                        logger.error(
+                            'Downloading failed with code [%d].', response.status_code
                         )
-                    case 'Darwin':
-                        downloaded_file = tmp_dir / f'sharly-chess-{version}-macos.dmg'
-                    case 'Linux':
-                        build_arch = os.environ.get('BUILD_ARCH')
-                        if build_arch:
-                            machine = build_arch.lower()
-                        else:
-                            machine = platform.machine().lower()
+                        return False
+                    # Determine downloaded file name based on platform
+                    system = platform.system()
+                    match system:
+                        case 'Windows':
+                            downloaded_file = (
+                                tmp_dir / f'sharly-chess-{version}-windows.zip'
+                            )
+                        case 'Darwin':
+                            downloaded_file = (
+                                tmp_dir / f'sharly-chess-{version}-macos.dmg'
+                            )
+                        case 'Linux':
+                            build_arch = os.environ.get('BUILD_ARCH')
+                            if build_arch:
+                                machine = build_arch.lower()
+                            else:
+                                machine = platform.machine().lower()
                             if machine in ('aarch64', 'arm64'):
                                 downloaded_file = (
                                     tmp_dir / f'sharly-chess-{version}-linux-arm64.zip'
@@ -583,104 +598,102 @@ class Engine:
                                     tmp_dir / f'sharly-chess-{version}-linux-x86_64.zip'
                                 )
 
-                downloaded_file.write_bytes(response.content)
-                logger.debug('File downloaded: [%s].', downloaded_file)
+                    downloaded_file.write_bytes(response.content)
+                    logger.debug('File downloaded: [%s].', downloaded_file)
 
-                if platform.system() == 'Windows':
-                    # For Windows: Unzip the file
-                    new_version_dir.mkdir()
-                    with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
-                        zip_ref.extractall(new_version_dir)
-                    control_file: Path = new_version_dir / 'tmp' / 'control_file.json'
-                    if control_file.exists():
-                        with open(control_file, 'r', encoding='utf8') as infile:
-                            control_data: dict[str, Any] = json.loads(infile.read())
-                        missing_files: list[str] = [
-                            file_path
-                            for file_path in control_data['file_paths']
-                            if not Path(file_path).is_file()
-                        ]
-                        if missing_files:
-                            logger.error(
-                                '\n'.join(
-                                    [
-                                        f'Sharly Chess {version} has not been correctly installed, the following files are missing:',
-                                    ]
-                                    + [
-                                        f'- {missing_file}'
-                                        for missing_file in missing_files
-                                    ]
-                                    + [
-                                        'This is probably due to Windows Defender or any other antivirus sending files to quarantaine.',
-                                        'Recover the missing files from your quarantaine folder (depends on the antivirus you use) or manually install:',
-                                        f'1. Download Sharly Chess from https://github.com/Sharly-Chess/sharly-chess/releases/download/{version}/sharly-chess-{version}-windows.zip',
-                                        '2. Unzip the downloaded archive manually',
-                                    ]
-                                )
-                            )
+                    if platform.system() == 'Windows':
+                        # For Windows: Unzip the file
+                        new_version_dir.mkdir()
+                        with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
+                            zip_ref.extractall(new_version_dir)
+                        if error_message := search_missing_files(
+                            folder=new_version_dir, delete_control_file=False
+                        ):
+                            logger.error(error_message)
                             return False
-                elif platform.system() == 'Darwin':
-                    # For Mac: Handle the DMG file
-                    mount_point = tmp_dir / f'mount-{version}'
-                    try:
-                        # Mount the DMG
-                        subprocess.run(
-                            [
-                                'hdiutil',
-                                'attach',
-                                str(downloaded_file),
-                                '-mountpoint',
-                                str(mount_point),
-                            ],
-                            check=True,
-                        )
-                        dmg_content = list(mount_point.iterdir())
-                        if len(dmg_content) == 1 and dmg_content[0].is_dir():
-                            # Copy the folder from DMG to the new version directory
-                            # Use cp -R to preserve code signatures and extended attributes
+                    elif platform.system() == 'Darwin':
+                        # For Mac: Handle the DMG file
+                        mount_point = tmp_dir / f'mount-{version}'
+                        try:
+                            # Mount the DMG
                             subprocess.run(
                                 [
-                                    'cp',
-                                    '-R',
-                                    str(dmg_content[0]),
-                                    str(new_version_dir.parent),
+                                    'hdiutil',
+                                    'attach',
+                                    str(downloaded_file),
+                                    '-mountpoint',
+                                    str(mount_point),
                                 ],
                                 check=True,
                             )
-                        else:
-                            logger.error(
-                                'DMG does not contain exactly one folder as expected.'
-                            )
-                            return False
-                    finally:
-                        # Always try to unmount the DMG, even if copying failed
-                        try:
-                            subprocess.run(
-                                ['hdiutil', 'detach', str(mount_point)], check=True
-                            )
-                        except subprocess.CalledProcessError:
-                            logger.warning('Failed to unmount DMG at [%s]', mount_point)
-                        # Clean up the mount point directory
-                        if mount_point.exists():
-                            shutil.rmtree(mount_point, ignore_errors=True)
-                else:
-                    # For Linux, just unzip
-                    new_version_dir.mkdir()
-                    with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
-                        zip_ref.extractall(new_version_dir)
+                            dmg_content = list(mount_point.iterdir())
+                            if len(dmg_content) == 1 and dmg_content[0].is_dir():
+                                # Copy the folder from DMG to the new version directory
+                                # Use cp -R to preserve code signatures and extended attributes
+                                subprocess.run(
+                                    [
+                                        'cp',
+                                        '-R',
+                                        str(dmg_content[0]),
+                                        str(new_version_dir.parent),
+                                    ],
+                                    check=True,
+                                )
+                            else:
+                                logger.error(
+                                    'DMG does not contain exactly one folder as expected.'
+                                )
+                                return False
+                        finally:
+                            # Always try to unmount the DMG, even if copying failed
+                            try:
+                                subprocess.run(
+                                    ['hdiutil', 'detach', str(mount_point)], check=True
+                                )
+                            except subprocess.CalledProcessError:
+                                logger.warning(
+                                    'Failed to unmount DMG at [%s]', mount_point
+                                )
+                            # Clean up the mount point directory
+                            if mount_point.exists():
+                                shutil.rmtree(mount_point, ignore_errors=True)
+                    else:
+                        # For Linux, just unzip
+                        new_version_dir.mkdir()
+                        with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
+                            zip_ref.extractall(new_version_dir)
 
                 logger.info(
                     'New release [%s] has been installed in [%s].',
                     version,
-                    new_version_dir.absolute(),
+                    new_version_dir.resolve(),
                 )
-                return True
-        except RequestException as ex:
-            logger.warning('Failed to read [%s]: [%s].', download_url, ex)
-            return False
-        except subprocess.CalledProcessError as ex:
-            logger.error('Failed to process DMG file: [%s]', ex)
-            return False
-        except Exception as ex:
-            logger.error('Unexpected error during installation: [%s]', ex)
-            return False
+            except RequestException as ex:
+                print_interactive_message(
+                    _('Failed to read [{download_url}]: [{ex}].').format(
+                        download_url=download_url, ex=ex
+                    )
+                )
+                return False
+            except subprocess.CalledProcessError as ex:
+                print_interactive_message(
+                    _('Failed to process DMG file: [{ex}].').format(ex=ex)
+                )
+                return False
+            except Exception as ex:
+                print_interactive_message(
+                    _('Unexpected error during installation: [{ex}].').format(ex=ex)
+                )
+                return False
+
+        if print_interactive_message(
+            _('Release {version} has been installed in [{folder}].').format(
+                version=version,
+                folder=new_version_dir.absolute(),
+            )
+            + '\n\n'
+            + _('Please launch the new version.'),
+        ):
+            quit_app()
+
+        return True

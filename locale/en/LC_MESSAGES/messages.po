@@ -1996,6 +1996,12 @@ msgstr "FM"
 msgid "FORFEIT"
 msgstr ""
 
+msgid "Failed to process DMG file: [{ex}]."
+msgstr ""
+
+msgid "Failed to read [{download_url}]: [{ex}]."
+msgstr ""
+
 msgid "Families"
 msgstr ""
 
@@ -2403,6 +2409,9 @@ msgid "Install"
 msgstr ""
 
 msgid "Installation of [{lib}] failed."
+msgstr ""
+
+msgid "Installation of release [{version}] failed, exiting."
 msgstr ""
 
 msgid "Installed [{lib}]."
@@ -3602,6 +3611,9 @@ msgstr ""
 msgid "Please enter the name of the event."
 msgstr ""
 
+msgid "Please launch the new version."
+msgstr ""
+
 msgid "Please select a type of criterion."
 msgstr ""
 
@@ -3887,6 +3899,9 @@ msgid "Refresh"
 msgstr ""
 
 msgid "Refresh this page."
+msgstr ""
+
+msgid "Release {version} has been installed in [{folder}]."
 msgstr ""
 
 msgid "Reload the page"
@@ -5176,6 +5191,9 @@ msgstr "Undefined"
 
 msgid "Undefined *** SINGULAR"
 msgstr "Undefined"
+
+msgid "Unexpected error during installation: [{ex}]."
+msgstr ""
 
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
