@@ -15,6 +15,7 @@ from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
+from antivirus.control import search_missing_files
 from common import (
     SHARLY_CHESS_VERSION,
     TEST_ENV,
@@ -417,6 +418,7 @@ class Engine:
                     continue
                 download_url: str | None = None
                 for asset in assets:
+                    valid_asset_names: list[str] = []
                     system = platform.system()
                     match system:
                         case 'Windows':
@@ -442,6 +444,8 @@ class Engine:
                                 valid_asset_names = [
                                     f'sharly-chess-{version}-linux-x86_64.zip'
                                 ]
+                        case _:
+                            raise NotImplementedError(f'{system=}')
 
                     if (
                         asset_name := asset.get('name', 'undefined')
@@ -566,36 +570,11 @@ class Engine:
                         new_version_dir.mkdir()
                         with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
                             zip_ref.extractall(new_version_dir)
-                        control_file: Path = (
-                            new_version_dir / 'tmp' / 'control_file.json'
-                        )
-                        if control_file.exists():
-                            with open(control_file, 'r', encoding='utf8') as infile:
-                                control_data: dict[str, Any] = json.loads(infile.read())
-                            missing_files: list[str] = [
-                                file_path
-                                for file_path in control_data['file_paths']
-                                if not Path(file_path).is_file()
-                            ]
-                            if missing_files:
-                                logger.error(
-                                    '\n'.join(
-                                        [
-                                            f'Sharly Chess {version} has not been correctly installed, the following files are missing:',
-                                        ]
-                                        + [
-                                            f'- {missing_file}'
-                                            for missing_file in missing_files
-                                        ]
-                                        + [
-                                            'This is probably due to Windows Defender or any other antivirus sending files to quarantaine.',
-                                            'Recover the missing files from your quarantaine folder (depends on the antivirus you use) or manually install:',
-                                            f'1. Download Sharly Chess from https://github.com/Sharly-Chess/sharly-chess/releases/download/{version}/sharly-chess-{version}-windows.zip',
-                                            '2. Unzip the downloaded archive manually',
-                                        ]
-                                    )
-                                )
-                                return False
+                        if error_message := search_missing_files(
+                            folder=new_version_dir, delete_control_file=False
+                        ):
+                            logger.error(error_message)
+                            return False
                     elif platform.system() == 'Darwin':
                         # For Mac: Handle the DMG file
                         mount_point = tmp_dir / f'mount-{version}'
@@ -648,11 +627,11 @@ class Engine:
                         with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
                             zip_ref.extractall(new_version_dir)
 
-                    logger.info(
-                        'New release [%s] has been installed in [%s].',
-                        version,
-                        new_version_dir.absolute(),
-                    )
+                logger.info(
+                    'New release [%s] has been installed in [%s].',
+                    version,
+                    new_version_dir.resolve(),
+                )
             except RequestException as ex:
                 print_interactive_message(
                     _('Failed to read [{download_url}]: [{ex}].').format(
