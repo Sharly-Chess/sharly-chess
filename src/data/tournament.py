@@ -1384,10 +1384,11 @@ class Tournament:
         event_database: EventDatabase | None = None,
     ):
         assert stored_player.id is not None
-        last_zpb_round: int = (
-            self.current_round
-            if self.is_round_finished(self.current_round)
-            else self.current_round - 1
+        current_round = self.current_round
+        last_zpb_round = (
+            current_round
+            if current_round == 0 or self.is_round_finished(current_round)
+            else current_round - 1
         )
         stored_tournament_player = StoredTournamentPlayer(
             tournament_id=self.id,
