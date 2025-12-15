@@ -515,7 +515,14 @@ class Engine:
         """Install the new stable version at the same directory level.
         Returns True on success, False otherwise."""
         new_version_dir: Path = Path('..') / f'sharly-chess-{version}'
-        if not new_version_dir.exists():
+        if new_version_dir.exists():
+            logger.warning(
+                'Version [%s] is already installed in directory [%s], please manually delete this folder before upgrading.',
+                version,
+                new_version_dir.resolve(),
+            )
+            return False
+        else:
             try:
                 with tempfile.TemporaryDirectory() as tmpdir:
                     tmp_dir: Path = Path(tmpdir)
