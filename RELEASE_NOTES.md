@@ -5,6 +5,7 @@
 - Export of events for sharing purposes (3.4.0)
 - Ask the browser not to translate the interface (3.4.0)
 - Recover archived events on upgrade (3.4.0)
+- Improve upgrade experience (3.4.0)
 
 ## Players
 
