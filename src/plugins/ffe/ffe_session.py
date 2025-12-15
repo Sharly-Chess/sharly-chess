@@ -420,6 +420,9 @@ class FFESession(Session):
             EVENT_VALIDATION_INPUT_ID: self.ffe_state[EVENT_VALIDATION_INPUT_ID],
         }
 
+        # Required to avoid writing in the tmp database
+        self.tournament.set_tournament_players_pairing_numbers()
+
         event_uniq_id = self.tournament.event.uniq_id
         with tempfile.TemporaryDirectory() as tmpdir:
             tmp_path: Path = Path(tmpdir)
@@ -470,7 +473,11 @@ class FFESession(Session):
                 PapiConverter().write_papi_file(
                     tmp_tournament, tmp_papi_file, anonymize_player_data=True
                 )
-            except Exception:
+            except Exception as e:
+                logger.error(
+                    self.tournament.log_prefix
+                    + f'Error during conversion to Papi format: {e}'
+                )
                 self.report_error(_('Conversion to Papi format failed.'))
                 return
 

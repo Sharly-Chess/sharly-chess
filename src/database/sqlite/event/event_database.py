@@ -740,7 +740,9 @@ class EventDatabase(MigrationDatabase):
             ),
         )
 
-    def set_tournament_current_round(self, tournament_id: int, current_round: int):
+    def set_tournament_current_round(
+        self, tournament_id: int, current_round: int | None
+    ):
         self.execute(
             'UPDATE `tournament` SET '
             '`current_round` = ?, `last_update` = ? '
