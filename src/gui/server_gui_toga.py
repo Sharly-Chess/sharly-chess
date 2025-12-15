@@ -591,6 +591,7 @@ class SharlyChessServerToga(toga.App):
         self.server_loop = asyncio.SelectorEventLoop()
         loop = self.server_loop
         if platform.system() != 'Linux':
+            asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
             asyncio.set_event_loop(loop)
 
         def schedule_ready():
