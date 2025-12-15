@@ -834,6 +834,25 @@ class SharlyChessServerToga(toga.App):
         except Exception:
             return None
 
+    def handle_interactive_message(self, message: str) -> bool:
+        """Blocking Yes/No prompt callable from background threads."""
+
+        async def _message_on_ui():
+            # Show the dialog on the main window; returns True/False
+            assert isinstance(self.main_window, toga.MainWindow)
+            dialog = toga.InfoDialog(
+                title=_('Sharly Chess'),
+                message=message,
+            )
+            return await self.main_window.dialog(dialog)
+
+        # Schedule the coroutine on the UI loop and wait for the result
+        fut = asyncio.run_coroutine_threadsafe(_message_on_ui(), self.loop)
+        try:
+            return fut.result() is None
+        except Exception:
+            return False
+
     def quit_app(self) -> None:
         loop = self.server_loop
         if loop is None or loop.is_closed():

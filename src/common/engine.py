@@ -28,6 +28,7 @@ from common.logger import (
     get_logger,
     input_interactive_choices,
     input_interactive_yn,
+    print_interactive_message,
     quit_app,
 )
 from common.network import NetworkMonitor
@@ -662,14 +663,13 @@ class Engine:
                 logger.error('Unexpected error during installation: [%s]', ex)
                 return False
 
-        if input_interactive_yn(
+        if print_interactive_message(
             _('Release {version} has been installed in [{folder}].').format(
                 version=version,
                 folder=new_version_dir.absolute(),
             )
             + '\n\n'
-            + _('Do you want to quit this older version'),
-            yes_is_default=True,
+            + _('Please launch the new version.'),
         ):
             quit_app()
 
