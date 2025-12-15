@@ -2411,6 +2411,9 @@ msgstr "Installer"
 msgid "Installation of [{lib}] failed."
 msgstr "L'installation de la bibliothèque [{lib}] a échoué."
 
+msgid "Installation of release [{version}] failed, exiting."
+msgstr "L'nstallation de la version [{version}] a échoué, abandon."
+
 msgid "Installed [{lib}]."
 msgstr "La bibliothèque [{lib}] a été installée."
 

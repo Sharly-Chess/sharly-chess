@@ -2411,6 +2411,9 @@ msgstr ""
 msgid "Installation of [{lib}] failed."
 msgstr ""
 
+msgid "Installation of release [{version}] failed, exiting."
+msgstr ""
+
 msgid "Installed [{lib}]."
 msgstr ""
 
