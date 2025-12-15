@@ -298,6 +298,23 @@ class Engine:
                         target_item.parent.mkdir(parents=True, exist_ok=True)
                         shutil.copy(item, target_item)
                         custom_files.append(item)
+        logger.info('Recovering archived events...')
+        archives: list[Path] = []
+        archives_dir: Path = (
+            version_dir / EVENTS_FOLDER / SharlyChessConfig.archives_folder
+        )
+        if archives_dir.is_dir():
+            for item in archives_dir.glob(f'*.{SharlyChessConfig.event_archive_ext}'):
+                if item.is_file():
+                    target_item: Path = Path(
+                        str(item).replace(
+                            str(archives_dir),
+                            str(SharlyChessConfig.event_archive_base_path),
+                        )
+                    )
+                    target_item.parent.mkdir(parents=True, exist_ok=True)
+                    shutil.copy(item, target_item)
+                    archives.append(item)
         logger.info(
             'Events recovered: %d (from directory [%s]).', len(files), events_dir
         )
@@ -316,6 +333,14 @@ class Engine:
             )
             for custom_file in custom_files:
                 logger.info('- %s', str(custom_file).replace(str(custom_dir), ''))
+        if archives:
+            logger.info(
+                'Archived_events recovered: %d (from directory [%s]).',
+                len(archives),
+                archives_dir,
+            )
+            for archive in archives:
+                logger.info('- %s', str(archive).replace(str(archives_dir), ''))
 
     @classmethod
     def _check_version(cls) -> tuple[Version | None, str | None]:
