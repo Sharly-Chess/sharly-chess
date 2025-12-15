@@ -565,65 +565,67 @@ class Engine:
                     downloaded_file.write_bytes(response.content)
                     logger.debug('File downloaded: [%s].', downloaded_file)
 
-                if platform.system() == 'Windows':
-                    # For Windows: Unzip the file
-                    new_version_dir.mkdir()
-                    with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
-                        zip_ref.extractall(new_version_dir)
-                    if error_message := search_missing_files(
-                        folder=new_version_dir, delete_control_file=False
-                    ):
-                        logger.error(error_message)
-                        return False
-                elif platform.system() == 'Darwin':
-                    # For Mac: Handle the DMG file
-                    mount_point = tmp_dir / f'mount-{version}'
-                    try:
-                        # Mount the DMG
-                        subprocess.run(
-                            [
-                                'hdiutil',
-                                'attach',
-                                str(downloaded_file),
-                                '-mountpoint',
-                                str(mount_point),
-                            ],
-                            check=True,
-                        )
-                        dmg_content = list(mount_point.iterdir())
-                        if len(dmg_content) == 1 and dmg_content[0].is_dir():
-                            # Copy the folder from DMG to the new version directory
-                            # Use cp -R to preserve code signatures and extended attributes
+                    if platform.system() == 'Windows':
+                        # For Windows: Unzip the file
+                        new_version_dir.mkdir()
+                        with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
+                            zip_ref.extractall(new_version_dir)
+                        if error_message := search_missing_files(
+                            folder=new_version_dir, delete_control_file=False
+                        ):
+                            logger.error(error_message)
+                            return False
+                    elif platform.system() == 'Darwin':
+                        # For Mac: Handle the DMG file
+                        mount_point = tmp_dir / f'mount-{version}'
+                        try:
+                            # Mount the DMG
                             subprocess.run(
                                 [
-                                    'cp',
-                                    '-R',
-                                    str(dmg_content[0]),
-                                    str(new_version_dir.parent),
+                                    'hdiutil',
+                                    'attach',
+                                    str(downloaded_file),
+                                    '-mountpoint',
+                                    str(mount_point),
                                 ],
                                 check=True,
                             )
-                        else:
-                            logger.error(
-                                'DMG does not contain exactly one folder as expected.'
-                            )
-                            return False
-                    finally:
-                        # Always try to unmount the DMG, even if copying failed
-                        try:
-                            subprocess.run(
-                                ['hdiutil', 'detach', str(mount_point)], check=True
-                            )
-                        except subprocess.CalledProcessError:
-                            logger.warning('Failed to unmount DMG at [%s]', mount_point)
-                        # Clean up the mount point directory
-                        if mount_point.exists():
-                            shutil.rmtree(mount_point, ignore_errors=True)
-                else:
-                    # For Linux, just unzip
-                    new_version_dir.mkdir()
-                    with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
-                        zip_ref.extractall(new_version_dir)
+                            dmg_content = list(mount_point.iterdir())
+                            if len(dmg_content) == 1 and dmg_content[0].is_dir():
+                                # Copy the folder from DMG to the new version directory
+                                # Use cp -R to preserve code signatures and extended attributes
+                                subprocess.run(
+                                    [
+                                        'cp',
+                                        '-R',
+                                        str(dmg_content[0]),
+                                        str(new_version_dir.parent),
+                                    ],
+                                    check=True,
+                                )
+                            else:
+                                logger.error(
+                                    'DMG does not contain exactly one folder as expected.'
+                                )
+                                return False
+                        finally:
+                            # Always try to unmount the DMG, even if copying failed
+                            try:
+                                subprocess.run(
+                                    ['hdiutil', 'detach', str(mount_point)], check=True
+                                )
+                            except subprocess.CalledProcessError:
+                                logger.warning(
+                                    'Failed to unmount DMG at [%s]', mount_point
+                                )
+                            # Clean up the mount point directory
+                            if mount_point.exists():
+                                shutil.rmtree(mount_point, ignore_errors=True)
+                    else:
+                        # For Linux, just unzip
+                        new_version_dir.mkdir()
+                        with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
+                            zip_ref.extractall(new_version_dir)
 
                 logger.info(
                     'New release [%s] has been installed in [%s].',
