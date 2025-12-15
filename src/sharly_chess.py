@@ -238,10 +238,10 @@ try:
         sys.exit(0)
 
     port = args.port or None
-    if args.debug:
+    debug = args.debug if DEVEL_ENV else False
+    if debug:
         # set the log level to DEBUG before loading the logging configuration of the application
         set_logging_config(console_log_level=logging.DEBUG)
-    debug = args.debug if DEVEL_ENV else False
     if error_message := search_missing_files(folder=Path(), delete_control_file=True):
         import tkinter
         from tkinter import messagebox
