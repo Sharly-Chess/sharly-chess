@@ -784,6 +784,8 @@ class IndexAdminController(BaseAdminController):
             database.update_stored_event(stored_event)
             if 'with_players' not in data:
                 database.delete_all_stored_players()
+                for tournament in event.tournaments:
+                    database.set_tournament_current_round(tournament.id, None)
             plugin_manager.hook.on_event_duplicated(event_database=database)
 
         Message.success(
