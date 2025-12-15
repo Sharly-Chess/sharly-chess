@@ -1999,6 +1999,12 @@ msgstr "MF"
 msgid "FORFEIT"
 msgstr "FORFAIT"
 
+msgid "Failed to process DMG file: [{ex}]."
+msgstr "Échec du traitement du fichier DMG : [{ex}]."
+
+msgid "Failed to read [{download_url}]: [{ex}]."
+msgstr "Échec de la lecture de [{download_url}] : [{ex}]."
+
 msgid "Families"
 msgstr "Familles"
 
@@ -3605,6 +3611,9 @@ msgstr "Veuillez entrer l'URL de l'image."
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
 
+msgid "Please launch the new version."
+msgstr "Veuillez lancer la nouvelle version."
+
 msgid "Please select a type of criterion."
 msgstr "Veuillez choisir un type de critère."
 
@@ -3891,6 +3900,9 @@ msgstr "Actualiser"
 
 msgid "Refresh this page."
 msgstr "Actualiser la page."
+
+msgid "Release {version} has been installed in [{folder}]."
+msgstr "La nouvelle version {version} a été installée dans [{folder}]."
 
 msgid "Release {version} has been installed in \"{folder}\"."
 msgstr "La nouvelle version {version} a été installée dans « {folder} »."
@@ -5183,6 +5195,9 @@ msgstr "Non définis"
 msgid "Undefined *** SINGULAR"
 msgstr "Non défini"
 
+msgid "Unexpected error during installation: [{ex}]."
+msgstr "Erreur inattendue pendant l’installation : [{ex}]."
+
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
 msgstr "Identifiant unique : %(uniq_id)s"
@@ -5912,3 +5927,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

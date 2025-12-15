@@ -56,7 +56,6 @@ class ProjectBuilder(ABC):
         parser = ArgumentParser(description='Export Sharly Chess.')
         # option --github is used when generating the EXE file from a GITHUB action
         # to verify that the name of the tag matches the Sharly Chess version.
-        # option --preserve-build is used to skip cleanup for signing purposes
         parser.add_argument('--github', type=str)
         self.hook_add_params(parser)
         args: Namespace = parser.parse_args()
@@ -623,8 +622,6 @@ class ProjectBuilder(ABC):
             PLUGINS_DIR / 'ffe' / 'create_ffe.sql',
             PLUGINS_DIR / 'fra_schools' / 'create_fra_schools.sql',
         ]
-        yml_dir: Path = self.src_dir / 'database' / 'yml'
-        files += list(yml_dir.glob('*.yml'))
         custom_dir: Path = self.src_dir / 'custom'
         files += [file for file in custom_dir.glob('**/*') if file.is_file()]
         files += [file for file in self.locale_dir.glob('**/*.mo') if file.is_file()]

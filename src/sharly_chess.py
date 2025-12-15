@@ -1,3 +1,4 @@
+import logging
 import os
 import platform
 import sys
@@ -124,8 +125,8 @@ try:
     from common import DEVEL_ENV, TEST_ENV
     from common.logger import (
         get_logger,
-        print_interactive_warning,
         print_interactive_error,
+        set_logging_config,
     )
     from gui.server_gui_toga import SharlyChessServerToga
     from web.server_engine import ServerEngine
@@ -133,7 +134,6 @@ try:
     logger = get_logger()
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--server', action='store_true')
 
     parser.add_argument(
         '-p',
@@ -187,9 +187,6 @@ try:
 
     args = parser.parse_args(arguments)
 
-    if args.server:
-        print_interactive_warning('Argument --server is deprecated, ignored.')
-
     if args.generate_tournament or args.check_tournament:
         trf_input_file_path: Path
         if args.generate_tournament:
@@ -241,6 +238,9 @@ try:
         sys.exit(0)
 
     port = args.port or None
+    if args.debug:
+        # set the log level to DEBUG before loading the logging configuration of the application
+        set_logging_config(console_log_level=logging.DEBUG)
     debug = args.debug if DEVEL_ENV else False
     if error_message := search_missing_files(folder=Path(), delete_control_file=True):
         import tkinter
