@@ -84,10 +84,14 @@ class Engine:
             ):
                 self.error = True
                 if not self._install_new_version(more_recent_version, download_url):
-                    logger.error(
-                        'The installation of release [%s] failed.',
-                        more_recent_version,
-                    )
+                    if print_interactive_message(
+                        _(
+                            'Installation of release [{version}] failed, exiting.'
+                        ).format(
+                            version=more_recent_version,
+                        ),
+                    ):
+                        quit_app()
                 return
 
         if not EventLoader().event_uniq_ids:
@@ -516,8 +520,8 @@ class Engine:
         Returns True on success, False otherwise."""
         new_version_dir: Path = Path('..') / f'sharly-chess-{version}'
         if new_version_dir.exists():
-            logger.warning(
-                'Version [%s] is already installed in directory [%s], please manually delete this folder before upgrading.',
+            logger.error(
+                'Version [%s] could not be installed because directory [%s] already exists.',
                 version,
                 new_version_dir.resolve(),
             )
