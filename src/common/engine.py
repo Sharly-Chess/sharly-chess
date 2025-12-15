@@ -663,7 +663,7 @@ class Engine:
                 return False
 
         if input_interactive_yn(
-            _('Release {version} has been installed in "{folder}".').format(
+            _('Release {version} has been installed in [{folder}].').format(
                 version=version,
                 folder=new_version_dir.absolute(),
             )

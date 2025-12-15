@@ -3892,7 +3892,7 @@ msgstr ""
 msgid "Refresh this page."
 msgstr ""
 
-msgid "Release {version} has been installed in \"{folder}\"."
+msgid "Release {version} has been installed in [{folder}]."
 msgstr ""
 
 msgid "Reload the page"

@@ -3892,8 +3892,8 @@ msgstr "Actualiser"
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
-msgid "Release {version} has been installed in \"{folder}\"."
-msgstr "La nouvelle version {version} a été installée dans « {folder} »."
+msgid "Release {version} has been installed in [{folder}]."
+msgstr "La nouvelle version {version} a été installée dans [{folder}]."
 
 msgid "Reload the page"
 msgstr "Recharger la page"
