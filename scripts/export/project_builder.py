@@ -75,8 +75,6 @@ class ProjectBuilder(ABC):
         self.clean_on_startup()
         if not self.build_project():
             return False
-        if not self.build_control_file():
-            return False
         if not self.build_zip_file():
             return False
         if not self.build_test():
@@ -160,6 +158,8 @@ class ProjectBuilder(ABC):
         logger.info('Creating custom folder [%s]...', custom_dir)
         custom_dir.mkdir(exist_ok=True)
         if not self._generate_license_files():
+            return False
+        if not self.build_control_file():
             return False
         if not self.hook_post_build_project():
             return False

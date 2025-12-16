@@ -851,7 +851,7 @@ msgid "Cancel Half-Point Bye"
 msgstr "Annuler le demi-point joker"
 
 msgid "Cancel Zero-Point Bye"
-msgstr "Annuler l'absence"
+msgstr "Annuler l'absence pour cette ronde"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"
@@ -5672,7 +5672,7 @@ msgid "You must create a tournament before creating these screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
 
 msgid "Zero-Point Bye"
-msgstr "Absent·e"
+msgstr "Absent·e pour cette ronde"
 
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr "Le·la joueur·euse [{player}] a été marqué·e absent·e."

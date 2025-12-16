@@ -6,6 +6,7 @@
 - Ask the browser not to translate the interface (3.4.0)
 - Recover archived events on upgrade (3.4.0)
 - Improve upgrade experience (3.4.0)
+- Fixed application startup (3.4.1)
 
 ## Players
 
@@ -27,3 +28,8 @@
 ## _Chess-Results_
 
 - Added "State" field to the Chess-Results export for certain federations (3.4.0)
+
+## Linux
+
+- Linux experimental support (3.4.0)
+- Fixed Linux bundles (3.4.1)
