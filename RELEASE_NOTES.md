@@ -1,12 +1,16 @@
 # _Sharly Chess_ release notes
 
-# General
+## General
 
 - Export of events for sharing purposes (3.4.0)
 - Ask the browser not to translate the interface (3.4.0)
 - Recover archived events on upgrade (3.4.0)
 - Improve upgrade experience (3.4.0)
 - Fixed application startup (3.4.1)
+
+## Events
+
+- Fixed ordering of events with the same start and stop dates (3.4.1)
 
 ## Players
 
