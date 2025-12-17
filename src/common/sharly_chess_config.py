@@ -5,6 +5,7 @@ import platform
 import re
 import subprocess
 import sys
+from copy import copy
 from pathlib import Path
 from typing import Optional, overload, TYPE_CHECKING
 
@@ -245,7 +246,7 @@ class SharlyChessConfig(metaclass=Singleton):
         return PlayerCategorySet(
             id=-1,
             name=_('U8-U20 / 50+ / 65+'),
-            categories=EVEN_PRESET_CATEGORIES,
+            categories=copy(EVEN_PRESET_CATEGORIES),
             is_default=True,
         )
 
@@ -262,7 +263,7 @@ class SharlyChessConfig(metaclass=Singleton):
             PlayerCategorySet(
                 id=-2,
                 name=_('U7-U19 / 50+ / 65+'),
-                categories=ODD_PRESET_CATEGORIES,
+                categories=copy(ODD_PRESET_CATEGORIES),
                 is_default=True,
             ),
         ] + [
