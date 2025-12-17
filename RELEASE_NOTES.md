@@ -15,6 +15,7 @@
 - Allow custom player age categories (3.4.0)
 - Fixed FIDE ID display on player update (3.4.0)
 - Fixed late entries ZPBs (3.4.0)
+- Fixed U0 category displayed in default category set (3.4.2)
 
 ## Printing
 

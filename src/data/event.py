@@ -135,7 +135,9 @@ class Event:
             )
 
         else:
-            categories = SharlyChessConfig().default_player_category_set.categories
+            categories = copy.copy(
+                SharlyChessConfig().default_player_category_set.categories
+            )
         # Insert a category as filler for all the players not represented in the categories
         index: int = 0
         while index < len(categories) and isinstance(categories[index], JuniorCategory):
