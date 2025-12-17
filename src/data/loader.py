@@ -8,7 +8,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Literal
 
-from common.i18n.utils import by, normalized_key
+from common.i18n.utils import by
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
@@ -192,7 +192,7 @@ class EventLoader:
             key=lambda event: (
                 get_date_timestamp(event.stop_date) * sort_order,
                 get_date_timestamp(event.start_date) * sort_order,
-                normalized_key('name'),
+                event.name,
             ),
         )
 
