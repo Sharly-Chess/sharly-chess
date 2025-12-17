@@ -64,9 +64,11 @@ def default_workdir() -> Path:
                 and exe.parent.parent.parent.suffix == '.app'
             ):
                 return exe.parent.parent.parent.parent  # -> parent of the .app bundle
+            # Case: onefile or frozen onedir (not .app)
+            return exe.parent
+        else:
+            return Path(sys.executable).resolve().parent
 
-        # Case: onefile or frozen onedir (not .app)
-        return exe.parent
     # Dev/unfrozen
     return Path.cwd()
 
