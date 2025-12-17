@@ -7,8 +7,6 @@ from pathlib import Path
 
 from pathvalidate import validate_filepath, ValidationError
 
-from antivirus.control import search_missing_files
-
 # Nuclear option: Override warnings.warn to block specific messages
 # warnings.filterwarnings simply would not work
 _original_warn = warnings.warn
@@ -130,6 +128,7 @@ try:
     )
     from gui.server_gui_toga import SharlyChessServerToga
     from web.server_engine import ServerEngine
+    from antivirus.control import search_missing_files
 
     logger = get_logger()
 
