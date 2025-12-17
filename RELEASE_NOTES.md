@@ -10,7 +10,7 @@
 
 ## Events
 
-- Fixed ordering of events with the same start and stop dates (3.4.1)
+- Fixed ordering of events with the same start and stop dates (3.4.2)
 
 ## Players
 
@@ -19,7 +19,6 @@
 - Allow custom player age categories (3.4.0)
 - Fixed FIDE ID display on player update (3.4.0)
 - Fixed late entries ZPBs (3.4.0)
-- Fixed the default age category change month for FFE events (3.4.2)
 - Fixed U0 category displayed in default category set (3.4.2)
 
 ## Printing
@@ -30,6 +29,10 @@
 
 - Improved the timer interface (3.4.0)
 - Added timers to rotators (3.4.0)
+
+## _FFE_
+
+- Fixed the default age category change month for FFE events (3.4.2)
 
 ## _Chess-Results_
 
