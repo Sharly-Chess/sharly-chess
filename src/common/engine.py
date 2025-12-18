@@ -32,6 +32,8 @@ from common.logger import (
     get_logger,
     input_interactive_choices,
     input_interactive_yn,
+    print_interactive_message,
+    quit_app,
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -85,10 +87,14 @@ class Engine:
             ):
                 self.error = True
                 if not self._install_new_version(more_recent_version, download_url):
-                    logger.error(
-                        'The installation of release [%s] failed.',
-                        more_recent_version,
-                    )
+                    if print_interactive_message(
+                        _(
+                            'Installation of release [{version}] failed, exiting.'
+                        ).format(
+                            version=more_recent_version,
+                        ),
+                    ):
+                        quit_app()
                 return
 
         if not EventLoader().event_uniq_ids:
@@ -443,8 +449,8 @@ class Engine:
                     logger.debug('No assets for release [%s], ignored.', version)
                     continue
                 download_url: str | None = None
-                valid_asset_names: list[str] = []
                 for asset in assets:
+                    valid_asset_names: list[str] = []
                     system = platform.system()
                     match system:
                         case 'Windows':
@@ -470,6 +476,8 @@ class Engine:
                                 valid_asset_names = [
                                     f'sharly-chess-{version}-linux-x86_64.zip'
                                 ]
+                        case _:
+                            raise NotImplementedError(f'{system=}')
 
                     if (
                         asset_name := asset.get('name', 'undefined')
@@ -541,44 +549,49 @@ class Engine:
         new_version_dir: Path = Path('..') / f'sharly-chess-{version}'
         if new_version_dir.exists():
             logger.error(
-                'Version [%s] is already installed in directory [%s], please manually delete this folder before installing.',
+                'Version [%s] could not be installed because directory [%s] already exists.',
                 version,
                 new_version_dir.resolve(),
             )
             return False
-        try:
-            with tempfile.TemporaryDirectory() as tmpdir:
-                tmp_dir: Path = Path(tmpdir)
-                logger.info(
-                    'Downloading release [%s] from GitHub ([%s])...',
-                    version,
-                    download_url,
-                )
-                response: Response = get(download_url, allow_redirects=True, timeout=10)
-                response.raise_for_status()
-                if not response:
-                    logger.error('No response from GitHub.')
-                    return False
-                if response.status_code != 200:
-                    logger.error(
-                        'Downloading failed with code [%d].', response.status_code
+        else:
+            try:
+                with tempfile.TemporaryDirectory() as tmpdir:
+                    tmp_dir: Path = Path(tmpdir)
+                    logger.info(
+                        'Downloading release [%s] from GitHub ([%s])...',
+                        version,
+                        download_url,
                     )
-                    return False
-                # Determine downloaded file name based on platform
-                system = platform.system()
-                match system:
-                    case 'Windows':
-                        downloaded_file = (
-                            tmp_dir / f'sharly-chess-{version}-windows.zip'
+                    response: Response = get(
+                        download_url, allow_redirects=True, timeout=10
+                    )
+                    response.raise_for_status()
+                    if not response:
+                        logger.error('No response from GitHub.')
+                        return False
+                    if response.status_code != 200:
+                        logger.error(
+                            'Downloading failed with code [%d].', response.status_code
                         )
-                    case 'Darwin':
-                        downloaded_file = tmp_dir / f'sharly-chess-{version}-macos.dmg'
-                    case 'Linux':
-                        build_arch = os.environ.get('BUILD_ARCH')
-                        if build_arch:
-                            machine = build_arch.lower()
-                        else:
-                            machine = platform.machine().lower()
+                        return False
+                    # Determine downloaded file name based on platform
+                    system = platform.system()
+                    match system:
+                        case 'Windows':
+                            downloaded_file = (
+                                tmp_dir / f'sharly-chess-{version}-windows.zip'
+                            )
+                        case 'Darwin':
+                            downloaded_file = (
+                                tmp_dir / f'sharly-chess-{version}-macos.dmg'
+                            )
+                        case 'Linux':
+                            build_arch = os.environ.get('BUILD_ARCH')
+                            if build_arch:
+                                machine = build_arch.lower()
+                            else:
+                                machine = platform.machine().lower()
                             if machine in ('aarch64', 'arm64'):
                                 downloaded_file = (
                                     tmp_dir / f'sharly-chess-{version}-linux-arm64.zip'
@@ -588,8 +601,8 @@ class Engine:
                                     tmp_dir / f'sharly-chess-{version}-linux-x86_64.zip'
                                 )
 
-                downloaded_file.write_bytes(response.content)
-                logger.debug('File downloaded: [%s].', downloaded_file)
+                    downloaded_file.write_bytes(response.content)
+                    logger.debug('File downloaded: [%s].', downloaded_file)
 
                 match system:
                     case 'Windows':
@@ -663,13 +676,32 @@ class Engine:
                     version,
                     new_version_dir.resolve(),
                 )
-                return True
-        except RequestException as ex:
-            logger.warning('Failed to read [%s]: [%s].', download_url, ex)
-            return False
-        except subprocess.CalledProcessError as ex:
-            logger.error('Failed to process DMG file: [%s]', ex)
-            return False
-        except Exception as ex:
-            logger.error('Unexpected error during installation: [%s]', ex)
-            return False
+            except RequestException as ex:
+                print_interactive_message(
+                    _('Failed to read [{download_url}]: [{ex}].').format(
+                        download_url=download_url, ex=ex
+                    )
+                )
+                return False
+            except subprocess.CalledProcessError as ex:
+                print_interactive_message(
+                    _('Failed to process DMG file: [{ex}].').format(ex=ex)
+                )
+                return False
+            except Exception as ex:
+                print_interactive_message(
+                    _('Unexpected error during installation: [{ex}].').format(ex=ex)
+                )
+                return False
+
+        if print_interactive_message(
+            _('Release {version} has been installed in [{folder}].').format(
+                version=version,
+                folder=new_version_dir.absolute(),
+            )
+            + '\n\n'
+            + _('Please launch the new version.'),
+        ):
+            quit_app()
+
+        return True

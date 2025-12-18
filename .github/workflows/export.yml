@@ -404,8 +404,8 @@ jobs:
           # macOS files - only sharly-chess
           cp export-macos/sharly-chess-${VERSION}-macos.dmg release-files/sharly-chess-${VERSION}-macos.dmg
           # Linux files - both architectures
-          cp export-linux/sharly-chess-3.4.0b2-linux-x86_64/sharly-chess-${VERSION}-x86_64.zip release-files/sharly-chess-${VERSION}-linux-x86_64.zip 2>/dev/null || true
-          cp export-linux/sharly-chess-3.4.0b2-linux-arm64/sharly-chess-${VERSION}-arm64.zip release-files/sharly-chess-${VERSION}-linux-arm64.zip 2>/dev/null || true
+          cp export-linux/sharly-chess-${VERSION}-linux-x86_64/sharly-chess-${VERSION}-x86_64.zip release-files/sharly-chess-${VERSION}-linux-x86_64.zip
+          cp export-linux/sharly-chess-${VERSION}-linux-arm64/sharly-chess-${VERSION}-arm64.zip release-files/sharly-chess-${VERSION}-linux-arm64.zip
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:

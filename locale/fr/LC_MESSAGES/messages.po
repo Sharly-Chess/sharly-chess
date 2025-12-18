@@ -851,7 +851,7 @@ msgid "Cancel Half-Point Bye"
 msgstr "Annuler le demi-point joker"
 
 msgid "Cancel Zero-Point Bye"
-msgstr "Annuler l'absence"
+msgstr "Annuler l'absence pour cette ronde"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"
@@ -1996,6 +1996,12 @@ msgstr "MF"
 msgid "FORFEIT"
 msgstr "FORFAIT"
 
+msgid "Failed to process DMG file: [{ex}]."
+msgstr "Échec du traitement du fichier DMG : [{ex}]."
+
+msgid "Failed to read [{download_url}]: [{ex}]."
+msgstr "Échec de la lecture de [{download_url}] : [{ex}]."
+
 msgid "Families"
 msgstr "Familles"
 
@@ -2404,6 +2410,9 @@ msgstr "Installer"
 
 msgid "Installation of [{lib}] failed."
 msgstr "L'installation de la bibliothèque [{lib}] a échoué."
+
+msgid "Installation of release [{version}] failed, exiting."
+msgstr "L'nstallation de la version [{version}] a échoué, abandon."
 
 msgid "Installed [{lib}]."
 msgstr "La bibliothèque [{lib}] a été installée."
@@ -3602,6 +3611,9 @@ msgstr "Veuillez entrer l'URL de l'image."
 msgid "Please enter the name of the event."
 msgstr "Veuillez entrer le nom de l'évènement."
 
+msgid "Please launch the new version."
+msgstr "Veuillez lancer la nouvelle version."
+
 msgid "Please select a type of criterion."
 msgstr "Veuillez choisir un type de critère."
 
@@ -3888,6 +3900,9 @@ msgstr "Actualiser"
 
 msgid "Refresh this page."
 msgstr "Actualiser la page."
+
+msgid "Release {version} has been installed in [{folder}]."
+msgstr "La nouvelle version {version} a été installée dans [{folder}]."
 
 msgid "Reload the page"
 msgstr "Recharger la page"
@@ -5177,6 +5192,9 @@ msgstr "Non définis"
 msgid "Undefined *** SINGULAR"
 msgstr "Non défini"
 
+msgid "Unexpected error during installation: [{ex}]."
+msgstr "Erreur inattendue pendant l’installation : [{ex}]."
+
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
 msgstr "Identifiant unique : %(uniq_id)s"
@@ -5654,7 +5672,7 @@ msgid "You must create a tournament before creating these screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
 
 msgid "Zero-Point Bye"
-msgstr "Absent·e"
+msgstr "Absent·e pour cette ronde"
 
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr "Le·la joueur·euse [{player}] a été marqué·e absent·e."
