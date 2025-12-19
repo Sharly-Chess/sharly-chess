@@ -1,5 +1,4 @@
 from logging import Logger
-from pathlib import Path
 
 from antivirus.programs.windows import WindowsAntivirus
 from common.logger import get_logger
@@ -10,24 +9,11 @@ logger: Logger = get_logger()
 class ESET(WindowsAntivirus):
     def __init__(self):
         super().__init__(
-            'ESET',
-            [
+            name='ESET',
+            doc_url='https://help.eset.com/ees/10.1/en-US/idh_config_processes_exclude_add.html?idh_config_amon.html',
+            signatures=[
                 'Efwd.exe',
                 'ekrn.exe',
                 'eServiceHost.exe',
             ],
-        )
-
-    def run(
-        self,
-        folder: Path,
-    ) -> None:
-        if not folder.is_absolute():
-            folder = folder.resolve()
-        logger.warning(
-            'Antivirus ESET has been detected and Sharly Chess has no way to know the exclusions set in ESET.\n'
-            'So you should (if not already done) add an exclusion in ESET for the following folder to prevent\n'
-            'you from arbitrary ESET file deletions:\n'
-            f'- [{folder}]\n'
-            'Please refer to https://sharly-chess.com/antivirus/eset to learn how to add a path exception in ESET.'
         )

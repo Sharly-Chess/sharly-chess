@@ -22,12 +22,9 @@ def detect() -> list[Antivirus]:
             from antivirus.programs.windows.avira import Avira
             from antivirus.programs.windows.eset import ESET
             from antivirus.programs.windows.f_secure import FSecure
-            from antivirus.programs.windows.i_defense_lab import IDefenseLab
             from antivirus.programs.windows.kaspersky import Kaspersky
-            from antivirus.programs.windows.mc_afee import McAfee
             from antivirus.programs.windows.norton import Norton
-            from antivirus.programs.windows.sunbelt_sandbox import SunbeltSandbox
-            from antivirus.programs.windows.virtual_pc import VirtualPC
+            from antivirus.programs.windows.trend_micro import TrendMicro
             from antivirus.programs.windows.windows_defender import WindowsDefender
 
             detected_antivirus_programs: list[Antivirus] = []
@@ -43,12 +40,9 @@ def detect() -> list[Antivirus]:
                     AVG(),
                     ESET(),
                     FSecure(),
-                    IDefenseLab(),
                     Kaspersky(),
-                    McAfee(),
                     Norton(),
-                    SunbeltSandbox(),
-                    VirtualPC(),
+                    TrendMicro(),
                     WindowsDefender(),
                 ]:
                     for signature in avs.signatures:

@@ -9,8 +9,9 @@ logger: Logger = get_logger()
 class AVG(WindowsAntivirus):
     def __init__(self):
         super().__init__(
-            'AVG',
-            [
+            name='AVG',
+            doc_url='https://support.avg.com/SupportArticleView?urlName=AVG-Antivirus-scan-exclusions&supportType=home',
+            signatures=[
                 'avghookx.dll',
                 'avghooka.dll',
             ],

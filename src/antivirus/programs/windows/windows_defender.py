@@ -13,8 +13,9 @@ logger: Logger = get_logger()
 class WindowsDefender(WindowsAntivirus):
     def __init__(self):
         super().__init__(
-            'Windows Defender',
-            [
+            name='Windows Defender',
+            doc_url='',
+            signatures=[
                 'msmpeng.exe',
                 'mpcmdrun.exe',
             ],

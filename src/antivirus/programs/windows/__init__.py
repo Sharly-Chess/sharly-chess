@@ -12,9 +12,10 @@ class WindowsAntivirus(Antivirus):
     def __init__(
         self,
         name: str,
+        doc_url: str,
         signatures: list[str],
     ):
-        super().__init__(name, signatures)
+        super().__init__(name, doc_url, signatures)
 
 
 class WinregistryException(Exception):

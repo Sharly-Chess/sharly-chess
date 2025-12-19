@@ -11,8 +11,9 @@ logger: Logger = get_logger()
 class Avast(WindowsAntivirus):
     def __init__(self):
         super().__init__(
-            'Avast',
-            [
+            name='Avast',
+            doc_url='https://support.avast.com/en-us/article/antivirus-scan-exclusions',
+            signatures=[
                 'snxhk.dll',
                 'sf2.dll',
                 'AvastUI.exe',
@@ -60,8 +61,4 @@ class Avast(WindowsAntivirus):
                     f'Sharly Chess folder [{folder}] belongs to the Avast exclusions.'
                 )
                 return
-        logger.error(
-            f'Sharly Chess folder [{folder}] does not belong to the Avast path exceptions.\n'
-            'You should add a path exception in Avast to prevent you from arbitrary Avast file deletions.\n'
-            'Please refer to https://sharly-chess.com/antivirus/avast to learn how to add a path exception in Avast.\n'
-        )
+        super().run(folder)

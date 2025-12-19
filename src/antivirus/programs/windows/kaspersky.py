@@ -9,8 +9,9 @@ logger: Logger = get_logger()
 class Kaspersky(WindowsAntivirus):
     def __init__(self):
         super().__init__(
-            'Kaspersky',
-            [
+            name='Kaspersky',
+            doc_url='https://support.kaspersky.com/ksws/11/en-US/179387.htm',
+            signatures=[
                 'kav.exe',
                 'kavsvc.exe',
             ],
