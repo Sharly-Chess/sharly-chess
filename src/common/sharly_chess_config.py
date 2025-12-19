@@ -1,7 +1,6 @@
 import locale
 import logging
 import os
-import platform
 import re
 import subprocess
 import sys
@@ -283,7 +282,7 @@ class SharlyChessConfig(metaclass=Singleton):
 
     # The ports the web server tries to start on, tried one after the other.
     web_ports: list[int] = (
-        ([80, 81, 8080, 8081] if platform.system() != 'Linux' else [8080, 8081])
+        ([80, 81, 8080, 8081] if sys.platform != 'linux' else [8080, 8081])
         if not TEST_ENV
         else [9000]
     )

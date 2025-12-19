@@ -11,9 +11,9 @@ import asyncio
 import io
 import json
 import logging
-import platform
 import queue
 import re
+import sys
 import threading
 import webbrowser
 from datetime import datetime
@@ -261,16 +261,15 @@ class SharlyChessServerToga(toga.App):
 
     def __init__(self, *, debug: bool = False, port: int | None = None):
         icon_file_name: str | None = None
-        system = platform.system()
-        match system:
-            case 'Windows':
+        match sys.platform:
+            case 'win32':
                 icon_file_name = 'sharly-chess.ico'
-            case 'Darwin':
+            case 'darwin':
                 icon_file_name = 'sharly-chess.icns'
-            case 'Linux':
+            case 'linux':
                 icon_file_name = 'sharly-chess.png'
             case _:
-                raise NotImplementedError(f'{system=}')
+                raise NotImplementedError(f'{sys.platform=}')
         super().__init__(
             formal_name='Sharly Chess',
             app_id='com.sharlychess.app',
@@ -608,7 +607,7 @@ class SharlyChessServerToga(toga.App):
         # IMPORTANT: bypass Toga's event-loop policy in this *background* thread
         self.server_loop = asyncio.SelectorEventLoop()
         loop = self.server_loop
-        if platform.system() != 'Linux':
+        if sys.platform != 'linux':
             asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
             asyncio.set_event_loop(loop)
 
