@@ -7,6 +7,7 @@
 - Recover archived events on upgrade (3.4.0)
 - Improve upgrade experience (3.4.0)
 - Fixed application startup (3.4.1)
+- Improve error display on upgrade failures (3.4.3)
 
 ## Events
 
