@@ -995,7 +995,7 @@ class StatisticsPrintDocument(PrintDocument):
             (
                 'category',
                 _('Age categories'),
-                lambda item: -item[0].value,
+                lambda item: item[0],
                 None,
                 None,
                 None,
