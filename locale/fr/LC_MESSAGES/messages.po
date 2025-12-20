@@ -1337,6 +1337,9 @@ msgstr "ADJ"
 msgid "DD/MM/YYYY"
 msgstr "JJ/MM/AAAA"
 
+msgid "DMG does not contain exactly one folder as expected."
+msgstr "Le DMG ne contient pas un unique dossier comme attendu."
+
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
@@ -1520,6 +1523,9 @@ msgstr "Confrontation directe"
 msgid "Director:"
 msgstr "Directeur·ice :"
 
+msgid "Directory [{folder}] already exists."
+msgstr "Le dossier [{folder}] existe déjà."
+
 msgid "Disabled"
 msgstr "Désactivé"
 
@@ -1604,6 +1610,9 @@ msgstr "Télécharger les vCards des joueur·euses (format VCF). Attention: les 
 
 msgid "Download tournament fees"
 msgstr "Télécharger les droits d'homologation"
+
+msgid "Downloading failed with code [{code}]."
+msgstr "Le téléchargement a échoué avec le code [{code}]."
 
 msgid "Drag the sets to order them."
 msgstr "Faites glisser les ensembles pour les ordonner."
@@ -2990,6 +2999,9 @@ msgstr "Aucun événement public."
 msgid "No public screens"
 msgstr "Aucun écran public"
 
+msgid "No response from GitHub."
+msgstr "Pas de réponse de GitHub."
+
 msgid "No result"
 msgstr "Pas de résultat"
 
@@ -4356,6 +4368,9 @@ msgstr "Dimension ({unit}) : {width}x{height}"
 
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
 msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les rendant dangereux dans les mains de personnes non-informées ou malveillantes."
+
+msgid "Some files are missing."
+msgstr "Des fichiers sont manquants."
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
