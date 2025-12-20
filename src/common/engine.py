@@ -14,6 +14,8 @@ from typing import Any
 
 from antivirus.control import search_missing_files
 from antivirus.detect import detect_antivirus_programs
+from antivirus.programs.antivirus import Antivirus
+from antivirus.protect import protect_from_antivirus_programs
 from common import (
     SHARLY_CHESS_VERSION,
     TEST_ENV,
@@ -606,7 +608,13 @@ class Engine:
                         case 'win32':
                             # For Windows: Unzip the file
                             new_version_dir.mkdir()
-                            detect_antivirus_programs(folder=new_version_dir)
+                            detected_antivirus_programs: list[Antivirus] = (
+                                detect_antivirus_programs()
+                            )
+                            protect_from_antivirus_programs(
+                                detected_antivirus_programs=detected_antivirus_programs,
+                                folder=new_version_dir,
+                            )
                             with zipfile.ZipFile(downloaded_file, 'r') as zip_ref:
                                 zip_ref.extractall(new_version_dir)
                             if error_message := search_missing_files(
