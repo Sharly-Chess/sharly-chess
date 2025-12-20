@@ -1337,6 +1337,9 @@ msgstr ""
 msgid "DD/MM/YYYY"
 msgstr ""
 
+msgid "DMG does not contain exactly one folder as expected."
+msgstr ""
+
 msgid "DOUBLE"
 msgstr ""
 
@@ -1520,6 +1523,9 @@ msgstr ""
 msgid "Director:"
 msgstr ""
 
+msgid "Directory [{folder}] already exists."
+msgstr ""
+
 msgid "Disabled"
 msgstr ""
 
@@ -1603,6 +1609,9 @@ msgid "Download the vCards of the selected players (VCF format). Warning: player
 msgstr ""
 
 msgid "Download tournament fees"
+msgstr ""
+
+msgid "Downloading failed with code [{code}]."
 msgstr ""
 
 msgid "Drag the sets to order them."
@@ -2990,6 +2999,9 @@ msgstr ""
 msgid "No public screens"
 msgstr ""
 
+msgid "No response from GitHub."
+msgstr ""
+
 msgid "No result"
 msgstr ""
 
@@ -4355,6 +4367,9 @@ msgid "Size ({unit}): {width}x{height}"
 msgstr ""
 
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
+msgstr ""
+
+msgid "Some files are missing."
 msgstr ""
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
