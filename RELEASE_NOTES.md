@@ -24,6 +24,7 @@
 ## Printing
 
 - Prize receipts (3.4.0)
+- Fixed the statistics document (3.4.3)
 
 ## Screens
 
