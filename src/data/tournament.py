@@ -290,6 +290,16 @@ class Tournament:
             for setting in self.pairing_variation.settings
         }
 
+    @property
+    def pairing_settings_warning_message(self) -> str | None:
+        """Warning to display at global pairing level."""
+        plugin_warning = plugin_manager.hook_for_event(
+            self.event, 'get_tournament_pairing_settings_warning_message'
+        )(tournament=self)
+        if plugin_warning:
+            return plugin_warning
+        return None
+
     def set_valid_pairing_settings(self):
         modified_settings: dict[str, Any] = {}
         for setting in self.pairing_variation.settings:

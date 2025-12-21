@@ -97,6 +97,13 @@
                         </span>
                     {% endif %}
                 {% endwith %}
+                {% set warning_message = tournament.pairing_settings_warning_message %}
+                {% if warning_message %}
+                    <i
+                        class="bi-exclamation-triangle-fill text-warning"
+                        {{ macros.tooltip_attributes('warning', warning_message, 'top', ) }}
+                    ></i>
+                {% endif %}
             </div>
             {% for template in plugin_card_fields_templates %}
                 {% include template %}

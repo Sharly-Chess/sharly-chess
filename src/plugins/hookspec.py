@@ -295,6 +295,12 @@ class AppHookSpecs:
     ) -> str | None:
         """Warning message for the tie-breaks of a tournament."""
 
+    @hookspec(firstresult=True)
+    def get_tournament_pairing_settings_warning_message(
+        self, tournament: 'Tournament'
+    ) -> str | None:
+        """Warning message for the pairing settings of a tournament."""
+
     @hookspec
     def signal_tournament_set(
         self, event: 'Event', stored_tournament: 'StoredTournament'

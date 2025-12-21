@@ -381,6 +381,9 @@ msgstr ""
 msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
 msgstr ""
 
+msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
+msgstr ""
+
 msgid "Tournament"
 msgstr ""
 
