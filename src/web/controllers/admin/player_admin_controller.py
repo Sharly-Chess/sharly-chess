@@ -1947,6 +1947,7 @@ class PlayerAdminController(BaseEventAdminController):
         data_source = web_context.get_admin_data_source()
         players: list[Player] = []
         connection_error: str | None = None
+        search = search.strip()
         if search:
             try:
                 stored_players = await data_source.search_player(
