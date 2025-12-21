@@ -34,7 +34,8 @@
 
 ## _FFE_
 
-- Fixed the default age category change month for FFE events (3.4.2)
+- Fixed the default age category change month for _FFE_ events (3.4.2)
+- Fixed player search on the local _FFE_ database (3.4.3)
 
 ## _Chess-Results_
 
