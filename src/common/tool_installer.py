@@ -2,6 +2,7 @@ import os
 import platform
 import stat
 import shutil
+import sys
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from functools import cached_property
@@ -334,21 +335,20 @@ class BbpPairingsInstaller(ExecutableInstaller):
 
     @cached_property
     def system_handler(self) -> SystemHandler:
-        system = platform.system()
-        match system:
-            case 'Windows':
+        match sys.platform:
+            case 'win32':
                 return SystemHandler(
                     executable_dir=f'bbpPairings-v{self.version}',
                     executable_filename='bbpPairings-windows.exe',
                     archive_filename='bbpPairings-Windows.zip',
                 )
-            case 'Darwin':
+            case 'darwin':
                 return SystemHandler(
                     executable_dir=f'bbpPairings-v{self.version}',
                     executable_filename='bbpPairings-macos',
                     archive_filename='bbpPairings-macOS.zip',
                 )
-            case 'Linux':
+            case 'linux':
                 # Detect architecture for Linux
                 # Allow override via BUILD_ARCH environment variable (useful for cross-compilation/QEMU)
                 build_arch = os.environ.get('BUILD_ARCH')
@@ -372,9 +372,7 @@ class BbpPairingsInstaller(ExecutableInstaller):
                     archive_filename=archive_filename,
                 )
             case _:
-                raise OSError(
-                    f'{self._name} is not available for the current system: {system}'
-                )
+                raise NotImplementedError(f'{sys.platform=}')
 
     @property
     def install_dir(self) -> Path:
@@ -392,15 +390,19 @@ class BbpPairingsInstaller(ExecutableInstaller):
         self.install_archive_and_delete(archive_path, self.install_dir)
 
         # Set execute permissions for macOS and Linux
-        system = platform.system()
-        if system in ['Darwin', 'Linux']:
-            if self.executable_path.exists():
-                # Add execute permission for owner, group, and others
-                current_permissions = self.executable_path.stat().st_mode
-                new_permissions = (
-                    current_permissions | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
-                )
-                self.executable_path.chmod(new_permissions)
+        match sys.platform:
+            case 'darwin' | 'linux':
+                if self.executable_path.exists():
+                    # Add execute permission for owner, group, and others
+                    current_permissions = self.executable_path.stat().st_mode
+                    new_permissions = (
+                        current_permissions | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+                    )
+                    self.executable_path.chmod(new_permissions)
+            case 'win32':
+                pass
+            case _:
+                raise NotImplementedError(f'{sys.platform=}')
 
         return self.is_installed
 
@@ -412,21 +414,20 @@ class PapiConverterInstaller(ExecutableInstaller):
 
     @cached_property
     def system_handler(self) -> SystemHandler:
-        system = platform.system()
-        match system:
-            case 'Windows':
+        match sys.platform:
+            case 'win32':
                 return SystemHandler(
                     executable_dir='papi-converter-windows',
                     executable_filename='papi-converter.bat',
                     archive_filename='papi-converter-windows.zip',
                 )
-            case 'Darwin':
+            case 'darwin':
                 return SystemHandler(
                     executable_dir='papi-converter-mac',
                     executable_filename='papi-converter',
                     archive_filename='papi-converter-mac.tar.gz',
                 )
-            case 'Linux':
+            case 'linux':
                 # Detect architecture for Linux
                 # Allow override via BUILD_ARCH environment variable (useful for cross-compilation/QEMU)
                 build_arch = os.environ.get('BUILD_ARCH')
@@ -450,9 +451,7 @@ class PapiConverterInstaller(ExecutableInstaller):
                     archive_filename=archive_filename,
                 )
             case _:
-                raise OSError(
-                    f'{self._name} is not available for the current system: {system}'
-                )
+                raise NotImplementedError(f'{sys.platform=}')
 
     @property
     def _name(self) -> str:

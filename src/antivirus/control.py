@@ -1,5 +1,4 @@
 import os
-import platform
 from logging import Logger
 from pathlib import Path
 
@@ -17,7 +16,7 @@ def search_missing_files(
     import sys
 
     if (
-        platform.system() == 'Windows'
+        sys.platform == 'win32'
         and getattr(sys, 'frozen', False)
         and os.getenv('TEST_ENV') != 'true'
         and Path(sys.argv[0]).stem != 'pytest'
