@@ -97,6 +97,11 @@ class AccelerationSwissVariation(SwissVariation, ABC):
     ) -> AccelerationGroup:
         """Get the acceleration group of a player in a tournament."""
 
+    @classmethod
+    @abstractmethod
+    def get_group_max_numbers(cls, tournament: Tournament) -> list[int]:
+        """Returns the list of the plast pairing numbers of each acceleration group."""
+
 
 class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
     @property
@@ -149,6 +154,13 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
             GroupB2GroupsSetting().id: (max_a + 1, tournament.player_count),
         }
         return True
+
+    @classmethod
+    def get_group_max_numbers(cls, tournament: Tournament) -> list[int]:
+        _, group_a_max = tournament.pairing_settings[GroupA2GroupsSetting.static_id()]
+        return [
+            group_a_max,
+        ]
 
 
 class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
@@ -226,6 +238,15 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
             GroupC3GroupsSetting().id: (max_b + 1, tournament.player_count),
         }
         return True
+
+    @classmethod
+    def get_group_max_numbers(cls, tournament: Tournament) -> list[int]:
+        _, group_a_max = tournament.pairing_settings[GroupA3GroupsSetting.static_id()]
+        _, group_b_max = tournament.pairing_settings[GroupB3GroupsSetting.static_id()]
+        return [
+            group_a_max,
+            group_b_max,
+        ]
 
     @staticmethod
     def _format_vpoints_inequality(

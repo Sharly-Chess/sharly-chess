@@ -35,6 +35,7 @@
 ## _FFE_
 
 - Fixed the default age category change month for FFE events (3.4.2)
+- Fixed the display of pairings on the FFE website for accelerated tournaments (3.4.3)
 
 ## _Chess-Results_
 

@@ -13,6 +13,7 @@ from common.i18n import _
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from common.tool_installer import PapiConverterInstaller
+from data.event import Event
 from data.input_output.dict_reader import dict_to_dataclass
 from data.pairings.engines import DoubleBergerPairingEngine
 from data.pairings.variations import (
@@ -20,7 +21,6 @@ from data.pairings.variations import (
     DoubleBergerRoundRobinVariation,
     PairingVariation,
 )
-from data.event import Event
 from data.player import TournamentPlayer, PlayerRating
 from data.player_categories import PlayerCategory
 from data.tie_breaks.tie_breaks import ManualTieBreak, TieBreak
@@ -51,7 +51,10 @@ from plugins.ffe.papi_mappers import (
 from plugins.ffe.utils import FFEUtils
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence, FFE_EPOCH
 from plugins.manager import plugin_manager
-from plugins.pairing_acceleration.pairing_variations import BakuSwissVariation
+from plugins.pairing_acceleration.pairing_variations import (
+    BakuSwissVariation,
+    AccelerationSwissVariation,
+)
 from utils import Utils
 from utils.enum import (
     TournamentRating,
@@ -733,12 +736,37 @@ class PapiConverter:
                     result.stdout,
                 )
 
+    @classmethod
+    def _get_rating_thresholds_from_pairing_settings(
+        cls,
+        tournament: Tournament,
+    ) -> tuple[int, int]:
+        rating_threshold_1: int = 0
+        rating_threshold_2: int = 0
+        variation: PairingVariation = tournament.pairing_variation
+        if isinstance(variation, AccelerationSwissVariation):
+            group_max_numbers: list[int] = variation.get_group_max_numbers(tournament)
+            if len(group_max_numbers) > 0 and group_max_numbers[0] > 0:
+                rating_threshold_1 = tournament.tournament_players_by_pairing_number[
+                    group_max_numbers[0] - 1
+                ].rating
+                if len(group_max_numbers) > 1 and group_max_numbers[0] > 0:
+                    rating_threshold_2 = (
+                        tournament.tournament_players_by_pairing_number[
+                            group_max_numbers[1] - 1
+                        ].rating
+                    )
+        return rating_threshold_1, rating_threshold_2
+
     def tournament_to_papi_data(
         self, tournament: Tournament, anonymize_player_data: bool = False
     ) -> PapiData:
         """Convert a Tournament object to PapiData."""
         papi_tiebreaks, manual_tiebreak_by_player_id = (
             self._tiebreaks_to_papi_tiebreaks(tournament)
+        )
+        rating_thresholds: tuple[int, int] = (
+            self._get_rating_thresholds_from_pairing_settings(tournament)
         )
         # Convert tournament variables
         variables = PapiVariables(
@@ -757,9 +785,9 @@ class PapiConverter:
                 tournament.three_points_for_a_win
             ),
             arbiter='',
-            timeControl='',
-            ratingThreshold1='0',
-            ratingThreshold2='0',
+            timeControl=tournament.time_control_trf25,
+            ratingThreshold1=str(rating_thresholds[0]),
+            ratingThreshold2=str(rating_thresholds[1]),
             homologation=str(
                 FFEUtils.get_tournament_plugin_data(tournament).ffe_id or ''
             ),
