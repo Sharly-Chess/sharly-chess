@@ -2,10 +2,8 @@ import logging
 import os
 import sys
 import warnings
+from pathlib import Path
 
-from antivirus.detect import detect_antivirus_programs
-from antivirus.programs.antivirus import Antivirus
-from antivirus.protect import protect_from_antivirus_programs
 from pathvalidate import validate_filepath, ValidationError
 
 # Nuclear option: Override warnings.warn to block specific messages
@@ -44,7 +42,6 @@ match sys.platform:
     case 'win32':
         # Windows marks the downloaded files as unsure and blocks their usage.
         # On the first run, all the files of the distribution are unmarked.
-        from pathlib import Path
 
         base_dir: Path = Path(sys.argv[0]).resolve().parent
         tracer: Path = base_dir / 'tmp/.unblock_files'
@@ -134,6 +131,9 @@ try:
     from gui.server_gui_toga import SharlyChessServerToga
     from web.server_engine import ServerEngine
     from antivirus.control import search_missing_files
+    from antivirus.detect import detect_antivirus_programs
+    from antivirus.programs.antivirus import Antivirus
+    from antivirus.protect import protect_from_antivirus_programs
 
     logger = get_logger()
 
@@ -246,6 +246,7 @@ try:
     if debug:
         # set the log level to DEBUG before loading the logging configuration of the application
         set_logging_config(console_log_level=logging.DEBUG)
+
     if error_message := search_missing_files(folder=Path(), delete_control_file=True):
         import tkinter
         from tkinter import messagebox
