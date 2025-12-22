@@ -178,8 +178,8 @@ msgstr "Site de la FFE"
 msgid "FIDE ID"
 msgstr "Identifiant FIDE"
 
-msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
-msgstr "Lien de facture non trouvé, vérifier qu'un fichier Papi a été envoyé et que le tournoi n'a pas été archivé sur le site web FFE."
+msgid "Fees link not found, check that a tournament has already been sent and that the tournament has not been archived on the FFE website."
+msgstr "Lien de facture non trouvé, vérifier qu'un tournoi a été envoyé et que le tournoi n'a pas été archivé sur le site web FFE."
 
 msgid "Filter the leagues."
 msgstr "Filtrer les ligues."
@@ -348,8 +348,8 @@ msgstr "Standard"
 msgid "Status"
 msgstr "Statut"
 
-msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
-msgstr "Le système d'accélération de Bakou n'est pas compatible avec Papi, il peut y avoir des différences dans l'affichage des appariements Papi."
+msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
+msgstr "e système d'accélération de Bakou n'est pas reconnu par la FFE, il peut y avoir des différences dans l'affichage des appariements sur le site web de la FFE."
 
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."

@@ -178,7 +178,7 @@ msgstr ""
 msgid "FIDE ID"
 msgstr ""
 
-msgid "Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website."
+msgid "Fees link not found, check that a tournament has already been sent and that the tournament has not been archived on the FFE website."
 msgstr ""
 
 msgid "Filter the leagues."
@@ -348,7 +348,7 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-msgid "The Baku acceleration system is not compatible with Papi, there may be differences in the Papi pairings display."
+msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
 msgstr ""
 
 msgid "The FFE ID is a positive integer."
