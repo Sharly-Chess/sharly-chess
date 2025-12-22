@@ -756,14 +756,20 @@ class PapiConverter:
         if isinstance(variation, AccelerationSwissVariation):
             group_max_numbers: list[int] = variation.get_group_max_numbers(tournament)
             if len(group_max_numbers) > 0 and group_max_numbers[0] > 0:
-                rating_threshold_1 = tournament.tournament_players_by_pairing_number[
-                    group_max_numbers[0] - 1
-                ].rating
+                rating_threshold_1 = max(
+                    tournament.tournament_players_by_pairing_number[
+                        group_max_numbers[0] - 1
+                    ].rating
+                    - 1,
+                    0,
+                )
                 if len(group_max_numbers) > 1 and group_max_numbers[0] > 0:
-                    rating_threshold_2 = (
+                    rating_threshold_2 = max(
                         tournament.tournament_players_by_pairing_number[
                             group_max_numbers[1] - 1
                         ].rating
+                        - 1,
+                        0,
                     )
         return rating_threshold_1, rating_threshold_2
 
