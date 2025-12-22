@@ -37,7 +37,7 @@ msgstr ""
 msgid "No acceleration."
 msgstr ""
 
-msgid "Pairing number range of players the group."
+msgid "Pairing number range of players in the group."
 msgstr ""
 
 #, python-format
