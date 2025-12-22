@@ -37,7 +37,7 @@ msgstr "La valeur maximale doit être supérieure à la valeur minimale."
 msgid "No acceleration."
 msgstr "Pas d'accélération."
 
-msgid "Pairing number range of players the group."
+msgid "Pairing number range of players in the group."
 msgstr "Plage de numéros d'appariement des joueur·euses du groupe."
 
 #, python-format

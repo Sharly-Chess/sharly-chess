@@ -1,3 +1,4 @@
+{% set are_groups_editable = admin_tournament.pairing_variation.are_groups_editable %}
 <h4>
     {{ _('Acceleration groups') }}
     <i
@@ -22,12 +23,12 @@
                     'Pairing number range of the group (recommended: %(min)d-%(max)d).',
                     min=recommended[0],
                     max=recommended[1],
-                ) if setting.are_groups_editable else
-                _('Pairing number range of players the group.')
+                ) if are_groups_editable else
+                _('Pairing number range of players in the group.')
             ),
             tooltip_text=admin_tournament.pairing_variation.get_group_a_tooltip(admin_tournament),
             input_tooltip=(
-                '' if setting.are_groups_editable else
+                '' if are_groups_editable else
                 _('Groups can\'t be edited for this pairing system.')
             ),
             min_disabled=true,
