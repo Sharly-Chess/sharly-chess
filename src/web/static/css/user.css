@@ -10,6 +10,10 @@
 ###########################################################
 */
 
+.screen-set-row {
+    flex-wrap: nowrap;
+}
+
 .user-screen-content {
     --font-size: 100;
     font-size: calc(var(--font-size) * 1%)
