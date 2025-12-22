@@ -796,12 +796,12 @@ class FfePlugin(Plugin):
         return PapiConverter.check_tiebreaks_warning(tournament.tie_breaks)
 
     @hookimpl
-    def get_tournament_pairing_settings_warning_message(
+    def get_tournament_pairing_warning_message(
         self, tournament: 'Tournament'
     ) -> str | None:
         if not FFEUtils.get_tournament_plugin_data(tournament).ffe_id:
             return None
-        return PapiConverter.check_pairing_settings_warning(tournament)
+        return PapiConverter.check_pairing_warning(tournament)
 
     @hookimpl
     def signal_tournament_set(
