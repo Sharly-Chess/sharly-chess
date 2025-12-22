@@ -116,6 +116,10 @@ msgstr[0] "%(set_name)s (ronde n°%(round)d, %(remaining)d partie en cours)"
 msgstr[1] "%(set_name)s (ronde n°%(round)d, %(remaining)d parties en cours)"
 
 #, python-format
+msgid "%(set_name)s (round #%(round)d, finished)"
+msgstr "%(set_name)s (ronde n°%(round)d, terminée)"
+
+#, python-format
 msgid "%(set_name)s (round %(round)d)"
 msgstr "%(set_name)s (ronde %(round)d)"
 

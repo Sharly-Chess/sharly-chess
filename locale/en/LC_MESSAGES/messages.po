@@ -116,6 +116,10 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(set_name)s (round #%(round)d, finished)"
+msgstr ""
+
+#, python-format
 msgid "%(set_name)s (round %(round)d)"
 msgstr ""
 
