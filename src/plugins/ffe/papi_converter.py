@@ -758,17 +758,15 @@ class PapiConverter:
             if len(group_max_numbers) > 0 and group_max_numbers[0] > 0:
                 rating_threshold_1 = max(
                     tournament.tournament_players_by_pairing_number[
-                        group_max_numbers[0] - 1
-                    ].rating
-                    - 1,
+                        group_max_numbers[0]
+                    ].rating,
                     0,
                 )
                 if len(group_max_numbers) > 1 and group_max_numbers[0] > 0:
                     rating_threshold_2 = max(
                         tournament.tournament_players_by_pairing_number[
-                            group_max_numbers[1] - 1
-                        ].rating
-                        - 1,
+                            group_max_numbers[1]
+                        ].rating,
                         0,
                     )
         return rating_threshold_1, rating_threshold_2
