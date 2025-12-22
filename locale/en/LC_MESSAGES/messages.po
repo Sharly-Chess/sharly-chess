@@ -110,10 +110,14 @@ msgid "%(set_name)s (registered players)"
 msgstr ""
 
 #, python-format
-msgid "%(set_name)s (round #%(round)d, %(remaining)d board remaining)"
-msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d boards remaining)"
+msgid "%(set_name)s (round #%(round)d, %(remaining)d game in progress)"
+msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d games in progress)"
 msgstr[0] ""
 msgstr[1] ""
+
+#, python-format
+msgid "%(set_name)s (round #%(round)d, finished)"
+msgstr ""
 
 #, python-format
 msgid "%(set_name)s (round %(round)d)"

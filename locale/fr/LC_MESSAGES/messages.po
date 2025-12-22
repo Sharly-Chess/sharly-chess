@@ -110,10 +110,14 @@ msgid "%(set_name)s (registered players)"
 msgstr "%(set_name)s (joueur·euses inscrit·es)"
 
 #, python-format
-msgid "%(set_name)s (round #%(round)d, %(remaining)d board remaining)"
-msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d boards remaining)"
-msgstr[0] "%(set_name)s (ronde n°%(round)d, %(remaining)d échiquier restant)"
-msgstr[1] "%(set_name)s (ronde n°%(round)d, %(remaining)d échiquiers restants)"
+msgid "%(set_name)s (round #%(round)d, %(remaining)d game in progress)"
+msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d games in progress)"
+msgstr[0] "%(set_name)s (ronde n°%(round)d, %(remaining)d partie en cours)"
+msgstr[1] "%(set_name)s (ronde n°%(round)d, %(remaining)d parties en cours)"
+
+#, python-format
+msgid "%(set_name)s (round #%(round)d, finished)"
+msgstr "%(set_name)s (ronde n°%(round)d, terminée)"
 
 #, python-format
 msgid "%(set_name)s (round %(round)d)"
