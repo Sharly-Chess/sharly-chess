@@ -647,7 +647,7 @@ class PapiConverter:
         )
 
     @classmethod
-    def check_pairing_settings_warning(cls, tournament: Tournament) -> str | None:
+    def check_pairing_warning(cls, tournament: Tournament) -> str | None:
         if isinstance(tournament.pairing_variation, AccelerationSwissVariation):
             return _(
                 "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
