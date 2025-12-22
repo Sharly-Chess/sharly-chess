@@ -1,3 +1,4 @@
+{% set are_groups_editable = admin_tournament.pairing_variation.are_groups_editable %}
 <div class="row mb-3">
     <div class="col-12">
         {% set recommended = setting.default_value(admin_tournament) %}
@@ -9,12 +10,12 @@
                     'Pairing number range of the group (recommended: %(min)d-%(max)d).',
                     min=recommended[0],
                     max=recommended[1],
-                ) if setting.are_groups_editable else
-                _('Pairing number range of players the group.')
+                ) if are_groups_editable else
+                _('Pairing number range of players in the group.')
             ),
             tooltip_text=admin_tournament.pairing_variation.get_group_c_tooltip(admin_tournament),
             input_tooltip=(
-                '' if setting.are_groups_editable else
+                '' if are_groups_editable else
                 _('Groups can\'t be edited for this pairing system.')
             ),
             max_disabled=setting.group_count() == 3,

@@ -22,6 +22,10 @@
 - Fixed late entries ZPBs (3.4.0)
 - Fixed U0 category displayed in default category set (3.4.2)
 
+## Pairings
+
+- Allow pairing groups to be edited for acceleration systems other than Baku (3.4.3)
+
 ## Printing
 
 - Prize receipts (3.4.0)
