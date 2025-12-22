@@ -291,7 +291,7 @@ class Tournament:
         }
 
     @property
-    def pairing_settings_warning_message(self) -> str | None:
+    def pairing_warning_message(self) -> str | None:
         """Warning to display at global pairing level."""
         plugin_warning = plugin_manager.hook_for_event(
             self.event, 'get_tournament_pairing_warning_message'
