@@ -338,6 +338,9 @@ class AccountAdminController(BaseEventAdminController):
                 ),
             )
         event = web_context.get_admin_event()
+        stored_account.stored_permissions = copy(
+            event.anonymous_account.stored_account.stored_permissions
+        )
         account = event.create_account(stored_account)
 
         Message.success(
