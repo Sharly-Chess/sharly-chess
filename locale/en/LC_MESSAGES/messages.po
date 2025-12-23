@@ -4024,6 +4024,9 @@ msgstr "Rk. O."
 msgid "Rnd.Boa"
 msgstr ""
 
+msgid "Roles"
+msgstr ""
+
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr ""

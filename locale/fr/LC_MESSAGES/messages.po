@@ -4024,6 +4024,9 @@ msgstr "Pl. Gén."
 msgid "Rnd.Boa"
 msgstr "Rde.Ech"
 
+msgid "Roles"
+msgstr "Rôles"
+
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Délai de rotation : %(seconds)d sec."
