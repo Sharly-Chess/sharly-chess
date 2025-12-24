@@ -25,7 +25,6 @@
 ## Pairings
 
 - Allow pairing groups to be edited for acceleration systems other than Baku (3.4.3)
-- Fixed Buchholz calculation for players with no game played OTB (3.4.4)
 
 ## Printing
 
