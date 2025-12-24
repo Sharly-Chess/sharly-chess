@@ -824,21 +824,12 @@ class Event:
         return account
 
     def update_account(self, stored_account: StoredAccount):
-        def get_role(role_type: RoleType) -> StoredRole | None:
-            for stored_role in stored_account.stored_roles:
-                if stored_role.role == role_type.value:
-                    return stored_role
-            return StoredRole(account_id=None, role=role_type.value)
-
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_account(stored_account)
-            if deputy_role := get_role(RoleType.DEPUTY_ARBITER):
-                deputy_role.account_id = stored_account.id
-                self.set_account_role(database, deputy_role)
-
-            if chief_role := get_role(RoleType.CHIEF_ARBITER):
-                chief_role.account_id = stored_account.id
-                self.set_account_role(database, chief_role)
+            database.delete_stored_roles(account_id=stored_account.id)
+            for stored_role in stored_account.stored_roles:
+                stored_role.account_id = stored_account.id
+                self.set_account_role(database, stored_role)
 
     def delete_account(self, account: Account):
         with EventDatabase(self.uniq_id, True) as database:
@@ -855,25 +846,15 @@ class Event:
         stored_role: StoredRole,
     ):
         assert stored_role.account_id is not None
-        if stored_role.tournament_ids:
-            # Always replace this user's existing tournaments for this role
+        if stored_role.role == RoleType.CHIEF_ARBITER.value:
+            # Delete any previous chief arbiter roles for these tournaments
             database.delete_stored_roles(
-                stored_role.account_id, None, stored_role.tournament_ids
+                role=RoleType.CHIEF_ARBITER.value,
+                tournament_ids=stored_role.tournament_ids,
             )
-
-            if stored_role.role == RoleType.CHIEF_ARBITER.value:
-                # Delete any previous chief arbiter roles for these tournaments
-                database.delete_stored_roles(
-                    None, RoleType.CHIEF_ARBITER.value, stored_role.tournament_ids
-                )
-
-        if (
-            not RoleType(stored_role.role).is_tournament_bound
-            or stored_role.tournament_ids
-        ):
-            database.add_stored_roles(
-                stored_role.account_id, stored_role.role, stored_role.tournament_ids
-            )
+        database.add_stored_roles(
+            stored_role.account_id, stored_role.role, stored_role.tournament_ids
+        )
 
     @staticmethod
     def _delete_redundant_account_permissions(
