@@ -596,6 +596,8 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
             for round_index, pairing in tournament_player.pairings.items()
             if round_index <= after_round
         }
+        if all(pairing.unplayed for pairing in pairings.values()):
+            return 0
         pairing_system = tournament.pairing_system
         if pairing_system == RoundRobinPairingSystem():
             return sum(
