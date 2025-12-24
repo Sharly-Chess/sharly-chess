@@ -5657,7 +5657,7 @@ msgstr ""
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr ""
 
-msgid "You can ask the organizer for permission to access the event screens."
+msgid "You can ask the administrator for permission to access the event screens."
 msgstr ""
 
 msgid "You can create password-protected accounts to delegate tasks to other members of the staff (arbiters and organizers)."
