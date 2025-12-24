@@ -12,6 +12,7 @@
 ## Events
 
 - Fixed ordering of events with the same start and stop dates (3.4.2)
+- Fixed login/logout permission error (3.4.4)
 
 ## Players
 
