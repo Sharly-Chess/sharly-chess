@@ -41,6 +41,7 @@
 - Fixed the default age category change month for _FFE_ events (3.4.2)
 - Fixed player search on the local _FFE_ database (3.4.3)
 - Fixed the display of pairings on the FFE website for accelerated tournaments (3.4.3)
+- Update the players with new FFE licences during the player update (3.4.4)
 
 ## _Chess-Results_
 

@@ -185,17 +185,11 @@ class FFESqlServer(SqlServer):
         # licence number, so that it skips a more complex request
         string = string.upper().strip()
         if ffe_licence_number := self.string_matches_ffe_licence_number(string):
-            return await self.get_stored_players_by_ffe_licence_number(
-                [
-                    ffe_licence_number,
-                ]
+            return await self.get_stored_players_by_licence_numbers(
+                [ffe_licence_number]
             )
         if fide_id := self.string_matches_fide_id(string):
-            return await self.get_players_by_fide_id(
-                [
-                    fide_id,
-                ]
-            )
+            return await self.get_players_by_fide_id([fide_id])
         tokens: list[str] = [
             unicode_normalize(token) for token in re.split(r'\s+', string)
         ]
@@ -253,52 +247,58 @@ class FFESqlServer(SqlServer):
             ]
 
         order_expr = ' + '.join(order_clauses)
-
-        query: str = (
-            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE {condition} '
-            f'ORDER BY {order_expr}, Joueur.Nom, Joueur.Prenom'
+        return await self._get_stored_players_by_condition(
+            condition,
+            params,
+            order_by=f'{order_expr}, Joueur.Nom, Joueur.Prenom',
+            limit=limit,
+            offset=page * limit if limit else None,
         )
-
-        if limit:
-            query += ' OFFSET %s ROWS FETCH NEXT %s ROWS ONLY'
-            params += [
-                page * limit,
-                limit,
-            ]
-
-        await self.execute(
-            query,
-            tuple(params),
-        )
-        return [self._get_stored_player_from_row(row) async for row in self.fetchall()]
 
     async def _get_stored_player_by_condition(
-        self,
-        condition: str,
-        params: tuple,
+        self, condition: str, params: list
     ) -> StoredPlayer | None:
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
             f'WHERE {condition} AND {self.RATING_TYPE_CONDITION}'
         )
-        await self.execute(
-            query,
-            params,
-        )
+        await self.execute(query, tuple(params))
         if row := await self.fetchone():
             return self._get_stored_player_from_row(row)
         else:
             return None
+
+    async def _get_stored_players_by_condition(
+        self,
+        condition: str,
+        params: list,
+        order_by: str | None = None,
+        offset: int | None = None,
+        limit: int | None = None,
+    ) -> list[StoredPlayer]:
+        query: str = (
+            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
+            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
+            f'WHERE {condition} AND {self.RATING_TYPE_CONDITION}'
+        )
+        if order_by:
+            query += f' ORDER BY {order_by}'
+        if offset is not None:
+            query += ' OFFSET %s ROWS'
+            params.append(offset)
+            if limit:
+                query += ' FETCH NEXT %s ROWS ONLY'
+                params.append(limit)
+        await self.execute(query, tuple(params))
+        return [self._get_stored_player_from_row(row) async for row in self.fetchall()]
 
     async def get_stored_player_by_ffe_id(
         self,
         player_ffe_id: int,
     ) -> StoredPlayer | None:
         return await self._get_stored_player_by_condition(
-            'joueur.Ref = %s', (player_ffe_id,)
+            'joueur.Ref = %s', [player_ffe_id]
         )
 
     async def get_stored_player_by_fide_id(
@@ -307,44 +307,52 @@ class FFESqlServer(SqlServer):
     ) -> StoredPlayer | None:
         return await self._get_stored_player_by_condition(
             'joueur.FideCode IN (%s, %s)',
-            (
+            [
                 self.remote_fide_id_format_1(player_fide_id),
                 self.remote_fide_id_format_2(player_fide_id),
-            ),
+            ],
         )
 
-    async def get_stored_players_by_ffe_licence_number(
-        self,
-        player_ffe_licence_numbers: list[str],
+    async def get_stored_players_by_licence_numbers(
+        self, licence_numbers: list[str]
     ) -> list[StoredPlayer]:
-        query: str = (
-            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE joueur.NrFFE IN ({", ".join(["%s"] * len(player_ffe_licence_numbers))}) '
-            f'AND {self.RATING_TYPE_CONDITION}'
+        return await self._get_stored_players_by_condition(
+            f'joueur.NrFFE IN ({", ".join(["%s"] * len(licence_numbers))})',
+            licence_numbers,
         )
-        await self.execute(query, tuple(player_ffe_licence_numbers))
-        return [self._get_stored_player_from_row(row) async for row in self.fetchall()]
+
+    async def get_stored_players_by_name_keys(
+        self, name_keys: list[tuple[str, str, date]]
+    ) -> list[StoredPlayer]:
+        query_array = ', '.join('%s' for _ in name_keys)
+        name_str_keys: list[str] = []
+        name_dob_str_keys: list[str] = []
+        for name_key in name_keys:
+            name_str_key = '|'.join((name_key[0].upper(), name_key[1].upper()))
+            name_str_keys.append(name_str_key)
+            name_dob_str_keys.append(
+                '|'.join((name_str_key, name_key[2].strftime('%Y-%m-%d')))
+            )
+        # Formatting all the DOB of the database is too expensive and times out
+        # It is therefore necessary to first match the full name then check full name + DOB
+        name_query = "UPPER(joueur.Nom) + '|' + UPPER(Joueur.Prenom)"
+        name_dob_query = name_query + " + '|' + FORMAT(joueur.Nele, 'yyyy-MM-dd')"
+        return await self._get_stored_players_by_condition(
+            f'{name_query} IN ({query_array}) AND {name_dob_query} IN ({query_array})',
+            name_str_keys + name_dob_str_keys,
+        )
 
     async def get_players_by_fide_id(
         self,
         player_fide_ids: list[int],
     ) -> list[StoredPlayer]:
-        query: str = (
-            f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
-            f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE joueur.FideCode IN ({", ".join(["%s"] * 2 * len(player_fide_ids))}) '
-            f'AND {self.RATING_TYPE_CONDITION}'
+        params: list[str] = []
+        for player_fide_id in player_fide_ids:
+            params += [
+                self.remote_fide_id_format_1(player_fide_id),
+                self.remote_fide_id_format_2(player_fide_id),
+            ]
+        return await self._get_stored_players_by_condition(
+            f'joueur.FideCode IN ({", ".join(["%s"] * 2 * len(player_fide_ids))})',
+            params,
         )
-        await self.execute(
-            query,
-            tuple(
-                self.remote_fide_id_format_1(player_fide_id)
-                for player_fide_id in player_fide_ids
-            )
-            + tuple(
-                self.remote_fide_id_format_2(player_fide_id)
-                for player_fide_id in player_fide_ids
-            ),
-        )
-        return [self._get_stored_player_from_row(row) async for row in self.fetchall()]
