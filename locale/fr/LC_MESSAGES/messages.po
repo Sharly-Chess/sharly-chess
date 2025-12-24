@@ -2925,6 +2925,9 @@ msgstr "Pas de famille à ajouter."
 msgid "No games against FIDE rated opponents."
 msgstr "Aucune partie contre des adversaires classés FIDE."
 
+msgid "No games played on the board for this player."
+msgstr "Aucune partie jouée sur l'échiquier pour ce·tte joueur·euse."
+
 msgid "No home page"
 msgstr "Aucun site web"
 

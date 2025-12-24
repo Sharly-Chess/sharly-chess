@@ -1233,3 +1233,7 @@ class TournamentPlayer(Player):
     @property
     def pairings(self) -> dict[int, Pairing]:
         return self.pairings_by_round
+
+    @property
+    def has_played_games(self) -> bool:
+        return any(pairing.played for pairing in self.pairings.values())

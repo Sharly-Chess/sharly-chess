@@ -2925,6 +2925,9 @@ msgstr ""
 msgid "No games against FIDE rated opponents."
 msgstr ""
 
+msgid "No games played on the board for this player."
+msgstr ""
+
 msgid "No home page"
 msgstr ""
 
