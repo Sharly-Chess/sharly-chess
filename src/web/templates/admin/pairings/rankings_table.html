@@ -107,7 +107,7 @@
             <td class="points text-center fw-bold {{ no_played_games_class }}">{{ tournament_player.points_str }}</td>
 
             {% for tie_break_value in tournament_player.tie_break_values %}
-                <td class="tie-break text-center compact-col {% if tie_break_value.tie_break.is_manual and sortable %}cursor-grap{% endif %}">
+                <td class="tie-break text-center compact-col {% if tie_break_value.tie_break.is_manual and sortable %}cursor-grap{% endif %} {{ no_played_games_class }}">
 
                     <span
                         {% if tie_break_value.rank_progress %}
