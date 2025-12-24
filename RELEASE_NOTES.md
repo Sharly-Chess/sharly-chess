@@ -7,6 +7,7 @@
 - Recover archived events on upgrade (3.4.0)
 - Improve upgrade experience (3.4.0)
 - Fixed application startup (3.4.1)
+- Improve error display on upgrade failures (3.4.3)
 - Detect antivirus software and suggest adding exclusions on _Sharly Chess_ folder (3.5.0)
 
 ## Events
@@ -22,9 +23,14 @@
 - Fixed late entries ZPBs (3.4.0)
 - Fixed U0 category displayed in default category set (3.4.2)
 
+## Pairings
+
+- Allow pairing groups to be edited for acceleration systems other than Baku (3.4.3)
+
 ## Printing
 
 - Prize receipts (3.4.0)
+- Fixed the statistics document (3.4.3)
 
 ## Screens
 
@@ -33,7 +39,9 @@
 
 ## _FFE_
 
-- Fixed the default age category change month for FFE events (3.4.2)
+- Fixed the default age category change month for _FFE_ events (3.4.2)
+- Fixed player search on the local _FFE_ database (3.4.3)
+- Fixed the display of pairings on the FFE website for accelerated tournaments (3.4.3)
 
 ## _Chess-Results_
 

@@ -83,13 +83,17 @@ class Engine:
                 yes_is_default=False,
             ):
                 self.error = True
-                if not self._install_new_version(more_recent_version, download_url):
+                if error_message := self._install_new_version(
+                    more_recent_version, download_url
+                ):
                     if print_interactive_message(
-                        _(
+                        error_message
+                        + '\n\n'
+                        + _(
                             'Installation of release [{version}] failed, exiting.'
                         ).format(
                             version=more_recent_version,
-                        ),
+                        )
                     ):
                         quit_app()
                 return
@@ -539,17 +543,18 @@ class Engine:
             return None, None
 
     @staticmethod
-    def _install_new_version(version: Version, download_url: str) -> bool:
+    def _install_new_version(version: Version, download_url: str) -> str | None:
         """Install the new stable version at the same directory level.
-        Returns True on success, False otherwise."""
+        Returns an error message on failure, None on success."""
         new_version_dir: Path = Path('..') / f'sharly-chess-{version}'
         if new_version_dir.exists():
             logger.error(
-                'Version [%s] could not be installed because directory [%s] already exists.',
-                version,
+                'Directory [%s] already exists.',
                 new_version_dir.resolve(),
             )
-            return False
+            return _('Directory [{folder}] already exists.').format(
+                folder=new_version_dir.resolve(),
+            )
         else:
             try:
                 with tempfile.TemporaryDirectory() as tmpdir:
@@ -565,12 +570,14 @@ class Engine:
                     response.raise_for_status()
                     if not response:
                         logger.error('No response from GitHub.')
-                        return False
+                        return _('No response from GitHub.')
                     if response.status_code != 200:
                         logger.error(
                             'Downloading failed with code [%d].', response.status_code
                         )
-                        return False
+                        return _('Downloading failed with code [{code}].').format(
+                            code=response.status_code
+                        )
                     # Determine downloaded file name based on platform
                     match sys.platform:
                         case 'win32':
@@ -611,7 +618,7 @@ class Engine:
                                 folder=new_version_dir, delete_control_file=False
                             ):
                                 logger.error(error_message)
-                                return False
+                                return _('Some files are missing.')
                         case 'darwin':
                             # For Mac: Handle the DMG file
                             mount_point = tmp_dir / f'mount-{version}'
@@ -644,7 +651,9 @@ class Engine:
                                     logger.error(
                                         'DMG does not contain exactly one folder as expected.'
                                     )
-                                    return False
+                                    return _(
+                                        'DMG does not contain exactly one folder as expected.'
+                                    )
                             finally:
                                 # Always try to unmount the DMG, even if copying failed
                                 try:
@@ -673,22 +682,16 @@ class Engine:
                     new_version_dir.resolve(),
                 )
             except RequestException as ex:
-                print_interactive_message(
-                    _('Failed to read [{download_url}]: [{ex}].').format(
-                        download_url=download_url, ex=ex
-                    )
+                logger.error('Failed to read [%s]: [%s].', download_url, ex)
+                return _('Failed to read [{download_url}]: [{ex}].').format(
+                    download_url=download_url, ex=ex
                 )
-                return False
             except subprocess.CalledProcessError as ex:
-                print_interactive_message(
-                    _('Failed to process DMG file: [{ex}].').format(ex=ex)
-                )
-                return False
+                logger.error('Failed to process DMG file: [%s].', ex)
+                return _('Failed to process DMG file: [{ex}].').format(ex=ex)
             except Exception as ex:
-                print_interactive_message(
-                    _('Unexpected error during installation: [{ex}].').format(ex=ex)
-                )
-                return False
+                logger.error('Unexpected error during installation: [%s].', ex)
+                return _('Unexpected error during installation: [{ex}].').format(ex=ex)
 
         if print_interactive_message(
             _('Release {version} has been installed in [{folder}].').format(
@@ -700,4 +703,4 @@ class Engine:
         ):
             quit_app()
 
-        return True
+        return None
