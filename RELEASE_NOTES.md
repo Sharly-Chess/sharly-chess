@@ -25,6 +25,7 @@
 ## Pairings
 
 - Allow pairing groups to be edited for acceleration systems other than Baku (3.4.3)
+- Add a warning tooltip on the ranking table when no games played on the board (3.4.4)
 
 ## Printing
 
