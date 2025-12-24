@@ -275,15 +275,9 @@ class AccountAdminController(BaseEventAdminController):
             flat_data, 'chief_tournament_ids'
         )
         deputy_tournament_ids = WebContext.form_data_to_list_int(
-            flat_data, 'deputy_tournament_ids'
+            flat_data, field := 'deputy_tournament_ids'
         )
-        event = web_context.get_admin_event()
         for tournament_id in deputy_tournament_ids:
-            if tournament_id not in event.tournaments_by_id:
-                errors[field] = (
-                    f'Invalid tournament ID [{tournament_id}] '
-                    f'for event in [{event.uniq_id}].'
-                )
             if tournament_id in chief_tournament_ids:
                 errors[field] = _(
                     'Cannot be both chief and deputy on the same tournament.'
