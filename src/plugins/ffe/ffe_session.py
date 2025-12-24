@@ -312,7 +312,7 @@ class FFESession(Session):
         if fees_link_id is None:
             self.report_error(
                 _(
-                    'Fees link not found, check that a Papi file has already been sent and that the tournament has not been archived on the FFE website.'
+                    'Fees link not found, check that a tournament has already been sent and that the tournament has not been archived on the FFE website.'
                 )
             )
             return None

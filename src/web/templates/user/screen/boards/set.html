@@ -8,14 +8,22 @@
                     {% if tournament.current_round %}
                         {% set current_round = tournament.current_round %}
                         {% set remaining=tournament.boards_without_result(current_round)|length %}
-                        {{ ngettext(
-                            "%(set_name)s (round #%(round)d, %(remaining)d board remaining)",
-                            "%(set_name)s (round #%(round)d, %(remaining)d boards remaining)",
-                            remaining,
-                            set_name=screen_set.name_for_boards,
-                            round=current_round,
-                            remaining=remaining
-                        ) }}
+                        {% if remaining %}
+                            {{ ngettext(
+                                "%(set_name)s (round #%(round)d, %(remaining)d game in progress)",
+                                "%(set_name)s (round #%(round)d, %(remaining)d games in progress)",
+                                remaining,
+                                set_name=screen_set.name_for_boards,
+                                round=current_round,
+                                remaining=remaining
+                            ) }}
+                        {% else %}
+                            {{ _(
+                                "%(set_name)s (round #%(round)d, finished)",
+                                set_name=screen_set.name_for_boards,
+                                round=current_round,
+                            ) }}
+                        {% endif %}
                     {% else %}
                         {{ screen_set.name_for_boards }}
                     {% endif %}
