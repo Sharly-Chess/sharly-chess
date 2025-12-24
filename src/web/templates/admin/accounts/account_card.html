@@ -98,7 +98,7 @@
                         <span {{ macros.tooltip_attributes('info', access_level.help_text, 'left') }}>
                             {{ access_level.card_name }}
                         </span>
-                        {% if access_level.has_tournament_scope %}
+                        {% if access_level.has_tournament_scope and tournament_count > 1 %}
                             {% if permission.tournament_ids %}
                                 {% if admin_accounts_show_details %}
                                     <ul>
