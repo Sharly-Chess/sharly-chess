@@ -14,6 +14,11 @@
 - Fixed ordering of events with the same start and stop dates (3.4.2)
 - Fixed login/logout permission error (3.4.4)
 
+## Accounts
+
+- Fixed login/logout permission error (3.4.4)
+- Grant the anonymous account's permissions to new accounts (3.4.4)
+
 ## Players
 
 - Added an option to specify the base date for the age categories (3.4.0)
