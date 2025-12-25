@@ -37,11 +37,11 @@
                     <h4>
                         {{ _('Tournament: %(tournament_name)s', tournament_name=admin_tournament.name) }}
                     </h4>
-                    {% if admin_tournament.players %}
+                    {% if admin_tournament.tournament_players %}
                         <h5 class="text-danger">
                             {{ _(
                                 'Warning: the %(player_count)d players in the tournament will be deleted.',
-                                player_count=admin_tournament.players|length
+                                player_count=admin_tournament.tournament_players|length
                             ) }}
                         </h5>
                     {% endif %}
@@ -51,7 +51,7 @@
                         {% include option.template_name %}
                     {% endfor %}
                 </div>
-                {% if admin_tournament and admin_tournament.players %}
+                {% if admin_tournament and admin_tournament.tournament_players %}
                     <div class="mt-2">
                         {{ admin_macros.checkbox_input(
                             name='confirm_checkbox',
