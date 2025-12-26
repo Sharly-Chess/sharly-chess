@@ -12,12 +12,12 @@
 ## Events
 
 - Fixed ordering of events with the same start and stop dates (3.4.2)
-- Fixed login/logout permission error (3.4.4)
 
 ## Accounts
 
 - Fixed login/logout permission error (3.4.4)
 - Grant the anonymous account's permissions to new accounts (3.4.4)
+- Fixed the update of account roles (3.4.4)
 
 ## Players
 
@@ -42,10 +42,6 @@
 
 - Improved the timer interface (3.4.0)
 - Added timers to rotators (3.4.0)
-
-## Accounts
-
-- Fixed the update of account roles (3.4.4)
 
 ## _FFE_
 
