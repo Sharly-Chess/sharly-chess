@@ -4,7 +4,7 @@ import sqlite3
 import tempfile
 import zipfile
 from contextlib import suppress
-from datetime import datetime
+from datetime import datetime, date
 from logging import Logger
 from pathlib import Path
 from typing import Any, override
@@ -288,12 +288,30 @@ class FfeDatabase(LocalSourcePlayerDatabase):
     ) -> StoredPlayer | None:
         return self._get_stored_player_by_id('fide_id', player_fide_id)
 
-    def get_stored_players_by_ffe_licence_number(
-        self, player_ffe_licence_numbers: list[str]
+    def get_stored_players_by_licence_numbers(
+        self, licence_numbers: list[str]
     ) -> list[StoredPlayer]:
-        query_array = ', '.join('?' for _ in player_ffe_licence_numbers)
+        query_array = ', '.join('?' for _ in licence_numbers)
         self.execute(
             f'SELECT * FROM player WHERE ffe_licence_number IN ({query_array})',
-            tuple(player_ffe_licence_numbers),
+            tuple(licence_numbers),
+        )
+        return [self.get_stored_player_from_row(row) for row in self.fetchall()]
+
+    def get_stored_players_by_name_keys(
+        self, name_keys: list[tuple[str, str, date]]
+    ) -> list[StoredPlayer]:
+        query_array = ', '.join('(?, ?, ?)' for _ in name_keys)
+        params: list[str] = []
+        for name_key in name_keys:
+            params += [
+                name_key[0],
+                name_key[1],
+                self.dump_date_to_database_field(name_key[2]) or '',
+            ]
+        self.execute(
+            'SELECT * FROM player '
+            f'WHERE (last_name, first_name, date_of_birth) IN ({query_array})',
+            tuple(params),
         )
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
