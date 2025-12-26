@@ -43,6 +43,10 @@
 - Improved the timer interface (3.4.0)
 - Added timers to rotators (3.4.0)
 
+## Accounts
+
+- Fixed the update of account roles (3.4.4)
+
 ## _FFE_
 
 - Fixed the default age category change month for _FFE_ events (3.4.2)
