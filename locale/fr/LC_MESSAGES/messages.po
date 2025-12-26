@@ -2925,6 +2925,9 @@ msgstr "Pas de famille à ajouter."
 msgid "No games against FIDE rated opponents."
 msgstr "Aucune partie contre des adversaires classés FIDE."
 
+msgid "No games played on the board for this player."
+msgstr "Aucune partie jouée sur l'échiquier pour ce·tte joueur·euse."
+
 msgid "No home page"
 msgstr "Aucun site web"
 
@@ -5657,6 +5660,9 @@ msgstr "Vous essayez de modifier manuellement les appariements de la ronde en co
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
 
+msgid "You can ask the administrator for permission to access the event screens."
+msgstr "Vous pouvez demander à l'administrateur·ice la permission d'accéder aux écrans de l'évènement."
+
 msgid "You can create password-protected accounts to delegate tasks to other members of the staff (arbiters and organizers)."
 msgstr "Vous pouvez créer des comptes protégés par mots de passe pour déléguer des tâches aux autres membres du staff (arbitres et organisateur·ices)."
 
@@ -5668,6 +5674,9 @@ msgstr "Vous ne pouvez pas pas ajouter davantage de permissions à ce compte."
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
+
+msgid "You have no permissions"
+msgstr "Vous n'avez aucune permission"
 
 msgid "You may also connect to this server from other devices using"
 msgstr "Vous pouvez également vous connecter à ce serveur depuis d’autres appareils"

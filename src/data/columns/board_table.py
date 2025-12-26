@@ -136,6 +136,10 @@ class ResultColumn(BoardColumn):
     def get_cell_content(self, board: Board) -> Any:
         return board.result_str
 
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
 
 class NoResultColumn(BoardColumn):
     @property

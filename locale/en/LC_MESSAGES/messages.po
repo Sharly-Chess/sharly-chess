@@ -2925,6 +2925,9 @@ msgstr ""
 msgid "No games against FIDE rated opponents."
 msgstr ""
 
+msgid "No games played on the board for this player."
+msgstr ""
+
 msgid "No home page"
 msgstr ""
 
@@ -5657,6 +5660,9 @@ msgstr ""
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr ""
 
+msgid "You can ask the administrator for permission to access the event screens."
+msgstr ""
+
 msgid "You can create password-protected accounts to delegate tasks to other members of the staff (arbiters and organizers)."
 msgstr ""
 
@@ -5667,6 +5673,9 @@ msgid "You can't add any more permission to this account."
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
+msgstr ""
+
+msgid "You have no permissions"
 msgstr ""
 
 msgid "You may also connect to this server from other devices using"

@@ -12,6 +12,12 @@
 ## Events
 
 - Fixed ordering of events with the same start and stop dates (3.4.2)
+- Fixed login/logout permission error (3.4.4)
+
+## Accounts
+
+- Fixed login/logout permission error (3.4.4)
+- Grant the anonymous account's permissions to new accounts (3.4.4)
 
 ## Players
 
@@ -25,6 +31,7 @@
 ## Pairings
 
 - Allow pairing groups to be edited for acceleration systems other than Baku (3.4.3)
+- Add a warning tooltip on the ranking table when no games played on the board (3.4.4)
 
 ## Printing
 
