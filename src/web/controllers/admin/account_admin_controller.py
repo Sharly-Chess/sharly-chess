@@ -282,6 +282,23 @@ class AccountAdminController(BaseEventAdminController):
                 errors[field] = _(
                     'Cannot be both chief and deputy on the same tournament.'
                 )
+        stored_roles: list[StoredRole] = []
+        if chief_tournament_ids:
+            stored_roles.append(
+                StoredRole(
+                    account_id=None,
+                    role=RoleType.CHIEF_ARBITER.value,
+                    tournament_ids=chief_tournament_ids,
+                )
+            )
+        if deputy_tournament_ids:
+            stored_roles.append(
+                StoredRole(
+                    account_id=None,
+                    role=RoleType.DEPUTY_ARBITER.value,
+                    tournament_ids=deputy_tournament_ids,
+                )
+            )
 
         if errors:
             return None, errors
@@ -293,18 +310,7 @@ class AccountAdminController(BaseEventAdminController):
             first_name=first_name,
             fide_id=fide_id,
             password_hash=password_hash,
-            stored_roles=[
-                StoredRole(
-                    account_id=None,
-                    role=RoleType.CHIEF_ARBITER.value,
-                    tournament_ids=chief_tournament_ids,
-                ),
-                StoredRole(
-                    account_id=None,
-                    role=RoleType.DEPUTY_ARBITER.value,
-                    tournament_ids=deputy_tournament_ids,
-                ),
-            ],
+            stored_roles=stored_roles,
         )
         return stored_account, errors
 
@@ -359,10 +365,10 @@ class AccountAdminController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = AccountAdminWebContext(request)
-        new_stored_account, errors = self._read_account_form_data(
+        stored_account, errors = self._read_account_form_data(
             data, web_context, FormAction.UPDATE
         )
-        if not new_stored_account:
+        if not stored_account:
             return self.admin_event_account_render(
                 web_context,
                 self._account_form_modal_context(
@@ -374,13 +380,10 @@ class AccountAdminController(BaseEventAdminController):
             )
         event = web_context.get_admin_event()
         account = web_context.get_admin_account()
-        stored_account = account.stored_account
-        stored_account.last_name = new_stored_account.last_name
-        stored_account.first_name = new_stored_account.first_name
-        stored_account.fide_id = new_stored_account.fide_id
-        stored_account.active = new_stored_account.active
-        stored_account.password_hash = new_stored_account.password_hash
-        stored_account.stored_roles = new_stored_account.stored_roles
+        stored_account.id = account.id
+        stored_account.stored_permissions = copy(
+            account.stored_account.stored_permissions
+        )
         event.update_account(stored_account)
         Message.success(
             request,
