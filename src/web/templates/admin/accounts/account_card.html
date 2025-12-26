@@ -41,6 +41,7 @@
 {% endblock %}
 
 {% block card_text %}
+    {% set tournament_count = admin_event.tournaments|length %}
     <div class="d-flex flex-column gap-1">
         {% if not account.roles and account.user_account %}
             <div class="text-warning">
@@ -49,36 +50,35 @@
         {% else %}
             {% for role in account.roles %}
                 <div>
-                    {{ _('%(string)s:', string=role.role_type) }}
-                    <span>
-                        {% if role.role_type.is_tournament_bound %}
-                            {% if admin_accounts_show_details %}
-                                <ul>
-                                    {% for tournament_name in role.tournament_names(admin_event) %}
-                                        <li>{{ tournament_name }}</li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <i class="text-secondary">
-                                    ({{ ngettext(
-                                        '%(num)d tournament',
-                                        '%(num)d tournaments',
-                                        role.tournament_ids|length if role.tournament_ids else 0
-                                    ) }})
-                                </i>
-                                <i
-                                    class="bi-info-circle-fill ps-1"
-                                    {{ macros.tooltip_attributes(
-                                        '', role.tournaments_tooltip_message(admin_event), 'right'
-                                    ) }}
-                                ></i>
-                            {% endif %}
-                        {% else %}
+                    {{ role.role_type }}
+                    {% if role.role_type.is_tournament_bound and tournament_count > 1 %}
+                        {% set tournament_names = role.tournament_names(admin_event) %}
+                        {% if tournament_count == tournament_names|length %}
                             <i class="text-secondary">
                                 ({{ _('all the tournaments') }})
                             </i>
+                        {% elif admin_accounts_show_details %}
+                            <ul>
+                                {% for tournament_name in role.tournament_names(admin_event) %}
+                                    <li>{{ tournament_name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <i class="text-secondary">
+                                ({{ ngettext(
+                                    '%(num)d tournament',
+                                    '%(num)d tournaments',
+                                    tournament_names|length
+                                ) }})
+                            </i>
+                            <i
+                                class="bi-info-circle-fill ps-1"
+                                {{ macros.tooltip_attributes(
+                                    '', role.tournaments_tooltip_message(admin_event), 'right'
+                                ) }}
+                            ></i>
                         {% endif %}
-                    </span>
+                    {% endif %}
                 </div>
             {% endfor %}
         {% endif %}
@@ -98,7 +98,7 @@
                         <span {{ macros.tooltip_attributes('info', access_level.help_text, 'left') }}>
                             {{ access_level.card_name }}
                         </span>
-                        {% if access_level.has_tournament_scope %}
+                        {% if access_level.has_tournament_scope and tournament_count > 1 %}
                             {% if permission.tournament_ids %}
                                 {% if admin_accounts_show_details %}
                                     <ul>
