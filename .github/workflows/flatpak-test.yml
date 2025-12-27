@@ -46,17 +46,17 @@ jobs:
           if ! pkg-config --exists girepository-2.0; then
             version=$(pkg-config --modversion gobject-introspection-1.0 || echo "1.0")
             cat <<EOF | sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc >/dev/null
-prefix=/usr
-libdir=${prefix}/lib/x86_64-linux-gnu
-includedir=${prefix}/include/gobject-introspection-1.0
+            prefix=/usr
+            libdir=${prefix}/lib/x86_64-linux-gnu
+            includedir=${prefix}/include/gobject-introspection-1.0
 
-Name: girepository-2.0
-Description: GObject Introspection repository library
-Version: ${version}
-Requires: gobject-2.0
-Libs: -L${libdir} -lgirepository-1.0
-Cflags: -I${includedir}
-EOF
+            Name: girepository-2.0
+            Description: GObject Introspection repository library
+            Version: ${version}
+            Requires: gobject-2.0
+            Libs: -L${libdir} -lgirepository-1.0
+            Cflags: -I${includedir}
+          EOF
           fi
 
       - name: Install GNOME runtimes (45)
