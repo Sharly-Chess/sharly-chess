@@ -37,9 +37,30 @@ jobs:
             gir1.2-gtk-3.0 \
             libgtk-3-dev \
             gobject-introspection \
+            libglib2.0-dev \
             libffi-dev \
+            ninja-build \
+            meson \
             pkg-config \
             build-essential
+      
+      - name: Ensure girepository pkg-config metadata
+        run: |
+          if [ ! -f /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc ]; then
+            sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc > /dev/null <<'EOF'
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib/x86_64-linux-gnu
+includedir=${prefix}/include/gobject-introspection-1.0
+
+Name: girepository-2.0
+Description: GObject Introspection Repository
+Version: 1.80.0
+Requires: gobject-introspection-1.0
+Libs: -L${libdir} -lgirepository-1.0
+Cflags: -I${includedir}
+EOF
+          fi
       
       - name: Install dependencies
         run: |
@@ -124,9 +145,30 @@ jobs:
             gir1.2-gtk-3.0 \
             libgtk-3-dev \
             gobject-introspection \
+            libglib2.0-dev \
             libffi-dev \
+            ninja-build \
+            meson \
             pkg-config \
             build-essential
+      
+      - name: Ensure girepository pkg-config metadata
+        run: |
+          if [ ! -f /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc ]; then
+            sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc > /dev/null <<'EOF'
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib/x86_64-linux-gnu
+includedir=${prefix}/include/gobject-introspection-1.0
+
+Name: girepository-2.0
+Description: GObject Introspection Repository
+Version: 1.80.0
+Requires: gobject-introspection-1.0
+Libs: -L${libdir} -lgirepository-1.0
+Cflags: -I${includedir}
+EOF
+          fi
       
       - name: Install dependencies
         run: |
@@ -163,9 +205,30 @@ jobs:
             gir1.2-gtk-3.0 \
             libgtk-3-dev \
             gobject-introspection \
+            libglib2.0-dev \
             libffi-dev \
+            ninja-build \
+            meson \
             pkg-config \
             build-essential
+      
+      - name: Ensure girepository pkg-config metadata
+        run: |
+          if [ ! -f /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc ]; then
+            sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc > /dev/null <<'EOF'
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib/x86_64-linux-gnu
+includedir=${prefix}/include/gobject-introspection-1.0
+
+Name: girepository-2.0
+Description: GObject Introspection Repository
+Version: 1.80.0
+Requires: gobject-introspection-1.0
+Libs: -L${libdir} -lgirepository-1.0
+Cflags: -I${includedir}
+EOF
+          fi
       
       - name: Install dependencies
         run: |
@@ -190,9 +253,46 @@ jobs:
         with:
           python-version: '3.13'
       
+      - name: Install GTK system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libcairo2-dev \
+            libgirepository1.0-dev \
+            gir1.2-gtk-3.0 \
+            libgtk-3-dev \
+            gobject-introspection \
+            libglib2.0-dev \
+            libffi-dev \
+            ninja-build \
+            meson \
+            pkg-config \
+            build-essential
+      
+      - name: Ensure girepository pkg-config metadata
+        run: |
+          if [ ! -f /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc ]; then
+            sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc > /dev/null <<'EOF'
+prefix=/usr
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib/x86_64-linux-gnu
+includedir=${prefix}/include/gobject-introspection-1.0
+
+Name: girepository-2.0
+Description: GObject Introspection Repository
+Version: 1.80.0
+Requires: gobject-introspection-1.0
+Libs: -L${libdir} -lgirepository-1.0
+Cflags: -I${includedir}
+EOF
+          fi
+      
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
+          export PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig"
+          export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/x86_64-linux-gnu"
           pip install -r requirements-flatpak.txt
       
       - name: Validate 3 critical points
