@@ -68,7 +68,7 @@ jobs:
           flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
           flatpak --user install -y --noninteractive flathub org.gnome.Platform//48
           flatpak --user install -y --noninteractive flathub org.gnome.Sdk//48
-          flatpak --user install -y --noninteractive flathub org.gnome.Sdk.Extension.python3.12//48
+          flatpak --user install -y --noninteractive flathub org.gnome.Sdk.Extension.python3//48
 
       - name: Set up Python
         uses: actions/setup-python@v5
