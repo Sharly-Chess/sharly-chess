@@ -59,21 +59,21 @@ jobs:
           EOF
           fi
 
-      - name: Install GNOME runtimes (45)
+      - name: Install GNOME runtimes (46)
         env:
           FLATPAK_USER_DIR: ${{ github.workspace }}/.flatpak
           XDG_RUNTIME_DIR: ${{ runner.temp }}/flatpak-runtime
         run: |
           mkdir -p "$FLATPAK_USER_DIR" "$XDG_RUNTIME_DIR"
           flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak --user install -y --noninteractive flathub org.gnome.Platform//45
-          flatpak --user install -y --noninteractive flathub org.gnome.Sdk//45
-          flatpak --user install -y --noninteractive flathub org.gnome.Sdk.Extension.python313//45
+          flatpak --user install -y --noninteractive flathub org.gnome.Platform//46
+          flatpak --user install -y --noninteractive flathub org.gnome.Sdk//46
+          flatpak --user install -y --noninteractive flathub org.gnome.Sdk.Extension.python3.12//46
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.12'
 
       - name: Install Python dependencies
         run: |
