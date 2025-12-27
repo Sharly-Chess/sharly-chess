@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Sharly Chess
+Comment=Tournament Management System for Chess
+Exec=sharly-chess-launcher
+Icon=com.sharlychess.SharlyChess
+Categories=Office;Utility;
+Terminal=false
+StartupNotify=true
+Keywords=chess;tournament;arbiter;organizer;
+X-Flatpak=com.sharlychess.SharlyChess

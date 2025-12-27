@@ -1,0 +1,86 @@
+name: Build with Initialization Scripts
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-flatpak.txt
+          pip install -e .
+          
+      - name: Run Chess Results initialization
+        env:
+          CHESS_RESULTS_ENCRYPTION_KEY: ${{ secrets.CHESS_RESULTS_ENCRYPTION_KEY }}
+          CHESS_RESULTS_ENCRYPTION_IV: ${{ secrets.CHESS_RESULTS_ENCRYPTION_IV }}
+        run: |
+          if [ -z "$CHESS_RESULTS_ENCRYPTION_KEY" ] || [ -z "$CHESS_RESULTS_ENCRYPTION_IV" ]; then
+            echo "Warning: Chess Results secrets not configured, skipping initialization"
+          else
+            python scripts/chess_results/generate_chess_results_credentials.py \
+              --key="${CHESS_RESULTS_ENCRYPTION_KEY}" \
+              --iv="${CHESS_RESULTS_ENCRYPTION_IV}"
+          fi
+          
+      - name: Run FFE initialization
+        env:
+          FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOST }}
+          FFE_SQL_SERVER_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
+          FFE_SQL_SERVER_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
+          FFE_SQL_SERVER_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
+        run: |
+          if [ -z "$FFE_SQL_SERVER_HOST" ] || [ -z "$FFE_SQL_SERVER_USER" ] || [ -z "$FFE_SQL_SERVER_PASSWORD" ] || [ -z "$FFE_SQL_SERVER_DATABASE" ]; then
+            echo "Warning: FFE secrets not configured, skipping initialization"
+          else
+            python scripts/ffe/generate_ffe_sql_server_credentials.py \
+              --host="${FFE_SQL_SERVER_HOST}" \
+              --user="${FFE_SQL_SERVER_USER}" \
+              --password="${FFE_SQL_SERVER_PASSWORD}" \
+              --database="${FFE_SQL_SERVER_DATABASE}" \
+              --github
+          fi
+          
+      - name: Run tests
+        run: |
+          pytest tests/ -v --tb=short
+          
+      - name: Build application
+        run: |
+          python -m PyInstaller --onefile src/sharly_chess.py
+          
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: build-artifacts
+          path: dist/
+          retention-days: 7
+          
+      - name: Report build status
+        if: always()
+        run: |
+          echo "Build completed with status: ${{ job.status }}"
+          if [ -f dist/sharly_chess ]; then
+            echo "✓ Application executable created successfully"
+            file dist/sharly_chess
+          else
+            echo "✗ Application executable not found"
+          fi

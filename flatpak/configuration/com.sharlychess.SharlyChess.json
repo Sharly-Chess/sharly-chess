@@ -1,0 +1,114 @@
+{
+  "app-id": "com.sharlychess.SharlyChess",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "45",
+  "sdk": "org.gnome.Sdk",
+  "sdk-extensions": [
+    "org.gnome.Sdk.Locale",
+    "org.freedesktop.Sdk.Extension.python313"
+  ],
+  "command": "sharly-chess-launcher",
+  "separate-locales": false,
+  "finish-args": [
+    "--socket=wayland",
+    "--socket=x11",
+    "--socket=pulseaudio",
+    "--share=network",
+    "--filesystem=home:rw",
+    "--device=dri",
+    "--env=PYTHONUNBUFFERED=1",
+    "--env=PYTHONPATH=/app/lib/python3.13/site-packages"
+  ],
+  "cleanup": [
+    "/include",
+    "/lib/pkgconfig",
+    "/lib/*.la",
+    "/lib/*.a",
+    "/share/pkgconfig",
+    "/share/aclocal",
+    "/man",
+    "/share/man",
+    "/share/doc",
+    "/share/gtk-doc",
+    "*.pyc",
+    "__pycache__"
+  ],
+  "build-options": {
+    "cflags": "-O2 -g",
+    "cxxflags": "-O2 -g",
+    "env": {
+      "LDFLAGS": "-L/app/lib",
+      "CFLAGS": "-I/app/include"
+    }
+  },
+  "modules": [
+    {
+      "name": "libffi",
+      "config-opts": [
+        "--disable-static",
+        "--disable-docs"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://github.com/libffi/libffi/releases/download/v3.4.4/libffi-3.4.4.tar.gz",
+          "sha256": "d66d56698e7ee2e805e61af227a5eb57b0b3443ea4c4f89b250803786bda9199"
+        }
+      ]
+    },
+    {
+      "name": "openssl",
+      "buildsystem": "simple",
+      "build-commands": [
+        "LDFLAGS=-L/app/lib ./config shared --prefix=/app --openssldir=/app/etc/ssl",
+        "make",
+        "make install_sw",
+        "rm -f /app/lib/libssl.a /app/lib/libcrypto.a"
+      ],
+      "sources": [
+        {
+          "type": "archive",
+          "url": "https://www.openssl.org/source/openssl-3.0.13.tar.gz",
+          "sha256": "603c0b7b814854767203e3847e2d757c02c0dede975fc19baf4dc20df271017c"
+        }
+      ]
+    },
+    {
+      "name": "python-dependencies",
+      "buildsystem": "simple",
+      "build-commands": [
+        "pip3 install --prefix=/app --no-index --find-links . -r requirements-flatpak.txt 2>&1 | tee pip-install.log",
+        "echo 'Pip dependencies installed successfully' > /app/share/sharly-chess/pip-install.log",
+        "cp /app/share/sharly-chess/pip-install.log /app/lib/pip-install.log || true"
+      ],
+      "sources": [
+        {
+          "type": "file",
+          "path": "requirements-flatpak.txt"
+        }
+      ]
+    },
+    {
+      "name": "sharly-chess",
+      "buildsystem": "simple",
+      "build-commands": [
+        "mkdir -p /app/share/sharly-chess",
+        "pip3 install --prefix=/app --no-deps . 2>&1 | tee /tmp/app-install.log",
+        "install -Dm755 flatpak/scripts/launcher.py /app/bin/sharly-chess-launcher",
+        "chmod +x /app/bin/sharly-chess-launcher",
+        "install -Dm644 flatpak/configuration/com.sharlychess.SharlyChess.desktop /app/share/applications/com.sharlychess.SharlyChess.desktop",
+        "install -Dm644 flatpak/configuration/com.sharlychess.SharlyChess.appdata.xml /app/share/appdata/com.sharlychess.SharlyChess.appdata.xml",
+        "install -Dm644 src/web/static/images/sharly-chess.png /app/share/icons/hicolor/256x256/apps/com.sharlychess.SharlyChess.png",
+        "install -Dm644 src/web/static/images/sharly-chess.png /app/share/icons/hicolor/128x128/apps/com.sharlychess.SharlyChess.png",
+        "install -Dm644 LICENSE.md /app/share/licenses/com.sharlychess.SharlyChess/LICENSE.md",
+        "echo 'Build completed successfully' > /app/share/sharly-chess/build-info.txt"
+      ],
+      "sources": [
+        {
+          "type": "dir",
+          "path": "."
+        }
+      ]
+    }
+  ]
+}

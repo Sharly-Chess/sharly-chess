@@ -1,0 +1,52 @@
+# Sharly Chess - Flatpak Python Dependencies
+# This file lists all Python packages required for Sharly Chess in a Flatpak environment
+# Install with: pip3 install -r requirements-flatpak.txt
+
+# Web Framework & ASGI Server
+litestar==2.16.0
+uvicorn==0.34.0
+python-multipart==0.0.6
+
+# GUI Framework (GTK-based)
+toga==0.5.2
+toga-gtk==0.5.2
+
+# Database
+aiosqlite==0.20.0
+
+# Templating
+Jinja2==3.1.2
+MarkupSafe==2.1.5
+
+# QR Code Generation
+qrcode==8.0
+pillow==11.0.0
+
+# Cryptography & Security
+cryptography==42.0.5
+PyJWT==2.8.1
+python-jose==3.3.0
+bcrypt==4.1.1
+
+# Data Processing
+pydantic==2.5.3
+pydantic-settings==2.1.0
+pytz==2024.1
+
+# HTTP Client
+aiohttp==3.9.3
+requests==2.31.0
+
+# Utilities
+click==8.1.7
+python-dotenv==1.0.1
+pyOpenSSL==24.0.0
+
+# Optional but recommended for production
+gunicorn==21.2.0
+
+# Development/Testing (optional)
+pytest==7.4.3
+pytest-asyncio==0.21.1
+black==23.12.1
+flake8==6.1.0
