@@ -28,6 +28,11 @@ jobs:
         with:
           python-version: '3.13'
       
+      - name: Install GTK system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0 pkg-config build-essential
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -100,6 +105,11 @@ jobs:
         with:
           python-version: '3.13'
       
+      - name: Install GTK system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0 pkg-config build-essential
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -123,6 +133,11 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
+      
+      - name: Install GTK system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0 pkg-config build-essential
       
       - name: Install dependencies
         run: |
