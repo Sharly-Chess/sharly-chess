@@ -11,6 +11,7 @@ from data.account import (
 )
 from data.access_levels.manager import AccessLevelManager
 from data.access_levels.access_levels import AccessLevel
+from data.tournament import Tournament
 from utils.enum import Result
 from web.session import SessionHandler
 
@@ -96,6 +97,15 @@ class Client:
             ):
                 return True
         return False
+
+    def allowed_tournaments_for_action(self, action: AuthAction) -> list[Tournament]:
+        """Get the list of tournaments for which an action is allowed."""
+        assert self.event is not None
+        return [
+            tournament
+            for tournament in self.event.tournaments_sorted_by_index
+            if self.action_allowed_for_tournament(action, tournament.id)
+        ]
 
     # ---------------------------------------------------------------------------------
     # Application
