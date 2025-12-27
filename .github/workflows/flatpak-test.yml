@@ -44,24 +44,6 @@ jobs:
             pkg-config \
             build-essential
       
-      - name: Ensure girepository pkg-config metadata
-        run: |
-          if [ ! -f /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc ]; then
-            sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc > /dev/null <<'EOF'
-            prefix=/usr
-            exec_prefix=${prefix}
-            libdir=${exec_prefix}/lib/x86_64-linux-gnu
-            includedir=${prefix}/include/gobject-introspection-1.0
-
-            Name: girepository-2.0
-            Description: GObject Introspection Repository
-            Version: 1.80.0
-            Requires: gobject-introspection-1.0
-            Libs: -L${libdir} -lgirepository-1.0
-            Cflags: -I${includedir}
-            EOF
-          fi
-      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -152,24 +134,6 @@ jobs:
             pkg-config \
             build-essential
       
-      - name: Ensure girepository pkg-config metadata
-        run: |
-          if [ ! -f /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc ]; then
-            sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc > /dev/null <<'EOF'
-            prefix=/usr
-            exec_prefix=${prefix}
-            libdir=${exec_prefix}/lib/x86_64-linux-gnu
-            includedir=${prefix}/include/gobject-introspection-1.0
-
-            Name: girepository-2.0
-            Description: GObject Introspection Repository
-            Version: 1.80.0
-            Requires: gobject-introspection-1.0
-            Libs: -L${libdir} -lgirepository-1.0
-            Cflags: -I${includedir}
-            EOF
-          fi
-      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -212,24 +176,6 @@ jobs:
             pkg-config \
             build-essential
       
-      - name: Ensure girepository pkg-config metadata
-        run: |
-          if [ ! -f /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc ]; then
-            sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc > /dev/null <<'EOF'
-            prefix=/usr
-            exec_prefix=${prefix}
-            libdir=${exec_prefix}/lib/x86_64-linux-gnu
-            includedir=${prefix}/include/gobject-introspection-1.0
-
-            Name: girepository-2.0
-            Description: GObject Introspection Repository
-            Version: 1.80.0
-            Requires: gobject-introspection-1.0
-            Libs: -L${libdir} -lgirepository-1.0
-            Cflags: -I${includedir}
-            EOF
-          fi
-      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -268,25 +214,6 @@ jobs:
             meson \
             pkg-config \
             build-essential
-      
-      - name: Ensure girepository pkg-config metadata
-        run: |
-          if [ ! -f /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc ]; then
-            sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc > /dev/null <<'EOF'
-            prefix=/usr
-            exec_prefix=${prefix}
-            libdir=${exec_prefix}/lib/x86_64-linux-gnu
-            includedir=${prefix}/include/gobject-introspection-1.0
-
-            Name: girepository-2.0
-            Description: GObject Introspection Repository
-            Version: 1.80.0
-            Requires: gobject-introspection-1.0
-            Libs: -L${libdir} -lgirepository-1.0
-            Cflags: -I${includedir}
-            EOF
-          fi
-      
       
       - name: Install dependencies
         run: |
