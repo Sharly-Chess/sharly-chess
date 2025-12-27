@@ -24,7 +24,7 @@ pillow==11.0.0
 
 # Cryptography & Security
 cryptography==42.0.5
-PyJWT==2.8.1
+PyJWT==2.10.1
 python-jose==3.3.0
 bcrypt==4.1.1
 
