@@ -38,32 +38,32 @@ jobs:
       
       - name: Check permissions
         run: |
-          python3 -c '
-            import json
-            import sys
+          python3 -c "
+import json
+import sys
 
-            with open("flatpak/configuration/com.sharlychess.SharlyChess.json") as f:
-                manifest = json.load(f)
-                args = manifest.get("finish-args", [])
-                
-                required = {
-                    "--share=network": "TCP binding + Internet",
-                    "--filesystem=home:rw": "Read/write filesystem",
-                    "--socket=wayland": "Wayland GUI",
-                    "--socket=x11": "X11 compatibility"
-                }
-                
-                failed = False
-                for perm, desc in required.items():
-                    if perm in args:
-                        print(f"✅ {perm:25} - {desc}")
-                    else:
-                        print(f"❌ {perm:25} - {desc}")
-                        failed = True
-                
-                if failed:
-                    sys.exit(1)
-            '
+with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
+    manifest = json.load(f)
+    args = manifest.get('finish-args', [])
+    
+    required = {
+        '--share=network': 'TCP binding + Internet',
+        '--filesystem=home:rw': 'Read/write filesystem',
+        '--socket=wayland': 'Wayland GUI',
+        '--socket=x11': 'X11 compatibility'
+    }
+    
+    failed = False
+    for perm, desc in required.items():
+        if perm in args:
+            print(f'✅ {perm:25} - {desc}')
+        else:
+            print(f'❌ {perm:25} - {desc}')
+            failed = True
+    
+    if failed:
+        sys.exit(1)
+"
 
   build-flatpak:
     runs-on: ubuntu-latest
@@ -150,53 +150,53 @@ jobs:
       
       - name: Test JSON validity
         run: |
-          python3 -c '
-            import json
-            import sys
+          python3 -c "
+import json
+import sys
 
-            print("🔍 Testing manifest JSON structure...")
-            with open("flatpak/configuration/com.sharlychess.SharlyChess.json") as f:
-                manifest = json.load(f)
+print('🔍 Testing manifest JSON structure...')
+with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
+    manifest = json.load(f)
 
-            required_fields = ["app-id", "runtime", "sdk", "command", "finish-args", "modules"]
-            failed = False
-            for field in required_fields:
-                if field in manifest:
-                    print(f"✅ {field}: present")
-                else:
-                    print(f"❌ {field}: MISSING")
-                    failed = True
+required_fields = ['app-id', 'runtime', 'sdk', 'command', 'finish-args', 'modules']
+failed = False
+for field in required_fields:
+    if field in manifest:
+        print(f'✅ {field}: present')
+    else:
+        print(f'❌ {field}: MISSING')
+        failed = True
 
-            if manifest.get("app-id") == "com.sharlychess.SharlyChess":
-                print("✅ app-id: correct")
-            else:
-                print("❌ app-id: wrong value")
-                failed = True
+if manifest.get('app-id') == 'com.sharlychess.SharlyChess':
+    print('✅ app-id: correct')
+else:
+    print('❌ app-id: wrong value')
+    failed = True
 
-            if manifest.get("runtime") == "org.gnome.Platform" and manifest.get("runtime-version") == "45":
-                print("✅ runtime: GNOME Platform 45")
-            else:
-                print("❌ runtime: incorrect")
-                failed = True
+if manifest.get('runtime') == 'org.gnome.Platform' and manifest.get('runtime-version') == '45':
+    print('✅ runtime: GNOME Platform 45')
+else:
+    print('❌ runtime: incorrect')
+    failed = True
 
-            if failed:
-                sys.exit(1)
-            print("✅ All manifest fields validated")
-            '
+if failed:
+    sys.exit(1)
+print('✅ All manifest fields validated')
+"
       
       - name: Test AppData validity
         run: |
-          python3 -c '
-            import xml.etree.ElementTree as ET
-            import sys
+          python3 -c "
+import xml.etree.ElementTree as ET
+import sys
 
-            try:
-                tree = ET.parse("flatpak/configuration/com.sharlychess.SharlyChess.appdata.xml")
-                print("✅ AppData XML is valid")
-            except Exception as e:
-                print(f"❌ AppData XML error: {e}")
-                sys.exit(1)
-            '
+try:
+    tree = ET.parse('flatpak/configuration/com.sharlychess.SharlyChess.appdata.xml')
+    print('✅ AppData XML is valid')
+except Exception as e:
+    print(f'❌ AppData XML error: {e}')
+    sys.exit(1)
+"
                 
                 - name: Test Desktop file
                     run: |
@@ -217,57 +217,57 @@ jobs:
       
       - name: Test Point 1 - TCP Network Binding
         run: |
-          python3 -c '
-            import json
-            import sys
+          python3 -c "
+import json
+import sys
 
-            with open("flatpak/configuration/com.sharlychess.SharlyChess.json") as f:
-                manifest = json.load(f)
-                args = manifest.get("finish-args", [])
-                
-                if "--share=network" in args:
-                    print("✅ Point 1: --share=network present")
-                    print("   → Service can bind to TCP port 8000")
-                else:
-                    print("❌ Point 1 FAILED: --share=network missing")
-                    sys.exit(1)
-            '
+with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
+    manifest = json.load(f)
+    args = manifest.get('finish-args', [])
+    
+    if '--share=network' in args:
+        print('✅ Point 1: --share=network present')
+        print('   → Service can bind to TCP port 8000')
+    else:
+        print('❌ Point 1 FAILED: --share=network missing')
+        sys.exit(1)
+"
       
       - name: Test Point 2 - File Storage R/W
         run: |
-          python3 -c '
-            import json
-            import sys
+          python3 -c "
+import json
+import sys
 
-            with open("flatpak/configuration/com.sharlychess.SharlyChess.json") as f:
-                manifest = json.load(f)
-                args = manifest.get("finish-args", [])
-                
-                if "--filesystem=home:rw" in args:
-                    print("✅ Point 2: --filesystem=home:rw present")
-                    print("   → Can read/write ~/.local/share/sharlychess/")
-                else:
-                    print("❌ Point 2 FAILED: --filesystem=home:rw missing")
-                    sys.exit(1)
-            '
+with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
+    manifest = json.load(f)
+    args = manifest.get('finish-args', [])
+    
+    if '--filesystem=home:rw' in args:
+        print('✅ Point 2: --filesystem=home:rw present')
+        print('   → Can read/write ~/.local/share/sharlychess/')
+    else:
+        print('❌ Point 2 FAILED: --filesystem=home:rw missing')
+        sys.exit(1)
+"
       
       - name: Test Point 3 - Internet Dependencies
         run: |
-          python3 -c '
-                import json
-                import sys
+          python3 -c "
+import json
+import sys
 
-                with open("flatpak/configuration/com.sharlychess.SharlyChess.json") as f:
-                    manifest = json.load(f)
-                    args = manifest.get("finish-args", [])
-                    
-                    if "--share=network" in args:
-                        print("✅ Point 3: --share=network present")
-                        print("   → Can download pip packages and external sources")
-                    else:
-                        print("❌ Point 3 FAILED: --share=network missing")
-                        sys.exit(1)
-                '
+with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
+    manifest = json.load(f)
+    args = manifest.get('finish-args', [])
+    
+    if '--share=network' in args:
+        print('✅ Point 3: --share=network present')
+        print('   → Can download pip packages and external sources')
+    else:
+        print('❌ Point 3 FAILED: --share=network missing')
+        sys.exit(1)
+"
       
       - name: Summary - 3 Essential Points
         run: |
