@@ -2,9 +2,9 @@
 
 État actuel de la construction du package Flatpak pour Sharly Chess.
 
-**Last Updated**: 2024 (Current Session)
-**Status**: ✅ **IMPLEMENTATION PHASE** - Ready for local build & testing
-**Next Phase**: CI/CD Integration & Flathub Submission
+**Last Updated**: 2024 (Current Session) - Workflow triggered for testing
+**Status**: ✅ **CI/CD TESTING PHASE** - GitHub Actions workflow execution
+**Next Phase**: Verify test results & CI/CD Integration
 
 ---
 
