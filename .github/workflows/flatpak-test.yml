@@ -44,7 +44,8 @@ jobs:
             pkg-config \
             build-essential
           if ! pkg-config --exists girepository-2.0; then
-            version=$(pkg-config --modversion gobject-introspection-1.0 || echo "1.0")
+            # Pygobject builds require girepository-2.0 >= 2.80; create a minimal .pc if missing
+            version=2.80.0
           cat <<'EOF' | sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc >/dev/null
           prefix=/usr
           libdir=${prefix}/lib/x86_64-linux-gnu
