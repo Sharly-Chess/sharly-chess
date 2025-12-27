@@ -37,8 +37,7 @@ jobs:
         run: python flatpak/scripts/validate.py
       
       - name: Check permissions
-        run: |
-          python3 -c "
+        run: python3 << 'PYEOF'
 import json
 import sys
 
@@ -63,7 +62,7 @@ with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
     
     if failed:
         sys.exit(1)
-"
+PYEOF
 
   build-flatpak:
     runs-on: ubuntu-latest
@@ -149,8 +148,7 @@ with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
         uses: actions/checkout@v4
       
       - name: Test JSON validity
-        run: |
-          python3 -c "
+        run: python3 << 'PYEOF'
 import json
 import sys
 
@@ -182,11 +180,10 @@ else:
 if failed:
     sys.exit(1)
 print('✅ All manifest fields validated')
-"
+PYEOF
       
       - name: Test AppData validity
-        run: |
-          python3 -c "
+        run: python3 << 'PYEOF'
 import xml.etree.ElementTree as ET
 import sys
 
@@ -196,7 +193,7 @@ try:
 except Exception as e:
     print(f'❌ AppData XML error: {e}')
     sys.exit(1)
-"
+PYEOF
                 
                 - name: Test Desktop file
                     run: |
@@ -216,8 +213,7 @@ except Exception as e:
         uses: actions/checkout@v4
       
       - name: Test Point 1 - TCP Network Binding
-        run: |
-          python3 -c "
+        run: python3 << 'PYEOF'
 import json
 import sys
 
@@ -231,11 +227,10 @@ with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
     else:
         print('❌ Point 1 FAILED: --share=network missing')
         sys.exit(1)
-"
+PYEOF
       
       - name: Test Point 2 - File Storage R/W
-        run: |
-          python3 -c "
+        run: python3 << 'PYEOF'
 import json
 import sys
 
@@ -249,11 +244,10 @@ with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
     else:
         print('❌ Point 2 FAILED: --filesystem=home:rw missing')
         sys.exit(1)
-"
+PYEOF
       
       - name: Test Point 3 - Internet Dependencies
-        run: |
-          python3 -c "
+        run: python3 << 'PYEOF'
 import json
 import sys
 
@@ -267,7 +261,7 @@ with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
     else:
         print('❌ Point 3 FAILED: --share=network missing')
         sys.exit(1)
-"
+PYEOF
       
       - name: Summary - 3 Essential Points
         run: |
