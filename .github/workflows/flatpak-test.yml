@@ -2,13 +2,13 @@ name: Flatpak Build & Test
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, dev ]
     paths:
       - 'flatpak/**'
       - 'requirements-flatpak.txt'
       - '.github/workflows/flatpak-test.yml'
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main, develop, dev ]
     paths:
       - 'flatpak/**'
       - 'requirements-flatpak.txt'
