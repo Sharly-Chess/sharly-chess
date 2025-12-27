@@ -54,7 +54,7 @@ jobs:
       - name: Check permissions
         run: |
           echo "🔐 Checking required permissions..."
-          python -c "
+          python << 'PYEOF'
 import json
 with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
     manifest = json.load(f)
@@ -73,7 +73,7 @@ with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
         else:
             print(f'❌ {perm:25} - {desc}')
             exit(1)
-"
+PYEOF
 
   build-flatpak:
     runs-on: ubuntu-latest
@@ -162,7 +162,7 @@ with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
       
       - name: Test JSON validity
         run: |
-          python -c "
+          python << 'PYEOF'
 import json
 print('🔍 Testing manifest JSON structure...')
 with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
@@ -192,12 +192,12 @@ else:
     exit(1)
 
 print('✅ All manifest fields validated')
-"
+PYEOF
       
       - name: Test AppData validity
         run: |
           echo "🔍 Testing AppData XML..."
-          python -c "
+          python << 'PYEOF'
 import xml.etree.ElementTree as ET
 try:
     tree = ET.parse('flatpak/configuration/com.sharlychess.SharlyChess.appdata.xml')
@@ -206,7 +206,7 @@ try:
 except Exception as e:
     print(f'❌ AppData XML error: {e}')
     exit(1)
-"
+PYEOF
       
       - name: Test Desktop file
         run: |
@@ -229,7 +229,7 @@ except Exception as e:
       - name: Test Point 1 - TCP Network Binding
         run: |
           echo "🌐 Point 1: TCP Network Binding"
-          python -c "
+          python << 'PYEOF'
 import json
 with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
     manifest = json.load(f)
@@ -242,12 +242,12 @@ with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
     else:
         print('❌ Point 1 FAILED: --share=network missing')
         exit(1)
-"
+PYEOF
       
       - name: Test Point 2 - File Storage Read/Write
         run: |
           echo "💾 Point 2: File Storage (Read/Write)"
-          python -c "
+          python << 'PYEOF'
 import json
 with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
     manifest = json.load(f)
@@ -261,12 +261,12 @@ with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
     else:
         print('❌ Point 2 FAILED: --filesystem=home:rw missing')
         exit(1)
-"
+PYEOF
       
       - name: Test Point 3 - Internet Dependencies
         run: |
           echo "📡 Point 3: Internet for Dependencies"
-          python -c "
+          python << 'PYEOF'
 import json
 with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
     manifest = json.load(f)
@@ -286,7 +286,7 @@ with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
             if source.get('type') == 'archive':
                 url = source.get('url', '')
                 if 'http' in url:
-                    print(f'✅ Module {module.get(\"name\")}: fetches from {url[:40]}...')
+                    print(f'✅ Module {module.get("name")}: fetches from {url[:40]}...')
                     has_sources = True
     
     if has_sources:
@@ -295,7 +295,7 @@ with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
         print('   → External sources downloadable')
     else:
         print('⚠️  Warning: No external sources found')
-"
+PYEOF
       
       - name: Generate 3-Points Report
         run: |
