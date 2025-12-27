@@ -31,7 +31,15 @@ jobs:
       - name: Install GTK system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0 pkg-config build-essential
+          sudo apt-get install -y \
+            libcairo2-dev \
+            libgirepository1.0-dev \
+            gir1.2-gtk-3.0 \
+            libgtk-3-dev \
+            gobject-introspection \
+            libffi-dev \
+            pkg-config \
+            build-essential
       
       - name: Install dependencies
         run: |
@@ -110,7 +118,15 @@ jobs:
       - name: Install GTK system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0 pkg-config build-essential
+          sudo apt-get install -y \
+            libcairo2-dev \
+            libgirepository1.0-dev \
+            gir1.2-gtk-3.0 \
+            libgtk-3-dev \
+            gobject-introspection \
+            libffi-dev \
+            pkg-config \
+            build-essential
       
       - name: Install dependencies
         run: |
@@ -141,7 +157,15 @@ jobs:
       - name: Install GTK system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libcairo2-dev libgirepository1.0-dev gir1.2-gtk-3.0 pkg-config build-essential
+          sudo apt-get install -y \
+            libcairo2-dev \
+            libgirepository1.0-dev \
+            gir1.2-gtk-3.0 \
+            libgtk-3-dev \
+            gobject-introspection \
+            libffi-dev \
+            pkg-config \
+            build-essential
       
       - name: Install dependencies
         run: |
