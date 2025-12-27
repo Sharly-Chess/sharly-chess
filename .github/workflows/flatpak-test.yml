@@ -45,26 +45,30 @@ jobs:
             build-essential
           if ! pkg-config --exists girepository-2.0; then
             version=$(pkg-config --modversion gobject-introspection-1.0 || echo "1.0")
-            cat <<EOF | sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc >/dev/null
-            prefix=/usr
-            libdir=${prefix}/lib/x86_64-linux-gnu
-            includedir=${prefix}/include/gobject-introspection-1.0
+          cat <<'EOF' | sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc >/dev/null
+          prefix=/usr
+          libdir=${prefix}/lib/x86_64-linux-gnu
+          includedir=${prefix}/include/gobject-introspection-1.0
 
-            Name: girepository-2.0
-            Description: GObject Introspection repository library
-            Version: ${version}
-            Requires: gobject-2.0
-            Libs: -L${libdir} -lgirepository-1.0
-            Cflags: -I${includedir}
+          Name: girepository-2.0
+          Description: GObject Introspection repository library
+          Version: ${version}
+          Requires: gobject-2.0
+          Libs: -L${libdir} -lgirepository-1.0
+          Cflags: -I${includedir}
           EOF
           fi
 
       - name: Install GNOME runtimes (45)
+        env:
+          FLATPAK_USER_DIR: ${{ github.workspace }}/.flatpak
+          XDG_RUNTIME_DIR: ${{ runner.temp }}/flatpak-runtime
         run: |
-          flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak install -y --noninteractive flathub org.gnome.Platform//45
-          flatpak install -y --noninteractive flathub org.gnome.Sdk//45
-          flatpak install -y --noninteractive flathub org.gnome.Sdk.Extension.python313//45
+          mkdir -p "$FLATPAK_USER_DIR" "$XDG_RUNTIME_DIR"
+          flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak --user install -y --noninteractive flathub org.gnome.Platform//45
+          flatpak --user install -y --noninteractive flathub org.gnome.Sdk//45
+          flatpak --user install -y --noninteractive flathub org.gnome.Sdk.Extension.python313//45
 
       - name: Set up Python
         uses: actions/setup-python@v5
