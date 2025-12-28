@@ -276,7 +276,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             logger.warning(self.log_prefix + 'Not connected, impossible to update.')
             return self.stop_update(False)
         self.publish_database_status_updated()
-        with tempfile.TemporaryDirectory() as tmpdir:
+        with tempfile.TemporaryDirectory(dir=TMP_DIR) as tmpdir:
             tmp_dir: Path = Path(tmpdir)
             logger.info(self.log_prefix + 'Downloading source file…')
             if not self._download_source_file(tmp_dir):
