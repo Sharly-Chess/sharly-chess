@@ -1,4 +1,4 @@
-name: Flatpak Build & Test
+name: Linux Flatpak Build
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
       - requirements-flatpak.txt
       - pyproject.toml
       - src/**
-      - .github/workflows/flatpak-test.yml
+      - .github/workflows/linux-flatpak.yml
   pull_request:
     branches: [main, develop, dev]
     paths:
