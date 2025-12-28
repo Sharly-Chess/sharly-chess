@@ -6,7 +6,7 @@ from pathlib import Path
 sys.path.append('src')
 
 from common.sharly_chess_config import SharlyChessConfig
-from sharly_chess import SHARLY_CHESS_VERSION
+from common import SHARLY_CHESS_VERSION
 
 def generate_notice(output_path):
     content = f"""SHARLY CHESS {SHARLY_CHESS_VERSION}
