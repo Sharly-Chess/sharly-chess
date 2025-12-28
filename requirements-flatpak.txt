@@ -40,7 +40,7 @@ requests==2.32.3
 # Utilities
 click==8.1.7
 python-dotenv==1.0.1
-pyOpenSSL==24.0.0
+pyOpenSSL==24.3.0
 
 # Optional but recommended for production
 gunicorn==21.2.0
