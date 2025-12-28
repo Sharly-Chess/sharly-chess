@@ -92,25 +92,6 @@ def launch_application():
         
         logger.info('Importing sharly_chess module to launch application...')
         
-        # Debug: List site-packages to see what's installed
-        app_lib = Path('/app/lib')
-        python_version = f'python{sys.version_info.major}.{sys.version_info.minor}'
-        site_packages = app_lib / python_version / 'site-packages'
-        if site_packages.exists():
-            logger.info(f'Listing {site_packages}:')
-            for item in list(site_packages.glob('*'))[:20]:  # List first 20 items
-                logger.info(f'  - {item.name}')
-            
-            # Check specifically for sharly_chess
-            if (site_packages / 'sharly_chess.py').exists():
-                logger.info('Found sharly_chess.py in site-packages')
-            else:
-                logger.error('sharly_chess.py NOT found in site-packages')
-                
-            # Check for src folder
-            if (site_packages / 'src').exists():
-                logger.info('Found src folder in site-packages')
-        
         # Import the main application module
         # Note: sharly_chess.py runs the application on import
         import sharly_chess

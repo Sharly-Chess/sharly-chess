@@ -104,6 +104,7 @@
       "build-commands": [
         "mkdir -p /app/share/sharly-chess",
         "pip3 install --prefix=/app --no-deps . 2>&1 | tee /tmp/app-install.log",
+        "cp -r src/* /app/lib/python3.12/site-packages/",
         "install -Dm755 flatpak/scripts/launcher.py /app/bin/sharly-chess-launcher",
         "chmod +x /app/bin/sharly-chess-launcher",
         "install -Dm644 flatpak/configuration/com.sharlychess.SharlyChess.desktop /app/share/applications/com.sharlychess.SharlyChess.desktop",
