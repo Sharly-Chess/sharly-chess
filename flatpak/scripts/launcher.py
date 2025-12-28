@@ -88,7 +88,7 @@ def launch_application():
     
     try:
         # Set arguments before import because the module runs on import
-        sys.argv = ['sharly-chess', '--gui']
+        sys.argv = ['sharly-chess']
         
         logger.info('Importing sharly_chess module to launch application...')
         
