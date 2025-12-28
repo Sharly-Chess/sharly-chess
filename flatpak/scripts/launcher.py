@@ -34,11 +34,22 @@ def setup_flatpak_environment():
         logger.warning(f'site-packages not found: {site_packages}')
     
     # Ensure XDG directories are set properly
-    home = Path.home()
-    os.environ['XDG_DATA_HOME'] = str(home / '.local' / 'share')
-    os.environ['XDG_CONFIG_HOME'] = str(home / '.config')
-    os.environ['XDG_CACHE_HOME'] = str(home / '.cache')
+    # We rely on Flatpak's default XDG variables to ensure data persistence in ~/.var/app/...
+    # This keeps 'events', 'logs', and 'tmp' folders inside the sandbox data directory,
+    # preserving them across updates while keeping the user's home directory clean.
+    xdg_data_home = os.environ.get('XDG_DATA_HOME')
+    if not xdg_data_home:
+        # Fallback for non-Flatpak or weird environments
+        home = Path.home()
+        xdg_data_home = str(home / '.var' / 'app' / 'com.sharlychess.SharlyChess' / 'data')
+        os.environ['XDG_DATA_HOME'] = xdg_data_home
     
+    # Set working directory to XDG_DATA_HOME to ensure relative paths (events/, logs/) are created there
+    work_dir = Path(xdg_data_home)
+    work_dir.mkdir(parents=True, exist_ok=True)
+    os.chdir(work_dir)
+    
+    logger.info(f'Working directory set to: {work_dir}')
     logger.info('XDG directories configured')
 
 def verify_dependencies():
