@@ -129,10 +129,14 @@ flatpak run --env=SHARLY_CHESS_PORT=9090 com.sharlychess.SharlyChess
 L'application sera alors accessible sur `http://localhost:9090`.
 
 ### Mettre à jour l'application
-Pour mettre à jour Sharly Chess vers la dernière version disponible :
-```bash
-flatpak update com.sharlychess.SharlyChess
-```
+Puisque l'application n'est pas encore hébergée sur un dépôt en ligne (comme Flathub), la mise à jour se fait manuellement :
+
+1.  Téléchargez la nouvelle version du fichier `.flatpak` sur le site officiel.
+2.  Lancez la commande d'installation (la même que pour la première installation) :
+    ```bash
+    flatpak install --user sharly-chess-nouvelle-version.flatpak
+    ```
+3.  Flatpak détectera que l'application est déjà installée et effectuera la mise à jour vers la nouvelle version tout en conservant vos données.
 
 ---
 
