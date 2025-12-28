@@ -76,6 +76,7 @@ jobs:
 
       - name: Build Flatpak
         run: |
+          set -o pipefail
           flatpak-builder \
             --repo=flatpak-repo \
             --force-clean \
