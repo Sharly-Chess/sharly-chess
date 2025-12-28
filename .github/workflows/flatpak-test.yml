@@ -21,11 +21,14 @@ jobs:
     env:
       PKG_CONFIG_PATH: /usr/local/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
       LD_LIBRARY_PATH: /usr/lib/x86_64-linux-gnu
-      FLATPAK_USER_DIR: ${{ github.workspace }}/.flatpak
-      XDG_RUNTIME_DIR: ${{ runner.temp }}/flatpak-runtime
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set up environment variables
+        run: |
+          echo "FLATPAK_USER_DIR=${{ github.workspace }}/.flatpak" >> $GITHUB_ENV
+          echo "XDG_RUNTIME_DIR=${{ runner.temp }}/flatpak-runtime" >> $GITHUB_ENV
 
       - name: Install system dependencies
         run: |
