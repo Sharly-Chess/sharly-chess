@@ -59,8 +59,8 @@ requirements-flatpak.txt                   # ⭐ Dépendances Python
 - **Rôle**: Manifest principal Flatpak
 - **Contenu**:
   - Identifiant application: `com.sharlychess.SharlyChess`
-  - Runtime: `org.gnome.Platform//48`
-  - SDK: `org.gnome.Sdk//48`
+  - Runtime: `org.gnome.Platform//49`
+  - SDK: `org.gnome.Sdk//49`
   - Permissions: Wayland, X11, Network, Home
   - 4 modules de build (libffi, OpenSSL, Python deps, Sharly Chess)
 - **Taille**: ~7 KB

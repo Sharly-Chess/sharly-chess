@@ -217,9 +217,9 @@ See **06-FILE_STORAGE.md** for storage architecture and backup procedures.
 
 ### 1. `com.sharlychess.SharlyChess.json`
 The main Flatpak manifest. Contains:
-- **Runtime**: `org.gnome.Platform//48` (GTK3/4, GLib, etc.)
-- **SDK**: `org.gnome.Sdk//48` (build tools, Python included)
-- **Python**: Bundled in the GNOME 48 SDK (no separate Flathub python extension published)
+- **Runtime**: `org.gnome.Platform//49` (GTK3/4, GLib, etc.)
+- **SDK**: `org.gnome.Sdk//49` (build tools, Python included)
+- **Python**: Bundled in the GNOME 49 SDK (no separate Flathub python extension published)
 - **Modules**: 4 build modules (libffi, OpenSSL, Python deps, Sharly Chess)
 - **Permissions**: Wayland, X11, Network, Home filesystem
 
