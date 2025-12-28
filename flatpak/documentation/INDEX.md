@@ -27,8 +27,8 @@ flatpak/                                    # Dossier principal Flatpak
 │   ├── functional_tests.py                 # ⭐ 15 tests fonctionnels
 │   └── (unit_tests.py - optionnel)
 │
-├── 📁 ci-cd/                               # Configuration GitHub Actions
-│   └── flatpak-build.yml                   # ⭐ Workflow automatisé
+├── .github/workflows/                      # Configuration GitHub Actions
+│   └── linux-flatpak.yml                   # ⭐ Workflow automatisé
 │
 └── 📁 documentation/                       # Documentation complète
     ├── README.md                           # Quick start documentation

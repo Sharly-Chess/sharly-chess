@@ -34,7 +34,7 @@ Phase 6: Flathub Submission          ⏳ PENDING
 ### Key Findings
 
 - ✅ Flatpak is highly suitable for Sharly Chess
-- ✅ Python 3.13 + async framework compatible
+- ✅ Python 3.13 + async framework compatible (via GNOME 49)
 - ✅ Web service architecture (Litestar) well-supported
 - ⚠️ Network permissions required (port 8000)
 - ⚠️ File storage access critical (persistence)

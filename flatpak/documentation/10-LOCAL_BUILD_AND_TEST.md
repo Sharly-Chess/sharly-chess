@@ -35,8 +35,8 @@ Flatpak needs the GNOME runtime:
 
 ```bash
 # Install GNOME Platform runtime
-flatpak install flathub org.gnome.Platform//48
-flatpak install flathub org.gnome.Sdk//48
+flatpak install flathub org.gnome.Platform//49
+flatpak install flathub org.gnome.Sdk//49
 
 # Verify installation
 flatpak list --app

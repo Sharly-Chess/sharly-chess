@@ -52,8 +52,8 @@ flatpak/
 ├── testing/                    # Test suites
 │   ├── functional_tests.py    # Flatpak-specific tests
 │   └── unit_tests.py          # (Optional) Unit tests
-├── ci-cd/                      # GitHub Actions workflows
-│   └── flatpak-build.yml      # Build automation
+├── .github/workflows/          # GitHub Actions workflows
+│   └── linux-flatpak.yml      # Build automation
 ├── documentation/             # Guides & analysis
 │   ├── 01-ANALYSE_REPOSITORY.md
 │   ├── 02-ANALYSE_FLATPAK_FEASIBILITY.md
@@ -118,10 +118,10 @@ flatpak remote-list
 
 ```bash
 # Runtime GNOME Platform (base du système)
-flatpak install -y flathub org.gnome.Platform//48
+flatpak install -y flathub org.gnome.Platform//49
 
 # SDK GNOME (pour la compilation)
-flatpak install -y flathub org.gnome.Sdk//48
+flatpak install -y flathub org.gnome.Sdk//49
 
 # Vérifier
 flatpak list --runtimes
@@ -129,8 +129,8 @@ flatpak list --runtimes
 
 **Output attendu**:
 ```
-org.gnome.Platform/x86_64/48              48      system
-org.gnome.Sdk/x86_64/48                   48      system
+org.gnome.Platform/x86_64/49              49      system
+org.gnome.Sdk/x86_64/49                   49      system
 ```
 
 ### Étape 4: Cloner et explorer le repository
