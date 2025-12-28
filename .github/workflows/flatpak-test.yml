@@ -46,18 +46,18 @@ jobs:
           current_version=$(pkg-config --modversion girepository-2.0 2>/dev/null || true)
           if [ -z "$current_version" ] || ! dpkg --compare-versions "$current_version" ge 2.80.0; then
             version=2.80.0
-            cat <<EOF | sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc >/dev/null
-            prefix=/usr
-            libdir=\${prefix}/lib/x86_64-linux-gnu
-            includedir=\${prefix}/include/gobject-introspection-1.0
-
-            Name: girepository-2.0
-            Description: GObject Introspection repository library
-            Version: ${version}
-            Requires: gobject-2.0
-            Libs: -L\${libdir} -lgirepository-1.0
-            Cflags: -I\${includedir}
-            EOF
+            printf '%s\n' \
+              "prefix=/usr" \
+              "libdir=\\${prefix}/lib/x86_64-linux-gnu" \
+              "includedir=\\${prefix}/include/gobject-introspection-1.0" \
+              "" \
+              "Name: girepository-2.0" \
+              "Description: GObject Introspection repository library" \
+              "Version: ${version}" \
+              "Requires: gobject-2.0" \
+              "Libs: -L\\${libdir} -lgirepository-1.0" \
+              "Cflags: -I\\${includedir}" \
+              | sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc >/dev/null
           fi
 
       - name: Install GNOME runtimes (48)
