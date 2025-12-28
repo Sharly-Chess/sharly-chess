@@ -80,3 +80,5 @@ validators==0.34.0
 wsproto==1.2.0
 wheel>=0.45.1
 https://github.com/sharly-chess/TRF/archive/refs/tags/v1.1.3-unofficial.zip
+
+pip-licenses==5.0.0
