@@ -47,6 +47,9 @@ def setup_flatpak_environment():
     # Set working directory to XDG_DATA_HOME to ensure relative paths (events/, logs/) are created there
     work_dir = Path(xdg_data_home)
     work_dir.mkdir(parents=True, exist_ok=True)
+    (work_dir / 'tmp').mkdir(exist_ok=True)
+    (work_dir / 'logs').mkdir(exist_ok=True)
+    (work_dir / 'events').mkdir(exist_ok=True)
     os.chdir(work_dir)
     
     logger.info(f'Working directory set to: {work_dir}')
