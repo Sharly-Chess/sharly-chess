@@ -52,17 +52,17 @@ jobs:
             pkg-config \
             build-essential
 
-      - name: Install GNOME runtimes (48)
+      - name: Install GNOME runtimes (49)
         run: |
           mkdir -p "$FLATPAK_USER_DIR" "$XDG_RUNTIME_DIR"
           flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak --user install -y --noninteractive flathub org.gnome.Platform//48
-          flatpak --user install -y --noninteractive flathub org.gnome.Sdk//48
+          flatpak --user install -y --noninteractive flathub org.gnome.Platform//49
+          flatpak --user install -y --noninteractive flathub org.gnome.Sdk//49
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
 
       - name: Install Python dependencies
         env:
