@@ -44,24 +44,30 @@ sudo pacman -S flatpak
 
 ## 🚀 Installation de Sharly Chess
 
-### 1. Ajouter le dépôt Flathub
-Flathub est le "magasin d'applications" standard pour Flatpak.
+### 1. Ajouter le dépôt Flathub (Requis pour les dépendances)
+Bien que Sharly Chess soit distribué indépendamment, il dépend de la plateforme **GNOME 49** qui est hébergée sur Flathub. Vous devez ajouter ce dépôt pour que Flatpak puisse télécharger automatiquement les composants nécessaires.
+
 ```bash
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 ```
 
-### 2. Installer Sharly Chess
-Une fois l'application publiée sur Flathub (ou si vous avez le fichier `.flatpak` local), installez-la avec :
+### 2. Télécharger et Installer Sharly Chess
 
-**Depuis Flathub (Recommandé)** :
-```bash
-flatpak install flathub com.sharlychess.SharlyChess
-```
+Le paquet d'installation est disponible sur le site officiel.
 
-**Depuis un fichier local (Build manuel)** :
-```bash
-flatpak install --user sharly-chess.flatpak
-```
+1.  Téléchargez la dernière version Linux (`.flatpak`) à cette adresse :
+    👉 **[https://sharly-chess.com/installation-linux/](https://sharly-chess.com/installation-linux/)**
+
+2.  Ouvrez un terminal dans le dossier où vous avez téléchargé le fichier (généralement `Téléchargements`) :
+    ```bash
+    cd ~/Téléchargements
+    ```
+
+3.  Installez le paquet (remplacez `sharly-chess.flatpak` par le nom réel du fichier téléchargé) :
+    ```bash
+    flatpak install --user sharly-chess.flatpak
+    ```
+    *Note : Flatpak vous demandera peut-être d'installer le runtime `org.gnome.Platform//49`. Acceptez en appuyant sur `Y`.*
 
 ---
 
