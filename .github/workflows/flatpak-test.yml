@@ -6,12 +6,14 @@ on:
     paths:
       - flatpak/**
       - requirements-flatpak.txt
+      - src/**
       - .github/workflows/flatpak-test.yml
   pull_request:
     branches: [main, develop, dev]
     paths:
       - flatpak/**
       - requirements-flatpak.txt
+      - src/**
   workflow_dispatch:
 
 jobs:
