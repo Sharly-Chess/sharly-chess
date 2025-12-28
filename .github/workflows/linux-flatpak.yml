@@ -2,22 +2,8 @@ name: Linux Flatpak Build
 
 on:
   push:
-    branches: [main, develop, dev]
     tags:
       - 'v*'
-    paths:
-      - flatpak/**
-      - requirements-flatpak.txt
-      - pyproject.toml
-      - src/**
-      - .github/workflows/linux-flatpak.yml
-  pull_request:
-    branches: [main, develop, dev]
-    paths:
-      - flatpak/**
-      - requirements-flatpak.txt
-      - pyproject.toml
-      - src/**
   workflow_dispatch:
 
 jobs:
