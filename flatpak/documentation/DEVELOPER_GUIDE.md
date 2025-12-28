@@ -1,17 +1,19 @@
-# Local Flatpak Build & Test Guide
+# 🛠️ Guide du Développeur Flatpak
 
-Guide complet pour construire et tester le Flatpak localement sur votre machine.
+Ce guide est destiné aux développeurs souhaitant maintenir, construire et tester le paquet Flatpak de Sharly Chess. Il couvre à la fois le développement local et l'intégration continue (CI/CD).
 
-## 📋 Prerequisites
+## 📋 Prérequis (Développement Local)
 
-### System Requirements
+Pour construire et tester le paquet sur votre machine avant de pousser les changements.
+
+### Configuration Système
 
 - **Linux** : Ubuntu 20.04+, Debian 11+, Fedora 35+
-- **RAM** : 4 GB minimum (8 GB recommended)
-- **Disk** : 5 GB free space
-- **Internet** : Required for downloading dependencies
+- **RAM** : 4 GB minimum (8 GB recommandé)
+- **Disque** : 5 GB d'espace libre
+- **Internet** : Requis pour télécharger les dépendances
 
-### Required Tools
+### Outils Requis
 
 ```bash
 # Ubuntu/Debian
@@ -20,31 +22,28 @@ sudo apt-get install flatpak flatpak-builder python3-pip
 # Fedora
 sudo dnf install flatpak flatpak-builder python3-pip
 
-# macOS (via Homebrew)
-brew install flatpak flatpak-builder python@3.13
-
-# Verify installation
+# Vérification
 flatpak --version
 flatpak-builder --version
 python3 --version
 ```
 
-### Runtime Installation
+### Installation du Runtime
 
-Flatpak needs the GNOME runtime:
+Flatpak a besoin du runtime GNOME 49 :
 
 ```bash
-# Install GNOME Platform runtime
+# Installer le runtime et le SDK GNOME 49
 flatpak install flathub org.gnome.Platform//49
 flatpak install flathub org.gnome.Sdk//49
 
-# Verify installation
+# Vérifier l'installation
 flatpak list --app
 ```
 
-## 🚀 Quick Start
+## 🚀 Build Local (Quick Start)
 
-### 1. Clone and Setup
+### 1. Cloner et Préparer
 
 ```bash
 # Clone repository
@@ -403,23 +402,30 @@ The test suite verifies:
 - ✅ Proper permission scoping
 - ✅ No world-readable secrets
 
-## 📝 CI/CD Integration
+## 📝 Intégration Continue (CI/CD)
 
-For automated testing in GitHub Actions:
+Le build officiel est géré par GitHub Actions.
+
+### Workflow
+Le fichier de configuration est : `.github/workflows/linux-flatpak.yml`
+
+### Déclenchement
+Le build se lance automatiquement dans les cas suivants :
+1.  **Tags** : Pousser un tag commençant par `v` (ex: `v3.4.3`).
+2.  **Manuel** : Via l'onglet "Actions" de GitHub (bouton "Run workflow").
 
 ```bash
-# See: .github/workflows/flatpak-test.yml
-
-# Manual trigger
-gh workflow run flatpak-test.yml
+# Exemple de déclenchement par tag
+git tag v3.4.3
+git push origin v3.4.3
 ```
 
-Results:
-- ✅ Manifest validation
-- ✅ Build verification
-- ✅ Functional tests (15 tests)
-- ✅ Security review
-- 📊 Artifact upload (logs, reports)
+### Résultats
+Le workflow effectue :
+- ✅ Validation du manifest
+- ✅ Build complet (Flatpak)
+- ✅ Tests fonctionnels (15 tests)
+- 📊 Génération de l'artefact `.flatpak` (téléchargeable depuis GitHub)
 
 ## 📞 Support
 
