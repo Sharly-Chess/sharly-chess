@@ -44,7 +44,10 @@ jobs:
             pkg-config \
             build-essential
           # Override the pkg-config metadata so pygobject sees a new-enough girepository
-          version=$(pkg-config --modversion gobject-introspection-1.0 2>/dev/null || echo 2.80.0)
+          # Ubuntu 24.04 ships with gobject-introspection 1.80.1 which corresponds to GLib 2.80.0
+          # but the .pc file might still be named gobject-introspection-1.0 or have version 1.80.1.
+          # PyGObject 3.48+ looks for girepository-2.0 >= 2.80.0.
+          # We create a shim that points to the existing libs but reports version 2.80.0.
           sudo mkdir -p /usr/local/lib/pkgconfig
           cat <<EOF | sudo tee /usr/local/lib/pkgconfig/girepository-2.0.pc >/dev/null
           prefix=/usr
@@ -53,10 +56,10 @@ jobs:
 
           Name: GObject Introspection Repository
           Description: GObject Introspection repository library
-          Version: ${version}
+          Version: 2.80.0
           Requires: gobject-introspection-1.0
-          Libs: -L${libdir} -lgirepository-1.0 -lgobject-2.0 -lglib-2.0
-          Cflags: -I${includedir} -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/glib-2.0
+          Libs: -L\${libdir} -lgirepository-1.0 -lgobject-2.0 -lglib-2.0
+          Cflags: -I\${includedir} -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/glib-2.0
           EOF
 
       - name: Install GNOME runtimes (48)
@@ -75,6 +78,8 @@ jobs:
           python-version: '3.12'
 
       - name: Install Python dependencies
+        env:
+          PKG_CONFIG_PATH: /usr/local/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig:${{ env.PKG_CONFIG_PATH }}
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-flatpak.txt
