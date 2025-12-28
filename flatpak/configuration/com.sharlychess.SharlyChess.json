@@ -105,6 +105,7 @@
         "mkdir -p /app/share/sharly-chess",
         "pip3 install --prefix=/app --no-deps . 2>&1 | tee /tmp/app-install.log",
         "cp -r src/* /app/lib/python3.12/site-packages/",
+        "PYTHONPATH=src python3 -c \"import sys; sys.path.append('src'); from common.i18n.babel_updaters import BabelUpdater; from common.i18n.domains import Domain; from common.i18n import locales, DEFAULT_LOCALE; BabelUpdater(Domain.get_domains(), locales, DEFAULT_LOCALE).create_absent_mo_files()\"",
         "cp -r locale /app/lib/python3.12/",
         "cp -r examples /app/lib/python3.12/",
         "install -Dm755 flatpak/scripts/launcher.py /app/bin/sharly-chess-launcher",
