@@ -129,7 +129,7 @@ class IndexController(BaseController):
                 )
                 error_message = _('An unexpected error occurred.')
         return HTMXTemplate(
-            template_name='/error.html',
+            template_name='error.html',
             context=WebContext(request).template_context
             | {
                 'reload_message': reload_message,
