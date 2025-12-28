@@ -94,7 +94,7 @@ Le manifest actuel est conçu pour un build local (`sources: { type: file, path:
         "sources": [
             {
                 "type": "git",
-                "url": "https://github.com/GillesHorn/chess2.git",
+                "url": "https://github.com/Sharly-Chess/sharly-chess.git",
                 "tag": "v3.4.3",
                 "commit": "..."
             }

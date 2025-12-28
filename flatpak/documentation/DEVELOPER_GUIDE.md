@@ -47,8 +47,8 @@ flatpak list --app
 
 ```bash
 # Clone repository
-git clone https://github.com/GillesHorn/chess2.git
-cd chess2
+git clone https://github.com/Sharly-Chess/sharly-chess.git
+cd sharly-chess
 
 # Ensure Flatpak directory exists
 ls -la flatpak/
