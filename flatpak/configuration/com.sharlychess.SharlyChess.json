@@ -68,7 +68,7 @@
         {
           "type": "archive",
           "url": "https://www.openssl.org/source/openssl-3.0.13.tar.gz",
-          "sha256": "603c0b7b814854767203e3847e2d757c02c0dede975fc19baf4dc20df271017c"
+          "sha256": "88525753f79d3bec27d2fa7c66aa0b92b3aa9498dafd93d7cfa4b3780cdae313"
         }
       ]
     },
