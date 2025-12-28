@@ -1,0 +1,180 @@
+#, ai_translation
+msgid "Auto-upload disabled"
+msgstr "Auto-upload desativado"
+
+#, ai_translation
+msgid "Auto-upload enabled"
+msgstr "Auto-upload habilitado"
+
+#, ai_translation
+msgid "Auto-upload results"
+msgstr "Resultados de auto-upload"
+
+#, ai_translation
+msgid "Auto-upload:"
+msgstr "Auto-upload:"
+
+#, ai_translation
+msgid "Automatic"
+msgstr "Automático"
+
+#, ai_translation
+msgid "Chess-Results.com"
+msgstr "Chess-Results.com"
+
+msgid "Chess-Results.com only displays {max} tie-breaks. However, the rankings remain the same as in Sharly Chess."
+msgstr ""
+
+#, ai_translation
+msgid "Close"
+msgstr "Fechar"
+
+#, ai_translation
+msgid "Disabled"
+msgstr "Deficientes"
+
+#, ai_translation
+msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
+msgstr "Por exemplo: 1000 em prêmios, FIDE avaliado, 2 byes 1/2 possível."
+
+#, ai_translation
+msgid "Enabled"
+msgstr "Ativado"
+
+#, ai_translation
+msgid "Error uploading tournament"
+msgstr "Erro ao carregar o torneio"
+
+#, ai_translation
+msgid "Last upload"
+msgstr "ltimo upload"
+
+#, ai_translation
+msgid "Manage"
+msgstr "Gerir"
+
+#, ai_translation
+msgid "Manual"
+msgstr "Manual"
+
+#, ai_translation
+msgid "Minimum delay between uploads (minutes):"
+msgstr "Atraso mínimo entre uploads (minutos):"
+
+#, ai_translation
+msgid "Mode"
+msgstr "Modo"
+
+#, ai_translation
+msgid "Modified since last upload"
+msgstr "Modificado desde o último upload"
+
+#, ai_translation
+msgid "Modified, but no internet connection"
+msgstr "Modificado, mas sem conexão com a internet"
+
+msgid "No Chess-Results ID defined for tournament [{tournament}]."
+msgstr ""
+
+#, ai_translation
+msgid "No internet connection"
+msgstr "Sem conexão à internet"
+
+#, ai_translation
+msgid "Remark:"
+msgstr "Observação:"
+
+#, ai_translation
+msgid "Results upload OK"
+msgstr "Resultados upload OK"
+
+#, ai_translation
+msgid "Scan to access the tournament on Chess-Results.com."
+msgstr "Scan para acessar o torneio em Chess-Results.com."
+
+#, ai_translation
+msgid "Site"
+msgstr "Site"
+
+#, ai_translation
+msgid "State:"
+msgstr "Estado:"
+
+#, ai_translation
+msgid "Status"
+msgstr "Estado"
+
+msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
+msgstr ""
+
+#, ai_translation
+msgid "Tournament"
+msgstr "Torneio Torneio"
+
+#, ai_translation
+msgid "Tournament finished, upload no longer possible."
+msgstr "Terminado o torneio, o upload não é mais possível."
+
+#, ai_translation
+msgid "Tournament modified, awaiting auto-upload"
+msgstr "Modificado, aguardando auto-upload Torneio"
+
+#, ai_translation
+msgid "Tournament not modified since last upload"
+msgstr "Torneio não modificado desde o último upload"
+
+#, ai_translation
+msgid "Tournament not yet uploaded."
+msgstr "Torneio ainda não carregado."
+
+#, python-format
+msgid "Tournament number: %(tnr)s"
+msgstr ""
+
+#, ai_translation
+msgid "Tournament on Chess-results.com"
+msgstr "Torneio de Resultados de Xads em Chess-results.com"
+
+#, ai_translation
+msgid "Tournament previously uploaded."
+msgstr "Torneio previamente carregado."
+
+#, ai_translation
+msgid "Unable to upload tournament."
+msgstr "Não foi possível carregar o torneio."
+
+#, ai_translation
+msgid "Unknown error when uploading results."
+msgstr "Erro desconhecido ao fazer upload de resultados."
+
+#, ai_translation
+msgid "Upload"
+msgstr "Upload"
+
+#, ai_translation
+msgid "Upload to Chess-Results.com"
+msgstr "Enviar para Chess-Results.com"
+
+#, ai_translation
+msgid "Upload tournaments now"
+msgstr "Upload de torneios agora"
+
+#, ai_translation
+msgid "Upload tournaments to Chess-Results.com"
+msgstr "Upload de torneios para Chess-Results.com"
+
+#, ai_translation
+msgid "Uploading of tournaments to Chess-Results.com."
+msgstr "Upload de torneios para Chess-Results.com."
+
+#, ai_translation
+msgid "Uploading tournament…"
+msgstr "Carregando torneio..."
+
+msgid "Use default - {option}"
+msgstr ""
+
+#, ai_translation
+msgid "You are not allowed to publish results."
+msgstr "Você não tem permissão para publicar resultados."
+

@@ -1,0 +1,253 @@
+#, ai_translation
+msgid "A value is expected."
+msgstr "Um valor é esperado."
+
+#, ai_translation
+msgid "An unexpected error occurred, either in Sharly Chess or in ChessEvent. Consult the logs for more details."
+msgstr "Ocorreu um erro inesperado, seja no Sharly Chess ou no ChessEvent. Consulte os registros para obter mais detalhes."
+
+#, ai_translation
+msgid "Authentication failed"
+msgstr "Falha na autenticação"
+
+#, ai_translation
+msgid "Authentication failed. Please check your credentials and try again."
+msgstr "A autenticação falhou. Por favor, verifique suas credenciais e tente novamente."
+
+#, ai_translation
+msgid "Check the event ID then try again."
+msgstr "Verifique o ID do evento e tente novamente."
+
+#, ai_translation
+msgid "Check the tournament name then try again."
+msgstr "Verifique o nome do torneio e tente novamente."
+
+#, ai_translation
+msgid "Check the username and the password then try again."
+msgstr "Verifique o nome de usuário e a senha e tente novamente."
+
+#, ai_translation
+msgid "ChessEvent"
+msgstr "ChessEvent"
+
+#, ai_translation
+msgid "ChessEvent actions are no longer available once the tournament has started."
+msgstr "As ações do ChessEvent não estão mais disponíveis uma vez que o torneio tenha começado."
+
+#, ai_translation
+msgid "ChessEvent event not defined."
+msgstr "Evento de ChessEvent não definido."
+
+#, ai_translation
+msgid "ChessEvent event:"
+msgstr "Evento de ChessEvent:"
+
+#, ai_translation
+msgid "ChessEvent password not defined."
+msgstr "Senha do ChessEvent não definida."
+
+#, ai_translation
+msgid "ChessEvent password:"
+msgstr "Senha do ChessEvent:"
+
+#, ai_translation
+msgid "ChessEvent tournament"
+msgstr "torneio ChessEvent"
+
+#, ai_translation
+msgid "ChessEvent tournament:"
+msgstr "Torneio ChessEvent:"
+
+#, ai_translation
+msgid "ChessEvent user name:"
+msgstr "Nome de usuário do ChessEvent:"
+
+#, ai_translation
+msgid "ChessEvent user not defined."
+msgstr "Usuário do ChessEvent não definido."
+
+#, ai_translation
+msgid "Close"
+msgstr "Fechar"
+
+#, ai_translation
+msgid "Configure the ChessEvent settings of this tournament."
+msgstr "Configure as configurações do ChessEvent deste torneio."
+
+#, ai_translation
+msgid "Connection failed"
+msgstr "A ligação falhou"
+
+#, ai_translation
+msgid "Connection to the ChessEvent server failed."
+msgstr "A conexão com o servidor ChessEvent falhou."
+
+#, ai_translation
+msgid "Default credentials used to import tournaments from the ChessEvent platform."
+msgstr "Credenciais padrão usadas para importar torneios da plataforma ChessEvent."
+
+#, python-format
+msgid "Default: %(string)s"
+msgstr ""
+
+#, python-format
+msgid "E.g.: %(string)s"
+msgstr ""
+
+#, ai_translation
+msgid "E.g.: Tournoi A"
+msgstr "Por exemplo: Tournoi A"
+
+#, ai_translation
+msgid "E.g.: my_password"
+msgstr "Por exemplo: my_password"
+
+msgid "Event [{event_id}] does not exist."
+msgstr ""
+
+#, ai_translation
+msgid "Event not found"
+msgstr "Página não encontrada"
+
+msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
+msgstr ""
+
+#, ai_translation
+msgid "I confirm that I have read and acknowledged the warning"
+msgstr "Confirmei que li e reconheci o aviso"
+
+#, ai_translation
+msgid "Import from ChessEvent"
+msgstr "Importação do ChessEvent"
+
+#, ai_translation
+msgid "Last synchronization"
+msgstr "ltima sincronização"
+
+#, ai_translation
+msgid "Never synchronized"
+msgstr "Nunca sincronizado"
+
+#, ai_translation
+msgid "Not configured"
+msgstr "Não configurado"
+
+#, ai_translation
+msgid "Please enter a password for the ChessEvent connection."
+msgstr "Por favor, insira uma senha para a conexão ChessEvent."
+
+#, ai_translation
+msgid "Settings error"
+msgstr "Erro de configuração"
+
+#, ai_translation
+msgid "Started"
+msgstr "Iniciado"
+
+#, ai_translation
+msgid "Status"
+msgstr "Estado"
+
+#, ai_translation
+msgid "Success"
+msgstr "Sucesso"
+
+#, ai_translation
+msgid "Support for the ChessEvent platform used for organising tournaments in France."
+msgstr "Suporte para a plataforma ChessEvent usada para organizar torneios na França."
+
+msgid "Synchronisation failed for {count} tournament"
+msgid_plural "Synchronisation failed for {count} tournaments"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Synchronization failed for tournament [{tournament}]."
+msgstr ""
+
+#, ai_translation
+msgid "Synchronize all tournaments"
+msgstr "Sincronizar todos os torneios"
+
+#, ai_translation
+msgid "Synchronize the tournaments with the ChessEvent platform."
+msgstr "Sincronize os torneios com a plataforma ChessEvent."
+
+#, ai_translation
+msgid "Synchronize this tournament from its ChessEvent tournament."
+msgstr "Sincronize este torneio de seu torneio ChessEvent."
+
+#, ai_translation
+msgid "Synchronize tournaments with ChessEvent"
+msgstr "Sincronize torneios com ChessEvent"
+
+#, ai_translation
+msgid "Synchronize with ChessEvent"
+msgstr "Sincronizar com ChessEvent"
+
+msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
+msgstr ""
+
+#, ai_translation
+msgid "The username / password provided are not allowed to access this ChessEvent event."
+msgstr "O nome de usuário / senha fornecido não está autorizado a acessar este evento ChessEvent."
+
+#, ai_translation
+msgid "Tournament"
+msgstr "Torneio Torneio"
+
+msgid "Tournament [{tournament_name}] does not exist in event [{event_id}]."
+msgstr ""
+
+msgid "Tournament [{tournament}] successfully synchronized."
+msgstr ""
+
+#, ai_translation
+msgid "Tournament has not been configured to be used with ChessEvent."
+msgstr "O torneio não foi configurado para ser usado com o ChessEvent."
+
+#, ai_translation
+msgid "Tournament not found"
+msgstr "Página não encontrada"
+
+#, ai_translation
+msgid "Unauthorized access"
+msgstr "Acesso não autorizado"
+
+#, ai_translation
+msgid "Unexpected error"
+msgstr "Erro inesperado"
+
+#, ai_translation
+msgid "Warning: synchronizing a tournament overwrites all of its player data."
+msgstr "Aviso: Sincronizar um torneio substitui todos os dados do jogador."
+
+#, ai_translation
+msgid "You are not allowed to update players."
+msgstr "Você não tem permissão para atualizar os jogadores."
+
+#, ai_translation
+msgid "You have to acknowledge the warning first."
+msgstr "Você tem que reconhecer o aviso em primeiro lugar."
+
+#, ai_translation
+msgid "You have to update the ChessEvent settings before being able to use synchronisation."
+msgstr "Você precisa atualizar as configurações do ChessEvent antes de poder usar a sincronização."
+
+#, ai_translation
+msgid "defined in the event"
+msgstr "definida no evento"
+
+#, ai_translation
+msgid "my_password"
+msgstr "my_password"
+
+msgid "{count} tournament ignored"
+msgid_plural "{count} tournaments ignored"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} tournament successfully synchronized"
+msgid_plural "{count} tournament successfully synchronized"
+msgstr[0] ""
+msgstr[1] ""
+

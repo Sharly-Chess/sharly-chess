@@ -1,0 +1,160 @@
+#, python-format
+msgid "%(string)s:"
+msgstr ""
+
+#, ai_translation
+msgid "Add"
+msgstr "Adicionar Adicionar"
+
+#, ai_translation
+msgid "Add a french school"
+msgstr "Adicionar uma escola francesa"
+
+#, ai_translation
+msgid "Add a school to the options."
+msgstr "Adicione uma escola às opções."
+
+#, ai_translation
+msgid "Adds support for school competitions in France"
+msgstr "Adiciona suporte para competições escolares na França"
+
+#, ai_translation
+msgid "At least one school is expected."
+msgstr "Pelo menos uma escola é esperada."
+
+#, python-format
+msgid "Average age: %(years)s"
+msgstr ""
+
+#, ai_translation
+msgid "Cancel"
+msgstr "Cancelar"
+
+#, ai_translation
+msgid "Choose at least one school."
+msgstr "Escolha pelo menos uma escola."
+
+#, ai_translation
+msgid "City"
+msgstr "Cidade"
+
+#, ai_translation
+msgid "Code"
+msgstr "Código"
+
+#, ai_translation
+msgid "Complete Team"
+msgstr "Equipe completa"
+
+msgid "Exclude: {values}"
+msgstr ""
+
+#, ai_translation
+msgid "Filter the schools."
+msgstr "Filtre as escolas."
+
+#, ai_translation
+msgid "French School Competitions"
+msgstr "Competições Escolares Francesas"
+
+#, ai_translation
+msgid "French Schools"
+msgstr "Escolas de Francês"
+
+#, ai_translation
+msgid "French school"
+msgstr "Escola de francês"
+
+#, ai_translation
+msgid "Identifier"
+msgstr "Identificador"
+
+#, ai_translation
+msgid "Incomplete Team"
+msgstr "Equipe Incompleta"
+
+#, ai_translation
+msgid "Invalid format (expected: 5 digits)."
+msgstr "Formato inválido (esperado: 5 dígitos)."
+
+#, ai_translation
+msgid "Loading more results…"
+msgstr "Atualizando... Hotéis similares"
+
+#, python-format
+msgid "Missing boys: %(count)d"
+msgstr ""
+
+#, python-format
+msgid "Missing girls: %(count)d"
+msgstr ""
+
+#, ai_translation
+msgid "Name"
+msgstr "Nome"
+
+#, ai_translation
+msgid "OK"
+msgstr "OK"
+
+#, python-format
+msgid "Other missing players: %(count)d"
+msgstr ""
+
+#, ai_translation
+msgid "Postal code"
+msgstr "Código postal"
+
+#, ai_translation
+msgid "Ranking by school"
+msgstr "Ranking por escola"
+
+msgid "Ranking by school after round #{round}"
+msgstr ""
+
+#, fuzzy
+msgid "School *** SCHOOL FOR TABLE HEADER"
+msgstr "School"
+
+#, ai_translation
+msgid "Schools"
+msgstr "Escolas"
+
+#, python-format
+msgid "Search by: %(fields)s"
+msgstr ""
+
+#, ai_translation
+msgid "Sort the players by school."
+msgstr "Organize os jogadores por escola."
+
+#, python-format
+msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
+msgstr ""
+
+#, python-format
+msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
+msgstr ""
+
+#, ai_translation
+msgid "The tournament has not yet started."
+msgstr "O torneio ainda não começou."
+
+#, ai_translation
+msgid "This field is not editable."
+msgstr "Este campo não é editável."
+
+#, ai_translation
+msgid "This field is required."
+msgstr "Este campo é necessário."
+
+msgid "This round is not finished (last finished: #{round})."
+msgstr ""
+
+msgid "This round is not valid (the tournament has {rounds} rounds)."
+msgstr ""
+
+#, ai_translation
+msgid "Total"
+msgstr "Total"
+

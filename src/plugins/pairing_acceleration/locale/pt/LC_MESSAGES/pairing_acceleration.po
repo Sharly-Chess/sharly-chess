@@ -1,0 +1,85 @@
+#, python-format
+msgid "%(string)s:"
+msgstr ""
+
+#, ai_translation
+msgid "Accelerated pairings"
+msgstr "Emparelhamentos acelerados"
+
+#, ai_translation
+msgid "Accelerated variations of the swiss pairing system."
+msgstr "Variações aceleradas do sistema de emparelhamento suíço."
+
+#, ai_translation
+msgid "Acceleration groups"
+msgstr "Grupos de aceleração"
+
+#, ai_translation
+msgid "Baku acceleration system"
+msgstr "Sistema de aceleração Baku"
+
+msgid "Group {group_id}"
+msgstr ""
+
+#, ai_translation
+msgid "Groups can't be edited for this pairing system."
+msgstr "Grupos não podem ser editados para este sistema de emparelhamento."
+
+#, ai_translation, python-format
+msgid "Groups must be composed of at least 25%% and at most 50%% of players."
+msgstr "Os grupos devem ser compostos por pelo menos 25%% e, no máximo, 50%% dos jogadores."
+
+#, ai_translation, python-format
+msgid "Groups must be composed of at least 25%% of players."
+msgstr "Os grupos devem ser compostos por pelo menos 25% dos jogadores."
+
+#, ai_translation
+msgid "Haley system"
+msgstr "sistema Haley"
+
+#, ai_translation
+msgid "Maximum value must be greater than the minimum value."
+msgstr "O valor máximo deve ser maior do que o valor mínimo."
+
+#, ai_translation
+msgid "No acceleration."
+msgstr "Sem aceleração."
+
+#, ai_translation
+msgid "Pairing number range of players in the group."
+msgstr "Emparelhar o número de jogadores no grupo."
+
+#, python-format
+msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
+msgstr ""
+
+#, ai_translation
+msgid "Positive values are expected."
+msgstr "Valores positivos são esperados."
+
+#, ai_translation
+msgid "Progressive accelerated system"
+msgstr "sistema acelerado progressivo"
+
+msgid "Round {round}"
+msgstr ""
+
+msgid "Rounds {min_round}-{max_round}"
+msgstr ""
+
+#, ai_translation
+msgid "Soft Haley system"
+msgstr "Sistema Haley macio"
+
+#, ai_translation
+msgid "Virtual points"
+msgstr "Pontos virtuais"
+
+#, ai_translation
+msgid "Virtual points are granted to players according to their group. Those points only are used for pairing, not for ranking."
+msgstr "Os pontos virtuais são concedidos aos jogadores de acordo com seu grupo. Esses pontos são usados apenas para emparelhamento, não para classificação."
+
+#, ai_translation
+msgid "points"
+msgstr "pontos"
+

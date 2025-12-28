@@ -1,0 +1,48 @@
+#, ai_translation
+msgid "/move"
+msgstr "/move"
+
+#, ai_translation
+msgid "Adds features for handicap tournaments where weaker players are given a time advantage."
+msgstr "Adiciona recursos para torneios de handicap onde jogadores mais fracos recebem uma vantagem de tempo."
+
+#, python-format
+msgid "E.g.: %(val)d"
+msgstr ""
+
+#, ai_translation
+msgid "Elo step:"
+msgstr "Passo Elo:"
+
+#, ai_translation
+msgid "Handicap games"
+msgstr "Handicap jogos"
+
+#, ai_translation
+msgid "Minimum time (secs):"
+msgstr "Tempo mínimo (segs):"
+
+#, ai_translation
+msgid "Penalties require a time control with a single period."
+msgstr "As penalidades exigem um controle de tempo com um único período."
+
+#, ai_translation
+msgid "Penalty (secs):"
+msgstr "Penalidade (segs):"
+
+#, ai_translation
+msgid "The minimum time, whatever the ranking difference between the two players."
+msgstr "O tempo mínimo, qualquer que seja a diferença de classificação entre os dois jogadores."
+
+#, ai_translation
+msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
+msgstr "O número de pontos diferença entre o ranking dos jogadores utilizados para calcular o número de penalidades aplicadas ao jogador mais bem classificado."
+
+#, ai_translation
+msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
+msgstr "O tempo subtraído do jogador mais bem classificado, em segundos (desta vez é multiplicado pelo número de passos de diferença entre os dois jogadores)."
+
+#, ai_translation
+msgid "Time control"
+msgstr "Controle do tempo"
+

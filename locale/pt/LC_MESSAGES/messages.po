@@ -1,0 +1,7443 @@
+msgid " [{default_choice}: {default_value}]: "
+msgstr ""
+
+msgid " [{yes_answer}/{no_answer}]?"
+msgstr ""
+
+msgid "#{board_number}"
+msgstr ""
+
+#, python-format
+msgid "%%s is replaced by the time elapsed since the hour."
+msgstr ""
+
+#, python-format
+msgid "%%s is replaced by the time left before the hour."
+msgstr ""
+
+#, python-format
+msgid "%(count)d boards without result"
+msgstr ""
+
+#, python-format
+msgid "%(count)d players unpaired"
+msgstr ""
+
+#, python-format
+msgid "%(minutes)d minutes after"
+msgstr ""
+
+#, python-format
+msgid "%(minutes)d minutes before"
+msgstr ""
+
+#, ai_translation, python-format
+msgid "%(num).1f point group -"
+msgid_plural "%(num).1f points group -"
+msgstr[0] "%(num).1f grupo de pontos -"
+msgstr[1] "%(num).1f grupo de pontos -"
+
+#, python-format
+msgid "%(num)d criterion"
+msgid_plural "%(num)d criteria"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d family"
+msgid_plural "%(num)d families"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d player"
+msgid_plural "%(num)d players"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d player did not check-in"
+msgid_plural "%(num)d players did not check-in"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d player does not match criteria."
+msgid_plural "%(num)d players do not match criteria."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d prize"
+msgid_plural "%(num)d prizes"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d prize group"
+msgid_plural "%(num)d prize groups"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d prize successfully created!"
+msgid_plural "%(num)d prizes successfully created!"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d screen"
+msgid_plural "%(num)d screens"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d tournament"
+msgid_plural "%(num)d tournaments"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(player)s - Round %(num)s"
+msgstr ""
+
+#, python-format
+msgid "%(set_name)s (check-in)"
+msgstr ""
+
+#, python-format
+msgid "%(set_name)s (registered players)"
+msgstr ""
+
+#, python-format
+msgid "%(set_name)s (round #%(round)d, %(remaining)d game in progress)"
+msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d games in progress)"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(set_name)s (round #%(round)d, finished)"
+msgstr ""
+
+#, python-format
+msgid "%(set_name)s (round %(round)d)"
+msgstr ""
+
+#, python-format
+msgid "%(string)s:"
+msgstr ""
+
+#, python-format
+msgid "%(string)s: %(value)s"
+msgstr ""
+
+#, python-format
+msgid "%f to %l"
+msgstr ""
+
+#, python-format
+msgid "%t (%f to %l)"
+msgstr ""
+
+msgid "%t (by board)"
+msgstr ""
+
+msgid "%t (by player)"
+msgstr ""
+
+#, python-format
+msgid "%t [Boards %f-%l]"
+msgstr ""
+
+msgid "%t crosstable"
+msgstr ""
+
+msgid "%t ranking"
+msgstr ""
+
+#, ai_translation
+msgid "'EUR' or '€'"
+msgstr "'EUR' ou ''"
+
+#, python-format
+msgid "(%(num)d screen)"
+msgid_plural "(%(num)d screens)"
+msgstr[0] ""
+msgstr[1] ""
+
+#, ai_translation
+msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
+msgstr "(*) Conhecer a lista dos eventos atuais é necessário para selecionar os eventos antes da autenticação."
+
+#, ai_translation
+msgid "(by default)"
+msgstr "(por defeito)"
+
+#, ai_translation
+msgid "(family)"
+msgstr "(família)"
+
+msgid "(inheritance: {inheritance})"
+msgstr ""
+
+#, ai_translation
+msgid "(inherited)"
+msgstr "(herdado)"
+
+#, ai_translation
+msgid "(no screens)"
+msgstr "(sem ecrãs)"
+
+#, python-format
+msgid "(replace [%(object_uniq_id)s])"
+msgstr ""
+
+#, ai_translation
+msgid "*** Doc Link"
+msgstr "*** Doc Link"
+
+#, fuzzy
+msgid "- *** NAME FOR GENDER NONE"
+msgstr "-"
+
+#, fuzzy
+msgid "- *** SHORT NAME FOR GENDER NONE"
+msgstr "-"
+
+#, ai_translation
+msgid "/<moves>"
+msgstr "/moves>"
+
+#, ai_translation
+msgid "/move"
+msgstr "/move"
+
+#, ai_translation
+msgid "0 - 0 (U)"
+msgstr "0 - 0 (U)"
+
+#, ai_translation
+msgid "0 - 1 (U)"
+msgstr "0 - 1 (U)"
+
+#, ai_translation
+msgid "0 - ½ (U)"
+msgstr "0 - 12 (U)"
+
+#, ai_translation
+msgid "1 - 0 (U)"
+msgstr "1 - 0 (U)"
+
+#, ai_translation
+msgid "1st day of the month"
+msgstr "1o dia do mês"
+
+#, ai_translation
+msgid "400 - Bad request"
+msgstr "400 - Mau pedido"
+
+#, ai_translation
+msgid "401 - Authentication failed"
+msgstr "401 - Falha na autenticação"
+
+#, ai_translation
+msgid "403 - Access Forbidden"
+msgstr "403 - Acesso Proibido"
+
+#, ai_translation
+msgid "404 - Page Not Found"
+msgstr "404 - Página não encontrada"
+
+#, ai_translation, python-format
+msgid "50%% of the maximum possible score"
+msgstr "50%% da pontuação máxima possível"
+
+#, ai_translation
+msgid "500 - Internal Server Error"
+msgstr "500 - Erro do Servidor Interno"
+
+#, ai_translation
+msgid "<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt."
+msgstr "b>1.4.3/b> Devem ser incluídas pelo menos duas federações diferentes da do candidato ao título, exceto 1.4.3a - 1.4.3d."
+
+#, ai_translation
+msgid "<b>1.4.3d</b> Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles."
+msgstr "b>1.4.3d/b> Torneios do Sistema Suíço em que os participantes incluem em cada rodada pelo menos 20 jogadores classificados pela FIDE, não da federação anfitriã, de pelo menos 3 federações diferentes, das quais pelo menos 10 possuem títulos GM, IM, WGM ou WIM."
+
+#, ai_translation
+msgid "<b>1.4.4</b> A maximum of 2/3 of the opponents from one federation."
+msgstr "b>1.4.4/b> Um máximo de 2/3 dos oponentes de uma federação."
+
+#, ai_translation
+msgid "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applicant's federation."
+msgstr "b>1.4.4/b> Um máximo de 3/5 dos oponentes pode vir da federação do candidato."
+
+msgid "<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}"
+msgstr ""
+
+#, ai_translation, python-format
+msgid "<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM."
+msgstr "b>1.4.5a/b> Pelo menos 50%% dos oponentes devem ser detentores de títulos, excluindo CM e WCM."
+
+msgid "<b>1.4.8</b> The minimum performance for this norm is {min}."
+msgstr ""
+
+msgid "<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}."
+msgstr ""
+
+#, ai_translation, python-format
+msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
+msgstr "b>1.4.8b/b> A pontuação mínima é de 35%% para todas as normas."
+
+#, ai_translation
+msgid "<b>Delete</b> from the tournament"
+msgstr "b>Delete/b> do torneio"
+
+#, ai_translation
+msgid "<first> and <second>"
+msgstr "primeiro> e segundo>"
+
+#, ai_translation
+msgid "<first> then <second>"
+msgstr "fir> então segundo>"
+
+#, ai_translation
+msgid "<first>, <second>"
+msgstr "primeiro>, segundo>"
+
+#, ai_translation
+msgid "<side>: <text>"
+msgstr "side>: text>"
+
+#, ai_translation
+msgid "<smart_count> day |||| <smart_count> days"
+msgstr "smart_count> dias  smart_count> dias"
+
+#, ai_translation
+msgid "<smart_count> hour |||| <smart_count> hours"
+msgstr "smart_count> horas  smart_count> horas"
+
+#, ai_translation
+msgid "<smart_count> minute |||| <smart_count> minutes"
+msgstr "smart_count> minuto  smart_count> minutos"
+
+#, ai_translation
+msgid "<smart_count> move |||| <smart_count> moves"
+msgstr "smart_count> mover  smart_count> mover"
+
+#, ai_translation
+msgid "<smart_count> second |||| <smart_count> seconds"
+msgstr "smart_count> segundo  smart_count> segundos"
+
+#, ai_translation
+msgid "<smart_count> week |||| <smart_count> weeks"
+msgstr "smart_count> semana  smart_count> semanas"
+
+#, ai_translation
+msgid "A URL, or the path to the rules file on the server, in PDF format."
+msgstr "Uma URL, ou o caminho para o arquivo de regras no servidor, em formato PDF."
+
+#, ai_translation
+msgid "A file is expected."
+msgstr "Um arquivo é esperado."
+
+#, ai_translation
+msgid "A plugin specific to this federation is used, it can no longer be modified."
+msgstr "Um plugin específico para esta federação é usado, ele não pode mais ser modificado."
+
+#, ai_translation
+msgid "A positive integer is expected."
+msgstr "Espera-se um número inteiro positivo."
+
+#, ai_translation
+msgid "A positive value is expected."
+msgstr "Espera-se um valor positivo."
+
+#, ai_translation
+msgid "A set with this name already existe."
+msgstr "Um conjunto com este nome já existe."
+
+#, ai_translation
+msgid "A value is expected."
+msgstr "Um valor é esperado."
+
+#, ai_translation
+msgid "ADM"
+msgstr "ADM"
+
+#, ai_translation
+msgid "Absent"
+msgstr "Ausente"
+
+#, ai_translation
+msgid "Absolute"
+msgstr "Absoluto"
+
+#, ai_translation
+msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
+msgstr "Os caracteres aceitos são letras, números, sublinhado (_) e menos (-)."
+
+#, ai_translation
+msgid "Access control"
+msgstr "Controle de acesso"
+
+#, ai_translation
+msgid "Access level"
+msgstr "Nível de acesso"
+
+#, ai_translation
+msgid "Access level already defined for the account."
+msgstr "Nível de acesso já definido para a conta."
+
+#, ai_translation
+msgid "Access unrated and penalty results."
+msgstr "Acesso sem classificação e resultados de penalidades."
+
+#, ai_translation
+msgid "Account"
+msgstr "Conta"
+
+msgid "Account [{account_name}] already exists."
+msgstr ""
+
+msgid "Account [{account_name}] has been created."
+msgstr ""
+
+msgid "Account [{account_name}] has been deleted."
+msgstr ""
+
+msgid "Account [{account_name}] has been updated."
+msgstr ""
+
+#, ai_translation
+msgid "Account:"
+msgstr "Conta:"
+
+#, ai_translation
+msgid "Action"
+msgstr "Acção"
+
+#, ai_translation
+msgid "Action delay"
+msgstr "Atraso da acção"
+
+#, ai_translation
+msgid "Actions"
+msgstr "Acções"
+
+#, ai_translation
+msgid "Actions / Access levels"
+msgstr "Ações / Níveis de acesso"
+
+#, ai_translation
+msgid "Add"
+msgstr "Adicionar Adicionar"
+
+#, ai_translation
+msgid "Add a criterion to the list."
+msgstr "Adicione um critério à lista."
+
+#, ai_translation
+msgid "Add a display controller to the event."
+msgstr "Adicione um controlador de exibição ao evento."
+
+#, ai_translation
+msgid "Add a family of screens to check-in players or enter results."
+msgstr "Adicione uma família de telas aos jogadores de check-in ou insira os resultados."
+
+#, ai_translation
+msgid "Add a family of screens to display the pairings by alphabetical order."
+msgstr "Adicione uma família de telas para exibir os pares por ordem alfabética."
+
+#, ai_translation
+msgid "Add a family of screens to display the pairings by board."
+msgstr "Adicione uma família de telas para exibir os emparelhamentos a bordo."
+
+#, ai_translation
+msgid "Add a family of screens to display the ranking."
+msgstr "Adicione uma família de telas para exibir o ranking."
+
+#, ai_translation
+msgid "Add a group to the list."
+msgstr "Adicione um grupo à lista."
+
+#, ai_translation
+msgid "Add a permission to the account."
+msgstr "Adicione uma permissão à conta."
+
+#, ai_translation
+msgid "Add a player to the event."
+msgstr "Adicione um jogador ao evento."
+
+#, ai_translation
+msgid "Add a prize category to the prize bracket."
+msgstr "Adicione uma categoria de prêmio à faixa de prêmio."
+
+#, ai_translation
+msgid "Add a prize to the list."
+msgstr "Adicione um prêmio à lista."
+
+#, ai_translation
+msgid "Add a rotator to the event."
+msgstr "Adicione um rotador ao evento."
+
+#, ai_translation
+msgid "Add a screen to check-in players or enter results."
+msgstr "Adicione uma tela aos jogadores de check-in ou insira os resultados."
+
+#, ai_translation
+msgid "Add a screen to display an image."
+msgstr "Adicione uma tela para exibir uma imagem."
+
+#, ai_translation
+msgid "Add a screen to display the last results."
+msgstr "Adicione uma tela para exibir os últimos resultados."
+
+#, ai_translation
+msgid "Add a screen to display the pairings by alphabetical order."
+msgstr "Adicione uma tela para exibir os pares por ordem alfabética."
+
+#, ai_translation
+msgid "Add a screen to display the pairings by board number."
+msgstr "Adicione uma tela para exibir os emparelhamentos por número de placa."
+
+#, ai_translation
+msgid "Add a screen to display the ranking."
+msgstr "Adicione uma tela para exibir o ranking."
+
+#, ai_translation
+msgid "Add a set"
+msgstr "Adicionar um conjunto"
+
+#, ai_translation
+msgid "Add a timer to the event."
+msgstr "Adicione um cronômetro ao evento."
+
+#, ai_translation
+msgid "Add a tournament before adding players."
+msgstr "Adicione um torneio antes de adicionar jogadores."
+
+#, ai_translation
+msgid "Add a tournament to the event."
+msgstr "Adicione um torneio ao evento."
+
+#, ai_translation
+msgid "Add an account to the event."
+msgstr "Adicione uma conta ao evento."
+
+#, ai_translation
+msgid "Add an hour to the timer."
+msgstr "Adicione uma hora ao temporizador."
+
+#, ai_translation
+msgid "Add families"
+msgstr "Adicionar famílias"
+
+#, ai_translation
+msgid "Add manual estimated ratings"
+msgstr "Adicionar avaliações estimadas manuais"
+
+#, ai_translation
+msgid "Add period"
+msgstr "Adicionar período"
+
+#, ai_translation
+msgid "Add player"
+msgstr "Adicionar jogador"
+
+#, ai_translation
+msgid "Add players"
+msgstr "Adicionar jogadores"
+
+#, ai_translation
+msgid "Add screens"
+msgstr "Adicionar ecrãs"
+
+#, ai_translation
+msgid "Add tournaments"
+msgstr "Adicionar torneios"
+
+#, ai_translation
+msgid "Administration"
+msgstr "Administração"
+
+#, ai_translation
+msgid "Administrator"
+msgstr "Administrador"
+
+#, ai_translation
+msgid "Affects the rating that will be chosen for each player."
+msgstr "Afeta a classificação que será escolhida para cada jogador."
+
+#, ai_translation
+msgid "After the last round, reorder manually the tied players from the Pairings tab."
+msgstr "Após a última rodada, reordene manualmente os jogadores amarrados na guia Pares."
+
+#, ai_translation
+msgid "Age"
+msgstr "Idade"
+
+#, ai_translation
+msgid "Age categories"
+msgstr "Categorias de idade"
+
+#, ai_translation
+msgid "Alert message"
+msgstr "Mensagem de alerta"
+
+#, ai_translation
+msgid "Alert message:"
+msgstr "Mensagem de alerta:"
+
+#, ai_translation
+msgid "All"
+msgstr "Todos"
+
+#, ai_translation
+msgid "All Events"
+msgstr "Todos os Eventos"
+
+#, ai_translation
+msgid "All the boards"
+msgstr "Todas as placas"
+
+msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
+msgstr ""
+
+#, ai_translation
+msgid "All the dependant objects will also be deleted:"
+msgstr "Todos os objetos dependentes também serão excluídos:"
+
+#, ai_translation
+msgid "All the players"
+msgstr "Todos os jogadores"
+
+#, ai_translation
+msgid "All the players intended to play the coming round did check-in."
+msgstr "Todos os jogadores que pretendiam jogar a próxima rodada fizeram check-in."
+
+#, ai_translation
+msgid "All the tournaments"
+msgstr "Todos os torneios"
+
+#, ai_translation
+msgid "All values may be modified by the arbiter if necessary."
+msgstr "Todos os valores podem ser modificados pelo árbitro, se necessário."
+
+#, ai_translation
+msgid "Allow links to this screen"
+msgstr "Permitir links para esta tela"
+
+#, ai_translation
+msgid "Allows access to Screens marked as public"
+msgstr "Permite o acesso a telas marcadas como públicas"
+
+#, ai_translation
+msgid "Allows access to the Players and Pairings tabs, results and illegal moves update"
+msgstr "Permite o acesso aos jogadores e pares guias, resultados e atualizações de movimentos ilegais"
+
+#, ai_translation
+msgid "Allows check-in via any input Screens marked as public"
+msgstr "Permite o check-in através de qualquer entrada Telas marcadas como públicas"
+
+#, ai_translation
+msgid "Allows entry of results via any input Screens marked as public"
+msgstr "Permite a entrada de resultados através de qualquer entrada Telas marcadas como públicas"
+
+#, ai_translation
+msgid "Allows granting or revoking the Chief Arbitration access level and editing the event"
+msgstr "Permite conceder ou revogar o nível de acesso ao Chief Arbitration e editar o evento"
+
+#, ai_translation
+msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments"
+msgstr "Permite conceder ou revogar o nível de acesso ao vice-chefe de arbitragem, editar o evento e gerenciar torneios"
+
+#, ai_translation
+msgid "Allows management of Screens and the accounts that can access them"
+msgstr "Permite o gerenciamento de telas e as contas que podem acessá-los"
+
+#, ai_translation
+msgid "Allows managing players, entering special results, modifying results, handling check-ins, pairings, and displays"
+msgstr "Permite gerenciar jogadores, inserir resultados especiais, modificar resultados, lidar com check-ins, emparelhamentos e exibições"
+
+#, ai_translation
+msgid "Allows pairing of the players, either using a pairing engine or manually"
+msgstr "Permite o emparelhamento dos jogadores, seja usando um motor de emparelhamento ou manualmente"
+
+#, ai_translation
+msgid "An error occurred. Consult the logs for more details."
+msgstr "Ocorreu um erro. Consulte os registros para obter mais detalhes."
+
+#, ai_translation
+msgid "An unexpected error occurred."
+msgstr "Ocorreu um erro inesperado."
+
+#, ai_translation
+msgid "Anonymous"
+msgstr "Anonymous"
+
+#, ai_translation
+msgid "Any number of devices can be controlled by the same display controller."
+msgstr "Qualquer número de dispositivos pode ser controlado pelo mesmo controlador de tela."
+
+#, ai_translation
+msgid "Application"
+msgstr "Aplicação"
+
+#, fuzzy
+msgid "Apr *** APRIL"
+msgstr "Apr"
+
+#, ai_translation
+msgid "April"
+msgstr "Abril"
+
+#, ai_translation
+msgid "Arbiter"
+msgstr "Árbiter"
+
+#, ai_translation
+msgid "Archive"
+msgstr "Arquivo"
+
+msgid "Archive [{archive}] could not be restored, consult the logs for more details."
+msgstr ""
+
+msgid "Archive [{archive}] successfully restored (see event [{event}])."
+msgstr ""
+
+#, ai_translation
+msgid "Archive event"
+msgstr "Arquivo do evento"
+
+#, ai_translation
+msgid "Archive the event."
+msgstr "Arquive o evento."
+
+msgid "Archived ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Archived event"
+msgstr "Evento Arquivado"
+
+#, ai_translation
+msgid "Archived events"
+msgstr "Eventos Arquivado"
+
+#, ai_translation
+msgid "Assign a screen to the controller."
+msgstr "Atribua uma tela ao controlador."
+
+#, ai_translation
+msgid "Assign a zero-point bye <b>for the next round</b>"
+msgstr "Atribua um bye de ponto zero b>para a próxima rodada/b>"
+
+#, ai_translation
+msgid "Assign a zero-point bye <b>for the rest of the tournament</b>"
+msgstr "Atribua um bye de ponto zero b>para o resto do torneio/b>"
+
+#, ai_translation
+msgid "Assign to a display controller."
+msgstr "Atribua a um controlador de exibição."
+
+#, python-format
+msgid "At least %(min)d games must be played."
+msgstr ""
+
+#, ai_translation
+msgid "At least a minimum or a maximum rating must be defined."
+msgstr "Pelo menos uma classificação mínima ou máxima deve ser definida."
+
+#, ai_translation
+msgid "At least one age category is expected."
+msgstr "Pelo menos uma categoria etária é esperada."
+
+#, ai_translation
+msgid "At least one club is expected."
+msgstr "Pelo menos um clube é esperado."
+
+#, ai_translation
+msgid "At least one federation is expected."
+msgstr "Pelo menos uma federação é esperada."
+
+#, ai_translation
+msgid "At least one player is expected."
+msgstr "Pelo menos um jogador é esperado."
+
+#, ai_translation
+msgid "At least one rating type is expected."
+msgstr "Pelo menos um tipo de classificação é esperado."
+
+#, ai_translation
+msgid "At least one value is expected."
+msgstr "Pelo menos um valor é esperado."
+
+#, python-format
+msgid "At most %(num)d illegal move is recorded."
+msgid_plural "At most %(num)d illegal moves are recorded."
+msgstr[0] ""
+msgstr[1] ""
+
+#, fuzzy
+msgid "Aug *** AUGUST"
+msgstr "Aug"
+
+#, ai_translation
+msgid "August"
+msgstr "Agosto"
+
+#, ai_translation
+msgid "Auto-update"
+msgstr "Auto-atualização"
+
+#, ai_translation
+msgid "Average"
+msgstr "Média"
+
+#, ai_translation
+msgid "Average of opponents Buchholz"
+msgstr "Média de adversários Buchholz"
+
+#, ai_translation
+msgid "Average perfect performance of opponents"
+msgstr "Desempenho perfeito médio dos adversários"
+
+#, ai_translation
+msgid "Average performance rating of opponents"
+msgstr "Classificação média de desempenho dos adversários"
+
+#, ai_translation
+msgid "Average rating of opponents"
+msgstr "Classificação média dos adversários"
+
+msgid "Average rating: {rating}"
+msgstr ""
+
+#, fuzzy
+msgid "B *** BLACK COLOR FOR CROSSTABLE"
+msgstr "B"
+
+#, fuzzy
+msgid "B *** BLACK COLOR FOR PLACE CARDS"
+msgstr "B"
+
+#, ai_translation
+msgid "BLACK PLAYER"
+msgstr "PLAYER PRETO"
+
+#, ai_translation
+msgid "BLACK WINS"
+msgstr "BLACK WINS"
+
+#, ai_translation
+msgid "BY FORFEIT"
+msgstr "POR FORFEITO"
+
+#, ai_translation
+msgid "Back"
+msgstr "Voltar"
+
+#, ai_translation
+msgid "Background colour:"
+msgstr "Cor do fundo:"
+
+#, python-format
+msgid "Background colour: %(color)s"
+msgstr ""
+
+#, ai_translation
+msgid "Background image:"
+msgstr "Imagem de fundo:"
+
+#, ai_translation
+msgid "Base date"
+msgstr "Data base"
+
+#, fuzzy
+msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
+msgstr "Bd."
+
+#, ai_translation
+msgid "Before configuring accounts, you have to be aware of a few security warnings:"
+msgstr "Antes de configurar contas, você precisa estar ciente de alguns avisos de segurança:"
+
+#, ai_translation
+msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
+msgstr "Beneficie-se das últimas características (experimentais) (Use em seu próprio RISKS!)."
+
+#, ai_translation
+msgid "Berger"
+msgstr "Berger"
+
+#, ai_translation
+msgid "Berger grid"
+msgstr "Berger grid"
+
+#, ai_translation
+msgid "Black"
+msgstr "Preto"
+
+#, ai_translation
+msgid "Black wins"
+msgstr "Vitórias pretas"
+
+#, ai_translation
+msgid "Blitz"
+msgstr "Blitz"
+
+#, fuzzy
+msgid "Blitz *** BLITZ ELO FOR TABLE HEADER"
+msgstr "Blitz"
+
+#, ai_translation
+msgid "Blitz rating"
+msgstr "Classificação Blitz"
+
+#, ai_translation
+msgid "Blitz:"
+msgstr "Blitz:"
+
+#, fuzzy
+msgid "Blz *** BLITZ RATING ACRONYM"
+msgstr "Blz"
+
+#, python-format
+msgid "Board #%(board_number)d with %(color)s"
+msgstr ""
+
+#, python-format
+msgid "Board %(board_number)s"
+msgstr ""
+
+#, python-format
+msgid "Board %(number)s"
+msgstr ""
+
+#, ai_translation
+msgid "Board & color"
+msgstr "Quadro & cor"
+
+#, python-format
+msgid "Board (%(remaining)d)"
+msgstr ""
+
+#, ai_translation
+msgid "Board Cards"
+msgstr "Cartas de Conselho"
+
+#, ai_translation
+msgid "Board Pairings"
+msgstr "Emparelhamentos"
+
+#, ai_translation
+msgid "Board is not the same as the opponent's."
+msgstr "Não é o mesmo que o adversário."
+
+#, ai_translation
+msgid "Board numbers:"
+msgstr "Números da placa:"
+
+#, ai_translation
+msgid "Board selection (by number)"
+msgstr "Seleção do Conselho de Administração (por número)"
+
+#, python-format
+msgid "Board sets of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+#, ai_translation
+msgid "Boards"
+msgstr "Conselhos"
+
+#, python-format
+msgid "Boards %f-%l"
+msgstr ""
+
+#, python-format
+msgid "Boards from #%(first)d to #%(last)d"
+msgstr ""
+
+#, ai_translation
+msgid "Boards screens show pairings by board number."
+msgstr "As telas das placas mostram os emparelhamentos pelo número da placa."
+
+#, ai_translation
+msgid "Border"
+msgstr "Fronteira"
+
+#, ai_translation
+msgid "Buchholz"
+msgstr "Buchholz"
+
+#, ai_translation
+msgid "Buchholz score calculated as if all paired games for the final round had ended in draws."
+msgstr "A pontuação de Buchholz calculada como se todos os jogos pareados para a rodada final tivessem terminado em empates."
+
+#, ai_translation
+msgid "By board"
+msgstr "A bordo"
+
+#, ai_translation
+msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
+msgstr "Por padrão, outros dispositivos só podem interagir com telas públicas. Esta guia permite que você configure esse comportamento."
+
+msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
+msgstr ""
+
+#, python-format
+msgid "By default: %(minutes)d minutes"
+msgstr ""
+
+#, ai_translation
+msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
+msgstr "Ao executar esta operação, você está permitindo um modo inseguro para esta rodada, permitindo outras operações inseguras."
+
+#, ai_translation
+msgid "By player"
+msgstr "Por jogador"
+
+#, python-format
+msgid "Bye limit (%(limit)d) is already reached for this tournament."
+msgstr ""
+
+#, fuzzy, python-format
+msgid "Byes (%(byes)d) *** PLAYERS WITH BYES"
+msgstr "Byes (%(byes)d)"
+
+msgid "Byes can't be set for the last round of the tournament."
+msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
+msgstr[0] "Byes não pode ser definido para a última rodada do torneio."
+msgstr[1] ""
+
+#, ai_translation
+msgid "CA"
+msgstr "CA"
+
+#, ai_translation
+msgid "CHE"
+msgstr "CHE"
+
+#, ai_translation
+msgid "CHECK-IN"
+msgstr "CHECK-IN"
+
+#, ai_translation
+msgid "CHECK-OUT"
+msgstr "CHECK-OUT"
+
+#, ai_translation
+msgid "CLEAR THE RESULT"
+msgstr "CLEAR O RESULTADO"
+
+#, fuzzy
+msgid "CM *** SHORT NAME FOR Candidate Master"
+msgstr "CM"
+
+#, ai_translation
+msgid "Can't see your event?"
+msgstr "Não consegue ver o seu evento?"
+
+#, ai_translation
+msgid "Cancel"
+msgstr "Cancelar"
+
+#, ai_translation
+msgid "Cancel Half-Point Bye"
+msgstr "Meia-Ponto Cancelar Meia-Ponto Bye"
+
+#, ai_translation
+msgid "Cancel Zero-Point Bye"
+msgstr "Cancelar Zero-Point Bye"
+
+#, ai_translation
+msgid "Candidate Master"
+msgstr "Mestre Candidato"
+
+#, ai_translation
+msgid "Cannot be both chief and deputy on the same tournament."
+msgstr "Não pode ser chefe e vice-presidente no mesmo torneio."
+
+#, ai_translation
+msgid "Cash"
+msgstr "Dinheiro em dinheiro"
+
+#, fuzzy
+msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
+msgstr "Cat"
+
+#, fuzzy
+msgid "Cat *** CATEGORY FOR TABLE HEADER"
+msgstr "Cat"
+
+#, ai_translation
+msgid "Categories"
+msgstr "Categorias"
+
+#, ai_translation
+msgid "Categories are based on the age of the players before January 1st of the current sporting season."
+msgstr "As categorias são baseadas na idade dos jogadores antes de 1o de janeiro da atual temporada esportiva."
+
+#, ai_translation
+msgid "Categories are by default based on the start date of each tournament. Choosing a base date uses the categories as they were on this date (usage: long events crossing 2 sporting seasons)."
+msgstr "As categorias são por padrão com base na data de início de cada torneio. A escolha de uma data base usa as categorias como estavam nesta data (uso: eventos longos que cruzam 2 estações esportivas)."
+
+#, ai_translation
+msgid "Category"
+msgstr "Categoria"
+
+#, fuzzy
+msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
+msgstr "Category"
+
+#, python-format
+msgid "Category [%(category)s] successfully created!"
+msgstr ""
+
+#, ai_translation
+msgid "Category sets"
+msgstr "Conjuntos de categorias"
+
+#, ai_translation
+msgid "Change the player's tournament."
+msgstr "Mude o torneio do jogador."
+
+#, ai_translation
+msgid "Check connection"
+msgstr "Verificar ligação"
+
+#, ai_translation
+msgid "Check the box to allow other screens to display a link to the screen of this family."
+msgstr "Marque a caixa para permitir que outras telas exibam um link para a tela desta família."
+
+#, ai_translation
+msgid "Check the box to allow other screens to display a link to this screen."
+msgstr "Marque a caixa para permitir que outras telas exibam um link para esta tela."
+
+#, ai_translation
+msgid "Check-in"
+msgstr "Check-in"
+
+#, fuzzy
+msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
+msgstr "Check-in"
+
+msgid "Check-in / Results ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Check-in / Results entry"
+msgstr "Check-in / Entrada de resultados"
+
+msgid "Check-in / Results entry ({tournament_name})"
+msgstr ""
+
+#, python-format
+msgid "Check-in is closed for tournament [%(tournament)s]."
+msgstr ""
+
+msgid "Check-in is closed for tournament [{tournament}]."
+msgstr ""
+
+#, python-format
+msgid "Check-in is not allowed after the tournament has started for the [%(pairing_system)s] pairing system."
+msgstr ""
+
+msgid "Check-in is open for tournament [{tournament}]."
+msgstr ""
+
+#, ai_translation
+msgid "Check-in players"
+msgstr "Jogadores de check-in"
+
+#, ai_translation
+msgid "Check-in via public screens"
+msgstr "Check-in através de ecrãs públicos"
+
+#, ai_translation
+msgid "Checked-in"
+msgstr "Check-in"
+
+#, ai_translation
+msgid "Cheque"
+msgstr "Cheque"
+
+#, ai_translation
+msgid "Chess"
+msgstr "Xads"
+
+#, ai_translation
+msgid "Chief Arbitration"
+msgstr "Chefe Arbitragem"
+
+#, ai_translation
+msgid "Chief arbiter"
+msgstr "Árbitro chefe"
+
+#, ai_translation
+msgid "Choose a player at random"
+msgstr "Escolha um jogador ao acaso"
+
+#, ai_translation
+msgid "Choose at least one category."
+msgstr "Escolha pelo menos uma categoria."
+
+#, ai_translation
+msgid "Choose at least one club."
+msgstr "Escolha pelo menos um clube."
+
+#, ai_translation
+msgid "Choose at least one federation."
+msgstr "Escolha pelo menos uma federação."
+
+#, ai_translation
+msgid "Choose at least one player."
+msgstr "Escolha pelo menos um jogador."
+
+#, ai_translation
+msgid "Choose at least one rating type."
+msgstr "Escolha pelo menos um tipo de classificação."
+
+#, ai_translation
+msgid "Choose families to add"
+msgstr "Escolha famílias para adicionar"
+
+#, ai_translation
+msgid "Choose my own"
+msgstr "Escolha a minha"
+
+#, ai_translation
+msgid "Choose one, many or no players."
+msgstr "Escolha um, muitos ou nenhum jogador."
+
+#, ai_translation
+msgid "Choose one, many or no tournaments."
+msgstr "Escolha um, muitos ou nenhum torneio."
+
+#, ai_translation
+msgid "Choose screens to add"
+msgstr "Escolha telas para adicionar"
+
+#, ai_translation
+msgid "Choose the columns displayed."
+msgstr "Escolha as colunas exibidas."
+
+#, ai_translation
+msgid "Choose your language"
+msgstr "Escolha o seu idioma"
+
+#, ai_translation
+msgid "Clear Log"
+msgstr "Limpar Log"
+
+#, ai_translation
+msgid "Clear all the filters."
+msgstr "Limpar todos os filtros."
+
+#, ai_translation
+msgid "Click to check-in the player."
+msgstr "Clique para fazer o check-in do jogador."
+
+#, ai_translation
+msgid "Click to check-out the player."
+msgstr "Clique para fazer o check-out do jogador."
+
+#, ai_translation
+msgid "Close"
+msgstr "Fechar"
+
+#, ai_translation
+msgid "Close check-in"
+msgstr "Fechar check-in"
+
+#, python-format
+msgid "Close check-in for tournament [%(tournament)s]"
+msgstr ""
+
+#, python-format
+msgid "Close check-in for tournament [%(tournament)s]."
+msgstr ""
+
+#, ai_translation
+msgid "Club"
+msgstr "Clube"
+
+#, fuzzy
+msgid "Club *** CLUB COLUMN HEADER FOR PLAYERS"
+msgstr "Club"
+
+#, fuzzy
+msgid "Club *** CLUB FOR PLAYERS COLUMNS"
+msgstr "Club"
+
+#, fuzzy
+msgid "Club *** CLUB FOR TABLE HEADER"
+msgstr "Club"
+
+#, ai_translation
+msgid "Club threshold"
+msgstr "Limiar do clube"
+
+#, ai_translation
+msgid "Club:"
+msgstr "Clube:"
+
+#, ai_translation
+msgid "Clubs"
+msgstr "Clubes"
+
+#, ai_translation
+msgid "Color"
+msgstr "Cor"
+
+msgid "Color [{color}] can't be used with an opponent."
+msgstr ""
+
+msgid "Color [{color}] can't be used without an opponent."
+msgstr ""
+
+#, ai_translation
+msgid "Colors and delays"
+msgstr "Cores e atrasos"
+
+#, python-format
+msgid "Colour #%(num)d:"
+msgstr ""
+
+msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
+msgstr ""
+
+msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
+msgstr ""
+
+msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
+msgstr ""
+
+#, ai_translation
+msgid "Colour history"
+msgstr "História das cores"
+
+#, ai_translation
+msgid "Columns"
+msgstr "Colunas"
+
+#, ai_translation
+msgid "Columns:"
+msgstr "Colunas:"
+
+#, ai_translation
+msgid "Comma-separated board numbers; if this field is set, other fields are omitted."
+msgstr "Números de placa separados por vírgulas; se este campo for definido, outros campos serão omitidos."
+
+#, fuzzy
+msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
+msgstr "Comment"
+
+#, ai_translation
+msgid "Comment:"
+msgstr "Comentário:"
+
+#, fuzzy
+msgid "Comments *** COMMENTS FOR TABLE HEADER"
+msgstr "Comments"
+
+#, ai_translation
+msgid "Complementary pairings"
+msgstr "Emparelhamentos complementares"
+
+#, ai_translation
+msgid "Complementary pairings generated."
+msgstr "Emparelhamentos complementares gerados."
+
+#, ai_translation
+msgid "Complementary pairings successfully generated!"
+msgstr "Emparelhamentos complementares gerados com sucesso!"
+
+#, ai_translation
+msgid "Configuration"
+msgstr "Configuração"
+
+#, ai_translation
+msgid "Configure the category sets, which are available for all events."
+msgstr "Configure os conjuntos de categorias, que estão disponíveis para todos os eventos."
+
+#, ai_translation
+msgid "Configure the tie-breaks of the tournament."
+msgstr "Configure os tie-breaks do torneio."
+
+msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
+msgstr ""
+
+#, ai_translation
+msgid "Connect to the Sharly Chess network, then scan to access the Sharly Chess server."
+msgstr "Conecte-se à rede Sharly Chess e, em seguida, digitalize para acessar o servidor Sharly Chess."
+
+#, ai_translation
+msgid "Connection established"
+msgstr "Conexão estabelecida"
+
+#, ai_translation
+msgid "Connection failed"
+msgstr "A ligação falhou"
+
+#, ai_translation
+msgid "Connection parameters"
+msgstr "Parâmetros de conexão"
+
+msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
+msgstr ""
+
+#, ai_translation
+msgid "Connection to the server failed (timeout)."
+msgstr "A conexão com o servidor falhou (tempo limite)."
+
+#, ai_translation
+msgid "Connection to the server failed."
+msgstr "A conexão com o servidor falhou."
+
+#, ai_translation
+msgid "Consider all paired games for the final round as draws."
+msgstr "Considere todos os jogos pareados para a rodada final como empates."
+
+#, ai_translation
+msgid "Consider forfeited games, either wins or losses, as played games against the scheduled opponent."
+msgstr "Considere jogos perdidos, ganhos ou perdas, como jogos jogados contra o adversário agendado."
+
+msgid "Console logging level: {console_log_level}"
+msgstr ""
+
+#, ai_translation
+msgid "Consult the logs for more details."
+msgstr "Consulte os logs para mais detalhes."
+
+#, ai_translation
+msgid "Consult the players and the prize assignment of this category."
+msgstr "Consulte os jogadores e a atribuição de prêmios desta categoria."
+
+#, ai_translation
+msgid "Contact and registration"
+msgstr "Contacto e registo"
+
+#, ai_translation
+msgid "Contact email:"
+msgstr "E-mail:"
+
+#, ai_translation
+msgid "Continue"
+msgstr "Continuar"
+
+#, ai_translation
+msgid "Corners"
+msgstr "Cantos"
+
+msgid "Could not connect to data source [{data_source}]."
+msgstr ""
+
+#, ai_translation
+msgid "Create"
+msgstr "Criar"
+
+#, ai_translation
+msgid "Create a Prize Bracket"
+msgstr "Criar um Prize Bracket"
+
+#, ai_translation
+msgid "Create a Prize Bracket now to get started."
+msgstr "Crie um Prize Bracket agora para começar."
+
+#, ai_translation
+msgid "Create a Prize Category now to continue."
+msgstr "Crie uma categoria de prêmio agora para continuar."
+
+#, ai_translation
+msgid "Create a category"
+msgstr "Criar uma categoria"
+
+#, ai_translation
+msgid "Create a display controller"
+msgstr "Criar um controlador de visualização"
+
+#, ai_translation
+msgid "Create a display controller now to get started."
+msgstr "Crie um controlador de exibição agora para começar."
+
+#, ai_translation
+msgid "Create a family now to get started."
+msgstr "Crie uma família agora para começar."
+
+#, ai_translation
+msgid "Create a prize bracket in which you will then be able to create categories, and then prizes."
+msgstr "Crie um suporte de prêmio no qual você poderá criar categorias e, em seguida, prêmios."
+
+#, ai_translation
+msgid "Create a rotator"
+msgstr "Criar um rotador"
+
+#, ai_translation
+msgid "Create a rotator now to get started."
+msgstr "Crie um rotador agora para começar."
+
+#, ai_translation
+msgid "Create a screen"
+msgstr "Criar uma tela"
+
+#, ai_translation
+msgid "Create a screen family"
+msgstr "Criar uma família de ecrã"
+
+#, ai_translation
+msgid "Create a screen now to get started."
+msgstr "Crie uma tela agora para começar."
+
+#, ai_translation
+msgid "Create a timer"
+msgstr "Criar um timer"
+
+#, ai_translation
+msgid "Create a timer now to get started."
+msgstr "Crie um cronômetro agora para começar."
+
+#, ai_translation
+msgid "Create a tournament"
+msgstr "Criar um torneio"
+
+#, ai_translation
+msgid "Create account"
+msgstr "Criar conta"
+
+#, ai_translation
+msgid "Create an account"
+msgstr "Criar uma conta"
+
+#, ai_translation
+msgid "Create an event"
+msgstr "Criar um evento"
+
+#, ai_translation
+msgid "Create and add another"
+msgstr "Criar e adicionar outro"
+
+#, ai_translation
+msgid "Create as many controllers as you need, then on your other devices choose to display a display controller rather than a specific screen or rotator."
+msgstr "Crie quantos controladores você precisar, então em seus outros dispositivos opte por exibir um controlador de exibição em vez de uma tela ou rotador específico."
+
+#, ai_translation
+msgid "Create category set"
+msgstr "Criar conjunto de categorias"
+
+#, ai_translation
+msgid "Create criterion"
+msgstr "Criar critério"
+
+#, ai_translation
+msgid "Create display controller"
+msgstr "Criar controlador de exibição"
+
+#, ai_translation
+msgid "Create event"
+msgstr "Criar evento"
+
+#, ai_translation
+msgid "Create hour"
+msgstr "Criar hora"
+
+#, ai_translation
+msgid "Create permission"
+msgstr "Criar permissão"
+
+#, ai_translation
+msgid "Create player"
+msgstr "Criar jogador"
+
+#, ai_translation
+msgid "Create prize"
+msgstr "Criar prêmio"
+
+#, ai_translation
+msgid "Create prize category"
+msgstr "Criar categoria de prêmio"
+
+#, ai_translation
+msgid "Create rotator"
+msgstr "Criar rotator"
+
+#, ai_translation
+msgid "Create screen"
+msgstr "Criar tela"
+
+#, ai_translation
+msgid "Create screen family"
+msgstr "Criar família de ecrã"
+
+#, ai_translation
+msgid "Create tie-break"
+msgstr "Criar tie-break"
+
+#, ai_translation
+msgid "Create timer"
+msgstr "Criar timer"
+
+#, ai_translation
+msgid "Create tournament"
+msgstr "Criar torneio"
+
+#, ai_translation
+msgid "Create with default screens"
+msgstr "Criar com telas padrão"
+
+msgid "Creator: {template_creator}"
+msgstr ""
+
+#, ai_translation
+msgid "Criteria"
+msgstr "Critérios"
+
+#, ai_translation
+msgid "Criteria list"
+msgstr "Lista de critérios"
+
+#, python-format
+msgid "Criterion [%(criterion)s] successfully created!"
+msgstr ""
+
+#, ai_translation
+msgid "Crop marks:"
+msgstr "Marcas de colheita:"
+
+#, ai_translation
+msgid "Crosstable"
+msgstr "mesa cruzada"
+
+#, python-format
+msgid "Crosstable %f to %l"
+msgstr ""
+
+#, python-format
+msgid "Crosstable %f-%l"
+msgstr ""
+
+msgid "Crosstable after round #{round}"
+msgstr ""
+
+#, ai_translation
+msgid "Crosstable before the first round"
+msgstr "Mesa antes da primeira rodada"
+
+msgid "Current ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Current events"
+msgstr "Eventos Atuais"
+
+#, ai_translation
+msgid "Current pairings differ from the expected Swiss pairings, possibly due to manual changes, complementary pairings, or renumbering after rating/late-entry adjustments."
+msgstr "Os emparelhamentos atuais diferem dos emparelhamentos suíços esperados, possivelmente devido a mudanças manuais, emparelhamentos complementares ou renumeração após ajustes de classificação / entrada tardia."
+
+#, ai_translation
+msgid "Current round"
+msgstr "Rodada atual"
+
+#, python-format
+msgid "Current round: %(round)d"
+msgstr ""
+
+msgid "Currently displaying rotator [{name}]"
+msgstr ""
+
+msgid "Currently displaying screen [{name}]"
+msgstr ""
+
+#, ai_translation
+msgid "Cut values"
+msgstr "Valores de corte"
+
+#, fuzzy
+msgid "Cut {value} *** CUT TIE BREAK NAME"
+msgstr "Cut {value}"
+
+#, ai_translation
+msgid "DCA"
+msgstr "DCA"
+
+#, ai_translation
+msgid "DD/MM/YYYY"
+msgstr "DD/MM/ AAAA"
+
+#, ai_translation
+msgid "DMG does not contain exactly one folder as expected."
+msgstr "DMG não contém exatamente uma pasta como esperado."
+
+#, ai_translation
+msgid "DOUBLE"
+msgstr "DUPLO"
+
+#, ai_translation
+msgid "DRAW"
+msgstr "DRAW"
+
+#, ai_translation
+msgid "Daily"
+msgstr "Diariamente"
+
+#, ai_translation
+msgid "Dashed border"
+msgstr "Fronteira Dashed"
+
+#, python-format
+msgid "Data source: %(data_source)s"
+msgstr ""
+
+#, ai_translation
+msgid "Data sources"
+msgstr "Fontes de dados"
+
+#, ai_translation
+msgid "Database"
+msgstr "Banco de dados"
+
+msgid "Database [{database}] successfully updated."
+msgstr ""
+
+#, ai_translation
+msgid "Date and time"
+msgstr "Data e hora"
+
+#, ai_translation
+msgid "Date format"
+msgstr "Formato da data"
+
+#, ai_translation
+msgid "Date of birth"
+msgstr "Data de nascimento"
+
+#, ai_translation
+msgid "Date of birth:"
+msgstr "Data de nascimento:"
+
+#, ai_translation
+msgid "Dates"
+msgstr "Datas"
+
+#, fuzzy
+msgid "Dec *** DECEMBER"
+msgstr "Dec"
+
+#, ai_translation
+msgid "December"
+msgstr "Dezembro"
+
+#, ai_translation
+msgid "Default accounts have been created."
+msgstr "Contas padrão foram criadas."
+
+#, ai_translation
+msgid "Default sets can't be deleted."
+msgstr "Conjuntos padrão não podem ser excluídos."
+
+#, ai_translation
+msgid "Default timer settings"
+msgstr "Configurações padrão do temporizador"
+
+#, ai_translation
+msgid "Define as main category"
+msgstr "Definir como categoria principal"
+
+#, ai_translation
+msgid "Define as monetary"
+msgstr "Definir como monetário"
+
+#, ai_translation
+msgid "Define as public"
+msgstr "Definir como público"
+
+#, ai_translation
+msgid "Define the criteria for players to belong to this category."
+msgstr "Defina os critérios para os jogadores pertencerem a esta categoria."
+
+#, ai_translation
+msgid "Define the criteria for players to participate in this tournament."
+msgstr "Defina os critérios para os jogadores participarem neste torneio."
+
+#, ai_translation
+msgid "Define the prizes of the category."
+msgstr "Defina os prêmios da categoria."
+
+#, ai_translation
+msgid "Define the screens and screen families to display."
+msgstr "Defina as telas e as famílias de tela para exibir."
+
+#, python-format
+msgid "Delay #%(num)d:"
+msgstr ""
+
+#, ai_translation
+msgid "Delay (seconds):"
+msgstr "Atraso (segundos):"
+
+#, ai_translation
+msgid "Delete"
+msgstr "Apagar"
+
+#, python-format
+msgid "Delete FIDE ID [%(old)s]"
+msgstr ""
+
+#, ai_translation
+msgid "Delete account"
+msgstr "Apagar conta"
+
+#, ai_translation
+msgid "Delete display controller"
+msgstr "Apagar o controlador de ecrã"
+
+#, ai_translation
+msgid "Delete player"
+msgstr "Apagar jogador"
+
+#, ai_translation
+msgid "Delete players"
+msgstr "Apagar jogadores"
+
+#, ai_translation
+msgid "Delete prize category"
+msgstr "Apagar categoria de prémio"
+
+#, ai_translation
+msgid "Delete prize group"
+msgstr "Apagar grupo de prémios"
+
+#, ai_translation
+msgid "Delete rotator"
+msgstr "Apagar o rotador"
+
+#, ai_translation
+msgid "Delete screen"
+msgstr "Apagar tela"
+
+#, ai_translation
+msgid "Delete screen family"
+msgstr "Apagar a família da tela"
+
+#, ai_translation
+msgid "Delete the account."
+msgstr "Apagar a conta."
+
+#, ai_translation
+msgid "Delete the category."
+msgstr "Apagar a categoria."
+
+#, ai_translation
+msgid "Delete the display controller."
+msgstr "Exclua o controlador de exibição."
+
+#, ai_translation
+msgid "Delete the rotator."
+msgstr "Apague o rotador."
+
+#, ai_translation
+msgid "Delete the screen family."
+msgstr "Exclua a família da tela."
+
+#, ai_translation
+msgid "Delete the timer."
+msgstr "Apagar o temporizador."
+
+#, ai_translation
+msgid "Delete the tournament."
+msgstr "Apagar o torneio."
+
+#, ai_translation
+msgid "Delete timer"
+msgstr "Apagar timer"
+
+#, ai_translation
+msgid "Delete tournament"
+msgstr "Apagar torneio"
+
+#, ai_translation
+msgid "Delete tournaments"
+msgstr "Apagar torneios"
+
+#, ai_translation
+msgid "Deletes all the criteria of this category."
+msgstr "Apaga todos os critérios desta categoria."
+
+#, ai_translation
+msgid "Deletion date"
+msgstr "Data de exclusão"
+
+#, ai_translation
+msgid "Deputy Chief Arbitration"
+msgstr "Arbitragem Chefe Adjunto"
+
+#, ai_translation
+msgid "Deputy arbiter"
+msgstr "Árbitro adjunto"
+
+#, ai_translation
+msgid "Deputy arbiters"
+msgstr "árbitros adjuntos"
+
+#, ai_translation
+msgid "Description"
+msgstr "Descrição"
+
+#, ai_translation
+msgid "Description is mandatory for non-monetary prizes."
+msgstr "A descrição é obrigatória para prêmios não monetários."
+
+#, ai_translation
+msgid "Descriptions can only be defined for non-monetary prizes."
+msgstr "As descrições só podem ser definidas para prêmios não monetários."
+
+#, ai_translation
+msgid "Details"
+msgstr "Detalhes"
+
+#, ai_translation
+msgid "Different for White / Black"
+msgstr "Diferente para branco/preto"
+
+#, ai_translation
+msgid "Direct encounter"
+msgstr "Encontro direto"
+
+#, ai_translation
+msgid "Director:"
+msgstr "Diretor:"
+
+msgid "Directory [{folder}] already exists."
+msgstr ""
+
+#, ai_translation
+msgid "Disabled"
+msgstr "Deficientes"
+
+#, ai_translation
+msgid "Display"
+msgstr "Exibição"
+
+#, ai_translation
+msgid "Display Controller"
+msgstr "Controlador da exposição"
+
+msgid "Display controller [{display_controller}] has been created."
+msgstr ""
+
+msgid "Display controller [{display_controller}] has been deleted."
+msgstr ""
+
+msgid "Display controller [{display_controller}] has been updated."
+msgstr ""
+
+#, ai_translation
+msgid "Display controllers"
+msgstr "Controladores de exibição"
+
+msgid "Display controllers ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
+msgstr "Os controladores de exibição permitem que você controle telas em seu evento a partir do seu servidor (ou qualquer dispositivo permitido)."
+
+#, ai_translation
+msgid "Display the exit button"
+msgstr "Mostrar o botão de saída"
+
+#, ai_translation
+msgid "Display the players' opponent"
+msgstr "Mostrar o adversário dos jogadores"
+
+#, ai_translation
+msgid "Display the unpaired players"
+msgstr "Mostrar os jogadores não emparelhados"
+
+#, python-format
+msgid "Displayed round: %(round)d"
+msgstr ""
+
+msgid "Do not edit this table manually, use script {script_name} instead."
+msgstr ""
+
+#, ai_translation
+msgid "Do not recover"
+msgstr "Não recuperar"
+
+#, ai_translation
+msgid "Do nothing (players will be eligible for pairing)"
+msgstr "Não faça nada (os jogadores serão elegíveis para emparelhamento)"
+
+#, ai_translation
+msgid "Do you want to install example event databases"
+msgstr "Você quer instalar exemplos de bancos de dados de eventos"
+
+msgid "Do you want to recover the data of release [{version}]"
+msgstr ""
+
+msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
+msgstr ""
+
+#, ai_translation
+msgid "Document:"
+msgstr "Documento:"
+
+#, ai_translation
+msgid "Double-round Berger"
+msgstr "Berger duplo-round"
+
+#, ai_translation
+msgid "Download"
+msgstr "Download"
+
+#, ai_translation
+msgid "Download the information of the selected players (CSV format)."
+msgstr "Faça o download das informações dos jogadores selecionados (formato CSV)."
+
+#, ai_translation
+msgid "Download the information of the selected players (ODS format)."
+msgstr "Faça o download das informações dos jogadores selecionados (formato ODS)."
+
+#, ai_translation
+msgid "Download the information of the selected players (XLSX format)."
+msgstr "Faça o download das informações dos jogadores selecionados (formato XLSX)."
+
+#, ai_translation
+msgid "Download the players."
+msgstr "Baixe os jogadores."
+
+#, ai_translation
+msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
+msgstr "Faça o download dos vCards dos jogadores selecionados (formato VCF). Aviso: os jogadores sem telefone ou e-mail não serão incluídos."
+
+#, ai_translation
+msgid "Download tournament fees"
+msgstr "Taxas de download do torneio"
+
+msgid "Downloading failed with code [{code}]."
+msgstr ""
+
+#, ai_translation
+msgid "Drag the sets to order them."
+msgstr "Arraste os conjuntos para encomendá-los."
+
+#, ai_translation
+msgid "Draw"
+msgstr "Desenhar"
+
+#, ai_translation
+msgid "Duplicate the account."
+msgstr "Duplicar a conta."
+
+#, ai_translation
+msgid "Duplicate the category and its criteria and prizes."
+msgstr "Duplicar a categoria e seus critérios e prêmios."
+
+#, ai_translation
+msgid "Duplicate the event."
+msgstr "Duplicar o evento."
+
+#, ai_translation
+msgid "Duplicate the rotator."
+msgstr "Duplique o rotador."
+
+#, ai_translation
+msgid "Duplicate the screen family."
+msgstr "Duplique a família da tela."
+
+#, ai_translation
+msgid "Duplicate the timer."
+msgstr "Duplique o temporizador."
+
+#, ai_translation
+msgid "Duplicate the tournament."
+msgstr "Duplicar o torneio."
+
+#, ai_translation
+msgid "Duplicate with players"
+msgstr "Duplicar com jogadores"
+
+#, ai_translation
+msgid "Duplicate without players"
+msgstr "Duplicar sem jogadores"
+
+#, ai_translation
+msgid "Duration (min):"
+msgstr "Duração (min):"
+
+#, ai_translation
+msgid "Duration (sec):"
+msgstr "Duração (seg):"
+
+#, fuzzy
+msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
+msgstr "E"
+
+#, python-format
+msgid "E.g.: %(minutes)d (minutes)"
+msgstr ""
+
+#, python-format
+msgid "E.g.: %(num)d"
+msgstr ""
+
+#, python-format
+msgid "E.g.: %(string)s"
+msgstr ""
+
+#, ai_translation
+msgid "E.g.: 20 (boards per screen)"
+msgstr "Por exemplo: 20 (quadros por tela)"
+
+#, ai_translation
+msgid "E.g.: 20 (players per screen)"
+msgstr "Por exemplo: 20 (jogadores por tela)"
+
+#, ai_translation
+msgid "E.g.: 4 (split boards over 4 screens)"
+msgstr "Por exemplo: 4 (placas divididas sobre 4 telas)"
+
+#, ai_translation
+msgid "E.g.: 4 (split players over 4 screens)"
+msgstr "Por exemplo: 4 (jogadores divididos em 4 telas)"
+
+#, ai_translation
+msgid "E.g.: @boards, @family, another-screen"
+msgstr "Por exemplo: boards, family, outra tela"
+
+#, python-format
+msgid "E.g.: Boards %%f to %%l"
+msgstr ""
+
+#, python-format
+msgid "E.g.: Boards %%f-%%l"
+msgstr ""
+
+#, python-format
+msgid "E.g.: Check-in started for %%s"
+msgstr ""
+
+#, ai_translation
+msgid "E.g.: DOE"
+msgstr "Por exemplo: DOE"
+
+#, ai_translation
+msgid "E.g.: John"
+msgstr "Por exemplo: John"
+
+#, ai_translation
+msgid "E.g.: Link to my screen"
+msgstr "Por exemplo: Link para a minha tela"
+
+#, ai_translation
+msgid "E.g.: Main tournament"
+msgstr "Por exemplo: Torneio principal"
+
+#, ai_translation
+msgid "E.g.: My display controller"
+msgstr "Por exemplo: Meu controlador de exibição"
+
+#, ai_translation
+msgid "E.g.: My favourite club!"
+msgstr "Por exemplo: Meu clube favorito!"
+
+#, ai_translation
+msgid "E.g.: My screen"
+msgstr "Por exemplo: Minha tela"
+
+#, ai_translation
+msgid "E.g.: My screen family"
+msgstr "Por exemplo: Minha família de tela"
+
+#, ai_translation
+msgid "E.g.: Paris"
+msgstr "Por exemplo: Paris"
+
+#, python-format
+msgid "E.g.: Players %%f to %%l"
+msgstr ""
+
+#, python-format
+msgid "E.g.: Players %%f-%%l"
+msgstr ""
+
+#, ai_translation
+msgid "E.g.: Please keep quiet until the end of the round!"
+msgstr "Por exemplo: Por favor, fique quieto até o final da rodada!"
+
+#, ai_translation
+msgid "E.g.: Sharly Chess Club"
+msgstr "Por exemplo: Sharly Chess Club"
+
+#, ai_translation
+msgid "E.g.: Start of check-in"
+msgstr "Por exemplo: Início do check-in"
+
+#, python-format
+msgid "E.g.: Start of check-in in %%s"
+msgstr ""
+
+#, ai_translation
+msgid "E.g.: World championship"
+msgstr "Por exemplo: Campeonato Mundial"
+
+#, ai_translation
+msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
+msgstr "Por exemplo: c:chesstournamentsmainrules.pdf"
+
+#, ai_translation
+msgid "E.g.: https://my.club.us/tournament.jpg"
+msgstr "Por exemplo: https://my.club.us/tournament.jpg"
+
+#, ai_translation
+msgid "E.g.: john.doe@chess.com"
+msgstr "Por exemplo: john.doechess.com"
+
+#, ai_translation
+msgid "EXEMPT"
+msgstr "EXEMPT"
+
+#, python-format
+msgid "EXEMPT (already received at round #%(round)d)"
+msgstr ""
+
+#, ai_translation
+msgid "Each bracket should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgstr "Cada parêntese deve conter uma ou mais categorias (por exemplo, U12, Melhor Mulher) com critérios e lugares (1o, 2o, etc.). Os prêmios são concedidos com base no valor (e na ordem da categoria se os valores forem iguais)."
+
+#, ai_translation
+msgid "Each player can only be awarded one prize per bracket."
+msgstr "Cada jogador só pode receber um prêmio por parêntese."
+
+#, ai_translation
+msgid "Edit"
+msgstr "Editar Editar"
+
+#, ai_translation
+msgid "Edit Player"
+msgstr "Editar Jogador"
+
+#, ai_translation
+msgid "Edit account"
+msgstr "Editar conta"
+
+#, ai_translation
+msgid "Edit criterion"
+msgstr "Editar critério"
+
+#, ai_translation
+msgid "Edit display controller"
+msgstr "Editar controlador de exibição"
+
+#, ai_translation
+msgid "Edit event"
+msgstr "Editar evento"
+
+#, ai_translation
+msgid "Edit hour"
+msgstr "Editar hora"
+
+#, ai_translation
+msgid "Edit permission"
+msgstr "Editar permissão"
+
+#, ai_translation
+msgid "Edit player"
+msgstr "Editar jogador"
+
+#, ai_translation
+msgid "Edit prize"
+msgstr "Editar prêmio"
+
+#, ai_translation
+msgid "Edit prize category"
+msgstr "Editar categoria de prêmio"
+
+#, ai_translation
+msgid "Edit rotator"
+msgstr "Editar rotator"
+
+#, ai_translation
+msgid "Edit screen"
+msgstr "Editar tela"
+
+#, ai_translation
+msgid "Edit screen family"
+msgstr "Editar família de ecrã"
+
+#, ai_translation
+msgid "Edit the hours of the timer"
+msgstr "Editar as horas do temporizador"
+
+#, ai_translation
+msgid "Edit the permissions of the account."
+msgstr "Edite as permissões da conta."
+
+#, ai_translation
+msgid "Edit the player's properties."
+msgstr "Edite as propriedades do jogador."
+
+#, ai_translation
+msgid "Edit the player's tournament record."
+msgstr "Edite o registro do torneio do jogador."
+
+#, ai_translation
+msgid "Edit the properties of the account."
+msgstr "Edite as propriedades da conta."
+
+#, ai_translation
+msgid "Edit the properties of the category."
+msgstr "Edite as propriedades da categoria."
+
+#, ai_translation
+msgid "Edit the properties of the display controller."
+msgstr "Edite as propriedades do controlador de exibição."
+
+#, ai_translation
+msgid "Edit the properties of the event."
+msgstr "Edite as propriedades do evento."
+
+#, ai_translation
+msgid "Edit the properties of the rotator."
+msgstr "Edite as propriedades do rotador."
+
+#, ai_translation
+msgid "Edit the properties of the screen family."
+msgstr "Edite as propriedades da família de telas."
+
+#, ai_translation
+msgid "Edit the properties of the screen."
+msgstr "Edite as propriedades da tela."
+
+#, ai_translation
+msgid "Edit the properties of the timer."
+msgstr "Edite as propriedades do temporizador."
+
+#, ai_translation
+msgid "Edit the properties of the tournament."
+msgstr "Edite as propriedades do torneio."
+
+#, ai_translation
+msgid "Edit the sets of boards displayed on the screen."
+msgstr "Edite os conjuntos de placas exibidos na tela."
+
+#, ai_translation
+msgid "Edit the sets of players displayed on the screen."
+msgstr "Edite os conjuntos de jogadores exibidos na tela."
+
+#, ai_translation
+msgid "Edit the unique ID."
+msgstr "Edite o ID único."
+
+#, ai_translation
+msgid "Edit tie-break"
+msgstr "Editar tie-break"
+
+#, ai_translation
+msgid "Edit timer"
+msgstr "Editar timer"
+
+#, ai_translation
+msgid "Edit tournament"
+msgstr "Editar torneio"
+
+#, fuzzy
+msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
+msgstr "Elo"
+
+#, fuzzy
+msgid "Elo *** STD ELO FOR TABLE HEADER"
+msgstr "Elo"
+
+#, ai_translation
+msgid "Email:"
+msgstr "E-mail:"
+
+#, ai_translation
+msgid "Enable this account"
+msgstr "Ativar esta conta"
+
+#, ai_translation
+msgid "Enable/disable the details on the cards below."
+msgstr "Ativar/desativar os detalhes nos cartões abaixo."
+
+#, python-format
+msgid "Encounter already happened at round #%(round)d"
+msgstr ""
+
+#, ai_translation
+msgid "End round"
+msgstr "Fim da ronda"
+
+#, ai_translation
+msgid "Enter results"
+msgstr "Inserir resultados"
+
+#, ai_translation
+msgid "Enter the result"
+msgstr "Digite o resultado"
+
+msgid "Error when updating database [{database}]."
+msgstr ""
+
+#, fuzzy
+msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
+msgstr "Estimated"
+
+#, ai_translation
+msgid "Event"
+msgstr "Evento"
+
+msgid "Event [{uniq_id}] has been created."
+msgstr ""
+
+msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
+msgstr ""
+
+msgid "Event [{uniq_id}] has been updated."
+msgstr ""
+
+#, ai_translation
+msgid "Event name"
+msgstr "Nome do evento"
+
+msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
+msgstr ""
+
+#, ai_translation
+msgid "Events"
+msgstr "Eventos"
+
+msgid "Events ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Exclude"
+msgstr "Excluir"
+
+#, ai_translation
+msgid "Exclude the players matching the criterion instead of including them."
+msgstr "Exclua os jogadores que correspondem ao critério em vez de incluí-los."
+
+msgid "Exclude: {values}"
+msgstr ""
+
+#, fuzzy
+msgid "Exempt *** FEMALE"
+msgstr "Exempt"
+
+#, fuzzy
+msgid "Exempt *** MALE"
+msgstr "Exempt"
+
+#, ai_translation
+msgid "Exit button:"
+msgstr "Botão de saída:"
+
+#, ai_translation
+msgid "Experimental features"
+msgstr "Características experimentais"
+
+#, python-format
+msgid "Experimental features in version %(version)s are:"
+msgstr ""
+
+#, ai_translation
+msgid "Export"
+msgstr "Exportação"
+
+#, ai_translation
+msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
+msgstr "Exporte todos os jogos da última rodada do torneio para o formato PGN (uso: transferência de pares)."
+
+#, ai_translation
+msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
+msgstr "Exportar o torneio para o formato TRF (bx) (uso: geração de pares)."
+
+#, ai_translation
+msgid "Export the tournament to the TRF16 format."
+msgstr "Exporte o torneio para o formato TRF16."
+
+#, fuzzy
+msgid "F *** SHORT NAME FOR GENDER FEMALE"
+msgstr "F"
+
+#, fuzzy
+msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
+msgstr "F"
+
+#, fuzzy
+msgid "FFE *** FFE FOR PLAYERS COLUMNS"
+msgstr "FFE"
+
+#, ai_translation
+msgid "FIDE"
+msgstr "FIDE"
+
+#, fuzzy
+msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
+msgstr "FIDE"
+
+#, fuzzy
+msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
+msgstr "FIDE"
+
+#, fuzzy
+msgid "FIDE *** NAME FOR RATING TYPE FIDE"
+msgstr "FIDE"
+
+#, ai_translation
+msgid "FIDE ID"
+msgstr "ID da FIDE"
+
+#, ai_translation
+msgid "FIDE ID:"
+msgstr "ID da FIDE:"
+
+#, python-format
+msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
+msgstr ""
+
+#, ai_translation
+msgid "FIDE Title:"
+msgstr "Título da FIDE:"
+
+#, ai_translation
+msgid "FIDE database"
+msgstr "Base de dados FIDE"
+
+#, fuzzy
+msgid "FM *** SHORT NAME FOR Fide Master"
+msgstr "FM"
+
+#, ai_translation
+msgid "FORFEIT"
+msgstr "FORFEIT"
+
+msgid "Failed to process DMG file: [{ex}]."
+msgstr ""
+
+msgid "Failed to read [{download_url}]: [{ex}]."
+msgstr ""
+
+#, ai_translation
+msgid "Families"
+msgstr "Famílias"
+
+msgid "Families ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Families are used to split a large amount of information across multiple screens."
+msgstr "As famílias são usadas para dividir uma grande quantidade de informações em várias telas."
+
+#, ai_translation
+msgid "Family"
+msgstr "Família"
+
+msgid "Family [{family_uniq_id}] has been created."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been deleted."
+msgstr ""
+
+msgid "Family [{family_uniq_id}] has been updated."
+msgstr ""
+
+#, fuzzy
+msgid "Feb *** FEBRUARY"
+msgstr "Feb"
+
+#, ai_translation
+msgid "February"
+msgstr "Fevereiro"
+
+#, fuzzy
+msgid "Fed *** FEDERATION FOR TABLE HEADER"
+msgstr "Fed"
+
+#, ai_translation
+msgid "Fed."
+msgstr "Fed."
+
+#, fuzzy
+msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
+msgstr "Fed."
+
+#, ai_translation
+msgid "Federation"
+msgstr "Federação"
+
+#, fuzzy
+msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
+msgstr "Federation"
+
+#, ai_translation
+msgid "Federation plugins"
+msgstr "Plugins da Federação"
+
+#, ai_translation
+msgid "Federation:"
+msgstr "Federação:"
+
+#, ai_translation
+msgid "Federations"
+msgstr "Federações"
+
+#, fuzzy
+msgid "Female *** NAME FOR GENDER FEMALE"
+msgstr "Female"
+
+msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
+msgstr ""
+
+#, ai_translation
+msgid "Fide Master"
+msgstr "Mestre Fide"
+
+#, ai_translation
+msgid "File"
+msgstr "Ficheiro"
+
+msgid "File [{file}] not found."
+msgstr ""
+
+msgid "File has invalid suffix [{suffix}] (expected: {expected})."
+msgstr ""
+
+#, ai_translation
+msgid "Filter out players with a greater rating."
+msgstr "Filtre os jogadores com uma classificação maior."
+
+#, ai_translation
+msgid "Filter out players with a lower rating."
+msgstr "Filtre os jogadores com uma classificação mais baixa."
+
+#, ai_translation
+msgid "Filter the categories."
+msgstr "Filtre as categorias."
+
+#, ai_translation
+msgid "Filter the check-in status."
+msgstr "Filtre o status do check-in."
+
+#, ai_translation
+msgid "Filter the clubs."
+msgstr "Filtre os clubes."
+
+#, ai_translation
+msgid "Filter the federations."
+msgstr "Filtre as federações."
+
+#, ai_translation
+msgid "Filter the genders."
+msgstr "Filtre os gêneros."
+
+#, ai_translation
+msgid "Filter the tournaments."
+msgstr "Filtre os torneios."
+
+#, ai_translation
+msgid "First FIDE rating (based only on this tournament)"
+msgstr "Primeira classificação FIDE (baseada apenas neste torneio)"
+
+#, ai_translation
+msgid "First board number:"
+msgstr "Número do primeiro quadro:"
+
+#, python-format
+msgid "First board number: %(board_number)d"
+msgstr ""
+
+#, ai_translation
+msgid "First board:"
+msgstr "Primeira placa:"
+
+#, ai_translation
+msgid "First name"
+msgstr "Nome próprio"
+
+#, ai_translation
+msgid "First name:"
+msgstr "Nome próprio:"
+
+#, ai_translation
+msgid "First player:"
+msgstr "Primeiro jogador:"
+
+#, ai_translation
+msgid "First round"
+msgstr "Primeira ronda"
+
+#, fuzzy
+msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
+msgstr "Fixed board"
+
+#, ai_translation
+msgid "Fixed board:"
+msgstr "Placa fixa:"
+
+#, ai_translation
+msgid "Fixed boards:"
+msgstr "Placas fixas:"
+
+#, ai_translation
+msgid "Floats"
+msgstr "Floats"
+
+#, ai_translation
+msgid "Foldable (mirrored top)"
+msgstr "Dobrável (superior espelhado)"
+
+#, ai_translation, python-format
+msgid "Font size adjustment (%%):"
+msgstr "Ajuste do tamanho da fonte (%%):"
+
+#, ai_translation
+msgid "For non-monetary prizes, the value is used for reward priority."
+msgstr "Para prêmios não monetários, o valor é usado para prioridade de recompensa."
+
+#, ai_translation
+msgid "For players who have not checked-in:"
+msgstr "Para jogadores que não fizeram check-in:"
+
+#, ai_translation
+msgid "For players without a rapid or blitz FIDE rating, use instead their standard FIDE rating."
+msgstr "Para jogadores sem uma classificação FIDE rápida ou blitz, use em vez disso sua classificação FIDE padrão."
+
+#, ai_translation
+msgid "For these reasons, it is strongly discouraged to unpair a round. It is instead recommended to use manual pairings to handle unusual situations."
+msgstr "Por estas razões, é fortemente desencorajado para desemparelhar uma rodada. Em vez disso, recomenda-se usar emparelhamentos manuais para lidar com situações incomuns."
+
+#, ai_translation
+msgid "Fore"
+msgstr "Fore"
+
+#, ai_translation
+msgid "Fore Buchholz"
+msgstr "Fore Buchholz"
+
+#, ai_translation
+msgid "Forfeit Loss"
+msgstr "Perda Falsificada"
+
+#, ai_translation
+msgid "Forfeit Win"
+msgstr "Forfeit Win"
+
+#, ai_translation
+msgid "Forfeited games are always considered as played in Round-Robin tournaments."
+msgstr "Jogos falsificados são sempre considerados como jogados em torneios Round-Robin."
+
+#, ai_translation
+msgid "Forfeited games are considered as played."
+msgstr "Jogos falsificados são considerados como jogados."
+
+#, ai_translation
+msgid "Forfeits played"
+msgstr "Forfeits jogados"
+
+#, fuzzy
+msgid "Fr *** FRIDAY"
+msgstr "Fr"
+
+#, ai_translation
+msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
+msgstr "De seu servidor, encontre a tela ou o rotador que você deseja exibir e envie-o para o controlador usando o botão com este ícone:"
+
+#, ai_translation
+msgid "Full-Point Bye"
+msgstr "Ponto Completo Bye"
+
+#, ai_translation
+msgid "Full-Point Bye (deprecated)"
+msgstr "Full-Point Bye (recuperado)"
+
+#, fuzzy
+msgid "GM *** SHORT NAME FOR Grand Master"
+msgstr "GM"
+
+#, ai_translation
+msgid "Games played with black"
+msgstr "Jogos jogados com preto"
+
+#, ai_translation
+msgid "Games won with Black"
+msgstr "Jogos vencidos com Black"
+
+#, fuzzy
+msgid "Gen *** GENDER FOR TABLE HEADER"
+msgstr "Gen"
+
+#, ai_translation
+msgid "Gender"
+msgstr "Gênero"
+
+msgid "Gender ({gender})"
+msgstr ""
+
+#, fuzzy
+msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
+msgstr "Gender"
+
+#, ai_translation
+msgid "Gender:"
+msgstr "Gênero:"
+
+#, ai_translation
+msgid "Genders"
+msgstr "Géneros"
+
+#, ai_translation
+msgid "Generate pairings for all the rounds of the tournament."
+msgstr "Gerar emparelhamentos para todas as rodadas do torneio."
+
+#, ai_translation
+msgid "Generate pairings for this round."
+msgstr "Gerar emparelhamentos para esta rodada."
+
+msgid "Generated by script {script_name} on {date}"
+msgstr ""
+
+#, ai_translation
+msgid "Get started"
+msgstr "Começar"
+
+msgid "Give/take away access level {access_level_short_name}"
+msgstr ""
+
+#, ai_translation
+msgid "Go to the display controller."
+msgstr "Vá para o controlador de exibição."
+
+#, ai_translation
+msgid "Go to the first screen."
+msgstr "Vá para a primeira tela."
+
+#, ai_translation
+msgid "Go to the pairings."
+msgstr "Vá para os emparelhamentos."
+
+#, ai_translation
+msgid "Go to the rotator."
+msgstr "Vai para o rotador."
+
+#, ai_translation
+msgid "Go to the screen."
+msgstr "Vá para a tela."
+
+#, ai_translation
+msgid "Grand Master"
+msgstr "Grã-Mestre"
+
+#, ai_translation
+msgid "Grant 4 tie-break points for a win, 2 for a draw, 1 for a loss, and 0 for an unplayed game."
+msgstr "Grant 4 tie-break pontos para uma vitória, 2 para um empate, 1 para uma perda, e 0 para um jogo não jogado."
+
+#, ai_translation
+msgid "Group"
+msgstr "Grupo"
+
+#, ai_translation
+msgid "Half-Point Bye"
+msgstr "Meia-Ponto Bye"
+
+msgid "Half-Point Bye attributed to player [{player}]."
+msgstr ""
+
+#, ai_translation
+msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
+msgstr "Ter uma quantidade próxima de jogadores e prêmios representa um risco de um prêmio não ser atribuído."
+
+#, ai_translation
+msgid "Hide"
+msgstr "Ocultar"
+
+#, ai_translation
+msgid "Hide Log"
+msgstr "Ocultar Registo"
+
+#, ai_translation
+msgid "Hide Networks"
+msgstr "Ocultar redes"
+
+#, ai_translation
+msgid "Highlight"
+msgstr "Realce"
+
+#, ai_translation
+msgid "Highlights the row if the new result is different when using the keyboard shortcuts (useful when re-entering all the results for verification)."
+msgstr "Destaca a linha se o novo resultado for diferente ao usar os atalhos de teclado (útil ao reentrar todos os resultados para verificação)."
+
+#, ai_translation
+msgid "Home"
+msgstr "E-mail"
+
+#, ai_translation
+msgid "Home page:"
+msgstr "Página inicial:"
+
+#, ai_translation
+msgid "Hort system"
+msgstr "sistema Hort"
+
+msgid "Hour [{hour}] already exists."
+msgstr ""
+
+msgid "Hour [{hour}] has been created."
+msgstr ""
+
+#, ai_translation
+msgid "Hours"
+msgstr "Horas"
+
+#, ai_translation
+msgid "I confirm that I want to archive this event."
+msgstr "Confirmo que quero arquivar este evento."
+
+#, ai_translation
+msgid "I confirm that I want to delete this tournament."
+msgstr "Confirmo que quero apagar este torneio."
+
+#, ai_translation
+msgid "I confirm that I want to overwrite the player data of this tournament."
+msgstr "Eu confirmo que eu quero substituir os dados do jogador deste torneio."
+
+#, fuzzy
+msgid "IM *** SHORT NAME FOR International Master"
+msgstr "IM"
+
+#, ai_translation
+msgid "Identity"
+msgstr "Identidade"
+
+#, ai_translation
+msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
+msgstr "Se você não pode controlar quem tem acesso à rede à qual está conectado, é altamente recomendável não criar nenhuma conta."
+
+#, ai_translation
+msgid "If you have an account you may connect by clicking on the <i>Profile</i> button in the menu."
+msgstr "Se você tiver uma conta, você pode se conectar clicando no botão i>Perfil/i> no menu."
+
+#, ai_translation
+msgid "Illegal moves are not recorded."
+msgstr "Movimentos ilegais não são registrados."
+
+#, ai_translation
+msgid "Illegal moves recording:"
+msgstr "Gravação de movimentos ilegais:"
+
+#, ai_translation
+msgid "Image"
+msgstr "Imagem"
+
+msgid "Image ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Image screens show an image (local or remote)."
+msgstr "As telas de imagem mostram uma imagem (local ou remota)."
+
+#, python-format
+msgid "Image: %(image)s"
+msgstr ""
+
+#, ai_translation
+msgid "Import"
+msgstr "Importação"
+
+#, ai_translation
+msgid "Import TRF file"
+msgstr "Importar o ficheiro TRF"
+
+#, ai_translation
+msgid "Import a tournament"
+msgstr "Importar um torneio"
+
+#, ai_translation
+msgid "Import a tournament to the event from an external source."
+msgstr "Importar um torneio para o evento de uma fonte externa."
+
+#, ai_translation
+msgid "Import is unavailable once the tournament has started."
+msgstr "A importação não está disponível uma vez que o torneio tenha começado."
+
+msgid "Impossible to add players to tournament [{tournament}]."
+msgstr ""
+
+#, python-format
+msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
+msgstr ""
+
+msgid "Impossible to set a round number lower than the last round with pairings #{round}."
+msgstr ""
+
+#, ai_translation
+msgid "In play"
+msgstr "Em jogo"
+
+#, ai_translation
+msgid "In-tournament"
+msgstr "In-tournament"
+
+#, ai_translation
+msgid "Include IDs and passwords for uploading results"
+msgstr "Incluir IDs e senhas para upload de resultados"
+
+#, ai_translation
+msgid "Include greater categories"
+msgstr "Incluir categorias maiores"
+
+#, ai_translation
+msgid "Include lower categories"
+msgstr "Incluir categorias inferiores"
+
+#, ai_translation
+msgid "Include players"
+msgstr "Incluir jogadores"
+
+#, ai_translation
+msgid "Include private player data (emails, phone numbers, etc.)"
+msgstr "Inclua dados de jogadores privados (e-mails, números de telefone, etc.)"
+
+#, ai_translation
+msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
+msgstr "Inclui todos os outros níveis de acesso e concede acesso total ao aplicativo. Este nível de acesso é concedido apenas ao acessar o Sharly Chess a partir do dispositivo em que está sendo executado (não de outro dispositivo na rede)."
+
+#, ai_translation
+msgid "Incorrect installation, exiting."
+msgstr "Instalação incorreta, saída."
+
+msgid "Incorrect path [{path}]."
+msgstr ""
+
+#, ai_translation
+msgid "Increment (sec):"
+msgstr "Incremento (seg):"
+
+#, ai_translation
+msgid "Info"
+msgstr "Info"
+
+msgid "Inherited by permission [{permission}]."
+msgstr ""
+
+#, ai_translation
+msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
+msgstr "As telas de entrada podem ser usadas para permitir que os jogadores insiram seus próprios resultados em um dispositivo que você disponibiliza no local."
+
+#, ai_translation
+msgid "Input screens can't be part of rotators."
+msgstr "As telas de entrada não podem fazer parte dos rotadores."
+
+#, ai_translation
+msgid "Input screens show pairings by board number and allow people to enter results."
+msgstr "As telas de entrada mostram emparelhamentos por número de placa e permitem que as pessoas insiram resultados."
+
+#, ai_translation
+msgid "Install"
+msgstr "Instalar"
+
+msgid "Installation of [{lib}] failed."
+msgstr ""
+
+msgid "Installation of release [{version}] failed, exiting."
+msgstr ""
+
+msgid "Installed [{lib}]."
+msgstr ""
+
+#, ai_translation
+msgid "International Master"
+msgstr "Mestre Internacional"
+
+msgid "Invalid FIDE ID [{fide_id}]."
+msgstr ""
+
+#, ai_translation
+msgid "Invalid TRF25 string: unexpected characters."
+msgstr "Invalid TRF25 string: caracteres inesperados."
+
+msgid "Invalid URL [{background_image}]."
+msgstr ""
+
+#, ai_translation
+msgid "Invalid account."
+msgstr "Conta inválida."
+
+msgid "Invalid amount [{amount}]."
+msgstr ""
+
+msgid "Invalid board number [{fixed_board_str}]."
+msgstr ""
+
+msgid "Invalid color [{color}] ([#RRGGBB] expected)."
+msgstr ""
+
+msgid "Invalid date format (expected: {format})."
+msgstr ""
+
+msgid "Invalid date format [{date}] (expected: {format})"
+msgstr ""
+
+msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr ""
+
+msgid "Invalid expression [{expression}]"
+msgstr ""
+
+msgid "Invalid federation [{federation}]."
+msgstr ""
+
+msgid "Invalid fixed board number [{fixed_board}]."
+msgstr ""
+
+msgid "Invalid format (expected: {format})."
+msgstr ""
+
+msgid "Invalid locale [{locale}]."
+msgstr ""
+
+msgid "Invalid mail [{mail}]."
+msgstr ""
+
+#, ai_translation
+msgid "Invalid password."
+msgstr "Senha inválida."
+
+#, ai_translation
+msgid "Invalid period:"
+msgstr "Período inválido:"
+
+msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
+msgstr ""
+
+msgid "Invalid value [{value}] for field [{field}] (expected one of [{expected_values}])."
+msgstr ""
+
+msgid "Invalid value [{value}]."
+msgstr ""
+
+#, ai_translation
+msgid "It is highly recommended to set at least one tie-break."
+msgstr "É altamente recomendável definir pelo menos um tie-break."
+
+#, fuzzy
+msgid "Jan *** JANUARY"
+msgstr "Jan"
+
+#, ai_translation
+msgid "January"
+msgstr "Janeiro"
+
+#, fuzzy
+msgid "Jul *** JULY"
+msgstr "Jul"
+
+#, ai_translation
+msgid "July"
+msgstr "Julho"
+
+#, fuzzy
+msgid "Jun *** JUNE"
+msgstr "Jun"
+
+#, ai_translation
+msgid "June"
+msgstr "Junho"
+
+#, ai_translation
+msgid "Junior categories"
+msgstr "Categorias juniores"
+
+#, ai_translation
+msgid "Kashdan"
+msgstr "Kashdan"
+
+#, ai_translation
+msgid "Keyboard shortcuts:"
+msgstr "Atalhos de teclado:"
+
+#, ai_translation
+msgid "Koya system"
+msgstr "sistema Koya"
+
+#, ai_translation
+msgid "Language:"
+msgstr "Língua:"
+
+#, ai_translation
+msgid "Last board:"
+msgstr "ltimo quadro:"
+
+#, ai_translation
+msgid "Last check"
+msgstr "ltima verificação"
+
+#, ai_translation
+msgid "Last name:"
+msgstr "Sobrenome:"
+
+#, ai_translation
+msgid "Last player:"
+msgstr "ltimo jogador:"
+
+#, ai_translation
+msgid "Last results"
+msgstr "ltimos resultados"
+
+msgid "Last results ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Last update"
+msgstr "ltima atualização"
+
+msgid "Last update: {updated_at}"
+msgstr ""
+
+msgid "Last update: {updated_at} (outdated)"
+msgstr ""
+
+#, ai_translation
+msgid "Launch a browser on startup"
+msgstr "Iniciar um navegador na inicialização"
+
+#, ai_translation
+msgid "Layout"
+msgstr "Layout"
+
+msgid "Library [{lib}] is missing."
+msgstr ""
+
+#, ai_translation
+msgid "Limit adjustment"
+msgstr "Ajuste do limite"
+
+msgid "Limit {operator} {count} half-point"
+msgid_plural "Limit {operator} {count} half-points"
+msgstr[0] ""
+msgstr[1] ""
+
+#, ai_translation
+msgid "Link to a board not involving the player."
+msgstr "Link para uma placa que não envolve o jogador."
+
+#, ai_translation
+msgid "Links displayed on the screen menu:"
+msgstr "Links exibidos no menu da tela:"
+
+#, ai_translation
+msgid "List of players"
+msgstr "Lista de jogadores"
+
+#, ai_translation
+msgid "Loading more results…"
+msgstr "Atualizando... Hotéis similares"
+
+msgid "Local URL: {local_url}"
+msgstr ""
+
+#, ai_translation
+msgid "Local databases"
+msgstr "Bancos de dados locais"
+
+#, ai_translation
+msgid "Location"
+msgstr "Localização"
+
+#, ai_translation
+msgid "Log in"
+msgstr "Acessar"
+
+#, ai_translation
+msgid "Log out"
+msgstr "Sair"
+
+#, ai_translation
+msgid "Log-level specific colors"
+msgstr "Cores específicas de nível de log"
+
+#, python-format
+msgid "Logged in as [%(account_name)s]"
+msgstr ""
+
+#, ai_translation
+msgid "Loss"
+msgstr "Perda"
+
+#, fuzzy
+msgid "M *** SHORT NAME FOR GENDER MALE"
+msgstr "M"
+
+#, ai_translation
+msgid "MM/DD/YYYY"
+msgstr "MM/DD/ AAAA"
+
+#, fuzzy
+msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
+msgstr "Mail"
+
+#, python-format
+msgid "Mail: %(mail)s (click to copy to the clipboard)."
+msgstr ""
+
+#, ai_translation
+msgid "Main category"
+msgstr "Categoria principal"
+
+#, ai_translation
+msgid "Main group"
+msgstr "Grupo principal"
+
+#, fuzzy
+msgid "Male *** NAME FOR GENDER MALE"
+msgstr "Male"
+
+#, ai_translation
+msgid "Manage accounts"
+msgstr "Gerenciar contas"
+
+#, ai_translation
+msgid "Manage application settings"
+msgstr "Gerenciar configurações do aplicativo"
+
+#, ai_translation
+msgid "Manage archives"
+msgstr "Gerir arquivos"
+
+#, ai_translation
+msgid "Manage events"
+msgstr "Gerenciar eventos"
+
+#, ai_translation
+msgid "Manage prizes"
+msgstr "Gerenciar prêmios"
+
+#, ai_translation
+msgid "Manage screens"
+msgstr "Gerenciar telas"
+
+#, ai_translation
+msgid "Manage source databases"
+msgstr "Gerir bases de dados de origem"
+
+#, ai_translation
+msgid "Manage the prize brackets"
+msgstr "Gerencie os colchetes de prêmios"
+
+#, ai_translation
+msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
+msgstr "Gerencie os colchetes de prêmios do torneio (1 jogador  1 prêmio por colchet)."
+
+#, ai_translation
+msgid "Manual"
+msgstr "Manual"
+
+#, ai_translation
+msgid "Manually pair players"
+msgstr "Par manualmente jogadores"
+
+#, fuzzy
+msgid "Mar *** MARCH"
+msgstr "Mar"
+
+#, ai_translation
+msgid "March"
+msgstr "Março"
+
+#, ai_translation
+msgid "Mark this round as over and define the next one as the current round."
+msgstr "Marque esta rodada como mais e defina a próxima como a rodada atual."
+
+#, python-format
+msgid "Max age: %(num)d minute"
+msgid_plural "Max age: %(num)d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#, ai_translation
+msgid "Max age: unlimited"
+msgstr "Idade máxima: ilimitado"
+
+#, ai_translation
+msgid "Max byes:"
+msgstr "Max byes:"
+
+#, python-format
+msgid "Max number: %(num)d"
+msgstr ""
+
+#, ai_translation
+msgid "Max number: unlimited"
+msgstr "Número máximo: ilimitado"
+
+#, ai_translation
+msgid "Maximum age of the results:"
+msgstr "Idade máxima dos resultados:"
+
+#, python-format
+msgid "Maximum number of byes: %(max_byes)d"
+msgstr ""
+
+#, ai_translation
+msgid "Maximum number of points (included):"
+msgstr "Número máximo de pontos (incluído):"
+
+#, ai_translation
+msgid "Maximum number of results displayed:"
+msgstr "Número máximo de resultados apresentados:"
+
+#, ai_translation
+msgid "Maximum rating"
+msgstr "Classificação máxima"
+
+#, ai_translation
+msgid "May"
+msgstr "Maio"
+
+#, fuzzy
+msgid "May *** MAY ACRONYM"
+msgstr "May"
+
+#, ai_translation
+msgid "May be overridden on a per-tournament basis."
+msgstr "Pode ser substituído em uma base per-tournament."
+
+#, ai_translation
+msgid "May be used for per-round prize giveaways etc."
+msgstr "Pode ser usado para brindes de prêmios por rodada etc."
+
+msgid "Median {value}"
+msgstr ""
+
+#, ai_translation
+msgid "Menu link label:"
+msgstr "Etiqueta do link do menu:"
+
+#, python-format
+msgid "Menu link label: %(menu_label)s"
+msgstr ""
+
+#, ai_translation
+msgid "Menu link label: none"
+msgstr "Etiqueta do link do menu: none"
+
+#, python-format
+msgid "Menu: %(menu)s"
+msgstr ""
+
+#, ai_translation
+msgid "Menu: none"
+msgstr "Menu: none"
+
+#, ai_translation
+msgid "Menus"
+msgstr "Menus"
+
+#, ai_translation
+msgid "Minimum number of points (included):"
+msgstr "Número mínimo de pontos (incluído):"
+
+#, ai_translation
+msgid "Minimum rating"
+msgstr "Classificação mínima"
+
+msgid "Missing required field [{field}]."
+msgstr ""
+
+#, fuzzy
+msgid "Mo *** MONDAY"
+msgstr "Mo"
+
+#, ai_translation
+msgid "Monetary prizes only"
+msgstr "Apenas prémios monetários"
+
+#, python-format
+msgid "Moved down %(num)d place"
+msgid_plural "Moved down %(num)d places"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "Moved up %(num)d place"
+msgid_plural "Moved up %(num)d places"
+msgstr[0] ""
+msgstr[1] ""
+
+#, ai_translation
+msgid "Moves:"
+msgstr "Movimentos:"
+
+#, python-format
+msgid "Moving on to round #%(round)d"
+msgstr ""
+
+#, ai_translation
+msgid "My category"
+msgstr "Minha categoria"
+
+#, ai_translation
+msgid "My group"
+msgstr "O meu grupo"
+
+#, ai_translation
+msgid "My rotator"
+msgstr "Meu rotador"
+
+#, ai_translation
+msgid "My timer"
+msgstr "Meu timer"
+
+#, fuzzy
+msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
+msgstr "N"
+
+#, fuzzy
+msgid "N *** THE LETTER TO ANSWER NO"
+msgstr "N"
+
+#, ai_translation
+msgid "Name"
+msgstr "Nome"
+
+#, fuzzy
+msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
+msgstr "Name"
+
+#, fuzzy
+msgid "Name *** NAME FOR PLAYERS COLUMNS"
+msgstr "Name"
+
+#, fuzzy
+msgid "Name *** NAME FOR TABLE HEADER"
+msgstr "Name"
+
+#, ai_translation
+msgid "Name:"
+msgstr "Nome:"
+
+#, python-format
+msgid "Name: %(screen_set_name)s"
+msgstr ""
+
+#, ai_translation
+msgid "Name: by default"
+msgstr "Nome: por defeito"
+
+#, fuzzy
+msgid "National *** NAME FOR RATING TYPE NATIONAL"
+msgstr "National"
+
+#, ai_translation
+msgid "Navigation"
+msgstr "Navegação"
+
+#, ai_translation
+msgid "Neither screen nor rotator currently assigned"
+msgstr "Nem tela nem rotator atualmente atribuído"
+
+#, ai_translation
+msgid "Network"
+msgstr "Rede"
+
+#, ai_translation
+msgid "Network:"
+msgstr "Rede:"
+
+#, python-format
+msgid "New FIDE rating (assuming <i>k</i> of <b>%(k)d</b>)"
+msgstr ""
+
+#, python-format
+msgid "New FIDE rating (based on player's official <i>k</i> of <b>%(k)d</b>)"
+msgstr ""
+
+#, ai_translation
+msgid "New category"
+msgstr "Nova categoria"
+
+#, ai_translation
+msgid "New checkins are in, refresh your browser"
+msgstr "Novos check-ins estão dentro, atualize seu navegador"
+
+#, ai_translation
+msgid "New display controller"
+msgstr "Novo controlador de exibição"
+
+#, ai_translation
+msgid "New event"
+msgstr "Novo evento"
+
+#, ai_translation
+msgid "New group"
+msgstr "Novo grupo"
+
+#, ai_translation
+msgid "New password. Leave blank for no change."
+msgstr "Nova senha. Deixe em branco para nenhuma mudança."
+
+#, ai_translation
+msgid "New results are in, refresh your browser"
+msgstr "Novos resultados estão em, atualizar o seu navegador"
+
+#, ai_translation
+msgid "New rotator"
+msgstr "Novo rotador"
+
+#, ai_translation
+msgid "New timer"
+msgstr "Novo timer"
+
+#, ai_translation
+msgid "New tournament"
+msgstr "Novo torneio"
+
+#, ai_translation
+msgid "Next round"
+msgstr "Próxima ronda"
+
+#, ai_translation
+msgid "Next tournament"
+msgstr "Próximo torneio"
+
+#, ai_translation
+msgid "No FIDE ID."
+msgstr "Não há FIDE ID."
+
+#, ai_translation
+msgid "No Prize Bracket"
+msgstr "No Prize Bracket"
+
+#, ai_translation
+msgid "No Prize Category"
+msgstr "Categoria Sem Prémio"
+
+#, ai_translation
+msgid "No alert message"
+msgstr "Nenhuma mensagem de alerta"
+
+#, ai_translation
+msgid "No archived events."
+msgstr "Nenhum evento arquivado."
+
+#, ai_translation
+msgid "No criteria defined."
+msgstr "Nenhum critério definido."
+
+#, ai_translation
+msgid "No criteria for the main category."
+msgstr "Não há critérios para a categoria principal."
+
+#, ai_translation
+msgid "No criteria."
+msgstr "Sem critérios."
+
+#, ai_translation
+msgid "No current events."
+msgstr "Não há eventos atuais."
+
+#, ai_translation
+msgid "No director"
+msgstr "Nenhum diretor"
+
+#, ai_translation
+msgid "No display controllers"
+msgstr "Sem controladores de exibição"
+
+#, ai_translation
+msgid "No email"
+msgstr "Nenhum e-mail"
+
+#, ai_translation
+msgid "No events."
+msgstr "Nenhum evento."
+
+#, ai_translation
+msgid "No families to add."
+msgstr "Não há famílias a acrescentar."
+
+#, ai_translation
+msgid "No games against FIDE rated opponents."
+msgstr "Nenhum jogo contra adversários classificados pela FIDE."
+
+#, ai_translation
+msgid "No home page"
+msgstr "Página não encontrada"
+
+#, ai_translation
+msgid "No hours."
+msgstr "Não há horas."
+
+#, ai_translation
+msgid "No internet connection"
+msgstr "Sem conexão à internet"
+
+#, ai_translation
+msgid "No mail defined."
+msgstr "Nenhum e-mail definido."
+
+#, ai_translation
+msgid "No marks"
+msgstr "Sem marcas"
+
+#, ai_translation
+msgid "No monetary prizes assigned to players for this tournament."
+msgstr "Nenhum prêmio monetário atribuído aos jogadores para este torneio."
+
+#, ai_translation
+msgid "No organiser"
+msgstr "Nenhum organizador"
+
+#, ai_translation
+msgid "No pairing found for this player in the current round."
+msgstr "Nenhum par encontrado para este jogador na rodada atual."
+
+#, ai_translation
+msgid "No pairings."
+msgstr "Nothings."
+
+#, ai_translation
+msgid "No passed events."
+msgstr "Sem eventos passados."
+
+#, ai_translation
+msgid "No permissions"
+msgstr "Sem permissões"
+
+#, ai_translation
+msgid "No permissions defined."
+msgstr "Não há permissões definidas."
+
+#, ai_translation
+msgid "No permissions."
+msgstr "Sem permissões."
+
+#, ai_translation
+msgid "No phone defined."
+msgstr "Nenhum telefone definido."
+
+#, ai_translation
+msgid "No players"
+msgstr "Nenhum jogador"
+
+#, ai_translation
+msgid "No players matching the criteria."
+msgstr "Nenhum jogador corresponde aos critérios."
+
+#, ai_translation
+msgid "No players to choose from."
+msgstr "Não há jogadores para escolher."
+
+#, ai_translation
+msgid "No players updated."
+msgstr "Nenhum jogador atualizado."
+
+#, ai_translation
+msgid "No players."
+msgstr "Nenhum jogador."
+
+#, ai_translation
+msgid "No prize brackets."
+msgstr "Sem colchetes de prémios."
+
+#, ai_translation
+msgid "No prizes assigned to players for this tournament."
+msgstr "Nenhum prêmio atribuído aos jogadores para este torneio."
+
+#, ai_translation
+msgid "No prizes defined"
+msgstr "Não há prêmios definidos"
+
+#, ai_translation
+msgid "No prizes defined."
+msgstr "Nenhum prêmio definido."
+
+#, ai_translation
+msgid "No prizes."
+msgstr "Sem prémios."
+
+#, ai_translation
+msgid "No public events."
+msgstr "Não há eventos públicos."
+
+#, ai_translation
+msgid "No public screens"
+msgstr "Sem telas públicas"
+
+#, ai_translation
+msgid "No response from GitHub."
+msgstr "Nenhuma resposta do GitHub."
+
+#, ai_translation
+msgid "No result"
+msgstr "Nenhum resultado"
+
+#, ai_translation
+msgid "No results."
+msgstr "Nenhum resultado."
+
+#, ai_translation
+msgid "No roles defined."
+msgstr "Não há papéis definidos."
+
+#, ai_translation
+msgid "No rotators"
+msgstr "Não há rotadores"
+
+#, ai_translation
+msgid "No rules file set"
+msgstr "Sem regras conjunto de arquivos"
+
+#, ai_translation
+msgid "No screen families"
+msgstr "Sem famílias de ecrã"
+
+#, ai_translation
+msgid "No screens"
+msgstr "Sem ecrãs"
+
+#, ai_translation
+msgid "No screens to add."
+msgstr "Não há telas para adicionar."
+
+#, ai_translation
+msgid "No screens."
+msgstr "Não há ecrãs."
+
+#, ai_translation
+msgid "No such screens."
+msgstr "Não há tais telas."
+
+#, ai_translation
+msgid "No tie-breaks"
+msgstr "Sem tie-breaks"
+
+#, ai_translation
+msgid "No timers"
+msgstr "Sem temporizadores"
+
+#, ai_translation
+msgid "No title"
+msgstr "Sem título"
+
+#, ai_translation
+msgid "No tournaments"
+msgstr "Sem torneios"
+
+#, ai_translation
+msgid "No tournaments."
+msgstr "Nada de torneios."
+
+#, ai_translation
+msgid "No upcoming events."
+msgstr "Não há eventos futuros."
+
+#, ai_translation
+msgid "No updates found."
+msgstr "Nenhuma atualização encontrada."
+
+#, fuzzy
+msgid "No. *** NB FOR TABLE HEADER"
+msgstr "No."
+
+#, ai_translation
+msgid "No. final rounds without byes:"
+msgstr "Não. rodadas finais sem byes:"
+
+#, ai_translation
+msgid "None"
+msgstr "Nenhuma"
+
+#, ai_translation
+msgid "Norm Report"
+msgstr "Relatório Norm"
+
+#, ai_translation
+msgid "Not assigned"
+msgstr "Não atribuído"
+
+#, ai_translation
+msgid "Not checked-in yet"
+msgstr "Ainda não check-in"
+
+#, ai_translation
+msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
+msgstr "Não há byes suficientes disponíveis para definir um Bye Full-Point (obrigatório: 2)."
+
+#, ai_translation
+msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
+msgstr "Não há byes suficientes disponíveis para definir um Half-Point Bye (obrigatório: 1)."
+
+#, ai_translation
+msgid "Not logged in"
+msgstr "Não logado"
+
+#, ai_translation
+msgid "Not paired"
+msgstr "Não emparelhado"
+
+#, ai_translation
+msgid "Not paired for this round"
+msgstr "Não pareado para esta rodada"
+
+#, ai_translation
+msgid "Not specified"
+msgstr "Não especificado"
+
+#, ai_translation
+msgid "Notification"
+msgstr "Notificação"
+
+#, fuzzy
+msgid "Nov *** NOVEMBER"
+msgstr "Nov"
+
+#, ai_translation
+msgid "November"
+msgstr "Novembro"
+
+#, ai_translation
+msgid "Now"
+msgstr "Agora"
+
+#, ai_translation
+msgid "Number"
+msgstr "Número"
+
+#, ai_translation
+msgid "Number (2-sided, tournament on back)"
+msgstr "Número (2 lados, torneio na parte de trás)"
+
+#, ai_translation
+msgid "Number (tournament on front)"
+msgstr "Número (torneio na frente)"
+
+#, python-format
+msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
+msgstr ""
+
+#, python-format
+msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
+msgstr ""
+
+#, ai_translation
+msgid "Number of games won"
+msgstr "Número de jogos ganhos"
+
+#, ai_translation, python-format
+msgid "Number of half-points above or below the 50%% limit required for opponents to be taken into account."
+msgstr "Número de pontos-meio acima ou abaixo do limite de 50%% necessário para que os oponentes sejam levados em conta."
+
+#, ai_translation
+msgid "Number of players"
+msgstr "Número de jogadores"
+
+#, python-format
+msgid "Number of players: %(num)d"
+msgstr ""
+
+#, ai_translation
+msgid "Number of prizes"
+msgstr "Número de prémios"
+
+#, ai_translation
+msgid "Number of screen families"
+msgstr "Número de famílias de ecrã"
+
+#, ai_translation
+msgid "Number of screens"
+msgstr "Número de ecrãs"
+
+#, ai_translation
+msgid "Number of screens:"
+msgstr "Número de ecrãs:"
+
+#, ai_translation
+msgid "Number of wins"
+msgstr "Número de vitórias"
+
+msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
+msgstr ""
+
+#, ai_translation
+msgid "OK"
+msgstr "OK"
+
+#, ai_translation
+msgid "ORG"
+msgstr "ORG"
+
+#, fuzzy
+msgid "Oct *** OCTOBER"
+msgstr "Oct"
+
+#, ai_translation
+msgid "October"
+msgstr "Outubro"
+
+#, ai_translation
+msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
+msgstr "Uma vez criado, você pode selecionar o temporizador para exibir nas configurações de cada tela, família ou rotador."
+
+#, ai_translation
+msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
+msgstr "Uma categoria pode ser marcada como a principal categoria de prêmio para rankings gerais, com opções de empate: sem compartilhamento, compartilhamento igual ou sistema Hort."
+
+#, ai_translation
+msgid "Ongoing"
+msgstr "Em curso"
+
+#, ai_translation
+msgid "Online sources"
+msgstr "Fontes online"
+
+#, ai_translation
+msgid "Only allowed users can see private events."
+msgstr "Somente usuários permitidos podem ver eventos privados."
+
+#, ai_translation
+msgid "Only allowed users can see private screen families."
+msgstr "Apenas usuários permitidos podem ver famílias de tela privada."
+
+#, ai_translation
+msgid "Only allowed users can see private screens."
+msgstr "Somente usuários permitidos podem ver telas privadas."
+
+#, ai_translation
+msgid "Only allowed users can view private display controllers."
+msgstr "Somente usuários permitidos podem visualizar controladores de exibição privados."
+
+#, ai_translation
+msgid "Only allowed users can view private rotators."
+msgstr "Somente usuários permitidos podem ver rotadores privados."
+
+#, ai_translation
+msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
+msgstr "Somente eventos atuais e futuros que foram declarados como b>públicos/b> pelo administrador são visíveis através da rede."
+
+#, ai_translation
+msgid "Only one age category is expected with options including other categories."
+msgstr "Apenas uma categoria etária é esperada com opções, incluindo outras categorias."
+
+#, ai_translation
+msgid "Only required for users that need to connect to the server."
+msgstr "Só é necessário para os usuários que precisam se conectar ao servidor."
+
+#, ai_translation
+msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
+msgstr "Apenas o ano de nascimento é necessário para a maioria dos torneios. portanto, recomenda-se apenas pedir o ano de nascimento de seus jogadores, a fim de respeitar sua privacidade."
+
+#, ai_translation
+msgid "Open Admin Interface"
+msgstr "Abrir interface de administração"
+
+#, python-format
+msgid "Open check-in for tournament [%(tournament)s]."
+msgstr ""
+
+#, ai_translation
+msgid "Open documentation"
+msgstr "Documentação aberta"
+
+#, ai_translation
+msgid "Open/close check-in"
+msgstr "Abrir/fechar check-in"
+
+#, ai_translation
+msgid "Open/close check-in."
+msgstr "Abrir/fechar check-in."
+
+msgid "Opening the welcome page [{url}] in a browser…"
+msgstr ""
+
+#, ai_translation
+msgid "Opponent"
+msgstr "opositor"
+
+#, ai_translation
+msgid "Opponent Elo"
+msgstr "Opositor Elo"
+
+#, ai_translation
+msgid "Opponent Elo [Pts]"
+msgstr "Opositor Elo [Pts]"
+
+#, ai_translation
+msgid "Opponents"
+msgstr "Opositores"
+
+#, ai_translation
+msgid "Opponents' ratings"
+msgstr "Classificações dos opositores"
+
+#, ai_translation
+msgid "Opponents' records"
+msgstr "Registos dos opositores"
+
+#, ai_translation
+msgid "Organiser"
+msgstr "Organizador"
+
+#, ai_translation
+msgid "Organiser:"
+msgstr "Organizador:"
+
+#, ai_translation
+msgid "Organization"
+msgstr "Organização"
+
+#, ai_translation
+msgid "Organize your prizes into brackets to manage how they’re awarded. A player can win only one prize per bracket, but can win prizes in multiple brackets."
+msgstr "Organize seus prêmios em colchetes para gerenciar como eles são concedidos. Um jogador pode ganhar apenas um prêmio por colchetes, mas pode ganhar prêmios em vários colchetes."
+
+msgid "Origin: {template_origin}"
+msgstr ""
+
+#, ai_translation
+msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
+msgstr "Outros jogadores neste grupo de pontuação não recebem prêmios, pois sua participação seria menor que o limite mínimo."
+
+#, ai_translation
+msgid "Others"
+msgstr "Outros"
+
+#, ai_translation
+msgid "Overwrite"
+msgstr "Sobrescrever"
+
+#, ai_translation
+msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
+msgstr "Sobrescreva o resultado do emparelhamento ao usar os atalhos do teclado."
+
+#, fuzzy
+msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
+msgstr "Owed"
+
+#, fuzzy
+msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
+msgstr "Owed/paid"
+
+#, ai_translation
+msgid "Owed:"
+msgstr "Owed:"
+
+#, ai_translation
+msgid "PAB is already assigned"
+msgstr "PAB já está atribuído"
+
+#, ai_translation
+msgid "PAI"
+msgstr "PAI"
+
+#, ai_translation
+msgid "PENALTY"
+msgstr "PENALTY"
+
+#, ai_translation
+msgid "PERMUTE WHITE/BLACK"
+msgstr "PERMUTE BRANQUE/BLACK"
+
+#, ai_translation
+msgid "PGN"
+msgstr "PGN"
+
+#, ai_translation
+msgid "PLAYER'S NAME"
+msgstr "NO NOME DO JOGADOR"
+
+#, fuzzy
+msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
+msgstr "Paid"
+
+#, ai_translation
+msgid "Paid:"
+msgstr "Pago:"
+
+#, ai_translation
+msgid "Pair"
+msgstr "Pair"
+
+#, ai_translation
+msgid "Pair as BLACK"
+msgstr "par como preto"
+
+#, ai_translation
+msgid "Pair as WHITE"
+msgstr "Pare como branco"
+
+#, ai_translation
+msgid "Pair the unpaired players with each other."
+msgstr "Emparelhar os jogadores desemparelhados uns com os outros."
+
+#, ai_translation
+msgid "Pair tournament"
+msgstr "Torneio de pares"
+
+#, python-format
+msgid "Paired against: %(opponent_name)s"
+msgstr ""
+
+#, ai_translation
+msgid "Pairing"
+msgstr "Emparelhamento"
+
+#, ai_translation
+msgid "Pairing Allocated Bye"
+msgstr "Emparelhar Alocated Bye"
+
+#, ai_translation
+msgid "Pairing Cards"
+msgstr "Cartões de Emparelhar"
+
+#, python-format
+msgid "Pairing information for round %(round)d"
+msgstr ""
+
+#, ai_translation
+msgid "Pairing not found."
+msgstr "Emparelhamento não encontrado."
+
+#, ai_translation
+msgid "Pairing number"
+msgstr "Número de emparelhamento"
+
+#, ai_translation
+msgid "Pairing numbers selection"
+msgstr "Seleção de números de emparelhamento"
+
+#, ai_translation
+msgid "Pairing settings"
+msgstr "Configurações de emparelhamento"
+
+#, ai_translation
+msgid "Pairing style:"
+msgstr "Estilo de emparelhamento:"
+
+#, ai_translation
+msgid "Pairing system"
+msgstr "Sistema de emparelhamento"
+
+msgid "Pairing-Allocated Bye assigned to player [{player}]."
+msgstr ""
+
+#, ai_translation
+msgid "Pairings"
+msgstr "Pares"
+
+#, ai_translation
+msgid "Pairings by board"
+msgstr "Emparelhamentos por tabuleiro"
+
+msgid "Pairings by board ({num})"
+msgstr ""
+
+msgid "Pairings by board ({tournament_name})"
+msgstr ""
+
+#, ai_translation
+msgid "Pairings by player"
+msgstr "Pares por jogador"
+
+msgid "Pairings by player ({num})"
+msgstr ""
+
+msgid "Pairings by player ({tournament_name})"
+msgstr ""
+
+#, ai_translation
+msgid "Pairings disabled while check-in is open."
+msgstr "Pares desativados enquanto o check-in está aberto."
+
+msgid "Pairings for round #{round}"
+msgstr ""
+
+msgid "Pairings generated for all rounds of tournament [{tournament}]."
+msgstr ""
+
+#, ai_translation
+msgid "Pairings generation not allowed if previous rounds have missing results or unpaired players."
+msgstr "A geração de pares não é permitida se as rodadas anteriores tiverem resultados ausentes ou jogadores não pareados."
+
+#, ai_translation
+msgid "Pairings generation not allowed if there are fewer players than rounds."
+msgstr "A geração de pares não é permitida se houver menos jogadores do que rodadas."
+
+#, ai_translation
+msgid "Pairings should strictly abide by the rules of the tournament, and not be biased by the arbiter. For this reason, pairing manually is strongly discouraged."
+msgstr "Os emparelhamentos devem respeitar rigorosamente as regras do torneio e não ser tendenciosos pelo árbitro. Por esta razão, o emparelhamento manual é fortemente desencorajado."
+
+#, ai_translation
+msgid "Pairings successfully generated."
+msgstr "Emparelhamentos gerados com sucesso."
+
+#, python-format
+msgid "Pairings: %(pairing_variation)s"
+msgstr ""
+
+#, ai_translation
+msgid "Parings by player"
+msgstr "Parings por jogador"
+
+#, ai_translation
+msgid "Participation Statistics"
+msgstr "Participação Estatísticas"
+
+msgid "Passed ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Passed events"
+msgstr "Eventos passados"
+
+#, ai_translation
+msgid "Password:"
+msgstr "Senha:"
+
+#, ai_translation
+msgid "Payment"
+msgstr "Pagamento"
+
+#, ai_translation
+msgid "Pending"
+msgstr "Pendente"
+
+#, ai_translation
+msgid "Perfect tournament performance"
+msgstr "Desempenho de torneio perfeito"
+
+msgid "Performance indicators for round #{round}"
+msgstr ""
+
+#, ai_translation
+msgid "Period"
+msgstr "Período"
+
+#, ai_translation
+msgid "Permissions"
+msgstr "Permissões"
+
+#, ai_translation
+msgid "Permissions list"
+msgstr "Lista de permissões"
+
+#, ai_translation
+msgid "Permute boards"
+msgstr "Placas Permute"
+
+#, ai_translation
+msgid "Personal"
+msgstr "Pessoal"
+
+#, fuzzy
+msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
+msgstr "Phone"
+
+#, ai_translation
+msgid "Phone number:"
+msgstr "Número de telefone:"
+
+#, python-format
+msgid "Phone: %(phone)s (click to copy to the clipboard)."
+msgstr ""
+
+#, ai_translation
+msgid "Place Cards"
+msgstr "Cartas de Lugar"
+
+#, ai_translation
+msgid "Place card type:"
+msgstr "Tipo de cartão de lugar:"
+
+#, ai_translation
+msgid "Player"
+msgstr "Jogador"
+
+#, ai_translation
+msgid "Player / Elo"
+msgstr "Jogador / Elo"
+
+#, ai_translation
+msgid "Player Cards"
+msgstr "Cartas do Jogador"
+
+#, ai_translation
+msgid "Player Elo"
+msgstr "Jogador Elo"
+
+#, ai_translation
+msgid "Player Elo [Pts]"
+msgstr "Jogador Elo [Pts]"
+
+#, python-format
+msgid "Player [%(player)s] has been created."
+msgstr ""
+
+#, python-format
+msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament)s]."
+msgstr ""
+
+msgid "Player [{player_id}] - round {round}: "
+msgstr ""
+
+msgid "Player [{player_id}]: {error}"
+msgstr ""
+
+msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
+msgstr ""
+
+msgid "Player [{player}] has been created."
+msgstr ""
+
+msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
+msgstr ""
+
+msgid "Player [{player}] has been paired against [{opponent}] at board #{board}."
+msgstr ""
+
+msgid "Player [{player}] has pairings in tournament [{tournament}]."
+msgstr ""
+
+msgid "Player [{player}] has returned for this round."
+msgstr ""
+
+msgid "Player does not match tournament criteria: {names}"
+msgstr ""
+
+#, ai_translation
+msgid "Player estimation explained in the rules"
+msgstr "Estimativa do jogador explicada nas regras"
+
+#, ai_translation
+msgid "Player is not yet rated."
+msgstr "O jogador ainda não foi avaliado."
+
+#, ai_translation
+msgid "Player pairings"
+msgstr "Emparelhamentos de jogadores"
+
+#, ai_translation
+msgid "Player ratings to use by default:"
+msgstr "Classificações de jogadores para usar por padrão:"
+
+#, ai_translation
+msgid "Player selection (by alphabetical order)"
+msgstr "Seleção do jogador (por ordem alfabética)"
+
+#, ai_translation
+msgid "Player selection (by rank)"
+msgstr "Seleção de jogadores (por classificação)"
+
+#, python-format
+msgid "Player sets of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+#, ai_translation
+msgid "Player's club"
+msgstr "Clube do Jogador"
+
+#, ai_translation
+msgid "Player's record"
+msgstr "Recorde do Jogador"
+
+#, ai_translation
+msgid "Player:"
+msgstr "Jogador:"
+
+#, ai_translation
+msgid "Players"
+msgstr "Jogadores"
+
+#, ai_translation
+msgid "Players (none now)"
+msgstr "Jogadores (nenhuma agora)"
+
+msgid "Players ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Players check-in list"
+msgstr "Lista de check-in dos jogadores"
+
+#, python-format
+msgid "Players from #%(first)d to #%(last)d"
+msgstr ""
+
+#, python-format
+msgid "Players from %(first)s to %(last)s"
+msgstr ""
+
+#, ai_translation
+msgid "Players may have default estimated ratings depending on the activated plugins."
+msgstr "Os jogadores podem ter classificações estimadas padrão, dependendo dos plugins ativados."
+
+#, python-format
+msgid "Players of category [%(category)s]"
+msgstr ""
+
+#, ai_translation
+msgid "Players screens show pairings by alphabetical order."
+msgstr "As telas dos jogadores mostram emparelhamentos por ordem alfabética."
+
+#, ai_translation
+msgid "Players update"
+msgstr "Os jogadores atualizam"
+
+#, python-format
+msgid "Players update for tournament [%(tournament)s]"
+msgstr ""
+
+#, ai_translation
+msgid "Players' opponent: displayed"
+msgstr "O adversário dos jogadores: exibido"
+
+#, ai_translation
+msgid "Players' opponent: hidden"
+msgstr "O adversário dos jogadores: oculto"
+
+#, python-format
+msgid "Players: %(num)d"
+msgstr ""
+
+#, ai_translation
+msgid "Playing"
+msgstr "Jogando"
+
+#, python-format
+msgid "Playing in tournament [%(name)s]"
+msgstr ""
+
+#, ai_translation
+msgid "Please ask your administrator to set a password."
+msgstr "Por favor, peça ao seu administrador para definir uma senha."
+
+#, ai_translation
+msgid "Please choose a federation"
+msgstr "Escolha uma federação"
+
+#, ai_translation
+msgid "Please choose a federation."
+msgstr "Escolha uma federação."
+
+#, ai_translation
+msgid "Please choose a player."
+msgstr "Por favor, escolha um jogador."
+
+#, ai_translation
+msgid "Please choose the document."
+msgstr "Por favor, escolha o documento."
+
+#, ai_translation
+msgid "Please choose the release to recover: "
+msgstr "Por favor, escolha a liberação para recuperar:"
+
+#, ai_translation
+msgid "Please choose the template."
+msgstr "Por favor, escolha o modelo."
+
+#, ai_translation
+msgid "Please choose the tournament."
+msgstr "Por favor, escolha o torneio."
+
+#, ai_translation
+msgid "Please close the time control editor before saving."
+msgstr "Por favor, feche o editor de controle de tempo antes de salvar."
+
+#, ai_translation
+msgid "Please enter the image URL."
+msgstr "Por favor, insira a URL da imagem."
+
+#, ai_translation
+msgid "Please enter the name of the event."
+msgstr "Por favor, insira o nome do evento."
+
+#, ai_translation
+msgid "Please launch the new version."
+msgstr "Por favor, lance a nova versão."
+
+#, ai_translation
+msgid "Please select a type of criterion."
+msgstr "Por favor, selecione um tipo de critério."
+
+#, ai_translation
+msgid "Please select the account."
+msgstr "Por favor, selecione a conta."
+
+#, ai_translation
+msgid "Please supply a valid URL (e.g. https://my.domain.com)."
+msgstr "Por favor, forneça um URL válido (por exemplo, https://my.domain.com)."
+
+#, ai_translation
+msgid "Please supply a valid email address."
+msgstr "Por favor, forneça um endereço de e-mail válido."
+
+#, ai_translation
+msgid "Please validate the global configuration of the application."
+msgstr "Por favor, valide a configuração global do aplicativo."
+
+#, ai_translation
+msgid "Please wait until the application settings have been set on the server…"
+msgstr "Aguarde até que as configurações do aplicativo tenham sido definidas no servidor..."
+
+#, ai_translation
+msgid "Please wait…"
+msgstr "Por favor aguarde..."
+
+#, ai_translation
+msgid "Plugins"
+msgstr "Plugins"
+
+#, python-format
+msgid "Points: %(min)s or more"
+msgstr ""
+
+#, python-format
+msgid "Points: %(min)s to %(max)s"
+msgstr ""
+
+#, python-format
+msgid "Points: up to %(max)s"
+msgstr ""
+
+msgid "Port [{port}] already in use, can not start Sharly Chess server."
+msgstr ""
+
+msgid "Port [{port}] already in use."
+msgstr ""
+
+msgid "Port: {port}"
+msgstr ""
+
+#, ai_translation
+msgid "Pref."
+msgstr "Pref."
+
+#, ai_translation
+msgid "Present"
+msgstr "Presente"
+
+#, ai_translation
+msgid "Previous round"
+msgstr "Rodada anterior"
+
+#, ai_translation
+msgid "Previous tournament"
+msgstr "Torneio Anterior"
+
+#, ai_translation
+msgid "Print"
+msgstr "Imprimir"
+
+#, ai_translation
+msgid "Print players, results, etc."
+msgstr "Imprima jogadores, resultados, etc."
+
+#, ai_translation
+msgid "Printing"
+msgstr "Impressão"
+
+#, fuzzy
+msgid "Prize *** PRIZE FOR TABLE HEADER"
+msgstr "Prize"
+
+#, ai_translation
+msgid "Prize Brackets"
+msgstr "Prize brackets"
+
+#, ai_translation
+msgid "Prize assignment"
+msgstr "atribuição de prémio"
+
+msgid "Prize category [{prize_category}] has been duplicated."
+msgstr ""
+
+msgid "Prize category [{prize_category}] successfully created."
+msgstr ""
+
+msgid "Prize category [{prize_category}] successfully deleted."
+msgstr ""
+
+msgid "Prize category [{prize_category}] successfully updated."
+msgstr ""
+
+#, ai_translation
+msgid "Prize currency"
+msgstr "moeda do prémio"
+
+#, ai_translation
+msgid "Prize defaults have been updated."
+msgstr "Os defaults dos prêmios foram atualizados."
+
+msgid "Prize group [{prize_group}] successfully created."
+msgstr ""
+
+#, ai_translation
+msgid "Prize list"
+msgstr "lista de prémios"
+
+#, ai_translation
+msgid "Prize receipts"
+msgstr "recibos de prémios"
+
+#, ai_translation
+msgid "Prize settings"
+msgstr "Configurações do prêmio"
+
+#, ai_translation
+msgid "Prize sharing"
+msgstr "Partilha de prémios"
+
+#, ai_translation
+msgid "Prizes"
+msgstr "Prémios"
+
+#, ai_translation
+msgid "Prizes can only be shared for the main category."
+msgstr "Os prêmios só podem ser compartilhados para a categoria principal."
+
+#, ai_translation
+msgid "Prizes of categories with prize sharing can only be monetary."
+msgstr "Prêmios de categorias com compartilhamento de prêmios só podem ser monetários."
+
+#, ai_translation
+msgid "Proceed"
+msgstr "Prosseguir"
+
+#, ai_translation
+msgid "Profile"
+msgstr "Perfil"
+
+#, ai_translation
+msgid "Progressive scores"
+msgstr "Pontuações progressivas"
+
+#, ai_translation
+msgid "Properties"
+msgstr "Propriedades"
+
+#, ai_translation
+msgid "Protected pairings editing"
+msgstr "Edição de pares protegidos"
+
+#, ai_translation
+msgid "Proxy (if any):"
+msgstr "Proxy (se houver):"
+
+#, fuzzy
+msgid "Pts *** POINTS FOR TABLE HEADER"
+msgstr "Pts"
+
+#, ai_translation
+msgid "Public event"
+msgstr "Evento público"
+
+#, ai_translation
+msgid "Public family"
+msgstr "Família pública"
+
+#, ai_translation
+msgid "Public screen"
+msgstr "Tela pública"
+
+#, ai_translation
+msgid "Publish pairings"
+msgstr "Publicar emparelhamentos"
+
+#, ai_translation
+msgid "Publish rankings"
+msgstr "Publicar rankings"
+
+#, ai_translation
+msgid "Publish tournament results"
+msgstr "Publicar resultados do torneio"
+
+#, ai_translation
+msgid "Publish tournament rules"
+msgstr "Publicar regras do torneio"
+
+#, fuzzy
+msgid "Q *** THE LETTER TO ANSWER QUIT"
+msgstr "Q"
+
+#, ai_translation
+msgid "QR Code"
+msgstr "Código QR"
+
+#, ai_translation
+msgid "QR Code type:"
+msgstr "Tipo de código QR:"
+
+#, fuzzy, python-format
+msgid "R %(round)d *** ROUND FOR TABLE HEADER"
+msgstr "R %(round)d"
+
+#, fuzzy
+msgid "R {round} *** ROUND FOR TABLE HEADER"
+msgstr "R {round}"
+
+#, ai_translation
+msgid "RES"
+msgstr "RES"
+
+#, ai_translation
+msgid "Random"
+msgstr "Aleatório"
+
+#, ai_translation
+msgid "Random player"
+msgstr "Jogador aleatório"
+
+#, ai_translation
+msgid "Randomly select the pairing numbers."
+msgstr "Selecione aleatoriamente os números de emparelhamento."
+
+#, ai_translation
+msgid "Rank"
+msgstr "Rank"
+
+#, ai_translation
+msgid "Ranking"
+msgstr "Ranking"
+
+#, python-format
+msgid "Ranking %f to %l"
+msgstr ""
+
+#, python-format
+msgid "Ranking %f-%l"
+msgstr ""
+
+msgid "Ranking ({num})"
+msgstr ""
+
+msgid "Ranking ({tournament_name})"
+msgstr ""
+
+#, python-format
+msgid "Ranking after round #%(round)d"
+msgstr ""
+
+msgid "Ranking after round #{round}"
+msgstr ""
+
+#, ai_translation
+msgid "Ranking before the first round"
+msgstr "Ranking antes da primeira rodada"
+
+#, ai_translation
+msgid "Ranking only"
+msgstr "Apenas Ranking"
+
+#, ai_translation
+msgid "Ranking screens show the players by rank."
+msgstr "Telas de classificação mostram os jogadores por classificação."
+
+#, ai_translation
+msgid "Rankings"
+msgstr "Rankings"
+
+#, ai_translation
+msgid "Rapid"
+msgstr "Rapid Rapid"
+
+#, fuzzy
+msgid "Rapid *** RAPID ELO FOR TABLE HEADER"
+msgstr "Rapid"
+
+#, ai_translation
+msgid "Rapid rating"
+msgstr "Avaliação rápida"
+
+#, ai_translation
+msgid "Rapid:"
+msgstr "Rápido:"
+
+#, ai_translation
+msgid "Rating"
+msgstr "Classificação"
+
+#, fuzzy
+msgid "Rating *** RATING FOR PLAYERS COLUMNS"
+msgstr "Rating"
+
+#, ai_translation
+msgid "Rating change"
+msgstr "Variação da avaliação"
+
+#, ai_translation
+msgid "Rating ranges"
+msgstr "Faixas de classificação"
+
+#, ai_translation
+msgid "Rating to use:"
+msgstr "Classificação a utilizar:"
+
+#, ai_translation
+msgid "Rating type"
+msgstr "Tipo de classificação"
+
+#, ai_translation
+msgid "Rating types"
+msgstr "Tipos de classificação"
+
+#, ai_translation
+msgid "Rating:"
+msgstr "Classificação:"
+
+#, ai_translation
+msgid "Ratings"
+msgstr "Classificações"
+
+#, python-format
+msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
+msgstr ""
+
+#, ai_translation
+msgid "Record"
+msgstr "Gravar"
+
+#, fuzzy
+msgid "Record *** RECORD FOR PLAYERS COLUMNS"
+msgstr "Record"
+
+msgid "Reference to unknown board [{board_id}]."
+msgstr ""
+
+msgid "Reference to unknown player [{player_id}]."
+msgstr ""
+
+#, ai_translation
+msgid "Refresh"
+msgstr "Refrescar"
+
+#, ai_translation
+msgid "Refresh this page."
+msgstr "Atualize esta página."
+
+msgid "Release {version} has been installed in [{folder}]."
+msgstr ""
+
+#, ai_translation
+msgid "Reload the page"
+msgstr "Recarregar a página"
+
+#, ai_translation
+msgid "Remove the player from the event."
+msgstr "Remova o jogador do evento."
+
+#, ai_translation
+msgid "Remove the screen from the display controller."
+msgstr "Remova a tela do controlador de exibição."
+
+#, ai_translation
+msgid "Rename event"
+msgstr "Renomear evento"
+
+#, ai_translation
+msgid "Replace"
+msgstr "Substituir"
+
+#, python-format
+msgid "Replace [%(old)s] by [%(new)s]"
+msgstr ""
+
+#, python-format
+msgid "Replace player [%(player)s]"
+msgstr ""
+
+#, ai_translation
+msgid "Replace the player to update this field."
+msgstr "Substitua o jogador para atualizar este campo."
+
+#, python-format
+msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
+msgstr ""
+
+#, python-format
+msgid "Replaces category [%(category)s]."
+msgstr ""
+
+#, ai_translation
+msgid "Request to the database failed (timeout)."
+msgstr "O pedido para a base de dados falhou (tempo limite)."
+
+#, ai_translation
+msgid "Request to the database failed."
+msgstr "O pedido à base de dados falhou."
+
+#, python-format
+msgid "Required by plugin <b>%(plugin)s</b>."
+msgstr ""
+
+#, ai_translation
+msgid "Res. ** RESULT FOR TABLE HEADER"
+msgstr "Res. ** RESULT RESULTADO PARA CABELO DE TABELA"
+
+#, ai_translation
+msgid "Reset manual tie-break"
+msgstr "Reset manual tie-break"
+
+#, ai_translation
+msgid "Restore"
+msgstr "Restaurar"
+
+#, ai_translation
+msgid "Result"
+msgstr "Resultado"
+
+msgid "Result [{result}] can't be used with a board."
+msgstr ""
+
+msgid "Result [{result}] can't be used with an opponent."
+msgstr ""
+
+msgid "Result [{result}] can't be used without a board."
+msgstr ""
+
+msgid "Result [{result}] can't be used without an opponent."
+msgstr ""
+
+msgid "Result [{result}] is incompatible with the opponent's result [{opponent_result}]."
+msgstr ""
+
+#, ai_translation
+msgid "Results"
+msgstr "Resultados"
+
+#, ai_translation
+msgid "Results entry"
+msgstr "Resultados de entrada"
+
+#, ai_translation
+msgid "Results entry via public screens"
+msgstr "Entrada de resultados através de ecrãs públicos"
+
+msgid "Results for round #{round}"
+msgstr ""
+
+#, ai_translation
+msgid "Results screens show the last results (most recent first)."
+msgstr "As telas de resultados mostram os últimos resultados (o mais recente primeiro)."
+
+#, ai_translation
+msgid "Retry"
+msgstr "Tentar novamente"
+
+#, ai_translation
+msgid "Return to the home page"
+msgstr "Voltar para a página inicial"
+
+#, ai_translation
+msgid "Return to tournament"
+msgstr "Voltar ao torneio"
+
+#, fuzzy
+msgid "Rk. *** RANK FOR TABLE HEADER"
+msgstr "Rk."
+
+#, fuzzy
+msgid "Rk. O. *** RANK OVERALL FOR TABLE HEADER"
+msgstr "Rk. O."
+
+#, ai_translation
+msgid "Rnd.Boa"
+msgstr "Rnd.Boa"
+
+#, python-format
+msgid "Rotation delay: %(seconds)d sec."
+msgstr ""
+
+#, ai_translation
+msgid "Rotator"
+msgstr "Rotator"
+
+msgid "Rotator [{rotator}] has been assigned to controller [{display_controller}]."
+msgstr ""
+
+msgid "Rotator [{rotator}] has been created."
+msgstr ""
+
+msgid "Rotator [{rotator}] has been deleted."
+msgstr ""
+
+msgid "Rotator [{rotator}] has been updated."
+msgstr ""
+
+#, ai_translation
+msgid "Rotator automatically rotate between multiple screens."
+msgstr "O rotador gira automaticamente entre várias telas."
+
+#, ai_translation
+msgid "Rotators"
+msgstr "Rotadores"
+
+msgid "Rotators ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event."
+msgstr "Os rotadores permitem que você gire através de várias telas, ou famílias de telas, para exibir muitas informações em seu evento."
+
+#, python-format
+msgid "Rotators: %(num)d"
+msgstr ""
+
+#, ai_translation
+msgid "Round"
+msgstr "Rodada"
+
+#, python-format
+msgid "Round #%(round)d"
+msgstr ""
+
+#, python-format
+msgid "Round #%(round)d is finished."
+msgstr ""
+
+#, python-format
+msgid "Round #%(round)d is running."
+msgstr ""
+
+#, ai_translation
+msgid "Round #0 is forbidden."
+msgstr "A Rodada #0 é proibida."
+
+msgid "Round #{round}"
+msgstr ""
+
+#, python-format
+msgid "Round %(round)d - Board %(board_number)d"
+msgstr ""
+
+#, ai_translation
+msgid "Round number or text"
+msgstr "Número redondo ou texto"
+
+#, ai_translation
+msgid "Round performance indicators"
+msgstr "Indicadores de desempenho das rondas"
+
+#, ai_translation
+msgid "Round skipped"
+msgstr "Rodada skipped"
+
+#, python-format
+msgid "Round {} started for %%s"
+msgstr ""
+
+#, ai_translation
+msgid "Round-Robin"
+msgstr "Round-Robin"
+
+#, ai_translation
+msgid "Round:"
+msgstr "Rodada:"
+
+#, python-format
+msgid "Round: %(round)d"
+msgstr ""
+
+#, ai_translation
+msgid "Round: the last finished round"
+msgstr "ltima Rodada: A ltima Rodada Finalizada"
+
+#, ai_translation
+msgid "Rounds"
+msgstr "Rodadas"
+
+#, ai_translation
+msgid "Rounds one Elected to Play"
+msgstr "Rodadas um Eleito para Jogar"
+
+#, ai_translation
+msgid "Rows per screen:"
+msgstr "Linhas por tela:"
+
+#, fuzzy
+msgid "Rpd *** RAPID RATING ACRONYM"
+msgstr "Rpd"
+
+#, ai_translation
+msgid "Rules"
+msgstr "Regras"
+
+#, ai_translation
+msgid "Rules file location:"
+msgstr "Localização do arquivo de regras:"
+
+#, ai_translation
+msgid "Rules file set"
+msgstr "conjunto de arquivos de regras"
+
+#, ai_translation
+msgid "SCR"
+msgstr "SCR"
+
+#, ai_translation
+msgid "SEC"
+msgstr "SEC SEC"
+
+#, ai_translation
+msgid "SPE"
+msgstr "SPE"
+
+#, fuzzy
+msgid "Sa *** SATURDAY"
+msgstr "Sa"
+
+#, ai_translation
+msgid "Save"
+msgstr "Gravar"
+
+#, ai_translation
+msgid "Save the set or cancel."
+msgstr "Salve o set ou cancele."
+
+#, ai_translation
+msgid "Scope"
+msgstr "mbito de aplicação"
+
+#, ai_translation
+msgid "Score"
+msgstr "Pontuação"
+
+#, fuzzy
+msgid "Score *** PERF IND. FOR TABULAR DISPLAY"
+msgstr "Score"
+
+#, ai_translation
+msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
+msgstr "Pontuação calculada adicionando, para cada rodada, um valor dado multiplicando a pontuação do oponente pelos pontos marcados contra eles."
+
+#, ai_translation
+msgid "Screen"
+msgstr "Tela"
+
+#, ai_translation
+msgid "Screen Management"
+msgstr "Gerenciamento de tela"
+
+msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller}]."
+msgstr ""
+
+msgid "Screen [{screen_uniq_id}] has been created."
+msgstr ""
+
+msgid "Screen [{screen_uniq_id}] has been deleted."
+msgstr ""
+
+msgid "Screen [{screen_uniq_id}] has been updated."
+msgstr ""
+
+#, ai_translation
+msgid "Screen configuration has been updated."
+msgstr "A configuração da tela foi atualizada."
+
+#, ai_translation
+msgid "Screen families:"
+msgstr "Famílias da tela:"
+
+#, python-format
+msgid "Screen families: %(num)d"
+msgstr ""
+
+#, ai_translation
+msgid "Screen settings"
+msgstr "Definições de ecrã"
+
+#, ai_translation
+msgid "Screen type"
+msgstr "Tipo de tela"
+
+#, ai_translation
+msgid "Screens"
+msgstr "Telas"
+
+#, ai_translation
+msgid "Screens list"
+msgstr "Lista de ecrãs"
+
+#, ai_translation
+msgid "Screens may display information about your event, such as player listings, pairings and results. One screen can contain information concerning a single tournament, or multiple tournaments."
+msgstr "As telas podem exibir informações sobre o seu evento, como listas de jogadores, pares e resultados. Uma tela pode conter informações sobre um único torneio ou vários torneios."
+
+#, ai_translation
+msgid "Screens:"
+msgstr "Telas:"
+
+#, python-format
+msgid "Screens: %(num)d"
+msgstr ""
+
+#, ai_translation
+msgid "Scroll down to review all the norms…"
+msgstr "Para rever todas as normas..."
+
+#, ai_translation
+msgid "Search"
+msgstr "Pesquisar"
+
+#, python-format
+msgid "Search by: %(fields)s"
+msgstr ""
+
+#, ai_translation
+msgid "Search for player"
+msgstr "Pesquisar por jogador"
+
+#, ai_translation
+msgid "Searching…"
+msgstr "Pesquisando..."
+
+#, ai_translation
+msgid "Sector arbitration"
+msgstr "arbitragem do setor"
+
+#, ai_translation
+msgid "See Networks"
+msgstr "Ver redes"
+
+#, ai_translation
+msgid "See the pairings information for the start of this round."
+msgstr "Veja as informações de emparelhamento para o início desta rodada."
+
+#, ai_translation
+msgid "Seed color"
+msgstr "Cor da semente"
+
+#, ai_translation
+msgid "Select All"
+msgstr "Selecionar tudo"
+
+#, ai_translation
+msgid "Select player"
+msgstr "Seleccionar jogador"
+
+#, ai_translation
+msgid "Select the players and the data to update:"
+msgstr "Selecione os jogadores e os dados a serem atualizados:"
+
+#, ai_translation
+msgid "Selection"
+msgstr "Seleção"
+
+#, python-format
+msgid "Selection: %(selection)s"
+msgstr ""
+
+#, ai_translation
+msgid "Senior categories"
+msgstr "Categorias sénior"
+
+#, fuzzy
+msgid "Sep *** SEPTEMBER"
+msgstr "Sep"
+
+#, ai_translation
+msgid "September"
+msgstr "Setembro"
+
+#, ai_translation
+msgid "Server Setup"
+msgstr "Configuração do Servidor"
+
+#, ai_translation
+msgid "Server is already running!"
+msgstr "O servidor já está funcionando!"
+
+#, python-format
+msgid "Set FIDE ID [%(new)s]"
+msgstr ""
+
+#, ai_translation
+msgid "Set Full-Points Byes"
+msgstr "Set Full-Points Byes"
+
+#, ai_translation
+msgid "Set Half-Points Byes"
+msgstr "Set Half-Points Byes"
+
+#, ai_translation
+msgid "Set Zero-Points Byes"
+msgstr "Set Zero-Points Byes"
+
+#, ai_translation
+msgid "Set illegal moves"
+msgstr "Definir movimentos ilegais"
+
+#, ai_translation
+msgid "Set special results"
+msgstr "Definir resultados especiais"
+
+#, ai_translation
+msgid "Set the current round"
+msgstr "Defina a rodada atual"
+
+#, ai_translation
+msgid "Settings"
+msgstr "Configurações"
+
+#, ai_translation
+msgid "Share"
+msgstr "Partilhar"
+
+#, ai_translation
+msgid "Share event"
+msgstr "Partilhar evento"
+
+#, ai_translation
+msgid "Share the prizes"
+msgstr "Compartilhe os prêmios"
+
+#, ai_translation
+msgid "Shared prizes"
+msgstr "Prémios partilhados"
+
+#, ai_translation
+msgid "Sharing threshold"
+msgstr "Limiar de partilha"
+
+#, ai_translation
+msgid "Sharly Chess Server"
+msgstr "Sharly Chess Servidor"
+
+#, ai_translation
+msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
+msgstr "O Sharly Chess pode fornecer funcionalidades específicas para a federação escolhida para cada evento."
+
+#, ai_translation
+msgid "Sharly Chess offers a powerful and flexible prize management system to handle a wide variety of tournament prize structures."
+msgstr "Sharly Chess oferece um sistema de gerenciamento de prêmios poderoso e flexível para lidar com uma ampla variedade de estruturas de prêmios de torneios."
+
+#, ai_translation
+msgid "Sharly Chess project"
+msgstr "Projeto Sharly Chess"
+
+#, ai_translation
+msgid "Sharly Chess reaches its full potential when used as a server, with other devices connected to the same network."
+msgstr "O Sharly Chess atinge todo o seu potencial quando usado como servidor, com outros dispositivos conectados à mesma rede."
+
+#, ai_translation
+msgid "Sharly Chess server"
+msgstr "Sharly Chess servidor"
+
+#, ai_translation
+msgid "Sharly Chess settings"
+msgstr "Configurações Sharly Chess"
+
+#, ai_translation
+msgid "Sharly Chess settings have been updated."
+msgstr "As configurações do Sharly Chess foram atualizadas."
+
+#, ai_translation
+msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
+msgstr "Sharly Chess usando a rede local, todo o tráfego é público. Isso significa que qualquer pessoa conectada à mesma rede poderia facilmente obter acesso a uma conta sem precisar digitar a senha."
+
+#, ai_translation
+msgid "Should only be used when the wrong player has been added by mistake."
+msgstr "Só deve ser usado quando o jogador errado foi adicionado por engano."
+
+#, ai_translation
+msgid "Show Log"
+msgstr "Mostrar registo"
+
+#, ai_translation
+msgid "Show all the players"
+msgstr "Mostrar todos os jogadores"
+
+#, ai_translation
+msgid "Show logging level"
+msgstr "Mostrar nível de registo"
+
+#, ai_translation
+msgid "Show warnings"
+msgstr "Mostrar avisos"
+
+#, ai_translation
+msgid "Show/hide the screens created from screen families."
+msgstr "Mostrar/ocultar as telas criadas a partir de famílias de tela."
+
+#, ai_translation
+msgid "Signature"
+msgstr "Assinatura"
+
+#, ai_translation
+msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
+msgstr "Como as classificações são usadas no cálculo do tie-break, é importante que elas sejam representativas do nível do jogador. Por essa razão, esse tie-break não é recomendado com jogadores não classificados."
+
+#, ai_translation
+msgid "Single Screens"
+msgstr "Telas nicas"
+
+msgid "Single Screens ({num})"
+msgstr ""
+
+msgid "Size ({unit}): {width}x{height}"
+msgstr ""
+
+#, ai_translation
+msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
+msgstr "Algumas contas podem ter níveis de acesso muito altos, tornando-as perigosas nas mãos de usuários desprevenidos ou mal-intencionados."
+
+#, ai_translation
+msgid "Some files are missing."
+msgstr "Alguns arquivos estão faltando."
+
+#, ai_translation
+msgid "Something went wrong. Please ask your administrator to recreate your account."
+msgstr "Algo deu errado. Por favor, peça ao seu administrador para recriar sua conta."
+
+#, ai_translation
+msgid "Sonneborn-Berger"
+msgstr "Sonneborn-Berger"
+
+#, ai_translation
+msgid "Sorry, an unexpected error has occurred."
+msgstr "Desculpe, ocorreu um erro inesperado."
+
+#, ai_translation
+msgid "Sorry, authorization failed."
+msgstr "Desculpe, a autorização falhou."
+
+#, ai_translation
+msgid "Sorry, the page you are looking for does not exist."
+msgstr "Desculpe, a página que você está procurando não existe."
+
+#, ai_translation
+msgid "Sorry, you are not allowed to access this page."
+msgstr "Desculpe, você não tem permissão para acessar esta página."
+
+#, ai_translation
+msgid "Sort by:"
+msgstr "Ordenar por:"
+
+#, ai_translation
+msgid "Sort the players by club."
+msgstr "Organize os jogadores por clube."
+
+#, ai_translation
+msgid "Sort the players by name."
+msgstr "Classifique os jogadores pelo nome."
+
+#, ai_translation
+msgid "Sort the players by rating (less rated first)."
+msgstr "Ordenar os jogadores por classificação (menos classificado primeiro)."
+
+#, ai_translation
+msgid "Sort the players by rating (most rated first)."
+msgstr "Ordenar os jogadores por classificação (mais classificado primeiro)."
+
+#, ai_translation
+msgid "Sort the players by tournament."
+msgstr "Ordenar os jogadores por torneio."
+
+#, ai_translation
+msgid "Sort the players by year of birth (oldest first)."
+msgstr "Ordenar os jogadores por ano de nascimento (mais velho primeiro)."
+
+#, ai_translation
+msgid "Sort the players by year of birth (youngest first)."
+msgstr "Ordenar os jogadores por ano de nascimento (o mais jovem primeiro)."
+
+#, ai_translation
+msgid "Source"
+msgstr "Fonte"
+
+#, ai_translation
+msgid "Space-separated list of numbers. One prize is created per value in the list."
+msgstr "Lista de números separada pelo espaço. Um prêmio é criado por valor na lista."
+
+#, ai_translation
+msgid "Specifying the number of parts and the number of items per part is not possible."
+msgstr "Especificar o número de peças e o número de itens por peça não é possível."
+
+#, ai_translation
+msgid "Spectator"
+msgstr "Espectador"
+
+#, ai_translation
+msgid "Split by:"
+msgstr "Dividido por:"
+
+#, ai_translation
+msgid "Staff"
+msgstr "Pessoal"
+
+msgid "Staff ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Staff default configuration"
+msgstr "Configuração padrão do pessoal"
+
+#, ai_translation
+msgid "Staff information"
+msgstr "Informações do pessoal"
+
+#, ai_translation
+msgid "Staff member roles"
+msgstr "Funções dos membros do pessoal"
+
+#, ai_translation
+msgid "Standard"
+msgstr "Padrão"
+
+#, ai_translation
+msgid "Standard (no flag)"
+msgstr "Padrão (sem bandeira)"
+
+#, ai_translation
+msgid "Standard rating"
+msgstr "Classificação padrão"
+
+#, ai_translation
+msgid "Standard rating used."
+msgstr "Classificação padrão utilizada."
+
+#, ai_translation
+msgid "Standard swiss system"
+msgstr "Sistema suíço padrão"
+
+#, ai_translation
+msgid "Standard:"
+msgstr "Padrão:"
+
+#, python-format
+msgid "Start of round {} in %%s"
+msgstr ""
+
+#, ai_translation
+msgid "Start of the sporting season"
+msgstr "Início da temporada desportiva"
+
+#, ai_translation
+msgid "Starting Sharly Chess server, Please wait…"
+msgstr "Servidor de Xadrez Sharly, Por favor, aguarde..."
+
+#, ai_translation
+msgid "Starting rank"
+msgstr "Classificação inicial"
+
+#, ai_translation
+msgid "Statistics"
+msgstr "Estatísticas"
+
+#, ai_translation
+msgid "Status"
+msgstr "Estado"
+
+#, fuzzy
+msgid "Std *** STANDARD RATING ACRONYM"
+msgstr "Std"
+
+#, ai_translation
+msgid "Strong"
+msgstr "Forte"
+
+#, fuzzy
+msgid "Su *** SUNDAY"
+msgstr "Su"
+
+msgid "Successfully logged in as [{account}]."
+msgstr ""
+
+#, ai_translation
+msgid "Successfully logged out."
+msgstr "Desconectado com sucesso."
+
+#, ai_translation
+msgid "Sum of Buchholz"
+msgstr "Soma de Buchholz"
+
+#, ai_translation
+msgid "Swiss"
+msgstr "Suíça Suíça"
+
+#, ai_translation
+msgid "TRF file"
+msgstr "ficheiro TRF"
+
+#, ai_translation
+msgid "TRF(bx)"
+msgstr "TRF(bx)"
+
+#, ai_translation
+msgid "TRF16"
+msgstr "TRF16"
+
+#, ai_translation
+msgid "Template:"
+msgstr "Modelo:"
+
+#, ai_translation
+msgid "Text"
+msgstr "Texto"
+
+#, ai_translation
+msgid "Text (2-sided, tournament on back)"
+msgstr "Texto (2 lados, torneio na parte de trás)"
+
+#, ai_translation
+msgid "Text (tournament on front)"
+msgstr "Texto (tournament na frente)"
+
+#, ai_translation
+msgid "Text after the hour:"
+msgstr "Texto após a hora:"
+
+#, ai_translation
+msgid "Text before the hour:"
+msgstr "Texto antes da hora:"
+
+#, ai_translation
+msgid "Text colour:"
+msgstr "Cor do texto:"
+
+#, ai_translation
+msgid "Texts before and after the hour below are optional for round numbers, mandatory otherwise."
+msgstr "Textos antes e depois da hora abaixo são opcionais para números redondos, obrigatórios de outra forma."
+
+#, fuzzy
+msgid "Th *** THURSDAY"
+msgstr "Th"
+
+#, ai_translation
+msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
+msgstr "As regras da FIDE estipulam que apenas os emparelhamentos da rodada b>prior/b> para a atual podem ser modificados. Mudanças nos emparelhamentos anteriores a isso devem ser feitas no b>end/b> do torneio, b>after/b> os rankings foram publicados, e apenas para o cálculo das classificações da FIDE."
+
+msgid "The FIDE will use the opponent's standard rating for this game ({rating})."
+msgstr ""
+
+msgid "The FIDE will use the player's standard rating for this game ({rating})."
+msgstr ""
+
+msgid "The FIDE will use the standard ratings of both players for this game ({rating_opponent} and {rating_player})."
+msgstr ""
+
+#, ai_translation
+msgid "The URL of the image to display."
+msgstr "A URL da imagem a ser exibida."
+
+#, ai_translation
+msgid "The account matching all the users not logged in to any account."
+msgstr "A conta corresponde a todos os usuários não logados em nenhuma conta."
+
+#, ai_translation
+msgid "The account of the user accessing Sharly Chess directly from the server."
+msgstr "A conta do usuário acessando Sharly Chess diretamente do servidor."
+
+#, ai_translation
+msgid "The administrator has all the permissions."
+msgstr "O administrador tem todas as permissões."
+
+#, ai_translation
+msgid "The age categories in which players are distributed. A category is added to represent the missing players (E.g.: U20 / 50+ → 20+)."
+msgstr "As categorias etárias em que os jogadores são distribuídos. Uma categoria é adicionada para representar os jogadores desaparecidos (por exemplo: U20 / 50+  20+)."
+
+msgid "The average of the [{tie_break}] scores of the opponents played over the board."
+msgstr ""
+
+#, ai_translation
+msgid "The average of the ratings of the opponents played over the board."
+msgstr "A média das classificações dos adversários jogou sobre o tabuleiro."
+
+#, ai_translation
+msgid "The base date has to be at most one year after the end of the event."
+msgstr "A data base deve ser no máximo um ano após o final do evento."
+
+#, ai_translation
+msgid "The base date has to be at most one year prior to the start of the event."
+msgstr "A data base deve ser no máximo um ano antes do início do evento."
+
+#, ai_translation
+msgid "The board number the player will always be assigned to (use it for disabled people)."
+msgstr "O número do tabuleiro ao qual o jogador será sempre atribuído (use-o para pessoas com deficiência)."
+
+#, ai_translation
+msgid "The category contains non-monetary prizes which can not be shared."
+msgstr "A categoria contém prêmios não monetários que não podem ser compartilhados."
+
+#, ai_translation
+msgid "The color attributed to the highest ranked player at the first round."
+msgstr "A cor atribuída ao jogador mais bem classificado na primeira rodada."
+
+#, ai_translation
+msgid "The crosstable shows all the results of the players, while the club is printed when displaying raking only."
+msgstr "A tabela cruzada mostra todos os resultados dos jogadores, enquanto o clube é impresso ao exibir apenas raking."
+
+#, ai_translation
+msgid "The currency used to represent monetary prizes (defaults to the currency of the event federation)."
+msgstr "A moeda usada para representar prêmios monetários (padrão para a moeda da federação de eventos)."
+
+#, ai_translation
+msgid "The default federation for your events."
+msgstr "A federação padrão para seus eventos."
+
+#, ai_translation
+msgid "The director is the person in charge of the event."
+msgstr "O diretor é o responsável pelo evento."
+
+msgid "The first round is ignored."
+msgid_plural "The first {rounds} rounds are ignored."
+msgstr[0] "A primeira rodada é ignorada."
+msgstr[1] ""
+
+#, ai_translation
+msgid "The first tournament of the screen."
+msgstr "O primeiro torneio da tela."
+
+#, ai_translation
+msgid "The following categories will also be deleted:"
+msgstr "Serão igualmente suprimidas as seguintes categorias:"
+
+msgid "The least and the most significant values are removed."
+msgid_plural "The {count} least and the {count} most significant values are removed."
+msgstr[0] "Os valores menores e mais significativos são removidos."
+msgstr[1] ""
+
+msgid "The least significant value is removed."
+msgid_plural "The {count} least significant values are removed."
+msgstr[0] "O valor menos significativo é removido."
+msgstr[1] ""
+
+msgid "The limit can only be adjusted by {count} half-points."
+msgstr ""
+
+#, ai_translation
+msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
+msgstr "A classificação mais baixa que um jogador deve ter para que sua pontuação esperada seja maior ou igual à sua pontuação."
+
+#, ai_translation
+msgid "The mail addresses."
+msgstr "Os endereços de correio."
+
+#, ai_translation
+msgid "The main category is open to all the players."
+msgstr "A categoria principal está aberta a todos os jogadores."
+
+#, python-format
+msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
+msgstr ""
+
+#, ai_translation
+msgid "The maximum number of byes a player can pretend to."
+msgstr "O número máximo de byes que um jogador pode fingir."
+
+#, ai_translation
+msgid "The maximum number of illegal moves that can be recorded per round for a player."
+msgstr "O número máximo de movimentos ilegais que podem ser registrados por rodada para um jogador."
+
+#, ai_translation
+msgid "The maximum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr "O número máximo de pontos dos jogadores exibidos (se deixados vazios, todos os jogadores são exibidos)."
+
+#, ai_translation
+msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
+msgstr "O número máximo de resultados exibidos na tela, opcional (se deixado vazio, todos os resultados são exibidos)."
+
+#, ai_translation
+msgid "The maximum rating must be at most equal to the minimum rating."
+msgstr "A classificação máxima deve ser, no máximo, igual à classificação mínima."
+
+#, ai_translation
+msgid "The message displayed on the scrolling banner at the bottom of the screen."
+msgstr "A mensagem exibida no banner de rolagem na parte inferior da tela."
+
+#, ai_translation
+msgid "The minimum number of players needed for a club to be displayed."
+msgstr "O número mínimo de jogadores necessários para que um clube seja exibido."
+
+#, ai_translation
+msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
+msgstr "O número mínimo de pontos dos jogadores exibidos (se deixados vazios, todos os jogadores são exibidos)."
+
+#, ai_translation
+msgid "The minimum value of a shared prize in this category (by default: no threshold)."
+msgstr "O valor mínimo de um prêmio compartilhado nesta categoria (por padrão: sem limite)."
+
+#, python-format
+msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
+msgstr ""
+
+#, ai_translation
+msgid "The network on which the devices are connected."
+msgstr "A rede na qual os dispositivos estão conectados."
+
+#, ai_translation
+msgid "The number of boards per screen, optional (the number of screens adapts to the number of boards)."
+msgstr "O número de placas por tela, opcional (o número de telas se adapta ao número de placas)."
+
+#, ai_translation
+msgid "The number of columns used to display data."
+msgstr "O número de colunas usadas para exibir dados."
+
+#, ai_translation
+msgid "The number of final rounds in which byes are not permitted."
+msgstr "O número de rodadas finais em que byes não são permitidos."
+
+#, ai_translation
+msgid "The number of games played over the board with the Black pieces."
+msgstr "O número de jogos jogados sobre o tabuleiro com as peças pretas."
+
+#, ai_translation
+msgid "The number of games won over the board with the Black pieces."
+msgstr "O número de jogos ganhou sobre o tabuleiro com as peças pretas."
+
+#, ai_translation
+msgid "The number of games won over the board."
+msgstr "O número de jogos ganhou sobre o tabuleiro."
+
+#, ai_translation
+msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
+msgstr "O número de jogadores por tela, opcional (o número de telas se adapta ao número de jogadores)."
+
+msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
+msgstr ""
+
+#, ai_translation
+msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
+msgstr "O número de rodadas em que um jogador não recebeu um HPB, um ZPB ou uma perda de perda."
+
+#, ai_translation
+msgid "The number of rounds where a player obtains, with or without playing, as many points as awarded for a win."
+msgstr "O número de rodadas onde um jogador obtém, com ou sem jogar, tantos pontos como concedido para uma vitória."
+
+#, ai_translation
+msgid "The number of screens on which the boards will be distributed, optional (the number of screens is always the same and the number of boards per screen adapts to the number of boards)."
+msgstr "O número de telas em que as placas serão distribuídas, opcional (o número de telas é sempre o mesmo e o número de placas por tela se adapta ao número de placas)."
+
+#, ai_translation
+msgid "The number of screens on which the players will be distributed, optional (the number of screens is always the same and the number of players per screen adapts to the number of players."
+msgstr "O número de telas em que os jogadores serão distribuídos, opcional (o número de telas é sempre o mesmo e o número de jogadores por tela se adapta ao número de jogadores."
+
+#, ai_translation
+msgid "The number of the first board to select."
+msgstr "O número do primeiro quadro a selecionar."
+
+#, ai_translation
+msgid "The number of the first player to select."
+msgstr "O número do primeiro jogador a escolher."
+
+#, ai_translation
+msgid "The number of the last board to select."
+msgstr "O número da última placa para selecionar."
+
+#, ai_translation
+msgid "The number of the last player to select."
+msgstr "O número do último jogador a escolher."
+
+#, ai_translation
+msgid "The numbers (or ranges of numbers) of the boards to print."
+msgstr "Os números (ou intervalos de números) das placas para imprimir."
+
+#, ai_translation
+msgid "The pairing number can't be greater than the player count."
+msgstr "O número de emparelhamento não pode ser maior do que a contagem de jogadores."
+
+#, ai_translation
+msgid "The pairing number is already attributed."
+msgstr "O número do par já foi atribuído."
+
+#, ai_translation
+msgid "The permissions of this account can not be updated."
+msgstr "As permissões desta conta não podem ser atualizadas."
+
+#, ai_translation
+msgid "The phone numbers."
+msgstr "Os números de telefone."
+
+#, ai_translation
+msgid "The player did not win any games against FIDE rated opponents."
+msgstr "O jogador não ganhou nenhum jogo contra adversários classificados pela FIDE."
+
+#, ai_translation
+msgid "The player has already been paired, removing them from the tournament is impossible."
+msgstr "O jogador já foi emparelhado, removê-los do torneio é impossível."
+
+msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
+msgstr ""
+
+#, ai_translation
+msgid "The rank of the first player to select."
+msgstr "A classificação do primeiro jogador a selecionar."
+
+#, ai_translation
+msgid "The rank of the last player to select."
+msgstr "A classificação do último jogador a selecionar."
+
+#, ai_translation
+msgid "The rating used when the time control is at least 60 minutes."
+msgstr "A classificação usada quando o controle de tempo é de pelo menos 60 minutos."
+
+#, ai_translation
+msgid "The rating used when the time control is at most 10 minutes."
+msgstr "A classificação usada quando o controle de tempo é no máximo 10 minutos."
+
+#, ai_translation
+msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
+msgstr "A classificação usada quando o controle de tempo é mais de 10 minutos e menos de 60 minutos."
+
+#, ai_translation
+msgid "The related objects will also be deleted:"
+msgstr "Os objetos relacionados também serão excluídos:"
+
+#, ai_translation
+msgid "The rotating delay between two screens."
+msgstr "O atraso rotativo entre duas telas."
+
+#, ai_translation
+msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
+msgstr "A rodada após a qual o ranking é exibido (se deixado vazio, a última rodada terminada)."
+
+msgid "The round count is incompatible with the number of players (expected: {expected})."
+msgstr ""
+
+#, ai_translation
+msgid "The round for which the document is printed (Defaults to the last possible round)."
+msgstr "A rodada para a qual o documento é impresso (Padrões para a última rodada possível)."
+
+#, ai_translation
+msgid "The screens displayed by the display controller are controlled by the screen managers."
+msgstr "As telas exibidas pelo controlador de exibição são controladas pelos gerentes de tela."
+
+msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
+msgstr ""
+
+#, ai_translation
+msgid "The sum of the score of the player at the end of each round."
+msgstr "A soma da pontuação do jogador no final de cada rodada."
+
+#, ai_translation
+msgid "The sum of the scores of each of the opponents of the player."
+msgstr "A soma das pontuações de cada um dos oponentes do jogador."
+
+msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
+msgstr ""
+
+#, ai_translation
+msgid "The timer displayed on the screen."
+msgstr "O temporizador exibido na tela."
+
+#, ai_translation
+msgid "The timer displayed on the screens of the family."
+msgstr "O temporizador exibido nas telas da família."
+
+#, ai_translation
+msgid "The tournament has not yet started."
+msgstr "O torneio ainda não começou."
+
+#, ai_translation
+msgid "The tournament is finished."
+msgstr "O torneio está terminado."
+
+#, ai_translation
+msgid "The tournament of the screens of the family."
+msgstr "O torneio das telas da família."
+
+#, ai_translation
+msgid "The tournaments for which the staff member is a deputy arbiter."
+msgstr "Os torneios para os quais o membro da equipe é um árbitro adjunto."
+
+#, ai_translation
+msgid "The tournaments for which the staff member is the chief arbiter."
+msgstr "Os torneios para os quais o membro da equipe é o árbitro principal."
+
+#, ai_translation
+msgid "The tournaments on which the permission is applied."
+msgstr "Os torneios em que a permissão é aplicada."
+
+#, ai_translation
+msgid "The type of criterion used to filter the players."
+msgstr "O tipo de critério usado para filtrar os jogadores."
+
+msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
+msgstr ""
+
+msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
+msgstr ""
+
+#, ai_translation
+msgid "The values to take into account when computing the tie-break."
+msgstr "Os valores a ter em conta ao calcular o tie-break."
+
+#, ai_translation
+msgid "The way to share the prizes between players with the same points."
+msgstr "A maneira de compartilhar os prêmios entre os jogadores com os mesmos pontos."
+
+#, ai_translation
+msgid "There already is an hour defined at this time."
+msgstr "Neste momento já existe uma hora definida."
+
+msgid "There already is an hour for round #{round}."
+msgstr ""
+
+msgid "There are no pairings for this round (last round with pairings: #{round})."
+msgstr ""
+
+#, ai_translation
+msgid "There are no public screens available for this event."
+msgstr "Não há telas públicas disponíveis para este evento."
+
+#, ai_translation
+msgid "There can only be one main category."
+msgstr "Só pode haver uma categoria principal."
+
+#, ai_translation
+msgid "There needs to be at least one screen or family defined for the rotator to be accessible."
+msgstr "Deve haver pelo menos uma tela ou família definida para que o rotador seja acessível."
+
+#, ai_translation
+msgid "These plugins can only be activated on events of their federation."
+msgstr "Esses plugins só podem ser ativados em eventos de sua federação."
+
+#, ai_translation
+msgid "These tournaments are already included for this account by a higher access level."
+msgstr "Estes torneios já estão incluídos para esta conta por um nível de acesso mais elevado."
+
+#, ai_translation
+msgid "This account can not be deleted."
+msgstr "Esta conta não pode ser excluída."
+
+#, ai_translation
+msgid "This account can not be duplicated."
+msgstr "Esta conta não pode ser duplicada."
+
+#, ai_translation
+msgid "This account can not be updated."
+msgstr "Esta conta não pode ser atualizada."
+
+#, ai_translation
+msgid "This account is active, anonymous users can log in to it."
+msgstr "Esta conta está ativa, usuários anônimos podem fazer login nela."
+
+#, ai_translation
+msgid "This account is not active, anonymous users can not log in to it."
+msgstr "Esta conta não está ativa, usuários anônimos não podem fazer login nela."
+
+#, ai_translation
+msgid "This data source in unavailable (for more details: Menu > Data sources)."
+msgstr "Esta fonte de dados indisponível (para mais detalhes: Menu > Fontes de dados)."
+
+#, ai_translation
+msgid "This database is not installed (to install it: Menu > Data sources)."
+msgstr "Este banco de dados não está instalado (para instalá-lo: Menu > Fontes de dados)."
+
+#, ai_translation
+msgid "This display controller is private (not visible by the spectators)."
+msgstr "Este controlador de exibição é privado (não visível pelos espectadores)."
+
+#, ai_translation
+msgid "This display controller is public (visible by the spectators)."
+msgstr "Este controlador de exibição é público (visível pelos espectadores)."
+
+#, ai_translation
+msgid "This document is not available for unpaired tournaments."
+msgstr "Este documento não está disponível para torneios não pareados."
+
+#, ai_translation
+msgid "This document is only available for Round-Robin tournaments."
+msgstr "Este documento só está disponível para torneios Round-Robin."
+
+#, ai_translation
+msgid "This document is only available for standard time control tournaments."
+msgstr "Este documento está disponível apenas para torneios de controle de tempo padrão."
+
+#, ai_translation
+msgid "This event is private (by default, screens are not visible by the spectators)."
+msgstr "Este evento é privado (por padrão, as telas não são visíveis pelos espectadores)."
+
+#, ai_translation
+msgid "This event is public (by default, screens are visible by the spectators)."
+msgstr "Este evento é público (por padrão, as telas são visíveis pelos espectadores)."
+
+#, ai_translation
+msgid "This field allows you to specify the screens whose links will be displayed on the menu of the screens of the family. Screen identifiers must be separated by commas, the keywords @family (all screens of the family), @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screens."
+msgstr "Este campo permite que você especifique as telas cujos links serão exibidos no menu das telas da família. Os identificadores de tela devem ser separados por vírgulas, as palavras-chave família (todas as telas da família), boards (todas as telas de quadros), input (todas as telas de entrada), players (todas as telas dos jogadores), ranking (todas as telas de classificação), bem como o wildcard * podem ser usado. Se este campo for deixado vazio, não menu."
+
+#, ai_translation
+msgid "This field allows you to specify the screens whose links will be displayed on the screen menu. Screen identifiers must be separated by commas, the keywords @boards (all boards screens), @input (all input screens), @players (all players screens), @ranking (all ranking screens) as well as the wildcard * can be used. If this field is left empty, no menu will be displayed on the screen."
+msgstr "Este campo permite que você especifique as telas cujos links serão exibidos no menu da tela. Os identificadores de tela devem ser separados por vírgulas, as palavras-chave boards (todas as telas de placas), input (todas as telas de entrada), players (todas as telas de jogadores), ranking (todas as telas de classificação) e o wildcard * podem ser usados. Se este campo for deixado vazio, nenhum menu será exibido na tela."
+
+#, ai_translation
+msgid "This field can't be modified once the tournament has started."
+msgstr "Este campo não pode ser modificado assim que o torneio começar."
+
+#, ai_translation
+msgid "This field can't be updated once the tournament has started."
+msgstr "Este campo não pode ser atualizado assim que o torneio começar."
+
+#, ai_translation
+msgid "This field is not editable."
+msgstr "Este campo não é editável."
+
+#, ai_translation
+msgid "This field is required (except for rounds)."
+msgstr "Este campo é necessário (exceto para rodadas)."
+
+#, ai_translation
+msgid "This field is required."
+msgstr "Este campo é necessário."
+
+#, ai_translation
+msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
+msgstr "Este rótulo será usado para o link para outras telas para as telas da família. Se deixado vazio, um rótulo padrão será usado."
+
+#, ai_translation
+msgid "This label will be used for the link to other screens to this screen. If left empty, a default label will be used."
+msgstr "Este rótulo será usado para o link para outras telas para esta tela. Se deixado vazio, um rótulo padrão será usado."
+
+#, ai_translation
+msgid "This name is already used."
+msgstr "Este nome já foi usado."
+
+#, ai_translation
+msgid "This rotator is private (not visible by the spectators)."
+msgstr "Este rotador é privado (não visível pelos espectadores)."
+
+#, ai_translation
+msgid "This rotator is public (visible by the spectators)."
+msgstr "Este rotador é público (visível pelos espectadores)."
+
+msgid "This round hasn't started (current round: #{round})."
+msgstr ""
+
+msgid "This round is not finished (last finished: #{round})."
+msgstr ""
+
+msgid "This round is not valid (the tournament has {rounds} rounds)."
+msgstr ""
+
+#, ai_translation
+msgid "This screen family is private (not visible by the spectators)."
+msgstr "Esta família de tela é privada (não visível pelos espectadores)."
+
+#, ai_translation
+msgid "This screen family is public (visible by the spectators)."
+msgstr "Esta família de tela é pública (visível pelos espectadores)."
+
+#, ai_translation
+msgid "This screen is private (not visible by the spectators)."
+msgstr "Esta tela é privada (não visível pelos espectadores)."
+
+#, ai_translation
+msgid "This screen is public (visible by the spectators)."
+msgstr "Esta tela é pública (visível pelos espectadores)."
+
+#, ai_translation
+msgid "This tie-break can be used multiple times."
+msgstr "Este tie-break pode ser usado várias vezes."
+
+#, ai_translation
+msgid "This tie-break can't be used twice in a row (ignored)."
+msgstr "Este tie-break não pode ser usado duas vezes seguidas (ignorado)."
+
+#, ai_translation
+msgid "This tie-break is already used with the same modifiers."
+msgstr "Este tie-break já é usado com os mesmos modificadores."
+
+#, ai_translation
+msgid "This tie-break is already used."
+msgstr "Este tie-break já é usado."
+
+msgid "This tie-break is disabled when there are unrated players without estimated ratings ({count} in the tournament)."
+msgstr ""
+
+msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
+msgstr ""
+
+msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
+msgstr ""
+
+#, ai_translation
+msgid "This unique ID is already used."
+msgstr "Este ID único já é usado."
+
+#, ai_translation
+msgid "Three points for a win"
+msgstr "Três pontos por uma vitória"
+
+#, python-format
+msgid "Tie-break [%(tie_break)s] successfully created!"
+msgstr ""
+
+#, ai_translation
+msgid "Tie-break based on the opponents' ratings and the player's score (consult the FIDE Handbook for more details)."
+msgstr "Tie-break com base nas classificações dos adversários e pontuação do jogador (consulte o Manual da FIDE para mais detalhes)."
+
+#, ai_translation
+msgid "Tie-break favoring players which have won against the players they are tied with (consult the FIDE handbook for more details)."
+msgstr "Tie-break favorecendo os jogadores que venceram contra os jogadores com os quais estão empatados (consulte o manual da FIDE para mais detalhes)."
+
+#, ai_translation
+msgid "Tie-breaks"
+msgstr "tie-breaks"
+
+#, ai_translation
+msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
+msgstr "Os tie-breaks determinam os rankings para jogadores que estão empatados com o mesmo número de pontos."
+
+#, ai_translation
+msgid "Time control"
+msgstr "Controle do tempo"
+
+#, ai_translation
+msgid "Time control:"
+msgstr "Controle do tempo:"
+
+msgid "Time outside of event time range ({range})."
+msgstr ""
+
+#, ai_translation
+msgid "Timer"
+msgstr "Temporizador"
+
+msgid "Timer [{timer_id}] not found."
+msgstr ""
+
+msgid "Timer [{timer}] has been created."
+msgstr ""
+
+msgid "Timer [{timer}] has been deleted."
+msgstr ""
+
+msgid "Timer [{timer}] has been updated."
+msgstr ""
+
+#, ai_translation
+msgid "Timer defaults"
+msgstr "Timer defaults"
+
+#, ai_translation
+msgid "Timer:"
+msgstr "Temporizador:"
+
+#, python-format
+msgid "Timer: %(timer_uniq_id)s"
+msgstr ""
+
+#, ai_translation
+msgid "Timer: none"
+msgstr "Temporizador: nenhum"
+
+#, ai_translation
+msgid "Timers"
+msgstr "timers"
+
+msgid "Timers ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event."
+msgstr "Os temporizadores podem ser colocados em qualquer tela, família ou rotador para exibir uma contagem regressiva para a próxima rodada ou outro evento importante."
+
+#, python-format
+msgid "Timers: %(num)d"
+msgstr ""
+
+#, ai_translation
+msgid "Titled players"
+msgstr "Jogadores Intitulados"
+
+#, python-format
+msgid "To learn how to control your network, consult <a href=\"%(link)s\" target=\"_blank\">our documentation</a>."
+msgstr ""
+
+#, ai_translation
+msgid "To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player's name."
+msgstr "Para modificar rodadas anteriores, retorne a essa rodada na guia Pares;br />byes pode então ser alterado usando os botões ao lado do nome do jogador."
+
+#, ai_translation
+msgid "Today"
+msgstr "Hoje"
+
+msgid "Too few players to generate the pairings (minimum: {min})."
+msgstr ""
+
+msgid "Too many byes for player [{player_name}]."
+msgstr ""
+
+#, ai_translation
+msgid "Too much information to display on a single projector?"
+msgstr "Muita informação para exibir em um único projetor?"
+
+#, ai_translation
+msgid "Total prize value"
+msgstr "Valor total do prémio"
+
+#, ai_translation
+msgid "Tournament"
+msgstr "Torneio Torneio"
+
+#, fuzzy
+msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
+msgstr "Tournament"
+
+#, fuzzy
+msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
+msgstr "Tournament"
+
+#, python-format
+msgid "Tournament [%(tournament)s] is finished."
+msgstr ""
+
+#, python-format
+msgid "Tournament [%(tournament)s] is playing."
+msgstr ""
+
+msgid "Tournament [{tournament_id}] not found."
+msgstr ""
+
+msgid "Tournament [{tournament}] has been created and default screens have been added."
+msgstr ""
+
+msgid "Tournament [{tournament}] has been created."
+msgstr ""
+
+msgid "Tournament [{tournament}] has been deleted."
+msgstr ""
+
+msgid "Tournament [{tournament}] has been updated."
+msgstr ""
+
+msgid "Tournament [{tournament}] is finished, you can not add players any longer."
+msgstr ""
+
+msgid "Tournament [{tournament}] successfully imported."
+msgstr ""
+
+#, ai_translation
+msgid "Tournament name"
+msgstr "Nome do torneio"
+
+#, ai_translation
+msgid "Tournament performance rating"
+msgstr "Classificação de desempenho do torneio"
+
+#, python-format
+msgid "Tournament rating range: %(min_rating)d - %(max_rating)d"
+msgstr ""
+
+#, ai_translation
+msgid "Tournament record"
+msgstr "Recorde de torneio"
+
+msgid "Tournament {tournament} ({numbers_str})"
+msgstr ""
+
+#, ai_translation
+msgid "Tournament:"
+msgstr "Torneio:"
+
+#, python-format
+msgid "Tournament: %(tournament_name)s"
+msgstr ""
+
+#, ai_translation
+msgid "Tournament: not set"
+msgstr "Torneio: não definido"
+
+#, ai_translation
+msgid "Tournaments"
+msgstr "Torneios"
+
+msgid "Tournaments ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Tournaments are finished, you can not add players any longer."
+msgstr "Os torneios estão concluídos, você não pode adicionar jogadores por mais tempo."
+
+#, ai_translation
+msgid "Tournaments displayed:"
+msgstr "Torneios exibidos:"
+
+#, ai_translation
+msgid "Tournaments:"
+msgstr "Torneios:"
+
+#, python-format
+msgid "Tournaments: %(num)d"
+msgstr ""
+
+#, ai_translation
+msgid "Transfer"
+msgstr "Transferência"
+
+#, ai_translation
+msgid "Trophy"
+msgstr "Troféu"
+
+#, fuzzy
+msgid "Tu *** TUESDAY"
+msgstr "Tu"
+
+#, ai_translation
+msgid "Type"
+msgstr "Tipo"
+
+#, ai_translation
+msgid "Type:"
+msgstr "Tipo:"
+
+#, python-format
+msgid "Type: %(family_type)s"
+msgstr ""
+
+#, python-format
+msgid "Type: %(screen_type)s"
+msgstr ""
+
+#, ai_translation
+msgid "U7-U19 / 50+ / 65+"
+msgstr "U7-U19 / 50+ / 65+"
+
+#, ai_translation
+msgid "U8-U20 / 50+ / 65+"
+msgstr "U8-U20 / 50+ / 65+"
+
+#, ai_translation
+msgid "UNPAIR"
+msgstr "UNPAIR"
+
+#, ai_translation
+msgid "UNRATED BLACK VICTORY"
+msgstr "VITRIA PRETA NO RATADA"
+
+#, ai_translation
+msgid "UNRATED DRAW"
+msgstr "DRAW UNRATADO"
+
+#, ai_translation
+msgid "UNRATED PENALTY"
+msgstr "PENALDADE PENALDADE"
+
+#, ai_translation
+msgid "UNRATED WHITE VICTORY"
+msgstr "VITRIA BRANCA RUADA"
+
+msgid "URL [{url}] did not respond (error: [{error}])."
+msgstr ""
+
+msgid "URL [{url}] responded code [{code}]."
+msgstr ""
+
+#, fuzzy
+msgid "Undefined *** PLURAL"
+msgstr "Undefined"
+
+#, fuzzy
+msgid "Undefined *** SINGULAR"
+msgstr "Undefined"
+
+msgid "Unexpected error during installation: [{ex}]."
+msgstr ""
+
+#, python-format
+msgid "Unique ID: %(uniq_id)s"
+msgstr ""
+
+#, python-format
+msgid "Unique ID: [%(uniq_id)s]"
+msgstr ""
+
+#, ai_translation
+msgid "Unknown"
+msgstr "Desconhecido"
+
+msgid "Unknown color [{color}]."
+msgstr ""
+
+msgid "Unknown federation [{federation}]."
+msgstr ""
+
+msgid "Unknown gender [{gender}]."
+msgstr ""
+
+msgid "Unknown result [{result}]."
+msgstr ""
+
+msgid "Unknown title [{title}]."
+msgstr ""
+
+#, ai_translation
+msgid "Unlike single Screens, families can only be used to display information about a single tournament."
+msgstr "Ao contrário de telas únicas, as famílias só podem ser usadas para exibir informações sobre um único torneio."
+
+#, ai_translation
+msgid "Unmet requirements are highlighted in red and should be verified. They will appear in black when printed."
+msgstr "Os requisitos não atendidos são destacados em vermelho e devem ser verificados. Eles aparecerão em preto quando impressos."
+
+#, ai_translation
+msgid "Unpair"
+msgstr "Desempar"
+
+#, ai_translation
+msgid "Unpair all the boards of a round"
+msgstr "Desemparelhar todas as tábuas de uma rodada"
+
+#, ai_translation
+msgid "Unpair all the boards of this round."
+msgstr "Desemparelhar todos os tabuleiros desta ronda."
+
+#, ai_translation
+msgid "Unpair all the rounds of the tournament."
+msgstr "Desemparelhar todas as rodadas do torneio."
+
+#, ai_translation
+msgid "Unpair one board"
+msgstr "Desemparelhar um tabuleiro"
+
+#, ai_translation
+msgid "Unpair tournament"
+msgstr "torneio Unpair"
+
+#, python-format
+msgid "Unpaired (%(unpaired)d)"
+msgstr ""
+
+#, fuzzy
+msgid "Unpaired *** FEMALE"
+msgstr "Unpaired"
+
+#, fuzzy
+msgid "Unpaired *** MALE"
+msgstr "Unpaired"
+
+#, ai_translation
+msgid "Unpaired: displayed"
+msgstr "Desemparelhado: exibido"
+
+#, ai_translation
+msgid "Unpaired: hidden"
+msgstr "Desemparelhado: oculto"
+
+#, ai_translation
+msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
+msgstr "Desemparelhar uma rodada publicada pode ser muito inconveniente para os jogadores. Além disso, você perderá quaisquer ajustes manuais."
+
+#, ai_translation
+msgid "Unpairing all the boards of this round is not possible because the round has results."
+msgstr "Desemparelhar todos os tabuleiros desta ronda não é possível porque a ronda tem resultados."
+
+#, fuzzy
+msgid "Unrated *** PLURAL"
+msgstr "Unrated"
+
+#, fuzzy
+msgid "Unrated *** SINGULAR"
+msgstr "Unrated"
+
+#, ai_translation
+msgid "Unrated Draw"
+msgstr "Sorte sem classificação"
+
+#, ai_translation
+msgid "Unrated Loss"
+msgstr "Perda sem classificação"
+
+#, ai_translation
+msgid "Unrated Win"
+msgstr "Vitória sem classificação"
+
+#, ai_translation
+msgid "Unrated opponent."
+msgstr "Opositor não classificado."
+
+#, ai_translation
+msgid "Unrated players"
+msgstr "Jogadores não classificados"
+
+msgid "Upcoming ({num})"
+msgstr ""
+
+#, ai_translation
+msgid "Upcoming events"
+msgstr "Próximos eventos"
+
+#, ai_translation
+msgid "Update"
+msgstr "Actualização"
+
+#, ai_translation
+msgid "Update event"
+msgstr "Evento de atualização"
+
+#, ai_translation
+msgid "Update players"
+msgstr "Atualizar jogadores"
+
+#, ai_translation
+msgid "Update players' history"
+msgstr "Atualizar a história dos jogadores"
+
+#, ai_translation
+msgid "Update results"
+msgstr "Resultados da atualização"
+
+#, ai_translation
+msgid "Update the players' information from an external data source."
+msgstr "Atualize as informações dos jogadores a partir de uma fonte de dados externa."
+
+#, ai_translation
+msgid "Update tournaments"
+msgstr "Torneios de atualização"
+
+#, ai_translation
+msgid "Updating"
+msgstr "Actualização"
+
+#, ai_translation
+msgid "Upload"
+msgstr "Upload"
+
+#, ai_translation
+msgid "Use Fore Buchholz"
+msgstr "Use Fore Buchholz"
+
+#, ai_translation
+msgid "Use default"
+msgstr "Usar padrão"
+
+msgid "Use default - {option}"
+msgstr ""
+
+#, ai_translation
+msgid "Use pairing engines"
+msgstr "Use motores de emparelhamento"
+
+#, ai_translation
+msgid "Use the 3/1/0 points system instead of the standard 1/0.5/0 system."
+msgstr "Use o sistema de pontos 3/1/0 em vez do sistema padrão 1/0.5/0."
+
+#, ai_translation
+msgid "Use the Staff tab to declare arbiters."
+msgstr "Use a guia Staff para declarar árbitros."
+
+#, ai_translation
+msgid "Use the recommended tie-breaks"
+msgstr "Use os tie-breaks recomendados"
+
+#, ai_translation
+msgid "Use the standard FIDE rating for unrated players"
+msgstr "Use a classificação FIDE padrão para jogadores não classificados"
+
+#, python-format
+msgid "Used by %(num)d event."
+msgid_plural "Used by %(num)d events."
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "Used by %(num)d tournament."
+msgid_plural "Used by %(num)d tournaments."
+msgstr[0] ""
+msgstr[1] ""
+
+#, fuzzy
+msgid "U{age_limit} *** YOUTH AGE CATEGORY"
+msgstr "U{age_limit}"
+
+#, ai_translation
+msgid "Validate"
+msgstr "Validar"
+
+#, ai_translation
+msgid "Value"
+msgstr "Valor"
+
+#, ai_translation
+msgid "Value of the pairing allocated bye:"
+msgstr "Valor do emparelhamento atribuído pore:"
+
+#, ai_translation
+msgid "Values"
+msgstr "Valores"
+
+#, ai_translation
+msgid "Variation"
+msgstr "Variação"
+
+msgid "Version: {version}"
+msgstr ""
+
+#, ai_translation
+msgid "View Pairings tab"
+msgstr "Ver separador Pares"
+
+#, ai_translation
+msgid "View Players tab"
+msgstr "Ver a aba Jogadores"
+
+#, ai_translation
+msgid "View Prizes tab"
+msgstr "Ver Prémios tab"
+
+#, ai_translation
+msgid "View draft pairings"
+msgstr "Ver rascunho emparelhamentos"
+
+#, ai_translation
+msgid "View draft rankings"
+msgstr "Ver draft rankings"
+
+#, ai_translation
+msgid "View event cards details"
+msgstr "Ver detalhes dos cartões de evento"
+
+#, ai_translation
+msgid "View event configuration"
+msgstr "Ver configuração do evento"
+
+#, ai_translation
+msgid "View passed events"
+msgstr "Ver eventos passados"
+
+#, ai_translation
+msgid "View private events"
+msgstr "Ver eventos privados"
+
+#, ai_translation
+msgid "View private screens"
+msgstr "Ver telas privadas"
+
+#, ai_translation
+msgid "View public current and upcoming events"
+msgstr "Ver eventos atuais e futuros"
+
+#, ai_translation
+msgid "View public screens"
+msgstr "Ver telas públicas"
+
+#, ai_translation
+msgid "View the Tournaments tab"
+msgstr "Ver a guia Torneios"
+
+#, ai_translation
+msgid "Visibility:"
+msgstr "Visibilidade:"
+
+#, fuzzy
+msgid "W *** WHITE COLOR FOR CROSSTABLE"
+msgstr "W"
+
+#, fuzzy
+msgid "W *** WHITE COLOR FOR PLACE CARDS"
+msgstr "W"
+
+#, fuzzy
+msgid "WCM *** SHORT NAME FOR Woman Candidate Master"
+msgstr "WCM"
+
+#, fuzzy
+msgid "WFM *** SHORT NAME FOR Woman Fide Master"
+msgstr "WFM"
+
+#, fuzzy
+msgid "WGM *** SHORT NAME FOR Woman Grand Master"
+msgstr "WGM"
+
+#, ai_translation
+msgid "WHITE PLAYER"
+msgstr "JOYER BRANQUE"
+
+#, ai_translation
+msgid "WHITE WINS"
+msgstr "VINHOS BRANTOS"
+
+#, fuzzy
+msgid "WIM *** SHORT NAME FOR Woman International Master"
+msgstr "WIM"
+
+#, ai_translation
+msgid "Warning: closing this window will stop Sharly Chess."
+msgstr "Aviso: fechar esta janela vai parar Sharly Chess."
+
+#, ai_translation
+msgid "Warning: experimental features are enabled!"
+msgstr "Aviso: recursos experimentais estão ativados!"
+
+#, python-format
+msgid "Warning: round #%(round)d is not finished."
+msgstr ""
+
+#, python-format
+msgid "Warning: the %(player_count)d players in the tournament will be deleted."
+msgstr ""
+
+#, ai_translation
+msgid "Warning: the deletion is permanent!"
+msgstr "Aviso: a eliminação é permanente!"
+
+#, ai_translation
+msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
+msgstr "Aviso: você está tentando executar uma operação proibida pelas regras da FIDE."
+
+#, fuzzy
+msgid "We *** WEDNESDAY"
+msgstr "We"
+
+#, ai_translation
+msgid "Weak"
+msgstr "Fraco"
+
+msgid "Web server not started yet ({ex}), waiting…"
+msgstr ""
+
+#, ai_translation
+msgid "Weekly"
+msgstr "Semanal"
+
+#, ai_translation
+msgid "Welcome to Sharly Chess!"
+msgstr "Bem-vindo ao Sharly Chess!"
+
+#, ai_translation
+msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
+msgstr "Quando definida, a mensagem de alerta é exibida em um banner de rolagem na parte inferior das telas."
+
+#, ai_translation
+msgid "When not displaying the exit button, users can not accidentally exit input screens."
+msgstr "Ao não exibir o botão de saída, os usuários não podem sair acidentalmente das telas de entrada."
+
+#, ai_translation
+msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
+msgstr "Ao não exibir o adversário dos jogadores (apenas números de cor e de tabuleiro), menos telas são necessárias (com várias colunas)."
+
+#, ai_translation
+msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."
+msgstr "Quando há jogadores não classificados, as regras da FIDE estipulam que os tie-breaks baseados em classificação só podem ser usados se as regras do torneio explicarem como as estimativas são decididas."
+
+#, ai_translation
+msgid "When two or more players with the same points are eligible for prizes, share their prizes."
+msgstr "Quando dois ou mais jogadores com os mesmos pontos são elegíveis para prêmios, compartilhe seus prêmios."
+
+#, ai_translation
+msgid "When unpaired players are not displayed, there is no way to distinguish the absent (zero-point) players and the players with a Half-Point Bye)."
+msgstr "Quando os jogadores não pareados não são exibidos, não há como distinguir os jogadores ausentes (ponto zero) e os jogadores com um Half-Point Bye)."
+
+#, ai_translation
+msgid "White"
+msgstr "Branco"
+
+#, ai_translation
+msgid "White wins"
+msgstr "Vitórias brancas"
+
+#, ai_translation
+msgid "Win"
+msgstr "Vencer"
+
+#, ai_translation
+msgid "With less players than prizes, some prizes will not be attributed."
+msgstr "Com menos jogadores do que prêmios, alguns prêmios não serão atribuídos."
+
+#, ai_translation
+msgid "Withdraw from tournament"
+msgstr "Retirar do torneio"
+
+#, ai_translation
+msgid "Woman Candidate Master"
+msgstr "Mestre candidato mulher"
+
+#, ai_translation
+msgid "Woman Fide Master"
+msgstr "Mestre Fide Mulher"
+
+#, ai_translation
+msgid "Woman Grand Master"
+msgstr "Grande Mestre Mulher"
+
+#, ai_translation
+msgid "Woman International Master"
+msgstr "Mestre Internacional Mulher"
+
+msgid "Wrong file extension [{ext}] ([pdf] expected)."
+msgstr ""
+
+#, fuzzy
+msgid "Y *** THE LETTER TO ANSWER YES"
+msgstr "Y"
+
+#, fuzzy
+msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
+msgstr "YOB"
+
+msgid "YYYY or {date_format}"
+msgstr ""
+
+#, ai_translation
+msgid "YYYY-MM-DD"
+msgstr "YY-MM-DD"
+
+#, ai_translation
+msgid "YYYY/MM/DD"
+msgstr "AAA/MM/DD"
+
+#, fuzzy
+msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
+msgstr "Year of birth"
+
+#, ai_translation
+msgid "Yesterday"
+msgstr "Ontem Ontem"
+
+#, ai_translation
+msgid "You are connected on the Sharly Chess server and have full administration privileges."
+msgstr "Você está conectado no servidor Sharly Chess e tem privilégios de administração completos."
+
+#, ai_translation
+msgid "You are in an unsafe editing mode. Change the round to exit this mode."
+msgstr "Você está em um modo de edição inseguro. Mude a rodada para sair deste modo."
+
+#, ai_translation
+msgid "You are not allowed to add players to the event."
+msgstr "Você não tem permissão para adicionar jogadores ao evento."
+
+#, ai_translation
+msgid "You are not allowed to check-in the player."
+msgstr "Você não tem permissão para fazer o check-in do jogador."
+
+#, ai_translation
+msgid "You are not allowed to check-out the player."
+msgstr "Você não tem permissão para fazer o check-out do jogador."
+
+#, ai_translation
+msgid "You are not allowed to create tournaments."
+msgstr "Você não tem permissão para criar torneios."
+
+#, ai_translation
+msgid "You are not allowed to delete the tournament."
+msgstr "Você não tem permissão para excluir o torneio."
+
+#, ai_translation
+msgid "You are not allowed to delete this account."
+msgstr "Você não tem permissão para excluir esta conta."
+
+#, ai_translation
+msgid "You are not allowed to duplicate this account."
+msgstr "Você não tem permissão para duplicar esta conta."
+
+#, ai_translation
+msgid "You are not allowed to enter results."
+msgstr "Você não tem permissão para inserir resultados."
+
+#, ai_translation
+msgid "You are not allowed to generate complementary pairings."
+msgstr "Você não tem permissão para gerar emparelhamentos complementares."
+
+#, ai_translation
+msgid "You are not allowed to generate the pairings."
+msgstr "Você não tem permissão para gerar os emparelhamentos."
+
+#, ai_translation
+msgid "You are not allowed to manage prizes."
+msgstr "Você não tem permissão para gerenciar prêmios."
+
+#, ai_translation
+msgid "You are not allowed to modify Full-Point Byes."
+msgstr "Você não tem permissão para modificar Byes Full-Point."
+
+#, ai_translation
+msgid "You are not allowed to modify Half-Point Byes."
+msgstr "Você não tem permissão para modificar Half-Point Byes."
+
+#, ai_translation
+msgid "You are not allowed to open/close check-in."
+msgstr "Não é permitido abrir/fechar o check-in."
+
+#, ai_translation
+msgid "You are not allowed to pair players."
+msgstr "Você não tem permissão para emparelhar jogadores."
+
+#, ai_translation
+msgid "You are not allowed to set Full-Point Byes."
+msgstr "Você não tem permissão para definir Byes Full-Point."
+
+#, ai_translation
+msgid "You are not allowed to set Half-Point Byes."
+msgstr "Você não tem permissão para definir Half-Point Byes."
+
+#, ai_translation
+msgid "You are not allowed to set the current round."
+msgstr "Você não tem permissão para definir a rodada atual."
+
+#, ai_translation
+msgid "You are not allowed to set/unset Half-Point Byes."
+msgstr "Você não tem permissão para definir / desmarcar Half-Point Byes."
+
+#, ai_translation
+msgid "You are not allowed to set/unset Zero-Point Byes."
+msgstr "Você não está autorizado a definir / desmarcar Zero-Point Byes."
+
+#, ai_translation
+msgid "You are not allowed to unpair rounds."
+msgstr "Você não tem permissão para desemparelhar rodadas."
+
+#, ai_translation
+msgid "You are not allowed to update results."
+msgstr "Você não tem permissão para atualizar os resultados."
+
+#, ai_translation
+msgid "You are not allowed to update the permissions of this account."
+msgstr "Você não tem permissão para atualizar as permissões desta conta."
+
+#, ai_translation
+msgid "You are not allowed to update the players' information from an external data source."
+msgstr "Você não tem permissão para atualizar as informações dos jogadores de uma fonte de dados externa."
+
+#, ai_translation
+msgid "You are not allowed to update the tournament."
+msgstr "Você não tem permissão para atualizar o torneio."
+
+#, ai_translation
+msgid "You are not allowed to update this account."
+msgstr "Você não tem permissão para atualizar esta conta."
+
+#, ai_translation
+msgid "You are trying to manually edit the pairings of the current round. Pairings should only be altered to handle unusual situations."
+msgstr "Você está tentando editar manualmente os emparelhamentos da rodada atual. Os emparelhamentos só devem ser alterados para lidar com situações incomuns."
+
+#, ai_translation
+msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
+msgstr "Você está tentando modificar os emparelhamentos da rodada anterior. Isso terá um impacto nos emparelhamentos e rankings de todas as rodadas futuras."
+
+#, ai_translation
+msgid "You can ask the administrator for permission to access the event screens."
+msgstr "Você pode pedir permissão ao administrador para acessar as telas do evento."
+
+#, ai_translation
+msgid "You can create password-protected accounts to delegate tasks to other members of the staff (arbiters and organizers)."
+msgstr "Você pode criar contas protegidas por senha para delegar tarefas a outros membros da equipe (arbitristas e organizadores)."
+
+#, ai_translation
+msgid "You can temporarily invalidate accounts by turning this switch off."
+msgstr "Você pode invalidar temporariamente as contas desligando esse interruptor."
+
+#, ai_translation
+msgid "You can't add any more permission to this account."
+msgstr "Você não pode adicionar mais nenhuma permissão a esta conta."
+
+#, ai_translation
+msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
+msgstr "Você define o tipo de dados a serem exibidos (resultados, pareamentos, classificação...) e detalhes como o número de telas para dividir os jogadores, e as telas individuais serão geradas automaticamente."
+
+#, ai_translation
+msgid "You have no permissions"
+msgstr "Você não tem permissões"
+
+#, ai_translation
+msgid "You may also connect to this server from other devices using"
+msgstr "Você também pode se conectar a este servidor a partir de outros dispositivos usando"
+
+#, ai_translation
+msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network."
+msgstr "Você pode criar diferentes tipos de páginas da web, conhecidas como i>Screens/i>, que podem ser acessadas através de outros dispositivos em sua rede local."
+
+#, ai_translation
+msgid "You must create a prize bracket before creating a prize category."
+msgstr "Você deve criar uma faixa de prêmio antes de criar uma categoria de prêmio."
+
+#, ai_translation
+msgid "You must create a screen or a family of screens before creating a rotator."
+msgstr "Você deve criar uma tela ou uma família de telas antes de criar um rotador."
+
+#, ai_translation
+msgid "You must create a tournament before creating a prize bracket."
+msgstr "Você deve criar um torneio antes de criar um prize bracket."
+
+#, ai_translation
+msgid "You must create a tournament before creating a screen family."
+msgstr "Você deve criar um torneio antes de criar uma família de tela."
+
+#, ai_translation
+msgid "You must create a tournament before creating these screens."
+msgstr "Você deve criar um torneio antes de criar essas telas."
+
+#, ai_translation
+msgid "Zero-Point Bye"
+msgstr "Zero-Point Bye"
+
+msgid "Zero-Point Bye attributed to player [{player}]."
+msgstr ""
+
+msgid "[{value}] is not a positive value."
+msgstr ""
+
+msgid "[{value}] is not a valid value format."
+msgstr ""
+
+#, ai_translation
+msgid "all the boards"
+msgstr "todas as placas"
+
+#, ai_translation
+msgid "all the players"
+msgstr "todos os jogadores"
+
+#, ai_translation
+msgid "all the tournaments"
+msgstr "todos os torneios"
+
+msgid "boards from #{first} to #{last}"
+msgstr ""
+
+msgid "boards from #{first} to #{last}, on {parts} screens"
+msgstr ""
+
+msgid "boards from #{first} to end"
+msgstr ""
+
+msgid "boards from #{first} to end, on {parts} screens"
+msgstr ""
+
+msgid "boards from start to #{last}"
+msgstr ""
+
+msgid "boards from start to #{last}, on {parts} screens"
+msgstr ""
+
+msgid "boards on {parts} screens"
+msgstr ""
+
+msgid "boards {board_numbers}"
+msgstr ""
+
+#, ai_translation
+msgid "either the duration or the increment must be greater than 0."
+msgstr "A duração ou o incremento devem ser maiores que 0."
+
+#, ai_translation
+msgid "embedded in _Sharly Chess_"
+msgstr "_Sharly Chess_"
+
+#, ai_translation
+msgid "estimated ratings"
+msgstr "Avaliações estimadas"
+
+#, ai_translation
+msgid "event"
+msgstr "evento"
+
+#, ai_translation
+msgid "example"
+msgstr "exemplo"
+
+#, ai_translation
+msgid "forfeits played"
+msgstr "confiscos jogados"
+
+#, ai_translation
+msgid "from move 1"
+msgstr "do movimento 1"
+
+#, ai_translation
+msgid "last"
+msgstr "ltima"
+
+#, fuzzy
+msgid "min *** MINUTES"
+msgstr "min"
+
+msgid "minimum: {value}"
+msgstr ""
+
+#, ai_translation
+msgid "my-event"
+msgstr "my-event"
+
+#, ai_translation
+msgid "my-family"
+msgstr "minha-família"
+
+#, ai_translation
+msgid "my-screen"
+msgstr "my-screen"
+
+#, ai_translation
+msgid "no"
+msgstr "E-mail"
+
+#, ai_translation
+msgid "player already received a PAB in a previous round"
+msgstr "jogador já recebeu um PAB em uma rodada anterior"
+
+msgid "players from #{first} to #{last}"
+msgstr ""
+
+msgid "players from #{first} to #{last}, on {parts} screens"
+msgstr ""
+
+msgid "players from #{first} to end"
+msgstr ""
+
+msgid "players from #{first} to end, on {parts} screens"
+msgstr ""
+
+msgid "players from start to #{last}"
+msgstr ""
+
+msgid "players from start to #{last}, on {parts} screens"
+msgstr ""
+
+msgid "players on {parts} screens"
+msgstr ""
+
+msgid "ranking from #{first} to #{last}"
+msgstr ""
+
+msgid "ranking from #{first} to end"
+msgstr ""
+
+msgid "ranking from start to #{last}"
+msgstr ""
+
+msgid "round_{round}"
+msgstr ""
+
+#, fuzzy
+msgid "s *** SECONDS"
+msgstr "s"
+
+msgid "screens of {number} boards"
+msgstr ""
+
+msgid "screens of {number} boards from #{first} to #{last}"
+msgstr ""
+
+msgid "screens of {number} boards from #{first} to end"
+msgstr ""
+
+msgid "screens of {number} boards from start to #{last}"
+msgstr ""
+
+msgid "screens of {number} players"
+msgstr ""
+
+msgid "screens of {number} players from #{first} to #{last}"
+msgstr ""
+
+msgid "screens of {number} players from #{first} to end"
+msgstr ""
+
+msgid "screens of {number} players from start to #{last}"
+msgstr ""
+
+#, ai_translation
+msgid "some already played each other"
+msgstr "Alguns já jogaram um ao outro"
+
+#, ai_translation
+msgid "standard ratings"
+msgstr "Classificações padrão"
+
+#, ai_translation
+msgid "the address of this server on your available networks:"
+msgstr "o endereço deste servidor nas suas redes disponíveis:"
+
+#, ai_translation
+msgid "the number of moves is required for a non-final period."
+msgstr "O número de movimentos é necessário para um período não final."
+
+#, ai_translation
+msgid "the number of moves must be a positive integer."
+msgstr "O número de movimentos deve ser um número inteiro positivo."
+
+#, ai_translation
+msgid "the number of moves must not be specified for the final period."
+msgstr "O número de movimentos não deve ser especificado para o período final."
+
+#, ai_translation
+msgid "the whole ranking"
+msgstr "todo o ranking"
+
+#, ai_translation
+msgid "then"
+msgstr "então"
+
+msgid "value: {value}"
+msgstr ""
+
+#, ai_translation
+msgid "vs"
+msgstr "vs vs vs"
+
+#, python-format
+msgid "vs %(player)s"
+msgstr ""
+
+#, ai_translation
+msgid "yes"
+msgstr "sim"
+
+#, fuzzy
+msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
+msgstr "{age_limit}+"
+
+msgid "{count} club represented"
+msgid_plural "{count} clubs represented"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} federation represented"
+msgid_plural "{count} federations represented"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} half-point"
+msgid_plural "{count} half-points"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} player updated."
+msgid_plural "{count} players updated."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{date_format} HH:MM"
+msgstr ""
+
+msgid "{days} days"
+msgstr ""
+
+msgid "{days} days ago"
+msgstr ""
+
+msgid "{family_type}-screen"
+msgstr ""
+
+msgid "{first_name} {last_name}"
+msgstr ""
+
+msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
+msgstr ""
+
+msgid "{players} player remain unpaired"
+msgid_plural "{players} players remain unpaired"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{prefix}{int_value}<sup>{suffix}</sup>"
+msgstr ""
+
+msgid "{screen_type}-screen"
+msgstr ""
+
+msgid "{start} → {end}"
+msgstr ""
+
+msgid "{status_code} - Unknown error"
+msgstr ""
+
+msgid "{string}: {value}"
+msgstr ""
+
+#, ai_translation
+msgid "½ - 0 (U)"
+msgstr "12 - 0 (U)"
+
+#, ai_translation
+msgid "½ - ½ (U)"
+msgstr "12 - 12 (U)"
+
