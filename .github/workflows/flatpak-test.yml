@@ -2,16 +2,16 @@ name: Flatpak Build & Test
 
 on:
   push:
-    branches: [ main, develop, dev ]
+    branches: [main, develop, dev]
     paths:
-      - 'flatpak/**'
-      - 'requirements-flatpak.txt'
-      - '.github/workflows/flatpak-test.yml'
+      - flatpak/**
+      - requirements-flatpak.txt
+      - .github/workflows/flatpak-test.yml
   pull_request:
-    branches: [ main, develop, dev ]
+    branches: [main, develop, dev]
     paths:
-      - 'flatpak/**'
-      - 'requirements-flatpak.txt'
+      - flatpak/**
+      - requirements-flatpak.txt
   workflow_dispatch:
 
 jobs:
@@ -43,21 +43,21 @@ jobs:
             meson \
             pkg-config \
             build-essential
-          if ! pkg-config --exists girepository-2.0; then
-            # Pygobject builds require girepository-2.0 >= 2.80; create a minimal .pc if missing
+          current_version=$(pkg-config --modversion girepository-2.0 2>/dev/null || true)
+          if [ -z "$current_version" ] || ! dpkg --compare-versions "$current_version" ge 2.80.0; then
             version=2.80.0
-          cat <<'EOF' | sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc >/dev/null
-          prefix=/usr
-          libdir=${prefix}/lib/x86_64-linux-gnu
-          includedir=${prefix}/include/gobject-introspection-1.0
+            cat <<EOF | sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc >/dev/null
+            prefix=/usr
+            libdir=\${prefix}/lib/x86_64-linux-gnu
+            includedir=\${prefix}/include/gobject-introspection-1.0
 
-          Name: girepository-2.0
-          Description: GObject Introspection repository library
-          Version: ${version}
-          Requires: gobject-2.0
-          Libs: -L${libdir} -lgirepository-1.0
-          Cflags: -I${includedir}
-          EOF
+            Name: girepository-2.0
+            Description: GObject Introspection repository library
+            Version: ${version}
+            Requires: gobject-2.0
+            Libs: -L\${libdir} -lgirepository-1.0
+            Cflags: -I\${includedir}
+            EOF
           fi
 
       - name: Install GNOME runtimes (48)
@@ -69,7 +69,6 @@ jobs:
           flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
           flatpak --user install -y --noninteractive flathub org.gnome.Platform//48
           flatpak --user install -y --noninteractive flathub org.gnome.Sdk//48
-          # GNOME SDK 48 already ships Python 3; no separate python extension is published on Flathub for this runtime.
 
       - name: Set up Python
         uses: actions/setup-python@v5
