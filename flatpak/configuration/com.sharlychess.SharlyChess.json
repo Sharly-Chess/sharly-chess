@@ -75,6 +75,11 @@
     {
       "name": "python-dependencies",
       "buildsystem": "simple",
+      "build-options": {
+        "build-args": [
+          "--share=network"
+        ]
+      },
       "build-commands": [
         "pip3 install --prefix=/app -r requirements-flatpak.txt 2>&1 | tee pip-install.log",
         "echo 'Pip dependencies installed successfully' > /app/share/sharly-chess/pip-install.log",
@@ -90,6 +95,11 @@
     {
       "name": "sharly-chess",
       "buildsystem": "simple",
+      "build-options": {
+        "build-args": [
+          "--share=network"
+        ]
+      },
       "build-commands": [
         "mkdir -p /app/share/sharly-chess",
         "pip3 install --prefix=/app --no-deps . 2>&1 | tee /tmp/app-install.log",

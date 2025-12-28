@@ -78,7 +78,6 @@ jobs:
             --repo=flatpak-repo \
             --force-clean \
             --verbose \
-            --share=network \
             build-flatpak \
             flatpak/configuration/com.sharlychess.SharlyChess.json 2>&1 | tee build.log
 
