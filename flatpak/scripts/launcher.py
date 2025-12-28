@@ -87,14 +87,16 @@ def launch_application():
     logger.info('Launching Sharly Chess...')
     
     try:
-        # Import the main application module
-        from src.sharly_chess import main
-        
-        logger.info('Sharly Chess module imported successfully')
-        
-        # Launch the application with GUI mode
+        # Set arguments before import because the module runs on import
         sys.argv = ['sharly-chess', '--gui']
-        main()
+        
+        logger.info('Importing sharly_chess module to launch application...')
+        
+        # Import the main application module
+        # Note: sharly_chess.py runs the application on import
+        import sharly_chess
+        
+        logger.info('Sharly Chess execution completed')
         
     except Exception as e:
         logger.error(f'Failed to launch application: {e}', exc_info=True)
