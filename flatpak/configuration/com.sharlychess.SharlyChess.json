@@ -117,6 +117,8 @@
         "install -Dm644 LICENSE.md /app/share/licenses/com.sharlychess.SharlyChess/LICENSE.md",
         "PYTHONPATH=/app/lib/python3.12/site-packages /app/bin/pip-licenses --with-system --with-authors --with-urls --with-description --format=markdown --output-file=/app/share/licenses/com.sharlychess.SharlyChess/THIRD_PARTY_LICENSES.md",
         "PYTHONPATH=/app/lib/python3.12/site-packages python3 flatpak/scripts/generate_notice.py /app/share/licenses/com.sharlychess.SharlyChess/NOTICE.txt",
+        "PYTHONPATH=/app/lib/python3.12/site-packages python3 scripts/ffe/generate_ffe_sql_server_credentials.py --host=$FFE_HOST --user=$FFE_USER --password=$FFE_PASSWORD --database=$FFE_DATABASE --github",
+        "PYTHONPATH=/app/lib/python3.12/site-packages python3 scripts/chess_results/generate_chess_results_credentials.py --key=$CHESS_RESULTS_KEY --iv=$CHESS_RESULTS_IV",
         "echo 'Build completed successfully' > /app/share/sharly-chess/build-info.txt"
       ],
       "sources": [
