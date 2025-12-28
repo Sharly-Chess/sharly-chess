@@ -43,22 +43,7 @@ jobs:
             meson \
             pkg-config \
             build-essential
-          current_version=$(pkg-config --modversion girepository-2.0 2>/dev/null || true)
-          if [ -z "$current_version" ] || ! dpkg --compare-versions "$current_version" ge 2.80.0; then
-            version=2.80.0
-            printf '%s\n' \
-              "prefix=/usr" \
-              "libdir=/usr/lib/x86_64-linux-gnu" \
-              "includedir=/usr/include/gobject-introspection-1.0" \
-              "" \
-              "Name: girepository-2.0" \
-              "Description: GObject Introspection repository library" \
-              "Version: ${version}" \
-              "Requires: gobject-2.0" \
-              "Libs: -L/usr/lib/x86_64-linux-gnu -lgirepository-1.0" \
-              "Cflags: -I/usr/include/gobject-introspection-1.0" \
-              | sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc >/dev/null
-          fi
+          # Use distro-provided girepository .pc; no stub override to keep headers and include paths accurate
 
       - name: Install GNOME runtimes (48)
         env:
