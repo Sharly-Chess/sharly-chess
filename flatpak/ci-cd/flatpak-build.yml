@@ -65,8 +65,8 @@ jobs:
       
       - name: Install GNOME runtime
         run: |
-          flatpak install -y --noninteractive flathub org.gnome.Platform//45
-          flatpak install -y --noninteractive flathub org.gnome.Sdk//45
+          flatpak install -y --noninteractive flathub org.gnome.Platform//48
+          flatpak install -y --noninteractive flathub org.gnome.Sdk//48
       
       - name: Validate manifest JSON
         run: |

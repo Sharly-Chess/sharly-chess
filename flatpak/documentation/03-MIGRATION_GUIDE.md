@@ -118,10 +118,10 @@ flatpak remote-list
 
 ```bash
 # Runtime GNOME Platform (base du système)
-flatpak install -y flathub org.gnome.Platform//45
+flatpak install -y flathub org.gnome.Platform//48
 
 # SDK GNOME (pour la compilation)
-flatpak install -y flathub org.gnome.Sdk//45
+flatpak install -y flathub org.gnome.Sdk//48
 
 # Vérifier
 flatpak list --runtimes
@@ -129,8 +129,8 @@ flatpak list --runtimes
 
 **Output attendu**:
 ```
-org.gnome.Platform/x86_64/45              45      system
-org.gnome.Sdk/x86_64/45                   45      system
+org.gnome.Platform/x86_64/48              48      system
+org.gnome.Sdk/x86_64/48                   48      system
 ```
 
 ### Étape 4: Cloner et explorer le repository

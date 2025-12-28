@@ -13,7 +13,7 @@ sudo apt-get install flatpak flatpak-builder
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # Install GNOME runtime
-flatpak install flathub org.gnome.Platform//45 org.gnome.Sdk//45
+flatpak install flathub org.gnome.Platform//48 org.gnome.Sdk//48
 ```
 
 ### Build Locally (5-30 minutes)
