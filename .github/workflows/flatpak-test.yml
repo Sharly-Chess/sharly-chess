@@ -43,24 +43,30 @@ jobs:
             meson \
             pkg-config \
             build-essential
-          # Override the pkg-config metadata so pygobject sees a new-enough girepository
-          # Ubuntu 24.04 ships with gobject-introspection 1.80.1 which corresponds to GLib 2.80.0
-          # but the .pc file might still be named gobject-introspection-1.0 or have version 1.80.1.
-          # PyGObject 3.48+ looks for girepository-2.0 >= 2.80.0.
-          # We create a shim that points to the existing libs but reports version 2.80.0.
+          
+          # Create a shim for girepository-2.0 that reports version 2.80.0
+          # but points to the actual system libraries (which are 1.80.1).
+          # We use pkg-config to get the real flags.
+          
+          REAL_CFLAGS=$(pkg-config --cflags girepository-2.0)
+          REAL_LIBS=$(pkg-config --libs girepository-2.0)
+          
+          echo "Real CFLAGS: $REAL_CFLAGS"
+          echo "Real LIBS: $REAL_LIBS"
+          
           sudo mkdir -p /usr/local/lib/pkgconfig
           cat <<EOF | sudo tee /usr/local/lib/pkgconfig/girepository-2.0.pc >/dev/null
-          prefix=/usr
-          libdir=/usr/lib/x86_64-linux-gnu
-          includedir=/usr/include/gobject-introspection-1.0
-
-          Name: GObject Introspection Repository
-          Description: GObject Introspection repository library
+          Name: girepository-2.0
+          Description: Shim for girepository-2.0
           Version: 2.80.0
-          Requires: gobject-introspection-1.0
-          Libs: -L\${libdir} -lgirepository-1.0 -lgobject-2.0 -lglib-2.0
-          Cflags: -I\${includedir} -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/glib-2.0
+          Cflags: $REAL_CFLAGS
+          Libs: $REAL_LIBS
           EOF
+          
+          # Verify the shim
+          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
+          pkg-config --modversion girepository-2.0
+          pkg-config --cflags girepository-2.0
 
       - name: Install GNOME runtimes (48)
         env:
@@ -95,6 +101,7 @@ jobs:
             --repo=flatpak-repo \
             --force-clean \
             --verbose \
+            --share=network \
             build-flatpak \
             flatpak/configuration/com.sharlychess.SharlyChess.json 2>&1 | tee build.log
 

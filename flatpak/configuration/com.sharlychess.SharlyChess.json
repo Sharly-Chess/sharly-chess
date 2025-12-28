@@ -76,7 +76,7 @@
       "name": "python-dependencies",
       "buildsystem": "simple",
       "build-commands": [
-        "pip3 install --prefix=/app --no-index --find-links . -r requirements-flatpak.txt 2>&1 | tee pip-install.log",
+        "pip3 install --prefix=/app -r requirements-flatpak.txt 2>&1 | tee pip-install.log",
         "echo 'Pip dependencies installed successfully' > /app/share/sharly-chess/pip-install.log",
         "cp /app/share/sharly-chess/pip-install.log /app/lib/pip-install.log || true"
       ],
