@@ -144,18 +144,15 @@ requirements-flatpak.txt                   # ⭐ Dépendances Python
 
 ### 4. CI/CD GitHub Actions
 
-#### `flatpak/ci-cd/flatpak-build.yml`
+#### `.github/workflows/linux-flatpak.yml`
 - **Rôle**: Workflow automatisé GitHub Actions
 - **Jobs**:
-  1. **validate**: Validation manifest + tests
-  2. **build-test**: Test build (dry-run)
-  3. **security**: Vérifications sécurité
-  4. **documentation**: Vérification fichiers
-  5. **report**: Génération rapport
-- **Taille**: ~6 KB
-- **Déclenchement**: Push, PR, manuel
-- **Durée**: ~5-10 minutes
-- **Output**: Statut build + commentaires PR
+  1. **flatpak**: Build complet + Tests fonctionnels
+- **Déclenchement**:
+  - Tags (`v*`)
+  - Manuel (`workflow_dispatch`)
+- **Durée**: ~10-15 minutes
+- **Output**: Artifact `.flatpak` prêt à l'emploi
 
 ---
 

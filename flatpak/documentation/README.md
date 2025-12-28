@@ -81,12 +81,17 @@ flatpak-builder --user --install build-flatpak \
 ```
 
 ### 2. CI/CD Automation (GitHub Actions)
-Every push to `main` or PR triggers:
+The workflow `.github/workflows/linux-flatpak.yml` handles the build process.
+
+**Triggers:**
+- 🏷️ **Tags**: Pushing a tag starting with `v` (e.g., `v3.4.3`)
+- 👆 **Manual**: "Run workflow" button in GitHub Actions tab
+
+**Actions:**
 - ✓ Manifest validation
-- ✓ Dependency checking
-- ✓ Security checks
-- ✓ AppData verification
-- ✓ Build dry-run
+- ✓ Full Flatpak build
+- ✓ Functional tests execution
+- ✓ Artifact generation (`.flatpak` bundle)
 
 ### 3. Release to Flathub
 ```bash
