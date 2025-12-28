@@ -110,9 +110,9 @@ Contrairement à une installation classique, Flatpak isole l'application (sandbo
 
 | Type de Données | Emplacement sur votre disque |
 |----------------|------------------------------|
-| **Bases de données** | `~/.var/app/com.sharlychess.SharlyChess/data/sharly-chess/databases/` |
-| **Logs** | `~/.var/app/com.sharlychess.SharlyChess/data/sharly-chess/logs/` |
-| **Configuration** | `~/.var/app/com.sharlychess.SharlyChess/config/sharly-chess/` |
+| **Tournois (.sce)** | `~/.var/app/com.sharlychess.SharlyChess/data/events/` |
+| **Logs** | `~/.var/app/com.sharlychess.SharlyChess/data/logs/` |
+| **Configuration (.scc)** | `~/.var/app/com.sharlychess.SharlyChess/data/events/.scc` |
 
 *(Le symbole `~` représente votre dossier personnel `/home/votre_nom`)*
 
