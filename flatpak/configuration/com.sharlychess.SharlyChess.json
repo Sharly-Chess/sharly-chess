@@ -81,7 +81,8 @@
         ]
       },
       "build-commands": [
-        "pip3 install --prefix=/app -r requirements-flatpak.txt 2>&1 | tee pip-install.log",
+        "pip3 install --prefix=/app --ignore-installed -r requirements-flatpak.txt 2>&1 | tee pip-install.log",
+        "mkdir -p /app/share/sharly-chess",
         "echo 'Pip dependencies installed successfully' > /app/share/sharly-chess/pip-install.log",
         "cp /app/share/sharly-chess/pip-install.log /app/lib/pip-install.log || true"
       ],
