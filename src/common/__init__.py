@@ -131,7 +131,7 @@ if DEVEL_ENV:
     import tomllib
     from contextlib import suppress
 
-    with suppress(KeyError):
+    with suppress(KeyError, FileNotFoundError):
         with open(BASE_DIR / 'pyproject.toml', 'rb') as f:
             version = tomllib.load(f)['project']['version']
         if Version(version) != SHARLY_CHESS_VERSION:
