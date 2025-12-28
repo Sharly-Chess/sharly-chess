@@ -5,17 +5,17 @@
 # Web Framework & ASGI Server
 litestar==2.16.0
 uvicorn==0.34.0
-python-multipart==0.0.6
+python-multipart==0.0.12
 
 # GUI Framework (GTK-based)
 toga==0.5.2
 toga-gtk==0.5.2
 
 # Database
-aiosqlite==0.20.0
+aiosqlite==0.21.0
 
 # Templating
-Jinja2==3.1.2
+Jinja2==3.1.5
 MarkupSafe==2.1.5
 
 # QR Code Generation
@@ -23,7 +23,7 @@ qrcode==8.0
 pillow==11.0.0
 
 # Cryptography & Security
-cryptography==42.0.5
+cryptography==44.0.0
 PyJWT==2.10.1
 python-jose==3.3.0
 bcrypt==4.1.1
@@ -35,7 +35,7 @@ pytz==2024.1
 
 # HTTP Client
 aiohttp==3.9.3
-requests==2.31.0
+requests==2.32.3
 
 # Utilities
 click==8.1.7
