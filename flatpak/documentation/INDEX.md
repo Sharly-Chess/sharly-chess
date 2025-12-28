@@ -39,6 +39,7 @@ flatpak/                                    # Dossier principal Flatpak
     ├── 04-FLATPAK_PERMISSIONS.md           # ⭐ NOUVEAU - Permissions expliquées
     ├── 05-NETWORK_CONFIGURATION.md         # ⭐ NOUVEAU - Configuration réseau
     ├── 06-FILE_STORAGE.md                  # ⭐ NOUVEAU - Stockage fichiers
+    ├── FLATPAK_USER_GUIDE.md               # ⭐ NOUVEAU - Guide Utilisateur Final
     ├── CRITICAL_3_REQUIREMENTS.md          # ⭐ NOUVEAU - 3 points essentiels
     ├── CORRECTIONS_SUMMARY.md              # ⭐ NOUVEAU - Synthèse corrections
     └── (autres guides à venir)
