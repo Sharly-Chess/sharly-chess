@@ -33,7 +33,7 @@ Sharly Chess est une application web avec les exigences suivantes :
 ```
 
 **Pourquoi** : L'application a besoin de :
-- Créer des répertoires de travail (~/.local/share/sharly-chess/)
+- Créer des répertoires de travail (~/.var/app/com.sharlychess.SharlyChess/data/)
 - Stocker les bases de données SQLite (persistance)
 - Lire/écrire des fichiers de configuration
 - Générer des rapports

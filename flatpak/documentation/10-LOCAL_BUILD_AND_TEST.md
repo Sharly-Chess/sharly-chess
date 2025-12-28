@@ -183,7 +183,7 @@ Tests the 3 critical points:
 
 2. **Point 2: File Storage (R/W)**
    - Verifies `--filesystem=home:rw` permission
-   - Can create files in `~/.local/share/sharlychess/`
+   - Can create files in `~/.var/app/com.sharlychess.SharlyChess/data/`
    - Database persistence works
 
 3. **Point 3: Internet Dependencies**

@@ -41,7 +41,7 @@ HOST = "0.0.0.0"  # Écoute sur toutes les interfaces
 ### Modificable via Variable d'Environnement
 ```bash
 # Dans le launcher Flatpak
-SHARLY_CHESS_PORT=9000
+SHARLY_CHESS_PORT=8000
 SHARLY_CHESS_HOST=localhost
 ```
 
@@ -73,10 +73,10 @@ Accès seulement depuis la machine locale.
 
 ### Port Personnalisé
 ```bash
-flatpak run --env=SHARLY_CHESS_PORT=9000 com.sharlychess.SharlyChess
+flatpak run --env=SHARLY_CHESS_PORT=8000 com.sharlychess.SharlyChess
 ```
 
-Accès via : http://localhost:9000
+Accès via : http://localhost:8000
 
 ## 🔒 Considérations de Sécurité
 
@@ -276,7 +276,7 @@ Permission requise : `--share=network` ✅
 lsof -i :8000
 
 # Utiliser un autre port
-flatpak run --env=SHARLY_CHESS_PORT=9000 com.sharlychess.SharlyChess
+flatpak run --env=SHARLY_CHESS_PORT=8001 com.sharlychess.SharlyChess
 ```
 
 ### Connection refused

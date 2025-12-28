@@ -8,22 +8,14 @@ on:
 
 jobs:
   flatpak:
-    name: Build & Test Flatpak (${{ matrix.arch }})
+    name: Build & Test Flatpak
     runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        arch: [x86_64, aarch64]
-      fail-fast: false
     env:
       PKG_CONFIG_PATH: /usr/local/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
       LD_LIBRARY_PATH: /usr/lib/x86_64-linux-gnu
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        if: matrix.arch == 'aarch64'
-        uses: docker/setup-qemu-action@v3
 
       - name: Set up environment variables
         run: |
@@ -54,8 +46,8 @@ jobs:
         run: |
           mkdir -p "$FLATPAK_USER_DIR" "$XDG_RUNTIME_DIR"
           flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak --user install -y --noninteractive --arch=${{ matrix.arch }} flathub org.gnome.Platform//49
-          flatpak --user install -y --noninteractive --arch=${{ matrix.arch }} flathub org.gnome.Sdk//49
+          flatpak --user install -y --noninteractive flathub org.gnome.Platform//49
+          flatpak --user install -y --noninteractive flathub org.gnome.Sdk//49
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -99,7 +91,6 @@ jobs:
         run: |
           set -o pipefail
           flatpak-builder \
-            --arch=${{ matrix.arch }} \
             --repo=flatpak-repo \
             --force-clean \
             --verbose \
@@ -109,7 +100,6 @@ jobs:
       - name: Create Flatpak bundle
         run: |
           flatpak build-bundle \
-            --arch=${{ matrix.arch }} \
             flatpak-repo \
             com.sharlychess.SharlyChess.flatpak \
             com.sharlychess.SharlyChess
@@ -118,7 +108,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: flatpak-build-log-${{ matrix.arch }}
+          name: flatpak-build-log
           path: build.log
           retention-days: 7
 
@@ -126,6 +116,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: com.sharlychess.SharlyChess-${{ matrix.arch }}
+          name: com.sharlychess.SharlyChess
           path: com.sharlychess.SharlyChess.flatpak
           retention-days: 7

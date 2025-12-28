@@ -496,7 +496,7 @@ flatpak run --devel com.sharlychess.SharlyChess 2>&1 | head -50
 
 ```bash
 # Vérifier les répertoires XDG
-ls -la ~/.local/share/sharly-chess/
+ls -la ~/.var/app/com.sharlychess.SharlyChess/data/
 ls -la ~/.config/sharly-chess/
 
 # Vérifier les permissions Flatpak

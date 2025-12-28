@@ -150,9 +150,9 @@ Sharly Chess requires specific Flatpak permissions to function properly:
    - Download Python dependencies during build
 
 2. **`--filesystem=home:rw`** enables Sharly Chess to:
-   - Create/read/write databases (~/.local/share/sharly-chess/)
-   - Store configuration (~/.config/sharly-chess/)
-   - Generate reports and exports
+   - Import/Export files from user's home (Documents, Downloads)
+   - Access user provided files
+   - (Internal data is stored in `~/.var/app/...` which is writable by default)
 
 3. **Internet Access** is required for:
    - Building (pip install packages in sandbox)
@@ -188,12 +188,13 @@ See **05-NETWORK_CONFIGURATION.md** for production setup and security.
 
 ## 💾 File Storage & Persistence
 
-Sharly Chess stores data in standard XDG directories:
+Sharly Chess stores data in the application's private data directory:
 
 ```
-~/.local/share/sharly-chess/   # Application data (databases, logs, reports)
-~/.config/sharly-chess/         # Configuration files
-~/.cache/sharly-chess/          # Temporary cache
+~/.var/app/com.sharlychess.SharlyChess/data/
+├── events/              # Configuration (.scc) and Tournaments (.sce)
+├── logs/                # Application logs
+└── tmp/                 # Temporary files
 ```
 
 **Data persists across:**
@@ -205,8 +206,7 @@ Sharly Chess stores data in standard XDG directories:
 ```bash
 # Manual backup
 tar -czf sharly-chess-backup.tar.gz \
-  ~/.local/share/sharly-chess/ \
-  ~/.config/sharly-chess/
+  ~/.var/app/com.sharlychess.SharlyChess/data/
 ```
 
 See **06-FILE_STORAGE.md** for storage architecture and backup procedures.
@@ -289,10 +289,10 @@ flatpak info com.sharlychess.SharlyChess | grep Permissions
 ls -la ~/.local/share/sharly-chess/
 ```
 
-### Port 9000 already in use
+### Port 8000 already in use
 ```bash
 # Find process using port
-lsof -i :9000
+lsof -i :8000
 
 # Kill if needed or use different port
 ```

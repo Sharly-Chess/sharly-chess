@@ -231,8 +231,8 @@ curl http://localhost:8000/api/health
 ### 3. Données Persistantes
 ```bash
 # Vérifier création de fichiers
-ls ~/.local/share/sharly-chess/databases/
-ls ~/.config/sharly-chess/
+ls ~/.var/app/com.sharlychess.SharlyChess/data/events/
+ls ~/.var/app/com.sharlychess.SharlyChess/data/logs/
 
 # Arrêter l'app (Ctrl+C)
 # Relancer l'app
@@ -266,10 +266,10 @@ flatpak run com.sharlychess.SharlyChess 2>&1 | grep -i "error\|listening"
 
 ### Erreur 3: "Permission denied" (filesystem)
 ```
-ERROR: Cannot create ~/.local/share/sharly-chess/
+ERROR: Cannot create events/
 ```
-**Cause** : `--filesystem=home:rw` manquant
-**Solution** : Vérifier le manifest
+**Cause** : Problème de permissions dans `~/.var/app/...`
+**Solution** : Vérifier les permissions du dossier data
 
 ### Erreur 4: "pip: command not found" (internet)
 ```
