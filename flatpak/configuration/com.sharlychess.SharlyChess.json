@@ -1,11 +1,10 @@
 {
   "app-id": "com.sharlychess.SharlyChess",
   "runtime": "org.gnome.Platform",
-  "runtime-version": "45",
+  "runtime-version": "48",
   "sdk": "org.gnome.Sdk",
   "sdk-extensions": [
-    "org.gnome.Sdk.Locale",
-    "org.freedesktop.Sdk.Extension.python313"
+    "org.gnome.Sdk.Locale"
   ],
   "command": "sharly-chess-launcher",
   "separate-locales": false,
@@ -17,7 +16,7 @@
     "--filesystem=home:rw",
     "--device=dri",
     "--env=PYTHONUNBUFFERED=1",
-    "--env=PYTHONPATH=/app/lib/python3.13/site-packages"
+    "--env=PYTHONPATH=/app/lib/python3.12/site-packages"
   ],
   "cleanup": [
     "/include",

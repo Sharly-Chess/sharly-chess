@@ -19,7 +19,7 @@ jobs:
     name: Build & Test Flatpak
     runs-on: ubuntu-24.04
     env:
-      PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
+      PKG_CONFIG_PATH: /usr/local/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
       LD_LIBRARY_PATH: /usr/lib/x86_64-linux-gnu
     steps:
       - name: Checkout
@@ -43,22 +43,21 @@ jobs:
             meson \
             pkg-config \
             build-essential
-          # Ensure girepository-2.0.pc exists (Ubuntu only ships gobject-introspection-1.0.pc)
-          if ! pkg-config --exists girepository-2.0; then
-            version=$(pkg-config --modversion gobject-introspection-1.0 2>/dev/null || echo 2.80.0)
-            printf '%s\n' \
-              "prefix=/usr" \
-              "libdir=/usr/lib/x86_64-linux-gnu" \
-              "includedir=/usr/include/gobject-introspection-1.0" \
-              "" \
-              "Name: girepository-2.0" \
-              "Description: GObject Introspection repository library" \
-              "Version: ${version}" \
-              "Requires: gobject-introspection-1.0" \
-              "Libs: -L/usr/lib/x86_64-linux-gnu -lgirepository-1.0" \
-              "Cflags: -I/usr/include/gobject-introspection-1.0" \
-              | sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc >/dev/null
-          fi
+          # Override the pkg-config metadata so pygobject sees a new-enough girepository
+          version=$(pkg-config --modversion gobject-introspection-1.0 2>/dev/null || echo 2.80.0)
+          sudo mkdir -p /usr/local/lib/pkgconfig
+          cat <<EOF | sudo tee /usr/local/lib/pkgconfig/girepository-2.0.pc >/dev/null
+          prefix=/usr
+          libdir=/usr/lib/x86_64-linux-gnu
+          includedir=/usr/include/gobject-introspection-1.0
+
+          Name: GObject Introspection Repository
+          Description: GObject Introspection repository library
+          Version: ${version}
+          Requires: gobject-introspection-1.0
+          Libs: -L${libdir} -lgirepository-1.0 -lgobject-2.0 -lglib-2.0
+          Cflags: -I${includedir} -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/glib-2.0
+          EOF
 
       - name: Install GNOME runtimes (48)
         env:
@@ -76,8 +75,6 @@ jobs:
           python-version: '3.12'
 
       - name: Install Python dependencies
-        env:
-          PKG_CONFIG_PATH: /usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig:${{ env.PKG_CONFIG_PATH }}
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements-flatpak.txt
