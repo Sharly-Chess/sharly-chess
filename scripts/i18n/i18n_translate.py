@@ -227,13 +227,13 @@ class I18nTranslator:
             )
         else:
             # Tokens have changed, delete the translation.
-            print_interactive_error(
-                f'{percent}% The tokens have changed (the translation is deleted):'
+            print_interactive_warning(
+                f'{percent}% The tokens have changed (the translation should be manually updated):'
             )
-            print_interactive_error(
+            print_interactive_warning(
                 f'{percent}% {string} >>> {translated_string_with_tokens}'
             )
-            translated_string_with_tokens = ''
+            # translated_string_with_tokens = ''
         return translated_string_with_tokens
 
     @staticmethod
