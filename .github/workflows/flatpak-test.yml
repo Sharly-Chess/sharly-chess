@@ -21,6 +21,8 @@ jobs:
     env:
       PKG_CONFIG_PATH: /usr/local/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig
       LD_LIBRARY_PATH: /usr/lib/x86_64-linux-gnu
+      FLATPAK_USER_DIR: ${{ github.workspace }}/.flatpak
+      XDG_RUNTIME_DIR: ${{ runner.temp }}/flatpak-runtime
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -46,9 +48,6 @@ jobs:
             build-essential
 
       - name: Install GNOME runtimes (48)
-        env:
-          FLATPAK_USER_DIR: ${{ github.workspace }}/.flatpak
-          XDG_RUNTIME_DIR: ${{ runner.temp }}/flatpak-runtime
         run: |
           mkdir -p "$FLATPAK_USER_DIR" "$XDG_RUNTIME_DIR"
           flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
