@@ -3,9 +3,12 @@ name: Flatpak Build & Test
 on:
   push:
     branches: [main, develop, dev]
+    tags:
+      - 'v*'
     paths:
       - flatpak/**
       - requirements-flatpak.txt
+      - pyproject.toml
       - src/**
       - .github/workflows/flatpak-test.yml
   pull_request:
@@ -13,6 +16,7 @@ on:
     paths:
       - flatpak/**
       - requirements-flatpak.txt
+      - pyproject.toml
       - src/**
   workflow_dispatch:
 
