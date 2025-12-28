@@ -29,8 +29,8 @@ python-jose==3.3.0
 bcrypt==4.1.1
 
 # Data Processing
-pydantic==2.10.4
-pydantic-settings==2.7.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
 pytz==2024.1
 
 # HTTP Client
