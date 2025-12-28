@@ -204,7 +204,7 @@ FLATPAK_DEBUG_PATH=/tmp/debug flatpak run --devel com.sharlychess.SharlyChess
 
 **Vérifications**:
 - [ ] Interface GUI apparaît
-- [ ] Web server démarre (port 9000 accessible)
+- [ ] Web server démarre (port 8000 accessible)
 - [ ] Pas d'erreurs Python
 
 ### Troubleshooting Build
@@ -482,11 +482,11 @@ flatpak info --show=Permissions com.sharlychess.SharlyChess
 ### "Web server not starting"
 
 ```bash
-# Vérifier que le port 9000 est disponible
-netstat -tulpn | grep 9000
+# Vérifier que le port 8000 est disponible
+netstat -tulpn | grep 8000
 
 # Si occupé, trouver le processus
-lsof -i :9000
+lsof -i :8000
 
 # Vérifier les logs
 flatpak run --devel com.sharlychess.SharlyChess 2>&1 | head -50
