@@ -40,6 +40,7 @@ flatpak/                                    # Dossier principal Flatpak
     ├── 05-NETWORK_CONFIGURATION.md         # ⭐ NOUVEAU - Configuration réseau
     ├── 06-FILE_STORAGE.md                  # ⭐ NOUVEAU - Stockage fichiers
     ├── FLATPAK_USER_GUIDE.md               # ⭐ NOUVEAU - Guide Utilisateur Final
+    ├── FLATHUB_PUBLISHING.md               # ⭐ NOUVEAU - Guide Publication Flathub
     ├── CRITICAL_3_REQUIREMENTS.md          # ⭐ NOUVEAU - 3 points essentiels
     ├── CORRECTIONS_SUMMARY.md              # ⭐ NOUVEAU - Synthèse corrections
     └── (autres guides à venir)
