@@ -48,15 +48,15 @@ jobs:
             version=2.80.0
             printf '%s\n' \
               "prefix=/usr" \
-              "libdir=\\${prefix}/lib/x86_64-linux-gnu" \
-              "includedir=\\${prefix}/include/gobject-introspection-1.0" \
+              "libdir=${prefix}/lib/x86_64-linux-gnu" \
+              "includedir=${prefix}/include/gobject-introspection-1.0" \
               "" \
               "Name: girepository-2.0" \
               "Description: GObject Introspection repository library" \
               "Version: ${version}" \
               "Requires: gobject-2.0" \
-              "Libs: -L\\${libdir} -lgirepository-1.0" \
-              "Cflags: -I\\${includedir}" \
+              "Libs: -L${libdir} -lgirepository-1.0" \
+              "Cflags: -I${includedir}" \
               | sudo tee /usr/lib/x86_64-linux-gnu/pkgconfig/girepository-2.0.pc >/dev/null
           fi
 
