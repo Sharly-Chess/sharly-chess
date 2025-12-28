@@ -34,6 +34,7 @@ jobs:
             appstream-util \
             libcairo2-dev \
             libgirepository1.0-dev \
+            libgirepository-2.0-dev \
             gir1.2-gtk-3.0 \
             libgtk-3-dev \
             gobject-introspection \
@@ -43,30 +44,6 @@ jobs:
             meson \
             pkg-config \
             build-essential
-          
-          # Create a shim for girepository-2.0 that reports version 2.80.0
-          # but points to the actual system libraries (which are 1.80.1).
-          # We use pkg-config to get the real flags.
-          
-          REAL_CFLAGS=$(pkg-config --cflags girepository-2.0)
-          REAL_LIBS=$(pkg-config --libs girepository-2.0)
-          
-          echo "Real CFLAGS: $REAL_CFLAGS"
-          echo "Real LIBS: $REAL_LIBS"
-          
-          sudo mkdir -p /usr/local/lib/pkgconfig
-          cat <<EOF | sudo tee /usr/local/lib/pkgconfig/girepository-2.0.pc >/dev/null
-          Name: girepository-2.0
-          Description: Shim for girepository-2.0
-          Version: 2.80.0
-          Cflags: $REAL_CFLAGS
-          Libs: $REAL_LIBS
-          EOF
-          
-          # Verify the shim
-          export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
-          pkg-config --modversion girepository-2.0
-          pkg-config --cflags girepository-2.0
 
       - name: Install GNOME runtimes (48)
         env:
