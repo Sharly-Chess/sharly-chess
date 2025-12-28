@@ -54,6 +54,19 @@ def verify_dependencies():
     ]
     
     missing = []
+    
+    # Debug multipart specifically
+    try:
+        import multipart
+        logger.info(f'multipart module found: {multipart.__file__}')
+        try:
+            from multipart import MultipartSegment
+            logger.info('✓ MultipartSegment importable from multipart')
+        except ImportError:
+            logger.error('✗ MultipartSegment NOT importable from multipart (Wrong package installed?)')
+    except ImportError:
+        logger.warning('multipart module not found')
+
     for module in required_modules:
         try:
             __import__(module)
