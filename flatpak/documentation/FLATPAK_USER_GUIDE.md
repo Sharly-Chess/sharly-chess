@@ -51,8 +51,10 @@ Bien que Sharly Chess soit distribué indépendamment, il dépend de la platefor
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 ```
 
-### 2. Installer l'environnement d'exécution (Recommandé)
-Pour éviter tout problème de dépendance manquante lors de l'installation du paquet local, il est fortement recommandé d'installer explicitement la plateforme GNOME 49 au préalable :
+### 2. Télécharger la dépendance GNOME 49 depuis Flathub
+Sharly Chess nécessite l'environnement d'exécution **GNOME 49**. Si vous installez l'application depuis un fichier local, Flatpak peut ne pas le télécharger automatiquement.
+
+Il est donc recommandé de le télécharger et l'installer manuellement depuis Flathub avec cette commande :
 
 ```bash
 flatpak install flathub org.gnome.Platform//49
