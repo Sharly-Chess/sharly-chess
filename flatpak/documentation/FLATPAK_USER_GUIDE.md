@@ -51,7 +51,14 @@ Bien que Sharly Chess soit distribué indépendamment, il dépend de la platefor
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 ```
 
-### 2. Télécharger et Installer Sharly Chess
+### 2. Installer l'environnement d'exécution (Recommandé)
+Pour éviter tout problème de dépendance manquante lors de l'installation du paquet local, il est fortement recommandé d'installer explicitement la plateforme GNOME 49 au préalable :
+
+```bash
+flatpak install flathub org.gnome.Platform//49
+```
+
+### 3. Télécharger et Installer Sharly Chess
 
 Le paquet d'installation est disponible sur le site officiel.
 
@@ -67,7 +74,7 @@ Le paquet d'installation est disponible sur le site officiel.
     ```bash
     flatpak install --user sharly-chess.flatpak
     ```
-    *Note : Flatpak vous demandera peut-être d'installer le runtime `org.gnome.Platform//49`. Acceptez en appuyant sur `Y`.*
+    *Note : Si l'étape 2 a été ignorée, Flatpak devrait vous proposer d'installer `org.gnome.Platform//49`. Acceptez avec `Y`.*
 
 ---
 
