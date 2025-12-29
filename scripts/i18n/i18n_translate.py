@@ -221,7 +221,7 @@ class I18nTranslator:
             ):  # Looking for %(name)s or %(name)d
                 token = match.group()
             if token:
-                string = string.replace(token, f'←{len(tokens)}→', 1)
+                string = string.replace(token, f'({len(tokens)})', 1)
                 tokens.append(token)
             else:
                 break
@@ -230,7 +230,7 @@ class I18nTranslator:
     @staticmethod
     def inject_tokens(string: str, tokens: list[str]) -> str:
         for i in range(len(tokens)):
-            string = string.replace(f'←{i}→', tokens[i], 1)
+            string = string.replace(f'({i})', tokens[i], 1)
         return string
 
     def translate_string(
