@@ -269,10 +269,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             ):
                 default_print_document = PlayerRankingPrintDocument.static_id()
 
-        tournament_ids = [
-            tournament.id
-            for tournament in self.get_admin_event().tournaments_sorted_by_index
-        ]
+        tournament_ids = [tournament.id for tournament in self.allowed_tournaments]
         current_index = (
             tournament_ids.index(self.admin_tournament.id)
             if self.admin_tournament
