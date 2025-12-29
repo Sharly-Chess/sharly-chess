@@ -1,3 +1,4 @@
+import argparse
 import re
 from logging import Logger, DEBUG
 from pathlib import Path
@@ -31,17 +32,34 @@ class I18nTranslator:
         self,
         target_locale: str,
     ):
+        self.target_locale = target_locale
+        self._model: MarianMTModel | None = None
+        self._tokenizer: MarianTokenizer | None = None
+
+    @property
+    def model(self) -> MarianMTModel:
+        assert self._model is not None
+        return self._model
+
+    @property
+    def tokenizer(self) -> MarianTokenizer:
+        assert self._tokenizer is not None
+        return self._tokenizer
+
+    def run(
+        self,
+    ):
+        domain_messages_to_translate: dict[str, list[Message]] = {}
         for domain in Domain.get_domains():
-            locale_dir: Path = domain.locale_dir
             pot_file: Path = domain.pot_file
-            po_file: Path = domain.locale_po_file(target_locale)
+            po_file: Path = domain.locale_po_file(self.target_locale)
             if not po_file.is_file():
                 print_interactive_info(f'Creating [{po_file}] from [{pot_file}]...')
                 po_file.parent.mkdir(parents=True, exist_ok=True)
                 BabelDomainWrapper.run_babel_command(
                     'init',
                     [
-                        f'--locale={target_locale}',
+                        f'--locale={self.target_locale}',
                         f'--input-file={pot_file}',
                         f'--output-file={po_file}',
                     ],
@@ -51,8 +69,8 @@ class I18nTranslator:
             BabelDomainWrapper.run_babel_command(
                 'update',
                 [
-                    f'--locale={target_locale}',
-                    f'--output-dir={locale_dir}',
+                    f'--locale={self.target_locale}',
+                    f'--output-dir={domain.locale_dir}',
                     f'--input-file={pot_file}',
                     f'--output-file={po_file}',
                     '--no-fuzzy-matching',
@@ -78,87 +96,106 @@ class I18nTranslator:
                     if translate:
                         messages_to_translate.append(message)
             if not messages_to_translate:
-                print_interactive_info('No translation needed, exiting.')
-                return
+                print_interactive_info(
+                    f'No translation needed for domain [{domain.name}].'
+                )
+                continue
+            domain_messages_to_translate[domain.name] = messages_to_translate
             print_interactive_success(
-                f'{len(messages_to_translate)} messages to translate.'
+                f'{len(messages_to_translate)} messages to translate for domain [{domain.name}].'
             )
-            model_name: str
-            if target_locale == 'pt':
-                model_name = (
-                    f'Helsinki-NLP/opus-mt-tc-big-{DEFAULT_LOCALE}-{target_locale}'
+        if not domain_messages_to_translate:
+            print_interactive_info('No translation needed, exiting.')
+            return
+        print_interactive_success(
+            f'{sum(len(messages_to_translate) for messages_to_translate in domain_messages_to_translate.values())} messages to translate.'
+        )
+        if not self.init_tools():
+            return
+        for domain in Domain.get_domains():
+            if domain.name in domain_messages_to_translate:
+                po_file: Path = domain.locale_po_file(self.target_locale)
+                print_interactive_success(
+                    f'Adding missing translations to [{po_file}]...'
                 )
-            else:
-                model_name = f'Helsinki-NLP/opus-mt-{DEFAULT_LOCALE}-{target_locale}'
-            print_interactive_info(
-                f'Looking for the translator from [{DEFAULT_LOCALE}] to {target_locale} (model: {model_name})...'
-            )
-            model_dir: Path = Path() / 'scripts' / 'i18n' / 'models' / model_name
-            for filename in [
-                'pytorch_model.bin',
-                'config.json',
-                'source.spm',
-                'target.spm',
-                'tokenizer_config.json',
-                'vocab.json',
-            ]:
-                if (model_dir / filename).is_file():
-                    print_interactive_success(
-                        f'{filename} found in directory {model_dir}.'
+                error: bool = False
+                i: int = 0
+                for message in domain_messages_to_translate[domain.name]:
+                    i += 1
+                    percent = int(
+                        100 * i / len(domain_messages_to_translate[domain.name])
                     )
-                    continue
-                model_dir.mkdir(parents=True, exist_ok=True)
-                url: str = (
-                    f'{hf_hub_url(repo_id=model_name, filename=filename)}?download=true'
+                    if not self.translate_message(message, percent):
+                        error = True
+                with open(po_file, 'wb') as f:
+                    write_po(f, catalog, width=0, omit_header=True)
+                print_interactive_success(f'Wrote {po_file}.')
+                if error:
+                    print_interactive_warning(f'Errors found, please check {po_file}.')
+                mo_file: Path = po_file.with_suffix('.mo')
+                print_interactive_success(f'Compiling [{po_file}] to [{mo_file}]...')
+                BabelDomainWrapper.run_babel_command(
+                    'compile',
+                    [
+                        f'--domain={domain.name}',
+                        f'--directory={domain.locale_dir}',
+                        f'--locale={self.target_locale}',
+                    ],
+                    verbose=True,
                 )
-                print_interactive_info(f'Downloading {url}...')
-                r = requests.get(url, stream=True)
-                if not r.ok:
-                    print_interactive_error(
-                        f'Download failed with status code {r.status_code}: {r.text}, exiting.'
-                    )
-                    return
-                output: Path = model_dir / filename
-                with open(output, 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=1024 * 8):
-                        if chunk:
-                            f.write(chunk)
-                            f.flush()
-                print_interactive_info(f'Saved file {output}.')
-            print_interactive_success(f'Model {model_name} OK.')
-            print_interactive_info('Loading model from pretrained dataset...')
-            self.model: MarianMTModel = MarianMTModel.from_pretrained(
-                model_name, ignore_mismatched_sizes=True
+                print_interactive_success(f'Written [{mo_file}]...')
+
+    def init_tools(self) -> bool:
+        model_name: str
+        if self.target_locale == 'pt':
+            model_name = (
+                f'Helsinki-NLP/opus-mt-tc-big-{DEFAULT_LOCALE}-{self.target_locale}'
             )
-            print_interactive_success('Model loaded.')
-            print_interactive_info('Loading tokenizer...')
-            self.tokenizer: MarianTokenizer = AutoTokenizer.from_pretrained(model_name)
-            print_interactive_success('Tokenizer loaded...')
-            print_interactive_success(f'Adding missing translations to [{po_file}]...')
-            error: bool = False
-            i: int = 0
-            for message in messages_to_translate:
-                i += 1
-                percent = int(100 * i / len(messages_to_translate))
-                if not self.translate_message(message, percent):
-                    error = True
-            with open(po_file, 'wb') as f:
-                write_po(f, catalog, width=0, omit_header=True)
-            print_interactive_success(f'Wrote {po_file}.')
-            if error:
-                print_interactive_warning(f'Errors found, please check {po_file}.')
-            mo_file: Path = po_file.with_suffix('.mo')
-            print_interactive_success(f'Compiling [{po_file}] to [{mo_file}]...')
-            BabelDomainWrapper.run_babel_command(
-                'compile',
-                [
-                    f'--domain={domain.name}',
-                    f'--directory={locale_dir}',
-                    f'--locale={target_locale}',
-                ],
-                verbose=True,
+        else:
+            model_name = f'Helsinki-NLP/opus-mt-{DEFAULT_LOCALE}-{self.target_locale}'
+        print_interactive_info(
+            f'Looking for the translator from [{DEFAULT_LOCALE}] to {self.target_locale} (model: {model_name})...'
+        )
+        model_dir: Path = Path() / 'scripts' / 'i18n' / 'models' / model_name
+        for filename in [
+            'pytorch_model.bin',
+            'config.json',
+            'source.spm',
+            'target.spm',
+            'tokenizer_config.json',
+            'vocab.json',
+        ]:
+            if (model_dir / filename).is_file():
+                print_interactive_success(f'{filename} found in directory {model_dir}.')
+                continue
+            model_dir.mkdir(parents=True, exist_ok=True)
+            url: str = (
+                f'{hf_hub_url(repo_id=model_name, filename=filename)}?download=true'
             )
-            print_interactive_success(f'Written [{mo_file}]...')
+            print_interactive_info(f'Downloading {url}...')
+            r = requests.get(url, stream=True)
+            if not r.ok:
+                print_interactive_error(
+                    f'Download failed with status code {r.status_code}: {r.text}, exiting.'
+                )
+                return False
+            output: Path = model_dir / filename
+            with open(output, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=1024 * 8):
+                    if chunk:
+                        f.write(chunk)
+                        f.flush()
+            print_interactive_info(f'Saved file {output}.')
+        print_interactive_success(f'Model {model_name} OK.')
+        print_interactive_info('Loading model from pretrained dataset...')
+        self._model: MarianMTModel = MarianMTModel.from_pretrained(
+            model_name, ignore_mismatched_sizes=True
+        )
+        print_interactive_success('Model loaded.')
+        print_interactive_info('Loading tokenizer...')
+        self._tokenizer: MarianTokenizer = AutoTokenizer.from_pretrained(model_name)
+        print_interactive_success('Tokenizer loaded.')
+        return True
 
     @staticmethod
     def extract_tokens(string: str) -> tuple[str, list[str]]:
@@ -233,7 +270,6 @@ class I18nTranslator:
             print_interactive_warning(
                 f'{percent}% {string} >>> {translated_string_with_tokens}'
             )
-            # translated_string_with_tokens = ''
         return translated_string_with_tokens
 
     @staticmethod
@@ -275,4 +311,14 @@ class I18nTranslator:
 
 
 if __name__ == '__main__':
-    I18nTranslator('pt')
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-l',
+        '--locale',
+        type=str,
+        help='the locale to translate',
+        required=True,
+    )
+    args = parser.parse_args()
+
+    I18nTranslator(args.locale).run()
