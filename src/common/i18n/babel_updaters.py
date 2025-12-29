@@ -27,11 +27,12 @@ class BabelDomainUpdater(BabelDomainWrapper):
         default_locale: str,
     ):
         super().__init__(domain_id)
+        self.locales: list[str] = locales
         self.tmp_dir: Path = TMP_DIR / 'i18n' / self.name
         self.tmp_dir.mkdir(parents=True, exist_ok=True)
         self.domain_locale_infos: dict[str, DomainLocaleInfo] = {
             locale: DomainLocaleInfo(self.id, locale, default_locale)
-            for locale in locales
+            for locale in self.locales
         }
         self.translators: dict[str, list[Translator]] = Translator.get_translators(
             locales
@@ -43,6 +44,7 @@ class BabelDomainUpdater(BabelDomainWrapper):
         clean: bool,
     ):
         """Update all the files that need to updated (POT, PO, MO), and check the translations."""
+        logger.info('Domain [%s]: updating i18n strings...', self.name)
         if clean:
             self.pot_file.unlink(missing_ok=True)
             for domain_locale_info in self.domain_locale_infos.values():
@@ -183,7 +185,6 @@ class BabelDomainUpdater(BabelDomainWrapper):
                 logger.warning(
                     'Domain [%s]: translations are flagged for some locales.', self.name
                 )
-                ok = False
                 break
         if ok:
             logger.info('Domain [%s]: translations OK.', self.name)
@@ -305,15 +306,46 @@ class BabelDomainUpdater(BabelDomainWrapper):
         with open(self.po_for_mo_fingerprint_file(locale), 'wb') as f:
             return f.write(text_file_fingerprint(self.locale_po_file(locale)))
 
-    def markdown(self) -> str:
+    def markdown(
+        self,
+        flags: list[str],
+    ) -> str:
         """Returns the markdown associated to the plugin (or core)."""
+        return self.domain_or_total_markdown(
+            self,
+            flags,
+            {
+                locale: len(locale_info.messages)
+                for locale, locale_info in self.domain_locale_infos.items()
+            },
+            {
+                locale: len(locale_info.empty_optional_messages)
+                for locale, locale_info in self.domain_locale_infos.items()
+            },
+            {
+                locale: len(locale_info.empty_mandatory_messages)
+                for locale, locale_info in self.domain_locale_infos.items()
+            },
+            {
+                locale: {
+                    flag: len(locale_info.flagged_messages.get(flag, []))
+                    for flag in flags
+                }
+                for locale, locale_info in self.domain_locale_infos.items()
+            },
+        )
+
+    @staticmethod
+    def domain_or_total_markdown(
+        domain: Domain | None,
+        flags: list[str],
+        messages_len_by_locale: dict[str, int],
+        empty_optional_messages_len_by_locale: dict[str, int],
+        empty_mandatory_messages_len_by_locale: dict[str, int],
+        flagged_messages_len_by_locale: dict[str, dict[str, int]],
+    ) -> str:
+        """Returns the markdown associated to a domain (or all the domains if po_file is None)."""
         lines: list[str] = []
-        flags: set[str] = set()
-        for locale in self.domain_locale_infos:
-            for flag in sorted(
-                list(self.domain_locale_infos[locale].flagged_messages.keys())
-            ):
-                flags.add(flag)
         headers: list[str] = [
             'Locale',
             'Messages',
@@ -321,20 +353,38 @@ class BabelDomainUpdater(BabelDomainWrapper):
             'Empty mandatory',
         ]
         headers += [f'[{flag}]' for flag in flags]
-        headers += [
-            'PO file',
+        if domain:
+            headers += [
+                'PO file',
+            ]
+        lines.append('| ' + ' | '.join(headers) + ' |\n')
+        lines.append('|--' + ('|:--:' * (len(headers) - 1)) + '|\n')
+        for locale in messages_len_by_locale:
+            line: str = f'|<img src="../../src/web{locale_flag_url(locale)}" style="height: 1em;"/>&nbsp;``{locale}``&nbsp;{locale_localized_name(locale)} '
+            line += f'| {messages_len_by_locale[locale]} '
+            line += f'| {empty_optional_messages_len_by_locale[locale]} '
+            line += f'| {empty_mandatory_messages_len_by_locale[locale]} '
+            for flag in flags:
+                line += f'| {flagged_messages_len_by_locale[locale][flag]} '
+            if domain:
+                po_file: Path = domain.locale_po_file(locale)
+                line += f'| [{po_file.name}](../../{"/".join(d.name for d in reversed(po_file.relative_to(BASE_DIR).parents))}) '
+            line += '|\n'
+            lines.append(line)
+        lines.append('\n')
+        return ''.join(lines)
+
+    def translators_markdown(self) -> str:
+        """Returns the markdown associated to the plugin (or core)."""
+        lines: list[str] = []
+        headers: list[str] = [
+            'Locale',
             'Translators',
         ]
         lines.append('| ' + ' | '.join(headers) + ' |\n')
         lines.append('|--' + ('|:--:' * (len(headers) - 1)) + '|\n')
         for locale, locale_info in self.domain_locale_infos.items():
             line: str = f'|<img src="../../src/web{locale_flag_url(locale)}" style="height: 1em;"/>&nbsp;``{locale}``&nbsp;{locale_localized_name(locale)} '
-            line += f'| {len(locale_info.messages)} '
-            line += f'| {len(locale_info.empty_optional_messages)} '
-            line += f'| {len(locale_info.empty_mandatory_messages)} '
-            for flag in flags:
-                line += f'| {len(locale_info.flagged_messages.get(flag, []))} '
-            line += f'| [{locale_info.po_file.name}](../../{"/".join(d.name for d in reversed(locale_info.po_file.relative_to(BASE_DIR).parents))}) '
             translator_strings: list[str] = []
             for translator in self.translators[locale]:
                 if translator.github_user:
@@ -407,8 +457,9 @@ class BabelUpdater:
         locales: list[str],
         default_locale: str,
     ):
+        self.locales: list[str] = locales
         self.babel_domain_updaters: dict['Domain', BabelDomainUpdater] = {
-            domain: BabelDomainUpdater(domain.id, locales, default_locale)
+            domain: BabelDomainUpdater(domain.id, self.locales, default_locale)
             for domain in domains
         }
 
@@ -458,9 +509,79 @@ class BabelUpdater:
                     f'Could not edit [{doc_file}] (comment [{end_comment}] not found).'
                 )
                 return
+        flags: list[str] = list(
+            {
+                flag
+                for babel_domain_updater in self.babel_domain_updaters.values()
+                for locale, locale_info in babel_domain_updater.domain_locale_infos.items()
+                for flag in locale_info.flagged_messages
+            }
+        )
         new_content: str = ''.join(
             [
-                f'### {babel_domain_updater.name}\n\n{babel_domain_updater.markdown()}'
+                '## Translators\n\n',
+                list(self.babel_domain_updaters.values())[0].translators_markdown(),
+            ]
+            + [
+                '## Locales implemented and translation status\n\n',
+            ]
+            + [
+                '### Core and plugins\n\n',
+                BabelDomainUpdater.domain_or_total_markdown(
+                    None,
+                    flags,
+                    {
+                        locale: sum(
+                            len(
+                                babel_domain_updater.domain_locale_infos[
+                                    locale
+                                ].messages
+                            )
+                            for babel_domain_updater in self.babel_domain_updaters.values()
+                        )
+                        for locale in self.locales
+                    },
+                    {
+                        locale: sum(
+                            len(
+                                babel_domain_updater.domain_locale_infos[
+                                    locale
+                                ].empty_optional_messages
+                            )
+                            for babel_domain_updater in self.babel_domain_updaters.values()
+                        )
+                        for locale in self.locales
+                    },
+                    {
+                        locale: sum(
+                            len(
+                                babel_domain_updater.domain_locale_infos[
+                                    locale
+                                ].empty_mandatory_messages
+                            )
+                            for babel_domain_updater in self.babel_domain_updaters.values()
+                        )
+                        for locale in self.locales
+                    },
+                    {
+                        locale: {
+                            flag: sum(
+                                len(
+                                    babel_domain_updater.domain_locale_infos[
+                                        locale
+                                    ].flagged_messages.get(flag, [])
+                                )
+                                for babel_domain_updater in self.babel_domain_updaters.values()
+                            )
+                            for flag in flags
+                        }
+                        for locale in self.locales
+                    },
+                ),
+            ]
+            + [
+                f'### {"Core" if babel_domain_updater.is_core else f"Plugin `{babel_domain_updater.name}`"}\n\n'
+                f'{babel_domain_updater.markdown(flags)}'
                 for babel_domain_updater in self.babel_domain_updaters.values()
             ]
         )
