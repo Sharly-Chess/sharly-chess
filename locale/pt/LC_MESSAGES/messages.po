@@ -4952,7 +4952,7 @@ msgstr "Classificação após rodada n° %(round)d"
 
 #, ai_translation
 msgid "Ranking after round #{round}"
-msgstr "Classificação após rodada n° {round}\""
+msgstr "Classificação após rodada n° {round}"
 
 #, ai_translation
 msgid "Ranking before the first round"

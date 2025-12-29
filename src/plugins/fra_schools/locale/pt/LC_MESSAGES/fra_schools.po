@@ -2,11 +2,9 @@
 msgid "%(string)s:"
 msgstr "%(string)s:"
 
-# Error: translation [Adicionar Adicionar] is much too long compared to
-# initial [Add]
 #, ai_translation
 msgid "Add"
-msgstr ""
+msgstr "Adicionar"
 
 #, ai_translation
 msgid "Add a french school"
@@ -136,14 +134,9 @@ msgstr "Organize os jogadores por escola."
 msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
 msgstr "O banco de dados [%(database)s] não está instalado (para instalá-lo: Menu > Fontes de dados)."
 
-# Error: tokens differ between [The database [%(database)s] was last updated
-# over %(age)d months ago. It is preferable to update it before proceeding
-# (Menu > Data sources).] and [O banco de dados [%(database)s] foi atualizado
-# pela última vez há mais de 1 meses. É preferível atualizá-lo antes de
-# prosseguir (Menu > Fontes de dados).]
 #, ai_translation, python-format
 msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
-msgstr ""
+msgstr "O banco de dados [%(database)s] foi atualizado pela última vez há mais de %(age)d meses. É preferível atualizá-lo antes de prosseguir (Menu > Fontes de dados)."
 
 #, ai_translation
 msgid "The tournament has not yet started."
