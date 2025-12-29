@@ -86,13 +86,13 @@ msgstr "A conexão com o servidor ChessEvent falhou."
 msgid "Default credentials used to import tournaments from the ChessEvent platform."
 msgstr "Credenciais padrão usadas para importar torneios da plataforma ChessEvent."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Default: %(string)s"
-msgstr ""
+msgstr "Padrão: %(string)s"
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: %(string)s"
-msgstr ""
+msgstr "p. ex.: %(string)s"
 
 #, ai_translation
 msgid "E.g.: Tournoi A"
@@ -102,15 +102,17 @@ msgstr "Por exemplo: Tournoi A"
 msgid "E.g.: my_password"
 msgstr "Por exemplo: my_password"
 
+#, ai_translation
 msgid "Event [{event_id}] does not exist."
-msgstr ""
+msgstr "O evento [{event_id}] não existe."
 
 #, ai_translation
 msgid "Event not found"
 msgstr "Página não encontrada"
 
+#, ai_translation
 msgid "Federation [{federation}] of player [{player}] is unknown. Recreate it in ChessEvent then try again."
-msgstr ""
+msgstr "Federação [{federation}] do jogador [{player}] é desconhecida. Recriá-lo no ChessEvent, em seguida, tente novamente."
 
 #, ai_translation
 msgid "I confirm that I have read and acknowledged the warning"
@@ -156,13 +158,15 @@ msgstr "Sucesso"
 msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr "Suporte para a plataforma ChessEvent usada para organizar torneios na França."
 
+#, ai_translation
 msgid "Synchronisation failed for {count} tournament"
 msgid_plural "Synchronisation failed for {count} tournaments"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Falha na sincronização do torneio {count}"
+msgstr[1] "Falha na sincronização para torneios de {count}"
 
+#, ai_translation
 msgid "Synchronization failed for tournament [{tournament}]."
-msgstr ""
+msgstr "A sincronização falhou para o torneio [{tournament}]."
 
 #, ai_translation
 msgid "Synchronize all tournaments"
@@ -184,8 +188,9 @@ msgstr "Sincronize torneios com ChessEvent"
 msgid "Synchronize with ChessEvent"
 msgstr "Sincronizar com ChessEvent"
 
+#, ai_translation
 msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
-msgstr ""
+msgstr "O evento [{event_id}] não é acessível ao usuário [{user_id}]."
 
 #, ai_translation
 msgid "The username / password provided are not allowed to access this ChessEvent event."
@@ -195,11 +200,13 @@ msgstr "O nome de usuário / senha fornecido não está autorizado a acessar est
 msgid "Tournament"
 msgstr "Torneio Torneio"
 
+#, ai_translation
 msgid "Tournament [{tournament_name}] does not exist in event [{event_id}]."
-msgstr ""
+msgstr "Torneio [{tournament_name}] não existe no evento [{event_id}]."
 
+#, ai_translation
 msgid "Tournament [{tournament}] successfully synchronized."
-msgstr ""
+msgstr "Torneio [{tournament}] sincronizado com sucesso."
 
 #, ai_translation
 msgid "Tournament has not been configured to be used with ChessEvent."
@@ -241,13 +248,15 @@ msgstr "definida no evento"
 msgid "my_password"
 msgstr "my_password"
 
+#, ai_translation
 msgid "{count} tournament ignored"
 msgid_plural "{count} tournaments ignored"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{count} torneio ignorado"
+msgstr[1] "{count} torneios ignorados"
 
+#, ai_translation
 msgid "{count} tournament successfully synchronized"
 msgid_plural "{count} tournament successfully synchronized"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{count} torneio sincronizado com sucesso"
+msgstr[1] "{count} torneio sincronizado com sucesso"
 

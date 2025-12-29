@@ -22,8 +22,9 @@ msgstr "Automático"
 msgid "Chess-Results.com"
 msgstr "Chess-Results.com"
 
+#, ai_translation
 msgid "Chess-Results.com only displays {max} tie-breaks. However, the rankings remain the same as in Sharly Chess."
-msgstr ""
+msgstr "Chess-Results.com exibe apenas {max} tie-breaks. No entanto, os rankings permanecem os mesmos que no Sharly Chess."
 
 #, ai_translation
 msgid "Close"
@@ -73,8 +74,9 @@ msgstr "Modificado desde o último upload"
 msgid "Modified, but no internet connection"
 msgstr "Modificado, mas sem conexão com a internet"
 
+#, ai_translation
 msgid "No Chess-Results ID defined for tournament [{tournament}]."
-msgstr ""
+msgstr "No Chess-Results ID definido para o torneio [{tournament}]."
 
 #, ai_translation
 msgid "No internet connection"
@@ -104,8 +106,9 @@ msgstr "Estado:"
 msgid "Status"
 msgstr "Estado"
 
+#, ai_translation
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
-msgstr ""
+msgstr "O atraso deve ser de pelo menos {min_delay} minutos para evitar sobrecarregar o servidor de Resultados de Xadrez."
 
 #, ai_translation
 msgid "Tournament"
@@ -127,9 +130,9 @@ msgstr "Torneio não modificado desde o último upload"
 msgid "Tournament not yet uploaded."
 msgstr "Torneio ainda não carregado."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Tournament number: %(tnr)s"
-msgstr ""
+msgstr "Número do torneio: %(tnr)s"
 
 #, ai_translation
 msgid "Tournament on Chess-results.com"
@@ -171,8 +174,9 @@ msgstr "Upload de torneios para Chess-Results.com."
 msgid "Uploading tournament…"
 msgstr "Carregando torneio..."
 
+#, ai_translation
 msgid "Use default - {option}"
-msgstr ""
+msgstr "Padrão de uso - {option}"
 
 #, ai_translation
 msgid "You are not allowed to publish results."

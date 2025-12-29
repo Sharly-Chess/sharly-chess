@@ -6,9 +6,9 @@ msgstr "/move"
 msgid "Adds features for handicap tournaments where weaker players are given a time advantage."
 msgstr "Adiciona recursos para torneios de handicap onde jogadores mais fracos recebem uma vantagem de tempo."
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: %(val)d"
-msgstr ""
+msgstr "p. ex.: %(val)d"
 
 #, ai_translation
 msgid "Elo step:"

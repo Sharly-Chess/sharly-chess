@@ -1,6 +1,6 @@
-#, python-format
+#, ai_translation, python-format
 msgid "%(string)s:"
-msgstr ""
+msgstr "%(string)s:"
 
 #, ai_translation
 msgid "Accelerated pairings"
@@ -18,8 +18,9 @@ msgstr "Grupos de aceleração"
 msgid "Baku acceleration system"
 msgstr "Sistema de aceleração Baku"
 
+#, ai_translation
 msgid "Group {group_id}"
-msgstr ""
+msgstr "Grupo {group_id}"
 
 #, ai_translation
 msgid "Groups can't be edited for this pairing system."
@@ -49,9 +50,9 @@ msgstr "Sem aceleração."
 msgid "Pairing number range of players in the group."
 msgstr "Emparelhar o número de jogadores no grupo."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Pairing number range of the group (recommended: %(min)d-%(max)d)."
-msgstr ""
+msgstr "Intervalo de número de emparelhamento do grupo (recomendado: %(min)d-%(max)d)."
 
 #, ai_translation
 msgid "Positive values are expected."
@@ -61,11 +62,13 @@ msgstr "Valores positivos são esperados."
 msgid "Progressive accelerated system"
 msgstr "sistema acelerado progressivo"
 
+#, ai_translation
 msgid "Round {round}"
-msgstr ""
+msgstr "Rodada {round}"
 
+#, ai_translation
 msgid "Rounds {min_round}-{max_round}"
-msgstr ""
+msgstr "Rodadas {min_round}-{max_round}"
 
 #, ai_translation
 msgid "Soft Haley system"

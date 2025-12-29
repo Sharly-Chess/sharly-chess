@@ -1,6 +1,6 @@
-#, python-format
+#, ai_translation, python-format
 msgid "%(string)s:"
-msgstr ""
+msgstr "%(string)s:"
 
 #, ai_translation
 msgid "Add"
@@ -22,9 +22,9 @@ msgstr "Adiciona suporte para competições escolares na França"
 msgid "At least one school is expected."
 msgstr "Pelo menos uma escola é esperada."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Average age: %(years)s"
-msgstr ""
+msgstr "Idade média: %(years)s"
 
 #, ai_translation
 msgid "Cancel"
@@ -46,8 +46,9 @@ msgstr "Código"
 msgid "Complete Team"
 msgstr "Equipe completa"
 
+#, ai_translation
 msgid "Exclude: {values}"
-msgstr ""
+msgstr "Exclui: {values}"
 
 #, ai_translation
 msgid "Filter the schools."
@@ -81,13 +82,13 @@ msgstr "Formato inválido (esperado: 5 dígitos)."
 msgid "Loading more results…"
 msgstr "Atualizando... Hotéis similares"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Missing boys: %(count)d"
-msgstr ""
+msgstr "Rapazes desaparecidos: %(count)d"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Missing girls: %(count)d"
-msgstr ""
+msgstr "Meninas desaparecidas: %(count)d"
 
 #, ai_translation
 msgid "Name"
@@ -97,9 +98,9 @@ msgstr "Nome"
 msgid "OK"
 msgstr "OK"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Other missing players: %(count)d"
-msgstr ""
+msgstr "Outros jogadores desaparecidos: %(count)d"
 
 #, ai_translation
 msgid "Postal code"
@@ -109,8 +110,9 @@ msgstr "Código postal"
 msgid "Ranking by school"
 msgstr "Ranking por escola"
 
+#, ai_translation
 msgid "Ranking by school after round #{round}"
-msgstr ""
+msgstr "Ranking por escola após rodada n° {round}"
 
 #, fuzzy
 msgid "School *** SCHOOL FOR TABLE HEADER"
@@ -120,21 +122,21 @@ msgstr "School"
 msgid "Schools"
 msgstr "Escolas"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Search by: %(fields)s"
-msgstr ""
+msgstr "Procurar por: %(fields)s"
 
 #, ai_translation
 msgid "Sort the players by school."
 msgstr "Organize os jogadores por escola."
 
-#, python-format
+#, ai_translation, python-format
 msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
-msgstr ""
+msgstr "O banco de dados [%(database)s] não está instalado (para instalá-lo: Menu > Fontes de dados)."
 
-#, python-format
+#, ai_translation, python-format
 msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
-msgstr ""
+msgstr "O banco de dados [%(database)s] foi atualizado pela última vez há mais de 1 meses. É preferível atualizá-lo antes de prosseguir (Menu > Fontes de dados)."
 
 #, ai_translation
 msgid "The tournament has not yet started."
@@ -148,11 +150,13 @@ msgstr "Este campo não é editável."
 msgid "This field is required."
 msgstr "Este campo é necessário."
 
+#, ai_translation
 msgid "This round is not finished (last finished: #{round})."
-msgstr ""
+msgstr "Esta rodada não está terminada (última terminada: n° {round})."
 
+#, ai_translation
 msgid "This round is not valid (the tournament has {rounds} rounds)."
-msgstr ""
+msgstr "Esta rodada não é válida (o torneio tem rodadas {rounds})."
 
 #, ai_translation
 msgid "Total"

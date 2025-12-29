@@ -1,35 +1,38 @@
+#, ai_translation
 msgid " [{default_choice}: {default_value}]: "
-msgstr ""
+msgstr " [{default_choice}: {default_value}]: "
 
+#, ai_translation
 msgid " [{yes_answer}/{no_answer}]?"
-msgstr ""
+msgstr " [{yes_answer}/{no_answer}]?"
 
+#, ai_translation
 msgid "#{board_number}"
-msgstr ""
+msgstr "n° {board_number}"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
-msgstr ""
+msgstr "%%s é substituído pelo tempo decorrido desde a hora."
 
-#, python-format
+#, ai_translation, python-format
 msgid "%%s is replaced by the time left before the hour."
-msgstr ""
+msgstr "%%s é substituído pelo tempo restante antes da hora."
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(count)d boards without result"
-msgstr ""
+msgstr "%(count)d placas sem resultado"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(count)d players unpaired"
-msgstr ""
+msgstr "%(count)d jogadores desemparelhados"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(minutes)d minutes after"
-msgstr ""
+msgstr "%(minutes)d minutos depois"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(minutes)d minutes before"
-msgstr ""
+msgstr "%(minutes)d minutos antes"
 
 #, ai_translation, python-format
 msgid "%(num).1f point group -"
@@ -37,133 +40,137 @@ msgid_plural "%(num).1f points group -"
 msgstr[0] "%(num).1f grupo de pontos -"
 msgstr[1] "%(num).1f grupo de pontos -"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(num)d criterion"
 msgid_plural "%(num)d criteria"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(num)d critério"
+msgstr[1] "%(num)d critérios"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(num)d family"
 msgid_plural "%(num)d families"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(num)d família"
+msgstr[1] "%(num)d famílias"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(num)d player"
 msgid_plural "%(num)d players"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(num)d jogador"
+msgstr[1] "%(num)d jogadores"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(num)d player did not check-in"
 msgid_plural "%(num)d players did not check-in"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(num)d jogador não fez check-in"
+msgstr[1] "%(num)d os jogadores não fizeram check-in"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(num)d player does not match criteria."
 msgid_plural "%(num)d players do not match criteria."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(num)d jogador não corresponde aos critérios."
+msgstr[1] "%(num)d Os jogadores não correspondem aos critérios."
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(num)d prêmio"
+msgstr[1] "%(num)d prémios"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(num)d prize group"
 msgid_plural "%(num)d prize groups"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(num)d grupo de prémios"
+msgstr[1] "%(num)d grupos de prémios"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(num)d prize successfully created!"
 msgid_plural "%(num)d prizes successfully created!"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(num)d prêmio criado com sucesso!"
+msgstr[1] "%(num)d prêmios criados com sucesso!"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(num)d screen"
 msgid_plural "%(num)d screens"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(num)d tela"
+msgstr[1] "%(num)d telas"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(num)d tournament"
 msgid_plural "%(num)d tournaments"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(num)d torneio"
+msgstr[1] "%(num)d torneios"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(player)s - Round %(num)s"
-msgstr ""
+msgstr "%(player)s - Redondo 1"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(set_name)s (check-in)"
-msgstr ""
+msgstr "%(set_name)s (check-in)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(set_name)s (registered players)"
-msgstr ""
+msgstr "%(set_name)s (jogadores registados)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(set_name)s (round #%(round)d, %(remaining)d game in progress)"
 msgid_plural "%(set_name)s (round #%(round)d, %(remaining)d games in progress)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%(set_name)s (round 1, 2 jogo em andamento)"
+msgstr[1] "%(set_name)s (round 1, 2 jogos em andamento)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(set_name)s (round #%(round)d, finished)"
-msgstr ""
+msgstr "%(set_name)s (round 1, terminado)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(set_name)s (round %(round)d)"
-msgstr ""
+msgstr "%(set_name)s (round 1)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(string)s:"
-msgstr ""
+msgstr "%(string)s:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(string)s: %(value)s"
-msgstr ""
+msgstr "%(string)s: 1"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%f to %l"
-msgstr ""
+msgstr "%f a %l"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%t (%f to %l)"
-msgstr ""
+msgstr "%t (%f a %l)"
 
+#, ai_translation
 msgid "%t (by board)"
-msgstr ""
+msgstr "%t (a bordo)"
 
+#, ai_translation
 msgid "%t (by player)"
-msgstr ""
+msgstr "%t (por jogador)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "%t [Boards %f-%l]"
-msgstr ""
+msgstr "%t [Boards 1-2]"
 
+#, ai_translation
 msgid "%t crosstable"
-msgstr ""
+msgstr "%t mesa cruzada"
 
+#, ai_translation
 msgid "%t ranking"
-msgstr ""
+msgstr "%t classificação"
 
 #, ai_translation
 msgid "'EUR' or '€'"
-msgstr "'EUR' ou ''"
+msgstr "'EUR' ou '€'"
 
-#, python-format
+#, ai_translation, python-format
 msgid "(%(num)d screen)"
 msgid_plural "(%(num)d screens)"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "(%(num)d tela)"
+msgstr[1] "(%(num)d telas)"
 
 #, ai_translation
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
@@ -177,8 +184,9 @@ msgstr "(por defeito)"
 msgid "(family)"
 msgstr "(família)"
 
+#, ai_translation
 msgid "(inheritance: {inheritance})"
-msgstr ""
+msgstr "(herança: {inheritance})"
 
 #, ai_translation
 msgid "(inherited)"
@@ -188,9 +196,9 @@ msgstr "(herdado)"
 msgid "(no screens)"
 msgstr "(sem ecrãs)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "(replace [%(object_uniq_id)s])"
-msgstr ""
+msgstr "(substitua [%(object_uniq_id)s])"
 
 #, ai_translation
 msgid "*** Doc Link"
@@ -206,7 +214,7 @@ msgstr "-"
 
 #, ai_translation
 msgid "/<moves>"
-msgstr "/moves>"
+msgstr "/<moves>"
 
 #, ai_translation
 msgid "/move"
@@ -222,7 +230,7 @@ msgstr "0 - 1 (U)"
 
 #, ai_translation
 msgid "0 - ½ (U)"
-msgstr "0 - 12 (U)"
+msgstr "0 - ½ (U)"
 
 #, ai_translation
 msgid "1 - 0 (U)"
@@ -258,80 +266,83 @@ msgstr "500 - Erro do Servidor Interno"
 
 #, ai_translation
 msgid "<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt."
-msgstr "b>1.4.3/b> Devem ser incluídas pelo menos duas federações diferentes da do candidato ao título, exceto 1.4.3a - 1.4.3d."
+msgstr "<b>1.4.3</b> Devem ser incluídas pelo menos duas federações diferentes da do candidato ao título, exceto 1.4.3a - 1.4.3d."
 
 #, ai_translation
 msgid "<b>1.4.3d</b> Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles."
-msgstr "b>1.4.3d/b> Torneios do Sistema Suíço em que os participantes incluem em cada rodada pelo menos 20 jogadores classificados pela FIDE, não da federação anfitriã, de pelo menos 3 federações diferentes, das quais pelo menos 10 possuem títulos GM, IM, WGM ou WIM."
+msgstr "<b>1.4.3d</b> Torneios do Sistema Suíço em que os participantes incluem em cada rodada pelo menos 20 jogadores classificados pela FIDE, não da federação anfitriã, de pelo menos 3 federações diferentes, das quais pelo menos 10 possuem títulos GM, IM, WGM ou WIM."
 
 #, ai_translation
 msgid "<b>1.4.4</b> A maximum of 2/3 of the opponents from one federation."
-msgstr "b>1.4.4/b> Um máximo de 2/3 dos oponentes de uma federação."
+msgstr "<b>1.4.4</b> Um máximo de 2/3 dos oponentes de uma federação."
 
 #, ai_translation
 msgid "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applicant's federation."
-msgstr "b>1.4.4/b> Um máximo de 3/5 dos oponentes pode vir da federação do candidato."
+msgstr "<b>1.4.4</b> Um máximo de 3/5 dos oponentes pode vir da federação do candidato."
 
+#, ai_translation
 msgid "<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}"
-msgstr ""
+msgstr "<b>1.4.5</b> Para esta norma, pelo menos 0 os adversários devem ter este(s) título(s): {titles}"
 
 #, ai_translation, python-format
 msgid "<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM."
-msgstr "b>1.4.5a/b> Pelo menos 50%% dos oponentes devem ser detentores de títulos, excluindo CM e WCM."
+msgstr "<b>1.4.5a</b> Pelo menos 50%% dos oponentes devem ser detentores de títulos, excluindo CM e WCM."
 
+#, ai_translation
 msgid "<b>1.4.8</b> The minimum performance for this norm is {min}."
-msgstr ""
+msgstr "<b>1.4.8</b> O desempenho mínimo para esta norma é {min}."
 
+#, ai_translation
 msgid "<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}."
-msgstr ""
+msgstr "<b>1.4.8a</b> A classificação média mínima dos oponentes para esta norma é {min}."
 
 #, ai_translation, python-format
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
-msgstr "b>1.4.8b/b> A pontuação mínima é de 35%% para todas as normas."
+msgstr "<b>1.4.8b</b> A pontuação mínima é de 35%% para todas as normas."
 
 #, ai_translation
 msgid "<b>Delete</b> from the tournament"
-msgstr "b>Delete/b> do torneio"
+msgstr "<b>Delete</b> do torneio"
 
 #, ai_translation
 msgid "<first> and <second>"
-msgstr "primeiro> e segundo>"
+msgstr "<primeiro> e <segundo>"
 
 #, ai_translation
 msgid "<first> then <second>"
-msgstr "fir> então segundo>"
+msgstr "<fir> então <segundo>"
 
 #, ai_translation
 msgid "<first>, <second>"
-msgstr "primeiro>, segundo>"
+msgstr "<primeiro>, <segundo>"
 
 #, ai_translation
 msgid "<side>: <text>"
-msgstr "side>: text>"
+msgstr "<side>: <text>"
 
 #, ai_translation
 msgid "<smart_count> day |||| <smart_count> days"
-msgstr "smart_count> dias  smart_count> dias"
+msgstr "<smart_count> dias |||| <smart_count> dias"
 
 #, ai_translation
 msgid "<smart_count> hour |||| <smart_count> hours"
-msgstr "smart_count> horas  smart_count> horas"
+msgstr "<smart_count> horas |||| <smart_count> horas"
 
 #, ai_translation
 msgid "<smart_count> minute |||| <smart_count> minutes"
-msgstr "smart_count> minuto  smart_count> minutos"
+msgstr "<smart_count> minuto |||| <smart_count> minutos"
 
 #, ai_translation
 msgid "<smart_count> move |||| <smart_count> moves"
-msgstr "smart_count> mover  smart_count> mover"
+msgstr "<smart_count> mover |||| <smart_count> mover"
 
 #, ai_translation
 msgid "<smart_count> second |||| <smart_count> seconds"
-msgstr "smart_count> segundo  smart_count> segundos"
+msgstr "<smart_count> segundo |||| <smart_count> segundos"
 
 #, ai_translation
 msgid "<smart_count> week |||| <smart_count> weeks"
-msgstr "smart_count> semana  smart_count> semanas"
+msgstr "<smart_count> semana |||| <smart_count> semanas"
 
 #, ai_translation
 msgid "A URL, or the path to the rules file on the server, in PDF format."
@@ -397,17 +408,21 @@ msgstr "Acesso sem classificação e resultados de penalidades."
 msgid "Account"
 msgstr "Conta"
 
+#, ai_translation
 msgid "Account [{account_name}] already exists."
-msgstr ""
+msgstr "A conta [{account_name}] já existe."
 
+#, ai_translation
 msgid "Account [{account_name}] has been created."
-msgstr ""
+msgstr "A conta [{account_name}] foi criada."
 
+#, ai_translation
 msgid "Account [{account_name}] has been deleted."
-msgstr ""
+msgstr "A conta [{account_name}] foi excluída."
 
+#, ai_translation
 msgid "Account [{account_name}] has been updated."
-msgstr ""
+msgstr "A conta [{account_name}] foi atualizada."
 
 #, ai_translation
 msgid "Account:"
@@ -601,8 +616,9 @@ msgstr "Todos os Eventos"
 msgid "All the boards"
 msgstr "Todas as placas"
 
+#, ai_translation
 msgid "All the candidate ports [{ports}] are already in use, can not start Sharly Chess server."
-msgstr ""
+msgstr "Todos os portos candidatos [{ports}] já estão em uso, não podem iniciar o servidor Sharly Chess."
 
 #, ai_translation
 msgid "All the dependant objects will also be deleted:"
@@ -700,11 +716,13 @@ msgstr "Árbiter"
 msgid "Archive"
 msgstr "Arquivo"
 
+#, ai_translation
 msgid "Archive [{archive}] could not be restored, consult the logs for more details."
-msgstr ""
+msgstr "[{archive}] não pôde ser restaurado, consulte os registros para mais detalhes."
 
+#, ai_translation
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
-msgstr ""
+msgstr "[{archive}] restaurado com sucesso (ver evento [{event}])."
 
 #, ai_translation
 msgid "Archive event"
@@ -714,8 +732,9 @@ msgstr "Arquivo do evento"
 msgid "Archive the event."
 msgstr "Arquive o evento."
 
+#, ai_translation
 msgid "Archived ({num})"
-msgstr ""
+msgstr "Arquivado ({num})"
 
 #, ai_translation
 msgid "Archived event"
@@ -731,19 +750,19 @@ msgstr "Atribua uma tela ao controlador."
 
 #, ai_translation
 msgid "Assign a zero-point bye <b>for the next round</b>"
-msgstr "Atribua um bye de ponto zero b>para a próxima rodada/b>"
+msgstr "Atribua um bye de ponto zero <b>para a próxima rodada</b>"
 
 #, ai_translation
 msgid "Assign a zero-point bye <b>for the rest of the tournament</b>"
-msgstr "Atribua um bye de ponto zero b>para o resto do torneio/b>"
+msgstr "Atribua um bye de ponto zero <b>para o resto do torneio</b>"
 
 #, ai_translation
 msgid "Assign to a display controller."
 msgstr "Atribua a um controlador de exibição."
 
-#, python-format
+#, ai_translation, python-format
 msgid "At least %(min)d games must be played."
-msgstr ""
+msgstr "Pelo menos %(min)d jogos devem ser jogados."
 
 #, ai_translation
 msgid "At least a minimum or a maximum rating must be defined."
@@ -773,15 +792,15 @@ msgstr "Pelo menos um tipo de classificação é esperado."
 msgid "At least one value is expected."
 msgstr "Pelo menos um valor é esperado."
 
-#, python-format
+#, ai_translation, python-format
 msgid "At most %(num)d illegal move is recorded."
 msgid_plural "At most %(num)d illegal moves are recorded."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "No máximo %(num)d é registrado movimento ilegal."
+msgstr[1] "No máximo %(num)d movimentos ilegais são registrados."
 
 #, fuzzy
 msgid "Aug *** AUGUST"
-msgstr "Aug"
+msgstr "Ago"
 
 #, ai_translation
 msgid "August"
@@ -811,8 +830,9 @@ msgstr "Classificação média de desempenho dos adversários"
 msgid "Average rating of opponents"
 msgstr "Classificação média dos adversários"
 
+#, ai_translation
 msgid "Average rating: {rating}"
-msgstr ""
+msgstr "Classificação média: {rating}"
 
 #, fuzzy
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
@@ -842,9 +862,9 @@ msgstr "Voltar"
 msgid "Background colour:"
 msgstr "Cor do fundo:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Background colour: %(color)s"
-msgstr ""
+msgstr "Cor do fundo: %(color)s"
 
 #, ai_translation
 msgid "Background image:"
@@ -902,25 +922,25 @@ msgstr "Blitz:"
 msgid "Blz *** BLITZ RATING ACRONYM"
 msgstr "Blz"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Board #%(board_number)d with %(color)s"
-msgstr ""
+msgstr "Quadro n° %(board_number)d com %(color)s"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Board %(board_number)s"
-msgstr ""
+msgstr "Quadro %(board_number)s"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Board %(number)s"
-msgstr ""
+msgstr "Quadro %(number)s"
 
 #, ai_translation
 msgid "Board & color"
 msgstr "Quadro & cor"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Board (%(remaining)d)"
-msgstr ""
+msgstr "Conselho de Administração (%(remaining)d)"
 
 #, ai_translation
 msgid "Board Cards"
@@ -942,21 +962,21 @@ msgstr "Números da placa:"
 msgid "Board selection (by number)"
 msgstr "Seleção do Conselho de Administração (por número)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"
-msgstr ""
+msgstr "Conjuntos de painéis de ecrã [%(screen_uniq_id)s]"
 
 #, ai_translation
 msgid "Boards"
 msgstr "Conselhos"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Boards %f-%l"
-msgstr ""
+msgstr "Quadros %f-%l"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Boards from #%(first)d to #%(last)d"
-msgstr ""
+msgstr "Quadros de n° %(first)d a n° %(last)d"
 
 #, ai_translation
 msgid "Boards screens show pairings by board number."
@@ -982,12 +1002,13 @@ msgstr "A bordo"
 msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
 msgstr "Por padrão, outros dispositivos só podem interagir com telas públicas. Esta guia permite que você configure esse comportamento."
 
+#, ai_translation
 msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
-msgstr ""
+msgstr "Por padrão, esse tie-break é desativado quando há jogadores não classificados ({count} no torneio). Você deve especificar que a estimativa do jogador é explicada nas regras."
 
-#, python-format
+#, ai_translation, python-format
 msgid "By default: %(minutes)d minutes"
-msgstr ""
+msgstr "Por padrão: %(minutes)d minutos"
 
 #, ai_translation
 msgid "By executing this operation, you are enabling an unsafe mode for this round, allowing other unsafe operations."
@@ -997,18 +1018,19 @@ msgstr "Ao executar esta operação, você está permitindo um modo inseguro par
 msgid "By player"
 msgstr "Por jogador"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
-msgstr ""
+msgstr "O limite de tchau (%(limit)d) já foi alcançado para este torneio."
 
 #, fuzzy, python-format
 msgid "Byes (%(byes)d) *** PLAYERS WITH BYES"
 msgstr "Byes (%(byes)d)"
 
+#, ai_translation
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
 msgstr[0] "Byes não pode ser definido para a última rodada do torneio."
-msgstr[1] ""
+msgstr[1] "Byes não pode ser definido para as últimas rodadas {rounds} do torneio."
 
 #, ai_translation
 msgid "CA"
@@ -1090,9 +1112,9 @@ msgstr "Categoria"
 msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
 msgstr "Category"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Category [%(category)s] successfully created!"
-msgstr ""
+msgstr "Categoria [%(category)s] criada com sucesso!"
 
 #, ai_translation
 msgid "Category sets"
@@ -1122,29 +1144,33 @@ msgstr "Check-in"
 msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
 msgstr "Check-in"
 
+#, ai_translation
 msgid "Check-in / Results ({num})"
-msgstr ""
+msgstr "Check-in / Resultados ({num})"
 
 #, ai_translation
 msgid "Check-in / Results entry"
 msgstr "Check-in / Entrada de resultados"
 
+#, ai_translation
 msgid "Check-in / Results entry ({tournament_name})"
-msgstr ""
+msgstr "Entrada / Entrada nos resultados ({tournament_name})"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Check-in is closed for tournament [%(tournament)s]."
-msgstr ""
+msgstr "O check-in está fechado para o torneio [%(tournament)s]."
 
+#, ai_translation
 msgid "Check-in is closed for tournament [{tournament}]."
-msgstr ""
+msgstr "O check-in está fechado para o torneio [{tournament}]."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Check-in is not allowed after the tournament has started for the [%(pairing_system)s] pairing system."
-msgstr ""
+msgstr "O check-in não é permitido após o início do torneio para o sistema de emparelhamento [0]."
 
+#, ai_translation
 msgid "Check-in is open for tournament [{tournament}]."
-msgstr ""
+msgstr "O check-in está aberto para torneio [{tournament}]."
 
 #, ai_translation
 msgid "Check-in players"
@@ -1250,13 +1276,13 @@ msgstr "Fechar"
 msgid "Close check-in"
 msgstr "Fechar check-in"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Close check-in for tournament [%(tournament)s]"
-msgstr ""
+msgstr "Fechar check-in para o torneio [%(tournament)s]"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Close check-in for tournament [%(tournament)s]."
-msgstr ""
+msgstr "Fechar check-in para o torneio [%(tournament)s]."
 
 #, ai_translation
 msgid "Club"
@@ -1290,28 +1316,33 @@ msgstr "Clubes"
 msgid "Color"
 msgstr "Cor"
 
+#, ai_translation
 msgid "Color [{color}] can't be used with an opponent."
-msgstr ""
+msgstr "A cor [{color}] não pode ser usada com um oponente."
 
+#, ai_translation
 msgid "Color [{color}] can't be used without an opponent."
-msgstr ""
+msgstr "A cor [{color}] não pode ser usada sem um oponente."
 
 #, ai_translation
 msgid "Colors and delays"
 msgstr "Cores e atrasos"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Colour #%(num)d:"
-msgstr ""
+msgstr "Cor n° %(num)d:"
 
+#, ai_translation
 msgid "Colour #1 is used until {delay_1} minutes before the start of the rounds (delay #1), the color then changes gradually until colour #2 ({delay_2} minutes before the start of the rounds)."
-msgstr ""
+msgstr "A cor #1 é usada até {delay_1} minutos antes do início das rodadas (atraso #1), a cor muda gradualmente até a cor #2 ({delay_2} minutos antes do início das rodadas)."
 
+#, ai_translation
 msgid "Colour #2 is used {delay_2} minutes before the start of the rounds (delay #2), the color then changes gradually until colour #3 (at the start of the rounds)."
-msgstr ""
+msgstr "A cor #2 é usada {delay_2} minutos antes do início das rodadas (atraso #2), a cor muda gradualmente até a cor #3 (no início das rodadas)."
 
+#, ai_translation
 msgid "Colour #3 is used from the start of the rounds and for {delay_3} minutes after (delay #3)."
-msgstr ""
+msgstr "A cor #3 é usada desde o início das rodadas e por {delay_3} minutos depois (atraso #3)."
 
 #, ai_translation
 msgid "Colour history"
@@ -1365,8 +1396,9 @@ msgstr "Configure os conjuntos de categorias, que estão disponíveis para todos
 msgid "Configure the tie-breaks of the tournament."
 msgstr "Configure os tie-breaks do torneio."
 
+#, ai_translation
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
-msgstr ""
+msgstr "Conecte-se à rede Sharly Chess via {type},<br />, em seguida, digitalize para acessar o servidor Sharly Chess."
 
 #, ai_translation
 msgid "Connect to the Sharly Chess network, then scan to access the Sharly Chess server."
@@ -1384,8 +1416,9 @@ msgstr "A ligação falhou"
 msgid "Connection parameters"
 msgstr "Parâmetros de conexão"
 
+#, ai_translation
 msgid "Connection to the data source [{data_source}] failed. Consult the logs for more details."
-msgstr ""
+msgstr "A conexão com a fonte de dados [{data_source}] falhou. Consulte os registros para mais detalhes."
 
 #, ai_translation
 msgid "Connection to the server failed (timeout)."
@@ -1403,8 +1436,9 @@ msgstr "Considere todos os jogos pareados para a rodada final como empates."
 msgid "Consider forfeited games, either wins or losses, as played games against the scheduled opponent."
 msgstr "Considere jogos perdidos, ganhos ou perdas, como jogos jogados contra o adversário agendado."
 
+#, ai_translation
 msgid "Console logging level: {console_log_level}"
-msgstr ""
+msgstr "Nível de registo do console: {console_log_level}"
 
 #, ai_translation
 msgid "Consult the logs for more details."
@@ -1430,8 +1464,9 @@ msgstr "Continuar"
 msgid "Corners"
 msgstr "Cantos"
 
+#, ai_translation
 msgid "Could not connect to data source [{data_source}]."
-msgstr ""
+msgstr "Não foi possível se conectar à fonte de dados [{data_source}]."
 
 #, ai_translation
 msgid "Create"
@@ -1585,8 +1620,9 @@ msgstr "Criar torneio"
 msgid "Create with default screens"
 msgstr "Criar com telas padrão"
 
+#, ai_translation
 msgid "Creator: {template_creator}"
-msgstr ""
+msgstr "Criador: {template_creator}"
 
 #, ai_translation
 msgid "Criteria"
@@ -1596,9 +1632,9 @@ msgstr "Critérios"
 msgid "Criteria list"
 msgstr "Lista de critérios"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Criterion [%(criterion)s] successfully created!"
-msgstr ""
+msgstr "Critério [%(criterion)s] criado com sucesso!"
 
 #, ai_translation
 msgid "Crop marks:"
@@ -1608,23 +1644,25 @@ msgstr "Marcas de colheita:"
 msgid "Crosstable"
 msgstr "mesa cruzada"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Crosstable %f to %l"
-msgstr ""
+msgstr "Mesa transversal %f a %l"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Crosstable %f-%l"
-msgstr ""
+msgstr "Mesa transversal %f-%l"
 
+#, ai_translation
 msgid "Crosstable after round #{round}"
-msgstr ""
+msgstr "Mesa cruzada após rodada n° {round}"
 
 #, ai_translation
 msgid "Crosstable before the first round"
 msgstr "Mesa antes da primeira rodada"
 
+#, ai_translation
 msgid "Current ({num})"
-msgstr ""
+msgstr "Atual ({num})"
 
 #, ai_translation
 msgid "Current events"
@@ -1638,15 +1676,17 @@ msgstr "Os emparelhamentos atuais diferem dos emparelhamentos suíços esperados
 msgid "Current round"
 msgstr "Rodada atual"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Current round: %(round)d"
-msgstr ""
+msgstr "Rodada atual: %(round)d"
 
+#, ai_translation
 msgid "Currently displaying rotator [{name}]"
-msgstr ""
+msgstr "Atualmente exibindo rotator [{name}]"
 
+#, ai_translation
 msgid "Currently displaying screen [{name}]"
-msgstr ""
+msgstr "Atualmente exibindo tela [{name}]"
 
 #, ai_translation
 msgid "Cut values"
@@ -1684,9 +1724,9 @@ msgstr "Diariamente"
 msgid "Dashed border"
 msgstr "Fronteira Dashed"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Data source: %(data_source)s"
-msgstr ""
+msgstr "Fonte: %(data_source)s"
 
 #, ai_translation
 msgid "Data sources"
@@ -1696,8 +1736,9 @@ msgstr "Fontes de dados"
 msgid "Database"
 msgstr "Banco de dados"
 
+#, ai_translation
 msgid "Database [{database}] successfully updated."
-msgstr ""
+msgstr "Banco de dados [{database}] atualizado com sucesso."
 
 #, ai_translation
 msgid "Date and time"
@@ -1767,9 +1808,9 @@ msgstr "Defina os prêmios da categoria."
 msgid "Define the screens and screen families to display."
 msgstr "Defina as telas e as famílias de tela para exibir."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Delay #%(num)d:"
-msgstr ""
+msgstr "Atraso n° %(num)d:"
 
 #, ai_translation
 msgid "Delay (seconds):"
@@ -1779,9 +1820,9 @@ msgstr "Atraso (segundos):"
 msgid "Delete"
 msgstr "Apagar"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Delete FIDE ID [%(old)s]"
-msgstr ""
+msgstr "Excluir FIDE ID [%(old)s]"
 
 #, ai_translation
 msgid "Delete account"
@@ -1907,8 +1948,9 @@ msgstr "Encontro direto"
 msgid "Director:"
 msgstr "Diretor:"
 
+#, ai_translation
 msgid "Directory [{folder}] already exists."
-msgstr ""
+msgstr "Diretório [{folder}] já existe."
 
 #, ai_translation
 msgid "Disabled"
@@ -1922,21 +1964,25 @@ msgstr "Exibição"
 msgid "Display Controller"
 msgstr "Controlador da exposição"
 
+#, ai_translation
 msgid "Display controller [{display_controller}] has been created."
-msgstr ""
+msgstr "O controlador de exibição [{display_controller}] foi criado."
 
+#, ai_translation
 msgid "Display controller [{display_controller}] has been deleted."
-msgstr ""
+msgstr "O controlador de visualização [{display_controller}] foi eliminado."
 
+#, ai_translation
 msgid "Display controller [{display_controller}] has been updated."
-msgstr ""
+msgstr "O controlador de visualização [{display_controller}] foi atualizado."
 
 #, ai_translation
 msgid "Display controllers"
 msgstr "Controladores de exibição"
 
+#, ai_translation
 msgid "Display controllers ({num})"
-msgstr ""
+msgstr "Controladores de exibição ({num})"
 
 #, ai_translation
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
@@ -1954,12 +2000,13 @@ msgstr "Mostrar o adversário dos jogadores"
 msgid "Display the unpaired players"
 msgstr "Mostrar os jogadores não emparelhados"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Displayed round: %(round)d"
-msgstr ""
+msgstr "Exibido em redondo: %(round)d"
 
+#, ai_translation
 msgid "Do not edit this table manually, use script {script_name} instead."
-msgstr ""
+msgstr "Não edite esta tabela manualmente, use o script 0 em vez disso."
 
 #, ai_translation
 msgid "Do not recover"
@@ -1973,11 +2020,13 @@ msgstr "Não faça nada (os jogadores serão elegíveis para emparelhamento)"
 msgid "Do you want to install example event databases"
 msgstr "Você quer instalar exemplos de bancos de dados de eventos"
 
+#, ai_translation
 msgid "Do you want to recover the data of release [{version}]"
-msgstr ""
+msgstr "Você quer recuperar os dados de lançamento [{version}]"
 
+#, ai_translation
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
-msgstr ""
+msgstr "Você quer atualizar de [{old_version}] para [{new_version}]"
 
 #, ai_translation
 msgid "Document:"
@@ -2015,8 +2064,9 @@ msgstr "Faça o download dos vCards dos jogadores selecionados (formato VCF). Av
 msgid "Download tournament fees"
 msgstr "Taxas de download do torneio"
 
+#, ai_translation
 msgid "Downloading failed with code [{code}]."
-msgstr ""
+msgstr "O download falhou com o código [{code}]."
 
 #, ai_translation
 msgid "Drag the sets to order them."
@@ -2074,17 +2124,17 @@ msgstr "Duração (seg):"
 msgid "E *** SHORT NAME FOR RATING TYPE ESTIMATED"
 msgstr "E"
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: %(minutes)d (minutes)"
-msgstr ""
+msgstr "Por exemplo: %(minutes)d (minutos)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: %(num)d"
-msgstr ""
+msgstr "p. ex.: %(num)d"
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: %(string)s"
-msgstr ""
+msgstr "p. ex.: %(string)s"
 
 #, ai_translation
 msgid "E.g.: 20 (boards per screen)"
@@ -2106,17 +2156,17 @@ msgstr "Por exemplo: 4 (jogadores divididos em 4 telas)"
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "Por exemplo: boards, family, outra tela"
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: Boards %%f to %%l"
-msgstr ""
+msgstr "Por exemplo: Conselhos %%f a %%l"
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: Boards %%f-%%l"
-msgstr ""
+msgstr "Por exemplo: Conselhos de Administração %%f-%%l"
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: Check-in started for %%s"
-msgstr ""
+msgstr "Por exemplo: Check-in iniciado por %%s"
 
 #, ai_translation
 msgid "E.g.: DOE"
@@ -2154,13 +2204,13 @@ msgstr "Por exemplo: Minha família de tela"
 msgid "E.g.: Paris"
 msgstr "Por exemplo: Paris"
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: Players %%f to %%l"
-msgstr ""
+msgstr "Por exemplo: Jogadores %%f a %%l"
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: Players %%f-%%l"
-msgstr ""
+msgstr "Por exemplo: Jogadores %%f-%%l"
 
 #, ai_translation
 msgid "E.g.: Please keep quiet until the end of the round!"
@@ -2174,9 +2224,9 @@ msgstr "Por exemplo: Sharly Chess Club"
 msgid "E.g.: Start of check-in"
 msgstr "Por exemplo: Início do check-in"
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: Start of check-in in %%s"
-msgstr ""
+msgstr "Por exemplo: Início do check-in em %%s"
 
 #, ai_translation
 msgid "E.g.: World championship"
@@ -2198,9 +2248,9 @@ msgstr "Por exemplo: john.doechess.com"
 msgid "EXEMPT"
 msgstr "EXEMPT"
 
-#, python-format
+#, ai_translation, python-format
 msgid "EXEMPT (already received at round #%(round)d)"
-msgstr ""
+msgstr "EXEMPT (já recebido na rodada n° %(round)d)"
 
 #, ai_translation
 msgid "Each bracket should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
@@ -2362,9 +2412,9 @@ msgstr "Ativar esta conta"
 msgid "Enable/disable the details on the cards below."
 msgstr "Ativar/desativar os detalhes nos cartões abaixo."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Encounter already happened at round #%(round)d"
-msgstr ""
+msgstr "O encontro já aconteceu na rodada n° %(round)d"
 
 #, ai_translation
 msgid "End round"
@@ -2378,8 +2428,9 @@ msgstr "Inserir resultados"
 msgid "Enter the result"
 msgstr "Digite o resultado"
 
+#, ai_translation
 msgid "Error when updating database [{database}]."
-msgstr ""
+msgstr "Erro ao atualizar o banco de dados [{database}]."
 
 #, fuzzy
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
@@ -2389,28 +2440,33 @@ msgstr "Estimated"
 msgid "Event"
 msgstr "Evento"
 
+#, ai_translation
 msgid "Event [{uniq_id}] has been created."
-msgstr ""
+msgstr "O evento [{uniq_id}] foi criado."
 
+#, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
-msgstr ""
+msgstr "Evento [{uniq_id}] foi excluído, a base de dados foi arquivada (1)."
 
+#, ai_translation
 msgid "Event [{uniq_id}] has been updated."
-msgstr ""
+msgstr "Evento [{uniq_id}] foi atualizado."
 
 #, ai_translation
 msgid "Event name"
 msgstr "Nome do evento"
 
+#, ai_translation
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
-msgstr ""
+msgstr "O ID único do evento foi renomeado de [{old_uniq_id}] para [{new_uniq_id}]."
 
 #, ai_translation
 msgid "Events"
 msgstr "Eventos"
 
+#, ai_translation
 msgid "Events ({num})"
-msgstr ""
+msgstr "Eventos ({num})"
 
 #, ai_translation
 msgid "Exclude"
@@ -2420,8 +2476,9 @@ msgstr "Excluir"
 msgid "Exclude the players matching the criterion instead of including them."
 msgstr "Exclua os jogadores que correspondem ao critério em vez de incluí-los."
 
+#, ai_translation
 msgid "Exclude: {values}"
-msgstr ""
+msgstr "Exclui: {values}"
 
 #, fuzzy
 msgid "Exempt *** FEMALE"
@@ -2439,9 +2496,9 @@ msgstr "Botão de saída:"
 msgid "Experimental features"
 msgstr "Características experimentais"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Experimental features in version %(version)s are:"
-msgstr ""
+msgstr "As características experimentais na versão %(version)s são:"
 
 #, ai_translation
 msgid "Export"
@@ -2495,9 +2552,9 @@ msgstr "ID da FIDE"
 msgid "FIDE ID:"
 msgstr "ID da FIDE:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
-msgstr ""
+msgstr "ID da FIDE: %(fide_id)s (clique para copiar para a área de transferência)."
 
 #, ai_translation
 msgid "FIDE Title:"
@@ -2515,18 +2572,21 @@ msgstr "FM"
 msgid "FORFEIT"
 msgstr "FORFEIT"
 
+#, ai_translation
 msgid "Failed to process DMG file: [{ex}]."
-msgstr ""
+msgstr "Falha ao processar o arquivo DMG: [{ex}]."
 
+#, ai_translation
 msgid "Failed to read [{download_url}]: [{ex}]."
-msgstr ""
+msgstr "Não foi possível ler [{download_url}]: [{ex}]."
 
 #, ai_translation
 msgid "Families"
 msgstr "Famílias"
 
+#, ai_translation
 msgid "Families ({num})"
-msgstr ""
+msgstr "Famílias ({num})"
 
 #, ai_translation
 msgid "Families are used to split a large amount of information across multiple screens."
@@ -2536,14 +2596,17 @@ msgstr "As famílias são usadas para dividir uma grande quantidade de informaç
 msgid "Family"
 msgstr "Família"
 
+#, ai_translation
 msgid "Family [{family_uniq_id}] has been created."
-msgstr ""
+msgstr "A família [{family_uniq_id}] foi criada."
 
+#, ai_translation
 msgid "Family [{family_uniq_id}] has been deleted."
-msgstr ""
+msgstr "A família [{family_uniq_id}] foi excluída."
 
+#, ai_translation
 msgid "Family [{family_uniq_id}] has been updated."
-msgstr ""
+msgstr "A família [{family_uniq_id}] foi atualizada."
 
 #, fuzzy
 msgid "Feb *** FEBRUARY"
@@ -2589,8 +2652,9 @@ msgstr "Federações"
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Female"
 
+#, ai_translation
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
-msgstr ""
+msgstr "Fide ID [{fide_id}] já presente no torneio [{tournament}]."
 
 #, ai_translation
 msgid "Fide Master"
@@ -2600,11 +2664,13 @@ msgstr "Mestre Fide"
 msgid "File"
 msgstr "Ficheiro"
 
+#, ai_translation
 msgid "File [{file}] not found."
-msgstr ""
+msgstr "Arquivo [{file}] não encontrado."
 
+#, ai_translation
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
-msgstr ""
+msgstr "O arquivo tem sufixo inválido [{suffix}] (esperado: {expected})."
 
 #, ai_translation
 msgid "Filter out players with a greater rating."
@@ -2646,9 +2712,9 @@ msgstr "Primeira classificação FIDE (baseada apenas neste torneio)"
 msgid "First board number:"
 msgstr "Número do primeiro quadro:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "First board number: %(board_number)d"
-msgstr ""
+msgstr "Número do primeiro quadro: %(board_number)d"
 
 #, ai_translation
 msgid "First board:"
@@ -2774,8 +2840,9 @@ msgstr "Gen"
 msgid "Gender"
 msgstr "Gênero"
 
+#, ai_translation
 msgid "Gender ({gender})"
-msgstr ""
+msgstr "Gênero ({gender})"
 
 #, fuzzy
 msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
@@ -2797,15 +2864,17 @@ msgstr "Gerar emparelhamentos para todas as rodadas do torneio."
 msgid "Generate pairings for this round."
 msgstr "Gerar emparelhamentos para esta rodada."
 
+#, ai_translation
 msgid "Generated by script {script_name} on {date}"
-msgstr ""
+msgstr "Gerado por script {script_name} em {date}"
 
 #, ai_translation
 msgid "Get started"
 msgstr "Começar"
 
+#, ai_translation
 msgid "Give/take away access level {access_level_short_name}"
-msgstr ""
+msgstr "Dar/tirar o nível de acesso {access_level_short_name}"
 
 #, ai_translation
 msgid "Go to the display controller."
@@ -2843,8 +2912,9 @@ msgstr "Grupo"
 msgid "Half-Point Bye"
 msgstr "Meia-Ponto Bye"
 
+#, ai_translation
 msgid "Half-Point Bye attributed to player [{player}]."
-msgstr ""
+msgstr "Half-Point Bye atribuído ao jogador [{player}]."
 
 #, ai_translation
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
@@ -2882,11 +2952,13 @@ msgstr "Página inicial:"
 msgid "Hort system"
 msgstr "sistema Hort"
 
+#, ai_translation
 msgid "Hour [{hour}] already exists."
-msgstr ""
+msgstr "A hora [{hour}] já existe."
 
+#, ai_translation
 msgid "Hour [{hour}] has been created."
-msgstr ""
+msgstr "A hora [{hour}] foi criada."
 
 #, ai_translation
 msgid "Hours"
@@ -2918,7 +2990,7 @@ msgstr "Se você não pode controlar quem tem acesso à rede à qual está conec
 
 #, ai_translation
 msgid "If you have an account you may connect by clicking on the <i>Profile</i> button in the menu."
-msgstr "Se você tiver uma conta, você pode se conectar clicando no botão i>Perfil/i> no menu."
+msgstr "Se você tiver uma conta, você pode se conectar clicando no botão <i>Perfil</i> no menu."
 
 #, ai_translation
 msgid "Illegal moves are not recorded."
@@ -2932,16 +3004,17 @@ msgstr "Gravação de movimentos ilegais:"
 msgid "Image"
 msgstr "Imagem"
 
+#, ai_translation
 msgid "Image ({num})"
-msgstr ""
+msgstr "Imagem ({num})"
 
 #, ai_translation
 msgid "Image screens show an image (local or remote)."
 msgstr "As telas de imagem mostram uma imagem (local ou remota)."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Image: %(image)s"
-msgstr ""
+msgstr "Imagem:  %(image)s"
 
 #, ai_translation
 msgid "Import"
@@ -2963,15 +3036,17 @@ msgstr "Importar um torneio para o evento de uma fonte externa."
 msgid "Import is unavailable once the tournament has started."
 msgstr "A importação não está disponível uma vez que o torneio tenha começado."
 
+#, ai_translation
 msgid "Impossible to add players to tournament [{tournament}]."
-msgstr ""
+msgstr "Impossível adicionar jogadores ao torneio [{tournament}]."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
-msgstr ""
+msgstr "Impossível definir um tchau nas últimas %(rounds)d rodadas do torneio"
 
+#, ai_translation
 msgid "Impossible to set a round number lower than the last round with pairings #{round}."
-msgstr ""
+msgstr "Impossível definir um número de rodada menor do que a última rodada com pares n° {round}."
 
 #, ai_translation
 msgid "In play"
@@ -3009,8 +3084,9 @@ msgstr "Inclui todos os outros níveis de acesso e concede acesso total ao aplic
 msgid "Incorrect installation, exiting."
 msgstr "Instalação incorreta, saída."
 
+#, ai_translation
 msgid "Incorrect path [{path}]."
-msgstr ""
+msgstr "Caminho incorreto [{path}]."
 
 #, ai_translation
 msgid "Increment (sec):"
@@ -3020,8 +3096,9 @@ msgstr "Incremento (seg):"
 msgid "Info"
 msgstr "Info"
 
+#, ai_translation
 msgid "Inherited by permission [{permission}]."
-msgstr ""
+msgstr "Herdado com permissão [{permission}]."
 
 #, ai_translation
 msgid "Input Screens may be used to allow players to enter their own results on a device that you make available at the venue."
@@ -3039,68 +3116,85 @@ msgstr "As telas de entrada mostram emparelhamentos por número de placa e permi
 msgid "Install"
 msgstr "Instalar"
 
+#, ai_translation
 msgid "Installation of [{lib}] failed."
-msgstr ""
+msgstr "A instalação de [{lib}] falhou."
 
+#, ai_translation
 msgid "Installation of release [{version}] failed, exiting."
-msgstr ""
+msgstr "A instalação da liberação [{version}] falhou, saindo."
 
+#, ai_translation
 msgid "Installed [{lib}]."
-msgstr ""
+msgstr "Instalado [{lib}]."
 
 #, ai_translation
 msgid "International Master"
 msgstr "Mestre Internacional"
 
+#, ai_translation
 msgid "Invalid FIDE ID [{fide_id}]."
-msgstr ""
+msgstr "ID FIDE inválido [{fide_id}]."
 
 #, ai_translation
 msgid "Invalid TRF25 string: unexpected characters."
 msgstr "Invalid TRF25 string: caracteres inesperados."
 
+#, ai_translation
 msgid "Invalid URL [{background_image}]."
-msgstr ""
+msgstr "URL inválido [{background_image}]."
 
 #, ai_translation
 msgid "Invalid account."
 msgstr "Conta inválida."
 
+#, ai_translation
 msgid "Invalid amount [{amount}]."
-msgstr ""
+msgstr "Valor inválido [{amount}]."
 
+#, ai_translation
 msgid "Invalid board number [{fixed_board_str}]."
-msgstr ""
+msgstr "Número de placa inválido [{fixed_board_str}]."
 
+#, ai_translation
 msgid "Invalid color [{color}] ([#RRGGBB] expected)."
-msgstr ""
+msgstr "Cor inválida [{color}] ([#RRGGBB] esperado)."
 
+#, ai_translation
 msgid "Invalid date format (expected: {format})."
-msgstr ""
+msgstr "Formato de data inválido (esperado: {format})."
 
+#, ai_translation
 msgid "Invalid date format [{date}] (expected: {format})"
-msgstr ""
+msgstr "Formato de data inválido [{date}] (esperado: {format})"
 
+#, ai_translation
 msgid "Invalid delay [{delay}] (positive integer expected)."
-msgstr ""
+msgstr "Atraso inválido [{delay}] (número inteiro positivo esperado)."
 
+#, ai_translation
 msgid "Invalid expression [{expression}]"
-msgstr ""
+msgstr "Expressão inválida [{expression}]"
 
+#, ai_translation
 msgid "Invalid federation [{federation}]."
-msgstr ""
+msgstr "Federação inválida [{federation}]."
 
+#, ai_translation
 msgid "Invalid fixed board number [{fixed_board}]."
-msgstr ""
+msgstr "Número de cartão fixo inválido [{fixed_board}]."
 
+#, ai_translation
 msgid "Invalid format (expected: {format})."
-msgstr ""
+msgstr "Formato inválido (esperado: {format})."
 
+#, ai_translation
 msgid "Invalid locale [{locale}]."
-msgstr ""
+msgstr "Local inválido [{locale}]."
 
+#, ai_translation
 msgid "Invalid mail [{mail}]."
-msgstr ""
+msgstr "Correio inválido [{mail}]."
 
 #, ai_translation
 msgid "Invalid password."
@@ -3110,14 +3204,17 @@ msgstr "Senha inválida."
 msgid "Invalid period:"
 msgstr "Período inválido:"
 
+#, ai_translation
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
-msgstr ""
+msgstr "Tipo inválido [{type}] para o campo [{field}] (esperado: {expected})."
 
+#, ai_translation
 msgid "Invalid value [{value}] for field [{field}] (expected one of [{expected_values}])."
-msgstr ""
+msgstr "Valor inválido [{value}] para o campo [{field}] (esperado um de [{expected_values}])."
 
+#, ai_translation
 msgid "Invalid value [{value}]."
-msgstr ""
+msgstr "Valor inválido [{value}]."
 
 #, ai_translation
 msgid "It is highly recommended to set at least one tie-break."
@@ -3187,18 +3284,21 @@ msgstr "ltimo jogador:"
 msgid "Last results"
 msgstr "ltimos resultados"
 
+#, ai_translation
 msgid "Last results ({num})"
-msgstr ""
+msgstr "ltimos resultados ({num})"
 
 #, ai_translation
 msgid "Last update"
 msgstr "ltima atualização"
 
+#, ai_translation
 msgid "Last update: {updated_at}"
-msgstr ""
+msgstr "ltima atualização: {updated_at}"
 
+#, ai_translation
 msgid "Last update: {updated_at} (outdated)"
-msgstr ""
+msgstr "ltima atualização: {updated_at} (desatualizado)"
 
 #, ai_translation
 msgid "Launch a browser on startup"
@@ -3208,17 +3308,19 @@ msgstr "Iniciar um navegador na inicialização"
 msgid "Layout"
 msgstr "Layout"
 
+#, ai_translation
 msgid "Library [{lib}] is missing."
-msgstr ""
+msgstr "A biblioteca [{lib}] está faltando."
 
 #, ai_translation
 msgid "Limit adjustment"
 msgstr "Ajuste do limite"
 
+#, ai_translation
 msgid "Limit {operator} {count} half-point"
 msgid_plural "Limit {operator} {count} half-points"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Limite {operator} {count} meio ponto"
+msgstr[1] "Limite {operator} {count} meio ponto"
 
 #, ai_translation
 msgid "Link to a board not involving the player."
@@ -3236,8 +3338,9 @@ msgstr "Lista de jogadores"
 msgid "Loading more results…"
 msgstr "Atualizando... Hotéis similares"
 
+#, ai_translation
 msgid "Local URL: {local_url}"
-msgstr ""
+msgstr "URL local: {local_url}"
 
 #, ai_translation
 msgid "Local databases"
@@ -3259,9 +3362,9 @@ msgstr "Sair"
 msgid "Log-level specific colors"
 msgstr "Cores específicas de nível de log"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Logged in as [%(account_name)s]"
-msgstr ""
+msgstr "logado como [%(account_name)s]"
 
 #, ai_translation
 msgid "Loss"
@@ -3279,9 +3382,9 @@ msgstr "MM/DD/ AAAA"
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
 msgstr "Mail"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
-msgstr ""
+msgstr "Mail: %(mail)s (clique para copiar para a área de transferência)."
 
 #, ai_translation
 msgid "Main category"
@@ -3351,11 +3454,11 @@ msgstr "Março"
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marque esta rodada como mais e defina a próxima como a rodada atual."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Max age: %(num)d minute"
 msgid_plural "Max age: %(num)d minutes"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Idade máxima: %(num)d minuto"
+msgstr[1] "Idade máxima: %(num)d minutos"
 
 #, ai_translation
 msgid "Max age: unlimited"
@@ -3365,9 +3468,9 @@ msgstr "Idade máxima: ilimitado"
 msgid "Max byes:"
 msgstr "Max byes:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Max number: %(num)d"
-msgstr ""
+msgstr "Número máximo: %(num)d"
 
 #, ai_translation
 msgid "Max number: unlimited"
@@ -3377,9 +3480,9 @@ msgstr "Número máximo: ilimitado"
 msgid "Maximum age of the results:"
 msgstr "Idade máxima dos resultados:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Maximum number of byes: %(max_byes)d"
-msgstr ""
+msgstr "Número máximo de byes: %(max_byes)d"
 
 #, ai_translation
 msgid "Maximum number of points (included):"
@@ -3409,24 +3512,25 @@ msgstr "Pode ser substituído em uma base per-tournament."
 msgid "May be used for per-round prize giveaways etc."
 msgstr "Pode ser usado para brindes de prêmios por rodada etc."
 
+#, ai_translation
 msgid "Median {value}"
-msgstr ""
+msgstr "Median {value}"
 
 #, ai_translation
 msgid "Menu link label:"
 msgstr "Etiqueta do link do menu:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Menu link label: %(menu_label)s"
-msgstr ""
+msgstr "Rótulo do link do menu: %(menu_label)s"
 
 #, ai_translation
 msgid "Menu link label: none"
 msgstr "Etiqueta do link do menu: none"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Menu: %(menu)s"
-msgstr ""
+msgstr "Menu: %(menu)s"
 
 #, ai_translation
 msgid "Menu: none"
@@ -3444,8 +3548,9 @@ msgstr "Número mínimo de pontos (incluído):"
 msgid "Minimum rating"
 msgstr "Classificação mínima"
 
+#, ai_translation
 msgid "Missing required field [{field}]."
-msgstr ""
+msgstr "Faltando campo obrigatório [{field}]."
 
 #, fuzzy
 msgid "Mo *** MONDAY"
@@ -3455,25 +3560,25 @@ msgstr "Mo"
 msgid "Monetary prizes only"
 msgstr "Apenas prémios monetários"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Moved down %(num)d place"
 msgid_plural "Moved down %(num)d places"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Movido para baixo %(num)d lugar"
+msgstr[1] "Movido para baixo %(num)d lugares"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Moved up %(num)d place"
 msgid_plural "Moved up %(num)d places"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Movido para cima %(num)d lugar"
+msgstr[1] "Movido para cima %(num)d lugares"
 
 #, ai_translation
 msgid "Moves:"
 msgstr "Movimentos:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Moving on to round #%(round)d"
-msgstr ""
+msgstr "Passando para a rodada n° %(round)d"
 
 #, ai_translation
 msgid "My category"
@@ -3519,9 +3624,9 @@ msgstr "Name"
 msgid "Name:"
 msgstr "Nome:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Name: %(screen_set_name)s"
-msgstr ""
+msgstr "Nome: %(screen_set_name)s"
 
 #, ai_translation
 msgid "Name: by default"
@@ -3547,13 +3652,13 @@ msgstr "Rede"
 msgid "Network:"
 msgstr "Rede:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "New FIDE rating (assuming <i>k</i> of <b>%(k)d</b>)"
-msgstr ""
+msgstr "Nova classificação FIDE (assumindo <i>k</i> de <b>%(k)d</b>)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "New FIDE rating (based on player's official <i>k</i> of <b>%(k)d</b>)"
-msgstr ""
+msgstr "Nova classificação FIDE (baseada na classificação oficial do jogador <i>k/<i> de <b>%(k)d</b>)"
 
 #, ai_translation
 msgid "New category"
@@ -3915,13 +4020,13 @@ msgstr "Número (2 lados, torneio na parte de trás)"
 msgid "Number (tournament on front)"
 msgstr "Número (torneio na frente)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
-msgstr ""
+msgstr "Número de bytes: %(byes)d (máximo: %(max_byes)d)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
-msgstr ""
+msgstr "Número de rodadas finais em que byes são proibidos: %(last_rounds_no_byes)d"
 
 #, ai_translation
 msgid "Number of games won"
@@ -3935,9 +4040,9 @@ msgstr "Número de pontos-meio acima ou abaixo do limite de 50%% necessário par
 msgid "Number of players"
 msgstr "Número de jogadores"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Number of players: %(num)d"
-msgstr ""
+msgstr "Número de jogadores: %(num)d"
 
 #, ai_translation
 msgid "Number of prizes"
@@ -3959,8 +4064,9 @@ msgstr "Número de ecrãs:"
 msgid "Number of wins"
 msgstr "Número de vitórias"
 
+#, ai_translation
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
-msgstr ""
+msgstr "Os números {first} e {last} não são compatíveis ({first} > {last})."
 
 #, ai_translation
 msgid "OK"
@@ -4016,7 +4122,7 @@ msgstr "Somente usuários permitidos podem ver rotadores privados."
 
 #, ai_translation
 msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
-msgstr "Somente eventos atuais e futuros que foram declarados como b>públicos/b> pelo administrador são visíveis através da rede."
+msgstr "Somente eventos atuais e futuros que foram declarados como <b>públicos</b> pelo administrador são visíveis através da rede."
 
 #, ai_translation
 msgid "Only one age category is expected with options including other categories."
@@ -4034,9 +4140,9 @@ msgstr "Apenas o ano de nascimento é necessário para a maioria dos torneios. p
 msgid "Open Admin Interface"
 msgstr "Abrir interface de administração"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Open check-in for tournament [%(tournament)s]."
-msgstr ""
+msgstr "Aberto check-in para o torneio [%(tournament)s]."
 
 #, ai_translation
 msgid "Open documentation"
@@ -4050,8 +4156,9 @@ msgstr "Abrir/fechar check-in"
 msgid "Open/close check-in."
 msgstr "Abrir/fechar check-in."
 
+#, ai_translation
 msgid "Opening the welcome page [{url}] in a browser…"
-msgstr ""
+msgstr "Abrindo a página de boas-vindas [{url}] em um navegador..."
 
 #, ai_translation
 msgid "Opponent"
@@ -4093,8 +4200,9 @@ msgstr "Organização"
 msgid "Organize your prizes into brackets to manage how they’re awarded. A player can win only one prize per bracket, but can win prizes in multiple brackets."
 msgstr "Organize seus prêmios em colchetes para gerenciar como eles são concedidos. Um jogador pode ganhar apenas um prêmio por colchetes, mas pode ganhar prêmios em vários colchetes."
 
+#, ai_translation
 msgid "Origin: {template_origin}"
-msgstr ""
+msgstr "Origem: {template_origin}"
 
 #, ai_translation
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
@@ -4176,9 +4284,9 @@ msgstr "Emparelhar os jogadores desemparelhados uns com os outros."
 msgid "Pair tournament"
 msgstr "Torneio de pares"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Paired against: %(opponent_name)s"
-msgstr ""
+msgstr "Emparelhado contra: %(opponent_name)s"
 
 #, ai_translation
 msgid "Pairing"
@@ -4192,9 +4300,9 @@ msgstr "Emparelhar Alocated Bye"
 msgid "Pairing Cards"
 msgstr "Cartões de Emparelhar"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Pairing information for round %(round)d"
-msgstr ""
+msgstr "Informação de emparelhamento para a ronda %(round)d"
 
 #, ai_translation
 msgid "Pairing not found."
@@ -4220,8 +4328,9 @@ msgstr "Estilo de emparelhamento:"
 msgid "Pairing system"
 msgstr "Sistema de emparelhamento"
 
+#, ai_translation
 msgid "Pairing-Allocated Bye assigned to player [{player}]."
-msgstr ""
+msgstr "Emparelhamento-Atribuído Bye atribuído ao jogador [{player}]."
 
 #, ai_translation
 msgid "Pairings"
@@ -4231,31 +4340,37 @@ msgstr "Pares"
 msgid "Pairings by board"
 msgstr "Emparelhamentos por tabuleiro"
 
+#, ai_translation
 msgid "Pairings by board ({num})"
-msgstr ""
+msgstr "Emparelhamentos por tabuleiro ({num})"
 
+#, ai_translation
 msgid "Pairings by board ({tournament_name})"
-msgstr ""
+msgstr "Emparelhamentos por tabuleiro ({tournament_name})"
 
 #, ai_translation
 msgid "Pairings by player"
 msgstr "Pares por jogador"
 
+#, ai_translation
 msgid "Pairings by player ({num})"
-msgstr ""
+msgstr "Pares por jogador ({num})"
 
+#, ai_translation
 msgid "Pairings by player ({tournament_name})"
-msgstr ""
+msgstr "Pares por jogador ({tournament_name})"
 
 #, ai_translation
 msgid "Pairings disabled while check-in is open."
 msgstr "Pares desativados enquanto o check-in está aberto."
 
+#, ai_translation
 msgid "Pairings for round #{round}"
-msgstr ""
+msgstr "Emparelhamentos para a ronda n° {round}"
 
+#, ai_translation
 msgid "Pairings generated for all rounds of tournament [{tournament}]."
-msgstr ""
+msgstr "Emparelhamentos gerados para todas as rodadas do torneio [{tournament}]."
 
 #, ai_translation
 msgid "Pairings generation not allowed if previous rounds have missing results or unpaired players."
@@ -4273,9 +4388,9 @@ msgstr "Os emparelhamentos devem respeitar rigorosamente as regras do torneio e 
 msgid "Pairings successfully generated."
 msgstr "Emparelhamentos gerados com sucesso."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Pairings: %(pairing_variation)s"
-msgstr ""
+msgstr "Pares: %(pairing_variation)s"
 
 #, ai_translation
 msgid "Parings by player"
@@ -4285,8 +4400,9 @@ msgstr "Parings por jogador"
 msgid "Participation Statistics"
 msgstr "Participação Estatísticas"
 
+#, ai_translation
 msgid "Passed ({num})"
-msgstr ""
+msgstr "Passou ({num})"
 
 #, ai_translation
 msgid "Passed events"
@@ -4308,8 +4424,9 @@ msgstr "Pendente"
 msgid "Perfect tournament performance"
 msgstr "Desempenho de torneio perfeito"
 
+#, ai_translation
 msgid "Performance indicators for round #{round}"
-msgstr ""
+msgstr "Indicadores de desempenho para rodada n° #{round}"
 
 #, ai_translation
 msgid "Period"
@@ -4339,9 +4456,9 @@ msgstr "Phone"
 msgid "Phone number:"
 msgstr "Número de telefone:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Phone: %(phone)s (click to copy to the clipboard)."
-msgstr ""
+msgstr "Telefone: %(phone)s (clique para copiar para a área de transferência)."
 
 #, ai_translation
 msgid "Place Cards"
@@ -4371,40 +4488,49 @@ msgstr "Jogador Elo"
 msgid "Player Elo [Pts]"
 msgstr "Jogador Elo [Pts]"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Player [%(player)s] has been created."
-msgstr ""
+msgstr "O jogador [%(player)s] foi criado."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament)s]."
-msgstr ""
+msgstr "Jogador [%(player)s] está ausente para a próxima rodada no torneio [1]."
 
+#, ai_translation
 msgid "Player [{player_id}] - round {round}: "
-msgstr ""
+msgstr "Jogador [{player_id}] - ronda {round}:"
 
+#, ai_translation
 msgid "Player [{player_id}]: {error}"
-msgstr ""
+msgstr "Jogador [{player_id}]: {error}"
 
+#, ai_translation
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
-msgstr ""
+msgstr "Jogador [{player}] foi criado, mas não corresponde aos critérios do torneio: 1"
 
+#, ai_translation
 msgid "Player [{player}] has been created."
-msgstr ""
+msgstr "O jogador [{player}] foi criado."
 
+#, ai_translation
 msgid "Player [{player}] has been moved from tournament [{src_tournament}] to tournament [{dst_tournament}]."
-msgstr ""
+msgstr "Jogador [{player}] foi transferido do torneio [{src_tournament}] para o torneio [{dst_tournament}]."
 
+#, ai_translation
 msgid "Player [{player}] has been paired against [{opponent}] at board #{board}."
-msgstr ""
+msgstr "Jogador [{player}] foi emparelhado contra [{opponent}] a bordo n° {board}."
 
+#, ai_translation
 msgid "Player [{player}] has pairings in tournament [{tournament}]."
-msgstr ""
+msgstr "Jogador [{player}] tem pares no torneio [{tournament}]."
 
+#, ai_translation
 msgid "Player [{player}] has returned for this round."
-msgstr ""
+msgstr "O jogador [{player}] voltou para esta rodada."
 
+#, ai_translation
 msgid "Player does not match tournament criteria: {names}"
-msgstr ""
+msgstr "O jogador não corresponde aos critérios do torneio: {names}"
 
 #, ai_translation
 msgid "Player estimation explained in the rules"
@@ -4430,9 +4556,9 @@ msgstr "Seleção do jogador (por ordem alfabética)"
 msgid "Player selection (by rank)"
 msgstr "Seleção de jogadores (por classificação)"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
-msgstr ""
+msgstr "Conjuntos de ecrã do jogador [%(screen_uniq_id)s]"
 
 #, ai_translation
 msgid "Player's club"
@@ -4454,28 +4580,29 @@ msgstr "Jogadores"
 msgid "Players (none now)"
 msgstr "Jogadores (nenhuma agora)"
 
+#, ai_translation
 msgid "Players ({num})"
-msgstr ""
+msgstr "Jogadores ({num})"
 
 #, ai_translation
 msgid "Players check-in list"
 msgstr "Lista de check-in dos jogadores"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Players from #%(first)d to #%(last)d"
-msgstr ""
+msgstr "Jogadores de n° %(first)d a n° #%(last)d"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Players from %(first)s to %(last)s"
-msgstr ""
+msgstr "Jogadores de %(first)s a %(last)s"
 
 #, ai_translation
 msgid "Players may have default estimated ratings depending on the activated plugins."
 msgstr "Os jogadores podem ter classificações estimadas padrão, dependendo dos plugins ativados."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Players of category [%(category)s]"
-msgstr ""
+msgstr "Jogadores da categoria [%(category)s]"
 
 #, ai_translation
 msgid "Players screens show pairings by alphabetical order."
@@ -4485,9 +4612,9 @@ msgstr "As telas dos jogadores mostram emparelhamentos por ordem alfabética."
 msgid "Players update"
 msgstr "Os jogadores atualizam"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Players update for tournament [%(tournament)s]"
-msgstr ""
+msgstr "Atualização dos jogadores para o torneio [%(tournament)s]"
 
 #, ai_translation
 msgid "Players' opponent: displayed"
@@ -4497,17 +4624,17 @@ msgstr "O adversário dos jogadores: exibido"
 msgid "Players' opponent: hidden"
 msgstr "O adversário dos jogadores: oculto"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Players: %(num)d"
-msgstr ""
+msgstr "Jogadores: %(num)d"
 
 #, ai_translation
 msgid "Playing"
 msgstr "Jogando"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Playing in tournament [%(name)s]"
-msgstr ""
+msgstr "Jogando em torneio [%(name)s]"
 
 #, ai_translation
 msgid "Please ask your administrator to set a password."
@@ -4589,26 +4716,29 @@ msgstr "Por favor aguarde..."
 msgid "Plugins"
 msgstr "Plugins"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Points: %(min)s or more"
-msgstr ""
+msgstr "Pontos: %(min)s ou mais"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Points: %(min)s to %(max)s"
-msgstr ""
+msgstr "Pontos: %(min)s a %(max)s"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Points: up to %(max)s"
-msgstr ""
+msgstr "Pontos: até %(max)s"
 
+#, ai_translation
 msgid "Port [{port}] already in use, can not start Sharly Chess server."
-msgstr ""
+msgstr "Porta [{port}] já em uso, não pode iniciar o servidor Sharly Chess."
 
+#, ai_translation
 msgid "Port [{port}] already in use."
-msgstr ""
+msgstr "Porto [{port}] já em uso."
 
+#, ai_translation
 msgid "Port: {port}"
-msgstr ""
+msgstr "Porto: {port}"
 
 #, ai_translation
 msgid "Pref."
@@ -4650,17 +4780,21 @@ msgstr "Prize brackets"
 msgid "Prize assignment"
 msgstr "atribuição de prémio"
 
+#, ai_translation
 msgid "Prize category [{prize_category}] has been duplicated."
-msgstr ""
+msgstr "A categoria de prêmio [{prize_category}] foi duplicada."
 
+#, ai_translation
 msgid "Prize category [{prize_category}] successfully created."
-msgstr ""
+msgstr "Categoria do prêmio [{prize_category}] criada com sucesso."
 
+#, ai_translation
 msgid "Prize category [{prize_category}] successfully deleted."
-msgstr ""
+msgstr "Categoria do prêmio [{prize_category}] excluída com sucesso."
 
+#, ai_translation
 msgid "Prize category [{prize_category}] successfully updated."
-msgstr ""
+msgstr "Categoria do prêmio [{prize_category}] atualizado com sucesso."
 
 #, ai_translation
 msgid "Prize currency"
@@ -4670,8 +4804,9 @@ msgstr "moeda do prémio"
 msgid "Prize defaults have been updated."
 msgstr "Os defaults dos prêmios foram atualizados."
 
+#, ai_translation
 msgid "Prize group [{prize_group}] successfully created."
-msgstr ""
+msgstr "Grupo de prêmios [{prize_group}] criado com sucesso."
 
 #, ai_translation
 msgid "Prize list"
@@ -4801,26 +4936,29 @@ msgstr "Rank"
 msgid "Ranking"
 msgstr "Ranking"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Ranking %f to %l"
-msgstr ""
+msgstr "Classificação %f a %l"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Ranking %f-%l"
-msgstr ""
+msgstr "Classificação %f-%l"
 
+#, ai_translation
 msgid "Ranking ({num})"
-msgstr ""
+msgstr "Classificação ({num})"
 
+#, ai_translation
 msgid "Ranking ({tournament_name})"
-msgstr ""
+msgstr "Classificação ({tournament_name})"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Ranking after round #%(round)d"
-msgstr ""
+msgstr "Classificação após rodada n° %(round)d"
 
+#, ai_translation
 msgid "Ranking after round #{round}"
-msgstr ""
+msgstr "Classificação após rodada n° {round}""
 
 #, ai_translation
 msgid "Ranking before the first round"
@@ -4890,9 +5028,9 @@ msgstr "Classificação:"
 msgid "Ratings"
 msgstr "Classificações"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
-msgstr ""
+msgstr "Tie-breaks recomendados para um torneio [%(pairing_system)s]:"
 
 #, ai_translation
 msgid "Record"
@@ -4902,11 +5040,13 @@ msgstr "Gravar"
 msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Record"
 
+#, ai_translation
 msgid "Reference to unknown board [{board_id}]."
-msgstr ""
+msgstr "Referência ao quadro desconhecido [{board_id}]."
 
+#, ai_translation
 msgid "Reference to unknown player [{player_id}]."
-msgstr ""
+msgstr "Referência a jogador desconhecido [{player_id}]."
 
 #, ai_translation
 msgid "Refresh"
@@ -4916,8 +5056,9 @@ msgstr "Refrescar"
 msgid "Refresh this page."
 msgstr "Atualize esta página."
 
+#, ai_translation
 msgid "Release {version} has been installed in [{folder}]."
-msgstr ""
+msgstr "Release 0 foi instalado em [{folder}]."
 
 #, ai_translation
 msgid "Reload the page"
@@ -4939,25 +5080,25 @@ msgstr "Renomear evento"
 msgid "Replace"
 msgstr "Substituir"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
-msgstr ""
+msgstr "Substituir [%(old)s] por [%(new)s]"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Replace player [%(player)s]"
-msgstr ""
+msgstr "Substituir jogador [%(player)s]"
 
 #, ai_translation
 msgid "Replace the player to update this field."
 msgstr "Substitua o jogador para atualizar este campo."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Replaces category [%(category)s] and deletes all the criteria of this category."
-msgstr ""
+msgstr "Substitui a categoria [%(category)s] e exclui todos os critérios desta categoria."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Replaces category [%(category)s]."
-msgstr ""
+msgstr "Substitui a categoria [%(category)s]."
 
 #, ai_translation
 msgid "Request to the database failed (timeout)."
@@ -4967,9 +5108,9 @@ msgstr "O pedido para a base de dados falhou (tempo limite)."
 msgid "Request to the database failed."
 msgstr "O pedido à base de dados falhou."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Required by plugin <b>%(plugin)s</b>."
-msgstr ""
+msgstr "Necessário pelo plugin <b>%(plugin)s</b>."
 
 #, ai_translation
 msgid "Res. ** RESULT FOR TABLE HEADER"
@@ -4987,20 +5128,25 @@ msgstr "Restaurar"
 msgid "Result"
 msgstr "Resultado"
 
+#, ai_translation
 msgid "Result [{result}] can't be used with a board."
-msgstr ""
+msgstr "O resultado [{result}] não pode ser usado com um tabuleiro."
 
+#, ai_translation
 msgid "Result [{result}] can't be used with an opponent."
-msgstr ""
+msgstr "O resultado [{result}] não pode ser usado com um oponente."
 
+#, ai_translation
 msgid "Result [{result}] can't be used without a board."
-msgstr ""
+msgstr "O resultado [{result}] não pode ser usado sem uma prancha."
 
+#, ai_translation
 msgid "Result [{result}] can't be used without an opponent."
-msgstr ""
+msgstr "O resultado [{result}] não pode ser usado sem um oponente."
 
+#, ai_translation
 msgid "Result [{result}] is incompatible with the opponent's result [{opponent_result}]."
-msgstr ""
+msgstr "O resultado [{result}] é incompatível com o resultado do adversário [{opponent_result}]."
 
 #, ai_translation
 msgid "Results"
@@ -5014,8 +5160,9 @@ msgstr "Resultados de entrada"
 msgid "Results entry via public screens"
 msgstr "Entrada de resultados através de ecrãs públicos"
 
+#, ai_translation
 msgid "Results for round #{round}"
-msgstr ""
+msgstr "Resultados para rodada n° #{round}"
 
 #, ai_translation
 msgid "Results screens show the last results (most recent first)."
@@ -5045,25 +5192,29 @@ msgstr "Rk. O."
 msgid "Rnd.Boa"
 msgstr "Rnd.Boa"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Rotation delay: %(seconds)d sec."
-msgstr ""
+msgstr "Atraso de rotação: %(seconds)d seg."
 
 #, ai_translation
 msgid "Rotator"
 msgstr "Rotator"
 
+#, ai_translation
 msgid "Rotator [{rotator}] has been assigned to controller [{display_controller}]."
-msgstr ""
+msgstr "O rotador [{rotator}] foi atribuído ao controlador [{display_controller}]."
 
+#, ai_translation
 msgid "Rotator [{rotator}] has been created."
-msgstr ""
+msgstr "O rotador [{rotator}] foi criado."
 
+#, ai_translation
 msgid "Rotator [{rotator}] has been deleted."
-msgstr ""
+msgstr "O rotador [{rotator}] foi excluído."
 
+#, ai_translation
 msgid "Rotator [{rotator}] has been updated."
-msgstr ""
+msgstr "O rotador [{rotator}] foi atualizado."
 
 #, ai_translation
 msgid "Rotator automatically rotate between multiple screens."
@@ -5073,43 +5224,45 @@ msgstr "O rotador gira automaticamente entre várias telas."
 msgid "Rotators"
 msgstr "Rotadores"
 
+#, ai_translation
 msgid "Rotators ({num})"
-msgstr ""
+msgstr "Rotadores ({num})"
 
 #, ai_translation
 msgid "Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event."
 msgstr "Os rotadores permitem que você gire através de várias telas, ou famílias de telas, para exibir muitas informações em seu evento."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Rotators: %(num)d"
-msgstr ""
+msgstr "Rotadores:  %(num)d"
 
 #, ai_translation
 msgid "Round"
 msgstr "Rodada"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Round #%(round)d"
-msgstr ""
+msgstr "Rodada n° %(round)d"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Round #%(round)d is finished."
-msgstr ""
+msgstr "A rodada n° %(round)d está terminada."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Round #%(round)d is running."
-msgstr ""
+msgstr "A ronda n° %(round)d está a correr."
 
 #, ai_translation
 msgid "Round #0 is forbidden."
-msgstr "A Rodada #0 é proibida."
+msgstr "A Rodada n° 0 é proibida."
 
+#, ai_translation
 msgid "Round #{round}"
-msgstr ""
+msgstr "Rodada n° {round}"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Round %(round)d - Board %(board_number)d"
-msgstr ""
+msgstr "Rodada %(round)d - Tabuleiro %(board_number)d"
 
 #, ai_translation
 msgid "Round number or text"
@@ -5123,9 +5276,9 @@ msgstr "Indicadores de desempenho das rondas"
 msgid "Round skipped"
 msgstr "Rodada skipped"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Round {} started for %%s"
-msgstr ""
+msgstr "Rodada {} começada por %%s"
 
 #, ai_translation
 msgid "Round-Robin"
@@ -5135,9 +5288,9 @@ msgstr "Round-Robin"
 msgid "Round:"
 msgstr "Rodada:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Round: %(round)d"
-msgstr ""
+msgstr "Rodada: %(round)d"
 
 #, ai_translation
 msgid "Round: the last finished round"
@@ -5219,17 +5372,21 @@ msgstr "Tela"
 msgid "Screen Management"
 msgstr "Gerenciamento de tela"
 
+#, ai_translation
 msgid "Screen [{screen_uniq_id}] has been assigned to controller [{display_controller}]."
-msgstr ""
+msgstr "A tela [{screen_uniq_id}] foi atribuída ao controlador [{display_controller}]."
 
+#, ai_translation
 msgid "Screen [{screen_uniq_id}] has been created."
-msgstr ""
+msgstr "A tela [{screen_uniq_id}] foi criada."
 
+#, ai_translation
 msgid "Screen [{screen_uniq_id}] has been deleted."
-msgstr ""
+msgstr "A tela [{screen_uniq_id}] foi excluída."
 
+#, ai_translation
 msgid "Screen [{screen_uniq_id}] has been updated."
-msgstr ""
+msgstr "A tela [{screen_uniq_id}] foi atualizada."
 
 #, ai_translation
 msgid "Screen configuration has been updated."
@@ -5239,9 +5396,9 @@ msgstr "A configuração da tela foi atualizada."
 msgid "Screen families:"
 msgstr "Famílias da tela:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Screen families: %(num)d"
-msgstr ""
+msgstr "Famílias de ecrã: %(num)d"
 
 #, ai_translation
 msgid "Screen settings"
@@ -5267,9 +5424,9 @@ msgstr "As telas podem exibir informações sobre o seu evento, como listas de j
 msgid "Screens:"
 msgstr "Telas:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Screens: %(num)d"
-msgstr ""
+msgstr "Telas: %(num)d"
 
 #, ai_translation
 msgid "Scroll down to review all the norms…"
@@ -5279,9 +5436,9 @@ msgstr "Para rever todas as normas..."
 msgid "Search"
 msgstr "Pesquisar"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Search by: %(fields)s"
-msgstr ""
+msgstr "Procurar por: %(fields)s"
 
 #, ai_translation
 msgid "Search for player"
@@ -5323,9 +5480,9 @@ msgstr "Selecione os jogadores e os dados a serem atualizados:"
 msgid "Selection"
 msgstr "Seleção"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Selection: %(selection)s"
-msgstr ""
+msgstr "Selecção: %(selection)s"
 
 #, ai_translation
 msgid "Senior categories"
@@ -5347,9 +5504,9 @@ msgstr "Configuração do Servidor"
 msgid "Server is already running!"
 msgstr "O servidor já está funcionando!"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Set FIDE ID [%(new)s]"
-msgstr ""
+msgstr "Definir ID FIDE [%(new)s]"
 
 #, ai_translation
 msgid "Set Full-Points Byes"
@@ -5471,11 +5628,13 @@ msgstr "Como as classificações são usadas no cálculo do tie-break, é import
 msgid "Single Screens"
 msgstr "Telas nicas"
 
+#, ai_translation
 msgid "Single Screens ({num})"
-msgstr ""
+msgstr "Telas nicas ({num})"
 
+#, ai_translation
 msgid "Size ({unit}): {width}x{height}"
-msgstr ""
+msgstr "Tamanho ({unit}): {width}x{height}"
 
 #, ai_translation
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
@@ -5565,8 +5724,9 @@ msgstr "Dividido por:"
 msgid "Staff"
 msgstr "Pessoal"
 
+#, ai_translation
 msgid "Staff ({num})"
-msgstr ""
+msgstr "Pessoal ({num})"
 
 #, ai_translation
 msgid "Staff default configuration"
@@ -5604,9 +5764,9 @@ msgstr "Sistema suíço padrão"
 msgid "Standard:"
 msgstr "Padrão:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Start of round {} in %%s"
-msgstr ""
+msgstr "Início da ronda {} em %%s"
 
 #, ai_translation
 msgid "Start of the sporting season"
@@ -5640,8 +5800,9 @@ msgstr "Forte"
 msgid "Su *** SUNDAY"
 msgstr "Su"
 
+#, ai_translation
 msgid "Successfully logged in as [{account}]."
-msgstr ""
+msgstr "logado com sucesso como [{account}]."
 
 #, ai_translation
 msgid "Successfully logged out."
@@ -5705,16 +5866,19 @@ msgstr "Th"
 
 #, ai_translation
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
-msgstr "As regras da FIDE estipulam que apenas os emparelhamentos da rodada b>prior/b> para a atual podem ser modificados. Mudanças nos emparelhamentos anteriores a isso devem ser feitas no b>end/b> do torneio, b>after/b> os rankings foram publicados, e apenas para o cálculo das classificações da FIDE."
+msgstr "As regras da FIDE estipulam que apenas os emparelhamentos da rodada <b>prior</b> para a atual podem ser modificados. Mudanças nos emparelhamentos anteriores a isso devem ser feitas no <b>end</b> do torneio, <b>after</b> os rankings foram publicados, e apenas para o cálculo das classificações da FIDE."
 
+#, ai_translation
 msgid "The FIDE will use the opponent's standard rating for this game ({rating})."
-msgstr ""
+msgstr "A FIDE usará a classificação padrão do oponente para este jogo ({rating})."
 
+#, ai_translation
 msgid "The FIDE will use the player's standard rating for this game ({rating})."
-msgstr ""
+msgstr "A FIDE usará a classificação padrão do jogador para este jogo ({rating})."
 
+#, ai_translation
 msgid "The FIDE will use the standard ratings of both players for this game ({rating_opponent} and {rating_player})."
-msgstr ""
+msgstr "A FIDE usará as classificações padrão de ambos os jogadores para este jogo ({rating_opponent} e {rating_player})."
 
 #, ai_translation
 msgid "The URL of the image to display."
@@ -5736,8 +5900,9 @@ msgstr "O administrador tem todas as permissões."
 msgid "The age categories in which players are distributed. A category is added to represent the missing players (E.g.: U20 / 50+ → 20+)."
 msgstr "As categorias etárias em que os jogadores são distribuídos. Uma categoria é adicionada para representar os jogadores desaparecidos (por exemplo: U20 / 50+  20+)."
 
+#, ai_translation
 msgid "The average of the [{tie_break}] scores of the opponents played over the board."
-msgstr ""
+msgstr "A média das pontuações [{tie_break}] dos adversários jogados sobre o tabuleiro."
 
 #, ai_translation
 msgid "The average of the ratings of the opponents played over the board."
@@ -5779,10 +5944,11 @@ msgstr "A federação padrão para seus eventos."
 msgid "The director is the person in charge of the event."
 msgstr "O diretor é o responsável pelo evento."
 
+#, ai_translation
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."
 msgstr[0] "A primeira rodada é ignorada."
-msgstr[1] ""
+msgstr[1] "As primeiras rodadas {rounds} são ignoradas."
 
 #, ai_translation
 msgid "The first tournament of the screen."
@@ -5792,18 +5958,21 @@ msgstr "O primeiro torneio da tela."
 msgid "The following categories will also be deleted:"
 msgstr "Serão igualmente suprimidas as seguintes categorias:"
 
+#, ai_translation
 msgid "The least and the most significant values are removed."
 msgid_plural "The {count} least and the {count} most significant values are removed."
 msgstr[0] "Os valores menores e mais significativos são removidos."
-msgstr[1] ""
+msgstr[1] "Os {count} menos e os {count} mais significativos valores são removidos."
 
+#, ai_translation
 msgid "The least significant value is removed."
 msgid_plural "The {count} least significant values are removed."
 msgstr[0] "O valor menos significativo é removido."
-msgstr[1] ""
+msgstr[1] "Os {count} valores menos significativos são removidos."
 
+#, ai_translation
 msgid "The limit can only be adjusted by {count} half-points."
-msgstr ""
+msgstr "O limite só pode ser ajustado por {count} meio ponto."
 
 #, ai_translation
 msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
@@ -5817,9 +5986,9 @@ msgstr "Os endereços de correio."
 msgid "The main category is open to all the players."
 msgstr "A categoria principal está aberta a todos os jogadores."
 
-#, python-format
+#, ai_translation, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
-msgstr ""
+msgstr "A idade máxima dos resultados, em minutos (por padrão %(minutes)d minutos)."
 
 #, ai_translation
 msgid "The maximum number of byes a player can pretend to."
@@ -5857,9 +6026,9 @@ msgstr "O número mínimo de pontos dos jogadores exibidos (se deixados vazios, 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "O valor mínimo de um prêmio compartilhado nesta categoria (por padrão: sem limite)."
 
-#, python-format
+#, ai_translation, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
-msgstr ""
+msgstr "O nome da família da tela, opcional. Os seguintes tokens são automaticamente substituídos pelos números da placa ou nomes dos jogadores):  %%f=first, %%l=last, %%t=tournament."
 
 #, ai_translation
 msgid "The network on which the devices are connected."
@@ -5893,8 +6062,9 @@ msgstr "O número de jogos ganhou sobre o tabuleiro."
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr "O número de jogadores por tela, opcional (o número de telas se adapta ao número de jogadores)."
 
+#, ai_translation
 msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
-msgstr ""
+msgstr "O número de pontos atingidos contra todos os jogadores que marcaram pelo menos L pontos (L = {equation})."
 
 #, ai_translation
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
@@ -5956,8 +6126,9 @@ msgstr "O jogador não ganhou nenhum jogo contra adversários classificados pela
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "O jogador já foi emparelhado, removê-los do torneio é impossível."
 
+#, ai_translation
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
-msgstr ""
+msgstr "O jogador com FIDE ID [{fide_id}] já joga torneio [{tournament}]."
 
 #, ai_translation
 msgid "The rank of the first player to select."
@@ -5991,8 +6162,9 @@ msgstr "O atraso rotativo entre duas telas."
 msgid "The round after which the ranking is displayed (if left empty, the last round finished)."
 msgstr "A rodada após a qual o ranking é exibido (se deixado vazio, a última rodada terminada)."
 
+#, ai_translation
 msgid "The round count is incompatible with the number of players (expected: {expected})."
-msgstr ""
+msgstr "A contagem de rodadas é incompatível com o número de jogadores (esperado: {expected})."
 
 #, ai_translation
 msgid "The round for which the document is printed (Defaults to the last possible round)."
@@ -6002,8 +6174,9 @@ msgstr "A rodada para a qual o documento é impresso (Padrões para a última ro
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr "As telas exibidas pelo controlador de exibição são controladas pelos gerentes de tela."
 
+#, ai_translation
 msgid "The sum of the [{tie_break}] scores of the opponents played over the board."
-msgstr ""
+msgstr "A soma das pontuações [{tie_break}] dos oponentes jogados sobre o tabuleiro."
 
 #, ai_translation
 msgid "The sum of the score of the player at the end of each round."
@@ -6013,8 +6186,9 @@ msgstr "A soma da pontuação do jogador no final de cada rodada."
 msgid "The sum of the scores of each of the opponents of the player."
 msgstr "A soma das pontuações de cada um dos oponentes do jogador."
 
+#, ai_translation
 msgid "The threshold can't be greater than the value of the last prize of the category ({value})."
-msgstr ""
+msgstr "O limiar não pode ser maior do que o valor do último prêmio da categoria ({value})."
 
 #, ai_translation
 msgid "The timer displayed on the screen."
@@ -6052,11 +6226,13 @@ msgstr "Os torneios em que a permissão é aplicada."
 msgid "The type of criterion used to filter the players."
 msgstr "O tipo de critério usado para filtrar os jogadores."
 
+#, ai_translation
 msgid "The value has to be higher than the sharing threshold of the category ({threshold})."
-msgstr ""
+msgstr "O valor tem de ser superior ao limiar de partilha da categoria ({threshold})."
 
+#, ai_translation
 msgid "The values have to be higher than the sharing threshold of the category ({threshold})."
-msgstr ""
+msgstr "Os valores têm de ser superiores ao limiar de partilha da categoria ({threshold})."
 
 #, ai_translation
 msgid "The values to take into account when computing the tie-break."
@@ -6070,11 +6246,13 @@ msgstr "A maneira de compartilhar os prêmios entre os jogadores com os mesmos p
 msgid "There already is an hour defined at this time."
 msgstr "Neste momento já existe uma hora definida."
 
+#, ai_translation
 msgid "There already is an hour for round #{round}."
-msgstr ""
+msgstr "Já há uma hora para a rodada n° {round}."
 
+#, ai_translation
 msgid "There are no pairings for this round (last round with pairings: #{round})."
-msgstr ""
+msgstr "Não há pares para esta rodada (última rodada com pares: n° {round})."
 
 #, ai_translation
 msgid "There are no public screens available for this event."
@@ -6200,14 +6378,17 @@ msgstr "Este rotador é privado (não visível pelos espectadores)."
 msgid "This rotator is public (visible by the spectators)."
 msgstr "Este rotador é público (visível pelos espectadores)."
 
+#, ai_translation
 msgid "This round hasn't started (current round: #{round})."
-msgstr ""
+msgstr "Esta rodada não começou (roda atual: n° {round})."
 
+#, ai_translation
 msgid "This round is not finished (last finished: #{round})."
-msgstr ""
+msgstr "Esta rodada não está terminada (última terminada: {round})."
 
+#, ai_translation
 msgid "This round is not valid (the tournament has {rounds} rounds)."
-msgstr ""
+msgstr "Esta rodada não é válida (o torneio tem rodadas {rounds})."
 
 #, ai_translation
 msgid "This screen family is private (not visible by the spectators)."
@@ -6241,14 +6422,17 @@ msgstr "Este tie-break já é usado com os mesmos modificadores."
 msgid "This tie-break is already used."
 msgstr "Este tie-break já é usado."
 
+#, ai_translation
 msgid "This tie-break is disabled when there are unrated players without estimated ratings ({count} in the tournament)."
-msgstr ""
+msgstr "Este tie-break é desativado quando há jogadores não classificados sem classificações estimadas ({count} no torneio)."
 
+#, ai_translation
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
-msgstr ""
+msgstr "Este tie-break não é compatível com o sistema de emparelhamento [{pairing_system}] (ignorado)."
 
+#, ai_translation
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
-msgstr ""
+msgstr "Este tie-break não é recomendado com jogadores estimados ({count} no torneio)."
 
 #, ai_translation
 msgid "This unique ID is already used."
@@ -6258,9 +6442,9 @@ msgstr "Este ID único já é usado."
 msgid "Three points for a win"
 msgstr "Três pontos por uma vitória"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Tie-break [%(tie_break)s] successfully created!"
-msgstr ""
+msgstr "Tie-break [%(tie_break)s] criado com sucesso!"
 
 #, ai_translation
 msgid "Tie-break based on the opponents' ratings and the player's score (consult the FIDE Handbook for more details)."
@@ -6286,24 +6470,29 @@ msgstr "Controle do tempo"
 msgid "Time control:"
 msgstr "Controle do tempo:"
 
+#, ai_translation
 msgid "Time outside of event time range ({range})."
-msgstr ""
+msgstr "Tempo fora do intervalo de tempo do evento ({range})."
 
 #, ai_translation
 msgid "Timer"
 msgstr "Temporizador"
 
+#, ai_translation
 msgid "Timer [{timer_id}] not found."
-msgstr ""
+msgstr "Timer [{timer_id}] não encontrado."
 
+#, ai_translation
 msgid "Timer [{timer}] has been created."
-msgstr ""
+msgstr "Temporizador [{timer}] foi criado."
 
+#, ai_translation
 msgid "Timer [{timer}] has been deleted."
-msgstr ""
+msgstr "Timer [{timer}] foi excluído."
 
+#, ai_translation
 msgid "Timer [{timer}] has been updated."
-msgstr ""
+msgstr "Timer [{timer}] foi atualizado."
 
 #, ai_translation
 msgid "Timer defaults"
@@ -6313,9 +6502,9 @@ msgstr "Timer defaults"
 msgid "Timer:"
 msgstr "Temporizador:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Timer: %(timer_uniq_id)s"
-msgstr ""
+msgstr "Temporizador: %(timer_uniq_id)s"
 
 #, ai_translation
 msgid "Timer: none"
@@ -6325,38 +6514,41 @@ msgstr "Temporizador: nenhum"
 msgid "Timers"
 msgstr "timers"
 
+#, ai_translation
 msgid "Timers ({num})"
-msgstr ""
+msgstr "Temporizadores ({num})"
 
 #, ai_translation
 msgid "Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event."
 msgstr "Os temporizadores podem ser colocados em qualquer tela, família ou rotador para exibir uma contagem regressiva para a próxima rodada ou outro evento importante."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Timers: %(num)d"
-msgstr ""
+msgstr "Temporizadores: %(num)d"
 
 #, ai_translation
 msgid "Titled players"
 msgstr "Jogadores Intitulados"
 
-#, python-format
+#, ai_translation, python-format
 msgid "To learn how to control your network, consult <a href=\"%(link)s\" target=\"_blank\">our documentation</a>."
-msgstr ""
+msgstr "Para saber como controlar sua rede, consulte <a href=\"%(link)s\" target=\"_blank\">nossa documentação</a>."
 
 #, ai_translation
 msgid "To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player's name."
-msgstr "Para modificar rodadas anteriores, retorne a essa rodada na guia Pares;br />byes pode então ser alterado usando os botões ao lado do nome do jogador."
+msgstr "Para modificar rodadas anteriores, retorne a essa rodada na guia Pares;<br />byes pode então ser alterado usando os botões ao lado do nome do jogador."
 
 #, ai_translation
 msgid "Today"
 msgstr "Hoje"
 
+#, ai_translation
 msgid "Too few players to generate the pairings (minimum: {min})."
-msgstr ""
+msgstr "Poucos jogadores para gerar os pares (mínimo: {min})."
 
+#, ai_translation
 msgid "Too many byes for player [{player_name}]."
-msgstr ""
+msgstr "Muitos byes para o jogador [{player_name}]."
 
 #, ai_translation
 msgid "Too much information to display on a single projector?"
@@ -6378,34 +6570,41 @@ msgstr "Tournament"
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournament"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Tournament [%(tournament)s] is finished."
-msgstr ""
+msgstr "O torneio [%(tournament)s] está terminado."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Tournament [%(tournament)s] is playing."
-msgstr ""
+msgstr "O torneio [%(tournament)s] está a jogar."
 
+#, ai_translation
 msgid "Tournament [{tournament_id}] not found."
-msgstr ""
+msgstr "[{tournament_id}] não encontrado."
 
+#, ai_translation
 msgid "Tournament [{tournament}] has been created and default screens have been added."
-msgstr ""
+msgstr "O torneio [{tournament}] foi criado e as telas padrão foram adicionadas."
 
+#, ai_translation
 msgid "Tournament [{tournament}] has been created."
-msgstr ""
+msgstr "O torneio [{tournament}] foi criado."
 
+#, ai_translation
 msgid "Tournament [{tournament}] has been deleted."
-msgstr ""
+msgstr "O torneio [{tournament}] foi excluído."
 
+#, ai_translation
 msgid "Tournament [{tournament}] has been updated."
-msgstr ""
+msgstr "O torneio [{tournament}] foi atualizado."
 
+#, ai_translation
 msgid "Tournament [{tournament}] is finished, you can not add players any longer."
-msgstr ""
+msgstr "Torneio [{tournament}] está terminado, você não pode adicionar jogadores por mais tempo."
 
+#, ai_translation
 msgid "Tournament [{tournament}] successfully imported."
-msgstr ""
+msgstr "Torneio [{tournament}] importado com sucesso."
 
 #, ai_translation
 msgid "Tournament name"
@@ -6415,24 +6614,25 @@ msgstr "Nome do torneio"
 msgid "Tournament performance rating"
 msgstr "Classificação de desempenho do torneio"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Tournament rating range: %(min_rating)d - %(max_rating)d"
-msgstr ""
+msgstr "Faixa de classificação: %(min_rating)d - %(max_rating)d"
 
 #, ai_translation
 msgid "Tournament record"
 msgstr "Recorde de torneio"
 
+#, ai_translation
 msgid "Tournament {tournament} ({numbers_str})"
-msgstr ""
+msgstr "Torneio {tournament} ({numbers_str})"
 
 #, ai_translation
 msgid "Tournament:"
 msgstr "Torneio:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Tournament: %(tournament_name)s"
-msgstr ""
+msgstr "Torneio: %(tournament_name)s"
 
 #, ai_translation
 msgid "Tournament: not set"
@@ -6442,8 +6642,9 @@ msgstr "Torneio: não definido"
 msgid "Tournaments"
 msgstr "Torneios"
 
+#, ai_translation
 msgid "Tournaments ({num})"
-msgstr ""
+msgstr "Torneios ({num})"
 
 #, ai_translation
 msgid "Tournaments are finished, you can not add players any longer."
@@ -6457,9 +6658,9 @@ msgstr "Torneios exibidos:"
 msgid "Tournaments:"
 msgstr "Torneios:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Tournaments: %(num)d"
-msgstr ""
+msgstr "Torneios: %(num)d"
 
 #, ai_translation
 msgid "Transfer"
@@ -6481,13 +6682,13 @@ msgstr "Tipo"
 msgid "Type:"
 msgstr "Tipo:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Type: %(family_type)s"
-msgstr ""
+msgstr "Tipo: %(family_type)s"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Type: %(screen_type)s"
-msgstr ""
+msgstr "Tipo:%(screen_type)s"
 
 #, ai_translation
 msgid "U7-U19 / 50+ / 65+"
@@ -6517,11 +6718,13 @@ msgstr "PENALDADE PENALDADE"
 msgid "UNRATED WHITE VICTORY"
 msgstr "VITRIA BRANCA RUADA"
 
+#, ai_translation
 msgid "URL [{url}] did not respond (error: [{error}])."
-msgstr ""
+msgstr "URL [{url}] não respondeu (erro: [{error}])."
 
+#, ai_translation
 msgid "URL [{url}] responded code [{code}]."
-msgstr ""
+msgstr "URL [{url}] respondeu código [{code}]."
 
 #, fuzzy
 msgid "Undefined *** PLURAL"
@@ -6531,35 +6734,41 @@ msgstr "Undefined"
 msgid "Undefined *** SINGULAR"
 msgstr "Undefined"
 
+#, ai_translation
 msgid "Unexpected error during installation: [{ex}]."
-msgstr ""
+msgstr "Erro inesperado durante a instalação: [ex}]."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Unique ID: %(uniq_id)s"
-msgstr ""
+msgstr "ID nico: %(uniq_id)s"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Unique ID: [%(uniq_id)s]"
-msgstr ""
+msgstr "ID nico: [%(uniq_id)s]"
 
 #, ai_translation
 msgid "Unknown"
 msgstr "Desconhecido"
 
+#, ai_translation
 msgid "Unknown color [{color}]."
-msgstr ""
+msgstr "Cor desconhecida [{color}]."
 
+#, ai_translation
 msgid "Unknown federation [{federation}]."
-msgstr ""
+msgstr "Federação Desconhecida [{federation}]."
 
+#, ai_translation
 msgid "Unknown gender [{gender}]."
-msgstr ""
+msgstr "Gênero desconhecido [{gender}]."
 
+#, ai_translation
 msgid "Unknown result [{result}]."
-msgstr ""
+msgstr "Resultado desconhecido [{result}]."
 
+#, ai_translation
 msgid "Unknown title [{title}]."
-msgstr ""
+msgstr "Título desconhecido [{title}]."
 
 #, ai_translation
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
@@ -6593,9 +6802,9 @@ msgstr "Desemparelhar um tabuleiro"
 msgid "Unpair tournament"
 msgstr "torneio Unpair"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Unpaired (%(unpaired)d)"
-msgstr ""
+msgstr "Sem pares (%(unpaired)d)"
 
 #, fuzzy
 msgid "Unpaired *** FEMALE"
@@ -6649,8 +6858,9 @@ msgstr "Opositor não classificado."
 msgid "Unrated players"
 msgstr "Jogadores não classificados"
 
+#, ai_translation
 msgid "Upcoming ({num})"
-msgstr ""
+msgstr "Próximo ({num})"
 
 #, ai_translation
 msgid "Upcoming events"
@@ -6700,8 +6910,9 @@ msgstr "Use Fore Buchholz"
 msgid "Use default"
 msgstr "Usar padrão"
 
+#, ai_translation
 msgid "Use default - {option}"
-msgstr ""
+msgstr "Padrão de uso - {option}"
 
 #, ai_translation
 msgid "Use pairing engines"
@@ -6723,17 +6934,17 @@ msgstr "Use os tie-breaks recomendados"
 msgid "Use the standard FIDE rating for unrated players"
 msgstr "Use a classificação FIDE padrão para jogadores não classificados"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Used by %(num)d event."
 msgid_plural "Used by %(num)d events."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Usado pelo evento %(num)d."
+msgstr[1] "Usado por eventos %(num)d."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Used by %(num)d tournament."
 msgid_plural "Used by %(num)d tournaments."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Usado pelo torneio %(num)d."
+msgstr[1] "Usado por torneios %(num)d."
 
 #, fuzzy
 msgid "U{age_limit} *** YOUTH AGE CATEGORY"
@@ -6759,8 +6970,9 @@ msgstr "Valores"
 msgid "Variation"
 msgstr "Variação"
 
+#, ai_translation
 msgid "Version: {version}"
-msgstr ""
+msgstr "Versão: {version}"
 
 #, ai_translation
 msgid "View Pairings tab"
@@ -6858,13 +7070,13 @@ msgstr "Aviso: fechar esta janela vai parar Sharly Chess."
 msgid "Warning: experimental features are enabled!"
 msgstr "Aviso: recursos experimentais estão ativados!"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Warning: round #%(round)d is not finished."
-msgstr ""
+msgstr "Aviso: a rodada n° %(round)d não está terminada."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Warning: the %(player_count)d players in the tournament will be deleted."
-msgstr ""
+msgstr "Aviso: os jogadores %(player_count)d no torneio serão excluídos."
 
 #, ai_translation
 msgid "Warning: the deletion is permanent!"
@@ -6882,8 +7094,9 @@ msgstr "We"
 msgid "Weak"
 msgstr "Fraco"
 
+#, ai_translation
 msgid "Web server not started yet ({ex}), waiting…"
-msgstr ""
+msgstr "Servidor web ainda não iniciado ({ex}), esperando..."
 
 #, ai_translation
 msgid "Weekly"
@@ -6891,7 +7104,7 @@ msgstr "Semanal"
 
 #, ai_translation
 msgid "Welcome to Sharly Chess!"
-msgstr "Bem-vindo ao Sharly Chess!"
+msgstr "Bem-vindo ao Sharly Chess!"
 
 #, ai_translation
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
@@ -6953,8 +7166,9 @@ msgstr "Grande Mestre Mulher"
 msgid "Woman International Master"
 msgstr "Mestre Internacional Mulher"
 
+#, ai_translation
 msgid "Wrong file extension [{ext}] ([pdf] expected)."
-msgstr ""
+msgstr "Extensão errada do ficheiro [{ext}] ([pdf] esperado)."
 
 #, fuzzy
 msgid "Y *** THE LETTER TO ANSWER YES"
@@ -6964,8 +7178,9 @@ msgstr "Y"
 msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
 msgstr "YOB"
 
+#, ai_translation
 msgid "YYYY or {date_format}"
-msgstr ""
+msgstr "AAA ou {date_format}"
 
 #, ai_translation
 msgid "YYYY-MM-DD"
@@ -7133,7 +7348,7 @@ msgstr "Você também pode se conectar a este servidor a partir de outros dispos
 
 #, ai_translation
 msgid "You may create different types of web pages, referred to as <i>Screens</i>, that can be accessed via other devices on your local network."
-msgstr "Você pode criar diferentes tipos de páginas da web, conhecidas como i>Screens/i>, que podem ser acessadas através de outros dispositivos em sua rede local."
+msgstr "Você pode criar diferentes tipos de páginas da web, conhecidas como <i>Screens</i>, que podem ser acessadas através de outros dispositivos em sua rede local."
 
 #, ai_translation
 msgid "You must create a prize bracket before creating a prize category."
@@ -7159,14 +7374,17 @@ msgstr "Você deve criar um torneio antes de criar essas telas."
 msgid "Zero-Point Bye"
 msgstr "Zero-Point Bye"
 
+#, ai_translation
 msgid "Zero-Point Bye attributed to player [{player}]."
-msgstr ""
+msgstr "Zero-Point Bye atribuído ao jogador [{player}]."
 
+#, ai_translation
 msgid "[{value}] is not a positive value."
-msgstr ""
+msgstr "[{value}] não é um valor positivo."
 
+#, ai_translation
 msgid "[{value}] is not a valid value format."
-msgstr ""
+msgstr "[{value}] não é um formato de valor válido."
 
 #, ai_translation
 msgid "all the boards"
@@ -7180,29 +7398,37 @@ msgstr "todos os jogadores"
 msgid "all the tournaments"
 msgstr "todos os torneios"
 
+#, ai_translation
 msgid "boards from #{first} to #{last}"
-msgstr ""
+msgstr "quadros de n° {first} a n° {last}"
 
+#, ai_translation
 msgid "boards from #{first} to #{last}, on {parts} screens"
-msgstr ""
+msgstr "placas de n° {first} a n° {last}, em telas {parts}"
 
+#, ai_translation
 msgid "boards from #{first} to end"
-msgstr ""
+msgstr "da n° {first} ao fim"
 
+#, ai_translation
 msgid "boards from #{first} to end, on {parts} screens"
-msgstr ""
+msgstr "da n° {first} ao fim, nas telas {parts}"
 
+#, ai_translation
 msgid "boards from start to #{last}"
-msgstr ""
+msgstr "placas do início ao n° {last}"
 
+#, ai_translation
 msgid "boards from start to #{last}, on {parts} screens"
-msgstr ""
+msgstr "placas do início ao n° {last}, em telas {parts}}"
 
+#, ai_translation
 msgid "boards on {parts} screens"
-msgstr ""
+msgstr "placas em telas {parts}"
 
+#, ai_translation
 msgid "boards {board_numbers}"
-msgstr ""
+msgstr "placas {board_numbers}"
 
 #, ai_translation
 msgid "either the duration or the increment must be greater than 0."
@@ -7240,8 +7466,9 @@ msgstr "ltima"
 msgid "min *** MINUTES"
 msgstr "min"
 
+#, ai_translation
 msgid "minimum: {value}"
-msgstr ""
+msgstr "mínimo: {value}"
 
 #, ai_translation
 msgid "my-event"
@@ -7263,66 +7490,85 @@ msgstr "E-mail"
 msgid "player already received a PAB in a previous round"
 msgstr "jogador já recebeu um PAB em uma rodada anterior"
 
+#, ai_translation
 msgid "players from #{first} to #{last}"
-msgstr ""
+msgstr "jogadores de n° {first} a n° {last}"
 
+#, ai_translation
 msgid "players from #{first} to #{last}, on {parts} screens"
-msgstr ""
+msgstr "jogadores de n° {first} a n° {last}, em {parts} telas"
 
+#, ai_translation
 msgid "players from #{first} to end"
-msgstr ""
+msgstr "jogadores de n° {first} ao fim"
 
+#, ai_translation
 msgid "players from #{first} to end, on {parts} screens"
-msgstr ""
+msgstr "jogadores de n° {first} ao fim, em {parts} telas"
 
+#, ai_translation
 msgid "players from start to #{last}"
-msgstr ""
+msgstr "jogadores do início ao n° {last}"
 
+#, ai_translation
 msgid "players from start to #{last}, on {parts} screens"
-msgstr ""
+msgstr "jogadores do início ao n° {last}, em {parts} telas"
 
+#, ai_translation
 msgid "players on {parts} screens"
-msgstr ""
+msgstr "jogadores nas telas {parts}"
 
+#, ai_translation
 msgid "ranking from #{first} to #{last}"
-msgstr ""
+msgstr "Classificação de n° {first} a n° {last}"
 
+#, ai_translation
 msgid "ranking from #{first} to end"
-msgstr ""
+msgstr "Classificação de n° {first} ao fim"
 
+#, ai_translation
 msgid "ranking from start to #{last}"
-msgstr ""
+msgstr "Classificação do início ao n° {last}"
 
+#, ai_translation
 msgid "round_{round}"
-msgstr ""
+msgstr "round_{round}"
 
 #, fuzzy
 msgid "s *** SECONDS"
 msgstr "s"
 
+#, ai_translation
 msgid "screens of {number} boards"
-msgstr ""
+msgstr "telas de {number} placas"
 
+#, ai_translation
 msgid "screens of {number} boards from #{first} to #{last}"
-msgstr ""
+msgstr "telas de {number} placas de n° {first} a n° {last}"
 
+#, ai_translation
 msgid "screens of {number} boards from #{first} to end"
-msgstr ""
+msgstr "telas de {number} placas de n° {first} ao fim"
 
+#, ai_translation
 msgid "screens of {number} boards from start to #{last}"
-msgstr ""
+msgstr "telas de {number} placas do início ao n° {last}"
 
+#, ai_translation
 msgid "screens of {number} players"
-msgstr ""
+msgstr "Telas de {number} jogadores"
 
+#, ai_translation
 msgid "screens of {number} players from #{first} to #{last}"
-msgstr ""
+msgstr "telas de {number} jogadores de n° {first} a n° {last}"
 
+#, ai_translation
 msgid "screens of {number} players from #{first} to end"
-msgstr ""
+msgstr "telas de {number} jogadores de n° {first} ao fim"
 
+#, ai_translation
 msgid "screens of {number} players from start to #{last}"
-msgstr ""
+msgstr "telas de {number} jogadores do início ao n° {last}"
 
 #, ai_translation
 msgid "some already played each other"
@@ -7356,16 +7602,17 @@ msgstr "todo o ranking"
 msgid "then"
 msgstr "então"
 
+#, ai_translation
 msgid "value: {value}"
-msgstr ""
+msgstr "valor: {value}"
 
 #, ai_translation
 msgid "vs"
 msgstr "vs vs vs"
 
-#, python-format
+#, ai_translation, python-format
 msgid "vs %(player)s"
-msgstr ""
+msgstr "vs %(player)s"
 
 #, ai_translation
 msgid "yes"
@@ -7375,69 +7622,85 @@ msgstr "sim"
 msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
 msgstr "{age_limit}+"
 
+#, ai_translation
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{count} clube representado"
+msgstr[1] "{count} clubes representados"
 
+#, ai_translation
 msgid "{count} federation represented"
 msgid_plural "{count} federations represented"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{count} federação representada"
+msgstr[1] "{count} federações representadas"
 
+#, ai_translation
 msgid "{count} half-point"
 msgid_plural "{count} half-points"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{count} meio ponto"
+msgstr[1] "{count} meio ponto"
 
+#, ai_translation
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{count} jogador atualizado."
+msgstr[1] "{count} jogadores atualizados."
 
+#, ai_translation
 msgid "{date_format} HH:MM"
-msgstr ""
+msgstr "{date_format} HH:MM"
 
+#, ai_translation
 msgid "{days} days"
-msgstr ""
+msgstr "{days} dias"
 
+#, ai_translation
 msgid "{days} days ago"
-msgstr ""
+msgstr "{days} dias atrás"
 
+#, ai_translation
 msgid "{family_type}-screen"
-msgstr ""
+msgstr "{family_type}-tela"
 
+#, ai_translation
 msgid "{first_name} {last_name}"
-msgstr ""
+msgstr "{first_name} {last_name}"
 
+#, ai_translation
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
-msgstr ""
+msgstr "{player.first_name} {player.last_name} tinha ganho {previous_value} no grupo principal, mas recebeu então um prémio de {next_value} na categoria '{cat_name}'. Ao deixar o grupo principal, a quota-parte do prémio para o lugar em que estavam agora vale {new_share}."
 
+#, ai_translation
 msgid "{players} player remain unpaired"
 msgid_plural "{players} players remain unpaired"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{players} jogador permanece desemparelhado"
+msgstr[1] "{players} os jogadores permanecem desemparelhados"
 
+#, ai_translation
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"
-msgstr ""
+msgstr "{prefix}{int_value}<sup>{suffix}</sup>"
 
+#, ai_translation
 msgid "{screen_type}-screen"
-msgstr ""
+msgstr "{screen_type}-tela"
 
+#, ai_translation
 msgid "{start} → {end}"
-msgstr ""
+msgstr "{start} → {end}"
 
+#, ai_translation
 msgid "{status_code} - Unknown error"
-msgstr ""
+msgstr "{status_code} - Erro desconhecido"
 
+#, ai_translation
 msgid "{string}: {value}"
-msgstr ""
+msgstr "{string}: {value}"
 
 #, ai_translation
 msgid "½ - 0 (U)"
-msgstr "12 - 0 (U)"
+msgstr "½ - 0 (U)"
 
 #, ai_translation
 msgid "½ - ½ (U)"
-msgstr "12 - 12 (U)"
+msgstr "½ - ½ (U)"
 

@@ -2,9 +2,9 @@
 msgid "\"Niçois\" accelerated system"
 msgstr "Sistema acelerado \"Niçois\""
 
-#, python-format
+#, ai_translation, python-format
 msgid "%(string)s:"
-msgstr ""
+msgstr "%(string)s:"
 
 #, fuzzy
 msgid "A - Competition *** FFE licence"
@@ -118,13 +118,13 @@ msgstr "Taxas de download"
 msgid "Download the fees that the organizer should pay to the FFE."
 msgstr "Faça o download das taxas que o organizador deve pagar à FFE."
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: %(num)d"
-msgstr ""
+msgstr "p. ex.: %(num)d"
 
-#, python-format
+#, ai_translation, python-format
 msgid "E.g.: %(string)s"
-msgstr ""
+msgstr "p. ex.: %(string)s"
 
 #, ai_translation
 msgid "Enabled"
@@ -134,8 +134,9 @@ msgstr "Ativado"
 msgid "Error uploading tournament"
 msgstr "Erro ao carregar o torneio"
 
+#, ai_translation
 msgid "Exclude: {values}"
-msgstr ""
+msgstr "Exclui: {values}"
 
 #, fuzzy
 msgid "Expired *** FFE licence"
@@ -177,9 +178,9 @@ msgstr "Número de certificação FFE não definido."
 msgid "FFE certification number:"
 msgstr "Número de certificação FFE:"
 
-#, python-format
+#, ai_translation, python-format
 msgid "FFE certification number: %(ffe_id)d"
-msgstr ""
+msgstr "Número de certificação FFE: %(ffe_id)d"
 
 #, ai_translation
 msgid "FFE database (local)"
@@ -197,20 +198,21 @@ msgstr "Licença FFE A (concorrência)"
 msgid "FFE licence B (leisure)"
 msgstr "Licença FFE B (lazer)"
 
+#, ai_translation
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
-msgstr ""
+msgstr "Licença FFE [{ffe_licence_number}] já presente no torneio [{tournament}]."
 
 #, ai_translation
 msgid "FFE licence number"
 msgstr "Número de licença FFE"
 
-#, python-format
+#, ai_translation, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-msgstr ""
+msgstr "Licença FFE: %(ffe_licence_number)s (clique para copiar para a área de transferência)."
 
-#, python-format
+#, ai_translation, python-format
 msgid "FFE licence: %(ffe_licence_number)s (expired)."
-msgstr ""
+msgstr "Licença FFE: %(ffe_licence_number)s (expirado)."
 
 #, ai_translation
 msgid "FFE password not defined."
@@ -240,15 +242,17 @@ msgstr "Filtre as ligas."
 msgid "Filter the licences."
 msgstr "Filtre as licenças."
 
+#, ai_translation
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Para um torneio com {rounds} rodadas, os valores menores e mais significativos são removidos."
+msgstr[1] "Para um torneio com {rounds} rodadas, o {count} menor e o {count} valores mais significativos são removidos."
 
+#, ai_translation
 msgid "For a tournament with {rounds} rounds, the least significant value is removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least significant values are removed."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Para um torneio com {rounds} rodadas, o valor menos significativo é removido."
+msgstr[1] "Para um torneio com {rounds} rodadas, os {count} valores menos significativos são removidos."
 
 #, ai_translation
 msgid "For unrated players, a representative rating is calculated."
@@ -278,24 +282,29 @@ msgstr "Importar arquivo JSON (formato papi-converter)"
 msgid "Import Papi file"
 msgstr "Importar arquivo Papi"
 
+#, ai_translation
 msgid "Invalid FFE ID [{ffe_id}]."
-msgstr ""
+msgstr "ID FFE inválido [{ffe_id}]."
 
 #, ai_translation
 msgid "Invalid FFE certification number or password."
 msgstr "Número ou senha de certificação FFE inválido."
 
+#, ai_translation
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
-msgstr ""
+msgstr "Número de licença FFE inválido [{ffe_licence_number}]."
 
+#, ai_translation
 msgid "Invalid date format [{date}] (expected: {format})"
-msgstr ""
+msgstr "Formato de data inválido [{date}] (esperado: {format})"
 
+#, ai_translation
 msgid "Invalid display link text [{text}]"
-msgstr ""
+msgstr "Texto de link de exibição inválido [{text}]"
 
+#, ai_translation
 msgid "Invalid fees link text [{text}]."
-msgstr ""
+msgstr "Texto de link de taxas inválidas [{text}]."
 
 #, ai_translation
 msgid "Invalid response from the FFE website."
@@ -381,8 +390,9 @@ msgstr "Modificado, mas sem conexão com a internet"
 msgid "Name"
 msgstr "Nome"
 
+#, ai_translation
 msgid "No FFE ID defined for tournament [{tournament}]."
-msgstr ""
+msgstr "Não há ID FFE definido para o torneio [{tournament}]."
 
 #, ai_translation
 msgid "No FFE Licence"
@@ -408,9 +418,9 @@ msgstr "PAPI"
 msgid "Papi file"
 msgstr "Ficheiro Papi"
 
-#, python-format
+#, ai_translation, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
-msgstr ""
+msgstr "Substituir [%(old)s] por [%(new)s]"
 
 #, ai_translation
 msgid "Replace the player to update this field."
@@ -460,27 +470,33 @@ msgstr "A FFE sempre usa a classificação FIDE quando disponível."
 msgid "The FFE sporting season starts in September."
 msgstr "A temporada de esportes da FFE começa em setembro."
 
+#, ai_translation
 msgid "The PAPI format does not support {rounds} rounds (maximum: {max})."
-msgstr ""
+msgstr "O formato PAPI não suporta rodadas {rounds} (máximo: {max})."
 
+#, ai_translation
 msgid "The Papi format does not support result [{result}]."
-msgstr ""
+msgstr "O formato Papi não suporta o resultado [{result}]."
 
+#, ai_translation
 msgid "The [{tie_break}] tie-break as implemented in Papi."
-msgstr ""
+msgstr "[{tie_break}] tie-break como implementado em Papi."
 
+#, ai_translation
 msgid "The delay must be at least {min_delay} minutes to avoid overloading the FFE server."
-msgstr ""
+msgstr "O atraso deve ser de pelo menos {min_delay} minutos para evitar sobrecarregar o servidor FFE."
 
 #, ai_translation
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "A senha do torneio no site da FFE é feita de 10 letras maiúsculas."
 
+#, ai_translation
 msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament}]."
-msgstr ""
+msgstr "O jogador com FFE ID [{ffe_id}] já joga torneio [{tournament}]."
 
+#, ai_translation
 msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
-msgstr ""
+msgstr "O jogador com número de licença FFE [{ffe_licence_number}] já joga torneio [{tournament}]."
 
 #, ai_translation
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
@@ -538,15 +554,17 @@ msgstr "Não foi possível fazer upload das regras do torneio."
 msgid "Unable to upload tournament."
 msgstr "Não foi possível carregar o torneio."
 
-#, python-format
+#, ai_translation, python-format
 msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-msgstr ""
+msgstr "Tipo de licença FFE desconhecido [%(ffe_licence)s]."
 
+#, ai_translation
 msgid "Unknown player ID [{player_id}]"
-msgstr ""
+msgstr "ID do jogador desconhecido [{player_id}]"
 
+#, ai_translation
 msgid "Unknown value [{value}]"
-msgstr ""
+msgstr "Valor desconhecido [{value}]"
 
 #, fuzzy
 msgid "Unrated *** SINGULAR"
@@ -588,8 +606,9 @@ msgstr "Fazer o upload do arquivo de regras em PDF permite que os jogadores leia
 msgid "Uploading tournament…"
 msgstr "Carregando torneio..."
 
+#, ai_translation
 msgid "Use default - {option}"
-msgstr ""
+msgstr "Padrão de uso - {option}"
 
 #, ai_translation
 msgid "Variation"
@@ -607,8 +626,9 @@ msgstr "Você não tem permissão para publicar resultados."
 msgid "You are not allowed to publish rules."
 msgstr "Você não tem permissão para publicar regras."
 
+#, ai_translation
 msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "{count} Liga representada"
+msgstr[1] "{count} ligas representadas"
 
