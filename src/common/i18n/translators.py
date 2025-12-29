@@ -24,6 +24,9 @@ class Translator:
                 cls('pascalaubry', 'Pascal AUBRY'),
                 cls('Amaras', 'Sammy PLAT'),
             ],
+            'pt': [
+                cls('emerson-proenca', 'Emerson Proença'),
+            ],
         }
         return translators | {
             locale: [
