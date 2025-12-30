@@ -31,6 +31,8 @@ class AdminWebContext(WebContext):
         self.admin_tab: str | None = admin_tab
         self.admin_event: Event | None = None
         self.admin_event = RequestUtils.get_optional_event(request, reload_event)
+        if reload_event:
+            self.client.event = self.admin_event
         self.check_admin_tab()
 
     def get_admin_event(self) -> Event:
