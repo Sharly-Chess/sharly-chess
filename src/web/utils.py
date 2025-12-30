@@ -75,8 +75,8 @@ class RequestUtils:
     REQUEST_CLIENT_ATTR: str = 'sharly_chess_client'
 
     @classmethod
-    def get_client(cls, request: HTMXRequest) -> Client:
-        if cls.REQUEST_CLIENT_ATTR not in request.state:
+    def get_client(cls, request: HTMXRequest, reload: bool = False) -> Client:
+        if reload or cls.REQUEST_CLIENT_ATTR not in request.state:
             request.state[cls.REQUEST_CLIENT_ATTR] = Client(
                 request, cls.get_optional_event(request)
             )
