@@ -182,7 +182,10 @@ class DomainLocaleInfo(Domain):
             write_po(f, catalog, width=0, omit_header=True)  # type: ignore
         # compare line by line because files differ on CR/LF
         changed: bool = False
-        with open(self.po_file, 'r') as before_f, open(tmp_file, 'r') as after_f:
+        with (
+            open(self.po_file, 'r', encoding='utf-8') as before_f,
+            open(tmp_file, 'r', encoding='utf-8') as after_f,
+        ):
             for before_line, after_line in zip_longest(
                 before_f.readlines(), after_f.readlines()
             ):
