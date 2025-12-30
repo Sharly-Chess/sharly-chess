@@ -17,7 +17,7 @@
                     {{ macros.tooltip_attributes('info', _('Refresh this page.'), 'top') }}
                 ></i>
                 <span id="players-table-counters" class="px-0">
-                    {{ admin_filtered_player_count }}/{{admin_event.player_count}}
+                    {{ admin_filtered_player_count }}/{{ allowed_players|length }}
                 </span>
                 <i
                     class="bi-x-circle btn text-dark py-0 ps-1 pe-0 m-0"
@@ -201,7 +201,7 @@
             <th scope="col" class="text-nowrap text-end"><div class="d-flex align-items-center">{{ _('Paid *** PAID COLUMN HEADER FOR PLAYERS') }}</div></th>
         {% endif %}
         {{ admin_macros.extra_admin_column_header("tournament", admin_players_extra_columns)}}
-        {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
+        {% if 'tournament' in admin_players_filter_columns and allowed_tournaments|length > 1 %}
             <th scope="col" class="text-nowrap text-center">
                 <div class="d-flex align-items-center">
                     {% include 'filter_tournaments.html' %}

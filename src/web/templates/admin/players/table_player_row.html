@@ -271,7 +271,7 @@
         </td>
     {% endif %}
     {{ admin_macros.extra_admin_column_cell("tournament", player, admin_players_extra_columns)}}
-    {% if 'tournament' in admin_players_filter_columns and admin_event.tournaments_by_id|length > 1 %}
+    {% if 'tournament' in admin_players_filter_columns and allowed_tournaments|length > 1 %}
         <td class="text-nowrap text-start">
             {% if tournament_player.has_real_pairings or player_addable_tournaments|length <= 1 %}
                 {{ admin_event.tournaments_by_id[tournament_player.tournament.id].name }}

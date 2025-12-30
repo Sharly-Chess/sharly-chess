@@ -24,6 +24,7 @@
                     </button>
                 </li>
                 <li class="dropdown-divider m-0"></li>
+                {% set federation_counts = admin_event.federation_counts(allowed_players) %}
                 {% for federation in admin_players_federations %}
                     <li class="dropdown-item d-flex align-items-center gap-2">
                         <input
@@ -40,7 +41,7 @@
                                     class="player-federation-flag pe-1"
                                     src="{{ macros.federation_flag_url(federation) }}"
                                 />
-                                ({{ admin_event.federation_counts[federation] }})
+                                ({{ federation_counts[federation] }})
                             </span>
                         </label>
                     </li>
