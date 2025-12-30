@@ -153,39 +153,54 @@ class BabelDomainUpdater(BabelDomainWrapper):
                 self.store_po_for_mo_fingerprint(locale)
                 self.update_mo_file(locale)
                 logger.info('Domain [%s]: wrote MO file.', self.name)
-        ok: bool = True
         for locale_info in self.domain_locale_infos.values():
             if locale_info.error_messages:
                 logger.error(
                     'Domain [%s]: translations are not valid for some locales.',
                     self.name,
                 )
-                ok = False
-                break
+                return False
+        perfect_locales: list[str] = [
+            'fr',
+        ]
+        other_locales: list[str] = [
+            locale
+            for locale in self.locales
+            if locale not in [self.default_locale] + perfect_locales
+        ]
         for locale_info in self.domain_locale_infos.values():
             if locale_info.empty_mandatory_messages:
                 logger.error(
                     'Domain [%s]: mandatory translations are missing for some locales.',
                     self.name,
                 )
-                ok = False
-                break
-        for locale_info in self.domain_locale_infos.values():
-            if not locale_info.default and locale_info.empty_optional_messages:
-                logger.warning(
-                    'Domain [%s]: translations are missing for some locales.', self.name
+                return False
+        for locale in perfect_locales:
+            if self.domain_locale_infos[locale].empty_optional_messages:
+                logger.error(
+                    'Domain [%s]: optional translations are missing for some locales.',
+                    self.name,
                 )
-                ok = False
-                break
-        for locale_info in self.domain_locale_infos.values():
-            if locale_info.flagged_messages:
+                return False
+        for locale in other_locales:
+            if self.domain_locale_infos[locale].empty_optional_messages:
+                logger.warning(
+                    'Domain [%s]: optional translations are missing for some locales.',
+                    self.name,
+                )
+        for locale in perfect_locales:
+            if self.domain_locale_infos[locale].flagged_messages:
+                logger.error(
+                    'Domain [%s]: translations are flagged for some locales.', self.name
+                )
+                return False
+        for locale in other_locales:
+            if self.domain_locale_infos[locale].flagged_messages:
                 logger.warning(
                     'Domain [%s]: translations are flagged for some locales.', self.name
                 )
-                break
-        if ok:
-            logger.info('Domain [%s]: translations OK.', self.name)
-        return ok
+        logger.info('Domain [%s]: translations OK.', self.name)
+        return True
 
     def sources_for_pot_fingerprint_file(self) -> Path:
         """Returns the path of the file used to store the fingerprint of the source files."""
