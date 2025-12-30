@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Any
 
+from anyio import run
 from litestar.exceptions import (
     NotFoundException,
     ValidationException,
@@ -18,7 +19,7 @@ from data.board import Board
 from data.display_controller import DisplayController
 from data.event import Event
 from data.loader import EventLoader
-from data.player import TournamentPlayer
+from data.player import TournamentPlayer, Player
 from data.rotator import Rotator
 from data.screen import Screen
 from data.tournament import Tournament
@@ -30,14 +31,21 @@ class RequestUtils:
     and storing them into the request."""
 
     @staticmethod
-    def _get_request_param(request: HTMXRequest, param: str) -> Any:
+    def _get_request_param(
+        request: HTMXRequest, param: str, search_form: bool = False
+    ) -> Any:
         if value := request.path_params.get(param, None):
             return value
         if value := request.query_params.get(param, None):
             if isinstance(value, str) and value.isdigit():
                 return int(value)
             return value
-
+        if search_form:
+            form_data = run(lambda: request.form())
+            if value := form_data.get(param, None):
+                if isinstance(value, str) and value.isdigit():
+                    return int(value)
+                return value
         raise ValidationException(f'Parameter [{param}] not found.')
 
     REQUEST_EVENT_ATTR: str = 'sharly_chess_event'
@@ -136,10 +144,14 @@ class RequestUtils:
     TOURNAMENT_ID_PARAM: str = 'tournament_id'
 
     @classmethod
-    def get_tournament(cls, request: HTMXRequest) -> Tournament:
+    def get_tournament(
+        cls, request: HTMXRequest, search_form: bool = False
+    ) -> Tournament:
         if cls.REQUEST_TOURNAMENT_ATTR in request.state:
             return request.state[cls.REQUEST_TOURNAMENT_ATTR]
-        tournament_id = cls._get_request_param(request, cls.TOURNAMENT_ID_PARAM)
+        tournament_id = cls._get_request_param(
+            request, cls.TOURNAMENT_ID_PARAM, search_form
+        )
         try:
             tournament = cls.get_event(request).tournaments_by_id[tournament_id]
         except KeyError:
@@ -148,9 +160,11 @@ class RequestUtils:
         return tournament
 
     @classmethod
-    def get_optional_tournament(cls, request: HTMXRequest) -> Tournament | None:
+    def get_optional_tournament(
+        cls, request: HTMXRequest, search_form: bool = False
+    ) -> Tournament | None:
         try:
-            return cls.get_tournament(request)
+            return cls.get_tournament(request, search_form)
         except ValidationException:
             return None
 
@@ -203,19 +217,36 @@ class RequestUtils:
         return result
 
     REQUEST_PLAYER_ATTR: str = 'sharly_chess_player'
+    REQUEST_TOURNAMENT_PLAYER_ATTR: str = 'sharly_chess_tournament_player'
     PLAYER_ID_PARAM: str = 'player_id'
+
+    @classmethod
+    def get_player(cls, request: HTMXRequest) -> Player:
+        if cls.REQUEST_PLAYER_ATTR in request.state:
+            return request.state[cls.REQUEST_PLAYER_ATTR]
+        player_id = cls._get_request_param(request, cls.PLAYER_ID_PARAM)
+        try:
+            request.state[cls.REQUEST_PLAYER_ATTR] = cls.get_event(
+                request
+            ).players_by_id[player_id]
+        except KeyError:
+            raise NotFoundException(f'Player [{player_id}] not found.')
+        return request.state[cls.REQUEST_PLAYER_ATTR]
 
     @classmethod
     def get_tournament_player(cls, request: HTMXRequest) -> TournamentPlayer:
         if cls.REQUEST_PLAYER_ATTR in request.state:
             return request.state[cls.REQUEST_PLAYER_ATTR]
         player_id = cls._get_request_param(request, cls.PLAYER_ID_PARAM)
+        tournament = cls.get_tournament(request)
         try:
-            request.state[cls.REQUEST_PLAYER_ATTR] = cls.get_tournament(
-                request
-            ).tournament_players_by_id[player_id]
+            request.state[cls.REQUEST_PLAYER_ATTR] = (
+                tournament.tournament_players_by_id[player_id]
+            )
         except KeyError:
-            raise NotFoundException(f'Player [{player_id}] not found.')
+            raise NotFoundException(
+                f'Player [{player_id}] not found in tournament [{tournament.name}].'
+            )
         return request.state[cls.REQUEST_PLAYER_ATTR]
 
     REQUEST_ACCOUNT_ATTR: str = 'sharly_chess_account'

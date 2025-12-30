@@ -217,9 +217,9 @@ class FRASchoolsUtils:
         return plugin_data
 
     @classmethod
-    def get_event_school_counts(cls, event: Event) -> Counter[int]:
+    def get_event_school_counts(cls, players: Collection[Player]) -> Counter[int]:
         school_counts: Counter[int] = Counter[int]()
-        for player in event.players:
+        for player in players:
             school_counts[
                 FRASchoolsUtils.get_player_plugin_data(player).fra_school_id or 0
             ] += 1
