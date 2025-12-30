@@ -1,5 +1,6 @@
 from functools import cached_property, cache
-from typing import TYPE_CHECKING, Optional
+from operator import attrgetter
+from typing import TYPE_CHECKING, Optional, Collection
 
 from litestar_htmx import HTMXRequest
 
@@ -11,6 +12,7 @@ from data.account import (
 )
 from data.access_levels.manager import AccessLevelManager
 from data.access_levels.access_levels import AccessLevel
+from data.player import Player
 from data.tournament import Tournament
 from utils.enum import Result
 from web.session import SessionHandler
@@ -98,6 +100,27 @@ class Client:
                 return True
         return False
 
+    def action_allowed_for_player(self, action: AuthAction, player: Player) -> bool:
+        """Returns True if the action is allowed for at least one
+        tournament of a player, False otherwise."""
+        if action not in self.allowed_actions:
+            return False
+        checked_tournament_ids: list[int] = []
+        for access_level in self.access_levels_by_action()[action]:
+            permission = self.permissions_by_access_level.get(access_level, None)
+            if not permission:
+                continue
+            if permission.tournament_ids is None:
+                return True
+            assert self.event is not None
+            for tournament_id in permission.tournament_ids:
+                if tournament_id in checked_tournament_ids:
+                    continue
+                tournament = self.event.tournaments_by_id[tournament_id]
+                if player.id in tournament.tournament_players_by_id:
+                    return True
+        return False
+
     def allowed_tournaments_for_action(self, action: AuthAction) -> list[Tournament]:
         """Get the list of tournaments for which an action is allowed."""
         assert self.event is not None
@@ -106,6 +129,25 @@ class Client:
             for tournament in self.event.tournaments_sorted_by_index
             if self.action_allowed_for_tournament(action, tournament.id)
         ]
+
+    @cached_property
+    def allowed_players_by_id(self) -> dict[int, Player]:
+        allowed_players_by_id: dict[int, Player] = {}
+        for tournament in self.allowed_tournaments_for_action(
+            AuthAction.VIEW_PLAYERS_TAB
+        ):
+            for player in tournament.tournament_players:
+                if player.id not in allowed_players_by_id:
+                    allowed_players_by_id[player.id] = player
+        return allowed_players_by_id
+
+    @property
+    def allowed_players(self) -> Collection[Player]:
+        return self.allowed_players_by_id.values()
+
+    @property
+    def sorted_allowed_players(self) -> list[Player]:
+        return sorted(self.allowed_players, key=attrgetter('full_name'))
 
     # ---------------------------------------------------------------------------------
     # Application

@@ -1092,12 +1092,7 @@ class TournamentPlayer(Player):
             return False
         if not self.tournament.check_in_open:
             return False
-        pairing: Pairing = self.pairings[self.tournament.current_round + 1]
-        return (
-            not pairing.zero_point_bye
-            and not pairing.half_point_bye
-            and not pairing.full_point_bye
-        )
+        return not self.pairings[self.tournament.current_round + 1].next_round_bye
 
     @property
     def color_str(self) -> str:

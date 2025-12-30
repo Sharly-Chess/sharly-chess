@@ -33,7 +33,9 @@ class FRASchoolsController(BaseEventAdminController):
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
         schools = FRASchoolsUtils.get_event_plugin_data(event).fra_schools
-        school_counts = FRASchoolsUtils.get_event_school_counts(event)
+        school_counts = FRASchoolsUtils.get_event_school_counts(
+            web_context.client.allowed_players
+        )
         school_options: dict[str, SelectOption] = {'': SelectOption('-')}
         for school in sorted(schools, key=attrgetter('sort_key')):
             option_name = school.short_name

@@ -23,6 +23,7 @@
                         </button>
                     </li>
                     <li class="dropdown-divider m-0"></li>
+                    {% set category_counts = admin_event.category_counts(allowed_players) %}
                     {% for category in admin_players_categories %}
                         <li class="dropdown-item text-nowrap d-flex align-items-center gap-2">
                             <input
@@ -34,7 +35,7 @@
                                 class="{{ name }}"
                             />
                             <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                                {{ category.name }} ({{ admin_event.category_counts[category] }})
+                                {{ category.name }} ({{ category_counts[category] }})
                             </label>
                         </li>
                     {% endfor %}

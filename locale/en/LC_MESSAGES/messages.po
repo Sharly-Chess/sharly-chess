@@ -921,6 +921,9 @@ msgstr ""
 msgid "Check-in / Results entry ({tournament_name})"
 msgstr ""
 
+msgid "Check-in closed"
+msgstr ""
+
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament)s]."
 msgstr ""
