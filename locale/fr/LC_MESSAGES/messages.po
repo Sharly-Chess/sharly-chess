@@ -921,6 +921,9 @@ msgstr "Pointage / Saisie des résultats"
 msgid "Check-in / Results entry ({tournament_name})"
 msgstr "Pointage / Saisie des résultats ({tournament_name})"
 
+msgid "Check-in closed"
+msgstr "Pointage fermé"
+
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament)s]."
 msgstr "Le pointage est fermé pour le tournoi [%(tournament)s]."

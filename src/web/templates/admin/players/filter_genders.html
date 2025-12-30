@@ -23,6 +23,7 @@
                         </button>
                     </li>
                     <li class="dropdown-divider m-0"></li>
+                    {% set gender_counts = admin_event.gender_counts(allowed_players) %}
                     {% for gender, gender_data in {
                         0: {
                             'text': _('- *** SHORT NAME FOR GENDER NONE'),
@@ -47,7 +48,7 @@
                                 class="{{ name }}"
                             />
                             <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                                {% if gender_data['icon'] %}<i class="{{ gender_data['icon'] }}"></i> {% endif %}{{ gender_data['text'] }} ({{ admin_event.gender_counts[gender] }})
+                                {% if gender_data['icon'] %}<i class="{{ gender_data['icon'] }}"></i> {% endif %}{{ gender_data['text'] }} ({{ gender_counts[gender] }})
                             </label>
                         </li>
                     {% endfor %}

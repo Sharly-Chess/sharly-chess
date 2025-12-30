@@ -164,7 +164,9 @@ class FRASchoolsPlugin(Plugin):
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
 
-        school_counts = FRASchoolsUtils.get_event_school_counts(event)
+        school_counts = FRASchoolsUtils.get_event_school_counts(
+            web_context.client.allowed_players
+        )
         plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
         sorted_schools = sorted(
             (
@@ -177,7 +179,6 @@ class FRASchoolsPlugin(Plugin):
         sorted_school_ids: list[int] = [school.id for school in sorted_schools]
         if 0 in school_counts:
             sorted_school_ids.insert(0, 0)
-
         return {
             'fra_schools_utils': FRASchoolsUtils,
             'fra_school_ids': sorted_school_ids,

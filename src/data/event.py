@@ -402,10 +402,6 @@ class Event:
             'player_count',
             'players_by_id',
             'players_sorted_by_name',
-            'gender_counts',
-            'federation_counts',
-            'club_counts',
-            'check_in_counts',
         ]
         for property_name in player_cached_property_names:
             if property_name in self.__dict__:
@@ -461,42 +457,42 @@ class Event:
             key=by('last_name', 'first_name'),
         )
 
-    @cached_property
-    def gender_counts(self) -> Counter[PlayerGender]:
+    def gender_counts(
+        self, players: list[Player] | None = None
+    ) -> Counter[PlayerGender]:
         counter: Counter[PlayerGender] = Counter[PlayerGender]()
-        for tournament in self.tournaments_by_id.values():
-            for gender in tournament.gender_counts:
-                counter[gender] += tournament.gender_counts[gender]
+        for player in players or self.players:
+            counter[player.gender] += 1
         return counter
 
-    @cached_property
-    def federation_counts(self) -> Counter[Federation]:
+    def federation_counts(
+        self, players: list[Player] | None = None
+    ) -> Counter[Federation]:
         counter: Counter[Federation] = Counter[Federation]()
-        for tournament in self.tournaments_by_id.values():
-            for federation in tournament.federation_counts:
-                counter[federation] += tournament.federation_counts[federation]
+        for player in players or self.players:
+            counter[player.federation] += 1
         return counter
 
-    @property
-    def club_counts(self) -> Counter[Club]:
+    def club_counts(self, players: list[Player] | None = None) -> Counter[Club]:
         counter: Counter[Club] = Counter[Club]()
-        for tournament in self.tournaments_by_id.values():
-            for club in tournament.club_counts:
-                counter[club] += tournament.club_counts[club]
+        for player in players or self.players:
+            counter[player.club] += 1
         return counter
 
-    @cached_property
-    def check_in_counts(self) -> Counter[bool | None]:
+    def check_in_counts(
+        self, tournaments: list[Tournament] | None = None
+    ) -> Counter[bool | None]:
         counter: Counter[bool | None] = Counter[bool | None]()
-        for tournament in self.tournaments_by_id.values():
-            for check_in in tournament.tournament_players_by_check_in_status:
-                counter[check_in] += tournament.check_in_counts[check_in]
+        for tournament in tournaments or self.tournaments:
+            for status, checked_in in tournament.check_in_counts.items():
+                counter[status] += checked_in
         return counter
 
-    @cached_property
-    def category_counts(self) -> Counter[PlayerCategory]:
+    def category_counts(
+        self, players: list[Player] | None = None
+    ) -> Counter[PlayerCategory]:
         counter: Counter[PlayerCategory] = Counter[PlayerCategory]()
-        for player in self.players:
+        for player in players or self.players:
             counter[player.category] += 1
         return counter
 
