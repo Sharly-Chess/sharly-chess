@@ -577,7 +577,8 @@ class BabelUpdater:
                     },
                 )
             )
-        return '\n'.join(lines) + '\n\n'
+            lines.append('')
+        return '\n'.join(lines) + '\n'
 
     def by_domain_markdown_text(
         self,
