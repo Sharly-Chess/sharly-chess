@@ -32,7 +32,7 @@ class Translator:
                 cls('Amaras', 'Sammy PLAT'),
             ],
             'pt': [
-                cls('emerson-proenca', 'Emerson Proença'),
+                cls('emerson-proenca', 'Emerson PROENÇA'),
             ],
         }
         return translators | {
