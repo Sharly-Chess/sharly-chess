@@ -13,6 +13,7 @@ from common import BASE_DIR, DEVEL_ENV, TEST_ENV
 from common.exception import SharlyChessException
 from common.i18n.babel_updaters import BabelUpdater
 from common.i18n.domains import Domain
+from common.i18n.translators import Translator
 from common.logger import get_logger
 
 logger: Logger = get_logger()
@@ -48,7 +49,7 @@ _auto_update_file: Path = BASE_DIR / 'src' / 'common' / 'i18n' / '.auto-update'
 if DEVEL_ENV:
     babel_updater: BabelUpdater = BabelUpdater(
         Domain.get_domains(),
-        locales,
+        Translator.get_translators(locales),
         DEFAULT_LOCALE,
     )
     # if i18n_update is running then update_i18n_files() will be called later,
@@ -69,7 +70,7 @@ elif TEST_ENV:
     # When testing, make sure that the MO files will be available (including on GitHub)
     BabelUpdater(
         Domain.get_domains(),
-        locales,
+        Translator.get_translators(locales),
         DEFAULT_LOCALE,
     ).create_absent_mo_files()
 
@@ -81,7 +82,7 @@ def update_i18n_files(
     """Update all the i18n files if needed, returns False if the translations should be updated, True otherwise."""
     return BabelUpdater(
         Domain.get_domains(),
-        locales,
+        Translator.get_translators(locales),
         DEFAULT_LOCALE,
     ).update(
         clean=clean,

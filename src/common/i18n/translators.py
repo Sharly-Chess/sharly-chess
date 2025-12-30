@@ -10,6 +10,13 @@ class Translator:
         self.github_user: str | None = github_user
         self.name: str = name or 'Unknown'
 
+    @property
+    def markdown(self) -> str:
+        if self.github_user:
+            return f'[{self.name}](https://github.com/{self.github_user})'
+        else:
+            return self.name
+
     @classmethod
     def get_translators(
         cls,
