@@ -11,7 +11,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 ### Contributing
 
 - [Contributing guide](docs/contributing/contributing-guide.md)
-- [Translating guide](docs/contributing/translating-guide.md)
+- [Translation guide](docs/contributing/translation-guide.md)
 - [Internationalization](docs/contributing/i18n.md)
 - [Maintainers, contributors and translators](/docs/contributing/contributors.md)
 - [Copyright](https://sharly-chess.com/copyright)

@@ -1,4 +1,4 @@
-# _Sharly Chess_ - Translating guide
+# _Sharly Chess_ - Translation guide
 
 See also:
 - [Internationalization](i18n.md)

@@ -36,7 +36,7 @@ Since version 2.0, the source code is open for contributions on _GitHub_, it's u
 <!-- DO NOT EDIT! (END TRANSLATORS) -->
 
 See also:
-- [Translating guide](translating-guide.md)
+- [Translation guide](translation-guide.md)
 
 ## Thanks
 
