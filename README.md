@@ -8,6 +8,14 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 
 ## Developer documentation
 
+### Contributing
+
+- [Contributing guide](docs/contributing/contributing-guide.md)
+- [Translating guide](docs/contributing/translating-guide.md)
+- [Maintainers, contributors and translators](/docs/contributing/contributors.md)
+- [Copyright](https://sharly-chess.com/copyright)
+- [License](https://sharly-chess.com/license)
+
 ### Technical appendices
 
 - [Roadmap](https://discord.gg/gE4Y7DVxdY) (on Discord)
@@ -23,10 +31,3 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 
 - [Communication to players](docs/sandbox/communication-to-players.md)
 - [Pairing actions](docs/sandbox/pairing-actions.md)
-
-### Contributing
-
-- [Contributing guide](docs/contributing/contributing-guide.md)
-- [Contributors](/docs/contributing/contributors.md)
-- [Copyright](https://sharly-chess.com/copyright)
-- [License](https://sharly-chess.com/license)
