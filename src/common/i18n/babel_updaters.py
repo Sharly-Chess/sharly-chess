@@ -577,7 +577,8 @@ class BabelUpdater:
                     },
                 )
             )
-        return '\n'.join(lines) + '\n\n'
+            lines.append('')
+        return '\n'.join(lines) + '\n'
 
     def by_domain_markdown_text(
         self,
@@ -749,6 +750,6 @@ class BabelUpdater:
             line += f'| {flagged_messages_count[flag] if flagged_messages_count[flag] else "-"} '
         if domain:
             po_file: Path = domain.locale_po_file(locale)
-            line += f'| [{po_file.name}](../../{"/".join(d.name for d in reversed(po_file.relative_to(BASE_DIR).parents))}) '
+            line += f'| [{po_file.name}](../..{"/".join(d.name for d in reversed(po_file.relative_to(BASE_DIR).parents))}/{po_file.name}) '
         line += '|'
         return line
