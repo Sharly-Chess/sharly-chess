@@ -12,6 +12,7 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 
 - [Contributing guide](docs/contributing/contributing-guide.md)
 - [Translating guide](docs/contributing/translating-guide.md)
+- [Internationalization](docs/contributing/i18n.md)
 - [Maintainers, contributors and translators](/docs/contributing/contributors.md)
 - [Copyright](https://sharly-chess.com/copyright)
 - [License](https://sharly-chess.com/license)
@@ -23,7 +24,6 @@ _Sharly Chess - © Sharly Chess project 2013-2025_
 - [Interfacing _Sharly Chess_ with _ChessEvent_](docs/technical-appendices/chessevent-interfacing.md)
 - [Setting up a development environment](docs/technical-appendices/dev-setup.md)
 - [Description of the databases](docs/technical-appendices/databases.md)
-- [Internationalization](docs/technical-appendices/i18n.md)
 - [Network](docs/technical-appendices/network.md)
 - [FIDE endorsement](docs/technical-appendices/fide-endorsement.md)
 
