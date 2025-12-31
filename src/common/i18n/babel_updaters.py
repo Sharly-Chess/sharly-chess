@@ -4,6 +4,7 @@ from datetime import datetime
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
+from typing import Iterator
 
 from common import BASE_DIR, TMP_DIR
 from common.i18n.babel_wrapper import BabelDomainWrapper
@@ -416,36 +417,83 @@ class BabelUpdater:
         for babel_domain_updater in self.babel_domain_updaters:
             babel_domain_updater.update_mo_files()
 
-    def write_markdown(self):
-        """For (the core and) all the plugins, update all the files that need to updated (POT, PO, MO), and check the translations."""
-        doc_file: Path = BASE_DIR / 'docs' / 'technical-appendices' / 'i18n.md'
-        start_lines: list[str] = []
-        end_lines: list[str] = []
-        with open(doc_file, 'rt', encoding='utf-8') as f:
-            start_comment: str = '<!-- DO NOT EDIT! (START) -->'
+    @staticmethod
+    def insert_markdown(
+        markdown: str | list[str] | dict[str, list[str]],
+        target_file: Path,
+        print_last_update: bool = False,
+    ):
+        """Insert some markdown in doc file."""
+        markdown_lines_dict: dict[str, list[str]]
+        if isinstance(markdown, str):
+            markdown_lines_dict = {
+                '': [
+                    markdown,
+                ]
+            }
+        elif isinstance(markdown, list):
+            markdown_lines_dict = {'': markdown}
+        else:
+            markdown_lines_dict = markdown
+        with open(target_file, 'rt', encoding='utf-8') as f:
+            lines = [line.rstrip() for line in f]
+        for tag, markdown_lines in markdown_lines_dict.items():
+            input_lines: Iterator[str] = iter(lines)
+            start_comment: str = (
+                f'<!-- DO NOT EDIT! (START{f" {tag}" if tag else ""}) -->'
+            )
+            end_comment: str = f'<!-- DO NOT EDIT! (END{f" {tag}" if tag else ""}) -->'
+            start_lines: list[str] = []
+            end_lines: list[str] = []
             start_comment_found: bool = False
-            for line in f:
+            for line in input_lines:
                 if line.startswith(start_comment):
                     start_comment_found = True
                     break
                 start_lines.append(line)
             if not start_comment_found:
                 logger.error(
-                    f'Could not edit [{doc_file}] (comment [{start_comment}] not found).'
+                    f'Could not edit [{target_file}] (comment [{start_comment}] not found).'
                 )
                 return
-            end_comment: str = '<!-- DO NOT EDIT! (END) -->'
             end_comment_found: bool = False
-            for line in f:
+            for line in input_lines:
                 if end_comment_found:
                     end_lines.append(line)
                 if line.startswith(end_comment):
                     end_comment_found = True
             if not end_comment_found:
                 logger.error(
-                    f'Could not edit [{doc_file}] (comment [{end_comment}] not found).'
+                    f'Could not edit [{target_file}] (comment [{end_comment}] not found).'
                 )
                 return
+            lines = start_lines + [
+                f'{start_comment}\n',
+            ]
+            if print_last_update:
+                lines += [
+                    f'Last update: {datetime.strftime(datetime.fromtimestamp(time.time()), "%Y-%m-%d %H:%M")}\n'
+                ]
+            lines += (
+                markdown_lines
+                + [
+                    end_comment,
+                ]
+                + end_lines
+            )
+        with open(target_file, 'w', encoding='utf-8') as f:
+            f.write('\n'.join(lines))
+        logger.info('Wrote [%s].', target_file)
+
+    def write_markdown(self):
+        """Write the Markdown doc."""
+        self.insert_markdown(
+            markdown={
+                'TRANSLATORS': self.translators_markdown(),
+            },
+            target_file=BASE_DIR / 'docs' / 'contributing' / 'contributors.md',
+            print_last_update=False,
+        )
         flags: list[str] = list(
             {
                 flag
@@ -454,44 +502,31 @@ class BabelUpdater:
                 for flag in locale_info.flagged_messages
             }
         )
-        with open(doc_file, 'w', encoding='utf-8') as f:
-            for line in (
-                start_lines
-                + [
-                    f'{start_comment}\n',
-                ]
-                + [
-                    f'Last update: {datetime.strftime(datetime.fromtimestamp(time.time()), "%Y-%m-%d %H:%M")}\n\n'
-                ]
-                + [
-                    self.translators_markdown_text(),
-                    self.by_locale_markdown_text(flags),
-                    self.by_domain_markdown_text(flags),
-                ]
-                + [
-                    f'{end_comment}\n',
-                ]
-                + end_lines
-            ):
-                f.write(line)
-        logger.info('Wrote [%s].', doc_file)
+        self.insert_markdown(
+            markdown={
+                'BY_LOCALE': self.by_locale_markdown(flags),
+                'BY_DOMAIN': self.by_domain_markdown(flags),
+            },
+            target_file=BASE_DIR / 'docs' / 'contributing' / 'i18n.md',
+            print_last_update=True,
+        )
 
-    def translators_markdown_text(
+    def translators_markdown(
         self,
-    ) -> str:
+    ) -> list[str]:
         headers: list[str] = [
             'Locale',
             'Translators',
         ]
         lines: list[str] = [
-            '## Translators\n\n| ' + ' | '.join(headers) + ' |',
+            '| ' + ' | '.join(headers) + ' |',
             '|--' + ('|--' * (len(headers) - 1)) + '|',
         ]
         for locale in self.locales:
             lines.append(
                 f'| <img src="../../src/web{
                     locale_flag_url(locale)
-                }" style="height: 1em;"/>&nbsp;``{locale}``&nbsp;{
+                }" style="height: 1em;"/>&nbsp;`{locale}`&nbsp;{
                     locale_localized_name(locale)
                 } | {
                     ", ".join(
@@ -499,18 +534,19 @@ class BabelUpdater:
                     )
                 } |'
             )
-        return '\n'.join(lines) + '\n\n'
+        lines.append('')
+        return lines
 
-    def by_locale_markdown_text(
+    def by_locale_markdown(
         self,
         flags: list[str],
-    ) -> str:
-        lines: list[str] = ['## Translations by locale\n']
+    ) -> list[str]:
+        lines: list[str] = []
         for locale in self.locales:
             lines.append(
-                f'### <img src="../../src/web{locale_flag_url(locale)}" style="height: 1em;"/>&nbsp;``{locale}``&nbsp;{locale_localized_name(locale)}\n'
+                f'### <img src="../../src/web{locale_flag_url(locale)}" style="height: 1em;"/> `{locale}` {locale_localized_name(locale)}\n'
             )
-            lines += self.markdown_header_lines(
+            lines += self.markdown_header(
                 column1_locale=False,
                 domain=None,
                 flags=flags,
@@ -578,14 +614,13 @@ class BabelUpdater:
                 )
             )
             lines.append('')
-        return '\n'.join(lines) + '\n'
+        return lines
 
-    def by_domain_markdown_text(
+    def by_domain_markdown(
         self,
         flags: list[str],
-    ) -> str:
-        lines: list[str] = ['## Translations by domain\n']
-        lines += self.domain_markdown_lines(
+    ) -> list[str]:
+        lines: list[str] = self.domain_markdown(
             domain=None,
             flags=flags,
             messages_count_by_locale={
@@ -633,7 +668,7 @@ class BabelUpdater:
             },
         )
         for babel_domain_updater in self.babel_domain_updaters:
-            lines += self.domain_markdown_lines(
+            lines += self.domain_markdown(
                 domain=babel_domain_updater,
                 flags=flags,
                 messages_count_by_locale={
@@ -656,9 +691,9 @@ class BabelUpdater:
                     for locale, locale_info in babel_domain_updater.domain_locale_infos.items()
                 },
             )
-        return '\n'.join(lines) + '\n\n'
+        return lines
 
-    def domain_markdown_lines(
+    def domain_markdown(
         self,
         domain: Domain | None,
         flags: list[str],
@@ -676,7 +711,7 @@ class BabelUpdater:
             title = f'Plugin {domain.name}'
         return (
             [f'### {title}\n']
-            + self.markdown_header_lines(
+            + self.markdown_header(
                 column1_locale=True,
                 domain=domain,
                 flags=flags,
@@ -704,7 +739,7 @@ class BabelUpdater:
         )
 
     @staticmethod
-    def markdown_header_lines(
+    def markdown_header(
         column1_locale: bool,
         domain: Domain | None,
         flags: list[str],

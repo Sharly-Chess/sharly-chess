@@ -1,4 +1,4 @@
-# _Sharly Chess_ - Maintainers, contributors and thanks
+# _Sharly Chess_ - Maintainers, contributors and translators
 
 ## Maintainers
 
@@ -19,7 +19,24 @@ _Sharly Chess_ contributors are people who have contributed some of the code or 
 - Youri AUBRY ([molrn](https://github.com/molrn))
 - Adrien AVENIA ([adrienave](https://github.com/adrienave))
 
+See also:
+- [Contributing guide](contributing-guide.md)
+
 Since version 2.0, the source code is open for contributions on _GitHub_, it's up to you to be on the list of contributors!
+
+## Translators
+
+<!-- DO NOT EDIT! (START TRANSLATORS) -->
+
+| Locale | Translators |
+|--|--|
+| <img src="../../src/web/static/images/locales/en.svg" style="height: 1em;"/>&nbsp;`en`&nbsp;English | [Timothy ARMES](https://github.com/timothyarmes) |
+| <img src="../../src/web/static/images/locales/fr.svg" style="height: 1em;"/>&nbsp;`fr`&nbsp;Français | [Pascal AUBRY](https://github.com/pascalaubry), [Sammy PLAT](https://github.com/Amaras) |
+
+<!-- DO NOT EDIT! (END TRANSLATORS) -->
+
+See also:
+- [Translation guide](translation-guide.md)
 
 ## Thanks
 
