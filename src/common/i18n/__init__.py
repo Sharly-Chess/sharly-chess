@@ -46,7 +46,7 @@ for l_entry in sorted(_core_locale_dir.iterdir()):
 
 _auto_update_file: Path = BASE_DIR / 'src' / 'common' / 'i18n' / '.auto-update'
 
-if DEVEL_ENV:
+if DEVEL_ENV and Path(sys.argv[0]).stem != 'i18n_translate':
     babel_updater: BabelUpdater = BabelUpdater(
         Domain.get_domains(),
         Translator.get_translators(locales),
@@ -104,7 +104,10 @@ for domain in Domain.get_domains():
                 ],
             )
         except Exception as ex:
-            raise SharlyChessException(f'Could not load locale [{loc}]: {ex}.')
+            if Path(sys.argv[0]).stem == 'i18n_translate':
+                logger.debug('Could not load locale [%s]: %s.', loc, ex)
+            else:
+                raise SharlyChessException(f'Could not load locale [{loc}]: {ex}.')
 
 logger.debug('Locales found: %s', ', '.join(locales))
 
