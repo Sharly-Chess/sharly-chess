@@ -507,7 +507,7 @@ class BabelUpdater:
                 'BY_LOCALE': self.by_locale_markdown(flags),
                 'BY_DOMAIN': self.by_domain_markdown(flags),
             },
-            target_file=BASE_DIR / 'docs' / 'technical-appendices' / 'i18n.md',
+            target_file=BASE_DIR / 'docs' / 'contributing' / 'i18n.md',
             print_last_update=True,
         )
 
