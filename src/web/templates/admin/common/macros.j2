@@ -410,6 +410,7 @@ with_indicator: display a loading indicator, optional
     password_visible=false,
     default_checkbox=false,
     default_checkbox_text='',
+    default_checkbox_tooltip='',
     default_value='',
     with_indicator=false,
     select_options={},
@@ -760,7 +761,12 @@ with_indicator: display a loading indicator, optional
                         </script>
                     {% endif %}
                     {% if default_checkbox %}
-                        <div class="input-group-text">
+                        <div
+                            class="input-group-text"
+                            {% if default_checkbox_tooltip %}
+                                {{ macros.tooltip_attributes('info', default_checkbox_tooltip, 'top') }}
+                            {% endif %}
+                        >
                             <input
                                 data-testid="{{ default_checkbox_id }}"
                                 id="{{ default_checkbox_id }}"
@@ -769,6 +775,7 @@ with_indicator: display a loading indicator, optional
                                 aria-describedby="{{ id }}-help {{ id }}-error"
                                 {% if data[default_checkbox_name] == 'on' %}checked{% endif %}
                                 class="me-2"
+
                             />
                             {{ default_checkbox_text or _('Use default') }}
                         </div>
@@ -860,6 +867,7 @@ with_indicator: display a loading indicator, optional
     valid=false,
     default_checkbox=false,
     default_checkbox_text='',
+    default_checkbox_tooltip='',
     default_value='',
     disabled=false,
     input_tooltip='',
@@ -890,6 +898,7 @@ with_indicator: display a loading indicator, optional
         valid=valid,
         default_checkbox=default_checkbox,
         default_checkbox_text=default_checkbox_text,
+        default_checkbox_tooltip=default_checkbox_tooltip,
         default_value=default_value,
         disabled=disabled,
         input_tooltip=input_tooltip,
