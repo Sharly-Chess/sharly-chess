@@ -1200,7 +1200,10 @@ class IndexAdminController(BaseAdminController):
             config_database.update_stored_config(stored_config)
             for stored_plugin in stored_plugins:
                 config_database.update_stored_plugin(stored_plugin)
-        SharlyChessConfig().load_and_set_env()
+        config = SharlyChessConfig()
+        if config.locale != stored_config.locale:
+            self.set_locale(request, stored_config.locale)
+        config.load_and_set_env()
         Message.success(request, _('Sharly Chess settings have been updated.'))
         return HTMXTemplate(
             template_name='common/empty_modal_and_messages.html',
