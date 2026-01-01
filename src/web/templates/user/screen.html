@@ -1,5 +1,7 @@
 {% extends '/common/base.html' %}
 
+{% set timer = rotator.timer if rotator and rotator.timer else screen.timer %}
+
 {% block header %}
     <div id="user-screen-header" class="header user-header user-screen-header">
         {% if screen.type != 'input' or screen.input_exit_button %}
@@ -45,7 +47,7 @@
                 hx-indicator="#please-wait"
             ></div>
         {% endif %}
-        {% set message_text = rotator.message_text if (rotator and screen.message_default) else screen.message_text %}
+        {% set message_text = rotator.message_text if not rotator.message_default else screen.message_text %}
         {% if message_text %}
             <div class="alert-message-wrapper">
                 <div
@@ -62,14 +64,8 @@
                 </div>
             </div>
         {% endif %}
-        {% if rotator and rotator.timer and not rotator.timer.error %}
-            {% with timer = rotator.timer %}
-                <script>{% include 'screen/timer.js' %}</script>
-            {% endwith %}
-        {% elif screen.timer and not screen.timer.error %}
-            {% with timer = screen.timer %}
-                <script>{% include 'screen/timer.js' %}</script>
-            {% endwith %}
+        {% if timer %}
+            <script>{% include 'screen/timer.js' %}</script>
         {% endif %}
         {{ macros.copyright_script(show=screen.type.value != 'image') }}
     </div>
@@ -77,14 +73,8 @@
 
 {% block content %}
     <div id="top-nav-wrapper" class="pt-0" style="background-color: {{ screen.background_color }}">
-        {% if rotator and rotator.timer and not rotator.timer.error %}
-            {% with timer = rotator.timer %}
-                {% include 'screen/timer.html' %}
-            {% endwith %}
-        {% elif screen.timer and not screen.timer.error %}
-            {% with timer = screen.timer %}
-                {% include 'screen/timer.html' %}
-            {% endwith %}
+        {% if timer %}
+            {% include 'screen/timer.html' %}
         {% endif %}
         <div id="top-nav-content">
             {% if not rotator and not display_controller %}
