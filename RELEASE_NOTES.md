@@ -8,6 +8,7 @@
 - Improve upgrade experience (3.4.0)
 - Fixed application startup (3.4.1)
 - Improve error display on upgrade failures (3.4.3)
+- Change the session language when updated from the config (3.4.4)
 
 ## Events
 
