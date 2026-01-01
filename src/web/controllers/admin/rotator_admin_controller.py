@@ -26,7 +26,7 @@ from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
 from web.messages import Message
 from web.session import SessionHandler
-from web.utils import RequestUtils, SelectOption
+from web.utils import RequestUtils
 
 
 class RotatorAdminWebContext(BaseEventAdminWebContext):
@@ -114,12 +114,6 @@ class RotatorAdminController(BaseEventAdminController):
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
-        event = web_context.get_admin_event()
-        timer_options: dict[str, str | SelectOption] = {
-            '': SelectOption(
-                _('Default timers'), _('Use the timer defined for each screen.')
-            )
-        } | {str(timer.id): timer.name for timer in event.timers_by_name.values()}
         default_data = WebContext.values_dict_to_form_data(
             {
                 'name': '',
@@ -133,7 +127,7 @@ class RotatorAdminController(BaseEventAdminController):
         return {
             'modal': 'rotator',
             'action': action,
-            'timer_options': timer_options,
+            'timer_options': cls._get_timer_options(web_context.get_admin_event()),
             'data': default_data | data,
             'errors': errors or {},
         }

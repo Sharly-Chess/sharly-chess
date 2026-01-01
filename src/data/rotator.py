@@ -113,7 +113,11 @@ class Rotator:
 
     @property
     def message_text(self) -> str | None:
-        return self.stored_rotator.message_text
+        return (
+            self.event.message_text
+            if self.message_default
+            else self.stored_rotator.message_text
+        )
 
     @property
     def timer_id(self) -> int | None:

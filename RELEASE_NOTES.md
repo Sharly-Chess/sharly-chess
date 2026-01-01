@@ -19,7 +19,7 @@
 - Fixed login/logout permission error (3.4.4)
 - Grant the anonymous account's permissions to new accounts (3.4.4)
 - Fixed the update of account roles (3.4.4)
-- Fixed tournament based permissions applied on all tournaments (3.4.4)
+- Fix tournament based permissions applied on all tournaments (3.4.4)
 
 ## Players
 
@@ -44,7 +44,6 @@
 
 - Improved the timer interface (3.4.0)
 - Added timers to rotators (3.4.0)
-- Use rotator messages prior to screen messages (3.4.4)
 
 ## _FFE_
 
