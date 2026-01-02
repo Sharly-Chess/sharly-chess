@@ -47,7 +47,7 @@
                 hx-indicator="#please-wait"
             ></div>
         {% endif %}
-        {% set message_text = rotator.message_text if not rotator.message_default else screen.message_text %}
+        {% set message_text = rotator.message_text if rotator and not rotator.message_default else screen.message_text %}
         {% if message_text %}
             <div class="alert-message-wrapper">
                 <div
