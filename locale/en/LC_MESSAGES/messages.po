@@ -1396,10 +1396,16 @@ msgstr ""
 msgid "Default accounts have been created."
 msgstr ""
 
+msgid "Default alert messages"
+msgstr ""
+
 msgid "Default sets can't be deleted."
 msgstr ""
 
 msgid "Default timer settings"
+msgstr ""
+
+msgid "Default timers"
 msgstr ""
 
 msgid "Define as main category"
@@ -5364,10 +5370,16 @@ msgstr ""
 msgid "Use the Staff tab to declare arbiters."
 msgstr ""
 
+msgid "Use the alert message defined on each screen."
+msgstr ""
+
 msgid "Use the recommended tie-breaks"
 msgstr ""
 
 msgid "Use the standard FIDE rating for unrated players"
+msgstr ""
+
+msgid "Use the timer defined for each screen."
 msgstr ""
 
 #, python-format
