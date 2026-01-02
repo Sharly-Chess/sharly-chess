@@ -66,7 +66,6 @@
                         {% for event in nav_tab.events %}
                             {% with
                                 card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
-                                card_class='border-danger' if not event.public else '',
                                 hide_public_status=True
                             %}
                                 {% include 'event_card.html' %}

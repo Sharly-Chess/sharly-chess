@@ -1,7 +1,7 @@
 <div class="col-12 col-lg-6 col-xl-4 d-flex align-items-stretch {{ grid_class}}">
     <div
-        class="card {% if card_url %}btn{% endif %} p-1 w-100 {{ card_class }}"
-        {% if card_url %}
+        class="card{% if disabled %} card-disabled{% elif card_url %} btn{% endif %} p-1 w-100 {{ card_class }}"
+        {% if card_url and not disabled %}
             hx-get="{{ card_url }}"
             hx-target="body"
             hx-push-url="true"

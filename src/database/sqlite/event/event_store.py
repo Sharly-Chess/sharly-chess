@@ -386,16 +386,3 @@ class StoredEvent(BaseStoredEvent):
         default_factory=list[StoredDisplayController]
     )
     stored_accounts: list[StoredAccount] = field(default_factory=list[StoredAccount])
-
-
-@dataclass
-class EventMetadata(BaseStoredEvent):
-    """Class containing the metadata of an event required
-    for display on the event selection pages."""
-
-    tournament_count: int = 0
-    player_count: int = 0
-    timer_count: int = 0
-    screen_count: int = 0
-    family_count: int = 0
-    rotator_count: int = 0

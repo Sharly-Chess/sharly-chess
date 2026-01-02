@@ -3184,6 +3184,9 @@ msgstr ""
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr ""
 
+msgid "One or more of the plugins required to use this event are disabled, making it inaccessible. You can enable plugins in the application settings."
+msgstr ""
+
 msgid "Ongoing"
 msgstr ""
 
@@ -5946,6 +5949,9 @@ msgid "{players} player remain unpaired"
 msgid_plural "{players} players remain unpaired"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "{plugin} (disabled)"
+msgstr ""
 
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"
 msgstr ""

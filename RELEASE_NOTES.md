@@ -13,6 +13,8 @@
 ## Events
 
 - Fixed ordering of events with the same start and stop dates (3.4.2)
+- Add plugins to the events card (3.4.4)
+- Display the card of events with disabled plugins (3.4.4)
 
 ## Accounts
 
