@@ -1396,11 +1396,17 @@ msgstr "Décembre"
 msgid "Default accounts have been created."
 msgstr "Les comptes par défault ont été créés."
 
+msgid "Default alert messages"
+msgstr "Messages d'alerte par défaut"
+
 msgid "Default sets can't be deleted."
 msgstr "Les ensembles par défaut ne peuvent être supprimés."
 
 msgid "Default timer settings"
 msgstr "Paramètres par défaut des chronomètres"
+
+msgid "Default timers"
+msgstr "Chronomètres par défaut"
 
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
@@ -5364,11 +5370,17 @@ msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/
 msgid "Use the Staff tab to declare arbiters."
 msgstr "Utilisez l’onglet Staff pour déclarer les arbitres."
 
+msgid "Use the alert message defined on each screen."
+msgstr "Utiliser le message d'alerte défini pour chaque écran."
+
 msgid "Use the recommended tie-breaks"
 msgstr "Utiliser les départages recommandés"
 
 msgid "Use the standard FIDE rating for unrated players"
 msgstr "Utiliser le classement FIDE standard pour les joueur·euses non-classé·es"
+
+msgid "Use the timer defined for each screen."
+msgstr "Utiliser le chronomètre défini pour chaque écran."
 
 #, python-format
 msgid "Used by %(num)d event."
