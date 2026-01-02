@@ -1,13 +1,19 @@
+import urllib
 from abc import ABC, abstractmethod
 from typing import cast
 
 from litestar.connection.base import ASGIConnection
-from litestar.exceptions import PermissionDeniedException, ClientException
+from litestar.exceptions import (
+    PermissionDeniedException,
+    ClientException,
+    NotFoundException,
+)
 from litestar.handlers import BaseRouteHandler
 from litestar_htmx import HTMXRequest
 
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
+from data.tournament import Tournament
 from utils.enum import Result
 from web.utils import RequestUtils
 
@@ -52,8 +58,10 @@ class BaseGuard(ABC):
         client: Client,
         request: HTMXRequest,
         search_form: bool = False,
+        tournament: Tournament | None = None,
     ):
-        tournament = RequestUtils.get_tournament(request, search_form)
+        if not tournament:
+            tournament = RequestUtils.get_tournament(request, search_form)
         if not client.action_allowed_for_tournament(action, tournament.id):
             raise PermissionDeniedException(
                 f'Client [{client.account.full_name}] is not allowed '
@@ -222,4 +230,31 @@ class ManageAccountGuard(BaseGuard):
             raise PermissionDeniedException(
                 f'Client [{client.account.full_name}] can not '
                 f'manage access level [{access_level.id}].'
+            )
+
+
+class PrintGuard(BaseGuard):
+    """Guard validating if the client is allowed to generate a print view."""
+
+    def authorize_client(self, client: Client, request: HTMXRequest):
+        options = request.query_params.get('options', None)
+        if not options:
+            return
+        tournament_ids: list[int] = []
+        for option in urllib.parse.unquote(options).split('|'):
+            key, raw_value = option.split('=')
+            if key == 'tournament':
+                tournament_ids.append(int(raw_value))
+            if key == 'tournaments':
+                for item in raw_value.split(';'):
+                    tournament_ids.append(int(item))
+        event = RequestUtils.get_event(request)
+        for tournament_id in tournament_ids:
+            if tournament_id not in event.tournaments_by_id:
+                raise NotFoundException(f'Tournament [{tournament_id}] not found.')
+            self._authorize_tournament_action(
+                AuthAction.PRINT,
+                client,
+                request,
+                tournament=event.tournaments_by_id[tournament_id],
             )

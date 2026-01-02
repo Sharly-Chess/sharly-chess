@@ -10,6 +10,7 @@ from litestar_htmx import HTMXRequest, HTMXTemplate
 from common.i18n import _
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
+from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_session import FFESession
@@ -31,6 +32,12 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 class FfeAdminEventController(BaseEventAdminController):
     guards = []
+
+    @staticmethod
+    def _allowed_tournaments(web_context: BaseEventAdminWebContext) -> list[Tournament]:
+        return web_context.client.allowed_tournaments_for_action(
+            AuthAction.PUBLISH_RESULTS
+        )
 
     @get(
         path='/ffe/event/{event_uniq_id:str}/players',
@@ -107,6 +114,18 @@ class FfeAdminEventController(BaseEventAdminController):
             },
         )
 
+    @classmethod
+    def _upload_results_context(
+        cls, web_context: BaseEventAdminWebContext
+    ) -> dict[str, Any]:
+        return web_context.template_context | {
+            'format_timestamp_date_time': format_timestamp_date_time,
+            'result_id': FfeBackgroundUploader.result_id,
+            'upload_status_messages': FfeBackgroundUploader.upload_status_messages,
+            'ffe_utils': FFEUtils,
+            'allowed_tournaments': cls._allowed_tournaments(web_context),
+        }
+
     @get(
         path='/ffe/ffe-upload-modal/{event_uniq_id:str}',
         name='ffe-upload-modal',
@@ -117,36 +136,22 @@ class FfeAdminEventController(BaseEventAdminController):
         request: HTMXRequest,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
-
-        FfeBackgroundUploader.update_eligible_tournaments(web_context.get_admin_event())
-
+        FfeBackgroundUploader.update_eligible_tournaments(
+            self._allowed_tournaments(web_context)
+        )
         return HTMXTemplate(
             template_name='/ffe_upload_modal.html',
             re_target='#modal-wrapper',
             trigger_event='modal_opened',
             after='settle',
-            context=web_context.template_context
-            | {
-                'format_timestamp_date_time': format_timestamp_date_time,
-                'result_id': FfeBackgroundUploader.result_id,
-                'upload_status_messages': FfeBackgroundUploader.upload_status_messages,
-                'ffe_utils': FFEUtils,
-            },
+            context=self._upload_results_context(web_context),
         )
 
-    @staticmethod
-    def _render_upload_results(
-        web_context: BaseEventAdminWebContext,
-    ) -> Template:
+    @classmethod
+    def _render_upload_results(cls, web_context: BaseEventAdminWebContext) -> Template:
         return HTMXTemplate(
             template_name='/ffe_upload_results.html',
-            context=web_context.template_context
-            | {
-                'format_timestamp_date_time': format_timestamp_date_time,
-                'result_id': FfeBackgroundUploader.result_id,
-                'upload_status_messages': FfeBackgroundUploader.upload_status_messages,
-                'ffe_utils': FFEUtils,
-            },
+            context=cls._upload_results_context(web_context),
         )
 
     @get(
@@ -165,7 +170,9 @@ class FfeAdminEventController(BaseEventAdminController):
     )
     async def htmx_admin_ffe_upload(self, request: HTMXRequest) -> Template:
         web_context = BaseEventAdminWebContext(request)
-        FfeBackgroundUploader.upload_event(web_context.get_admin_event())
+        FfeBackgroundUploader.upload_event_tournaments(
+            self._allowed_tournaments(web_context)
+        )
         return self._render_upload_results(web_context)
 
     @post(

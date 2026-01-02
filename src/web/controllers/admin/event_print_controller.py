@@ -21,12 +21,13 @@ from data.print_documents.documents import (
     TournamentsPrintOption,
 )
 from data.print_documents.options import TournamentPrintOption
+from data.tournament import Tournament
 from web.controllers.base_controller import WebContext
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
-from web.guards import EventGuard, ActionGuard
+from web.guards import EventGuard, ActionGuard, PrintGuard
 from web.session import SessionHandler
 
 
@@ -35,6 +36,10 @@ class EventPrintController(BaseEventAdminController):
         EventGuard(),
         ActionGuard(AuthAction.PRINT),
     ]
+
+    @staticmethod
+    def _allowed_tournaments(web_context: BaseEventAdminWebContext) -> list[Tournament]:
+        return web_context.client.allowed_tournaments_for_action(AuthAction.PRINT)
 
     @classmethod
     def _admin_print_render(
@@ -46,8 +51,9 @@ class EventPrintController(BaseEventAdminController):
             web_context.template_context | (template_context or {}),
         )
 
-    @staticmethod
+    @classmethod
     def _print_modal_context(
+        cls,
         web_context: BaseEventAdminWebContext,
         document_id: str | None = None,
         tournament_ids: list[int] | None = None,
@@ -57,8 +63,9 @@ class EventPrintController(BaseEventAdminController):
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
         print_options = PrintDocumentOptionManager(event).objects()
-        if len(event.tournaments) == 1:
-            tournament_ids = list(event.tournaments_by_id)
+        allowed_tournaments = cls._allowed_tournaments(web_context)
+        if len(allowed_tournaments) == 1:
+            tournament_ids = [allowed_tournaments[0].id]
 
         default_data = WebContext.values_dict_to_form_data(
             {option.id: option.default_value for option in print_options}
@@ -84,7 +91,10 @@ class EventPrintController(BaseEventAdminController):
             ]
         return {
             'modal': 'print',
-            'tournament_options': web_context.get_tournament_options(),
+            'tournament_options': web_context.get_tournament_options(
+                allowed_tournaments
+            ),
+            'allowed_tournaments': allowed_tournaments,
             'document_options': PrintDocumentManager(event).options(),
             'current_document_option_ids': current_document_option_ids,
             'print_options': print_options,
@@ -121,6 +131,17 @@ class EventPrintController(BaseEventAdminController):
             template_context=template_context,
         )
 
+    @staticmethod
+    def _get_tournament_ids_from_options(
+        options: list[PrintOption],
+    ) -> list[int] | None:
+        for option in options:
+            if isinstance(option, TournamentPrintOption):
+                return [option.value]
+            elif isinstance(option, TournamentsPrintOption):
+                return option.value
+        return None
+
     @post(
         path='/event-print/{event_uniq_id:str}',
         name='admin-event-print',
@@ -149,41 +170,23 @@ class EventPrintController(BaseEventAdminController):
         except KeyError:
             errors[field] = _('Please choose the document.')
 
-        tournament_ids: list[int] | None = None
         if document_type:
-            options = []
+            options: list[PrintOption] = []
             for option in document_type().default_options():
                 value = WebContext.form_data_to_value(flat_data, option.id, option.type)
                 options.append(type(option)(event, value))
-
-                if isinstance(option, TournamentPrintOption):
-                    tournament_id = web_context.form_data_to_int(
-                        flat_data, field='tournament'
-                    )
-                    tournament_ids = [tournament_id] if tournament_id else []
-                elif isinstance(option, TournamentsPrintOption):
-                    tournament_ids = web_context.form_data_to_list_int(
-                        flat_data, field='tournaments'
-                    )
             try:
-                document = document_type(web_context.get_admin_event(), options)
+                document = document_type(event, options)
                 document.validate_options()
             except OptionError as error:
                 errors[error.option.id] = str(error)
 
             if not errors:
+                tournament_ids = self._get_tournament_ids_from_options(options)
                 if tournament_ids:
                     SessionHandler.set_session_admin_print_last_tournaments(
-                        request, web_context.get_admin_event().uniq_id, tournament_ids
+                        request, event.uniq_id, tournament_ids
                     )
-
-                    tournament = web_context.get_admin_event().tournaments_by_id[
-                        tournament_ids[0]
-                    ]
-                    if error_message := document_type.validate_for_tournament(
-                        tournament
-                    ):
-                        errors[field] = error_message
         if errors:
             template_context = self._print_modal_context(
                 web_context, data=flat_data, errors=errors
@@ -213,6 +216,7 @@ class EventPrintController(BaseEventAdminController):
     @get(
         path='/print-view/{event_uniq_id:str}/{document: str}',
         name='admin-print-view',
+        guards=[PrintGuard()],
     )
     async def htmx_tournament_print_view(
         self,
@@ -234,7 +238,9 @@ class EventPrintController(BaseEventAdminController):
                 option_data, print_option.id, print_option.type
             )
             print_options.append(type(print_option)(event, value))
-        print_document = document_type(web_context.get_admin_event(), print_options)
+        print_document = document_type(
+            event, print_options, self._allowed_tournaments(web_context)
+        )
 
         template_context = (
             web_context.template_context
