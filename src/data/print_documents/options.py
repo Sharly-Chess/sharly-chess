@@ -22,6 +22,7 @@ from data.print_documents.player_sorters import (
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
+from data.tournament import Tournament
 from utils.option import Option
 
 if TYPE_CHECKING:
@@ -101,12 +102,10 @@ class PlayerPrintOption(PrintOption):
         if self.value is None:
             raise OptionError(_('Please choose a player.'), self)
 
-    @property
-    def players_per_tournament(self) -> dict[int, list[dict[str, Any]]]:
-        if self.event is None:
-            return {}
-
-        tournaments = [tournament for tournament in self.event.tournaments]
+    @staticmethod
+    def get_players_per_tournament(
+        tournaments: list[Tournament],
+    ) -> dict[int, list[dict[str, Any]]]:
         return {
             tournament.id: [
                 {
@@ -136,12 +135,10 @@ class PlayersPrintOption(PrintOption):
     def validate(self):
         self._validate_list_type(int)
 
-    @property
-    def players_per_tournament(self) -> dict[int, list[dict[str, Any]]]:
-        if self.event is None:
-            return {}
-
-        tournaments = [tournament for tournament in self.event.tournaments]
+    @staticmethod
+    def get_players_per_tournament(
+        tournaments: list[Tournament],
+    ) -> dict[int, list[dict[str, Any]]]:
         return {
             tournament.id: [
                 {

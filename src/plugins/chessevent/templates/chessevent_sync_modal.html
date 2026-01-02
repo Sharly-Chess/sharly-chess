@@ -61,7 +61,7 @@
 
                 </thead>
                 <tbody>
-                    {% for tournament in admin_event.tournaments_by_id.values() %}
+                    {% for tournament in allowed_tournaments %}
                         {% set tournament_status = chessevent_utils.resolve_tournament_status(tournament) %}
                         <tr>
                             <td class="text-center">{{ tournament.name }}</td>

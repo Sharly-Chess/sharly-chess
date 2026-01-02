@@ -1,5 +1,3 @@
-from typing import Any
-
 from litestar import get, patch
 from litestar.response import Template
 from litestar_htmx import HTMXRequest
@@ -27,7 +25,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
 )
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
-from web.guards import EventGuard, ActionGuard
+from web.guards import EventGuard, TournamentActionGuard
 
 logger = get_logger()
 
@@ -35,18 +33,25 @@ logger = get_logger()
 class ChessEventController(BaseEventAdminController):
     guards = [
         EventGuard(),
-        ActionGuard(AuthAction.UPDATE_PLAYERS),
+        TournamentActionGuard(AuthAction.UPDATE_PLAYERS),
     ]
 
+    @staticmethod
+    def _allowed_tournaments(web_context: BaseEventAdminWebContext) -> list[Tournament]:
+        return web_context.client.allowed_tournaments_for_action(
+            AuthAction.UPDATE_PLAYERS
+        )
+
     @classmethod
-    def _chessevent_sync_modal_context(
+    def _render_chessevent_sync_modal(
         cls,
+        web_context: BaseEventAdminWebContext,
         allow_sync: bool,
         tournament: Tournament | None = None,
         message: str | None = None,
         message_type: str | None = None,
-    ) -> dict[str, Any]:
-        return {
+    ):
+        template_context = {
             'chessevent_utils': ChessEventUtils,
             'format_timestamp_date_time': format_timestamp_date_time,
             'chessevent_importer': ChessEventTournamentImporter(),
@@ -54,11 +59,12 @@ class ChessEventController(BaseEventAdminController):
             'allow_sync': allow_sync,
             'message': message,
             'message_type': message_type,
+            'allowed_tournaments': cls._allowed_tournaments(web_context),
         }
-
-    @classmethod
-    def _render_chessevent_sync_modal(cls, template_context: dict[str, Any]):
-        return cls._render_modal('/chessevent_sync_modal.html', template_context)
+        return cls._render_modal(
+            '/chessevent_sync_modal.html',
+            web_context.template_context | template_context,
+        )
 
     @get(
         path='/chessevent/sync-modal/{event_uniq_id:str}',
@@ -70,10 +76,7 @@ class ChessEventController(BaseEventAdminController):
         allow_sync: bool = False,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
-        return self._render_chessevent_sync_modal(
-            web_context.template_context
-            | self._chessevent_sync_modal_context(allow_sync)
-        )
+        return self._render_chessevent_sync_modal(web_context, allow_sync)
 
     @staticmethod
     def _sync_tournament_with_chessevent(tournament: Tournament) -> bool | None:
@@ -125,13 +128,11 @@ class ChessEventController(BaseEventAdminController):
             request, tournament_id, reload_event=True
         )
         return self._render_chessevent_sync_modal(
-            web_context.template_context
-            | self._chessevent_sync_modal_context(
-                allow_sync=True,
-                tournament=web_context.get_admin_tournament(),
-                message=message.format(tournament=tournament.name),
-                message_type='success' if result else 'error',
-            )
+            web_context,
+            allow_sync=True,
+            tournament=web_context.get_admin_tournament(),
+            message=message.format(tournament=tournament.name),
+            message_type='success' if result else 'error',
         )
 
     @patch(
@@ -143,10 +144,10 @@ class ChessEventController(BaseEventAdminController):
         request: HTMXRequest,
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
-        event = web_context.get_admin_event()
+        allowed_tournaments = self._allowed_tournaments(web_context)
         results = [
             self._sync_tournament_with_chessevent(tournament)
-            for tournament in event.tournaments
+            for tournament in allowed_tournaments
         ]
         message_parts: list[str] = []
         message_type = 'info'
@@ -178,10 +179,8 @@ class ChessEventController(BaseEventAdminController):
             )
         web_context = BaseEventAdminWebContext(request, reload_event=True)
         return self._render_chessevent_sync_modal(
-            web_context.template_context
-            | self._chessevent_sync_modal_context(
-                allow_sync=True,
-                message=', '.join(message_parts) + '.',
-                message_type=message_type,
-            )
+            web_context,
+            allow_sync=True,
+            message=', '.join(message_parts) + '.',
+            message_type=message_type,
         )

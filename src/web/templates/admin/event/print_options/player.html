@@ -12,7 +12,7 @@
         const tournamentSelect = $('.modal #tournament');
         const playerSelect = $('.modal #{{ option.id }}');
 
-        const playersPerTournament = {{ option.players_per_tournament | tojson }};
+        const playersPerTournament = {{ option.get_players_per_tournament(allowed_tournaments) | tojson }};
 
         function updatePlayers() {
             const tId = parseInt(tournamentSelect.val(), 10);
