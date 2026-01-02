@@ -10,7 +10,6 @@ from common.logger import (
 )
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
-from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament, StoredEvent
@@ -94,16 +93,18 @@ class ChessResultsBackgroundUploader:
         return result
 
     @classmethod
-    def update_eligible_tournaments(cls, admin_event: Event) -> list[Tournament]:
-        tournaments: list[Tournament] = []
-        for tournament in admin_event.tournaments_by_id.values():
+    def update_eligible_tournaments(
+        cls, tournaments: list[Tournament]
+    ) -> list[Tournament]:
+        eligible_tournaments: list[Tournament] = []
+        for tournament in tournaments:
             result = cls.get_updated_tournament_upload_result(tournament)
             if result.status == ChessResultsUploadStatus.SETTINGS_ERROR:
                 # Skip this tournament if we have a SETTINGS_ERROR
                 continue
 
-            tournaments.append(tournament)
-        return tournaments
+            eligible_tournaments.append(tournament)
+        return eligible_tournaments
 
     @classmethod
     def chess_results_last_upload(
@@ -231,12 +232,12 @@ class ChessResultsBackgroundUploader:
         return cls.upload_status_messages[result_id]
 
     @classmethod
-    def upload_event(cls, admin_event: Event) -> None:
+    def upload_event_tournaments(cls, tournaments: list[Tournament]) -> None:
         if cls.uploading_event:
             return
         cls.uploading_event = True
 
-        tournaments = cls.update_eligible_tournaments(admin_event)
+        tournaments = cls.update_eligible_tournaments(tournaments)
         updated_tournaments: list[tuple[str, int]] = []
         for tournament in tournaments:
             if cls.chess_results_upload_needed(tournament):
