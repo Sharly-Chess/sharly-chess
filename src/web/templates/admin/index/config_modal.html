@@ -83,7 +83,7 @@
                 <div id="plugin-section" class="collapse collapse-state-not-saved">
                     <div class="row gx-3 d-fex flex-column gap-2">
                         {% for plugin in global_plugins %}
-                            {% set used_by_events_count = plugin.used_by_events_count(events_metadata) %}
+                            {% set used_by_events_count = plugin.used_by_events_count(events_metadata) if plugin.is_enabled else 0 %}
                             {{ admin_macros.plugin_switch_input(
                                 plugin,
                                 data,

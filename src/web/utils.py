@@ -7,10 +7,12 @@ from anyio import run
 from litestar.exceptions import (
     NotFoundException,
     ValidationException,
+    ClientException,
 )
 from litestar_htmx import HTMXRequest
 
 from common.exception import SharlyChessException
+from common.logger import get_logger
 from data.access_levels.access_levels import AccessLevel
 from data.access_levels.client import Client
 from data.access_levels.manager import AccessLevelManager
@@ -23,7 +25,10 @@ from data.player import TournamentPlayer, Player
 from data.rotator import Rotator
 from data.screen import Screen
 from data.tournament import Tournament
+from plugins.manager import plugin_manager
 from utils.enum import Result
+
+logger = get_logger()
 
 
 class RequestUtils:
@@ -60,6 +65,12 @@ class RequestUtils:
             event = EventLoader.get(request).load_event(event_uniq_id)
         except SharlyChessException as sce:
             raise NotFoundException(f'Event [{event_uniq_id}] not found.') from sce
+        for plugin_id in event.stored_event.enabled_plugins:
+            if not plugin_manager.plugins_by_id[plugin_id].is_enabled:
+                raise ClientException(
+                    f'Event [{event_uniq_id}] - '
+                    f'Required plugin [{plugin_id}] not enabled.'
+                )
         request.state[cls.REQUEST_EVENT_ATTR] = event
         return event
 

@@ -79,9 +79,9 @@ class Migration(BaseMigration):
         with EventDatabase(self.database.uniq_id, True) as database:
             stored_event = database.load_stored_event()
             event_plugins: list[str] = stored_event.enabled_plugins
-            handicap_games_plugin = plugin_manager.get_plugin_by_class(
-                HandicapGamesPlugin
-            )
+            handicap_games_plugin = plugin_manager.plugins_by_id[
+                HandicapGamesPlugin.static_id()
+            ]
             if any(
                 handicap_games_plugin.used_by_stored_tournament(
                     stored_event, stored_tournament
