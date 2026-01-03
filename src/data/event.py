@@ -178,9 +178,8 @@ class Event:
     @property
     def enabled_plugins(self) -> list[Plugin]:
         return [
-            plugin
-            for plugin in plugin_manager.enabled_plugins
-            if plugin.id in self.stored_event.enabled_plugins
+            plugin_manager.plugins_by_id[plugin_id]
+            for plugin_id in self.stored_event.enabled_plugins
         ]
 
     @property
