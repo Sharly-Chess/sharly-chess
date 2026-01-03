@@ -309,12 +309,12 @@ class SharlyChessConfig(metaclass=Singleton):
 
     version = SHARLY_CHESS_VERSION
 
-    en_copyright: str = '© Sharly Chess project 2013-2025'
+    en_copyright: str = '© Sharly Chess project 2013-2026'
 
     @property
     def copyright(self) -> str:
         """The copyright of the application."""
-        return f'© {self.project} 2013-2025'
+        return f'© {self.project} 2013-2026'
 
     @property
     def project(self) -> str:
