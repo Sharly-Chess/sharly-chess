@@ -396,10 +396,10 @@
                             `{{ formatter.date_str_to_iso_format(date) }}`,
                         {% endfor %}
                     ];
-                    if (disabled_dates.includes(date.toISOString().split('T')[0])) {
-                        return {disabled: true}
+                    if (disabledDates.includes(formatISODate(date))) {
+                        return {disabled: true};
                     }
-                }}
+                },
             {% endif %}
             locale: {
                 daysMin: [
@@ -1598,7 +1598,7 @@ with_indicator: display a loading indicator, optional
             input_type='date',
             min_date=min_date,
             max_date=max_date,
-            now_button=now_button,
+            disabled_dates=disabled_dates,
         ) }}
         <span
             id="{{ id }}-submit-button-container"
