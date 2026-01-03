@@ -180,14 +180,18 @@ class IndexAdminController(BaseAdminController):
         coming_events = EventLoader.get_events_metadata(
             'coming', public_only=public_only
         )
-        lan_events = sorted(current_events + coming_events, key=by('name'))
+        lan_events = [
+            event
+            for event in current_events + coming_events
+            if event.are_all_plugins_enabled
+        ]
         nav_tabs: dict[str, dict[str, Any]] = {
             'home': {
                 'title': _('Home'),
                 'template': 'index/home_tab.html',
                 'icon_class': 'bi-house-fill',
                 'disabled': False,
-                'events': lan_events,
+                'events': sorted(lan_events, key=by('name')),
                 'experimental_features_warning': True,
             },
         }

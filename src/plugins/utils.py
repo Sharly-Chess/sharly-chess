@@ -14,10 +14,10 @@ from plugins import PLUGINS_DIR
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.event_metadata import EventMetadata
     from database.sqlite.event.event_database import EventDatabase
     from database.sqlite.event.event_store import (
         StoredEvent,
-        EventMetadata,
         StoredTournament,
     )
     from plugins.migration import PluginMigrationManager
@@ -212,7 +212,7 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         from plugins.manager import plugin_manager
 
         return [
-            plugin_manager.get_plugin_by_class(plugin_type)
+            plugin_manager.plugins_by_id[plugin_type.static_id()]
             for plugin_type in self.dependencies
         ]
 
