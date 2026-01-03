@@ -55,7 +55,7 @@
                 {{ _('%(string)s:', string=_('Plugins')) }}
                 {{ event.enabled_plugins|length }}
                 <i
-                    class="bi-info-circle-fill ps-1"
+                    class="{% if event.are_all_plugins_enabled %}bi-info-circle-fill{% else %}bi-exclamation-triangle-fill text-danger{% endif %} ps-1"
                     style="font-size: 90%"
                     {{ macros.tooltip_attributes('', event.plugins_tooltip_message, 'right') }}
                 ></i>
