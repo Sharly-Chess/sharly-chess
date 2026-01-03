@@ -3184,6 +3184,9 @@ msgstr "Une fois créés, vous pouvez sélectionner le chronomètre à afficher 
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr "Une catégorie peut être désignée comme la catégorie principale pour le classement général, avec des options de partage en cas d’égalité : aucun partage, partage égal ou système de Hort."
 
+msgid "One or more of the plugins required to use this event are disabled, making it inaccessible. You can enable plugins in the application settings."
+msgstr "Au moins l'un des plug-ins requis pour utiliser cet évènement est désactivé, le rendant inaccessible. Vous pouvez activer les plug-ins dans les paramètres de l'application."
+
 msgid "Ongoing"
 msgstr "En cours"
 
@@ -5946,6 +5949,9 @@ msgid "{players} player remain unpaired"
 msgid_plural "{players} players remain unpaired"
 msgstr[0] "{players} joueur·euse reste non-apparié·e"
 msgstr[1] "{players} joueur·euses restent non-apparié·es"
+
+msgid "{plugin} (disabled)"
+msgstr "{plugin} (désactivé)"
 
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"
 msgstr "{prefix}{int_value}<sup>{suffix}</sup>"

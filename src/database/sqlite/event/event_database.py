@@ -15,11 +15,11 @@ from common import (
 )
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.event_metadata import EventMetadata
 from database.sqlite.event.event_store import (
     StoredDisplayController,
     StoredTournament,
     StoredEvent,
-    EventMetadata,
     StoredTimer,
     StoredTimerHour,
     StoredFamily,
