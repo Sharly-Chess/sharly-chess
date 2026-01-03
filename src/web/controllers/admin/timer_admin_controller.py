@@ -12,11 +12,12 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.exception import FormError
 from common.sharly_chess_config import SharlyChessConfig
-from common.i18n import _
+from common.i18n import _, ngettext
 from data.access_levels.actions import AuthAction
 from data.timer import Timer, TimerHour
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTimer, StoredTimerHour
+from utils.date_time import format_date
 from utils.enum import FormAction
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -727,12 +728,28 @@ class TimerAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = TimerAdminWebContext(request, timer_id)
         timer = web_context.get_admin_timer()
+        previous_date = date.fromisoformat(iso_date)
         new_date = WebContext.form_data_to_date(data, 'date')
         if not new_date:
             raise ClientException('Missing date field.')
-        timer.update_timer_hours_date(date.fromisoformat(iso_date), new_date)
+
+        timer.update_timer_hours_date(previous_date, new_date)
+        warning_message = ''
+        previous_date_hours = timer.timer_hours_by_date_str.get(
+            format_date(previous_date), []
+        )
+        if previous_date_hours:
+            warning_message = ngettext(
+                '{count} hour could not be moved (time conflict).',
+                '{count} hours could not be moved (time conflict).',
+                len(previous_date_hours),
+            ).format(count=len(previous_date_hours))
         return self._admin_event_timers_render(
-            web_context, self._timer_hours_modal_context()
+            web_context,
+            self._timer_hours_modal_context()
+            | {
+                'warning_message': warning_message,
+            },
         )
 
     @patch(

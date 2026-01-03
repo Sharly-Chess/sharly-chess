@@ -21,7 +21,7 @@ class DateFormatter(IdentifiableEntity, ABC):
 
     @property
     def datetime_humanized_format(self) -> str:
-        return _('{date_format} HH:MM').format(format=self.humanized_format)
+        return _('{date_format} HH:MM').format(date_format=self.humanized_format)
 
     @property
     def range_humanized_format(self) -> str:

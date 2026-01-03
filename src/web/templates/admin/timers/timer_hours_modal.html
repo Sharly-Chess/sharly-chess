@@ -18,12 +18,16 @@
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
+            {% if warning_message %}
+                {% with type='warning', message=warning_message %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
 
             <div id="timer-hours-container" class="d-flex flex-column gap-2">
                 {% if not admin_timer.timer_hours %}
                     <div class="text-danger">{{ _('No hours.') }}</div>
                 {% endif %}
-                {% set all_dates_str = admin_timer.timer_hours_by_date_str.keys()|list %}
                 {% set has_available_date = admin_timer.has_available_date %}
                 {% for date_str, timer_hours in admin_timer.timer_hours_by_date_str.items() %}
                     {% set iso_date = sharly_chess_config.date_formatter.date_str_to_iso_format(date_str) %}
@@ -55,7 +59,6 @@
                                 placeholder=date_str,
                                 min_date=admin_event.start_date_str,
                                 max_date=admin_event.stop_date_str,
-                                disabled_dates=all_dates_str,
                                 patch_url=url_for(
                                     'admin-timer-hours-update-date',
                                     event_uniq_id=admin_event.uniq_id,

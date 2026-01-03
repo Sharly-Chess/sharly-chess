@@ -369,7 +369,7 @@
             firstDay: 1,
             keyboardNav: false,
             {% if min_date %}
-                minDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ min_date }}`),
+                minDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ min_date }} 00:00`),
             {% endif %}
             {% if max_date %}
                 maxDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ max_date }} 23:59`),
@@ -1570,7 +1570,6 @@ with_indicator: display a loading indicator, optional
     placeholder='',
     min_date='',
     max_date='',
-    disabled_dates=[],
     patch_url=''
 ) %}
     <form
@@ -1598,7 +1597,6 @@ with_indicator: display a loading indicator, optional
             input_type='date',
             min_date=min_date,
             max_date=max_date,
-            disabled_dates=disabled_dates,
         ) }}
         <span
             id="{{ id }}-submit-button-container"

@@ -257,13 +257,20 @@ class Timer:
             del self.timer_hours_by_id[timer_hour_id]
 
     def update_timer_hours_date(self, previous_date: date, new_date: date):
-        date_str = format_date(previous_date)
+        hours_by_date_str = self.timer_hours_by_date_str
+        new_date_hours_triggered_at = [
+            hour.triggered_at
+            for hour in hours_by_date_str.get(format_date(new_date), [])
+        ]
         with EventDatabase(self.event.uniq_id, True) as database:
-            for timer_hour in self.timer_hours_by_date_str.get(date_str, []):
+            for timer_hour in hours_by_date_str.get(format_date(previous_date), []):
                 stored_hour = timer_hour.stored_timer_hour
-                stored_hour.triggered_at = stored_hour.triggered_at.replace(
+                triggered_at = stored_hour.triggered_at.replace(
                     year=new_date.year, month=new_date.month, day=new_date.day
                 )
+                if triggered_at in new_date_hours_triggered_at:
+                    continue
+                stored_hour.triggered_at = triggered_at
                 database.update_stored_timer_hour(stored_hour)
 
     def __str__(self):
