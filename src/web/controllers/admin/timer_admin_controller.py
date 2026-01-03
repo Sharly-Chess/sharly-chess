@@ -1,9 +1,9 @@
 from copy import copy
-from datetime import datetime
+from datetime import datetime, date
 from typing import Annotated, Any
 
 from litestar import post, get, delete, patch
-from litestar.exceptions import NotFoundException
+from litestar.exceptions import NotFoundException, ClientException
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -710,6 +710,30 @@ class TimerAdminController(BaseEventAdminController):
         else:
             template_context = self._timer_hours_modal_context(message)
         return self._admin_event_timers_render(web_context, template_context)
+
+    @patch(
+        path='/timer-hours/update-date/{event_uniq_id:str}/{timer_id:int}/{iso_date:str}',
+        name='admin-timer-hours-update-date',
+    )
+    async def htmx_admin_timer_hours_update_date(
+        self,
+        request: HTMXRequest,
+        timer_id: int,
+        iso_date: str,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = TimerAdminWebContext(request, timer_id)
+        timer = web_context.get_admin_timer()
+        new_date = WebContext.form_data_to_date(data, 'date')
+        if not new_date:
+            raise ClientException('Missing date field.')
+        timer.update_timer_hours_date(date.fromisoformat(iso_date), new_date)
+        return self._admin_event_timers_render(
+            web_context, self._timer_hours_modal_context()
+        )
 
     @patch(
         path='/timer-hour/update/{event_uniq_id:str}/{timer_id:int}/{timer_hour_id:int}',

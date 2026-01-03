@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from datetime import datetime
 
 from common.i18n import _
 from utils.entity import IdentifiableEntity
@@ -65,6 +66,9 @@ class DateFormatter(IdentifiableEntity, ABC):
     def value_to_date_js_function(self) -> str:
         """JS function converting a formatted string to a Date object."""
 
+    def date_str_to_iso_format(self, date_str: str) -> str:
+        return datetime.strptime(date_str, self.python_format).date().isoformat()
+
 
 class ISODateFormatter(DateFormatter):
     @staticmethod
@@ -94,6 +98,9 @@ class ISODateFormatter(DateFormatter):
     @property
     def value_to_date_js_function(self) -> str:
         return '(value) => new Date(value)'
+
+    def date_str_to_iso_format(self, date_str: str) -> str:
+        return date_str
 
 
 class EUDateFormatter(DateFormatter):

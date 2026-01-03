@@ -1,7 +1,7 @@
 import weakref
 from collections import defaultdict
 from collections.abc import Collection
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from functools import cached_property
 from operator import attrgetter
 from typing import TYPE_CHECKING
@@ -195,6 +195,16 @@ class Timer:
         }
 
     @property
+    def has_available_date(self) -> bool:
+        hour_dates = {hour.triggered_at.date() for hour in self.timer_hours}
+        current_date = self.event.start_date
+        while current_date <= self.event.stop_date:
+            if current_date not in hour_dates:
+                return True
+            current_date += timedelta(days=1)
+        return False
+
+    @property
     def timer_hours(self) -> Collection[TimerHour]:
         return self.timer_hours_by_id.values()
 
@@ -245,6 +255,16 @@ class Timer:
             database.delete_stored_timer_hour(timer_hour_id)
         if timer_hour_id in self.timer_hours_by_id:
             del self.timer_hours_by_id[timer_hour_id]
+
+    def update_timer_hours_date(self, previous_date: date, new_date: date):
+        date_str = format_date(previous_date)
+        with EventDatabase(self.event.uniq_id, True) as database:
+            for timer_hour in self.timer_hours_by_date_str.get(date_str, []):
+                stored_hour = timer_hour.stored_timer_hour
+                stored_hour.triggered_at = stored_hour.triggered_at.replace(
+                    year=new_date.year, month=new_date.month, day=new_date.day
+                )
+                database.update_stored_timer_hour(stored_hour)
 
     def __str__(self):
         return f'{type(self).__name__}({self.colors} {self.delays} {self.timer_hours_by_id})'
