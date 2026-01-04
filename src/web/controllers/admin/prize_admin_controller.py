@@ -19,7 +19,7 @@ from data.print_documents.documents import (
     PrizeAssignmentPrintDocument,
     PrizeListPrintDocument,
 )
-from data.prize.managers import PrizeSharingManager
+from data.prize.managers import PrizeSharingManager, PrizeTypeManager
 from data.criteria.managers import PrizePlayerFilterManager, PlayerFilterOptionManager
 from data.criteria.player_filters import PlayerFilter
 from data.prize.prize import Prize
@@ -27,6 +27,7 @@ from data.prize.prize_category import PrizeCategory
 from data.prize.prize_criterion import PrizeCriterion
 from data.prize.prize_group import PrizeGroup
 from data.prize.prize_sharing import NoPrizeSharing, AveragePrizeSharing
+from data.prize.prize_type import MonetaryPrizeType
 from data.tournament import Tournament
 from database.sqlite.event.event_store import (
     StoredPrizeGroup,
@@ -44,6 +45,7 @@ from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, TournamentActionGuard
 from web.messages import Message
 from web.session import SessionHandler
+from web.utils import SelectOption
 
 logger = get_logger()
 
@@ -1088,7 +1090,9 @@ class PrizeAdminController(BaseEventAdminController):
         data: dict[str, str], prize_category: PrizeCategory, action: FormAction
     ) -> dict[str, str]:
         errors: dict[str, str] = {}
-        is_monetary = WebContext.form_data_to_bool(data, 'is_monetary')
+        prize_type = PrizeTypeManager().get_object(
+            WebContext.form_data_to_str(data, 'type') or ''
+        )
         threshold = prize_category.sharing_threshold
         if action == FormAction.CREATE:
             field = 'values'
@@ -1118,7 +1122,7 @@ class PrizeAdminController(BaseEventAdminController):
                         else threshold
                     )
                     break
-            if not str_values and threshold:
+            if not str_values and prize_type.is_monetary:
                 errors[field] = _('At least one value is expected.')
         else:
             field = 'value'
@@ -1137,31 +1141,43 @@ class PrizeAdminController(BaseEventAdminController):
                     if threshold
                     else _('A positive value is expected.')
                 )
-        field = 'description'
-        description = WebContext.form_data_to_str(data, field) or ''
-        if is_monetary and description:
-            message = 'Description is only allowed for non-monetary prizes.'
-            errors[field] = message
-            logger.error(message)
-        if not is_monetary and not description:
-            errors[field] = _('Description is mandatory for non-monetary prizes.')
+        if prize_type.has_description:
+            description = (
+                WebContext.form_data_to_str(data, field := 'description') or ''
+            )
+            if not description:
+                errors[field] = _('This field is required.')
         return errors
 
     @staticmethod
     def _prize_form_modal_context(
         request: HTMXRequest,
-        data: dict[str, str],
-        action: FormAction,
+        category: PrizeCategory,
+        data: dict[str, str] | None = None,
+        action: FormAction = FormAction.CREATE,
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         default_data = {
             'values': '',
+            'type': MonetaryPrizeType().id,
             'value': WebContext.value_to_form_data(0.0),
-            'is_monetary': WebContext.value_to_form_data(True),
             'description': '',
         }
+        prize_types = PrizeTypeManager().objects()
+        type_options: dict[str, SelectOption] = {}
+        for type_ in prize_types:
+            option = SelectOption(type_.name, type_.tooltip_message)
+            if not type_.is_monetary and category.are_prizes_shared:
+                option.disabled = True
+                option.tooltip = _(
+                    'Non-monetary prizes are not compatible with '
+                    'categories in which the prizes are shared.'
+                )
+            type_options[type_.id] = option
         return {
             'modal': 'prize_form',
+            'prize_types': prize_types,
+            'type_options': type_options,
             'add_other_active': (
                 SessionHandler.get_session_admin_prize_add_other_active(request)
             ),
@@ -1203,10 +1219,10 @@ class PrizeAdminController(BaseEventAdminController):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_form_modal_context(
-                    request, data, FormAction.CREATE, errors
+                    request, prize_category, data, errors=errors
                 ),
             )
-        is_monetary = WebContext.form_data_to_bool(data, 'is_monetary')
+        type_id = WebContext.form_data_to_str(data, 'type') or ''
         description = WebContext.form_data_to_str(data, 'description') or ''
         str_values = WebContext.form_data_to_str(data, 'values') or '0'
         values = [
@@ -1217,14 +1233,14 @@ class PrizeAdminController(BaseEventAdminController):
                 StoredPrize(
                     id=None,
                     prize_category_id=prize_category.id,
+                    type=type_id,
                     value=value,
-                    is_monetary=is_monetary,
                     description=description,
                 )
             )
         if add_other:
             template_context = self._prize_form_modal_context(
-                request, {}, FormAction.CREATE, errors
+                request, prize_category, errors=errors
             ) | {'previous_prize_count': len(values)}
         else:
             template_context = {'modal': 'prizes'}
@@ -1266,14 +1282,13 @@ class PrizeAdminController(BaseEventAdminController):
             return self._admin_event_prizes_render(
                 web_context,
                 self._prize_form_modal_context(
-                    request, data, FormAction.UPDATE, errors
+                    request, prize_category, data, FormAction.UPDATE, errors
                 ),
             )
         prize = web_context.get_admin_prize()
         stored_prize = prize.stored_prize
-
+        stored_prize.type = WebContext.form_data_to_str(data, 'type') or ''
         stored_prize.value = WebContext.form_data_to_float(data, 'value') or 0.0
-        stored_prize.is_monetary = WebContext.form_data_to_bool(data, 'is_monetary')
         stored_prize.description = (
             WebContext.form_data_to_str(data, 'description') or ''
         )
@@ -1350,9 +1365,9 @@ class PrizeAdminController(BaseEventAdminController):
         web_context = PrizeAdminWebContext(
             request, tournament_id, prize_group_id, prize_category_id
         )
+        category = web_context.get_admin_prize_category()
         return self._admin_event_prizes_render(
-            web_context,
-            self._prize_form_modal_context(request, {}, FormAction.CREATE),
+            web_context, self._prize_form_modal_context(request, category)
         )
 
     @get(
@@ -1378,14 +1393,16 @@ class PrizeAdminController(BaseEventAdminController):
             prize_category_id,
             prize_id=prize_id,
         )
-
+        category = web_context.get_admin_prize_category()
         prize = web_context.get_admin_prize()
-        data = {
-            'value': WebContext.value_to_form_data(prize.value),
-            'is_monetary': WebContext.value_to_form_data(prize.is_monetary),
-            'description': WebContext.value_to_form_data(prize.description),
-        }
+        data = WebContext.values_dict_to_form_data(
+            {
+                'type': prize.type.id,
+                'value': prize.value,
+                'description': prize.description,
+            }
+        )
         return self._admin_event_prizes_render(
             web_context,
-            self._prize_form_modal_context(request, data, FormAction.UPDATE),
+            self._prize_form_modal_context(request, category, data, FormAction.UPDATE),
         )

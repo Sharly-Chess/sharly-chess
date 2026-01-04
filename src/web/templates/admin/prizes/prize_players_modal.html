@@ -101,15 +101,9 @@
                             </td>
                             <td class="{{ prize_class }}">
                                 {% if assigned_prize %}
-                                    {% set prize_str = (
-                                        format_prize_value(assigned_prize.value)
-                                        if assigned_prize.prize.is_monetary
-                                        else assigned_prize.prize.description
-                                    ) %}
-                                    {% if has_category_prize %}
-                                        {{ prize_str }}
-                                    {% else %}
-                                        {{ prize_str }} ({{ ordinal_integer(assigned_prize.place_index + 1)|safe }} {{ assigned_prize_category.name }})
+                                    {{ assigned_prize.name }}
+                                    {% if not has_category_prize %}
+                                        ({{ ordinal_integer(assigned_prize.place_index + 1)|safe }} {{ assigned_prize_category.name }})
                                     {% endif %}
                                 {% endif %}
                             </td>

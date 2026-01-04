@@ -52,6 +52,15 @@
             >
                 <div class="row gy-2 gx-3">
                     <div class="col-12">
+                        {{ admin_macros.select_input(
+                            name='type',
+                            label=_('%(string)s:', string=_('Type')),
+                            select_options=type_options,
+                            tooltip_select=true,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12">
                         {% if action == 'create' %}
                             {{ admin_macros.text_input(
                                 name='values',
@@ -69,51 +78,32 @@
                             ) }}
                         {% endif %}
                     </div>
-                    <div class="col-12">
-                        {{ admin_macros.switch_input(
-                            name='is_monetary',
-                            label='',
-                            placeholder=_('Define as monetary'),
-                            disabled=admin_prize_category.are_prizes_shared,
-                            input_tooltip=(
-                                _('Prizes of categories with prize sharing can only be monetary.')
-                                if admin_prize_category.are_prizes_shared else ''
-                            ),
-                            tooltip_text=_('For non-monetary prizes, the value is used for reward priority.'),
-                            data=data, errors=errors
-                        ) }}
-                        {% if admin_prize_category.are_prizes_shared %}
-                            <input name="is_monetary" type="hidden" value="on">
-                        {% endif %}
-                    </div>
-                    <div class="col-12">
+                    <div id="description-container" class="col-12">
                         {{ admin_macros.text_input(
                             name='description',
-                            label=_('%(string)s:', string=_('Description')),
-                            placeholder=_('E.g.: %(string)s', string=_('Trophy')),
-                            input_tooltip=_('Descriptions can only be defined for non-monetary prizes.'),
+                            label=_('Description'),
+                            placeholder=_('E.g.: %(string)s', string=_('Trophy, medal')),
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <script>
+                        $('#type').change(function () {
+                            const type = $(this).val();
+                            var showDesc = true;
+                            {% for type in prize_types %}
+                                if (type === `{{ type.id }}`) {
+                                    showDesc = {% if type.has_description %}true{% else %}false{% endif %};
+                                    $('#description').prop('disabled', !showDesc);
+                                    $('#description-container').css('display', showDesc ? '' : 'none');
+                                    $('#description-label').html(
+                                        `{{ _('%(string)s:', string=type.description_label) }}`
+                                    )
+                                }
+                            {% endfor %}
+                        });
+                        $('#type').trigger('change');
+                    </script>
                 </div>
-
-                <script>
-                    $('#is-monetary').on('change', (event) => {
-                        const tooltip = new bootstrap.Tooltip(
-                            document.getElementById('description-input-container')
-                        );
-                        const description = document.getElementById('description');
-                        if (event.target.checked) {
-                            description.disabled = true;
-                            tooltip.enable();
-                        } else {
-                            description.disabled = false;
-                            tooltip.disable();
-                        }
-                    });
-                    $('#is-monetary').trigger('change');
-                    setTimeout(() => $('#is-monetary').trigger('change'), 50);
-                </script>
             </form>
         </div>
         <div class="modal-footer">

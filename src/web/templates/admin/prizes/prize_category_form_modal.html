@@ -91,6 +91,7 @@
                             ></i>
                         </div>
                     </div>
+                    {% set has_non_monetary_prizes = admin_prize_category and admin_prize_category.has_non_monetary_prizes %}
                     <div class="col-12">
                         <div class="d-flex">
                             <span
@@ -98,7 +99,7 @@
                                 {{ macros.tooltip_attributes(
                                     'info',
                                     _('The category contains non-monetary prizes which can not be shared.')
-                                    if admin_prize_category and admin_prize_category.has_non_monetary_prizes else
+                                    if has_non_monetary_prizes else
                                     _('Prizes can only be shared for the main category.'),
                                     'top'
                                 ) }}
@@ -107,6 +108,7 @@
                                     name='share_prizes',
                                     label='',
                                     placeholder=_('Share the prizes'),
+                                    disabled=has_non_monetary_prizes,
                                     data=data, errors=errors
                                 ) }}
                             </span>
@@ -154,29 +156,31 @@
                             ) }}
                         </div>
                     </div>
-                    <script>
-                        $('#is-main').on('change', (event) => {
-                            const tooltip = new bootstrap.Tooltip(
-                                document.getElementById('share-prizes-container')
-                            );
-                            const isMain = event.target.checked;
-                            const sharePrizes = document.getElementById('share-prizes');
-                            sharePrizes.disabled = !isMain;
-                            if (isMain) {
-                                tooltip.disable();
-                            } else {
-                                sharePrizes.checked = false;
-                                $(sharePrizes).trigger('change');
-                                tooltip.enable();
-                            }
-                        });
-                        $('#share-prizes').on('change', (event) => {
-                            $('#prize-sharing-container').css(
-                                'display', event.target.checked ? 'block' : 'none'
-                            );
-                        });
-                        setTimeout(() => $('#is-main').trigger('change'), 50);
-                    </script>
+                    {% if not has_non_monetary_prizes %}
+                        <script>
+                            $('#is-main').on('change', (event) => {
+                                const tooltip = new bootstrap.Tooltip(
+                                    document.getElementById('share-prizes-container')
+                                );
+                                const isMain = event.target.checked;
+                                const sharePrizes = document.getElementById('share-prizes');
+                                sharePrizes.disabled = !isMain;
+                                if (isMain) {
+                                    tooltip.disable();
+                                } else {
+                                    sharePrizes.checked = false;
+                                    $(sharePrizes).trigger('change');
+                                    tooltip.enable();
+                                }
+                            });
+                            $('#share-prizes').on('change', (event) => {
+                                $('#prize-sharing-container').css(
+                                    'display', event.target.checked ? 'block' : 'none'
+                                );
+                            });
+                            setTimeout(() => $('#is-main').trigger('change'), 50);
+                        </script>
+                    {% endif %}
                 </div>
             </form>
         </div>

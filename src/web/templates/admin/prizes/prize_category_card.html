@@ -89,11 +89,7 @@
                     {% for prize in prize_category.sorted_prizes %}
                         <div>
                             {{ ordinal_integer(loop.index)|safe }}&nbsp;-&nbsp;
-                            {% if prize.is_monetary %}
-                                {{ format_prize_value(value=prize.value) }}
-                            {% else %}
-                                {{ prize.description }}
-                            {% endif %}
+                            {{ prize.name }}
                         </div>
                     {% endfor %}
                     {% if prize_category.sorted_prizes|length == 0 %}
