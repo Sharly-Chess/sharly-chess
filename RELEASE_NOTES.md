@@ -47,6 +47,7 @@
 - Improved the timer interface (3.4.0)
 - Added timers to rotators (3.4.0)
 - Use rotator messages prior to screen messages (3.4.4)
+- Allow batch updating the dates of timer hours (3.4.5)
 
 ## _FFE_
 
