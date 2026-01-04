@@ -1100,6 +1100,9 @@ msgstr ""
 msgid "Complementary pairings successfully generated!"
 msgstr ""
 
+msgid "Complementary prize"
+msgstr ""
+
 msgid "Configuration"
 msgstr ""
 
@@ -1411,9 +1414,6 @@ msgstr ""
 msgid "Define as main category"
 msgstr ""
 
-msgid "Define as monetary"
-msgstr ""
-
 msgid "Define as public"
 msgstr ""
 
@@ -1516,12 +1516,6 @@ msgid "Deputy arbiters"
 msgstr ""
 
 msgid "Description"
-msgstr ""
-
-msgid "Description is mandatory for non-monetary prizes."
-msgstr ""
-
-msgid "Descriptions can only be defined for non-monetary prizes."
 msgstr ""
 
 msgid "Details"
@@ -2161,9 +2155,6 @@ msgstr ""
 msgid "Font size adjustment (%%):"
 msgstr ""
 
-msgid "For non-monetary prizes, the value is used for reward priority."
-msgstr ""
-
 msgid "For players who have not checked-in:"
 msgstr ""
 
@@ -2312,6 +2303,9 @@ msgid "Hour [{hour}] has been created."
 msgstr ""
 
 msgid "Hours"
+msgstr ""
+
+msgid "Hybrid"
 msgstr ""
 
 msgid "I confirm that I want to archive this event."
@@ -2768,6 +2762,9 @@ msgstr ""
 msgid "Mo *** MONDAY"
 msgstr "Mo"
 
+msgid "Monetary"
+msgstr ""
+
 msgid "Monetary prizes only"
 msgstr ""
 
@@ -3073,6 +3070,12 @@ msgid "No. *** NB FOR TABLE HEADER"
 msgstr "No."
 
 msgid "No. final rounds without byes:"
+msgstr ""
+
+msgid "Non-monetary"
+msgstr ""
+
+msgid "Non-monetary prizes are not compatible with categories in which the prizes are shared."
 msgstr ""
 
 msgid "None"
@@ -3759,7 +3762,13 @@ msgstr ""
 msgid "Prizes can only be shared for the main category."
 msgstr ""
 
-msgid "Prizes of categories with prize sharing can only be monetary."
+msgid "Prizes defined as a free text field. The value is used to determine the place of the prize in the list."
+msgstr ""
+
+msgid "Prizes defined as both a monetary value and a complementary non-monetary prize (example: 100 € + Trophy)."
+msgstr ""
+
+msgid "Prizes only defined as a monetary value."
 msgstr ""
 
 msgid "Proceed"
@@ -5171,7 +5180,7 @@ msgstr ""
 msgid "Transfer"
 msgstr ""
 
-msgid "Trophy"
+msgid "Trophy, medal"
 msgstr ""
 
 msgid "Tu *** TUESDAY"

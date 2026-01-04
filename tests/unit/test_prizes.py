@@ -6,6 +6,7 @@ from unittest import TestCase
 
 from data.loader import EventLoader
 from data.player_categories import JuniorCategory, SeniorCategory
+from data.prize.prize_type import MonetaryPrizeType
 from data.tournament import Tournament
 from data.player import Federation, PlayerRating, Club
 from data.criteria.player_filter_options import (
@@ -213,12 +214,12 @@ class PrizesTestCase(TestCase):
         self.criterion_index += 1
         return criterion
 
-    def stored_prize(self, value: int, is_monetary: bool = True):
+    def stored_prize(self, value: int):
         prize = StoredPrize(
             id=self.prize_index,
             prize_category_id=0,
+            type=MonetaryPrizeType.static_id(),
             value=value,
-            is_monetary=is_monetary,
             description='',
         )
         self.prize_index += 1

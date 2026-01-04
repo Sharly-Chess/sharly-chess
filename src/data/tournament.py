@@ -317,9 +317,7 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_pairing_settings(self.id, pairing_settings)
         self.stored_tournament.pairing_settings = pairing_settings
-        property_name = 'pairing_settings'
-        if property_name in self.__dict__:
-            del self.__dict__[property_name]
+        Utils.reset_cached_properties(self, 'pairing_settings')
 
     # -------------------------------------------------------------------------
     # Tie-breaks

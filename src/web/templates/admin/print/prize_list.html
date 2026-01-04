@@ -24,13 +24,7 @@
                                 <td class="important-cell">
                                     {{ ordinal_integer(loop.index)|safe }}
                                 </td>
-                                <td>
-                                    {% if prize.is_monetary %}
-                                        {{ format_prize_value(value=prize.value) }}
-                                    {% else %}
-                                        {{ prize.description }}
-                                    {% endif %}
-                                </td>
+                                <td>{{ prize.name }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>

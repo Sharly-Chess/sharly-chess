@@ -397,14 +397,12 @@ class Event:
     # --------------------------------------------------------------------------
 
     def clear_player_cache(self):
-        player_cached_property_names = [
+        Utils.reset_cached_properties(
+            self,
             'player_count',
             'players_by_id',
             'players_sorted_by_name',
-        ]
-        for property_name in player_cached_property_names:
-            if property_name in self.__dict__:
-                del self.__dict__[property_name]
+        )
 
     def add_player(
         self, stored_player: StoredPlayer, tournaments: list[Tournament]
