@@ -62,6 +62,7 @@
         {% set ns = namespace(current_key=None) %}
         {% for tournament_player in admin_tournament.tournament_players_by_rank.values() %}
         {% set group_key = tournament_player %}
+        {% set no_played_games_class = '' if tournament_player.has_played_games else 'text-warning' %}
         {% set row_class='even' if loop.index is even else 'odd' %}
 
         {% if ns.current_key != group_key %}
@@ -75,10 +76,16 @@
         {% set sortable = same_as_prev or same_as_next %}
         {% set new_point_group = loop.previtem and loop.previtem.points != tournament_player.points %}
 
-        <tr id="player-{{ tournament_player.id }}" class="player-row {{ row_class }} {% if not sortable %}non-sortable{% endif %} {% if new_point_group %}separator{% endif %}">
-            <td class="rank text-end">{{ tournament_player.rank }}</td>
-            <td class="title text-end">{{ tournament_player.title.short_name }}</td>
-            <td class="name text-start">
+        <tr
+                id="player-{{ tournament_player.id }}"
+                class="player-row {{ row_class }} {% if not sortable %}non-sortable{% endif %} {% if new_point_group %}separator{% endif %}"
+                {% if not tournament_player.has_played_games %}
+                    {{ macros.tooltip_attributes('warning', _('No games played on the board for this player.'), 'top') }}
+                {% endif %}
+        >
+            <td class="rank text-end {{ no_played_games_class }}">{{ tournament_player.rank }}</td>
+            <td class="title text-end {{ no_played_games_class }}">{{ tournament_player.title.short_name }}</td>
+            <td class="name text-start {{ no_played_games_class }}">
                 {% include '/admin/player_link.html' %}
                 <button
                     type="button"
@@ -93,14 +100,14 @@
                     <i class="bi-info-circle ps-2"></i>
                 </button>
             </td>
-            <td class="rating text-{{ 'start' if pairings_list else 'end' }}">{{ tournament_player.rating_str }}</td>
-            <td class="category text-center">{{ tournament_player.category.name }}</td>
-            <td class="category text-center">{{ tournament_player.gender.short_name }}</td>
-            <td class="federation text-center">{{ tournament_player.federation }}</td>
-            <td class="points text-center fw-bold">{{ tournament_player.points_str }}</td>
+            <td class="rating text-{{ 'start' if pairings_list else 'end' }} {{ no_played_games_class }}">{{ tournament_player.rating_str }}</td>
+            <td class="category text-center {{ no_played_games_class }}">{{ tournament_player.category.name }}</td>
+            <td class="category text-center {{ no_played_games_class }}">{{ tournament_player.gender.short_name }}</td>
+            <td class="federation text-center {{ no_played_games_class }}">{{ tournament_player.federation }}</td>
+            <td class="points text-center fw-bold {{ no_played_games_class }}">{{ tournament_player.points_str }}</td>
 
             {% for tie_break_value in tournament_player.tie_break_values %}
-                <td class="tie-break text-center compact-col {% if tie_break_value.tie_break.is_manual and sortable %}cursor-grap{% endif %}">
+                <td class="tie-break text-center compact-col {% if tie_break_value.tie_break.is_manual and sortable %}cursor-grap{% endif %} {{ no_played_games_class }}">
 
                     <span
                         {% if tie_break_value.rank_progress %}

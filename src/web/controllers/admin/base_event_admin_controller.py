@@ -4,6 +4,7 @@ from typing import Any
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 
 from common.i18n import _
+from data.access_levels.actions import AuthAction
 from data.access_levels.client_tracker import ClientTracker
 from data.display_controller import DisplayController
 from data.event import Event
@@ -110,10 +111,13 @@ class BaseEventAdminWebContext(AdminWebContext):
                 },
             }
         if self.client.can_view_tournaments_tab:
+            tournaments = self.client.allowed_tournaments_for_action(
+                AuthAction.VIEW_TOURNAMENTS_TAB
+            )
             nav_tabs |= {
                 'admin-event-tournaments-tab': {
                     'title': _('Tournaments ({num})').format(
-                        num=len(event.tournaments_by_id) or '-'
+                        num=len(tournaments) or '-'
                     ),
                     'template': 'tournaments/tab.html',
                     'icon_class': 'bi-diagram-3-fill',
@@ -122,7 +126,9 @@ class BaseEventAdminWebContext(AdminWebContext):
         if self.client.can_view_players_tab:
             nav_tabs |= {
                 'admin-event-players-tab': {
-                    'title': _('Players ({num})').format(num=event.player_count or '-'),
+                    'title': _('Players ({num})').format(
+                        num=len(self.client.allowed_players_by_id) or '-'
+                    ),
                     'template': 'players/tab.html',
                     'icon_class': 'bi-people-fill',
                 },

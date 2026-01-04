@@ -109,7 +109,7 @@
 {% endblock %}
 
 {% block cards_container_cards %}
-    {% set sortable = admin_event.tournaments|length > 1 %}
+    {% set sortable = admin_event.tournaments|length > 1 and client.can_add_tournament %}
     <form
         {% if sortable %}
             hx-patch="{{ url_for(
@@ -122,7 +122,7 @@
     >
         <div class="row gy-2 gx-3 {% if sortable %}sortable{% endif %}">
             {% if admin_event.tournaments_sorted_by_index %}
-                {% for tournament in admin_event.tournaments_sorted_by_index %}
+                {% for tournament in allowed_tournaments %}
                     {% include 'tournament_card.html' %}
                 {% endfor %}
             {% else %}

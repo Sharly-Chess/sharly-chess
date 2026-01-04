@@ -87,6 +87,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
     ):
         super().__init__(request, reload_event)
         self.admin_tournament: Tournament | None = None
+        self.allowed_tournaments = self.client.allowed_tournaments_for_action(
+            AuthAction.VIEW_PAIRINGS_TAB
+        )
         event = self.get_admin_event()
         if tournament_id:
             if tournament_id not in event.tournaments_by_id:
@@ -95,17 +98,19 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                     f'for event [{event.uniq_id}]'
                 )
             self.admin_tournament = event.tournaments_by_id[tournament_id]
-        elif event.tournaments:
+        elif self.allowed_tournaments:
             session_tournament_id = (
                 SessionHandler.get_session_admin_pairings_selected_tournament(
                     self.request,
                     event.uniq_id,
                 )
             )
-            if session_tournament_id in event.tournaments_by_id:
+            if session_tournament_id in [
+                tournament.id for tournament in self.allowed_tournaments
+            ]:
                 self.admin_tournament = event.tournaments_by_id[session_tournament_id]
             else:
-                self.admin_tournament = event.tournaments_sorted_by_index[0]
+                self.admin_tournament = self.allowed_tournaments[0]
 
         self.display_rankings = self.admin_tournament and (
             self.admin_tournament.finished
@@ -264,10 +269,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             ):
                 default_print_document = PlayerRankingPrintDocument.static_id()
 
-        tournament_ids = [
-            tournament.id
-            for tournament in self.get_admin_event().tournaments_sorted_by_index
-        ]
+        tournament_ids = [tournament.id for tournament in self.allowed_tournaments]
         current_index = (
             tournament_ids.index(self.admin_tournament.id)
             if self.admin_tournament
@@ -297,7 +299,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'safety_mode': self.safety_mode,
             'allowed_actions': allowed_actions,
             'existing_actions': existing_actions,
-            'tournament_options': self.get_tournament_options(),
+            'tournament_options': self.get_tournament_options(self.allowed_tournaments),
             'admin_filtered_boards': self.admin_filtered_boards,
             'admin_unpaired': self.admin_unpaired,
             'admin_bye_players': self.admin_bye_players,
