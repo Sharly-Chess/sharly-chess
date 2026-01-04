@@ -352,11 +352,7 @@ class ChessResultsSession(Session):
 
         if not tnr:
             # See if we have a creator_id stored in the config
-            from plugins.chess_results.chess_results import ChessResultsPlugin
-
-            chess_results_plugin = plugin_manager.get_plugin_by_class(
-                ChessResultsPlugin
-            )
+            chess_results_plugin = plugin_manager.plugins_by_id[PLUGIN_NAME]
             chess_results_plugin_data = chess_results_plugin.get_plugin_data()
             creator_id = chess_results_plugin_data.creator_id
             if not creator_id:

@@ -13,17 +13,17 @@
         admin_tournament.dependent_screens
         or admin_tournament.dependent_families
         or admin_tournament.prize_groups
-        or admin_tournament.players
+        or admin_tournament.tournament_players
     ) %}
         <p class="mt-3">{{ _('All the dependant objects will also be deleted:') }}</p>
         <ul>
-            {% if admin_tournament.players %}
+            {% if admin_tournament.tournament_players %}
                 {# TODO (Molrn - multi-tournament) replace by the players only playing in this tournament #}
                 <li>
                    {{ ngettext(
                        '%(num)d player',
                        '%(num)d players',
-                       admin_tournament.players|length
+                       admin_tournament.tournament_players|length
                    ) }}
                </li>
             {% endif %}

@@ -178,9 +178,8 @@ class Event:
     @property
     def enabled_plugins(self) -> list[Plugin]:
         return [
-            plugin
-            for plugin in plugin_manager.enabled_plugins
-            if plugin.id in self.stored_event.enabled_plugins
+            plugin_manager.plugins_by_id[plugin_id]
+            for plugin_id in self.stored_event.enabled_plugins
         ]
 
     @property
@@ -402,10 +401,6 @@ class Event:
             'player_count',
             'players_by_id',
             'players_sorted_by_name',
-            'gender_counts',
-            'federation_counts',
-            'club_counts',
-            'check_in_counts',
         ]
         for property_name in player_cached_property_names:
             if property_name in self.__dict__:
@@ -461,42 +456,42 @@ class Event:
             key=by('last_name', 'first_name'),
         )
 
-    @cached_property
-    def gender_counts(self) -> Counter[PlayerGender]:
+    def gender_counts(
+        self, players: list[Player] | None = None
+    ) -> Counter[PlayerGender]:
         counter: Counter[PlayerGender] = Counter[PlayerGender]()
-        for tournament in self.tournaments_by_id.values():
-            for gender in tournament.gender_counts:
-                counter[gender] += tournament.gender_counts[gender]
+        for player in players or self.players:
+            counter[player.gender] += 1
         return counter
 
-    @cached_property
-    def federation_counts(self) -> Counter[Federation]:
+    def federation_counts(
+        self, players: list[Player] | None = None
+    ) -> Counter[Federation]:
         counter: Counter[Federation] = Counter[Federation]()
-        for tournament in self.tournaments_by_id.values():
-            for federation in tournament.federation_counts:
-                counter[federation] += tournament.federation_counts[federation]
+        for player in players or self.players:
+            counter[player.federation] += 1
         return counter
 
-    @property
-    def club_counts(self) -> Counter[Club]:
+    def club_counts(self, players: list[Player] | None = None) -> Counter[Club]:
         counter: Counter[Club] = Counter[Club]()
-        for tournament in self.tournaments_by_id.values():
-            for club in tournament.club_counts:
-                counter[club] += tournament.club_counts[club]
+        for player in players or self.players:
+            counter[player.club] += 1
         return counter
 
-    @cached_property
-    def check_in_counts(self) -> Counter[bool | None]:
+    def check_in_counts(
+        self, tournaments: list[Tournament] | None = None
+    ) -> Counter[bool | None]:
         counter: Counter[bool | None] = Counter[bool | None]()
-        for tournament in self.tournaments_by_id.values():
-            for check_in in tournament.tournament_players_by_check_in_status:
-                counter[check_in] += tournament.check_in_counts[check_in]
+        for tournament in tournaments or self.tournaments:
+            for status, checked_in in tournament.check_in_counts.items():
+                counter[status] += checked_in
         return counter
 
-    @cached_property
-    def category_counts(self) -> Counter[PlayerCategory]:
+    def category_counts(
+        self, players: list[Player] | None = None
+    ) -> Counter[PlayerCategory]:
         counter: Counter[PlayerCategory] = Counter[PlayerCategory]()
-        for player in self.players:
+        for player in players or self.players:
             counter[player.category] += 1
         return counter
 
@@ -824,21 +819,12 @@ class Event:
         return account
 
     def update_account(self, stored_account: StoredAccount):
-        def get_role(role_type: RoleType) -> StoredRole | None:
-            for stored_role in stored_account.stored_roles:
-                if stored_role.role == role_type.value:
-                    return stored_role
-            return StoredRole(account_id=None, role=role_type.value)
-
         with EventDatabase(self.uniq_id, True) as database:
             database.update_stored_account(stored_account)
-            if deputy_role := get_role(RoleType.DEPUTY_ARBITER):
-                deputy_role.account_id = stored_account.id
-                self.set_account_role(database, deputy_role)
-
-            if chief_role := get_role(RoleType.CHIEF_ARBITER):
-                chief_role.account_id = stored_account.id
-                self.set_account_role(database, chief_role)
+            database.delete_stored_roles(account_id=stored_account.id)
+            for stored_role in stored_account.stored_roles:
+                stored_role.account_id = stored_account.id
+                self.set_account_role(database, stored_role)
 
     def delete_account(self, account: Account):
         with EventDatabase(self.uniq_id, True) as database:
@@ -855,25 +841,15 @@ class Event:
         stored_role: StoredRole,
     ):
         assert stored_role.account_id is not None
-        if stored_role.tournament_ids:
-            # Always replace this user's existing tournaments for this role
+        if stored_role.role == RoleType.CHIEF_ARBITER.value:
+            # Delete any previous chief arbiter roles for these tournaments
             database.delete_stored_roles(
-                stored_role.account_id, None, stored_role.tournament_ids
+                role=RoleType.CHIEF_ARBITER.value,
+                tournament_ids=stored_role.tournament_ids,
             )
-
-            if stored_role.role == RoleType.CHIEF_ARBITER.value:
-                # Delete any previous chief arbiter roles for these tournaments
-                database.delete_stored_roles(
-                    None, RoleType.CHIEF_ARBITER.value, stored_role.tournament_ids
-                )
-
-        if (
-            not RoleType(stored_role.role).is_tournament_bound
-            or stored_role.tournament_ids
-        ):
-            database.add_stored_roles(
-                stored_role.account_id, stored_role.role, stored_role.tournament_ids
-            )
+        database.add_stored_roles(
+            stored_role.account_id, stored_role.role, stored_role.tournament_ids
+        )
 
     @staticmethod
     def _delete_redundant_account_permissions(

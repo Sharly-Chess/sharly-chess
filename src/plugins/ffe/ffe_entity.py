@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from collections import Counter
 from collections.abc import Callable
+from datetime import date
 from functools import partial, cached_property, cache
 from types import UnionType
 from typing import override, Any
@@ -60,6 +61,11 @@ class FfePlayerComparator(FidePlayerComparator):
         ):
             diff_field_ids.append(field_id)
         if (
+            (field_id := 'ffe_licence_number') in self.field_ids
+            and plugin_data.ffe_licence_number != match_plugin_data.ffe_licence_number
+        ):
+            diff_field_ids.append(field_id)
+        if (
             (field_id := 'ffe_licence') in self.field_ids
             and plugin_data.ffe_licence != match_plugin_data.ffe_licence
         ):
@@ -79,6 +85,11 @@ class FfePlayerComparator(FidePlayerComparator):
             and plugin_data.league != match_plugin_data.league
         ):
             plugin_data.league = match_plugin_data.league
+        if (
+            'ffe_licence_number' in self.field_ids
+            and plugin_data.ffe_licence_number != match_plugin_data.ffe_licence_number
+        ):
+            plugin_data.ffe_licence_number = match_plugin_data.ffe_licence_number
         if (
             'ffe_licence' in self.field_ids
             and plugin_data.ffe_licence != match_plugin_data.ffe_licence
@@ -105,15 +116,36 @@ class _FfeDataSource(ABC):
         ]
 
     @abstractmethod
-    async def player_matches_from_licence_number(
-        self, ffe_licence_numbers: list[str]
+    async def _get_match_stored_players(
+        self,
+        ffe_licence_numbers: list[str],
+        name_keys: list[tuple[str, str, date]],
     ) -> list[StoredPlayer] | None:
-        """Fetch player matches in the data source from their licence numbers.
-        Return None if it fails."""
+        """Fetch player matches in the data source. Return None if it fails."""
 
     @staticmethod
-    def _get_ffe_licence_number(stored_player: StoredPlayer) -> str | None:
+    def _get_licence_number(stored_player: StoredPlayer) -> str | None:
         return get_data(stored_player.plugin_data, 'ffe_licence_number', None)
+
+    @staticmethod
+    def _get_name_key(stored_player: StoredPlayer) -> tuple[str, str, date] | None:
+        first_name = stored_player.first_name
+        dob = stored_player.date_of_birth
+        if first_name and dob:
+            return stored_player.last_name, first_name, dob
+        return None
+
+    @classmethod
+    def _match_stored_players(
+        cls,
+        player1: StoredPlayer,
+        player2: StoredPlayer,
+    ) -> bool:
+        if licence_key := cls._get_licence_number(player1):
+            return licence_key == cls._get_licence_number(player2)
+        if name_key := cls._get_name_key(player1):
+            return name_key == cls._get_name_key(player2)
+        return False
 
     async def _get_player_matches(
         self,
@@ -121,22 +153,23 @@ class _FfeDataSource(ABC):
         field_ids: list[str],
         diff_only: bool,
     ) -> list[PlayerComparator] | None:
-        ffe_licence_numbers: list[str] = []
+        licence_numbers: list[str] = []
+        name_keys: list[tuple[str, str, date]] = []
         for player in players:
-            if licence_number := self._get_ffe_licence_number(player.stored_player):
-                ffe_licence_numbers.append(licence_number)
-        match_stored_players = await self.player_matches_from_licence_number(
-            ffe_licence_numbers
+            stored_player = player.stored_player
+            if licence_number := self._get_licence_number(stored_player):
+                licence_numbers.append(licence_number)
+            elif name_key := self._get_name_key(stored_player):
+                name_keys.append(name_key)
+        match_stored_players = await self._get_match_stored_players(
+            licence_numbers, name_keys
         )
         if match_stored_players is None:
             return None
         return DataSource.create_player_comparators(
             players,
             match_stored_players,
-            lambda p1, p2: (
-                self._get_ffe_licence_number(p1) is not None
-                and self._get_ffe_licence_number(p1) == self._get_ffe_licence_number(p2)
-            ),
+            self._match_stored_players,
             field_ids,
             diff_only,
             FfePlayerComparator,
@@ -180,16 +213,24 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
     ) -> list[PlayerComparator] | None:
         return await self._get_player_matches(players, field_ids, diff_only)
 
-    async def player_matches_from_licence_number(
-        self, ffe_licence_numbers: list[str]
+    async def _get_match_stored_players(
+        self,
+        ffe_licence_numbers: list[str],
+        name_keys: list[tuple[str, str, date]],
     ) -> list[StoredPlayer] | None:
         database = FfeDatabase()
         if not database.exists():
             return None
         with database:
-            return database.get_stored_players_by_ffe_licence_number(
-                ffe_licence_numbers
+            licence_matches = (
+                database.get_stored_players_by_licence_numbers(ffe_licence_numbers)
+                if ffe_licence_numbers
+                else []
             )
+            name_matches = (
+                database.get_stored_players_by_name_keys(name_keys) if name_keys else []
+            )
+        return licence_matches + name_matches
 
     @property
     def search_fields(self) -> list[str]:
@@ -240,14 +281,26 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
     ) -> list[PlayerComparator] | None:
         return await self._get_player_matches(players, field_ids, diff_only)
 
-    async def player_matches_from_licence_number(
-        self, ffe_licence_numbers: list[str]
+    async def _get_match_stored_players(
+        self,
+        ffe_licence_numbers: list[str],
+        name_keys: list[tuple[str, str, date]],
     ) -> list[StoredPlayer] | None:
         try:
             async with FFESqlServer() as server:
-                return await server.get_stored_players_by_ffe_licence_number(
-                    ffe_licence_numbers
+                licence_matches = (
+                    await server.get_stored_players_by_licence_numbers(
+                        ffe_licence_numbers
+                    )
+                    if ffe_licence_numbers
+                    else []
                 )
+                name_matches = (
+                    await server.get_stored_players_by_name_keys(name_keys)
+                    if name_keys
+                    else []
+                )
+                return licence_matches + name_matches
         except SharlyChessException:
             return None
 

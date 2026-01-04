@@ -54,7 +54,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.base_controller import WebContext
-from web.guards import EventGuard, ActionGuard
+from web.guards import EventGuard, ActionGuard, TournamentActionGuard
 from web.messages import Message
 from web.session import SessionHandler
 from web.utils import SelectOption
@@ -120,6 +120,9 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
             'admin_tournament': self.admin_tournament,
             'admin_tournament_criterion': self.admin_tournament_criterion,
             'admin_tie_break_id': self.admin_tie_break_id,
+            'allowed_tournaments': self.client.allowed_tournaments_for_action(
+                AuthAction.VIEW_TOURNAMENTS_TAB
+            ),
         }
 
 
@@ -547,6 +550,7 @@ class TournamentAdminController(BaseEventAdminController):
     @get(
         path='/tournament-modal/{action:str}/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-modal',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_modal(
         self,
@@ -769,7 +773,7 @@ class TournamentAdminController(BaseEventAdminController):
     @patch(
         path='/tournament-update/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-update',
-        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_update(
         self,
@@ -829,6 +833,7 @@ class TournamentAdminController(BaseEventAdminController):
     @patch(
         path='/tournament-reorder/{event_uniq_id:str}',
         name='admin-tournament-reorder',
+        guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_reorder(
         self,
@@ -858,6 +863,7 @@ class TournamentAdminController(BaseEventAdminController):
     @get(
         path='/tournament-export/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
         name='admin-tournament-export',
+        guards=[TournamentActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB)],
     )
     async def admin_tournament_export(
         self,
@@ -1113,7 +1119,7 @@ class TournamentAdminController(BaseEventAdminController):
     @post(
         path='/tournaments/create-default-tie-breaks/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-create-default-tie-breaks',
-        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_create_default_tie_breaks(
         self,
@@ -1131,7 +1137,7 @@ class TournamentAdminController(BaseEventAdminController):
     @post(
         path='/tournaments/tie-break/create/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tie-break-create',
-        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tie_break_create(
         self,
@@ -1174,7 +1180,7 @@ class TournamentAdminController(BaseEventAdminController):
             '/{tournament_id:int}/{tie_break_id:int}'
         ),
         name='admin-tie-break-duplicate',
-        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tie_break_duplicate(
         self,
@@ -1202,7 +1208,7 @@ class TournamentAdminController(BaseEventAdminController):
             '/{tournament_id:int}/{tie_break_id:int}'
         ),
         name='admin-tie-break-update',
-        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tie_break_update(
         self,
@@ -1242,7 +1248,7 @@ class TournamentAdminController(BaseEventAdminController):
             '/{tournament_id:int}/{tie_break_id:int}'
         ),
         name='admin-tie-break-delete',
-        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_tie_break_delete(
@@ -1264,6 +1270,7 @@ class TournamentAdminController(BaseEventAdminController):
     @patch(
         path='/tournament-reorder-tie-breaks/{event_uniq_id:str}/{tournament_id:int}',
         name='admin-tournament-reorder-tie-breaks',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_reorder_tie_breaks(
         self,
@@ -1407,7 +1414,7 @@ class TournamentAdminController(BaseEventAdminController):
             '/tournaments/tournament-criterion/create/{event_uniq_id:str}/{tournament_id:int}'
         ),
         name='admin-tournament-criterion-create',
-        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_criterion_create(
         self,
@@ -1458,7 +1465,7 @@ class TournamentAdminController(BaseEventAdminController):
             '/{tournament_id:int}/{tournament_criterion_id:int}'
         ),
         name='admin-tournament-criterion-update',
-        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
     async def htmx_admin_tournament_criterion_update(
         self,
@@ -1503,7 +1510,7 @@ class TournamentAdminController(BaseEventAdminController):
             '/{tournament_criterion_id:int}'
         ),
         name='admin-tournament-criterion-delete',
-        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_tournament_criterion_delete(
@@ -1598,6 +1605,7 @@ class TournamentAdminController(BaseEventAdminController):
             '/random-player/{event_uniq_id:str}/{tournament_id:int}',
         ],
         name='admin-random-player',
+        guards=[TournamentActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB)],
     )
     async def htmx_random_player(
         self,
@@ -1609,11 +1617,11 @@ class TournamentAdminController(BaseEventAdminController):
         assert web_context.admin_event is not None
         admin_event: Event = web_context.admin_event
         admin_tournament: Tournament | None = web_context.admin_tournament
-
+        allowed_tournaments = web_context.client.allowed_tournaments_for_action(
+            AuthAction.VIEW_TOURNAMENTS_TAB
+        )
         if not admin_tournament:
-            admin_tournament = random.choice(
-                list(admin_event.tournaments_by_id.values())
-            )
+            admin_tournament = random.choice(allowed_tournaments)
 
         tournament_players = (
             admin_tournament.tournament_players if admin_tournament else None

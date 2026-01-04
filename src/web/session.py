@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Optional
 
 from litestar.plugins.htmx import HTMXRequest
 
+from common.i18n import locales, DEFAULT_LOCALE
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account
@@ -281,7 +282,11 @@ class SessionHandler:
 
     @classmethod
     def get_session_locale(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.LOCALE_KEY, SharlyChessConfig().locale)
+        locale: str = request.session.get(cls.LOCALE_KEY, SharlyChessConfig().locale)
+        if locale not in locales:
+            locale = DEFAULT_LOCALE
+            cls.set_session_locale(request, locale)
+        return locale
 
     ADMIN_PLAYERS_EVENT_KEY: str = 'admin_players_event'
 

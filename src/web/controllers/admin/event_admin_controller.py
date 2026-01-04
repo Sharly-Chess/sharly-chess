@@ -4,6 +4,7 @@ from litestar import Response, get
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template, Redirect
 
+from data.access_levels.actions import AuthAction
 from data.display_controller import DisplayController
 from data.rotator import Rotator
 from data.screen import Screen
@@ -48,17 +49,22 @@ class EventAdminController(BaseEventAdminController):
         web_context = BaseEventAdminWebContext(request)
         if web_context.admin_event is None:
             raise RuntimeError('admin_event not defined')
-        started_tournaments: list[Tournament] = [
-            tournament
-            for tournament in web_context.admin_event.tournaments_by_name.values()
-            if tournament.started
-        ]
-        if len(started_tournaments) > 0 and web_context.client.can_view_pairings_tab:
-            return Redirect(
-                admin_event_pairings_url(
-                    request, web_context.admin_event.uniq_id, started_tournaments[0].id
+        if web_context.client.can_view_pairings_tab:
+            started_tournaments: list[Tournament] = [
+                tournament
+                for tournament in web_context.client.allowed_tournaments_for_action(
+                    AuthAction.VIEW_PAIRINGS_TAB
                 )
-            )
+                if tournament.started
+            ]
+            if len(started_tournaments) > 0 and web_context:
+                return Redirect(
+                    admin_event_pairings_url(
+                        request,
+                        web_context.admin_event.uniq_id,
+                        started_tournaments[0].id,
+                    )
+                )
         if (
             web_context.admin_event.player_count
             and web_context.client.can_view_players_tab

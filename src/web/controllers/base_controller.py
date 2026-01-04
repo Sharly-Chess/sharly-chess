@@ -43,9 +43,9 @@ class WebContext:
     Web contexts are used by controllers to get the context of the request based on the payload data received.
     """
 
-    def __init__(self, request: HTMXRequest):
+    def __init__(self, request: HTMXRequest, reload_client: bool = False):
         self.request: HTMXRequest = request
-        self.client = RequestUtils.get_client(request)
+        self.client = RequestUtils.get_client(request, reload_client)
         # sets the session locale to the thread
         set_locale(SessionHandler.get_session_locale(request))
         if request.client:

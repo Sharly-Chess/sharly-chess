@@ -23,21 +23,22 @@
                         </button>
                     </li>
                     <li class="dropdown-divider m-0"></li>
+                    {% set check_in_counts = admin_event.check_in_counts(allowed_tournaments) %}
                     {% for check_in, check_in_data in {
                         0: {
                             'class': 'bi-ban text-secondary',
-                            'text': _('Absent'),
-                            'number': admin_event.check_in_counts[none],
+                            'text': _('Check-in closed'),
+                            'value': none,
                         },
                         1: {
                             'class': 'bi-circle-fill text-warning',
                             'text': _('Not checked-in yet'),
-                            'number': admin_event.check_in_counts[false],
+                            'value': false,
                         },
                         2: {
                             'class': 'bi-check-circle-fill text-success',
                             'text': _('Checked-in'),
-                            'number': admin_event.check_in_counts[true],
+                            'value': true,
                         },
                     }.items() %}
                         <li class="dropdown-item text-nowrap d-flex align-items-center gap-2">
@@ -46,12 +47,12 @@
                                 id="{{ name }}-{{ loop.index }}"
                                 name="{{ name }}"
                                 value="{{ check_in }}"
-                                {% if (check_in == 0 and none in admin_players_filter_check_ins) or (check_in == 1 and false in admin_players_filter_check_ins) or (check_in == 2 and true in admin_players_filter_check_ins) %}checked{% endif %}
+                                {% if check_in_data['value'] in admin_players_filter_check_ins %}checked{% endif %}
                                 class="{{ name }}"
                             />
                             <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
                                 <i class="{{ check_in_data['class'] }} pe-1"></i>
-                                {{ check_in_data['text'] }} ({{ check_in_data['number'] }})
+                                {{ check_in_data['text'] }} ({{ check_in_counts[check_in_data['value']] }})
                             </label>
                         </li>
                     {% endfor %}

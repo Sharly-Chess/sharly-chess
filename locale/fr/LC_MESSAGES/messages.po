@@ -921,6 +921,9 @@ msgstr "Pointage / Saisie des résultats"
 msgid "Check-in / Results entry ({tournament_name})"
 msgstr "Pointage / Saisie des résultats ({tournament_name})"
 
+msgid "Check-in closed"
+msgstr "Pointage fermé"
+
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament)s]."
 msgstr "Le pointage est fermé pour le tournoi [%(tournament)s]."
@@ -1393,11 +1396,17 @@ msgstr "Décembre"
 msgid "Default accounts have been created."
 msgstr "Les comptes par défault ont été créés."
 
+msgid "Default alert messages"
+msgstr "Messages d'alerte par défaut"
+
 msgid "Default sets can't be deleted."
 msgstr "Les ensembles par défaut ne peuvent être supprimés."
 
 msgid "Default timer settings"
 msgstr "Paramètres par défaut des chronomètres"
+
+msgid "Default timers"
+msgstr "Chronomètres par défaut"
 
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
@@ -2925,6 +2934,9 @@ msgstr "Pas de famille à ajouter."
 msgid "No games against FIDE rated opponents."
 msgstr "Aucune partie contre des adversaires classés FIDE."
 
+msgid "No games played on the board for this player."
+msgstr "Aucune partie jouée sur l'échiquier pour ce·tte joueur·euse."
+
 msgid "No home page"
 msgstr "Aucun site web"
 
@@ -3171,6 +3183,9 @@ msgstr "Une fois créés, vous pouvez sélectionner le chronomètre à afficher 
 
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr "Une catégorie peut être désignée comme la catégorie principale pour le classement général, avec des options de partage en cas d’égalité : aucun partage, partage égal ou système de Hort."
+
+msgid "One or more of the plugins required to use this event are disabled, making it inaccessible. You can enable plugins in the application settings."
+msgstr "Au moins l'un des plug-ins requis pour utiliser cet évènement est désactivé, le rendant inaccessible. Vous pouvez activer les plug-ins dans les paramètres de l'application."
 
 msgid "Ongoing"
 msgstr "En cours"
@@ -5358,11 +5373,17 @@ msgstr "Utiliser le système de points 3/1/0 au lieu du système standard 1/0,5/
 msgid "Use the Staff tab to declare arbiters."
 msgstr "Utilisez l’onglet Staff pour déclarer les arbitres."
 
+msgid "Use the alert message defined on each screen."
+msgstr "Utiliser le message d'alerte défini pour chaque écran."
+
 msgid "Use the recommended tie-breaks"
 msgstr "Utiliser les départages recommandés"
 
 msgid "Use the standard FIDE rating for unrated players"
 msgstr "Utiliser le classement FIDE standard pour les joueur·euses non-classé·es"
+
+msgid "Use the timer defined for each screen."
+msgstr "Utiliser le chronomètre défini pour chaque écran."
 
 #, python-format
 msgid "Used by %(num)d event."
@@ -5657,6 +5678,9 @@ msgstr "Vous essayez de modifier manuellement les appariements de la ronde en co
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr "Vous essayez de modifier les appariements de la ronde précédente. Cela aura un impact sur les appariements et le classement de toutes les rondes à venir."
 
+msgid "You can ask the administrator for permission to access the event screens."
+msgstr "Vous pouvez demander à l'administrateur·ice la permission d'accéder aux écrans de l'évènement."
+
 msgid "You can create password-protected accounts to delegate tasks to other members of the staff (arbiters and organizers)."
 msgstr "Vous pouvez créer des comptes protégés par mots de passe pour déléguer des tâches aux autres membres du staff (arbitres et organisateur·ices)."
 
@@ -5668,6 +5692,9 @@ msgstr "Vous ne pouvez pas pas ajouter davantage de permissions à ce compte."
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Vous définissez le type de données à afficher (résultats, appariements, classement…) ainsi que des détails comme le nombre d’écrans pour répartir les joueur·euses, et les écrans simples seront générés automatiquement."
+
+msgid "You have no permissions"
+msgstr "Vous n'avez aucune permission"
 
 msgid "You may also connect to this server from other devices using"
 msgstr "Vous pouvez également vous connecter à ce serveur depuis d’autres appareils"
@@ -5922,6 +5949,9 @@ msgid "{players} player remain unpaired"
 msgid_plural "{players} players remain unpaired"
 msgstr[0] "{players} joueur·euse reste non-apparié·e"
 msgstr[1] "{players} joueur·euses restent non-apparié·es"
+
+msgid "{plugin} (disabled)"
+msgstr "{plugin} (désactivé)"
 
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"
 msgstr "{prefix}{int_value}<sup>{suffix}</sup>"

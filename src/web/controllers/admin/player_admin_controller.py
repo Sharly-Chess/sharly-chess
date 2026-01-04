@@ -62,6 +62,7 @@ from web.guards import (
     TournamentActionGuard,
     ActionGuard,
     SetByeGuard,
+    PlayerTournamentActionGuard,
 )
 from web.messages import Message
 from web.session import SessionHandler
@@ -150,7 +151,7 @@ class PlayerAdminController(BaseEventAdminController):
 
     guards = [
         EventGuard(),
-        TournamentActionGuard(AuthAction.VIEW_PLAYERS_TAB),
+        ActionGuard(AuthAction.VIEW_PLAYERS_TAB),
     ]
 
     @classmethod
@@ -319,11 +320,16 @@ class PlayerAdminController(BaseEventAdminController):
         cls, request: HTMXRequest, players: Iterable[Player]
     ) -> list[Player]:
         web_context = PlayerAdminWebContext(request)
-        admin_event = web_context.admin_event
-        assert admin_event is not None
+        event = web_context.get_admin_event()
+        allowed_tournaments = web_context.client.allowed_tournaments_for_action(
+            AuthAction.VIEW_PLAYERS_TAB
+        )
+        allowed_tournament_ids = [tournament.id for tournament in allowed_tournaments]
+        allowed_players_by_id = web_context.client.allowed_players_by_id
+        allowed_players = allowed_players_by_id.values()
         # The federations that will be shown on the federation select list
         players_federations: list[Federation] = sorted(
-            {player.federation for player in admin_event.players_by_id.values()}
+            {player.federation for player in allowed_players}
         )
         # The federations that will be selected on the federation select list and used to filter the players
         filter_federations: list[Federation] = [
@@ -335,11 +341,7 @@ class PlayerAdminController(BaseEventAdminController):
         ]
         # The clubs that will be shown on the club select list
         players_clubs: list[Club] = sorted(
-            {
-                player.club
-                for player in admin_event.players_by_id.values()
-                if player.club is not None
-            }
+            {player.club for player in allowed_players if player.club is not None}
         )
         # The clubs that will be selected on the club select list and used to filter the players
         filter_clubs: list[Club] = [
@@ -357,15 +359,13 @@ class PlayerAdminController(BaseEventAdminController):
             SessionHandler.get_session_admin_players_filter_check_ins(request)
         )
         # The tournaments that will be selected on the tournament select list and used to filter the players
-        filter_tournaments: list[int] = (
+        filter_tournaments: set[int] = set(
             SessionHandler.get_session_admin_players_filter_tournaments(request)
-        )
+        ).intersection(set(allowed_tournament_ids))
+
         # The categories that will be shown on the category select list
         players_categories: list[PlayerCategory] = sorted(
-            {
-                player.single_tournament_player.category
-                for player in admin_event.players_by_id.values()
-            }
+            {player.single_tournament_player.category for player in allowed_players}
         )
         # The categories that will be selected on the category select list and used to filter the players
         filter_categories: list[PlayerCategory] = (
@@ -398,7 +398,7 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 )
             )
-        if len(filter_tournaments) not in (0, len(admin_event.tournaments_by_id)):
+        if len(filter_tournaments) not in (0, len(allowed_tournaments)):
             filters.append(
                 lambda player: player.single_tournament_player.tournament.id
                 in filter_tournaments
@@ -420,22 +420,23 @@ class PlayerAdminController(BaseEventAdminController):
                 )
             )
         per_plugin_context = plugin_manager.hook_for_event(
-            admin_event, 'get_player_admin_template_context'
+            event, 'get_player_admin_template_context'
         )(web_context=web_context)
         plugin_context = {
             key: value
             for context in per_plugin_context
             for key, value in context.items()
         }
-        for plugin_filters in plugin_manager.hook_for_event(
-            admin_event, 'player_filters'
-        )(
+        for plugin_filters in plugin_manager.hook_for_event(event, 'player_filters')(
             web_context=web_context,
             template_context=web_context.template_context | plugin_context,
         ):
             filters += plugin_filters
         return [
-            player for player in players if all(filter_(player) for filter_ in filters)
+            player
+            for player in players
+            if player.id in allowed_players_by_id
+            and all(filter_(player) for filter_ in filters)
         ]
 
     @staticmethod
@@ -607,7 +608,7 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext = PlayerAdminWebContext(
             request, player_id, tournament_id, reload_event=reload_event
         )
-        admin_event = web_context.get_admin_event()
+        event = web_context.get_admin_event()
         session_event_uniq_id = SessionHandler.get_session_admin_player_event(request)
         search_results_id = SessionHandler.get_session_admin_players_search_results_id(
             request
@@ -615,25 +616,31 @@ class PlayerAdminController(BaseEventAdminController):
 
         if (
             search_results_id is None
-            or session_event_uniq_id != admin_event.uniq_id
+            or session_event_uniq_id != event.uniq_id
             or search_results_id not in cls.search_results_by_session
         ):
             search_results = cls.set_players_search_results(request)
         else:
             search_results = cls.search_results_by_session[search_results_id]
+        allowed_tournaments = web_context.client.allowed_tournaments_for_action(
+            AuthAction.VIEW_PLAYERS_TAB
+        )
+        allowed_tournament_ids = [tournament.id for tournament in allowed_tournaments]
+        allowed_players_by_id = web_context.client.allowed_players_by_id
+        allowed_players = web_context.client.sorted_allowed_players
         players: dict[int, Player] = {}
         start_index = ((page or 1) - 1) * cls.PAGE_SIZE
         end_index = (page or 1) * cls.PAGE_SIZE
         pages = math.ceil(len(search_results) / cls.PAGE_SIZE)
         for index, player_id in enumerate(search_results[start_index:end_index]):
-            if player := admin_event.players_by_id.get(player_id, None):
+            if player := allowed_players_by_id.get(player_id, None):
                 players[start_index + index + 1] = player
 
         admin_player: Player | None = web_context.admin_player
 
         # Allow plugin to provide extra columns
         per_plugin_columns: Iterable[Iterable[ExtraAdminColumn]] = (
-            plugin_manager.hook_for_event(admin_event, 'get_extra_player_columns')()
+            plugin_manager.hook_for_event(event, 'get_extra_player_columns')()
         )
         extra_columns: dict[str, list[ExtraAdminColumn]] = {}
         for plugin_columns in per_plugin_columns:
@@ -643,34 +650,32 @@ class PlayerAdminController(BaseEventAdminController):
 
         # The federations that will be shown on the federation select list
         players_federations: list[Federation] = sorted(
-            {player.federation for player in admin_event.players_by_id.values()}
+            {player.federation for player in allowed_players}
         )
         # The clubs that will be shown on the club select list
         players_clubs: list[Club] = sorted(
-            {
-                player.club
-                for player in admin_event.players_by_id.values()
-                if player.club is not None
-            }
+            {player.club for player in allowed_players if player.club is not None}
         )
         # The genders that will be shown on the gender select list
         players_genders: list[PlayerGender] = sorted(
-            {player.gender for player in admin_event.players_by_id.values()}
+            {player.gender for player in allowed_players}
         )
         # The years or birth that will be shown on the year of birth select list
         players_yobs: list[int] = sorted(
-            {player.year_of_birth for player in admin_event.players_by_id.values()}
+            {player.year_of_birth for player in allowed_players}
         )
         # The check-in statuses that will be selected on the
         # check-in status select list and used to filter the players
         players_check_ins: list[bool | None] = [None, True, False]
         # The categories that will be shown on the category select list
         players_categories: list[PlayerCategory] = sorted(
-            {
-                player.single_tournament_player.category
-                for player in admin_event.players_by_id.values()
-            }
+            {player.single_tournament_player.category for player in allowed_players}
         )
+        player_addable_tournaments = [
+            tournament
+            for tournament in event.player_addable_tournaments
+            if tournament.id in allowed_tournament_ids
+        ]
 
         template_context = web_context.template_context
         template_context |= {
@@ -679,9 +684,9 @@ class PlayerAdminController(BaseEventAdminController):
             'admin_filtered_player_count': len(search_results),
             'page': page or 1,
             'pages': pages,
-            'nav_tab_title': _('Players ({num})').format(
-                num=len(admin_event.players_by_id)
-            ),
+            'nav_tab_title': _('Players ({num})').format(num=len(allowed_players)),
+            'allowed_tournaments': allowed_tournaments,
+            'allowed_players': allowed_players,
             'admin_players_columns': [
                 'name',
                 'check_in',
@@ -738,12 +743,12 @@ class PlayerAdminController(BaseEventAdminController):
             ),
             'admin_players_extra_columns': extra_columns,
             'data_sources': DataSourceManager().objects(),
-            'player_addable_tournaments': admin_event.player_addable_tournaments,
+            'player_addable_tournaments': player_addable_tournaments,
         }
         template_context |= Utils.concat_dicts(
-            plugin_manager.hook_for_event(
-                admin_event, 'get_player_admin_template_context'
-            )(web_context=web_context)
+            plugin_manager.hook_for_event(event, 'get_player_admin_template_context')(
+                web_context=web_context
+            )
         )
 
         match modal:
@@ -759,7 +764,7 @@ class PlayerAdminController(BaseEventAdminController):
                         tr: PlayerRating(estimated=0) for tr in TournamentRating
                     }
                     title: int = PlayerTitle.NONE.value
-                    federation = admin_event.federation
+                    federation = event.federation
                     club: str | None = None
                     fide_id: int | None = None
                     mail: str | None = None
@@ -797,14 +802,9 @@ class PlayerAdminController(BaseEventAdminController):
                         fixed = stored_player.fixed
                         stored_plugin_data = stored_player.plugin_data
                     if action == 'create':
-                        if (
-                            len(admin_event.not_finished_tournaments_sorted_by_index)
-                            == 1
-                        ):
+                        if len(event.not_finished_tournaments_sorted_by_index) == 1:
                             tournament_id = (
-                                admin_event.not_finished_tournaments_sorted_by_index[
-                                    0
-                                ].id
+                                event.not_finished_tournaments_sorted_by_index[0].id
                             )
                     else:
                         assert admin_player is not None
@@ -860,7 +860,7 @@ class PlayerAdminController(BaseEventAdminController):
                     )
                 if errors is None:
                     errors = {}
-                tournaments = admin_event.player_addable_tournaments
+                tournaments = player_addable_tournaments
                 tournament_options: dict[str, str] = {}
                 if action == 'create' and len(tournaments) > 1:
                     # force the choice of the tournament on player creation if several tournaments
@@ -877,7 +877,7 @@ class PlayerAdminController(BaseEventAdminController):
                 tournament_options |= web_context.get_tournament_options(tournaments)
                 plugin_templates_by_section: dict[str, list[str]] = defaultdict(list)
                 plugin_manager.hook_for_event(
-                    admin_event, 'insert_player_form_fields_template'
+                    event, 'insert_player_form_fields_template'
                 )(templates_by_section=plugin_templates_by_section)
 
                 template_context |= {
@@ -921,7 +921,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'data_source_options': DataSourceManager().options(),
                     'plugin_templates_by_section': plugin_templates_by_section,
                     'previous_player': (
-                        admin_event.players_by_id.get(old_player_id, None)
+                        allowed_players_by_id.get(old_player_id, None)
                         if action == 'create' and old_player_id
                         else None
                     ),
@@ -938,7 +938,7 @@ class PlayerAdminController(BaseEventAdminController):
                 }
                 template_context |= Utils.concat_dicts(
                     plugin_manager.hook_for_event(
-                        admin_event, 'get_player_form_template_context'
+                        event, 'get_player_form_template_context'
                     )(web_context=web_context)
                 )
 
@@ -1205,6 +1205,7 @@ class PlayerAdminController(BaseEventAdminController):
     @get(
         path='/player-modal/{action:str}/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-modal',
+        guards=[PlayerTournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
     async def htmx_admin_player_modal(
         self,
@@ -1222,6 +1223,7 @@ class PlayerAdminController(BaseEventAdminController):
     @get(
         path='/player-delete-modal/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-delete-modal',
+        guards=[PlayerTournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
     async def htmx_admin_player_delete_modal(
         self,
@@ -1238,7 +1240,7 @@ class PlayerAdminController(BaseEventAdminController):
     @get(
         path='/record-modal/{event_uniq_id:str}/{player_id:int}',
         name='admin-record-modal',
-        guards=[ActionGuard(AuthAction.UPDATE_PLAYERS_HISTORY)],
+        guards=[PlayerTournamentActionGuard(AuthAction.UPDATE_PLAYERS_HISTORY)],
     )
     async def htmx_admin_record_modal(
         self, request: HTMXRequest, player_id: int
@@ -1425,7 +1427,10 @@ class PlayerAdminController(BaseEventAdminController):
     @patch(
         path='/player-move/{event_uniq_id:str}/{player_id:int}/{tournament_id:int}',
         name='admin-player-move',
-        guard=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
+        guard=[
+            TournamentActionGuard(AuthAction.UPDATE_PLAYERS),
+            PlayerTournamentActionGuard(AuthAction.UPDATE_PLAYERS),
+        ],
     )
     async def htmx_admin_player_move(
         self,
@@ -1514,7 +1519,7 @@ class PlayerAdminController(BaseEventAdminController):
     @post(
         path='/player-create/{event_uniq_id:str}',
         name='admin-player-create',
-        guard=[TournamentActionGuard(AuthAction.ADD_PLAYERS)],
+        guard=[TournamentActionGuard(AuthAction.ADD_PLAYERS, search_form=True)],
     )
     async def htmx_admin_player_create(
         self,
@@ -1534,7 +1539,10 @@ class PlayerAdminController(BaseEventAdminController):
     @patch(
         path='/player-update/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-update',
-        guard=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
+        guard=[
+            TournamentActionGuard(AuthAction.UPDATE_PLAYERS, search_form=True),
+            PlayerTournamentActionGuard(AuthAction.UPDATE_PLAYERS),
+        ],
     )
     async def htmx_admin_player_update(
         self,
@@ -1555,6 +1563,10 @@ class PlayerAdminController(BaseEventAdminController):
     @patch(
         path='/player-replace/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-replace',
+        guard=[
+            TournamentActionGuard(AuthAction.UPDATE_PLAYERS, search_form=True),
+            PlayerTournamentActionGuard(AuthAction.UPDATE_PLAYERS),
+        ],
     )
     async def htmx_admin_player_replace(
         self,
@@ -1617,7 +1629,7 @@ class PlayerAdminController(BaseEventAdminController):
     @delete(
         path='/player-delete/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-delete',
-        guard=[TournamentActionGuard(AuthAction.DELETE_PLAYERS)],
+        guard=[PlayerTournamentActionGuard(AuthAction.DELETE_PLAYERS)],
         status_code=HTTP_200_OK,
     )
     async def htmx_admin_player_delete(
@@ -1741,7 +1753,7 @@ class PlayerAdminController(BaseEventAdminController):
     @patch(
         path='/player-check-in/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-check-in',
-        guard=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+        guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
     async def htmx_admin_player_check_in(
         self, request: HTMXRequest, player_id: int
@@ -1755,7 +1767,7 @@ class PlayerAdminController(BaseEventAdminController):
     @patch(
         path='/player-check-out/{event_uniq_id:str}/{player_id:int}',
         name='admin-player-check-out',
-        guard=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+        guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
     async def htmx_admin_player_check_out(
         self,
@@ -1767,6 +1779,7 @@ class PlayerAdminController(BaseEventAdminController):
     @patch(
         path='/players-update/{event_uniq_id:str}/{data_source_id:str}',
         name='admin-event-players-update',
+        guards=[ActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
     async def htmx_admin_update_event_players(
         self,
@@ -1776,13 +1789,8 @@ class PlayerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         data_source_id: str,
-        tournament_id: int | None = None,
     ) -> Template:
-        web_context = PlayerAdminWebContext(
-            request,
-            tournament_id=tournament_id,
-            data_source_id=data_source_id,
-        )
+        web_context = PlayerAdminWebContext(request, data_source_id=data_source_id)
         event = web_context.get_admin_event()
         data_source = web_context.get_admin_data_source()
         player_updater_field_ids: list[str] = [
@@ -1793,10 +1801,11 @@ class PlayerAdminController(BaseEventAdminController):
             for field_id in data['field_ids']
             if field_id in player_updater_field_ids
         ]
-        players: list[Player] = [
-            event.players_by_id[player_id]
-            for player_id in map(int, (id_ for id_ in data['player_ids'] if id_))
-        ]
+        allowed_players_by_id = web_context.client.allowed_players_by_id
+        players: list[Player] = []
+        for player_id in map(int, (id_ for id_ in data['player_ids'] if id_)):
+            if player := allowed_players_by_id.get(player_id, None):
+                players.append(player)
         player_matches = await data_source.get_player_matches(
             players, field_ids, diff_only=True
         )
@@ -1827,6 +1836,7 @@ class PlayerAdminController(BaseEventAdminController):
     @get(
         path='/event-players-diff-modal/{event_uniq_id:str}/{data_source_id:str}',
         name='admin-event-players-diff-modal',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
     async def htmx_admin_event_players_diff_modal(
         self,
@@ -1849,7 +1859,7 @@ class PlayerAdminController(BaseEventAdminController):
             ) in tournament.tournament_players_by_name_with_unpaired:
                 players.append(tournament_player)
         else:
-            players = event.players_sorted_by_name
+            players = web_context.client.sorted_allowed_players
         player_matches: (
             list[PlayerComparator] | None
         ) = await data_source.get_player_matches(

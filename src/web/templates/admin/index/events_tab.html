@@ -41,7 +41,8 @@
             {% for event in nav_tab.events %}
                 {% with
                     card_url=url_for('admin-event', event_uniq_id=event.uniq_id),
-                    card_class='border-danger' if not event.public else ''
+                    card_class='border-danger' if not event.public else '',
+                    disabled=not event.are_all_plugins_enabled
                 %}
                     {% include 'event_card.html' %}
                 {% endwith %}

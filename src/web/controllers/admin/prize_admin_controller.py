@@ -67,6 +67,9 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
         self.show_details = SessionHandler.get_session_admin_prizes_show_details(
             request
         )
+        self.allowed_tournaments = self.client.allowed_tournaments_for_action(
+            AuthAction.VIEW_PRIZES_TAB
+        )
 
         event = self.get_admin_event()
         if tournament_id:
@@ -76,8 +79,8 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
                     f'for event [{event.uniq_id}]'
                 )
             self.admin_tournament = event.tournaments_by_id[tournament_id]
-        elif event.tournaments:
-            self.admin_tournament = event.tournaments_sorted_by_index[0]
+        elif self.allowed_tournaments:
+            self.admin_tournament = self.allowed_tournaments[0]
 
         if prize_group_id:
             tournament = self.get_admin_tournament()
@@ -141,7 +144,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
                 currency=prize_currency,
             ),
             'prize_currency': prize_currency,
-            'tournament_options': self.get_tournament_options(),
+            'tournament_options': self.get_tournament_options(self.allowed_tournaments),
             'prize_group_options': self.get_prize_group_options(),
             'show_details': self.show_details,
             'default_print_document': PrizeAssignmentPrintDocument.static_id()

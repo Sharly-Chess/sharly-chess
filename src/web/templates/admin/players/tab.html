@@ -1,5 +1,5 @@
 {% with url=url_for('admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
-   <div
+    <div
         hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
         hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }} from:body"
         hx-target="#refresh-message"
@@ -44,10 +44,10 @@
                         </ul>
                     </span>
                 </div>
-                {% if admin_event.players_sorted_by_name %}
+                {% if allowed_players %}
                     {% include 'download_players.html' %}
                 {% endif %}
-                {% if admin_event.not_finished_tournaments_sorted_by_index %}
+                {% if allowed_tournaments %}
                     {% include 'check_in_tournaments.html' %}
                 {% endif %}
                 {% include 'filter_columns.html' %}
