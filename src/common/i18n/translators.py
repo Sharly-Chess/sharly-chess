@@ -32,10 +32,9 @@ class Translator:
                 cls('Amaras', 'Sammy PLAT'),
             ],
         }
-        return translators | {
-            locale: [
-                cls(),
-            ]
-            for locale in locales
-            if locale not in translators
-        }
+        for locale in locales:
+            if locale not in translators:
+                translators[locale] = [
+                    cls(),
+                ]
+        return translators

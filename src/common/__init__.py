@@ -13,7 +13,8 @@ APP_NAME: str = 'sharly-chess'
 SHARLY_CHESS_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 
 # True when the program is running in a development environment, False if running as an EXE file.
-DEVEL_ENV: bool = not getattr(sys, 'frozen', False)
+# We also consider Flatpak as a non-development environment.
+DEVEL_ENV: bool = not getattr(sys, 'frozen', False) and not os.environ.get('FLATPAK_ID')
 TEST_ENV: bool = os.getenv('TEST_ENV') == 'true' or Path(sys.argv[0]).stem == 'pytest'
 
 # True when experimental features are enabled, False otherwise.

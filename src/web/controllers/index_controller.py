@@ -129,7 +129,7 @@ class IndexController(BaseController):
                 )
                 error_message = _('An unexpected error occurred.')
         return HTMXTemplate(
-            template_name='/error.html',
+            template_name='error.html',
             context=WebContext(request).template_context
             | {
                 'reload_message': reload_message,
@@ -144,6 +144,11 @@ class IndexController(BaseController):
         cls, request: HTMXRequest, exception: HTTPException
     ) -> Redirect | HTMXTemplate:
         status_code = getattr(exception, 'status_code', 500)
+
+        # Prevent infinite redirect loops if the error handler itself fails
+        if request.url.path.startswith('/error/'):
+            return cls._error_template(request, status_code)
+
         if request.htmx:
             return cls._error_template(request, status_code)
         return Redirect(

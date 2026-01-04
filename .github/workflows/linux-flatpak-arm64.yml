@@ -1,0 +1,118 @@
+name: Linux Flatpak Build (ARM64)
+
+on:
+  push:
+    branches: [ dev, 'hotfix/*', 'release/*', 'linux-flatpak' ]
+  pull_request:
+    branches: [ dev, 'hotfix/*', 'release/*' ]
+  workflow_dispatch:
+
+jobs:
+  flatpak-arm64:
+    name: Build & Test Flatpak (ARM64)
+    runs-on: ubuntu-24.04-arm
+    env:
+      PKG_CONFIG_PATH: /usr/local/lib/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/share/pkgconfig
+      LD_LIBRARY_PATH: /usr/lib/aarch64-linux-gnu
+      ARCH: aarch64
+      BUILD_VERSION: 'dev' # Default value to satisfy linter
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up environment variables
+        run: |
+          echo "FLATPAK_USER_DIR=${{ github.workspace }}/.flatpak" >> $GITHUB_ENV
+          echo "XDG_RUNTIME_DIR=${{ runner.temp }}/flatpak-runtime" >> $GITHUB_ENV
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            flatpak \
+            flatpak-builder \
+            appstream-util \
+            libcairo2-dev \
+            libgirepository1.0-dev \
+            libgirepository-2.0-dev \
+            gir1.2-gtk-3.0 \
+            libgtk-3-dev \
+            gobject-introspection \
+            libglib2.0-dev \
+            libffi-dev \
+            ninja-build \
+            meson \
+            pkg-config \
+            build-essential
+
+      - name: Install GNOME runtimes (49)
+        run: |
+          mkdir -p "$FLATPAK_USER_DIR" "$XDG_RUNTIME_DIR"
+          flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          # Flatpak will automatically install the aarch64 version because we are on an ARM runner
+          flatpak --user install -y --noninteractive flathub org.gnome.Platform//49
+          flatpak --user install -y --noninteractive flathub org.gnome.Sdk//49
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Python dependencies
+        env:
+          PKG_CONFIG_PATH: /usr/local/lib/pkgconfig:/usr/lib/aarch64-linux-gnu/pkgconfig:/usr/share/pkgconfig:${{ env.PKG_CONFIG_PATH }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-flatpak.txt
+
+      - name: Derive version from git ref
+        run: |
+          if [[ "${GITHUB_REF_TYPE}" == "tag" && "${GITHUB_REF_NAME}" =~ ^v[0-9] ]]; then
+            VERSION="${GITHUB_REF_NAME#v}"
+          else
+            VERSION="${GITHUB_REF_NAME}"
+          fi
+          # Sanitize version for filenames (replace / with -)
+          VERSION="${VERSION//\//-}"
+          echo "DESKTOP_VERSION=${VERSION}" >> "$GITHUB_ENV"
+          echo "BUILD_VERSION=${VERSION}" >> "$GITHUB_ENV"
+
+      - name: Sync desktop version
+        run: |
+          python scripts/sync_desktop_version.py --version "${DESKTOP_VERSION}"
+
+      - name: Inject secrets into Flatpak manifest
+        env:
+          FFE_HOST: ${{ secrets.FFE_HOSTNAME }}
+          FFE_USER: ${{ secrets.FFE_USER }}
+          FFE_PASSWORD: ${{ secrets.FFE_PASSWORD }}
+          FFE_DATABASE: ${{ secrets.FFE_DATABASE }}
+          CHESS_RESULTS_KEY: ${{ secrets.CHESS_RESULTS_AES_KEY }}
+          CHESS_RESULTS_IV: ${{ secrets.CHESS_RESULTS_AES_IV }}
+        run: |
+          jq '(.modules |= map(if .name == "sharly-chess" then .["build-options"] += {
+            "env": {
+              "FFE_HOST": env.FFE_HOST,
+              "FFE_USER": env.FFE_USER,
+              "FFE_PASSWORD": env.FFE_PASSWORD,
+              "FFE_DATABASE": env.FFE_DATABASE,
+              "CHESS_RESULTS_KEY": env.CHESS_RESULTS_KEY,
+              "CHESS_RESULTS_IV": env.CHESS_RESULTS_IV
+            }
+          } else . end))' flatpak/configuration/com.sharlychess.SharlyChess.json > manifest.tmp
+          mv manifest.tmp flatpak/configuration/com.sharlychess.SharlyChess.json
+
+      - name: Build Flatpak
+        run: |
+          flatpak-builder --arch=${ARCH} --repo=repo-staging --force-clean --verbose build-flatpak flatpak/configuration/com.sharlychess.SharlyChess.json
+
+      - name: Create Flatpak bundle
+        run: |
+          flatpak build-bundle repo-staging com.sharlychess.SharlyChess-${BUILD_VERSION}-${ARCH}.flatpak com.sharlychess.SharlyChess --arch=${ARCH}
+
+      - name: Upload Flatpak bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: com.sharlychess.SharlyChess-${{ env.BUILD_VERSION }}-${{ env.ARCH }}
+          path: com.sharlychess.SharlyChess-${{ env.BUILD_VERSION }}-${{ env.ARCH }}.flatpak
+          retention-days: 7

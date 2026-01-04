@@ -15,7 +15,7 @@ Limitations
 
 In all cases, if you redistribute this product, you must:
 
-   distribute it under the AGLP V3 (or higher) license and therefore make all sources available;
+   distribute it under the AGPL V3 (or higher) license and therefore make all sources available;
 
    reference the original product (Sharly Chess);
 

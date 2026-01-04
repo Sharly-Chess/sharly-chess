@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.sharlychess.SharlyChess</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0-or-later</project_license>
+
+  <name>Sharly Chess</name>
+  <summary>Tournament Management System for Chess</summary>
+
+  <description>
+    <p>
+      Sharly Chess is a comprehensive application designed for chess arbiters
+      and tournament organizers to manage all aspects of chess tournaments.
+    </p>
+    <p>Features include:</p>
+    <ul>
+      <li>Tournament creation and management</li>
+      <li>Player registration and categorization</li>
+      <li>Pairing generation (Swiss, Round-robin systems)</li>
+      <li>Real-time result display</li>
+      <li>Scoring and tie-break calculations</li>
+      <li>Export to Chess-Results, FFE, and other formats</li>
+      <li>Multi-language support (French, English)</li>
+      <li>Integration with chess federations (FFE, FIDE)</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">com.sharlychess.SharlyChess.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <image type="source">https://sharly-chess.com/images/screenshot-main.png</image>
+      <caption>Main Tournament Interface</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://sharly-chess.com/images/screenshot-pairings.png</image>
+      <caption>Pairing Generation</caption>
+    </screenshot>
+    <screenshot>
+      <image type="source">https://sharly-chess.com/images/screenshot-results.png</image>
+      <caption>Live Results Display</caption>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://sharly-chess.com</url>
+  <url type="help">https://sharly-chess.com/docs</url>
+  <url type="bugtracker">https://github.com/sharly-chess/sharly-chess/issues</url>
+  <url type="donation">https://sharly-chess.com/donate</url>
+
+  <content_rating type="oars-1.1" />
+
+  <releases>
+    <release version="3.4.4" date="2026-01-03">
+      <description>
+        <p>Maintenance release</p>
+        <ul>
+          <li>Improved update mechanism for Flatpak</li>
+          <li>Bug fixes and performance improvements</li>
+        </ul>
+      </description>
+    </release>
+    <release version="3.4.3" date="2025-12-27">
+      <description>
+        <p>Stable release with Linux Flatpak support</p>
+        <ul>
+          <li>Fixed AppImage compatibility issues</li>
+          <li>Added Flatpak native integration</li>
+          <li>Improved Linux distribution support</li>
+        </ul>
+      </description>
+    </release>
+    <release version="3.4.2" date="2025-12-01">
+      <description>
+        <p>Maintenance release with bug fixes</p>
+      </description>
+    </release>
+    <release version="3.4.1" date="2025-11-15">
+      <description>
+        <p>Critical bug fixes</p>
+      </description>
+    </release>
+  </releases>
+
+  <categories>
+    <category>Utility</category>
+    <category>Office</category>
+  </categories>
+
+  <keywords>
+    <keyword>chess</keyword>
+    <keyword>tournament</keyword>
+    <keyword>arbiter</keyword>
+    <keyword>organizer</keyword>
+    <keyword>pairing</keyword>
+  </keywords>
+
+  <translation type="gettext">sharly-chess</translation>
+
+  <developer_name>Sharly Chess Team</developer_name>
+  <update_contact>support@sharly-chess.com</update_contact>
+</component>

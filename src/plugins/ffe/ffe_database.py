@@ -13,6 +13,7 @@ from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
+from common import TMP_DIR
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
@@ -83,7 +84,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         )
 
     def _download_source_file(self, source_file_dir: Path) -> bool:
-        with tempfile.TemporaryDirectory() as tmpdir:
+        with tempfile.TemporaryDirectory(dir=TMP_DIR) as tmpdir:
             tmp_dir: Path = Path(tmpdir)
             ffe_database_url: str = 'https://www.echecs.asso.fr/Papi/PapiData.zip'
             local_zip_file: Path = tmp_dir / os.path.basename(ffe_database_url)
