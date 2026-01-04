@@ -352,6 +352,114 @@
     {% endif %}
 {% endmacro %}
 
+{% macro set_date_picker(
+    id,
+    input_type='date',
+    min_date='',
+    max_date='',
+    now_button=false,
+    disabled_dates=[]
+) %}
+    {% set formatter = sharly_chess_config.date_formatter %}
+    <script>
+        datePickers['{{ id }}'] = new AirDatepicker('#{{ id }}', {
+            classes: 'dark',
+            dateFormat: `{{ formatter.air_date_picker_format }}`,
+            timeFormat: 'HH:mm',
+            firstDay: 1,
+            keyboardNav: false,
+            {% if min_date %}
+                minDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ min_date }} 00:00`),
+            {% endif %}
+            {% if max_date %}
+                maxDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ max_date }} 23:59`),
+            {% endif %}
+            {% if input_type == 'date-range' %}
+                range: true,
+                multipleDatesSeparator: '{{ formatter.range_separator }}',
+            {% elif input_type == 'datetime' %}
+                timepicker: true,
+                minutesStep: 5,
+            {% endif %}
+            {% if now_button %}
+                buttons: [
+                    {
+                        content(dp) { return `{{ _('Now') }}`; },
+                        onClick(dp) { dp.selectDate(new Date(), {updateTime: true}); }
+                    }
+                ],
+            {% endif %}
+            {% if disabled_dates %}
+                onRenderCell: ({date}) => {
+                    const disabledDates = [
+                        {% for date in disabled_dates %}
+                            `{{ formatter.date_str_to_iso_format(date) }}`,
+                        {% endfor %}
+                    ];
+                    if (disabledDates.includes(formatISODate(date))) {
+                        return {disabled: true};
+                    }
+                },
+            {% endif %}
+            locale: {
+                daysMin: [
+                    "{{ _('Su *** SUNDAY') }}",
+                    "{{ _('Mo *** MONDAY') }}",
+                    "{{ _('Tu *** TUESDAY') }}",
+                    "{{ _('We *** WEDNESDAY') }}",
+                    "{{ _('Th *** THURSDAY') }}",
+                    "{{ _('Fr *** FRIDAY') }}",
+                    "{{ _('Sa *** SATURDAY') }}",
+                ],
+                months: [
+                    "{{ _('January') }}",
+                    "{{ _('February') }}",
+                    "{{ _('March') }}",
+                    "{{ _('April') }}",
+                    "{{ _('May') }}",
+                    "{{ _('June') }}",
+                    "{{ _('July') }}",
+                    "{{ _('August') }}",
+                    "{{ _('September') }}",
+                    "{{ _('October') }}",
+                    "{{ _('November') }}",
+                    "{{ _('December') }}"
+                ],
+                monthsShort: [
+                    "{{ _('Jan *** JANUARY') }}",
+                    "{{ _('Feb *** FEBRUARY') }}",
+                    "{{ _('Mar *** MARCH') }}",
+                    "{{ _('Apr *** APRIL') }}",
+                    "{{ _('May *** MAY ACRONYM') }}",
+                    "{{ _('Jun *** JUNE') }}",
+                    "{{ _('Jul *** JULY') }}",
+                    "{{ _('Aug *** AUGUST') }}",
+                    "{{ _('Sep *** SEPTEMBER') }}",
+                    "{{ _('Oct *** OCTOBER') }}",
+                    "{{ _('Nov *** NOVEMBER') }}",
+                    "{{ _('Dec *** DECEMBER') }}"
+                ],
+            },
+        });
+        $('#{{ id }}').on('keyup', function () {
+            const selected = getAirDatePickerSelectedDates(
+                value=$(this).val(),
+                inputType='{{ input_type }}',
+                rangeSeparator=`{{ formatter.range_separator }}`,
+                valueToDate={{ formatter.value_to_date_js_function|safe }},
+                dateRegex=/{{ formatter.regex }}/,
+                datetimeRegex=/{{ formatter.datetime_regex }}/,
+            );
+            if (selected.length === 0) return;
+            const picker = datePickers['{{ id }}'];
+            if (picker.minDate && !selected.every(date => date >= picker.minDate)) return;
+            if (picker.maxDate && !selected.every(date => date <= picker.maxDate)) return;
+            picker.selectDate(selected, {updateTime: true});
+        });
+         $('#{{ id }}').trigger('keyup');
+    </script>
+{% endmacro %}
+
 {% macro search_indicator(id) %}
     <span id="{{ id }}" class="input-group-text with-input-group-indicator px-2 pt-2">
         <i class="bi bi-search"></i>
@@ -674,92 +782,13 @@ with_indicator: display a loading indicator, optional
                         ></i>
                     {% endif %}
                     {% if use_date_picker %}
-                        {% set formatter = sharly_chess_config.date_formatter %}
-                        <script>
-                            datePickers['{{ id }}'] = new AirDatepicker('#{{ id }}', {
-                                classes: 'dark',
-                                dateFormat: `{{ formatter.air_date_picker_format }}`,
-                                timeFormat: 'HH:mm',
-                                firstDay: 1,
-                                keyboardNav: false,
-                                {% if min_date %}
-                                    minDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ min_date }}`),
-                                {% endif %}
-                                {% if max_date %}
-                                    maxDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ max_date }} 23:59`),
-                                {% endif %}
-                                {% if input_type == 'date-range' %}
-                                    range: true,
-                                    multipleDatesSeparator: '{{ formatter.range_separator }}',
-                                {% elif input_type == 'datetime' %}
-                                    timepicker: true,
-                                    minutesStep: 5,
-                                {% endif %}
-                                {% if date_now_button %}
-                                    buttons: [
-                                        {
-                                            content(dp) { return `{{ _('Now') }}`; },
-                                            onClick(dp) { dp.selectDate(new Date(), {updateTime: true}); }
-                                        }
-                                    ],
-                                {% endif %}
-                                locale: {
-                                    daysMin: [
-                                        "{{ _('Su *** SUNDAY') }}",
-                                        "{{ _('Mo *** MONDAY') }}",
-                                        "{{ _('Tu *** TUESDAY') }}",
-                                        "{{ _('We *** WEDNESDAY') }}",
-                                        "{{ _('Th *** THURSDAY') }}",
-                                        "{{ _('Fr *** FRIDAY') }}",
-                                        "{{ _('Sa *** SATURDAY') }}",
-                                    ],
-                                    months: [
-                                        "{{ _('January') }}",
-                                        "{{ _('February') }}",
-                                        "{{ _('March') }}",
-                                        "{{ _('April') }}",
-                                        "{{ _('May') }}",
-                                        "{{ _('June') }}",
-                                        "{{ _('July') }}",
-                                        "{{ _('August') }}",
-                                        "{{ _('September') }}",
-                                        "{{ _('October') }}",
-                                        "{{ _('November') }}",
-                                        "{{ _('December') }}"
-                                    ],
-                                    monthsShort: [
-                                        "{{ _('Jan *** JANUARY') }}",
-                                        "{{ _('Feb *** FEBRUARY') }}",
-                                        "{{ _('Mar *** MARCH') }}",
-                                        "{{ _('Apr *** APRIL') }}",
-                                        "{{ _('May *** MAY ACRONYM') }}",
-                                        "{{ _('Jun *** JUNE') }}",
-                                        "{{ _('Jul *** JULY') }}",
-                                        "{{ _('Aug *** AUGUST') }}",
-                                        "{{ _('Sep *** SEPTEMBER') }}",
-                                        "{{ _('Oct *** OCTOBER') }}",
-                                        "{{ _('Nov *** NOVEMBER') }}",
-                                        "{{ _('Dec *** DECEMBER') }}"
-                                    ],
-                                },
-                            });
-                            $('#{{ id }}').on('keyup', function () {
-                                const selected = getAirDatePickerSelectedDates(
-                                    value=$(this).val(),
-                                    inputType='{{ input_type }}',
-                                    rangeSeparator=`{{ formatter.range_separator }}`,
-                                    valueToDate={{ formatter.value_to_date_js_function|safe }},
-                                    dateRegex=/{{ formatter.regex }}/,
-                                    datetimeRegex=/{{ formatter.datetime_regex }}/,
-                                );
-                                if (selected.length === 0) return;
-                                const picker = datePickers['{{ id }}'];
-                                if (picker.minDate && !selected.every(date => date >= picker.minDate)) return;
-                                if (picker.maxDate && !selected.every(date => date <= picker.maxDate)) return;
-                                picker.selectDate(selected, {updateTime: true});
-                            });
-                             $('#{{ id }}').trigger('keyup');
-                        </script>
+                        {{ set_date_picker(
+                            id,
+                            input_type=input_type,
+                            min_date=min_date,
+                            max_date=max_date,
+                            now_button=date_now_button,
+                        ) }}
                     {% endif %}
                     {% if default_checkbox %}
                         <div
@@ -1535,6 +1564,77 @@ with_indicator: display a loading indicator, optional
     </div>
 {% endmacro %}
 
+{% macro inline_date_form(
+    id,
+    name,
+    value='',
+    placeholder='',
+    min_date='',
+    max_date='',
+    patch_url=''
+) %}
+    <form
+        id="{{ id }}-form"
+        class="input-group"
+        {% if patch_url %}
+            hx-patch="{{ patch_url }}""
+        {% endif %}
+        hx-target="body"
+        hx-indicator="#please-wait"
+    >
+        <input
+            id="{{ id }}-input"
+            data-testid="{{ id }}-input"
+            name="{{ name }}"
+            type="text"
+            class="form-control"
+            placeholder="{{ placeholder }}"
+            value="{{ value }}"
+            style="outline-offset: 0px;"
+            readonly
+        >
+        {{ set_date_picker(
+            id ~ '-input',
+            input_type='date',
+            min_date=min_date,
+            max_date=max_date,
+        ) }}
+        <span
+            id="{{ id }}-submit-button-container"
+            {{ macros.tooltip_attributes('', _('Validate'), 'top') }}
+        >
+            <button
+                id="{{ id }}-submit-button"
+                data-testid="{{ id }}-submit-button"
+                class="btn btn-primary rounded-0"
+                type="submit"
+                style="outline-offset: 0px;"
+            >
+                <i class="bi-check"></i>
+            </button>
+        </span>
+        <button
+            id="{{ id }}-cancel-button"
+            data-testid="{{ id }}-cancel-button"
+            class="inline-form-cancel-button btn btn-secondary"
+            type="button"
+            style="outline-offset: 0px;"
+            {{ macros.tooltip_attributes('', _('Cancel'), 'top') }}
+        >
+            <i class="bi-x"></i>
+        </button>
+    </form>
+    <script>
+        $('#{{ id }}-input').focus(function() {
+            $('#{{ id }}-form').addClass('focus');
+        });
+        $('#{{ id }}-input').change(function() {
+            $('#{{ id }}-submit-button').prop('disabled', $(this).val() === '');
+        });
+        $('#{{ id }}-input').trigger('change');
+    </script>
+{% endmacro %}
+
 {% macro extra_admin_column_header(
     at,
     extra_columns = {}
@@ -1664,8 +1764,6 @@ with_indicator: display a loading indicator, optional
     disabled=false,
     default_state=false
 ) %}
-
-
     <div class="input-block position-relative">
         <div
             class="pw-input-group form-check form-switch d-inline-block pe-3"
