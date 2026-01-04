@@ -921,6 +921,9 @@ msgstr ""
 msgid "Check-in / Results entry ({tournament_name})"
 msgstr ""
 
+msgid "Check-in closed"
+msgstr ""
+
 #, python-format
 msgid "Check-in is closed for tournament [%(tournament)s]."
 msgstr ""
@@ -1393,10 +1396,16 @@ msgstr ""
 msgid "Default accounts have been created."
 msgstr ""
 
+msgid "Default alert messages"
+msgstr ""
+
 msgid "Default sets can't be deleted."
 msgstr ""
 
 msgid "Default timer settings"
+msgstr ""
+
+msgid "Default timers"
 msgstr ""
 
 msgid "Define as main category"
@@ -2925,6 +2934,9 @@ msgstr ""
 msgid "No games against FIDE rated opponents."
 msgstr ""
 
+msgid "No games played on the board for this player."
+msgstr ""
+
 msgid "No home page"
 msgstr ""
 
@@ -3170,6 +3182,9 @@ msgid "Once created, you can select the timer to display in the settings of each
 msgstr ""
 
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
+msgstr ""
+
+msgid "One or more of the plugins required to use this event are disabled, making it inaccessible. You can enable plugins in the application settings."
 msgstr ""
 
 msgid "Ongoing"
@@ -5358,10 +5373,16 @@ msgstr ""
 msgid "Use the Staff tab to declare arbiters."
 msgstr ""
 
+msgid "Use the alert message defined on each screen."
+msgstr ""
+
 msgid "Use the recommended tie-breaks"
 msgstr ""
 
 msgid "Use the standard FIDE rating for unrated players"
+msgstr ""
+
+msgid "Use the timer defined for each screen."
 msgstr ""
 
 #, python-format
@@ -5657,6 +5678,9 @@ msgstr ""
 msgid "You are trying to modify the pairings of the previous round. This will have an impact on pairings and rankings of all future rounds."
 msgstr ""
 
+msgid "You can ask the administrator for permission to access the event screens."
+msgstr ""
+
 msgid "You can create password-protected accounts to delegate tasks to other members of the staff (arbiters and organizers)."
 msgstr ""
 
@@ -5667,6 +5691,9 @@ msgid "You can't add any more permission to this account."
 msgstr ""
 
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
+msgstr ""
+
+msgid "You have no permissions"
 msgstr ""
 
 msgid "You may also connect to this server from other devices using"
@@ -5922,6 +5949,9 @@ msgid "{players} player remain unpaired"
 msgid_plural "{players} players remain unpaired"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "{plugin} (disabled)"
+msgstr ""
 
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"
 msgstr ""

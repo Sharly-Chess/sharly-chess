@@ -101,12 +101,18 @@ class BaseAccessLevelTest:
         )
         TestUtils.check_api_response(res)
         with EventDatabase(PUBLIC_EVENT_ID) as event_database:
-            accounts = event_database.load_stored_accounts()
+            stored_accounts = event_database.load_stored_accounts()
             stored_account = next(
                 a
-                for a in accounts
+                for a in stored_accounts
                 if a.first_name == first_name and a.last_name == last_name
             )
+        # For the tests, delete all existing permissions of the new account
+        # (new accounts inherit the anonymous account's permissions)
+        with EventDatabase(PUBLIC_EVENT_ID, write=True) as event_database:
+            for stored_permission in stored_account.stored_permissions:
+                event_database.delete_stored_permission(stored_permission)
+            stored_account.stored_permissions = []
         for access_level in access_levels:
             form_data = TestUtils.prepare_form_data(
                 {

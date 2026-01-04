@@ -382,6 +382,11 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .sharly-chess-tooltip-error {
   --bs-tooltip-color: #900000;
 }
+
+.tooltip-danger {
+    color: #af2e3b;
+}
+
 .card-title {
     margin-bottom: 0;
 }
@@ -653,6 +658,10 @@ body[data-bs-theme=light] .btn-primary {
 
 [data-bs-theme=dark] .card {
     --bs-card-bg: #313334;
+}
+
+[data-bs-theme=dark] .card-disabled {
+    --bs-card-bg: #4a4c4d;
 }
 
 [data-bs-theme=dark] .card.btn:hover {

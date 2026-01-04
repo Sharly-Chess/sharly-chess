@@ -67,11 +67,21 @@
                             name='timer_id',
                             label=_('Timer:'),
                             select_options=timer_options,
+                            tooltip_select=true,
                             data=data, errors=errors
                         ) }}
                     </div>
                     <div class="col-12">
-                        {% include '../common/modal/alert_message.html' %}
+                        {{ admin_macros.text_input(
+                            name='message_text',
+                            label=_('Alert message:'),
+                            placeholder=_('E.g.: Please keep quiet until the end of the round!'),
+                            tooltip_text=_('The message displayed on the scrolling banner at the bottom of the screen.'),
+                            default_checkbox=true,
+                            default_checkbox_tooltip=_('Use the alert message defined on each screen.'),
+                            data=data, errors=errors
+                        ) }}
+
                     </div>
                 </div>
             </form>

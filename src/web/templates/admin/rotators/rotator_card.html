@@ -44,13 +44,13 @@
         <div>
             {{ _('Rotation delay: %(seconds)d sec.', seconds=rotator.delay) }}
         </div>
-        <div>
-            {% if rotator.timer %}
-                {{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=rotator.timer.name) }}
-            {% else %}
-                <span class="fst-italic text-secondary">{{ _('Timer: none') }}</span>
-            {% endif %}
-        </div>
+        {% if rotator.timer %}
+            <div>{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=rotator.timer.name) }}</div>
+        {% else %}
+            <div class="fst-italic text-secondary">
+                {{ _('Default timers') }}
+            </div>
+        {% endif %}
         {% if client.can_manage_screens %}
             {% if rotator.message_text %}
                 <div
@@ -58,16 +58,14 @@
                     style="background-color: {{ admin_event.message_background_color }}; color: {{ admin_event.message_color }}"
                 >
                     {{ rotator.message_text }}
-                    {% if rotator.message_default %}
-                        <span class="fst-italic pe-1">
-                            {{ _('(by default)') }}
-                        </span>
-                    {% endif %}
                 </div>
             {% else %}
                 <div class="fst-italic text-secondary">
-                    {{ _('No alert message') }}
-                    {% if rotator.message_default %}{{ _('(by default)') }}{% endif %}
+                    {% if rotator.message_default %}
+                        {{ _('Default alert messages') }}
+                    {% else %}
+                        {{ _('No alert message') }}
+                    {% endif %}
                 </div>
             {% endif %}
         {% endif %}

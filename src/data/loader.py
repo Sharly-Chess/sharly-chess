@@ -8,7 +8,6 @@ from logging import Logger
 from pathlib import Path
 from typing import Literal
 
-from common.i18n.utils import by
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
@@ -20,8 +19,8 @@ from common.exception import SharlyChessException
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 from data.event import Event
+from data.event_metadata import EventMetadata
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import EventMetadata
 from plugins.manager import plugin_manager
 from utils import Utils
 from utils.date_time import get_date_timestamp, format_timestamp_date_time
@@ -72,22 +71,9 @@ class EventLoader:
         with EventDatabase(event_uniq_id) as database:
             stored_event = database.load_stored_event_metadata()
         for plugin_id in stored_event.enabled_plugins:
-            plugin = next(
-                (
-                    plugin
-                    for plugin in plugin_manager.all_plugins
-                    if plugin.id == plugin_id
-                ),
-                None,
-            )
-            if not plugin:
+            if plugin_id not in plugin_manager.plugins_by_id:
                 raise SharlyChessException(
-                    f'Event database [{event_uniq_id}] - Unknown plugin [{plugin_id}]'
-                )
-            elif not plugin.is_enabled:
-                raise SharlyChessException(
-                    f'Event database [{event_uniq_id}] - '
-                    f'Plugin [{plugin.id}] expected, currently disabled.'
+                    f'Event [{event_uniq_id}] - Unknown plugin [{plugin_id}]'
                 )
 
     @classmethod
@@ -148,17 +134,6 @@ class EventLoader:
         with EventDatabase(uniq_id) as event_database:
             event = Event(event_database.load_stored_event())
         return event
-
-    @cached_property
-    def events_sorted_by_name(self) -> list[Event]:
-        # TODO (Molrn) Remove (loading all the events at once should be avoided at all cost)
-        events_by_id: dict[str, Event] = {}
-        for uniq_id in self.event_uniq_ids:
-            try:
-                events_by_id[uniq_id] = self.load_event(uniq_id)
-            except SharlyChessException as pwe:
-                logger.error(pwe)
-        return sorted(events_by_id.values(), key=by('name'))
 
     @classmethod
     def load_event_metadata(cls, uniq_id: str) -> EventMetadata:

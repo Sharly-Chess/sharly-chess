@@ -180,14 +180,18 @@ class IndexAdminController(BaseAdminController):
         coming_events = EventLoader.get_events_metadata(
             'coming', public_only=public_only
         )
-        lan_events = sorted(current_events + coming_events, key=by('name'))
+        lan_events = [
+            event
+            for event in current_events + coming_events
+            if event.are_all_plugins_enabled
+        ]
         nav_tabs: dict[str, dict[str, Any]] = {
             'home': {
                 'title': _('Home'),
                 'template': 'index/home_tab.html',
                 'icon_class': 'bi-house-fill',
                 'disabled': False,
-                'events': lan_events,
+                'events': sorted(lan_events, key=by('name')),
                 'experimental_features_warning': True,
             },
         }
@@ -1200,7 +1204,10 @@ class IndexAdminController(BaseAdminController):
             config_database.update_stored_config(stored_config)
             for stored_plugin in stored_plugins:
                 config_database.update_stored_plugin(stored_plugin)
-        SharlyChessConfig().load_and_set_env()
+        config = SharlyChessConfig()
+        if config.locale != stored_config.locale:
+            self.set_locale(request, stored_config.locale)
+        config.load_and_set_env()
         Message.success(request, _('Sharly Chess settings have been updated.'))
         return HTMXTemplate(
             template_name='common/empty_modal_and_messages.html',

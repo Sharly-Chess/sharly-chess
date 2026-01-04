@@ -270,14 +270,14 @@ class FfePlugin(Plugin):
     def get_player_admin_template_context(
         self, web_context: PlayerAdminWebContext
     ) -> dict[str, Any]:
-        event = web_context.get_admin_event()
         request = web_context.request
+        allowed_players = web_context.client.allowed_players
 
         # The leagues that will be shown on the league select list
         players_leagues: list[str] = sorted(
             {
                 FFEUtils.get_player_plugin_data(player).league or ''
-                for player in event.players_by_id.values()
+                for player in allowed_players
             }
         )
 
@@ -294,7 +294,7 @@ class FfePlugin(Plugin):
         players_licences: list[PlayerFFELicence] = sorted(
             {
                 FFEUtils.get_player_plugin_data(player).ffe_licence
-                for player in event.players_by_id.values()
+                for player in allowed_players
             }
         )
         # The licences that will be selected on the licence select list and used to filter the players
@@ -303,13 +303,12 @@ class FfePlugin(Plugin):
                 web_context.request
             )
         )
-
         league_counts: Counter[str] = Counter[str]()
-        for player in event.players_by_id.values():
+        for player in allowed_players:
             league_counts[FFEUtils.get_player_plugin_data(player).league or ''] += 1
 
         licence_counts: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
-        for player in event.players_by_id.values():
+        for player in allowed_players:
             licence_counts[FFEUtils.get_player_plugin_data(player).ffe_licence] += 1
         return {
             'admin_players_leagues': players_leagues,

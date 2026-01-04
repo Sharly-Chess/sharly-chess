@@ -1,4 +1,6 @@
+import argparse
 import re
+from logging import Logger, DEBUG
 from pathlib import Path
 
 import requests
@@ -8,15 +10,19 @@ from transformers import AutoTokenizer, MarianMTModel, MarianTokenizer
 from huggingface_hub import hf_hub_url
 
 
-from common.i18n.babel_wrapper import BabelWrapper
+from common.i18n.babel_wrapper import BabelDomainWrapper
 
-from common.i18n import DEFAULT_LOCALE
+from common.i18n import DEFAULT_LOCALE, Domain
 from common.logger import (
     print_interactive_info,
     print_interactive_error,
     print_interactive_success,
     print_interactive_warning,
+    get_logger,
 )
+
+logger: Logger = get_logger()
+logger.setLevel(DEBUG)
 
 HF_HUB_DISABLE_SYMLINKS_WARNING = 1
 
@@ -26,64 +32,129 @@ class I18nTranslator:
         self,
         target_locale: str,
     ):
-        locale_dir: Path = Path('locale')
-        pot_file: Path = locale_dir / 'messages.pot'
-        po_file: Path = locale_dir / target_locale / 'LC_MESSAGES' / 'messages.po'
-        if not po_file.is_file():
-            print_interactive_info(f'Creating [{po_file}] from [{pot_file}]...')
-            po_file.parent.mkdir(parents=True, exist_ok=True)
-            BabelWrapper.run_babel_command(
-                'init',
+        self.target_locale = target_locale
+        self._model: MarianMTModel | None = None
+        self._tokenizer: MarianTokenizer | None = None
+
+    @property
+    def model(self) -> MarianMTModel:
+        assert self._model is not None
+        return self._model
+
+    @property
+    def tokenizer(self) -> MarianTokenizer:
+        assert self._tokenizer is not None
+        return self._tokenizer
+
+    def run(
+        self,
+    ):
+        domain_messages_to_translate: dict[str, list[Message]] = {}
+        for domain in Domain.get_domains():
+            pot_file: Path = domain.pot_file
+            po_file: Path = domain.locale_po_file(self.target_locale)
+            if not po_file.is_file():
+                print_interactive_info(f'Creating [{po_file}] from [{pot_file}]...')
+                po_file.parent.mkdir(parents=True, exist_ok=True)
+                BabelDomainWrapper.run_babel_command(
+                    'init',
+                    [
+                        f'--locale={self.target_locale}',
+                        f'--input-file={pot_file}',
+                        f'--output-file={po_file}',
+                    ],
+                )
+                print_interactive_success(f'[{po_file}] created.')
+            print_interactive_info(f'Updating {po_file} from the sources...')
+            BabelDomainWrapper.run_babel_command(
+                'update',
                 [
-                    f'--locale={target_locale}',
+                    f'--locale={self.target_locale}',
+                    f'--output-dir={domain.locale_dir}',
                     f'--input-file={pot_file}',
                     f'--output-file={po_file}',
+                    '--no-fuzzy-matching',
+                    '--no-wrap',
+                    '--omit-header',
                 ],
             )
-            print_interactive_success(f'[{po_file}] created.')
-        print_interactive_info(f'Updating {po_file} from the sources...')
-        BabelWrapper.run_babel_command(
-            'update',
-            [
-                f'--locale={target_locale}',
-                f'--output-dir={locale_dir}',
-                f'--input-file={pot_file}',
-                f'--output-file={po_file}',
-                '--no-fuzzy-matching',
-                '--no-wrap',
-                '--omit-header',
-            ],
-        )
-        print_interactive_success(f'[{po_file}] updated.')
-        print_interactive_info('Loading the catalog ...')
-        with open(po_file, 'rb') as f:
-            catalog: Catalog = read_po(f)
-        print_interactive_success(f'Loaded {len(catalog._messages)} messages.')
-        print_interactive_info('Looking for messages to translate...')
-        messages_to_translate: list[Message] = []
-        for message in catalog:
-            if message.id:
-                if isinstance(message.id, str):
-                    assert isinstance(message.string, str)
-                    translate = not message.string
-                else:
-                    assert isinstance(message.string, tuple)
-                    translate = not message.string[0] or not message.string[1]
-                if translate:
-                    messages_to_translate.append(message)
-        if not messages_to_translate:
+            print_interactive_success(f'[{po_file}] updated.')
+            print_interactive_info('Loading the catalog ...')
+            with open(po_file, 'rb') as f:
+                catalog: Catalog = read_po(f)
+            print_interactive_success(f'Loaded {len(catalog._messages)} messages.')
+            print_interactive_info('Looking for messages to translate...')
+            messages_to_translate: list[Message] = []
+            for message in catalog:
+                if message.id:
+                    if isinstance(message.id, str):
+                        assert isinstance(message.string, str)
+                        translate = not message.string
+                    else:
+                        assert isinstance(message.string, tuple)
+                        translate = not message.string[0] or not message.string[1]
+                    if translate:
+                        messages_to_translate.append(message)
+            if not messages_to_translate:
+                print_interactive_info(
+                    f'No translation needed for domain [{domain.name}].'
+                )
+                continue
+            domain_messages_to_translate[domain.name] = messages_to_translate
+            print_interactive_success(
+                f'{len(messages_to_translate)} messages to translate for domain [{domain.name}].'
+            )
+        if not domain_messages_to_translate:
             print_interactive_info('No translation needed, exiting.')
             return
         print_interactive_success(
-            f'{len(messages_to_translate)} messages to translate.'
+            f'{sum(len(messages_to_translate) for messages_to_translate in domain_messages_to_translate.values())} messages to translate.'
         )
+        if not self.init_tools():
+            return
+        for domain in Domain.get_domains():
+            if domain.name in domain_messages_to_translate:
+                po_file: Path = domain.locale_po_file(self.target_locale)
+                print_interactive_success(
+                    f'Adding missing translations to [{po_file}]...'
+                )
+                error: bool = False
+                i: int = 0
+                for message in domain_messages_to_translate[domain.name]:
+                    i += 1
+                    percent = int(
+                        100 * i / len(domain_messages_to_translate[domain.name])
+                    )
+                    if not self.translate_message(message, percent):
+                        error = True
+                with open(po_file, 'wb') as f:
+                    write_po(f, catalog, width=0, omit_header=True)
+                print_interactive_success(f'Wrote {po_file}.')
+                if error:
+                    print_interactive_warning(f'Errors found, please check {po_file}.')
+                mo_file: Path = po_file.with_suffix('.mo')
+                print_interactive_success(f'Compiling [{po_file}] to [{mo_file}]...')
+                BabelDomainWrapper.run_babel_command(
+                    'compile',
+                    [
+                        f'--domain={domain.name}',
+                        f'--directory={domain.locale_dir}',
+                        f'--locale={self.target_locale}',
+                    ],
+                    verbose=True,
+                )
+                print_interactive_success(f'Written [{mo_file}]...')
+
+    def init_tools(self) -> bool:
         model_name: str
-        if target_locale == 'pt':
-            model_name = f'Helsinki-NLP/opus-mt-tc-big-{DEFAULT_LOCALE}-{target_locale}'
+        if self.target_locale == 'pt':
+            model_name = (
+                f'Helsinki-NLP/opus-mt-tc-big-{DEFAULT_LOCALE}-{self.target_locale}'
+            )
         else:
-            model_name = f'Helsinki-NLP/opus-mt-{DEFAULT_LOCALE}-{target_locale}'
+            model_name = f'Helsinki-NLP/opus-mt-{DEFAULT_LOCALE}-{self.target_locale}'
         print_interactive_info(
-            f'Looking for the translator from [{DEFAULT_LOCALE}] to {target_locale} (model: {model_name})...'
+            f'Looking for the translator from [{DEFAULT_LOCALE}] to {self.target_locale} (model: {model_name})...'
         )
         model_dir: Path = Path() / 'scripts' / 'i18n' / 'models' / model_name
         for filename in [
@@ -107,7 +178,7 @@ class I18nTranslator:
                 print_interactive_error(
                     f'Download failed with status code {r.status_code}: {r.text}, exiting.'
                 )
-                return
+                return False
             output: Path = model_dir / filename
             with open(output, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024 * 8):
@@ -117,37 +188,14 @@ class I18nTranslator:
             print_interactive_info(f'Saved file {output}.')
         print_interactive_success(f'Model {model_name} OK.')
         print_interactive_info('Loading model from pretrained dataset...')
-        self.model: MarianMTModel = MarianMTModel.from_pretrained(
+        self._model: MarianMTModel = MarianMTModel.from_pretrained(
             model_name, ignore_mismatched_sizes=True
         )
         print_interactive_success('Model loaded.')
         print_interactive_info('Loading tokenizer...')
-        self.tokenizer: MarianTokenizer = AutoTokenizer.from_pretrained(model_name)
-        print_interactive_success('Tokenizer loaded...')
-        print_interactive_success(f'Adding missing translations to [{po_file}]...')
-        error: bool = False
-        i: int = 0
-        for message in messages_to_translate:
-            i += 1
-            percent = int(100 * i / len(messages_to_translate))
-            if not self.translate_message(message, percent):
-                error = True
-        with open(po_file, 'wb') as f:
-            write_po(f, catalog, width=0, omit_header=True)
-        print_interactive_success(f'Wrote {po_file}.')
-        if error:
-            print_interactive_warning(f'Errors found, please check {po_file}.')
-        mo_file: Path = po_file.with_suffix('.mo')
-        print_interactive_success(f'Compiling [{po_file}] to [{mo_file}]...')
-        BabelWrapper.run_babel_command(
-            'compile',
-            [
-                f'--directory={locale_dir}',
-                f'--locale={target_locale}',
-            ],
-            verbose=True,
-        )
-        print_interactive_success(f'Written [{mo_file}]...')
+        self._tokenizer: MarianTokenizer = AutoTokenizer.from_pretrained(model_name)
+        print_interactive_success('Tokenizer loaded.')
+        return True
 
     @staticmethod
     def extract_tokens(string: str) -> tuple[str, list[str]]:
@@ -173,7 +221,7 @@ class I18nTranslator:
             ):  # Looking for %(name)s or %(name)d
                 token = match.group()
             if token:
-                string = string.replace(token, f'←{len(tokens)}→', 1)
+                string = string.replace(token, f'({len(tokens)})', 1)
                 tokens.append(token)
             else:
                 break
@@ -182,7 +230,7 @@ class I18nTranslator:
     @staticmethod
     def inject_tokens(string: str, tokens: list[str]) -> str:
         for i in range(len(tokens)):
-            string = string.replace(f'←{i}→', tokens[i], 1)
+            string = string.replace(f'({i})', tokens[i], 1)
         return string
 
     def translate_string(
@@ -216,13 +264,12 @@ class I18nTranslator:
             )
         else:
             # Tokens have changed, delete the translation.
-            print_interactive_error(
-                f'{percent}% The tokens have changed (the translation is deleted):'
+            print_interactive_warning(
+                f'{percent}% The tokens have changed (the translation should be manually updated):'
             )
-            print_interactive_error(
+            print_interactive_warning(
                 f'{percent}% {string} >>> {translated_string_with_tokens}'
             )
-            translated_string_with_tokens = ''
         return translated_string_with_tokens
 
     @staticmethod
@@ -264,4 +311,14 @@ class I18nTranslator:
 
 
 if __name__ == '__main__':
-    I18nTranslator('nl')
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-l',
+        '--locale',
+        type=str,
+        help='the locale to translate',
+        required=True,
+    )
+    args = parser.parse_args()
+
+    I18nTranslator(args.locale).run()

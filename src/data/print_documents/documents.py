@@ -59,13 +59,19 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         self,
         event: Event | None = None,
         options: list[PrintOption] | None = None,
+        allowed_tournaments: list[Tournament] | None = None,
     ):
         self.event = event
         super().__init__(options)
+        self.allowed_tournaments = allowed_tournaments
 
     def get_event(self) -> Event:
         assert self.event is not None
         return self.event
+
+    def get_allowed_tournaments(self) -> list[Tournament]:
+        assert self.allowed_tournaments is not None
+        return self.allowed_tournaments
 
     @override
     def default_options(self) -> list[PrintOption]:
@@ -92,7 +98,7 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         event = self.get_event()
         tournament_ids = self._get_option(TournamentsPrintOption).value
         if not tournament_ids:
-            return list(event.tournaments)
+            return self.get_allowed_tournaments()
         return [
             event.tournaments_by_id[int(tournament_id)]
             for tournament_id in tournament_ids.split(';')
@@ -128,13 +134,6 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         If multiple classes use the same template, an abstract class per
         template should be defined with the required context, with each
         context variable being a property of this class."""
-
-    @staticmethod
-    def validate_for_tournament(tournament: Tournament) -> str | None:
-        """Determines if the document is available for *tournament*.
-        If it's not, return an explanation message, if it is return None.
-        By default, documents are available for all tournaments."""
-        return None
 
 
 class PlayerPrintDocument(PrintDocument, ABC):
@@ -623,13 +622,20 @@ class BergerGridPrintDocument(PrintDocument):
     def template_name(self) -> str:
         return '/admin/print/berger_grid.html'
 
-    @staticmethod
-    def validate_for_tournament(tournament: Tournament) -> str | None:
+    def validate_options(self):
+        super().validate_options()
+        option = self._get_option(TournamentPrintOption)
+        tournament = self.tournament
         if tournament.pairing_system != RoundRobinPairingSystem():
-            return _('This document is only available for Round-Robin tournaments.')
+            raise OptionError(
+                _('This document is only available for Round-Robin tournaments.'),
+                option,
+            )
         if not tournament.is_fully_paired:
-            return _('This document is not available for unpaired tournaments.')
-        return None
+            raise OptionError(
+                _('This document is not available for unpaired tournaments.'),
+                option,
+            )
 
     @cached_property
     def grid_id_by_player_id(self) -> dict[int, int]:
@@ -734,8 +740,7 @@ class PrizeListPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        assert self.event is not None
-        prize_currency = self.event.prize_currency
+        prize_currency = self.get_event().prize_currency
         return {
             'tournaments': self.tournaments,
             'ordinal_integer': Utils.ordinal_integer,
@@ -770,8 +775,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        assert self.event is not None
-        prize_currency = self.event.prize_currency
+        prize_currency = self.get_event().prize_currency
         return {
             'tournaments': self.tournaments,
             'show_warnings': self._get_option(ShowWarningsPrintOption).value,
@@ -786,9 +790,8 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
-        assert self.event is not None
         return PlayerColumnHandler(
-            self.event, ColumnUsage.PRINT
+            self.get_event(), ColumnUsage.PRINT
         ).get_prize_assignment_columns()
 
 
@@ -818,8 +821,7 @@ class PrizeReceiptsPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        assert self.event is not None
-        prize_currency = self.event.prize_currency
+        prize_currency = self.get_event().prize_currency
         return {
             'tournaments': self.tournaments,
             'monetary_only': self._get_option(MonetaryOnlyPrintOption).value,
@@ -1085,13 +1087,15 @@ class NormReportPrintDocument(PrintDocument):
     def title(self) -> str:
         return 'Certificate of Title Results'
 
-    @staticmethod
-    def validate_for_tournament(tournament: Tournament) -> str | None:
-        if tournament.rating != TournamentRating.STANDARD:
-            return _(
-                'This document is only available for standard time control tournaments.'
+    def validate_options(self):
+        super().validate_options()
+        if self.tournament.rating != TournamentRating.STANDARD:
+            raise OptionError(
+                _(
+                    'This document is only available for standard time control tournaments.'
+                ),
+                self._get_option(TournamentPrintOption),
             )
-        return None
 
     @property
     def template_name(self) -> str:
@@ -1212,9 +1216,8 @@ class PlaceCardPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        assert self.event is not None
         return self.place_card_template.template_context(
-            event=self.event,
+            event=self.get_event(),
             tournament=self.tournament,
             round_=self.at_round,
             mirror=self.mirror,
@@ -1222,10 +1225,6 @@ class PlaceCardPrintDocument(PrintDocument):
             board_numbers=self.board_numbers,
             player_ids=self.player_ids,
         )
-
-    @staticmethod
-    def validate_for_tournament(tournament: Tournament) -> str | None:
-        return None
 
     @property
     def template_name(self) -> str:

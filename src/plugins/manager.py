@@ -1,7 +1,7 @@
 import copy
 from functools import cached_property
 from pathlib import Path
-from typing import Any, Type, TypeVar, TYPE_CHECKING, Optional
+from typing import Any, TypeVar, TYPE_CHECKING, Optional
 
 from apluggy import PluginManager  # type: ignore
 
@@ -22,7 +22,7 @@ class AppPluginManager(PluginManager):
     """
 
     @cached_property
-    def all_plugins(self) -> list[Plugin]:
+    def plugins_by_id(self) -> dict[str, Plugin]:
         from plugins.chess_results.chess_results import ChessResultsPlugin
         from plugins.ffe.ffe import FfePlugin
         from plugins.chessevent.chessevent import ChessEventPlugin
@@ -34,7 +34,7 @@ class AppPluginManager(PluginManager):
         )
         from plugins.fra_schools.fra_schools import FRASchoolsPlugin
 
-        return [
+        plugins = [
             PairingAccelerationPlugin(),
             ChessResultsPlugin(),
             FfePlugin(),
@@ -42,16 +42,15 @@ class AppPluginManager(PluginManager):
             FRASchoolsPlugin(),
             HandicapGamesPlugin(),
         ]
+        return {plugin.id: plugin for plugin in plugins}
+
+    @property
+    def all_plugins(self) -> list[Plugin]:
+        return list(self.plugins_by_id.values())
 
     @property
     def enabled_plugins(self) -> list[Plugin]:
         return [plugin for plugin in self.all_plugins if plugin.is_enabled]
-
-    def get_plugin_by_class(self, plugin_cls: Type[TPlugin]) -> TPlugin:
-        for plugin in self.all_plugins:
-            if isinstance(plugin, plugin_cls):
-                return plugin
-        raise ValueError(f'Plugin {plugin_cls.__name__} not found')
 
     def get_plugins_with_dependencies(self, plugins: list[Plugin]) -> list[Plugin]:
         plugins_with_dependencies: list[Plugin] = []

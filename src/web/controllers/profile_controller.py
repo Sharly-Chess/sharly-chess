@@ -3,11 +3,11 @@ from typing import Annotated
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHash
 from litestar import post, get
-from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, Redirect
-from litestar_htmx import HTMXTemplate
+from litestar.plugins.htmx import HTMXRequest
+from litestar.response import Template
+from litestar_htmx import HTMXTemplate, ClientRedirect
 
 from common.i18n import _
 from data.account import Account
@@ -94,7 +94,7 @@ class ProfileController(BaseController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template | Redirect:
+    ) -> Template | ClientRedirect:
         web_context = ProfileWebContext(request)
 
         errors: dict[str, str] = {}
@@ -165,7 +165,7 @@ class ProfileController(BaseController):
                                 account=account.full_name
                             ),
                         )
-                        return Redirect(admin_event_url(request, event_uniq_id))
+                        return ClientRedirect(admin_event_url(request, event_uniq_id))
             except KeyError:
                 errors['account_id'] = _('Invalid account.')
 
@@ -183,9 +183,9 @@ class ProfileController(BaseController):
         self,
         request: HTMXRequest,
         event_uniq_id: str,
-    ) -> Redirect:
+    ) -> ClientRedirect:
         web_context = ProfileWebContext(request)
         event = web_context.get_admin_event()
         SessionHandler.store_user_account(request, event, None)
         Message.success(request, _('Successfully logged out.'))
-        return Redirect(admin_event_url(request, event_uniq_id))
+        return ClientRedirect(admin_event_url(request, event_uniq_id))

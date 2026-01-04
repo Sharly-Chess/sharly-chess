@@ -13,6 +13,7 @@ from common import BASE_DIR, DEVEL_ENV, TEST_ENV
 from common.exception import SharlyChessException
 from common.i18n.babel_updaters import BabelUpdater
 from common.i18n.domains import Domain
+from common.i18n.translators import Translator
 from common.logger import get_logger
 
 logger: Logger = get_logger()
@@ -45,10 +46,10 @@ for l_entry in sorted(_core_locale_dir.iterdir()):
 
 _auto_update_file: Path = BASE_DIR / 'src' / 'common' / 'i18n' / '.auto-update'
 
-if DEVEL_ENV:
+if DEVEL_ENV and Path(sys.argv[0]).stem != 'i18n_translate':
     babel_updater: BabelUpdater = BabelUpdater(
         Domain.get_domains(),
-        locales,
+        Translator.get_translators(locales),
         DEFAULT_LOCALE,
     )
     # if i18n_update is running then update_i18n_files() will be called later,
@@ -69,7 +70,7 @@ elif TEST_ENV:
     # When testing, make sure that the MO files will be available (including on GitHub)
     BabelUpdater(
         Domain.get_domains(),
-        locales,
+        Translator.get_translators(locales),
         DEFAULT_LOCALE,
     ).create_absent_mo_files()
 
@@ -81,7 +82,7 @@ def update_i18n_files(
     """Update all the i18n files if needed, returns False if the translations should be updated, True otherwise."""
     return BabelUpdater(
         Domain.get_domains(),
-        locales,
+        Translator.get_translators(locales),
         DEFAULT_LOCALE,
     ).update(
         clean=clean,
@@ -103,7 +104,10 @@ for domain in Domain.get_domains():
                 ],
             )
         except Exception as ex:
-            raise SharlyChessException(f'Could not load locale [{loc}]: {ex}.')
+            if Path(sys.argv[0]).stem == 'i18n_translate':
+                logger.debug('Could not load locale [%s]: %s.', loc, ex)
+            else:
+                raise SharlyChessException(f'Could not load locale [{loc}]: {ex}.')
 
 logger.debug('Locales found: %s', ', '.join(locales))
 
