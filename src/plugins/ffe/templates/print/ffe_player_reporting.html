@@ -50,7 +50,7 @@
                         <label for="tournament-ffe-id">Numéro d'homologation FFE :</label>
                     </div>
                     <div class="item">
-                        <input id="tournament-ffe-id" value="{{ player.tournament.plugin_data.ffe.ffe_id }}" style="width: 3.5rem; flex-grow: 0;" />
+                        <input id="tournament-ffe-id" value="{{ player.tournament.plugin_data.ffe.ffe_id or '' }}" style="width: 3.5rem; flex-grow: 0;" />
                     </div>
                     <div class="item">
                         <label for="event-date">Dates du tournoi :</label>
@@ -74,7 +74,7 @@
                         <label for="player-ffe-licence-number">Numéro de licence :</label>
                     </div>
                     <div class="item">
-                        <input id="player-ffe-licence-number" value="{{ player.plugin_data.ffe.ffe_licence_number }}" style="width: 3.5rem; flex-grow: 0;" />
+                        <input id="player-ffe-licence-number" value="{{ player.plugin_data.ffe.ffe_licence_number or '' }}" style="width: 3.5rem; flex-grow: 0;" />
                     </div>
                 </div>
             </section>
