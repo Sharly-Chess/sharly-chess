@@ -863,15 +863,16 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_print_document(self, print_documents: list[type['PrintDocument']]):
-        for c in [
-            FFEEventReportPrintDocument,
-            FFEPlayersLicenceAPrintDocument,
-            FFEPlayersLicenceBPrintDocument,
-            FFEPlayerForfeitPrintDocument,
-            FFEPlayerExclusionPrintDocument,
-            FFEPlayerReportingPrintDocument,
-        ]:
-            PluginUtils.insert_last(print_documents, c)  # type: ignore
+        print_documents.extend(
+            [
+                FFEEventReportPrintDocument,
+                FFEPlayersLicenceAPrintDocument,
+                FFEPlayersLicenceBPrintDocument,
+                FFEPlayerForfeitPrintDocument,
+                FFEPlayerExclusionPrintDocument,
+                FFEPlayerReportingPrintDocument,
+            ]
+        )
 
     @hookimpl
     def alter_print_and_screen_player_columns(

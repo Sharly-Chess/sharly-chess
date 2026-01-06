@@ -80,18 +80,6 @@ class PluginUtils:
         )
 
     @staticmethod
-    def insert_last[T](
-        source_list: list[T],
-        element: T,
-    ):
-        """Inserts *element* into the list *source_list*. The insert in made at
-        the position of the first element matching *condition*.
-        If *after* is True, element is inserted after the matched element,
-        otherwise it is inserted before.
-        """
-        source_list.append(element)
-
-    @staticmethod
     def _replace_on_condition[T](
         source_list: list[T],
         element: T,
