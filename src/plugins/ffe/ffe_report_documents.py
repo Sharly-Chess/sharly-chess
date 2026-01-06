@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, override, Iterator
 
+from common.exception import OptionError
+from common.i18n import _
 from data.account import Account
 from data.player import TournamentPlayer
 from data.print_documents import PrintOption
@@ -251,16 +253,33 @@ class FFEPlayersLicencePrintDocument(FFETournamentPrintDocument, ABC):
         return 'print/ffe_players_licence.html'
 
     @property
+    def _player_ids(self) -> Iterator[int]:
+        return self._get_option(PlayersPrintOption).value
+
+    @property
+    def players(self) -> Iterator[TournamentPlayer]:
+        return (
+            self.tournament.tournament_players_by_id[player_id]
+            for player_id in self._player_ids
+        )
+
+    @property
     def template_context(self) -> dict[str, Any]:
         assert self.event is not None
         return super().template_context | {
-            'players': [
-                self.tournament.tournament_players_by_id[player_id]
-                for player_id in self._get_option(PlayersPrintOption).value
-            ],
+            'players': self.players,
             'date': self.event.start_date.strftime('%d/%m/%Y'),
             'location': self.event.location,
         }
+
+    @override
+    def validate_options(self):
+        super().validate_options()
+        if not self._player_ids:
+            raise OptionError(
+                _('Please select at least one player.'),
+                self._get_option(PlayersPrintOption),
+            )
 
 
 class FFEPlayersLicenceAPrintDocument(FFEPlayersLicencePrintDocument):
