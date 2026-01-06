@@ -302,7 +302,7 @@ class FFEPlayerPrintDocument(FFETournamentPrintDocument, ABC):
         ]
 
     @property
-    def event_name(self) -> str:
+    def event_date(self) -> str:
         assert self.event is not None
         event_date: str = self.event.start_date.strftime('%d/%m/%Y')
         if self.event.start_date != self.event.stop_date:
@@ -310,7 +310,7 @@ class FFEPlayerPrintDocument(FFETournamentPrintDocument, ABC):
         return event_date
 
     @property
-    def event_date(self) -> str:
+    def event_name(self) -> str:
         assert self.event is not None
         return f'{self.event.name} - {self.player.tournament.name}'
 
