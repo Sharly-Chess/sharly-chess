@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ document.title }}</title>
+        <style>
+            {% include 'ffe_print.css' %}
+        </style>
+    </head>
+    <body>
+        <form class="break-after t1">
+            <h1>
+                <span style="font-style: italic;">Formulaire T1/DNA</span>
+                <br/>
+                RAPPORT TECHNIQUE : PAGE DE GARDE
+            </h1>
+            <h2>Identification de l'arbitre rédacteur·ice</h2>
+            <section>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    <div class="item">
+                        <label for="writer">Nom et prénom de l'arbitre rédacteur·ice :</label>
+                        <input id="writer" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+                    </div>
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr 10fr;">
+                    <div class="item">
+                        <label for="writer-ffe-licence-number">Numéro de licence :</label>
+                        <input id="writer-ffe-licence-number" value="Z99999" style="width: 3.5rem; flex-grow: 0;" />
+                    </div>
+                    <div class="item">
+                        <label for="writer-level">Niveau de l'arbitre rédacteur·ice :</label>
+                        <input id="writer-level" value="AFC/AFO1/AFO2/AFE1/AFE2" style="width: 13rem; flex-grow: 0;" />
+                    </div>
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    <div class="item">
+                        <label for="address">Adresse postale :</label>
+                        <input id="address" value="1 rue qui monte 01000 EN-HAUT" />
+                    </div>
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr 10fr;">
+                    <div class="item">
+                        <label for="phone">Tél :</label>
+                        <input id="phone" value="+33 6 00 00 00 00" style="width: 7rem; flex-grow: 0;" />
+                    </div>
+                    <div class="item">
+                        <label for="mail">Mél :</label>
+                        <input id="mail" value="arbitre@tournoi.fr" />
+                    </div>
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    <div class="item">
+                        <label for="chief-arbiter">Nom, prénom et n° de licence de l’arbitre principal·e (si différent·e) :</label>
+                    </div>
+                    <div class="item">
+                        <input id="chief-arbiter" value="{% if arbiters|length and writer != arbiters[0] %}{{ arbiters[0].last_name }} {{ arbiters[0].first_name }}{% endif %}" style="margin-left: 0;" />
+                    </div>
+                </div>
+            </section>
+            <h2>Caractéristiques du tournoi</h2>
+            <section>
+                <div class="grid" style="grid-template-columns: 1fr 3.5fr;">
+                    <div class="item">
+                        <label for="event-name">Nom de l'évènement :</label>
+                    </div>
+                    <div class="item">
+                        <input id="event-name" value="{{ event_name }}" />
+                    </div>
+                    <div class="item">
+                        <label for="tournament-ffe-id">Numéro d'homologation FFE :</label>
+                    </div>
+                    <div class="item">
+                        <input id="tournament-ffe-id" value="{{ tournament_ffe_ids }}" />
+                    </div>
+                    <div class="item">
+                        <label for="event-date">Date(s) de l'évènement :</label>
+                    </div>
+                    <div class="item">
+                        <input id="event-date" value="{{ event_date }}" />
+                    </div>
+                    <div class="item">
+                        <label for="location">Lieu (commune, département, ligue) :</label>
+                    </div>
+                    <div class="item">
+                        <input id="location" value="" />
+                    </div>
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    <div class="item">
+                        <label>Nom et coordonnées de l'organisateur·ice :</label>
+                    </div>
+                    {% for i in range(2) %}
+                        <div class="item">
+                            <input id="organiser-{{ i }}" value="{% if organisers|length > i %}{{ organisers[i].last_name }} {{ organisers[i].first_name }}{% endif %}" style="margin-left: 0;" />
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr 4fr;">
+                    <div class="item">
+                        <label for="rounds">Nombre de rondes :</label>
+                        <input id="rounds" value="{{ rounds }}" style="width: 1rem; flex-grow: 0; text-align: right;" />
+                    </div>
+                    <div class="item">
+                        <label for="time-control">cadence :</label>
+                        <input id="time-control" value="{{ time_control }}" />
+                    </div>
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr 7fr;">
+                    <div class="item">
+                        <label for="pairing">Type d'appariement :</label>
+                    </div>
+                    <div class="item">
+                        <input id="pairing" value="{{ pairing }}" />
+                    </div>
+                    <div class="item">
+                        <label for="tie_breaks">Départages :</label>
+                    </div>
+                    <div class="item">
+                        <input id="tie_breaks" value="{{ tie_breaks }}" />
+                    </div>
+                </div>
+                <div class="grid" style="grid-template-columns: 10fr 1fr 1fr 1fr 1fr 1fr 15fr;">
+                    <div class="item">
+                        <label>Nombre de joueur·euses FIDE :</label>
+                    </div>
+                    <div class="item">
+                        <label for="fide-player-count">FIDE :</label>
+                    </div>
+                    <div class="item">
+                        <input id="fide-player-count" value="{{ fide_player_count }}" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />
+                    </div>
+                    <div class="item"></div>
+                    <div class="item">
+                        <label for="total-player-count">Total :</label>
+                    </div>
+                    <div class="item">
+                        <input id="total-player-count" value="{{ player_count }}" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />
+                    </div>
+                    <div class="item"></div>
+                    <div class="item">
+                        <label>Tarif des droits d'inscription :</label>
+                    </div>
+                    <div class="item">
+                        <label for="adult-prize">Adultes =</label>
+                    </div>
+                    <div class="item">
+                        <input id="adult-prize" value="" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />€
+                    </div>
+                    <div class="item"></div>
+                    <div class="item">
+                        <label for="young-prize">Jeunes =</label>
+                    </div>
+                    <div class="item">
+                        <input id="young-prize" value="" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />€
+                    </div>
+                    <div class="item"></div>
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    <div class="item">
+                        <label for="prizes-sharing">Système de répartition des prix :</label>
+                        <input id="prizes-sharing" value="{{ prizes_sharing }}" />
+                    </div>
+                    <div class="item">
+                        <label for="prizes-total">Montant total des prix distribués :</label>
+                        <input id="prizes-total" value="{{ prizes_total }}" style="width: 3.5rem; flex-grow: 0; text-align: right;" />€
+                    </div>
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                    <div class="item">
+                        <label>Nom et titre des adjoints :</label>
+                    </div>
+                    <div class="item"></div>
+                    {% for i in range(10) %}
+                        <div class="item">
+                            <input id="deputy-{{ i }}" value="{% if arbiters|length > i %}{{ arbiters[i].last_name }} {{ arbiters[i].first_name }}{% endif %}" />
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+            <h2>Divers</h2>
+            <section>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    <div class="item">
+                        <label for="asp">
+                            Attestation(s) de stage pratique jointe(s) :
+                            <input id="asp" type="checkbox" />
+                        </label>
+                    </div>
+                    <div class="item">
+                        <label for="sanction">
+                            Copie de demande de sanction ou d’explication :
+                            <input id="sanction" type="checkbox" />
+                        </label>
+                    </div>
+                    <div class="item">
+                        <label for="date">Date :</label>
+                        <input id="date" value="{{ date }}" style="width: 5em; flex-grow: 0;" />
+                    </div>
+                </div>
+            </section>
+        </form>
+        <div class="spacer"></div>
+        <form class="break-after t2">
+            <h1>
+                <span style="font-style: italic;">Formulaire T2/DNA</span>
+                <br/>
+                RAPPORT TECHNIQUE : PROCÈS-VERBAL DU TOURNOI
+            </h1>
+            <h2>Dans ce formulaire, l’arbitre indiquera tout événement qu’il lui sera nécessaire de signaler tels que les anomalies ayant pu survenir lors des appariements et ayant nécessité une intervention de sa part, les signalements de forfaits, les réclamations de joueurs et tout élément qu’il jugerait nécessaire de détailler pour ses archives personnelles ou dans le cadre d’une consultation de ce rapport par une instance de la fédération. Dans le cadre d’un tournoi sans aucun incident, ce formulaire devra être joint au rapport technique avec une annotation indiquant que l’arbitre n’a rien à signaler.</h2>
+            <section>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    {% for i in range(35) %}
+                        <div class="item">
+                            <input value="{% if loop.first %}Rien à signaler.{% endif %}" />
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        </form>
+    </body>
+</html>

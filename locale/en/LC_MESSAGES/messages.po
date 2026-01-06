@@ -3598,6 +3598,9 @@ msgstr ""
 msgid "Players' opponent: hidden"
 msgstr ""
 
+msgid "Players:"
+msgstr ""
+
 #, python-format
 msgid "Players: %(num)d"
 msgstr ""

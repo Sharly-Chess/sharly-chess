@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ document.title }}</title>
+        <style>
+            {% include 'ffe_print.css' %}
+        </style>
+    </head>
+    <body>
+        <form class="t5">
+            <h1>
+                <span style="font-style: italic;">Formulaire T6/DNA</span>
+                <br/>
+                RAPPORT TECHNIQUE : EXCLUSION DE TOURNOI
+            </h1>
+            <h2>Coordonnées de l'arbitre</h2>
+            <section>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    {% for i in range(4) %}
+                        <div class="item">
+                            <input id="arbiter-{{ i }}" value="{% if loop.first and writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+            <div class="grid" style="grid-template-columns: 1fr; margin-top: 1rem;">
+                <div class="item">
+                    <label for="to">À l'intention de</label>
+                    <input id="to" value="{{ player.last_name }} {{ player.first_name }}" />
+                </div>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr; margin-top: 2rem;">
+                <div class="item">
+                    <label for="tournament">Vous avez participé au tournoi</label>
+                    <input id="tournament" value="{{ document.event_name }}" />
+                </div>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr; margin-top: 1rem;">
+                <div class="item">
+                    <label for="round">que vous avez abandonné avant la fin du tournoi, avant la ronde n°</label>
+                    <input id="round" value="" style="width: 1rem; flex-grow: 0;" />
+                </div>
+            </div>
+            <div style="margin-top: 2rem;">
+                Sauf erreur, vous ne nous avez pas prévenu de votre départ et vous avez donc été apparié·e contre une personne qui vous a attendu en vain.
+            </div>
+            <div style="margin-top: 1rem;">
+                Je vous prie de bien vouloir nous communiquer dans les plus brefs délais le motif justifié de votre abandon.
+            </div>
+            <div style="margin-top: 1rem;">
+                Sans réponse de votre part ou si vous ne répondez pas de façon satisfaisante, je serai dans l’obligation de le signaler à la Direction Juridique de la Direction Nationale de l’arbitrage.
+            </div>
+            <div style="margin-top: 1rem;">
+                Si la Direction Juridique estime qu’un simple avertissement est nécessaire, elle vous en informera par courrier électronique. Elle pourra également solliciter la saisie d’une instance disciplinaire conformément au règlement disciplinaire.
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr; margin-top: 2rem;">
+                <div class="item">
+                    <label for="response-date" style="font-weight: bold;">Réponse attendue au plus tard le</label>
+                    <input id="response-date" value="{{ response_date }}" style="width: 5.5rem; flex-grow: 0;" />
+                </div>
+            </div>
+            <div class="grid" style="grid-template-columns: 2fr 1fr 1fr 3fr; margin-top: 3rem; margin-bottom: 5rem;">
+                <div class="item">
+                    <label for="location">Fait à</label>
+                    <input id="location" value="{{ location }}" />
+                </div>
+                <div class="item">
+                    <label for="date">le</label>
+                    <input id="date" value="{{ date }}" style="width: 5.5rem; flex-grow: 0;" />
+                </div>
+                <div class="item"></div>
+                <div class="item">
+                    <label>Signature de l'arbitre :</label>
+                </div>
+            </div>
+        </form>
+    </body>
+</html>

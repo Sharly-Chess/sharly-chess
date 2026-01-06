@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ document.title }}</title>
+        <style>
+            {% include 'ffe_print.css' %}
+        </style>
+    </head>
+    <body>
+        <form class="t5">
+            <h1>
+                <span style="font-style: italic;">Formulaire T6/DNA</span>
+                <br/>
+                RAPPORT TECHNIQUE : EXCLUSION DE TOURNOI
+            </h1>
+            <h2>Identification de l'arbitre rédacteur·ice</h2>
+            <section>
+                <div class="grid" style="grid-template-columns: 1fr 7fr;">
+                    <div class="item">
+                        <label for="arbiter-full-name">Nom et prénom :</label>
+                    </div>
+                    <div class="item">
+                        <input id="arbiter-full-name" value="{% if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+                    </div>
+                    <div class="item">
+                        <label for="arbiter-ffe-licence-number">Numéro de licence :</label>
+                    </div>
+                    <div class="item">
+                        <input id="arbiter-ffe-licence-number" value="Z99999" style="width: 3.5rem; flex-grow: 0;" />
+                    </div>
+                    <div class="item">
+                        <label for="arbiter-level">Titre :</label>
+                    </div>
+                    <div class="item">
+                        <input id="arbiter-level" value="AFC/AFO1/AFO2/AFE1/AFE2" style="width: 13rem; flex-grow: 0;" />
+                    </div>
+                </div>
+            </section>
+            <h2>Caractéristiques techniques du tournoi</h2>
+            <section>
+                <div class="grid" style="grid-template-columns: 1fr 7fr;">
+                    <div class="item">
+                        <label for="tournament">Nom :</label>
+                    </div>
+                    <div class="item">
+                        <input id="tournament" value="{{ document.event_name }}" />
+                    </div>
+                    <div class="item">
+                        <label for="tournament-ffe-id">Numéro d'homologation FFE :</label>
+                    </div>
+                    <div class="item">
+                        <input id="tournament-ffe-id" value="{{ player.tournament.plugin_data.ffe.ffe_id }}" style="width: 3.5rem; flex-grow: 0;" />
+                    </div>
+                    <div class="item">
+                        <label for="event-date">Dates du tournoi :</label>
+                    </div>
+                    <div class="item">
+                        <input id="event-date" value="{{ document.event_date }}" />
+                    </div>
+                </div>
+            </section>
+            <div style="margin-top: 1rem;">En application de l’article 12.9 des règles du jeu, l’arbitre principal·e exclut du tournoi le·la joueur·euse suivant·e :</div>
+            <section>
+                <div class="grid" style="grid-template-columns: 1fr 7fr; margin-top: 1rem;">
+                    <div class="item">
+                        <label for="to">Nom et prénom :</label>
+                    </div>
+                    <div class="item">
+                        <input id="to" value="{{ player.last_name }} {{ player.first_name }}" />
+                    </div>
+                    <div class="item">
+                        <label for="player-ffe-licence-number">N° de licence :</label>
+                    </div>
+                    <div class="item">
+                        <input id="player-ffe-licence-number" value="{{ player.plugin_data.ffe.ffe_licence_number }}" />
+                    </div>
+                </div>
+            </section>
+            <h2>MOTIF DE L'EXCLUSION</h2>
+            <section>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    {% for i in range(10) %}
+                        <div class="item">
+                            <input id="reason-{{ i }}" value="" style="margin-left: 0;" />
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+            <div class="grid" style="grid-template-columns: 1fr 3fr; margin-top: 2rem;">
+                <div class="item">
+                    <label for="date">le</label>
+                    <input id="date" value="{{ date }}" style="width: 5.5rem; flex-grow: 0;" />
+                </div>
+                <div class="item">
+                    <label>Signature de l'arbitre :</label>
+                </div>
+            </div>
+        </form>
+    </body>
+</html>

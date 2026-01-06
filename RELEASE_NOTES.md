@@ -54,6 +54,7 @@
 - Fixed player search on the local _FFE_ database (3.4.3)
 - Fixed the display of pairings on the _FFE_ website for accelerated tournaments (3.4.3)
 - Update the players with new _FFE_ licences during the player update (3.4.4)
+- Added print views for FFE forms T1-T7 (3.5.0)
 
 ## _Chess-Results_
 

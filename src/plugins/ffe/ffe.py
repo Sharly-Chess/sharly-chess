@@ -57,6 +57,14 @@ from plugins.ffe.ffe_entity import (
     FfeLicenceTypeTableColumn,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
+from plugins.ffe.ffe_report_documents import (
+    FFEEventReportPrintDocument,
+    FFEPlayersLicenceAPrintDocument,
+    FFEPlayersLicenceBPrintDocument,
+    FFEPlayerForfeitPrintDocument,
+    FFEPlayerExclusionPrintDocument,
+    FFEPlayerReportingPrintDocument,
+)
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
@@ -852,6 +860,18 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
     # Printing
     # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def insert_print_document(self, print_documents: list[type['PrintDocument']]):
+        for c in [
+            FFEEventReportPrintDocument,
+            FFEPlayersLicenceAPrintDocument,
+            FFEPlayersLicenceBPrintDocument,
+            FFEPlayerForfeitPrintDocument,
+            FFEPlayerExclusionPrintDocument,
+            FFEPlayerReportingPrintDocument,
+        ]:
+            PluginUtils.insert_last(print_documents, c)  # type: ignore
 
     @hookimpl
     def alter_print_and_screen_player_columns(
