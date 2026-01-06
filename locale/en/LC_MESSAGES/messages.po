@@ -2388,6 +2388,9 @@ msgstr ""
 msgid "Include lower categories"
 msgstr ""
 
+msgid "Include non-monetary prizes"
+msgstr ""
+
 msgid "Include players"
 msgstr ""
 
@@ -2763,9 +2766,6 @@ msgid "Mo *** MONDAY"
 msgstr "Mo"
 
 msgid "Monetary"
-msgstr ""
-
-msgid "Monetary prizes only"
 msgstr ""
 
 #, python-format
