@@ -37,7 +37,6 @@
                 border: none;
             }
             input[type="checkbox"] {
-                pointer-events: none;
                 accent-color: black;
             }
             .grid {
@@ -62,7 +61,6 @@
                 font-weight: bold;
             }
             .item input[type="checkbox"] {
-                pointer-events: none;
                 accent-color: black;
                 width: auto;
             }
