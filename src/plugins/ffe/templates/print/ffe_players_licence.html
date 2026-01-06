@@ -12,7 +12,7 @@
             {% if not loop.first %}
                 <div class="spacer"></div>
             {% endif %}
-            <form class="break-after t{{ document.form_number }}">
+            <form class="break-after t{{ document.form_number() }}">
                 <h1>
                     <span style="font-style: italic;">Formulaire T{{ document.form_number() }}/DNA</span>
                     <br/>
