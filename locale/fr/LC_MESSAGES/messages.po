@@ -3748,7 +3748,7 @@ msgid "Prize list"
 msgstr "Liste des prix"
 
 msgid "Prize receipts"
-msgstr "Reçus financiers"
+msgstr "Reçus financiers des prix"
 
 msgid "Prize settings"
 msgstr "Paramètres des prix"
