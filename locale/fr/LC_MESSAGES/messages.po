@@ -4631,13 +4631,11 @@ msgstr "Le premier tournoi de l'écran."
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
 
-#, fuzzy
 msgid "The least and the most significant values are removed."
 msgid_plural "The {count} least and the {count} most significant values are removed."
 msgstr[0] "La valeur la moins élevée et la valeur la plus élevée sont retirées."
 msgstr[1] "Les {count} valeurs les moins élevées et les {count} valeurs les plus élevées sont retirées."
 
-#, fuzzy
 msgid "The least significant value is removed."
 msgid_plural "The {count} least significant values are removed."
 msgstr[0] "La valeur la moins élevée est retirée."

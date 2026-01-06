@@ -4631,13 +4631,11 @@ msgstr ""
 msgid "The following categories will also be deleted:"
 msgstr ""
 
-#, fuzzy
 msgid "The least and the most significant values are removed."
 msgid_plural "The {count} least and the {count} most significant values are removed."
 msgstr[0] ""
 msgstr[1] ""
 
-#, fuzzy
 msgid "The least significant value is removed."
 msgid_plural "The {count} least significant values are removed."
 msgstr[0] ""
