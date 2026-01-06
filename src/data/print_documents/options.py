@@ -287,10 +287,10 @@ class ShowWarningsPrintOption(PrintOption):
         return True
 
 
-class MonetaryOnlyPrintOption(PrintOption):
+class NonMonetaryPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
-        return 'monetary-only'
+        return 'non-monetary'
 
     @property
     def type(self) -> type | UnionType:
@@ -298,7 +298,7 @@ class MonetaryOnlyPrintOption(PrintOption):
 
     @property
     def default_value(self) -> Any:
-        return True
+        return False
 
 
 class ClubThresholdPrintOption(PrintOption):

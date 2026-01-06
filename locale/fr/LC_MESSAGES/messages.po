@@ -2388,6 +2388,9 @@ msgstr "Inclure les catégories supérieures"
 msgid "Include lower categories"
 msgstr "Inclure les catégories inférieures"
 
+msgid "Include non-monetary prizes"
+msgstr "Inclure les prix non-monétaires"
+
 msgid "Include players"
 msgstr "Inclure les joueur·euses"
 
@@ -2764,9 +2767,6 @@ msgstr "Lu"
 
 msgid "Monetary"
 msgstr "Monétaire"
-
-msgid "Monetary prizes only"
-msgstr "Seulement les prix monétaires"
 
 #, python-format
 msgid "Moved down %(num)d place"

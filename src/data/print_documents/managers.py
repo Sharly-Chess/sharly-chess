@@ -76,7 +76,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.PlayerSplitPrintOption,
             options.PlayerSortPrintOption,
             options.ShowWarningsPrintOption,
-            options.MonetaryOnlyPrintOption,
+            options.NonMonetaryPrintOption,
             options.ClubThresholdPrintOption,
             options.QRCodeNetworkPrintOption,
             options.PlaceCardBoardNumbersPrintOption,
