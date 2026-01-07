@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from datetime import datetime, timedelta
 from typing import Any, override, Iterator
 
@@ -16,12 +16,24 @@ from data.print_documents.options import (
     TournamentPrintOption,
     PlayerPrintOption,
 )
+from plugins.ffe.print_documents.ffe_options import FFELicencePrintOption
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from utils.enum import RoleType, PlayerRatingType
 from utils.time_control import trf25_to_human_readable
 
 
-class FFEEventReportPrintDocument(PrintDocument):
+class FFEPrintDocument(PrintDocument, ABC):
+    @property
+    def template_name(self) -> str:
+        return f'/print/{self.static_id().replace("-", "_")}.html'
+
+    @property
+    def ffe_form_number(self) -> int | None:
+        """Return the number of the FFE form associated with the document."""
+        return None
+
+
+class FFEEventReportPrintDocument(FFEPrintDocument):
     @staticmethod
     def static_id() -> str:
         return 'ffe-tournament-report'
@@ -166,7 +178,7 @@ class FFEEventReportPrintDocument(PrintDocument):
         }
 
 
-class FFETournamentPrintDocument(PrintDocument, ABC):
+class FFETournamentPrintDocument(FFEPrintDocument, ABC):
     @property
     def writer(self) -> Account | None:
         accounts_by_role: dict[RoleType, set[Account]] = {
@@ -218,39 +230,13 @@ class FFETournamentPrintDocument(PrintDocument, ABC):
         }
 
 
-class FFEPlayersLicencePrintDocument(FFETournamentPrintDocument, ABC):
-    @staticmethod
-    @abstractmethod
-    def licence() -> PlayerFFELicence:
-        """Returns the licence type expected by the form."""
-
-    @staticmethod
-    @abstractmethod
-    def form_number() -> int:
-        """Returns the number of the associated FFE form."""
-
-    @classmethod
-    def static_id(cls) -> str:
-        return f'ffe-players-licence-{cls.licence().short_name.lower()}'
-
-    @classmethod
-    def static_name(cls) -> str:
-        return f'FFE Attestation licence {cls.licence().short_name}'
-
+class FFEPlayersPrintDocument(FFETournamentPrintDocument):
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
         return [
             TournamentPrintOption,
             PlayersPrintOption,
         ]
-
-    @property
-    def title(self) -> str:
-        return self.static_name()
-
-    @property
-    def template_name(self) -> str:
-        return 'print/ffe_players_licence.html'
 
     @property
     def _player_ids(self) -> Iterator[int]:
@@ -282,24 +268,36 @@ class FFEPlayersLicencePrintDocument(FFETournamentPrintDocument, ABC):
             )
 
 
-class FFEPlayersLicenceAPrintDocument(FFEPlayersLicencePrintDocument):
-    @staticmethod
-    def licence() -> PlayerFFELicence:
-        return PlayerFFELicence.A
+class FFEPlayersLicencePrintDocument(FFEPlayersPrintDocument):
+    @classmethod
+    def static_id(cls) -> str:
+        return 'ffe-players-licence'
+
+    @classmethod
+    def static_name(cls) -> str:
+        return 'FFE Attestations de licence'
 
     @staticmethod
-    def form_number() -> int:
-        return 3
+    def available_options() -> list[type[PrintOption]]:
+        return FFEPlayersPrintDocument.available_options() + [
+            FFELicencePrintOption,
+        ]
 
+    @property
+    def title(self) -> str:
+        return f'FFE Attestations de licence {self.ffe_licence.short_name}'
 
-class FFEPlayersLicenceBPrintDocument(FFEPlayersLicencePrintDocument):
-    @staticmethod
-    def licence() -> PlayerFFELicence:
-        return PlayerFFELicence.B
+    @property
+    def template_name(self) -> str:
+        return 'print/ffe_players_licence.html'
 
-    @staticmethod
-    def form_number() -> int:
-        return 4
+    @property
+    def ffe_licence(self) -> PlayerFFELicence:
+        return self._get_option(FFELicencePrintOption).ffe_licence
+
+    @property
+    def ffe_form_number(self) -> int | None:
+        return self._get_option(FFELicencePrintOption).form_number
 
 
 class FFEPlayerPrintDocument(FFETournamentPrintDocument, ABC):

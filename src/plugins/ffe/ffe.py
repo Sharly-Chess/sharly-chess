@@ -22,7 +22,7 @@ from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
 from data.player_categories import PlayerCategory, JuniorCategory
-from data.print_documents import PlayerSplitter, PrintDocument
+from data.print_documents import PlayerSplitter, PrintDocument, PrintOption
 from data.print_documents.documents import StatisticsPrintDocument
 from data.print_documents.place_cards.data import PlaceCardPlayer
 from data.print_documents.player_splitters import ClubPlayerSplitter
@@ -57,10 +57,9 @@ from plugins.ffe.ffe_entity import (
     FfeLicenceTypeTableColumn,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
-from plugins.ffe.ffe_report_documents import (
+from plugins.ffe.print_documents.ffe_documents import (
     FFEEventReportPrintDocument,
-    FFEPlayersLicenceAPrintDocument,
-    FFEPlayersLicenceBPrintDocument,
+    FFEPlayersLicencePrintDocument,
     FFEPlayerForfeitPrintDocument,
     FFEPlayerExclusionPrintDocument,
     FFEPlayerReportingPrintDocument,
@@ -78,6 +77,7 @@ from plugins.ffe.ffe_tournament_importers import (
     PapiTournamentImporter,
 )
 from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
+from plugins.ffe.print_documents.ffe_options import FFELicencePrintOption
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.ffe.utils import (
     FFE_DEFAULT_UPLOAD_DELAY,
@@ -866,11 +866,18 @@ class FfePlugin(Plugin):
         print_documents.extend(
             [
                 FFEEventReportPrintDocument,
-                FFEPlayersLicenceAPrintDocument,
-                FFEPlayersLicenceBPrintDocument,
+                FFEPlayersLicencePrintDocument,
                 FFEPlayerForfeitPrintDocument,
                 FFEPlayerExclusionPrintDocument,
                 FFEPlayerReportingPrintDocument,
+            ]
+        )
+
+    @hookimpl
+    def insert_print_option(self, print_options: list[type['PrintOption']]):
+        print_options.extend(
+            [
+                FFELicencePrintOption,
             ]
         )
 

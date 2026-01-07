@@ -12,11 +12,11 @@
             {% if not loop.first %}
                 <div class="spacer"></div>
             {% endif %}
-            <form class="break-after t{{ document.form_number() }}">
+            <form class="break-after t{{ document.ffe_form_number }}">
                 <h1>
-                    <span style="font-style: italic;">Formulaire T{{ document.form_number() }}/DNA</span>
+                    <span style="font-style: italic;">Formulaire T{{ document.ffe_form_number }}/DNA</span>
                     <br/>
-                    RAPPORT TECHNIQUE : ATTESTATION SUR L'HONNEUR – LICENCE {{ document.licence().short_name }}
+                    RAPPORT TECHNIQUE : ATTESTATION SUR L'HONNEUR – LICENCE {{ document.ffe_licence.short_name }}
                 </h1>
                 <section>
                     <div class="grid" style="grid-template-columns: 1fr;">
@@ -41,7 +41,7 @@
                         <div class="item"></div>
                     </div>
                     <div>
-                        certifie sur l'honneur que je suis titulaire d'une licence {{ document.licence().short_name }} pour la saison en cours.
+                        certifie sur l'honneur que je suis titulaire d'une licence {{ document.ffe_licence.short_name }} pour la saison en cours.
                     </div>
                     <div class="grid" style="grid-template-columns: 1fr;">
                         <div class="item">

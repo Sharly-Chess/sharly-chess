@@ -63,7 +63,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
 class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
     @override
     def entity_types(self) -> list[type[options.PrintOption]]:
-        return [
+        print_options = [
             options.QRCodePrintOption,
             options.PlaceCardPrintOption,
             options.PlaceCardTemplatePrintOption,
@@ -83,6 +83,10 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.PlaceCardMirrorPrintOption,
             options.PlaceCardCropMarksPrintOption,
         ]
+        plugin_manager.hook_for_event(self.event, 'insert_print_option')(
+            print_options=print_options
+        )
+        return print_options
 
     @override
     def objects(self) -> list[PrintOption]:

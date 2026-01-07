@@ -29,7 +29,12 @@ if TYPE_CHECKING:
         PlayerRatingType,
         PlayerCategory,
     )
-    from data.print_documents import PrintDocument, PlayerSplitter, QRCodeType
+    from data.print_documents import (
+        PrintDocument,
+        PrintOption,
+        PlayerSplitter,
+        QRCodeType,
+    )
     from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
     from data.criteria.player_filters import PlayerFilter
@@ -327,6 +332,10 @@ class AppHookSpecs:
     @hookspec
     def insert_print_document(self, print_documents: list[type['PrintDocument']]):
         """Provide extra print documents"""
+
+    @hookspec
+    def insert_print_option(self, print_options: list[type['PrintOption']]):
+        """Provide extra print options"""
 
     @hookspec
     def alter_print_and_screen_player_columns(
