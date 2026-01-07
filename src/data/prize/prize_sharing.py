@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
 from itertools import groupby
-from typing import override
+from typing import override, TYPE_CHECKING
 
 from common.i18n import _
 from data.player import TournamentPlayer
-from data.prize.prize import Prize
 from data.prize.assigned_prize import AssignedPrize
 from utils.entity import IdentifiableEntity
+
+if TYPE_CHECKING:
+    from data.prize.prize import Prize
 
 
 class PrizeSharing(IdentifiableEntity, ABC):
@@ -16,7 +18,7 @@ class PrizeSharing(IdentifiableEntity, ABC):
     @abstractmethod
     def calculate_prizes(
         self,
-        prizes: list[Prize],
+        prizes: list['Prize'],
         tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
@@ -35,7 +37,7 @@ class NoPrizeSharing(PrizeSharing):
     @override
     def calculate_prizes(
         self,
-        prizes: list[Prize],
+        prizes: list['Prize'],
         tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
@@ -66,7 +68,7 @@ class AveragePrizeSharing(PrizeSharing):
     @override
     def calculate_prizes(
         self,
-        prizes: list[Prize],
+        prizes: list['Prize'],
         tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
@@ -85,17 +87,25 @@ class AveragePrizeSharing(PrizeSharing):
                     share = total / len(players_in_tie)
                     warning = True
             for i, player in enumerate(players_in_tie):
+                if i < len(prizes_to_share):
+                    prize = prizes_to_share[i]
+                    is_own = True
+                else:
+                    prize = prizes_to_share[0]
+                    is_own = False
                 is_last = i == len(players_in_tie) - 1
                 resolved.append(
                     AssignedPrize(
-                        prize=prizes_to_share[0],
+                        prize=prize,
                         priority=0,
                         place_index=place_index + i,
                         assigned_to=player,
                         value=share,
                         is_main=True,
+                        is_own=is_own,
                         warning=_(
-                            'Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold.'
+                            'Other players in this score group are not awarded prizes, '
+                            'as their share would be less than the minimum threshold.'
                         )
                         if is_last and warning
                         else None,
@@ -122,7 +132,7 @@ class HortSystemPrizeSharing(PrizeSharing):
     @override
     def calculate_prizes(
         self,
-        prizes: list[Prize],
+        prizes: list['Prize'],
         tournament_players: list[TournamentPlayer],
         threshold: float | None = None,
     ) -> list[AssignedPrize]:
@@ -146,18 +156,27 @@ class HortSystemPrizeSharing(PrizeSharing):
                     players_in_tie.pop()
 
             for i, player in enumerate(players_in_tie):
-                own = prizes_to_share[i].value if i < len(prizes_to_share) else 0
+                if i < len(prizes_to_share):
+                    prize = prizes_to_share[i]
+                    is_own = True
+                    own_value = prize.value
+                else:
+                    prize = prizes_to_share[0]
+                    is_own = False
+                    own_value = 0
                 is_last = i == len(players_in_tie) - 1
                 resolved.append(
                     AssignedPrize(
-                        prize=prizes_to_share[0],
+                        prize=prize,
                         priority=0,
                         place_index=place_index + i,
                         assigned_to=player,
-                        value=(own + total / len(players_in_tie)) / 2,
+                        value=(own_value + total / len(players_in_tie)) / 2,
                         is_main=True,
+                        is_own=is_own,
                         warning=_(
-                            'Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold.'
+                            'Other players in this score group are not awarded prizes, '
+                            'as their share would be less than the minimum threshold.'
                         )
                         if is_last and warning
                         else None,

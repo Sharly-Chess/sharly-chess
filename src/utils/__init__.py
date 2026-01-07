@@ -298,6 +298,12 @@ class Utils:
             - (1 if end.day < start.day else 0)
         )
 
+    @staticmethod
+    def reset_cached_properties(obj: object, *property_names: str):
+        for property_name in property_names:
+            if property_name in obj.__dict__:
+                del obj.__dict__[property_name]
+
 
 class SupportsEquals(Protocol):
     def __eq__(self, other: object) -> bool: ...

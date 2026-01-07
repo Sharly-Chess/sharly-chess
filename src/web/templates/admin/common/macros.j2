@@ -458,6 +458,7 @@ with_indicator: display a loading indicator, optional
             <div class="d-flex align-items-center">
                 {%- if label -%}
                     <span
+                        id="{{ id }}-label"
                         for="{{ id }}"
                         class="form-check-label flex-grow-1"
                     >
@@ -473,7 +474,7 @@ with_indicator: display a loading indicator, optional
                                 ></i>
                             </span>
                         {%- endif -%}
-                    </label>
+                    </span>
                 {%- endif -%}
             </div>
 

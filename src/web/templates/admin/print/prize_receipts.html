@@ -49,11 +49,7 @@
                                 </div>
                                 <div class="cell value {{classes}}">
                                     <span class="fw-bold text-start text-nowrap">
-                                        {% if prize_assigned_to_player.prize.is_monetary %}
-                                            {{ format_prize_value(prize_assigned_to_player.value) }}
-                                        {% else %}
-                                            {{ prize_assigned_to_player.prize.description }}
-                                        {% endif %}
+                                        {{ prize_assigned_to_player.name }}
                                     </span>
                                 </div>
                                 <div class="cell payment {{classes}}">
