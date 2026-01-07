@@ -1100,6 +1100,9 @@ msgstr "Appariements complémentaires générés."
 msgid "Complementary pairings successfully generated!"
 msgstr "Appariements complémentaires générés avec succès !"
 
+msgid "Complementary prize"
+msgstr "Prix complémentaire"
+
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -1411,9 +1414,6 @@ msgstr "Chronomètres par défaut"
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
 
-msgid "Define as monetary"
-msgstr "Définir comme monétaire"
-
 msgid "Define as public"
 msgstr "Définir comme public"
 
@@ -1517,12 +1517,6 @@ msgstr "Arbitres adjoint·es"
 
 msgid "Description"
 msgstr "Description"
-
-msgid "Description is mandatory for non-monetary prizes."
-msgstr "La description est objigatoire pour les prix non-monétaires."
-
-msgid "Descriptions can only be defined for non-monetary prizes."
-msgstr "Les descriptions ne peuvent être définies que pour les prix non-monétaires."
 
 msgid "Details"
 msgstr "Détails"
@@ -2161,9 +2155,6 @@ msgstr "Miroir (recto-verso)"
 msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
 
-msgid "For non-monetary prizes, the value is used for reward priority."
-msgstr "Pour les prix non-monétaires, la valeur est utiliée pour prioriser les récompenses."
-
 msgid "For players who have not checked-in:"
 msgstr "Pour les joueur·euses qui ne se sont pas pointé·es :"
 
@@ -2314,6 +2305,9 @@ msgstr "L'horaire [{hour}] a été créé."
 msgid "Hours"
 msgstr "Horaires"
 
+msgid "Hybrid"
+msgstr "Hybride"
+
 msgid "I confirm that I want to archive this event."
 msgstr "Je confirme vouloir archiver cet évènement."
 
@@ -2393,6 +2387,9 @@ msgstr "Inclure les catégories supérieures"
 
 msgid "Include lower categories"
 msgstr "Inclure les catégories inférieures"
+
+msgid "Include non-monetary prizes"
+msgstr "Inclure les prix non-monétaires"
 
 msgid "Include players"
 msgstr "Inclure les joueur·euses"
@@ -2768,8 +2765,8 @@ msgstr "Champ requis manquant [{field}]."
 msgid "Mo *** MONDAY"
 msgstr "Lu"
 
-msgid "Monetary prizes only"
-msgstr "Seulement les prix monétaires"
+msgid "Monetary"
+msgstr "Monétaire"
 
 #, python-format
 msgid "Moved down %(num)d place"
@@ -3074,6 +3071,12 @@ msgstr "N°"
 
 msgid "No. final rounds without byes:"
 msgstr "Dernières rondes sans bye :"
+
+msgid "Non-monetary"
+msgstr "Non-monétaire"
+
+msgid "Non-monetary prizes are not compatible with categories in which the prizes are shared."
+msgstr "Les prix non-monétaires ne sont pas compatibles avec les catégories pour lesquelles les prix sont partagés."
 
 msgid "None"
 msgstr "Aucun"
@@ -3748,7 +3751,7 @@ msgid "Prize list"
 msgstr "Liste des prix"
 
 msgid "Prize receipts"
-msgstr "Reçus financiers"
+msgstr "Reçus financiers des prix"
 
 msgid "Prize settings"
 msgstr "Paramètres des prix"
@@ -3762,8 +3765,14 @@ msgstr "Prix"
 msgid "Prizes can only be shared for the main category."
 msgstr "Les prix ne peuvent être partagés que pour la catégorie générale."
 
-msgid "Prizes of categories with prize sharing can only be monetary."
-msgstr "Les prix des catégories partageant les prix ne peuvent être que monétaires."
+msgid "Prizes defined as a free text field. The value is used to determine the place of the prize in the list."
+msgstr "Prix définis par un champ texte libre. La valeur est utilisée pour déterminer la place du prix dans la liste."
+
+msgid "Prizes defined as both a monetary value and a complementary non-monetary prize (example: 100 € + Trophy)."
+msgstr "Prix définis par une valeur monétaire et un prix non-monétaire complémentaire (exemple : 100 € + Trophée)."
+
+msgid "Prizes only defined as a monetary value."
+msgstr "Prix définis seulement par une valeur monétaire."
 
 msgid "Proceed"
 msgstr "Continuer"
@@ -5174,8 +5183,8 @@ msgstr "Tournois : %(num)d"
 msgid "Transfer"
 msgstr "Virement"
 
-msgid "Trophy"
-msgstr "Trophée"
+msgid "Trophy, medal"
+msgstr "Trophée, médaille"
 
 msgid "Tu *** TUESDAY"
 msgstr "Ma"

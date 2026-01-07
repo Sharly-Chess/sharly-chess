@@ -2248,8 +2248,8 @@ class EventDatabase(MigrationDatabase):
         return StoredPrize(
             id=row['id'],
             prize_category_id=row['prize_category_id'],
+            type=row['type'],
             value=row['value'],
-            is_monetary=cls.load_bool_from_database_field(row['is_monetary']),
             description=row['description'],
         )
 
@@ -2268,7 +2268,7 @@ class EventDatabase(MigrationDatabase):
     ) -> int:
         fields = self._get_fields_dict(
             stored_prize,
-            ['prize_category_id', 'value', 'is_monetary', 'description'],
+            ['prize_category_id', 'type', 'value', 'description'],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -2286,7 +2286,7 @@ class EventDatabase(MigrationDatabase):
     ):
         fields = self._get_fields_dict(
             stored_prize,
-            ['prize_category_id', 'value', 'is_monetary', 'description'],
+            ['prize_category_id', 'type', 'value', 'description'],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_prize.id is not None
