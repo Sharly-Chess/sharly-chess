@@ -191,7 +191,7 @@ class Board:
     ) -> str:
         field_prefix = 'White' if is_white else 'Black'
         if tournament_player is None:
-            return f'[{field_prefix} ""]'
+            return f'[{field_prefix} ""]\n'
         rating = (
             tournament_player.rating
             if tournament_player.rating_type == PlayerRatingType.FIDE
