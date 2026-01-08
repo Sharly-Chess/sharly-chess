@@ -243,11 +243,17 @@ class Engine:
             version_dir / EVENTS_FOLDER / ConfigDatabase.config_database_name
         )
         if config_database_file.is_file():
+            from gui.server_gui_toga import SharlyChessServerToga
+
             logger.info('Recovering configuration from release [%s]...', version)
             # copy the configuration database to its new destination
             shutil.copy(config_database_file, ConfigDatabase().file)
             ConfigDatabase.setup()
-            SharlyChessConfig().load_and_set_env()
+            sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+            sharly_chess_config.load_and_set_env()
+            if SharlyChessServerToga.instance is not None:
+                logger.debug('Applying recovered configuration to the Toga app...')
+                SharlyChessServerToga.instance.update_from_sharly_chess_config()
             plugin_manager.reload_register()
         else:
             logger.debug(
