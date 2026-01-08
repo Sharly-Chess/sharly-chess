@@ -9,6 +9,7 @@
 - Fixed application startup (3.4.1)
 - Improve error display on upgrade failures (3.4.3)
 - Change the session language when updated from the config (3.4.4)
+- Update the console after recovering the configuration of a previous version (3.4.5)
 
 ## Events
 
