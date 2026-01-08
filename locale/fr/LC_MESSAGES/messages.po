@@ -5922,6 +5922,11 @@ msgid_plural "{count} half-points"
 msgstr[0] "{count} demi-point"
 msgstr[1] "{count} demi-points"
 
+msgid "{count} hour could not be moved (time conflict)."
+msgid_plural "{count} hours could not be moved (time conflict)."
+msgstr[0] "{count} horaire n'a pas pu être déplacé (conflit d'heures)."
+msgstr[1] "{count} horaires n'ont pas pu être déplacés (conflit d'heures)."
+
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] "{count} joueur·euse mis·e à jour."
