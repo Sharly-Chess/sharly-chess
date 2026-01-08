@@ -50,6 +50,10 @@
 - Use rotator messages prior to screen messages (3.4.4)
 - Allow batch updating the dates of timer hours (3.4.5)
 
+## Outputs
+
+- Fixed PGN exports with Pairing Allocated Bye (3.4.5)
+
 ## _FFE_
 
 - Fixed the default age category change month for _FFE_ events (3.4.2)
