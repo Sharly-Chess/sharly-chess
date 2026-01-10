@@ -7,6 +7,7 @@ from functools import cached_property
 from logging import Logger
 from pathlib import Path
 from typing import Literal
+from urllib.parse import quote
 
 from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
@@ -197,6 +198,10 @@ class Archive:
     @property
     def date_str(self):
         return format_timestamp_date_time(self.date)
+
+    @property
+    def url_name(self) -> str:
+        return quote(self.name)
 
     def restore(self) -> str | None:
         event_uniq_id = EventLoader().get_unused_event_uniq_id(self.name.split('#')[0])
