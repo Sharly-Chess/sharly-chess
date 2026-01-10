@@ -43,12 +43,12 @@ class FFEDocumentTypePrintOption(FFEPrintOption):
         }
 
     @property
-    def valid_options_per_type(self) -> dict[str, list[str]]:
+    def valid_option_ids_per_type_id(self) -> dict[str, list[str]]:
         from plugins.ffe.print_documents.ffe_managers import FFEDocumentTypeManager
 
         type_options = FFEDocumentTypeManager().type_by_id()
         return {
-            type_id: type_options[type_id].get_valid_options()
+            type_id: type_options[type_id].get_valid_option_ids()
             for type_id in type_options
         }
 

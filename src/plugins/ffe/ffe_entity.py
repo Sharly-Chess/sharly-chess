@@ -26,7 +26,7 @@ from data.input_output.data_source import (
     OnlineDataSource,
 )
 from data.player import Player, TournamentPlayer
-from data.print_documents import PlayerSplitter
+from data.print_documents import PlayerSplitter, PrintOption
 from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
 from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
@@ -358,8 +358,8 @@ class FFESiteQRCodeType(QRCodeType):
         return _('Tournament on the FFE site')
 
     @staticmethod
-    def get_valid_options() -> list[str]:
-        return [TournamentPrintOption.static_id()]
+    def get_valid_option_types() -> list[type[PrintOption]]:
+        return [TournamentPrintOption]
 
     @staticmethod
     def title(doc: QRCodePrintDocument) -> str:

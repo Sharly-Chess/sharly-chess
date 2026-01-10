@@ -8,6 +8,7 @@ from common.i18n import _
 from data.account import Account
 from data.event import Event
 from data.player import TournamentPlayer
+from data.print_documents import PrintOption
 from data.tournament import Tournament
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from utils.entity import IdentifiableEntity
@@ -37,14 +38,16 @@ class FFEDocumentType(IdentifiableEntity, ABC):
     def title(self) -> str:
         return self.static_name()
 
+    @classmethod
+    def get_valid_option_ids(cls) -> list[str]:
+        return [option.static_id() for option in cls.get_valid_option_types()]
+
     @staticmethod
-    def get_valid_options() -> list[str]:
+    def get_valid_option_types() -> list[type[PrintOption]]:
         """Returns a list of valid options for the document type."""
         from plugins.ffe.print_documents.ffe_options import FFEDocumentTypePrintOption
 
-        return [
-            FFEDocumentTypePrintOption.static_id(),
-        ]
+        return [FFEDocumentTypePrintOption]
 
     def validate_options(
         self,
@@ -125,11 +128,11 @@ class FFEDocumentType(IdentifiableEntity, ABC):
 
 class FFETournamentsDocumentType(FFEDocumentType, ABC):
     @staticmethod
-    def get_valid_options() -> list[str]:
+    def get_valid_option_types() -> list[type['PrintOption']]:
         from data.print_documents.options import TournamentsPrintOption
 
-        return FFEDocumentType.get_valid_options() + [
-            TournamentsPrintOption.static_id(),
+        return FFEDocumentType.get_valid_option_types() + [
+            TournamentsPrintOption,
         ]
 
     @cached_property
@@ -341,11 +344,11 @@ class FFET1T2Type(FFETournamentsDocumentType):
 
 class FFETournamentDocumentType(FFEDocumentType, ABC):
     @staticmethod
-    def get_valid_options() -> list[str]:
+    def get_valid_option_types() -> list[type['PrintOption']]:
         from data.print_documents.options import TournamentPrintOption
 
-        return FFEDocumentType.get_valid_options() + [
-            TournamentPrintOption.static_id(),
+        return FFEDocumentType.get_valid_option_types() + [
+            TournamentPrintOption,
         ]
 
     @cached_property
@@ -402,11 +405,11 @@ class FFETournamentDocumentType(FFEDocumentType, ABC):
 
 class FFEPlayersDocumentType(FFETournamentDocumentType, ABC):
     @staticmethod
-    def get_valid_options() -> list[str]:
+    def get_valid_option_types() -> list[type['PrintOption']]:
         from data.print_documents.options import PlayersPrintOption
 
-        return FFETournamentDocumentType.get_valid_options() + [
-            PlayersPrintOption.static_id(),
+        return FFETournamentDocumentType.get_valid_option_types() + [
+            PlayersPrintOption,
         ]
 
     @cached_property
@@ -437,11 +440,11 @@ class FFEPlayersDocumentType(FFETournamentDocumentType, ABC):
 
 class FFET3T4Type(FFEPlayersDocumentType):
     @staticmethod
-    def get_valid_options() -> list[str]:
+    def get_valid_option_types() -> list[type['PrintOption']]:
         from plugins.ffe.print_documents.ffe_options import FFELicencePrintOption
 
-        return FFEPlayersDocumentType.get_valid_options() + [
-            FFELicencePrintOption.static_id(),
+        return FFEPlayersDocumentType.get_valid_option_types() + [
+            FFELicencePrintOption,
         ]
 
     @staticmethod
@@ -467,11 +470,11 @@ class FFET3T4Type(FFEPlayersDocumentType):
 
 class FFEPlayerDocumentType(FFETournamentDocumentType, ABC):
     @staticmethod
-    def get_valid_options() -> list[str]:
+    def get_valid_option_types() -> list[type['PrintOption']]:
         from data.print_documents.options import PlayerPrintOption
 
-        return FFETournamentDocumentType.get_valid_options() + [
-            PlayerPrintOption.static_id(),
+        return FFETournamentDocumentType.get_valid_option_types() + [
+            PlayerPrintOption,
         ]
 
     @cached_property

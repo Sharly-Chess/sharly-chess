@@ -353,12 +353,12 @@ class QRCodePrintOption(PrintOption):
         return PrintQRCodeTypeManager(self.event).get_object(self.value)
 
     @property
-    def valid_options_per_type(self) -> dict[str, list[str]]:
+    def valid_option_ids_per_type_id(self) -> dict[str, list[str]]:
         from data.print_documents import PrintQRCodeTypeManager
 
         type_options = PrintQRCodeTypeManager(self.event).type_by_id()
         return {
-            type_id: type_options[type_id].get_valid_options()
+            type_id: type_options[type_id].get_valid_option_ids()
             for type_id in type_options
         }
 
@@ -437,12 +437,12 @@ class PlaceCardPrintOption(PrintOption):
         return PrintPlaceCardTypeManager().get_object(self.value)
 
     @property
-    def valid_options_per_type(self) -> dict[str, list[str]]:
+    def valid_option_ids_per_type_id(self) -> dict[str, list[str]]:
         from data.print_documents import PrintPlaceCardTypeManager
 
         type_options = PrintPlaceCardTypeManager().type_by_id()
         return {
-            type_id: type_options[type_id].get_valid_options()
+            type_id: type_options[type_id].get_valid_option_ids()
             for type_id in type_options
         }
 
