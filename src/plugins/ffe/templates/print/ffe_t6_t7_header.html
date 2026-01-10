@@ -1,0 +1,59 @@
+<h2>Arbitre rédacteur·ice</h2>
+<section>
+    <div class="grid" style="grid-template-columns: 1fr 7fr;">
+        <div class="item">
+            <label for="writer">Nom et prénom :</label>
+        </div>
+        {% if not writer %}
+            {% set error = 'Aucun·e arbitre n\'a été déclaré·e.' %}
+        {% else %}
+            {% if not account %}
+                {% set error = 'Le·la première arbitre a été déclaré·e comme rédacteur·ice.' %}
+            {% else %}
+                {% set error = '' %}
+            {% endif %}
+        {% endif %}
+        <div class="item {%if error %}error{% endif %}">
+            <div class="error-info">{{ error }}</div>
+            <input id="writer" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+        </div>
+        <div class="item">
+            <label for="writer-ffe-licence-number">Numéro de licence :</label>
+        </div>
+        <div class="item error {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
+            <div class="error-info">TODO Add arbiter FFE licence number (as a FFE plugin data).</div>
+            <input id="writer-ffe-licence-number" value="{%if writer and writer.plugin_data %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
+        </div>
+        <div class="item">
+            <label for="writer-arbiter-level">Titre :</label>
+        </div>
+        <div class="item error {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.arbiter_level %}error{% endif %}">
+            <div class="error-info">TODO Add arbiter level to accounts (as a FFE plugin data).</div>
+            <input id="writer-arbiter-level" value="{%if writer and writer.plugin_data %}{{ writer.plugin_data.ffe.ffe_arbiter_level or '' }}{% endif %}"/>
+        </div>
+    </div>
+</section>
+<h2>Caractéristiques techniques du tournoi</h2>
+<section>
+    <div class="grid" style="grid-template-columns: 1fr 7fr;">
+        <div class="item">
+            <label for="tournament">Nom :</label>
+        </div>
+        <div class="item">
+            <input id="tournament" value="{{ tournament_name }}" />
+        </div>
+        <div class="item">
+            <label for="tournament-ffe-id">Numéro d'homologation FFE :</label>
+        </div>
+        <div class="item {% if not tournament.plugin_data.ffe.ffe_id %}error{% endif %}">
+            <div class="error-info">Le numéro d'homologation du tournoi n'est pas défini.</div>
+            <input id="tournament-ffe-id" value="{{ tournament.plugin_data.ffe.ffe_id or '' }}" />
+        </div>
+        <div class="item">
+            <label for="event-date">Dates du tournoi :</label>
+        </div>
+        <div class="item">
+            <input id="event-date" value="{{ tournament_date }}" />
+        </div>
+    </div>
+</section>

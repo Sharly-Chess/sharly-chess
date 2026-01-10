@@ -9,36 +9,48 @@
         </h1>
         <h2>Identification de l'arbitre rédacteur·ice</h2>
         <section>
-            <div class="grid" style="grid-template-columns: 1fr;">
-                <div class="item">
-                    <label for="writer">Nom et prénom de l'arbitre rédacteur·ice :</label>
+            <div class="grid" style="grid-template-columns: 5fr 2fr 1fr;">
+                {% if not writer %}
+                    {% set error = 'Aucun·e arbitre n\'a été déclaré·e.' %}
+                {% else %}
+                    {% if not account %}
+                        {% set error = 'Le·la première arbitre a été déclaré·e comme rédacteur·ice.' %}
+                    {% else %}
+                        {% set error = '' %}
+                    {% endif %}
+                {% endif %}
+                <div class="item {%if error %}error{% endif %}">
+                    <label for="writer">Nom et prénom :</label>
+                    <div class="error-info">{{ error }}</div>
                     <input id="writer" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
                 </div>
-            </div>
-            <div class="grid" style="grid-template-columns: 1fr 10fr;">
-                <div class="item">
+                <div class="item error {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
                     <label for="writer-ffe-licence-number">Numéro de licence :</label>
-                    <input id="writer-ffe-licence-number" value="TODO" style="width: 3.5rem; flex-grow: 0;" />
+                    <div class="error-info">TODO Add arbiter FFE licence number (as a FFE plugin data).</div>
+                    <input id="writer-ffe-licence-number" value="{%if writer and writer.plugin_data %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
                 </div>
-                <div class="item">
-                    <label for="writer-level">Niveau de l'arbitre rédacteur·ice :</label>
-                    <input id="writer-level" value="AFJ/AFC/AFO1/AFO2/AFE1/AFE2" style="width: 13.5rem; flex-grow: 0;" />
+                <div class="item error {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.arbiter_level %}error{% endif %}">
+                    <label for="writer-arbiter-level">Niveau :</label>
+                    <div class="error-info">TODO Add arbiter level to accounts (as a FFE plugin data).</div>
+                    <input id="writer-arbiter-level" value="{%if writer and writer.plugin_data %}{{ writer.plugin_data.ffe.ffe_arbiter_level or '' }}{% endif %}"/>
+                </div>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                <div class="item error {% if not writer or not writer.phone %}error{% endif %}">
+                    <label for="writer-phone">Tél :</label>
+                    <div class="error-info">TODO Add the phone number to accounts.</div>
+                    <input id="writer-phone" value="{%if writer %}{{ writer.address or '' }}{% endif %}" />
+                </div>
+                <div class="item error {% if not writer or not writer.email %}error{% endif %}">
+                    <label for="writer-email">Mél :</label>
+                    <div class="error-info">TODO Add the email to accounts.</div>
+                    <input id="writer-email" value="{%if writer %}{{ writer.email or '' }}{% endif %}" />
                 </div>
             </div>
             <div class="grid" style="grid-template-columns: 1fr;">
                 <div class="item">
-                    <label for="address">Adresse postale :</label>
-                    <input id="address" value="1 rue qui monte 01000 EN-HAUT" />
-                </div>
-            </div>
-            <div class="grid" style="grid-template-columns: 1fr 10fr;">
-                <div class="item">
-                    <label for="phone">Tél :</label>
-                    <input id="phone" value="+33 6 00 00 00 00" style="width: 7rem; flex-grow: 0;" />
-                </div>
-                <div class="item">
-                    <label for="mail">Mél :</label>
-                    <input id="mail" value="arbitre@tournoi.fr" />
+                    <label for="writer-address">Adresse postale :</label>
+                    <input id="writer-address" value="" />
                 </div>
             </div>
             <div class="grid" style="grid-template-columns: 1fr;">
@@ -50,9 +62,42 @@
                 </div>
             </div>
         </section>
+        <h2>Organisation</h2>
+        <section>
+            <div class="grid" style="grid-template-columns: 1fr 7fr 1fr 7fr;">
+                <div class="item">
+                    <label for="organiser-name">Nom :</label>
+                </div>
+                <div class="item {% if not event.organiser_name %}error{% endif %}">
+                    <div class="error-info">Le nom de l'organisation n'est pas défini (la définition de l'organisation se fait dans la configuration de l'évènement).</div>
+                    <input id="organiser-name" value="{{ event.organiser_name or '' }}" />
+                </div>
+                <div class="item">
+                    <label for="organiser-home-page">Site web :</label>
+                </div>
+                <div class="item {% if not event.organiser_home_page %}error{% endif %}">
+                    <div class="error-info">Le site web de l'organisation n'est pas défini (la définition de l'organisation se fait dans la configuration de l'évènement).</div>
+                    <input id="organiser-home-page" value="{{ event.organiser_home_page or '' }}" />
+                </div>
+                <div class="item">
+                    <label for="organiser-director">Direction :</label>
+                </div>
+                <div class="item {% if not event.organiser_director %}error{% endif %}">
+                    <div class="error-info">Le·la directeur·ice de l'organisation n'est pas défini (la définition de l'organisation se fait dans la configuration de l'évènement).</div>
+                    <input id="organiser-director" value="{{ event.organiser_director or '' }}" />
+                </div>
+                <div class="item">
+                    <label for="organiser-email">Mél :</label>
+                </div>
+                <div class="item {% if not event.organiser_email %}error{% endif %}">
+                    <div class="error-info">Le mél de l'organisation n'est pas défini (la définition de l'organisation se fait dans la configuration de l'évènement).</div>
+                    <input id="organiser-email" value="{{ event.organiser_email or '' }}" />
+                </div>
+            </div>
+        </section>
         <h2>Caractéristiques du tournoi</h2>
         <section>
-            <div class="grid" style="grid-template-columns: 1fr 3.5fr;">
+            <div class="grid" style="grid-template-columns: 1fr 3fr;">
                 <div class="item">
                     <label for="event-name">Nom de l'évènement :</label>
                 </div>
@@ -60,10 +105,17 @@
                     <input id="event-name" value="{{ event_name }}" />
                 </div>
                 <div class="item">
-                    <label for="tournament-ffe-id">Numéro d'homologation FFE :</label>
+                    <label for="tournaments-ffe-id">Numéro d'homologation FFE :</label>
                 </div>
-                <div class="item">
-                    <input id="tournament-ffe-id" value="{{ ffe_ids }}" />
+                <div class="item {% if not ffe_ids %}error{% endif %}">
+                    <div class="error-info">
+                        {% if tournaments|length > 1 %}
+                            Les numéros d'homologation des tournois ne sont pas définis.
+                        {% else %}
+                            Le numéro d'homologation du tournoi n'est pas défini.
+                        {% endif %}
+                    </div>
+                    <input id="tournaments-ffe-id" value="{{ ffe_ids }}" />
                 </div>
                 <div class="item">
                     <label for="event-date">Date(s) de l'évènement :</label>
@@ -74,31 +126,35 @@
                 <div class="item">
                     <label for="location">Lieu (commune, département, ligue) :</label>
                 </div>
-                <div class="item">
+                <div class="item {% if not location %}error{% endif %}">
+                    <div class="error-info">
+                        {% if tournaments|length > 1 %}
+                            Les lieux des tournois ne sont pas définis (celui de l'évènement non plus).
+                        {% else %}
+                            Le lieu du tournoi n'est pas défini (celui de l'évènement non plus).
+                        {% endif %}
+                    </div>
                     <input id="location" value="{{ location }}" />
                 </div>
-            </div>
-            <div class="grid" style="grid-template-columns: 1fr;">
-                <div class="item">
-                    <label>Nom et coordonnées de l'organisateur·ice : TODO replace by a textarea</label>
-                </div>
-                {% for i in range(2) %}
-                    <div class="item">
-                        <input id="organiser-{{ i }}" value="{% if organisers|length > i %}{{ organisers[i].last_name }} {{ organisers[i].first_name }}{% endif %}" style="margin-left: 0;" />
-                    </div>
-                {% endfor %}
-            </div>
-            <div class="grid" style="grid-template-columns: 1fr 4fr;">
                 <div class="item">
                     <label for="rounds">Nombre de rondes :</label>
+                </div>
+                <div class="item">
                     <input id="rounds" value="{{ rounds }}" style="width: 1rem; flex-grow: 0; text-align: right;" />
                 </div>
                 <div class="item">
                     <label for="time-control">cadence :</label>
+                </div>
+                <div class="item {%if not time_control %}error{% endif %}">
+                    <div class="error-info">
+                        {% if tournaments|length > 1 %}
+                            La cadence des tournois n'est pas définie.
+                        {% else %}
+                            La cadence du tournoi n'est pas définie.
+                        {% endif %}
+                    </div>
                     <input id="time-control" value="{{ time_control }}" />
                 </div>
-            </div>
-            <div class="grid" style="grid-template-columns: 1fr 7fr;">
                 <div class="item">
                     <label for="pairing">Type d'appariement :</label>
                 </div>
@@ -148,23 +204,34 @@
                 </div>
                 <div class="item"></div>
             </div>
-            <div class="grid" style="grid-template-columns: 1fr;">
+            <div class="grid" style="grid-template-columns: 1fr 3fr;">
                 <div class="item">
                     <label for="prizes-sharing">Système de répartition des prix :</label>
+                </div>
+                <div class="item">
                     <input id="prizes-sharing" value="{{ prizes_sharing }}" />
                 </div>
                 <div class="item">
                     <label for="prizes-total">Montant total des prix distribués :</label>
+                </div>
+                <div class="item">
                     <input id="prizes-total" value="{{ prizes_total }}" style="width: 3.5rem; flex-grow: 0; text-align: right;" />€
                 </div>
             </div>
             <div class="grid" style="grid-template-columns: 1fr 1fr;">
                 <div class="item">
-                    <label>Nom, prénom et titre des arbitres : TODO replace by a textarea</label>
+                    <label>Nom, prénom et titre des arbitres :</label>
                 </div>
                 <div class="item"></div>
                 {% for i in range(10) %}
-                    <div class="item">
+                    <div class="item error">
+                        <div class="error-info">
+                            TODO
+                            <ul>
+                                <li>Add the FFE licence number and the arbiter level</li>
+                                <li>Replace the inputs by a textarea</li>
+                            </ul>
+                        </div>
                         <input id="deputy-{{ i }}" value="{% if arbiters|length > i %}{{ arbiters[i].last_name }} {{ arbiters[i].first_name }} TODO Ajouter la licence AFJ/AFC/AFO1/AFO2/AFE1/AFE2{% endif %}" />
                     </div>
                 {% endfor %}
@@ -200,11 +267,11 @@
             RAPPORT TECHNIQUE : PROCÈS-VERBAL DU TOURNOI
         </h1>
         <h2>Dans ce formulaire, l’arbitre indiquera tout événement qu’il lui sera nécessaire de signaler tels que les anomalies ayant pu survenir lors des appariements et ayant nécessité une intervention de sa part, les signalements de forfaits, les réclamations de joueurs et tout élément qu’il jugerait nécessaire de détailler pour ses archives personnelles ou dans le cadre d’une consultation de ce rapport par une instance de la fédération. Dans le cadre d’un tournoi sans aucun incident, ce formulaire devra être joint au rapport technique avec une annotation indiquant que l’arbitre n’a rien à signaler.</h2>
-        <h2>TODO: replace by a textarea</h2>
         <section>
             <div class="grid" style="grid-template-columns: 1fr;">
                 {% for i in range(35) %}
-                    <div class="item">
+                    <div class="item error">
+                        <div class="error-info">Replace the inputs by a textarea</div>
                         <input value="{% if loop.first %}Rien à signaler.{% endif %}" />
                     </div>
                 {% endfor %}

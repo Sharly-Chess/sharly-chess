@@ -7,52 +7,7 @@
             <br/>
             RAPPORT TECHNIQUE : SIGNALEMENT D'UN·E JOUEUR·EUSE
         </h1>
-        <h2>Identification de l'arbitre</h2>
-        <section>
-            <div class="grid" style="grid-template-columns: 1fr 7fr;">
-                <div class="item">
-                    <label for="arbiter-full-name">Nom et prénom :</label>
-                </div>
-                <div class="item">
-                    <input id="arbiter-full-name" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
-                </div>
-                <div class="item">
-                    <label for="arbiter-ffe-licence-number">Numéro de licence :</label>
-                </div>
-                <div class="item">
-                    <input id="arbiter-ffe-licence-number" value="TODO" />
-                </div>
-                <div class="item">
-                    <label for="arbiter-level">Titre :</label>
-                </div>
-                <div class="item">
-                    <input id="arbiter-level" value="AFC/AFO1/AFO2/AFE1/AFE2" />
-                </div>
-            </div>
-        </section>
-        <h2>Identification du tournoi</h2>
-        <section>
-            <div class="grid" style="grid-template-columns: 1fr 7fr;">
-                <div class="item">
-                    <label for="tournament">Nom :</label>
-                </div>
-                <div class="item">
-                    <input id="tournament" value="{{ tournament_name }}" />
-                </div>
-                <div class="item">
-                    <label for="tournament-ffe-id">Numéro d'homologation FFE :</label>
-                </div>
-                <div class="item">
-                    <input id="tournament-ffe-id" value="{{ player.tournament.plugin_data.ffe.ffe_id or '' }}" />
-                </div>
-                <div class="item">
-                    <label for="event-date">Dates du tournoi :</label>
-                </div>
-                <div class="item">
-                    <input id="event-date" value="{{ tournament_date }}" />
-                </div>
-            </div>
-        </section>
+        {% include 'ffe_t6_t7_header.html' %}
         <h2>Identification du·de la licencié·e</h2>
         <div>Un formulaire regroupant plusieurs joueur·euses ne sera pas accepté.</div>
         <section>
@@ -94,17 +49,20 @@
                 <input id="reason-5" type="checkbox" />
                 Autre
             </div>
-            <h3 style="text-align: center;">Description des faits : TODO replace by a textarea</h3>
+            <h3 style="text-align: center;">Description des faits :</h3>
             <div class="grid" style="grid-template-columns: 1fr;">
                 {% for i in range(5) %}
-                    <div class="item">
-                        <input id="description-{{ i }}" value="" style="margin-left: 0"/>
+                    <div class="item error">
+                        <div class="error-info">TODO Replace all these inputs by a textarea</div>
+                        <input id="reason-{{ i }}" value="" style="margin-left: 0;" />
                     </div>
                 {% endfor %}
             </div>
             <h3 style="text-align: center;">Pièces jointes au signalement :</h3>
-            <div>L’arbitre effectuant ce signalement s’engage à fournir toute information ou document demandé par la direction juridique pouvant permettre une meilleure compréhension des faits.</div>
             <div class="grid" style="grid-template-columns: 1fr;">
+                <div class="item">
+                    <label for="enclosed" style="white-space: normal;">L’arbitre effectuant ce signalement s’engage à fournir toute information ou document demandé par la direction juridique pouvant permettre une meilleure compréhension des faits.</label>
+                </div>
                 <div class="item">
                     <input id="enclosed" value="" style="margin-left: 0"/>
                 </div>

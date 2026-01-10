@@ -509,10 +509,12 @@ class FFET5Type(FFEPlayerDocumentType):
         return (datetime.now() + timedelta(days=2)).strftime('%d/%m/%Y')
 
     @property
-    def player_first_forfeit_round(self) -> str:
-        for round_ in range(1, self.player.tournament.rounds + 1):
-            if self.player.pairings[round_].forfeit_loss:
-                return str(round_)
+    def player_last_forfeit_round(self) -> str:
+        for round_ in range(self.player.tournament.rounds, 0, -1):
+            if self.player.pairings[round_].paired:
+                if self.player.pairings[round_].forfeit_loss:
+                    return str(round_)
+                break
         return ''
 
     def template_context(
@@ -521,7 +523,7 @@ class FFET5Type(FFEPlayerDocumentType):
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
             'response_date': self.response_date,
-            'player_first_forfeit_round': self.player_first_forfeit_round,
+            'player_last_forfeit_round': self.player_last_forfeit_round,
         }
 
 

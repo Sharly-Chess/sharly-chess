@@ -64,6 +64,31 @@
                 accent-color: black;
                 width: auto;
             }
+            .error {
+                /* color: red; */
+                position: relative;
+            }
+            .error input {
+                color: red;
+                border-color: red;
+            }
+            .error-info {
+                display: none;
+                color: black;
+            }
+            .error:hover .error-info {
+                display: block;
+                position: absolute;
+                z-index: 10;
+                min-width: 200px;
+                max-width: 300px;
+                background-color: white;
+                border: 1px solid #000;
+                top: 1.5rem;
+                left: 1rem;
+                padding: 0.5rem;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+            }
             .break-after {
                 page-break-after: always;
                 page-break-inside: avoid;
@@ -74,6 +99,13 @@
                 margin-top: 4rem;
                 border-top: 2px solid black;
                 padding-bottom: 4rem;
+            }
+            .info {
+                text-align: center;
+                font-style: italic;
+                font-size: 1rem;
+                border-bottom: 2px solid black;
+                margin-bottom: 1rem;
             }
             @media print {
                 body {
@@ -89,6 +121,9 @@
                 }
                 .item input {
                     border: none;
+                }
+                .error input {
+                    color: black;
                 }
                 .spacer, .heading, .info {
                     display: none;
