@@ -5,6 +5,7 @@ from typing import Any, TYPE_CHECKING
 
 from common.exception import OptionError
 from common.i18n import _
+from data.access_levels.client import Client
 from data.account import Account
 from data.event import Event
 from data.player import TournamentPlayer
@@ -62,7 +63,11 @@ class FFEDocumentType(IdentifiableEntity, ABC):
 
     @cached_property
     def event(self) -> Event:
-        return self.ffe_document.event
+        return self.ffe_document.get_event()
+
+    @cached_property
+    def client(self) -> Client:
+        return self.ffe_document.get_client()
 
     @property
     def date(self) -> str:
@@ -103,7 +108,7 @@ class FFEDocumentType(IdentifiableEntity, ABC):
     @cached_property
     def writer(self) -> Account | None:
         """Returns the account of the document writer, if any."""
-        account: Account = self.ffe_document.client.account
+        account: Account = self.client.account
         if not account.administrator and not account.anonymous:
             return account
         if self.chief_arbiters:

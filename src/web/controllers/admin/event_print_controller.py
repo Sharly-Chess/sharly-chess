@@ -79,14 +79,14 @@ class EventPrintController(BaseEventAdminController):
         data = default_data | (data or {})
         containers_by_document: dict[str, list[str]] = {'': []} | {
             document.id: [option.container_id for option in document.default_options()]
-            for document in PrintDocumentManager(web_context.client).objects()
+            for document in PrintDocumentManager(event).objects()
         }
         current_document_option_ids = []
         if document_id := data.get('document', None):
             current_document_option_ids = [
                 option.id
-                for option in PrintDocumentManager(web_context.client)
-                .get_type(document_id)(web_context.client)
+                for option in PrintDocumentManager(event)
+                .get_type(document_id)()
                 .default_options()
             ]
         return {
@@ -95,7 +95,7 @@ class EventPrintController(BaseEventAdminController):
                 allowed_tournaments
             ),
             'allowed_tournaments': allowed_tournaments,
-            'document_options': PrintDocumentManager(web_context.client).options(),
+            'document_options': PrintDocumentManager(event).options(),
             'current_document_option_ids': current_document_option_ids,
             'print_options': print_options,
             'containers_by_document': containers_by_document,
@@ -164,13 +164,13 @@ class EventPrintController(BaseEventAdminController):
         document_type: type[PrintDocument] | None = None
         field = 'document'
         try:
-            document_type = PrintDocumentManager(web_context.client).get_type(
+            document_type = PrintDocumentManager(event).get_type(
                 WebContext.form_data_to_str(flat_data, field) or ''
             )
         except KeyError:
             errors[field] = _('Please choose the document.')
 
-        if document_type is not None:
+        if document_type:
             options: list[PrintOption] = []
             for option in document_type(web_context.client).default_options():
                 value = WebContext.form_data_to_value(flat_data, option.id, option.type)
@@ -226,7 +226,7 @@ class EventPrintController(BaseEventAdminController):
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         event = web_context.get_admin_event()
-        document_type = PrintDocumentManager(web_context.client).get_type(document)
+        document_type = PrintDocumentManager(event).get_type(document)
         option_data: dict[str, str] = {}
         if options:
             for option in urllib.parse.unquote(options).split('|'):

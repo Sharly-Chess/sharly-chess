@@ -27,14 +27,10 @@ from data.print_documents.player_sorters import PlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
 from plugins.manager import plugin_manager
-from utils.entity import (
-    EntityManager,
-    ClientBoundEntityManager,
-    EventBoundEntityManager,
-)
+from utils.entity import EventBoundEntityManager, EntityManager
 
 
-class PrintDocumentManager(ClientBoundEntityManager[PrintDocument]):
+class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
     @override
     def entity_types(self) -> list[type[PrintDocument]]:
         print_documents = [
@@ -54,14 +50,10 @@ class PrintDocumentManager(ClientBoundEntityManager[PrintDocument]):
             documents.QRCodePrintDocument,
             documents.PlaceCardPrintDocument,
         ]
-        plugin_manager.hook_for_event(self.client.event, 'insert_print_document')(
+        plugin_manager.hook_for_event(self.event, 'insert_print_document')(
             print_documents=print_documents
         )
         return print_documents
-
-    @override
-    def objects(self) -> list[PrintDocument]:
-        return [type_(self.client) for type_ in self.entity_types()]
 
 
 class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
