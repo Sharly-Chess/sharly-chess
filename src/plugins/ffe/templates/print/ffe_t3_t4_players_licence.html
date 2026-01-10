@@ -1,0 +1,103 @@
+{% extends 'ffe_document_base.html' %}
+
+{% block body %}
+    {% for player in players %}
+        {% if not loop.first %}
+            <div class="spacer"></div>
+        {% endif %}
+        <form class="break-after t{{ document.ffe_form_number }}">
+            <h1>
+                <span style="font-style: italic;">Formulaire T{{ document.ffe_form_number }}/DNA</span>
+                <br/>
+                RAPPORT TECHNIQUE : ATTESTATION SUR L'HONNEUR – LICENCE {{ document.ffe_licence.short_name }}
+            </h1>
+            <section>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    <div class="item">
+                        <label>Je soussigné</label>
+                    </div>
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr 3fr 5fr;">
+                    <div class="item">
+                        <label for="player-last-name">Nom :</label>
+                    </div>
+                    <div class="item">
+                        <input id="player-last-name" value="{{ player.last_name }}" />
+                    </div>
+                    <div class="item"></div>
+                    <div class="item">
+                        <label for="player-first-name">Prénom :</label>
+                    </div>
+                    <div class="item">
+                        <input id="player-first-name" value="{{ player.first_name }}" />
+                    </div>
+                    <div class="item"></div>
+                </div>
+                <div>
+                    certifie sur l'honneur que je suis titulaire d'une licence {{ document.ffe_licence.short_name }} pour la saison en cours.
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr;">
+                    <div class="item">
+                        <label>Adresse :</label>
+                    </div>
+                    {% for i in range(2) %}
+                        <div class="item">
+                            <input id="player-address-{{ player.id }}" style="margin-left: 0"/>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr 3fr 5fr;">
+                    <div class="item">
+                        <label for="player-mail">Mél :</label>
+                    </div>
+                    <div class="item">
+                        <input id="player-mail" value="{{ player.mail }}" />
+                    </div>
+                    <div class="item"></div>
+                    <div class="item">
+                        <label for="player-phone">Tél :</label>
+                    </div>
+                    <div class="item">
+                        <input id="player-phone" value="{{ player.phone }}" />
+                    </div>
+                    <div class="item"></div>
+                    <div class="item">
+                        <label for="player-ffe-licence-number">N° de licence :</label>
+                    </div>
+                    <div class="item">
+                        <input id="player-ffe-licence-number" value="{{ player.plugin_data.ffe.ffe_licence_number or '' }}" />
+                    </div>
+                    <div class="item"></div>
+                    <div class="item">
+                        <label for="player-club">Club :</label>
+                    </div>
+                    <div class="item">
+                        <input id="player-club" value="{{ player.club }}" />
+                    </div>
+                    <div class="item"></div>
+                    <div class="item">
+                        <label for="player-league">Ligue :</label>
+                    </div>
+                    <div class="item">
+                        <input id="player-league" value="{{ player.plugin_data.ffe.league }}" />
+                    </div>
+                    <div class="item"></div>
+                </div>
+                <div class="grid" style="grid-template-columns: 3fr 1fr 1fr 3fr; margin-top: 3rem; margin-bottom: 5rem;">
+                    <div class="item">
+                        <label for="location">Fait à</label>
+                        <input id="location" value="{{ location }}" />
+                    </div>
+                    <div class="item">
+                        <label for="date">le</label>
+                        <input id="date" value="{{ date }}" />
+                    </div>
+                    <div class="item"></div>
+                    <div class="item">
+                        <label>Signature :</label>
+                    </div>
+                </div>
+            </section>
+        </form>
+    {% endfor %}
+{% endblock %}

@@ -1,11 +1,5 @@
-from abc import ABC
-from datetime import datetime, timedelta
-from typing import Any, override, Iterator
+from typing import Any
 
-from common.exception import OptionError
-from common.i18n import _
-from data.account import Account
-from data.player import TournamentPlayer
 from data.print_documents import PrintOption
 from data.print_documents.documents import (
     PrintDocument,
@@ -16,377 +10,53 @@ from data.print_documents.options import (
     TournamentPrintOption,
     PlayerPrintOption,
 )
-from plugins.ffe.print_documents.ffe_options import FFELicencePrintOption
-from plugins.ffe.utils import FFEUtils, PlayerFFELicence
-from utils.enum import RoleType, PlayerRatingType
-from utils.time_control import trf25_to_human_readable
+from plugins.ffe.print_documents.ffe_managers import FFEDocumentTypeManager
+from plugins.ffe.print_documents.ffe_options import (
+    FFELicencePrintOption,
+    FFEDocumentTypePrintOption,
+)
+from plugins.ffe.print_documents.ffe_types import FFEDocumentType
+from plugins.ffe.utils import PlayerFFELicence
 
 
-class FFEPrintDocument(PrintDocument, ABC):
-    @property
-    def template_name(self) -> str:
-        return f'/print/{self.static_id().replace("-", "_")}.html'
-
-    @property
-    def ffe_form_number(self) -> int | None:
-        """Return the number of the FFE form associated with the document."""
-        return None
-
-
-class FFEEventReportPrintDocument(FFEPrintDocument):
+class FFEPrintDocument(PrintDocument):
     @staticmethod
     def static_id() -> str:
-        return 'ffe-tournament-report'
+        return 'ffe-document'
 
     @staticmethod
     def static_name() -> str:
-        return 'FFE Rapport technique T1/T2'
-
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return [
-            TournamentsPrintOption,
-        ]
+        return 'Documents FFE'
 
     @property
     def title(self) -> str:
-        return self.static_name()
+        return self.ffe_document_type.title
 
     @property
-    def template_name(self) -> str:
-        return 'print/ffe_tournament_report.html'
-
-    @property
-    def template_context(self) -> dict[str, Any]:
-        accounts_by_role: dict[RoleType, set[Account]] = {
-            role_type: set()
-            for role_type in [
-                RoleType.CHIEF_ARBITER,
-                RoleType.DEPUTY_ARBITER,
-                RoleType.ORGANISER,
-            ]
-        }
-        assert self.event is not None
-        for account_id, account in self.event.accounts_by_id.items():
-            if not account.administrator and not account.anonymous:
-                if account.roles:
-                    for role in account.roles:
-                        if role.tournament_ids is not None:
-                            for tournament_id in role.tournament_ids:
-                                if tournament_id in (
-                                    tournament.id for tournament in self.tournaments
-                                ):
-                                    accounts_by_role[role.role_type].add(account)
-        chief_arbiters: list[Account] = sorted(
-            accounts_by_role[RoleType.CHIEF_ARBITER], key=lambda a: a.full_name
+    def ffe_document_type(self) -> FFEDocumentType:
+        return FFEDocumentTypeManager().get_object(
+            self._get_option(FFEDocumentTypePrintOption).value
         )
-        deputy_arbiters: list[Account] = sorted(
-            (
-                account
-                for account in accounts_by_role[RoleType.DEPUTY_ARBITER]
-                if account not in chief_arbiters
-            ),
-            key=lambda a: a.full_name,
-        )
-        organisers: list[Account] = sorted(
-            accounts_by_role[RoleType.ORGANISER], key=lambda a: a.full_name
-        )
-        writer: Account | None = None
-        if chief_arbiters:
-            writer = chief_arbiters[0]
-        elif deputy_arbiters:
-            writer = deputy_arbiters[0]
-        event_date: str = self.event.start_date.strftime('%d/%m/%Y')
-        if self.event.start_date != self.event.stop_date:
-            event_date += f' - {self.event.stop_date.strftime("%d/%m/%Y")}'
-        event_name: str = self.event.name
-        if len(self.tournaments) != len(self.event.tournaments):
-            event_name += (
-                f' ({", ".join(tournament.name for tournament in self.tournaments)})'
-            )
-        prizes_total: float = 0.0
-        for tournament in self.tournaments:
-            for prize_group in tournament.prize_groups:
-                for category in prize_group.categories:
-                    for prize in category.prizes:
-                        if prize.is_monetary:
-                            prizes_total += prize.value
-        sharing_systems: set[str] = set()
-        for tournament in self.tournaments:
-            for prize_group in tournament.prize_groups:
-                for category in prize_group.categories:
-                    if category.is_main:
-                        sharing_systems.add(category.prize_sharing.name)
-        prizes_sharing: str = ', '.join(sharing_systems)
-        return {
-            'event': self.event,
-            'writer': writer,
-            'event_date': event_date,
-            'event_name': event_name,
-            'arbiters': chief_arbiters + deputy_arbiters,
-            'organisers': organisers,
-            'tournament_ffe_ids': ', '.join(
-                str(FFEUtils.get_tournament_plugin_data(tournament).ffe_id)
-                for tournament in self.tournaments
-                if FFEUtils.get_tournament_plugin_data(tournament).ffe_id
-            ),
-            'rounds': '/'.join(
-                sorted(set(str(tournament.rounds) for tournament in self.tournaments))
-            ),
-            'time_control': ', '.join(
-                sorted(
-                    set(
-                        trf25_to_human_readable(tournament.time_control_trf25)
-                        for tournament in self.tournaments
-                    )
-                )
-            ),
-            'pairing': ', '.join(
-                sorted(
-                    set(
-                        f'{tournament.pairing_system.name} - {tournament.pairing_variation.name}'
-                        for tournament in self.tournaments
-                    )
-                )
-            ),
-            'tie_breaks': ' '.join(
-                sorted(
-                    set(
-                        ', '.join(
-                            tie_break.acronym for tie_break in tournament.tie_breaks
-                        )
-                        for tournament in self.tournaments
-                    )
-                )
-            ),
-            'fide_player_count': sum(
-                len(
-                    [
-                        player
-                        for player in tournament.tournament_players_by_id.values()
-                        if player.rating_type == PlayerRatingType.FIDE
-                    ]
-                )
-                for tournament in self.tournaments
-            ),
-            'player_count': sum(
-                tournament.player_count for tournament in self.tournaments
-            ),
-            'prizes_total': f'{prizes_total:.2f}',
-            'prizes_sharing': prizes_sharing,
-            'date': datetime.now().strftime('%d/%m/%Y'),
-        }
-
-
-class FFETournamentPrintDocument(FFEPrintDocument, ABC):
-    @property
-    def writer(self) -> Account | None:
-        accounts_by_role: dict[RoleType, set[Account]] = {
-            role_type: set()
-            for role_type in [
-                RoleType.CHIEF_ARBITER,
-                RoleType.DEPUTY_ARBITER,
-            ]
-        }
-        assert self.event is not None
-        for account_id, account in self.event.accounts_by_id.items():
-            if not account.administrator and not account.anonymous:
-                if account.roles:
-                    for role in account.roles:
-                        if (
-                            role.role_type
-                            in [
-                                RoleType.CHIEF_ARBITER,
-                                RoleType.DEPUTY_ARBITER,
-                            ]
-                            and role.tournament_ids is not None
-                        ):
-                            for tournament_id in role.tournament_ids:
-                                if tournament_id in (
-                                    tournament.id for tournament in self.tournaments
-                                ):
-                                    accounts_by_role[role.role_type].add(account)
-        chief_arbiters: list[Account] = sorted(
-            accounts_by_role[RoleType.CHIEF_ARBITER], key=lambda a: a.full_name
-        )
-        if chief_arbiters:
-            return chief_arbiters[0]
-        deputy_arbiters: list[Account] = sorted(
-            (
-                account
-                for account in accounts_by_role[RoleType.DEPUTY_ARBITER]
-                if account not in chief_arbiters
-            ),
-            key=lambda a: a.full_name,
-        )
-        if deputy_arbiters:
-            return deputy_arbiters[0]
-        return None
-
-    @property
-    def template_context(self) -> dict[str, Any]:
-        return {
-            'writer': self.writer,
-        }
-
-
-class FFEPlayersPrintDocument(FFETournamentPrintDocument):
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return [
-            TournamentPrintOption,
-            PlayersPrintOption,
-        ]
-
-    @property
-    def _player_ids(self) -> Iterator[int]:
-        return self._get_option(PlayersPrintOption).value
-
-    @property
-    def players(self) -> Iterator[TournamentPlayer]:
-        return (
-            self.tournament.tournament_players_by_id[player_id]
-            for player_id in self._player_ids
-        )
-
-    @property
-    def template_context(self) -> dict[str, Any]:
-        assert self.event is not None
-        return super().template_context | {
-            'players': self.players,
-            'date': self.event.start_date.strftime('%d/%m/%Y'),
-            'location': self.event.location,
-        }
-
-    @override
-    def validate_options(self):
-        super().validate_options()
-        if not self._player_ids:
-            raise OptionError(
-                _('Please select at least one player.'),
-                self._get_option(PlayersPrintOption),
-            )
-
-
-class FFEPlayersLicencePrintDocument(FFEPlayersPrintDocument):
-    @classmethod
-    def static_id(cls) -> str:
-        return 'ffe-players-licence'
-
-    @classmethod
-    def static_name(cls) -> str:
-        return 'FFE Attestations de licence'
-
-    @staticmethod
-    def available_options() -> list[type[PrintOption]]:
-        return FFEPlayersPrintDocument.available_options() + [
-            FFELicencePrintOption,
-        ]
-
-    @property
-    def title(self) -> str:
-        return f'FFE Attestations de licence {self.ffe_licence.short_name}'
-
-    @property
-    def template_name(self) -> str:
-        return 'print/ffe_players_licence.html'
 
     @property
     def ffe_licence(self) -> PlayerFFELicence:
-        return self._get_option(FFELicencePrintOption).ffe_licence
+        return PlayerFFELicence(self._get_option(FFELicencePrintOption).value)
 
     @property
-    def ffe_form_number(self) -> int | None:
-        return self._get_option(FFELicencePrintOption).form_number
+    def template_name(self) -> str:
+        return self.ffe_document_type.get_template_name()
 
-
-class FFEPlayerPrintDocument(FFETournamentPrintDocument, ABC):
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
         return [
+            FFEDocumentTypePrintOption,
+            TournamentsPrintOption,
             TournamentPrintOption,
+            PlayersPrintOption,
+            FFELicencePrintOption,
             PlayerPrintOption,
         ]
 
     @property
-    def title(self) -> str:
-        return self.static_name()
-
-    @property
-    def player(self) -> TournamentPlayer:
-        return self.tournament.tournament_players_by_id[
-            self._get_option(PlayerPrintOption).value
-        ]
-
-    @property
-    def event_date(self) -> str:
-        assert self.event is not None
-        event_date: str = self.event.start_date.strftime('%d/%m/%Y')
-        if self.event.start_date != self.event.stop_date:
-            event_date += f' - {self.event.stop_date.strftime("%d/%m/%Y")}'
-        return event_date
-
-    @property
-    def event_name(self) -> str:
-        assert self.event is not None
-        return f'{self.event.name} - {self.player.tournament.name}'
-
-    @property
     def template_context(self) -> dict[str, Any]:
-        assert self.event is not None
-        return super().template_context | {
-            'player': self.player,
-            'date': datetime.now().strftime('%d/%m/%Y'),
-            'location': self.event.location,
-        }
-
-
-class FFEPlayerForfeitPrintDocument(FFEPlayerPrintDocument):
-    @classmethod
-    def static_id(cls) -> str:
-        return 'ffe-player-forfeit'
-
-    @classmethod
-    def static_name(cls) -> str:
-        return 'FFE Enquête forfait non justifié'
-
-    @property
-    def template_name(self) -> str:
-        return 'print/ffe_player_forfeit.html'
-
-    @property
-    def template_context(self) -> dict[str, Any]:
-        assert self.event is not None
-        return super().template_context | {
-            'response_date': (self.event.stop_date + timedelta(days=2)).strftime(
-                '%d/%m/%Y'
-            ),
-        }
-
-
-class FFEPlayerExclusionPrintDocument(FFEPlayerPrintDocument):
-    @classmethod
-    def static_id(cls) -> str:
-        return 'ffe-player-exclusion'
-
-    @classmethod
-    def static_name(cls) -> str:
-        return 'FFE Exclusion joueur·euse'
-
-    @property
-    def template_name(self) -> str:
-        return 'print/ffe_player_exclusion.html'
-
-
-class FFEPlayerReportingPrintDocument(FFEPlayerPrintDocument):
-    @classmethod
-    def static_id(cls) -> str:
-        return 'ffe-player-reporting'
-
-    @classmethod
-    def static_name(cls) -> str:
-        return 'FFE Signalement joueur·euse'
-
-    @property
-    def template_name(self) -> str:
-        return 'print/ffe_player_reporting.html'
+        return self.ffe_document_type.template_context(self)

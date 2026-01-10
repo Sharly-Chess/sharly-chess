@@ -104,6 +104,19 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
             for tournament_id in tournament_ids.split(';')
         ]
 
+    @cached_property
+    def player(self) -> TournamentPlayer:
+        return self.tournament.tournament_players_by_id[
+            self._get_option(PlayerPrintOption).value
+        ]
+
+    @cached_property
+    def players(self) -> list[TournamentPlayer]:
+        return [
+            self.tournament.tournament_players_by_id[player_id]
+            for player_id in self._get_option(PlayersPrintOption).value
+        ]
+
     @property
     def subtitle(self) -> str:
         """Subtitle of the print document."""
@@ -1180,10 +1193,6 @@ class PlaceCardPrintDocument(PrintDocument):
     @property
     def place_card_template(self) -> PlaceCardTemplate:
         return self._get_option(PlaceCardTemplatePrintOption).place_card_template
-
-    @property
-    def player_ids(self) -> list[int]:
-        return self._get_option(PlayersPrintOption).value
 
     @property
     def at_round(self) -> int:

@@ -3602,7 +3602,7 @@ msgid "Players' opponent: hidden"
 msgstr "Adversaires des joueur·euses : cachée·es"
 
 msgid "Players:"
-msgstr "Joueur·euses:"
+msgstr "Joueur·euses :"
 
 #, python-format
 msgid "Players: %(num)d"

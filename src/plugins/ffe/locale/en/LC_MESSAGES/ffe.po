@@ -320,6 +320,9 @@ msgstr ""
 msgid "Papi file"
 msgstr ""
 
+msgid "Please select at least one player."
+msgstr ""
+
 #, python-format
 msgid "Replace [%(old)s] by [%(new)s]"
 msgstr ""

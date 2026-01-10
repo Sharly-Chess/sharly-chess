@@ -57,13 +57,7 @@ from plugins.ffe.ffe_entity import (
     FfeLicenceTypeTableColumn,
 )
 from plugins.ffe.ffe_event_controller import FfeAdminEventController
-from plugins.ffe.print_documents.ffe_documents import (
-    FFEEventReportPrintDocument,
-    FFEPlayersLicencePrintDocument,
-    FFEPlayerForfeitPrintDocument,
-    FFEPlayerExclusionPrintDocument,
-    FFEPlayerReportingPrintDocument,
-)
+from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
 from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
@@ -77,7 +71,10 @@ from plugins.ffe.ffe_tournament_importers import (
     PapiTournamentImporter,
 )
 from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
-from plugins.ffe.print_documents.ffe_options import FFELicencePrintOption
+from plugins.ffe.print_documents.ffe_options import (
+    FFELicencePrintOption,
+    FFEDocumentTypePrintOption,
+)
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.ffe.utils import (
     FFE_DEFAULT_UPLOAD_DELAY,
@@ -863,23 +860,12 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_print_document(self, print_documents: list[type['PrintDocument']]):
-        print_documents.extend(
-            [
-                FFEEventReportPrintDocument,
-                FFEPlayersLicencePrintDocument,
-                FFEPlayerForfeitPrintDocument,
-                FFEPlayerExclusionPrintDocument,
-                FFEPlayerReportingPrintDocument,
-            ]
-        )
+        print_documents.append(FFEPrintDocument)
 
     @hookimpl
     def insert_print_option(self, print_options: list[type['PrintOption']]):
-        print_options.extend(
-            [
-                FFELicencePrintOption,
-            ]
-        )
+        print_options.insert(0, FFELicencePrintOption)
+        print_options.insert(0, FFEDocumentTypePrintOption)
 
     @hookimpl
     def alter_print_and_screen_player_columns(
