@@ -2268,7 +2268,7 @@ msgid "Half-Point Bye attributed to player [{player}]."
 msgstr "Un demi-point joker a été attribué au·à la joueur·euse [{player}]."
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
-msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risque qu'un prix ne soit pas attribué."
+msgstr "Avoir un nombre de joueur·euses et de prix proches présente un risque qu'un prix ne soit pas attribué."
 
 msgid "Hide"
 msgstr "Cacher"
@@ -5550,7 +5550,7 @@ msgid "Win"
 msgstr "Victoire"
 
 msgid "With less players than prizes, some prizes will not be attributed."
-msgstr "Avec moins de joueur·euses que de prix, certains prix vont ne pas être attribués."
+msgstr "Avec moins de joueur·euses que de prix, certains prix ne vont pas être attribués."
 
 msgid "Withdraw from tournament"
 msgstr "Forfait définitif"
