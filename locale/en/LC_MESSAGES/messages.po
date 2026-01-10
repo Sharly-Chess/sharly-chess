@@ -5932,6 +5932,11 @@ msgid_plural "{count} half-points"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "{count} hour could not be moved (time conflict)."
+msgid_plural "{count} hours could not be moved (time conflict)."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] ""

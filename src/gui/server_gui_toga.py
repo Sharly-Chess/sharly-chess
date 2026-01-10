@@ -259,7 +259,10 @@ def pil_to_toga_image(pil_img: PILImage.Image) -> toga.Image:
 class SharlyChessServerToga(toga.App):
     """Main Toga GUI app for Sharly Chess server."""
 
+    instance: Optional['SharlyChessServerToga'] = None
+
     def __init__(self, *, debug: bool = False, port: int | None = None):
+        SharlyChessServerToga.instance = self
         icon_file_name: str | None = None
         match sys.platform:
             case 'win32':
@@ -463,6 +466,23 @@ class SharlyChessServerToga(toga.App):
         assert isinstance(self.main_window, toga.MainWindow)
         self.main_window.show()
         self.compact_size = self.main_window.size
+
+    def update_from_sharly_chess_config(self):
+        sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
+        assert self.launch_browser_switch is not None
+        self.launch_browser_switch.value = sharly_chess_config.launch_browser
+        assert self.log_level_select is not None and isinstance(
+            self.log_level_select.items, ListSource
+        )
+        self.log_level_select.value = self.log_level_select.items.find(
+            data={'level': sharly_chess_config.console_log_level}
+        )
+        assert self.color_switch is not None
+        self.color_switch.value = sharly_chess_config.console_color
+        assert self.show_level_switch is not None
+        self.show_level_switch.value = sharly_chess_config.console_show_level
+        assert self.show_time_switch is not None
+        self.show_time_switch.value = sharly_chess_config.console_show_date
 
     def on_running(self):
         # Logging handler
