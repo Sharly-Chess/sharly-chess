@@ -59,7 +59,7 @@ class FFEDocumentType(IdentifiableEntity, ABC):
 
     @cached_property
     def event(self) -> Event:
-        return self.ffe_document.get_event()
+        return self.ffe_document.event
 
     @property
     def date(self) -> str:
@@ -100,7 +100,9 @@ class FFEDocumentType(IdentifiableEntity, ABC):
     @cached_property
     def writer(self) -> Account | None:
         """Returns the account of the document writer, if any."""
-        # TODO use the request to get the connected account
+        account: Account = self.ffe_document.client.account
+        if not account.administrator and not account.anonymous:
+            return account
         if self.chief_arbiters:
             return self.chief_arbiters[0]
         if self.deputy_arbiters:

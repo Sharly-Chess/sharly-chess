@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.access_levels.client import Client
 
 
 class IdentifiableEntity(ABC):
@@ -83,3 +84,8 @@ class EntityManager[T: IdentifiableEntity](ABC):
 class EventBoundEntityManager[T: IdentifiableEntity](EntityManager[T], ABC):
     def __init__(self, event: Optional['Event']):
         self.event = event
+
+
+class ClientBoundEntityManager[T: IdentifiableEntity](EntityManager[T], ABC):
+    def __init__(self, client: 'Client'):
+        self.client: Client = client

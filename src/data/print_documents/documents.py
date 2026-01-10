@@ -10,6 +10,8 @@ from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
+from data.access_levels.actions import AuthAction
+from data.access_levels.client import Client
 from data.board import Board
 from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
 from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
@@ -57,21 +59,19 @@ logger: logging.Logger = get_logger()
 class PrintDocument(OptionHandler[PrintOption], ABC):
     def __init__(
         self,
-        event: Event | None = None,
+        client: Client,
         options: list[PrintOption] | None = None,
-        allowed_tournaments: list[Tournament] | None = None,
     ):
-        self.event = event
+        self.client: Client = client
         super().__init__(options)
-        self.allowed_tournaments = allowed_tournaments
 
-    def get_event(self) -> Event:
-        assert self.event is not None
-        return self.event
+    @property
+    def event(self) -> Event:
+        assert self.client.event is not None
+        return self.client.event
 
     def get_allowed_tournaments(self) -> list[Tournament]:
-        assert self.allowed_tournaments is not None
-        return self.allowed_tournaments
+        return self.client.allowed_tournaments_for_action(AuthAction.PRINT)
 
     @override
     def default_options(self) -> list[PrintOption]:
@@ -89,18 +89,17 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         """The tournament for which the document is printed."""
         tournament_id = self._get_option(TournamentPrintOption).value
         if tournament_id:
-            return self.get_event().tournaments_by_id[tournament_id]
+            return self.event.tournaments_by_id[tournament_id]
         return self.tournaments[0]
 
     @property
     def tournaments(self) -> list[Tournament]:
         """The tournaments for which the document is printed."""
-        event = self.get_event()
         tournament_ids = self._get_option(TournamentsPrintOption).value
         if not tournament_ids:
             return self.get_allowed_tournaments()
         return [
-            event.tournaments_by_id[int(tournament_id)]
+            self.event.tournaments_by_id[int(tournament_id)]
             for tournament_id in tournament_ids.split(';')
         ]
 
@@ -120,10 +119,9 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
     @property
     def subtitle(self) -> str:
         """Subtitle of the print document."""
-        event = self.get_event()
         return (
-            event.name
-            if len(self.tournaments) == len(list(event.tournaments))
+            self.event.name
+            if len(self.tournaments) == len(list(self.event.tournaments))
             else ', '.join(tournament.name for tournament in self.tournaments)
         )
 
@@ -162,7 +160,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
     @property
     def ordered_split_players(self) -> dict[str, list[TournamentPlayer]]:
         splitter = self._get_option(PlayerSplitPrintOption).player_splitter
-        return splitter.split_players(self.get_event(), self.ordered_tournament_players)
+        return splitter.split_players(self.event, self.ordered_tournament_players)
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -170,7 +168,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
 
     @property
     def column_handler(self) -> PlayerColumnHandler:
-        return PlayerColumnHandler(self.get_event(), ColumnUsage.PRINT)
+        return PlayerColumnHandler(self.event, ColumnUsage.PRINT)
 
     @property
     def multiple_tournaments(self) -> bool:
@@ -219,7 +217,7 @@ class PlayerListPrintDocument(PlayerPrintDocument):
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
             player.single_tournament_player
-            for player in self.get_event().players_sorted_by_name
+            for player in self.event.players_sorted_by_name
             if player.single_tournament_player.tournament.id in tournament_ids
         ]
 
@@ -246,7 +244,7 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
             player.single_tournament_player
-            for player in self.get_event().players_sorted_by_name
+            for player in self.event.players_sorted_by_name
             if player.single_tournament_player.tournament.id in tournament_ids
         ]
 
@@ -518,7 +516,7 @@ class PairingPrintDocument(PrintDocument):
     def sub_document(self) -> PrintDocument:
         return self._get_option(
             PairingStylePrintOption
-        ).pairing_style.print_document_type(event=self.event, options=self.options)
+        ).pairing_style.print_document_type(self.client, options=self.options)
 
     @property
     def title(self) -> str:
@@ -753,7 +751,7 @@ class PrizeListPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        prize_currency = self.get_event().prize_currency
+        prize_currency = self.event.prize_currency
         return {
             'tournaments': self.tournaments,
             'ordinal_integer': Utils.ordinal_integer,
@@ -788,7 +786,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        prize_currency = self.get_event().prize_currency
+        prize_currency = self.event.prize_currency
         return {
             'tournaments': self.tournaments,
             'show_warnings': self._get_option(ShowWarningsPrintOption).value,
@@ -804,7 +802,7 @@ class PrizeAssignmentPrintDocument(PrintDocument):
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return PlayerColumnHandler(
-            self.get_event(), ColumnUsage.PRINT
+            self.event, ColumnUsage.PRINT
         ).get_prize_assignment_columns()
 
 
@@ -834,7 +832,7 @@ class PrizeReceiptsPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        prize_currency = self.get_event().prize_currency
+        prize_currency = self.event.prize_currency
         return {
             'tournaments': self.tournaments,
             'monetary_only': not self._get_option(NonMonetaryPrintOption).value,
@@ -1195,6 +1193,10 @@ class PlaceCardPrintDocument(PrintDocument):
         return self._get_option(PlaceCardTemplatePrintOption).place_card_template
 
     @property
+    def player_ids(self) -> list[int]:
+        return self._get_option(PlayersPrintOption).value
+
+    @property
     def at_round(self) -> int:
         return self._get_option(RoundPrintOption).value or self.tournament.current_round
 
@@ -1226,7 +1228,7 @@ class PlaceCardPrintDocument(PrintDocument):
     @property
     def template_context(self) -> dict[str, Any]:
         return self.place_card_template.template_context(
-            event=self.get_event(),
+            event=self.event,
             tournament=self.tournament,
             round_=self.at_round,
             mirror=self.mirror,
