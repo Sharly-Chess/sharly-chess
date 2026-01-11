@@ -726,14 +726,14 @@ class TournamentPlayer(Player):
             min_rounds = tn.minimum_rounds(self.tournament)
 
             # Games criterion
-            if played_games < min_rounds:
-                res.not_enough_games = _('At least %(min)d games must be played.')
-            elif (
+            if (played_games < min_rounds) or (
                 rounds == min_rounds
                 and played_games == min_rounds - 1
                 and forfeits_or_byes != 1
             ):
-                res.not_enough_games = _('At least %(min)d games must be played.')
+                res.not_enough_games = _('At least {min} games must be played.').format(
+                    min=min_rounds
+                )
 
             res.played_games = played_games
 
