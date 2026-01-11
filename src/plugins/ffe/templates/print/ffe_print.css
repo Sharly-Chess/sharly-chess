@@ -6,6 +6,10 @@
                 font-size: 0.8rem;
                 --row-gap: 0.9rem;
             }
+            h1 {
+                background: url("{{ ffe_logo_url }}") left top no-repeat, url("{{ sharly_chess_logo_url }}") right top no-repeat;
+                background-size: contain;
+            }
             .t1 h2, .t2 h2, .t3 h2, .t4 h2, .t5 h2, .t6 h2, .t7 h2 {
                 text-align: left;
                 margin: var(--row-gap) 0 0 0;

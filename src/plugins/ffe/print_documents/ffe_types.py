@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from functools import cached_property
 from typing import Any, TYPE_CHECKING
 
+from common import BASE_DIR
 from common.exception import OptionError
 from common.i18n import _
 from data.access_levels.client import Client
@@ -11,9 +12,11 @@ from data.event import Event
 from data.player import TournamentPlayer
 from data.print_documents import PrintOption
 from data.tournament import Tournament
+from plugins.ffe import PLUGIN_DIR
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from utils.entity import IdentifiableEntity
 from utils.enum import RoleType, PlayerRatingType
+from utils.file import image_file_inline_url
 from utils.time_control import trf25_to_human_readable
 
 if TYPE_CHECKING:
@@ -123,6 +126,12 @@ class FFEDocumentType(IdentifiableEntity, ABC):
     ) -> dict[str, Any]:
         self.set_ffe_document(ffe_document)
         return {
+            'sharly_chess_logo_url': image_file_inline_url(
+                BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
+            ),
+            'ffe_logo_url': image_file_inline_url(
+                PLUGIN_DIR / 'static/images/ffe-text.png'
+            ),
             'event': self.event,
             'date': self.date,
             'writer': self.writer,
@@ -460,16 +469,15 @@ class FFET3T4Type(FFEPlayersDocumentType):
     def static_name() -> str:
         return 'T3-T4 Attestation de licence'
 
-    @cached_property
-    def ffe_licence(self) -> PlayerFFELicence:
-        return self.ffe_document.ffe_licence
-
     def template_context(
         self,
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
-            'ffe_licence': self.ffe_licence,
+            'ffe_licence': self.ffe_document.ffe_licence,
+            'ffe_form_number': 3
+            if self.ffe_document.ffe_licence == PlayerFFELicence.A
+            else 4,
         }
 
 
