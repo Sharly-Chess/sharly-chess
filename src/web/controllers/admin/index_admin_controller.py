@@ -1081,6 +1081,28 @@ class IndexAdminController(BaseAdminController):
             )
         return self._admin_render(web_context=web_context)
 
+    @delete(
+        path='/delete-archive/{archive_name:str}',
+        name='admin-delete-archive',
+        guards=[ActionGuard(AuthAction.MANAGE_ARCHIVES)],
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_delete_archive(
+        self,
+        request: HTMXRequest,
+        archive_name: str,
+    ) -> Template:
+        web_context = AdminWebContext(request, admin_tab='archives')
+        archive = ArchiveLoader.get_archive(archive_name)
+        if not archive:
+            raise NotFoundException(f'Unknown archive [{archive_name}]')
+        archive.file.unlink(missing_ok=True)
+        Message.success(
+            request,
+            _('Archive [{archive}] successfully deleted.').format(archive=archive.name),
+        )
+        return self._admin_render(web_context=web_context)
+
     @patch(
         path='/locale-update/{locale:str}',
         name='admin-locale-update',

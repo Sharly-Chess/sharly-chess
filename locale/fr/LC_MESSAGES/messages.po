@@ -579,6 +579,9 @@ msgstr "Archiver"
 msgid "Archive [{archive}] could not be restored, consult the logs for more details."
 msgstr "L'archive [{archive}] n'a pas pu être restaurée, consultez les logs pour plus d'informations."
 
+msgid "Archive [{archive}] successfully deleted."
+msgstr "L'archive [{archive}] a été supprimée."
+
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr "L'archive [{archive}] a été restaurée avec succès (voir l'évènement [{event}])."
 
