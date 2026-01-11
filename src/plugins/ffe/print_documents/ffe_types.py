@@ -77,6 +77,19 @@ class FFEDocumentType(IdentifiableEntity, ABC):
         """Returns the date of the doc, as a printable string."""
         return datetime.now().strftime('%d/%m/%Y')
 
+    @property
+    def event_date(self) -> str:
+        """Returns the date for the event, as a printable string."""
+        event_date: str = self.event.start_date.strftime('%d/%m/%Y')
+        if self.event.start_date != self.event.stop_date:
+            event_date += f' - {self.event.stop_date.strftime("%d/%m/%Y")}'
+        return event_date
+
+    @property
+    def event_days(self) -> int:
+        """Returns the number of days for the tournaments."""
+        return (self.event.stop_date - self.event.start_date).days + 1
+
     @cached_property
     @abstractmethod
     def _accounts_by_role(self) -> dict[RoleType, set[Account]]:
@@ -133,6 +146,8 @@ class FFEDocumentType(IdentifiableEntity, ABC):
                 PLUGIN_DIR / 'static/images/ffe-text.png'
             ),
             'event': self.event,
+            'event_date': self.event_date,
+            'event_days': self.event_days,
             'date': self.date,
             'writer': self.writer,
             'arbiters': self.chief_arbiters + self.deputy_arbiters,
@@ -387,12 +402,6 @@ class FFEArbiterCompensationType(FFETournamentsDocumentType):
     def static_name() -> str:
         return 'Indemnisation arbitrage'
 
-    def template_context(
-        self,
-        ffe_document: 'FFEPrintDocument',
-    ) -> dict[str, Any]:
-        return super().template_context(ffe_document) | {}
-
 
 class FFETournamentDocumentType(FFEDocumentType, ABC):
     @staticmethod
@@ -591,3 +600,13 @@ class FFET7Type(FFEPlayerDocumentType):
     @staticmethod
     def static_name() -> str:
         return "T7 Signalement d'un·e joueur·euse"
+
+
+class FFECheatingType(FFEPlayerDocumentType):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-cheating'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'Dépôt de plainte suspicion de triche'
