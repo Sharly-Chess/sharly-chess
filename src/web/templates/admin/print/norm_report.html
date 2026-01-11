@@ -317,7 +317,7 @@
 
                         <div class="item {{ 'error' if norm.not_enough_title_holders else '' }}">
                             <div class="error-info">
-                                {{ norm.not_enough_title_holders | safe }}
+                                {{ norm.not_enough_title_holders | safe | replace('%%', '%') }}
                             </div>
                             <label>Total number titled opponents:</label>
                             <input value="{{ norm.num_title_holders }}" />
@@ -483,9 +483,9 @@
                     </div>
                     <div class="item {{ 'error' if norm.score_too_low or norm.performance_too_low else '' }}">
                         <div class="error-info">
-                            {{ norm.score_too_low | safe }}
+                            {{ norm.score_too_low | safe | replace('%%', '%') }}
                             <br />
-                            {{ norm.performance_too_low | safe }}
+                            {{ norm.performance_too_low | safe  | replace('%%', '%') }}
                         </div>
                         <label>Score achieved:</label>
                         <input value="{{ norm.score }}" />
