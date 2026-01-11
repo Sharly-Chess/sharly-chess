@@ -123,7 +123,7 @@
                 .error input {
                     color: black;
                 }
-                .spacer, .heading, .info {
+                .spacer, .heading, .info, .error:hover .error-info {
                     display: none;
                 }
                 @page {

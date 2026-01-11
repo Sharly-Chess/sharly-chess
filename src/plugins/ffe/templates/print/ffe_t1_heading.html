@@ -254,27 +254,8 @@
                 </div>
                 <div class="item">
                     <label for="date">Date :</label>
-                    <input id="date" value="{{ date }}" style="width: 5em; flex-grow: 0;" />
+                    <input id="date" value="{{ date }}" style="width: 7em; flex-grow: 0;" />
                 </div>
-            </div>
-        </section>
-    </form>
-    <div class="spacer"></div>
-    <form class="break-after t2">
-        <h1>
-            <span style="font-style: italic;">Formulaire T2/DNA</span>
-            <br/>
-            RAPPORT TECHNIQUE : PROCÈS-VERBAL DU TOURNOI
-        </h1>
-        <h2>Dans ce formulaire, l’arbitre indiquera tout événement qu’il lui sera nécessaire de signaler tels que les anomalies ayant pu survenir lors des appariements et ayant nécessité une intervention de sa part, les signalements de forfaits, les réclamations de joueurs et tout élément qu’il jugerait nécessaire de détailler pour ses archives personnelles ou dans le cadre d’une consultation de ce rapport par une instance de la fédération. Dans le cadre d’un tournoi sans aucun incident, ce formulaire devra être joint au rapport technique avec une annotation indiquant que l’arbitre n’a rien à signaler.</h2>
-        <section>
-            <div class="grid" style="grid-template-columns: 1fr;">
-                {% for i in range(35) %}
-                    <div class="item error">
-                        <div class="error-info">Replace the inputs by a textarea</div>
-                        <input value="{% if loop.first %}Rien à signaler.{% endif %}" />
-                    </div>
-                {% endfor %}
             </div>
         </section>
     </form>

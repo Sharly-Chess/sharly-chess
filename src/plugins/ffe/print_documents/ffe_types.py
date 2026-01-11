@@ -251,14 +251,14 @@ class FFETournamentsDocumentType(FFEDocumentType, ABC):
         }
 
 
-class FFET1T2Type(FFETournamentsDocumentType):
+class FFET1Type(FFETournamentsDocumentType):
     @staticmethod
     def static_id() -> str:
-        return 'ffe-t1-t2-tournament-report'
+        return 'ffe-t1-heading'
 
     @staticmethod
     def static_name() -> str:
-        return 'T1-T2 Rapport technique'
+        return 'T1 Page de garde'
 
     @property
     def tournaments_prizes_sharing_systems(self) -> str:
@@ -366,6 +366,16 @@ class FFET1T2Type(FFETournamentsDocumentType):
             'prizes_total': f'{self.tournaments_prizes_total:.2f}',
             'prizes_sharing': self.tournaments_prizes_sharing_systems,
         }
+
+
+class FFET2Type(FFETournamentsDocumentType):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-t2-tournament-report'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'T2 Procès-verbal'
 
 
 class FFEArbiterCompensationType(FFETournamentsDocumentType):
