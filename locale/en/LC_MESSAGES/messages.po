@@ -5985,6 +5985,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "At least %(min)d games must be played."
-#~ msgstr ""
-
