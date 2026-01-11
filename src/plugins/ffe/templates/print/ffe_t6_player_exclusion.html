@@ -1,4 +1,4 @@
-{% extends 'ffe_document_base.html' %}
+{% extends '_ffe_document_base.html' %}
 
 {% block body %}
     <form class="t6">
@@ -7,7 +7,7 @@
             <br/>
             EXCLUSION D'UN·E JOUEUR·EUSE
         </h1>
-        {% include 'ffe_t6_t7_header.html' %}
+        {% include '_ffe_t6_t7_header.html' %}
         <div style="margin-top: 1rem;">En application de l’article 12.9 des règles du jeu, l’arbitre principal·e exclut du tournoi le·la joueur·euse suivant·e :</div>
         <section>
             <div class="grid" style="grid-template-columns: 1fr 7fr; margin-top: 1rem;">
@@ -36,6 +36,6 @@
                 {% endfor %}
             </div>
         </section>
-        {% include 'location_date_signature.html' %}
+        {% include '_ffe_location_date_signature.html' %}
     </form>
 {% endblock %}

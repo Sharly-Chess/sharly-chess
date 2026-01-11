@@ -1,4 +1,4 @@
-{% extends 'ffe_document_base.html' %}
+{% extends '_ffe_document_base.html' %}
 
 {% block body %}
     <form class="t7">
@@ -7,7 +7,7 @@
             <br/>
             SIGNALEMENT D'UN·E JOUEUR·EUSE
         </h1>
-        {% include 'ffe_t6_t7_header.html' %}
+        {% include '_ffe_t6_t7_header.html' %}
         <h2>Identification du·de la licencié·e</h2>
         <div>Un formulaire regroupant plusieurs joueur·euses ne sera pas accepté.</div>
         <section>
@@ -68,7 +68,7 @@
                 </div>
             </div>
         </section>
-        {% include 'location_date_signature.html' %}
+        {% include '_ffe_location_date_signature.html' %}
         <h3 style="margin-top: 3rem; margin-bottom: 0;">Document à destination de la Direction Juridique de la DNA</h3>
         <div>
             Le signalement est traité par la direction juridique qui établira si la saisie d’une instance disciplinaire est nécessaire et lancera la procédure.<br/>
