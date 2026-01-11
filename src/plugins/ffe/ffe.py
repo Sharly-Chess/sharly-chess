@@ -38,16 +38,15 @@ from plugins.ffe.ffe_background_uploader import (
     FfeBackgroundUploader,
     FfeUploadStatus,
 )
+from plugins.ffe.ffe_data_sources import FfeLocalDataSource, FfeOnlineDataSource
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.ffe_entity import (
     FFESiteQRCodeType,
-    FfeLocalDataSource,
     LeaguePlayerSplitter,
     NicoisSwissVariation,
     FfeLeaguePlayerFilter,
     FfeLicencePlayerFilter,
     FfeLicenceFilterOption,
-    FfeOnlineDataSource,
     FfeLeaguesFilterOption,
     FfeLeagueTableColumn,
     FfeIdDatasheetColumn,
@@ -634,26 +633,6 @@ class FfePlugin(Plugin):
         PluginUtils.insert_on_isinstance(
             datasheet_columns, FfeLeagueDatasheetColumn(), federation
         )
-
-    @hookimpl
-    def get_extra_players_update_columns(self) -> Iterable[ExtraAdminColumn]:
-        return [
-            ExtraAdminColumn(
-                at='fide_id',
-                header_template='/ffe_players_update/licence_number_header.html',
-                cell_template='/ffe_players_update/licence_number_cell.html',
-            ),
-            ExtraAdminColumn(
-                at='fide_id',
-                header_template='/ffe_players_update/licence_header.html',
-                cell_template='/ffe_players_update/licence_cell.html',
-            ),
-            ExtraAdminColumn(
-                at='club',
-                header_template='/ffe_players_update/league_header.html',
-                cell_template='/ffe_players_update/league_cell.html',
-            ),
-        ]
 
     # ---------------------------------------------------------------------------------
     # Events

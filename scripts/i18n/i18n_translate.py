@@ -2,6 +2,7 @@ import argparse
 import re
 from logging import Logger, DEBUG
 from pathlib import Path
+from typing import Any
 
 import requests
 from babel.messages import Catalog, Message
@@ -49,7 +50,7 @@ class I18nTranslator:
     def run(
         self,
     ):
-        domain_messages_to_translate: dict[str, list[Message]] = {}
+        domain_message_ids_to_translate: dict[str, Any] = {}
         for domain in Domain.get_domains():
             pot_file: Path = domain.pot_file
             po_file: Path = domain.locale_po_file(self.target_locale)
@@ -84,7 +85,7 @@ class I18nTranslator:
                 catalog: Catalog = read_po(f)
             print_interactive_success(f'Loaded {len(catalog._messages)} messages.')
             print_interactive_info('Looking for messages to translate...')
-            messages_to_translate: list[Message] = []
+            message_ids_to_translate: list[Any] = []
             for message in catalog:
                 if message.id:
                     if isinstance(message.id, str):
@@ -94,38 +95,43 @@ class I18nTranslator:
                         assert isinstance(message.string, tuple)
                         translate = not message.string[0] or not message.string[1]
                     if translate:
-                        messages_to_translate.append(message)
-            if not messages_to_translate:
+                        message_ids_to_translate.append(message.id)
+            if not message_ids_to_translate:
                 print_interactive_info(
                     f'No translation needed for domain [{domain.name}].'
                 )
                 continue
-            domain_messages_to_translate[domain.name] = messages_to_translate
+            domain_message_ids_to_translate[domain.name] = message_ids_to_translate
             print_interactive_success(
-                f'{len(messages_to_translate)} messages to translate for domain [{domain.name}].'
+                f'{len(message_ids_to_translate)} messages to translate for domain [{domain.name}].'
             )
-        if not domain_messages_to_translate:
+        if not domain_message_ids_to_translate:
             print_interactive_info('No translation needed, exiting.')
             return
         print_interactive_success(
-            f'{sum(len(messages_to_translate) for messages_to_translate in domain_messages_to_translate.values())} messages to translate.'
+            f'{sum(len(messages_to_translate) for messages_to_translate in domain_message_ids_to_translate.values())} messages to translate.'
         )
         if not self.init_tools():
             return
         for domain in Domain.get_domains():
-            if domain.name in domain_messages_to_translate:
+            if domain.name in domain_message_ids_to_translate:
                 po_file: Path = domain.locale_po_file(self.target_locale)
+                print_interactive_success(f'Reading catalog [{po_file}]...')
+                with open(po_file, 'rb') as f:
+                    catalog: Catalog = read_po(f)
                 print_interactive_success(
                     f'Adding missing translations to [{po_file}]...'
                 )
                 error: bool = False
                 i: int = 0
-                for message in domain_messages_to_translate[domain.name]:
+                for message_id in domain_message_ids_to_translate[domain.name]:
                     i += 1
                     percent = int(
-                        100 * i / len(domain_messages_to_translate[domain.name])
+                        100 * i / len(domain_message_ids_to_translate[domain.name])
                     )
-                    if not self.translate_message(message, percent):
+                    if not self.translate_message(
+                        catalog._messages[message_id], percent
+                    ):
                         error = True
                 with open(po_file, 'wb') as f:
                     write_po(f, catalog, width=0, omit_header=True)
@@ -140,6 +146,7 @@ class I18nTranslator:
                         f'--domain={domain.name}',
                         f'--directory={domain.locale_dir}',
                         f'--locale={self.target_locale}',
+                        '--use-fuzzy',
                     ],
                     verbose=True,
                 )
@@ -298,7 +305,8 @@ class I18nTranslator:
                     return True
                 else:
                     return False
-        else:
+        elif isinstance(message.id, tuple):
+            assert len(message.id) == 2, f'{message.id=}'
             message.string = (
                 self.translate_string(message.id[0], percent),
                 self.translate_string(message.id[1], percent),
@@ -308,6 +316,13 @@ class I18nTranslator:
                 return True
             else:
                 return False
+        else:
+            logger.warning(
+                'Can not translate message [%s] (type: [%s])',
+                message.id,
+                type(message.id),
+            )
+            return False
 
 
 if __name__ == '__main__':

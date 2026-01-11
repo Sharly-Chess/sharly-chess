@@ -198,10 +198,6 @@ class AppHookSpecs:
     ):
         """Provide extra columns for the player download datasheets"""
 
-    @hookspec
-    def get_extra_players_update_columns(self) -> Iterable[ExtraAdminColumn]:
-        """Provide additional columns for the players update view"""
-
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------
