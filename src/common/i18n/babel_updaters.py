@@ -123,7 +123,13 @@ class BabelDomainUpdater(BabelDomainWrapper):
             old_po_for_mo_fingerprint: bytes = self.get_po_fingerprint_for_mo(locale)
             po_fingerprint: bytes = text_file_fingerprint(po_file)
             build_mo: bool = False
-            if not mo_file.exists():
+            if po_errors:
+                logger.info(
+                    'Domain [%s]: errors found for locale [%s], MO file not rebuilt.',
+                    self.name,
+                    locale,
+                )
+            elif not mo_file.exists():
                 build_mo = True
                 logger.info(
                     'Domain [%s]: MO file not found for locale [%s], generating from PO file...',
@@ -134,13 +140,6 @@ class BabelDomainUpdater(BabelDomainWrapper):
                 build_mo = True
                 logger.info(
                     'Domain [%s]: PO file has changed since last MO file generation for locale [%s], updating MO file...',
-                    self.name,
-                    locale,
-                )
-            elif po_errors:
-                build_mo = True
-                logger.info(
-                    'Domain [%s]: errors found for locale [%s], rebuilding MO file...',
                     self.name,
                     locale,
                 )
@@ -482,7 +481,7 @@ class BabelUpdater:
                 + end_lines
             )
         with open(target_file, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(lines))
+            f.write('\n'.join(lines) + '\n')
         logger.info('Wrote [%s].', target_file)
 
     def write_markdown(self):

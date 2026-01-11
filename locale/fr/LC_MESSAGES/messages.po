@@ -579,6 +579,9 @@ msgstr "Archiver"
 msgid "Archive [{archive}] could not be restored, consult the logs for more details."
 msgstr "L'archive [{archive}] n'a pas pu être restaurée, consultez les logs pour plus d'informations."
 
+msgid "Archive [{archive}] successfully deleted."
+msgstr "L'archive [{archive}] a été supprimée."
+
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr "L'archive [{archive}] a été restaurée avec succès (voir l'évènement [{event}])."
 
@@ -1100,6 +1103,9 @@ msgstr "Appariements complémentaires générés."
 msgid "Complementary pairings successfully generated!"
 msgstr "Appariements complémentaires générés avec succès !"
 
+msgid "Complementary prize"
+msgstr "Prix complémentaire"
+
 msgid "Configuration"
 msgstr "Configuration"
 
@@ -1411,9 +1417,6 @@ msgstr "Chronomètres par défaut"
 msgid "Define as main category"
 msgstr "Définir comme catégorie générale"
 
-msgid "Define as monetary"
-msgstr "Définir comme monétaire"
-
 msgid "Define as public"
 msgstr "Définir comme public"
 
@@ -1517,12 +1520,6 @@ msgstr "Arbitres adjoint·es"
 
 msgid "Description"
 msgstr "Description"
-
-msgid "Description is mandatory for non-monetary prizes."
-msgstr "La description est objigatoire pour les prix non-monétaires."
-
-msgid "Descriptions can only be defined for non-monetary prizes."
-msgstr "Les descriptions ne peuvent être définies que pour les prix non-monétaires."
 
 msgid "Details"
 msgstr "Détails"
@@ -2161,9 +2158,6 @@ msgstr "Miroir (recto-verso)"
 msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
 
-msgid "For non-monetary prizes, the value is used for reward priority."
-msgstr "Pour les prix non-monétaires, la valeur est utiliée pour prioriser les récompenses."
-
 msgid "For players who have not checked-in:"
 msgstr "Pour les joueur·euses qui ne se sont pas pointé·es :"
 
@@ -2314,6 +2308,9 @@ msgstr "L'horaire [{hour}] a été créé."
 msgid "Hours"
 msgstr "Horaires"
 
+msgid "Hybrid"
+msgstr "Hybride"
+
 msgid "I confirm that I want to archive this event."
 msgstr "Je confirme vouloir archiver cet évènement."
 
@@ -2393,6 +2390,9 @@ msgstr "Inclure les catégories supérieures"
 
 msgid "Include lower categories"
 msgstr "Inclure les catégories inférieures"
+
+msgid "Include non-monetary prizes"
+msgstr "Inclure les prix non-monétaires"
 
 msgid "Include players"
 msgstr "Inclure les joueur·euses"
@@ -2768,8 +2768,8 @@ msgstr "Champ requis manquant [{field}]."
 msgid "Mo *** MONDAY"
 msgstr "Lu"
 
-msgid "Monetary prizes only"
-msgstr "Seulement les prix monétaires"
+msgid "Monetary"
+msgstr "Monétaire"
 
 #, python-format
 msgid "Moved down %(num)d place"
@@ -3074,6 +3074,12 @@ msgstr "N°"
 
 msgid "No. final rounds without byes:"
 msgstr "Dernières rondes sans bye :"
+
+msgid "Non-monetary"
+msgstr "Non-monétaire"
+
+msgid "Non-monetary prizes are not compatible with categories in which the prizes are shared."
+msgstr "Les prix non-monétaires ne sont pas compatibles avec les catégories pour lesquelles les prix sont partagés."
 
 msgid "None"
 msgstr "Aucun"
@@ -3745,7 +3751,7 @@ msgid "Prize list"
 msgstr "Liste des prix"
 
 msgid "Prize receipts"
-msgstr "Reçus financiers"
+msgstr "Reçus financiers des prix"
 
 msgid "Prize settings"
 msgstr "Paramètres des prix"
@@ -3759,8 +3765,14 @@ msgstr "Prix"
 msgid "Prizes can only be shared for the main category."
 msgstr "Les prix ne peuvent être partagés que pour la catégorie générale."
 
-msgid "Prizes of categories with prize sharing can only be monetary."
-msgstr "Les prix des catégories partageant les prix ne peuvent être que monétaires."
+msgid "Prizes defined as a free text field. The value is used to determine the place of the prize in the list."
+msgstr "Prix définis par un champ texte libre. La valeur est utilisée pour déterminer la place du prix dans la liste."
+
+msgid "Prizes defined as both a monetary value and a complementary non-monetary prize (example: 100 € + Trophy)."
+msgstr "Prix définis par une valeur monétaire et un prix non-monétaire complémentaire (exemple : 100 € + Trophée)."
+
+msgid "Prizes only defined as a monetary value."
+msgstr "Prix définis seulement par une valeur monétaire."
 
 msgid "Proceed"
 msgstr "Continuer"
@@ -4628,13 +4640,11 @@ msgstr "Le premier tournoi de l'écran."
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
 
-#, fuzzy
 msgid "The least and the most significant values are removed."
 msgid_plural "The {count} least and the {count} most significant values are removed."
 msgstr[0] "La valeur la moins élevée et la valeur la plus élevée sont retirées."
 msgstr[1] "Les {count} valeurs les moins élevées et les {count} valeurs les plus élevées sont retirées."
 
-#, fuzzy
 msgid "The least significant value is removed."
 msgid_plural "The {count} least significant values are removed."
 msgstr[0] "La valeur la moins élevée est retirée."
@@ -5173,8 +5183,8 @@ msgstr "Tournois : %(num)d"
 msgid "Transfer"
 msgstr "Virement"
 
-msgid "Trophy"
-msgstr "Trophée"
+msgid "Trophy, medal"
+msgstr "Trophée, médaille"
 
 msgid "Tu *** TUESDAY"
 msgstr "Ma"
@@ -5921,6 +5931,11 @@ msgid "{count} half-point"
 msgid_plural "{count} half-points"
 msgstr[0] "{count} demi-point"
 msgstr[1] "{count} demi-points"
+
+msgid "{count} hour could not be moved (time conflict)."
+msgid_plural "{count} hours could not be moved (time conflict)."
+msgstr[0] "{count} horaire n'a pas pu être déplacé (conflit d'heures)."
+msgstr[1] "{count} horaires n'ont pas pu être déplacés (conflit d'heures)."
 
 msgid "{count} player updated."
 msgid_plural "{count} players updated."

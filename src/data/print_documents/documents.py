@@ -28,7 +28,7 @@ from data.print_documents.options import (
     RoundPrintOption,
     PlayerSortPrintOption,
     ShowWarningsPrintOption,
-    MonetaryOnlyPrintOption,
+    NonMonetaryPrintOption,
     ClubThresholdPrintOption,
     TournamentPrintOption,
     TournamentsPrintOption,
@@ -808,7 +808,7 @@ class PrizeReceiptsPrintDocument(PrintDocument):
     def available_options() -> list[type[PrintOption]]:
         return [
             TournamentsPrintOption,
-            MonetaryOnlyPrintOption,
+            NonMonetaryPrintOption,
         ]
 
     @property
@@ -824,7 +824,7 @@ class PrizeReceiptsPrintDocument(PrintDocument):
         prize_currency = self.get_event().prize_currency
         return {
             'tournaments': self.tournaments,
-            'monetary_only': self._get_option(MonetaryOnlyPrintOption).value,
+            'monetary_only': not self._get_option(NonMonetaryPrintOption).value,
             'ordinal_integer': Utils.ordinal_integer,
             'prize_currency': prize_currency,
             'format_prize_value': partial(
