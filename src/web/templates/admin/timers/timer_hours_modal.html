@@ -18,13 +18,68 @@
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
+            {% if warning_message %}
+                {% with type='warning', message=warning_message %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
 
             <div id="timer-hours-container" class="d-flex flex-column gap-2">
                 {% if not admin_timer.timer_hours %}
                     <div class="text-danger">{{ _('No hours.') }}</div>
                 {% endif %}
+                {% set has_available_date = admin_timer.has_available_date %}
                 {% for date_str, timer_hours in admin_timer.timer_hours_by_date_str.items() %}
-                    <h6 class="fw-bold mt-2">{{ date_str }}</h6>
+                    {% set iso_date = sharly_chess_config.date_formatter.date_str_to_iso_format(date_str) %}
+                    {% set id='date-' ~ iso_date %}
+                    <h6 id="{{ id }}-field" class="date-field fw-bold mt-2">
+                        {{ date_str }}
+                        {% if has_available_date %}
+                            <span>
+                                <button
+                                    id="{{ id }}-update-button"
+                                    data-testid="{{ id }}-update-button"
+                                    type="button"
+                                    class="btn btn-sm text-primary text-nowrap"
+                                >
+                                    <i class="bi-pencil"></i>
+                                </button>
+                            </span>
+                        {% endif %}
+                    </h6>
+                    {% if has_available_date %}
+                        <div
+                            id="{{ id }}-form-container"
+                            class="date-form-container mt-1 mb-1 col-12 col-md-6"
+                            style="display: none"
+                        >
+                            {{ admin_macros.inline_date_form(
+                                id=id,
+                                name='date',
+                                placeholder=date_str,
+                                min_date=admin_event.start_date_str,
+                                max_date=admin_event.stop_date_str,
+                                patch_url=url_for(
+                                    'admin-timer-hours-update-date',
+                                    event_uniq_id=admin_event.uniq_id,
+                                    timer_id=admin_timer.id,
+                                    iso_date=iso_date,
+                                ),
+                            ) }}
+                        </div>
+                        <script>
+                            $('#{{ id }}-update-button').click(() => {
+                                $('.date-form-container').css('display', 'none');
+                                $('.date-field').css('display', '');
+                                $('#{{ id }}-form-container').css('display', '');
+                                $('#{{ id }}-field').css('display', 'none');
+                            });
+                            $('#{{ id }}-cancel-button').click(() => {
+                                $('#{{ id }}-form-container').css('display', 'none');
+                                $('#{{ id }}-field').css('display', '');
+                            });
+                        </script>
+                    {% endif %}
                     {% for timer_hour in timer_hours %}
                         <div class="timer-hour-container border border-secondary bg-body-tertiary">
                             <div class="p-2">
