@@ -1096,7 +1096,7 @@ class IndexAdminController(BaseAdminController):
         archive = ArchiveLoader.get_archive(archive_name)
         if not archive:
             raise NotFoundException(f'Unknown archive [{archive_name}]')
-        archive.file.unlink()
+        archive.file.unlink(missing_ok=True)
         Message.success(
             request,
             _('Archive [{archive}] successfully deleted.').format(archive=archive.name),
