@@ -50,7 +50,15 @@ class DomainLocaleInfo(Domain):
             return not msg.string
         else:
             assert isinstance(msg.string, tuple)
-            return not msg.string[0] or not msg.string[1]
+            return any(not s for s in msg.string)
+
+    @staticmethod
+    def message_is_mandatory(msg: Message):
+        if isinstance(msg.id, str):
+            return msg.id.__contains__('***')
+        else:
+            assert isinstance(msg.string, tuple)
+            return any(s.__contains__('***') for s in msg.id)
 
     @staticmethod
     def sorted_tokens(string: str) -> list[str]:
@@ -92,7 +100,6 @@ class DomainLocaleInfo(Domain):
                 msg.user_comments = [
                     f'Error: tokens differ between [{msg.id}] and [{msg.string}]',
                 ]
-                msg.string = ''
                 error = True
         else:
             assert isinstance(msg.id, tuple)
@@ -102,12 +109,6 @@ class DomainLocaleInfo(Domain):
                     msg.user_comments = [
                         f'Error: tokens differ between [{msg.id[i]}] and [{msg.string[i]}]',
                     ]
-                    msg.string = tuple(
-                        [
-                            '',
-                        ]
-                        * len(msg.id)
-                    )
                     error = True
                     break
         return not error
@@ -121,7 +122,6 @@ class DomainLocaleInfo(Domain):
                 msg.user_comments = [
                     f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]',
                 ]
-                msg.string = ''
                 error = True
         else:
             assert isinstance(msg.id, tuple)
@@ -131,12 +131,6 @@ class DomainLocaleInfo(Domain):
                     msg.user_comments = [
                         f'Error: translation [{msg.string}] is much too long compared to initial [{msg.id}]',
                     ]
-                    msg.string = tuple(
-                        [
-                            '',
-                        ]
-                        * len(msg.id)
-                    )
                     error = True
                     break
         return not error
@@ -152,22 +146,27 @@ class DomainLocaleInfo(Domain):
         self.flagged_messages = {}
         # Control all the messages.
         for msg in catalog:
-            if isinstance(msg.id, str) and msg.id:
-                self.messages[msg.id] = msg
-                if msg.id.__contains__('***'):
-                    self.mandatory_messages[msg.id] = msg
+            if msg.id:
+                if isinstance(msg.id, str):
+                    msg_key = msg.id
+                else:
+                    assert isinstance(msg.id, tuple)
+                    msg_key = str(msg.id)
+                self.messages[msg_key] = msg
+                if self.message_is_mandatory(msg):
+                    self.mandatory_messages[msg_key] = msg
                     if self.message_is_empty(msg):
-                        self.empty_mandatory_messages[msg.id] = msg
+                        self.empty_mandatory_messages[msg_key] = msg
                         continue
                 else:
                     if self.message_is_empty(msg):
-                        self.empty_optional_messages[msg.id] = msg
+                        self.empty_optional_messages[msg_key] = msg
                         continue
                 if not self.compare_message_tokens(msg):
-                    self.error_messages[msg.id] = msg
+                    self.error_messages[msg_key] = msg
                     continue
                 if not self.check_message_length(msg):
-                    self.error_messages[msg.id] = msg
+                    self.error_messages[msg_key] = msg
                     continue
                 for flag in msg.flags:
                     if flag not in [
@@ -176,7 +175,7 @@ class DomainLocaleInfo(Domain):
                     ]:
                         if flag not in self.flagged_messages:
                             self.flagged_messages[flag] = {}
-                        self.flagged_messages[flag][msg.id] = msg
+                        self.flagged_messages[flag][msg_key] = msg
         tmp_file: Path = self.po_file.with_suffix('.tmp')
         with open(tmp_file, 'wb') as f:
             write_po(f, catalog, width=0, omit_header=True)  # type: ignore
@@ -212,8 +211,8 @@ class DomainLocaleInfo(Domain):
             )
         if self.error_messages:
             logger.error(f'  * Error messages ({len(self.error_messages)})')
-            for msg_id in self.error_messages:
-                logger.error(f'    - [{msg_id}]')
+            for msg_id, msg in self.error_messages.items():
+                logger.error(f'    - [{msg_id}]: {msg.user_comments}')
         if self.empty_mandatory_messages:
             logger.error(
                 f'  * Empty mandatory messages ({len(self.empty_mandatory_messages)})'
