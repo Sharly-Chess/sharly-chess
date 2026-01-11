@@ -1,5 +1,6 @@
 {% extends '/common/base.html' %}
 
+{% set rotator = display_controller.rotator if display_controller else rotator %}
 {% set timer = rotator.timer if rotator and rotator.timer else screen.timer %}
 
 {% block header %}
