@@ -609,10 +609,6 @@ msgstr "Marquer forfait <b>pour le reste du tournoi</b>"
 msgid "Assign to a display controller."
 msgstr "Attribuer à un pilote d'écran."
 
-#, python-format
-msgid "At least %(min)d games must be played."
-msgstr "Au moins %(min)d parties doivent être jouées."
-
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr "Au moins un Elo minimum ou un Elo maximum doit être défini."
 
@@ -633,6 +629,9 @@ msgstr "Au moins un type de classement est attendu."
 
 msgid "At least one value is expected."
 msgstr "Au moins une valeur est attendue."
+
+msgid "At least {min} games must be played."
+msgstr "Au moins {min} parties doivent être jouées."
 
 #, python-format
 msgid "At most %(num)d illegal move is recorded."

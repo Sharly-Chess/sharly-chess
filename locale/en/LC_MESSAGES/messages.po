@@ -609,10 +609,6 @@ msgstr ""
 msgid "Assign to a display controller."
 msgstr ""
 
-#, python-format
-msgid "At least %(min)d games must be played."
-msgstr ""
-
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr ""
 
@@ -632,6 +628,9 @@ msgid "At least one rating type is expected."
 msgstr ""
 
 msgid "At least one value is expected."
+msgstr ""
+
+msgid "At least {min} games must be played."
 msgstr ""
 
 #, python-format
@@ -5985,4 +5984,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "At least %(min)d games must be played."
+#~ msgstr ""
 
