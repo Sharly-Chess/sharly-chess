@@ -9,7 +9,8 @@ class FFEDocumentTypeManager(EntityManager[FFEDocumentType]):
     @override
     def entity_types(self) -> list[type[FFEDocumentType]]:
         return [
-            ffe_types.FFET1T2Type,
+            ffe_types.FFET1Type,
+            ffe_types.FFET2Type,
             ffe_types.FFET3T4Type,
             ffe_types.FFET5Type,
             ffe_types.FFET6Type,
