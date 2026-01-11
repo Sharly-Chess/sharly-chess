@@ -178,7 +178,7 @@ def get_i18n_domain() -> str:
 def gettext(message: str, locale: str | None = None):
     """Overrides the gettext.gettext() function to use the locale of the current thread."""
     if locales:
-        return _all_translations[
+        translated = _all_translations[
             get_i18n_domain(
                 # debug=debug
             )
@@ -186,7 +186,8 @@ def gettext(message: str, locale: str | None = None):
             message,
         )
     else:
-        return gettext_lib.gettext(message)
+        translated = gettext_lib.gettext(message)
+    return translated.replace('%%', '%')
 
 
 def _(message: str, locale: str | None = None):
@@ -197,11 +198,12 @@ def _(message: str, locale: str | None = None):
 def ngettext(singular: str, plural: str, n: int, locale: str | None = None):
     """Overrides the gettext.ngettext() function to use the locale of the current thread."""
     if locales:
-        return _all_translations[get_i18n_domain()][locale or get_locale()].ngettext(
-            singular, plural, n
-        )
+        translated = _all_translations[get_i18n_domain()][
+            locale or get_locale()
+        ].ngettext(singular, plural, n)
     else:
-        return gettext_lib.ngettext(singular, plural, n)
+        translated = gettext_lib.ngettext(singular, plural, n)
+    return translated.replace('%%', '%')
 
 
 def normalize_bcp47_to_locale(tag: str) -> str:

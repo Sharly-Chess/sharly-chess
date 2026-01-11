@@ -1056,7 +1056,7 @@ class KoyaTieBreak(OpponentRecordTieBreak):
 
     @property
     def base_help_text(self) -> str:
-        equation = _('50%% of the maximum possible score').replace('%%', '%')
+        equation = _('50%% of the maximum possible score')
         return _(
             'The number of points achieved against all players '
             'who have scored at least L points (L = {equation}).'

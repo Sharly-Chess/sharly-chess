@@ -92,14 +92,14 @@ class TimerHour:
     def text_before(self) -> str:
         return self._format_stored_text(
             self.stored_timer_hour.text_before,
-            _('Start of round {} in %%s').replace('%%', '%'),
+            _('Start of round {} in %%s'),
         )
 
     @cached_property
     def text_after(self) -> str:
         return self._format_stored_text(
             self.stored_timer_hour.text_after,
-            _('Round {} started for %%s').replace('%%', '%'),
+            _('Round {} started for %%s'),
         )
 
     @property

@@ -114,11 +114,7 @@ class Base2GroupsSetting(PairingGroupSetting, ABC):
 
         min_number, max_number = self.from_form_data(data)
         if tournament.player_count / 4 > max_number - min_number + 1:
-            return {
-                self.id: _(
-                    'Groups must be composed of at least 25%% of players.'
-                ).replace('%%', '%')
-            }
+            return {self.id: _('Groups must be composed of at least 25%% of players.')}
         return {}
 
 
@@ -178,7 +174,7 @@ class Base3GroupsSetting(PairingGroupSetting, ABC):
                 self.id: _(
                     'Groups must be composed of at least '
                     '25%% and at most 50%% of players.'
-                ).replace('%%', '%')
+                )
             }
         return {}
 
