@@ -230,7 +230,7 @@ msgstr "404 - Page non trouvée"
 
 #, python-format
 msgid "50%% of the maximum possible score"
-msgstr "50%% du score maximal possible"
+msgstr "50 %% du score maximal possible"
 
 msgid "500 - Internal Server Error"
 msgstr "500 - Erreur interne du serveur"
@@ -252,7 +252,7 @@ msgstr "<b>1.4.5</b> Pour cette norme, au moins {min} adversaires doivent déten
 
 #, python-format
 msgid "<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM."
-msgstr "<b>1.4.5a</b> Au moins 50 %% des adversaires doivent être titulaires d’un titre, à l’exclusion des titres de CM et de CMF."
+msgstr "<b>1.4.5a</b> Au moins 50 %% des adversaires doivent être titulaires d’un titre, à l’exclusion des titres de CM et de CMF."
 
 msgid "<b>1.4.8</b> The minimum performance for this norm is {min}."
 msgstr "<b>1.4.8</b> La performance minimale requise pour cette norme est de {min}."
@@ -262,7 +262,7 @@ msgstr "<b>1.4.8a</b> La moyenne minimale des classements des adversaires requis
 
 #, python-format
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
-msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %%."
+msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %%."
 
 msgid "<b>Delete</b> from the tournament"
 msgstr "<b>Supprimer</b> du tournoi"
@@ -3141,7 +3141,7 @@ msgstr "Nombre de parties gagnées"
 
 #, python-format
 msgid "Number of half-points above or below the 50%% limit required for opponents to be taken into account."
-msgstr "Le nombre de demi-points au-dessus ou en dessous des 50%% de points requis pour que les adversaires soient pris en compte."
+msgstr "Le nombre de demi-points au-dessus ou en dessous des 50 %% de points requis pour que les adversaires soient pris en compte."
 
 msgid "Number of players"
 msgstr "Nombre de joueur·euses"
