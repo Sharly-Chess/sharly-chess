@@ -26,7 +26,7 @@ class FFEPrintDocument(PrintDocument):
 
     @staticmethod
     def static_name() -> str:
-        return 'Documents FFE'
+        return 'Formulaires FFE'
 
     @property
     def title(self) -> str:

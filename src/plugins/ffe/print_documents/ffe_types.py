@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from functools import cached_property
 from typing import Any, TYPE_CHECKING
 
@@ -176,12 +176,78 @@ class FFETournamentsDocumentType(FFEDocumentType, ABC):
                                     accounts_by_role[role.role_type].add(account)
         return accounts_by_role
 
+    @property
+    def tournaments_name(self) -> str:
+        """Returns the name for the tournaments."""
+        tournaments_name: str = self.event.name
+        if self.tournaments and len(self.tournaments) != len(self.event.tournaments):
+            tournaments_name += (
+                f' ({", ".join(tournament.name for tournament in self.tournaments)})'
+            )
+        return tournaments_name
+
+    @cached_property
+    def _tournaments_dates(self) -> tuple[date, date]:
+        """Returns the start and stop dates for the tournaments."""
+        if self.tournaments and len(self.tournaments) != len(self.event.tournaments):
+            return (
+                min(tournament.start_date for tournament in self.tournaments),
+                max(tournament.stop_date for tournament in self.tournaments),
+            )
+        else:
+            return (
+                self.event.start_date,
+                self.event.stop_date,
+            )
+
+    @property
+    def tournaments_date(self) -> str:
+        """Returns the date for the tournaments, as a printable string."""
+        start_date, stop_date = self._tournaments_dates
+        tournaments_date: str = start_date.strftime('%d/%m/%Y')
+        if start_date != stop_date:
+            tournaments_date += f' - {stop_date.strftime("%d/%m/%Y")}'
+        return tournaments_date
+
+    @property
+    def tournaments_days(self) -> int:
+        """Returns the number of days for the tournaments."""
+        start_date, stop_date = self._tournaments_dates
+        return (stop_date - start_date).days + 1
+
+    @property
+    def tournament_ffe_ids(self) -> str:
+        """Returns the list of the tournaments' FFE ID, as a printable string."""
+        return ', '.join(
+            str(FFEUtils.get_tournament_plugin_data(tournament).ffe_id)
+            for tournament in self.tournaments
+            if FFEUtils.get_tournament_plugin_data(tournament).ffe_id
+        )
+
+    @property
+    def tournaments_location(self) -> str:
+        """Returns the list of the tournaments' location, as a printable string."""
+        return ' '.join(
+            sorted(
+                set(
+                    tournament.location
+                    for tournament in self.tournaments
+                    if tournament.location
+                )
+            )
+        )
+
     def template_context(
         self,
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
             'tournaments': self.tournaments,
+            'event_date': self.tournaments_date,
+            'event_days': self.tournaments_days,
+            'event_name': self.tournaments_name,
+            'ffe_ids': self.tournament_ffe_ids,
+            'location': self.tournaments_location,
         }
 
 
@@ -193,34 +259,6 @@ class FFET1T2Type(FFETournamentsDocumentType):
     @staticmethod
     def static_name() -> str:
         return 'T1-T2 Rapport technique'
-
-    @property
-    def tournaments_name(self) -> str:
-        """Returns the name for the tournaments."""
-        tournaments_name: str = self.event.name
-        if self.tournaments and len(self.tournaments) != len(self.event.tournaments):
-            tournaments_name += (
-                f' ({", ".join(tournament.name for tournament in self.tournaments)})'
-            )
-        return tournaments_name
-
-    @property
-    def tournaments_date(self) -> str:
-        """Returns the date for the tournaments, as a printable string."""
-        if self.tournaments and len(self.tournaments) != len(self.event.tournaments):
-            start_date_min = min(
-                tournament.start_date for tournament in self.tournaments
-            )
-            stop_date_max = max(
-                tournament.start_date for tournament in self.tournaments
-            )
-        else:
-            start_date_min = self.event.start_date
-            stop_date_max = self.event.stop_date
-        tournaments_date: str = start_date_min.strftime('%d/%m/%Y')
-        if start_date_min != stop_date_max:
-            tournaments_date += f' - {stop_date_max.strftime("%d/%m/%Y")}'
-        return tournaments_date
 
     @property
     def tournaments_prizes_sharing_systems(self) -> str:
@@ -244,15 +282,6 @@ class FFET1T2Type(FFETournamentsDocumentType):
                         if prize.is_monetary:
                             prizes_total += prize.value
         return prizes_total
-
-    @property
-    def tournament_ffe_ids(self) -> str:
-        """Returns the list of the tournaments' FFE ID, as a printable string."""
-        return ', '.join(
-            str(FFEUtils.get_tournament_plugin_data(tournament).ffe_id)
-            for tournament in self.tournaments
-            if FFEUtils.get_tournament_plugin_data(tournament).ffe_id
-        )
 
     @property
     def tournaments_rounds(self) -> str:
@@ -298,19 +327,6 @@ class FFET1T2Type(FFETournamentsDocumentType):
         )
 
     @property
-    def tournaments_location(self) -> str:
-        """Returns the list of the tournaments' location, as a printable string."""
-        return ' '.join(
-            sorted(
-                set(
-                    tournament.location
-                    for tournament in self.tournaments
-                    if tournament.location
-                )
-            )
-        )
-
-    @property
     def _tournaments_players_counts(self) -> tuple[int, int]:
         """Returns the counts of FIDE and total players count as a 2-tuple."""
         return sum(
@@ -341,19 +357,31 @@ class FFET1T2Type(FFETournamentsDocumentType):
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
-            'event_date': self.tournaments_date,
-            'event_name': self.tournaments_name,
-            'ffe_ids': self.tournament_ffe_ids,
             'rounds': self.tournaments_rounds,
             'time_control': self.tournaments_time_control,
             'pairing': self.tournaments_pairing,
             'tie_breaks': self.tournaments_tie_breaks,
-            'location': self.tournaments_location,
             'fide_player_count': self.tournaments_fide_players_count,
             'total_player_count': self.tournaments_total_players_count,
             'prizes_total': f'{self.tournaments_prizes_total:.2f}',
             'prizes_sharing': self.tournaments_prizes_sharing_systems,
         }
+
+
+class FFEArbiterCompensationType(FFETournamentsDocumentType):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-arbiter-compensation'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'Indemnisation arbitrage'
+
+    def template_context(
+        self,
+        ffe_document: 'FFEPrintDocument',
+    ) -> dict[str, Any]:
+        return super().template_context(ffe_document) | {}
 
 
 class FFETournamentDocumentType(FFEDocumentType, ABC):

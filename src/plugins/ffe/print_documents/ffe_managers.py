@@ -14,4 +14,5 @@ class FFEDocumentTypeManager(EntityManager[FFEDocumentType]):
             ffe_types.FFET5Type,
             ffe_types.FFET6Type,
             ffe_types.FFET7Type,
+            ffe_types.FFEArbiterCompensationType,
         ]
