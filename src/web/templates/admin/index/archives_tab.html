@@ -20,7 +20,7 @@
         <tr>
             <th scope="col" class="text-nowrap">{{ _('Archived event') }}</th>
             <th scope="col">{{ _('Deletion date') }}</th>
-            <th>{# Restore button #}</th>
+            <th>{# buttons #}</th>
         </tr>
     </thead>
     <tbody>
@@ -32,11 +32,21 @@
                     <td>
                         <button
                             class="btn btn-sm btn-outline-primary"
-                            hx-post="{{ url_for('admin-restore-archive', archive_name=archive.name) }}"
+                            hx-post="{{ url_for('admin-restore-archive', archive_name=archive.url_name) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
+                            {{ macros.tooltip_attributes('info', _('Restore'), 'top') }}
                         >
-                            {{ _('Restore') }}
+                            <i class="bi-arrow-counterclockwise"></i>
+                        </button>
+                        <button
+                            class="btn btn-sm btn-outline-danger"
+                            hx-delete="{{ url_for('admin-delete-archive', archive_name=archive.url_name) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            {{ macros.tooltip_attributes('info', _('Delete'), 'top') }}
+                        >
+                            <i class="bi-trash-fill"></i>
                         </button>
                     </td>
                 </tr>
