@@ -1439,6 +1439,9 @@ msgstr "Délai (secondes) :"
 msgid "Delete"
 msgstr "Supprimer"
 
+msgid "Delete <b>{value}</b>"
+msgstr "Supprimer <b>{value}</b>"
+
 msgid "Delete account"
 msgstr "Supprimer le compte"
 
@@ -2001,6 +2004,9 @@ msgstr "Titre FIDE :"
 
 msgid "FIDE database"
 msgstr "Base de données FIDE"
+
+msgid "FIDE rating lost"
+msgstr "classement FIDE perdu"
 
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
@@ -4303,6 +4309,9 @@ msgstr "Noter des résultats spéciaux"
 
 msgid "Set the current round"
 msgstr "Changer la ronde courante"
+
+msgid "Set to <b>{value}</b>"
+msgstr "Initialiser à <b>{value}</b>"
 
 msgid "Settings"
 msgstr "Paramètres"

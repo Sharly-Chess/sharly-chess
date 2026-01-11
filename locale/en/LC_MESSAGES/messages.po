@@ -1439,6 +1439,9 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Delete <b>{value}</b>"
+msgstr ""
+
 msgid "Delete account"
 msgstr ""
 
@@ -2000,6 +2003,9 @@ msgid "FIDE Title:"
 msgstr ""
 
 msgid "FIDE database"
+msgstr ""
+
+msgid "FIDE rating lost"
 msgstr ""
 
 msgid "FM *** SHORT NAME FOR Fide Master"
@@ -4302,6 +4308,9 @@ msgid "Set special results"
 msgstr ""
 
 msgid "Set the current round"
+msgstr ""
+
+msgid "Set to <b>{value}</b>"
 msgstr ""
 
 msgid "Settings"

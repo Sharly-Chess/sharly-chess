@@ -46,8 +46,12 @@ class PlayerUpdaterField(IdentifiableEntity, ABC):
         """Message of the tooltip displayed on the cell if the field has been updated."""
         src_value = self.get_string_value(player)
         match_value = self.get_composed_string_value(player, match_player)
+        if src_value in ('', '-'):
+            return _('Set to <b>{value}</b>').format(value=match_value)
+        if match_value in ('', '-'):
+            return _('Delete <b>{value}</b>').format(value=src_value)
         return _('Replace <b>{old}</b> by <b>{new}</b>').format(
-            old=src_value or '-', new=match_value or '-'
+            old=src_value, new=match_value
         )
 
 
@@ -213,6 +217,18 @@ class RatingUpdaterField(PlayerUpdaterField, ABC):
             for rt in self.rating_types
         )
 
+    def updated_tooltip_message(self, player: Player, match_player: Player) -> str:
+        message = super().updated_tooltip_message(player, match_player)
+        src_ratings = player.ratings[self.tournament_rating()]
+        match_ratings = match_player.ratings[self.tournament_rating()]
+        if (
+            PlayerRatingType.FIDE in self.rating_types
+            and src_ratings.fide is not None
+            and match_ratings.fide is None
+        ):
+            message += f' ({_("FIDE rating lost")})'
+        return message
+
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
     ):
@@ -287,7 +303,7 @@ class ClubUpdaterField(PlayerUpdaterField):
         return _('Club')
 
     def is_updated(self, player: Player, match_player: Player) -> bool:
-        return player.club != player.club
+        return player.club != match_player.club
 
     def update_player(
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
