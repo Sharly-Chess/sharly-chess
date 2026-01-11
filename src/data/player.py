@@ -776,7 +776,7 @@ class TournamentPlayer(Player):
             if num_titles < tn.minimum_title_holders(rounds):
                 res.not_enough_title_holders = _(
                     '<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM.'
-                )
+                ).replace('%%', '%')
 
             res.num_title_holders = num_titles
             res.title_counts = titles_counter
@@ -798,7 +798,7 @@ class TournamentPlayer(Player):
             if score < TitleNorm.minimum_score(rounds):
                 res.score_too_low = _(
                     '<b>1.4.8b</b> The minimum score is 35%% for all norms.'
-                )
+                ).replace('%%', '%')
 
             res.score = score
 
