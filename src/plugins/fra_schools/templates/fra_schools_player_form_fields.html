@@ -67,7 +67,7 @@
             style="display:none"
         {% endif %}
     >
-        <h4>{{ _('Add a french school') }}</h4>
+        <h4>{{ _('Add a French school') }}</h4>
         <div class="row mb-3">
             <div class="col-12">
                 <div class="input-group">
@@ -175,14 +175,28 @@
                 }
             }, 100);
         });
-
+        var fraSchoolTooltip = null;
         $('#fra-school-add-button').click(function () {
             $(this).hide();
             $('#fra-school-form-container').show();
+            const submitContainer = document.getElementById('submit-button-container');
+            fraSchoolTooltip = new bootstrap.Tooltip(submitContainer, {
+                title: `{{ _('Please validate the French school to continue.') }}`,
+                placement: 'top',
+            });
+            $(submitContainer).find('button').prop('disabled', true);
         });
         $('#fra-school-cancel-button').click(function () {
             $('#fra-school-form-container').hide();
             $('#fra-school-add-button').show();
+            fraSchoolTooltip.dispose();
+            fraSchoolTooltip = null;
+            $('#submit-button-container').find('button').prop('disabled', false);
+        });
+        $('#fra-school-submit-button').click(function () {
+            fraSchoolTooltip.dispose();
+            fraSchoolTooltip = null;
+            $('#submit-button-container').find('button').prop('disabled', false);
         });
     </script>
 </div>
