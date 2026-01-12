@@ -5,7 +5,7 @@ msgstr "%(string)s :"
 msgid "Add"
 msgstr "Ajouter"
 
-msgid "Add a french school"
+msgid "Add a French school"
 msgstr "Ajouter un établissement scolaire"
 
 msgid "Add a school to the options."
@@ -81,7 +81,7 @@ msgstr "OK"
 msgid "Other missing players: %(count)d"
 msgstr "Autres joueur·euses manquant·es : %(count)d"
 
-msgid "Please validate the french school to continue."
+msgid "Please validate the French school to continue."
 msgstr "Merci de valider l'établissement scolaire avant de continuer."
 
 msgid "Postal code"
