@@ -57,7 +57,7 @@ class FfePlayerUpdaterField(PlayerUpdaterField, ABC):
     def _update_ffe_plugin_data(
         self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData
     ):
-        """Update the FFE plugin data from the math player's FFE plugin data."""
+        """Update the FFE plugin data from the match player's FFE plugin data."""
 
     def get_string_value(self, player: Player) -> str:
         return self._get_ffe_string_value(FFEUtils.get_player_plugin_data(player))
