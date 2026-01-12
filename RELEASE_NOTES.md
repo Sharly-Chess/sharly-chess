@@ -7,6 +7,7 @@
 ## Players
 
 - Fixed deleted ratings not taken into account during player update (3.5.0)
+- Fixed the text of player norm tooltips (3.5.0)
 
 ## Prizes
 

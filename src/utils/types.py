@@ -136,7 +136,7 @@ class PlayerRatingAndType:
     type: PlayerRatingType
 
     def __str__(self) -> str:
-        return f'{self.value} {self.type.short_name}'
+        return f'{self.value} {self.type.short_name}' if self.value else '-'
 
 
 @dataclass
