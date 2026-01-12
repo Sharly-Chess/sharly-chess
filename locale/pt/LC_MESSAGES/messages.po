@@ -761,10 +761,6 @@ msgstr "Atribua um bye de ponto zero <b>para o resto do torneio</b>"
 msgid "Assign to a display controller."
 msgstr "Atribua a um controlador de exibição."
 
-#, ai_translation, python-format
-msgid "At least %(min)d games must be played."
-msgstr "Pelo menos %(min)d jogos devem ser jogados."
-
 #, ai_translation
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr "Pelo menos uma classificação mínima ou máxima deve ser definida."
@@ -792,6 +788,10 @@ msgstr "Pelo menos um tipo de classificação é esperado."
 #, ai_translation
 msgid "At least one value is expected."
 msgstr "Pelo menos um valor é esperado."
+
+#, ai_translation
+msgid "At least {min} games must be played."
+msgstr "Pelo menos {min} jogos devem ser jogados."
 
 #, ai_translation, python-format
 msgid "At most %(num)d illegal move is recorded."
@@ -7747,4 +7747,7 @@ msgstr "½ - 0 (U)"
 #, ai_translation
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (U)"
+
+#~ msgid "At least %(min)d games must be played."
+#~ msgstr "Pelo menos %(min)d jogos devem ser jogados."
 

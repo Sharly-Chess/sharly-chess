@@ -7,7 +7,7 @@ msgid "Add"
 msgstr "Adicionar"
 
 #, ai_translation
-msgid "Add a french school"
+msgid "Add a French school"
 msgstr "Adicionar uma escola francesa"
 
 #, ai_translation
@@ -103,6 +103,10 @@ msgid "Other missing players: %(count)d"
 msgstr "Outros jogadores desaparecidos: %(count)d"
 
 #, ai_translation
+msgid "Please validate the French school to continue."
+msgstr "Por favor, valide a escola francesa para continuar."
+
+#, ai_translation
 msgid "Postal code"
 msgstr "Código postal"
 
@@ -161,4 +165,7 @@ msgstr "Esta rodada não é válida (o torneio tem rodadas {rounds})."
 #, ai_translation
 msgid "Total"
 msgstr "Total"
+
+#~ msgid "Add a french school"
+#~ msgstr "Adicionar uma escola francesa"
 
