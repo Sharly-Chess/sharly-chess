@@ -5,7 +5,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-msgid "Add a french school"
+msgid "Add a French school"
 msgstr ""
 
 msgid "Add a school to the options."
@@ -79,6 +79,9 @@ msgstr ""
 
 #, python-format
 msgid "Other missing players: %(count)d"
+msgstr ""
+
+msgid "Please validate the French school to continue."
 msgstr ""
 
 msgid "Postal code"
