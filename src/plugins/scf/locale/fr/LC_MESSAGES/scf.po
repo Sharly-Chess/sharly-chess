@@ -1,0 +1,39 @@
+#, python-format
+msgid "%(string)s:"
+msgstr "%(string)s :"
+
+msgid "FIDE ID"
+msgstr "Identifiant FIDE"
+
+# Error: tokens differ between [Invalid SCF code [{scf_code}].] and [Code SCF
+# [{ffe_id}] non valide.]
+msgid "Invalid SCF code [{scf_code}]."
+msgstr "Code SCF [{scf_code}] non valide."
+
+msgid "Name"
+msgstr "Nom"
+
+msgid "Replace the player to update this field."
+msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
+
+msgid "SCF"
+msgstr "SCF"
+
+msgid "SCF Code"
+msgstr "Code SCF"
+
+msgid "SCF database (local)"
+msgstr "Base de données SCF (locale)"
+
+msgid "Swiss Chess Federation"
+msgstr "Féderation Suisse des Échecs"
+
+msgid "Swiss Federation specific features"
+msgstr "Fonctionnalités spécifiques à la Féderation Suisse des Échecs"
+
+msgid "The player with SCF code [{scf_code}] already plays tournament [{tournament}]."
+msgstr "Le·la joueur·euse avec le code SCF [{scf_code}] joue déjà le tournoi [{tournament}]."
+
+msgid "Unrated *** SINGULAR"
+msgstr "Non-classé·e"
+
