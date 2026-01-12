@@ -718,6 +718,10 @@ msgid "Archive [{archive}] could not be restored, consult the logs for more deta
 msgstr "[{archive}] não pôde ser restaurado, consulte os registros para mais detalhes."
 
 #, ai_translation
+msgid "Archive [{archive}] successfully deleted."
+msgstr "[{archive}] foi eliminado com sucesso."
+
+#, ai_translation
 msgid "Archive [{archive}] successfully restored (see event [{event}])."
 msgstr "[{archive}] restaurado com sucesso (ver evento [{event}])."
 
@@ -1150,6 +1154,10 @@ msgstr "Check-in / Entrada de resultados"
 msgid "Check-in / Results entry ({tournament_name})"
 msgstr "Entrada / Entrada nos resultados ({tournament_name})"
 
+#, ai_translation
+msgid "Check-in closed"
+msgstr "Check-in fechado"
+
 #, ai_translation, python-format
 msgid "Check-in is closed for tournament [%(tournament)s]."
 msgstr "O check-in está fechado para o torneio [%(tournament)s]."
@@ -1377,6 +1385,10 @@ msgstr "Emparelhamentos complementares gerados."
 #, ai_translation
 msgid "Complementary pairings successfully generated!"
 msgstr "Emparelhamentos complementares gerados com sucesso!"
+
+#, ai_translation
+msgid "Complementary prize"
+msgstr "Prémio complementar"
 
 #, ai_translation
 msgid "Configuration"
@@ -1743,10 +1755,6 @@ msgid "Date format"
 msgstr "Formato da data"
 
 #, ai_translation
-msgid "Date of birth"
-msgstr "Data de nascimento"
-
-#, ai_translation
 msgid "Date of birth:"
 msgstr "Data de nascimento:"
 
@@ -1767,6 +1775,10 @@ msgid "Default accounts have been created."
 msgstr "Contas padrão foram criadas."
 
 #, ai_translation
+msgid "Default alert messages"
+msgstr "Mensagens de alerta predefinidas"
+
+#, ai_translation
 msgid "Default sets can't be deleted."
 msgstr "Conjuntos padrão não podem ser excluídos."
 
@@ -1775,12 +1787,12 @@ msgid "Default timer settings"
 msgstr "Configurações padrão do temporizador"
 
 #, ai_translation
-msgid "Define as main category"
-msgstr "Definir como categoria principal"
+msgid "Default timers"
+msgstr "temporizadores padrão"
 
 #, ai_translation
-msgid "Define as monetary"
-msgstr "Definir como monetário"
+msgid "Define as main category"
+msgstr "Definir como categoria principal"
 
 #, ai_translation
 msgid "Define as public"
@@ -1814,9 +1826,9 @@ msgstr "Atraso (segundos):"
 msgid "Delete"
 msgstr "Apagar"
 
-#, ai_translation, python-format
-msgid "Delete FIDE ID [%(old)s]"
-msgstr "Excluir FIDE ID [%(old)s]"
+#, ai_translation
+msgid "Delete <b>{value}</b>"
+msgstr "Apagar b>{value}/b>"
 
 #, ai_translation
 msgid "Delete account"
@@ -1917,14 +1929,6 @@ msgstr "árbitros adjuntos"
 #, ai_translation
 msgid "Description"
 msgstr "Descrição"
-
-#, ai_translation
-msgid "Description is mandatory for non-monetary prizes."
-msgstr "A descrição é obrigatória para prêmios não monetários."
-
-#, ai_translation
-msgid "Descriptions can only be defined for non-monetary prizes."
-msgstr "As descrições só podem ser definidas para prêmios não monetários."
 
 #, ai_translation
 msgid "Details"
@@ -2558,6 +2562,10 @@ msgstr "Título da FIDE:"
 msgid "FIDE database"
 msgstr "Base de dados FIDE"
 
+#, ai_translation
+msgid "FIDE rating lost"
+msgstr "Classificação FIDE perdida"
+
 #, fuzzy
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "FM"
@@ -2613,10 +2621,6 @@ msgstr "Fevereiro"
 #, fuzzy
 msgid "Fed *** FEDERATION FOR TABLE HEADER"
 msgstr "Fed"
-
-#, ai_translation
-msgid "Fed."
-msgstr "Fed."
 
 #, fuzzy
 msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
@@ -2753,10 +2757,6 @@ msgstr "Dobrável (superior espelhado)"
 #, ai_translation, python-format
 msgid "Font size adjustment (%%):"
 msgstr "Ajuste do tamanho da fonte (%%):"
-
-#, ai_translation
-msgid "For non-monetary prizes, the value is used for reward priority."
-msgstr "Para prêmios não monetários, o valor é usado para prioridade de recompensa."
 
 #, ai_translation
 msgid "For players who have not checked-in:"
@@ -2959,6 +2959,10 @@ msgid "Hours"
 msgstr "Horas"
 
 #, ai_translation
+msgid "Hybrid"
+msgstr "Híbrido"
+
+#, ai_translation
 msgid "I confirm that I want to archive this event."
 msgstr "Confirmo que quero arquivar este evento."
 
@@ -3061,6 +3065,10 @@ msgstr "Incluir categorias maiores"
 #, ai_translation
 msgid "Include lower categories"
 msgstr "Incluir categorias inferiores"
+
+#, ai_translation
+msgid "Include non-monetary prizes"
+msgstr "Prêmios não monetários"
 
 #, ai_translation
 msgid "Include players"
@@ -3551,8 +3559,8 @@ msgid "Mo *** MONDAY"
 msgstr "Mo"
 
 #, ai_translation
-msgid "Monetary prizes only"
-msgstr "Apenas prémios monetários"
+msgid "Monetary"
+msgstr "monetário"
 
 #, ai_translation, python-format
 msgid "Moved down %(num)d place"
@@ -3763,6 +3771,10 @@ msgid "No games against FIDE rated opponents."
 msgstr "Nenhum jogo contra adversários classificados pela FIDE."
 
 #, ai_translation
+msgid "No games played on the board for this player."
+msgstr "Não há jogos jogados no tabuleiro para este jogador."
+
+#, ai_translation
 msgid "No home page"
 msgstr "Página não encontrada"
 
@@ -3947,6 +3959,14 @@ msgid "No. final rounds without byes:"
 msgstr "Não. rodadas finais sem byes:"
 
 #, ai_translation
+msgid "Non-monetary"
+msgstr "Não monetário"
+
+#, ai_translation
+msgid "Non-monetary prizes are not compatible with categories in which the prizes are shared."
+msgstr "Os prêmios não monetários não são compatíveis com categorias nas quais os prêmios são compartilhados."
+
+#, ai_translation
 msgid "None"
 msgstr "Nenhuma"
 
@@ -4085,6 +4105,10 @@ msgstr "Uma vez criado, você pode selecionar o temporizador para exibir nas con
 #, ai_translation
 msgid "One category can be marked as the main prize category for overall rankings, with tie options: no sharing, equal sharing, or Hort system."
 msgstr "Uma categoria pode ser marcada como a principal categoria de prêmio para rankings gerais, com opções de empate: sem compartilhamento, compartilhamento igual ou sistema Hort."
+
+#, ai_translation
+msgid "One or more of the plugins required to use this event are disabled, making it inaccessible. You can enable plugins in the application settings."
+msgstr "Um ou mais dos plugins necessários para usar este evento são desativados, tornando-o inacessível. Você pode ativar plugins nas configurações do aplicativo."
 
 #, ai_translation
 msgid "Ongoing"
@@ -4827,8 +4851,16 @@ msgid "Prizes can only be shared for the main category."
 msgstr "Os prêmios só podem ser compartilhados para a categoria principal."
 
 #, ai_translation
-msgid "Prizes of categories with prize sharing can only be monetary."
-msgstr "Prêmios de categorias com compartilhamento de prêmios só podem ser monetários."
+msgid "Prizes defined as a free text field. The value is used to determine the place of the prize in the list."
+msgstr "Prêmios definidos como um campo de texto livre. O valor é usado para determinar o lugar do prêmio na lista."
+
+#, ai_translation
+msgid "Prizes defined as both a monetary value and a complementary non-monetary prize (example: 100 € + Trophy)."
+msgstr "Prêmios definidos como um valor monetário e um prêmio complementar não monetário (exemplo: 100  + Troféu)."
+
+#, ai_translation
+msgid "Prizes only defined as a monetary value."
+msgstr "Os prêmios são definidos apenas como um valor monetário."
 
 #, ai_translation
 msgid "Proceed"
@@ -5074,9 +5106,9 @@ msgstr "Renomear evento"
 msgid "Replace"
 msgstr "Substituir"
 
-#, ai_translation, python-format
-msgid "Replace [%(old)s] by [%(new)s]"
-msgstr "Substituir [%(old)s] por [%(new)s]"
+#, ai_translation
+msgid "Replace <b>{old}</b> by <b>{new}</b>"
+msgstr "Substituir b>{old}/b> por b>{new}/b>"
 
 #, ai_translation, python-format
 msgid "Replace player [%(player)s]"
@@ -5498,10 +5530,6 @@ msgstr "Configuração do Servidor"
 msgid "Server is already running!"
 msgstr "O servidor já está funcionando!"
 
-#, ai_translation, python-format
-msgid "Set FIDE ID [%(new)s]"
-msgstr "Definir ID FIDE [%(new)s]"
-
 #, ai_translation
 msgid "Set Full-Points Byes"
 msgstr "Set Full-Points Byes"
@@ -5525,6 +5553,10 @@ msgstr "Definir resultados especiais"
 #, ai_translation
 msgid "Set the current round"
 msgstr "Defina a rodada atual"
+
+#, ai_translation
+msgid "Set to <b>{value}</b>"
+msgstr "b>{value}/b>"
 
 #, ai_translation
 msgid "Settings"
@@ -6661,8 +6693,8 @@ msgid "Transfer"
 msgstr "Transferência"
 
 #, ai_translation
-msgid "Trophy"
-msgstr "Troféu"
+msgid "Trophy, medal"
+msgstr "Troféu, medalha"
 
 #, fuzzy
 msgid "Tu *** TUESDAY"
@@ -6921,12 +6953,20 @@ msgid "Use the Staff tab to declare arbiters."
 msgstr "Use a guia Staff para declarar árbitros."
 
 #, ai_translation
+msgid "Use the alert message defined on each screen."
+msgstr "Use a mensagem de alerta definida em cada tela."
+
+#, ai_translation
 msgid "Use the recommended tie-breaks"
 msgstr "Use os tie-breaks recomendados"
 
 #, ai_translation
 msgid "Use the standard FIDE rating for unrated players"
 msgstr "Use a classificação FIDE padrão para jogadores não classificados"
+
+#, ai_translation
+msgid "Use the timer defined for each screen."
+msgstr "Use o temporizador definido para cada tela."
 
 #, ai_translation, python-format
 msgid "Used by %(num)d event."
@@ -7313,6 +7353,10 @@ msgid "You are trying to modify the pairings of the previous round. This will ha
 msgstr "Você está tentando modificar os emparelhamentos da rodada anterior. Isso terá um impacto nos emparelhamentos e rankings de todas as rodadas futuras."
 
 #, ai_translation
+msgid "You can ask the administrator for permission to access the event screens."
+msgstr "Você pode pedir permissão ao administrador para acessar as telas do evento."
+
+#, ai_translation
 msgid "You can create password-protected accounts to delegate tasks to other members of the staff (arbiters and organizers)."
 msgstr "Você pode criar contas protegidas por senha para delegar tarefas a outros membros da equipe (arbitristas e organizadores)."
 
@@ -7327,6 +7371,10 @@ msgstr "Você não pode adicionar mais nenhuma permissão a esta conta."
 #, ai_translation
 msgid "You define the type of data to display (results, pairings, ranking…) and details such as the number of screens to split the players across, and the single screens will be generated automatically."
 msgstr "Você define o tipo de dados a serem exibidos (resultados, pareamentos, classificação...) e detalhes como o número de telas para dividir os jogadores, e as telas individuais serão geradas automaticamente."
+
+#, ai_translation
+msgid "You have no permissions"
+msgstr "Você não tem permissões"
 
 #, ai_translation
 msgid "You may also connect to this server from other devices using"
@@ -7627,6 +7675,12 @@ msgstr[0] "{count} meio ponto"
 msgstr[1] "{count} meio ponto"
 
 #, ai_translation
+msgid "{count} hour could not be moved (time conflict)."
+msgid_plural "{count} hours could not be moved (time conflict)."
+msgstr[0] "Não foi possível alterar {count} hora (conflito de horário)."
+msgstr[1] "{count} horas não puderam ser alteradas (conflito de fuso horário)."
+
+#, ai_translation
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] "{count} jogador atualizado."
@@ -7661,6 +7715,10 @@ msgid "{players} player remain unpaired"
 msgid_plural "{players} players remain unpaired"
 msgstr[0] "{players} jogador permanece desemparelhado"
 msgstr[1] "{players} os jogadores permanecem desemparelhados"
+
+#, ai_translation
+msgid "{plugin} (disabled)"
+msgstr "{plugin} (desabilitado)"
 
 #, ai_translation
 msgid "{prefix}{int_value}<sup>{suffix}</sup>"

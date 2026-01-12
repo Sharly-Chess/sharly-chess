@@ -202,10 +202,6 @@ msgstr "Licença FFE B (lazer)"
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
 msgstr "Licença FFE [{ffe_licence_number}] já presente no torneio [{tournament}]."
 
-#, ai_translation
-msgid "FFE licence number"
-msgstr "Número de licença FFE"
-
 #, ai_translation, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "Licença FFE: %(ffe_licence_number)s (clique para copiar para a área de transferência)."
@@ -417,10 +413,6 @@ msgstr "PAPI"
 #, ai_translation
 msgid "Papi file"
 msgstr "Ficheiro Papi"
-
-#, ai_translation, python-format
-msgid "Replace [%(old)s] by [%(new)s]"
-msgstr "Substituir [%(old)s] por [%(new)s]"
 
 #, ai_translation
 msgid "Replace the player to update this field."
