@@ -25,6 +25,7 @@ class AppPluginManager(PluginManager):
     def plugins_by_id(self) -> dict[str, Plugin]:
         from plugins.chess_results.chess_results import ChessResultsPlugin
         from plugins.ffe.ffe import FfePlugin
+        from plugins.scf.scf import ScfPlugin
         from plugins.chessevent.chessevent import ChessEventPlugin
         from plugins.pairing_acceleration.pairing_acceleration import (
             PairingAccelerationPlugin,
@@ -40,6 +41,7 @@ class AppPluginManager(PluginManager):
             FfePlugin(),
             ChessEventPlugin(),
             FRASchoolsPlugin(),
+            ScfPlugin(),
             HandicapGamesPlugin(),
         ]
         return {plugin.id: plugin for plugin in plugins}

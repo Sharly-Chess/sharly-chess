@@ -1,0 +1,30 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros %}
+
+{% if player.federation %}
+    <img
+        class="player-federation-flag pe-1"
+        src="{{ macros.federation_flag_url(player.federation) }}"
+    />
+    {{ player.federation }}
+{% endif %}
+{% if player.plugin_data.scf.scf_code %}
+    {{ player.plugin_data.scf.scf_code }}
+{% else %}
+    -
+{% endif %}
+<span class="fw-bold">
+    {{ player.full_name }}
+</span>
+{% if player.year_of_birth %}
+    ({{ player.year_of_birth }}, {{ player.category.short_name }})
+{% endif %}
+-
+{% if player.has_real_rating %}
+    {{ player.first_real_rating_str }}
+{% else %}
+    <i>{{ _('Unrated *** SINGULAR') }}</i>
+{% endif %}
+{% if player.club.name %}
+    - {{ player.club }}
+{% endif %}
