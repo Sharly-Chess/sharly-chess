@@ -1,0 +1,37 @@
+#, python-format
+msgid "%(string)s:"
+msgstr ""
+
+msgid "FIDE ID"
+msgstr ""
+
+msgid "Invalid SCF code [{scf_code}]."
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "Replace the player to update this field."
+msgstr ""
+
+msgid "SCF"
+msgstr ""
+
+msgid "SCF Code"
+msgstr ""
+
+msgid "SCF database (local)"
+msgstr ""
+
+msgid "Swiss Chess Federation"
+msgstr ""
+
+msgid "Swiss Federation specific features"
+msgstr ""
+
+msgid "The player with SCF code [{scf_code}] already plays tournament [{tournament}]."
+msgstr ""
+
+msgid "Unrated *** SINGULAR"
+msgstr "msgid \"Unrated *** SINGULAR"
+
