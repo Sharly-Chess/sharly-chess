@@ -81,6 +81,9 @@ msgstr "OK"
 msgid "Other missing players: %(count)d"
 msgstr "Autres joueur·euses manquant·es : %(count)d"
 
+msgid "Please validate the french school to continue."
+msgstr "Merci de valider l'établissement scolaire avant de continuer."
+
 msgid "Postal code"
 msgstr "Code postal"
 
