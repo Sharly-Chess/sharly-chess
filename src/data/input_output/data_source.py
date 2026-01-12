@@ -20,7 +20,6 @@ from data.input_output.player_updater_fields import (
     RapidRatingUpdaterField,
     BlitzRatingUpdaterField,
     FederationUpdaterField,
-    ClubUpdaterField,
 )
 from data.player import Player, PlayerRating
 from database.sqlite.event.event_store import StoredPlayer
@@ -362,7 +361,6 @@ class FideDataSource(LocalDataSource):
             RapidRatingUpdaterField([PlayerRatingType.FIDE]),
             BlitzRatingUpdaterField([PlayerRatingType.FIDE]),
             FederationUpdaterField(),
-            ClubUpdaterField(),
         ]
 
     @staticmethod
