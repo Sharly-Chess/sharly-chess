@@ -1384,9 +1384,6 @@ msgstr "Date et heure"
 msgid "Date format"
 msgstr "Format des dates"
 
-msgid "Date of birth"
-msgstr "Date de naissance"
-
 msgid "Date of birth:"
 msgstr "Date de naissance :"
 
@@ -1442,9 +1439,8 @@ msgstr "Délai (secondes) :"
 msgid "Delete"
 msgstr "Supprimer"
 
-#, python-format
-msgid "Delete FIDE ID [%(old)s]"
-msgstr "Supprimer l'identifiant FIDE [%(old)s]"
+msgid "Delete <b>{value}</b>"
+msgstr "Supprimer <b>{value}</b>"
 
 msgid "Delete account"
 msgstr "Supprimer le compte"
@@ -2009,6 +2005,9 @@ msgstr "Titre FIDE :"
 msgid "FIDE database"
 msgstr "Base de données FIDE"
 
+msgid "FIDE rating lost"
+msgstr "classement FIDE perdu"
+
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
 
@@ -2050,9 +2049,6 @@ msgstr "Février"
 
 msgid "Fed *** FEDERATION FOR TABLE HEADER"
 msgstr "Féd."
-
-msgid "Fed."
-msgstr "Fed."
 
 msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
 msgstr "Fed."
@@ -3962,9 +3958,8 @@ msgstr "Renommer l'évènement"
 msgid "Replace"
 msgstr "Remplacer"
 
-#, python-format
-msgid "Replace [%(old)s] by [%(new)s]"
-msgstr "Remplacer [%(old)s] par [%(new)s]"
+msgid "Replace <b>{old}</b> by <b>{new}</b>"
+msgstr "Remplacer <b>{old}</b> par <b>{new}</b>"
 
 #, python-format
 msgid "Replace player [%(player)s]"
@@ -4297,10 +4292,6 @@ msgstr "Configuration du serveur"
 msgid "Server is already running!"
 msgstr "Le serveur est déjà en cours d'exécution !"
 
-#, python-format
-msgid "Set FIDE ID [%(new)s]"
-msgstr "Initialiser l'identifiant FIDE [%(new)s]"
-
 msgid "Set Full-Points Byes"
 msgstr "Allouer des points joker"
 
@@ -4318,6 +4309,9 @@ msgstr "Noter des résultats spéciaux"
 
 msgid "Set the current round"
 msgstr "Changer la ronde courante"
+
+msgid "Set to <b>{value}</b>"
+msgstr "Initialiser à <b>{value}</b>"
 
 msgid "Settings"
 msgstr "Paramètres"

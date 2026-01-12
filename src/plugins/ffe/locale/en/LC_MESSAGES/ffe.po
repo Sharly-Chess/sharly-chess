@@ -155,9 +155,6 @@ msgstr ""
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
 msgstr ""
 
-msgid "FFE licence number"
-msgstr ""
-
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr ""
@@ -320,10 +317,6 @@ msgstr ""
 msgid "Papi file"
 msgstr ""
 
-#, python-format
-msgid "Replace [%(old)s] by [%(new)s]"
-msgstr ""
-
 msgid "Replace the player to update this field."
 msgstr ""
 
@@ -482,4 +475,10 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "FFE licence number"
+#~ msgstr ""
+
+#~ msgid "Replace [%(old)s] by [%(new)s]"
+#~ msgstr ""
 
