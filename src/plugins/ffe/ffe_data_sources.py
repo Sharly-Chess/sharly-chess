@@ -163,6 +163,7 @@ class _FfeDataSource(ABC):
     async def _get_ffe_match_stored_players(
         self,
         ffe_licence_numbers: list[str],
+        fide_ids: list[int],
         name_keys: list[tuple[str, str, date]],
     ) -> list[StoredPlayer] | None:
         """Fetch player matches in the data source. Return None if it fails."""
@@ -187,6 +188,8 @@ class _FfeDataSource(ABC):
     ) -> bool:
         if licence_key := cls._get_licence_number(player1):
             return licence_key == cls._get_licence_number(player2)
+        if fide_id := player1.fide_id:
+            return fide_id == player2.fide_id
         if name_key := cls._get_name_key(player1):
             return name_key == cls._get_name_key(player2)
         return False
@@ -195,14 +198,19 @@ class _FfeDataSource(ABC):
         self, players: list[Player]
     ) -> list[StoredPlayer] | None:
         licence_numbers: list[str] = []
+        fide_ids: list[int] = []
         name_keys: list[tuple[str, str, date]] = []
         for player in players:
             stored_player = player.stored_player
             if licence_number := self._get_licence_number(stored_player):
                 licence_numbers.append(licence_number)
+            elif fide_id := stored_player.fide_id:
+                fide_ids.append(fide_id)
             elif name_key := self._get_name_key(stored_player):
                 name_keys.append(name_key)
-        return await self._get_ffe_match_stored_players(licence_numbers, name_keys)
+        return await self._get_ffe_match_stored_players(
+            licence_numbers, fide_ids, name_keys
+        )
 
     @property
     def _search_fields(self) -> list[str]:
@@ -245,6 +253,7 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
     async def _get_ffe_match_stored_players(
         self,
         ffe_licence_numbers: list[str],
+        fide_ids: list[int],
         name_keys: list[tuple[str, str, date]],
     ) -> list[StoredPlayer] | None:
         database = FfeDatabase()
@@ -256,10 +265,13 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
                 if ffe_licence_numbers
                 else []
             )
+            fide_id_matches = (
+                database.get_stored_players_by_fide_ids(fide_ids) if fide_ids else []
+            )
             name_matches = (
                 database.get_stored_players_by_name_keys(name_keys) if name_keys else []
             )
-        return licence_matches + name_matches
+        return licence_matches + fide_id_matches + name_matches
 
     @property
     def search_fields(self) -> list[str]:
@@ -313,6 +325,7 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
     async def _get_ffe_match_stored_players(
         self,
         ffe_licence_numbers: list[str],
+        fide_ids: list[int],
         name_keys: list[tuple[str, str, date]],
     ) -> list[StoredPlayer] | None:
         try:
@@ -324,12 +337,17 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
                     if ffe_licence_numbers
                     else []
                 )
+                fide_id_matches = (
+                    await server.get_stored_players_by_fide_ids(fide_ids)
+                    if fide_ids
+                    else []
+                )
                 name_matches = (
                     await server.get_stored_players_by_name_keys(name_keys)
                     if name_keys
                     else []
                 )
-                return licence_matches + name_matches
+                return licence_matches + fide_id_matches + name_matches
         except SharlyChessException:
             return None
 
