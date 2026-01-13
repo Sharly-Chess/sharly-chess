@@ -482,3 +482,11 @@ class ScfDatabase(LocalSourcePlayerDatabase):
             tuple(scf_codes),
         )
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
+
+    def get_stored_players_by_fide_id(self, fide_ids: list[int]) -> list[StoredPlayer]:
+        query_array = ', '.join('?' for _ in fide_ids)
+        self.execute(
+            f'SELECT * FROM player WHERE fide_id IN ({query_array})',
+            tuple(fide_ids),
+        )
+        return [self.get_stored_player_from_row(row) for row in self.fetchall()]

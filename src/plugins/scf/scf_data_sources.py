@@ -52,21 +52,32 @@ class ScfLocalDataSource(LocalDataSource):
     def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
         if scf_code := self._get_scf_code(player1):
             return scf_code == self._get_scf_code(player2)
+        if fide_id := player1.fide_id:
+            return fide_id == player2.fide_id
         return False
 
     async def get_match_stored_players(
         self, players: list[Player]
     ) -> list[StoredPlayer] | None:
         scf_codes: list[str] = []
+        fide_ids: list[int] = []
         for player in players:
             if scf_code := self._get_scf_code(player.stored_player):
                 scf_codes.append(scf_code)
+            if fide_id := player.stored_player.fide_id:
+                fide_ids.append(fide_id)
 
         database = ScfDatabase()
         if not database.exists():
             return None
         with database:
-            return database.get_stored_players_by_scf_code(scf_codes)
+            scf_code_matches = (
+                database.get_stored_players_by_scf_code(scf_codes) if scf_codes else []
+            )
+            fide_id_matches = (
+                database.get_stored_players_by_fide_id(fide_ids) if fide_ids else []
+            )
+        return scf_code_matches + fide_id_matches
 
     @property
     def search_fields(self) -> list[str]:
