@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional, Collection
 
 from litestar_htmx import HTMXRequest
 
+from common.logger import get_logger
 from common.network import LOCALHOST_IP, LOCALHOST_NAME
 from data.access_levels.actions import AuthAction
 from data.account import (
@@ -15,10 +16,12 @@ from data.access_levels.access_levels import AccessLevel
 from data.player import Player
 from data.tournament import Tournament
 from utils.enum import Result
-from web.session import SessionHandler
+from web.session import SessionUserAccountId, SessionUserAccountPasswordHash
 
 if TYPE_CHECKING:
     from data.event import Event
+
+logger = get_logger()
 
 
 class Client:
@@ -30,26 +33,37 @@ class Client:
         event: Optional['Event'] = None,
     ):
         self.request = request
-        self.host: str = (
+        self.host = (
             self.request.client.host
             if self.request.client and self.request.client.host
             else ''
         )
-        self.event: Optional['Event'] = event
-        self.account: Account
-        if self.host in [
-            LOCALHOST_IP,
-            LOCALHOST_NAME,
-        ]:
-            if self.event is not None:
-                self.account = self.event.administrator_account
-            else:
-                self.account = Account.predefined_administrator_account()
-        else:
-            if self.event is not None:
-                self.account = SessionHandler.get_user_account(self.request, self.event)
-            else:
-                self.account = Account.predefined_anonymous_account()
+        self.event = event
+        self.account = self._get_account()
+
+    def _get_account(self) -> Account:
+        if self.host in [LOCALHOST_IP, LOCALHOST_NAME]:
+            if self.event:
+                return self.event.administrator_account
+            return Account.predefined_administrator_account()
+        if not self.event:
+            return Account.predefined_anonymous_account()
+        account_id_handler = SessionUserAccountId(self.request, self.event.uniq_id)
+        account_id = account_id_handler.get()
+        accounts_by_id = self.event.active_user_accounts_by_id
+        if not account_id or account_id not in accounts_by_id:
+            return self.event.anonymous_account
+        hash_handler = SessionUserAccountPasswordHash(self.request, self.event.uniq_id)
+        account = accounts_by_id[account_id]
+        if account.password_hash != hash_handler.get():
+            logger.info(
+                'Password has changed for account [%s], force the re-authentication.',
+                account.full_name,
+            )
+            account_id_handler.unset()
+            hash_handler.unset()
+            return self.event.anonymous_account
+        return account
 
     def __str__(self) -> str:
         return f'{self.__class__.__name__}(account={self.account}, host={self.host})'

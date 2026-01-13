@@ -25,7 +25,7 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import SessionRotatorsShowDetails
 from web.utils import RequestUtils, SelectOption
 
 
@@ -48,9 +48,7 @@ class RotatorAdminWebContext(BaseEventAdminWebContext):
             admin_rotators = event.public_rotators_sorted_by_name
         return super().template_context | {
             'admin_event_tab': 'admin-event-rotators-tab',
-            'admin_rotators_show_details': (
-                SessionHandler.get_session_admin_rotators_show_details(self.request)
-            ),
+            'show_details': SessionRotatorsShowDetails(self.request).get(),
             'admin_rotators': admin_rotators,
             'admin_rotator': self.admin_rotator,
         }
@@ -94,12 +92,10 @@ class RotatorAdminController(BaseEventAdminController):
     async def htmx_admin_event_rotators_tab(
         self,
         request: HTMXRequest,
-        admin_rotators_show_details: bool | None,
+        show_details: bool | None,
     ) -> Template:
-        if admin_rotators_show_details is not None:
-            SessionHandler.set_session_admin_rotators_show_details(
-                request, admin_rotators_show_details
-            )
+        if show_details is not None:
+            SessionRotatorsShowDetails(request).set(show_details)
         return self._admin_event_rotator_render(RotatorAdminWebContext(request))
 
     # -------------------------------------------------------------------------

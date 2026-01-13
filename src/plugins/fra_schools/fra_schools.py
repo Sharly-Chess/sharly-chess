@@ -42,11 +42,11 @@ from plugins.fra_schools.fra_schools_entity import (
 )
 from plugins.fra_schools.fra_schools_event_controller import (
     FraSchoolsAdminEventController,
+    SessionPlayersFilterFRASchools,
 )
 from plugins.fra_schools.fra_schools_ranking_document import (
     FraSchoolsRankingPrintDocument,
 )
-from plugins.fra_schools.fra_schools_session_handler import FRASchoolsSessionHandler
 from plugins.fra_schools.utils import (
     FRASchoolsPlayerPluginData,
     FRASchoolsUtils,
@@ -163,7 +163,7 @@ class FRASchoolsPlugin(Plugin):
         self, web_context: PlayerAdminWebContext
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
-
+        request = web_context.request
         school_counts = FRASchoolsUtils.get_event_school_counts(
             web_context.client.allowed_players
         )
@@ -184,9 +184,7 @@ class FRASchoolsPlugin(Plugin):
             'fra_school_ids': sorted_school_ids,
             'fra_schools_by_id': plugin_data.fra_schools_by_id,
             'fra_school_counts': school_counts,
-            'fra_schools_filter': FRASchoolsSessionHandler.get_session_filter_schools(
-                web_context.request
-            ),
+            'fra_schools_filter': SessionPlayersFilterFRASchools(request).get(),
         }
 
     @hookimpl
@@ -217,9 +215,8 @@ class FRASchoolsPlugin(Plugin):
         web_context: PlayerAdminWebContext,
         template_context: dict[str, Any],
     ) -> list[Callable[[Player], bool]]:
-        filter_schools = FRASchoolsSessionHandler.get_session_filter_schools(
-            web_context.request
-        )
+        request = web_context.request
+        filter_schools = SessionPlayersFilterFRASchools(request).get()
         schools_ids = template_context['fra_school_ids']
         filters: list[Callable[[Player], bool]] = []
         if len(filter_schools) not in (0, len(schools_ids)):
@@ -233,7 +230,7 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl
     def clear_player_filters(self, request: HTMXRequest):
-        FRASchoolsSessionHandler.set_session_filter_schools(request, [])
+        SessionPlayersFilterFRASchools(request).unset()
 
     @hookimpl
     def player_sort_key(self, player: 'Player', sort_type: str) -> tuple | None:

@@ -31,7 +31,7 @@ from data.access_levels.client_tracker import ClientTracker
 from data.player import Federation, Club
 from utils.date_time import format_date, format_date_range, format_datetime
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import SessionLocale
 from web.utils import RequestUtils
 
 logger: Logger = get_logger()
@@ -47,7 +47,7 @@ class WebContext:
         self.request: HTMXRequest = request
         self.client = RequestUtils.get_client(request, reload_client)
         # sets the session locale to the thread
-        set_locale(SessionHandler.get_session_locale(request))
+        set_locale(SessionLocale(request).get())
         if request.client:
             # tracks the visit of the client
             ClientTracker().track_client(request.client.host)
@@ -402,7 +402,7 @@ class WebContext:
             'theme': self.theme,
             'locale_infos': locale_infos,
             'locale_options': locale_options,
-            'locale': SessionHandler.get_session_locale(self.request),
+            'locale': SessionLocale(self.request).get(),
             'client': self.client,
         }
 
@@ -466,7 +466,7 @@ class BaseController(Controller):
         if locale:
             # sets the locale to the current thread and stores it to the session
             if set_locale(locale):
-                SessionHandler.set_session_locale(request, locale)
+                SessionLocale(request).set(locale)
 
     @staticmethod
     def get_cycler(items: list[str]):

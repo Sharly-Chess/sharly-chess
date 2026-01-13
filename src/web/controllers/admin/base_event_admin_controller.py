@@ -20,7 +20,7 @@ from web.controllers.admin.base_admin_controller import (
 )
 from web.guards import EventGuard
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import SessionPrintLastTournaments
 from web.urls import admin_upload_item_url
 
 
@@ -47,24 +47,15 @@ class BaseEventAdminWebContext(AdminWebContext):
     ) -> list[int] | None:
         if tournament_id:
             return [tournament_id]
-
+        event = self.get_admin_event()
         tournament_ids: list[int] | None = None
-        if (
-            tournament_id is None
-            and (
-                last_tournaments
-                := SessionHandler.get_session_admin_print_last_tournaments(self.request)
-            )
-            is not None
+        if last_tournament_ids := (
+            SessionPrintLastTournaments(self.request, event.uniq_id).get()
         ):
-            event_uniq_id, tids = last_tournaments
-            if event_uniq_id == self.get_admin_event().uniq_id:
-                # Remove ids that are not in the event anymore
-                tournament_ids = [
-                    tid
-                    for tid in tids
-                    if tid in self.get_admin_event().tournaments_by_id
-                ]
+            # Remove ids that are not in the event anymore
+            tournament_ids = [
+                tid for tid in last_tournament_ids if tid in event.tournaments_by_id
+            ]
 
         return tournament_ids
 
