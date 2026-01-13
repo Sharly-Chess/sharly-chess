@@ -30,7 +30,7 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, ManageAccountGuard
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import SessionAccountsShowDetails, SessionPlayersActiveDataSource
 from web.utils import RequestUtils, SelectOption
 
 
@@ -69,15 +69,11 @@ class AccountAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_event_tab': 'admin-event-accounts-tab',
-            'admin_accounts_show_details': (
-                SessionHandler.get_session_admin_accounts_show_details(self.request)
-            ),
+            'show_details': SessionAccountsShowDetails(self.request).get(),
             'admin_account': self.admin_account,
             'admin_permission': self.admin_permission,
             'data_sources': DataSourceManager().objects(),
-            'selected_data_source': SessionHandler.get_session_admin_players_active_data_source(
-                self.request
-            ),
+            'selected_data_source': SessionPlayersActiveDataSource(self.request).get(),
         }
 
 
@@ -105,12 +101,10 @@ class AccountAdminController(BaseEventAdminController):
     async def htmx_admin_event_accounts_tab(
         self,
         request: HTMXRequest,
-        admin_accounts_show_details: bool | None,
+        show_details: bool | None,
     ) -> Template:
-        if admin_accounts_show_details is not None:
-            SessionHandler.set_session_admin_accounts_show_details(
-                request, admin_accounts_show_details
-            )
+        if show_details is not None:
+            SessionAccountsShowDetails(request).set(show_details)
         return self.admin_event_account_render(AccountAdminWebContext(request))
 
     # --------------------------------------------------------------------------

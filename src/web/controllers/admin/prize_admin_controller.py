@@ -44,7 +44,12 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, TournamentActionGuard
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import (
+    SessionPrizesAddOtherActive,
+    SessionPrizeCategoriesAddOtherActive,
+    SessionPrizeCriteriaAddOtherActive,
+    SessionPrizesShowDetails,
+)
 from web.utils import SelectOption
 
 logger = get_logger()
@@ -66,9 +71,7 @@ class PrizeAdminWebContext(BaseEventAdminWebContext):
         self.admin_prize_category: PrizeCategory | None = None
         self.admin_prize_criterion: PrizeCriterion | None = None
         self.admin_prize: Prize | None = None
-        self.show_details = SessionHandler.get_session_admin_prizes_show_details(
-            request
-        )
+        self.show_details = SessionPrizesShowDetails(request).get()
         self.allowed_tournaments = self.client.allowed_tournaments_for_action(
             AuthAction.VIEW_PRIZES_TAB
         )
@@ -216,7 +219,7 @@ class PrizeAdminController(BaseEventAdminController):
         show_details: bool | None,
     ) -> Template:
         if show_details is not None:
-            SessionHandler.set_session_admin_prizes_show_details(request, show_details)
+            SessionPrizesShowDetails(request).set(show_details)
         web_context = PrizeAdminWebContext(request, tournament_id)
 
         if prize_group_id:
@@ -458,11 +461,7 @@ class PrizeAdminController(BaseEventAdminController):
             'modal': 'prize_category',
             'action': action,
             'prize_sharing_options': prize_sharing_options,
-            'add_other_active': (
-                SessionHandler.get_session_admin_prize_category_add_other_active(
-                    request
-                )
-            ),
+            'add_other_active': SessionPrizeCategoriesAddOtherActive(request).get(),
             'data': data,
             'errors': errors or {},
         }
@@ -500,9 +499,7 @@ class PrizeAdminController(BaseEventAdminController):
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
 
         add_other = 'add_other' in data
-        SessionHandler.set_session_admin_prize_category_add_other_active(
-            request, add_other
-        )
+        SessionPrizeCategoriesAddOtherActive(request).set(add_other)
         if errors := self._validate_prize_category_form_data(
             data, web_context.get_admin_prize_group()
         ):
@@ -858,11 +855,7 @@ class PrizeAdminController(BaseEventAdminController):
                 for player_filter in PrizePlayerFilterManager(event).objects()
             }
             | {'': []},
-            'add_other_active': (
-                SessionHandler.get_session_admin_prize_criterion_add_other_active(
-                    request
-                )
-            ),
+            'add_other_active': SessionPrizeCriteriaAddOtherActive(request).get(),
             'data': default_data | data,
             'errors': errors or {},
         }
@@ -892,9 +885,7 @@ class PrizeAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
 
         add_other = 'add_other' in data
-        SessionHandler.set_session_admin_prize_criterion_add_other_active(
-            request, add_other
-        )
+        SessionPrizeCriteriaAddOtherActive(request).set(add_other)
         flat_data = WebContext.flatten_list_data(data)
         if errors := self._validate_prize_criterion_form_data(event, flat_data):
             return self._admin_event_prizes_render(
@@ -1178,9 +1169,7 @@ class PrizeAdminController(BaseEventAdminController):
             'modal': 'prize_form',
             'prize_types': prize_types,
             'type_options': type_options,
-            'add_other_active': (
-                SessionHandler.get_session_admin_prize_add_other_active(request)
-            ),
+            'add_other_active': SessionPrizesAddOtherActive(request).get(),
             'action': action,
             'data': default_data | (data or {}),
             'errors': errors or {},
@@ -1210,7 +1199,7 @@ class PrizeAdminController(BaseEventAdminController):
         )
 
         add_other = 'add_other' in data
-        SessionHandler.set_session_admin_prize_add_other_active(request, add_other)
+        SessionPrizesAddOtherActive(request).set(add_other)
         prize_category = web_context.get_admin_prize_category()
 
         if errors := self._validate_prize_form_data(

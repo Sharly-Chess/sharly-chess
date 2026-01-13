@@ -29,7 +29,11 @@ from web.controllers.admin.event_admin_controller import Redirect
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, ManageScreenEntityGuard
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import (
+    SessionScreensShowFamilyScreens,
+    SessionScreensShowDetails,
+    SessionScreensScreenTypes,
+)
 from web.urls import admin_event_url
 
 
@@ -476,13 +480,9 @@ class ScreenAdminController(BaseEventAdminController):
 
         if web_context.client.can_manage_screens:
             # 'admin' view
-            admin_screens_show_family_screens: bool = (
-                SessionHandler.get_session_admin_screens_show_family_screens(
-                    web_context.request
-                )
-            )
+            show_family_screens = SessionScreensShowFamilyScreens(request).get()
             screens_by_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
-            if admin_screens_show_family_screens:
+            if show_family_screens:
                 screens_by_type_sorted_by_uniq_id = (
                     event.screens_by_screen_type_sorted_by_uniq_id
                 )
@@ -502,13 +502,9 @@ class ScreenAdminController(BaseEventAdminController):
             template_context |= {
                 'admin_event_tab': 'admin-event-screens-tab',
                 'admin_screen_types_data': admin_screen_types_data,
-                'admin_screens_show_family_screens': admin_screens_show_family_screens,
-                'admin_screens_show_details': SessionHandler.get_session_admin_screens_show_details(
-                    web_context.request
-                ),
-                'admin_screens_screen_types': SessionHandler.get_session_admin_screens_screen_types(
-                    web_context.request
-                ),
+                'show_family_screens': show_family_screens,
+                'show_details': SessionScreensShowDetails(request).get(),
+                'admin_screens_screen_types': SessionScreensScreenTypes(request).get(),
                 'admin_screens_count': sum(
                     len(admin_screen_types_data[ScreenType(screen_type)])
                     for screen_type in admin_screen_types_data
@@ -808,8 +804,8 @@ class ScreenAdminController(BaseEventAdminController):
     async def htmx_admin_event_screens_tab(
         self,
         request: HTMXRequest,
-        admin_screens_show_family_screens: bool | None,
-        admin_screens_show_details: bool | None,
+        show_family_screens: bool | None,
+        show_details: bool | None,
         admin_screens_show_boards: bool | None,
         admin_screens_show_input: bool | None,
         admin_screens_show_players: bool | None,
@@ -817,17 +813,11 @@ class ScreenAdminController(BaseEventAdminController):
         admin_screens_show_ranking: bool | None,
         admin_screens_show_image: bool | None,
     ) -> Template | Redirect:
-        if admin_screens_show_family_screens is not None:
-            SessionHandler.set_session_admin_screens_show_family_screens(
-                request, admin_screens_show_family_screens
-            )
-        if admin_screens_show_details is not None:
-            SessionHandler.set_session_admin_screens_show_details(
-                request, admin_screens_show_details
-            )
-        screen_types: set[str] = SessionHandler.get_session_admin_screens_screen_types(
-            request
-        )
+        if show_family_screens is not None:
+            SessionScreensShowFamilyScreens(request).set(show_family_screens)
+        if show_details is not None:
+            SessionScreensShowDetails(request).set(show_details)
+        screen_types = SessionScreensScreenTypes(request).get()
         for screen_type, param in {
             'boards': admin_screens_show_boards,
             'input': admin_screens_show_input,
@@ -844,9 +834,7 @@ class ScreenAdminController(BaseEventAdminController):
                         screen_types.remove(screen_type)
                     except KeyError:
                         pass
-                SessionHandler.set_session_admin_screens_screen_types(
-                    request, screen_types
-                )
+                SessionScreensScreenTypes(request).set(screen_types)
                 continue
         return self._admin_event_screens_render(request)
 

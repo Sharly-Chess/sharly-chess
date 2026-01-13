@@ -79,7 +79,7 @@ from web.controllers.admin.base_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import SessionEventsShowDetails
 from web.urls import admin_event_tournaments_url, admin_event_url
 
 logger: Logger = get_logger()
@@ -255,14 +255,15 @@ class IndexAdminController(BaseAdminController):
                     'divider': True,
                 },
             }
+        admin_tab = web_context.admin_tab
         if (not template_context or 'modal' not in template_context) and (
-            not web_context.admin_tab or nav_tabs[web_context.admin_tab]['disabled']
+            not admin_tab or nav_tabs[admin_tab]['disabled']
         ):
             web_context.admin_tab = list(nav_tabs.keys())[0]
         for nav_index in range(len(nav_tabs)):
             if (
-                web_context.admin_tab == list(nav_tabs.keys())[nav_index]
-                and nav_tabs[web_context.admin_tab]['disabled']
+                admin_tab == list(nav_tabs.keys())[nav_index]
+                and nav_tabs[admin_tab]['disabled']
             ):
                 web_context.admin_tab = list(nav_tabs.keys())[
                     (nav_index + 1) % len(nav_tabs)
@@ -272,6 +273,7 @@ class IndexAdminController(BaseAdminController):
             encoding='utf-8'
         )
 
+        request = web_context.request
         context = (
             web_context.template_context
             | {
@@ -281,11 +283,7 @@ class IndexAdminController(BaseAdminController):
                 'format_date': format_date,
                 'nav_tabs': nav_tabs,
                 'svg_logo': svg_logo,
-                'admin_events_show_details': (
-                    SessionHandler.get_session_admin_events_show_details(
-                        web_context.request
-                    )
-                ),
+                'show_details': SessionEventsShowDetails(request).get(),
             }
             | (template_context or {})
         )
@@ -310,14 +308,12 @@ class IndexAdminController(BaseAdminController):
         self,
         request: HTMXRequest,
         admin_tab: str,
-        admin_events_show_details: bool | None,
+        show_details: bool | None,
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
 
-        if admin_events_show_details is not None:
-            SessionHandler.set_session_admin_events_show_details(
-                request, admin_events_show_details
-            )
+        if show_details is not None:
+            SessionEventsShowDetails(request).set(show_details)
 
         return self._admin_render(web_context=web_context)
 
