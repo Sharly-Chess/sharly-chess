@@ -3799,6 +3799,10 @@ msgid "No monetary prizes assigned to players for this tournament."
 msgstr "Nenhum prêmio monetário atribuído aos jogadores para este torneio."
 
 #, ai_translation
+msgid "No network detected, use the Refresh button when connected."
+msgstr "Nenhuma rede detectada, use o botão Atualizar quando conectado."
+
+#, ai_translation
 msgid "No organiser"
 msgstr "Nenhum organizador"
 
