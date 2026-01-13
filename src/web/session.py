@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, is_dataclass
 from logging import Logger
-from typing import Any
+from typing import Any, ClassVar, cast, get_args, get_origin
 
 from litestar.plugins.htmx import HTMXRequest
 
@@ -121,10 +121,37 @@ class TournamentSessionVariable[T](SubKeySessionVariable[T], ABC):
 
 
 class DataclassSessionVariable[T](SessionVariable[T], ABC):
+    _data_class: ClassVar[type[Any]]
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+        for base in getattr(cls, '__orig_bases__', ()):
+            if get_origin(base) is DataclassSessionVariable:
+                (dc,) = get_args(base)
+
+                if not isinstance(dc, type):
+                    raise TypeError(
+                        f'{cls.__name__} must be parametrized with a dataclass *type*, '
+                        f'got {dc!r}'
+                    )
+
+                if not is_dataclass(dc):
+                    raise TypeError(
+                        f'{cls.__name__} must be parametrized with a dataclass type, '
+                        f'got {dc.__name__}'
+                    )
+
+                cls._data_class = dc
+                return
+
+        raise TypeError(
+            f'{cls.__name__} must inherit as DataclassSessionVariable[SomeDataclass]'
+        )
+
     @property
-    @abstractmethod
     def data_class(self) -> type[T]:
-        """Dataclass type returned of the session variable."""
+        return self.__class__._data_class
 
     @property
     def default_value(self) -> T:
@@ -136,7 +163,7 @@ class DataclassSessionVariable[T](SessionVariable[T], ABC):
         return dict_to_dataclass(self.data_class, self.request.session[self.key])
 
     def set(self, value: T):
-        self.request.session[self.key] = asdict(value)  # type: ignore
+        self.request.session[self.key] = asdict(cast(Any, value))
 
 
 class SessionUserAccountId(SubKeyNoneSessionVariable[int]):
@@ -164,10 +191,6 @@ class SessionLastResultUpdated(DataclassSessionVariable[LastBoardUpdated]):
     def key(self) -> str:
         return 'last_result_updated'
 
-    @property
-    def data_class(self) -> type[LastBoardUpdated]:
-        return LastBoardUpdated
-
 
 @dataclass
 class LastPlayerUpdated:
@@ -181,19 +204,11 @@ class SessionLastIllegalMoveUpdated(DataclassSessionVariable[LastPlayerUpdated])
     def key(self) -> str:
         return 'last_illegal_move_updated'
 
-    @property
-    def data_class(self) -> type[LastPlayerUpdated]:
-        return LastPlayerUpdated
-
 
 class SessionLastCheckInUpdated(DataclassSessionVariable[LastPlayerUpdated]):
     @property
     def key(self) -> str:
         return 'last_check_in_updated'
-
-    @property
-    def data_class(self) -> type[LastPlayerUpdated]:
-        return LastPlayerUpdated
 
 
 class SessionScreensShowFamilyScreens(BoolSessionVariable):
@@ -448,10 +463,6 @@ class SessionPairingsPageIdentifier(DataclassSessionVariable[PairingsPageIdentif
     @property
     def key(self) -> str:
         return 'pairings_page_identifier'
-
-    @property
-    def data_class(self) -> type[PairingsPageIdentifier]:
-        return PairingsPageIdentifier
 
 
 class SessionPairingsSelectedTournament(SubKeyNoneSessionVariable[int]):
