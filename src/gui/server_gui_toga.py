@@ -591,6 +591,8 @@ class SharlyChessServerToga(toga.App):
                     text_align='center',
                 )
             )
+        assert isinstance(self.main_window, toga.MainWindow)
+        self.main_window.size = self.compact_size
 
     def _noop(self, widget: toga.Widget):
         pass
