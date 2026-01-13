@@ -14,7 +14,6 @@ from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_session import FFESession
-from plugins.ffe.ffe_session_handler import FFESessionHandler
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.utils import PluginUtils
 from utils.date_time import format_timestamp_date_time
@@ -26,8 +25,27 @@ from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, TournamentActionGuard
+from web.session import ListSessionVariable, WrapperListSessionVariable
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
+
+
+class SessionPlayersFilterFFELeague(ListSessionVariable[str]):
+    @property
+    def key(self) -> str:
+        return 'ffe_players_filter_leagues'
+
+
+class SessionPlayersFilterFFELicence(WrapperListSessionVariable[PlayerFFELicence]):
+    @property
+    def key(self) -> str:
+        return 'ffe_players_filter_licence'
+
+    def from_session_value(self, value: Any) -> PlayerFFELicence:
+        return PlayerFFELicence(value)
+
+    def to_session_value(self, element: PlayerFFELicence) -> Any:
+        return element.value
 
 
 class FfeAdminEventController(BaseEventAdminController):
@@ -51,18 +69,16 @@ class FfeAdminEventController(BaseEventAdminController):
         admin_players_filter_licences: list[int] | None = None,
     ) -> Template:
         if admin_players_filter_leagues is not None:
-            FFESessionHandler.set_session_admin_players_filter_leagues(
-                request,
-                [league for league in admin_players_filter_leagues if league != '*'],
+            SessionPlayersFilterFFELeague(request).set(
+                [league for league in admin_players_filter_leagues if league != '*']
             )
         elif admin_players_filter_licences is not None:
-            FFESessionHandler.set_session_admin_players_filter_licences(
-                request,
+            SessionPlayersFilterFFELicence(request).set(
                 [
                     PlayerFFELicence(query_param)
                     for query_param in admin_players_filter_licences
                     if query_param >= 0  # -1 must be ignored
-                ],
+                ]
             )
         PlayerAdminController.set_players_search_results(request)
         return PlayerAdminController._admin_event_players_render(

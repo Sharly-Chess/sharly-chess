@@ -13,7 +13,7 @@
 
 {% block card_text %}
     <div class="d-flex flex-column gap-1">
-        {% if admin_screens_show_details and client.can_manage_screens %}
+        {% if show_details and client.can_manage_screens %}
             {% if screen.type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
                 <div>
                     <span class="pe-1">{{ macros.screen_type_icon(screen.type, true) }}</span>
@@ -21,7 +21,7 @@
                 </div>
             {% endif %}
         {% endif %}
-        {% if admin_screens_show_details and client.can_view_public_screens %}
+        {% if show_details and client.can_view_public_screens %}
             {% if screen.type == 'ranking' %}
                 <div class="{% if not screen.ranking_round %}text-secondary{% endif %}">
                     {% if screen.ranking_round %}
@@ -137,7 +137,7 @@
                 {% if screen.timer %}{{ _('Timer: %(timer_uniq_id)s', timer_uniq_id=screen.timer.name) }}{% else %}<span class="fst-italic">{{ _('Timer: none') }}</span>{% endif %}
             </div>
         {% endif %}
-        {% if admin_screens_show_details and client.can_manage_screens %}
+        {% if show_details and client.can_manage_screens %}
             {% if screen.type == 'input' %}
                 <div>
                     <i class="bi-x-circle pe-1"></i>
