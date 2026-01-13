@@ -298,7 +298,7 @@ class FfePlugin(Plugin):
             }
         )
         # The licences that will be selected on the licence select list and used to filter the players
-        filter_licences = SessionPlayersFilterFFELeague(request).get()
+        filter_licences = SessionPlayersFilterFFELicence(request).get()
         league_counts: Counter[str] = Counter[str]()
         for player in allowed_players:
             league_counts[FFEUtils.get_player_plugin_data(player).league or ''] += 1
