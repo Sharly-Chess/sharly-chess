@@ -50,6 +50,7 @@
 - Use rotator messages prior to screen messages (3.4.4)
 - Allow batch updating the dates of timer hours (3.4.5)
 - Fixed rotator timers display from display controllers (3.4.6)
+- Fixed the default tournament screens (3.4.6)
 
 ## Outputs
 
