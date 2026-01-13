@@ -26,7 +26,7 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import SessionTimersAddOtherActive
 
 
 class TimerAdminWebContext(BaseEventAdminWebContext):
@@ -514,17 +514,14 @@ class TimerAdminController(BaseEventAdminController):
                     'text_after': text_after,
                 }
             )
+        request = web_context.request
         return {
             'modal': 'timer_hour_form',
             'action': action,
             'data': data,
             'errors': errors or {},
             'success_message': success_message,
-            'add_other_active': (
-                SessionHandler.get_session_admin_timer_add_other_active(
-                    web_context.request
-                )
-            ),
+            'add_other_active': SessionTimersAddOtherActive(request).get(),
         }
 
     @staticmethod
@@ -688,9 +685,7 @@ class TimerAdminController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = TimerAdminWebContext(request, timer_id)
-        SessionHandler.set_session_admin_timer_add_other_active(
-            request, 'add_other' in data
-        )
+        SessionTimersAddOtherActive(request).set('add_other' in data)
         stored_timer_hour, errors = self._read_timer_hour_form_data(
             web_context, FormAction.CREATE, data
         )

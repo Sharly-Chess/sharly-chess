@@ -75,9 +75,9 @@ class PlayerRating:
     @classmethod
     def from_stored_value(cls, dict_rating: dict[str, int | None]) -> Self:
         return cls(
-            estimated=dict_rating.get('estimated'),
-            national=dict_rating.get('national'),
-            fide=dict_rating.get('fide'),
+            estimated=dict_rating.get('estimated', None),
+            national=dict_rating.get('national', None),
+            fide=dict_rating.get('fide', None),
         )
 
     @classmethod
@@ -92,21 +92,32 @@ class PlayerRating:
             case _:
                 raise ValueError(f'{rating_type=}')
 
-    def get_type_value(self, rating_type: PlayerRatingType):
+    def get_type_value(self, rating_type: PlayerRatingType) -> int | None:
         if rating_type == PlayerRatingType.FIDE:
             return self.fide
-        if rating_type == PlayerRatingType.NATIONAL:
+        elif rating_type == PlayerRatingType.NATIONAL:
             return self.national
         else:
             return self.estimated
 
+    def set_value_from_type(self, value: int | None, rating_type: PlayerRatingType):
+        if rating_type == PlayerRatingType.FIDE:
+            self.fide = value
+        elif rating_type == PlayerRatingType.NATIONAL:
+            self.national = value
+        else:
+            self.estimated = value
+
     @property
     def stored_value(self) -> dict[str, int | None]:
-        return {
-            'estimated': self.estimated,
-            'national': self.national,
-            'fide': self.fide,
-        }
+        ratings: dict[str, int | None] = {}
+        if self.estimated is not None:
+            ratings['estimated'] = self.estimated
+        if self.national is not None:
+            ratings['national'] = self.national
+        if self.fide is not None:
+            ratings['fide'] = self.fide
+        return ratings
 
     def __str__(self) -> str:
         parts = []
@@ -125,7 +136,7 @@ class PlayerRatingAndType:
     type: PlayerRatingType
 
     def __str__(self) -> str:
-        return f'{self.value} {self.type.short_name}'
+        return f'{self.value} {self.type.short_name}' if self.value else '-'
 
 
 @dataclass

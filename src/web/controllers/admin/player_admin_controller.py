@@ -31,7 +31,7 @@ from data.columns.player_datasheet import DatasheetColumn
 from data.event import Event
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
-from data.input_output.data_source import PlayerComparator, DataSource
+from data.input_output.data_source import DataSource
 from data.input_output.managers import DataSourceManager
 from data.player import Player, Federation, Club, PlayerRating, TournamentPlayer
 from data.player_categories import PlayerCategory
@@ -65,7 +65,22 @@ from web.guards import (
     PlayerTournamentActionGuard,
 )
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import (
+    SessionPlayersEvent,
+    SessionPlayersSort,
+    SessionPlayersFilterColumns,
+    SessionPlayersFilterFederations,
+    SessionPlayersFilterName,
+    SessionPlayersFilterClubsSearch,
+    SessionPlayersFilterGenders,
+    SessionPlayersFilterCheckIns,
+    SessionPlayersFilterTournaments,
+    SessionPlayersFilterCategories,
+    SessionPlayersFilterClubs,
+    SessionPlayersSearchResultsId,
+    SessionPlayersActiveDataSource,
+    SessionPlayersAddOtherActive,
+)
 from web.utils import SelectOption
 
 logger: Logger = get_logger()
@@ -328,55 +343,42 @@ class PlayerAdminController(BaseEventAdminController):
         allowed_players_by_id = web_context.client.allowed_players_by_id
         allowed_players = allowed_players_by_id.values()
         # The federations that will be shown on the federation select list
-        players_federations: list[Federation] = sorted(
-            {player.federation for player in allowed_players}
-        )
+        players_federations = sorted({player.federation for player in allowed_players})
         # The federations that will be selected on the federation select list and used to filter the players
-        filter_federations: list[Federation] = [
+        filter_federations = [
             f
-            for f in SessionHandler.get_session_admin_players_filter_federations(
-                request
-            )
+            for f in SessionPlayersFilterFederations(request).get()
             if f in players_federations
         ]
         # The clubs that will be shown on the club select list
-        players_clubs: list[Club] = sorted(
+        players_clubs = sorted(
             {player.club for player in allowed_players if player.club is not None}
         )
         # The clubs that will be selected on the club select list and used to filter the players
-        filter_clubs: list[Club] = [
-            c
-            for c in SessionHandler.get_session_admin_players_filter_clubs(request)
-            if c in players_clubs
+        filter_clubs = [
+            c for c in SessionPlayersFilterClubs(request).get() if c in players_clubs
         ]
         # The genders that will be selected on the gender select list and used to filter the players
-        filter_genders: list[PlayerGender] = (
-            SessionHandler.get_session_admin_players_filter_genders(request)
-        )
+        filter_genders = SessionPlayersFilterGenders(request).get()
         # The check-in statuses that will be selected on the
         # check-in status select list and used to filter the players
-        filter_check_ins: list[bool | None] = (
-            SessionHandler.get_session_admin_players_filter_check_ins(request)
-        )
+        filter_check_ins = SessionPlayersFilterCheckIns(request).get()
         # The tournaments that will be selected on the tournament select list and used to filter the players
-        filter_tournaments: set[int] = set(
-            SessionHandler.get_session_admin_players_filter_tournaments(request)
+        filter_tournaments = set(
+            SessionPlayersFilterTournaments(request).get()
         ).intersection(set(allowed_tournament_ids))
 
         # The categories that will be shown on the category select list
-        players_categories: list[PlayerCategory] = sorted(
+        players_categories = sorted(
             {player.single_tournament_player.category for player in allowed_players}
         )
         # The categories that will be selected on the category select list and used to filter the players
-        filter_categories: list[PlayerCategory] = (
-            SessionHandler.get_session_admin_players_filter_categories(request)
-        )
+        filter_categories = SessionPlayersFilterCategories(request).get()
         # The name the players must match
-        filter_name: str = SessionHandler.get_session_admin_players_filter_name(request)
+        filter_name = SessionPlayersFilterName(request).get()
         # The origin (federation+league+club) the players must match
-        filter_origin: str = (
-            SessionHandler.get_session_admin_players_filter_clubs_search(request)
-        )
+        filter_origin = SessionPlayersFilterClubsSearch(request).get()
+
         filters: list[Callable[[Player], bool]] = []
         if len(filter_genders) not in (0, 3):
             filters.append(lambda player: player.gender in filter_genders)
@@ -512,27 +514,21 @@ class PlayerAdminController(BaseEventAdminController):
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
         filtered_players = cls.filtered_players(request, event.players_by_id.values())
-        sort_type = SessionHandler.get_session_admin_players_sort(request)
+        sort_type = SessionPlayersSort(request).get()
         search_results = cls.sorted_player_ids(event, filtered_players, sort_type)
-        results_session_id = SessionHandler.get_session_admin_players_search_results_id(
-            request
-        )
+        results_session_id = SessionPlayersSearchResultsId(request).get()
         if not results_session_id:
             results_session_id = (
                 max([0] + [id_ for id_ in cls.search_results_by_session]) + 1
             )
-            SessionHandler.set_session_admin_players_search_results_id(
-                request, results_session_id
-            )
+            SessionPlayersSearchResultsId(request).set(results_session_id)
         cls.search_results_by_session[results_session_id] = search_results
-        SessionHandler.set_session_admin_players_event(request, event.uniq_id)
+        SessionPlayersEvent(request).set(event.uniq_id)
         return search_results
 
     @classmethod
     def delete_from_search_results(cls, request: HTMXRequest, player_id: int):
-        results_session_id = SessionHandler.get_session_admin_players_search_results_id(
-            request
-        )
+        results_session_id = SessionPlayersSearchResultsId(request).get()
         if not results_session_id:
             return
         try:
@@ -609,10 +605,8 @@ class PlayerAdminController(BaseEventAdminController):
             request, player_id, tournament_id, reload_event=reload_event
         )
         event = web_context.get_admin_event()
-        session_event_uniq_id = SessionHandler.get_session_admin_player_event(request)
-        search_results_id = SessionHandler.get_session_admin_players_search_results_id(
-            request
-        )
+        session_event_uniq_id = SessionPlayersEvent(request).get()
+        search_results_id = SessionPlayersSearchResultsId(request).get()
 
         if (
             search_results_id is None
@@ -705,42 +699,32 @@ class PlayerAdminController(BaseEventAdminController):
                 'comment',
                 'record',
             ],
-            'admin_players_sort': SessionHandler.get_session_admin_players_sort(
-                web_context.request
-            ),
+            'admin_players_sort': SessionPlayersSort(request).get(),
             'admin_players_federations': players_federations,
             'admin_players_clubs': players_clubs,
             'admin_players_yobs': players_yobs,
             'admin_players_categories': players_categories,
             'admin_players_genders': players_genders,
             'admin_players_check_ins': players_check_ins,
-            'admin_players_filter_columns': SessionHandler.get_session_admin_players_filter_columns(
-                web_context.request
-            ),
-            'admin_players_filter_federations': SessionHandler.get_session_admin_players_filter_federations(
-                web_context.request
-            ),
-            'admin_players_filter_clubs': SessionHandler.get_session_admin_players_filter_clubs(
-                web_context.request
-            ),
-            'admin_players_filter_clubs_search': SessionHandler.get_session_admin_players_filter_clubs_search(
-                web_context.request
-            ),
-            'admin_players_filter_genders': SessionHandler.get_session_admin_players_filter_genders(
-                web_context.request
-            ),
-            'admin_players_filter_check_ins': SessionHandler.get_session_admin_players_filter_check_ins(
-                web_context.request
-            ),
-            'admin_players_filter_tournaments': SessionHandler.get_session_admin_players_filter_tournaments(
-                web_context.request
-            ),
-            'admin_players_filter_categories': SessionHandler.get_session_admin_players_filter_categories(
-                web_context.request
-            ),
-            'admin_players_filter_name': SessionHandler.get_session_admin_players_filter_name(
-                web_context.request
-            ),
+            'admin_players_filter_columns': SessionPlayersFilterColumns(request).get(),
+            'admin_players_filter_federations': SessionPlayersFilterFederations(
+                request
+            ).get(),
+            'admin_players_filter_clubs': SessionPlayersFilterClubs(request).get(),
+            'admin_players_filter_clubs_search': SessionPlayersFilterClubsSearch(
+                request
+            ).get(),
+            'admin_players_filter_genders': SessionPlayersFilterGenders(request).get(),
+            'admin_players_filter_check_ins': SessionPlayersFilterCheckIns(
+                request
+            ).get(),
+            'admin_players_filter_tournaments': SessionPlayersFilterTournaments(
+                request
+            ).get(),
+            'admin_players_filter_categories': SessionPlayersFilterCategories(
+                request
+            ).get(),
+            'admin_players_filter_name': SessionPlayersFilterName(request).get(),
             'admin_players_extra_columns': extra_columns,
             'data_sources': DataSourceManager().objects(),
             'player_addable_tournaments': player_addable_tournaments,
@@ -915,9 +899,9 @@ class PlayerAdminController(BaseEventAdminController):
                     },
                     'federation_options': cls._get_federation_options(),
                     'tournament_options': tournament_options,
-                    'selected_data_source': SessionHandler.get_session_admin_players_active_data_source(
+                    'selected_data_source': SessionPlayersActiveDataSource(
                         request
-                    ),
+                    ).get(),
                     'data_source_options': DataSourceManager().options(),
                     'plugin_templates_by_section': plugin_templates_by_section,
                     'previous_player': (
@@ -926,11 +910,7 @@ class PlayerAdminController(BaseEventAdminController):
                         else None
                     ),
                     'warning_message': warning_message,
-                    'add_other_active': (
-                        SessionHandler.get_session_admin_player_add_other_active(
-                            request
-                        )
-                    ),
+                    'add_other_active': SessionPlayersAddOtherActive(request).get(),
                     'modal': modal,
                     'action': action,
                     'data': data,
@@ -1035,46 +1015,49 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> Template:
         event = RequestUtils.get_optional_event(request)
         if admin_players_sort is not None:
-            SessionHandler.set_session_admin_players_sort(request, admin_players_sort)
+            SessionPlayersSort(request).set(admin_players_sort)
+        elif admin_players_filter_name is not None:
+            SessionPlayersFilterName(request).set(
+                normalized_key(admin_players_filter_name)
+            )
         elif admin_players_filter_columns is not None:
-            SessionHandler.set_session_admin_players_filter_columns(
-                request,
+            SessionPlayersFilterColumns(request).set(
                 [
                     column
                     for column in admin_players_filter_columns
                     if column  # '' must be ignored
-                ],
+                ]
             )
         elif admin_players_filter_federations is not None:
-            SessionHandler.set_session_admin_players_filter_federations(
-                request,
+            SessionPlayersFilterFederations(request).set(
                 [
                     Federation.from_query_param(query_param)
                     for query_param in admin_players_filter_federations
                     if query_param != '*'
-                ],
+                ]
             )
         elif admin_players_filter_clubs is not None:
-            SessionHandler.set_session_admin_players_filter_clubs(
-                request,
+            SessionPlayersFilterClubs(request).set(
                 [
                     Club.from_query_param(query_param)
                     for query_param in admin_players_filter_clubs
                     if query_param != '*'
-                ],
+                ]
+            )
+        elif admin_players_filter_clubs_search is not None:
+            SessionPlayersFilterClubsSearch(request).set(
+                normalized_key(admin_players_filter_clubs_search)
             )
         elif admin_players_filter_genders is not None:
-            SessionHandler.set_session_admin_players_filter_genders(
-                request,
+            SessionPlayersFilterGenders(request).set(
                 [
                     PlayerGender(query_param)
                     for query_param in admin_players_filter_genders
                     if query_param >= 0  # -1 must be ignored
-                ],
+                ]
             )
         elif admin_players_filter_check_ins is not None:
-            SessionHandler.set_session_admin_players_filter_check_ins(
-                request,
+            SessionPlayersFilterCheckIns(request).set(
                 [
                     {
                         0: None,
@@ -1083,43 +1066,33 @@ class PlayerAdminController(BaseEventAdminController):
                     }.get(query_param, None)
                     for query_param in admin_players_filter_check_ins
                     if query_param >= 0  # -1 must be ignored
-                ],
+                ]
             )
         elif admin_players_filter_tournaments is not None:
-            SessionHandler.set_session_admin_players_filter_tournaments(
-                request,
+            SessionPlayersFilterTournaments(request).set(
                 [
                     query_param
                     for query_param in admin_players_filter_tournaments
                     if query_param > 0  # 0 must be ignored
-                ],
+                ]
             )
         elif admin_players_filter_categories is not None:
-            SessionHandler.set_session_admin_players_filter_categories(
-                request,
+            SessionPlayersFilterCategories(request).set(
                 [
                     PlayerCategory.from_id(query_param)
                     for query_param in admin_players_filter_categories
                     if query_param  # '' must be ignored
-                ],
-            )
-        elif admin_players_filter_name is not None:
-            SessionHandler.set_session_admin_players_filter_name(
-                request, normalized_key(admin_players_filter_name)
-            )
-        elif admin_players_filter_clubs_search is not None:
-            SessionHandler.set_session_admin_players_filter_clubs_search(
-                request, normalized_key(admin_players_filter_clubs_search)
+                ]
             )
         elif admin_players_clear_filters:
-            SessionHandler.set_session_admin_players_filter_federations(request, [])
-            SessionHandler.set_session_admin_players_filter_clubs(request, [])
-            SessionHandler.set_session_admin_players_filter_genders(request, [])
-            SessionHandler.set_session_admin_players_filter_check_ins(request, [])
-            SessionHandler.set_session_admin_players_filter_tournaments(request, [])
-            SessionHandler.set_session_admin_players_filter_categories(request, [])
-            SessionHandler.set_session_admin_players_filter_name(request, '')
-            SessionHandler.set_session_admin_players_filter_clubs_search(request, '')
+            SessionPlayersFilterName(request).unset()
+            SessionPlayersFilterFederations(request).unset()
+            SessionPlayersFilterClubs(request).unset()
+            SessionPlayersFilterClubsSearch(request).unset()
+            SessionPlayersFilterGenders(request).unset()
+            SessionPlayersFilterCheckIns(request).unset()
+            SessionPlayersFilterTournaments(request).unset()
+            SessionPlayersFilterCategories(request).unset()
             plugin_manager.hook_for_event(event, 'clear_player_filters')(
                 request=request
             )
@@ -1266,7 +1239,7 @@ class PlayerAdminController(BaseEventAdminController):
             raise RuntimeError('admin_event not defined')
         add_other = 'add_other' in data
         if action == 'create':
-            SessionHandler.set_session_admin_player_add_other_active(request, add_other)
+            SessionPlayersAddOtherActive(request).set(add_other)
         errors = self._admin_validate_player_update_data(action, web_context, data)
         if errors:
             return self._admin_event_players_render(
@@ -1793,23 +1766,23 @@ class PlayerAdminController(BaseEventAdminController):
         web_context = PlayerAdminWebContext(request, data_source_id=data_source_id)
         event = web_context.get_admin_event()
         data_source = web_context.get_admin_data_source()
-        player_updater_field_ids: list[str] = [
-            field.id for field in data_source.player_updater_fields
-        ]
-        field_ids: list[str] = [
-            field_id
-            for field_id in data['field_ids']
-            if field_id in player_updater_field_ids
+        flat_data = WebContext.flatten_list_data(data)
+        player_ids = WebContext.form_data_to_list_int(flat_data, 'player_ids')
+        field_ids = WebContext.form_data_to_list_str(flat_data, 'field_ids')
+        fields = [
+            field
+            for field in data_source.player_updater_fields
+            if field.id in field_ids
         ]
         allowed_players_by_id = web_context.client.allowed_players_by_id
         players: list[Player] = []
-        for player_id in map(int, (id_ for id_ in data['player_ids'] if id_)):
+        for player_id in player_ids:
             if player := allowed_players_by_id.get(player_id, None):
                 players.append(player)
-        player_matches = await data_source.get_player_matches(
-            players, field_ids, diff_only=True
+        player_comparators = await data_source.get_player_comparators(
+            players, fields, diff_only=True
         )
-        if player_matches is None:
+        if player_comparators is None:
             Message.error(
                 request,
                 _(
@@ -1818,10 +1791,13 @@ class PlayerAdminController(BaseEventAdminController):
                 ).format(data_source=data_source.name),
             )
         else:
-            for match in player_matches:
-                match.update_player_from_match(field_ids)
-            event.update_players([match.player for match in player_matches])
-            count: int = len(player_matches)
+            event.update_players(
+                [
+                    comparator.updated_player_from_match(fields)
+                    for comparator in player_comparators
+                ]
+            )
+            count: int = len(player_comparators)
             Message.success(
                 request,
                 ngettext(
@@ -1849,9 +1825,7 @@ class PlayerAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             data_source_id=data_source_id,
         )
-        event = web_context.get_admin_event()
         data_source = web_context.get_admin_data_source()
-        field_ids: list[str] = [field.id for field in data_source.player_updater_fields]
         players: list[Player] = []
         if tournament := web_context.admin_tournament:
             for (
@@ -1860,14 +1834,9 @@ class PlayerAdminController(BaseEventAdminController):
                 players.append(tournament_player)
         else:
             players = web_context.client.sorted_allowed_players
-        player_matches: (
-            list[PlayerComparator] | None
-        ) = await data_source.get_player_matches(
-            players,
-            field_ids,
-            diff_only=False,
-        )
-        if player_matches is None:
+        fields = data_source.player_updater_fields
+        player_comparators = await data_source.get_player_comparators(players, fields)
+        if player_comparators is None:
             Message.error(
                 request,
                 _('Could not connect to data source [{data_source}].').format(
@@ -1875,25 +1844,18 @@ class PlayerAdminController(BaseEventAdminController):
                 ),
             )
             return self._admin_event_players_render(request, reload_event=True)
-
-        per_plugin_columns: Iterable[Iterable[ExtraAdminColumn]] = (
-            plugin_manager.hook_for_event(event, 'get_extra_players_update_columns')()
-        )
-        extra_columns: dict[str, list[ExtraAdminColumn]] = {}
-        for plugin_columns in per_plugin_columns:
-            for extra_column in plugin_columns:
-                c = extra_columns.setdefault(extra_column.at, [])
-                c.append(extra_column)
-
+        updated_field_ids = {
+            field_id
+            for comparator in player_comparators
+            for field_id in comparator.diff_field_ids
+        }
         template_context = web_context.template_context | {
             'modal': 'players_diff',
             'data_source': data_source,
-            'field_ids': field_ids,
-            'player_matches': player_matches,
-            'update_enabled': any(
-                player_match.diff_field_ids for player_match in player_matches
-            ),
-            'admin_players_update_extra_columns': extra_columns,
+            'fields': fields,
+            'updated_field_ids': updated_field_ids,
+            'player_comparators': player_comparators,
+            'update_enabled': bool(updated_field_ids),
         }
         return self._admin_base_event_render(template_context)
 
@@ -1972,9 +1934,7 @@ class PlayerAdminController(BaseEventAdminController):
                     players.append(Player(web_context.get_admin_event(), stored_player))
             except SharlyChessException as e:
                 connection_error = str(e)
-            SessionHandler.set_session_admin_players_active_data_source(
-                request, data_source.id
-            )
+            SessionPlayersActiveDataSource(request).set(data_source.id)
         return HTMXTemplate(
             template_name=results_template or 'admin/players/search_results.html',
             context=web_context.template_context

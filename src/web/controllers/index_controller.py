@@ -15,7 +15,7 @@ from web.controllers.admin.base_admin_controller import AdminWebContext
 from web.controllers.admin.index_admin_controller import IndexAdminController
 from web.controllers.base_controller import BaseController, WebContext
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import SessionEventsShowDetails
 
 
 class IndexController(BaseController):
@@ -36,14 +36,12 @@ class IndexController(BaseController):
         self,
         request: HTMXRequest,
         locale: str | None,
-        admin_events_show_details: bool | None,
+        show_details: bool | None,
     ) -> Template | Redirect:
         web_context = AdminWebContext(request)
         self.set_locale(request, locale)
-        if admin_events_show_details is not None:
-            SessionHandler.set_session_admin_events_show_details(
-                request, admin_events_show_details
-            )
+        if show_details is not None:
+            SessionEventsShowDetails(request).set(show_details)
         return IndexAdminController._admin_render(web_context)
 
     @get(

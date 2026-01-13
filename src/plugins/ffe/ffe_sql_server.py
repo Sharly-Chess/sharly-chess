@@ -1,3 +1,4 @@
+import itertools
 import re
 from contextlib import suppress
 from datetime import datetime, date
@@ -319,6 +320,22 @@ class FFESqlServer(SqlServer):
         return await self._get_stored_players_by_condition(
             f'joueur.NrFFE IN ({", ".join(["%s"] * len(licence_numbers))})',
             licence_numbers,
+        )
+
+    async def get_stored_players_by_fide_ids(
+        self, fide_ids: list[int]
+    ) -> list[StoredPlayer]:
+        return await self._get_stored_players_by_condition(
+            f'joueur.FideCode IN ({", ".join(["%s"] * len(fide_ids) * 2)})',
+            list(
+                itertools.chain.from_iterable(
+                    [
+                        self.remote_fide_id_format_1(fide_id),
+                        self.remote_fide_id_format_2(fide_id),
+                    ]
+                    for fide_id in fide_ids
+                )
+            ),
         )
 
     async def get_stored_players_by_name_keys(

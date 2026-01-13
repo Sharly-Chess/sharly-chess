@@ -22,14 +22,14 @@
             {{ _('Get started') }}
         </button>
     {% else %}
-        {% set show=admin_accounts_show_details %}
+        {% set show=show_details %}
         <div
             class="form-check form-switch d-inline-block pe-2"
             {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
         >
             <input
                 hx-get="{{ url_for('admin-event-accounts-tab', event_uniq_id=admin_event.uniq_id) }}"
-                hx-vals='{"admin_accounts_show_details": "{% if show %}false{% else %}true{% endif %}"}'
+                hx-vals='{"show_details": "{% if show %}false{% else %}true{% endif %}"}'
                 hx-target="body"
                 hx-indicator="#please-wait"
                 class="form-check-input"

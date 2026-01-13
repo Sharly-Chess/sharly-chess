@@ -230,7 +230,7 @@ msgstr "404 - Page non trouvée"
 
 #, python-format
 msgid "50%% of the maximum possible score"
-msgstr "50%% du score maximal possible"
+msgstr "50 %% du score maximal possible"
 
 msgid "500 - Internal Server Error"
 msgstr "500 - Erreur interne du serveur"
@@ -252,7 +252,7 @@ msgstr "<b>1.4.5</b> Pour cette norme, au moins {min} adversaires doivent déten
 
 #, python-format
 msgid "<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM."
-msgstr "<b>1.4.5a</b> Au moins 50 %% des adversaires doivent être titulaires d’un titre, à l’exclusion des titres de CM et de CMF."
+msgstr "<b>1.4.5a</b> Au moins 50 %% des adversaires doivent être titulaires d’un titre, à l’exclusion des titres de CM et de CMF."
 
 msgid "<b>1.4.8</b> The minimum performance for this norm is {min}."
 msgstr "<b>1.4.8</b> La performance minimale requise pour cette norme est de {min}."
@@ -262,7 +262,7 @@ msgstr "<b>1.4.8a</b> La moyenne minimale des classements des adversaires requis
 
 #, python-format
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
-msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %%."
+msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %%."
 
 msgid "<b>Delete</b> from the tournament"
 msgstr "<b>Supprimer</b> du tournoi"
@@ -612,10 +612,6 @@ msgstr "Marquer forfait <b>pour le reste du tournoi</b>"
 msgid "Assign to a display controller."
 msgstr "Attribuer à un pilote d'écran."
 
-#, python-format
-msgid "At least %(min)d games must be played."
-msgstr "Au moins %(min)d parties doivent être jouées."
-
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr "Au moins un Elo minimum ou un Elo maximum doit être défini."
 
@@ -636,6 +632,9 @@ msgstr "Au moins un type de classement est attendu."
 
 msgid "At least one value is expected."
 msgstr "Au moins une valeur est attendue."
+
+msgid "At least {min} games must be played."
+msgstr "Au moins {min} parties doivent être jouées."
 
 #, python-format
 msgid "At most %(num)d illegal move is recorded."
@@ -1384,9 +1383,6 @@ msgstr "Date et heure"
 msgid "Date format"
 msgstr "Format des dates"
 
-msgid "Date of birth"
-msgstr "Date de naissance"
-
 msgid "Date of birth:"
 msgstr "Date de naissance :"
 
@@ -1442,9 +1438,8 @@ msgstr "Délai (secondes) :"
 msgid "Delete"
 msgstr "Supprimer"
 
-#, python-format
-msgid "Delete FIDE ID [%(old)s]"
-msgstr "Supprimer l'identifiant FIDE [%(old)s]"
+msgid "Delete <b>{value}</b>"
+msgstr "Supprimer <b>{value}</b>"
 
 msgid "Delete account"
 msgstr "Supprimer le compte"
@@ -2009,6 +2004,9 @@ msgstr "Titre FIDE :"
 msgid "FIDE database"
 msgstr "Base de données FIDE"
 
+msgid "FIDE rating lost"
+msgstr "classement FIDE perdu"
+
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
 
@@ -2050,9 +2048,6 @@ msgstr "Février"
 
 msgid "Fed *** FEDERATION FOR TABLE HEADER"
 msgstr "Féd."
-
-msgid "Fed."
-msgstr "Fed."
 
 msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
 msgstr "Fed."
@@ -2273,7 +2268,7 @@ msgid "Half-Point Bye attributed to player [{player}]."
 msgstr "Un demi-point joker a été attribué au·à la joueur·euse [{player}]."
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
-msgstr "Avoir un nombre de joueur·euses et de prix proches représente un risque qu'un prix ne soit pas attribué."
+msgstr "Avoir un nombre de joueur·euses et de prix proches présente un risque qu'un prix ne soit pas attribué."
 
 msgid "Hide"
 msgstr "Cacher"
@@ -2955,6 +2950,9 @@ msgstr "Aucune marque"
 msgid "No monetary prizes assigned to players for this tournament."
 msgstr "Aucun prix monétaire assigné à une·e joueur·euse pour ce tournoi."
 
+msgid "No network detected, use the Refresh button when connected."
+msgstr "Aucun réseau détecté, utilisez le bouton Actualiser après connexion."
+
 msgid "No organiser"
 msgstr "Aucun organisateur·ice"
 
@@ -3145,7 +3143,7 @@ msgstr "Nombre de parties gagnées"
 
 #, python-format
 msgid "Number of half-points above or below the 50%% limit required for opponents to be taken into account."
-msgstr "Le nombre de demi-points au-dessus ou en dessous des 50%% de points requis pour que les adversaires soient pris en compte."
+msgstr "Le nombre de demi-points au-dessus ou en dessous des 50 %% de points requis pour que les adversaires soient pris en compte."
 
 msgid "Number of players"
 msgstr "Nombre de joueur·euses"
@@ -3965,9 +3963,8 @@ msgstr "Renommer l'évènement"
 msgid "Replace"
 msgstr "Remplacer"
 
-#, python-format
-msgid "Replace [%(old)s] by [%(new)s]"
-msgstr "Remplacer [%(old)s] par [%(new)s]"
+msgid "Replace <b>{old}</b> by <b>{new}</b>"
+msgstr "Remplacer <b>{old}</b> par <b>{new}</b>"
 
 #, python-format
 msgid "Replace player [%(player)s]"
@@ -4300,10 +4297,6 @@ msgstr "Configuration du serveur"
 msgid "Server is already running!"
 msgstr "Le serveur est déjà en cours d'exécution !"
 
-#, python-format
-msgid "Set FIDE ID [%(new)s]"
-msgstr "Initialiser l'identifiant FIDE [%(new)s]"
-
 msgid "Set Full-Points Byes"
 msgstr "Allouer des points joker"
 
@@ -4321,6 +4314,9 @@ msgstr "Noter des résultats spéciaux"
 
 msgid "Set the current round"
 msgstr "Changer la ronde courante"
+
+msgid "Set to <b>{value}</b>"
+msgstr "Initialiser à <b>{value}</b>"
 
 msgid "Settings"
 msgstr "Paramètres"
@@ -5560,7 +5556,7 @@ msgid "Win"
 msgstr "Victoire"
 
 msgid "With less players than prizes, some prizes will not be attributed."
-msgstr "Avec moins de joueur·euses que de prix, certains prix vont ne pas être attribués."
+msgstr "Avec moins de joueur·euses que de prix, certains prix ne vont pas être attribués."
 
 msgid "Withdraw from tournament"
 msgstr "Forfait définitif"

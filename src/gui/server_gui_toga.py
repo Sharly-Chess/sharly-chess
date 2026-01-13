@@ -303,7 +303,7 @@ class SharlyChessServerToga(toga.App):
         # GUI elements (initialized in startup)
         self.main_box: Optional[toga.Box] = None
         self.browser_btn: Optional[toga.Button] = None
-        self.network_btn: Optional[toga.Button] = None
+        self.toggle_network_btn: Optional[toga.Button] = None
         self.website_btn: Optional[toga.Button] = None
         self.clear_btn: Optional[toga.Button] = None
         self.toggle_log_btn: Optional[toga.Button] = None
@@ -319,6 +319,7 @@ class SharlyChessServerToga(toga.App):
         self.networks_section: Optional[toga.Box] = None
         self.networks_view: Optional[toga.Box] = None
         self.progress_bar: Optional[toga.ProgressBar] = None
+        self.lan_ifaces: list[dict[str, str]] | None = None
 
     # --- Toga lifecycle ---
     def startup(self):
@@ -338,7 +339,7 @@ class SharlyChessServerToga(toga.App):
             text=_('Open Admin Interface'), on_press=self._open_browser
         )
         self.browser_btn.enabled = False
-        self.network_btn = toga.Button(
+        self.toggle_network_btn = toga.Button(
             text=_('See Networks'), on_press=self._toggle_networks_view
         )
         self.website_btn = toga.Button(
@@ -443,7 +444,7 @@ class SharlyChessServerToga(toga.App):
             style=Pack(direction=COLUMN, margin_top=10, gap=5, align_items='center')
         )
         section_buttons.add(self.browser_btn)
-        section_buttons.add(self.network_btn)
+        section_buttons.add(self.toggle_network_btn)
         self.main_buttons_section.add(section_buttons)
 
         self.networks_section = toga.Box(
@@ -519,15 +520,30 @@ class SharlyChessServerToga(toga.App):
         main_buttons_wrapper.add(self.main_buttons_section)
         self.info_view.add(main_buttons_wrapper)
 
+        self._refresh_networks_section()
+
+    def _refresh_networks_section(self, widget: Any = None, **kwargs):
+        assert self.networks_section is not None
         config = SharlyChessConfig()
-        if config.lan_ifaces:
-            assert self.networks_section is not None
+        lan_ifaces: list[dict[str, str]] = SharlyChessConfig().lan_ifaces
+        if (
+            self.lan_ifaces is None and lan_ifaces == self.lan_ifaces
+        ):  # don't do anything if networks did not change
+            return
+        self.networks_section.clear()
+        refresh_box = toga.Box(style=Pack(direction=ROW, align_items='center'))
+        refresh_box.add(
+            toga.Button(text=_('Refresh'), on_press=self._refresh_networks_section)
+        )
+        self.networks_section.add(refresh_box)
+        if lan_ifaces:
+            self.lan_ifaces = lan_ifaces
             self.networks_section.add(
                 toga.Label(
                     text=_(
                         'You may also connect to this server from other devices using'
                     ),
-                    margin_top=20,
+                    margin_top=10,
                     align_items='center',
                     text_align='center',
                 )
@@ -544,7 +560,7 @@ class SharlyChessServerToga(toga.App):
                 style=Pack(direction=ROW, margin_top=15, gap=10)
             )
             self.networks_section.add(self.networks_view)
-            for item in config.lan_ifaces:
+            for item in self.lan_ifaces:
                 url = config.app_url(item['ip'])
                 network_item = toga.Box(
                     style=Pack(direction=COLUMN, gap=5, align_items='center')
@@ -563,6 +579,19 @@ class SharlyChessServerToga(toga.App):
                 network_item.add(self.make_link_button(url))
                 network_item.add(toga.Label(text=label, align_items='center'))
                 self.networks_view.add(network_item)
+        else:
+            self.networks_section.add(
+                toga.Label(
+                    text=_(
+                        'No network detected, use the Refresh button when connected.'
+                    ),
+                    margin_top=10,
+                    align_items='center',
+                    text_align='center',
+                )
+            )
+        assert isinstance(self.main_window, toga.MainWindow)
+        self.main_window.size = self.compact_size
 
     def _noop(self, widget: toga.Widget):
         pass
@@ -679,6 +708,7 @@ class SharlyChessServerToga(toga.App):
             assert self.info_view is not None
             if self.networks_section not in self.info_view.children:
                 self.info_view.add(self.networks_section)
+            self._refresh_networks_section()
         else:
             if self.networks_section in self.info_view.children:
                 self.info_view.remove(self.networks_section)
@@ -686,9 +716,9 @@ class SharlyChessServerToga(toga.App):
         assert isinstance(self.main_window, toga.MainWindow)
         self.main_window.size = self.compact_size
 
-        # Update button label
-        assert self.network_btn is not None
-        self.network_btn.text = (
+        # Update the network buttons' label
+        assert self.toggle_network_btn is not None
+        self.toggle_network_btn.text = (
             _('Hide Networks') if self.networks_visible else _('See Networks')
         )
 
