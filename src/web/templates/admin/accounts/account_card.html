@@ -57,7 +57,7 @@
                             <i class="text-secondary">
                                 ({{ _('all the tournaments') }})
                             </i>
-                        {% elif admin_accounts_show_details %}
+                        {% elif show_details %}
                             <ul>
                                 {% for tournament_name in role.tournament_names(admin_event) %}
                                     <li>{{ tournament_name }}</li>
@@ -100,7 +100,7 @@
                         </span>
                         {% if access_level.has_tournament_scope and tournament_count > 1 %}
                             {% if permission.tournament_ids %}
-                                {% if admin_accounts_show_details %}
+                                {% if show_details %}
                                     <ul>
                                         {% for tournament_name in permission.tournament_names(admin_event) %}
                                             <li>{{ tournament_name }}</li>

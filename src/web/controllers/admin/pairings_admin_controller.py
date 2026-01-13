@@ -5,8 +5,6 @@ from litestar.exceptions import NotFoundException, ClientException
 from common import experimental_features_enabled
 
 from collections import defaultdict
-import json
-from dataclasses import dataclass
 from typing import Annotated, Any, Optional
 
 from common.i18n.utils import by
@@ -47,31 +45,16 @@ from web.guards import (
     SetResultGuard,
 )
 from web.messages import Message
-from web.session import SessionHandler
-
+from web.session import (
+    SessionPairingsShowWithoutResults,
+    SessionPairingsSafetyMode,
+    PairingsPageIdentifier,
+    SessionPairingsPageIdentifier,
+    SessionPairingsSelectedTournament,
+    SessionPairingsSelectedRound,
+)
 
 logger = get_logger()
-
-
-@dataclass
-class PageIdentifier:
-    event_uniq_id: str
-    tournament_id: int
-    round_: int
-
-    def to_json(self) -> str:
-        return json.dumps(
-            {
-                'event_uniq_id': self.event_uniq_id,
-                'tournament_id': self.tournament_id,
-                'round_': self.round_,
-            }
-        )
-
-    @classmethod
-    def from_json(cls, json_str) -> 'PageIdentifier':
-        data = json.loads(json_str)
-        return cls(**data)
 
 
 class PairingsAdminWebContext(BaseEventAdminWebContext):
@@ -99,12 +82,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 )
             self.admin_tournament = event.tournaments_by_id[tournament_id]
         elif self.allowed_tournaments:
-            session_tournament_id = (
-                SessionHandler.get_session_admin_pairings_selected_tournament(
-                    self.request,
-                    event.uniq_id,
-                )
-            )
+            session_tournament_id = SessionPairingsSelectedTournament(
+                self.request, event.uniq_id
+            ).get()
             if session_tournament_id in [
                 tournament.id for tournament in self.allowed_tournaments
             ]:
@@ -121,11 +101,11 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_round = 0
         elif round_:
             self.admin_round = round_
-        elif session_round := SessionHandler.get_session_admin_pairings_selected_round(
+        elif session_round := SessionPairingsSelectedRound(
             self.request,
             event.uniq_id,
             self.admin_tournament.id,
-        ):
+        ).get():
             max_round = (
                 self.admin_tournament.current_round or 1
             ) + self.admin_tournament.finished
@@ -155,7 +135,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         if self.admin_tournament and self.display_rankings:
             self.admin_tournament.compute_tournament_player_ranks()
 
-        if SessionHandler.get_session_admin_pairings_show_without_results(request):
+        if SessionPairingsShowWithoutResults(request).get():
             self.admin_filtered_boards = [
                 b for b in self.admin_boards if b.result == Result.NO_RESULT
             ]
@@ -203,28 +183,18 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.safety_mode = SafetyMode.SAFE
         if not tournament_id:
             # Reset the session safety mode if coming from another page
-            SessionHandler.set_session_admin_pairings_page_identifier(request, None)
+            SessionPairingsPageIdentifier(request).unset()
         else:
-            page_identifier = PageIdentifier(
+            page_identifier = PairingsPageIdentifier(
                 event.uniq_id, tournament_id, self.admin_round
             )
-            session_page_identifier = (
-                SessionHandler.get_session_admin_pairings_page_identifier(request)
-            )
-            if (
-                not session_page_identifier
-                or page_identifier != session_page_identifier
-            ):
-                SessionHandler.set_session_admin_pairings_page_identifier(
-                    request, page_identifier
-                )
-                SessionHandler.set_session_admin_pairings_safety_mode(
-                    request, SafetyMode.SAFE
-                )
+
+            session_page_identifier = SessionPairingsPageIdentifier(request).get()
+            if page_identifier != session_page_identifier:
+                SessionPairingsPageIdentifier(request).set(page_identifier)
+                SessionPairingsSafetyMode(request).set(SafetyMode.SAFE)
             else:
-                self.safety_mode = (
-                    SessionHandler.get_session_admin_pairings_safety_mode(request)
-                )
+                self.safety_mode = SessionPairingsSafetyMode(request).get()
         self.requires_refresh = False
         if action:
             permission_handler = (
@@ -237,9 +207,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                     required_mode = permission_handler.required_mode(
                         self.round_status, action
                     )
-                    SessionHandler.set_session_admin_pairings_safety_mode(
-                        request, required_mode
-                    )
+                    SessionPairingsSafetyMode(request).set(required_mode)
                     self.safety_mode = required_mode
                     self.requires_refresh = True
             except SharlyChessException:
@@ -307,11 +275,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             and self.admin_tournament.pairings_generation_disabled_message(
                 self.admin_round
             ),
-            'admin_pairings_show_without_results': (
-                SessionHandler.get_session_admin_pairings_show_without_results(
-                    self.request
-                )
-            ),
+            'show_without_results': SessionPairingsShowWithoutResults,
             'board': self.admin_board,
             'wtp': self.admin_board.white_tournament_player
             if self.admin_board
@@ -368,23 +332,14 @@ class PairingsAdminController(BaseEventAdminController):
         show_without_results: bool | None,
     ) -> Template:
         if show_without_results is not None:
-            SessionHandler.set_session_admin_pairings_show_without_results(
-                request, show_without_results
-            )
+            SessionPairingsShowWithoutResults(request).set(show_without_results)
         web_context = PairingsAdminWebContext(request, tournament_id, round)
-
-        if web_context.admin_tournament:
-            SessionHandler.set_session_admin_pairings_selected_tournament(
-                request,
-                web_context.get_admin_event().uniq_id,
-                web_context.admin_tournament.id,
-            )
-            if web_context.admin_round:
-                SessionHandler.set_session_admin_pairings_selected_round(
-                    request,
-                    web_context.get_admin_event().uniq_id,
-                    web_context.admin_tournament.id,
-                    web_context.admin_round,
+        event = web_context.get_admin_event()
+        if tournament := web_context.admin_tournament:
+            SessionPairingsSelectedTournament(request, event.uniq_id).set(tournament.id)
+            if admin_round := web_context.admin_round:
+                SessionPairingsSelectedRound(request, event.uniq_id, tournament.id).set(
+                    admin_round
                 )
 
         return self._admin_event_pairings_render(
@@ -1097,9 +1052,7 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         mode = WebContext.form_data_to_str(data, 'mode') or ''
         try:
-            SessionHandler.set_session_admin_pairings_safety_mode(
-                request, SafetyMode(mode)
-            )
+            SessionPairingsSafetyMode(request).set(SafetyMode(mode))
         except ValueError:
             raise NotFoundException(f'Unknown safety mode [{mode}]')
         web_context = PairingsAdminWebContext(request, tournament_id, round)
