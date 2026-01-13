@@ -532,13 +532,13 @@ class SharlyChessServerToga(toga.App):
         ):  # don't do anything if networks did not change
             return
         self.networks_section.clear()
+        refresh_box = toga.Box(style=Pack(direction=ROW, align_items='center'))
+        refresh_box.add(
+            toga.Button(text=_('Refresh'), on_press=self._refresh_networks_section)
+        )
+        self.networks_section.add(refresh_box)
         if lan_ifaces:
             self.lan_ifaces = lan_ifaces
-            refresh_box = toga.Box(style=Pack(direction=ROW, align_items='center'))
-            refresh_box.add(
-                toga.Button(text=_('Refresh'), on_press=self._refresh_networks_section)
-            )
-            self.networks_section.add(refresh_box)
             self.networks_section.add(
                 toga.Label(
                     text=_(
