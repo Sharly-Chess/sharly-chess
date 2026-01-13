@@ -56,7 +56,11 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, TournamentActionGuard
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import (
+    SessionTournamentsShowDetails,
+    SessionTournamentCriteriaAddOtherActive,
+    SessionTieBreakAddOtherActive,
+)
 from web.utils import SelectOption
 
 logger = get_logger()
@@ -139,6 +143,7 @@ class TournamentAdminController(BaseEventAdminController):
         template_context: dict[str, Any] | None = None,
     ) -> Template:
         event = web_context.get_admin_event()
+        request = web_context.request
         plugin_context = Utils.concat_dicts(
             plugin_manager.hook_for_event(
                 event, 'get_tournament_page_template_context'
@@ -171,11 +176,7 @@ class TournamentAdminController(BaseEventAdminController):
                 'tournament_exporters': tournament_exporters,
                 'plugin_card_action_menu_items_templates': plugin_card_action_menu_items_templates,
                 'plugin_tab_action_menu_items_templates': plugin_tab_action_menu_items_templates,
-                'admin_tournaments_show_details': (
-                    SessionHandler.get_session_admin_tournaments_show_details(
-                        web_context.request
-                    )
-                ),
+                'show_details': SessionTournamentsShowDetails(request).get(),
                 'data_sources': DataSourceManager().objects(),
             }
             | plugin_context
@@ -202,13 +203,11 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_event_tournaments_tab(
         self,
         request: HTMXRequest,
-        admin_tournaments_show_details: bool | None,
+        show_details: bool | None,
     ) -> Template:
         web_context = TournamentAdminWebContext(request)
-        if admin_tournaments_show_details is not None:
-            SessionHandler.set_session_admin_tournaments_show_details(
-                request, admin_tournaments_show_details
-            )
+        if show_details is not None:
+            SessionTournamentsShowDetails(request).set(show_details)
 
         return self._admin_event_tournaments_render(web_context)
 
@@ -690,9 +689,9 @@ class TournamentAdminController(BaseEventAdminController):
                                 menu_text=None,
                                 menu=menu,
                                 timer_id=timer_id,
-                                input_exit_button=None,
-                                players_show_unpaired=None,
-                                players_show_opponent=None,
+                                input_exit_button=False,
+                                players_show_unpaired=False,
+                                players_show_opponent=False,
                                 results_limit=None,
                                 results_max_age=None,
                                 results_tournament_ids=[],
@@ -1081,6 +1080,7 @@ class TournamentAdminController(BaseEventAdminController):
     ) -> dict[str, Any]:
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
+        request = web_context.request
         default_data = {
             option.id: WebContext.value_to_form_data(option.default_value)
             for option in TieBreakOptionManager(event).objects()
@@ -1107,11 +1107,7 @@ class TournamentAdminController(BaseEventAdminController):
                 for tie_break in TieBreakManager(event).objects()
             }
             | {'': []},
-            'add_other_active': (
-                SessionHandler.get_session_admin_tie_break_add_other_active(
-                    web_context.request
-                )
-            ),
+            'add_other_active': SessionTieBreakAddOtherActive(request).get(),
             'data': default_data | data,
             'errors': errors or {},
         }
@@ -1152,7 +1148,7 @@ class TournamentAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
         add_other = 'add_other' in data
-        SessionHandler.set_session_admin_tie_break_add_other_active(request, add_other)
+        SessionTieBreakAddOtherActive(request).set(add_other)
         if errors := self._validate_tie_break_form_data(
             web_context, FormAction.CREATE, data
         ):
@@ -1400,11 +1396,7 @@ class TournamentAdminController(BaseEventAdminController):
                 for player_filter in TournamentPlayerFilterManager(event).objects()
             }
             | {'': []},
-            'add_other_active': (
-                SessionHandler.get_session_admin_tournament_criterion_add_other_active(
-                    request
-                )
-            ),
+            'add_other_active': SessionTournamentCriteriaAddOtherActive(request).get(),
             'data': default_data | data,
             'errors': errors or {},
         }
@@ -1428,9 +1420,7 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id)
         event = web_context.get_admin_event()
         add_other = 'add_other' in data
-        SessionHandler.set_session_admin_tournament_criterion_add_other_active(
-            request, add_other
-        )
+        SessionTournamentCriteriaAddOtherActive(request).set(add_other)
         flat_data = WebContext.flatten_list_data(data)
         if errors := self._validate_tournament_criterion_form_data(event, flat_data):
             return self._admin_base_event_render(

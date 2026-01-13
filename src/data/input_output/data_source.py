@@ -1,8 +1,6 @@
 import asyncio
 import time
 from abc import ABC, abstractmethod
-from collections.abc import Callable
-from dataclasses import dataclass
 from functools import cached_property
 from logging import Logger
 from typing import override, ClassVar
@@ -11,6 +9,18 @@ from common import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
+from data.input_output.player_updater_fields import (
+    PlayerUpdaterField,
+    FideIDUpdaterField,
+    TitleUpdaterField,
+    NameUpdaterField,
+    CategoryUpdaterField,
+    GenderPlayerUpdater,
+    StandardRatingUpdaterField,
+    RapidRatingUpdaterField,
+    BlitzRatingUpdaterField,
+    FederationUpdaterField,
+)
 from data.player import Player, PlayerRating
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
@@ -18,188 +28,43 @@ from database.sqlite.local_source_database.databases import LocalSourcePlayerDat
 from plugins.manager import plugin_manager
 from utils.date_time import format_timestamp_date_time
 from utils.entity import IdentifiableEntity
-from utils.enum import TournamentRating
+from utils.enum import TournamentRating, PlayerRatingType
 
 logger: Logger = get_logger()
 
 
-class PlayerComparator(ABC):
+class PlayerComparator:
     def __init__(
         self,
-        field_ids: list[str],
+        fields: list[PlayerUpdaterField],
         player: Player,
         match_stored_player: StoredPlayer | None = None,
     ):
-        self.field_ids = field_ids
         self.player = player
         self.match_player: Player | None = None
         if match_stored_player:
             match_stored_player.id = 0
             self.match_player = Player(player.event, match_stored_player)
+        self.diff_field_ids = self._get_diff_field_ids(fields)
 
-    @property
-    @abstractmethod
-    def diff_field_ids(self) -> list[str] | None:
-        """Returns the list of fields amongst the selected fields on which
-        the 2 players have a diff. If match is unset, returns None."""
-        ...
+    def _get_diff_field_ids(self, fields: list[PlayerUpdaterField]) -> list[str]:
+        if not self.match_player:
+            return []
+        return [
+            field.id
+            for field in fields
+            if field.is_updated(self.player, self.match_player)
+        ]
 
-    @abstractmethod
-    def update_player_from_match(self, field_ids: list[str]):
-        """Updates the selected fields of the player from the match_player."""
-        ...
-
-
-class FidePlayerComparator(PlayerComparator):
-    def match_date_differs(self) -> bool:
+    def updated_player_from_match(self, fields: list[PlayerUpdaterField]) -> Player:
         assert self.match_player is not None
-        src_date = self.player.date_of_birth
-        src_year = self.player.year_of_birth
-        match_date = self.match_player.date_of_birth
-        match_year = self.match_player.year_of_birth
-        if not match_date and not match_year:
-            return False
-        if not src_date and not src_year:
-            return True
-        if src_date and match_date:
-            return src_date != match_date
-        return bool(match_date) or src_year != match_year
-
-    @cached_property
-    def diff_field_ids(self) -> list[str] | None:
-        if not self.match_player:
-            return None
-        diff_field_ids: list[str] = []
-        for tr in TournamentRating:
-            field_id: str = f'rating_{tr.value}'
-            if field_id in self.field_ids:
-                src_rating = self.player.ratings[tr]
-                match_rating = self.match_player.ratings[tr]
-                for type_ in ['fide', 'national', 'estimated']:
-                    value: int | None = getattr(match_rating, type_)
-                    if value and getattr(src_rating, type_) != value:
-                        diff_field_ids.append(field_id)
-        field_id: str = 'name'
-        if field_id in self.field_ids:
-            if (self.player.first_name, self.player.last_name) != (
-                self.match_player.first_name,
-                self.match_player.last_name,
-            ):
-                diff_field_ids.append(field_id)
-        field_id: str = 'federation'
-        if field_id in self.field_ids:
-            if self.player.federation.name != self.match_player.federation.name:
-                diff_field_ids.append(field_id)
-        field_id: str = 'club'
-        if field_id in self.field_ids:
-            if (not self.player.club and self.match_player.club) or (
-                self.player.club
-                and self.match_player.club
-                and self.player.club.name != self.match_player.club.name
-            ):
-                diff_field_ids.append(field_id)
-        field_id: str = 'gender'
-        if field_id in self.field_ids:
-            if self.player.gender != self.match_player.gender:
-                diff_field_ids.append(field_id)
-        field_id: str = 'date_of_birth'
-        if field_id in self.field_ids:
-            if self.match_date_differs():
-                diff_field_ids.append(field_id)
-        field_id: str = 'fide_id'
-        if field_id in self.field_ids:
-            if (
-                self.match_player.fide_id
-                and self.player.fide_id != self.match_player.fide_id
-            ):
-                diff_field_ids.append(field_id)
-        return diff_field_ids
-
-    def updated_ratings(self, tournament_rating: TournamentRating) -> PlayerRating:
-        if not self.match_player:
-            return self.player.ratings[tournament_rating]
-        match_player_rating = self.match_player.ratings[tournament_rating]
-        player_rating = self.player.ratings[tournament_rating]
-        return PlayerRating(
-            fide=match_player_rating.fide or player_rating.fide,
-            national=match_player_rating.national or player_rating.national,
-            estimated=match_player_rating.estimated or player_rating.estimated,
-        )
-
-    def update_player_from_match(self, field_ids: list[str]):
-        if not self.match_player:
-            return
-        stored_player = self.player.stored_player
-        match_stored_player = self.match_player.stored_player
-        updated_ratings: dict[TournamentRating, PlayerRating] = {}
-        for tr in TournamentRating:
-            field_id: str = f'rating_{tr.value}'
-            if field_id in field_ids:
-                updated_ratings[tr] = self.updated_ratings(tr)
-        self.player.update_ratings(updated_ratings)
-        field_id: str = 'name'
-        if field_id in field_ids:
-            if (stored_player.first_name, stored_player.last_name) != (
-                match_stored_player.first_name,
-                match_stored_player.last_name,
-            ):
-                stored_player.last_name = match_stored_player.last_name
-                stored_player.first_name = match_stored_player.first_name
-        field_id: str = 'federation'
-        if field_id in field_ids:
-            if stored_player.federation != match_stored_player.federation:
-                stored_player.federation = match_stored_player.federation
-        field_id: str = 'club'
-        if field_id in field_ids:
-            if stored_player.club != match_stored_player.club:
-                stored_player.club = match_stored_player.club
-        field_id: str = 'gender'
-        if field_id in field_ids:
-            if stored_player.gender != match_stored_player.gender:
-                stored_player.gender = match_stored_player.gender
-        field_id: str = 'date_of_birth'
-        if field_id in field_ids:
-            if self.match_date_differs():
-                stored_player.date_of_birth = match_stored_player.date_of_birth
-                stored_player.year_of_birth = match_stored_player.year_of_birth
-        field_id: str = 'fide_id'
-        if field_id in field_ids:
-            match_fide_id = match_stored_player.fide_id
-            if match_fide_id and stored_player.fide_id != match_fide_id:
-                stored_player.fide_id = match_fide_id
-
-
-@dataclass
-class PlayerUpdaterField:
-    name: str
-    id: str
-
-    @staticmethod
-    def ratings_fields() -> list['PlayerUpdaterField']:
-        return [
-            PlayerUpdaterField(rating.name, f'rating_{rating.value}')
-            for rating in TournamentRating
-        ]
-
-    @staticmethod
-    def identity_fields() -> list['PlayerUpdaterField']:
-        return [
-            PlayerUpdaterField(_('Name'), 'name'),
-            PlayerUpdaterField(_('Gender'), 'gender'),
-            PlayerUpdaterField(_('Date of birth'), 'date_of_birth'),
-        ]
-
-    @staticmethod
-    def federation_fields() -> list['PlayerUpdaterField']:
-        return [PlayerUpdaterField(_('Federation'), 'federation')]
-
-    @staticmethod
-    def club_fields() -> list['PlayerUpdaterField']:
-        return [PlayerUpdaterField(_('Club'), 'club')]
-
-    @staticmethod
-    def fide_fields() -> list['PlayerUpdaterField']:
-        return [PlayerUpdaterField(_('FIDE ID'), 'fide_id')]
+        for field in fields:
+            if field.id not in self.diff_field_ids:
+                continue
+            field.update_player(
+                self.player.stored_player, self.match_player.stored_player
+            )
+        return self.player
 
 
 class DataSource(IdentifiableEntity, ABC):
@@ -232,40 +97,40 @@ class DataSource(IdentifiableEntity, ABC):
         """Returns the player fields that can be updated by the data source."""
 
     @abstractmethod
-    async def get_player_matches(
+    def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
+        """Checks if the two players are a match."""
+
+    @abstractmethod
+    async def get_match_stored_players(
+        self, players: list[Player]
+    ) -> list[StoredPlayer] | None:
+        """Get a list of stored players matching the given players."""
+
+    async def get_player_comparators(
         self,
         players: list[Player],
-        field_ids: list[str],
-        diff_only: bool,
+        fields: list[PlayerUpdaterField],
+        diff_only: bool = False,
     ) -> list[PlayerComparator] | None:
-        """If the database access fails, returns None. Otherwise for each player,
-        returns a MatchPlayer object (if a match is found, set *match_player* with
-        the extracted player, else set it to None). If diff_only is True, identical
-        matches are omitted."""
-
-    @staticmethod
-    def create_player_comparators(
-        players: list[Player],
-        match_stored_players: list[StoredPlayer],
-        match_condition: Callable[[StoredPlayer, StoredPlayer], bool],
-        field_ids: list[str],
-        diff_only: bool,
-        comparator: type[PlayerComparator],
-    ) -> list[PlayerComparator]:
+        """Get player comparators for all the players in the list.
+        *restricted_field_ids* allows to only set the comparators with specific fields.
+        If *diff_only*, the comparators returned are only the ones where a match has been found."""
+        match_stored_players = await self.get_match_stored_players(players)
+        if match_stored_players is None:
+            return None
         player_comparators: list[PlayerComparator] = []
         for player in players:
-            player_comparator = comparator(
-                field_ids,
-                player,
-                next(
-                    (
-                        match_stored_player
-                        for match_stored_player in match_stored_players
-                        if match_condition(player.stored_player, match_stored_player)
-                    ),
-                    None,
+            match_player = next(
+                (
+                    match_stored_player
+                    for match_stored_player in match_stored_players
+                    if self.check_player_match(
+                        player.stored_player, match_stored_player
+                    )
                 ),
+                None,
             )
+            player_comparator = PlayerComparator(fields, player, match_player)
             if not diff_only or player_comparator.diff_field_ids:
                 player_comparators.append(player_comparator)
         return player_comparators
@@ -486,37 +351,35 @@ class FideDataSource(LocalDataSource):
 
     @property
     def player_updater_fields(self) -> list[PlayerUpdaterField]:
-        return (
-            PlayerUpdaterField.ratings_fields()
-            + PlayerUpdaterField.identity_fields()
-            + PlayerUpdaterField.federation_fields()
-        )
+        return [
+            FideIDUpdaterField(),
+            TitleUpdaterField(),
+            NameUpdaterField(),
+            CategoryUpdaterField(),
+            GenderPlayerUpdater(),
+            StandardRatingUpdaterField([PlayerRatingType.FIDE]),
+            RapidRatingUpdaterField([PlayerRatingType.FIDE]),
+            BlitzRatingUpdaterField([PlayerRatingType.FIDE]),
+            FederationUpdaterField(),
+        ]
 
     @staticmethod
     @override
     def _adjust_player_from_fide_database(src_stored_player: StoredPlayer):
         pass
 
-    async def get_player_matches(
-        self,
-        players: list[Player],
-        field_ids: list[str],
-        diff_only: bool,
-    ) -> list[PlayerComparator] | None:
+    def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
+        return bool(player1.fide_id) and player1.fide_id == player2.fide_id
+
+    async def get_match_stored_players(
+        self, players: list[Player]
+    ) -> list[StoredPlayer] | None:
         database = FideDatabase()
         if not database.exists():
             return None
         fide_ids = [player.fide_id for player in players if player.fide_id]
         with database:
-            match_players = database.get_stored_players_by_fide_id(fide_ids)
-            return self.create_player_comparators(
-                players,
-                match_players,
-                lambda p1, p2: p1.fide_id is not None and p1.fide_id == p2.fide_id,
-                field_ids,
-                diff_only,
-                FidePlayerComparator,
-            )
+            return database.get_stored_players_by_fide_id(fide_ids)
 
     @property
     def search_fields(self) -> list[str]:

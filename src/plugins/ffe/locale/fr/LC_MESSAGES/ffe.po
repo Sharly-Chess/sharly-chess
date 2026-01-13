@@ -155,9 +155,6 @@ msgstr "Licence FFE B (loisir)"
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
 msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament}]."
 
-msgid "FFE licence number"
-msgstr "Numéro de licence FFE"
-
 #, python-format
 msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
 msgstr "Licence FFE : %(ffe_licence_number)s (cliquer pour copier dans le presse-papier)."
@@ -323,10 +320,6 @@ msgstr "Fichier Papi"
 msgid "Please select at least one player."
 msgstr "Veuillez sélectionner au moins un·e joueur·euse."
 
-#, python-format
-msgid "Replace [%(old)s] by [%(new)s]"
-msgstr "Remplacer [%(old)s] par [%(new)s]"
-
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
 
@@ -485,4 +478,7 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] "{count} ligue représentée"
 msgstr[1] "{count} ligues représentées"
+
+#~ msgid "Replace [%(old)s] by [%(new)s]"
+#~ msgstr "Remplacer [%(old)s] par [%(new)s]"
 

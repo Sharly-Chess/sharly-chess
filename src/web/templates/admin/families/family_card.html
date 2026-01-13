@@ -10,7 +10,7 @@
 
 {% block card_text %}
     <div class="d-flex flex-column gap-1">
-        {% if admin_families_show_details %}
+        {% if show_details %}
             <div>
                 <span class="pe-1">{{ macros.screen_type_icon(family.type, true) }}</span>
                 {{ _('Type: %(family_type)s', family_type=family.type_str) }}

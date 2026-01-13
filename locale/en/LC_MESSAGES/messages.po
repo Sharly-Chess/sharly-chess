@@ -612,10 +612,6 @@ msgstr ""
 msgid "Assign to a display controller."
 msgstr ""
 
-#, python-format
-msgid "At least %(min)d games must be played."
-msgstr ""
-
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr ""
 
@@ -635,6 +631,9 @@ msgid "At least one rating type is expected."
 msgstr ""
 
 msgid "At least one value is expected."
+msgstr ""
+
+msgid "At least {min} games must be played."
 msgstr ""
 
 #, python-format
@@ -1384,9 +1383,6 @@ msgstr ""
 msgid "Date format"
 msgstr ""
 
-msgid "Date of birth"
-msgstr ""
-
 msgid "Date of birth:"
 msgstr ""
 
@@ -1442,8 +1438,7 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#, python-format
-msgid "Delete FIDE ID [%(old)s]"
+msgid "Delete <b>{value}</b>"
 msgstr ""
 
 msgid "Delete account"
@@ -2009,6 +2004,9 @@ msgstr ""
 msgid "FIDE database"
 msgstr ""
 
+msgid "FIDE rating lost"
+msgstr ""
+
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "FM"
 
@@ -2050,9 +2048,6 @@ msgstr ""
 
 msgid "Fed *** FEDERATION FOR TABLE HEADER"
 msgstr "Fed."
-
-msgid "Fed."
-msgstr ""
 
 msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
 msgstr "Fed."
@@ -2953,6 +2948,9 @@ msgid "No marks"
 msgstr ""
 
 msgid "No monetary prizes assigned to players for this tournament."
+msgstr ""
+
+msgid "No network detected, use the Refresh button when connected."
 msgstr ""
 
 msgid "No organiser"
@@ -3965,8 +3963,7 @@ msgstr ""
 msgid "Replace"
 msgstr ""
 
-#, python-format
-msgid "Replace [%(old)s] by [%(new)s]"
+msgid "Replace <b>{old}</b> by <b>{new}</b>"
 msgstr ""
 
 #, python-format
@@ -4300,10 +4297,6 @@ msgstr ""
 msgid "Server is already running!"
 msgstr ""
 
-#, python-format
-msgid "Set FIDE ID [%(new)s]"
-msgstr ""
-
 msgid "Set Full-Points Byes"
 msgstr ""
 
@@ -4320,6 +4313,9 @@ msgid "Set special results"
 msgstr ""
 
 msgid "Set the current round"
+msgstr ""
+
+msgid "Set to <b>{value}</b>"
 msgstr ""
 
 msgid "Settings"

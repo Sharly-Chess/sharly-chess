@@ -11,7 +11,7 @@
 
 {% block top_right_nav %}
     {% if client.can_manage_screens %}
-        {% with id='admin-screens-show-family-screens', name='admin_screens_show_family_screens', show=admin_screens_show_family_screens %}
+        {% with id='show-family-screens', name='show_family_screens', show=show_family_screens %}
             <div
                 class="form-check form-switch d-inline-block pe-2"
                 {{ macros.tooltip_attributes('info', _('Show/hide the screens created from screen families.'), 'top') }}
@@ -29,7 +29,7 @@
                 <label for="{{ id }}" class="form-check-label"> {{ _('Families') }}</label>
             </div>
         {% endwith %}
-        {% with id='admin-screens-show-details', name='admin_screens_show_details', show=admin_screens_show_details %}
+        {% with id='show-details', name='show_details', show=show_details %}
             <div
                 class="form-check form-switch d-inline-block pe-2"
                 {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}
@@ -99,7 +99,7 @@
 
 {% block cards_container_cards %}
     {% if client.can_manage_screens %}
-        {% with screens=admin_event.screens_sorted_by_uniq_id if admin_screens_show_family_screens else admin_event.basic_screens_sorted_by_name %}
+        {% with screens=admin_event.screens_sorted_by_uniq_id if show_family_screens else admin_event.basic_screens_sorted_by_name %}
             {% if not screens %}
                 <div class="mx-auto" style="max-width: 500px;">
                     <h5 class="mt-2 my-5 text-center">

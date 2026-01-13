@@ -18,7 +18,7 @@ from web.controllers.admin.base_event_admin_controller import BaseEventAdminWebC
 from web.controllers.base_controller import WebContext, BaseController
 from web.guards import EventGuard
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import SessionUserAccountId, SessionUserAccountPasswordHash
 from web.urls import admin_event_url
 
 
@@ -158,7 +158,10 @@ class ProfileController(BaseController):
                             'Something went wrong. Please ask your administrator to recreate your account.'
                         )
                     else:
-                        SessionHandler.store_user_account(request, admin_event, account)
+                        SessionUserAccountId(request, event_uniq_id).set(account.id)
+                        SessionUserAccountPasswordHash(request, event_uniq_id).set(
+                            account.password_hash
+                        )
                         Message.success(
                             request,
                             _('Successfully logged in as [{account}].').format(
@@ -179,13 +182,10 @@ class ProfileController(BaseController):
         path='/profile-logout/{event_uniq_id:str}',
         name='profile-logout',
     )
-    async def htmx_profile_logout(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> ClientRedirect:
+    async def htmx_profile_logout(self, request: HTMXRequest) -> ClientRedirect:
         web_context = ProfileWebContext(request)
         event = web_context.get_admin_event()
-        SessionHandler.store_user_account(request, event, None)
+        SessionUserAccountId(request, event.uniq_id).unset()
+        SessionUserAccountPasswordHash(request, event.uniq_id).unset()
         Message.success(request, _('Successfully logged out.'))
-        return ClientRedirect(admin_event_url(request, event_uniq_id))
+        return ClientRedirect(admin_event_url(request, event.uniq_id))

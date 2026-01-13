@@ -325,25 +325,20 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Cancel') }}
             </button>
-            {% if action == 'create' %}
-                {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
-            {% else %}
-                <button
-                    type="submit"
-                    form="modal-form"
-                    class="text-nowrap white btn btn-primary"
-                >
-                    {% if action == 'create' %}
-                        <i class="bi-floppy-fill pe-1"></i>
-                        {{ _('Create') }}
-                    {% elif action in ['update', 'replace'] %}
+            <span id="submit-button-container">
+                {% if action == 'create' %}
+                    {{ admin_macros.create_with_add_other_split_buttons(add_other_active) }}
+                {% else %}
+                    <button
+                        type="submit"
+                        form="modal-form"
+                        class="text-nowrap white btn btn-primary"
+                    >
                         <i class="bi-floppy-fill pe-1"></i>
                         {{ _('Save') }}
-                    {% else %}
-                        ?
-                    {% endif %}
-                </button>
-            {% endif %}
+                    </button>
+                {% endif %}
+            </span>
         </div>
     </div>
 </div>
