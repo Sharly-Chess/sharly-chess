@@ -12,7 +12,7 @@
 
 {% block top_right_nav %}
     {% if client.can_manage_screens %}
-        {% with id='show-details-on-rotator-list', name='admin_rotators_show_details', show=admin_rotators_show_details %}
+        {% with id='show-details-on-rotator-list', name='show_details', show=show_details %}
             <div
                 class="form-check form-switch d-inline-block pe-2"
                 {{ macros.tooltip_attributes('info', _('Enable/disable the details on the cards below.'), 'top') }}

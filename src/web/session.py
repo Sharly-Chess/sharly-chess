@@ -1,666 +1,498 @@
-import time
-from contextlib import suppress
+from abc import ABC, abstractmethod
+from dataclasses import dataclass, asdict
 from logging import Logger
-from typing import TYPE_CHECKING, Optional
+from typing import Any
 
 from litestar.plugins.htmx import HTMXRequest
 
 from common.i18n import locales, DEFAULT_LOCALE
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.account import Account
 from data.input_output import DataSourceManager
+from data.input_output.dict_reader import dict_to_dataclass
 from data.player import Federation, Club
 from data.player_categories import PlayerCategory
 from data.safety_mode import SafetyMode
 from utils.enum import PlayerGender
 
-if TYPE_CHECKING:
-    from data.event import Event
-    from web.controllers.admin.pairings_admin_controller import PageIdentifier
-
 logger: Logger = get_logger()
 
 
-class SessionHandler:
-    USER_ACCOUNT_SESSION_KEY: str = 'user_account'
-    USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY: str = 'user_account_password_hash'
+class SessionVariable[T](ABC):
+    def __init__(self, request: HTMXRequest):
+        self.request = request
 
-    @classmethod
-    def store_user_account(
-        cls,
-        request: HTMXRequest,
-        event: 'Event',
-        user_account: Account | None,
-    ):
-        if cls.USER_ACCOUNT_SESSION_KEY not in request.session:
-            request.session[cls.USER_ACCOUNT_SESSION_KEY] = {}
-        if cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY not in request.session:
-            request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY] = {}
-        if user_account:
-            request.session[cls.USER_ACCOUNT_SESSION_KEY][event.uniq_id] = (
-                user_account.id
-            )
-            # store the password hash at the time the authentication is successful
-            # to be able to invalidate the session if the password is changed
-            request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY][
-                event.uniq_id
-            ] = user_account.password_hash
-        else:
-            with suppress(KeyError):
-                del request.session[cls.USER_ACCOUNT_SESSION_KEY][event.uniq_id]
-                del request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY][
-                    event.uniq_id
-                ]
+    @property
+    @abstractmethod
+    def key(self) -> str:
+        """Key used to store and retrieve the variable from the session.
+        Has to be unique amongst all session variables."""
 
-    @classmethod
-    def get_user_account(
-        cls,
-        request: HTMXRequest,
-        event: 'Event',
-    ) -> Account:
-        try:
-            account: Account = event.active_user_accounts_by_id[
-                request.session[cls.USER_ACCOUNT_SESSION_KEY][event.uniq_id]
-            ]
-        except KeyError:
-            return event.anonymous_account
-        # if the password has been changed, disconnect the client to force the re-authentication
-        if (
-            account.password_hash
-            != request.session[cls.USER_ACCOUNT_PASSWORD_HASH_SESSION_KEY][
-                event.uniq_id
-            ]
-        ):
-            logger.info(
-                'Password has changed for account [%s], force the re-authentication.',
-                account.full_name,
-            )
-            cls.store_user_account(request, event, None)
-            return event.anonymous_account
-        return account
+    @property
+    @abstractmethod
+    def default_value(self) -> T:
+        """Default value used for the variable when nothing's stored in the session."""
 
-    LAST_RESULT_UPDATED_SESSION_KEY: str = 'last_result_updated'
+    def get(self) -> T:
+        return self.request.session.get(self.key, self.default_value)
 
-    @classmethod
-    def set_session_last_result_updated(
-        cls,
-        request: HTMXRequest,
-        tournament_id: int,
-        round_: int,
-        board_id: int,
-    ):
-        request.session[cls.LAST_RESULT_UPDATED_SESSION_KEY] = {
-            'tournament_id': tournament_id,
-            'round': round_,
-            'board_id': board_id,
-            'expiration': time.time() + 20,
-        }
+    def set(self, value: T):
+        self.request.session[self.key] = value
 
-    @classmethod
-    def get_session_last_result_updated(cls, request: HTMXRequest):
-        return request.session.get(cls.LAST_RESULT_UPDATED_SESSION_KEY, None)
+    def unset(self):
+        self.request.session.pop(self.key, None)
 
-    USER_LAST_ILLEGAL_MOVE_UPDATED_KEY: str = 'user_last_illegal_move_updated'
 
-    @classmethod
-    def set_session_user_last_illegal_move_updated(
-        cls,
-        request: HTMXRequest,
-        tournament_id: int,
-        player_id: int,
-    ):
-        request.session[cls.USER_LAST_ILLEGAL_MOVE_UPDATED_KEY] = {
-            'tournament_id': tournament_id,
-            'player_id': player_id,
-            'expiration': time.time() + 20,
-        }
-
-    @classmethod
-    def get_session_user_last_illegal_move_updated(cls, request: HTMXRequest):
-        return request.session.get(cls.USER_LAST_ILLEGAL_MOVE_UPDATED_KEY, None)
-
-    USER_LAST_CHECK_IN_UPDATED_KEY: str = 'user_last_check_in_updated'
-
-    @classmethod
-    def set_session_user_last_check_in_updated(
-        cls,
-        request: HTMXRequest,
-        tournament_id: int,
-        player_id: int,
-    ):
-        request.session[cls.USER_LAST_CHECK_IN_UPDATED_KEY] = {
-            'tournament_id': tournament_id,
-            'player_id': player_id,
-            'expiration': time.time() + 20,
-        }
-
-    @classmethod
-    def get_session_user_last_check_in_updated(cls, request: HTMXRequest):
-        return request.session.get(cls.USER_LAST_CHECK_IN_UPDATED_KEY, None)
-
-    ADMIN_SCREENS_SHOW_FAMILY_SCREENS_KEY: str = 'admin_screens_show_family_screens'
-
-    @classmethod
-    def set_session_admin_screens_show_family_screens(
-        cls, request: HTMXRequest, b: bool
-    ):
-        request.session[cls.ADMIN_SCREENS_SHOW_FAMILY_SCREENS_KEY] = b
-
-    @classmethod
-    def get_session_admin_screens_show_family_screens(
-        cls, request: HTMXRequest
-    ) -> bool:
-        return request.session.get(cls.ADMIN_SCREENS_SHOW_FAMILY_SCREENS_KEY, False)
-
-    ADMIN_SCREENS_SHOW_DETAILS_KEY: str = 'admin_screens_show_details'
-
-    @classmethod
-    def set_session_admin_screens_show_details(cls, request: HTMXRequest, b: bool):
-        request.session[cls.ADMIN_SCREENS_SHOW_DETAILS_KEY] = b
-
-    @classmethod
-    def get_session_admin_screens_show_details(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.ADMIN_SCREENS_SHOW_DETAILS_KEY, False)
-
-    ADMIN_FAMILIES_SHOW_DETAILS_KEY: str = 'admin_families_show_details'
-
-    @classmethod
-    def set_session_admin_families_show_details(cls, request: HTMXRequest, b: bool):
-        request.session[cls.ADMIN_FAMILIES_SHOW_DETAILS_KEY] = b
-
-    @classmethod
-    def get_session_admin_families_show_details(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.ADMIN_FAMILIES_SHOW_DETAILS_KEY, False)
-
-    ADMIN_ROTATORS_SHOW_DETAILS_KEY: str = 'admin_rotators_show_details'
-
-    @classmethod
-    def set_session_admin_rotators_show_details(cls, request: HTMXRequest, b: bool):
-        request.session[cls.ADMIN_ROTATORS_SHOW_DETAILS_KEY] = b
-
-    @classmethod
-    def get_session_admin_rotators_show_details(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.ADMIN_ROTATORS_SHOW_DETAILS_KEY, False)
-
-    ADMIN_TOURNAMENTS_SHOW_DETAILS_KEY: str = 'admin_tournaments_show_details'
-
-    @classmethod
-    def set_session_admin_tournaments_show_details(cls, request: HTMXRequest, b: bool):
-        request.session[cls.ADMIN_TOURNAMENTS_SHOW_DETAILS_KEY] = b
-
-    @classmethod
-    def get_session_admin_tournaments_show_details(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.ADMIN_TOURNAMENTS_SHOW_DETAILS_KEY, False)
-
-    ADMIN_ACCOUNTS_SHOW_DETAILS_KEY: str = 'admin_accounts_show_details'
-
-    @classmethod
-    def set_session_admin_accounts_show_details(cls, request: HTMXRequest, b: bool):
-        request.session[cls.ADMIN_ACCOUNTS_SHOW_DETAILS_KEY] = b
-
-    @classmethod
-    def get_session_admin_accounts_show_details(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.ADMIN_ACCOUNTS_SHOW_DETAILS_KEY, False)
-
-    ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY: str = (
-        'admin_tournament_criterion_add_other_active'
-    )
-
-    @classmethod
-    def set_session_admin_tournament_criterion_add_other_active(
-        cls, request: HTMXRequest, b: bool
-    ):
-        request.session[cls.ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY] = b
-
-    @classmethod
-    def get_session_admin_tournament_criterion_add_other_active(
-        cls, request: HTMXRequest
-    ) -> bool:
-        return request.session.get(
-            cls.ADMIN_TOURNAMENT_CRITERION_ADD_OTHER_ACTIVE_KEY, False
-        )
-
-    ADMIN_TIE_BREAK_ADD_OTHER_ACTIVE_KEY = 'admin_tie_break_add_other_active'
-
-    @classmethod
-    def set_session_admin_tie_break_add_other_active(
-        cls, request: HTMXRequest, b: bool
-    ):
-        request.session[cls.ADMIN_TIE_BREAK_ADD_OTHER_ACTIVE_KEY] = b
-
-    @classmethod
-    def get_session_admin_tie_break_add_other_active(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.ADMIN_TIE_BREAK_ADD_OTHER_ACTIVE_KEY, False)
-
-    ADMIN_EVENTS_SHOW_DETAILS_KEY: str = 'admin_events_show_details'
-
-    @classmethod
-    def set_session_admin_events_show_details(cls, request: HTMXRequest, b: bool):
-        request.session[cls.ADMIN_EVENTS_SHOW_DETAILS_KEY] = b
-
-    @classmethod
-    def get_session_admin_events_show_details(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.ADMIN_EVENTS_SHOW_DETAILS_KEY, False)
-
-    ADMIN_PAIRINGS_SHOW_WITHOUT_RESULTS_KEY: str = 'admin_pairings_show_without_results'
-
-    @classmethod
-    def set_session_admin_pairings_show_without_results(
-        cls, request: HTMXRequest, b: bool
-    ):
-        request.session[cls.ADMIN_PAIRINGS_SHOW_WITHOUT_RESULTS_KEY] = b
-
-    @classmethod
-    def get_session_admin_pairings_show_without_results(
-        cls, request: HTMXRequest
-    ) -> bool:
-        return request.session.get(cls.ADMIN_PAIRINGS_SHOW_WITHOUT_RESULTS_KEY, False)
-
-    ADMIN_SCREENS_SCREEN_TYPES_KEY: str = 'admin_screens_screen_types'
-
-    @classmethod
-    def set_session_admin_screens_screen_types(
-        cls, request: HTMXRequest, screen_types: set[str]
-    ):
-        request.session[cls.ADMIN_SCREENS_SCREEN_TYPES_KEY] = list(screen_types)
-
-    @classmethod
-    def get_session_admin_screens_screen_types(cls, request: HTMXRequest) -> set[str]:
-        return set(
-            request.session.get(
-                cls.ADMIN_SCREENS_SCREEN_TYPES_KEY,
-                [],
-            )
-        )
-
-    LOCALE_KEY: str = 'locale'
-
-    @classmethod
-    def set_session_locale(cls, request: HTMXRequest, locale: str):
-        request.session[cls.LOCALE_KEY] = locale
-
-    @classmethod
-    def get_session_locale(cls, request: HTMXRequest) -> str:
-        locale: str = request.session.get(cls.LOCALE_KEY, SharlyChessConfig().locale)
-        if locale not in locales:
-            locale = DEFAULT_LOCALE
-            cls.set_session_locale(request, locale)
-        return locale
-
-    ADMIN_PLAYERS_EVENT_KEY: str = 'admin_players_event'
-
-    @classmethod
-    def set_session_admin_players_event(cls, request: HTMXRequest, event_uniq_id: str):
-        request.session[cls.ADMIN_PLAYERS_EVENT_KEY] = event_uniq_id
-
-    @classmethod
-    def get_session_admin_player_event(cls, request: HTMXRequest) -> str | None:
-        return request.session.get(cls.ADMIN_PLAYERS_EVENT_KEY, None)
-
-    ADMIN_PLAYERS_SORT_KEY: str = 'admin_players_sort'
-
-    @classmethod
-    def set_session_admin_players_sort(cls, request: HTMXRequest, players_sort: str):
-        request.session[cls.ADMIN_PLAYERS_SORT_KEY] = players_sort
-
-    @classmethod
-    def get_session_admin_players_sort(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.ADMIN_PLAYERS_SORT_KEY, 'alpha')
-
-    ADMIN_PLAYERS_FILTER_COLUMNS_KEY: str = 'admin_players_filter_columns'
-
-    @classmethod
-    def set_session_admin_players_filter_columns(
-        cls, request: HTMXRequest, columns: list[str]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_COLUMNS_KEY] = columns
-
-    @classmethod
-    def get_session_admin_players_filter_columns(
-        cls, request: HTMXRequest
-    ) -> list[str]:
-        return request.session.get(
-            cls.ADMIN_PLAYERS_FILTER_COLUMNS_KEY,
-            SharlyChessConfig.default_players_filter_columns,
-        )
-
-    ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY: str = 'admin_players_filter_federations'
-
-    @classmethod
-    def set_session_admin_players_filter_federations(
-        cls, request: HTMXRequest, federations: list[Federation]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY] = [
-            federation.name for federation in federations
-        ]
-
-    @classmethod
-    def get_session_admin_players_filter_federations(
-        cls, request: HTMXRequest
-    ) -> list[Federation]:
-        return [
-            Federation(federation_name)
-            for federation_name in request.session.get(
-                cls.ADMIN_PLAYERS_FILTER_FEDERATIONS_KEY, []
-            )
-        ]
-
-    ADMIN_PLAYERS_FILTER_CLUBS_KEY: str = 'admin_players_filter_clubs'
-
-    @classmethod
-    def set_session_admin_players_filter_clubs(
-        cls, request: HTMXRequest, clubs: list[Club]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY] = [
-            club.name for club in clubs
-        ]
-
-    @classmethod
-    def get_session_admin_players_filter_clubs(cls, request: HTMXRequest) -> list[Club]:
-        return [
-            Club(club_name)
-            for club_name in request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_KEY, [])
-        ]
-
-    ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY: str = 'admin_players_filter_clubs_search'
-
-    @classmethod
-    def set_session_admin_players_filter_clubs_search(
-        cls, request: HTMXRequest, origin: str
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY] = origin
-
-    @classmethod
-    def get_session_admin_players_filter_clubs_search(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_CLUBS_SEARCH_KEY, '')
-
-    ADMIN_PLAYERS_FILTER_GENDERS_KEY: str = 'admin_players_filter_genders'
-
-    @classmethod
-    def set_session_admin_players_filter_genders(
-        cls, request: HTMXRequest, genders: list[PlayerGender]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY] = [
-            gender.value for gender in genders
-        ]
-
-    @classmethod
-    def get_session_admin_players_filter_genders(
-        cls, request: HTMXRequest
-    ) -> list[PlayerGender]:
-        return [
-            PlayerGender(gender_value)
-            for gender_value in request.session.get(
-                cls.ADMIN_PLAYERS_FILTER_GENDERS_KEY, []
-            )
-        ]
-
-    ADMIN_PLAYERS_FILTER_CHECK_INS_KEY: str = 'admin_players_filter_check_ins'
-
-    @classmethod
-    def set_session_admin_players_filter_check_ins(
-        cls, request: HTMXRequest, check_ins: list[bool | None]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CHECK_INS_KEY] = check_ins
-
-    @classmethod
-    def get_session_admin_players_filter_check_ins(
-        cls, request: HTMXRequest
-    ) -> list[bool | None]:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_CHECK_INS_KEY, [])
-
-    ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY: str = 'admin_players_filter_tournaments'
-
-    @classmethod
-    def set_session_admin_players_filter_tournaments(
-        cls, request: HTMXRequest, tournament_ids: list[int]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY] = tournament_ids
-
-    @classmethod
-    def get_session_admin_players_filter_tournaments(
-        cls, request: HTMXRequest
-    ) -> list[int]:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_TOURNAMENTS_KEY, [])
-
-    ADMIN_PLAYERS_FILTER_CATEGORIES_KEY: str = 'admin_players_filter_categories'
-
-    @classmethod
-    def set_session_admin_players_filter_categories(
-        cls, request: HTMXRequest, categories: list[PlayerCategory]
-    ):
-        request.session[cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY] = [
-            category.id for category in categories
-        ]
-
-    @classmethod
-    def get_session_admin_players_filter_categories(
-        cls, request: HTMXRequest
-    ) -> list[PlayerCategory]:
-        return [
-            PlayerCategory.from_id(category_value)
-            for category_value in request.session.get(
-                cls.ADMIN_PLAYERS_FILTER_CATEGORIES_KEY, []
-            )
-        ]
-
-    ADMIN_PLAYERS_FILTER_NAME_KEY: str = 'admin_players_filter_name'
-
-    @classmethod
-    def set_session_admin_players_filter_name(cls, request: HTMXRequest, name: str):
-        request.session[cls.ADMIN_PLAYERS_FILTER_NAME_KEY] = name
-
-    @classmethod
-    def get_session_admin_players_filter_name(cls, request: HTMXRequest) -> str:
-        return request.session.get(cls.ADMIN_PLAYERS_FILTER_NAME_KEY, '')
-
-    ADMIN_PLAYERS_SEARCH_RESULTS_ID_KEY = 'admin_players_search_results_id'
-
-    @classmethod
-    def set_session_admin_players_search_results_id(
-        cls, request: HTMXRequest, search_results_id: int
-    ):
-        request.session[cls.ADMIN_PLAYERS_SEARCH_RESULTS_ID_KEY] = search_results_id
-
-    @classmethod
-    def get_session_admin_players_search_results_id(
-        cls, request: HTMXRequest
-    ) -> int | None:
-        return request.session.get(cls.ADMIN_PLAYERS_SEARCH_RESULTS_ID_KEY, None)
-
-    ADMIN_PLAYERS_ACTIVE_DATA_SOURCE_KEY: str = 'admin_players_active_data_source'
-
-    @classmethod
-    def set_session_admin_players_active_data_source(
-        cls, request: HTMXRequest, data_source_id: str
-    ):
-        request.session[cls.ADMIN_PLAYERS_ACTIVE_DATA_SOURCE_KEY] = data_source_id
-
-    @classmethod
-    def get_session_admin_players_active_data_source(cls, request: HTMXRequest) -> str:
-        return request.session.get(
-            cls.ADMIN_PLAYERS_ACTIVE_DATA_SOURCE_KEY,
-            DataSourceManager().entity_types()[0].static_id(),
-        )
-
-    ADMIN_PAIRINGS_SAFETY_MODE_KEY = 'admin_pairings_safety_mode'
-
-    @classmethod
-    def set_session_admin_pairings_safety_mode(
-        cls, request: HTMXRequest, safety_mode: SafetyMode
-    ):
-        request.session[cls.ADMIN_PAIRINGS_SAFETY_MODE_KEY] = safety_mode.value
-
-    @classmethod
-    def get_session_admin_pairings_safety_mode(cls, request: HTMXRequest) -> SafetyMode:
-        return SafetyMode(
-            request.session.get(cls.ADMIN_PAIRINGS_SAFETY_MODE_KEY, SafetyMode.SAFE)
-        )
-
-    ADMIN_PAIRINGS_PAGE_IDENTIFIER_KEY = 'admin_pairings_page_identifier'
-
-    @classmethod
-    def set_session_admin_pairings_page_identifier(
-        cls, request: HTMXRequest, page_identifier: Optional['PageIdentifier']
-    ):
-        request.session[cls.ADMIN_PAIRINGS_PAGE_IDENTIFIER_KEY] = (
-            page_identifier.to_json() if page_identifier else None
-        )
-
-    @classmethod
-    def get_session_admin_pairings_page_identifier(
-        cls, request: HTMXRequest
-    ) -> Optional['PageIdentifier']:
-        from web.controllers.admin.pairings_admin_controller import PageIdentifier
-
-        if page_identifier := request.session.get(
-            cls.ADMIN_PAIRINGS_PAGE_IDENTIFIER_KEY, None
-        ):
-            return PageIdentifier.from_json(page_identifier)
+class NoneSessionVariable[T](SessionVariable[T | None], ABC):
+    @property
+    def default_value(self) -> T | None:
         return None
 
-    ADMIN_PLAYER_ADD_OTHER_ACTIVE_KEY: str = 'admin_player_add_other_active'
 
-    @classmethod
-    def set_session_admin_player_add_other_active(cls, request: HTMXRequest, b: bool):
-        request.session[cls.ADMIN_PLAYER_ADD_OTHER_ACTIVE_KEY] = b
+class BoolSessionVariable(SessionVariable[bool], ABC):
+    @property
+    def default_value(self) -> bool:
+        return False
 
-    @classmethod
-    def get_session_admin_player_add_other_active(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.ADMIN_PLAYER_ADD_OTHER_ACTIVE_KEY, False)
 
-    ADMIN_PRIZE_ADD_OTHER_ACTIVE_KEY: str = 'admin_prize_add_other_active'
+class StrSessionVariable(SessionVariable[str], ABC):
+    @property
+    def default_value(self) -> str:
+        return ''
 
-    @classmethod
-    def set_session_admin_prize_add_other_active(cls, request: HTMXRequest, b: bool):
-        request.session[cls.ADMIN_PRIZE_ADD_OTHER_ACTIVE_KEY] = b
 
-    @classmethod
-    def get_session_admin_prize_add_other_active(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.ADMIN_PRIZE_ADD_OTHER_ACTIVE_KEY, False)
+class ListSessionVariable[T](SessionVariable[list[T]], ABC):
+    @property
+    def default_value(self) -> list[T]:
+        return []
 
-    ADMIN_PRIZE_CATEGORY_ADD_OTHER_ACTIVE_KEY: str = (
-        'admin_prize_category_add_other_active'
-    )
 
-    @classmethod
-    def set_session_admin_prize_category_add_other_active(
-        cls, request: HTMXRequest, b: bool
-    ):
-        request.session[cls.ADMIN_PRIZE_CATEGORY_ADD_OTHER_ACTIVE_KEY] = b
+class WrapperListSessionVariable[T](ListSessionVariable[T], ABC):
+    @abstractmethod
+    def from_session_value(self, value: Any) -> T:
+        """Initialize an object of type T from the session value."""
 
-    @classmethod
-    def get_session_admin_prize_category_add_other_active(
-        cls, request: HTMXRequest
-    ) -> bool:
-        return request.session.get(cls.ADMIN_PRIZE_CATEGORY_ADD_OTHER_ACTIVE_KEY, False)
+    @abstractmethod
+    def to_session_value(self, element: T) -> Any:
+        """Get the value stored in the session for an element."""
 
-    ADMIN_PRIZE_CRITERION_ADD_OTHER_ACTIVE_KEY: str = (
-        'admin_prize_criterion_add_other_active'
-    )
+    def get(self) -> list[T]:
+        return [
+            self.from_session_value(value)
+            for value in self.request.session.get(self.key, self.default_value)
+        ]
 
-    @classmethod
-    def set_session_admin_prize_criterion_add_other_active(
-        cls, request: HTMXRequest, b: bool
-    ):
-        request.session[cls.ADMIN_PRIZE_CRITERION_ADD_OTHER_ACTIVE_KEY] = b
+    def set(self, value: list[T]):
+        self.request.session[self.key] = [
+            self.to_session_value(element) for element in value
+        ]
 
-    @classmethod
-    def get_session_admin_prize_criterion_add_other_active(
-        cls, request: HTMXRequest
-    ) -> bool:
-        return request.session.get(
-            cls.ADMIN_PRIZE_CRITERION_ADD_OTHER_ACTIVE_KEY, False
-        )
 
-    ADMIN_PRIZES_SHOW_DETAILS_KEY: str = 'admin_prizes_show_details'
+class SubKeySessionVariable[T](SessionVariable[T], ABC):
+    def __init__(self, request: HTMXRequest, sub_key: str):
+        super().__init__(request)
+        self.sub_key = sub_key
 
-    @classmethod
-    def set_session_admin_prizes_show_details(cls, request: HTMXRequest, b: bool):
-        request.session[cls.ADMIN_PRIZES_SHOW_DETAILS_KEY] = b
+    def set(self, value: T):
+        if self.key not in self.request.session:
+            self.request.session[self.key] = {}
+        self.request.session[self.key][self.sub_key] = value
 
-    @classmethod
-    def get_session_admin_prizes_show_details(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.ADMIN_PRIZES_SHOW_DETAILS_KEY, False)
+    def get(self) -> T:
+        if self.key not in self.request.session:
+            self.request.session[self.key] = {}
+        return self.request.session[self.key].get(self.sub_key, self.default_value)
 
-    PRINT_TOURNAMENT_KEY: str = 'admin_print_last_tournament'
+    def unset(self):
+        if self.key not in self.request.session:
+            return
+        self.request.session[self.key].pop(self.sub_key, None)
 
-    @classmethod
-    def set_session_admin_print_last_tournaments(
-        cls, request: HTMXRequest, event_uniq_id: str, tournament_ids: list[int]
-    ):
-        request.session[cls.PRINT_TOURNAMENT_KEY] = (event_uniq_id, tournament_ids)
 
-    @classmethod
-    def get_session_admin_print_last_tournaments(
-        cls, request: HTMXRequest
-    ) -> tuple[str, list[int]] | None:
-        return request.session.get(cls.PRINT_TOURNAMENT_KEY, None)
+class SubKeyNoneSessionVariable[T](SubKeySessionVariable[T | None], ABC):
+    @property
+    def default_value(self) -> T | None:
+        return None
 
-    PAIRINGS_SELECTED_TOURNAMENT_KEY: str = 'admin_pairings_selected_tournament'
 
-    @classmethod
-    def set_session_admin_pairings_selected_tournament(
-        cls, request: HTMXRequest, event_uniq_id: str, tournament_id: int
-    ):
-        if cls.PAIRINGS_SELECTED_TOURNAMENT_KEY not in request.session:
-            request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY] = {}
-        request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY][event_uniq_id] = (
-            tournament_id
-        )
+class TournamentSessionVariable[T](SubKeySessionVariable[T], ABC):
+    def __init__(self, request: HTMXRequest, event_uniq_id: str, tournament_id: int):
+        super().__init__(request, f'{event_uniq_id}|{tournament_id}')
 
-    @classmethod
-    def get_session_admin_pairings_selected_tournament(
-        cls,
-        request: HTMXRequest,
-        event_uniq_id: str,
-    ) -> int | None:
-        try:
-            return request.session[cls.PAIRINGS_SELECTED_TOURNAMENT_KEY][event_uniq_id]
-        except KeyError:
-            return None
 
-    PAIRINGS_SELECTED_ROUND_KEY: str = 'admin_pairings_selected_round'
+class DataclassSessionVariable[T](SessionVariable[T], ABC):
+    @property
+    @abstractmethod
+    def data_class(self) -> type[T]:
+        """Dataclass type returned of the session variable."""
 
-    @classmethod
-    def set_session_admin_pairings_selected_round(
-        cls,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
-        round: int,
-    ):
-        # dict keys are stored as strings because they are always read as strings
-        if cls.PAIRINGS_SELECTED_ROUND_KEY not in request.session:
-            request.session[cls.PAIRINGS_SELECTED_ROUND_KEY] = {}
-        if event_uniq_id not in request.session[cls.PAIRINGS_SELECTED_ROUND_KEY]:
-            request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id] = {}
-        request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id][
-            str(tournament_id)
-        ] = round
+    @property
+    def default_value(self) -> T:
+        return self.data_class()
 
-    @classmethod
-    def get_session_admin_pairings_selected_round(
-        cls,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        tournament_id: int,
-    ) -> int | None:
-        # dict keys are stored as strings because they are always read as strings
-        try:
-            return request.session[cls.PAIRINGS_SELECTED_ROUND_KEY][event_uniq_id][
-                str(tournament_id)
-            ]
-        except KeyError:
-            return None
+    def get(self) -> T:
+        if self.key not in self.request.session:
+            return self.default_value
+        return dict_to_dataclass(self.data_class, self.request.session[self.key])
 
-    ADMIN_TIMER_ADD_OTHER_ACTIVE_KEY: str = 'admin_timer_add_other_active'
+    def set(self, value: T):
+        self.request.session[self.key] = asdict(value)  # type: ignore
 
-    @classmethod
-    def set_session_admin_timer_add_other_active(cls, request: HTMXRequest, b: bool):
-        request.session[cls.ADMIN_TIMER_ADD_OTHER_ACTIVE_KEY] = b
 
-    @classmethod
-    def get_session_admin_timer_add_other_active(cls, request: HTMXRequest) -> bool:
-        return request.session.get(cls.ADMIN_TIMER_ADD_OTHER_ACTIVE_KEY, False)
+class SessionUserAccountId(SubKeyNoneSessionVariable[int]):
+    @property
+    def key(self) -> str:
+        return 'account_id'
+
+
+class SessionUserAccountPasswordHash(SubKeyNoneSessionVariable[str]):
+    @property
+    def key(self) -> str:
+        return 'account_password_hash'
+
+
+@dataclass
+class LastBoardUpdated:
+    tournament_id: int = 0
+    round: int = 0
+    board_id: int = 0
+    expiration: float = 0.0
+
+
+class SessionLastResultUpdated(DataclassSessionVariable[LastBoardUpdated]):
+    @property
+    def key(self) -> str:
+        return 'last_result_updated'
+
+    @property
+    def data_class(self) -> type[LastBoardUpdated]:
+        return LastBoardUpdated
+
+
+@dataclass
+class LastPlayerUpdated:
+    tournament_id: int = 0
+    player_id: int = 0
+    expiration: float = 0.0
+
+
+class SessionLastIllegalMoveUpdated(DataclassSessionVariable[LastPlayerUpdated]):
+    @property
+    def key(self) -> str:
+        return 'last_illegal_move_updated'
+
+    @property
+    def data_class(self) -> type[LastPlayerUpdated]:
+        return LastPlayerUpdated
+
+
+class SessionLastCheckInUpdated(DataclassSessionVariable[LastPlayerUpdated]):
+    @property
+    def key(self) -> str:
+        return 'last_check_in_updated'
+
+    @property
+    def data_class(self) -> type[LastPlayerUpdated]:
+        return LastPlayerUpdated
+
+
+class SessionScreensShowFamilyScreens(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'screens_show_family_screens'
+
+
+class SessionScreensShowDetails(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'screens_show_details'
+
+
+class SessionFamiliesShowDetails(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'families_show_details'
+
+
+class SessionRotatorsShowDetails(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'rotators_show_details'
+
+
+class SessionAccountsShowDetails(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'accounts_show_details'
+
+
+class SessionPrizesShowDetails(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'prizes_show_details'
+
+
+class SessionTournamentsShowDetails(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'tournaments_show_details'
+
+
+class SessionEventsShowDetails(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'events_show_details'
+
+
+class SessionTimersAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'timers_add_other_active'
+
+
+class SessionTournamentCriteriaAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'tournament_criteria_add_other_active'
+
+
+class SessionTieBreakAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'tie_break_add_other_active'
+
+
+class SessionPairingsShowWithoutResults(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'pairings_show_without_results'
+
+
+class SessionScreensScreenTypes(SessionVariable[set[str]]):
+    @property
+    def key(self) -> str:
+        return 'screens_screen_types'
+
+    @property
+    def default_value(self) -> set[str]:
+        return set()
+
+    def get(self) -> set[str]:
+        return set(super().get())
+
+    def set(self, value: set[str]):
+        self.request.session[self.key] = list(value)
+
+
+class SessionLocale(SessionVariable[str]):
+    @property
+    def key(self) -> str:
+        return 'locale'
+
+    @property
+    def default_value(self) -> str:
+        return SharlyChessConfig().locale
+
+    def get(self) -> str:
+        locale = super().get()
+        if locale not in locales:
+            locale = DEFAULT_LOCALE
+            self.set(locale)
+        return locale
+
+
+class SessionPlayersEvent(NoneSessionVariable[str]):
+    @property
+    def key(self) -> str:
+        return 'players_event'
+
+
+class SessionPlayersSort(SessionVariable[str]):
+    @property
+    def key(self) -> str:
+        return 'players_sort'
+
+    @property
+    def default_value(self) -> str:
+        return 'alpha'
+
+
+class SessionPlayersFilterColumns(ListSessionVariable[str]):
+    @property
+    def key(self) -> str:
+        return 'players_filter_columns'
+
+    @property
+    def default_value(self) -> list[str]:
+        return SharlyChessConfig.default_players_filter_columns
+
+
+class SessionPlayersFilterName(StrSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'players_filter_name'
+
+
+class SessionPlayersFilterFederations(WrapperListSessionVariable[Federation]):
+    @property
+    def key(self) -> str:
+        return 'players_filter_federations'
+
+    def from_session_value(self, value: Any) -> Federation:
+        return Federation(value)
+
+    def to_session_value(self, element: Federation) -> Any:
+        return element.name
+
+
+class SessionPlayersFilterClubs(WrapperListSessionVariable[Club]):
+    @property
+    def key(self) -> str:
+        return 'players_filter_clubs'
+
+    def from_session_value(self, value: Any) -> Club:
+        return Club(value)
+
+    def to_session_value(self, element: Club) -> Any:
+        return element.name
+
+
+class SessionPlayersFilterClubsSearch(StrSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'players_filter_clubs_search'
+
+
+class SessionPlayersFilterGenders(WrapperListSessionVariable[PlayerGender]):
+    @property
+    def key(self) -> str:
+        return 'players_filter_genders'
+
+    def from_session_value(self, value: Any) -> PlayerGender:
+        return PlayerGender(value)
+
+    def to_session_value(self, element: PlayerGender) -> Any:
+        return element.value
+
+
+class SessionPlayersFilterCheckIns(ListSessionVariable[bool | None]):
+    @property
+    def key(self) -> str:
+        return 'players_filter_check_ins'
+
+
+class SessionPlayersFilterTournaments(ListSessionVariable[int]):
+    @property
+    def key(self) -> str:
+        return 'players_filter_tournaments'
+
+
+class SessionPlayersFilterCategories(WrapperListSessionVariable[PlayerCategory]):
+    @property
+    def key(self) -> str:
+        return 'players_filter_categories'
+
+    def from_session_value(self, value: Any) -> PlayerCategory:
+        return PlayerCategory.from_id(value)
+
+    def to_session_value(self, element: PlayerCategory) -> Any:
+        return element.id
+
+
+class SessionPlayersSearchResultsId(NoneSessionVariable[int]):
+    @property
+    def key(self) -> str:
+        return 'players_search_results_id'
+
+
+class SessionPlayersActiveDataSource(SessionVariable[str]):
+    @property
+    def key(self) -> str:
+        return 'players_active_data_source'
+
+    @property
+    def default_value(self) -> str:
+        return DataSourceManager().entity_types()[0].static_id()
+
+
+class SessionPlayersAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'players_add_other_active'
+
+
+class SessionPairingsSafetyMode(SessionVariable[SafetyMode]):
+    @property
+    def key(self) -> str:
+        return 'pairings_safety_mode'
+
+    @property
+    def default_value(self) -> SafetyMode:
+        return SafetyMode.SAFE
+
+    def get(self) -> SafetyMode:
+        return SafetyMode(super().get())
+
+    def set(self, safety_mode: SafetyMode):
+        self.request.session[self.key] = safety_mode.value
+
+
+@dataclass
+class PairingsPageIdentifier:
+    event_uniq_id: str = ''
+    tournament_id: int = 0
+    round: int = 0
+
+
+class SessionPairingsPageIdentifier(DataclassSessionVariable[PairingsPageIdentifier]):
+    @property
+    def key(self) -> str:
+        return 'pairings_page_identifier'
+
+    @property
+    def data_class(self) -> type[PairingsPageIdentifier]:
+        return PairingsPageIdentifier
+
+
+class SessionPairingsSelectedTournament(SubKeyNoneSessionVariable[int]):
+    @property
+    def key(self) -> str:
+        return 'pairings_selected_tournament'
+
+
+class SessionPairingsSelectedRound(TournamentSessionVariable[int | None]):
+    @property
+    def key(self) -> str:
+        return 'pairings_selected_round'
+
+    @property
+    def default_value(self) -> int | None:
+        return None
+
+
+class SessionPrizeCategoriesAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'prize_categories_add_other_active'
+
+
+class SessionPrizeCriteriaAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'prize_criteria_add_other_active'
+
+
+class SessionPrizesAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'prizes_add_other_active'
+
+
+class SessionPrintLastTournaments(SubKeySessionVariable[list[int]]):
+    @property
+    def key(self) -> str:
+        return 'print_last_tournaments'
+
+    @property
+    def default_value(self) -> list[int]:
+        return []

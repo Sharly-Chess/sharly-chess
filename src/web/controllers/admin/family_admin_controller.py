@@ -24,7 +24,7 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import SessionFamiliesShowDetails
 
 
 class FamilyAdminWebContext(BaseEventAdminWebContext):
@@ -308,9 +308,7 @@ class FamilyAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         template_context = web_context.template_context | {
             'admin_event_tab': 'admin-event-families-tab',
-            'admin_families_show_details': SessionHandler.get_session_admin_families_show_details(
-                web_context.request,
-            ),
+            'show_details': SessionFamiliesShowDetails(request).get(),
         }
 
         match modal:
@@ -491,12 +489,10 @@ class FamilyAdminController(BaseEventAdminController):
     async def htmx_admin_event_families_tab(
         self,
         request: HTMXRequest,
-        admin_families_show_details: bool | None,
+        show_details: bool | None,
     ) -> Template:
-        if admin_families_show_details is not None:
-            SessionHandler.set_session_admin_families_show_details(
-                request, admin_families_show_details
-            )
+        if show_details is not None:
+            SessionFamiliesShowDetails(request).set(show_details)
         return self._admin_event_families_render(request)
 
     @get(

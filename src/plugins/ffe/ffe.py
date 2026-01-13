@@ -55,8 +55,11 @@ from plugins.ffe.ffe_entity import (
     FfeLeagueDatasheetColumn,
     FfeLicenceTypeTableColumn,
 )
-from plugins.ffe.ffe_event_controller import FfeAdminEventController
-from plugins.ffe.ffe_session_handler import FFESessionHandler
+from plugins.ffe.ffe_event_controller import (
+    FfeAdminEventController,
+    SessionPlayersFilterFFELeague,
+    SessionPlayersFilterFFELicence,
+)
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
     BasePapiTieBreak,
@@ -273,7 +276,7 @@ class FfePlugin(Plugin):
         allowed_players = web_context.client.allowed_players
 
         # The leagues that will be shown on the league select list
-        players_leagues: list[str] = sorted(
+        players_leagues = sorted(
             {
                 FFEUtils.get_player_plugin_data(player).league or ''
                 for player in allowed_players
@@ -281,27 +284,21 @@ class FfePlugin(Plugin):
         )
 
         # The leagues that will be selected on the league select list and used to filter the players
-        filter_leagues: list[str] = [
+        filter_leagues = [
             league
-            for league in FFESessionHandler.get_session_admin_players_filter_leagues(
-                request
-            )
+            for league in SessionPlayersFilterFFELeague(request).get()
             if league in players_leagues
         ]
 
         # The licences that will be shown on the licence select list
-        players_licences: list[PlayerFFELicence] = sorted(
+        players_licences = sorted(
             {
                 FFEUtils.get_player_plugin_data(player).ffe_licence
                 for player in allowed_players
             }
         )
         # The licences that will be selected on the licence select list and used to filter the players
-        filter_licences: list[PlayerFFELicence] = (
-            FFESessionHandler.get_session_admin_players_filter_licences(
-                web_context.request
-            )
-        )
+        filter_licences = SessionPlayersFilterFFELeague(request).get()
         league_counts: Counter[str] = Counter[str]()
         for player in allowed_players:
             league_counts[FFEUtils.get_player_plugin_data(player).league or ''] += 1
@@ -311,17 +308,11 @@ class FfePlugin(Plugin):
             licence_counts[FFEUtils.get_player_plugin_data(player).ffe_licence] += 1
         return {
             'admin_players_leagues': players_leagues,
-            'admin_filter_leagues': filter_leagues,
+            'admin_players_filter_leagues': filter_leagues,
             'admin_players_licences': players_licences,
-            'admin_filter_licences': filter_licences,
+            'admin_players_filter_licences': filter_licences,
             'ffe_league_counts': league_counts,
             'ffe_licence_counts': licence_counts,
-            'admin_players_filter_leagues': FFESessionHandler.get_session_admin_players_filter_leagues(
-                request
-            ),
-            'admin_players_filter_licences': FFESessionHandler.get_session_admin_players_filter_licences(
-                request
-            ),
         }
 
     @hookimpl
@@ -574,16 +565,9 @@ class FfePlugin(Plugin):
         web_context: PlayerAdminWebContext,
         template_context: dict[str, Any],
     ) -> list[Callable[[Player], bool]]:
-        filter_leagues: list[str] = (
-            FFESessionHandler.get_session_admin_players_filter_leagues(
-                web_context.request
-            )
-        )
-        filter_licences: list[PlayerFFELicence] = (
-            FFESessionHandler.get_session_admin_players_filter_licences(
-                web_context.request
-            )
-        )
+        request = web_context.request
+        filter_leagues = SessionPlayersFilterFFELeague(request).get()
+        filter_licences = SessionPlayersFilterFFELicence(request).get()
 
         admin_players_leagues = template_context['admin_players_leagues']
         admin_players_licences = template_context['admin_players_licences']
@@ -602,8 +586,8 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def clear_player_filters(self, request: HTMXRequest):
-        FFESessionHandler.set_session_admin_players_filter_leagues(request, [])
-        FFESessionHandler.set_session_admin_players_filter_licences(request, [])
+        SessionPlayersFilterFFELeague(request).unset()
+        SessionPlayersFilterFFELicence(request).unset()
 
     @hookimpl
     def player_sort_key(self, player: Player, sort_type: str):
