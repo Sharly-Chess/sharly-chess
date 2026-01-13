@@ -108,7 +108,7 @@
             {% for template in plugin_card_fields_templates %}
                 {% include template %}
             {% endfor %}
-            {% if admin_tournaments_show_details %}
+            {% if show_details %}
                 <div class="text-start {% if not tournament.rules %}text-secondary{% endif %}">
                     {% if tournament.rules %}
                         {{ _('Rules file set') }}

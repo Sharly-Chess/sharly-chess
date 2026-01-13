@@ -20,7 +20,11 @@ from web.controllers.user.event_user_controller import (
     EventUserWebContext,
 )
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import (
+    SessionLastResultUpdated,
+    SessionLastIllegalMoveUpdated,
+    SessionLastCheckInUpdated,
+)
 from web.utils import RequestUtils
 
 logger: Logger = get_logger()
@@ -186,21 +190,17 @@ class BaseScreenUserController(BaseUserController):
                             and tournament.record_illegal_moves > 0
                         ),
                     )
-
+        request = web_context.request
         return HTMXTemplate(
             template_name='user/screen.html',
             context=web_context.template_context
             | {
-                'last_result_updated': SessionHandler.get_session_last_result_updated(
-                    web_context.request
-                ),
-                'last_illegal_move_updated': SessionHandler.get_session_user_last_illegal_move_updated(
-                    web_context.request
-                ),
-                'last_check_in_updated': SessionHandler.get_session_user_last_check_in_updated(
-                    web_context.request
-                ),
-                'messages': Message.messages(web_context.request),
+                'last_result_updated': SessionLastResultUpdated(request).get(),
+                'last_illegal_move_updated': SessionLastIllegalMoveUpdated(
+                    request
+                ).get(),
+                'last_check_in_updated': SessionLastCheckInUpdated(request).get(),
+                'messages': Message.messages(request),
                 'columns_by_tournament_id': columns_by_tournament_id,
             },
         )

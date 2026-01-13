@@ -28,7 +28,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
 )
 from web.guards import EventGuard, ActionGuard, PrintGuard
-from web.session import SessionHandler
+from web.session import SessionPrintLastTournaments
 
 
 class EventPrintController(BaseEventAdminController):
@@ -184,8 +184,8 @@ class EventPrintController(BaseEventAdminController):
             if not errors:
                 tournament_ids = self._get_tournament_ids_from_options(options)
                 if tournament_ids:
-                    SessionHandler.set_session_admin_print_last_tournaments(
-                        request, event.uniq_id, tournament_ids
+                    SessionPrintLastTournaments(request, event.uniq_id).set(
+                        tournament_ids
                     )
         if errors:
             template_context = self._print_modal_context(

@@ -1,3 +1,4 @@
+import time
 from contextlib import suppress
 from typing import Any
 
@@ -26,7 +27,13 @@ from web.guards import (
     SetResultGuard,
 )
 from web.messages import Message
-from web.session import SessionHandler
+from web.session import (
+    SessionLastResultUpdated,
+    LastBoardUpdated,
+    LastPlayerUpdated,
+    SessionLastIllegalMoveUpdated,
+    SessionLastCheckInUpdated,
+)
 from web.utils import RequestUtils
 
 
@@ -117,53 +124,44 @@ class CheckInUserController(BaseInputUserController):
         channels: ChannelsPlugin,
         event_uniq_id: str,
     ) -> Template:
-        player_web_context = PlayerUserWebContext(request)
-        assert player_web_context.tournament_player.id is not None
-        player_web_context.tournament.check_in_player(
-            player_web_context.tournament_player,
-            not player_web_context.tournament_player.check_in,
+        web_context = PlayerUserWebContext(request)
+        tournament = web_context.tournament
+        player = web_context.tournament_player
+        tournament.check_in_player(player, not player.check_in)
+        PlayerAdminController.publish_new_checkin(channels, event_uniq_id, player)
+        SessionLastCheckInUpdated(request).set(
+            LastPlayerUpdated(
+                tournament_id=tournament.id,
+                player_id=player.id,
+                expiration=time.time() + 20,
+            )
         )
-        PlayerAdminController.publish_new_checkin(
-            channels, event_uniq_id, player_web_context.tournament_player
-        )
-        SessionHandler.set_session_user_last_check_in_updated(
-            request,
-            player_web_context.tournament.id,
-            player_web_context.tournament_player.id,
-        )
-        web_context = BasicScreenOrFamilyUserWebContext(request)
-        return self._user_screen_render(web_context)
+        return self._user_screen_render(BasicScreenOrFamilyUserWebContext(request))
 
 
 class IllegalMoveUserController(BaseInputUserController):
     def _delete_or_add_illegal_move(self, request: HTMXRequest, add: bool) -> Template:
-        player_web_context = PlayerUserWebContext(request)
-
+        web_context = PlayerUserWebContext(request)
+        tournament = web_context.tournament
+        player = web_context.tournament_player
+        session_handler = SessionLastIllegalMoveUpdated(request)
+        last_player_updated = LastPlayerUpdated(
+            tournament_id=tournament.id,
+            player_id=player.id,
+            expiration=time.time() + 20,
+        )
         if add:
-            player_web_context.tournament.store_illegal_move(
-                player_web_context.tournament_player
-            )
-            SessionHandler.set_session_user_last_illegal_move_updated(
-                request,
-                player_web_context.tournament.id,
-                player_web_context.tournament_player.id,
-            )
+            tournament.store_illegal_move(player)
+            session_handler.set(last_player_updated)
         else:
-            if not player_web_context.tournament.delete_illegal_move(
-                player_web_context.tournament_player
-            ):
+            if not tournament.delete_illegal_move(player):
                 Message.error(
                     request,
-                    f'Player [{player_web_context.tournament_player.id}] has no illegal move recorded.',
+                    f'Player [{player.id}] has no illegal move recorded.',
                 )
             else:
-                SessionHandler.set_session_user_last_illegal_move_updated(
-                    request,
-                    player_web_context.tournament.id,
-                    player_web_context.tournament_player.id,
-                )
-        web_context = BasicScreenOrFamilyUserWebContext(request)
-        return self._user_screen_render(web_context)
+                session_handler.set(last_player_updated)
+        return self._user_screen_render(BasicScreenOrFamilyUserWebContext(request))
 
     @put(
         path='/view/add-illegal-move/{event_uniq_id:str}/{screen_uniq_id:str}/{tournament_id:int}/{player_id:int}',
@@ -205,29 +203,29 @@ class ResultUserController(BaseInputUserController):
         request: HTMXRequest,
         channels: ChannelsPlugin,
     ) -> Template:
-        result_web_context = ResultUserWebContext(request)
-        assert result_web_context.board.id is not None
-        if result_web_context.result == Result.NO_RESULT:
+        web_context = ResultUserWebContext(request)
+        event = web_context.user_event
+        tournament = web_context.tournament
+        round_ = web_context.round
+        board = web_context.board
+        result = web_context.result
+        if result == Result.NO_RESULT:
             with suppress(ValueError):
-                result_web_context.tournament.delete_result(result_web_context.board)
+                tournament.delete_result(board)
         else:
-            result_web_context.tournament.add_result(
-                result_web_context.board, result_web_context.result
-            )
+            tournament.add_result(board, result)
         PairingsAdminController.publish_new_user_results(
-            channels,
-            result_web_context.user_event.uniq_id,
-            result_web_context.tournament.id,
-            result_web_context.round,
+            channels, event.uniq_id, tournament.id, round_
         )
-        SessionHandler.set_session_last_result_updated(
-            request,
-            result_web_context.tournament.id,
-            result_web_context.round,
-            result_web_context.board.id,
+        SessionLastResultUpdated(web_context.request).set(
+            LastBoardUpdated(
+                tournament_id=tournament.id,
+                round=round_,
+                board_id=board.id,
+                expiration=time.time() + 20,
+            )
         )
-        web_context = BasicScreenOrFamilyUserWebContext(request)
-        return self._user_screen_render(web_context)
+        return self._user_screen_render(BasicScreenOrFamilyUserWebContext(request))
 
     @put(
         path='/view/add-result/{event_uniq_id:str}/{screen_uniq_id:str}/'
