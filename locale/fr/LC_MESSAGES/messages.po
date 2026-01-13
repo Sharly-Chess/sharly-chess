@@ -2950,6 +2950,9 @@ msgstr "Aucune marque"
 msgid "No monetary prizes assigned to players for this tournament."
 msgstr "Aucun prix monétaire assigné à une·e joueur·euse pour ce tournoi."
 
+msgid "No network detected, use the Refresh button when connected."
+msgstr "Aucun réseau détecté, utilisez le bouton Actualiser après connexion."
+
 msgid "No organiser"
 msgstr "Aucun organisateur·ice"
 

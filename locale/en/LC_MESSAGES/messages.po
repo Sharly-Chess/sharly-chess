@@ -2950,6 +2950,9 @@ msgstr ""
 msgid "No monetary prizes assigned to players for this tournament."
 msgstr ""
 
+msgid "No network detected, use the Refresh button when connected."
+msgstr ""
+
 msgid "No organiser"
 msgstr ""
 
