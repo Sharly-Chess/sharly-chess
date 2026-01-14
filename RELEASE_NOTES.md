@@ -52,6 +52,7 @@
 - Allow batch updating the dates of timer hours (3.4.5)
 - Fixed rotator timers display from display controllers (3.4.6)
 - Fixed the default tournament screens (3.4.6)
+- Use menu links by default for new screen families (3.4.7)
 
 ## Outputs
 
