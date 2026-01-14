@@ -65,6 +65,7 @@
 - Fixed the display of pairings on the _FFE_ website for accelerated tournaments (3.4.3)
 - Update the players with new _FFE_ licences during the player update (3.4.4)
 - Enable the _FFE_ plugin by default when switching event federation (3.4.6)
+- Prevent timeout when updating many players with no licence from the online database (3.4.7)
 
 ## _Chess-Results_
 
