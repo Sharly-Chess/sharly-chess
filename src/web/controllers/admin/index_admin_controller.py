@@ -472,7 +472,7 @@ class IndexAdminController(BaseAdminController):
             )
 
         federation = WebContext.form_data_to_str(data, field := 'federation', '') or ''
-        if federation not in SharlyChessConfig.federations:
+        if federation not in SharlyChessConfig().federations:
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''

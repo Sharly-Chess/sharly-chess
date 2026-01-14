@@ -477,6 +477,9 @@ msgstr "Administrateur·ice"
 msgid "Affects the rating that will be chosen for each player."
 msgstr "Influe sur le classement qui sera choisi pour chaque joueur·euse."
 
+msgid "Afghanistan"
+msgstr "Afghanistan"
+
 msgid "After the last round, reorder manually the tied players from the Pairings tab."
 msgstr "Après la dernière ronde, réorganiser manuellement les joueur·euses ex æquo depuis l'onglet Appariements."
 
@@ -486,11 +489,17 @@ msgstr "Age"
 msgid "Age categories"
 msgstr "Catégories d'age"
 
+msgid "Albania"
+msgstr "Albanie"
+
 msgid "Alert message"
 msgstr "Message d'alerte"
 
 msgid "Alert message:"
 msgstr "Message d'alerte :"
+
+msgid "Algeria"
+msgstr "Algérie"
 
 msgid "All"
 msgstr "Tous"
@@ -555,8 +564,17 @@ msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 msgid "An unexpected error occurred."
 msgstr "Une erreur inattendue s'est produite."
 
+msgid "Andorra"
+msgstr "Andorre"
+
+msgid "Angola"
+msgstr "Angola"
+
 msgid "Anonymous"
 msgstr "Anonyme"
+
+msgid "Antigua and Barbuda"
+msgstr "Antigua-et-Barbuda"
 
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs afficheurs."
@@ -599,6 +617,15 @@ msgstr "Évènement archivé"
 
 msgid "Archived events"
 msgstr "Évènements archivés"
+
+msgid "Argentina"
+msgstr "Argentine"
+
+msgid "Armenia"
+msgstr "Arménie"
+
+msgid "Aruba"
+msgstr "Aruba"
 
 msgid "Assign a screen to the controller."
 msgstr "Attribuer un écran au pilote."
@@ -648,6 +675,12 @@ msgstr "Août"
 msgid "August"
 msgstr "Août"
 
+msgid "Australia"
+msgstr "Australie"
+
+msgid "Austria"
+msgstr "Autriche"
+
 msgid "Auto-update"
 msgstr "Mise à jour"
 
@@ -668,6 +701,9 @@ msgstr "Moyenne des classements des adversaires"
 
 msgid "Average rating: {rating}"
 msgstr "Classement moyen : {rating}"
+
+msgid "Azerbaijan"
+msgstr "Azerbaïdjan"
 
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "N"
@@ -697,6 +733,18 @@ msgstr "Couleur de fond : %(color)s"
 msgid "Background image:"
 msgstr "Image de fond :"
 
+msgid "Bahamas"
+msgstr "Bahamas"
+
+msgid "Bahrain"
+msgstr "Bahreïn"
+
+msgid "Bangladesh"
+msgstr "Bangladesh"
+
+msgid "Barbados"
+msgstr "Barbade"
+
 msgid "Base date"
 msgstr "Date de référence"
 
@@ -706,6 +754,15 @@ msgstr "Ech."
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
 msgstr "Avant de configurer des comptes, vous devez avoir en tête quelques avertissements de sécurité :"
 
+msgid "Belarus"
+msgstr "Bélarus"
+
+msgid "Belgium"
+msgstr "Belgique"
+
+msgid "Belize"
+msgstr "Belize"
+
 msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
 msgstr "Bénéficiez des toutes dernières fonctionnalités (expérimentales) de l'application (UTILISEZ À VOS PROPRES RISQUES !)."
 
@@ -714,6 +771,12 @@ msgstr "Berger"
 
 msgid "Berger grid"
 msgstr "Grille Berger"
+
+msgid "Bermuda"
+msgstr "Bermudes"
+
+msgid "Bhutan"
+msgstr "Bhoutan"
 
 msgid "Black"
 msgstr "Noirs"
@@ -788,14 +851,41 @@ msgstr "échiquiers du n°%(first)d au n°%(last)d"
 msgid "Boards screens show pairings by board number."
 msgstr "Les écrans d'affichage des échiquiers présentent les appariements par échiquier."
 
+msgid "Bolivia"
+msgstr "Bolivie"
+
 msgid "Border"
 msgstr "Bordure"
+
+msgid "Bosnia & Herzegovina"
+msgstr "Bosnie-Herzégovine"
+
+msgid "Botswana"
+msgstr "Botswana"
+
+msgid "Brazil"
+msgstr "Brésil"
+
+msgid "British Virgin Islands"
+msgstr "Îles Vierges britanniques"
+
+msgid "Brunei Darussalam"
+msgstr "Brunéi Darussalam"
 
 msgid "Buchholz"
 msgstr "Buchholz"
 
 msgid "Buchholz score calculated as if all paired games for the final round had ended in draws."
 msgstr "Score Buchholz calculé comme si toutes les parties appariées pour la dernière ronde s'étaient terminées en match nul."
+
+msgid "Bulgaria"
+msgstr "Bulgarie"
+
+msgid "Burkina Faso"
+msgstr "Burkina Faso"
+
+msgid "Burundi"
+msgstr "Burundi"
 
 msgid "By board"
 msgstr "Par échiquier"
@@ -847,8 +937,17 @@ msgstr "EFFACER LE RÉSULTAT"
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
+msgid "Cambodia"
+msgstr "Cambodge"
+
+msgid "Cameroon"
+msgstr "Cameroun"
+
 msgid "Can't see your event?"
 msgstr "Vous ne voyez pas votre événement ?"
+
+msgid "Canada"
+msgstr "Canada"
 
 msgid "Cancel"
 msgstr "Annuler"
@@ -864,6 +963,9 @@ msgstr "Candidat Maître"
 
 msgid "Cannot be both chief and deputy on the same tournament."
 msgstr "Impossible d’être à la fois arbitre principal·e et arbitre adjoint·e sur le même tournoi."
+
+msgid "Cape Verde"
+msgstr "Cap-Vert"
 
 msgid "Cash"
 msgstr "Espèces"
@@ -895,6 +997,15 @@ msgstr "La catégorie [%(category)s] créée avec succès !"
 
 msgid "Category sets"
 msgstr "Ensembles de catégories"
+
+msgid "Cayman Islands"
+msgstr "Îles Caïmanes"
+
+msgid "Central African Republic"
+msgstr "République centrafricaine"
+
+msgid "Chad"
+msgstr "Tchad"
 
 msgid "Change the player's tournament."
 msgstr "Changer le joueur de tournoi."
@@ -960,6 +1071,15 @@ msgstr "Arbitrage en chef·fe"
 
 msgid "Chief arbiter"
 msgstr "Arbitre principal·e"
+
+msgid "Chile"
+msgstr "Chili"
+
+msgid "China"
+msgstr "Chine"
+
+msgid "Chinese Taipei"
+msgstr "Taipei chinois"
 
 msgid "Choose a player at random"
 msgstr "Choisir un·e joueur·euse au hasard"
@@ -1047,6 +1167,9 @@ msgstr "Club :"
 msgid "Clubs"
 msgstr "Clubs"
 
+msgid "Colombia"
+msgstr "Colombie"
+
 msgid "Color"
 msgstr "Couleur"
 
@@ -1093,6 +1216,9 @@ msgstr "Commentaire :"
 msgid "Comments *** COMMENTS FOR TABLE HEADER"
 msgstr "Commentaires"
 
+msgid "Comoros Islands"
+msgstr "Îles Comores"
+
 msgid "Complementary pairings"
 msgstr "Appariements complémentaires"
 
@@ -1113,6 +1239,9 @@ msgstr "Configurer les ensembles de catégories, qui sont disponibles pour tous 
 
 msgid "Configure the tie-breaks of the tournament."
 msgstr "Configurer les départages du tournoi."
+
+msgid "Congo"
+msgstr "Congo"
 
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr "Connectez-vous au réseau Sharly Chess via {type},<br />puis scannez pour accéder au serveur Sharly Chess."
@@ -1164,6 +1293,12 @@ msgstr "Continuer"
 
 msgid "Corners"
 msgstr "Coins"
+
+msgid "Costa Rica"
+msgstr "Costa Rica"
+
+msgid "Cote d’Ivoire"
+msgstr "Côte d'Ivoire"
 
 msgid "Could not connect to data source [{data_source}]."
 msgstr "Impossible de se connecter à la source de données [{data_source}]."
@@ -1295,6 +1430,9 @@ msgstr "Liste des critères"
 msgid "Criterion [%(criterion)s] successfully created!"
 msgstr "Critère [%(criterion)s] créé avec succès!"
 
+msgid "Croatia"
+msgstr "Croatie"
+
 msgid "Crop marks:"
 msgstr "Traits de coupe :"
 
@@ -1314,6 +1452,9 @@ msgstr "Grille américaine après la ronde {round}"
 
 msgid "Crosstable before the first round"
 msgstr "Grille américaine avant la première ronde"
+
+msgid "Cuba"
+msgstr "Cuba"
 
 msgid "Current ({num})"
 msgstr "En cours ({num})"
@@ -1342,6 +1483,12 @@ msgstr "Élaguer des valeurs"
 
 msgid "Cut {value} *** CUT TIE BREAK NAME"
 msgstr "Tronqué {value}"
+
+msgid "Cyprus"
+msgstr "Chypre"
+
+msgid "Czech Republic"
+msgstr "République tchèque"
 
 msgid "DCA"
 msgstr "ADJ"
@@ -1504,6 +1651,12 @@ msgstr "Supprime tous les critères de cette catégorie."
 msgid "Deletion date"
 msgstr "Date de suppression"
 
+msgid "Democratic Republic of the Congo"
+msgstr "République démocratique du Congo"
+
+msgid "Denmark"
+msgstr "Danemark"
+
 msgid "Deputy Chief Arbitration"
 msgstr "Arbitrage adjoint"
 
@@ -1571,6 +1724,9 @@ msgstr "Afficher les joueur·euses non-apparié·es"
 msgid "Displayed round: %(round)d"
 msgstr "Ronde affichée : %(round)d"
 
+msgid "Djibouti"
+msgstr "Djibouti"
+
 msgid "Do not edit this table manually, use script {script_name} instead."
 msgstr "Ne pas éditer ce tableau manuellement, utiliser plutôt le script {script_name}."
 
@@ -1591,6 +1747,12 @@ msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
 
 msgid "Document:"
 msgstr "Document :"
+
+msgid "Dominica"
+msgstr "Dominique"
+
+msgid "Dominican Republic"
+msgstr "République dominicaine"
 
 msgid "Double-round Berger"
 msgstr "Berger aller-retour"
@@ -1773,6 +1935,9 @@ msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple :
 msgid "Each player can only be awarded one prize per bracket."
 msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
 
+msgid "Ecuador"
+msgstr "Équateur"
+
 msgid "Edit"
 msgstr "Modifier"
 
@@ -1872,6 +2037,12 @@ msgstr "Modifier le chronomètre"
 msgid "Edit tournament"
 msgstr "Modifier le tournoi"
 
+msgid "Egypt"
+msgstr "Égypte"
+
+msgid "El Salvador"
+msgstr "El Salvador"
+
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
@@ -1894,17 +2065,35 @@ msgstr "La rencontre a déjà eu lieu à la ronde n°%(round)d"
 msgid "End round"
 msgstr "Terminer la ronde"
 
+msgid "England"
+msgstr "Angleterre"
+
 msgid "Enter results"
 msgstr "Entrer des résultats"
 
 msgid "Enter the result"
 msgstr "Saisir le résultat"
 
+msgid "Equatorial Guinea"
+msgstr "Guinée équatoriale"
+
+msgid "Eritrea"
+msgstr "Érythrée"
+
 msgid "Error when updating database [{database}]."
 msgstr "Erreur lors de la mise à jour de la base de données [{database}]."
 
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimé"
+
+msgid "Estonia"
+msgstr "Espagne"
+
+msgid "Eswatini"
+msgstr "Eswatini"
+
+msgid "Ethiopia"
+msgstr "Éthiopie"
 
 msgid "Event"
 msgstr "Évènement"
@@ -2040,6 +2229,9 @@ msgstr "La famile [{family_uniq_id}] a été supprimée."
 msgid "Family [{family_uniq_id}] has been updated."
 msgstr "La famile [{family_uniq_id}] a été modifiée."
 
+msgid "Faroe Islands"
+msgstr "Îles Féroé"
+
 msgid "Feb *** FEBRUARY"
 msgstr "Fev"
 
@@ -2076,6 +2268,9 @@ msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tou
 msgid "Fide Master"
 msgstr "Maître Fide"
 
+msgid "Fiji"
+msgstr "Fidji"
+
 msgid "File"
 msgstr "Fichier"
 
@@ -2108,6 +2303,9 @@ msgstr "Filtrer les genres."
 
 msgid "Filter the tournaments."
 msgstr "Filtrer les tournois."
+
+msgid "Finland"
+msgstr "Finlande"
 
 msgid "First FIDE rating (based only on this tournament)"
 msgstr "Premier classement FIDE (basé uniquement sur ce tournoi)"
@@ -2186,6 +2384,9 @@ msgstr "Forfaits joués"
 msgid "Fr *** FRIDAY"
 msgstr "Ve"
 
+msgid "France"
+msgstr "France"
+
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
 
@@ -2197,6 +2398,12 @@ msgstr "Point joker entier (obsolète)"
 
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GMI"
+
+msgid "Gabon"
+msgstr "Gabon"
+
+msgid "Gambia"
+msgstr "Gambie"
 
 msgid "Games played with black"
 msgstr "Nombre de parties jouées avec les Noirs"
@@ -2231,8 +2438,17 @@ msgstr "Générer les appariements pour cette ronde."
 msgid "Generated by script {script_name} on {date}"
 msgstr "Généré par le script {script_name} ({date})"
 
+msgid "Georgia"
+msgstr "Géorgie"
+
+msgid "Germany"
+msgstr "Allemagne"
+
 msgid "Get started"
 msgstr "Commencer"
+
+msgid "Ghana"
+msgstr "Ghana"
 
 msgid "Give/take away access level {access_level_short_name}"
 msgstr "Donner/retirer le niveau d'accès {access_level_short_name}"
@@ -2258,8 +2474,32 @@ msgstr "Grand Maître International"
 msgid "Grant 4 tie-break points for a win, 2 for a draw, 1 for a loss, and 0 for an unplayed game."
 msgstr "Attribuer 4 points de score pour une victoire, 2  pour un match nul, 1 pour une défaite et 0 pour une partie non jouée."
 
+msgid "Greece"
+msgstr "Grèce"
+
+msgid "Grenada"
+msgstr "Grenade"
+
+msgid "Groenland"
+msgstr "Groenland"
+
 msgid "Group"
 msgstr "Groupe"
+
+msgid "Guam"
+msgstr "Guam"
+
+msgid "Guatemala"
+msgstr "Guatemala"
+
+msgid "Guernsey"
+msgstr "Guernesey"
+
+msgid "Guyana"
+msgstr "Guyana"
+
+msgid "Haiti"
+msgstr "Haïti"
 
 msgid "Half-Point Bye"
 msgstr "Demi-point joker (bye)"
@@ -2291,6 +2531,12 @@ msgstr "Accueil"
 msgid "Home page:"
 msgstr "Site web :"
 
+msgid "Honduras"
+msgstr "Honduras"
+
+msgid "Hong Kong, China"
+msgstr "Hong Kong (Chine)"
+
 msgid "Hort system"
 msgstr "Système Hort"
 
@@ -2302,6 +2548,9 @@ msgstr "L'horaire [{hour}] a été créé."
 
 msgid "Hours"
 msgstr "Horaires"
+
+msgid "Hungary"
+msgstr "Hongrie"
 
 msgid "Hybrid"
 msgstr "Hybride"
@@ -2317,6 +2566,9 @@ msgstr "Je confirme vouloir écraser les données des joueur·euses de ce tourno
 
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "MI"
+
+msgid "Iceland"
+msgstr "Espagne"
 
 msgid "Identity"
 msgstr "Identité"
@@ -2407,6 +2659,12 @@ msgstr "Chemin incorrect [{path}]."
 msgid "Increment (sec):"
 msgstr "Incrément (sec) :"
 
+msgid "India"
+msgstr "Inde"
+
+msgid "Indonesia"
+msgstr "Indonésie"
+
 msgid "Info"
 msgstr "Info"
 
@@ -2433,6 +2691,9 @@ msgstr "L'nstallation de la version [{version}] a échoué, abandon."
 
 msgid "Installed [{lib}]."
 msgstr "La bibliothèque [{lib}] a été installée."
+
+msgid "International Chess Federation"
+msgstr "Fédération internationale d'échecs"
 
 msgid "International Master"
 msgstr "Maître International"
@@ -2500,14 +2761,44 @@ msgstr "Valeur invalide [{value}] pour le champ [{field}] (attendu : l’une de
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
 
+msgid "Iran"
+msgstr "Iran"
+
+msgid "Iraq"
+msgstr "Iraq"
+
+msgid "Ireland"
+msgstr "Belgique"
+
+msgid "Isle of Man"
+msgstr "Île de Man"
+
+msgid "Israel"
+msgstr "Israël"
+
 msgid "It is highly recommended to set at least one tie-break."
 msgstr "Il est fortement recommandé de définir au moins un départage."
+
+msgid "Italy"
+msgstr "Italie"
+
+msgid "Jamaica"
+msgstr "Jamaïque"
 
 msgid "Jan *** JANUARY"
 msgstr "Jan"
 
 msgid "January"
 msgstr "Janvier"
+
+msgid "Japan"
+msgstr "Japon"
+
+msgid "Jersey"
+msgstr "Jersey"
+
+msgid "Jordan"
+msgstr "Jordanie"
 
 msgid "Jul *** JULY"
 msgstr "Juil"
@@ -2527,14 +2818,32 @@ msgstr "Catégories jeunes"
 msgid "Kashdan"
 msgstr "Kashdan"
 
+msgid "Kazakhstan"
+msgstr "Kazakhstan"
+
+msgid "Kenya"
+msgstr "Kenya"
+
 msgid "Keyboard shortcuts:"
 msgstr "Raccourcis clavier :"
+
+msgid "Kosovo"
+msgstr "Kosovo"
 
 msgid "Koya system"
 msgstr "Système Koya"
 
+msgid "Kuwait"
+msgstr "Koweït"
+
+msgid "Kyrgyzstan"
+msgstr "Kirghizistan"
+
 msgid "Language:"
 msgstr "Langue :"
+
+msgid "Laos"
+msgstr "Laos"
 
 msgid "Last board:"
 msgstr "Dernier échiquier :"
@@ -2563,14 +2872,32 @@ msgstr "Dernière mise à jour : {updated_at}"
 msgid "Last update: {updated_at} (outdated)"
 msgstr "Dernière mise à jour : {updated_at} (dépassée)"
 
+msgid "Latvia"
+msgstr "Lettonie"
+
 msgid "Launch a browser on startup"
 msgstr "Lancer un navigateur web au démarrage"
 
 msgid "Layout"
 msgstr "Présentation"
 
+msgid "Lebanon"
+msgstr "Liban"
+
+msgid "Lesotho"
+msgstr "Lesotho"
+
+msgid "Liberia"
+msgstr "Libéria"
+
 msgid "Library [{lib}] is missing."
 msgstr "La bibliothèque [{lib}] n'est pas installée."
+
+msgid "Libya"
+msgstr "Libye"
+
+msgid "Liechtenstein"
+msgstr "Liechtenstein"
 
 msgid "Limit adjustment"
 msgstr "Ajustement de la limite"
@@ -2588,6 +2915,9 @@ msgstr "Liens affichés sur le menu de l'écran :"
 
 msgid "List of players"
 msgstr "Liste des participant·es"
+
+msgid "Lithuania"
+msgstr "Lituanie"
 
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
@@ -2617,11 +2947,20 @@ msgstr "Connecté en tant que [%(account_name)s]"
 msgid "Loss"
 msgstr "Défaite"
 
+msgid "Luxembourg"
+msgstr "Luxembourg"
+
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
 
 msgid "MM/DD/YYYY"
 msgstr "MM/JJ/AAAA"
+
+msgid "Macau, China"
+msgstr "Macao, Chine"
+
+msgid "Madagascar"
+msgstr "Madagascar"
 
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
 msgstr "Mél"
@@ -2636,8 +2975,23 @@ msgstr "Catégorie générale"
 msgid "Main group"
 msgstr "Groupe principal"
 
+msgid "Malawi"
+msgstr "Malawi"
+
+msgid "Malaysia"
+msgstr "Malaisie"
+
+msgid "Maldives"
+msgstr "Maldives"
+
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Homme"
+
+msgid "Mali"
+msgstr "Mali"
+
+msgid "Malta"
+msgstr "Malte"
 
 msgid "Manage accounts"
 msgstr "Gestion des comptes"
@@ -2680,6 +3034,12 @@ msgstr "Mars"
 
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ronde courante."
+
+msgid "Mauritania"
+msgstr "Mauritanie"
+
+msgid "Mauritius"
+msgstr "Maurice"
 
 #, python-format
 msgid "Max age: %(num)d minute"
@@ -2751,6 +3111,9 @@ msgstr "Menu : aucun"
 msgid "Menus"
 msgstr "Menus"
 
+msgid "Mexico"
+msgstr "Mexique"
+
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
 
@@ -2763,8 +3126,23 @@ msgstr "Champ requis manquant [{field}]."
 msgid "Mo *** MONDAY"
 msgstr "Lu"
 
+msgid "Moldova"
+msgstr "République de Moldova"
+
+msgid "Monaco"
+msgstr "Monaco"
+
 msgid "Monetary"
 msgstr "Monétaire"
+
+msgid "Mongolia"
+msgstr "Mongolie"
+
+msgid "Montenegro"
+msgstr "Monténégro"
+
+msgid "Morocco"
+msgstr "Maroc"
 
 #, python-format
 msgid "Moved down %(num)d place"
@@ -2785,6 +3163,9 @@ msgstr "Coups :"
 msgid "Moving on to round #%(round)d"
 msgstr "Passage à la ronde n°%(round)d"
 
+msgid "Mozambique"
+msgstr "Mozambique"
+
 msgid "My category"
 msgstr "Ma catégorie"
 
@@ -2796,6 +3177,9 @@ msgstr "Mon écran rotatif"
 
 msgid "My timer"
 msgstr "Mon chronomètre"
+
+msgid "Myanmar"
+msgstr "Myanmar"
 
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
 msgstr "N"
@@ -2825,8 +3209,14 @@ msgstr "Nom : %(screen_set_name)s"
 msgid "Name: by default"
 msgstr "Nom : par défaut"
 
+msgid "Namibia"
+msgstr "Namibie"
+
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "National"
+
+msgid "Nauru"
+msgstr "Nauru"
 
 msgid "Navigation"
 msgstr "Navigation"
@@ -2834,11 +3224,23 @@ msgstr "Navigation"
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
+msgid "Nepal"
+msgstr "Népal"
+
+msgid "Netherlands"
+msgstr "Pays-Bas"
+
+msgid "Netherlands Antilles"
+msgstr "Antilles néerlandaises"
+
 msgid "Network"
 msgstr "Réseau"
 
 msgid "Network:"
 msgstr "Réseau :"
+
+msgid "New Caledonia"
+msgstr "Nouvelle-Calédonie"
 
 #, python-format
 msgid "New FIDE rating (assuming <i>k</i> of <b>%(k)d</b>)"
@@ -2847,6 +3249,9 @@ msgstr "Nouveau classement FIDE (en supposant un <i>k</i> de <b>%(k)d</b>)"
 #, python-format
 msgid "New FIDE rating (based on player's official <i>k</i> of <b>%(k)d</b>)"
 msgstr "Nouveau classement FIDE (basé sur le <i>k</i< officiel du·de la joueur·euse : <b>%(k)d</b>)"
+
+msgid "New Zealand"
+msgstr "Nouvelle-Zélande"
 
 msgid "New category"
 msgstr "Nouvelle catégorie"
@@ -2883,6 +3288,15 @@ msgstr "Ronde suivante"
 
 msgid "Next tournament"
 msgstr "Tournoi suivant"
+
+msgid "Nicaragua"
+msgstr "Nicaragua"
+
+msgid "Niger"
+msgstr "Niger"
+
+msgid "Nigeria"
+msgstr "Nigéria"
 
 msgid "No FIDE ID."
 msgstr "Identifiant FIDE non défini."
@@ -3082,8 +3496,17 @@ msgstr "Les prix non-monétaires ne sont pas compatibles avec les catégories po
 msgid "None"
 msgstr "Aucun"
 
+msgid "None *** FEDERATION"
+msgstr "Aucune"
+
 msgid "Norm Report"
 msgstr "Rapport de norme"
+
+msgid "North Macedonia"
+msgstr "Macédoine du Nord"
+
+msgid "Norway"
+msgstr "Norvège"
 
 msgid "Not assigned"
 msgstr "Non-attribué"
@@ -3181,6 +3604,11 @@ msgstr "Oct"
 
 msgid "October"
 msgstr "Octobre"
+
+# Error: translation [États-Unis d'Amérique] is much too long compared to
+# initial [Oman]
+msgid "Oman"
+msgstr "Oman"
 
 msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
 msgstr "Une fois créés, vous pouvez sélectionner le chronomètre à afficher dans les paramètres de chaque écran, famille d’écrans ou écran rotatif."
@@ -3420,6 +3848,24 @@ msgstr "Appariements générés avec succès."
 msgid "Pairings: %(pairing_variation)s"
 msgstr "Appariements : %(pairing_variation)s"
 
+msgid "Pakistan"
+msgstr "Pakistan"
+
+msgid "Palau"
+msgstr "Palaos"
+
+msgid "Palestine"
+msgstr "Palestine"
+
+msgid "Panama"
+msgstr "Panama"
+
+msgid "Papua New Guinea"
+msgstr "Papouasie-Nouvelle-Guinée"
+
+msgid "Paraguay"
+msgstr "Paraguay"
+
 msgid "Parings by player"
 msgstr "Appariements par ordre alphabétique"
 
@@ -3461,6 +3907,12 @@ msgstr "Permuter les échiquiers"
 
 msgid "Personal"
 msgstr "Personnel"
+
+msgid "Peru"
+msgstr "Pérou"
+
+msgid "Philippines"
+msgstr "Philippines"
 
 msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
 msgstr "Téléphone"
@@ -3685,6 +4137,9 @@ msgstr "Points : %(min)s à %(max)s"
 msgid "Points: up to %(max)s"
 msgstr "Points: %(max)s ou moins"
 
+msgid "Poland"
+msgstr "Pologne"
+
 msgid "Port [{port}] already in use, can not start Sharly Chess server."
 msgstr "Le port [{port}] est déjà utilisé, impossible de démarrer le serveur Sharly Chess."
 
@@ -3693,6 +4148,9 @@ msgstr "Le port [{port}] est déjà utilisé."
 
 msgid "Port: {port}"
 msgstr "Port : {port}"
+
+msgid "Portugal"
+msgstr "Portugal"
 
 msgid "Pref."
 msgstr "Préf."
@@ -3814,6 +4272,9 @@ msgstr "Publier les résultats"
 msgid "Publish tournament rules"
 msgstr "Publier les règles"
 
+msgid "Puerto Rico"
+msgstr "Porto Rico"
+
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
 
@@ -3822,6 +4283,9 @@ msgstr "QR Code"
 
 msgid "QR Code type:"
 msgstr "Type de QR Code :"
+
+msgid "Qatar"
+msgstr "Qatar"
 
 #, python-format
 msgid "R %(round)d *** ROUND FOR TABLE HEADER"
@@ -4048,6 +4512,9 @@ msgstr "Pl. Gén."
 msgid "Rnd.Boa"
 msgstr "Rde.Ech"
 
+msgid "Romania"
+msgstr "Roumanie"
+
 #, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Délai de rotation : %(seconds)d sec."
@@ -4155,6 +4622,12 @@ msgstr "Emplacement du règlement :"
 msgid "Rules file set"
 msgstr "Règlement défini"
 
+msgid "Russia"
+msgstr "Russie"
+
+msgid "Rwanda"
+msgstr "Rwanda"
+
 msgid "SCR"
 msgstr "ÉCR"
 
@@ -4166,6 +4639,24 @@ msgstr "SPE"
 
 msgid "Sa *** SATURDAY"
 msgstr "Sa"
+
+msgid "Saint Kitts and Nevis"
+msgstr "Saint-Kitts-et-Nevis"
+
+msgid "Saint Lucia"
+msgstr "Sainte-Lucie"
+
+msgid "Saint Vincent and the Grenadines"
+msgstr "Saint-Vincent-et-les Grenadines"
+
+msgid "San Marino"
+msgstr "Saint-Marin"
+
+msgid "Sao Tome and Principe"
+msgstr "Sao Tomé-et-Principe"
+
+msgid "Saudi Arabia"
+msgstr "Arabie saoudite"
 
 msgid "Save"
 msgstr "Enregistrer"
@@ -4184,6 +4675,9 @@ msgstr "Score"
 
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
 msgstr "Score calculé en ajoutant, pour chaque ronde, la valeur obtenue en multipliant le score de l'adversaire par le nombre de points obtenus."
+
+msgid "Scotland"
+msgstr "Écosse"
 
 msgid "Screen"
 msgstr "Écran"
@@ -4279,6 +4773,9 @@ msgstr "Sélection"
 msgid "Selection: %(selection)s"
 msgstr "Sélection : %(selection)s"
 
+msgid "Senegal"
+msgstr "Sénégal"
+
 msgid "Senior categories"
 msgstr "Catégories Séniors"
 
@@ -4287,6 +4784,9 @@ msgstr "Sep"
 
 msgid "September"
 msgstr "Septembre"
+
+msgid "Serbia"
+msgstr "Serbie"
 
 msgid "Server Setup"
 msgstr "Configuration du serveur"
@@ -4317,6 +4817,9 @@ msgstr "Initialiser à <b>{value}</b>"
 
 msgid "Settings"
 msgstr "Paramètres"
+
+msgid "Seychelles"
+msgstr "Seychelles"
 
 msgid "Share"
 msgstr "Partager"
@@ -4378,11 +4881,17 @@ msgstr "Afficher les avertissements"
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
 
+msgid "Sierra Leone"
+msgstr "Sierra Leone"
+
 msgid "Signature"
 msgstr "Signature"
 
 msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
 msgstr "Les classements étant utilisés pour le calcul des départages, il est important qu'ils soient représentatifs du niveau des joueur·euses. Pour cette raison ce départage est déconseillé avec des joueur·euses non-classé·es."
+
+msgid "Singapore"
+msgstr "Singapour"
 
 msgid "Single Screens"
 msgstr "Écrans simples"
@@ -4392,6 +4901,18 @@ msgstr "Écrans simples ({num})"
 
 msgid "Size ({unit}): {width}x{height}"
 msgstr "Dimension ({unit}) : {width}x{height}"
+
+msgid "Slovakia"
+msgstr "Slovaquie"
+
+msgid "Slovenia"
+msgstr "Slovénie"
+
+msgid "Solomon Islands"
+msgstr "Îles Salomon"
+
+msgid "Somalia"
+msgstr "Somalie"
 
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
 msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les rendant dangereux dans les mains de personnes non-informées ou malveillantes."
@@ -4444,8 +4965,20 @@ msgstr "Trier les joueur·euses par année de naissance (moins âgé·es en prem
 msgid "Source"
 msgstr "Source"
 
+msgid "South Africa"
+msgstr "Afrique du Sud"
+
+msgid "South Korea"
+msgstr "Corée du Sud"
+
+msgid "South Sudan"
+msgstr "Soudan du Sud"
+
 msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr "Liste de nombres séparés par des espaces. Un prix est créé par valeur dans la liste."
+
+msgid "Spain"
+msgstr "Espagne"
 
 msgid "Specifying the number of parts and the number of items per part is not possible."
 msgstr "On ne peut spécifier à la fois le nombre d'éléments par écran et le nombre d'écrans."
@@ -4455,6 +4988,9 @@ msgstr "Visualisation"
 
 msgid "Split by:"
 msgstr "Séparateur :"
+
+msgid "Sri Lanka"
+msgstr "Sri Lanka"
 
 msgid "Staff"
 msgstr "Staff"
@@ -4523,11 +5059,26 @@ msgstr "Connecté·e en tant que [{account}]."
 msgid "Successfully logged out."
 msgstr "Déconnexion réussie."
 
+msgid "Sudan"
+msgstr "Soudan"
+
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
 
+msgid "Suriname"
+msgstr "Suriname"
+
+msgid "Sweden"
+msgstr "Suède"
+
 msgid "Swiss"
 msgstr "Suisse"
+
+msgid "Switzerland"
+msgstr "Suisse"
+
+msgid "Syria"
+msgstr "Syrie"
 
 msgid "TRF file"
 msgstr "Fichier TRF"
@@ -4537,6 +5088,12 @@ msgstr "TRF(bx)"
 
 msgid "TRF16"
 msgstr "TRF16"
+
+msgid "Tajikistan"
+msgstr "Tadjikistan"
+
+msgid "Tanzania"
+msgstr "Tanzanie"
 
 msgid "Template:"
 msgstr "Modèle :"
@@ -4564,6 +5121,9 @@ msgstr "Les textes avant et après l'horaire ci-dessous sont facultatifs pour le
 
 msgid "Th *** THURSDAY"
 msgstr "Je"
+
+msgid "Thailand"
+msgstr "Thaïlande"
 
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
 msgstr "Le règlement FIDE indique que seuls les appariements de la ronde <b>précédant</b> la ronde courante peuvent être modifiés. Les modifications des appariements antérieurs doivent être effectuées à la <b>fin</b> du tournoi, <b>après</b> la publication du classement, et uniquement pour le calcul des classements ELO FIDE."
@@ -5068,6 +5628,9 @@ msgstr "Les chronomètres peuvent être placés sur n’importe quel écran, fam
 msgid "Timers: %(num)d"
 msgstr "Chronomètres : %(num)d"
 
+msgid "Timor-Leste"
+msgstr "Timor-Leste"
+
 msgid "Titled players"
 msgstr "Joueur·euses titré·es"
 
@@ -5080,6 +5643,12 @@ msgstr "Pour modifier les rondes précédentes, retourne sur la ronde concernée
 
 msgid "Today"
 msgstr "Aujourd'hui"
+
+msgid "Togo"
+msgstr "Togo"
+
+msgid "Tonga"
+msgstr "États-Unis d'Amérique"
 
 msgid "Too few players to generate the pairings (minimum: {min})."
 msgstr "Trop peu de joueur·euses pour générer les appariements (minimum : {min})."
@@ -5179,11 +5748,23 @@ msgstr "Tournois : %(num)d"
 msgid "Transfer"
 msgstr "Virement"
 
+msgid "Trinidad & Tobago"
+msgstr "Trinité-et-Tobago"
+
 msgid "Trophy, medal"
 msgstr "Trophée, médaille"
 
 msgid "Tu *** TUESDAY"
 msgstr "Ma"
+
+msgid "Tunisia"
+msgstr "Tunisie"
+
+msgid "Turkiye"
+msgstr "Turquie"
+
+msgid "Turkmenistan"
+msgstr "Turkménistan"
 
 msgid "Type"
 msgstr "Type"
@@ -5226,6 +5807,15 @@ msgstr "L'URL [{url}] n'a pas répondu (erreur : [{error}])."
 msgid "URL [{url}] responded code [{code}]."
 msgstr "L'URL [{url}] a répondu avec le code [{code}]."
 
+msgid "US Virgin Islands"
+msgstr "Îles Vierges américaines"
+
+msgid "Uganda"
+msgstr "Ouganda"
+
+msgid "Ukraine"
+msgstr "Ukraine"
+
 msgid "Undefined *** PLURAL"
 msgstr "Non définis"
 
@@ -5242,6 +5832,12 @@ msgstr "Identifiant unique : %(uniq_id)s"
 #, python-format
 msgid "Unique ID: [%(uniq_id)s]"
 msgstr "Identifiant unique : [%(uniq_id)s]"
+
+msgid "United Arab Emirates"
+msgstr "Émirats arabes unis"
+
+msgid "United States of America"
+msgstr "États-Unis d'Amérique"
 
 msgid "Unknown"
 msgstr "Inconnu·e"
@@ -5361,6 +5957,9 @@ msgstr "Mise à jour"
 msgid "Upload"
 msgstr "Mettre en ligne"
 
+msgid "Uruguay"
+msgstr "Uruguay"
+
 msgid "Use Fore Buchholz"
 msgstr "Utiliser le Fore Buchholz"
 
@@ -5403,6 +6002,9 @@ msgid_plural "Used by %(num)d tournaments."
 msgstr[0] "Utilisé par %(num)d tournoi."
 msgstr[1] "Utilisé par %(num)d tournois."
 
+msgid "Uzbekistan"
+msgstr "Ouzbékistan"
+
 msgid "U{age_limit} *** YOUTH AGE CATEGORY"
 msgstr "U{age_limit}"
 
@@ -5418,11 +6020,20 @@ msgstr "Points attribués en cas d’exemption :"
 msgid "Values"
 msgstr "Valeurs"
 
+msgid "Vanuatu"
+msgstr "Vanuatu"
+
 msgid "Variation"
 msgstr "Variante"
 
+msgid "Venezuela"
+msgstr "Venezuela"
+
 msgid "Version: {version}"
 msgstr "Version : {version}"
+
+msgid "Vietnam"
+msgstr "Vietnam"
 
 msgid "View Pairings tab"
 msgstr "Voir l'onglet Appariements"
@@ -5489,6 +6100,9 @@ msgstr "VICTOIRE BLANCS"
 
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "MIF"
+
+msgid "Wales"
+msgstr "Pays de Galles"
 
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
@@ -5590,6 +6204,9 @@ msgstr "AAAA/MM/JJ"
 
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "Année de naissance"
+
+msgid "Yemen"
+msgstr "Yémen"
 
 msgid "Yesterday"
 msgstr "Hier"
@@ -5723,11 +6340,17 @@ msgstr "Vous devez créer un tournoi avant de pouvoir créer des familles d'écr
 msgid "You must create a tournament before creating these screens."
 msgstr "Vous devez créer un tournoi avant de pouvoir créer ces écrans."
 
+msgid "Zambia"
+msgstr "Zambie"
+
 msgid "Zero-Point Bye"
 msgstr "Absent·e pour cette ronde"
 
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr "Le·la joueur·euse [{player}] a été marqué·e absent·e."
+
+msgid "Zimbabwe"
+msgstr "Zimbabwe"
 
 msgid "[{value}] is not a positive value."
 msgstr "[{value}] n'est pas une valeur positive."
