@@ -28,10 +28,11 @@ logger: Logger = get_logger()
 
 
 class FFESqlServer(SqlServer):
+    TIMEOUT = 10
     CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.credentials'
 
     def __init__(self):
-        super().__init__(self.CREDENTIALS_FILE, timeout=3)
+        super().__init__(self.CREDENTIALS_FILE, timeout=self.TIMEOUT)
         if not NetworkMonitor.connected():
             error: str = _('No internet connection')
             logger.error(error)
@@ -280,7 +281,7 @@ class FFESqlServer(SqlServer):
         query: str = (
             f'SELECT {", ".join(self.get_player_fields() + self.get_club_fields())} '
             f'FROM joueur LEFT JOIN club on joueur.ClubRef = club.Ref '
-            f'WHERE {condition} AND {self.RATING_TYPE_CONDITION}'
+            f'WHERE ({condition}) AND {self.RATING_TYPE_CONDITION}'
         )
         if order_by:
             query += f' ORDER BY {order_by}'
@@ -321,10 +322,13 @@ class FFESqlServer(SqlServer):
             licence_numbers,
         )
 
-    async def get_stored_players_by_name_keys(
+    # The query scales fast, so it is required to paginate the results
+    # A page of 30 is about a 5 seconds query (half the timeout)
+    NAME_KEYS_PAGE_SIZE = 30
+
+    async def _get_stored_players_by_name_keys_page(
         self, name_keys: list[tuple[str, str, date]]
-    ) -> list[StoredPlayer]:
-        query_array = ', '.join('%s' for _ in name_keys)
+    ):
         name_str_keys: list[str] = []
         name_dob_str_keys: list[str] = []
         for name_key in name_keys:
@@ -333,14 +337,38 @@ class FFESqlServer(SqlServer):
             name_dob_str_keys.append(
                 '|'.join((name_str_key, name_key[2].strftime('%Y-%m-%d')))
             )
-        # Formatting all the DOB of the database is too expensive and times out
-        # It is therefore necessary to first match the full name then check full name + DOB
         name_query = "UPPER(joueur.Nom) + '|' + UPPER(Joueur.Prenom)"
-        name_dob_query = name_query + " + '|' + FORMAT(joueur.Nele, 'yyyy-MM-dd')"
-        return await self._get_stored_players_by_condition(
-            f'{name_query} IN ({query_array}) AND {name_dob_query} IN ({query_array})',
-            name_str_keys + name_dob_str_keys,
+        query_array = ', '.join('%s' for _ in name_keys)
+        stored_players = await self._get_stored_players_by_condition(
+            f'{name_query} IN ({query_array})',
+            name_str_keys,
         )
+        # DOB formatting is too expensive in SQL Server, we have to do the
+        # matching only on the name, and match the DOB in python
+        return [
+            stored_player
+            for stored_player in stored_players
+            if stored_player.date_of_birth
+            and '|'.join(
+                (
+                    stored_player.last_name.upper(),
+                    (stored_player.first_name or '').upper(),
+                    stored_player.date_of_birth.strftime('%Y-%m-%d'),
+                )
+            )
+            in name_dob_str_keys
+        ]
+
+    async def get_stored_players_by_name_keys(
+        self, name_keys: list[tuple[str, str, date]]
+    ) -> list[StoredPlayer]:
+        stored_players: list[StoredPlayer] = []
+        while name_keys:
+            stored_players += await self._get_stored_players_by_name_keys_page(
+                name_keys[: self.NAME_KEYS_PAGE_SIZE]
+            )
+            name_keys = name_keys[self.NAME_KEYS_PAGE_SIZE :]
+        return stored_players
 
     async def get_players_by_fide_id(
         self,
