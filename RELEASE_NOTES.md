@@ -43,6 +43,7 @@
 
 - Prize receipts (3.4.0)
 - Fixed the statistics document (3.4.3)
+- Added schools to the statistics (3.4.7)
 
 ## Screens
 
