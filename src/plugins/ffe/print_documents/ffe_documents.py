@@ -11,12 +11,8 @@ from data.print_documents.options import (
     PlayerPrintOption,
 )
 from plugins.ffe.print_documents.ffe_managers import FFEDocumentTypeManager
-from plugins.ffe.print_documents.ffe_options import (
-    FFELicencePrintOption,
-    FFEDocumentTypePrintOption,
-)
+from plugins.ffe.print_documents.ffe_options import FFEDocumentTypePrintOption
 from plugins.ffe.print_documents.ffe_types import FFEDocumentType
-from plugins.ffe.utils import PlayerFFELicence
 
 
 class FFEPrintDocument(PrintDocument):
@@ -39,10 +35,6 @@ class FFEPrintDocument(PrintDocument):
         )
 
     @property
-    def ffe_licence(self) -> PlayerFFELicence:
-        return PlayerFFELicence(self._get_option(FFELicencePrintOption).value)
-
-    @property
     def template_name(self) -> str:
         return self.ffe_document_type.get_template_name()
 
@@ -53,7 +45,6 @@ class FFEPrintDocument(PrintDocument):
             TournamentsPrintOption,
             TournamentPrintOption,
             MandatoryPlayersPrintOption,
-            FFELicencePrintOption,
             PlayerPrintOption,
         ]
 

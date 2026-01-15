@@ -11,7 +11,8 @@ class FFEDocumentTypeManager(EntityManager[FFEDocumentType]):
         return [
             ffe_types.FFET1Type,
             ffe_types.FFET2Type,
-            ffe_types.FFET3T4Type,
+            ffe_types.FFET3Type,
+            ffe_types.FFET4Type,
             ffe_types.FFET5Type,
             ffe_types.FFET6Type,
             ffe_types.FFET7Type,

@@ -581,33 +581,65 @@ class FFEPlayersDocumentType(FFETournamentDocumentType, ABC):
         }
 
 
-class FFET3T4Type(FFEPlayersDocumentType):
-    @staticmethod
-    def get_valid_option_types() -> list[type['PrintOption']]:
-        from plugins.ffe.print_documents.ffe_options import FFELicencePrintOption
-
-        return FFEPlayersDocumentType.get_valid_option_types() + [
-            FFELicencePrintOption,
-        ]
+class FFET3T4Type(FFEPlayersDocumentType, ABC):
+    @classmethod
+    def get_template_stem(cls) -> str:
+        return 'ffe_t3_t4_players_licence'
 
     @staticmethod
-    def static_id() -> str:
-        return 'ffe-t3-t4-players-licence'
+    @abstractmethod
+    def ffe_licence() -> PlayerFFELicence:
+        """Returns the FFE licence concerned."""
 
     @staticmethod
-    def static_name() -> str:
-        return 'T3-T4 Attestation de licence'
+    @abstractmethod
+    def ffe_form_number() -> int:
+        """Returns the FFE form number concerned."""
 
     def template_context(
         self,
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
-            'ffe_licence': self.ffe_document.ffe_licence,
-            'ffe_form_number': 3
-            if self.ffe_document.ffe_licence == PlayerFFELicence.A
-            else 4,
+            'ffe_licence': self.ffe_licence(),
+            'ffe_form_number': self.ffe_form_number(),
         }
+
+
+class FFET3Type(FFET3T4Type):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-t3-players-licence'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'T3 Attestation de licence A'
+
+    @staticmethod
+    def ffe_licence() -> PlayerFFELicence:
+        return PlayerFFELicence.A
+
+    @staticmethod
+    def ffe_form_number() -> int:
+        return 3
+
+
+class FFET4Type(FFET3T4Type):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-t4-players-licence'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'T4 Attestation de licence B'
+
+    @staticmethod
+    def ffe_licence() -> PlayerFFELicence:
+        return PlayerFFELicence.B
+
+    @staticmethod
+    def ffe_form_number() -> int:
+        return 4
 
 
 class FFEPlayerDocumentType(FFETournamentDocumentType, ABC):

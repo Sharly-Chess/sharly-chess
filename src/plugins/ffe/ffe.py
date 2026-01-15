@@ -73,10 +73,7 @@ from plugins.ffe.ffe_tournament_importers import (
     PapiTournamentImporter,
 )
 from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
-from plugins.ffe.print_documents.ffe_options import (
-    FFELicencePrintOption,
-    FFEDocumentTypePrintOption,
-)
+from plugins.ffe.print_documents.ffe_options import FFEDocumentTypePrintOption
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.ffe.utils import (
     FFE_DEFAULT_UPLOAD_DELAY,
@@ -827,7 +824,6 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_print_option(self, print_options: list[type['PrintOption']]):
-        print_options.insert(0, FFELicencePrintOption)
         print_options.insert(0, FFEDocumentTypePrintOption)
 
     @hookimpl

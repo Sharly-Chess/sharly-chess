@@ -1,11 +1,9 @@
 from abc import ABC
-from functools import cached_property
 from types import UnionType
 from typing import Any, override
 
 from common.exception import OptionError
 from data.print_documents import PrintOption
-from plugins.ffe.utils import PlayerFFELicence
 
 
 class FFEPrintOption(PrintOption, ABC):
@@ -65,6 +63,7 @@ class FFEDocumentTypePrintOption(FFEPrintOption):
             raise OptionError(f'Unknown FFE document type: {self.value}', self)
 
 
+"""
 class FFELicencePrintOption(FFEPrintOption):
     @staticmethod
     def static_id() -> str:
@@ -122,3 +121,4 @@ class FFELicencePrintOption(FFEPrintOption):
         except KeyError:
             # Untranslated, should not happen
             raise OptionError(f'Unknown FFE licence: {self.value}', self)
+"""
