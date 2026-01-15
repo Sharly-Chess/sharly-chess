@@ -6,7 +6,7 @@ from data.print_documents.documents import (
 )
 from data.print_documents.options import (
     TournamentsPrintOption,
-    PlayersPrintOption,
+    MandatoryPlayersPrintOption,
     TournamentPrintOption,
     PlayerPrintOption,
 )
@@ -52,13 +52,12 @@ class FFEPrintDocument(PrintDocument):
             FFEDocumentTypePrintOption,
             TournamentsPrintOption,
             TournamentPrintOption,
-            PlayersPrintOption,
+            MandatoryPlayersPrintOption,
             FFELicencePrintOption,
             PlayerPrintOption,
         ]
 
     def validate_options(self):
-        self._get_option(FFEDocumentTypePrintOption).validate()
         valid_options_types = self.ffe_document_type.get_valid_option_types()
         for option in self.options:
             if type(option) in valid_options_types:

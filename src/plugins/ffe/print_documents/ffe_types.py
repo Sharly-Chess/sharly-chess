@@ -4,8 +4,6 @@ from functools import cached_property
 from typing import Any, TYPE_CHECKING
 
 from common import BASE_DIR
-from common.exception import OptionError
-from common.i18n import _
 from data.access_levels.client import Client
 from data.account import Account
 from data.event import Event
@@ -564,28 +562,15 @@ class FFETournamentDocumentType(FFEDocumentType, ABC):
 class FFEPlayersDocumentType(FFETournamentDocumentType, ABC):
     @staticmethod
     def get_valid_option_types() -> list[type['PrintOption']]:
-        from data.print_documents.options import PlayersPrintOption
+        from data.print_documents.options import MandatoryPlayersPrintOption
 
         return FFETournamentDocumentType.get_valid_option_types() + [
-            PlayersPrintOption,
+            MandatoryPlayersPrintOption,
         ]
 
     @cached_property
     def players(self) -> list[TournamentPlayer]:
-        return self.ffe_document.players
-
-    def validate_options(
-        self,
-        ffe_document: 'FFEPrintDocument',
-    ):
-        from data.print_documents.options import PlayersPrintOption
-
-        super().validate_options(ffe_document)
-        if not self.players:
-            raise OptionError(
-                _('Please select at least one player.'),
-                self.ffe_document._get_option(PlayersPrintOption),
-            )
+        return self.ffe_document.mandatory_players
 
     def template_context(
         self,

@@ -54,6 +54,7 @@ class FFEDocumentTypePrintOption(FFEPrintOption):
 
     @override
     def validate(self):
+        super().validate()
         from plugins.ffe.print_documents.ffe_managers import FFEDocumentTypeManager
 
         if self.value not in (
@@ -115,6 +116,7 @@ class FFELicencePrintOption(FFEPrintOption):
 
     @override
     def validate(self):
+        super().validate()
         try:
             _ffe_licence = self.ffe_licence
         except KeyError:
