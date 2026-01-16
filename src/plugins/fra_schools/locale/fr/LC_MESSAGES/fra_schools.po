@@ -90,6 +90,9 @@ msgstr "Classement par établissement"
 msgid "Ranking by school after round #{round}"
 msgstr "Classement par établissement après la ronde n°{round}"
 
+msgid "School"
+msgstr "Établissement"
+
 msgid "School *** SCHOOL FOR TABLE HEADER"
 msgstr "Établissement"
 
@@ -128,4 +131,9 @@ msgstr "Ce numéro de ronde n'est pas valide (le tournoi comporte {rounds} ronde
 
 msgid "Total"
 msgstr "Total"
+
+msgid "{count} school represented"
+msgid_plural "{count} schools represented"
+msgstr[0] "{count} établissement représenté"
+msgstr[1] "{count} établissements représentés"
 
