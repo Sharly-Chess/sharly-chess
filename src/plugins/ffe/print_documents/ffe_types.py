@@ -1,9 +1,11 @@
+import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, date
 from functools import cached_property
 from typing import Any, TYPE_CHECKING
 
 from common import BASE_DIR
+from common.logger import get_logger
 from data.access_levels.client import Client
 from data.account import Account
 from data.event import Event
@@ -19,6 +21,9 @@ from utils.time_control import trf25_to_human_readable
 
 if TYPE_CHECKING:
     from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
+    from plugins.ffe.print_documents.ffe_options import FFENoLicencePlayersPrintOption
+
+logger: logging.Logger = get_logger()
 
 
 class FFEDocumentType(IdentifiableEntity, ABC):
@@ -388,7 +393,6 @@ class FFETournamentsDocumentType(FFEDocumentType, ABC):
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
-            'tournaments': self.tournaments,
             'event_name': self.tournaments_name,
             'event_date': self.tournaments_date,
             'event_days': self.tournaments_days,
@@ -552,7 +556,6 @@ class FFETournamentDocumentType(FFEDocumentType, ABC):
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
-            'tournament': self.tournament,
             'tournament_name': self.tournament_name,
             'tournament_date': self.tournament_date,
             'location': self.tournament.location,
@@ -560,17 +563,9 @@ class FFETournamentDocumentType(FFEDocumentType, ABC):
 
 
 class FFEPlayersDocumentType(FFETournamentDocumentType, ABC):
-    @staticmethod
-    def get_valid_option_types() -> list[type['PrintOption']]:
-        from data.print_documents.options import MandatoryPlayersPrintOption
-
-        return FFETournamentDocumentType.get_valid_option_types() + [
-            MandatoryPlayersPrintOption,
-        ]
-
     @cached_property
     def players(self) -> list[TournamentPlayer]:
-        return self.ffe_document.mandatory_players
+        return []
 
     def template_context(
         self,
@@ -588,6 +583,17 @@ class FFET3T4Type(FFEPlayersDocumentType, ABC):
 
     @staticmethod
     @abstractmethod
+    def players_print_option() -> type['FFENoLicencePlayersPrintOption']:
+        """Returns the type of the option used."""
+
+    @classmethod
+    def get_valid_option_types(cls) -> list[type['PrintOption']]:
+        return FFEPlayersDocumentType.get_valid_option_types() + [
+            cls.players_print_option(),
+        ]
+
+    @staticmethod
+    @abstractmethod
     def ffe_licence() -> PlayerFFELicence:
         """Returns the FFE licence concerned."""
 
@@ -595,6 +601,18 @@ class FFET3T4Type(FFEPlayersDocumentType, ABC):
     @abstractmethod
     def ffe_form_number() -> int:
         """Returns the FFE form number concerned."""
+
+    @cached_property
+    def players(self) -> list[TournamentPlayer]:
+        if player_ids := self.ffe_document._get_option(
+            self.players_print_option()
+        ).value:
+            return [
+                self.tournament.tournament_players_by_id[player_id]
+                for player_id in player_ids
+            ]
+        else:
+            return self.players_print_option().get_tournament_players(self.tournament)
 
     def template_context(
         self,
@@ -616,6 +634,12 @@ class FFET3Type(FFET3T4Type):
         return 'T3 Attestation de licence A'
 
     @staticmethod
+    def players_print_option() -> type['FFENoLicencePlayersPrintOption']:
+        from plugins.ffe.print_documents import ffe_options
+
+        return ffe_options.FFET3NoLicencePlayersPrintOption
+
+    @staticmethod
     def ffe_licence() -> PlayerFFELicence:
         return PlayerFFELicence.A
 
@@ -634,12 +658,32 @@ class FFET4Type(FFET3T4Type):
         return 'T4 Attestation de licence B'
 
     @staticmethod
+    def players_print_option() -> type['FFENoLicencePlayersPrintOption']:
+        from plugins.ffe.print_documents import ffe_options
+
+        return ffe_options.FFET4NoLicencePlayersPrintOption
+
+    @staticmethod
     def ffe_licence() -> PlayerFFELicence:
         return PlayerFFELicence.B
 
     @staticmethod
     def ffe_form_number() -> int:
         return 4
+
+
+class FFEOptionalPlayersDocumentType(FFEPlayersDocumentType, ABC):
+    @staticmethod
+    def get_valid_option_types() -> list[type['PrintOption']]:
+        from data.print_documents.options import OptionalPlayersPrintOption
+
+        return FFEPlayersDocumentType.get_valid_option_types() + [
+            OptionalPlayersPrintOption,
+        ]
+
+    @cached_property
+    def players(self) -> list[TournamentPlayer]:
+        return self.ffe_document.optional_players
 
 
 class FFEPlayerDocumentType(FFETournamentDocumentType, ABC):

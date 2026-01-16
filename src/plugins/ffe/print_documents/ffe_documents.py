@@ -6,12 +6,15 @@ from data.print_documents.documents import (
 )
 from data.print_documents.options import (
     TournamentsPrintOption,
-    MandatoryPlayersPrintOption,
     TournamentPrintOption,
     PlayerPrintOption,
 )
 from plugins.ffe.print_documents.ffe_managers import FFEDocumentTypeManager
-from plugins.ffe.print_documents.ffe_options import FFEDocumentTypePrintOption
+from plugins.ffe.print_documents.ffe_options import (
+    FFEDocumentTypePrintOption,
+    FFET3NoLicencePlayersPrintOption,
+    FFET4NoLicencePlayersPrintOption,
+)
 from plugins.ffe.print_documents.ffe_types import FFEDocumentType
 
 
@@ -44,7 +47,8 @@ class FFEPrintDocument(PrintDocument):
             FFEDocumentTypePrintOption,
             TournamentsPrintOption,
             TournamentPrintOption,
-            MandatoryPlayersPrintOption,
+            FFET3NoLicencePlayersPrintOption,
+            FFET4NoLicencePlayersPrintOption,
             PlayerPrintOption,
         ]
 
