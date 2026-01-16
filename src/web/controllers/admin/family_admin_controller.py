@@ -402,6 +402,7 @@ class FamilyAdminController(BaseEventAdminController):
                         case 'create':
                             public = True
                             message_default = True
+                            menu_link = True
                             tournament_id = list(event.tournaments_by_id.keys())[0]
                             match family_type:
                                 case ScreenType.BOARDS:
