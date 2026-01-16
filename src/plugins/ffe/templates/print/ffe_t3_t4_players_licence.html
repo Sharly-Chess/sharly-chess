@@ -51,14 +51,14 @@
                         <label for="player-mail">Mél :</label>
                     </div>
                     <div class="item">
-                        <input id="player-mail" value="{{ player.mail }}" />
+                        <input id="player-mail" value="{{ player.mail or '' }}" />
                     </div>
                     <div class="item"></div>
                     <div class="item">
                         <label for="player-phone">Tél :</label>
                     </div>
                     <div class="item">
-                        <input id="player-phone" value="{{ player.phone }}" />
+                        <input id="player-phone" value="{{ player.phone or '' }}" />
                     </div>
                     <div class="item"></div>
                     <div class="item">
@@ -72,14 +72,14 @@
                         <label for="player-club">Club :</label>
                     </div>
                     <div class="item">
-                        <input id="player-club" value="{{ player.club }}" />
+                        <input id="player-club" value="{{ player.club or '' }}" />
                     </div>
                     <div class="item"></div>
                     <div class="item">
                         <label for="player-league">Ligue :</label>
                     </div>
                     <div class="item">
-                        <input id="player-league" value="{{ player.plugin_data.ffe.league }}" />
+                        <input id="player-league" value="{{ player.plugin_data.ffe.league or '' }}" />
                     </div>
                     <div class="item"></div>
                 </div>
