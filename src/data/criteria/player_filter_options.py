@@ -374,7 +374,7 @@ class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[Federation]:
-        return [Federation(code) for code in SharlyChessConfig.federations.keys()]
+        return [Federation(code) for code in SharlyChessConfig().federations.keys()]
 
     def get_tournament_player_counter(
         self, tournament: 'Tournament'
@@ -390,9 +390,10 @@ class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
 
     def get_name(self, object_: Federation) -> str:
         code = object_.name
-        if code not in SharlyChessConfig.federations:
+        federations: dict[str, str] = SharlyChessConfig().federations
+        if code not in federations:
             return code
-        return f'{code} - {SharlyChessConfig.federations[code]}'
+        return f'{code} - {federations[code]}'
 
     def validate(self):
         self._validate_list_type(str)

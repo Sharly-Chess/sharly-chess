@@ -263,7 +263,7 @@ class ChessEventTournamentImporter(TournamentImporter):
             title = ChessEventTitle.get_core_object(player.title)
         except KeyError:
             raise unknown_exception('title')
-        if player.federation not in SharlyChessConfig.federations:
+        if player.federation not in SharlyChessConfig().federations:
             # Error raised in the form as it's the only field manually input by the user
             raise ImporterError(
                 _(

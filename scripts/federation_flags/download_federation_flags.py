@@ -63,7 +63,7 @@ def main():
     undeclared_federation_ids: set[str] = {
         federation_id
         for federation_id in federation_ids
-        if federation_id not in SharlyChessConfig.federations
+        if federation_id not in SharlyChessConfig().federations
     }
     if undeclared_federation_ids:
         print(
@@ -71,7 +71,7 @@ def main():
         )
     useless_federation_ids: set[str] = {
         federation_id
-        for federation_id in SharlyChessConfig.federations
+        for federation_id in SharlyChessConfig().federations
         if federation_id not in federation_ids
     }
     if useless_federation_ids:

@@ -492,7 +492,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             )
         if (
             trf_player.fed
-            and trf_player.fed.upper() not in SharlyChessConfig.federations
+            and trf_player.fed.upper() not in SharlyChessConfig().federations
         ):
             raise ImporterError(
                 _('Unknown federation [{federation}].').format(
