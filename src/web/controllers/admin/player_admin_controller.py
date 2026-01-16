@@ -232,7 +232,7 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = f'Invalid title value [{data[field]}].'
             data[field] = ''
         federation = WebContext.form_data_to_str(data, field := 'federation', '')
-        if federation not in SharlyChessConfig.federations:
+        if federation not in SharlyChessConfig().federations:
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
