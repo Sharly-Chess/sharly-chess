@@ -470,8 +470,10 @@ class FfePlugin(Plugin):
             ):
                 stored_player.date_of_birth = ffe_stored_player.date_of_birth
                 stored_player.year_of_birth = None
-            stored_player.comment = ffe_stored_player.comment
-            stored_player.club = ffe_stored_player.club
+            if not stored_player.comment:
+                stored_player.comment = ffe_stored_player.comment
+            if not stored_player.club:
+                stored_player.club = ffe_stored_player.club
             stored_player.plugin_data[self.id] = copy.copy(
                 ffe_stored_player.plugin_data.get(self.id, {})
             )

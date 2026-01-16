@@ -85,7 +85,7 @@ class BaseAdminController(BaseController):
     def _get_federation_options() -> dict[str, str]:
         return {
             federation_id: f'{federation_id} - {federation_name}'
-            for federation_id, federation_name in SharlyChessConfig.federations.items()
+            for federation_id, federation_name in SharlyChessConfig().federations.items()
         }
 
     @staticmethod

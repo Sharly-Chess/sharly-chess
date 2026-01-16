@@ -936,8 +936,8 @@ class StatisticsPrintDocument(PrintDocument):
             return None
 
         max_rating = max(ratings, default=0)
-        buckets = [(0, 1000)]
-        r = 1001
+        buckets = [(0, 999)]
+        r = 1000
         while r <= max_rating:
             buckets.append((r, r + 199))
             r += 200
