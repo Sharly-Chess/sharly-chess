@@ -39,80 +39,79 @@ def _filtered_warn(*args, **kwargs):
 
 warnings.warn = _filtered_warn
 
-if platform.system() == 'Windows':
-    # Windows marks the downloaded files as unsure and blocks their usage.
-    # On the first run, all the files of the distribution are unmarked.
-    from pathlib import Path
-
-    base_dir: Path = Path(sys.argv[0]).resolve().parent
-    tracer: Path = base_dir / '_internal' / '.unblock_files'
-    if tracer.exists():
-        print(f'Unblocking files in : {base_dir}')
-        for root_, __, files in os.walk(base_dir):
-            for name in files:
-                path = os.path.join(root_, name)
-                # Remove Zone.Identifier ADS if it exists
-                ads_path = path + ':Zone.Identifier'
-                try:
-                    os.remove(ads_path)
-                    print(f'Unblocked: {path}')
-                except FileNotFoundError:
-                    pass  # not blocked or already unblocked
-                except Exception as e:
-                    print(f'Failed to unblock {path}: {e}')
-        # Remove not to run twice
-        tracer.unlink()
-
-if platform.system() == 'Darwin':
-    # Prevent MacOS from sleeping the windowed app when it's in the background
-    from rubicon.objc import ObjCClass
-
-    NSProcessInfo = ObjCClass('NSProcessInfo')
-    NSProcessInfo.processInfo.beginActivityWithOptions_reason_(
-        0x00FFFFFF,  # NSActivityUserInitiated | NSActivityLatencyCritical
-        'Prevent App Nap',
-    )
-
-if platform.system() == 'Linux':
-    # Patch gi.require_version to handle "already required" case gracefully
-    # This prevents errors when GTK is required multiple times (e.g., by runtime hook and toga_gtk)
-    try:
-        import gi  # type: ignore[import-not-found]
-
-        _original_require_version = gi.require_version
-
-        def _patched_require_version(namespace, version):
-            """Patched version that handles 'already required' or 'already loaded' gracefully."""
-            try:
-                return _original_require_version(namespace, version)
-            except ValueError as e:
-                error_str = str(e)
-                # If the error is "already requires version" or "already loaded", that's fine - continue
-                # This happens when GTK is required multiple times (e.g., by pre-check and toga_gtk)
-                if (
-                    'already requires version' in error_str
-                    or 'already loaded' in error_str
-                ):
-                    return
-                # Otherwise, re-raise the error
-                raise
-
-        gi.require_version = _patched_require_version
-        # Note: We don't force GTK4 here because Toga's WebView requires GTK3
-        # Toga will automatically use the appropriate GTK version based on what's available
-        # We only require GObject to ensure it's available
-        try:
-            gi.require_version('GObject', '2.0')
-            # Don't force GTK4 - let Toga choose (it needs GTK3 for WebView)
-            # gi.require_version('Gtk', '4.0')  # Commented out - Toga needs GTK3 for WebView
-        except (ImportError, ValueError):
-            # gi not available or already required, that's fine
-            pass
-    except ImportError:
-        # gi not available, skip patching
-        pass
-
 try:
+    if platform.system() == 'Windows':
+        # Windows marks the downloaded files as unsure and blocks their usage.
+        # On the first run, all the files of the distribution are unmarked.
+
+        base_dir: Path = Path(sys.argv[0]).resolve().parent
+        tracer: Path = base_dir / '_internal' / '.unblock_files'
+        if tracer.exists():
+            print(f'Unblocking files in : {base_dir}')
+            for root_, __, files in os.walk(base_dir):
+                for name in files:
+                    path = os.path.join(root_, name)
+                    # Remove Zone.Identifier ADS if it exists
+                    ads_path = path + ':Zone.Identifier'
+                    try:
+                        os.remove(ads_path)
+                        print(f'Unblocked: {path}')
+                    except FileNotFoundError:
+                        pass  # not blocked or already unblocked
+                    except Exception as e:
+                        print(f'Failed to unblock {path}: {e}')
+            # Remove not to run twice
+            tracer.unlink()
+
+    if platform.system() == 'Darwin':
+        # Prevent MacOS from sleeping the windowed app when it's in the background
+        from rubicon.objc import ObjCClass
+
+        NSProcessInfo = ObjCClass('NSProcessInfo')
+        NSProcessInfo.processInfo.beginActivityWithOptions_reason_(
+            0x00FFFFFF,  # NSActivityUserInitiated | NSActivityLatencyCritical
+            'Prevent App Nap',
+        )
+
+    if platform.system() == 'Linux':
+        # Patch gi.require_version to handle "already required" case gracefully
+        # This prevents errors when GTK is required multiple times (e.g., by runtime hook and toga_gtk)
+        try:
+            import gi  # type: ignore[import-not-found]
+
+            _original_require_version = gi.require_version
+
+            def _patched_require_version(namespace, version):
+                """Patched version that handles 'already required' or 'already loaded' gracefully."""
+                try:
+                    return _original_require_version(namespace, version)
+                except ValueError as e:
+                    error_str = str(e)
+                    # If the error is "already requires version" or "already loaded", that's fine - continue
+                    # This happens when GTK is required multiple times (e.g., by pre-check and toga_gtk)
+                    if (
+                        'already requires version' in error_str
+                        or 'already loaded' in error_str
+                    ):
+                        return
+                    # Otherwise, re-raise the error
+                    raise
+
+            gi.require_version = _patched_require_version
+            # Note: We don't force GTK4 here because Toga's WebView requires GTK3
+            # Toga will automatically use the appropriate GTK version based on what's available
+            # We only require GObject to ensure it's available
+            try:
+                gi.require_version('GObject', '2.0')
+                # Don't force GTK4 - let Toga choose (it needs GTK3 for WebView)
+                # gi.require_version('Gtk', '4.0')  # Commented out - Toga needs GTK3 for WebView
+            except (ImportError, ValueError):
+                # gi not available or already required, that's fine
+                pass
+        except ImportError:
+            # gi not available, skip patching
+            pass
+
     import argparse
     import asyncio
 
@@ -403,6 +402,13 @@ except Exception:
         case 'Windows':
             import tkinter
             from tkinter import messagebox
+
+            base_dir = Path(sys.argv[0]).resolve().parent
+            if not os.access(base_dir, os.W_OK):
+                message = (
+                    f'Write permission is missing from [{base_dir.absolute()}].\n'
+                    'Check the permissions of the directory then try again.'
+                )
 
             root = tkinter.Tk()
             root.withdraw()

@@ -11,6 +11,7 @@
 - Change the session language when updated from the config (3.4.4)
 - Update the console after recovering the configuration of a previous version (3.4.5)
 - Refresh the networks on the console (3.4.6)
+- Improve error message when executing from a directory without write permissions (3.4.8)
 
 ## Events
 
