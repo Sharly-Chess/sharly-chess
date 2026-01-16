@@ -3655,6 +3655,9 @@ msgstr ""
 msgid "Please select a type of criterion."
 msgstr ""
 
+msgid "Please select at least one player."
+msgstr ""
+
 msgid "Please select the account."
 msgstr ""
 

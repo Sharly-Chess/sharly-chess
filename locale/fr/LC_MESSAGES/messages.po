@@ -3655,6 +3655,9 @@ msgstr "Veuillez lancer la nouvelle version."
 msgid "Please select a type of criterion."
 msgstr "Veuillez choisir un type de critère."
 
+msgid "Please select at least one player."
+msgstr "Veuillez sélectionner au moins un·e joueur·euse."
+
 msgid "Please select the account."
 msgstr "Veuillez sélectionner le compte."
 
