@@ -14,6 +14,7 @@ from plugins.ffe.print_documents.ffe_options import (
     FFEDocumentTypePrintOption,
     FFET3NoLicencePlayersPrintOption,
     FFET4NoLicencePlayersPrintOption,
+    FFEWriterPrintOption,
 )
 from plugins.ffe.print_documents.ffe_types import FFEDocumentType
 
@@ -45,6 +46,7 @@ class FFEPrintDocument(PrintDocument):
     def available_options() -> list[type[PrintOption]]:
         return [
             FFEDocumentTypePrintOption,
+            FFEWriterPrintOption,
             TournamentsPrintOption,
             TournamentPrintOption,
             FFET3NoLicencePlayersPrintOption,

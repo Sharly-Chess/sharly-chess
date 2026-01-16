@@ -1,0 +1,23 @@
+<div class="col-12">
+    {% do account_options.update(
+        {
+            '': '-- ' + option.default_text + ' --'
+        }
+    ) -%}
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=option.label,
+        help_text='',
+        placeholder='',
+        select_options=account_options,
+        multiple_select=false,
+        data=data, errors=errors
+    ) }}
+</div>
+<script>
+    $(document).ready(function() {
+        $(".modal #{{ option.id }} option").prop("selected", false);
+        $(".modal #{{ option.id }} option[value='{{ client.account.id }}']").prop("selected", true);
+        $(".modal #{{ option.id }}").trigger("change");
+    })
+</script>

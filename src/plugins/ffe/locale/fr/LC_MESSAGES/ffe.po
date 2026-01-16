@@ -14,11 +14,14 @@ msgstr "Une chaîne de caractères non vide est attendue"
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
-msgid "All the players with no FFE licence A"
+msgid "All the player with no licence A"
 msgstr "Tou·tes les joueur·euses sans licence A"
 
-msgid "All the players with no FFE licence A/B"
-msgstr "Tou·tes les joueur·euses sans licence A/B"
+msgid "All the player with no licence A or B"
+msgstr "Tou·tes les joueur·euses sans licence A ou B"
+
+msgid "Arbitration compensation"
+msgstr "Indemnités d'arbitrage"
 
 msgid "At least one league is expected."
 msgstr "Au moins une ligue est attendue."
@@ -58,6 +61,9 @@ msgstr "Buchholz tronqué"
 
 msgid "By default, tournaments are not visible on the FFE site."
 msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
+
+msgid "Cheating complaint"
+msgstr "Dépot de plainte pour suspicion de triche"
 
 msgid "Choose at least one league."
 msgstr "Choisir au moins une ligue."
@@ -126,6 +132,9 @@ msgstr "FFE"
 
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
+
+msgid "FFE Form:"
+msgstr "Formulaire FFE :"
 
 msgid "FFE ID"
 msgstr "Identifiant FFE"
@@ -341,6 +350,9 @@ msgstr "Règlement mis en ligne"
 msgid "Scan to access the tournament on the FFE site."
 msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
 
+msgid "Select the writer"
+msgstr "Sélectionner le·la rédacteur·ice"
+
 msgid "Some of the tie-break values will not appear in the results on the FFE website."
 msgstr "Certaines des valeurs des départages n'apparaîtront pas dans les résultats sur le site de la FFE."
 
@@ -349,6 +361,27 @@ msgstr "Standard"
 
 msgid "Status"
 msgstr "Statut"
+
+msgid "T1 Cover page"
+msgstr "T1 Page de garde"
+
+msgid "T2 minutes"
+msgstr "T2 Procès-verbal"
+
+msgid "T3 Licence A certificate"
+msgstr "T3 Attestation de licence A"
+
+msgid "T4 Licence B certificate"
+msgstr "T4 Attestation de licence B"
+
+msgid "T5 Unjustified forfeit investigation"
+msgstr "T5 Enquête pour forfait injustifié"
+
+msgid "T6 Player exclusion"
+msgstr "T6 Exclusion d'un·e joueur·euse"
+
+msgid "T7 Player reporting"
+msgstr "T7 Signalement d'un·e joueur·euse"
 
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
 msgstr "e système d'accélération de Bakou n'est pas reconnu par la FFE, il peut y avoir des différences dans l'affichage des appariements sur le site web de la FFE."
@@ -471,6 +504,9 @@ msgstr "Par défaut – {option}"
 msgid "Variation"
 msgstr "Variante"
 
+msgid "Writer"
+msgstr "Rédacteur·ice"
+
 msgid "You are not allowed to download fees."
 msgstr "Vous n'êtes pas autorisé·e à télécharger les droits d'homologation."
 
@@ -484,7 +520,4 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] "{count} ligue représentée"
 msgstr[1] "{count} ligues représentées"
-
-#~ msgid "Replace [%(old)s] by [%(new)s]"
-#~ msgstr "Remplacer [%(old)s] par [%(new)s]"
 

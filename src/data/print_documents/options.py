@@ -613,3 +613,32 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
     def validate(self):
         self._validate_list_type(int)
         _board_numbers = self.board_numbers
+
+
+class AccountPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'account'
+
+    @property
+    def template_file_name(self) -> str:
+        return 'account'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @property
+    def default_text(self) -> str:
+        """Returns the default text for this option."""
+        return _('Select an account')
+
+    @property
+    @abstractmethod
+    def label(self) -> str:
+        """Returns the label for this option."""
+        return _('Account:')

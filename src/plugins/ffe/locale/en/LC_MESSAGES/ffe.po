@@ -14,10 +14,13 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
-msgid "All the players with no FFE licence A"
+msgid "All the player with no licence A"
 msgstr ""
 
-msgid "All the players with no FFE licence A/B"
+msgid "All the player with no licence A or B"
+msgstr ""
+
+msgid "Arbitration compensation"
 msgstr ""
 
 msgid "At least one league is expected."
@@ -57,6 +60,9 @@ msgid "Buchholz cut"
 msgstr ""
 
 msgid "By default, tournaments are not visible on the FFE site."
+msgstr ""
+
+msgid "Cheating complaint"
 msgstr ""
 
 msgid "Choose at least one league."
@@ -126,6 +132,9 @@ msgstr ""
 
 msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
 msgstr "FFE"
+
+msgid "FFE Form:"
+msgstr ""
 
 msgid "FFE ID"
 msgstr ""
@@ -341,6 +350,9 @@ msgstr ""
 msgid "Scan to access the tournament on the FFE site."
 msgstr ""
 
+msgid "Select the writer"
+msgstr ""
+
 msgid "Some of the tie-break values will not appear in the results on the FFE website."
 msgstr ""
 
@@ -348,6 +360,27 @@ msgid "Standard"
 msgstr ""
 
 msgid "Status"
+msgstr ""
+
+msgid "T1 Cover page"
+msgstr ""
+
+msgid "T2 minutes"
+msgstr ""
+
+msgid "T3 Licence A certificate"
+msgstr ""
+
+msgid "T4 Licence B certificate"
+msgstr ""
+
+msgid "T5 Unjustified forfeit investigation"
+msgstr ""
+
+msgid "T6 Player exclusion"
+msgstr ""
+
+msgid "T7 Player reporting"
 msgstr ""
 
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
@@ -471,6 +504,9 @@ msgstr ""
 msgid "Variation"
 msgstr ""
 
+msgid "Writer"
+msgstr ""
+
 msgid "You are not allowed to download fees."
 msgstr ""
 
@@ -484,10 +520,4 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "Replace [%(old)s] by [%(new)s]"
-#~ msgstr ""
-
-#~ msgid "Please select at least one player."
-#~ msgstr ""
 

@@ -6,7 +6,7 @@ from common.exception import OptionError
 from common.i18n import _
 from data.player import TournamentPlayer
 from data.print_documents import PrintOption
-from data.print_documents.options import OptionalPlayersPrintOption
+from data.print_documents.options import OptionalPlayersPrintOption, AccountPrintOption
 from data.tournament import Tournament
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 
@@ -144,7 +144,7 @@ class FFET3NoLicencePlayersPrintOption(FFENoLicencePlayersPrintOption):
 
     @property
     def placeholder(self) -> str:
-        return _('All the players with no FFE licence A')
+        return _('All the player with no licence A')
 
 
 class FFET4NoLicencePlayersPrintOption(FFENoLicencePlayersPrintOption):
@@ -165,4 +165,18 @@ class FFET4NoLicencePlayersPrintOption(FFENoLicencePlayersPrintOption):
 
     @property
     def placeholder(self) -> str:
-        return _('All the players with no FFE licence A/B')
+        return _('All the player with no licence A or B')
+
+
+class FFEWriterPrintOption(AccountPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-writer'
+
+    @property
+    def default_text(self) -> str:
+        return _('Select the writer')
+
+    @property
+    def label(self) -> str:
+        return _('Writer')
