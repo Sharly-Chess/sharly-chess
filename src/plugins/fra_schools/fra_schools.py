@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import Counter, defaultdict
 from collections.abc import Callable
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterable, override
@@ -7,7 +7,7 @@ from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
 from common.logger import get_logger
-from common.i18n import _
+from common.i18n import _, ngettext
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn, ColumnUsage
@@ -17,7 +17,11 @@ from data.event import Player, Event
 from data.input_output import TournamentImporter
 from data.player import TournamentPlayer
 from data.print_documents import PlayerSplitter
-from data.print_documents.documents import PrintDocument, PlayerRankingPrintDocument
+from data.print_documents.documents import (
+    PrintDocument,
+    PlayerRankingPrintDocument,
+    StatisticsPrintDocument,
+)
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from database.sqlite.event.event_store import (
     StoredEvent,
@@ -53,7 +57,7 @@ from plugins.fra_schools.utils import (
     FRASchoolsEventPluginData,
     FRASchool,
 )
-from plugins.hookspec import ExtraAdminColumn, hookimpl
+from plugins.hookspec import ExtraAdminColumn, ExtraStatisticsSection, hookimpl
 from plugins.manager import Path
 from plugins.utils import (
     Plugin,
@@ -65,7 +69,7 @@ from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredTournament
-
+    from data.tournament import Tournament
 
 logger = get_logger()
 
@@ -293,6 +297,50 @@ class FRASchoolsPlugin(Plugin):
         lps: type[PlayerSplitter] = FraSchoolPlayerSplitter
         cps: type[PlayerSplitter] = ClubPlayerSplitter
         PluginUtils.insert_on_equals(player_splitter_types, lps, cps, False)
+
+    @hookimpl
+    def get_extra_statistics_sections(
+        self, document: PrintDocument, tournaments: list['Tournament']
+    ) -> Iterable[ExtraStatisticsSection]:
+        if isinstance(document, StatisticsPrintDocument):
+            counter = Counter[int](
+                fra_school_id
+                for tournament in tournaments
+                for p in tournament.tournament_players
+                if (
+                    fra_school_id := FRASchoolsUtils.get_player_plugin_data(
+                        p
+                    ).fra_school_id
+                )
+                is not None
+            )
+
+            if not counter:
+                return []
+
+            items: list[tuple[int, int]] = list(counter.items())
+            items = sorted(items, key=lambda item: (-item[1], item[0]))
+            event = document.event
+            assert event is not None
+            rows = {}
+            for k, v in items:
+                school = FRASchoolsUtils.get_school_by_id(event, k)
+                if school is not None:
+                    rows[f'{school.name} ({school.postal_code})'] = v
+
+            return [
+                ExtraStatisticsSection(
+                    at='club',
+                    title=_('School'),
+                    rows=rows,
+                    subtitle=ngettext(
+                        '{count} school represented',
+                        '{count} schools represented',
+                        len(rows),
+                    ).format(count=len(rows)),
+                )
+            ]
+        return []
 
     # ---------------------------------------------------------------------------------
     # Prizes
