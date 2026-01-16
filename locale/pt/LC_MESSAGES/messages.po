@@ -583,6 +583,10 @@ msgid "Affects the rating that will be chosen for each player."
 msgstr "Afeta a classificação que será escolhida para cada jogador."
 
 #, ai_translation
+msgid "Afghanistan"
+msgstr "Afeganistão"
+
+#, ai_translation
 msgid "After the last round, reorder manually the tied players from the Pairings tab."
 msgstr "Após a última rodada, reordene manualmente os jogadores amarrados na guia Pares."
 
@@ -595,12 +599,20 @@ msgid "Age categories"
 msgstr "Categorias de idade"
 
 #, ai_translation
+msgid "Albania"
+msgstr "Albânia"
+
+#, ai_translation
 msgid "Alert message"
 msgstr "Mensagem de alerta"
 
 #, ai_translation
 msgid "Alert message:"
 msgstr "Mensagem de alerta:"
+
+#, ai_translation
+msgid "Algeria"
+msgstr "Argélia"
 
 #, ai_translation
 msgid "All"
@@ -687,8 +699,20 @@ msgid "An unexpected error occurred."
 msgstr "Ocorreu um erro inesperado."
 
 #, ai_translation
+msgid "Andorra"
+msgstr "Andorra"
+
+#, ai_translation
+msgid "Angola"
+msgstr "Angola"
+
+#, ai_translation
 msgid "Anonymous"
 msgstr "Anonymous"
+
+#, ai_translation
+msgid "Antigua and Barbuda"
+msgstr "Antígua e Barbuda"
 
 #, ai_translation
 msgid "Any number of devices can be controlled by the same display controller."
@@ -744,6 +768,18 @@ msgstr "Evento Arquivado"
 #, ai_translation
 msgid "Archived events"
 msgstr "Eventos Arquivado"
+
+#, ai_translation
+msgid "Argentina"
+msgstr "Argentina"
+
+#, ai_translation
+msgid "Armenia"
+msgstr "Arménia"
+
+#, ai_translation
+msgid "Aruba"
+msgstr "Aruba"
 
 #, ai_translation
 msgid "Assign a screen to the controller."
@@ -807,6 +843,14 @@ msgid "August"
 msgstr "Agosto"
 
 #, ai_translation
+msgid "Australia"
+msgstr "Austrália"
+
+#, ai_translation
+msgid "Austria"
+msgstr "Áustria"
+
+#, ai_translation
 msgid "Auto-update"
 msgstr "Auto-atualização"
 
@@ -833,6 +877,10 @@ msgstr "Classificação média dos adversários"
 #, ai_translation
 msgid "Average rating: {rating}"
 msgstr "Classificação média: {rating}"
+
+#, ai_translation
+msgid "Azerbaijan"
+msgstr "Azerbaijão"
 
 msgid "B *** BLACK COLOR FOR CROSSTABLE"
 msgstr "P"
@@ -869,6 +917,22 @@ msgid "Background image:"
 msgstr "Imagem de fundo:"
 
 #, ai_translation
+msgid "Bahamas"
+msgstr "Bahamas"
+
+#, ai_translation
+msgid "Bahrain"
+msgstr "Barein"
+
+#, ai_translation
+msgid "Bangladesh"
+msgstr "Bangladesh"
+
+#, ai_translation
+msgid "Barbados"
+msgstr "Barbados Barbados"
+
+#, ai_translation
 msgid "Base date"
 msgstr "Data base"
 
@@ -881,6 +945,18 @@ msgid "Before configuring accounts, you have to be aware of a few security warni
 msgstr "Antes de configurar contas, você precisa estar ciente de alguns avisos de segurança:"
 
 #, ai_translation
+msgid "Belarus"
+msgstr "Bielorrússia"
+
+#, ai_translation
+msgid "Belgium"
+msgstr "Bélgica"
+
+#, ai_translation
+msgid "Belize"
+msgstr "Belize Belize"
+
+#, ai_translation
 msgid "Benefit from the very last (experimental) features (USE AT YOUR OWN RISKS!)."
 msgstr "Beneficie-se das últimas características (experimentais) (Use em seu próprio RISKS!)."
 
@@ -891,6 +967,14 @@ msgstr "Berger"
 #, ai_translation
 msgid "Berger grid"
 msgstr "Berger grid"
+
+#, ai_translation
+msgid "Bermuda"
+msgstr "Bermudas"
+
+#, ai_translation
+msgid "Bhutan"
+msgstr "Butão"
 
 #, ai_translation
 msgid "Black"
@@ -981,8 +1065,32 @@ msgid "Boards screens show pairings by board number."
 msgstr "As telas das placas mostram os emparelhamentos pelo número da placa."
 
 #, ai_translation
+msgid "Bolivia"
+msgstr "Bolívia"
+
+#, ai_translation
 msgid "Border"
 msgstr "Fronteira"
+
+#, ai_translation
+msgid "Bosnia & Herzegovina"
+msgstr "Bósnia e Herzegovina"
+
+#, ai_translation
+msgid "Botswana"
+msgstr "Botsuana"
+
+#, ai_translation
+msgid "Brazil"
+msgstr "Brasil"
+
+#, ai_translation
+msgid "British Virgin Islands"
+msgstr "Ilhas Virgens Britânicas"
+
+#, ai_translation
+msgid "Brunei Darussalam"
+msgstr "Brunei Darussalam"
 
 #, ai_translation
 msgid "Buchholz"
@@ -991,6 +1099,18 @@ msgstr "Buchholz"
 #, ai_translation
 msgid "Buchholz score calculated as if all paired games for the final round had ended in draws."
 msgstr "A pontuação de Buchholz calculada como se todos os jogos pareados para a rodada final tivessem terminado em empates."
+
+#, ai_translation
+msgid "Bulgaria"
+msgstr "Bulgária"
+
+#, ai_translation
+msgid "Burkina Faso"
+msgstr "Burkina Faso"
+
+#, ai_translation
+msgid "Burundi"
+msgstr "Burundi"
 
 #, ai_translation
 msgid "By board"
@@ -1055,8 +1175,20 @@ msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
 #, ai_translation
+msgid "Cambodia"
+msgstr "Camboja"
+
+#, ai_translation
+msgid "Cameroon"
+msgstr "Camarões"
+
+#, ai_translation
 msgid "Can't see your event?"
 msgstr "Não consegue ver o seu evento?"
+
+#, ai_translation
+msgid "Canada"
+msgstr "Canadá"
 
 #, ai_translation
 msgid "Cancel"
@@ -1077,6 +1209,10 @@ msgstr "Mestre Candidato"
 #, ai_translation
 msgid "Cannot be both chief and deputy on the same tournament."
 msgstr "Não pode ser chefe e vice-presidente no mesmo torneio."
+
+#, ai_translation
+msgid "Cape Verde"
+msgstr "Cabo Verde"
 
 #, ai_translation
 msgid "Cash"
@@ -1117,6 +1253,18 @@ msgstr "Categoria [%(category)s] criada com sucesso!"
 #, ai_translation
 msgid "Category sets"
 msgstr "Conjuntos de categorias"
+
+#, ai_translation
+msgid "Cayman Islands"
+msgstr "Ilhas Cayman"
+
+#, ai_translation
+msgid "Central African Republic"
+msgstr "República Centro-Africana"
+
+#, ai_translation
+msgid "Chad"
+msgstr "Chade"
 
 #, ai_translation
 msgid "Change the player's tournament."
@@ -1201,6 +1349,18 @@ msgstr "Chefe Arbitragem"
 #, ai_translation
 msgid "Chief arbiter"
 msgstr "Árbitro chefe"
+
+#, ai_translation
+msgid "Chile"
+msgstr "Chile"
+
+#, ai_translation
+msgid "China"
+msgstr "China"
+
+#, ai_translation
+msgid "Chinese Taipei"
+msgstr "chinês Taipei"
 
 #, ai_translation
 msgid "Choose a player at random"
@@ -1315,6 +1475,10 @@ msgid "Clubs"
 msgstr "Clubes"
 
 #, ai_translation
+msgid "Colombia"
+msgstr "Colômbia"
+
+#, ai_translation
 msgid "Color"
 msgstr "Cor"
 
@@ -1375,6 +1539,10 @@ msgid "Comments *** COMMENTS FOR TABLE HEADER"
 msgstr "Comentários"
 
 #, ai_translation
+msgid "Comoros Islands"
+msgstr "Ilhas Comores"
+
+#, ai_translation
 msgid "Complementary pairings"
 msgstr "Emparelhamentos complementares"
 
@@ -1401,6 +1569,10 @@ msgstr "Configure os conjuntos de categorias, que estão disponíveis para todos
 #, ai_translation
 msgid "Configure the tie-breaks of the tournament."
 msgstr "Configure os tie-breaks do torneio."
+
+#, ai_translation
+msgid "Congo"
+msgstr "Congo"
 
 #, ai_translation
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
@@ -1469,6 +1641,14 @@ msgstr "Continuar"
 #, ai_translation
 msgid "Corners"
 msgstr "Cantos"
+
+#, ai_translation
+msgid "Costa Rica"
+msgstr "Costa Rica"
+
+#, ai_translation
+msgid "Cote d’Ivoire"
+msgstr "Costa do Marfim"
 
 #, ai_translation
 msgid "Could not connect to data source [{data_source}]."
@@ -1643,6 +1823,10 @@ msgid "Criterion [%(criterion)s] successfully created!"
 msgstr "Critério [%(criterion)s] criado com sucesso!"
 
 #, ai_translation
+msgid "Croatia"
+msgstr "Croácia"
+
+#, ai_translation
 msgid "Crop marks:"
 msgstr "Marcas de colheita:"
 
@@ -1665,6 +1849,10 @@ msgstr "Mesa cruzada após rodada n° {round}"
 #, ai_translation
 msgid "Crosstable before the first round"
 msgstr "Mesa antes da primeira rodada"
+
+#, ai_translation
+msgid "Cuba"
+msgstr "Cuba"
 
 #, ai_translation
 msgid "Current ({num})"
@@ -1701,6 +1889,14 @@ msgstr "Valores de corte"
 #, fuzzy
 msgid "Cut {value} *** CUT TIE BREAK NAME"
 msgstr "Cut {value}"
+
+#, ai_translation
+msgid "Cyprus"
+msgstr "Chipre"
+
+#, ai_translation
+msgid "Czech Republic"
+msgstr "República Checa"
 
 #, ai_translation
 msgid "DCA"
@@ -1915,6 +2111,14 @@ msgid "Deletion date"
 msgstr "Data de exclusão"
 
 #, ai_translation
+msgid "Democratic Republic of the Congo"
+msgstr "República Democrática do Congo"
+
+#, ai_translation
+msgid "Denmark"
+msgstr "Dinamarca"
+
+#, ai_translation
 msgid "Deputy Chief Arbitration"
 msgstr "Arbitragem Chefe Adjunto"
 
@@ -2003,6 +2207,10 @@ msgid "Displayed round: %(round)d"
 msgstr "Exibido em redondo: %(round)d"
 
 #, ai_translation
+msgid "Djibouti"
+msgstr "Djibuti"
+
+#, ai_translation
 msgid "Do not edit this table manually, use script {script_name} instead."
 msgstr "Não edite esta tabela manualmente, use o script {script_name} em vez disso."
 
@@ -2029,6 +2237,14 @@ msgstr "Você quer atualizar de [{old_version}] para [{new_version}]"
 #, ai_translation
 msgid "Document:"
 msgstr "Documento:"
+
+#, ai_translation
+msgid "Dominica"
+msgstr "Dominica"
+
+#, ai_translation
+msgid "Dominican Republic"
+msgstr "República Dominicana"
 
 #, ai_translation
 msgid "Double-round Berger"
@@ -2259,6 +2475,10 @@ msgid "Each player can only be awarded one prize per bracket."
 msgstr "Cada jogador só pode receber um prêmio por parêntese."
 
 #, ai_translation
+msgid "Ecuador"
+msgstr "Equador"
+
+#, ai_translation
 msgid "Edit"
 msgstr "Editar Editar"
 
@@ -2391,6 +2611,14 @@ msgid "Edit tournament"
 msgstr "Editar torneio"
 
 #, ai_translation
+msgid "Egypt"
+msgstr "Egito"
+
+#, ai_translation
+msgid "El Salvador"
+msgstr "El Salvador"
+
+#, ai_translation
 msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
 msgstr "Elo"
 
@@ -2419,6 +2647,10 @@ msgid "End round"
 msgstr "Fim da ronda"
 
 #, ai_translation
+msgid "England"
+msgstr "Inglaterra"
+
+#, ai_translation
 msgid "Enter results"
 msgstr "Inserir resultados"
 
@@ -2427,12 +2659,32 @@ msgid "Enter the result"
 msgstr "Digite o resultado"
 
 #, ai_translation
+msgid "Equatorial Guinea"
+msgstr "Guiné Equatorial"
+
+#, ai_translation
+msgid "Eritrea"
+msgstr "Eritreia"
+
+#, ai_translation
 msgid "Error when updating database [{database}]."
 msgstr "Erro ao atualizar o banco de dados [{database}]."
 
 #, ai_translation
 msgid "Estimated *** NAME FOR RATING TYPE ESTIMATED"
 msgstr "Estimado"
+
+#, ai_translation
+msgid "Estonia"
+msgstr "Estónia"
+
+#, ai_translation
+msgid "Eswatini"
+msgstr "Eswatini"
+
+#, ai_translation
+msgid "Ethiopia"
+msgstr "Etiópia"
 
 #, ai_translation
 msgid "Event"
@@ -2610,6 +2862,10 @@ msgstr "A família [{family_uniq_id}] foi excluída."
 msgid "Family [{family_uniq_id}] has been updated."
 msgstr "A família [{family_uniq_id}] foi atualizada."
 
+#, ai_translation
+msgid "Faroe Islands"
+msgstr "Ilhas Faroe"
+
 #, fuzzy
 msgid "Feb *** FEBRUARY"
 msgstr "Fev"
@@ -2659,6 +2915,10 @@ msgid "Fide Master"
 msgstr "Mestre Fide"
 
 #, ai_translation
+msgid "Fiji"
+msgstr "Fiji"
+
+#, ai_translation
 msgid "File"
 msgstr "Ficheiro"
 
@@ -2701,6 +2961,10 @@ msgstr "Filtre os gêneros."
 #, ai_translation
 msgid "Filter the tournaments."
 msgstr "Filtre os torneios."
+
+#, ai_translation
+msgid "Finland"
+msgstr "Finlândia"
 
 #, ai_translation
 msgid "First FIDE rating (based only on this tournament)"
@@ -2803,6 +3067,10 @@ msgid "Fr *** FRIDAY"
 msgstr "Fr"
 
 #, ai_translation
+msgid "France"
+msgstr "França"
+
+#, ai_translation
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr "De seu servidor, encontre a tela ou o rotador que você deseja exibir e envie-o para o controlador usando o botão com este ícone:"
 
@@ -2817,6 +3085,14 @@ msgstr "Full-Point Bye (recuperado)"
 #, fuzzy
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
+
+#, ai_translation
+msgid "Gabon"
+msgstr "Gabão"
+
+#, ai_translation
+msgid "Gambia"
+msgstr "Gâmbia"
 
 #, ai_translation
 msgid "Games played with black"
@@ -2863,8 +3139,20 @@ msgid "Generated by script {script_name} on {date}"
 msgstr "Gerado por script {script_name} em {date}"
 
 #, ai_translation
+msgid "Georgia"
+msgstr "Geórgia"
+
+#, ai_translation
+msgid "Germany"
+msgstr "Alemanha"
+
+#, ai_translation
 msgid "Get started"
 msgstr "Começar"
+
+#, ai_translation
+msgid "Ghana"
+msgstr "Gana"
 
 #, ai_translation
 msgid "Give/take away access level {access_level_short_name}"
@@ -2899,8 +3187,40 @@ msgid "Grant 4 tie-break points for a win, 2 for a draw, 1 for a loss, and 0 for
 msgstr "Grant 4 tie-break pontos para uma vitória, 2 para um empate, 1 para uma perda, e 0 para um jogo não jogado."
 
 #, ai_translation
+msgid "Greece"
+msgstr "Grécia"
+
+#, ai_translation
+msgid "Grenada"
+msgstr "Granada"
+
+#, ai_translation
+msgid "Groenland"
+msgstr "Groenland"
+
+#, ai_translation
 msgid "Group"
 msgstr "Grupo"
+
+#, ai_translation
+msgid "Guam"
+msgstr "Guam"
+
+#, ai_translation
+msgid "Guatemala"
+msgstr "Guatemala"
+
+#, ai_translation
+msgid "Guernsey"
+msgstr "Guernsey"
+
+#, ai_translation
+msgid "Guyana"
+msgstr "Guiana"
+
+#, ai_translation
+msgid "Haiti"
+msgstr "Haiti"
 
 #, ai_translation
 msgid "Half-Point Bye"
@@ -2943,6 +3263,14 @@ msgid "Home page:"
 msgstr "Página inicial:"
 
 #, ai_translation
+msgid "Honduras"
+msgstr "Honduras"
+
+#, ai_translation
+msgid "Hong Kong, China"
+msgstr "Hong Kong, China"
+
+#, ai_translation
 msgid "Hort system"
 msgstr "sistema Hort"
 
@@ -2957,6 +3285,10 @@ msgstr "A hora [{hour}] foi criada."
 #, ai_translation
 msgid "Hours"
 msgstr "Horas"
+
+#, ai_translation
+msgid "Hungary"
+msgstr "Hungria"
 
 #, ai_translation
 msgid "Hybrid"
@@ -2977,6 +3309,10 @@ msgstr "Eu confirmo que eu quero substituir os dados do jogador deste torneio."
 #, fuzzy
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
+
+#, ai_translation
+msgid "Iceland"
+msgstr "Islândia"
 
 #, ai_translation
 msgid "Identity"
@@ -3095,6 +3431,14 @@ msgid "Increment (sec):"
 msgstr "Incremento (seg):"
 
 #, ai_translation
+msgid "India"
+msgstr "ndia"
+
+#, ai_translation
+msgid "Indonesia"
+msgstr "Indonésia"
+
+#, ai_translation
 msgid "Info"
 msgstr "Info"
 
@@ -3129,6 +3473,10 @@ msgstr "A instalação da liberação [{version}] falhou, saindo."
 #, ai_translation
 msgid "Installed [{lib}]."
 msgstr "Instalado [{lib}]."
+
+#, ai_translation
+msgid "International Chess Federation"
+msgstr "Federação Internacional de Xads"
 
 #, ai_translation
 msgid "International Master"
@@ -3219,8 +3567,36 @@ msgid "Invalid value [{value}]."
 msgstr "Valor inválido [{value}]."
 
 #, ai_translation
+msgid "Iran"
+msgstr "Irã"
+
+#, ai_translation
+msgid "Iraq"
+msgstr "Iraque"
+
+#, ai_translation
+msgid "Ireland"
+msgstr "Irlanda"
+
+#, ai_translation
+msgid "Isle of Man"
+msgstr "Ilha de Man"
+
+#, ai_translation
+msgid "Israel"
+msgstr "Israel"
+
+#, ai_translation
 msgid "It is highly recommended to set at least one tie-break."
 msgstr "É altamente recomendável definir pelo menos um tie-break."
+
+#, ai_translation
+msgid "Italy"
+msgstr "Itália"
+
+#, ai_translation
+msgid "Jamaica"
+msgstr "Jamaica"
 
 #, fuzzy
 msgid "Jan *** JANUARY"
@@ -3229,6 +3605,18 @@ msgstr "Jan"
 #, ai_translation
 msgid "January"
 msgstr "Janeiro"
+
+#, ai_translation
+msgid "Japan"
+msgstr "Japão"
+
+#, ai_translation
+msgid "Jersey"
+msgstr "Jersey"
+
+#, ai_translation
+msgid "Jordan"
+msgstr "Jordânia"
 
 #, fuzzy
 msgid "Jul *** JULY"
@@ -3255,16 +3643,40 @@ msgid "Kashdan"
 msgstr "Kashdan"
 
 #, ai_translation
+msgid "Kazakhstan"
+msgstr "Cazaquistão"
+
+#, ai_translation
+msgid "Kenya"
+msgstr "Quénia"
+
+#, ai_translation
 msgid "Keyboard shortcuts:"
 msgstr "Atalhos de teclado:"
+
+#, ai_translation
+msgid "Kosovo"
+msgstr "Kosovo"
 
 #, ai_translation
 msgid "Koya system"
 msgstr "sistema Koya"
 
 #, ai_translation
+msgid "Kuwait"
+msgstr "Kuwait"
+
+#, ai_translation
+msgid "Kyrgyzstan"
+msgstr "Quirguistão"
+
+#, ai_translation
 msgid "Language:"
 msgstr "Língua:"
+
+#, ai_translation
+msgid "Laos"
+msgstr "Laos"
 
 #, ai_translation
 msgid "Last board:"
@@ -3303,6 +3715,10 @@ msgid "Last update: {updated_at} (outdated)"
 msgstr "ltima atualização: {updated_at} (desatualizado)"
 
 #, ai_translation
+msgid "Latvia"
+msgstr "Letónia"
+
+#, ai_translation
 msgid "Launch a browser on startup"
 msgstr "Iniciar um navegador na inicialização"
 
@@ -3311,8 +3727,28 @@ msgid "Layout"
 msgstr "Layout"
 
 #, ai_translation
+msgid "Lebanon"
+msgstr "Líbano"
+
+#, ai_translation
+msgid "Lesotho"
+msgstr "Lesoto"
+
+#, ai_translation
+msgid "Liberia"
+msgstr "Libéria"
+
+#, ai_translation
 msgid "Library [{lib}] is missing."
 msgstr "A biblioteca [{lib}] está faltando."
+
+#, ai_translation
+msgid "Libya"
+msgstr "Líbia"
+
+#, ai_translation
+msgid "Liechtenstein"
+msgstr "Liechtenstein"
 
 #, ai_translation
 msgid "Limit adjustment"
@@ -3335,6 +3771,10 @@ msgstr "Links exibidos no menu da tela:"
 #, ai_translation
 msgid "List of players"
 msgstr "Lista de jogadores"
+
+#, ai_translation
+msgid "Lithuania"
+msgstr "Lituânia"
 
 #, ai_translation
 msgid "Loading more results…"
@@ -3372,6 +3812,10 @@ msgstr "logado como [%(account_name)s]"
 msgid "Loss"
 msgstr "Perda"
 
+#, ai_translation
+msgid "Luxembourg"
+msgstr "Luxemburgo"
+
 #, fuzzy
 msgid "M *** SHORT NAME FOR GENDER MALE"
 msgstr "M"
@@ -3379,6 +3823,14 @@ msgstr "M"
 #, ai_translation
 msgid "MM/DD/YYYY"
 msgstr "MM/DD/ AAAA"
+
+#, ai_translation
+msgid "Macau, China"
+msgstr "Macau, China"
+
+#, ai_translation
+msgid "Madagascar"
+msgstr "Madagáscar"
 
 #, fuzzy
 msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
@@ -3396,9 +3848,29 @@ msgstr "Categoria principal"
 msgid "Main group"
 msgstr "Grupo principal"
 
+#, ai_translation
+msgid "Malawi"
+msgstr "Malawi"
+
+#, ai_translation
+msgid "Malaysia"
+msgstr "Malásia"
+
+#, ai_translation
+msgid "Maldives"
+msgstr "Maldivas"
+
 #, fuzzy
 msgid "Male *** NAME FOR GENDER MALE"
 msgstr "Macho"
+
+#, ai_translation
+msgid "Mali"
+msgstr "Mali"
+
+#, ai_translation
+msgid "Malta"
+msgstr "Malta"
 
 #, ai_translation
 msgid "Manage accounts"
@@ -3455,6 +3927,14 @@ msgstr "Março"
 #, ai_translation
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marque esta rodada como mais e defina a próxima como a rodada atual."
+
+#, ai_translation
+msgid "Mauritania"
+msgstr "Mauritânia"
+
+#, ai_translation
+msgid "Mauritius"
+msgstr "Ilhas Maurícias"
 
 #, ai_translation, python-format
 msgid "Max age: %(num)d minute"
@@ -3543,6 +4023,10 @@ msgid "Menus"
 msgstr "Menus"
 
 #, ai_translation
+msgid "Mexico"
+msgstr "México"
+
+#, ai_translation
 msgid "Minimum number of points (included):"
 msgstr "Número mínimo de pontos (incluído):"
 
@@ -3559,8 +4043,28 @@ msgid "Mo *** MONDAY"
 msgstr "Mo"
 
 #, ai_translation
+msgid "Moldova"
+msgstr "Moldávia"
+
+#, ai_translation
+msgid "Monaco"
+msgstr "Mónaco"
+
+#, ai_translation
 msgid "Monetary"
 msgstr "monetário"
+
+#, ai_translation
+msgid "Mongolia"
+msgstr "Mongólia"
+
+#, ai_translation
+msgid "Montenegro"
+msgstr "Montenegro"
+
+#, ai_translation
+msgid "Morocco"
+msgstr "Marrocos"
 
 #, ai_translation, python-format
 msgid "Moved down %(num)d place"
@@ -3583,6 +4087,10 @@ msgid "Moving on to round #%(round)d"
 msgstr "Passando para a rodada n° %(round)d"
 
 #, ai_translation
+msgid "Mozambique"
+msgstr "Moçambique"
+
+#, ai_translation
 msgid "My category"
 msgstr "Minha categoria"
 
@@ -3597,6 +4105,10 @@ msgstr "Meu rotador"
 #, ai_translation
 msgid "My timer"
 msgstr "Meu timer"
+
+#, ai_translation
+msgid "Myanmar"
+msgstr "Myanmar"
 
 #, fuzzy
 msgid "N *** SHORT NAME FOR RATING TYPE NATIONAL"
@@ -3634,9 +4146,17 @@ msgstr "Nome: %(screen_set_name)s"
 msgid "Name: by default"
 msgstr "Nome: por defeito"
 
+#, ai_translation
+msgid "Namibia"
+msgstr "Namíbia"
+
 #, fuzzy
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "Nacional"
+
+#, ai_translation
+msgid "Nauru"
+msgstr "Nauru"
 
 #, ai_translation
 msgid "Navigation"
@@ -3647,12 +4167,28 @@ msgid "Neither screen nor rotator currently assigned"
 msgstr "Nem tela nem rotator atualmente atribuído"
 
 #, ai_translation
+msgid "Nepal"
+msgstr "Nepal"
+
+#, ai_translation
+msgid "Netherlands"
+msgstr "Países Baixos"
+
+#, ai_translation
+msgid "Netherlands Antilles"
+msgstr "Antilhas Holandesas"
+
+#, ai_translation
 msgid "Network"
 msgstr "Rede"
 
 #, ai_translation
 msgid "Network:"
 msgstr "Rede:"
+
+#, ai_translation
+msgid "New Caledonia"
+msgstr "Nova Caledónia"
 
 #, ai_translation, python-format
 msgid "New FIDE rating (assuming <i>k</i> of <b>%(k)d</b>)"
@@ -3661,6 +4197,10 @@ msgstr "Nova classificação FIDE (assumindo <i>k</i> de <b>%(k)d</b>)"
 #, ai_translation, python-format
 msgid "New FIDE rating (based on player's official <i>k</i> of <b>%(k)d</b>)"
 msgstr "Nova classificação FIDE (baseada na classificação oficial do jogador <i>k/<i> de <b>%(k)d</b>)"
+
+#, ai_translation
+msgid "New Zealand"
+msgstr "Nova Zelândia"
 
 #, ai_translation
 msgid "New category"
@@ -3709,6 +4249,18 @@ msgstr "Próxima ronda"
 #, ai_translation
 msgid "Next tournament"
 msgstr "Próximo torneio"
+
+#, ai_translation
+msgid "Nicaragua"
+msgstr "Nicarágua"
+
+#, ai_translation
+msgid "Niger"
+msgstr "Níger"
+
+#, ai_translation
+msgid "Nigeria"
+msgstr "Nigéria"
 
 #, ai_translation
 msgid "No FIDE ID."
@@ -3974,9 +4526,21 @@ msgstr "Os prêmios não monetários não são compatíveis com categorias nas q
 msgid "None"
 msgstr "Nenhuma"
 
+#, fuzzy
+msgid "None *** FEDERATION"
+msgstr "Sem"
+
 #, ai_translation
 msgid "Norm Report"
 msgstr "Relatório Norm"
+
+#, ai_translation
+msgid "North Macedonia"
+msgstr "Macedónia do Norte"
+
+#, ai_translation
+msgid "Norway"
+msgstr "Noruega"
 
 #, ai_translation
 msgid "Not assigned"
@@ -4101,6 +4665,10 @@ msgstr "Out"
 #, ai_translation
 msgid "October"
 msgstr "Outubro"
+
+#, ai_translation
+msgid "Oman"
+msgstr "Omã"
 
 #, ai_translation
 msgid "Once created, you can select the timer to display in the settings of each screen, family or rotator."
@@ -4415,6 +4983,30 @@ msgid "Pairings: %(pairing_variation)s"
 msgstr "Pares: %(pairing_variation)s"
 
 #, ai_translation
+msgid "Pakistan"
+msgstr "Paquistão"
+
+#, ai_translation
+msgid "Palau"
+msgstr "Palau"
+
+#, ai_translation
+msgid "Palestine"
+msgstr "Palestina"
+
+#, ai_translation
+msgid "Panama"
+msgstr "Panamá"
+
+#, ai_translation
+msgid "Papua New Guinea"
+msgstr "Papua Nova Guiné"
+
+#, ai_translation
+msgid "Paraguay"
+msgstr "Paraguai"
+
+#, ai_translation
 msgid "Parings by player"
 msgstr "Parings por jogador"
 
@@ -4469,6 +5061,14 @@ msgstr "Placas Permute"
 #, ai_translation
 msgid "Personal"
 msgstr "Pessoal"
+
+#, ai_translation
+msgid "Peru"
+msgstr "Peru"
+
+#, ai_translation
+msgid "Philippines"
+msgstr "Filipinas"
 
 #, fuzzy
 msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
@@ -4751,6 +5351,10 @@ msgid "Points: up to %(max)s"
 msgstr "Pontos: até %(max)s"
 
 #, ai_translation
+msgid "Poland"
+msgstr "Polónia"
+
+#, ai_translation
 msgid "Port [{port}] already in use, can not start Sharly Chess server."
 msgstr "Porta [{port}] já em uso, não pode iniciar o servidor Sharly Chess."
 
@@ -4761,6 +5365,10 @@ msgstr "Porto [{port}] já em uso."
 #, ai_translation
 msgid "Port: {port}"
 msgstr "Porto: {port}"
+
+#, ai_translation
+msgid "Portugal"
+msgstr "Portugal"
 
 #, ai_translation
 msgid "Pref."
@@ -4922,6 +5530,10 @@ msgstr "Publicar resultados do torneio"
 msgid "Publish tournament rules"
 msgstr "Publicar regras do torneio"
 
+#, ai_translation
+msgid "Puerto Rico"
+msgstr "Porto Rico"
+
 #, fuzzy
 msgid "Q *** THE LETTER TO ANSWER QUIT"
 msgstr "Q"
@@ -4933,6 +5545,10 @@ msgstr "Código QR"
 #, ai_translation
 msgid "QR Code type:"
 msgstr "Tipo de código QR:"
+
+#, ai_translation
+msgid "Qatar"
+msgstr "Qatar"
 
 #, fuzzy, python-format
 msgid "R %(round)d *** ROUND FOR TABLE HEADER"
@@ -5222,6 +5838,10 @@ msgstr "Rk. O."
 msgid "Rnd.Boa"
 msgstr "Rnd.Boa"
 
+#, ai_translation
+msgid "Romania"
+msgstr "Roménia"
+
 #, ai_translation, python-format
 msgid "Rotation delay: %(seconds)d sec."
 msgstr "Atraso de rotação: %(seconds)d seg."
@@ -5355,6 +5975,14 @@ msgid "Rules file set"
 msgstr "conjunto de arquivos de regras"
 
 #, ai_translation
+msgid "Russia"
+msgstr "Rússia"
+
+#, ai_translation
+msgid "Rwanda"
+msgstr "Ruanda"
+
+#, ai_translation
 msgid "SCR"
 msgstr "SCR"
 
@@ -5369,6 +5997,30 @@ msgstr "SPE"
 #, fuzzy
 msgid "Sa *** SATURDAY"
 msgstr "Sa"
+
+#, ai_translation
+msgid "Saint Kitts and Nevis"
+msgstr "São Cristóvão e Nevis"
+
+#, ai_translation
+msgid "Saint Lucia"
+msgstr "Santa Lúcia"
+
+#, ai_translation
+msgid "Saint Vincent and the Grenadines"
+msgstr "São Vicente e Granadinas"
+
+#, ai_translation
+msgid "San Marino"
+msgstr "San Marino"
+
+#, ai_translation
+msgid "Sao Tome and Principe"
+msgstr "São Tomé e Príncipe"
+
+#, ai_translation
+msgid "Saudi Arabia"
+msgstr "Arábia Saudita"
 
 #, ai_translation
 msgid "Save"
@@ -5393,6 +6045,10 @@ msgstr "Score"
 #, ai_translation
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
 msgstr "Pontuação calculada adicionando, para cada rodada, um valor dado multiplicando a pontuação do oponente pelos pontos marcados contra eles."
+
+#, ai_translation
+msgid "Scotland"
+msgstr "Escócia"
 
 #, ai_translation
 msgid "Screen"
@@ -5515,6 +6171,10 @@ msgid "Selection: %(selection)s"
 msgstr "Selecção: %(selection)s"
 
 #, ai_translation
+msgid "Senegal"
+msgstr "Senegal"
+
+#, ai_translation
 msgid "Senior categories"
 msgstr "Categorias sénior"
 
@@ -5525,6 +6185,10 @@ msgstr "Set"
 #, ai_translation
 msgid "September"
 msgstr "Setembro"
+
+#, ai_translation
+msgid "Serbia"
+msgstr "Sérvia"
 
 #, ai_translation
 msgid "Server Setup"
@@ -5565,6 +6229,10 @@ msgstr "b>{value}/b>"
 #, ai_translation
 msgid "Settings"
 msgstr "Configurações"
+
+#, ai_translation
+msgid "Seychelles"
+msgstr "Seicheles"
 
 #, ai_translation
 msgid "Share"
@@ -5647,12 +6315,20 @@ msgid "Show/hide the screens created from screen families."
 msgstr "Mostrar/ocultar as telas criadas a partir de famílias de tela."
 
 #, ai_translation
+msgid "Sierra Leone"
+msgstr "Serra Leoa"
+
+#, ai_translation
 msgid "Signature"
 msgstr "Assinatura"
 
 #, ai_translation
 msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
 msgstr "Como as classificações são usadas no cálculo do tie-break, é importante que elas sejam representativas do nível do jogador. Por essa razão, esse tie-break não é recomendado com jogadores não classificados."
+
+#, ai_translation
+msgid "Singapore"
+msgstr "Singapura"
 
 #, ai_translation
 msgid "Single Screens"
@@ -5665,6 +6341,22 @@ msgstr "Telas nicas ({num})"
 #, ai_translation
 msgid "Size ({unit}): {width}x{height}"
 msgstr "Tamanho ({unit}): {width}x{height}"
+
+#, ai_translation
+msgid "Slovakia"
+msgstr "Eslováquia"
+
+#, ai_translation
+msgid "Slovenia"
+msgstr "Eslovénia"
+
+#, ai_translation
+msgid "Solomon Islands"
+msgstr "Ilhas Salomão"
+
+#, ai_translation
+msgid "Somalia"
+msgstr "Somália"
 
 #, ai_translation
 msgid "Some accounts can have very high access levels, making them dangerous in the hands of an unaware or malicious users."
@@ -5735,8 +6427,24 @@ msgid "Source"
 msgstr "Fonte"
 
 #, ai_translation
+msgid "South Africa"
+msgstr "África do Sul"
+
+#, ai_translation
+msgid "South Korea"
+msgstr "Coreia do Sul"
+
+#, ai_translation
+msgid "South Sudan"
+msgstr "Sudão do Sul"
+
+#, ai_translation
 msgid "Space-separated list of numbers. One prize is created per value in the list."
 msgstr "Lista de números separada pelo espaço. Um prêmio é criado por valor na lista."
+
+#, ai_translation
+msgid "Spain"
+msgstr "Espanha"
 
 #, ai_translation
 msgid "Specifying the number of parts and the number of items per part is not possible."
@@ -5749,6 +6457,10 @@ msgstr "Espectador"
 #, ai_translation
 msgid "Split by:"
 msgstr "Dividido por:"
+
+#, ai_translation
+msgid "Sri Lanka"
+msgstr "Sri Lanka"
 
 #, ai_translation
 msgid "Staff"
@@ -5839,12 +6551,32 @@ msgid "Successfully logged out."
 msgstr "Desconectado com sucesso."
 
 #, ai_translation
+msgid "Sudan"
+msgstr "Sudão"
+
+#, ai_translation
 msgid "Sum of Buchholz"
 msgstr "Soma de Buchholz"
 
 #, ai_translation
+msgid "Suriname"
+msgstr "Suriname"
+
+#, ai_translation
+msgid "Sweden"
+msgstr "Suécia"
+
+#, ai_translation
 msgid "Swiss"
 msgstr "Suíça Suíça"
+
+#, ai_translation
+msgid "Switzerland"
+msgstr "Suíça"
+
+#, ai_translation
+msgid "Syria"
+msgstr "Síria"
 
 #, ai_translation
 msgid "TRF file"
@@ -5857,6 +6589,14 @@ msgstr "TRF(bx)"
 #, ai_translation
 msgid "TRF16"
 msgstr "TRF16"
+
+#, ai_translation
+msgid "Tajikistan"
+msgstr "Tajiquistão"
+
+#, ai_translation
+msgid "Tanzania"
+msgstr "Tanzânia"
 
 #, ai_translation
 msgid "Template:"
@@ -5893,6 +6633,10 @@ msgstr "Textos antes e depois da hora abaixo são opcionais para números redond
 #, fuzzy
 msgid "Th *** THURSDAY"
 msgstr "Th"
+
+#, ai_translation
+msgid "Thailand"
+msgstr "Tailândia"
 
 #, ai_translation
 msgid "The FIDE rules stipulate that only the pairings of the round <b>prior</b> to the current one may be modified. Changes to pairings previous to this should be made at the <b>end</b> of the tournament, <b>after</b> the rankings have been published, and solely for the computation of the FIDE ratings."
@@ -6557,6 +7301,10 @@ msgid "Timers: %(num)d"
 msgstr "Temporizadores: %(num)d"
 
 #, ai_translation
+msgid "Timor-Leste"
+msgstr "Timor-Leste"
+
+#, ai_translation
 msgid "Titled players"
 msgstr "Jogadores Intitulados"
 
@@ -6571,6 +7319,14 @@ msgstr "Para modificar rodadas anteriores, retorne a essa rodada na guia Pares;<
 #, ai_translation
 msgid "Today"
 msgstr "Hoje"
+
+#, ai_translation
+msgid "Togo"
+msgstr "Togo"
+
+#, ai_translation
+msgid "Tonga"
+msgstr "Tonga"
 
 #, ai_translation
 msgid "Too few players to generate the pairings (minimum: {min})."
@@ -6697,12 +7453,28 @@ msgid "Transfer"
 msgstr "Transferência"
 
 #, ai_translation
+msgid "Trinidad & Tobago"
+msgstr "Trinidad e Tobago"
+
+#, ai_translation
 msgid "Trophy, medal"
 msgstr "Troféu, medalha"
 
 #, fuzzy
 msgid "Tu *** TUESDAY"
 msgstr "Tu"
+
+#, ai_translation
+msgid "Tunisia"
+msgstr "Tunísia"
+
+#, ai_translation
+msgid "Turkiye"
+msgstr "Turkiye"
+
+#, ai_translation
+msgid "Turkmenistan"
+msgstr "Turcomenistão"
 
 #, ai_translation
 msgid "Type"
@@ -6756,6 +7528,18 @@ msgstr "URL [{url}] não respondeu (erro: [{error}])."
 msgid "URL [{url}] responded code [{code}]."
 msgstr "URL [{url}] respondeu código [{code}]."
 
+#, ai_translation
+msgid "US Virgin Islands"
+msgstr "Ilhas Virgens Americanas"
+
+#, ai_translation
+msgid "Uganda"
+msgstr "Uganda"
+
+#, ai_translation
+msgid "Ukraine"
+msgstr "Ucrânia"
+
 #, fuzzy
 msgid "Undefined *** PLURAL"
 msgstr "Undefined"
@@ -6775,6 +7559,14 @@ msgstr "ID nico: %(uniq_id)s"
 #, ai_translation, python-format
 msgid "Unique ID: [%(uniq_id)s]"
 msgstr "ID nico: [%(uniq_id)s]"
+
+#, ai_translation
+msgid "United Arab Emirates"
+msgstr "Emirados Árabes Unidos"
+
+#, ai_translation
+msgid "United States of America"
+msgstr "Estados Unidos da América"
 
 #, ai_translation
 msgid "Unknown"
@@ -6933,6 +7725,10 @@ msgid "Upload"
 msgstr "Upload"
 
 #, ai_translation
+msgid "Uruguay"
+msgstr "Uruguai"
+
+#, ai_translation
 msgid "Use Fore Buchholz"
 msgstr "Use Fore Buchholz"
 
@@ -6984,6 +7780,10 @@ msgid_plural "Used by %(num)d tournaments."
 msgstr[0] "Usado pelo torneio %(num)d."
 msgstr[1] "Usado por torneios %(num)d."
 
+#, ai_translation
+msgid "Uzbekistan"
+msgstr "Usbequistão"
+
 #, fuzzy
 msgid "U{age_limit} *** YOUTH AGE CATEGORY"
 msgstr "U{age_limit}"
@@ -7005,12 +7805,24 @@ msgid "Values"
 msgstr "Valores"
 
 #, ai_translation
+msgid "Vanuatu"
+msgstr "Vanuatu"
+
+#, ai_translation
 msgid "Variation"
 msgstr "Variação"
 
 #, ai_translation
+msgid "Venezuela"
+msgstr "Venezuela"
+
+#, ai_translation
 msgid "Version: {version}"
 msgstr "Versão: {version}"
+
+#, ai_translation
+msgid "Vietnam"
+msgstr "Vietname"
 
 #, ai_translation
 msgid "View Pairings tab"
@@ -7099,6 +7911,10 @@ msgstr "VINHOS BRANTOS"
 #, fuzzy
 msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
+
+#, ai_translation
+msgid "Wales"
+msgstr "País de Gales"
 
 #, ai_translation
 msgid "Warning: closing this window will stop Sharly Chess."
@@ -7231,6 +8047,10 @@ msgstr "AAA/MM/DD"
 #, ai_translation
 msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
 msgstr "Ano de nascimento"
+
+#, ai_translation
+msgid "Yemen"
+msgstr "Iémen"
 
 #, ai_translation
 msgid "Yesterday"
@@ -7409,12 +8229,20 @@ msgid "You must create a tournament before creating these screens."
 msgstr "Você deve criar um torneio antes de criar essas telas."
 
 #, ai_translation
+msgid "Zambia"
+msgstr "Zâmbia"
+
+#, ai_translation
 msgid "Zero-Point Bye"
 msgstr "Zero-Point Bye"
 
 #, ai_translation
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr "Zero-Point Bye atribuído ao jogador [{player}]."
+
+#, ai_translation
+msgid "Zimbabwe"
+msgstr "Zimbabué"
 
 #, ai_translation
 msgid "[{value}] is not a positive value."
