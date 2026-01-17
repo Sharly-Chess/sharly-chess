@@ -20,6 +20,9 @@ msgstr ""
 msgid "All the player with no licence A or B"
 msgstr ""
 
+msgid "Arbiter:"
+msgstr ""
+
 msgid "Arbitration compensation"
 msgstr ""
 
@@ -63,6 +66,9 @@ msgid "By default, tournaments are not visible on the FFE site."
 msgstr ""
 
 msgid "Cheating complaint"
+msgstr ""
+
+msgid "Chief arbiter (if different):"
 msgstr ""
 
 msgid "Choose at least one league."
@@ -159,6 +165,9 @@ msgid "FFE database (local)"
 msgstr ""
 
 msgid "FFE database (online)"
+msgstr ""
+
+msgid "FFE forms"
 msgstr ""
 
 msgid "FFE licence A (competition)"
@@ -350,6 +359,15 @@ msgstr ""
 msgid "Scan to access the tournament on the FFE site."
 msgstr ""
 
+msgid "Select the arbiter"
+msgstr ""
+
+msgid "Select the chief arbiter"
+msgstr ""
+
+msgid "Select the trainee"
+msgstr ""
+
 msgid "Select the writer"
 msgstr ""
 
@@ -365,7 +383,7 @@ msgstr ""
 msgid "T1 Cover page"
 msgstr ""
 
-msgid "T2 minutes"
+msgid "T2 Minutes"
 msgstr ""
 
 msgid "T3 Licence A certificate"
@@ -446,6 +464,9 @@ msgstr ""
 msgid "Tournament visibility successfully set"
 msgstr ""
 
+msgid "Trainee:"
+msgstr ""
+
 msgid "Unable to download tournament fees."
 msgstr ""
 
@@ -504,7 +525,7 @@ msgstr ""
 msgid "Variation"
 msgstr ""
 
-msgid "Writer"
+msgid "Writer:"
 msgstr ""
 
 msgid "You are not allowed to download fees."

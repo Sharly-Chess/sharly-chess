@@ -192,6 +192,7 @@ class SharlyChessEnvironment(Environment):
         self.install_gettext_callables(  # type: ignore
             gettext=gettext, ngettext=ngettext, newstyle=True
         )
+        self.add_extension('jinja2.ext.do')
 
     def join_path(self, template: str, parent: str) -> str:
         return str(Path(parent).parent / template)

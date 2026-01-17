@@ -179,4 +179,46 @@ class FFEWriterPrintOption(AccountPrintOption):
 
     @property
     def label(self) -> str:
-        return _('Writer')
+        return _('Writer:')
+
+
+class FFETraineePrintOption(AccountPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-trainee'
+
+    @property
+    def default_text(self) -> str:
+        return _('Select the trainee')
+
+    @property
+    def label(self) -> str:
+        return _('Trainee:')
+
+
+class FFEChiefArbiterPrintOption(AccountPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-chief-arbiter'
+
+    @property
+    def default_text(self) -> str:
+        return _('Select the chief arbiter')
+
+    @property
+    def label(self) -> str:
+        return _('Chief arbiter (if different):')
+
+
+class FFEArbiterPrintOption(AccountPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-arbiter'
+
+    @property
+    def default_text(self) -> str:
+        return _('Select the arbiter')
+
+    @property
+    def label(self) -> str:
+        return _('Arbiter:')

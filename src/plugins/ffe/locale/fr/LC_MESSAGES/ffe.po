@@ -20,6 +20,9 @@ msgstr "Tou·tes les joueur·euses sans licence A"
 msgid "All the player with no licence A or B"
 msgstr "Tou·tes les joueur·euses sans licence A ou B"
 
+msgid "Arbiter:"
+msgstr "Arbitre :"
+
 msgid "Arbitration compensation"
 msgstr "Indemnités d'arbitrage"
 
@@ -64,6 +67,9 @@ msgstr "Par défaut, les tournois ne sont pas visibles sur le site de la FFE."
 
 msgid "Cheating complaint"
 msgstr "Dépot de plainte pour suspicion de triche"
+
+msgid "Chief arbiter (if different):"
+msgstr "Arbitre en chef·fe (si différent·e) :"
 
 msgid "Choose at least one league."
 msgstr "Choisir au moins une ligue."
@@ -160,6 +166,9 @@ msgstr "Base de données FFE (locale)"
 
 msgid "FFE database (online)"
 msgstr "Base de données FFE (en ligne)"
+
+msgid "FFE forms"
+msgstr "Formulaires FFE"
 
 msgid "FFE licence A (competition)"
 msgstr "Licence FFE A (compétition)"
@@ -350,6 +359,15 @@ msgstr "Règlement mis en ligne"
 msgid "Scan to access the tournament on the FFE site."
 msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
 
+msgid "Select the arbiter"
+msgstr "Sélectionner l'arbitre"
+
+msgid "Select the chief arbiter"
+msgstr "Sélectionner l'arbitre en chef·fe"
+
+msgid "Select the trainee"
+msgstr "Sélectionner le·la stagiaire"
+
 msgid "Select the writer"
 msgstr "Sélectionner le·la rédacteur·ice"
 
@@ -365,7 +383,7 @@ msgstr "Statut"
 msgid "T1 Cover page"
 msgstr "T1 Page de garde"
 
-msgid "T2 minutes"
+msgid "T2 Minutes"
 msgstr "T2 Procès-verbal"
 
 msgid "T3 Licence A certificate"
@@ -446,6 +464,9 @@ msgstr "Le règlement du tournoi n’est pas défini"
 msgid "Tournament visibility successfully set"
 msgstr "Visibilité du tournoi définie avec succès"
 
+msgid "Trainee:"
+msgstr "Stagiaire :"
+
 msgid "Unable to download tournament fees."
 msgstr "Impossible de télécharger les droits d'homologation."
 
@@ -504,8 +525,8 @@ msgstr "Par défaut – {option}"
 msgid "Variation"
 msgstr "Variante"
 
-msgid "Writer"
-msgstr "Rédacteur·ice"
+msgid "Writer:"
+msgstr "Rédacteur·ice :"
 
 msgid "You are not allowed to download fees."
 msgstr "Vous n'êtes pas autorisé·e à télécharger les droits d'homologation."

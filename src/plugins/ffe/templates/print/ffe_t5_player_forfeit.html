@@ -13,25 +13,10 @@
                 <div class="item">
                     <label for="writer">Nom et prénom :</label>
                 </div>
-                {% if not writer %}
-                    {% set error = 'Aucun·e arbitre n\'a été déclaré·e.' %}
-                {% else %}
-                    {% if not account %}
-                        {% set error = 'Le·la première arbitre a été déclaré·e comme rédacteur·ice.' %}
-                    {% else %}
-                        {% set error = '' %}
-                    {% endif %}
-                {% endif %}
-                <div class="item {%if error %}error{% endif %}">
-                    <div class="error-info">{{ error }}</div>
+                {% set writer_error = 'Aucun·e arbitre rédacteur·ice n\'a été déclaré·e.' if not writer else '' %}
+                <div class="item {%if writer_error %}error{% endif %}">
+                    <div class="error-info">{{ writer_error }}</div>
                     <input id="writer" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
-                </div>
-                <div class="item">
-                    <label for="writer-phone">Tél :</label>
-                </div>
-                <div class="item error {% if not writer or not writer.phone %}error{% endif %}">
-                    <div class="error-info">TODO Add the phone number to accounts.</div>
-                    <input id="writer-phone" value="{%if writer %}{{ writer.address or '' }}{% endif %}" />
                 </div>
                 <div class="item">
                     <label for="writer-email">Mél :</label>
@@ -39,6 +24,13 @@
                 <div class="item error {% if not writer or not writer.email %}error{% endif %}">
                     <div class="error-info">TODO Add the email to accounts.</div>
                     <input id="writer-email" value="{%if writer %}{{ writer.email or '' }}{% endif %}" />
+                </div>
+                <div class="item">
+                    <label for="writer-phone">Tél :</label>
+                </div>
+                <div class="item {% if not writer or not writer.phone %}error{% endif %}">
+                    <div class="error-info">{{ writer_error or 'Le tél n\'a pas été saisi.' }}</div>
+                    <input id="writer-phone" value="{%if writer %}{{ writer.address or '' }}{% endif %}" />
                 </div>
                 <div class="item">
                     <label for="writer-address">Adresse postale :</label>

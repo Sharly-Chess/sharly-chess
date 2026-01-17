@@ -22,10 +22,7 @@ from utils.time_control import trf25_to_human_readable
 
 if TYPE_CHECKING:
     from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
-    from plugins.ffe.print_documents.ffe_options import (
-        FFENoLicencePlayersPrintOption,
-        FFEWriterPrintOption,
-    )
+    from plugins.ffe.print_documents.ffe_options import FFENoLicencePlayersPrintOption
 
 logger: logging.Logger = get_logger()
 
@@ -145,6 +142,8 @@ class FFEDocumentType(IdentifiableEntity, ABC):
 
     @cached_property
     def writer(self) -> Account | None:
+        from plugins.ffe.print_documents.ffe_options import FFEWriterPrintOption
+
         if account_id := self.ffe_document._get_option(FFEWriterPrintOption).value:
             return self.event.accounts_by_id[account_id]
         else:
@@ -213,11 +212,13 @@ class FFETrainingCertificateType(FFEDocumentType, ABC):
         from plugins.ffe.print_documents.ffe_options import (
             FFEDocumentTypePrintOption,
             FFEWriterPrintOption,
+            FFETraineePrintOption,
         )
 
         return [
             FFEDocumentTypePrintOption,
             FFEWriterPrintOption,
+            FFETraineePrintOption,
         ]
 
     @property
@@ -235,6 +236,15 @@ class FFETrainingCertificateType(FFEDocumentType, ABC):
     def training_title(self) -> str:
         """Returns the arbiter title for the training."""
 
+    @cached_property
+    def trainee(self) -> Account | None:
+        from plugins.ffe.print_documents.ffe_options import FFETraineePrintOption
+
+        if account_id := self.ffe_document._get_option(FFETraineePrintOption).value:
+            return self.event.accounts_by_id[account_id]
+        else:
+            return None
+
     def template_context(
         self,
         ffe_document: 'FFEPrintDocument',
@@ -244,6 +254,7 @@ class FFETrainingCertificateType(FFEDocumentType, ABC):
             'training_skills': self.training_skills,
             'training_levels': self.training_levels,
             'training_title': self.training_title,
+            'trainee': self.trainee,
         }
 
 
@@ -270,9 +281,9 @@ class FFETrainingCertificate1Type(FFETrainingCertificateType):
             'Vérifier la mise en place en début de ronde',
             'Présence',
             'Intervenir sur une partie',
-            'Se questionner/se concerter avec les autres arbitres.',
+            'Se questionner/se concerter avec les autres arbitres',
             'Connaissance générale de la Fédération et de la D.N.A.',
-            'Compétences organisationnelles.',
+            'Compétences organisationnelles',
         ]
 
     @property
@@ -308,7 +319,7 @@ class FFETrainingCertificate2Type(FFETrainingCertificateType):
             'Non évalué Relations avec l’organisateur',
             'Calcul des prix',
             'Système suisse et départages',
-            'Se questionner/se concerter avec les autres arbitres. ',
+            'Se questionner/se concerter avec les autres arbitres',
         ]
 
     @property
@@ -320,23 +331,12 @@ class FFETournamentsDocumentType(FFEDocumentType, ABC):
     @classmethod
     def get_valid_option_types(cls) -> list[type[PrintOption]]:
         from data.print_documents.options import TournamentsPrintOption
-        from plugins.ffe.print_documents.ffe_options import (
-            FFEDocumentTypePrintOption,
-            FFEWriterPrintOption,
-        )
+        from plugins.ffe.print_documents.ffe_options import FFEDocumentTypePrintOption
 
-        option_types: list[type[PrintOption]] = [
+        return [
             FFEDocumentTypePrintOption,
             TournamentsPrintOption,
         ]
-        if cls.use_writer():
-            option_types.append(FFEWriterPrintOption)
-        return option_types
-
-    @classmethod
-    def use_writer(cls) -> bool:
-        """Returns true if the writer option is used for the document."""
-        return False
 
     @cached_property
     def tournaments(self) -> list[Tournament]:
@@ -416,8 +416,27 @@ class FFET1Type(FFETournamentsDocumentType):
         return _('T1 Cover page')
 
     @classmethod
-    def use_writer(cls) -> bool:
-        return True
+    def get_valid_option_types(cls) -> list[type[PrintOption]]:
+        from plugins.ffe.print_documents.ffe_options import (
+            FFEWriterPrintOption,
+            FFEChiefArbiterPrintOption,
+        )
+
+        return FFETournamentsDocumentType.get_valid_option_types() + [
+            FFEWriterPrintOption,
+            FFEChiefArbiterPrintOption,
+        ]
+
+    @cached_property
+    def chief_arbiter(self) -> Account | None:
+        from plugins.ffe.print_documents.ffe_options import FFEChiefArbiterPrintOption
+
+        if account_id := self.ffe_document._get_option(
+            FFEChiefArbiterPrintOption
+        ).value:
+            return self.event.accounts_by_id[account_id]
+        else:
+            return None
 
     @property
     def tournaments_prizes_sharing_systems(self) -> str:
@@ -497,6 +516,7 @@ class FFET1Type(FFETournamentsDocumentType):
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
+            'chief_arbiter': self.chief_arbiter,
             'pairing': self.tournaments_pairing,
             'tie_breaks': self.tournaments_tie_breaks,
             'fide_player_count': self.tournaments_fide_players_count,
@@ -513,7 +533,7 @@ class FFET2Type(FFETournamentsDocumentType):
 
     @staticmethod
     def static_name() -> str:
-        return _('T2 minutes')
+        return _('T2 Minutes')
 
 
 class FFEArbiterCompensationType(FFETournamentsDocumentType):
@@ -524,6 +544,25 @@ class FFEArbiterCompensationType(FFETournamentsDocumentType):
     @staticmethod
     def static_name() -> str:
         return _('Arbitration compensation')
+
+    @classmethod
+    def get_valid_option_types(cls) -> list[type[PrintOption]]:
+        from plugins.ffe.print_documents.ffe_options import (
+            FFEArbiterPrintOption,
+        )
+
+        return FFETournamentsDocumentType.get_valid_option_types() + [
+            FFEArbiterPrintOption,
+        ]
+
+    @cached_property
+    def arbiter(self) -> Account | None:
+        from plugins.ffe.print_documents.ffe_options import FFEArbiterPrintOption
+
+        if account_id := self.ffe_document._get_option(FFEArbiterPrintOption).value:
+            return self.event.accounts_by_id[account_id]
+        else:
+            return None
 
 
 class FFETournamentDocumentType(FFEDocumentType, ABC):
@@ -558,6 +597,7 @@ class FFETournamentDocumentType(FFEDocumentType, ABC):
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
+            'tournament': self.tournament,
             'tournament_name': self.tournament_name,
             'tournament_date': self.tournament_date,
             'location': self.tournament.location,
@@ -684,7 +724,6 @@ class FFEPlayerDocumentType(FFETournamentDocumentType, ABC):
     def get_valid_option_types(cls) -> list[type[PrintOption]]:
         from data.print_documents.options import (
             TournamentPrintOption,
-            PlayerPrintOption,
         )
         from plugins.ffe.print_documents.ffe_options import (
             FFEDocumentTypePrintOption,
@@ -695,12 +734,18 @@ class FFEPlayerDocumentType(FFETournamentDocumentType, ABC):
             FFEDocumentTypePrintOption,
             FFEWriterPrintOption,
             TournamentPrintOption,
-            PlayerPrintOption,
+            cls.player_print_option(),
         ]
 
-    @cached_property
-    def player(self) -> TournamentPlayer:
-        return self.ffe_document.player
+    @staticmethod
+    @abstractmethod
+    def player_print_option() -> type[PrintOption]:
+        """Returns the player option to use."""
+
+    @property
+    @abstractmethod
+    def player(self) -> TournamentPlayer | None:
+        """Returns the selected player."""
 
     def template_context(
         self,
@@ -711,7 +756,31 @@ class FFEPlayerDocumentType(FFETournamentDocumentType, ABC):
         }
 
 
-class FFET5Type(FFEPlayerDocumentType):
+class FFEMandatoryPlayerDocumentType(FFEPlayerDocumentType, ABC):
+    @staticmethod
+    def player_print_option() -> type[PrintOption]:
+        from data.print_documents.options import MandatoryPlayerPrintOption
+
+        return MandatoryPlayerPrintOption
+
+    @property
+    def player(self) -> TournamentPlayer:
+        return self.ffe_document.mandatory_player
+
+
+class FFEOptionalPlayerDocumentType(FFEPlayerDocumentType, ABC):
+    @staticmethod
+    def player_print_option() -> type[PrintOption]:
+        from data.print_documents.options import OptionalPlayerPrintOption
+
+        return OptionalPlayerPrintOption
+
+    @property
+    def player(self) -> TournamentPlayer:
+        return self.ffe_document.optional_player
+
+
+class FFET5Type(FFEMandatoryPlayerDocumentType):
     @staticmethod
     def static_id() -> str:
         return 'ffe-t5-player-forfeit'
@@ -743,7 +812,7 @@ class FFET5Type(FFEPlayerDocumentType):
         }
 
 
-class FFET6Type(FFEPlayerDocumentType):
+class FFET6Type(FFEMandatoryPlayerDocumentType):
     @staticmethod
     def static_id() -> str:
         return 'ffe-t6-player-exclusion'
@@ -753,7 +822,7 @@ class FFET6Type(FFEPlayerDocumentType):
         return _('T6 Player exclusion')
 
 
-class FFET7Type(FFEPlayerDocumentType):
+class FFET7Type(FFEMandatoryPlayerDocumentType):
     @staticmethod
     def static_id() -> str:
         return 'ffe-t7-player-reporting'
@@ -763,7 +832,7 @@ class FFET7Type(FFEPlayerDocumentType):
         return _('T7 Player reporting')
 
 
-class FFECheatingType(FFEPlayerDocumentType):
+class FFECheatingType(FFEOptionalPlayerDocumentType):
     @staticmethod
     def static_id() -> str:
         return 'ffe-cheating'

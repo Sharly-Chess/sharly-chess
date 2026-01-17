@@ -8,52 +8,57 @@
             {{ training_title }}
         </h1>
         <div class="grid" style="grid-template-columns: 1fr 5fr 1fr 5fr; margin-top: 4em">
-            {% if not writer %}
-                {% set error = 'Aucun·e arbitre n\'a été déclaré·e.' %}
-            {% else %}
-                {% if not account %}
-                    {% set error = 'Le·la première arbitre a été déclaré·e comme rédacteur·ice.' %}
-                {% else %}
-                    {% set error = '' %}
-                {% endif %}
-            {% endif %}
+            {% set writer_error = 'Aucun·e arbitre rédacteur·ice n\'a été déclaré·e.' if not writer else '' %}
+            {% set trainee_error = 'Aucun·e arbitre stagiaire n\'a été déclaré·e.' if not trainee else '' %}
             <h2 class="item">Tuteur·ice</h2>
             <div class="item"></div>
             <h2 class="item">Stagiaire</h2>
             <div class="item"></div>
             <div class="item">
-                <label for="writer">Nom et prénom :</label>
+                <label for="writer-full-name">Nom et prénom :</label>
             </div>
-            <div class="item {%if error %}error{% endif %}">
-                <div class="error-info">{{ error }}</div>
-                <input id="writer" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
-            </div>
-            <div class="item">
-                <label for="arbiter-full-name">Nom et prénom :</label>
+            <div class="item {%if writer_error %}error{% endif %}">
+                <div class="error-info">{{ writer_error }}</div>
+                <input id="writer-full-name" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
             </div>
             <div class="item">
-                <input id="arbiter-full-name" value="" />
+                <label for="trainee-full-name">Nom et prénom :</label>
+            </div>
+            <div class="item {%if trainee_error %}error{% endif %}">
+                <div class="error-info">{{ trainee_error }}</div>
+                <input id="trainee-full-name" value="{%if trainee %}{{ trainee.last_name }} {{ trainee.first_name }}{% endif %}" />
             </div>
             <div class="item">
                 <label for="writer-ffe-licence-number">Numéro de licence :</label>
             </div>
-            <div class="item error {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
-                <div class="error-info">TODO Add arbiter FFE licence number (as a FFE plugin data).</div>
-                <input id="writer-ffe-licence-number" value="{%if writer and writer.plugin_data %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
+            <div class="item {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
+                <div class="error-info">{{ writer_error or 'Le numéro de licence FFE n\'a pas été saisi.' }}</div>
+                <input id="writer-ffe-licence-number" value="{%if writer and writer.plugin_data and writer.plugin_data.ffe %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
             </div>
             <div class="item">
-                <label for="arbiter-ffe-licence-number">Numéro de licence :</label>
+                <label for="trainee-ffe-licence-number">Numéro de licence :</label>
             </div>
-            <div class="item">
-                <input id="arbiter-ffe-licence-number" value=""/>
+            <div class="item {% if not trainee or not trainee.plugin_data or not trainee.plugin_data.ffe or not trainee.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
+                <div class="error-info">{{ trainee_error or 'Le numéro de licence FFE n\'a pas été saisi.' }}</div>
+                <input id="trainee-ffe-licence-number" value="{%if trainee and trainee.plugin_data and trainee.plugin_data.ffe %}{{ trainee.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
             </div>
             <div class="item"></div>
             <div class="item"></div>
             <div class="item">
-                <label for="arbiter-email-phone">Mél ou tél :</label>
+                <label for="trainee-email">Mél :</label>
             </div>
+            <div class="item {% if not trainee or not trainee.email %}error{% endif %}">
+                <div class="error-info">{{ trainee_error or 'Le mél n\'a pas été saisi.' }}</div>
+                <input id="trainee-email" value="{%if trainee %}{{ trainee.email or '' }}{% endif %}"/>
+            </div>
+            <div class="item"></div>
+            <div class="item"></div>
             <div class="item">
-                <input id="arbiter-email-phone" value=""/>
+                <label for="trainee-phone">Tél :</label>
+            </div>
+            <div class="item {% if not trainee or not trainee.phone %}error{% endif %}">
+                <div class="error-info">{{ trainee_error or 'Le tél n\'a pas été saisi.' }}</div>
+                <input id="trainee-phone" value="{%if trainee %}{{ trainee.phone or '' }}{% endif %}"/>
             </div>
         </div>
         <div class="grid" style="grid-template-columns: 1fr 5fr 1fr 2fr;">

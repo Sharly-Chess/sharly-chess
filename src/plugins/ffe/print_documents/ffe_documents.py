@@ -1,5 +1,6 @@
 from typing import Any
 
+from common.i18n import _
 from data.print_documents import PrintOption
 from data.print_documents.documents import (
     PrintDocument,
@@ -7,7 +8,8 @@ from data.print_documents.documents import (
 from data.print_documents.options import (
     TournamentsPrintOption,
     TournamentPrintOption,
-    PlayerPrintOption,
+    MandatoryPlayerPrintOption,
+    OptionalPlayerPrintOption,
 )
 from plugins.ffe.print_documents.ffe_managers import FFEDocumentTypeManager
 from plugins.ffe.print_documents.ffe_options import (
@@ -15,6 +17,9 @@ from plugins.ffe.print_documents.ffe_options import (
     FFET3NoLicencePlayersPrintOption,
     FFET4NoLicencePlayersPrintOption,
     FFEWriterPrintOption,
+    FFETraineePrintOption,
+    FFEChiefArbiterPrintOption,
+    FFEArbiterPrintOption,
 )
 from plugins.ffe.print_documents.ffe_types import FFEDocumentType
 
@@ -26,7 +31,7 @@ class FFEPrintDocument(PrintDocument):
 
     @staticmethod
     def static_name() -> str:
-        return 'Formulaires FFE'
+        return _('FFE forms')
 
     @property
     def title(self) -> str:
@@ -51,7 +56,11 @@ class FFEPrintDocument(PrintDocument):
             TournamentPrintOption,
             FFET3NoLicencePlayersPrintOption,
             FFET4NoLicencePlayersPrintOption,
-            PlayerPrintOption,
+            MandatoryPlayerPrintOption,
+            OptionalPlayerPrintOption,
+            FFETraineePrintOption,
+            FFEChiefArbiterPrintOption,
+            FFEArbiterPrintOption,
         ]
 
     def validate_options(self):
