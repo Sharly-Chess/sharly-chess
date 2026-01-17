@@ -338,6 +338,10 @@ class StoredAccount:
         default_factory=list[StoredPermission]
     )
     stored_roles: list[StoredRole] = field(default_factory=list[StoredRole])
+    # Plugins can add their own tournament data
+    plugin_data: dict[str, dict[str, Any]] = field(
+        default_factory=dict[str, dict[str, Any]]
+    )
 
 
 @dataclass
