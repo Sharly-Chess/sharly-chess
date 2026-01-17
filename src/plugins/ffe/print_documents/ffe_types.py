@@ -776,7 +776,7 @@ class FFEOptionalPlayerDocumentType(FFEPlayerDocumentType, ABC):
         return OptionalPlayerPrintOption
 
     @property
-    def player(self) -> TournamentPlayer:
+    def player(self) -> TournamentPlayer | None:
         return self.ffe_document.optional_player
 
 
