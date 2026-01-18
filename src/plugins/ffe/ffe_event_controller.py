@@ -21,7 +21,6 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
-from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, TournamentActionGuard
@@ -55,33 +54,6 @@ class FfeAdminEventController(BaseEventAdminController):
     def _allowed_tournaments(web_context: BaseEventAdminWebContext) -> list[Tournament]:
         return web_context.client.allowed_tournaments_for_action(
             AuthAction.PUBLISH_RESULTS
-        )
-
-    @get(
-        path='/ffe/event/{event_uniq_id:str}/players',
-        name='ffe-admin-event-players-tab',
-        guards=[EventGuard(), ActionGuard(AuthAction.VIEW_PLAYERS_TAB)],
-    )
-    async def htmx_ffe_event_tab(
-        self,
-        request: HTMXRequest,
-        admin_players_filter_leagues: list[str] | None = None,
-        admin_players_filter_licences: list[int] | None = None,
-    ) -> Template:
-        if admin_players_filter_leagues is not None:
-            SessionPlayersFilterFFELeague(request).set(
-                [league for league in admin_players_filter_leagues if league != '*']
-            )
-        elif admin_players_filter_licences is not None:
-            SessionPlayersFilterFFELicence(request).set(
-                [
-                    PlayerFFELicence(query_param)
-                    for query_param in admin_players_filter_licences
-                    if query_param >= 0  # -1 must be ignored
-                ]
-            )
-        return PlayerAdminController._admin_event_players_render(
-            request, reload_event=True
         )
 
     @post(
