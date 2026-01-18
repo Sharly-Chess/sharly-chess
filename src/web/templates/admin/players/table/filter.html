@@ -1,0 +1,69 @@
+{% set is_active = column.has_active_filter_value %}
+<form
+    id="column-{{ column.id }}-filter"
+    class="d-inline-block ps-1"
+    hx-get="{{ url_for(
+        'admin-event-players-set-filter',
+        event_uniq_id=admin_event.uniq_id,
+        column_id=column.id,
+    ) }}"
+    hx-target="#players-table"
+    hx-indicator="#please-wait"
+>
+    <span class="dropdown-center">
+        <button
+            id="column-{{ column.id }}-filter-dropdown-button"
+            class="btn text-dark m-0 p-0"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            data-bs-auto-close="outside"
+        >
+            <i class="bi-funnel {% if is_active %}text-danger{% endif %}"></i>
+        </button>
+        <ul
+            id="column-{{ column.id }}-filter-dropdown"
+            class="dropdown-menu table-dropdown-menu p-0"
+        >
+            {% set name = 'filters' %}
+            {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
+            <input type="hidden" name="{{ name }}" value="" checked />
+            <li class="dropdown-item title text-nowrap">
+                <input
+                    type="checkbox"
+                    {% if column.all_filter_value_active %}checked{% endif %}
+                    onclick="$('input.filter-{{ column.id }}').prop('checked', this.checked)"
+                />
+                <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
+                    <i class="bi-check-lg pe-1"></i>
+                    {{ _('OK') }}
+                </button>
+            </li>
+            <li class="dropdown-divider m-0"></li>
+            {% for filter_value in column.filter_values %}
+                {% set tooltip = column.get_filter_row_tooltip(filter_value.value) %}
+                <li
+                    class="dropdown-item d-flex align-items-center gap-2"
+                    {% if tooltip %}{{ macros.tooltip_attributes('', tooltip, 'right') }}{% endif %}
+                >
+                    <input
+                        type="checkbox"
+                        id="{{ column.id }}-{{ loop.index }}"
+                        name="{{ name }}"
+                        value="{{ filter_value.key }}"
+                        {% if filter_value.is_active %}checked{% endif %}
+                        class="filter-{{ column.id }}"
+                    />
+                    <label for="{{ column.id }}-{{ loop.index }}" class="form-label w-100 my-0">
+                        {% if column.filter_row_template %}
+                            {% include column.filter_row_template %}
+                        {% else %}
+                            {{ column.get_filter_row_content(filter_value.value) }}
+                        {% endif %}
+                        ({{ filter_value.count }})
+                    </label>
+                </li>
+            {% endfor %}
+        </ul>
+    </span>
+</form>

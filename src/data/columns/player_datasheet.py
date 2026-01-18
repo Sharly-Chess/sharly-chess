@@ -97,7 +97,7 @@ class TournamentColumn(DatasheetColumn):
         return 'tournament'
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.single_tournament_player.tournament.name
+        return player.single_tournament.name
 
 
 class FederationColumn(DatasheetColumn):

@@ -8,7 +8,7 @@
 >
     <tr>
         <th>{{ _('Board (%(remaining)d)', remaining=admin_tournament.boards_without_result(admin_round)|length) }}</th>
-        <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
+        <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
         {% if admin_tournament.print_real_points(admin_round) %}
             <th>&nbsp;</th>
         {% endif %}
@@ -18,6 +18,6 @@
         {% if admin_tournament.print_real_points(admin_round) %}
             <th>&nbsp;</th>
         {% endif %}
-        <th>{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
+        <th>{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
     </tr>
 </thead>
