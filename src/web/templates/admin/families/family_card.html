@@ -129,7 +129,7 @@
                         ) }}
                     {% elif family.type in ['boards', 'input', 'players', ] %}
                         {% if screen_set.first_tournament_player_by_name %}
-                            {{ _('Players from %(first)s to %(last)s', first=screen_set.first_tournament_player_by_name.last_name[:8], last=screen_set.first_tournament_player_by_name.last_name[:8]) }}
+                            {{ _('Players from %(first)s to %(last)s', first=screen_set.first_tournament_player_by_name.last_name[:8], last=screen_set.last_tournament_player_by_name.last_name[:8]) }}
                         {% else %}
                             {{ _('Players (none now)') }}
                         {% endif %}
