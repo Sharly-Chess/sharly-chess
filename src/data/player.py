@@ -179,15 +179,16 @@ class Player:
         return self.stored_player.check_in
 
     @cached_property
-    def single_tournament(self) -> 'Tournament':
+    def single_tournament_id(self) -> int:
         """The tournament this player is assigned to (for single tournament events)"""
-        tournaments = self.event.tournaments_by_id
-        for tournament in tournaments.values():
-            for tournament_player in tournament.tournament_players:
-                if tournament_player.id == self.id:
-                    return tournament
-
+        for tournament in self.event.tournaments:
+            if self.id in tournament.tournament_players_by_id:
+                return tournament.id
         raise RuntimeError('Player not assigned to a tournament')
+
+    @property
+    def single_tournament(self) -> 'Tournament':
+        return self.event.tournaments_by_id[self.single_tournament_id]
 
     @property
     def single_tournament_player(self) -> 'TournamentPlayer':
@@ -303,7 +304,6 @@ class TournamentPlayer(Player):
         self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
         self.stored_tournament_player = stored_tournament_player
 
-        self.pairings_by_round = self._get_pairings_by_round()
         self.points: float | None = None
         self.vpoints: float | None = None
         self.board_id: int | None = None
@@ -343,7 +343,8 @@ class TournamentPlayer(Player):
             exists=False,
         )
 
-    def _get_pairings_by_round(self) -> dict[int, Pairing]:
+    @cached_property
+    def pairings_by_round(self) -> dict[int, Pairing]:
         known_pairings: dict[int, Pairing] = {}
         for stored_pairing in self.stored_tournament_player.stored_pairings:
             pairing = Pairing(self, stored_pairing)

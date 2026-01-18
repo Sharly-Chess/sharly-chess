@@ -56,7 +56,6 @@ class Event:
 
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
-        self.plugin_data = self._get_plugin_data()
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
@@ -384,7 +383,8 @@ class Event:
             if tournament.can_add_players
         ]
 
-    def _get_plugin_data(self) -> dict[str, PluginData]:
+    @cached_property
+    def plugin_data(self) -> dict[str, PluginData]:
         return {
             plugin_id: plugin_data_class.from_stored_value(
                 self.stored_event.plugin_data.get(plugin_id, {})
@@ -515,7 +515,7 @@ class Event:
             )
             database.delete_stored_tournament_player(source_tournament.id, player.id)
             del source_tournament.tournament_players_by_id[player.id]
-        player.single_tournament = destination_tournament
+        player.single_tournament_id = destination_tournament.id
         self.clear_player_cache()
 
     @cached_property
