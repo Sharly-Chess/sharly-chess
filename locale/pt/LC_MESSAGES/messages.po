@@ -937,8 +937,8 @@ msgid "Base date"
 msgstr "Data base"
 
 #, fuzzy
-msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
-msgstr "Bd."
+msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
+msgstr "Td."
 
 #, ai_translation
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
@@ -989,7 +989,7 @@ msgid "Blitz"
 msgstr "Blitz"
 
 #, fuzzy
-msgid "Blitz *** BLITZ ELO FOR TABLE HEADER"
+msgid "Blitz *** BLITZ ELO COLUMN HEADER"
 msgstr "Blitz"
 
 #, ai_translation
@@ -1219,12 +1219,8 @@ msgid "Cash"
 msgstr "Dinheiro em dinheiro"
 
 #, fuzzy
-msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
-msgstr "Cat"
-
-#, fuzzy
-msgid "Cat *** CATEGORY FOR TABLE HEADER"
-msgstr "Cat"
+msgid "Cat. *** CATEGORY COLUMN HEADER"
+msgstr "Cat."
 
 #, ai_translation
 msgid "Categories"
@@ -1240,10 +1236,6 @@ msgstr "As categorias são por padrão com base na data de início de cada torne
 
 #, ai_translation
 msgid "Category"
-msgstr "Categoria"
-
-#, fuzzy
-msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
 msgstr "Categoria"
 
 #, ai_translation, python-format
@@ -1286,10 +1278,6 @@ msgstr "Marque a caixa para permitir que outras telas exibam um link para esta t
 msgid "Check-in"
 msgstr "Check-in"
 
-#, fuzzy
-msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
-msgstr "Check-in"
-
 #, ai_translation
 msgid "Check-in / Results ({num})"
 msgstr "Check-in / Resultados ({num})"
@@ -1305,10 +1293,6 @@ msgstr "Entrada / Entrada nos resultados ({tournament_name})"
 #, ai_translation
 msgid "Check-in closed"
 msgstr "Check-in fechado"
-
-#, ai_translation, python-format
-msgid "Check-in is closed for tournament [%(tournament)s]."
-msgstr "O check-in está fechado para o torneio [%(tournament)s]."
 
 #, ai_translation
 msgid "Check-in is closed for tournament [{tournament}]."
@@ -1450,16 +1434,8 @@ msgstr "Fechar check-in para o torneio [%(tournament)s]."
 msgid "Club"
 msgstr "Clube"
 
-#, ai_translation
-msgid "Club *** CLUB COLUMN HEADER FOR PLAYERS"
-msgstr "Clube"
-
-#, ai_translation
-msgid "Club *** CLUB FOR PLAYERS COLUMNS"
-msgstr "Clube"
-
-#, ai_translation
-msgid "Club *** CLUB FOR TABLE HEADER"
+#, fuzzy
+msgid "Club *** CLUB COLUMN HEADER"
 msgstr "Clube"
 
 #, ai_translation
@@ -1527,15 +1503,15 @@ msgid "Comma-separated board numbers; if this field is set, other fields are omi
 msgstr "Números de placa separados por vírgulas; se este campo for definido, outros campos serão omitidos."
 
 #, ai_translation
-msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
+msgid "Comment"
 msgstr "Comentário"
 
 #, ai_translation
 msgid "Comment:"
 msgstr "Comentário:"
 
-#, ai_translation
-msgid "Comments *** COMMENTS FOR TABLE HEADER"
+#, fuzzy
+msgid "Comments *** COMMENTS COLUMN HEADER"
 msgstr "Comentários"
 
 #, ai_translation
@@ -1910,6 +1886,10 @@ msgstr "DD/MM/ AAAA"
 msgid "DMG does not contain exactly one folder as expected."
 msgstr "DMG não contém exatamente uma pasta como esperado."
 
+#, fuzzy
+msgid "DOB *** DATE-OF-BIRTH COLUMN HEADER"
+msgstr "DdN"
+
 #, ai_translation
 msgid "DOUBLE"
 msgstr "DUPLO"
@@ -1949,6 +1929,10 @@ msgstr "Data e hora"
 #, ai_translation
 msgid "Date format"
 msgstr "Formato da data"
+
+#, ai_translation
+msgid "Date of birth"
+msgstr "Data de nascimento"
 
 #, ai_translation
 msgid "Date of birth:"
@@ -2217,6 +2201,10 @@ msgstr "Não edite esta tabela manualmente, use o script {script_name} em vez di
 #, ai_translation
 msgid "Do not recover"
 msgstr "Não recuperar"
+
+#, ai_translation
+msgid "Do not use this order as ranking."
+msgstr "Não use esta ordem como ranking."
 
 #, ai_translation
 msgid "Do nothing (players will be eligible for pairing)"
@@ -2618,13 +2606,15 @@ msgstr "Egito"
 msgid "El Salvador"
 msgstr "El Salvador"
 
-#, ai_translation
-msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
+msgid "Elo *** ELO RATING"
+msgstr "Elo"
+
+msgid "Elo *** STD ELO COLUMN HEADER"
 msgstr "Elo"
 
 #, ai_translation
-msgid "Elo *** STD ELO FOR TABLE HEADER"
-msgstr "Elo"
+msgid "Email address"
+msgstr "Endereço de e-mail"
 
 #, ai_translation
 msgid "Email:"
@@ -2774,20 +2764,8 @@ msgstr "F"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
-#, fuzzy
-msgid "FFE *** FFE FOR PLAYERS COLUMNS"
-msgstr "FFE"
-
 #, ai_translation
 msgid "FIDE"
-msgstr "FIDE"
-
-#, fuzzy
-msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
-msgstr "FIDE"
-
-#, fuzzy
-msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
 msgstr "FIDE"
 
 #, fuzzy
@@ -2874,21 +2852,12 @@ msgstr "Fev"
 msgid "February"
 msgstr "Fevereiro"
 
-#, fuzzy
-msgid "Fed *** FEDERATION FOR TABLE HEADER"
-msgstr "Fed"
-
-#, fuzzy
-msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
+msgid "Fed. *** FEDERATION COLUMN HEADER"
 msgstr "Fed."
 
 #, ai_translation
 msgid "Federation"
 msgstr "Federação"
-
-#, fuzzy
-msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
-msgstr "Federation"
 
 #, ai_translation
 msgid "Federation plugins"
@@ -2939,30 +2908,6 @@ msgid "Filter out players with a lower rating."
 msgstr "Filtre os jogadores com uma classificação mais baixa."
 
 #, ai_translation
-msgid "Filter the categories."
-msgstr "Filtre as categorias."
-
-#, ai_translation
-msgid "Filter the check-in status."
-msgstr "Filtre o status do check-in."
-
-#, ai_translation
-msgid "Filter the clubs."
-msgstr "Filtre os clubes."
-
-#, ai_translation
-msgid "Filter the federations."
-msgstr "Filtre as federações."
-
-#, ai_translation
-msgid "Filter the genders."
-msgstr "Filtre os gêneros."
-
-#, ai_translation
-msgid "Filter the tournaments."
-msgstr "Filtre os torneios."
-
-#, ai_translation
 msgid "Finland"
 msgstr "Finlândia"
 
@@ -2998,8 +2943,8 @@ msgstr "Primeiro jogador:"
 msgid "First round"
 msgstr "Primeira ronda"
 
-#, ai_translation
-msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
+#, fuzzy
+msgid "Fixed board"
 msgstr "Placa fixa"
 
 #, ai_translation
@@ -3103,8 +3048,8 @@ msgid "Games won with Black"
 msgstr "Jogos vencidos com Black"
 
 #, fuzzy
-msgid "Gen *** GENDER FOR TABLE HEADER"
-msgstr "Gên"
+msgid "Gen. *** GENDER COLUMN HEADER"
+msgstr "Gên."
 
 #, ai_translation
 msgid "Gender"
@@ -3113,10 +3058,6 @@ msgstr "Gênero"
 #, ai_translation
 msgid "Gender ({gender})"
 msgstr "Gênero ({gender})"
-
-#, fuzzy
-msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
-msgstr "Genêro"
 
 #, ai_translation
 msgid "Gender:"
@@ -3832,10 +3773,6 @@ msgstr "Macau, China"
 msgid "Madagascar"
 msgstr "Madagáscar"
 
-#, fuzzy
-msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
-msgstr "Mail"
-
 #, ai_translation, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "Mail: %(mail)s (clique para copiar para a área de transferência)."
@@ -4123,15 +4060,7 @@ msgid "Name"
 msgstr "Nome"
 
 #, fuzzy
-msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
-msgstr "Nome"
-
-#, fuzzy
-msgid "Name *** NAME FOR PLAYERS COLUMNS"
-msgstr "Nome"
-
-#, fuzzy
-msgid "Name *** NAME FOR TABLE HEADER"
+msgid "Name *** NAME COLUMN HEADER"
 msgstr "Nome"
 
 #, ai_translation
@@ -4245,6 +4174,10 @@ msgstr "Novo torneio"
 #, ai_translation
 msgid "Next round"
 msgstr "Próxima ronda"
+
+#, ai_translation
+msgid "Next round bye"
+msgstr "Próxima rodada bye"
 
 #, ai_translation
 msgid "Next tournament"
@@ -4506,9 +4439,9 @@ msgstr "Não há eventos futuros."
 msgid "No updates found."
 msgstr "Nenhuma atualização encontrada."
 
-#, ai_translation
-msgid "No. *** NB FOR TABLE HEADER"
-msgstr "Núm"
+#, fuzzy
+msgid "No. *** NB COLUMN HEADER"
+msgstr "No."
 
 #, ai_translation
 msgid "No. final rounds without byes:"
@@ -4811,12 +4744,8 @@ msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
 msgstr "Sobrescreva o resultado do emparelhamento ao usar os atalhos do teclado."
 
 #, fuzzy
-msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
-msgstr "Dev."
-
-#, fuzzy
-msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
-msgstr "Dev./peg."
+msgid "Owed *** OWED COLUMN HEADER"
+msgstr "Owed"
 
 #, ai_translation
 msgid "Owed:"
@@ -4847,8 +4776,8 @@ msgid "PLAYER'S NAME"
 msgstr "NO NOME DO JOGADOR"
 
 #, fuzzy
-msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
-msgstr "Pago"
+msgid "Paid *** PAID COLUMN HEADER"
+msgstr "Paid"
 
 #, ai_translation
 msgid "Paid:"
@@ -5070,9 +4999,13 @@ msgstr "Peru"
 msgid "Philippines"
 msgstr "Filipinas"
 
-#, fuzzy
-msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
-msgstr "Tel."
+#, ai_translation
+msgid "Phone"
+msgstr "Telefone"
+
+#, ai_translation
+msgid "Phone number"
+msgstr "Número de telefone"
 
 #, ai_translation
 msgid "Phone number:"
@@ -5399,8 +5332,8 @@ msgid "Printing"
 msgstr "Impressão"
 
 #, fuzzy
-msgid "Prize *** PRIZE FOR TABLE HEADER"
-msgstr "Prêmio"
+msgid "Prize *** PRIZE COLUMN HEADER"
+msgstr "Prize"
 
 #, ai_translation
 msgid "Prize Brackets"
@@ -5499,7 +5432,7 @@ msgid "Proxy (if any):"
 msgstr "Proxy (se houver):"
 
 #, fuzzy
-msgid "Pts *** POINTS FOR TABLE HEADER"
+msgid "Pts *** POINTS COLUMN HEADER"
 msgstr "Pts"
 
 #, ai_translation
@@ -5551,11 +5484,11 @@ msgid "Qatar"
 msgstr "Qatar"
 
 #, fuzzy, python-format
-msgid "R %(round)d *** ROUND FOR TABLE HEADER"
+msgid "R %(round)d *** ROUND COLUMN HEADER"
 msgstr "R %(round)d"
 
 #, fuzzy
-msgid "R {round} *** ROUND FOR TABLE HEADER"
+msgid "R {round} *** ROUND COLUMN HEADER"
 msgstr "R {round}"
 
 #, ai_translation
@@ -5627,7 +5560,7 @@ msgid "Rapid"
 msgstr "Rapid Rapid"
 
 #, fuzzy
-msgid "Rapid *** RAPID ELO FOR TABLE HEADER"
+msgid "Rapid *** RAPID ELO COLUMN HEADER"
 msgstr "Rapid"
 
 #, ai_translation
@@ -5641,10 +5574,6 @@ msgstr "Rápido:"
 #, ai_translation
 msgid "Rating"
 msgstr "Classificação"
-
-#, fuzzy
-msgid "Rating *** RATING FOR PLAYERS COLUMNS"
-msgstr "Rating"
 
 #, ai_translation
 msgid "Rating change"
@@ -5681,10 +5610,6 @@ msgstr "Tie-breaks recomendados para um torneio [%(pairing_system)s]:"
 #, ai_translation
 msgid "Record"
 msgstr "Gravar"
-
-#, fuzzy
-msgid "Record *** RECORD FOR PLAYERS COLUMNS"
-msgstr "Record"
 
 #, ai_translation
 msgid "Reference to unknown board [{board_id}]."
@@ -5759,8 +5684,8 @@ msgid "Required by plugin <b>%(plugin)s</b>."
 msgstr "Necessário pelo plugin <b>%(plugin)s</b>."
 
 #, ai_translation
-msgid "Res. ** RESULT FOR TABLE HEADER"
-msgstr "Res. ** RESULT RESULTADO PARA CABELO DE TABELA"
+msgid "Res. ** RESULT COLUMN HEADER"
+msgstr "Res. ** RESULT RESULT RESULTADO CABEA DE COLUMNO"
 
 #, ai_translation
 msgid "Reset manual tie-break"
@@ -5827,11 +5752,11 @@ msgid "Return to tournament"
 msgstr "Voltar ao torneio"
 
 #, fuzzy
-msgid "Rk. *** RANK FOR TABLE HEADER"
+msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Rk."
 
 #, fuzzy
-msgid "Rk. O. *** RANK OVERALL FOR TABLE HEADER"
+msgid "Rk. O. *** RANK OVERALL COLUMN HEADER"
 msgstr "Rk. O."
 
 #, ai_translation
@@ -6118,9 +6043,13 @@ msgstr "Telas: %(num)d"
 msgid "Scroll down to review all the norms…"
 msgstr "Para rever todas as normas..."
 
-#, ai_translation
-msgid "Search"
-msgstr "Pesquisar"
+#, fuzzy
+msgid "Search *** PLACEHOLDER"
+msgstr "Search"
+
+#, fuzzy
+msgid "Search *** SECTION TITLE"
+msgstr "Search"
 
 #, ai_translation, python-format
 msgid "Search by: %(fields)s"
@@ -6753,10 +6682,6 @@ msgid "The lowest rating that a player should have for their expected score to b
 msgstr "A classificação mais baixa que um jogador deve ter para que sua pontuação esperada seja maior ou igual à sua pontuação."
 
 #, ai_translation
-msgid "The mail addresses."
-msgstr "Os endereços de correio."
-
-#, ai_translation
 msgid "The main category is open to all the players."
 msgstr "A categoria principal está aberta a todos os jogadores."
 
@@ -6887,10 +6812,6 @@ msgstr "O número do par já foi atribuído."
 #, ai_translation
 msgid "The permissions of this account can not be updated."
 msgstr "As permissões desta conta não podem ser atualizadas."
-
-#, ai_translation
-msgid "The phone numbers."
-msgstr "Os números de telefone."
 
 #, ai_translation
 msgid "The player did not win any games against FIDE rated opponents."
@@ -7349,10 +7270,6 @@ msgid "Tournament"
 msgstr "Torneio"
 
 #, ai_translation
-msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
-msgstr "Torneio"
-
-#, ai_translation
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Torneio"
 
@@ -7383,10 +7300,6 @@ msgstr "O torneio [{tournament}] foi excluído."
 #, ai_translation
 msgid "Tournament [{tournament}] has been updated."
 msgstr "O torneio [{tournament}] foi atualizado."
-
-#, ai_translation
-msgid "Tournament [{tournament}] is finished, you can not add players any longer."
-msgstr "Torneio [{tournament}] está terminado, você não pode adicionar jogadores por mais tempo."
 
 #, ai_translation
 msgid "Tournament [{tournament}] successfully imported."
@@ -8028,10 +7941,6 @@ msgstr "Extensão errada do ficheiro [{ext}] ([pdf] esperado)."
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "S"
 
-#, fuzzy
-msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
-msgstr "ADN"
-
 #, ai_translation
 msgid "YYYY or {date_format}"
 msgstr "AAA ou {date_format}"
@@ -8043,10 +7952,6 @@ msgstr "YY-MM-DD"
 #, ai_translation
 msgid "YYYY/MM/DD"
 msgstr "AAA/MM/DD"
-
-#, ai_translation
-msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
-msgstr "Ano de nascimento"
 
 #, ai_translation
 msgid "Yemen"
@@ -8579,7 +8484,4 @@ msgstr "½ - 0 (U)"
 #, ai_translation
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (U)"
-
-#~ msgid "At least %(min)d games must be played."
-#~ msgstr "Pelo menos %(min)d jogos devem ser jogados."
 

@@ -51,10 +51,6 @@ msgid "Exclude: {values}"
 msgstr "Exclui: {values}"
 
 #, ai_translation
-msgid "Filter the schools."
-msgstr "Filtre as escolas."
-
-#, ai_translation
 msgid "French School Competitions"
 msgstr "Competições Escolares Francesas"
 
@@ -94,10 +90,6 @@ msgstr "Meninas desaparecidas: %(count)d"
 msgid "Name"
 msgstr "Nome"
 
-#, ai_translation
-msgid "OK"
-msgstr "OK"
-
 #, ai_translation, python-format
 msgid "Other missing players: %(count)d"
 msgstr "Outros jogadores desaparecidos: %(count)d"
@@ -122,8 +114,8 @@ msgid "School"
 msgstr "Escola"
 
 #, fuzzy
-msgid "School *** SCHOOL FOR TABLE HEADER"
-msgstr "School"
+msgid "School *** SCHOOL COLUMN HEADER"
+msgstr "Escola"
 
 #, ai_translation
 msgid "Schools"
@@ -132,10 +124,6 @@ msgstr "Escolas"
 #, ai_translation, python-format
 msgid "Search by: %(fields)s"
 msgstr "Procurar por: %(fields)s"
-
-#, ai_translation
-msgid "Sort the players by school."
-msgstr "Organize os jogadores por escola."
 
 #, ai_translation, python-format
 msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
