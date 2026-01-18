@@ -2311,6 +2311,8 @@ class EventDatabase(MigrationDatabase):
             last_name=row['last_name'],
             fide_id=row['fide_id'],
             password_hash=row['password_hash'],
+            mail=row['mail'],
+            phone=row['phone'],
             plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
         )
 
@@ -2342,7 +2344,15 @@ class EventDatabase(MigrationDatabase):
     def add_stored_account(self, stored_account: StoredAccount) -> int:
         fields = self._get_fields_dict(
             stored_account,
-            ['active', 'first_name', 'last_name', 'fide_id', 'password_hash'],
+            [
+                'active',
+                'first_name',
+                'last_name',
+                'fide_id',
+                'password_hash',
+                'mail',
+                'phone',
+            ],
         ) | {
             'plugin_data': self.dump_to_json_database_field(
                 stored_account.plugin_data, {}
@@ -2364,7 +2374,15 @@ class EventDatabase(MigrationDatabase):
     def update_stored_account(self, stored_account: StoredAccount) -> StoredAccount:
         fields = self._get_fields_dict(
             stored_account,
-            ['active', 'first_name', 'last_name', 'fide_id', 'password_hash'],
+            [
+                'active',
+                'first_name',
+                'last_name',
+                'fide_id',
+                'password_hash',
+                'mail',
+                'phone',
+            ],
         ) | {
             'plugin_data': self.dump_to_json_database_field(
                 stored_account.plugin_data, {}

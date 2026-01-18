@@ -405,3 +405,28 @@ class AppHookSpecs:
         self, player_filter_option_types: list[type['PlayerFilterOption']]
     ):
         """Provide the options of the added prize player filters."""
+
+    # ---------------------------------------------------------------------------------
+    # Accounts
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def get_account_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        """Get the data class to use to store plugin account values.
+        Also provide the ID of the plugin."""
+
+    @hookspec
+    def get_account_form_fields_template_and_data(self) -> tuple[str, dict[str, Any]]:
+        """Provide a path to the template containing additional account form fields"""
+
+    @hookspec
+    def validate_account_form_fields(
+        self,
+        data: dict[str, str],
+        errors: dict[str, str],
+    ):
+        """Validate the additional account form fields"""
+
+    @hookspec
+    def get_account_search_result_js_template(self) -> tuple[str, dict[str, Any]]:
+        """Provide a path to the template containing additional JS code run when players are selected on the account modal search."""

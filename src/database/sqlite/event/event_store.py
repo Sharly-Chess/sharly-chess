@@ -334,6 +334,8 @@ class StoredAccount:
     last_name: str | None
     fide_id: int | None
     password_hash: str | None
+    mail: str | None
+    phone: str | None
     stored_permissions: list[StoredPermission] = field(
         default_factory=list[StoredPermission]
     )

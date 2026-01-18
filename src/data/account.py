@@ -104,7 +104,7 @@ class Account:
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
         return {
             plugin_id: plugin_data_class
-            for plugin_id, plugin_data_class in plugin_manager.hook.get_tournament_plugin_data_class()
+            for plugin_id, plugin_data_class in plugin_manager.hook.get_account_plugin_data_class()
         }
 
     def _get_plugin_data(self) -> dict[str, PluginData]:
@@ -178,6 +178,16 @@ class Account:
 
     def update_password(self, new_hash: str):
         self.stored_account.password_hash = new_hash
+
+    @property
+    def mail(self) -> str | None:
+        """Returns the mail of the account."""
+        return self.stored_account.mail
+
+    @property
+    def phone(self) -> str | None:
+        """Returns the phone of the account."""
+        return self.stored_account.phone
 
     @property
     def roles(self) -> list[Role]:
@@ -310,6 +320,8 @@ class Account:
                 last_name=None,
                 fide_id=None,
                 password_hash=None,
+                mail=None,
+                phone=None,
                 stored_permissions=[
                     StoredPermission(
                         cls.ADMINISTRATOR_ID, AdministrationAccessLevel.static_id()
@@ -329,6 +341,8 @@ class Account:
                 last_name=None,
                 fide_id=None,
                 password_hash=None,
+                mail=None,
+                phone=None,
                 stored_permissions=[
                     StoredPermission(cls.ANONYMOUS_ID, CheckInAccessLevel.static_id()),
                     StoredPermission(

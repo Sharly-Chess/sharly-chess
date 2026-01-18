@@ -38,7 +38,7 @@
                     {{ _('Staff information') }}
                 </h4>
 
-                {% with results_template='admin/accounts/account_search_results.html' %}
+                {% with results_template='admin/accounts/account_search_results.html', result_js_template_hook_name='get_account_search_result_js_template' %}
                     {% include '/admin/common/player_search.html' %}
                 {% endwith %}
 
@@ -60,6 +60,21 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6">
+                        {{ admin_macros.text_input(
+                            name='mail',
+                            label=_('Email:'),
+                            placeholder=_('E.g.: john.doe@chess.com'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.text_input(
+                            name='phone',
+                            label=_('Phone number:'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='fide_id',
                             label=_('FIDE ID:'),
@@ -70,6 +85,9 @@
                         ) }}
                     </div>
                 </div>
+                {% for form_fields_template in plugin_form_fields_templates %}
+                    {% include form_fields_template %}
+                {% endfor %}
 
                 <h4>
                     {{ _('Staff member roles') }}
@@ -158,15 +176,3 @@
         </div>
     </div>
 </div>
-<script>
-    function selectPlayer(last_name, first_name, fide_id) {
-        $('#last-name').val(last_name);
-        $('#first-name').val(first_name ?? '')
-        if (fide_id) {
-            $('#fide-id-hidden').val(fide_id);
-            $('#fide-id.form-control').val(fide_id);
-        }
-
-        $('#search-results').hide();
-    }
-</script>

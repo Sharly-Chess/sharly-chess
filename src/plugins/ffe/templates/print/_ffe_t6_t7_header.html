@@ -5,23 +5,23 @@
         <div class="item">
             <label for="writer-full-name">Nom et prénom :</label>
         </div>
-        <div class="item {%if writer_error %}error{% endif %}">
+        <div class="item {% if writer_error %}error{% endif %}">
             <div class="error-info">{{ writer_error }}</div>
-            <input id="writer-full-name" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+            <input id="writer-full-name" value="{% if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
         </div>
         <div class="item">
             <label for="writer-ffe-licence-number">Numéro de licence :</label>
         </div>
-        <div class="item {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
+        <div class="item {% if not writer or not writer.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
             <div class="error-info">{{ writer_error or 'Le numéro de licence FFE n\'a pas été saisi.' }}</div>
-            <input id="writer-ffe-licence-number" value="{%if writer and writer.plugin_data and writer.plugin_data.ffe %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
+            <input id="writer-ffe-licence-number" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
         </div>
         <div class="item">
-            <label for="writer-arbiter-level">Titre :</label>
+            <label for="writer-ffe-arbiter-title">Titre :</label>
         </div>
-        <div class="item {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.arbiter_level %}error{% endif %}">
+        <div class="item {% if not writer %}error{% endif %}">
             <div class="error-info">{{ writer_error or 'Le niveau n\'a pas été saisi.' }}</div>
-            <input id="writer-arbiter-level" value="{%if writer and writer.plugin_data and writer.plugin_data.ffe %}{{ writer.plugin_data.ffe.ffe_arbiter_level or '' }}{% endif %}"/>
+            <input id="writer-ffe-arbiter-title" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_arbiter_title.short_name }}{% endif %}"/>
         </div>
     </div>
 </section>

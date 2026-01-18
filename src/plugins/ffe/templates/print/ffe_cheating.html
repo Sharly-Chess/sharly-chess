@@ -36,21 +36,21 @@
                 </div>
                 <div class="item {% if writer_error %}error{% endif %}">
                     <div class="error-info">{{ writer_error }}</div>
-                    <input id="writer-last-name" value="{%if writer %}{{ writer.last_name }}{% endif %}" />
+                    <input id="writer-last-name" value="{% if writer %}{{ writer.last_name }}{% endif %}" />
                 </div>
                 <div class="item">
                     <label for="writer-first-name">Prénom :</label>
                 </div>
                 <div class="item {% if writer_error %}error{% endif %}">
                     <div class="error-info">{{ writer_error }}</div>
-                    <input id="writer-first-name" value="{%if writer %}{{ writer.first_name }}{% endif %}" />
+                    <input id="writer-first-name" value="{% if writer %}{{ writer.first_name }}{% endif %}" />
                 </div>
                 <div class="item">
                     <label for="writer-ffe-licence-number">N° de licence :</label>
                 </div>
                 <div class="item {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
                     <div class="error-info">{{ writer_error or 'Le numéro de licence FFE n\'a pas été saisi.' }}</div>
-                    <input id="writer-ffe-licence-number" value="{%if writer and writer.plugin_data and writer.plugin_data.ffe %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
+                    <input id="writer-ffe-licence-number" value="{% if writer and writer.plugin_data and writer.plugin_data.ffe %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
                 </div>
             </div>
         </section>
@@ -61,21 +61,21 @@
                 <div class="item">
                     <label for="player-last-name">Nom :</label>
                 </div>
-                <div class="item {%if player_error %}error{% endif %}">
+                <div class="item {% if player_error %}error{% endif %}">
                     <div class="error-info">{{ player_error }}</div>
                     <input id="player-last-name" value="{% if player %}{{ player.last_name }}{% endif %}" />
                 </div>
                 <div class="item">
                     <label for="player-first-name">Prénom :</label>
                 </div>
-                <div class="item {%if player_error %}error{% endif %}">
+                <div class="item {% if player_error %}error{% endif %}">
                     <div class="error-info">{{ player_error }}</div>
                     <input id="player-first-name" value="{% if player %}{{ player.first_name }}{% endif %}" />
                 </div>
                 <div class="item">
                     <label for="player-ffe-licence-number">N° de licence :</label>
                 </div>
-                <div class="item {%if not player or not player.plugin_data or not player.plugin_data.ffe or not player.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
+                <div class="item {% if not player or not player.plugin_data or not player.plugin_data.ffe or not player.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
                     <div class="error-info">{{ player_error or 'Le numéro de licence FFE n\'a pas été saisi.' }}</div>
                     <input id="player-ffe-licence-number" value="{% if player %}{{ player.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}" />
                 </div>

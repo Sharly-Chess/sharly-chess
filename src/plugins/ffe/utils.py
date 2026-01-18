@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
@@ -121,6 +122,11 @@ class PlayerFFELicence(IntEnum):
                 return 'B'
             case _:
                 raise ValueError(f'Unknown value: {self}')
+
+    @staticmethod
+    def validate(string: str) -> bool:
+        """Returns True if the string is a correct licence number."""
+        return bool(re.match(r'^[A-Z]\d{5}$', string))
 
 
 class FFEArbiterTitle(IntEnum):
