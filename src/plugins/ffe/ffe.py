@@ -1,11 +1,9 @@
 import copy
 import re
 from collections import Counter, defaultdict
-from collections.abc import Callable
 from types import ModuleType
 from typing import Any, TYPE_CHECKING, Iterable, Optional
 
-from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
 from common import TEST_ENV, DEVEL_ENV
@@ -14,6 +12,11 @@ from common.exception import SharlyChessException
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn, ColumnUsage
+from data.columns.players_tab import (
+    PlayersTabColumn,
+    ClubPlayersTabColumn,
+    FideIdPlayersTabColumn,
+)
 from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
@@ -54,11 +57,11 @@ from plugins.ffe.ffe_entity import (
     FfeLicenceDatasheetColumn,
     FfeLeagueDatasheetColumn,
     FfeLicenceTypeTableColumn,
+    FfeLeaguePlayersTabColumn,
+    FfeLicencePlayersTabColumn,
 )
 from plugins.ffe.ffe_event_controller import (
     FfeAdminEventController,
-    SessionPlayersFilterFFELeague,
-    SessionPlayersFilterFFELicence,
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
@@ -80,7 +83,7 @@ from plugins.ffe.utils import (
     FfePlayerPluginData,
     FfeTournamentPluginData,
 )
-from plugins.hookspec import ExtraAdminColumn, hookimpl, hookspec
+from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
 from plugins.utils import (
@@ -94,6 +97,7 @@ from utils.enum import (
     PlayerRatingType,
     Result,
     TournamentRating,
+    FormAction,
 )
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -269,53 +273,6 @@ class FfePlugin(Plugin):
         return self.id, FfePlayerPluginData
 
     @hookimpl
-    def get_player_admin_template_context(
-        self, web_context: PlayerAdminWebContext
-    ) -> dict[str, Any]:
-        request = web_context.request
-        allowed_players = web_context.client.allowed_players
-
-        # The leagues that will be shown on the league select list
-        players_leagues = sorted(
-            {
-                FFEUtils.get_player_plugin_data(player).league or ''
-                for player in allowed_players
-            }
-        )
-
-        # The leagues that will be selected on the league select list and used to filter the players
-        filter_leagues = [
-            league
-            for league in SessionPlayersFilterFFELeague(request).get()
-            if league in players_leagues
-        ]
-
-        # The licences that will be shown on the licence select list
-        players_licences = sorted(
-            {
-                FFEUtils.get_player_plugin_data(player).ffe_licence
-                for player in allowed_players
-            }
-        )
-        # The licences that will be selected on the licence select list and used to filter the players
-        filter_licences = SessionPlayersFilterFFELicence(request).get()
-        league_counts: Counter[str] = Counter[str]()
-        for player in allowed_players:
-            league_counts[FFEUtils.get_player_plugin_data(player).league or ''] += 1
-
-        licence_counts: Counter[PlayerFFELicence] = Counter[PlayerFFELicence]()
-        for player in allowed_players:
-            licence_counts[FFEUtils.get_player_plugin_data(player).ffe_licence] += 1
-        return {
-            'admin_players_leagues': players_leagues,
-            'admin_players_filter_leagues': filter_leagues,
-            'admin_players_licences': players_licences,
-            'admin_players_filter_licences': filter_licences,
-            'ffe_league_counts': league_counts,
-            'ffe_licence_counts': licence_counts,
-        }
-
-    @hookimpl
     def get_player_form_template_context(
         self, web_context: 'PlayerAdminWebContext'
     ) -> dict[str, Any]:
@@ -339,7 +296,7 @@ class FfePlugin(Plugin):
     @hookimpl
     def validate_player_form_fields(
         self,
-        action: str,
+        action: FormAction,
         tournament: 'Tournament',
         player: 'Player',
         data: dict[str, str],
@@ -546,62 +503,32 @@ class FfePlugin(Plugin):
 
         return None
 
-    @hookimpl
-    def get_extra_player_columns(self) -> Iterable[ExtraAdminColumn]:
-        return [
-            ExtraAdminColumn(
-                at='club',
-                header_template='/ffe_player_league_header.html',
-                cell_template='/ffe_player_league_cell.html',
-            ),
-            ExtraAdminColumn(
-                at='owed',
-                header_template='/ffe_player_licence_header.html',
-                cell_template='/ffe_player_licence_cell.html',
-            ),
-        ]
+    @staticmethod
+    def _get_ffe_club_sort_key(player: Player) -> tuple:
+        return (
+            not player.club.name,
+            player.federation,
+            FFEUtils.get_player_plugin_data(player).league or '',
+            player.club,
+        )
 
     @hookimpl
-    def player_filters(
-        self,
-        web_context: PlayerAdminWebContext,
-        template_context: dict[str, Any],
-    ) -> list[Callable[[Player], bool]]:
-        request = web_context.request
-        filter_leagues = SessionPlayersFilterFFELeague(request).get()
-        filter_licences = SessionPlayersFilterFFELicence(request).get()
-
-        admin_players_leagues = template_context['admin_players_leagues']
-        admin_players_licences = template_context['admin_players_licences']
-        filters: list[Callable[[Player], bool]] = []
-        if len(filter_leagues) not in (0, len(admin_players_leagues)):
-            filters.append(
-                lambda player: (FFEUtils.get_player_plugin_data(player).league or '')
-                in filter_leagues
-            )
-        if len(filter_licences) not in (0, len(admin_players_licences)):
-            filters.append(
-                lambda player: FFEUtils.get_player_plugin_data(player).ffe_licence
-                in filter_licences
-            )
-        return filters
-
-    @hookimpl
-    def clear_player_filters(self, request: HTMXRequest):
-        SessionPlayersFilterFFELeague(request).unset()
-        SessionPlayersFilterFFELicence(request).unset()
-
-    @hookimpl
-    def player_sort_key(self, player: Player, sort_type: str):
-        if sort_type == 'club':
-            # We sort by league first
-            return (
-                FFEUtils.get_player_plugin_data(player).league or '',
-                player.club,
-                player.last_name,
-                player.first_name,
-            )
-        return None
+    def alter_players_tab_columns(self, columns: list[PlayersTabColumn]):
+        for column in columns:
+            if isinstance(column, ClubPlayersTabColumn):
+                column.sort_key_function = self._get_ffe_club_sort_key
+                break
+        PluginUtils.insert_on_isinstance(
+            columns,
+            FfeLeaguePlayersTabColumn(),
+            ClubPlayersTabColumn,
+            after=False,
+        )
+        PluginUtils.insert_on_isinstance(
+            columns,
+            FfeLicencePlayersTabColumn(),
+            FideIdPlayersTabColumn,
+        )
 
     @hookimpl
     def insert_player_datasheet_columns(self, datasheet_columns: list[DatasheetColumn]):

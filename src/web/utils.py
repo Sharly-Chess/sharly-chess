@@ -324,8 +324,9 @@ class Column[T](ABC):
     def header_content(self) -> str:
         """The content of the header as a string.
         A template can be used for more complex headers."""
+        name = self.__class__.__name__
         raise NotImplementedError(
-            'The header content needs to be implemented '
+            f'{name}: header content needs to be implemented '
             'if a template for the header is not provided.'
         )
 
@@ -350,8 +351,9 @@ class Column[T](ABC):
     def get_cell_content(self, object_: T) -> Any:
         """Get the content of a cell as a string from an object of the table.
         A template can be used for more complex cell contents."""
+        name = self.__class__.__name__
         raise NotImplementedError(
-            'The cell content needs to be implemented '
+            f'{name}: cell content needs to be implemented '
             'if a template for the cell is not provided.'
         )
 

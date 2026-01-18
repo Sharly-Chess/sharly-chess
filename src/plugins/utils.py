@@ -330,12 +330,6 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         return PluginUtils.get_plugin_data(self.id, plugin_data, field, default)
 
 
-class ExtraAdminColumn(NamedTuple):
-    at: str
-    header_template: str
-    cell_template: str
-
-
 class ExtraStatisticsSection(NamedTuple):
     at: str
     title: str

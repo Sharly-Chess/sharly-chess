@@ -1,0 +1,22 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<tbody
+    {% if page < pages %}
+        hx-get="{{ url_for(
+            'admin-event-players-page',
+            event_uniq_id=admin_event.uniq_id,
+            page=page + 1
+        ) }}"
+        hx-swap="afterend"
+        hx-trigger="revealed"
+    {% endif %}
+>
+    {% if players_by_index and players_by_index|first is even %}
+        {# Reestablish even / odd row stripped coloring #}
+        <tr></tr>
+    {% endif %}
+    {% for index, player in players_by_index.items() %}
+        {% include '/admin/players/table/row.html' %}
+    {% endfor %}
+</tbody>

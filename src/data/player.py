@@ -28,6 +28,7 @@ from utils.enum import (
     TitleNorm,
     TournamentRating,
     PlayerRatingType,
+    CheckInStatus,
 )
 from utils.types import (
     Federation,
@@ -1083,6 +1084,16 @@ class TournamentPlayer(Player):
             ),
             None,
         )
+
+    @cached_property
+    def check_in_status(self) -> CheckInStatus:
+        if not self.tournament.check_in_open:
+            return CheckInStatus.CHECK_IN_CLOSED
+        if self.check_in:
+            return CheckInStatus.CHECKED_IN
+        if self.pairings[self.tournament.current_round + 1].next_round_bye:
+            return CheckInStatus.NEXT_ROUND_BYE
+        return CheckInStatus.NOT_CHECKED_IN
 
     @cached_property
     def can_check_in_out(self) -> bool:
