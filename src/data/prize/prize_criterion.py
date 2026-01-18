@@ -1,11 +1,13 @@
 import weakref
 from _weakref import ReferenceType
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 from data.criteria.managers import PrizePlayerFilterManager
 from data.criteria.player_filters import PlayerFilter
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPrizeCriterion
+from utils import Utils
 
 if TYPE_CHECKING:
     from data.prize.prize_category import PrizeCategory
@@ -22,9 +24,9 @@ class PrizeCriterion:
             prize_category
         )
         self.stored_prize_criterion = stored_prize_criterion
-        self.player_filter = self._get_player_filter()
 
-    def _get_player_filter(self) -> PlayerFilter:
+    @cached_property
+    def player_filter(self) -> PlayerFilter:
         filter_type = PrizePlayerFilterManager(self.tournament.event).get_type(
             self.stored_prize_criterion.type
         )
@@ -61,4 +63,4 @@ class PrizeCriterion:
     def update(self):
         with self.get_event_database() as database:
             database.update_stored_prize_criterion(self.stored_prize_criterion)
-        self.player_filter = self._get_player_filter()
+        Utils.reset_cached_properties(self, 'player_filter')

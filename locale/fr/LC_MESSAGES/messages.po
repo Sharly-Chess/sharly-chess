@@ -748,7 +748,7 @@ msgstr "Barbade"
 msgid "Base date"
 msgstr "Date de référence"
 
-msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
+msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
 msgstr "Ech."
 
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
@@ -787,7 +787,7 @@ msgstr "Victoire Noirs"
 msgid "Blitz"
 msgstr "Blitz"
 
-msgid "Blitz *** BLITZ ELO FOR TABLE HEADER"
+msgid "Blitz *** BLITZ ELO COLUMN HEADER"
 msgstr "Blitz"
 
 msgid "Blitz rating"
@@ -970,10 +970,7 @@ msgstr "Cap-Vert"
 msgid "Cash"
 msgstr "Espèces"
 
-msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
-msgstr "Cat"
-
-msgid "Cat *** CATEGORY FOR TABLE HEADER"
+msgid "Cat. *** CATEGORY COLUMN HEADER"
 msgstr "Cat."
 
 msgid "Categories"
@@ -986,9 +983,6 @@ msgid "Categories are by default based on the start date of each tournament. Cho
 msgstr "Les catégories sont par défaut basées sur la date de début de chaque tournoi. Choisir une date de référence utilise les catégories telles qu'elles étaient à cette date (usage : évènements longs à cheval entre 2 saisons sportives)."
 
 msgid "Category"
-msgstr "Catégorie"
-
-msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
 msgstr "Catégorie"
 
 #, python-format
@@ -1022,9 +1016,6 @@ msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien ver
 msgid "Check-in"
 msgstr "Pointage"
 
-msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
-msgstr "Pointage"
-
 msgid "Check-in / Results ({num})"
 msgstr "Pointage / Saisie ({num})"
 
@@ -1036,10 +1027,6 @@ msgstr "Pointage / Saisie des résultats ({tournament_name})"
 
 msgid "Check-in closed"
 msgstr "Pointage fermé"
-
-#, python-format
-msgid "Check-in is closed for tournament [%(tournament)s]."
-msgstr "Le pointage est fermé pour le tournoi [%(tournament)s]."
 
 msgid "Check-in is closed for tournament [{tournament}]."
 msgstr "Le pointage est fermé pour le tournoi [{tournament}]."
@@ -1130,7 +1117,7 @@ msgid "Click to check-in the player."
 msgstr "Cliquer ici pour pointer le·la joueur·euse."
 
 msgid "Click to check-out the player."
-msgstr "Cliquer ici pour supprimer la pointage du·de la joueur·euse."
+msgstr "Cliquer ici pour supprimer le pointage du·de la joueur·euse."
 
 msgid "Close"
 msgstr "Fermer"
@@ -1149,13 +1136,7 @@ msgstr "Fermer le pointage pour le tournoi [%(tournament)s]."
 msgid "Club"
 msgstr "Club"
 
-msgid "Club *** CLUB COLUMN HEADER FOR PLAYERS"
-msgstr "Club"
-
-msgid "Club *** CLUB FOR PLAYERS COLUMNS"
-msgstr "Club"
-
-msgid "Club *** CLUB FOR TABLE HEADER"
+msgid "Club *** CLUB COLUMN HEADER"
 msgstr "Club"
 
 msgid "Club threshold"
@@ -1207,13 +1188,13 @@ msgstr "Colonnes :"
 msgid "Comma-separated board numbers; if this field is set, other fields are omitted."
 msgstr "Les numéros des tables fixes, séparés par des virgules ; si ce champ est utilisé, les autres champs ne sont pas pris en compte."
 
-msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
+msgid "Comment"
 msgstr "Commentaire"
 
 msgid "Comment:"
 msgstr "Commentaire :"
 
-msgid "Comments *** COMMENTS FOR TABLE HEADER"
+msgid "Comments *** COMMENTS COLUMN HEADER"
 msgstr "Commentaires"
 
 msgid "Comoros Islands"
@@ -1499,6 +1480,9 @@ msgstr "JJ/MM/AAAA"
 msgid "DMG does not contain exactly one folder as expected."
 msgstr "Le DMG ne contient pas un unique dossier comme attendu."
 
+msgid "DOB *** DATE-OF-BIRTH COLUMN HEADER"
+msgstr "DdN"
+
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
@@ -1529,6 +1513,9 @@ msgstr "Date et heure"
 
 msgid "Date format"
 msgstr "Format des dates"
+
+msgid "Date of birth"
+msgstr "Date de naissance"
 
 msgid "Date of birth:"
 msgstr "Date de naissance :"
@@ -1732,6 +1719,9 @@ msgstr "Ne pas éditer ce tableau manuellement, utiliser plutôt le script {scri
 
 msgid "Do not recover"
 msgstr "Ne pas restaurer"
+
+msgid "Do not use this order as ranking."
+msgstr "Ne pas utiliser cet ordre comme classement."
 
 msgid "Do nothing (players will be eligible for pairing)"
 msgstr "Ne rien faire (les joueur·euses seront apparié·es)"
@@ -2043,11 +2033,14 @@ msgstr "Égypte"
 msgid "El Salvador"
 msgstr "El Salvador"
 
-msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
+msgid "Elo *** ELO RATING"
 msgstr "Elo"
 
-msgid "Elo *** STD ELO FOR TABLE HEADER"
+msgid "Elo *** STD ELO COLUMN HEADER"
 msgstr "Elo"
+
+msgid "Email address"
+msgstr "Adresse e-mail"
 
 msgid "Email:"
 msgstr "Mél :"
@@ -2162,17 +2155,8 @@ msgstr "F"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
-msgid "FFE *** FFE FOR PLAYERS COLUMNS"
-msgstr "FFE"
-
 msgid "FIDE"
 msgstr "FIDE"
-
-msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
-msgstr "Fide"
-
-msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
-msgstr "Fide"
 
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
@@ -2238,17 +2222,11 @@ msgstr "Fev"
 msgid "February"
 msgstr "Février"
 
-msgid "Fed *** FEDERATION FOR TABLE HEADER"
+msgid "Fed. *** FEDERATION COLUMN HEADER"
 msgstr "Féd."
-
-msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
-msgstr "Fed."
 
 msgid "Federation"
 msgstr "Fédération"
-
-msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
-msgstr "Féd."
 
 msgid "Federation plugins"
 msgstr "Plug-ins de fédération"
@@ -2286,24 +2264,6 @@ msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
 msgid "Filter out players with a lower rating."
 msgstr "Exclure les joueur·euses ayant un Elo moins élevé."
 
-msgid "Filter the categories."
-msgstr "Filtrer les catégories."
-
-msgid "Filter the check-in status."
-msgstr "Filtrer le pointage."
-
-msgid "Filter the clubs."
-msgstr "Filtrer les clubs."
-
-msgid "Filter the federations."
-msgstr "Filtrer les fédérations."
-
-msgid "Filter the genders."
-msgstr "Filtrer les genres."
-
-msgid "Filter the tournaments."
-msgstr "Filtrer les tournois."
-
 msgid "Finland"
 msgstr "Finlande"
 
@@ -2332,7 +2292,7 @@ msgstr "Premier·e joueur·euse :"
 msgid "First round"
 msgstr "Première ronde"
 
-msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
+msgid "Fixed board"
 msgstr "Échiquier fixe"
 
 msgid "Fixed board:"
@@ -2411,7 +2371,7 @@ msgstr "Nombre de parties jouées avec les Noirs"
 msgid "Games won with Black"
 msgstr "Nombre de parties gagnées avec les Noirs"
 
-msgid "Gen *** GENDER FOR TABLE HEADER"
+msgid "Gen. *** GENDER COLUMN HEADER"
 msgstr "Gen."
 
 msgid "Gender"
@@ -2419,9 +2379,6 @@ msgstr "Genre"
 
 msgid "Gender ({gender})"
 msgstr "Genre ({gender})"
-
-msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
-msgstr "Genre"
 
 msgid "Gender:"
 msgstr "Genre :"
@@ -2962,9 +2919,6 @@ msgstr "Macao, Chine"
 msgid "Madagascar"
 msgstr "Madagascar"
 
-msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
-msgstr "Mél"
-
 #, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
@@ -3190,13 +3144,7 @@ msgstr "N"
 msgid "Name"
 msgstr "Nom"
 
-msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
-msgstr "Nom"
-
-msgid "Name *** NAME FOR PLAYERS COLUMNS"
-msgstr "Nom"
-
-msgid "Name *** NAME FOR TABLE HEADER"
+msgid "Name *** NAME COLUMN HEADER"
 msgstr "Nom"
 
 msgid "Name:"
@@ -3285,6 +3233,9 @@ msgstr "Nouveau tournoi"
 
 msgid "Next round"
 msgstr "Ronde suivante"
+
+msgid "Next round bye"
+msgstr "Absent·e à la prochaine ronde"
 
 msgid "Next tournament"
 msgstr "Tournoi suivant"
@@ -3481,7 +3432,7 @@ msgstr "Aucun évènement à venir."
 msgid "No updates found."
 msgstr "Aucun changement détecté."
 
-msgid "No. *** NB FOR TABLE HEADER"
+msgid "No. *** NB COLUMN HEADER"
 msgstr "N°"
 
 msgid "No. final rounds without byes:"
@@ -3716,11 +3667,8 @@ msgstr "Remplacement"
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
 msgstr "Remplace les résultats lorsque l'on utilise les raccourcis clavier."
 
-msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
+msgid "Owed *** OWED COLUMN HEADER"
 msgstr "Du"
-
-msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
-msgstr "Du/payé"
 
 msgid "Owed:"
 msgstr "Dû :"
@@ -3743,7 +3691,7 @@ msgstr "PGN"
 msgid "PLAYER'S NAME"
 msgstr "NOM JOUEUR·EUSE"
 
-msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
+msgid "Paid *** PAID COLUMN HEADER"
 msgstr "Payé"
 
 msgid "Paid:"
@@ -3914,8 +3862,11 @@ msgstr "Pérou"
 msgid "Philippines"
 msgstr "Philippines"
 
-msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
+msgid "Phone"
 msgstr "Téléphone"
+
+msgid "Phone number"
+msgstr "Numéro de téléphone"
 
 msgid "Phone number:"
 msgstr "Numéro de téléphone :"
@@ -4179,7 +4130,7 @@ msgstr "Imprimer les participant·es, les résultats, les classements…"
 msgid "Printing"
 msgstr "Impression"
 
-msgid "Prize *** PRIZE FOR TABLE HEADER"
+msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prix"
 
 msgid "Prize Brackets"
@@ -4254,7 +4205,7 @@ msgstr "Édition d'appariements protégés"
 msgid "Proxy (if any):"
 msgstr "Mandataire (le cas échéant) :"
 
-msgid "Pts *** POINTS FOR TABLE HEADER"
+msgid "Pts *** POINTS COLUMN HEADER"
 msgstr "Pts"
 
 msgid "Public event"
@@ -4294,10 +4245,10 @@ msgid "Qatar"
 msgstr "Qatar"
 
 #, python-format
-msgid "R %(round)d *** ROUND FOR TABLE HEADER"
+msgid "R %(round)d *** ROUND COLUMN HEADER"
 msgstr "R %(round)d"
 
-msgid "R {round} *** ROUND FOR TABLE HEADER"
+msgid "R {round} *** ROUND COLUMN HEADER"
 msgstr "R {round}"
 
 msgid "RES"
@@ -4354,7 +4305,7 @@ msgstr "Classements"
 msgid "Rapid"
 msgstr "Rapide"
 
-msgid "Rapid *** RAPID ELO FOR TABLE HEADER"
+msgid "Rapid *** RAPID ELO COLUMN HEADER"
 msgstr "Rapide"
 
 msgid "Rapid rating"
@@ -4365,9 +4316,6 @@ msgstr "Rapide :"
 
 msgid "Rating"
 msgstr "Elo"
-
-msgid "Rating *** RATING FOR PLAYERS COLUMNS"
-msgstr "Classement"
 
 msgid "Rating change"
 msgstr "Variation Elo"
@@ -4395,9 +4343,6 @@ msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
 
 msgid "Record"
-msgstr "Historique"
-
-msgid "Record *** RECORD FOR PLAYERS COLUMNS"
 msgstr "Historique"
 
 msgid "Reference to unknown board [{board_id}]."
@@ -4458,7 +4403,7 @@ msgstr "La requête à la base de données a échoué."
 msgid "Required by plugin <b>%(plugin)s</b>."
 msgstr "Requis par le plug-in <b>%(plugin)s</b>."
 
-msgid "Res. ** RESULT FOR TABLE HEADER"
+msgid "Res. ** RESULT COLUMN HEADER"
 msgstr "Rés."
 
 msgid "Reset manual tie-break"
@@ -4509,10 +4454,10 @@ msgstr "Retourner à la page d'accueil"
 msgid "Return to tournament"
 msgstr "Retour au tournoi"
 
-msgid "Rk. *** RANK FOR TABLE HEADER"
+msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Pl."
 
-msgid "Rk. O. *** RANK OVERALL FOR TABLE HEADER"
+msgid "Rk. O. *** RANK OVERALL COLUMN HEADER"
 msgstr "Pl. Gén."
 
 msgid "Rnd.Boa"
@@ -4738,7 +4683,10 @@ msgstr "Écrans : %(num)d"
 msgid "Scroll down to review all the norms…"
 msgstr "Faites défiler vers le bas pour consulter toutes les normes…"
 
-msgid "Search"
+msgid "Search *** PLACEHOLDER"
+msgstr "Rechercher"
+
+msgid "Search *** SECTION TITLE"
 msgstr "Recherche"
 
 #, python-format
@@ -5221,9 +5169,6 @@ msgstr "La limite ne peut être ajustée que de {count} demi-points."
 msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
 msgstr "Le classement le plus bas qu'un·e joueur·euse doit avoir pour que son score attendu soit supérieur ou égal à son score réel."
 
-msgid "The mail addresses."
-msgstr "Les adresses mél."
-
 msgid "The main category is open to all the players."
 msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."
 
@@ -5324,9 +5269,6 @@ msgstr "Le numéro d'appariement est déjà attribué."
 
 msgid "The permissions of this account can not be updated."
 msgstr "Les permissions de ce compte ne peuvent être modifiées."
-
-msgid "The phone numbers."
-msgstr "Les numéros de téléphone."
 
 msgid "The player did not win any games against FIDE rated opponents."
 msgstr "Le·la joueur·euse n’a remporté aucune partie contre des adversaires classé·es FIDE."
@@ -5674,9 +5616,6 @@ msgstr "Valeur totale des prix"
 msgid "Tournament"
 msgstr "Tournoi"
 
-msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
-msgstr "Tournoi"
-
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournoi"
 
@@ -5702,9 +5641,6 @@ msgstr "Le tournoi [{tournament}] a été supprimé."
 
 msgid "Tournament [{tournament}] has been updated."
 msgstr "Le tournoi [{tournament}] a été modifié."
-
-msgid "Tournament [{tournament}] is finished, you can not add players any longer."
-msgstr "Le tournoi [{tournament}] est terminé, on ne peut plus y ajouter de joueur·euses."
 
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
@@ -6199,9 +6135,6 @@ msgstr "Mauvaise extension de fichier [{ext}] ([pdf] attendu)."
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "O"
 
-msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
-msgstr "An."
-
 msgid "YYYY or {date_format}"
 msgstr "AAAA ou {date_format}"
 
@@ -6210,9 +6143,6 @@ msgstr "AAAA-MM-JJ"
 
 msgid "YYYY/MM/DD"
 msgstr "AAAA/MM/JJ"
-
-msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
-msgstr "Année de naissance"
 
 msgid "Yemen"
 msgstr "Yémen"
