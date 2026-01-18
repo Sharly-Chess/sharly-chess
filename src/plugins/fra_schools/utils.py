@@ -240,6 +240,11 @@ class FRASchoolsUtils:
         return event_schools_by_id.get(player_school_id, None)
 
     @classmethod
+    def get_school_by_id(cls, event: Event, school_id: int) -> FRASchool | None:
+        event_schools_by_id = cls.get_event_plugin_data(event).fra_schools_by_id
+        return event_schools_by_id.get(school_id, None)
+
+    @classmethod
     def add_event_school(
         cls,
         event: Event,

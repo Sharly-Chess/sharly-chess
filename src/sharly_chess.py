@@ -45,7 +45,7 @@ match sys.platform:
         from pathlib import Path
 
         base_dir: Path = Path(sys.argv[0]).resolve().parent
-        tracer: Path = base_dir / 'tmp/.unblock_files'
+        tracer: Path = base_dir / '_internal' / '.unblock_files'
         if tracer.exists():
             print(f'Unblocking files in : {base_dir}')
             for root_, __, files in os.walk(base_dir):
@@ -406,6 +406,13 @@ except Exception:
         case 'win32':
             import tkinter
             from tkinter import messagebox
+
+            base_dir = Path(sys.argv[0]).resolve().parent
+            if not os.access(base_dir, os.W_OK):
+                message = (
+                    f'Write permission is missing from [{base_dir.absolute()}].\n'
+                    'Check the permissions of the directory then try again.'
+                )
 
             root = tkinter.Tk()
             root.withdraw()
