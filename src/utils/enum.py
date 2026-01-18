@@ -486,11 +486,11 @@ class TournamentRating(IntEnum):
     def print_view_header(self) -> str:
         match self:
             case TournamentRating.STANDARD:
-                return _('Elo *** STD ELO FOR TABLE HEADER')
+                return _('Elo *** STD ELO COLUMN HEADER')
             case TournamentRating.RAPID:
-                return _('Rapid *** RAPID ELO FOR TABLE HEADER')
+                return _('Rapid *** RAPID ELO COLUMN HEADER')
             case TournamentRating.BLITZ:
-                return _('Blitz *** BLITZ ELO FOR TABLE HEADER')
+                return _('Blitz *** BLITZ ELO COLUMN HEADER')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -1019,3 +1019,11 @@ class FormAction(StrEnum):
     CREATE = 'create'
     CLONE = 'clone'
     DELETE = 'delete'
+    REPLACE = 'replace'
+
+
+class CheckInStatus(IntEnum):
+    CHECK_IN_CLOSED = 0
+    NEXT_ROUND_BYE = 1
+    NOT_CHECKED_IN = 2
+    CHECKED_IN = 3

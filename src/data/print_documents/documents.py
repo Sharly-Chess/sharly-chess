@@ -238,7 +238,7 @@ class PlayerListPrintDocument(PlayerPrintDocument):
         return [
             player.single_tournament_player
             for player in self.get_event().players_sorted_by_name
-            if player.single_tournament_player.tournament.id in tournament_ids
+            if player.single_tournament.id in tournament_ids
         ]
 
     @property
@@ -265,7 +265,7 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
         return [
             player.single_tournament_player
             for player in self.get_event().players_sorted_by_name
-            if player.single_tournament_player.tournament.id in tournament_ids
+            if player.single_tournament.id in tournament_ids
         ]
 
     @property

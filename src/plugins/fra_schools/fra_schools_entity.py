@@ -7,12 +7,14 @@ from common.exception import OptionError
 from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn
+from data.columns.players_tab import FilterPlayersTabColumn, ColumnFilterValue
 from data.criteria.player_filter_options import (
     SelectPlayerFilterOption,
     PlayerFilterOption,
     ExcludeFilterOption,
 )
 from data.criteria.player_filters import PlayerFilter
+from data.event import Event
 from data.player import Player, TournamentPlayer
 from data.print_documents import PlayerSplitter
 from data.tournament import Tournament
@@ -44,7 +46,7 @@ class FraSchoolPlayerSplitter(PlayerSplitter):
 class FraSchoolTableColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('School *** SCHOOL FOR TABLE HEADER')
+        return _('School *** SCHOOL COLUMN HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return getattr(
@@ -162,3 +164,60 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
         self._validate_list_type(int)
         if not self.value:
             raise OptionError(_('At least one school is expected.'), self)
+
+
+class FraSchoolsPlayersTabColumn(FilterPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-school'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('School *** SCHOOL COLUMN HEADER')
+
+    @property
+    def is_compact(self) -> bool:
+        return True
+
+    @property
+    def align_start(self) -> bool:
+        return True
+
+    def get_cell_classes(self, player: Player) -> str:
+        return self.shared_classes + ' text-truncate mw-25em'
+
+    @property
+    def cell_template(self) -> str | None:
+        return '/fra_schools_player_school_cell.html'
+
+    @property
+    def is_tournament_column(self) -> bool:
+        return True
+
+    def get_filter_key(self, player: Player) -> str:
+        school = FRASchoolsUtils.get_player_school(player)
+        return str(school.id) if school else ''
+
+    def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
+        if not filter_key:
+            return None
+        return FRASchoolsUtils.get_event_plugin_data(event).fra_schools_by_id[
+            int(filter_key)
+        ]
+
+    def get_filter_row_content(self, value: Any) -> str:
+        return value.short_name if value else '-'
+
+    def get_filter_row_tooltip(self, value: Any) -> str:
+        return value.tooltip if value else ''
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        school = FRASchoolsUtils.get_player_school(player) or FRASchool()
+        return school.sort_key
+
+    def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
+        return (filter_value.value or FRASchool()).sort_key
+
+    @staticmethod
+    def get_player_school(player: Player) -> FRASchool | None:
+        return FRASchoolsUtils.get_player_school(player)

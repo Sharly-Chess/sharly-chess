@@ -1,0 +1,7 @@
+<span
+    {% if player.date_of_birth %}
+        {{ macros.tooltip_attributes('info', player.date_of_birth_str, 'left') }}
+    {% endif %}
+>
+    {{ player.year_of_birth if player.year_of_birth else '-' }}
+</span>

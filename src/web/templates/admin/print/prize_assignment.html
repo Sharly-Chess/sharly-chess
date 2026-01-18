@@ -28,7 +28,7 @@
                         <div class="subheading">
                             {{ prize_category.format_shared_prizes(prize_currency) }}
                         </div>
-                        <div class="header">{{ _('Rk. *** RANK FOR TABLE HEADER') }}</div>
+                        <div class="header">{{ _('Rk. *** RANK COLUMN HEADER') }}</div>
                         {% for column in player_columns %}
                             <div class="header {{ column.header_classes }}">
                                 {% if column.header_template %}
@@ -38,7 +38,7 @@
                                 {% endif %}
                             </div>
                         {% endfor %}
-                        <div class="header">{{ _('Prize *** PRIZE FOR TABLE HEADER') }}</div>
+                        <div class="header">{{ _('Prize *** PRIZE COLUMN HEADER') }}</div>
                         {% for assigned_prize in assigned_prizes_by_category_id[prize_category.id] %}
                             {% set tournament_player=assigned_prize.assigned_to %}
                             <div class="cell fw-bold">

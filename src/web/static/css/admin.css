@@ -44,6 +44,24 @@
     color: black;
 }
 
+.table-sticky-border {
+    border-right: 2px solid var(--bs-body-bg);
+    left: var(--side-bar-width);
+}
+
+.player-table-club-cell {
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mw-15em {
+    max-width: 15em;
+}
+.mw-25em {
+    max-width: 25em;
+}
+
 .pairing-modal .result-button {
     border: 3px white solid;
     display: flex;
