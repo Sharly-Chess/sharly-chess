@@ -1099,7 +1099,6 @@ class PairingsAdminController(BaseEventAdminController):
     async def htmx_admin_pairings_check_in_out(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         tournament_id: int,
         player_id: int,
         check_in: int,

@@ -154,7 +154,7 @@ class NoCategory(PlayerCategory):
 
     @property
     def name(self) -> str:
-        return ''
+        return '-'
 
     @property
     def _representative_age(self) -> int:

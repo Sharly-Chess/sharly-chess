@@ -118,9 +118,6 @@ msgstr "Exporter le tournoi au format PAPI."
 msgid "FFE"
 msgstr "FFE"
 
-msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr "FFE"
-
 msgid "FFE ID"
 msgstr "Identifiant FFE"
 
@@ -145,6 +142,9 @@ msgstr "Base de données FFE (locale)"
 
 msgid "FFE database (online)"
 msgstr "Base de données FFE (en ligne)"
+
+msgid "FFE licence"
+msgstr "Licence FFE"
 
 msgid "FFE licence A (competition)"
 msgstr "Licence FFE A (compétition)"
@@ -177,12 +177,6 @@ msgstr "Identifiant FIDE"
 
 msgid "Fees link not found, check that a tournament has already been sent and that the tournament has not been archived on the FFE website."
 msgstr "Lien de facture non trouvé, vérifier qu'un tournoi a été envoyé et que le tournoi n'a pas été archivé sur le site web FFE."
-
-msgid "Filter the leagues."
-msgstr "Filtrer les ligues."
-
-msgid "Filter the licences."
-msgstr "Filtrer les licences."
 
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
@@ -245,10 +239,7 @@ msgstr "Dernière mise en ligne"
 msgid "League"
 msgstr "Ligue"
 
-msgid "League *** LEAGUE FOR TABLE HEADER"
-msgstr "Ligue"
-
-msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
+msgid "League *** LEAGUE COLUMN HEADER"
 msgstr "Ligue"
 
 msgid "League:"
@@ -257,7 +248,7 @@ msgstr "Ligue :"
 msgid "Leagues"
 msgstr "Ligues"
 
-msgid "Lic. *** LICENCE FOR TABLE HEADER"
+msgid "Lic. *** LICENCE COLUMN HEADER"
 msgstr "Lic."
 
 msgid "Licence no. *** LICENCE NUMBER"
@@ -307,9 +298,6 @@ msgstr "Aucune connexion à internet"
 
 msgid "None *** FFE licence"
 msgstr "Aucune"
-
-msgid "OK"
-msgstr "OK"
 
 msgid "PAPI"
 msgstr "PAPI"

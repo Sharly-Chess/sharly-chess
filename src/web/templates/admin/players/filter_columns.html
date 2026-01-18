@@ -1,4 +1,9 @@
-<form class="d-inline-block" hx-get="{{ url }}" hx-target="body" hx-indicator="#please-wait" >
+<form
+    class="d-inline-block"
+    hx-get="{{ url_for('admin-event-players-columns', event_uniq_id=admin_event.uniq_id) }}"
+    hx-target="body"
+    hx-indicator="#please-wait"
+>
     <span class="dropdown-center" >
         <button
             class="btn btn-outline-primary dropdown-toggle text-nowrap"
@@ -15,101 +20,37 @@
             </span>
         </button>
         <ul class="dropdown-menu table-dropdown-menu p-0">
-            {% with name='admin_players_filter_columns' %}
-                {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
-                <input type="hidden" name="{{ name }}" value="" />
-                <li class="dropdown-item title text-nowrap">
+            {% set name = 'column_ids' %}
+            {# this input is always checked with an empty value (ignored) to be sure to get a list parameter. #}
+            <input type="hidden" name="{{ name }}" value="" />
+            <li class="dropdown-item title text-nowrap">
+                <input
+                    type="checkbox"
+                    {% if enabled_columns|length == visible_columns|length %}checked{% endif %}
+                    onclick="$('input.hideable-columns').prop('checked', this.checked)"
+                />
+                <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
+                    <i class="bi-check-lg pe-1"></i>
+                    {{ _('OK') }}
+                </button>
+            </li>
+            <li class="dropdown-divider m-0"></li>
+            {% for column in enabled_columns %}
+                <li class="dropdown-item text-nowrap d-inline-flex align-items-center gap-2">
                     <input
                         type="checkbox"
-                        {% if admin_players_filter_columns|length == admin_players_columns|length - 2 %}checked{% endif %}
-                        onclick="$('input.{{ name }}').prop('checked', this.checked)" {# TODO instead of relying on the class, use the name #}
+                        id="{{ name }}-{{ loop.index }}"
+                        name="{{ name }}"
+                        value="{{ column.id }}"
+                        {% if column.is_visible %}checked{% endif %}
+                        {% if not column.is_hideable %}disabled{% endif %}
+                        class="{% if column.is_hideable %}hideable-columns{% endif %}"
                     />
-                    <button type="submit" class="btn w-100 text-end py-0" data-bs-dismiss="modal" >
-                        <i class="bi-check-lg pe-1"></i>
-                        {{ _('OK') }}
-                    </button>
+                    <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
+                        {{ column.name }}
+                    </label>
                 </li>
-                <li class="dropdown-divider m-0"></li>
-                {% for column in admin_players_columns %}
-                    <li class="dropdown-item text-nowrap d-inline-flex align-items-center gap-2">
-                        <input
-                            type="checkbox"
-                            id="{{ name }}-{{ loop.index }}"
-                            name="{% if column not in ['name', 'rating', ] %}{{ name }}{% endif %}"
-                            value="{{ column }}"
-                            {% if column in ['name', 'rating', ] or column in admin_players_filter_columns %}checked {% endif %}
-                            {% if column in ['name', 'rating', ] %}disabled {% endif %}
-                            class="{% if column not in ['name', 'rating', ] %}{{ name }}{% endif %} {{ name }}_{{ column }}"
-                        />
-                        <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
-                            {% if column == 'mail' %}
-                                <i class="bi-envelope-check pe-1"></i>
-                                {{ _('Mail *** MAIL FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'phone' %}
-                                <i class="bi-telephone pe-1"></i>
-                                {{ _('Phone *** PHONE FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'name' %}
-                                <i class="bi-sort-alpha-down pe-1"></i>
-                                {{ _('Name *** NAME FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'rating' %}
-                                <i class="bi-sort-numeric-down pe-1"></i>
-                                {{ _('Rating *** RATING FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'federation' %}
-                                <i class="bi-house pe-1"></i>
-                                {{ _('Federation *** FEDERATION FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'club' %}
-                                <i class="bi-house pe-1"></i>
-                                {{ _('Club *** CLUB FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'yob' %}
-                                <i class="bi-calendar pe-1"></i>
-                                {{ _('Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'category' %}
-                                <i class="bi-tag pe-1"></i>
-                                {{ _('Category *** CATEGORY FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'gender' %}
-                                <i class="bi-person-standing-dress"></i><i class="bi-person-standing pe-1"></i>
-                                {{ _('Gender *** GENDER FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'fixed' %}
-                                {# https://www.svgrepo.com/svg/50760/disabled?edit=true #}<img
-                                    src="{{ url_for('static', file_path='/images/disabled-white.svg') }}?version={{ sharly_chess_config.version }}"
-                                    style="height: 1.2em"
-                                    class="p-0"
-                                />
-                                {{ _('Fixed board *** FIXED FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'fide' %}
-                                <img
-                                        src="{{ url_for('static', file_path='/images/fide-light.svg') }}?version={{ sharly_chess_config.version }}"
-                                        style="height: 1em"
-                                        class="p-0"
-                                /> {{ _('FIDE *** FIDE FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'ffe' %}
-                                <img
-                                        src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
-                                        style="height: 1.2em"
-                                        class="p-0"
-                                /> {{ _('FFE *** FFE FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'check_in' %}
-                                <i class="bi-check-circle pe-1"></i>
-                                {{ _('Check-in *** CHECK-IN FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'owed_paid' %}
-                                <i class="bi-currency-exchange pe-1"></i>
-                                {{ _('Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'tournament' %}
-                                <i class="bi-people pe-1"></i>
-                                {{ _('Tournament *** TOURNAMENT FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'comment' %}
-                                <i class="bi-chat pe-1"></i>
-                                {{ _('Comment *** COMMENT FOR PLAYERS COLUMNS') }}
-                            {% elif column == 'record' %}
-                                <i class="bi-0-square"></i><i class="bi-1-square-fill pe-1"></i>
-                                {{ _('Record *** RECORD FOR PLAYERS COLUMNS') }}
-                            {% else %}
-                                ???
-                            {% endif %}
-                        </label>
-                    </li>
-                {% endfor %}
-            {% endwith %}
+            {% endfor %}
         </ul>
     </span>
 </form>

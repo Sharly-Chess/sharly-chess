@@ -97,7 +97,7 @@ class FfeLicenceUpdaterField(FfePlayerUpdaterField):
 
     @staticmethod
     def static_name() -> str:
-        return _('Lic. *** LICENCE FOR TABLE HEADER')
+        return _('Lic. *** LICENCE COLUMN HEADER')
 
     def _is_ffe_plugin_data_updated(
         self, src_pd: FfePlayerPluginData, match_pd: FfePlayerPluginData

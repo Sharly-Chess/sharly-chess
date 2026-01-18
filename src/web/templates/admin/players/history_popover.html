@@ -5,7 +5,7 @@
             <th></th>
             <th></th>
             <th scope="col" class="text-nowrap text-center">
-                {{ _('Rk. *** RANK FOR TABLE HEADER') }}
+                {{ _('Rk. *** RANK COLUMN HEADER') }}
             </th>
             <th scope="col" class="text-nowrap">
                 {{ _('Opponent') }}
@@ -14,13 +14,13 @@
                 {{ _('Rating') }}
             </th>
             <th scope="col" class="text-nowrap text-center">
-                {{ _('Cat *** CATEGORY FOR TABLE HEADER') }}
+                {{ _('Cat. *** CATEGORY COLUMN HEADER') }}
             </th>
             <th scope="col" class="text-nowrap text-center">
-                {{ _('Fed *** FEDERATION FOR TABLE HEADER') }}
+                {{ _('Fed. *** FEDERATION COLUMN HEADER') }}
             </th>
             <th scope="col" class="text-nowrap">
-                {{ _('Pts *** POINTS FOR TABLE HEADER') }}
+                {{ _('Pts *** POINTS COLUMN HEADER') }}
             </th>
             {% for tie_break in admin_tournament.tie_breaks %}
                 <th class="tie-break text-center">{{ tie_break.acronym }}</th>
@@ -30,10 +30,10 @@
     <tbody>
         {% for round in range(1, admin_tournament.rounds + 1) %}
             <tr>
-                <th class="round text-center">{{ _('R %(round)d *** ROUND FOR TABLE HEADER', round=round) }}</th>
+                <th class="round text-center">{{ _('R %(round)d *** ROUND COLUMN HEADER', round=round) }}</th>
                 {%with pairing = player.single_tournament_player.pairings[round], opponent_id = player.single_tournament_player.pairings[round].opponent_id %}
                     {% if opponent_id %}
-                        {%with opponent = player.single_tournament_player.tournament.tournament_players_by_id[opponent_id] %}
+                        {%with opponent = player.single_tournament.tournament_players_by_id[opponent_id] %}
                             <td>{{ pairing.color.to_crosstable }}</td>
                             <td class='text-center'>{{ pairing.result }}</td>
                             <td class='text-center'>{{ opponent.rank }}</td>

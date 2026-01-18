@@ -76,13 +76,7 @@ class Tournament:
     ):
         self._event_ref: 'ReferenceType[Event]' = weakref.ref(event)
         self.stored_tournament: StoredTournament = stored_tournament
-        self.tournament_players_by_id = self._get_tournament_players_by_id()
-        self.boards_by_id = self._get_boards_by_id()
-        self.prize_groups_by_id = self._get_prize_groups_by_id()
         self._tournament_players_by_rank: dict[int, TournamentPlayer] | None = None
-        self.criteria_by_id = self._get_criteria_by_id()
-        self.tie_breaks_by_id = self._get_tie_breaks_by_id()
-        self.plugin_data = self._get_plugin_data()
 
     # -------------------------------------------------------------------------
     # Plugin
@@ -95,7 +89,8 @@ class Tournament:
             for plugin_id, plugin_data_class in plugin_manager.hook.get_tournament_plugin_data_class()
         }
 
-    def _get_plugin_data(self) -> dict[str, PluginData]:
+    @cached_property
+    def plugin_data(self) -> dict[str, PluginData]:
         return {
             plugin_id: plugin_data_class.from_stored_value(
                 self.stored_tournament.plugin_data.get(plugin_id, {})
@@ -349,7 +344,8 @@ class Tournament:
                 )
         return tie_break_type(options)
 
-    def _get_tie_breaks_by_id(self) -> dict[int, TieBreak]:
+    @cached_property
+    def tie_breaks_by_id(self) -> dict[int, TieBreak]:
         tie_breaks_by_id: dict[int, TieBreak] = {}
         for stored_tie_break in self.stored_tournament.stored_tie_breaks:
             if not (
@@ -505,7 +501,8 @@ class Tournament:
     # Criteria
     # -------------------------------------------------------------------------
 
-    def _get_criteria_by_id(self) -> dict[int, TournamentCriterion]:
+    @cached_property
+    def criteria_by_id(self) -> dict[int, TournamentCriterion]:
         criteria_by_id = {}
         for stored_criterion in self.stored_tournament.stored_criteria:
             assert stored_criterion.id is not None
@@ -631,7 +628,8 @@ class Tournament:
             None,
         )
 
-    def _get_prize_groups_by_id(self) -> dict[int, PrizeGroup]:
+    @cached_property
+    def prize_groups_by_id(self) -> dict[int, PrizeGroup]:
         prize_groups_by_id = {}
         for stored_prize_group in self.stored_tournament.stored_prize_groups:
             assert stored_prize_group.id is not None
@@ -815,21 +813,6 @@ class Tournament:
         counter = Counter[PlayerRatingType]()
         for player in self.tournament_players:
             counter[player.rating_type] += 1
-        return counter
-
-    @cached_property
-    def check_in_counts(self) -> Counter[bool | None]:
-        counter: Counter[bool | None] = Counter[bool | None]()
-        if self.finished or self.playing or not self.check_in_open:
-            counter[None] = len(self.tournament_players_by_id)
-            counter[True] = 0
-            counter[False] = 0
-        else:
-            for player in self.tournament_players:
-                if not player.can_check_in_out:
-                    counter[None] += 1
-                else:
-                    counter[player.check_in] += 1
         return counter
 
     @cached_property
@@ -1030,7 +1013,8 @@ class Tournament:
             self.current_round
         ) and not self.is_round_finished(self.current_round)
 
-    def _get_tournament_players_by_id(self) -> dict[int, TournamentPlayer]:
+    @cached_property
+    def tournament_players_by_id(self) -> dict[int, TournamentPlayer]:
         players_by_id: dict[int, TournamentPlayer] = {}
         for (
             stored_tournament_player
@@ -1039,7 +1023,8 @@ class Tournament:
             players_by_id[tournament_player.id] = tournament_player
         return players_by_id
 
-    def _get_boards_by_id(self) -> dict[int, Board]:
+    @cached_property
+    def boards_by_id(self) -> dict[int, Board]:
         boards_by_id: dict[int, Board] = {}
         for (
             round_,
