@@ -109,10 +109,7 @@ try:
         pass
 except OSError as error:
     raise SharlyChessException(
-        f'Log file [{LOG_FILE.absolute()}] could not be opened: {error}\n'
-        f'Write permission is most likely missing from '
-        f'[{LOG_FILE.parent.parent.absolute()}].\n'
-        f'Check the permissions then try again.'
+        f'Log file [{LOG_FILE.absolute()}] could not be opened: {error}'
     )
 
 
