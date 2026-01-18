@@ -1,25 +1,23 @@
 from collections import defaultdict
-from collections.abc import Callable
 from collections.abc import Iterable
 from typing import Any, TYPE_CHECKING, Optional
 
-from litestar.plugins.htmx import HTMXRequest
 import apluggy as pluggy  # type: ignore
 
 from common import APP_NAME
 
 from plugins.utils import (
-    ExtraAdminColumn,
     ExtraStatisticsSection,
     NavUploadItem,
     PluginData,
 )
-from utils.enum import Result, TournamentRating
+from utils.enum import Result, TournamentRating, FormAction
 
 if TYPE_CHECKING:
     from data.columns.player_datasheet import DatasheetColumn
     from data.columns.board_table import BoardColumn
     from data.columns.player_table import TournamentPlayerTableColumn
+    from data.columns.players_tab import PlayersTabColumn
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.pairings.variations import SwissVariation
     from data.player import (
@@ -103,12 +101,6 @@ class AppHookSpecs:
         Also provide the ID of the plugin."""
 
     @hookspec
-    def get_player_admin_template_context(
-        self, web_context: 'PlayerAdminWebContext'
-    ) -> dict[str, Any]:
-        """Provide additional template context for rendering in PlayerAdminController"""
-
-    @hookspec
     def get_player_form_template_context(
         self, web_context: 'PlayerAdminWebContext'
     ) -> dict[str, Any]:
@@ -130,7 +122,7 @@ class AppHookSpecs:
     @hookspec
     def validate_player_form_fields(
         self,
-        action: str,
+        action: 'FormAction',
         tournament: 'Tournament',
         player: 'Player',
         data: dict[str, str],
@@ -173,24 +165,8 @@ class AppHookSpecs:
         """Test if a player can participate in a tournament"""
 
     @hookspec
-    def get_extra_player_columns(self) -> Iterable[ExtraAdminColumn]:
-        """Provide additional columns for the player table view"""
-
-    @hookspec
-    def player_filters(
-        self,
-        web_context: 'PlayerAdminWebContext',
-        template_context: dict[str, Any],
-    ) -> list[Callable[['Player'], bool]]:
-        """List of condition to filter players based on plugin values."""
-
-    @hookspec
-    def clear_player_filters(self, request: HTMXRequest):
-        """Clear any filters set on the admin players tab"""
-
-    @hookspec(firstresult=True)
-    def player_sort_key(self, player: 'Player', sort_type: str) -> tuple | None:
-        """Returns a sort key for sorting the admin player"""
+    def alter_players_tab_columns(self, columns: list['PlayersTabColumn']):
+        """Add, modify or delete columns of the player tab."""
 
     @hookspec
     def insert_player_datasheet_columns(

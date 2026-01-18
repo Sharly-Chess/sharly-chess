@@ -1,5 +1,5 @@
 import copy
-from collections import defaultdict, Counter
+from collections import defaultdict
 from contextlib import suppress
 from datetime import date
 from functools import total_ordering, cached_property
@@ -16,7 +16,7 @@ from data.account import Account, Permission
 from data.board import PlayerRatingType
 from data.display_controller import DisplayController
 from data.family import Family
-from data.player import Player, Club, Federation
+from data.player import Player
 from data.player_categories import (
     PlayerCategory,
     NoCategory,
@@ -35,7 +35,6 @@ from utils.date_time import format_date, format_date_range, format_timestamp_dat
 from utils.enum import (
     RoleType,
     ScreenType,
-    PlayerGender,
 )
 from database.sqlite.event.event_store import (
     StoredEvent,
@@ -56,7 +55,6 @@ class Event:
 
     def __init__(self, stored_event: StoredEvent):
         self.stored_event: StoredEvent = stored_event
-        self.plugin_data = self._get_plugin_data()
 
     @staticmethod
     def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
@@ -375,16 +373,8 @@ class Event:
             if not tournament.finished
         ]
 
-    @property
-    def player_addable_tournaments(self) -> list[Tournament]:
-        """List of tournaments in which players can be added."""
-        return [
-            tournament
-            for tournament in self.tournaments_sorted_by_index
-            if tournament.can_add_players
-        ]
-
-    def _get_plugin_data(self) -> dict[str, PluginData]:
+    @cached_property
+    def plugin_data(self) -> dict[str, PluginData]:
         return {
             plugin_id: plugin_data_class.from_stored_value(
                 self.stored_event.plugin_data.get(plugin_id, {})
@@ -454,45 +444,6 @@ class Event:
             key=by('last_name', 'first_name'),
         )
 
-    def gender_counts(
-        self, players: list[Player] | None = None
-    ) -> Counter[PlayerGender]:
-        counter: Counter[PlayerGender] = Counter[PlayerGender]()
-        for player in players or self.players:
-            counter[player.gender] += 1
-        return counter
-
-    def federation_counts(
-        self, players: list[Player] | None = None
-    ) -> Counter[Federation]:
-        counter: Counter[Federation] = Counter[Federation]()
-        for player in players or self.players:
-            counter[player.federation] += 1
-        return counter
-
-    def club_counts(self, players: list[Player] | None = None) -> Counter[Club]:
-        counter: Counter[Club] = Counter[Club]()
-        for player in players or self.players:
-            counter[player.club] += 1
-        return counter
-
-    def check_in_counts(
-        self, tournaments: list[Tournament] | None = None
-    ) -> Counter[bool | None]:
-        counter: Counter[bool | None] = Counter[bool | None]()
-        for tournament in tournaments or self.tournaments:
-            for status, checked_in in tournament.check_in_counts.items():
-                counter[status] += checked_in
-        return counter
-
-    def category_counts(
-        self, players: list[Player] | None = None
-    ) -> Counter[PlayerCategory]:
-        counter: Counter[PlayerCategory] = Counter[PlayerCategory]()
-        for player in players or self.players:
-            counter[player.category] += 1
-        return counter
-
     def get_unused_tournament_name(
         self,
         base_name: str | None = None,
@@ -508,14 +459,14 @@ class Event:
         self, player: Player, destination_tournament: Tournament
     ):
         """Moves the given player from its current tournament to *destination_tournament*."""
-        source_tournament = player.single_tournament_player.tournament
+        source_tournament = player.single_tournament
         with EventDatabase(self.uniq_id, write=True) as database:
             destination_tournament.add_player_to_tournament(
                 player.stored_player, database
             )
             database.delete_stored_tournament_player(source_tournament.id, player.id)
             del source_tournament.tournament_players_by_id[player.id]
-        player.single_tournament = destination_tournament
+        player.single_tournament_id = destination_tournament.id
         self.clear_player_cache()
 
     @cached_property

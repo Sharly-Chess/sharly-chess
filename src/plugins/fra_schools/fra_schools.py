@@ -1,9 +1,6 @@
 from collections import Counter, defaultdict
-from collections.abc import Callable
-from operator import attrgetter
-from typing import TYPE_CHECKING, Any, Iterable, override
+from typing import TYPE_CHECKING, Any, override, Iterable
 
-from litestar.plugins.htmx import HTMXRequest
 from packaging.version import Version
 
 from common.logger import get_logger
@@ -11,9 +8,14 @@ from common.i18n import _, ngettext
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn, ColumnUsage
+from data.columns.players_tab import (
+    PlayersTabColumn,
+    ClubPlayersTabColumn,
+    FederationPlayersTabColumn,
+)
 from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
-from data.event import Player, Event
+from data.event import Event
 from data.input_output import TournamentImporter
 from data.player import TournamentPlayer
 from data.print_documents import PlayerSplitter
@@ -33,6 +35,7 @@ from plugins import PLUGINS_DIR
 from plugins.chessevent.tournament_importer.data import ChessEventPlayer
 from plugins.ffe.ffe import FfeLeagueTableColumn, FfePlugin
 from plugins.ffe.ffe_database import FfeDatabase
+from plugins.ffe.ffe_entity import FfeLeaguePlayersTabColumn
 from plugins.ffe.papi_converter import PapiPlayer
 from plugins.fra_schools import PLUGIN_NAME
 from plugins.fra_schools.fra_schools_controller import FRASchoolsController
@@ -43,10 +46,7 @@ from plugins.fra_schools.fra_schools_entity import (
     FraSchoolTableColumn,
     FRASchoolPlayerFilter,
     FRASchoolsFilterOption,
-)
-from plugins.fra_schools.fra_schools_event_controller import (
-    FraSchoolsAdminEventController,
-    SessionPlayersFilterFRASchools,
+    FraSchoolsPlayersTabColumn,
 )
 from plugins.fra_schools.fra_schools_ranking_document import (
     FraSchoolsRankingPrintDocument,
@@ -55,9 +55,8 @@ from plugins.fra_schools.utils import (
     FRASchoolsPlayerPluginData,
     FRASchoolsUtils,
     FRASchoolsEventPluginData,
-    FRASchool,
 )
-from plugins.hookspec import ExtraAdminColumn, ExtraStatisticsSection, hookimpl
+from plugins.hookspec import ExtraStatisticsSection, hookimpl
 from plugins.manager import Path
 from plugins.utils import (
     Plugin,
@@ -132,7 +131,6 @@ class FRASchoolsPlugin(Plugin):
     @property
     def controllers(self) -> list[type[BaseController]]:
         return [
-            FraSchoolsAdminEventController,
             FRASchoolsController,
         ]
 
@@ -163,35 +161,6 @@ class FRASchoolsPlugin(Plugin):
         return self.id, FRASchoolsPlayerPluginData
 
     @hookimpl
-    def get_player_admin_template_context(
-        self, web_context: PlayerAdminWebContext
-    ) -> dict[str, Any]:
-        event = web_context.get_admin_event()
-        request = web_context.request
-        school_counts = FRASchoolsUtils.get_event_school_counts(
-            web_context.client.allowed_players
-        )
-        plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
-        sorted_schools = sorted(
-            (
-                school
-                for school in plugin_data.fra_schools
-                if school.id in school_counts
-            ),
-            key=attrgetter('sort_key'),
-        )
-        sorted_school_ids: list[int] = [school.id for school in sorted_schools]
-        if 0 in school_counts:
-            sorted_school_ids.insert(0, 0)
-        return {
-            'fra_schools_utils': FRASchoolsUtils,
-            'fra_school_ids': sorted_school_ids,
-            'fra_schools_by_id': plugin_data.fra_schools_by_id,
-            'fra_school_counts': school_counts,
-            'fra_schools_filter': SessionPlayersFilterFRASchools(request).get(),
-        }
-
-    @hookimpl
     def get_player_form_template_context(
         self, web_context: 'PlayerAdminWebContext'
     ) -> dict[str, Any]:
@@ -203,48 +172,20 @@ class FRASchoolsPlugin(Plugin):
     ):
         templates_by_section['identity'].append('/fra_schools_player_form_fields.html')
 
-    @hookimpl
-    def get_extra_player_columns(self) -> Iterable[ExtraAdminColumn]:
-        return [
-            ExtraAdminColumn(
-                at='yob',
-                header_template='/fra_schools_player_school_header.html',
-                cell_template='/fra_schools_player_school_cell.html',
-            ),
-        ]
-
-    @hookimpl
-    def player_filters(
-        self,
-        web_context: PlayerAdminWebContext,
-        template_context: dict[str, Any],
-    ) -> list[Callable[[Player], bool]]:
-        request = web_context.request
-        filter_schools = SessionPlayersFilterFRASchools(request).get()
-        schools_ids = template_context['fra_school_ids']
-        filters: list[Callable[[Player], bool]] = []
-        if len(filter_schools) not in (0, len(schools_ids)):
-            filters.append(
-                lambda player: (
-                    FRASchoolsUtils.get_player_plugin_data(player).fra_school_id or 0
-                )
-                in filter_schools
-            )
-        return filters
-
-    @hookimpl
-    def clear_player_filters(self, request: HTMXRequest):
-        SessionPlayersFilterFRASchools(request).unset()
-
-    @hookimpl
-    def player_sort_key(self, player: 'Player', sort_type: str) -> tuple | None:
-        if sort_type == 'fra_schools_school':
-            school = FRASchoolsUtils.get_player_school(player) or FRASchool()
-            return school.sort_key + (
-                player.last_name,
-                player.first_name,
-            )
-        return None
+    @hookimpl(trylast=True)
+    def alter_players_tab_columns(self, columns: list[PlayersTabColumn]):
+        for column in columns:
+            if column.__class__ in [
+                FederationPlayersTabColumn,
+                FfeLeaguePlayersTabColumn,
+                ClubPlayersTabColumn,
+            ]:
+                column.is_default_visible = False
+        PluginUtils.insert_on_isinstance(
+            columns,
+            FraSchoolsPlayersTabColumn(),
+            ClubPlayersTabColumn,
+        )
 
     @hookimpl
     def insert_player_datasheet_columns(self, datasheet_columns: list[DatasheetColumn]):

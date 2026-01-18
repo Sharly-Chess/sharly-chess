@@ -1,9 +1,28 @@
 from functools import partial
-from typing import Callable
+from typing import Callable, Collection
 
 from data.columns import player_table as pt, board_table as bt
 from data.columns.board_table import BoardColumn
 from data.columns.player_table import TournamentPlayerTableColumn
+from data.columns.players_tab import (
+    PlayersTabColumn,
+    NamePlayersTabColumn,
+    CheckInPlayersTabColumn,
+    RatingPlayersTabColumn,
+    FederationPlayersTabColumn,
+    ClubPlayersTabColumn,
+    DateOfBirthPlayersTabColumn,
+    CategoryPlayersTabColumn,
+    MailPlayersTabColumn,
+    PhonePlayersTabColumn,
+    GenderPlayersTabColumn,
+    FixedPlayersTabColumn,
+    FideIdPlayersTabColumn,
+    PaymentPlayersTabColumn,
+    TournamentPlayersTabColumn,
+    CommentPlayersTabColumn,
+    RecordPlayersTabColumn,
+)
 from data.event import Event
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
@@ -198,3 +217,63 @@ class BoardColumnHandler:
             column_types.append(bt.BlackRealPointsColumn)
         column_types.append(bt.BlackPointsColumn)
         return self.get_columns(column_types, tournament)
+
+
+class PlayersTabColumnHandler:
+    def __init__(self, event: Event):
+        self._columns_by_id = self._get_columns_by_id(event)
+
+    @staticmethod
+    def _get_columns_by_id(event: Event) -> dict[str, PlayersTabColumn]:
+        columns: list[PlayersTabColumn] = [
+            NamePlayersTabColumn(),
+            CheckInPlayersTabColumn(),
+            RatingPlayersTabColumn(),
+            FederationPlayersTabColumn(),
+            ClubPlayersTabColumn(),
+            DateOfBirthPlayersTabColumn(),
+            CategoryPlayersTabColumn(),
+            MailPlayersTabColumn(),
+            PhonePlayersTabColumn(),
+            GenderPlayersTabColumn(),
+            FixedPlayersTabColumn(),
+            FideIdPlayersTabColumn(),
+            PaymentPlayersTabColumn(),
+            TournamentPlayersTabColumn(),
+            CommentPlayersTabColumn(),
+            RecordPlayersTabColumn(),
+        ]
+        plugin_manager.hook_for_event(event, 'alter_players_tab_columns')(
+            columns=columns
+        )
+        return {column.id: column for column in columns}
+
+    def set_column_states(
+        self,
+        disabled_column_ids: list[str],
+        hidden_column_ids: list[str] | None = None,
+    ):
+        for column in self.columns:
+            column.is_enabled = column.id not in disabled_column_ids
+            column.is_visible = (
+                column.id not in hidden_column_ids
+                if hidden_column_ids is not None
+                else column.is_default_visible
+            )
+
+    @property
+    def columns(self) -> Collection[PlayersTabColumn]:
+        return self._columns_by_id.values()
+
+    @property
+    def visible_columns(self) -> list[PlayersTabColumn]:
+        return [
+            column for column in self.columns if column.is_visible and column.is_enabled
+        ]
+
+    @property
+    def enabled_columns(self) -> list[PlayersTabColumn]:
+        return [column for column in self.columns if column.is_enabled]
+
+    def get_column(self, column_id: str) -> PlayersTabColumn | None:
+        return self._columns_by_id.get(column_id, None)

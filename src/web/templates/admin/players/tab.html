@@ -50,7 +50,6 @@
                 {% if allowed_tournaments %}
                     {% include 'check_in_tournaments.html' %}
                 {% endif %}
-                {% include 'filter_columns.html' %}
                 <span
                     {% if not client.can_add_player %}
                         {{ macros.tooltip_attributes('warning', _('You are not allowed to add players to the event.'), 'top') }}
@@ -78,26 +77,29 @@
                     </button>
                 </span>
             </div>
+            <div class="w-100 d-flex gap-2 pt-1">
+                <span style="width: 300px">
+                    {{ admin_macros.text_input(
+                        name='search',
+                        input_type='search',
+                        label='',
+                        hx_get=url_for('admin-event-players-search', event_uniq_id=admin_event.uniq_id),
+                        hx_target='#players-table',
+                        hx_trigger='input changed delay:0.5s, paste delay:0.1s, search',
+                        hx_indicator='#please-wait',
+                        placeholder=_('Search *** PLACEHOLDER'),
+                        data={'search': search or ''},
+                    ) }}
+                </span>
+                <div class="flex-grow-1"></div>
+                {% include 'filter_columns.html' %}
+            </div>
         </div>
     </div>
 
+
     <section class="pb-1">
-        <table
-            id="players-table"
-            class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
-        >
-            {% include '/admin/players/table_head.html' %}
-            {% include '/admin/players/table_players_page.html' %}
-            <tbody>
-                <tr id="players-table-empty-row">
-                    {% if not admin_players %}
-                        <td colspan="100%" class="px-3 text-center">
-                            {{ _('No players.') }}
-                        </td>
-                    {% endif %}
-                </tr>
-            </tbody>
-        </table>
+        {% include '/admin/players/table/table.html' %}
     </section>
 {% endwith %}
 
