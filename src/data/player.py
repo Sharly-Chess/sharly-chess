@@ -179,12 +179,16 @@ class Player:
         return self.stored_player.check_in
 
     @cached_property
-    def single_tournament(self) -> 'Tournament':
+    def single_tournament_id(self) -> int:
         """The tournament this player is assigned to (for single tournament events)"""
         for tournament in self.event.tournaments:
             if self.id in tournament.tournament_players_by_id:
-                return tournament
+                return tournament.id
         raise RuntimeError('Player not assigned to a tournament')
+
+    @property
+    def single_tournament(self) -> 'Tournament':
+        return self.event.tournaments_by_id[self.single_tournament_id]
 
     @property
     def single_tournament_player(self) -> 'TournamentPlayer':
