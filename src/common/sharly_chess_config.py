@@ -27,6 +27,7 @@ from common.i18n import (
     normalize_bcp47_to_locale,
     read_macos_global_prefs,
     set_locale,
+    get_locale,
 )
 from common.logger import set_logging_config, get_logger
 from common.network import find_lan_interfaces, LOCALHOST_IP
@@ -52,6 +53,7 @@ class SharlyChessConfig(metaclass=Singleton):
         self.web_port: int | None = None
         self._stored_config: StoredConfig | None = None
         self._date_formatter: DateFormatter | None = None
+        self._federations_by_locale: dict[str, dict[str, str]] = {}
 
     @staticmethod
     def _get_system_user_locale() -> str | None:
@@ -539,7 +541,15 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def federations(self) -> dict[str, str]:
-        """Returns The federation names."""
+        """Get the federation names. To avoid translating all
+        the names multiple times the values are stored by locale."""
+        locale_ = get_locale()
+        if locale_ not in self._federations_by_locale:
+            self._federations_by_locale[locale_] = self._get_localized_federations()
+        return self._federations_by_locale[locale_]
+
+    @staticmethod
+    def _get_localized_federations() -> dict[str, str]:
         return {
             'AFG': _('Afghanistan'),
             'ALB': _('Albania'),
