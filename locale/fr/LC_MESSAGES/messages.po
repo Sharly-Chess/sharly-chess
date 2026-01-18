@@ -1481,7 +1481,7 @@ msgid "DMG does not contain exactly one folder as expected."
 msgstr "Le DMG ne contient pas un unique dossier comme attendu."
 
 msgid "DOB *** DATE-OF-BIRTH COLUMN HEADER"
-msgstr "D.N."
+msgstr "DdN"
 
 msgid "DOUBLE"
 msgstr "DOUBLE"
@@ -5448,7 +5448,7 @@ msgid "This name is already used."
 msgstr "Ce nom est déjà utilisé."
 
 msgid "This player order does not represent the rankings as it does not include the tie-breaks."
-msgstr "Cet ordre de joueur·euses ne représente pas le classement vu qu'il ne tient pas compte des départages."
+msgstr "Cet ordre des joueur·euses ne correspond pas au classement car il ne prend pas en compte les départages."
 
 msgid "This rotator is private (not visible by the spectators)."
 msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."
@@ -6537,7 +6537,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "This tournament is finished, you can not add players any longer."
-#~ msgstr ""
 
