@@ -186,7 +186,6 @@ class Player:
             for tournament_player in tournament.tournament_players:
                 if tournament_player.id == self.id:
                     return tournament
-
         raise RuntimeError('Player not assigned to a tournament')
 
     @property
