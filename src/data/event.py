@@ -515,7 +515,7 @@ class Event:
             )
             database.delete_stored_tournament_player(source_tournament.id, player.id)
             del source_tournament.tournament_players_by_id[player.id]
-        player.single_tournament = destination_tournament
+        player.single_tournament_id = destination_tournament.id
         self.clear_player_cache()
 
     @cached_property
