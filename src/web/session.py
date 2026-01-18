@@ -10,10 +10,7 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.input_output import DataSourceManager
 from data.input_output.dict_reader import dict_to_dataclass
-from data.player import Federation, Club
-from data.player_categories import PlayerCategory
 from data.safety_mode import SafetyMode
-from utils.enum import PlayerGender
 
 logger: Logger = get_logger()
 
@@ -109,13 +106,18 @@ class SubKeySessionVariable[T](SessionVariable[T], ABC):
         self.request.session[self.key].pop(self.sub_key, None)
 
 
-class SubKeyNoneSessionVariable[T](SubKeySessionVariable[T | None], ABC):
+class EventSessionVariable[T](SubKeySessionVariable[T], ABC):
+    def __init__(self, request: HTMXRequest, event_uniq_id: str):
+        super().__init__(request, event_uniq_id)
+
+
+class EventNoneSessionVariable[T](EventSessionVariable[T | None], ABC):
     @property
     def default_value(self) -> T | None:
         return None
 
 
-class TournamentSessionVariable[T](SubKeySessionVariable[T], ABC):
+class TournamentSessionVariable[T](EventSessionVariable[T], ABC):
     def __init__(self, request: HTMXRequest, event_uniq_id: str, tournament_id: int):
         super().__init__(request, f'{event_uniq_id}|{tournament_id}')
 
@@ -166,13 +168,13 @@ class DataclassSessionVariable[T](SessionVariable[T], ABC):
         self.request.session[self.key] = asdict(cast(Any, value))
 
 
-class SessionUserAccountId(SubKeyNoneSessionVariable[int]):
+class SessionUserAccountId(EventNoneSessionVariable[int]):
     @property
     def key(self) -> str:
         return 'account_id'
 
 
-class SessionUserAccountPasswordHash(SubKeyNoneSessionVariable[str]):
+class SessionUserAccountPasswordHash(EventNoneSessionVariable[str]):
     @property
     def key(self) -> str:
         return 'account_password_hash'
@@ -316,102 +318,61 @@ class SessionLocale(SessionVariable[str]):
         return locale
 
 
+class SessionPlayersSearch(EventNoneSessionVariable[str]):
+    @property
+    def key(self) -> str:
+        return 'players_table_search'
+
+
+class SessionPlayersHiddenColumns(EventNoneSessionVariable[list[str]]):
+    @property
+    def key(self) -> str:
+        return 'players_hidden_columns'
+
+
+class SessionPlayersDisabledColumns(EventSessionVariable[list[str]]):
+    @property
+    def key(self) -> str:
+        return 'players_disabled_columns'
+
+    @property
+    def default_value(self) -> list[str]:
+        return []
+
+
+class SessionPlayersSort(EventSessionVariable[tuple[str, bool]]):
+    @property
+    def key(self) -> str:
+        return 'players_sorting'
+
+    @property
+    def default_value(self) -> tuple[str, bool]:
+        return '', True
+
+
+class SessionPlayersFilters(EventSessionVariable[dict[str, list[str]]]):
+    @property
+    def key(self) -> str:
+        return 'players_filters'
+
+    @property
+    def default_value(self) -> dict[str, list[str]]:
+        return {}
+
+    def set_column_filters(self, column_id: str, filter_keys: list[str]):
+        filters = self.get()
+        if not filter_keys:
+            if column_id in filters:
+                del filters[column_id]
+        else:
+            filters[column_id] = filter_keys
+        self.set(filters)
+
+
 class SessionPlayersEvent(NoneSessionVariable[str]):
     @property
     def key(self) -> str:
         return 'players_event'
-
-
-class SessionPlayersSort(SessionVariable[str]):
-    @property
-    def key(self) -> str:
-        return 'players_sort'
-
-    @property
-    def default_value(self) -> str:
-        return 'alpha'
-
-
-class SessionPlayersFilterColumns(ListSessionVariable[str]):
-    @property
-    def key(self) -> str:
-        return 'players_filter_columns'
-
-    @property
-    def default_value(self) -> list[str]:
-        return SharlyChessConfig.default_players_filter_columns
-
-
-class SessionPlayersFilterName(StrSessionVariable):
-    @property
-    def key(self) -> str:
-        return 'players_filter_name'
-
-
-class SessionPlayersFilterFederations(WrapperListSessionVariable[Federation]):
-    @property
-    def key(self) -> str:
-        return 'players_filter_federations'
-
-    def from_session_value(self, value: Any) -> Federation:
-        return Federation(value)
-
-    def to_session_value(self, element: Federation) -> Any:
-        return element.name
-
-
-class SessionPlayersFilterClubs(WrapperListSessionVariable[Club]):
-    @property
-    def key(self) -> str:
-        return 'players_filter_clubs'
-
-    def from_session_value(self, value: Any) -> Club:
-        return Club(value)
-
-    def to_session_value(self, element: Club) -> Any:
-        return element.name
-
-
-class SessionPlayersFilterClubsSearch(StrSessionVariable):
-    @property
-    def key(self) -> str:
-        return 'players_filter_clubs_search'
-
-
-class SessionPlayersFilterGenders(WrapperListSessionVariable[PlayerGender]):
-    @property
-    def key(self) -> str:
-        return 'players_filter_genders'
-
-    def from_session_value(self, value: Any) -> PlayerGender:
-        return PlayerGender(value)
-
-    def to_session_value(self, element: PlayerGender) -> Any:
-        return element.value
-
-
-class SessionPlayersFilterCheckIns(ListSessionVariable[bool | None]):
-    @property
-    def key(self) -> str:
-        return 'players_filter_check_ins'
-
-
-class SessionPlayersFilterTournaments(ListSessionVariable[int]):
-    @property
-    def key(self) -> str:
-        return 'players_filter_tournaments'
-
-
-class SessionPlayersFilterCategories(WrapperListSessionVariable[PlayerCategory]):
-    @property
-    def key(self) -> str:
-        return 'players_filter_categories'
-
-    def from_session_value(self, value: Any) -> PlayerCategory:
-        return PlayerCategory.from_id(value)
-
-    def to_session_value(self, element: PlayerCategory) -> Any:
-        return element.id
 
 
 class SessionPlayersSearchResultsId(NoneSessionVariable[int]):
@@ -465,7 +426,7 @@ class SessionPairingsPageIdentifier(DataclassSessionVariable[PairingsPageIdentif
         return 'pairings_page_identifier'
 
 
-class SessionPairingsSelectedTournament(SubKeyNoneSessionVariable[int]):
+class SessionPairingsSelectedTournament(EventNoneSessionVariable[int]):
     @property
     def key(self) -> str:
         return 'pairings_selected_tournament'
@@ -499,7 +460,7 @@ class SessionPrizesAddOtherActive(BoolSessionVariable):
         return 'prizes_add_other_active'
 
 
-class SessionPrintLastTournaments(SubKeySessionVariable[list[int]]):
+class SessionPrintLastTournaments(EventSessionVariable[list[int]]):
     @property
     def key(self) -> str:
         return 'print_last_tournaments'

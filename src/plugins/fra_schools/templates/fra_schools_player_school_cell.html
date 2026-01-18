@@ -1,9 +1,8 @@
-{% set school = fra_schools_utils.get_player_school(value) %}
-<td
-    class="text-nowrap compact-col"
+{% set school = column.get_player_school(player) %}
+<span
     {% if school and school.tooltip %}
         {{ macros.tooltip_attributes('', school.tooltip, 'right') }}
     {% endif %}
 >
     {% if school %}{{ school.short_name }}{% endif %}
-</td>
+</span>

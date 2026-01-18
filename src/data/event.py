@@ -374,15 +374,6 @@ class Event:
             if not tournament.finished
         ]
 
-    @property
-    def player_addable_tournaments(self) -> list[Tournament]:
-        """List of tournaments in which players can be added."""
-        return [
-            tournament
-            for tournament in self.tournaments_sorted_by_index
-            if tournament.can_add_players
-        ]
-
     @cached_property
     def plugin_data(self) -> dict[str, PluginData]:
         return {
@@ -508,7 +499,7 @@ class Event:
         self, player: Player, destination_tournament: Tournament
     ):
         """Moves the given player from its current tournament to *destination_tournament*."""
-        source_tournament = player.single_tournament_player.tournament
+        source_tournament = player.single_tournament
         with EventDatabase(self.uniq_id, write=True) as database:
             destination_tournament.add_player_to_tournament(
                 player.stored_player, database

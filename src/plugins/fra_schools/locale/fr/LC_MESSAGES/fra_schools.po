@@ -39,9 +39,6 @@ msgstr "Équipe complète"
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
 
-msgid "Filter the schools."
-msgstr "Filtrer les établissements scolaires."
-
 msgid "French School Competitions"
 msgstr "Compétitions scolaires françaises"
 
@@ -74,9 +71,6 @@ msgstr "Filles manquantes : %(count)d"
 msgid "Name"
 msgstr "Nom"
 
-msgid "OK"
-msgstr "OK"
-
 #, python-format
 msgid "Other missing players: %(count)d"
 msgstr "Autres joueur·euses manquant·es : %(count)d"
@@ -96,7 +90,7 @@ msgstr "Classement par établissement après la ronde n°{round}"
 msgid "School"
 msgstr "Établissement"
 
-msgid "School *** SCHOOL FOR TABLE HEADER"
+msgid "School *** SCHOOL COLUMN HEADER"
 msgstr "Établissement"
 
 msgid "Schools"
@@ -105,9 +99,6 @@ msgstr "Établissements"
 #, python-format
 msgid "Search by: %(fields)s"
 msgstr "Rechercher par : %(fields)s"
-
-msgid "Sort the players by school."
-msgstr "Trier les joueur·euses par établissement scolaire."
 
 #, python-format
 msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."

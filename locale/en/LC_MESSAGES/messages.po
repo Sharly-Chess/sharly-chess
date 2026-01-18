@@ -748,7 +748,7 @@ msgstr ""
 msgid "Base date"
 msgstr ""
 
-msgid "Bd. *** BOARD NUMBER FOR TABLE HEADER"
+msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
 msgstr "Bd."
 
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
@@ -787,7 +787,7 @@ msgstr ""
 msgid "Blitz"
 msgstr ""
 
-msgid "Blitz *** BLITZ ELO FOR TABLE HEADER"
+msgid "Blitz *** BLITZ ELO COLUMN HEADER"
 msgstr "Blitz"
 
 msgid "Blitz rating"
@@ -970,10 +970,7 @@ msgstr ""
 msgid "Cash"
 msgstr ""
 
-msgid "Cat *** CATEGORY COLUMN HEADER FOR PLAYERS"
-msgstr "Cat"
-
-msgid "Cat *** CATEGORY FOR TABLE HEADER"
+msgid "Cat. *** CATEGORY COLUMN HEADER"
 msgstr "Cat."
 
 msgid "Categories"
@@ -987,9 +984,6 @@ msgstr ""
 
 msgid "Category"
 msgstr ""
-
-msgid "Category *** CATEGORY FOR PLAYERS COLUMNS"
-msgstr "Category"
 
 #, python-format
 msgid "Category [%(category)s] successfully created!"
@@ -1022,9 +1016,6 @@ msgstr ""
 msgid "Check-in"
 msgstr ""
 
-msgid "Check-in *** CHECK-IN FOR PLAYERS COLUMNS"
-msgstr "Check-in"
-
 msgid "Check-in / Results ({num})"
 msgstr ""
 
@@ -1035,10 +1026,6 @@ msgid "Check-in / Results entry ({tournament_name})"
 msgstr ""
 
 msgid "Check-in closed"
-msgstr ""
-
-#, python-format
-msgid "Check-in is closed for tournament [%(tournament)s]."
 msgstr ""
 
 msgid "Check-in is closed for tournament [{tournament}]."
@@ -1149,13 +1136,7 @@ msgstr ""
 msgid "Club"
 msgstr ""
 
-msgid "Club *** CLUB COLUMN HEADER FOR PLAYERS"
-msgstr "Club"
-
-msgid "Club *** CLUB FOR PLAYERS COLUMNS"
-msgstr "Club"
-
-msgid "Club *** CLUB FOR TABLE HEADER"
+msgid "Club *** CLUB COLUMN HEADER"
 msgstr "Club"
 
 msgid "Club threshold"
@@ -1207,13 +1188,13 @@ msgstr ""
 msgid "Comma-separated board numbers; if this field is set, other fields are omitted."
 msgstr ""
 
-msgid "Comment *** COMMENT FOR PLAYERS COLUMNS"
-msgstr "Comment"
+msgid "Comment"
+msgstr ""
 
 msgid "Comment:"
 msgstr ""
 
-msgid "Comments *** COMMENTS FOR TABLE HEADER"
+msgid "Comments *** COMMENTS COLUMN HEADER"
 msgstr "Comments"
 
 msgid "Comoros Islands"
@@ -2043,11 +2024,14 @@ msgstr ""
 msgid "El Salvador"
 msgstr ""
 
-msgid "Elo *** ELO COLUMN HEADER FOR PLAYERS"
+msgid "Elo *** ELO RATING"
 msgstr "Elo"
 
-msgid "Elo *** STD ELO FOR TABLE HEADER"
+msgid "Elo *** STD ELO COLUMN HEADER"
 msgstr "Elo"
+
+msgid "Email address"
+msgstr ""
 
 msgid "Email:"
 msgstr ""
@@ -2162,17 +2146,8 @@ msgstr "F"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
-msgid "FFE *** FFE FOR PLAYERS COLUMNS"
-msgstr "FFE"
-
 msgid "FIDE"
 msgstr ""
-
-msgid "FIDE *** FIDE COLUMN HEADER FOR PLAYERS"
-msgstr "Fide"
-
-msgid "FIDE *** FIDE FOR PLAYERS COLUMNS"
-msgstr "Fide"
 
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
@@ -2238,17 +2213,11 @@ msgstr "Feb"
 msgid "February"
 msgstr ""
 
-msgid "Fed *** FEDERATION FOR TABLE HEADER"
-msgstr "Fed."
-
-msgid "Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS"
+msgid "Fed. *** FEDERATION COLUMN HEADER"
 msgstr "Fed."
 
 msgid "Federation"
 msgstr ""
-
-msgid "Federation *** FEDERATION FOR PLAYERS COLUMNS"
-msgstr "Fed."
 
 msgid "Federation plugins"
 msgstr ""
@@ -2286,24 +2255,6 @@ msgstr ""
 msgid "Filter out players with a lower rating."
 msgstr ""
 
-msgid "Filter the categories."
-msgstr ""
-
-msgid "Filter the check-in status."
-msgstr ""
-
-msgid "Filter the clubs."
-msgstr ""
-
-msgid "Filter the federations."
-msgstr ""
-
-msgid "Filter the genders."
-msgstr ""
-
-msgid "Filter the tournaments."
-msgstr ""
-
 msgid "Finland"
 msgstr ""
 
@@ -2332,8 +2283,8 @@ msgstr ""
 msgid "First round"
 msgstr ""
 
-msgid "Fixed board *** FIXED FOR PLAYERS COLUMNS"
-msgstr "Fixed board"
+msgid "Fixed board"
+msgstr ""
 
 msgid "Fixed board:"
 msgstr ""
@@ -2411,7 +2362,7 @@ msgstr ""
 msgid "Games won with Black"
 msgstr ""
 
-msgid "Gen *** GENDER FOR TABLE HEADER"
+msgid "Gen. *** GENDER COLUMN HEADER"
 msgstr "Gen."
 
 msgid "Gender"
@@ -2419,9 +2370,6 @@ msgstr ""
 
 msgid "Gender ({gender})"
 msgstr ""
-
-msgid "Gender *** GENDER FOR PLAYERS COLUMNS"
-msgstr "Gender"
 
 msgid "Gender:"
 msgstr ""
@@ -2962,9 +2910,6 @@ msgstr ""
 msgid "Madagascar"
 msgstr ""
 
-msgid "Mail *** MAIL FOR PLAYERS COLUMNS"
-msgstr "Mail"
-
 #, python-format
 msgid "Mail: %(mail)s (click to copy to the clipboard)."
 msgstr ""
@@ -3190,13 +3135,7 @@ msgstr "N"
 msgid "Name"
 msgstr ""
 
-msgid "Name *** NAME COLUMN HEADER FOR PLAYERS"
-msgstr "Name"
-
-msgid "Name *** NAME FOR PLAYERS COLUMNS"
-msgstr "Name"
-
-msgid "Name *** NAME FOR TABLE HEADER"
+msgid "Name *** NAME COLUMN HEADER"
 msgstr "Name"
 
 msgid "Name:"
@@ -3284,6 +3223,9 @@ msgid "New tournament"
 msgstr ""
 
 msgid "Next round"
+msgstr ""
+
+msgid "Next round bye"
 msgstr ""
 
 msgid "Next tournament"
@@ -3481,7 +3423,7 @@ msgstr ""
 msgid "No updates found."
 msgstr ""
 
-msgid "No. *** NB FOR TABLE HEADER"
+msgid "No. *** NB COLUMN HEADER"
 msgstr "No."
 
 msgid "No. final rounds without byes:"
@@ -3714,11 +3656,8 @@ msgstr ""
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
 msgstr ""
 
-msgid "Owed *** OWED COLUMN HEADER FOR PLAYERS"
+msgid "Owed *** OWED COLUMN HEADER"
 msgstr "Owed"
-
-msgid "Owed/paid *** OWED/PAID FOR PLAYERS COLUMNS"
-msgstr "Owed/paid"
 
 msgid "Owed:"
 msgstr ""
@@ -3741,7 +3680,7 @@ msgstr ""
 msgid "PLAYER'S NAME"
 msgstr ""
 
-msgid "Paid *** PAID COLUMN HEADER FOR PLAYERS"
+msgid "Paid *** PAID COLUMN HEADER"
 msgstr "Paid"
 
 msgid "Paid:"
@@ -3912,8 +3851,11 @@ msgstr ""
 msgid "Philippines"
 msgstr ""
 
-msgid "Phone *** PHONE FOR PLAYERS COLUMNS"
-msgstr "Phone"
+msgid "Phone"
+msgstr ""
+
+msgid "Phone number"
+msgstr ""
 
 msgid "Phone number:"
 msgstr ""
@@ -4171,7 +4113,7 @@ msgstr ""
 msgid "Printing"
 msgstr ""
 
-msgid "Prize *** PRIZE FOR TABLE HEADER"
+msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prize"
 
 msgid "Prize Brackets"
@@ -4246,7 +4188,7 @@ msgstr ""
 msgid "Proxy (if any):"
 msgstr ""
 
-msgid "Pts *** POINTS FOR TABLE HEADER"
+msgid "Pts *** POINTS COLUMN HEADER"
 msgstr "Pts"
 
 msgid "Public event"
@@ -4286,10 +4228,10 @@ msgid "Qatar"
 msgstr ""
 
 #, python-format
-msgid "R %(round)d *** ROUND FOR TABLE HEADER"
+msgid "R %(round)d *** ROUND COLUMN HEADER"
 msgstr "R %(round)d"
 
-msgid "R {round} *** ROUND FOR TABLE HEADER"
+msgid "R {round} *** ROUND COLUMN HEADER"
 msgstr "R {round}"
 
 msgid "RES"
@@ -4346,7 +4288,7 @@ msgstr ""
 msgid "Rapid"
 msgstr ""
 
-msgid "Rapid *** RAPID ELO FOR TABLE HEADER"
+msgid "Rapid *** RAPID ELO COLUMN HEADER"
 msgstr "Rapid"
 
 msgid "Rapid rating"
@@ -4357,9 +4299,6 @@ msgstr ""
 
 msgid "Rating"
 msgstr ""
-
-msgid "Rating *** RATING FOR PLAYERS COLUMNS"
-msgstr "Rating"
 
 msgid "Rating change"
 msgstr ""
@@ -4388,9 +4327,6 @@ msgstr ""
 
 msgid "Record"
 msgstr ""
-
-msgid "Record *** RECORD FOR PLAYERS COLUMNS"
-msgstr "Record"
 
 msgid "Reference to unknown board [{board_id}]."
 msgstr ""
@@ -4450,7 +4386,7 @@ msgstr ""
 msgid "Required by plugin <b>%(plugin)s</b>."
 msgstr ""
 
-msgid "Res. ** RESULT FOR TABLE HEADER"
+msgid "Res. ** RESULT COLUMN HEADER"
 msgstr "Res."
 
 msgid "Reset manual tie-break"
@@ -4501,10 +4437,10 @@ msgstr ""
 msgid "Return to tournament"
 msgstr ""
 
-msgid "Rk. *** RANK FOR TABLE HEADER"
+msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Rk."
 
-msgid "Rk. O. *** RANK OVERALL FOR TABLE HEADER"
+msgid "Rk. O. *** RANK OVERALL COLUMN HEADER"
 msgstr "Rk. O."
 
 msgid "Rnd.Boa"
@@ -4730,8 +4666,11 @@ msgstr ""
 msgid "Scroll down to review all the norms…"
 msgstr ""
 
-msgid "Search"
-msgstr ""
+msgid "Search *** PLACEHOLDER"
+msgstr "Rechercher"
+
+msgid "Search *** SECTION TITLE"
+msgstr "Recherche"
 
 #, python-format
 msgid "Search by: %(fields)s"
@@ -5210,9 +5149,6 @@ msgstr ""
 msgid "The lowest rating that a player should have for their expected score to be greater than or equal to their score."
 msgstr ""
 
-msgid "The mail addresses."
-msgstr ""
-
 msgid "The main category is open to all the players."
 msgstr ""
 
@@ -5312,9 +5248,6 @@ msgid "The pairing number is already attributed."
 msgstr ""
 
 msgid "The permissions of this account can not be updated."
-msgstr ""
-
-msgid "The phone numbers."
 msgstr ""
 
 msgid "The player did not win any games against FIDE rated opponents."
@@ -5663,9 +5596,6 @@ msgstr ""
 msgid "Tournament"
 msgstr ""
 
-msgid "Tournament *** TOURNAMENT COLUMN HEADER FOR PLAYERS"
-msgstr "Tournament"
-
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournament"
 
@@ -5690,9 +5620,6 @@ msgid "Tournament [{tournament}] has been deleted."
 msgstr ""
 
 msgid "Tournament [{tournament}] has been updated."
-msgstr ""
-
-msgid "Tournament [{tournament}] is finished, you can not add players any longer."
 msgstr ""
 
 msgid "Tournament [{tournament}] successfully imported."
@@ -6188,7 +6115,7 @@ msgstr ""
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y"
 
-msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER FOR PLAYERS"
+msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER"
 msgstr "YOB"
 
 msgid "YYYY or {date_format}"
@@ -6200,8 +6127,8 @@ msgstr ""
 msgid "YYYY/MM/DD"
 msgstr ""
 
-msgid "Year of birth *** YEAR OF BIRTH FOR PLAYERS COLUMNS"
-msgstr "YOB"
+msgid "Year of birth"
+msgstr ""
 
 msgid "Yemen"
 msgstr ""

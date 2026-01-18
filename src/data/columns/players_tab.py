@@ -1,0 +1,618 @@
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from datetime import date
+from typing import Any, Counter, Callable
+
+from common.i18n import _
+from data.event import Event
+from data.player import Player, TournamentPlayer
+from data.player_categories import PlayerCategory
+from data.tournament import Tournament
+from utils.entity import IdentifiableEntity
+from utils.enum import CheckInStatus, PlayerGender
+from web.utils import Column
+
+
+@dataclass
+class ColumnFilterValue:
+    key: str
+    value: Any
+    count: int
+    is_active: bool
+
+
+class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
+    """Base class for columns of the players tab."""
+
+    def __init__(self):
+        # Stored states of the column
+        self.is_visible: bool | None = None
+        self.is_enabled: bool | None = None
+        self.filter_values: list[ColumnFilterValue] = []
+
+        # Overridable by plugins
+        self.sort_key_function: Callable[[Player], tuple] = self._get_sort_key
+        self.is_default_visible = True
+
+    @property
+    def is_hideable(self) -> bool:
+        """Defines if the column can be hidden."""
+        return True
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-nowrap text-center'
+
+    @property
+    def header_content(self) -> str:
+        return self.name
+
+    @property
+    def is_tournament_column(self) -> bool:
+        """Defines if the column only in usable in a single tournament context."""
+        return False
+
+    def is_enabled_for_players(self, players: list[Player]) -> bool:
+        """Defines if the column is enabled for the given players.
+        Disabled columns do not appear in the interface.
+        If this can be determined at tournament level,
+        use is_enabled_for_tournaments instead."""
+        return True
+
+    def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
+        """Defines if the column is enabled for the given tournaments."""
+        return True
+
+    # -------------------------------------------------------------------------
+    # Sort / Filter
+    # -------------------------------------------------------------------------
+
+    @property
+    def is_sortable(self) -> bool:
+        """Defines if the rows can be sorted by this column."""
+        return False
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        """Get the sort key from a player to sort by this column.
+        After the values of this key the players are sorted by name."""
+        raise NotImplementedError('Required if is_sortable=True')
+
+    @property
+    def is_filtrable(self) -> bool:
+        """Defines if the rows can be filtered by this column."""
+        return False
+
+    def get_filter_key(self, player: Player) -> str:
+        """Get from a player the key used to gather them in the filters."""
+        raise NotImplementedError('Required if is_filtrable=True')
+
+    @property
+    def filter_row_template(self) -> str:
+        """Path of the template describing the content of the row of the filter.
+        The template takes as input the variable `filter_value`."""
+        return ''
+
+    def get_filter_row_content(self, value: Any) -> str:
+        """Get the of a filter row from the value."""
+        return value
+
+    def get_filter_row_tooltip(self, value: Any) -> str:
+        """Get the of a filter row from the value."""
+        return ''
+
+    def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
+        """Get a value from the key of a filter.
+        This value is passed to the filter row template.
+        Raise a ValueError if the value is not a valid form key."""
+        return filter_key
+
+    @property
+    def filter_mandatory_keys(self) -> list[str]:
+        """Get a list of keys that will be included in the
+        filter event if no player matches that key."""
+        return []
+
+    def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
+        return filter_value.key
+
+    def set_filter_values(
+        self, players: list[Player], event: Event, active_keys: list[str]
+    ):
+        count_by_key: Counter[str] = Counter[str]()
+        for key in self.filter_mandatory_keys:
+            count_by_key[key] = 0
+        for player in players:
+            count_by_key[self.get_filter_key(player)] += 1
+
+        filter_values = [
+            ColumnFilterValue(
+                key=key,
+                value=self.get_filter_value_from_key(key, event),
+                count=count,
+                is_active=key in active_keys,
+            )
+            for key, count in count_by_key.items()
+        ]
+        self.filter_values = sorted(filter_values, key=self.get_filter_value_sort_key)
+
+    @property
+    def has_active_filter_value(self) -> bool:
+        return any(filter_value.is_active for filter_value in self.filter_values)
+
+    @property
+    def all_filter_value_active(self) -> bool:
+        return all(filter_value.is_active for filter_value in self.filter_values)
+
+
+class FilterPlayersTabColumn(PlayersTabColumn, ABC):
+    @property
+    def is_filtrable(self) -> bool:
+        return True
+
+    @abstractmethod
+    def get_filter_key(self, player: Player) -> str: ...
+
+
+class SortPlayersTabColumn(PlayersTabColumn, ABC):
+    @property
+    def is_sortable(self) -> bool:
+        return True
+
+    @abstractmethod
+    def _get_sort_key(self, player: Player) -> tuple: ...
+
+
+class FilterSortPlayersTabColumn(FilterPlayersTabColumn, SortPlayersTabColumn, ABC):
+    """Base class for players tab columns that can both be filtered and sorted."""
+
+
+class NamePlayersTabColumn(SortPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'name'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Name')
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return tuple()
+
+    @property
+    def is_hideable(self) -> bool:
+        return False
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-nowrap position-sticky px-3 table-sticky-border'
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/name.html'
+
+
+class CheckInPlayersTabColumn(FilterPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'check_in'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Check-in')
+
+    @property
+    def header_template(self) -> str:
+        return 'headers/check_in.html'
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/check_in.html'
+
+    @property
+    def filter_row_template(self) -> str:
+        return 'filter_rows/check_in.html'
+
+    @property
+    def is_tournament_column(self) -> bool:
+        return True
+
+    def get_filter_key(self, player: Player) -> str:
+        return str(player.single_tournament_player.check_in_status.value)
+
+    def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
+        return CheckInStatus(int(filter_key))
+
+    @property
+    def filter_mandatory_keys(self) -> list[str]:
+        return [str(status.value) for status in CheckInStatus]
+
+    def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
+        return any(tournament.check_in_open for tournament in tournaments)
+
+    def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
+        return filter_value.value
+
+
+class RatingPlayersTabColumn(SortPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'rating'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Elo *** ELO RATING')
+
+    @property
+    def is_tournament_column(self) -> bool:
+        return True
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        assert isinstance(player, TournamentPlayer)
+        return (player.rating,)
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/rating.html'
+
+    @property
+    def is_hideable(self) -> bool:
+        return False
+
+
+class FederationPlayersTabColumn(FilterPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'federation'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Federation')
+
+    @property
+    def header_content(self) -> str:
+        return _('Fed. *** FEDERATION COLUMN HEADER')
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/federation.html'
+
+    def get_cell_classes(self, player: Player) -> str:
+        return self.shared_classes + ' compact-col'
+
+    def get_filter_key(self, player: Player) -> str:
+        return player.federation.name
+
+    @property
+    def filter_row_template(self) -> str:
+        return 'filter_rows/federation.html'
+
+
+class ClubPlayersTabColumn(FilterSortPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'club'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Club')
+
+    def get_filter_key(self, player: Player) -> str:
+        return player.club.name or '-'
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-nowrap text-start'
+
+    def get_cell_classes(self, player: Player) -> str:
+        return self.shared_classes + ' compact-col text-truncate mw-15em'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.club.name
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return player.federation.name, player.club.name
+
+
+class YearOfBirthPlayersTabColumn(SortPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'year_of_birth'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Year of birth')
+
+    @property
+    def header_content(self) -> str:
+        return _('YOB *** YEAR-OF-BIRTH COLUMN HEADER')
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return self.get_dob_sort_key(player)
+
+    @staticmethod
+    def get_dob_sort_key(player: Player) -> tuple:
+        if not (dob := player.date_of_birth):
+            dob = date(player.year_of_birth or 1900, 12, 31)
+        return (dob - date.today(),)
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/year_of_birth.html'
+
+
+class CategoryPlayersTabColumn(FilterSortPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'category'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Category')
+
+    @property
+    def header_content(self) -> str:
+        return _('Cat. *** CATEGORY COLUMN HEADER')
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.category.name
+
+    def get_filter_key(self, player: Player) -> str:
+        return player.category.id
+
+    def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
+        return PlayerCategory.from_id(filter_key)
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return YearOfBirthPlayersTabColumn.get_dob_sort_key(player)
+
+    def get_filter_row_content(self, value: Any) -> str:
+        return value.name
+
+    def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
+        return filter_value.value
+
+
+class MailPlayersTabColumn(PlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'mail'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Email address')
+
+    @property
+    def header_template(self) -> str | None:
+        return 'headers/mail.html'
+
+    @property
+    def header_classes(self) -> str:
+        return 'text-nowrap text-start compact-col'
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/mail.html'
+
+    def is_enabled_for_players(self, players: list[Player]) -> bool:
+        return any(player.mail for player in players)
+
+
+class PhonePlayersTabColumn(PlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'phone'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Phone')
+
+    @property
+    def header_template(self) -> str | None:
+        return 'headers/phone.html'
+
+    @property
+    def header_classes(self) -> str:
+        return 'text-nowrap text-start compact-col'
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/phone.html'
+
+    def is_enabled_for_players(self, players: list[Player]) -> bool:
+        return any(player.phone for player in players)
+
+
+class GenderPlayersTabColumn(FilterPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'gender'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Gender')
+
+    @property
+    def header_template(self) -> str | None:
+        return 'headers/gender.html'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.gender.short_name
+
+    def get_filter_key(self, player: Player) -> str:
+        return str(player.gender.value)
+
+    def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
+        return PlayerGender(int(filter_key))
+
+    def get_filter_row_content(self, value: Any) -> str:
+        return value.name
+
+
+class FixedPlayersTabColumn(PlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'fixed'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Fixed board')
+
+    @property
+    def header_template(self) -> str | None:
+        return 'headers/fixed.html'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.fixed or ''
+
+    def get_cell_classes(self, player: Player) -> str:
+        return self.shared_classes + ' compact-col'
+
+    def is_enabled_for_players(self, players: list[Player]) -> bool:
+        return any(player.fixed for player in players)
+
+
+class FideIdPlayersTabColumn(PlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'fide_id'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('FIDE ID')
+
+    @property
+    def header_template(self) -> str:
+        return 'headers/fide_id.html'
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/fide_id.html'
+
+    def get_cell_classes(self, player: Player) -> str:
+        return self.shared_classes + ' compact-col'
+
+    def is_enabled_for_players(self, players: list[Player]) -> bool:
+        return any(player.fide_id for player in players)
+
+
+class PaymentPlayersTabColumn(PlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'payment'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Payment')
+
+    @property
+    def header_template(self) -> str | None:
+        return 'headers/payment.html'
+
+    @staticmethod
+    def _format_float(value: float) -> str:
+        return str(int(value)) if value.is_integer() else f'{value:.2f}'
+
+    def get_cell_content(self, player: Player) -> Any:
+        if player.owed:
+            paid = self._format_float(player.paid)
+            owed = self._format_float(player.owed)
+            return f'{paid}/{owed}'
+        if player.paid:
+            return self._format_float(player.paid)
+        return ''
+
+    def is_enabled_for_players(self, players: list[Player]) -> bool:
+        return any(player.owed or player.paid for player in players)
+
+
+class TournamentPlayersTabColumn(FilterSortPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'tournament'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Tournament')
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-nowrap text-start'
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/tournament.html'
+
+    @property
+    def is_tournament_column(self) -> bool:
+        return True
+
+    def get_filter_key(self, player: Player) -> str:
+        return str(player.single_tournament.id)
+
+    def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
+        return event.tournaments_by_id[int(filter_key)]
+
+    def get_filter_row_content(self, value: Any) -> str:
+        return value.name
+
+    def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
+        return filter_value.value.index
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return (player.single_tournament.index,)
+
+    def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
+        return len(tournaments) > 1
+
+
+class CommentPlayersTabColumn(SortPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'comment'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Comment')
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-nowrap text-start'
+
+    @property
+    def header_template(self) -> str | None:
+        return 'headers/comment.html'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.comment or ''
+
+    def is_enabled_for_players(self, players: list[Player]) -> bool:
+        return any(player.comment for player in players)
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return player.comment is None, player.comment or ''
+
+
+class RecordPlayersTabColumn(PlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return 'record'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Record')
+
+    @property
+    def is_tournament_column(self) -> bool:
+        return True
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-nowrap text-start pe-2'
+
+    @property
+    def header_template(self) -> str | None:
+        return 'headers/record.html'
+
+    @property
+    def cell_template(self) -> str | None:
+        return 'cells/record.html'

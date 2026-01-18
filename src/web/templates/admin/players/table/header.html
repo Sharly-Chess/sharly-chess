@@ -1,0 +1,71 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+<thead
+    id="players-table-header"
+    class="position-sticky z-2"
+    style="top: var(--header-height);"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+
+    <tr>
+        <th colspan="3" class="text-nowrap text-start compact-col">
+            {# Covers the buttons, index and title columns #}
+            <div class="d-flex align-items-center">
+                <i
+                    class="bi-arrow-clockwise btn text-dark py-0 ps-0 pe-1 m-0"
+                    hx-get="{{ url }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {{ macros.tooltip_attributes('info', _('Refresh this page.'), 'top') }}
+                ></i>
+                <span id="players-table-counters" class="px-0">
+                    {{ filtered_player_count }}/{{ allowed_players|length }}
+                </span>
+                <i
+                    class="bi-x-circle btn text-dark py-0 ps-1 pe-0 m-0"
+                    hx-get="{{ url_for('admin-event-players-clear-filters', event_uniq_id=admin_event.uniq_id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    {{ macros.tooltip_attributes('info', _('Clear all the filters.'), 'top') }}
+                ></i>
+            </div>
+        </th>
+        {% for column in visible_columns %}
+            {% set is_sort_column = sort_column == column.id %}
+            <th id="column-{{ column.id }}-header" class="{{ column.header_classes }}">
+                <div class="{% if column.is_filtrable %}d-flex{% endif %}">
+                    <div
+                        class="
+                            {% if column.is_sortable %}cursor-pointer{% endif %}
+                            {% if is_sort_column %}fw-bold text-danger{% endif %}"
+                        {% if column.is_sortable %}
+                            hx-get="{{ url_for(
+                                'admin-event-players-sort',
+                                event_uniq_id=admin_event.uniq_id,
+                                column_id=column.id
+                            ) }}"
+                            hx-trigger="click"
+                            hx-indicator="#please-wait"
+                            hx-target="#players-table"
+                        {% endif %}
+                    >
+                        {% if column.header_template %}
+                            {% include column.header_template %}
+                        {% else %}
+                            {{ column.header_content }}
+                        {% endif %}
+                        {% if is_sort_column %}
+                            <i class="bi-sort-{{ 'up' if is_sort_asc else 'down' }}"></i>
+                        {% endif %}
+                    </div>
+                    {% if column.is_filtrable and column.filter_values|length > 1 %}
+                        {% include 'filter.html' %}
+                    {% endif %}
+                </div>
+            </th>
+        {% endfor %}
+     </tr>
+</thead>

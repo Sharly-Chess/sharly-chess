@@ -1,0 +1,35 @@
+{% if tournament_player.has_real_pairings or player_addable_tournaments|length <= 1 %}
+    {{ tournament.name }}
+{% else %}
+    <span class="dropdown">
+        <button
+            class="btn btn-secondary dropdown-toggle mx-0 px-2 py-0 w-100 d-inline-flex align-items-center justify-content-between"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+        >
+            {{ tournament.name }}
+        </button>
+        <ul
+            class="dropdown-menu table-dropdown-menu p-0"
+            {{ macros.tooltip_attributes('info', _('Change the player\'s tournament.'), 'left') }}
+        >
+            {% for addable_tournament in player_addable_tournaments %}
+                {% set enable=tournament.id != addable_tournament.id %}
+                <li
+                    class="dropdown-item btn {% if not enable %}disabled{% endif %} text-start"
+                    {% if enable %}
+                        hx-patch="{{ url_for('admin-player-move', event_uniq_id=admin_event.uniq_id, player_id=player.id, tournament_id=addable_tournament.id) }}"
+                        hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
+                        hx-swap="multi:#players-table:outerHTML,#messages:afterbegin"
+                        hx-indicator="#please-wait"
+                    {% else %}
+                        disabled
+                    {% endif %}
+                >
+                    {{ addable_tournament.name }}
+                </li>
+            {% endfor %}
+        </ul>
+    </span>
+{% endif %}
