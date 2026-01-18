@@ -506,6 +506,7 @@ class FfePlugin(Plugin):
     @staticmethod
     def _get_ffe_club_sort_key(player: Player) -> tuple:
         return (
+            not player.club.name,
             player.federation,
             FFEUtils.get_player_plugin_data(player).league or '',
             player.club,

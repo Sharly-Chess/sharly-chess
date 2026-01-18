@@ -299,9 +299,6 @@ msgstr ""
 msgid "None *** FFE licence"
 msgstr "None"
 
-msgid "OK"
-msgstr ""
-
 msgid "PAPI"
 msgstr ""
 

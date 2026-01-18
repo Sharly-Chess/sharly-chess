@@ -7,7 +7,7 @@ from common.exception import OptionError
 from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn
-from data.columns.players_tab import FilterSortPlayersTabColumn, ColumnFilterValue
+from data.columns.players_tab import FilterPlayersTabColumn, ColumnFilterValue
 from data.criteria.player_filter_options import (
     SelectPlayerFilterOption,
     PlayerFilterOption,
@@ -166,7 +166,7 @@ class FRASchoolsFilterOption(SelectPlayerFilterOption[FRASchool]):
             raise OptionError(_('At least one school is expected.'), self)
 
 
-class FraSchoolsPlayersTabColumn(FilterSortPlayersTabColumn):
+class FraSchoolsPlayersTabColumn(FilterPlayersTabColumn):
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-school'

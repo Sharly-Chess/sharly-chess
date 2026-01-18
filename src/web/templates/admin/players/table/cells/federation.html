@@ -1,5 +1,6 @@
+{% set federation = player.federation.name %}
 <img
     class="player-federation-flag pe-1"
-    src="{{ macros.federation_flag_url(player.federation) }}"
-    {{ macros.tooltip_attributes('', player.federation, 'left') }}
+    src="{{ macros.federation_flag_url(federation) }}"
+    {{ macros.tooltip_attributes('', federation ~ ' - ' ~ federations[federation], 'left') }}
 />

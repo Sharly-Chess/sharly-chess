@@ -36,21 +36,17 @@
         {% for column in visible_columns %}
             {% set is_sort_column = sort_column == column.id %}
             <th id="column-{{ column.id }}-header" class="{{ column.header_classes }}">
-                <div class="{% if column.is_filtrable %}d-flex{% endif %}">
+                <div class="d-flex">
                     <div
-                        class="
-                            {% if column.is_sortable %}cursor-pointer{% endif %}
-                            {% if is_sort_column %}fw-bold text-danger{% endif %}"
-                        {% if column.is_sortable %}
-                            hx-get="{{ url_for(
-                                'admin-event-players-sort',
-                                event_uniq_id=admin_event.uniq_id,
-                                column_id=column.id
-                            ) }}"
-                            hx-trigger="click"
-                            hx-indicator="#please-wait"
-                            hx-target="#players-table"
-                        {% endif %}
+                        class="cursor-pointer d-flex"
+                        hx-get="{{ url_for(
+                            'admin-event-players-sort',
+                            event_uniq_id=admin_event.uniq_id,
+                            column_id=column.id
+                        ) }}"
+                        hx-trigger="click"
+                        hx-indicator="#please-wait"
+                        hx-target="#players-table"
                     >
                         {% if column.header_template %}
                             {% include column.header_template %}
@@ -58,7 +54,7 @@
                             {{ column.header_content }}
                         {% endif %}
                         {% if is_sort_column %}
-                            <i class="bi-sort-{{ 'up' if is_sort_asc else 'down' }}"></i>
+                            <i class="bi-sort-{{ 'up' if is_sort_asc else 'down' }} text-danger ps-1"></i>
                         {% endif %}
                     </div>
                     {% if column.is_filtrable and column.filter_values|length > 1 %}

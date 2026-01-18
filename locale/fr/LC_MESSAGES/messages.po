@@ -1480,6 +1480,9 @@ msgstr "JJ/MM/AAAA"
 msgid "DMG does not contain exactly one folder as expected."
 msgstr "Le DMG ne contient pas un unique dossier comme attendu."
 
+msgid "DOB *** DATE-OF-BIRTH COLUMN HEADER"
+msgstr "D.N."
+
 msgid "DOUBLE"
 msgstr "DOUBLE"
 
@@ -1510,6 +1513,9 @@ msgstr "Date et heure"
 
 msgid "Date format"
 msgstr "Format des dates"
+
+msgid "Date of birth"
+msgstr "Date de naissance"
 
 msgid "Date of birth:"
 msgstr "Date de naissance :"
@@ -6117,9 +6123,6 @@ msgstr "Mauvaise extension de fichier [{ext}] ([pdf] attendu)."
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "O"
 
-msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER"
-msgstr "An."
-
 msgid "YYYY or {date_format}"
 msgstr "AAAA ou {date_format}"
 
@@ -6128,9 +6131,6 @@ msgstr "AAAA-MM-JJ"
 
 msgid "YYYY/MM/DD"
 msgstr "AAAA/MM/JJ"
-
-msgid "Year of birth"
-msgstr "Année de naissance"
 
 msgid "Yemen"
 msgstr "Yémen"

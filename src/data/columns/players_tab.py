@@ -63,19 +63,14 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
         """Defines if the column is enabled for the given tournaments."""
         return True
 
-    # -------------------------------------------------------------------------
-    # Sort / Filter
-    # -------------------------------------------------------------------------
-
-    @property
-    def is_sortable(self) -> bool:
-        """Defines if the rows can be sorted by this column."""
-        return False
-
+    @abstractmethod
     def _get_sort_key(self, player: Player) -> tuple:
         """Get the sort key from a player to sort by this column.
         After the values of this key the players are sorted by name."""
-        raise NotImplementedError('Required if is_sortable=True')
+
+    # -------------------------------------------------------------------------
+    # Filter
+    # -------------------------------------------------------------------------
 
     @property
     def is_filtrable(self) -> bool:
@@ -153,20 +148,7 @@ class FilterPlayersTabColumn(PlayersTabColumn, ABC):
     def get_filter_key(self, player: Player) -> str: ...
 
 
-class SortPlayersTabColumn(PlayersTabColumn, ABC):
-    @property
-    def is_sortable(self) -> bool:
-        return True
-
-    @abstractmethod
-    def _get_sort_key(self, player: Player) -> tuple: ...
-
-
-class FilterSortPlayersTabColumn(FilterPlayersTabColumn, SortPlayersTabColumn, ABC):
-    """Base class for players tab columns that can both be filtered and sorted."""
-
-
-class NamePlayersTabColumn(SortPlayersTabColumn):
+class NamePlayersTabColumn(PlayersTabColumn):
     @staticmethod
     def static_id() -> str:
         return 'name'
@@ -212,6 +194,9 @@ class CheckInPlayersTabColumn(FilterPlayersTabColumn):
     def filter_row_template(self) -> str:
         return 'filter_rows/check_in.html'
 
+    def _get_sort_key(self, player: Player) -> tuple:
+        return (player.single_tournament_player.check_in_status,)
+
     @property
     def is_tournament_column(self) -> bool:
         return True
@@ -233,7 +218,7 @@ class CheckInPlayersTabColumn(FilterPlayersTabColumn):
         return filter_value.value
 
 
-class RatingPlayersTabColumn(SortPlayersTabColumn):
+class RatingPlayersTabColumn(PlayersTabColumn):
     @staticmethod
     def static_id() -> str:
         return 'rating'
@@ -269,8 +254,8 @@ class FederationPlayersTabColumn(FilterPlayersTabColumn):
         return _('Federation')
 
     @property
-    def header_content(self) -> str:
-        return _('Fed. *** FEDERATION COLUMN HEADER')
+    def header_template(self) -> str:
+        return 'headers/federation.html'
 
     @property
     def cell_template(self) -> str | None:
@@ -278,6 +263,9 @@ class FederationPlayersTabColumn(FilterPlayersTabColumn):
 
     def get_cell_classes(self, player: Player) -> str:
         return self.shared_classes + ' compact-col'
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return (player.federation.name,)
 
     def get_filter_key(self, player: Player) -> str:
         return player.federation.name
@@ -287,7 +275,7 @@ class FederationPlayersTabColumn(FilterPlayersTabColumn):
         return 'filter_rows/federation.html'
 
 
-class ClubPlayersTabColumn(FilterSortPlayersTabColumn):
+class ClubPlayersTabColumn(FilterPlayersTabColumn):
     @staticmethod
     def static_id() -> str:
         return 'club'
@@ -310,37 +298,37 @@ class ClubPlayersTabColumn(FilterSortPlayersTabColumn):
         return player.club.name
 
     def _get_sort_key(self, player: Player) -> tuple:
-        return player.federation.name, player.club.name
+        return (
+            not player.club.name,
+            player.federation.name,
+            player.club.name,
+        )
 
 
-class YearOfBirthPlayersTabColumn(SortPlayersTabColumn):
+class DateOfBirthPlayersTabColumn(PlayersTabColumn):
     @staticmethod
     def static_id() -> str:
-        return 'year_of_birth'
+        return 'date_of_birth'
 
     @staticmethod
     def static_name() -> str:
-        return _('Year of birth')
+        return _('Date of birth')
 
     @property
-    def header_content(self) -> str:
-        return _('YOB *** YEAR-OF-BIRTH COLUMN HEADER')
-
-    def _get_sort_key(self, player: Player) -> tuple:
-        return self.get_dob_sort_key(player)
-
-    @staticmethod
-    def get_dob_sort_key(player: Player) -> tuple:
-        if not (dob := player.date_of_birth):
-            dob = date(player.year_of_birth or 1900, 12, 31)
-        return (dob - date.today(),)
+    def header_template(self) -> str:
+        return 'headers/date_of_birth.html'
 
     @property
     def cell_template(self) -> str | None:
-        return 'cells/year_of_birth.html'
+        return 'cells/date_of_birth.html'
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        if not (dob := player.date_of_birth):
+            dob = date(player.year_of_birth or date.today().year, 12, 31)
+        return (dob - date.today(),)
 
 
-class CategoryPlayersTabColumn(FilterSortPlayersTabColumn):
+class CategoryPlayersTabColumn(FilterPlayersTabColumn):
     @staticmethod
     def static_id() -> str:
         return 'category'
@@ -350,8 +338,8 @@ class CategoryPlayersTabColumn(FilterSortPlayersTabColumn):
         return _('Category')
 
     @property
-    def header_content(self) -> str:
-        return _('Cat. *** CATEGORY COLUMN HEADER')
+    def header_template(self) -> str:
+        return 'headers/category.html'
 
     def get_cell_content(self, player: Player) -> Any:
         return player.category.name
@@ -363,7 +351,9 @@ class CategoryPlayersTabColumn(FilterSortPlayersTabColumn):
         return PlayerCategory.from_id(filter_key)
 
     def _get_sort_key(self, player: Player) -> tuple:
-        return YearOfBirthPlayersTabColumn.get_dob_sort_key(player)
+        if not (dob := player.date_of_birth):
+            dob = date(player.year_of_birth or 1900, 1, 1)
+        return (date.today() - dob,)
 
     def get_filter_row_content(self, value: Any) -> str:
         return value.name
@@ -393,6 +383,9 @@ class MailPlayersTabColumn(PlayersTabColumn):
     def cell_template(self) -> str | None:
         return 'cells/mail.html'
 
+    def _get_sort_key(self, player: Player) -> tuple:
+        return not bool(player.mail), player.mail or ''
+
     def is_enabled_for_players(self, players: list[Player]) -> bool:
         return any(player.mail for player in players)
 
@@ -418,6 +411,9 @@ class PhonePlayersTabColumn(PlayersTabColumn):
     def cell_template(self) -> str | None:
         return 'cells/phone.html'
 
+    def _get_sort_key(self, player: Player) -> tuple:
+        return not bool(player.phone), player.phone or ''
+
     def is_enabled_for_players(self, players: list[Player]) -> bool:
         return any(player.phone for player in players)
 
@@ -437,6 +433,9 @@ class GenderPlayersTabColumn(FilterPlayersTabColumn):
 
     def get_cell_content(self, player: Player) -> Any:
         return player.gender.short_name
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return (player.gender,)
 
     def get_filter_key(self, player: Player) -> str:
         return str(player.gender.value)
@@ -467,6 +466,9 @@ class FixedPlayersTabColumn(PlayersTabColumn):
     def get_cell_classes(self, player: Player) -> str:
         return self.shared_classes + ' compact-col'
 
+    def _get_sort_key(self, player: Player) -> tuple:
+        return not bool(player.fixed), player.fixed or 0
+
     def is_enabled_for_players(self, players: list[Player]) -> bool:
         return any(player.fixed for player in players)
 
@@ -490,6 +492,9 @@ class FideIdPlayersTabColumn(PlayersTabColumn):
 
     def get_cell_classes(self, player: Player) -> str:
         return self.shared_classes + ' compact-col'
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return (not bool(player.fide_id),)
 
     def is_enabled_for_players(self, players: list[Player]) -> bool:
         return any(player.fide_id for player in players)
@@ -524,8 +529,15 @@ class PaymentPlayersTabColumn(PlayersTabColumn):
     def is_enabled_for_players(self, players: list[Player]) -> bool:
         return any(player.owed or player.paid for player in players)
 
+    def _get_sort_key(self, player: Player) -> tuple:
+        return (
+            not bool(player.owed),
+            player.paid >= player.owed,
+            player.paid,
+        )
 
-class TournamentPlayersTabColumn(FilterSortPlayersTabColumn):
+
+class TournamentPlayersTabColumn(FilterPlayersTabColumn):
     @staticmethod
     def static_id() -> str:
         return 'tournament'
@@ -565,7 +577,7 @@ class TournamentPlayersTabColumn(FilterSortPlayersTabColumn):
         return len(tournaments) > 1
 
 
-class CommentPlayersTabColumn(SortPlayersTabColumn):
+class CommentPlayersTabColumn(PlayersTabColumn):
     @staticmethod
     def static_id() -> str:
         return 'comment'
@@ -589,7 +601,7 @@ class CommentPlayersTabColumn(SortPlayersTabColumn):
         return any(player.comment for player in players)
 
     def _get_sort_key(self, player: Player) -> tuple:
-        return player.comment is None, player.comment or ''
+        return bool(player.comment), player.comment or ''
 
 
 class RecordPlayersTabColumn(PlayersTabColumn):
@@ -616,3 +628,9 @@ class RecordPlayersTabColumn(PlayersTabColumn):
     @property
     def cell_template(self) -> str | None:
         return 'cells/record.html'
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        tournament_player = player.single_tournament_player
+        tournament = tournament_player.tournament
+        points = tournament_player.points_before(tournament.current_round)
+        return tournament.index, points

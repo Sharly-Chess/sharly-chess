@@ -372,7 +372,6 @@ class PlayerAdminController(BaseEventAdminController):
             'filtered_player_count': len(search_results),
             'sort_column': sort_column,
             'is_sort_asc': is_sort_asc,
-            'federations': SharlyChessConfig().federations,
         }
 
     @classmethod
@@ -403,6 +402,7 @@ class PlayerAdminController(BaseEventAdminController):
             'columns': web_context.column_handler.columns,
             'visible_columns': web_context.column_handler.visible_columns,
             'player_addable_tournaments': web_context.player_addable_tournaments,
+            'federations': SharlyChessConfig().federations,
         }
 
     @classmethod
@@ -565,8 +565,6 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> Template:
         web_context = PlayerAdminWebContext(request, column_id=column_id)
         column = web_context.get_admin_column()
-        if not column.is_sortable:
-            raise ClientException(f'Column [{column.id}] not sortable')
         session_sort = SessionPlayersSort(request, event_uniq_id)
         current_column_id, current_is_asc = session_sort.get()
         if current_column_id != column.id:

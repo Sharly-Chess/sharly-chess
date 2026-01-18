@@ -1480,6 +1480,9 @@ msgstr ""
 msgid "DMG does not contain exactly one folder as expected."
 msgstr ""
 
+msgid "DOB *** DATE-OF-BIRTH COLUMN HEADER"
+msgstr "DOB"
+
 msgid "DOUBLE"
 msgstr ""
 
@@ -1509,6 +1512,9 @@ msgid "Date and time"
 msgstr ""
 
 msgid "Date format"
+msgstr ""
+
+msgid "Date of birth"
 msgstr ""
 
 msgid "Date of birth:"
@@ -4667,10 +4673,10 @@ msgid "Scroll down to review all the norms…"
 msgstr ""
 
 msgid "Search *** PLACEHOLDER"
-msgstr "Rechercher"
+msgstr "Search"
 
 msgid "Search *** SECTION TITLE"
-msgstr "Recherche"
+msgstr "Search"
 
 #, python-format
 msgid "Search by: %(fields)s"
@@ -6115,9 +6121,6 @@ msgstr ""
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "Y"
 
-msgid "YOB *** YEAR-OF-BIRTH COLUMN HEADER"
-msgstr "YOB"
-
 msgid "YYYY or {date_format}"
 msgstr ""
 
@@ -6125,9 +6128,6 @@ msgid "YYYY-MM-DD"
 msgstr ""
 
 msgid "YYYY/MM/DD"
-msgstr ""
-
-msgid "Year of birth"
 msgstr ""
 
 msgid "Yemen"

@@ -375,11 +375,19 @@ class FfeLeaguePlayersTabColumn(FilterPlayersTabColumn):
     def shared_classes(self) -> str:
         return super().shared_classes + ' compact-col'
 
-    def get_cell_content(self, player: Player) -> Any:
+    @staticmethod
+    def _get_league(player: Player) -> str:
         return FFEUtils.get_player_plugin_data(player).league or ''
 
+    def get_cell_content(self, player: Player) -> Any:
+        return self._get_league(player)
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        league = self._get_league(player)
+        return not bool(league), league
+
     def get_filter_key(self, player: Player) -> str:
-        return FFEUtils.get_player_plugin_data(player).league or ''
+        return self._get_league(player)
 
     def get_filter_row_content(self, value: Any) -> str:
         from plugins.ffe.ffe import FfePlugin
@@ -411,6 +419,9 @@ class FfeLicencePlayersTabColumn(FilterPlayersTabColumn):
     @property
     def cell_template(self) -> str | None:
         return '/ffe_player_licence_cell.html'
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return (FFEUtils.get_player_plugin_data(player).ffe_licence,)
 
     def get_filter_key(self, player: Player) -> str:
         return str(FFEUtils.get_player_plugin_data(player).ffe_licence.value)
