@@ -327,7 +327,7 @@ class FamilyAdminController(BaseEventAdminController):
                     font_size: int | None = None
                     timer_id: int | None = None
                     input_exit_button: bool | None = None
-                    players_show_unpaired: bool | None = None
+                    players_show_unpaired: bool = True
                     players_show_opponent: bool | None = None
                     ranking_crosstable: bool = False
                     ranking_round: int | None = None
@@ -382,7 +382,7 @@ class FamilyAdminController(BaseEventAdminController):
                                         stored_family.players_show_opponent
                                     )
                                     players_show_unpaired = (
-                                        stored_family.players_show_unpaired
+                                        stored_family.players_show_unpaired or False
                                     )
                                 case ScreenType.RANKING:
                                     ranking_crosstable = (

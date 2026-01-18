@@ -566,7 +566,7 @@ class ScreenAdminController(BaseEventAdminController):
                     message_default: bool | None = None
                     message_text: str | None = None
                     input_exit_button: bool | None = None
-                    players_show_unpaired: bool | None = None
+                    players_show_unpaired: bool = True
                     players_show_opponent: bool | None = None
                     results_limit: int | None = None
                     results_max_age: int | None = None
@@ -647,7 +647,7 @@ class ScreenAdminController(BaseEventAdminController):
                                     input_exit_button = stored_screen.input_exit_button
                                 case ScreenType.PLAYERS:
                                     players_show_unpaired = (
-                                        stored_screen.players_show_unpaired
+                                        stored_screen.players_show_unpaired or False
                                     )
                                     players_show_opponent = (
                                         stored_screen.players_show_opponent
