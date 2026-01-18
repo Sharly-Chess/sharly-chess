@@ -118,6 +118,9 @@ msgstr "Ranking por escola"
 msgid "Ranking by school after round #{round}"
 msgstr "Ranking por escola após rodada n° {round}"
 
+msgid "School"
+msgstr "Escola"
+
 #, fuzzy
 msgid "School *** SCHOOL FOR TABLE HEADER"
 msgstr "School"
@@ -166,6 +169,8 @@ msgstr "Esta rodada não é válida (o torneio tem rodadas {rounds})."
 msgid "Total"
 msgstr "Total"
 
-#~ msgid "Add a french school"
-#~ msgstr "Adicionar uma escola francesa"
+msgid "{count} school represented"
+msgid_plural "{count} schools represented"
+msgstr[0] "{count} escola representada"
+msgstr[1] "{count} escolas representadas"
 
