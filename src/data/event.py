@@ -1,5 +1,5 @@
 import copy
-from collections import defaultdict, Counter
+from collections import defaultdict
 from contextlib import suppress
 from datetime import date
 from functools import total_ordering, cached_property
@@ -16,7 +16,7 @@ from data.account import Account, Permission
 from data.board import PlayerRatingType
 from data.display_controller import DisplayController
 from data.family import Family
-from data.player import Player, Club, Federation
+from data.player import Player
 from data.player_categories import (
     PlayerCategory,
     NoCategory,
@@ -35,7 +35,6 @@ from utils.date_time import format_date, format_date_range, format_timestamp_dat
 from utils.enum import (
     RoleType,
     ScreenType,
-    PlayerGender,
 )
 from database.sqlite.event.event_store import (
     StoredEvent,
@@ -444,45 +443,6 @@ class Event:
             self.players_by_id.values(),
             key=by('last_name', 'first_name'),
         )
-
-    def gender_counts(
-        self, players: list[Player] | None = None
-    ) -> Counter[PlayerGender]:
-        counter: Counter[PlayerGender] = Counter[PlayerGender]()
-        for player in players or self.players:
-            counter[player.gender] += 1
-        return counter
-
-    def federation_counts(
-        self, players: list[Player] | None = None
-    ) -> Counter[Federation]:
-        counter: Counter[Federation] = Counter[Federation]()
-        for player in players or self.players:
-            counter[player.federation] += 1
-        return counter
-
-    def club_counts(self, players: list[Player] | None = None) -> Counter[Club]:
-        counter: Counter[Club] = Counter[Club]()
-        for player in players or self.players:
-            counter[player.club] += 1
-        return counter
-
-    def check_in_counts(
-        self, tournaments: list[Tournament] | None = None
-    ) -> Counter[bool | None]:
-        counter: Counter[bool | None] = Counter[bool | None]()
-        for tournament in tournaments or self.tournaments:
-            for status, checked_in in tournament.check_in_counts.items():
-                counter[status] += checked_in
-        return counter
-
-    def category_counts(
-        self, players: list[Player] | None = None
-    ) -> Counter[PlayerCategory]:
-        counter: Counter[PlayerCategory] = Counter[PlayerCategory]()
-        for player in players or self.players:
-            counter[player.category] += 1
-        return counter
 
     def get_unused_tournament_name(
         self,

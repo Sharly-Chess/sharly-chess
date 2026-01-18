@@ -816,21 +816,6 @@ class Tournament:
         return counter
 
     @cached_property
-    def check_in_counts(self) -> Counter[bool | None]:
-        counter: Counter[bool | None] = Counter[bool | None]()
-        if self.finished or self.playing or not self.check_in_open:
-            counter[None] = len(self.tournament_players_by_id)
-            counter[True] = 0
-            counter[False] = 0
-        else:
-            for player in self.tournament_players:
-                if not player.can_check_in_out:
-                    counter[None] += 1
-                else:
-                    counter[player.check_in] += 1
-        return counter
-
-    @cached_property
     def unrated_count(self) -> int:
         return sum(
             tournament_player.rating == 0
