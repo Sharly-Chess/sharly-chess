@@ -166,7 +166,7 @@ class NamePlayersTabColumn(PlayersTabColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'text-nowrap position-sticky px-3 table-sticky-border'
+        return 'text-nowrap position-sticky px-3 table-sticky-border z-1'
 
     @property
     def cell_template(self) -> str | None:
