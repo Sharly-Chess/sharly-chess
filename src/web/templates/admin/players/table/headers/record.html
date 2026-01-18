@@ -9,10 +9,7 @@
     <i
         class="bi-exclamation-triangle-fill text-danger ps-1"
         {{ macros.tooltip_attributes(
-            '', _(
-                'This player order does not represent the '
-                'rankings as it does not include the tie-breaks.'
-            ), 'top')
+            'warning', _('Do not use this order as ranking.'), 'top')
         }}
     ></i>
 {% endif %}

@@ -1720,6 +1720,9 @@ msgstr ""
 msgid "Do not recover"
 msgstr ""
 
+msgid "Do not use this order as ranking."
+msgstr ""
+
 msgid "Do nothing (players will be eligible for pairing)"
 msgstr ""
 
@@ -5443,9 +5446,6 @@ msgid "This label will be used for the link to other screens to this screen. If 
 msgstr ""
 
 msgid "This name is already used."
-msgstr ""
-
-msgid "This player order does not represent the rankings as it does not include the tie-breaks."
 msgstr ""
 
 msgid "This rotator is private (not visible by the spectators)."

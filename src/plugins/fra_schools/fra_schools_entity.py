@@ -176,8 +176,12 @@ class FraSchoolsPlayersTabColumn(FilterPlayersTabColumn):
         return _('School *** SCHOOL COLUMN HEADER')
 
     @property
-    def shared_classes(self) -> str:
-        return 'text-nowrap text-start compact-col'
+    def is_compact(self) -> bool:
+        return True
+
+    @property
+    def align_start(self) -> bool:
+        return True
 
     def get_cell_classes(self, player: Player) -> str:
         return self.shared_classes + ' text-truncate mw-25em'

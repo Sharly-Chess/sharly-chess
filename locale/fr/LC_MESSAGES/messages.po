@@ -1720,6 +1720,9 @@ msgstr "Ne pas éditer ce tableau manuellement, utiliser plutôt le script {scri
 msgid "Do not recover"
 msgstr "Ne pas restaurer"
 
+msgid "Do not use this order as ranking."
+msgstr "Ne pas utiliser cet ordre comme classement."
+
 msgid "Do nothing (players will be eligible for pairing)"
 msgstr "Ne rien faire (les joueur·euses seront apparié·es)"
 
@@ -5446,9 +5449,6 @@ msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran 
 
 msgid "This name is already used."
 msgstr "Ce nom est déjà utilisé."
-
-msgid "This player order does not represent the rankings as it does not include the tie-breaks."
-msgstr "Cet ordre des joueur·euses ne correspond pas au classement car il ne prend pas en compte les départages."
 
 msgid "This rotator is private (not visible by the spectators)."
 msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."

@@ -40,8 +40,18 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
         return True
 
     @property
+    def is_compact(self) -> bool:
+        """Defines if the display of the column should be compact."""
+        return False
+
+    @property
+    def align_start(self) -> bool:
+        """Defines if the header and cell content should be aligned left (centered otherwise)."""
+        return False
+
+    @property
     def shared_classes(self) -> str:
-        return 'text-nowrap text-center'
+        return 'text-nowrap'
 
     @property
     def header_content(self) -> str:
@@ -165,6 +175,10 @@ class NamePlayersTabColumn(PlayersTabColumn):
         return False
 
     @property
+    def align_start(self) -> bool:
+        return True
+
+    @property
     def shared_classes(self) -> str:
         return 'text-nowrap position-sticky px-3 table-sticky-border z-1'
 
@@ -254,15 +268,16 @@ class FederationPlayersTabColumn(FilterPlayersTabColumn):
         return _('Federation')
 
     @property
+    def is_compact(self) -> bool:
+        return True
+
+    @property
     def header_template(self) -> str:
         return 'headers/federation.html'
 
     @property
     def cell_template(self) -> str | None:
         return 'cells/federation.html'
-
-    def get_cell_classes(self, player: Player) -> str:
-        return self.shared_classes + ' compact-col'
 
     def _get_sort_key(self, player: Player) -> tuple:
         return (player.federation.name,)
@@ -288,11 +303,15 @@ class ClubPlayersTabColumn(FilterPlayersTabColumn):
         return player.club.name or '-'
 
     @property
-    def shared_classes(self) -> str:
-        return 'text-nowrap text-start'
+    def is_compact(self) -> bool:
+        return True
+
+    @property
+    def align_start(self) -> bool:
+        return True
 
     def get_cell_classes(self, player: Player) -> str:
-        return self.shared_classes + ' compact-col text-truncate mw-15em'
+        return 'text-truncate mw-15em'
 
     def get_cell_content(self, player: Player) -> Any:
         return player.club.name
@@ -376,8 +395,8 @@ class MailPlayersTabColumn(PlayersTabColumn):
         return 'headers/mail.html'
 
     @property
-    def header_classes(self) -> str:
-        return 'text-nowrap text-start compact-col'
+    def is_compact(self) -> bool:
+        return True
 
     @property
     def cell_template(self) -> str | None:
@@ -404,8 +423,8 @@ class PhonePlayersTabColumn(PlayersTabColumn):
         return 'headers/phone.html'
 
     @property
-    def header_classes(self) -> str:
-        return 'text-nowrap text-start compact-col'
+    def is_compact(self) -> bool:
+        return True
 
     @property
     def cell_template(self) -> str | None:
@@ -463,8 +482,9 @@ class FixedPlayersTabColumn(PlayersTabColumn):
     def get_cell_content(self, player: Player) -> Any:
         return player.fixed or ''
 
-    def get_cell_classes(self, player: Player) -> str:
-        return self.shared_classes + ' compact-col'
+    @property
+    def is_compact(self) -> bool:
+        return True
 
     def _get_sort_key(self, player: Player) -> tuple:
         return not bool(player.fixed), player.fixed or 0
@@ -490,8 +510,9 @@ class FideIdPlayersTabColumn(PlayersTabColumn):
     def cell_template(self) -> str | None:
         return 'cells/fide_id.html'
 
-    def get_cell_classes(self, player: Player) -> str:
-        return self.shared_classes + ' compact-col'
+    @property
+    def is_compact(self) -> bool:
+        return True
 
     def _get_sort_key(self, player: Player) -> tuple:
         return (not bool(player.fide_id),)
@@ -508,6 +529,10 @@ class PaymentPlayersTabColumn(PlayersTabColumn):
     @staticmethod
     def static_name() -> str:
         return _('Payment')
+
+    @property
+    def is_compact(self) -> bool:
+        return True
 
     @property
     def header_template(self) -> str | None:
@@ -547,8 +572,8 @@ class TournamentPlayersTabColumn(FilterPlayersTabColumn):
         return _('Tournament')
 
     @property
-    def shared_classes(self) -> str:
-        return 'text-nowrap text-start'
+    def align_start(self) -> bool:
+        return True
 
     @property
     def cell_template(self) -> str | None:
@@ -587,8 +612,8 @@ class CommentPlayersTabColumn(PlayersTabColumn):
         return _('Comment')
 
     @property
-    def shared_classes(self) -> str:
-        return 'text-nowrap text-start'
+    def align_start(self) -> bool:
+        return True
 
     @property
     def header_template(self) -> str | None:
@@ -601,7 +626,7 @@ class CommentPlayersTabColumn(PlayersTabColumn):
         return any(player.comment for player in players)
 
     def _get_sort_key(self, player: Player) -> tuple:
-        return bool(player.comment), player.comment or ''
+        return not bool(player.comment), player.comment or ''
 
 
 class RecordPlayersTabColumn(PlayersTabColumn):
@@ -618,8 +643,12 @@ class RecordPlayersTabColumn(PlayersTabColumn):
         return True
 
     @property
+    def align_start(self) -> bool:
+        return True
+
+    @property
     def shared_classes(self) -> str:
-        return 'text-nowrap text-start pe-2'
+        return 'text-nowrap pe-2'
 
     @property
     def header_template(self) -> str | None:
@@ -630,7 +659,9 @@ class RecordPlayersTabColumn(PlayersTabColumn):
         return 'cells/record.html'
 
     def _get_sort_key(self, player: Player) -> tuple:
-        tournament_player = player.single_tournament_player
-        tournament = tournament_player.tournament
-        points = tournament_player.points_before(tournament.current_round)
-        return tournament.index, points
+        played = 0
+        points = 0.0
+        for pairing in player.single_tournament_player.pairings.values():
+            played += pairing.played
+            points += pairing.points
+        return points, played

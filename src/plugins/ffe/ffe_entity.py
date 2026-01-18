@@ -372,8 +372,8 @@ class FfeLeaguePlayersTabColumn(FilterPlayersTabColumn):
         return _('League')
 
     @property
-    def shared_classes(self) -> str:
-        return super().shared_classes + ' compact-col'
+    def is_compact(self) -> bool:
+        return True
 
     @staticmethod
     def _get_league(player: Player) -> str:
@@ -409,8 +409,8 @@ class FfeLicencePlayersTabColumn(FilterPlayersTabColumn):
         return _('FFE licence')
 
     @property
-    def shared_classes(self) -> str:
-        return super().shared_classes + ' compact-col'
+    def is_compact(self) -> bool:
+        return True
 
     @property
     def header_template(self) -> str:

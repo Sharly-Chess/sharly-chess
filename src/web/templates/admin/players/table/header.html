@@ -11,7 +11,7 @@
 >
 
     <tr>
-        <th colspan="3" class="text-nowrap text-start compact-col">
+        <th colspan="3" class="text-nowrap compact-col">
             {# Covers the buttons, index and title columns #}
             <div class="d-flex align-items-center">
                 <i
@@ -35,8 +35,8 @@
         </th>
         {% for column in visible_columns %}
             {% set is_sort_column = sort_column == column.id %}
-            <th id="column-{{ column.id }}-header" class="{{ column.header_classes }}">
-                <div class="d-flex">
+            <th id="column-{{ column.id }}-header" class="{{ column.header_classes }} {% if column.is_compact %}compact-col{% endif %}">
+                <div class="d-flex {% if not column.align_start %}justify-content-center{% endif %}">
                     <div
                         class="cursor-pointer d-flex"
                         hx-get="{{ url_for(

@@ -97,12 +97,12 @@
     <td class="text-nowrap text-end compact-col index">
         {{ index }}
     </td>
-    <td class="text-end">
+    <td class="text-end compact-col">
         {{ player.title.short_name }}
     </td>
     {% for column in visible_columns %}
         {% set value = tournament_player if column.is_tournament_column else player %}
-        <td class="{{ column.get_cell_classes(value) }}">
+        <td class="text-{{ 'start' if column.align_start else 'center' }} {% if column.is_compact %}compact-col{% endif %} {{ column.get_cell_classes(value) }}">
             {% if column.cell_template %}
                 {% include column.cell_template %}
             {% else %}
