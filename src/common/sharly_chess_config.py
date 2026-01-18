@@ -310,10 +310,17 @@ class SharlyChessConfig(metaclass=Singleton):
 
     en_copyright: str = '© Sharly Chess project 2013-2026'
 
+    def localized_copyright(
+        self,
+        locale: str | None = None,
+    ) -> str:
+        """The localized copyright of the application."""
+        return _(f'© {self.project} 2013-2026', locale=locale)
+
     @property
     def copyright(self) -> str:
         """The copyright of the application."""
-        return f'© {self.project} 2013-2026'
+        return self.localized_copyright()
 
     @property
     def project(self) -> str:

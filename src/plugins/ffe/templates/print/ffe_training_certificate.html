@@ -138,14 +138,7 @@
             </tbody>
         </table>
         <h2 style="margin-top: 1.5rem;">Appréciation générale du·de la tuteur·ice :</h2>
-        <div class="grid" style="grid-template-columns: 1fr;">
-            {% for i in range(8) %}
-                <div class="item error">
-                    <div class="error-info">TODO Replace the inputs by a textarea</div>
-                    <input value="" />
-                </div>
-            {% endfor %}
-        </div>
+        <textarea id="text" class="error" style="height: 20rem;"></textarea>
         <h2 style="margin-top: 1.5rem;">Signature du·de la tuteur·ice :</h2>
     </form>
 {% endblock %}

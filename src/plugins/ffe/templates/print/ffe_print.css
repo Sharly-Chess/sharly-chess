@@ -1,5 +1,13 @@
+@font-face {
+    font-family: "{{ font_family }}";
+    src: url("{{ font_url }}") format("truetype");
+    font-weight: 400 900;
+    font-style: normal;
+}
+* {
+    font-family: {{ font_family }}, sans-serif;
+}
 body {
-    font-family: Arial, sans-serif;
     max-width: 900px;
     margin: 2rem auto;
     line-height: 1.4;
@@ -7,12 +15,13 @@ body {
     --row-gap: 0.9rem;
 }
 h1 {
-    background: url("{{ ffe_logo_url }}") left top no-repeat, url("{{ sharly_chess_logo_url }}") right top no-repeat;
+    background: url("{{ ffe_logo_url }}") left top no-repeat;
     background-size: contain;
     text-align: center;
     font-size: 1.3rem;
     line-height: 1.3;
     padding: 0;
+    padding-left: 4.5cm;
     margin: 0;
 }
 h2 {
@@ -63,6 +72,14 @@ input[type="checkbox"] {
     accent-color: black;
     width: auto;
 }
+textarea {
+    font-family: inherit;
+    resize: vertical;
+    width: 100%;
+}
+textarea.error {
+    border-color: red;
+}
 .error {
     /* color: red; */
     position: relative;
@@ -99,11 +116,18 @@ input[type="checkbox"] {
     border-top: 2px solid black;
     padding-bottom: 4rem;
 }
+.info.top {
+    margin-bottom: 1rem;
+}
 .info {
-    text-align: center;
+    background: url("{{ sharly_chess_logo_url }}") right top no-repeat;
+    background-size: contain;
+    background-color: #ddd;
+    margin-bottom: 1rem;
+    text-align: left;
     font-style: italic;
     font-size: 0.8rem;
-    margin-bottom: 1rem;
+    min-height: 3rem;
 }
 table {
     border-collapse: collapse;
@@ -124,7 +148,7 @@ th {
 @media print {
     body {
         margin: 0;
-        padding: 10mm;
+        padding: 5mm;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
         width: 210mm;
@@ -139,11 +163,14 @@ th {
     .error input {
         color: black;
     }
+    textarea {
+        border: 0;
+    }
     .spacer, .heading, .info, .error:hover .error-info {
         display: none;
     }
     @page {
         size: A4 portrait;
-        margin: 10mm;
+        margin: 5mm;
     }
 }
