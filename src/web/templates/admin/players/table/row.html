@@ -1,0 +1,113 @@
+<tr
+    id="player-{{ player.id }}"
+    {% if swap_oob %}
+        hx-swap-oob="outerHTML:#player-{{ old_player_id or player.id}}"
+    {% endif %}
+>
+    {% set tournament_player = player.single_tournament_player %}
+    {% set tournament = tournament_player.tournament %}
+    <td class="text-nowrap text-start compact-col ps-2">
+        {% set can_update = client.can_update_players %}
+        {% set can_update_history=client.can_update_players_history(tournament.id) %}
+        {% set can_delete=client.can_delete_players and not tournament_player.has_real_pairings %}
+        {% if can_update or can_update_history or can_delete %}
+            <span class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle mx-0 px-1 py-0" type="button" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false" >
+                    <i class="bi-three-dots"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-start table-dropdown-menu p-0" >
+                    {% if can_update %}
+                        <li {{ macros.tooltip_attributes('info', _('Edit the player\'s properties.'), 'right') }}>
+                            <div
+                                class="dropdown-item btn text-start"
+                                hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                                hx-trigger="click, keyup[key=='Enter']"
+                                tabindex="0"
+                            >
+                                <i class="bi-pencil-fill pe-1"></i>
+                                {{ _('Edit') }}
+                            </div>
+                        </li>
+                    {% endif %}
+                    {% if can_update_history %}
+                        <li {{ macros.tooltip_attributes('info', _('Edit the player\'s tournament record.'), 'right') }}>
+                            <div
+                                class="dropdown-item btn text-start"
+                                hx-get="{{ url_for('admin-record-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                                hx-trigger="click, keyup[key=='Enter']"
+                                tabindex="0"
+                            >
+                                <i class="bi-0-square"></i><i class="bi-1-square-fill"></i>
+                                {{ _('Record') }}
+                            </div>
+                        </li>
+                    {% endif %}
+                    {% if can_update %}
+                        <li
+                            {{ macros.tooltip_attributes(
+                                'warning',
+                                _('Should only be used when the wrong player has been added by mistake.'),
+                                'right'
+                            ) }}
+                        >
+                            <div
+                                class="dropdown-item btn text-start"
+                                hx-get="{{ url_for('admin-player-modal', action='replace', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                                hx-trigger="click, keyup[key=='Enter']"
+                                tabindex="0"
+                            >
+                                <i class="bi-arrow-left-right pe-1 text-danger"></i>
+                                {{ _('Replace') }}
+                            </div>
+                        </li>
+                    {% endif %}
+                    {% if can_delete %}
+                        <li {{ macros.tooltip_attributes('info', _('Remove the player from the event.'), 'right') }}>
+                            <div
+                                class="dropdown-item btn text-start"
+                                hx-get="{{ url_for('admin-player-delete-modal', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal-wrapper"
+                                hx-trigger="click, keyup[key=='Enter']"
+                                tabindex="0"
+                            >
+                                <i class="bi-trash-fill pe-1 text-danger"></i>
+                                {{ _('Delete') }}
+                            </div>
+                        </li>
+                    {% endif %}
+                </ul>
+            </span>
+        {% endif %}
+    </td>
+    <td class="text-nowrap text-end compact-col index">
+        {{ index }}
+    </td>
+    <td class="text-end compact-col">
+        {{ player.title.short_name }}
+    </td>
+    {% for column in visible_columns %}
+        {% set value = tournament_player if column.is_tournament_column else player %}
+        <td class="text-{{ 'start' if column.align_start else 'center' }} {% if column.is_compact %}compact-col{% endif %} {{ column.get_cell_classes(value) }}">
+            {% if column.cell_template %}
+                {% include column.cell_template %}
+            {% else %}
+                {{ column.get_cell_content(value) }}
+            {% endif %}
+        </td>
+    {% endfor %}
+</tr>

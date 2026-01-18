@@ -124,9 +124,6 @@ msgstr ""
 msgid "FFE"
 msgstr ""
 
-msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr "FFE"
-
 msgid "FFE ID"
 msgstr ""
 
@@ -150,6 +147,9 @@ msgid "FFE database (local)"
 msgstr ""
 
 msgid "FFE database (online)"
+msgstr ""
+
+msgid "FFE licence"
 msgstr ""
 
 msgid "FFE licence A (competition)"
@@ -182,12 +182,6 @@ msgid "FIDE ID"
 msgstr ""
 
 msgid "Fees link not found, check that a tournament has already been sent and that the tournament has not been archived on the FFE website."
-msgstr ""
-
-msgid "Filter the leagues."
-msgstr ""
-
-msgid "Filter the licences."
 msgstr ""
 
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
@@ -251,10 +245,7 @@ msgstr ""
 msgid "League"
 msgstr ""
 
-msgid "League *** LEAGUE FOR TABLE HEADER"
-msgstr "League"
-
-msgid "League. *** LEAGUE COLUMN HEADER FOR PLAYERS"
+msgid "League *** LEAGUE COLUMN HEADER"
 msgstr "League"
 
 msgid "League:"
@@ -263,7 +254,7 @@ msgstr ""
 msgid "Leagues"
 msgstr ""
 
-msgid "Lic. *** LICENCE FOR TABLE HEADER"
+msgid "Lic. *** LICENCE COLUMN HEADER"
 msgstr "Lic."
 
 msgid "Licence no. *** LICENCE NUMBER"
@@ -313,9 +304,6 @@ msgstr ""
 
 msgid "None *** FFE licence"
 msgstr "None"
-
-msgid "OK"
-msgstr ""
 
 msgid "PAPI"
 msgstr ""
