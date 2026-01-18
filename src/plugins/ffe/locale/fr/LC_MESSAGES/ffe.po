@@ -136,9 +136,6 @@ msgstr "Exporter le tournoi au format PAPI."
 msgid "FFE"
 msgstr "FFE"
 
-msgid "FFE *** FFE COLUMN HEADER FOR PLAYERS"
-msgstr "FFE"
-
 msgid "FFE Form:"
 msgstr "Formulaire FFE :"
 
