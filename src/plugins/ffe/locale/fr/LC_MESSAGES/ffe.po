@@ -338,9 +338,6 @@ msgstr "Aucune connexion à internet"
 msgid "None *** FFE licence"
 msgstr "Aucune"
 
-msgid "OK"
-msgstr "OK"
-
 msgid "Open Arbiter (level 1)"
 msgstr "Arbitre Fédéral Open 1"
 

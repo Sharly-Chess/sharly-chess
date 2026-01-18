@@ -338,9 +338,6 @@ msgstr ""
 msgid "None *** FFE licence"
 msgstr "None"
 
-msgid "OK"
-msgstr ""
-
 msgid "Open Arbiter (level 1)"
 msgstr ""
 
