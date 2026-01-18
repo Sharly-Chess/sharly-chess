@@ -517,23 +517,6 @@ class SharlyChessConfig(metaclass=Singleton):
     # The default last rounds of tournaments where byes are not allowed anymore.
     default_last_rounds_no_byes: int = 3
 
-    # The default filter for the players columns.
-    default_players_filter_columns: list[str] = [
-        'federation',
-        'club',
-        'yob',
-        'category',
-        'mail',
-        'phone',
-        'gender',
-        'fixed',
-        'fide',
-        'ffe',
-        'check_in',
-        'tournament',
-        'record',
-    ]
-
     default_prize_currency = 'EUR'
 
     # The test federation, used not to need to set the federation when entering the application

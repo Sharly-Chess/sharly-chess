@@ -1,0 +1,7 @@
+{% if tournament_player.rating_is_overridden(tournament.rating, tournament.player_rating_type) %}
+    <span {{ macros.tooltip_attributes('info', _('Standard rating used.'), 'right') }}>
+        {{ tournament_player.rating_str }} <sup>*</sup>
+    </span>
+{% else %}
+    {{ tournament_player.rating_str }}
+{% endif %}

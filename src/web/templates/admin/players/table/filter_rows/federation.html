@@ -1,0 +1,9 @@
+{% set federation = filter_value.key %}
+<img
+    class="player-federation-flag pe-1"
+    src="{{ macros.federation_flag_url(federation) }}"
+/>
+{{ federation }}
+{% if federation in federations %}
+    - {{ federations[federation] }}
+{% endif %}

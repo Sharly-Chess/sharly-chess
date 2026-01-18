@@ -39,9 +39,6 @@ msgstr ""
 msgid "Exclude: {values}"
 msgstr ""
 
-msgid "Filter the schools."
-msgstr ""
-
 msgid "French School Competitions"
 msgstr ""
 
@@ -74,9 +71,6 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-msgid "OK"
-msgstr ""
-
 #, python-format
 msgid "Other missing players: %(count)d"
 msgstr ""
@@ -96,7 +90,7 @@ msgstr ""
 msgid "School"
 msgstr ""
 
-msgid "School *** SCHOOL FOR TABLE HEADER"
+msgid "School *** SCHOOL COLUMN HEADER"
 msgstr "School"
 
 msgid "Schools"
@@ -104,9 +98,6 @@ msgstr ""
 
 #, python-format
 msgid "Search by: %(fields)s"
-msgstr ""
-
-msgid "Sort the players by school."
 msgstr ""
 
 #, python-format

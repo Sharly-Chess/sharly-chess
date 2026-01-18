@@ -146,10 +146,12 @@ class Client:
 
     @cached_property
     def allowed_players_by_id(self) -> dict[int, Player]:
+        assert self.event is not None
+        tournaments = self.allowed_tournaments_for_action(AuthAction.VIEW_PLAYERS_TAB)
+        if len(tournaments) == len(self.event.tournaments):
+            return self.event.players_by_id
         allowed_players_by_id: dict[int, Player] = {}
-        for tournament in self.allowed_tournaments_for_action(
-            AuthAction.VIEW_PLAYERS_TAB
-        ):
+        for tournament in tournaments:
             for player in tournament.tournament_players:
                 if player.id not in allowed_players_by_id:
                     allowed_players_by_id[player.id] = player
