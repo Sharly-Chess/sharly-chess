@@ -93,6 +93,9 @@ msgstr ""
 msgid "Ranking by school after round #{round}"
 msgstr ""
 
+msgid "School"
+msgstr ""
+
 msgid "School *** SCHOOL FOR TABLE HEADER"
 msgstr "School"
 
@@ -131,4 +134,9 @@ msgstr ""
 
 msgid "Total"
 msgstr ""
+
+msgid "{count} school represented"
+msgid_plural "{count} schools represented"
+msgstr[0] ""
+msgstr[1] ""
 

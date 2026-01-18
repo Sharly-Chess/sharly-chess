@@ -926,7 +926,7 @@ class IndexAdminController(BaseAdminController):
                     StoredPlayerCategorySet(id=None, name=name, categories=category_ids)
                 )
             SharlyChessConfig().load_and_set_env()
-            flat_data = {'age_categories': flat_data['age_categories']}
+            flat_data = {'age_categories': flat_data.get('age_categories', '')}
         return HTMXTemplate(
             template_name='/admin/event/event_age_categories_form.html',
             context=(
