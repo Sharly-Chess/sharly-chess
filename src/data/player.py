@@ -304,7 +304,6 @@ class TournamentPlayer(Player):
         self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
         self.stored_tournament_player = stored_tournament_player
 
-        self.pairings_by_round = self._get_pairings_by_round()
         self.points: float | None = None
         self.vpoints: float | None = None
         self.board_id: int | None = None
@@ -344,7 +343,8 @@ class TournamentPlayer(Player):
             exists=False,
         )
 
-    def _get_pairings_by_round(self) -> dict[int, Pairing]:
+    @cached_property
+    def pairings_by_round(self) -> dict[int, Pairing]:
         known_pairings: dict[int, Pairing] = {}
         for stored_pairing in self.stored_tournament_player.stored_pairings:
             pairing = Pairing(self, stored_pairing)

@@ -1,5 +1,6 @@
 import weakref
 from _weakref import ReferenceType
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 
@@ -19,9 +20,9 @@ class TournamentCriterion:
     ):
         self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
         self.stored_tournament_criterion = stored_tournament_criterion
-        self.player_filter = self._get_player_filter()
 
-    def _get_player_filter(self) -> PlayerFilter:
+    @cached_property
+    def player_filter(self) -> PlayerFilter:
         filter_type = TournamentPlayerFilterManager(self.tournament.event).get_type(
             self.stored_tournament_criterion.type
         )
