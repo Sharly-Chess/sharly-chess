@@ -5447,6 +5447,9 @@ msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran 
 msgid "This name is already used."
 msgstr "Ce nom est déjà utilisé."
 
+msgid "This player order does not represent the rankings as it does not include the tie-breaks."
+msgstr "Cet ordre de joueur·euses ne représente pas le classement vu qu'il ne tient pas compte des départages."
+
 msgid "This rotator is private (not visible by the spectators)."
 msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."
 

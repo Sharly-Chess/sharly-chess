@@ -5445,6 +5445,9 @@ msgstr ""
 msgid "This name is already used."
 msgstr ""
 
+msgid "This player order does not represent the rankings as it does not include the tie-breaks."
+msgstr ""
+
 msgid "This rotator is private (not visible by the spectators)."
 msgstr ""
 
