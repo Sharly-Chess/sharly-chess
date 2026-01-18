@@ -181,11 +181,9 @@ class Player:
     @cached_property
     def single_tournament(self) -> 'Tournament':
         """The tournament this player is assigned to (for single tournament events)"""
-        tournaments = self.event.tournaments_by_id
-        for tournament in tournaments.values():
-            for tournament_player in tournament.tournament_players:
-                if tournament_player.id == self.id:
-                    return tournament
+        for tournament in self.event.tournaments:
+            if self.id in tournament.tournament_players_by_id:
+                return tournament
         raise RuntimeError('Player not assigned to a tournament')
 
     @property
