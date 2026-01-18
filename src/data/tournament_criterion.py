@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from data.criteria.managers import PlayerFilter, TournamentPlayerFilterManager
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournamentCriterion
+from utils import Utils
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -54,4 +55,4 @@ class TournamentCriterion:
             database.update_stored_tournament_criterion(
                 self.stored_tournament_criterion
             )
-        self.player_filter = self._get_player_filter()
+        Utils.reset_cached_properties(self, 'player_filter')
