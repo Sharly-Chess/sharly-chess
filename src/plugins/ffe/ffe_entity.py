@@ -8,12 +8,14 @@ from common.exception import OptionError
 from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn
+from data.columns.players_tab import FilterPlayersTabColumn
 from data.criteria.player_filter_options import (
     PlayerFilterOption,
     SelectPlayerFilterOption,
     ExcludeFilterOption,
 )
 from data.criteria.player_filters import PlayerFilter
+from data.event import Event
 from data.player import Player, TournamentPlayer
 from data.print_documents import PlayerSplitter
 from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
@@ -360,10 +362,81 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
             raise OptionError(_('At least one licence type is expected.'), self)
 
 
+class FfeLeaguePlayersTabColumn(FilterPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-league'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('League')
+
+    @property
+    def is_compact(self) -> bool:
+        return True
+
+    @staticmethod
+    def _get_league(player: Player) -> str:
+        return FFEUtils.get_player_plugin_data(player).league or ''
+
+    def get_cell_content(self, player: Player) -> Any:
+        return self._get_league(player)
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        league = self._get_league(player)
+        return not bool(league), league
+
+    def get_filter_key(self, player: Player) -> str:
+        return self._get_league(player)
+
+    def get_filter_row_content(self, value: Any) -> str:
+        from plugins.ffe.ffe import FfePlugin
+
+        if not value:
+            return '-'
+        if value not in FfePlugin.FFE_LEAGUES:
+            return value
+        return f'{value} - {FfePlugin.FFE_LEAGUES[value]}'
+
+
+class FfeLicencePlayersTabColumn(FilterPlayersTabColumn):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-licence'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('FFE licence')
+
+    @property
+    def is_compact(self) -> bool:
+        return True
+
+    @property
+    def header_template(self) -> str:
+        return '/ffe_player_licence_header.html'
+
+    @property
+    def cell_template(self) -> str | None:
+        return '/ffe_player_licence_cell.html'
+
+    def _get_sort_key(self, player: Player) -> tuple:
+        return (FFEUtils.get_player_plugin_data(player).ffe_licence,)
+
+    def get_filter_key(self, player: Player) -> str:
+        return str(FFEUtils.get_player_plugin_data(player).ffe_licence.value)
+
+    def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
+        return PlayerFFELicence(int(filter_key))
+
+    def get_filter_row_content(self, value: Any) -> str:
+        return value.compact_name
+
+
 class FfeLeagueTableColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('League *** LEAGUE FOR TABLE HEADER')
+        return _('League *** LEAGUE COLUMN HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return FFEUtils.get_player_plugin_data(tournament_player).league or ''
@@ -376,7 +449,7 @@ class FfeLeagueTableColumn(TournamentPlayerTableColumn):
 class FfeLicenceTypeTableColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:
-        return _('Lic. *** LICENCE FOR TABLE HEADER')
+        return _('Lic. *** LICENCE COLUMN HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return FFEUtils.get_player_plugin_data(tournament_player).ffe_licence.short_name

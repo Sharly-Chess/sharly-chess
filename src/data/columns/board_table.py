@@ -25,7 +25,7 @@ class BoardColumn(Column[Board], ABC):
 class NumberColumn(BoardColumn):
     @property
     def header_content(self) -> str:
-        return _('Bd. *** BOARD NUMBER FOR TABLE HEADER')
+        return _('Bd. *** BOARD NUMBER COLUMN HEADER')
 
     def get_cell_content(self, board: Board) -> Any:
         return board.number_str
@@ -38,7 +38,7 @@ class NumberColumn(BoardColumn):
 class WhitePointsColumn(BoardColumn):
     @property
     def header_content(self) -> str:
-        return _('Pts *** POINTS FOR TABLE HEADER')
+        return _('Pts *** POINTS COLUMN HEADER')
 
     def get_cell_content(self, board: Board) -> Any:
         return board.white_tournament_player.vpoints_str
@@ -131,7 +131,7 @@ class WhiteRatingColumn(BoardColumn):
 class ResultColumn(BoardColumn):
     @property
     def header_content(self) -> str:
-        return _('Res. ** RESULT FOR TABLE HEADER')
+        return _('Res. ** RESULT COLUMN HEADER')
 
     def get_cell_content(self, board: Board) -> Any:
         return board.result_str
@@ -153,7 +153,7 @@ class NoResultColumn(BoardColumn):
 class ScreenResultColumn(BoardColumn):
     @property
     def header_content(self) -> str:
-        return _('Res. ** RESULT FOR TABLE HEADER')
+        return _('Res. ** RESULT COLUMN HEADER')
 
     def get_cell_content(self, board: Board) -> Any:
         return board.result_str or _('#{board_number}').format(
@@ -239,7 +239,7 @@ class BlackRealPointsColumn(BoardColumn):
 class BlackPointsColumn(BoardColumn):
     @property
     def header_content(self) -> str:
-        return _('Pts *** POINTS FOR TABLE HEADER')
+        return _('Pts *** POINTS COLUMN HEADER')
 
     def get_cell_content(self, board: Board) -> Any:
         return getattr(board.black_tournament_player, 'vpoints_str', '')

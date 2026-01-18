@@ -279,7 +279,7 @@ class FederationUpdaterField(PlayerUpdaterField):
 
     @staticmethod
     def static_name() -> str:
-        return _('Fed. *** FEDERATION COLUMN HEADER FOR PLAYERS')
+        return _('Fed. *** FEDERATION COLUMN HEADER')
 
     def is_updated(self, player: Player, match_player: Player) -> bool:
         return player.federation != match_player.federation

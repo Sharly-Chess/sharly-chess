@@ -1,3 +1,4 @@
+from functools import cached_property
 from logging import Logger
 import weakref
 from _weakref import ReferenceType
@@ -31,10 +32,9 @@ class PrizeCategory:
     ):
         self._prize_group_ref: 'ReferenceType[PrizeGroup]' = weakref.ref(prize_group)
         self.stored_prize_category = stored_prize_category
-        self.criteria_by_id = self._get_criteria_by_id()
-        self.prizes_by_id = self._get_prizes_by_id()
 
-    def _get_criteria_by_id(self) -> dict[int, PrizeCriterion]:
+    @cached_property
+    def criteria_by_id(self) -> dict[int, PrizeCriterion]:
         criteria_by_id = {}
         for stored_criterion in self.stored_prize_category.stored_prize_criteria:
             assert stored_criterion.id is not None
@@ -52,7 +52,8 @@ class PrizeCategory:
                 )
         return criteria_by_id
 
-    def _get_prizes_by_id(self) -> dict[int, Prize]:
+    @cached_property
+    def prizes_by_id(self) -> dict[int, Prize]:
         prizes_by_id = {}
         for stored_entry in self.stored_prize_category.stored_prizes:
             assert stored_entry.id is not None

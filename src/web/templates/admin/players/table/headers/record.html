@@ -1,0 +1,15 @@
+<div
+    class="d-flex align-items-center"
+    {{ macros.tooltip_attributes('', column.name, 'top') }}
+>
+    <i class="bi-0-square"></i>
+    <i class="bi-1-square-fill"></i>
+</div>
+{% if column.id == sort_column %}
+    <i
+        class="bi-exclamation-triangle-fill text-danger ps-1"
+        {{ macros.tooltip_attributes(
+            'warning', _('Do not use this order as ranking.'), 'top')
+        }}
+    ></i>
+{% endif %}
