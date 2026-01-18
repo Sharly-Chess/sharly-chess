@@ -325,10 +325,11 @@ class FRASchoolsPlugin(Plugin):
             school_code = FRASchoolsUtils.extract_school_code(ce_school)
             if not school_code:
                 logger.warning(
-                    'Player [%s %s] - School code not found in [%s] (ignored).',
+                    'Player [%s %s] [%s] [%s] - School code not found (ignored).',
                     stored_player.last_name,
                     stored_player.first_name,
-                    school_code,
+                    chessevent_player.ffe_license_number,
+                    chessevent_player.school,
                 )
             else:
                 fra_schools = FRASchoolsUtils.get_event_plugin_data(event).fra_schools
