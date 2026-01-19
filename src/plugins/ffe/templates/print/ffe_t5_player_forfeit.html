@@ -49,7 +49,7 @@
             </div>
         </div>
         <div class="grid" style="grid-template-columns: 1fr; margin-top: 1rem;">
-            <div class="item">
+            <div class="item {% if not player_last_forfeit_round %}error{% endif %}">
                 <div class="error-info">Le numéro de la dernière ronde forfait n'a pas pu être déterminé.</div>
                 <label for="round">que vous avez abandonné avant la fin du tournoi, avant la ronde n°</label>
                 <input required id="round" value="{{ player_last_forfeit_round }}" style="width: 1rem; flex-grow: 0;" />
