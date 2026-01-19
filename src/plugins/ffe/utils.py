@@ -143,7 +143,7 @@ class FFEArbiterTitle(IntEnum):
     def name(self) -> str:
         match self:
             case FFEArbiterTitle.NONE:
-                return _('No arbiter title')
+                return '-'
             case FFEArbiterTitle.AS:
                 return _('Trainee Arbiter')
             case FFEArbiterTitle.AFJ:

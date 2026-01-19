@@ -3,6 +3,9 @@
     <head>
         <meta charset="UTF-8" />
         <title>{{ document.title }}</title>
+        <script>
+            {% include '/lib/jquery/jquery-' ~ sharly_chess_config.jquery_version ~ '.min.js' %}
+        </script>
         <style>
             {% include 'ffe_print.css' %}
         </style>
@@ -18,6 +21,17 @@
         {% block body %}
             BODY
         {% endblock body %}
-        <div class="copyright"></div>
+        <script>
+            $(document).ready(function() {
+                $("input").on("input", function() {
+                    if ($(this).val()) {
+                        $(this).removeClass('missing');
+                    } else {
+                        $(this).addClass('missing');
+                    }
+                })
+                $('input').trigger('input');
+            })
+        </script>
     </body>
 </html>

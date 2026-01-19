@@ -14,13 +14,10 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
-msgid "All the player with no licence A"
+msgid "All the players with no FFE licence A"
 msgstr ""
 
-msgid "All the player with no licence A or B"
-msgstr ""
-
-msgid "Arbiter title:"
+msgid "All the players with no FFE licence A or B"
 msgstr ""
 
 msgid "Arbiter:"
@@ -156,6 +153,12 @@ msgstr ""
 
 msgid "FFE Licence"
 msgstr ""
+
+msgid "FFE Licence no. *** LICENCE NUMBER"
+msgstr "FFE Licence no."
+
+msgid "FFE arbiter title"
+msgstr "Titre d'arbitre FFE"
 
 msgid "FFE certification number and password not defined."
 msgstr ""
@@ -327,9 +330,6 @@ msgid "No FFE ID defined for tournament [{tournament}]."
 msgstr ""
 
 msgid "No FFE Licence"
-msgstr ""
-
-msgid "No arbiter title"
 msgstr ""
 
 msgid "No internet connection"

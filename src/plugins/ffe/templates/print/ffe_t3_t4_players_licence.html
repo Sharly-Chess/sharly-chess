@@ -22,14 +22,14 @@
                         <label for="player-last-name">Nom :</label>
                     </div>
                     <div class="item">
-                        <input id="player-last-name" value="{{ player.last_name }}" />
+                        <input required id="player-last-name" value="{{ player.last_name }}" />
                     </div>
                     <div class="item"></div>
                     <div class="item">
                         <label for="player-first-name">Prénom :</label>
                     </div>
                     <div class="item">
-                        <input id="player-first-name" value="{{ player.first_name }}" />
+                        <input required id="player-first-name" value="{{ player.first_name }}" />
                     </div>
                     <div class="item"></div>
                 </div>
@@ -65,21 +65,21 @@
                         <label for="player-ffe-licence-number">N° de licence :</label>
                     </div>
                     <div class="item">
-                        <input id="player-ffe-licence-number" value="{{ player.plugin_data.ffe.ffe_licence_number or '' }}" />
+                        <input required id="player-ffe-licence-number" value="{{ player.plugin_data.ffe.ffe_licence_number or '' }}" />
                     </div>
                     <div class="item"></div>
                     <div class="item">
                         <label for="player-club">Club :</label>
                     </div>
                     <div class="item">
-                        <input id="player-club" value="{{ player.club or '' }}" />
+                        <input required id="player-club" value="{{ player.club or '' }}" />
                     </div>
                     <div class="item"></div>
                     <div class="item">
                         <label for="player-league">Ligue :</label>
                     </div>
                     <div class="item">
-                        <input id="player-league" value="{{ player.plugin_data.ffe.league or '' }}" />
+                        <input required id="player-league" value="{{ player.plugin_data.ffe.league or '' }}" />
                     </div>
                     <div class="item"></div>
                 </div>

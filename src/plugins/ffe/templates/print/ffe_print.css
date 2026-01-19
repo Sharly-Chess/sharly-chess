@@ -44,9 +44,11 @@ label {
 input {
     border: none;
 }
+/*
 input[type="checkbox"] {
     accent-color: black;
 }
+*/
 .grid {
     display: grid;
     margin-top: var(--row-gap);
@@ -81,12 +83,11 @@ textarea.error {
     border-color: red;
 }
 .error {
-    /* color: red; */
     position: relative;
 }
-.error input {
-    color: red;
-    border-color: red;
+input[required].missing {
+    color: #ef6c00;
+    border-color: #ef6c00;
 }
 .error-info {
     display: none;
