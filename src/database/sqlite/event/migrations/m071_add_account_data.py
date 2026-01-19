@@ -12,6 +12,6 @@ class Migration(BaseMigration):
 
     def backward(self):
         self.database.execute('ALTER TABLE `account` DROP COLUMN `plugin_data`')
+        self.database.execute('ALTER TABLE `account` DROP COLUMN `fide_arbiter_title`')
         self.database.execute('ALTER TABLE `account` DROP COLUMN `phone`')
         self.database.execute('ALTER TABLE `account` DROP COLUMN `mail`')
-        self.database.execute('ALTER TABLE `account` DROP COLUMN `fide_arbiter_title`')
