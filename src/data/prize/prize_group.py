@@ -2,6 +2,7 @@ from collections import deque
 import weakref
 from _weakref import ReferenceType
 from collections.abc import Collection
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 from common.i18n import _
@@ -25,9 +26,9 @@ class PrizeGroup:
     ):
         self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
         self.stored_prize_group = stored_prize_group
-        self.categories_by_id = self._get_categories_by_id()
 
-    def _get_categories_by_id(self) -> dict[int, PrizeCategory]:
+    @cached_property
+    def categories_by_id(self) -> dict[int, PrizeCategory]:
         category_by_id = {}
         for stored_category in self.stored_prize_group.stored_prize_categories:
             assert stored_category.id is not None

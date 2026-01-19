@@ -111,6 +111,7 @@ class FRASchool(PluginData):
     @property
     def sort_key(self) -> tuple:
         return (
+            not self.name,
             self.postal_code or '',
             self.city or '',
             self.name,

@@ -8,15 +8,15 @@
     <table class="rr-table">
         <thead class="rr-header">
             <tr class="rr-header">
-                <th class="rr-number">{{ _('No. *** NB FOR TABLE HEADER') }}</th>
+                <th class="rr-number">{{ _('No. *** NB COLUMN HEADER') }}</th>
                 <th class="player-title">{# The player's title #}</th>
-                <th class="player">{{ _('Name *** NAME FOR TABLE HEADER') }}</th>
-                <th>{{ _('Fed *** FEDERATION FOR TABLE HEADER') }}</th>
+                <th class="player">{{ _('Name *** NAME COLUMN HEADER') }}</th>
+                <th>{{ _('Fed. *** FEDERATION COLUMN HEADER') }}</th>
                 <th>{{ tournament.rating.print_view_header }}</th>
                 {% for berger_number in range(1, tournament.player_count + 1) %}
                     <th>{{ berger_number }}</th>
                 {% endfor %}
-                <th class="result">{{ _('Pts *** POINTS FOR TABLE HEADER') }}</th>
+                <th class="result">{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
                 {% for tie_break in tournament.tie_breaks %}
                     <th class="tie-break">{{ tie_break.acronym }}</th>
                 {% endfor %}
