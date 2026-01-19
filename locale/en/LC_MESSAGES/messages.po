@@ -1122,6 +1122,9 @@ msgstr ""
 msgid "Click to check-out the player."
 msgstr ""
 
+msgid "Click to copy"
+msgstr ""
+
 msgid "Close"
 msgstr ""
 
@@ -2161,10 +2164,6 @@ msgstr ""
 msgid "FIDE ID:"
 msgstr ""
 
-#, python-format
-msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
-msgstr ""
-
 msgid "FIDE Title:"
 msgstr ""
 
@@ -2913,10 +2912,6 @@ msgstr ""
 msgid "Madagascar"
 msgstr ""
 
-#, python-format
-msgid "Mail: %(mail)s (click to copy to the clipboard)."
-msgstr ""
-
 msgid "Main category"
 msgstr ""
 
@@ -3243,9 +3238,6 @@ msgstr ""
 msgid "Nigeria"
 msgstr ""
 
-msgid "No FIDE ID."
-msgstr ""
-
 msgid "No Prize Bracket"
 msgstr ""
 
@@ -3300,9 +3292,6 @@ msgstr ""
 msgid "No internet connection"
 msgstr ""
 
-msgid "No mail defined."
-msgstr ""
-
 msgid "No marks"
 msgstr ""
 
@@ -3331,9 +3320,6 @@ msgid "No permissions defined."
 msgstr ""
 
 msgid "No permissions."
-msgstr ""
-
-msgid "No phone defined."
 msgstr ""
 
 msgid "No players"
@@ -3864,10 +3850,6 @@ msgid "Phone number"
 msgstr ""
 
 msgid "Phone number:"
-msgstr ""
-
-#, python-format
-msgid "Phone: %(phone)s (click to copy to the clipboard)."
 msgstr ""
 
 msgid "Place Cards"
@@ -5748,6 +5730,9 @@ msgid "Uganda"
 msgstr ""
 
 msgid "Ukraine"
+msgstr ""
+
+msgid "Undefined"
 msgstr ""
 
 msgid "Undefined *** PLURAL"

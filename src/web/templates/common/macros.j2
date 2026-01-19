@@ -14,6 +14,16 @@
     hx-on::before-send="$('body .tooltip').remove(); $('body .tooltip-inner').remove(); $('body .tooltip-arrow').remove();"
 {% endmacro %}
 
+{% macro click_to_copy_attributes(value, tooltip_placement='top', copied_value='', warning=false, wide=false) %}
+    {{ tooltip_attributes(
+        '',
+        '<div class="fw-bold" '~ ('style="font-size:90%"' if wide else '') ~ '>' ~ value ~ '</div>'
+        '<div class="fst-italic" style="font-size:90%">' ~ _('Click to copy') ~ '</div>',
+        tooltip_placement
+    ) }}
+    onclick="navigator.clipboard.writeText(`{{ copied_value or value }}`)"
+{% endmacro %}
+
 {% macro sharly_chess_logo() %}
     <svg
         xmlns="http://www.w3.org/2000/svg"
