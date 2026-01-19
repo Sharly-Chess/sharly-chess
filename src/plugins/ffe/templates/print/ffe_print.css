@@ -79,9 +79,6 @@ textarea {
     resize: vertical;
     width: 100%;
 }
-textarea.error {
-    border-color: red;
-}
 .error {
     position: relative;
 }

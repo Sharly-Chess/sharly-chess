@@ -23,14 +23,14 @@
         {% endblock body %}
         <script>
             $(document).ready(function() {
-                $("input").on("input", function() {
+                $("input[required]").on("input", function() {
                     if ($(this).val()) {
                         $(this).removeClass('missing');
                     } else {
                         $(this).addClass('missing');
                     }
                 })
-                $('input').trigger('input');
+                $('input[required]').trigger('input');
             })
         </script>
     </body>
