@@ -37,7 +37,7 @@
                         {% set opponent = pairing.opponent %}
                         {% if opponent %}
                             <td class="board">
-                                {{ _('Board #%(board_number)d with %(color)s', board_number=tournament_player.board_number, color=tournament_player.color_str) }}
+                                {{ _('%(board_number)d %(color)s', board_number=tournament_player.board_number, color=tournament_player.color_str) }}
                             </td>
                             {% for column in opponent_columns %}
                                 <td class="{{ column.get_cell_classes(opponent) }}">

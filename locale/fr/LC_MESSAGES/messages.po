@@ -16,6 +16,10 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr "%%s est remplacé par le temps restant avant l'horaire."
 
 #, python-format
+msgid "%(board_number)d %(color)s"
+msgstr "%(board_number)d %(color)s"
+
+#, python-format
 msgid "%(count)d boards without result"
 msgstr "%(count)d échiquiers sans résultat"
 
@@ -733,10 +737,6 @@ msgstr "Blitz :"
 
 msgid "Blz *** BLITZ RATING ACRONYM"
 msgstr "Blz"
-
-#, python-format
-msgid "Board #%(board_number)d with %(color)s"
-msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 
 #, python-format
 msgid "Board %(board_number)s"

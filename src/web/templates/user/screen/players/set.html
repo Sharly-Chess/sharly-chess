@@ -56,7 +56,7 @@
                                             {% elif not opponent_id %}
                                                 {{ tournament_player.not_paired_str }}
                                             {% else %}
-                                                {{ _('Board #%(board_number)d with %(color)s', board_number=tournament_player.board_number, color=tournament_player.color_str) }}
+                                                {{ _('%(board_number)d %(color)s', board_number=tournament_player.board_number, color=tournament_player.color_str) }}
                                             {% endif %}
                                         </div>
                                         {% if screen_set.players_show_opponent %}

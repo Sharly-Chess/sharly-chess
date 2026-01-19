@@ -16,6 +16,10 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
 #, python-format
+msgid "%(board_number)d %(color)s"
+msgstr ""
+
+#, python-format
 msgid "%(count)d boards without result"
 msgstr ""
 
@@ -733,10 +737,6 @@ msgstr ""
 
 msgid "Blz *** BLITZ RATING ACRONYM"
 msgstr "Blz"
-
-#, python-format
-msgid "Board #%(board_number)d with %(color)s"
-msgstr ""
 
 #, python-format
 msgid "Board %(board_number)s"
