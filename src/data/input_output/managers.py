@@ -1,10 +1,11 @@
 from typing import override
-from data.input_output import tournament_exporters
+from data.input_output import tournament_exporters, player_exporters
 from data.input_output.data_source import (
     FideDataSource,
     OnlineDataSource,
     DataSource,
 )
+from data.input_output.player_exporters import PlayerExporter
 from data.input_output.tournament_exporters import TournamentExporter
 from data.input_output.tournament_importers import (
     TournamentImporter,
@@ -54,3 +55,13 @@ class TournamentImporterManager(EventBoundEntityManager[TournamentImporter]):
             importers=importers
         )
         return importers
+
+
+class PlayerExporterManager(EntityManager[PlayerExporter]):
+    def entity_types(self) -> list[type[PlayerExporter]]:
+        return [
+            player_exporters.CsvPlayerExporter,
+            player_exporters.OdsPlayerExporter,
+            player_exporters.XlsxPlayerExporter,
+            player_exporters.VcfPlayerExporter,
+        ]
