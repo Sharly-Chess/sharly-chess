@@ -165,7 +165,7 @@ class FFET4NoLicencePlayersPrintOption(FFENoLicencePlayersPrintOption):
 
     @property
     def placeholder(self) -> str:
-        return _('All the players with no licence A or B')
+        return _('All the players with no FFE licence A or B')
 
 
 class FFEWriterPrintOption(AccountPrintOption):
