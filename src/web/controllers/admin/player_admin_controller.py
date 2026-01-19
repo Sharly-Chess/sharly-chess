@@ -1,21 +1,17 @@
-import csv
 from collections import defaultdict
 from collections.abc import Callable
 from datetime import date
 from functools import cached_property
 from logging import Logger
 import math
-from tempfile import NamedTemporaryFile
 from typing import Annotated, Any, Iterable
 
 from litestar.exceptions import NotFoundException, ClientException
 
 from common.i18n.utils import normalized_key
-from pyexcel_ods3 import save_data
-import xlsxwriter
 
 from litestar import get, patch, delete, post, Response
-from litestar.plugins.htmx import HTMXRequest, ClientRedirect
+from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template, File
@@ -27,15 +23,13 @@ from common.exception import SharlyChessException, FormError
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.columns import player_datasheet as ds_columns
 from data.columns.handlers import PlayersTabColumnHandler
-from data.columns.player_datasheet import DatasheetColumn
 from data.columns.players_tab import PlayersTabColumn
 from data.event import Event
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
 from data.input_output.data_source import DataSource
-from data.input_output.managers import DataSourceManager
+from data.input_output.managers import DataSourceManager, PlayerExporterManager
 from data.player import Player, PlayerRating, TournamentPlayer
 from data.print_documents.documents import (
     PlayerListPrintDocument,
@@ -409,8 +403,8 @@ class PlayerAdminController(BaseEventAdminController):
     def _render_players_tab(cls, web_context: PlayerAdminWebContext) -> HTMXTemplate:
         request = web_context.request
         event = web_context.get_admin_event()
-        cls.set_players_search_results(web_context)
         cls.set_disabled_columns(web_context)
+        cls.set_players_search_results(web_context)
         template_context = (
             web_context.template_context
             | cls._player_table_header_context(web_context)
@@ -422,6 +416,7 @@ class PlayerAdminController(BaseEventAdminController):
             'search': SessionPlayersSearch(request, event.uniq_id).get(),
             'allowed_tournaments': web_context.allowed_tournaments,
             'enabled_columns': web_context.column_handler.enabled_columns,
+            'player_exporters': PlayerExporterManager().objects(),
         }
         return cls._admin_base_event_render(template_context)
 
@@ -1811,163 +1806,25 @@ class PlayerAdminController(BaseEventAdminController):
             },
         )
 
-    @staticmethod
-    def download_players_as_vcf(
-        event: Event,
-        players: list[Player],
-    ) -> Response[str]:
-        """Returns a file with all the vCards of the players."""
-        data: str = ''
-        for player in players:
-            if not (player.mail or player.phone):
-                continue
-            data += 'BEGIN:VCARD\nVERSION:3.0\n'
-            if player.first_name:
-                data += (
-                    f'N:{player.last_name.title()};{player.first_name}\n'
-                    f'FN:{player.first_name} {player.last_name.title()}\n'
-                )
-            else:
-                data += f'N:{player.last_name.title()}\nFN:{player.last_name.title()}\n'
-            data += (
-                f'ORG:{player.club}\n'
-                f'item1.TEL:{player.phone}\n'
-                f'item1.X-ABLabel:{_("Personal")}\n'
-                f'item2.EMAIL;type=INTERNET:{player.mail}\n'
-                f'item2.X-ABLabel:{_("Personal")}\n'
-                f'CATEGORIES:{_("Chess")}\n'
-                'END:VCARD\n\n'
-            )
-        return Response(
-            content=data,
-            media_type='text/x-vcard',
-            headers={
-                'Content-Disposition': f'attachment;{event.uniq_id}.vcf',
-            },
-        )
-
-    @classmethod
-    def get_players_datasheet_column(cls, event: Event) -> list[DatasheetColumn]:
-        """Returns the names of the columns used in the datasheets that can be downloaded."""
-
-        datasheet_columns: list[DatasheetColumn] = [
-            ds_columns.LastNameColumn(),
-            ds_columns.FirstNameColumn(),
-            ds_columns.YearOfBirthColumn(),
-            ds_columns.DateOfBirthColumn(),
-            ds_columns.MailColumn(),
-            ds_columns.PhoneColumn(),
-            ds_columns.GenderColumn(),
-            ds_columns.FideIDColumn(),
-            ds_columns.TournamentColumn(),
-            ds_columns.FederationColumn(),
-            ds_columns.ClubColumn(),
-            ds_columns.OwedColumn(),
-            ds_columns.PaidColumn(),
-            ds_columns.CommentColumn(),
-        ]
-        for tournament_type in TournamentRating:
-            for rating_type in PlayerRatingType:
-                datasheet_columns.append(
-                    ds_columns.RatingColumn(tournament_type, rating_type)
-                )
-        plugin_manager.hook_for_event(event, 'insert_player_datasheet_columns')(
-            datasheet_columns=datasheet_columns
-        )
-        return datasheet_columns
-
-    @classmethod
-    def get_players_datasheet_header_and_data(
-        cls, event: Event, players: list[Player]
-    ) -> tuple[list[str], list[list[Any]]]:
-        columns = cls.get_players_datasheet_column(event)
-        header = [column.header_content for column in columns]
-        data = [
-            [column.get_cell_content(player) for column in columns]
-            for player in players
-        ]
-        return header, data
-
-    @classmethod
-    def download_players_as_xlsx(
-        cls,
-        event: Event,
-        players: list[Player],
-    ) -> File:
-        """Returns a file with all the information of the players in an XLSX format."""
-        temp_file = NamedTemporaryFile(delete=False, mode='wb', suffix='.xlsx')
-        workbook = xlsxwriter.Workbook(temp_file)
-        worksheet = workbook.add_worksheet()
-        header, data = cls.get_players_datasheet_header_and_data(event, players)
-        worksheet.add_table(
-            0,
-            0,
-            len(data),
-            len(header) - 1,
-            options={
-                'columns': [{'header': header} for header in header],
-                'data': data,
-            },
-        )
-        worksheet.autofit()
-        workbook.close()
-        return File(path=temp_file.name, filename=f'{event.uniq_id}.xlsx')
-
-    @classmethod
-    def download_players_as_csv(
-        cls,
-        event: Event,
-        players: list[Player],
-    ) -> File:
-        """Returns a file with all the information of the players in a CSV format (comma-separated)."""
-        temp_file = NamedTemporaryFile(
-            delete=False, mode='w', suffix='.csv', newline=''
-        )
-        writer = csv.writer(temp_file)
-        header, data = cls.get_players_datasheet_header_and_data(event, players)
-        writer.writerow(header)
-        writer.writerows(data)
-        return File(path=temp_file.name, filename=f'{event.uniq_id}.csv')
-
-    @classmethod
-    def download_players_as_ods(
-        cls,
-        event: Event,
-        players: list[Player],
-    ) -> File:
-        """Returns a file with all the information of the players in an ODS format."""
-        temp_file = NamedTemporaryFile(delete=False, mode='w+b', suffix='.ods')
-        header, data = cls.get_players_datasheet_header_and_data(event, players)
-        save_data(temp_file, [header] + data)
-        return File(path=temp_file.name, filename=f'{event.uniq_id}.ods')
-
     @get(
-        path='/download-event-players/{event_uniq_id:str}',
+        path='/download-event-players/{event_uniq_id:str}/{exporter_id:str}',
         name='admin-download-event-players',
     )
     async def htmx_admin_event_download_players(
         self,
         request: HTMXRequest,
-        download_format: str | None = None,
-        player_ids: list[int] | None = None,
-    ) -> ClientRedirect | Response[str] | File:
-        web_context = BaseEventAdminWebContext(request)
+        exporter_id: str,
+    ) -> Response[str] | File:
+        web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
+        search_results = self.get_search_results(web_context)
         players: list[Player] = [
             event.players_by_id[player_id]
-            for player_id in player_ids or []
-            if player_id
+            for player_id in search_results
+            if player_id in event.players_by_id
         ]
-        if not players:
-            players = event.players_sorted_by_name
-        match download_format:
-            case 'vcf':
-                return self.download_players_as_vcf(event, players)
-            case 'csv':
-                return self.download_players_as_csv(event, players)
-            case 'xlsx':
-                return self.download_players_as_xlsx(event, players)
-            case 'ods':
-                return self.download_players_as_ods(event, players)
-            case _:
-                raise ValueError(f'download_format={download_format}')
+        try:
+            exporter = PlayerExporterManager().get_object(exporter_id)
+        except KeyError:
+            raise NotFoundException(f'Unknown exporter [{exporter_id}].')
+        return exporter.download_players_file(players, event)
