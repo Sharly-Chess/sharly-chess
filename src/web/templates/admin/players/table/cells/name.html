@@ -7,7 +7,7 @@
         {{ macros.tooltip_attributes(
             '', _(
                 'Player does not match tournament criteria: {names}'
-            ).format(names=tournament.failing_criteria_message(player)),
+            ).format(names=tournament.failing_criteria_message(tournament_player)),
             'top'
         ) }}
     ></i>
