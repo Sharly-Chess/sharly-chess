@@ -163,14 +163,12 @@ class ChessResultsSession(Session):
                 'playerperteam': '',
                 'ratingavg': str(round(tournament.average_player_rating)),
                 'endstatus': 'N',
-                'chiefarbiter': tournament.chief_arbiter.full_name_and_id
-                if tournament.chief_arbiter
-                else '',
+                'chiefarbiter': getattr(
+                    tournament.chief_arbiter, 'fide_arbiter_str', ''
+                ),
                 'deputyarbiter': ', '.join(
-                    arbiter.full_name_and_id for arbiter in tournament.deputy_arbiters
-                )
-                if tournament.deputy_arbiters
-                else '',
+                    arbiter.fide_arbiter_str for arbiter in tournament.deputy_arbiters
+                ),
                 'homepageorganiser': (event.organiser_home_page or '')[:80],
                 'mail': (event.organiser_email or '')[:80],
                 'federation': tournament.event.federation or 'FID',

@@ -332,10 +332,11 @@ class StoredAccount:
     active: bool
     first_name: str | None
     last_name: str | None
-    fide_id: int | None
-    password_hash: str | None
-    mail: str | None
-    phone: str | None
+    fide_id: int | None = None
+    fide_arbiter_title: str | None = None
+    password_hash: str | None = None
+    mail: str | None = None
+    phone: str | None = None
     stored_permissions: list[StoredPermission] = field(
         default_factory=list[StoredPermission]
     )

@@ -1,23 +1,18 @@
-<h4>
-    {{ _('French Chess Federation') }}
-</h4>
-<div class="row gy-2 gx-3">
-    <div class="col-12 col-md-6">
-        {{ admin_macros.text_input(
-            name='ffe_licence_number',
-            label=_('%(string)s:', string=_('Licence no. *** LICENCE NUMBER')),
-            placeholder='',
-            disabled=true,
-            input_tooltip=_('This field is not editable.'),
-            data=data, errors=errors
-        ) }}
-    </div>
-    <div class="col-12 col-md-6">
-        {{ admin_macros.select_input(
-            name='ffe_arbiter_title',
-            label=_('Arbiter title:'),
-            select_options=ffe_arbiter_title_options,
-            data=data, errors=errors
-        ) }}
-    </div>
+<div class="col-12 col-md-6">
+    {{ admin_macros.text_input(
+        name='ffe_licence_number',
+        label=_('%(string)s:', string=_('FFE Licence no. *** LICENCE NUMBER')),
+        placeholder='',
+        disabled=true,
+        input_tooltip=_('This field is not editable.'),
+        data=data, errors=errors
+    ) }}
+</div>
+<div class="col-12 col-md-6">
+    {{ admin_macros.select_input(
+        name='ffe_arbiter_title',
+        label=_('%(string)s:', string=_('FFE arbiter title')),
+        select_options=ffe_arbiter_title_options,
+        data=data, errors=errors
+    ) }}
 </div>

@@ -12,12 +12,6 @@
             </h2>
         </div>
         <div class="modal-body">
-            {% if action == 'update' %}
-                <h4 class="mb-3">
-                    {{ _('%(string)s:', string=_('Account')) }}
-                    {{ admin_account.full_name }}
-                </h4>
-            {% endif %}
             <form
                 id="modal-form"
                 {% if action == 'update' %}
@@ -30,9 +24,39 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                <h4>
+                    {{ _('Connection parameters') }}
+                </h4>
                 {# These inputs are a trick to avoid autocomplete #}
                 <input type="text" style="display:none">
                 <input type="password" style="display:none">
+
+                <div class="row gy-2 gx-3">
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.switch_input(
+                            name='active',
+                            label='',
+                            placeholder=_('Enable this account'),
+                            tooltip_text=_(
+                                'You can temporarily invalidate accounts by turning this switch off.'
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <input type="password" name="fake_password" style="display:none" autocomplete="current-password">
+                        {{ admin_macros.password_input(
+                            name='password',
+                            label=_('Password:'),
+                            autocomplete='new-password',
+                            tooltip_text=(
+                                _('New password. Leave blank for no change.')
+                                if action == 'update' else _('Only required for users that need to connect to the server.')
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
 
                 <h4>
                     {{ _('Staff information') }}
@@ -84,10 +108,18 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <div class="col-12 col-md-6">
+                        {{ admin_macros.select_input(
+                            name='fide_arbiter_title',
+                            label=_('%(string)s:', string=_('FIDE arbiter title')),
+                            select_options=fide_arbiter_title_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    {% for form_fields_template in plugin_form_fields_templates %}
+                        {% include form_fields_template %}
+                    {% endfor %}
                 </div>
-                {% for form_fields_template in plugin_form_fields_templates %}
-                    {% include form_fields_template %}
-                {% endfor %}
 
                 <h4>
                     {{ _('Staff member roles') }}
@@ -114,38 +146,6 @@
                             select_options=tournament_options,
                             multiple_select=true,
                             placeholder=_('Choose one, many or no tournaments.'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                </div>
-
-                <h4>
-                    {{ _('Connection parameters') }}
-                </h4>
-
-               <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.switch_input(
-                            name='active',
-                            label='',
-                            placeholder=_('Enable this account'),
-                            tooltip_text=_(
-                                'You can temporarily invalidate accounts by turning this switch off.'
-                            ),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-
-                    <div class="col-12 col-md-6">
-                        <input type="password" name="fake_password" style="display:none" autocomplete="current-password">
-                        {{ admin_macros.password_input(
-                            name='password',
-                            label=_('Password:'),
-                            autocomplete='new-password',
-                            tooltip_text=(
-                                _('New password. Leave blank for no change.')
-                                if action == 'update' else _('Only required for users that need to connect to the server.')
-                            ),
                             data=data, errors=errors
                         ) }}
                     </div>

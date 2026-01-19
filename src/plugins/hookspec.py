@@ -14,6 +14,7 @@ from plugins.utils import (
 from utils.enum import Result, TournamentRating, FormAction
 
 if TYPE_CHECKING:
+    from data.account import Account
     from data.columns.player_datasheet import DatasheetColumn
     from data.columns.board_table import BoardColumn
     from data.columns.player_table import TournamentPlayerTableColumn
@@ -406,3 +407,7 @@ class AppHookSpecs:
     @hookspec
     def get_account_search_result_js_template(self) -> tuple[str, dict[str, Any]]:
         """Provide a path to the template containing additional JS code run when players are selected on the account modal search."""
+
+    @hookspec
+    def get_account_card_title_suffix(self, account: 'Account') -> str | None:
+        """Add a suffix for an account to be displayed in the card title."""

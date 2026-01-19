@@ -9,6 +9,7 @@ from packaging.version import Version
 from common import TEST_ENV, DEVEL_ENV
 from common.i18n import _, ngettext
 from common.exception import SharlyChessException
+from data.account import Account
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn, ColumnUsage
@@ -943,3 +944,10 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_account_search_result_js_template(self) -> str:
         return '/ffe_account_search_result.js'
+
+    @hookimpl
+    def get_account_card_title_suffix(self, account: Account) -> str | None:
+        title = FFEUtils.get_account_plugin_data(account).ffe_arbiter_title
+        if title != FFEArbiterTitle.NONE:
+            return title.short_name
+        return None

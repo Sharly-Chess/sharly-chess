@@ -2161,6 +2161,9 @@ msgstr "FIDE"
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
+msgid "FIDE Arbiter"
+msgstr "Arbitre FIDE"
+
 msgid "FIDE ID"
 msgstr "Identifiant FIDE"
 
@@ -2173,6 +2176,9 @@ msgstr "Identifiant FIDE : %(fide_id)s (cliquer pour copier dans le presse-papi
 
 msgid "FIDE Title:"
 msgstr "Titre FIDE :"
+
+msgid "FIDE arbiter title"
+msgstr "Titre d'arbitre FIDE"
 
 msgid "FIDE database"
 msgstr "Base de données FIDE"
@@ -2648,6 +2654,9 @@ msgstr "L'nstallation de la version [{version}] a échoué, abandon."
 
 msgid "Installed [{lib}]."
 msgstr "La bibliothèque [{lib}] a été installée."
+
+msgid "International Arbiter"
+msgstr "Arbitre International"
 
 msgid "International Chess Federation"
 msgstr "Fédération internationale d'échecs"
@@ -3162,6 +3171,9 @@ msgstr "Namibie"
 
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "National"
+
+msgid "National Arbiter"
+msgstr "Arbitre National"
 
 msgid "Nauru"
 msgstr "Nauru"
