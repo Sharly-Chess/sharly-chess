@@ -57,6 +57,7 @@
 - Fixed the default tournament screens (3.4.6)
 - Use menu links by default for new screen families (3.4.7)
 - Fixed the display of first and last players on family card (3.4.8)
+- Display the unpaired players by default on screens and families (3.4.8)
 
 ## Outputs
 
