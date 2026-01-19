@@ -5735,7 +5735,7 @@ msgid "Ukraine"
 msgstr "Ukraine"
 
 msgid "Undefined"
-msgstr "Non-défini"
+msgstr "Non défini"
 
 msgid "Undefined *** PLURAL"
 msgstr "Non définis"

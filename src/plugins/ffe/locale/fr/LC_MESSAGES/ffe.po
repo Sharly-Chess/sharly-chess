@@ -129,10 +129,10 @@ msgid "FFE Licence"
 msgstr "Licence FFE"
 
 msgid "FFE certification number and password not defined."
-msgstr "Numéro d'homologation FFE et mot de passe non-définis."
+msgstr "Numéro d'homologation FFE et mot de passe non définis."
 
 msgid "FFE certification number not defined."
-msgstr "Numéro d'homologation FFE non-défini."
+msgstr "Numéro d'homologation FFE non défini."
 
 msgid "FFE certification number:"
 msgstr "Numéro d'homologation :"
@@ -160,7 +160,7 @@ msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tourna
 msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament}]."
 
 msgid "FFE password not defined."
-msgstr "Mot de passe FFE non-défini."
+msgstr "Mot de passe FFE non défini."
 
 msgid "FFE password:"
 msgstr "Mot de passe FFE :"
