@@ -68,7 +68,7 @@ input[type="checkbox"] {
 .error {
     position: relative;
 }
-input.required.missing {
+input[required].missing {
     color: #ef6c00;
     border-color: #ef6c00;
 }
