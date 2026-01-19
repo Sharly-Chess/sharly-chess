@@ -33,7 +33,7 @@
                 ) }}
             ></i>
         {% endif %}
-        {{ account.full_name }}
+        {{ account.get_card_title(admin_event) }}
     {% endif %}
 {% endblock %}
 

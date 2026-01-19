@@ -1027,3 +1027,25 @@ class CheckInStatus(IntEnum):
     NEXT_ROUND_BYE = 1
     NOT_CHECKED_IN = 2
     CHECKED_IN = 3
+
+
+class FIDEArbiterTitle(StrEnum):
+    IA = 'IA'
+    FA = 'FA'
+    NA = 'NA'
+
+    @property
+    def name(self) -> str:
+        match self:
+            case self.IA:
+                return _('International Arbiter')
+            case self.FA:
+                return _('FIDE Arbiter')
+            case self.NA:
+                return _('National Arbiter')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def acronym(self) -> str:
+        return self.value
