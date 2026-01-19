@@ -3,9 +3,8 @@
     style="height: 1.2em"
     class="p-0 {% if player.fide_id %}cursor-pointer{% else %}fide-id-none{% endif %}"
     {% if player.fide_id %}
-        {{ macros.tooltip_attributes('info', _('FIDE ID: %(fide_id)s (click to copy to the clipboard).', fide_id=player.fide_id), 'left') }}
-        onclick="navigator.clipboard.writeText('{{ player.fide_id }}')"
+        {{ macros.click_to_copy_attributes(player.fide_id, 'left') }}
     {% else %}
-        {{ macros.tooltip_attributes('warning', _('No FIDE ID.'), 'left') }}
+        {{ macros.tooltip_attributes('warning', _('Undefined'), 'left') }}
     {% endif %}
 />

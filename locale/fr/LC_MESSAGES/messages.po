@@ -1122,6 +1122,9 @@ msgstr "Cliquer ici pour pointer le·la joueur·euse."
 msgid "Click to check-out the player."
 msgstr "Cliquer ici pour supprimer le pointage du·de la joueur·euse."
 
+msgid "Click to copy"
+msgstr "Cliquer pour copier"
+
 msgid "Close"
 msgstr "Fermer"
 
@@ -2161,10 +2164,6 @@ msgstr "Identifiant FIDE"
 msgid "FIDE ID:"
 msgstr "Identifiant FIDE :"
 
-#, python-format
-msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
-msgstr "Identifiant FIDE : %(fide_id)s (cliquer pour copier dans le presse-papier)."
-
 msgid "FIDE Title:"
 msgstr "Titre FIDE :"
 
@@ -2913,10 +2912,6 @@ msgstr "Macao, Chine"
 msgid "Madagascar"
 msgstr "Madagascar"
 
-#, python-format
-msgid "Mail: %(mail)s (click to copy to the clipboard)."
-msgstr "Mél : %(mail)s (cliquer pour copier dans le presse-papier)."
-
 msgid "Main category"
 msgstr "Catégorie générale"
 
@@ -3243,9 +3238,6 @@ msgstr "Niger"
 msgid "Nigeria"
 msgstr "Nigéria"
 
-msgid "No FIDE ID."
-msgstr "Identifiant FIDE non défini."
-
 msgid "No Prize Bracket"
 msgstr "Aucun Groupe de Prix Non-Cumulables"
 
@@ -3300,9 +3292,6 @@ msgstr "Aucun horaire."
 msgid "No internet connection"
 msgstr "Aucune connexion à internet"
 
-msgid "No mail defined."
-msgstr "Mél non défini."
-
 msgid "No marks"
 msgstr "Aucune marque"
 
@@ -3332,9 +3321,6 @@ msgstr "Aucune permission définie."
 
 msgid "No permissions."
 msgstr "Aucune permission."
-
-msgid "No phone defined."
-msgstr "Téléphone non défini."
 
 msgid "No players"
 msgstr "Aucun·e joueur·euse"
@@ -3867,10 +3853,6 @@ msgstr "Numéro de téléphone"
 
 msgid "Phone number:"
 msgstr "Numéro de téléphone :"
-
-#, python-format
-msgid "Phone: %(phone)s (click to copy to the clipboard)."
-msgstr "Téléphone : %(phone)s (cliquer pour copier dans le presse-papier)."
 
 msgid "Place Cards"
 msgstr "Chevalets"
@@ -5751,6 +5733,9 @@ msgstr "Ouganda"
 
 msgid "Ukraine"
 msgstr "Ukraine"
+
+msgid "Undefined"
+msgstr "Non-défini"
 
 msgid "Undefined *** PLURAL"
 msgstr "Non définis"

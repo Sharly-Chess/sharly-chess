@@ -2,6 +2,10 @@ msgid "\"Niçois\" accelerated system"
 msgstr "Système accéléré niçois"
 
 #, python-format
+msgid "%(licence_number)s (expired)"
+msgstr "%(licence_number)s (expirée)"
+
+#, python-format
 msgid "%(string)s:"
 msgstr "%(string)s :"
 
@@ -154,14 +158,6 @@ msgstr "Licence FFE B (loisir)"
 
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
 msgstr "La licence FFE [{ffe_licence_number}] est déjà présente dans le tournoi [{tournament}]."
-
-#, python-format
-msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-msgstr "Licence FFE : %(ffe_licence_number)s (cliquer pour copier dans le presse-papier)."
-
-#, python-format
-msgid "FFE licence: %(ffe_licence_number)s (expired)."
-msgstr "Licence FFE : %(ffe_licence_number)s (expirée)."
 
 msgid "FFE password not defined."
 msgstr "Mot de passe FFE non-défini."
@@ -403,10 +399,6 @@ msgstr "Impossible de mettre en ligne le règlement du tournoi."
 
 msgid "Unable to upload tournament."
 msgstr "Impossible de mettre en ligne le tournoi."
-
-#, python-format
-msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-msgstr "Type de FFE Licence FFE inconnu [%(ffe_licence)s]."
 
 msgid "Unknown player ID [{player_id}]"
 msgstr "Identifiant de joueur inconnu [{player_id}]."
