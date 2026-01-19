@@ -1,0 +1,146 @@
+{% extends '_ffe_document_base.html' %}
+
+{% block body %}
+    <form class="training-certificate">
+        <h1>
+            Attestation de stage pratique
+            <br/>
+            {{ training_title }}
+        </h1>
+        <div class="grid" style="grid-template-columns: 1fr 5fr 1fr 5fr; margin-top: 4em">
+            {% if not writer %}
+                {% set error = 'Aucun·e arbitre n\'a été déclaré·e.' %}
+            {% else %}
+                {% if not account %}
+                    {% set error = 'Le·la première arbitre a été déclaré·e comme rédacteur·ice.' %}
+                {% else %}
+                    {% set error = '' %}
+                {% endif %}
+            {% endif %}
+            <h2 class="item">Tuteur·ice</h2>
+            <div class="item"></div>
+            <h2 class="item">Stagiaire</h2>
+            <div class="item"></div>
+            <div class="item">
+                <label for="writer">Nom et prénom :</label>
+            </div>
+            <div class="item {%if error %}error{% endif %}">
+                <div class="error-info">{{ error }}</div>
+                <input id="writer" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+            </div>
+            <div class="item">
+                <label for="arbiter-full-name">Nom et prénom :</label>
+            </div>
+            <div class="item">
+                <input id="arbiter-full-name" value="" />
+            </div>
+            <div class="item">
+                <label for="writer-ffe-licence-number">Numéro de licence :</label>
+            </div>
+            <div class="item error {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
+                <div class="error-info">TODO Add arbiter FFE licence number (as a FFE plugin data).</div>
+                <input id="writer-ffe-licence-number" value="{%if writer and writer.plugin_data %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
+            </div>
+            <div class="item">
+                <label for="arbiter-ffe-licence-number">Numéro de licence :</label>
+            </div>
+            <div class="item">
+                <input id="arbiter-ffe-licence-number" value=""/>
+            </div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item">
+                <label for="arbiter-email-phone">Mél ou tél :</label>
+            </div>
+            <div class="item">
+                <input id="arbiter-email-phone" value=""/>
+            </div>
+        </div>
+        <div class="grid" style="grid-template-columns: 1fr 5fr 1fr 2fr;">
+            <h2 class="item" style="margin-top: auto;">Évènement</h2>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item"></div>
+            <div class="item">
+                <label for="event-name">Nom:</label>
+            </div>
+            <div class="item">
+                <input id="event-name" value="{{ event_name }}" />
+            </div>
+            <div class="item">
+                <label for="time-control">cadence :</label>
+            </div>
+            <div class="item {%if not time_control %}error{% endif %}">
+                <div class="error-info">
+                    {% if tournaments|length > 1 %}
+                        La cadence des tournois n'est pas définie.
+                    {% else %}
+                        La cadence du tournoi n'est pas définie.
+                    {% endif %}
+                </div>
+                <input id="time-control" value="{{ time_control }}" />
+            </div>
+            <div class="item">
+                <label for="event-date">Date(s) de l'évènement :</label>
+            </div>
+            <div class="item">
+                <input id="event-date" value="{{ event_date }}" />
+            </div>
+            <div class="item">
+                <label for="rounds">Nombre de rondes :</label>
+            </div>
+            <div class="item">
+                <input id="rounds" value="{{ rounds }}" style="width: 1rem; flex-grow: 0;" />
+            </div>
+            <div class="item">
+                <label for="tournaments-ffe-id">Numéro d'homologation FFE :</label>
+            </div>
+            <div class="item {% if not ffe_ids %}error{% endif %}">
+                <div class="error-info">
+                    {% if tournaments|length > 1 %}
+                        Les numéros d'homologation des tournois ne sont pas définis.
+                    {% else %}
+                        Le numéro d'homologation du tournoi n'est pas défini.
+                    {% endif %}
+                </div>
+                <input id="tournaments-ffe-id" value="{{ ffe_ids }}" />
+            </div>
+        </div>
+        <table style="margin-top: 3rem;">
+            <colgroup>
+                <col style="width: 40%" />
+                {% for level_num in range(training_levels|length) %}
+                    <col/>
+                {% endfor %}
+            </colgroup>
+            <thead>
+                <tr>
+                    <th></th>
+                    {% for level_num in range(training_levels|length) %}
+                        <th>{{ training_levels[level_num] }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+            {% for skill_num in range(training_skills|length) %}
+                <tr>
+                    <td style="text-align: left;">{{ training_skills[skill_num] }}</td>
+                    {% for level_num in range(training_levels|length) %}
+                        <td><input id="skill-{{ skill_num }}-level-{{ level_num }}" type="checkbox" /></td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <h2 style="margin-top: 1.5rem;">Appréciation générale du·de la tuteur·ice :</h2>
+        <div class="grid" style="grid-template-columns: 1fr;">
+            {% for i in range(8) %}
+                <div class="item error">
+                    <div class="error-info">TODO Replace the inputs by a textarea</div>
+                    <input value="" />
+                </div>
+            {% endfor %}
+        </div>
+        <h2 style="margin-top: 1.5rem;">Signature du·de la tuteur·ice :</h2>
+    </form>
+{% endblock %}

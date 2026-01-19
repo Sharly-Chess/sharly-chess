@@ -39,7 +39,8 @@ from data.print_documents.options import (
     PlaceCardMirrorPrintOption,
     PlaceCardCropMarksPrintOption,
     PlaceCardBoardNumbersPrintOption,
-    PlayersPrintOption,
+    OptionalPlayersPrintOption,
+    MandatoryPlayersPrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
@@ -114,10 +115,17 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         ]
 
     @cached_property
-    def players(self) -> list[TournamentPlayer]:
+    def optional_players(self) -> list[TournamentPlayer]:
         return [
             self.tournament.tournament_players_by_id[player_id]
-            for player_id in self._get_option(PlayersPrintOption).value
+            for player_id in self._get_option(OptionalPlayersPrintOption).value
+        ]
+
+    @cached_property
+    def mandatory_players(self) -> list[TournamentPlayer]:
+        return [
+            self.tournament.tournament_players_by_id[player_id]
+            for player_id in self._get_option(MandatoryPlayersPrintOption).value
         ]
 
     @property
@@ -1198,7 +1206,7 @@ class PlaceCardPrintDocument(PrintDocument):
 
     @property
     def player_ids(self) -> list[int]:
-        return self._get_option(PlayersPrintOption).value
+        return self._get_option(OptionalPlayersPrintOption).value
 
     @property
     def at_round(self) -> int:
@@ -1222,7 +1230,7 @@ class PlaceCardPrintDocument(PrintDocument):
             PlaceCardPrintOption,
             PlaceCardTemplatePrintOption,
             TournamentPrintOption,
-            PlayersPrintOption,
+            OptionalPlayersPrintOption,
             RoundPrintOption,
             PlaceCardMirrorPrintOption,
             PlaceCardCropMarksPrintOption,

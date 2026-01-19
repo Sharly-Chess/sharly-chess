@@ -1,17 +1,25 @@
-from abc import ABC
-from functools import cached_property
+from abc import ABC, abstractmethod
 from types import UnionType
 from typing import Any, override
 
 from common.exception import OptionError
+from common.i18n import _
+from data.player import TournamentPlayer
 from data.print_documents import PrintOption
-from plugins.ffe.utils import PlayerFFELicence
+from data.print_documents.options import OptionalPlayersPrintOption
+from data.tournament import Tournament
+from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 
 
 class FFEPrintOption(PrintOption, ABC):
     @property
     def template_name(self) -> str:
-        return f'/print_options/{self.static_id().replace("-", "_")}.html'
+        return f'/print_options/{self.template_stem}.html'
+
+    @property
+    def template_stem(self) -> str:
+        """Returns the stem of the body template."""
+        return self.static_id().replace('-', '_')
 
 
 class FFEDocumentTypePrintOption(FFEPrintOption):
@@ -54,6 +62,7 @@ class FFEDocumentTypePrintOption(FFEPrintOption):
 
     @override
     def validate(self):
+        super().validate()
         from plugins.ffe.print_documents.ffe_managers import FFEDocumentTypeManager
 
         if self.value not in (
@@ -64,59 +73,96 @@ class FFEDocumentTypePrintOption(FFEPrintOption):
             raise OptionError(f'Unknown FFE document type: {self.value}', self)
 
 
-class FFELicencePrintOption(FFEPrintOption):
+class FFENoLicencePlayersPrintOption(FFEPrintOption, OptionalPlayersPrintOption, ABC):
+    @staticmethod
+    @abstractmethod
+    def static_id() -> str:
+        """Returns the option ID."""
+
+    @property
+    def template_stem(self) -> str:
+        return 'ffe-no-licence-players'
+
+    @staticmethod
+    @abstractmethod
+    def ffe_licence() -> PlayerFFELicence:
+        """Returns the FFE licence concerned."""
+
+    @staticmethod
+    @abstractmethod
+    def allowed_licences() -> list[PlayerFFELicence]:
+        """Returns the licences allowed for this option."""
+
+    @property
+    @abstractmethod
+    def placeholder(self) -> str:
+        """Returns the placeholder for this option."""
+
+    @classmethod
+    def get_tournament_players(
+        cls,
+        tournament: Tournament,
+    ) -> list[TournamentPlayer]:
+        return [
+            tournament_player
+            for tournament_player in tournament.tournament_players_by_name_with_unpaired
+            if FFEUtils.get_player_plugin_data(tournament_player).ffe_licence
+            not in cls.allowed_licences()
+        ]
+
+    @classmethod
+    def get_players_per_tournament(
+        cls,
+        tournaments: list[Tournament],
+    ) -> dict[int, list[dict[str, Any]]]:
+        return {
+            tournament.id: [
+                {
+                    'id': tournament_player.id,
+                    'full_name': tournament_player.full_name,
+                }
+                for tournament_player in cls.get_tournament_players(tournament)
+            ]
+            for tournament in tournaments
+        }
+
+
+class FFET3NoLicencePlayersPrintOption(FFENoLicencePlayersPrintOption):
     @staticmethod
     def static_id() -> str:
-        return 'ffe-licence'
+        return 'ffe-t3-no-licence-players'
 
-    @property
-    def type(self) -> type | UnionType:
-        return int
-
-    @property
-    def default_value(self) -> Any:
+    @staticmethod
+    def ffe_licence() -> PlayerFFELicence:
         return PlayerFFELicence.A
 
-    @property
-    def _form_numbers_by_ffe_licence(self) -> dict[PlayerFFELicence, int]:
-        return {
-            PlayerFFELicence.A: 3,
-            PlayerFFELicence.B: 4,
-        }
+    @staticmethod
+    def allowed_licences() -> list[PlayerFFELicence]:
+        return [
+            PlayerFFELicence.A,
+        ]
 
     @property
-    def _ffe_licences_by_value(self) -> dict[int, PlayerFFELicence]:
-        return {
-            ffe_licence.value: ffe_licence
-            for ffe_licence in self._form_numbers_by_ffe_licence
-        }
+    def placeholder(self) -> str:
+        return _('All the players with no FFE licence A')
 
-    @cached_property
-    def _form_numbers_by_value(self) -> dict[int, PlayerFFELicence]:
-        return {
-            ffe_licence.value: ffe_licence
-            for ffe_licence, form_number in self._form_numbers_by_ffe_licence.items()
-        }
 
-    @property
-    def ffe_licence_options(self) -> dict[int, str]:
-        return {
-            value: ffe_licence.name
-            for value, ffe_licence in self._ffe_licences_by_value.items()
-        }
+class FFET4NoLicencePlayersPrintOption(FFENoLicencePlayersPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-t4-no-licence-players'
 
-    @property
-    def ffe_licence(self) -> PlayerFFELicence:
-        return self._ffe_licences_by_value[self.value]
+    @staticmethod
+    def ffe_licence() -> PlayerFFELicence:
+        return PlayerFFELicence.B
+
+    @staticmethod
+    def allowed_licences() -> list[PlayerFFELicence]:
+        return [
+            PlayerFFELicence.A,
+            PlayerFFELicence.B,
+        ]
 
     @property
-    def form_number(self) -> int:
-        return self._form_numbers_by_ffe_licence[self.ffe_licence]
-
-    @override
-    def validate(self):
-        try:
-            _ffe_licence = self.ffe_licence
-        except KeyError:
-            # Untranslated, should not happen
-            raise OptionError(f'Unknown FFE licence: {self.value}', self)
+    def placeholder(self) -> str:
+        return _('All the players with no FFE licence A/B')

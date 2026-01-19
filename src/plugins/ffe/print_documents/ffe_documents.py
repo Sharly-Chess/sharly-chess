@@ -6,17 +6,16 @@ from data.print_documents.documents import (
 )
 from data.print_documents.options import (
     TournamentsPrintOption,
-    PlayersPrintOption,
     TournamentPrintOption,
     PlayerPrintOption,
 )
 from plugins.ffe.print_documents.ffe_managers import FFEDocumentTypeManager
 from plugins.ffe.print_documents.ffe_options import (
-    FFELicencePrintOption,
     FFEDocumentTypePrintOption,
+    FFET3NoLicencePlayersPrintOption,
+    FFET4NoLicencePlayersPrintOption,
 )
 from plugins.ffe.print_documents.ffe_types import FFEDocumentType
-from plugins.ffe.utils import PlayerFFELicence
 
 
 class FFEPrintDocument(PrintDocument):
@@ -39,10 +38,6 @@ class FFEPrintDocument(PrintDocument):
         )
 
     @property
-    def ffe_licence(self) -> PlayerFFELicence:
-        return PlayerFFELicence(self._get_option(FFELicencePrintOption).value)
-
-    @property
     def template_name(self) -> str:
         return self.ffe_document_type.get_template_name()
 
@@ -52,13 +47,12 @@ class FFEPrintDocument(PrintDocument):
             FFEDocumentTypePrintOption,
             TournamentsPrintOption,
             TournamentPrintOption,
-            PlayersPrintOption,
-            FFELicencePrintOption,
+            FFET3NoLicencePlayersPrintOption,
+            FFET4NoLicencePlayersPrintOption,
             PlayerPrintOption,
         ]
 
     def validate_options(self):
-        self._get_option(FFEDocumentTypePrintOption).validate()
         valid_options_types = self.ffe_document_type.get_valid_option_types()
         for option in self.options:
             if type(option) in valid_options_types:

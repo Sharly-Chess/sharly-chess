@@ -1,11 +1,11 @@
+import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta, date
 from functools import cached_property
 from typing import Any, TYPE_CHECKING
 
 from common import BASE_DIR
-from common.exception import OptionError
-from common.i18n import _
+from common.logger import get_logger
 from data.access_levels.client import Client
 from data.account import Account
 from data.event import Event
@@ -21,6 +21,9 @@ from utils.time_control import trf25_to_human_readable
 
 if TYPE_CHECKING:
     from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
+    from plugins.ffe.print_documents.ffe_options import FFENoLicencePlayersPrintOption
+
+logger: logging.Logger = get_logger()
 
 
 class FFEDocumentType(IdentifiableEntity, ABC):
@@ -62,7 +65,12 @@ class FFEDocumentType(IdentifiableEntity, ABC):
     @classmethod
     def get_template_name(cls) -> str:
         """Returns the body template."""
-        return f'/print/{cls.static_id().replace("-", "_")}.html'
+        return f'/print/{cls.get_template_stem()}.html'
+
+    @classmethod
+    def get_template_stem(cls) -> str:
+        """Returns the stem of the body template."""
+        return cls.static_id().replace('-', '_')
 
     @cached_property
     def event(self) -> Event:
@@ -77,10 +85,50 @@ class FFEDocumentType(IdentifiableEntity, ABC):
         """Returns the date of the doc, as a printable string."""
         return datetime.now().strftime('%d/%m/%Y')
 
+    @property
+    def event_name(self) -> str:
+        """Returns the name of the event, as a printable string."""
+        return self.event.name
+
+    @property
+    def event_date(self) -> str:
+        """Returns the date for the event, as a printable string."""
+        event_date: str = self.event.start_date.strftime('%d/%m/%Y')
+        if self.event.start_date != self.event.stop_date:
+            event_date += f' - {self.event.stop_date.strftime("%d/%m/%Y")}'
+        return event_date
+
+    @property
+    def event_days(self) -> int:
+        """Returns the number of days for the tournaments."""
+        return (self.event.stop_date - self.event.start_date).days + 1
+
     @cached_property
-    @abstractmethod
+    def tournaments(self) -> list[Tournament]:
+        return self.ffe_document.get_allowed_tournaments()
+
+    @cached_property
     def _accounts_by_role(self) -> dict[RoleType, set[Account]]:
         """Returns a dict made of the accounts by role."""
+        accounts_by_role: dict[RoleType, set[Account]] = {
+            role_type: set()
+            for role_type in [
+                RoleType.CHIEF_ARBITER,
+                RoleType.DEPUTY_ARBITER,
+                RoleType.ORGANISER,
+            ]
+        }
+        for account_id, account in self.event.accounts_by_id.items():
+            if not account.administrator and not account.anonymous:
+                if account.roles:
+                    for role in account.roles:
+                        if role.tournament_ids is not None:
+                            for tournament_id in role.tournament_ids:
+                                if tournament_id in (
+                                    tournament.id for tournament in self.tournaments
+                                ):
+                                    accounts_by_role[role.role_type].add(account)
+        return accounts_by_role
 
     @cached_property
     def chief_arbiters(self) -> list[Account]:
@@ -120,6 +168,34 @@ class FFEDocumentType(IdentifiableEntity, ABC):
             return self.deputy_arbiters[0]
         return None
 
+    @property
+    def tournament_ffe_ids(self) -> str:
+        """Returns the list of the tournaments' FFE ID, as a printable string."""
+        return ', '.join(
+            str(FFEUtils.get_tournament_plugin_data(tournament).ffe_id)
+            for tournament in self.tournaments
+            if FFEUtils.get_tournament_plugin_data(tournament).ffe_id
+        )
+
+    @property
+    def tournaments_rounds(self) -> str:
+        """Returns the list of the tournaments' rounds, as a printable string."""
+        return '/'.join(
+            sorted(set(str(tournament.rounds) for tournament in self.tournaments))
+        )
+
+    @property
+    def tournaments_time_control(self) -> str:
+        """Returns the list of the tournaments' time control, as a printable string."""
+        return ', '.join(
+            sorted(
+                set(
+                    trf25_to_human_readable(tournament.time_control_trf25)
+                    for tournament in self.tournaments
+                )
+            )
+        )
+
     def template_context(
         self,
         ffe_document: 'FFEPrintDocument',
@@ -133,11 +209,118 @@ class FFEDocumentType(IdentifiableEntity, ABC):
                 PLUGIN_DIR / 'static/images/ffe-text.png'
             ),
             'event': self.event,
+            'event_name': self.event_name,
+            'event_date': self.event_date,
+            'event_days': self.event_days,
             'date': self.date,
             'writer': self.writer,
+            'rounds': self.tournaments_rounds,
+            'time_control': self.tournaments_time_control,
+            'ffe_ids': self.tournament_ffe_ids,
             'arbiters': self.chief_arbiters + self.deputy_arbiters,
             'organisers': self.organisers,
         }
+
+
+class FFETrainingCertificateType(FFEDocumentType, ABC):
+    @classmethod
+    def get_template_stem(cls) -> str:
+        return 'ffe_training_certificate'
+
+    @property
+    @abstractmethod
+    def training_skills(self) -> list[str]:
+        """Returns the skills expected for the training."""
+
+    @property
+    @abstractmethod
+    def training_levels(self) -> list[str]:
+        """Returns the evaluation levels for the training."""
+
+    @property
+    @abstractmethod
+    def training_title(self) -> str:
+        """Returns the arbiter title for the training."""
+
+    def template_context(
+        self,
+        ffe_document: 'FFEPrintDocument',
+    ) -> dict[str, Any]:
+        self.set_ffe_document(ffe_document)
+        return super().template_context(ffe_document) | {
+            'training_skills': self.training_skills,
+            'training_levels': self.training_levels,
+            'training_title': self.training_title,
+        }
+
+
+class FFETrainingCertificate1Type(FFETrainingCertificateType):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-training-certificate-1'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'Attestation de stage pratique AFC'
+
+    @property
+    def training_title(self) -> str:
+        return 'AFC'
+
+    @property
+    def training_skills(self) -> list[str]:
+        return [
+            'Connaitre les règles du jeu',
+            'Maitrise du règlement de la compétition',
+            'Représenter dignement l’équipe d’arbitrage',
+            'Régler une pendule',
+            'Vérifier la mise en place en début de ronde',
+            'Présence',
+            'Intervenir sur une partie',
+            'Se questionner/se concerter avec les autres arbitres.',
+            'Connaissance générale de la Fédération et de la D.N.A.',
+            'Compétences organisationnelles.',
+        ]
+
+    @property
+    def training_levels(self) -> list[str]:
+        return [
+            'Parfait',
+            'Satisfaisant',
+            'Fragile',
+            'Insuffisant',
+        ]
+
+
+class FFETrainingCertificate2Type(FFETrainingCertificateType):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-training-certificate-2'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'Attestation de stage pratique AFO'
+
+    @property
+    def training_title(self) -> str:
+        return 'AFC'
+
+    @property
+    def training_skills(self) -> list[str]:
+        return [
+            'Maitrise du logiciel Papi',
+            'Connaissance et maitrise de sa mission administrative',
+            'Maitrise du règlement de la compétition',
+            'Représenter dignement l’équipe d’arbitrage',
+            'Non évalué Relations avec l’organisateur',
+            'Calcul des prix',
+            'Système suisse et départages',
+            'Se questionner/se concerter avec les autres arbitres. ',
+        ]
+
+    @property
+    def training_levels(self) -> list[str]:
+        return ['Parfait', 'Satisfaisant', 'Fragile', 'Insuffisant', 'Non évalué']
 
 
 class FFETournamentsDocumentType(FFEDocumentType, ABC):
@@ -153,33 +336,10 @@ class FFETournamentsDocumentType(FFEDocumentType, ABC):
     def tournaments(self) -> list[Tournament]:
         return self.ffe_document.tournaments
 
-    @cached_property
-    def _accounts_by_role(self) -> dict[RoleType, set[Account]]:
-        """Returns a dict made of the accounts by role."""
-        accounts_by_role: dict[RoleType, set[Account]] = {
-            role_type: set()
-            for role_type in [
-                RoleType.CHIEF_ARBITER,
-                RoleType.DEPUTY_ARBITER,
-                RoleType.ORGANISER,
-            ]
-        }
-        for account_id, account in self.event.accounts_by_id.items():
-            if not account.administrator and not account.anonymous:
-                if account.roles:
-                    for role in account.roles:
-                        if role.tournament_ids is not None:
-                            for tournament_id in role.tournament_ids:
-                                if tournament_id in (
-                                    tournament.id for tournament in self.tournaments
-                                ):
-                                    accounts_by_role[role.role_type].add(account)
-        return accounts_by_role
-
     @property
     def tournaments_name(self) -> str:
         """Returns the name for the tournaments."""
-        tournaments_name: str = self.event.name
+        tournaments_name: str = self.event_name
         if self.tournaments and len(self.tournaments) != len(self.event.tournaments):
             tournaments_name += (
                 f' ({", ".join(tournament.name for tournament in self.tournaments)})'
@@ -216,15 +376,6 @@ class FFETournamentsDocumentType(FFEDocumentType, ABC):
         return (stop_date - start_date).days + 1
 
     @property
-    def tournament_ffe_ids(self) -> str:
-        """Returns the list of the tournaments' FFE ID, as a printable string."""
-        return ', '.join(
-            str(FFEUtils.get_tournament_plugin_data(tournament).ffe_id)
-            for tournament in self.tournaments
-            if FFEUtils.get_tournament_plugin_data(tournament).ffe_id
-        )
-
-    @property
     def tournaments_location(self) -> str:
         """Returns the list of the tournaments' location, as a printable string."""
         return ' '.join(
@@ -242,11 +393,9 @@ class FFETournamentsDocumentType(FFEDocumentType, ABC):
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
-            'tournaments': self.tournaments,
+            'event_name': self.tournaments_name,
             'event_date': self.tournaments_date,
             'event_days': self.tournaments_days,
-            'event_name': self.tournaments_name,
-            'ffe_ids': self.tournament_ffe_ids,
             'location': self.tournaments_location,
         }
 
@@ -282,25 +431,6 @@ class FFET1Type(FFETournamentsDocumentType):
                         if prize.is_monetary:
                             prizes_total += prize.value
         return prizes_total
-
-    @property
-    def tournaments_rounds(self) -> str:
-        """Returns the list of the tournaments' rounds, as a printable string."""
-        return '/'.join(
-            sorted(set(str(tournament.rounds) for tournament in self.tournaments))
-        )
-
-    @property
-    def tournaments_time_control(self) -> str:
-        """Returns the list of the tournaments' time control, as a printable string."""
-        return ', '.join(
-            sorted(
-                set(
-                    trf25_to_human_readable(tournament.time_control_trf25)
-                    for tournament in self.tournaments
-                )
-            )
-        )
 
     @property
     def tournaments_pairing(self) -> str:
@@ -357,8 +487,6 @@ class FFET1Type(FFETournamentsDocumentType):
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
-            'rounds': self.tournaments_rounds,
-            'time_control': self.tournaments_time_control,
             'pairing': self.tournaments_pairing,
             'tie_breaks': self.tournaments_tie_breaks,
             'fide_player_count': self.tournaments_fide_players_count,
@@ -387,12 +515,6 @@ class FFEArbiterCompensationType(FFETournamentsDocumentType):
     def static_name() -> str:
         return 'Indemnisation arbitrage'
 
-    def template_context(
-        self,
-        ffe_document: 'FFEPrintDocument',
-    ) -> dict[str, Any]:
-        return super().template_context(ffe_document) | {}
-
 
 class FFETournamentDocumentType(FFEDocumentType, ABC):
     @staticmethod
@@ -406,6 +528,12 @@ class FFETournamentDocumentType(FFEDocumentType, ABC):
     @cached_property
     def tournament(self) -> Tournament:
         return self.ffe_document.tournament
+
+    @property
+    def tournaments(self) -> list[Tournament]:
+        return [
+            self.tournament,
+        ]
 
     @property
     def tournament_name(self) -> str:
@@ -423,32 +551,11 @@ class FFETournamentDocumentType(FFEDocumentType, ABC):
             tournaments_date += f' - {self.tournament.stop_date.strftime("%d/%m/%Y")}'
         return tournaments_date
 
-    @cached_property
-    def _accounts_by_role(self) -> dict[RoleType, set[Account]]:
-        """Returns a dict made of the accounts by role."""
-        accounts_by_role: dict[RoleType, set[Account]] = {
-            role_type: set()
-            for role_type in [
-                RoleType.CHIEF_ARBITER,
-                RoleType.DEPUTY_ARBITER,
-                RoleType.ORGANISER,
-            ]
-        }
-        for account_id, account in self.event.accounts_by_id.items():
-            if not account.administrator and not account.anonymous:
-                if account.roles:
-                    for role in account.roles:
-                        if role.tournament_ids is not None:
-                            if self.tournament.id in role.tournament_ids:
-                                accounts_by_role[role.role_type].add(account)
-        return accounts_by_role
-
     def template_context(
         self,
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
-            'tournament': self.tournament,
             'tournament_name': self.tournament_name,
             'tournament_date': self.tournament_date,
             'location': self.tournament.location,
@@ -456,30 +563,9 @@ class FFETournamentDocumentType(FFEDocumentType, ABC):
 
 
 class FFEPlayersDocumentType(FFETournamentDocumentType, ABC):
-    @staticmethod
-    def get_valid_option_types() -> list[type['PrintOption']]:
-        from data.print_documents.options import PlayersPrintOption
-
-        return FFETournamentDocumentType.get_valid_option_types() + [
-            PlayersPrintOption,
-        ]
-
     @cached_property
     def players(self) -> list[TournamentPlayer]:
-        return self.ffe_document.players
-
-    def validate_options(
-        self,
-        ffe_document: 'FFEPrintDocument',
-    ):
-        from data.print_documents.options import PlayersPrintOption
-
-        super().validate_options(ffe_document)
-        if not self.players:
-            raise OptionError(
-                _('Please select at least one player.'),
-                self.ffe_document._get_option(PlayersPrintOption),
-            )
+        return []
 
     def template_context(
         self,
@@ -490,33 +576,114 @@ class FFEPlayersDocumentType(FFETournamentDocumentType, ABC):
         }
 
 
-class FFET3T4Type(FFEPlayersDocumentType):
-    @staticmethod
-    def get_valid_option_types() -> list[type['PrintOption']]:
-        from plugins.ffe.print_documents.ffe_options import FFELicencePrintOption
+class FFET3T4Type(FFEPlayersDocumentType, ABC):
+    @classmethod
+    def get_template_stem(cls) -> str:
+        return 'ffe_t3_t4_players_licence'
 
+    @staticmethod
+    @abstractmethod
+    def players_print_option() -> type['FFENoLicencePlayersPrintOption']:
+        """Returns the type of the option used."""
+
+    @classmethod
+    def get_valid_option_types(cls) -> list[type['PrintOption']]:
         return FFEPlayersDocumentType.get_valid_option_types() + [
-            FFELicencePrintOption,
+            cls.players_print_option(),
         ]
 
     @staticmethod
-    def static_id() -> str:
-        return 'ffe-t3-t4-players-licence'
+    @abstractmethod
+    def ffe_licence() -> PlayerFFELicence:
+        """Returns the FFE licence concerned."""
 
     @staticmethod
-    def static_name() -> str:
-        return 'T3-T4 Attestation de licence'
+    @abstractmethod
+    def ffe_form_number() -> int:
+        """Returns the FFE form number concerned."""
+
+    @cached_property
+    def players(self) -> list[TournamentPlayer]:
+        if player_ids := self.ffe_document._get_option(
+            self.players_print_option()
+        ).value:
+            return [
+                self.tournament.tournament_players_by_id[player_id]
+                for player_id in player_ids
+            ]
+        else:
+            return self.players_print_option().get_tournament_players(self.tournament)
 
     def template_context(
         self,
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         return super().template_context(ffe_document) | {
-            'ffe_licence': self.ffe_document.ffe_licence,
-            'ffe_form_number': 3
-            if self.ffe_document.ffe_licence == PlayerFFELicence.A
-            else 4,
+            'ffe_licence': self.ffe_licence(),
+            'ffe_form_number': self.ffe_form_number(),
         }
+
+
+class FFET3Type(FFET3T4Type):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-t3-players-licence'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'T3 Attestation de licence A'
+
+    @staticmethod
+    def players_print_option() -> type['FFENoLicencePlayersPrintOption']:
+        from plugins.ffe.print_documents import ffe_options
+
+        return ffe_options.FFET3NoLicencePlayersPrintOption
+
+    @staticmethod
+    def ffe_licence() -> PlayerFFELicence:
+        return PlayerFFELicence.A
+
+    @staticmethod
+    def ffe_form_number() -> int:
+        return 3
+
+
+class FFET4Type(FFET3T4Type):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-t4-players-licence'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'T4 Attestation de licence B'
+
+    @staticmethod
+    def players_print_option() -> type['FFENoLicencePlayersPrintOption']:
+        from plugins.ffe.print_documents import ffe_options
+
+        return ffe_options.FFET4NoLicencePlayersPrintOption
+
+    @staticmethod
+    def ffe_licence() -> PlayerFFELicence:
+        return PlayerFFELicence.B
+
+    @staticmethod
+    def ffe_form_number() -> int:
+        return 4
+
+
+class FFEOptionalPlayersDocumentType(FFEPlayersDocumentType, ABC):
+    @staticmethod
+    def get_valid_option_types() -> list[type['PrintOption']]:
+        from data.print_documents.options import OptionalPlayersPrintOption
+
+        return FFEPlayersDocumentType.get_valid_option_types() + [
+            OptionalPlayersPrintOption,
+        ]
+
+    @cached_property
+    def players(self) -> list[TournamentPlayer]:
+        return self.ffe_document.optional_players
 
 
 class FFEPlayerDocumentType(FFETournamentDocumentType, ABC):
@@ -591,3 +758,13 @@ class FFET7Type(FFEPlayerDocumentType):
     @staticmethod
     def static_name() -> str:
         return "T7 Signalement d'un·e joueur·euse"
+
+
+class FFECheatingType(FFEPlayerDocumentType):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-cheating'
+
+    @staticmethod
+    def static_name() -> str:
+        return 'Dépôt de plainte suspicion de triche'

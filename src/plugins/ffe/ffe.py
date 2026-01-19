@@ -77,8 +77,9 @@ from plugins.ffe.ffe_tournament_importers import (
 )
 from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
 from plugins.ffe.print_documents.ffe_options import (
-    FFELicencePrintOption,
     FFEDocumentTypePrintOption,
+    FFET3NoLicencePlayersPrintOption,
+    FFET4NoLicencePlayersPrintOption,
 )
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.ffe.utils import (
@@ -756,8 +757,9 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_print_option(self, print_options: list[type['PrintOption']]):
-        print_options.insert(0, FFELicencePrintOption)
         print_options.insert(0, FFEDocumentTypePrintOption)
+        print_options.append(FFET3NoLicencePlayersPrintOption)
+        print_options.append(FFET4NoLicencePlayersPrintOption)
 
     @hookimpl
     def alter_print_and_screen_player_columns(

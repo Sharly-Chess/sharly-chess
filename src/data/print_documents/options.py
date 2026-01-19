@@ -1,5 +1,5 @@
 import re
-from abc import ABC
+from abc import ABC, abstractmethod
 from functools import cached_property
 from types import UnionType
 from typing import TYPE_CHECKING, Optional, override, Any
@@ -118,9 +118,14 @@ class PlayerPrintOption(PrintOption):
         }
 
 
-class PlayersPrintOption(PrintOption):
-    @staticmethod
-    def static_id() -> str:
+class PlayersPrintOption(PrintOption, ABC):
+    @property
+    @abstractmethod
+    def mandatory(self) -> bool:
+        """Returns True if at least one player must be selected."""
+
+    @property
+    def template_file_name(self) -> str:
         return 'players'
 
     @property
@@ -134,6 +139,8 @@ class PlayersPrintOption(PrintOption):
     @override
     def validate(self):
         self._validate_list_type(int)
+        if self.mandatory and not self.value:
+            raise OptionError(_('Please select at least one player.'), self)
 
     @staticmethod
     def get_players_per_tournament(
@@ -149,6 +156,26 @@ class PlayersPrintOption(PrintOption):
             ]
             for tournament in tournaments
         }
+
+
+class OptionalPlayersPrintOption(PlayersPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'optional-players'
+
+    @property
+    def mandatory(self) -> bool:
+        return False
+
+
+class MandatoryPlayersPrintOption(PlayersPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'mandatory-players'
+
+    @property
+    def mandatory(self) -> bool:
+        return True
 
 
 class RoundPrintOption(PrintOption):
@@ -232,6 +259,7 @@ class PlayerSortPrintOption(PrintOption):
 
     @override
     def validate(self):
+        super().validate()
         try:
             _sorter = self.player_sorter
         except KeyError:
@@ -266,6 +294,7 @@ class PairingStylePrintOption(PrintOption):
 
     @override
     def validate(self):
+        super().validate()
         try:
             _style = self.pairing_style
         except KeyError:
@@ -364,6 +393,7 @@ class QRCodePrintOption(PrintOption):
 
     @override
     def validate(self):
+        super().validate()
         try:
             _style = self.qrcode_type
         except KeyError:
@@ -448,6 +478,7 @@ class PlaceCardPrintOption(PrintOption):
 
     @override
     def validate(self):
+        super().validate()
         try:
             _style = self.place_card_type
         except KeyError:
@@ -539,6 +570,7 @@ class PlaceCardCropMarksPrintOption(PrintOption):
 
     @override
     def validate(self):
+        super().validate()
         try:
             _crop_marks = self.place_card_crop_marks
         except KeyError:
@@ -579,4 +611,5 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
 
     @override
     def validate(self):
+        self._validate_list_type(int)
         _board_numbers = self.board_numbers

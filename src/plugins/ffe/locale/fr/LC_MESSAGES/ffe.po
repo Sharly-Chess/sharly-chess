@@ -14,6 +14,12 @@ msgstr "Une chaîne de caractères non vide est attendue"
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
+msgid "All the players with no FFE licence A"
+msgstr "Tou·tes les joueur·euses sans licence A"
+
+msgid "All the players with no FFE licence A/B"
+msgstr "Tou·tes les joueur·euses sans licence A/B"
+
 msgid "At least one league is expected."
 msgstr "Au moins une ligue est attendue."
 
@@ -305,8 +311,8 @@ msgstr "PAPI"
 msgid "Papi file"
 msgstr "Fichier Papi"
 
-msgid "Please select at least one player."
-msgstr "Veuillez sélectionner au moins un·e joueur·euse."
+msgid "Players:"
+msgstr "Joueur·euses :"
 
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."

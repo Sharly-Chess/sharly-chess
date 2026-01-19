@@ -138,10 +138,10 @@ class PlayerCardType(PlaceCardType):
 
     @staticmethod
     def get_valid_option_types() -> list[type['PrintOption']]:
-        from data.print_documents.options import PlayersPrintOption
+        from data.print_documents.options import OptionalPlayersPrintOption
 
         return PlaceCardType.get_valid_option_types() + [
-            PlayersPrintOption,
+            OptionalPlayersPrintOption,
         ]
 
     @classmethod

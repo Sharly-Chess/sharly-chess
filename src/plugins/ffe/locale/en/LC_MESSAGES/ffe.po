@@ -14,6 +14,12 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
+msgid "All the players with no FFE licence A"
+msgstr ""
+
+msgid "All the players with no FFE licence A/B"
+msgstr ""
+
 msgid "At least one league is expected."
 msgstr ""
 
@@ -305,7 +311,7 @@ msgstr ""
 msgid "Papi file"
 msgstr ""
 
-msgid "Please select at least one player."
+msgid "Players:"
 msgstr ""
 
 msgid "Replace the player to update this field."
@@ -468,5 +474,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #~ msgid "Replace [%(old)s] by [%(new)s]"
+#~ msgstr ""
+
+#~ msgid "Please select at least one player."
 #~ msgstr ""
 
