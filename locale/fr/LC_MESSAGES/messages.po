@@ -937,6 +937,9 @@ msgstr "EFFACER LE RÉSULTAT"
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
+msgid "CSV format"
+msgstr "Format CSV"
+
 msgid "Cambodia"
 msgstr "Cambodge"
 
@@ -1262,6 +1265,9 @@ msgstr "Consultez les logs pour plus d'informations."
 
 msgid "Consult the players and the prize assignment of this category."
 msgstr "Consulter les joueur·euses et l'attribution des prix de la catégorie."
+
+msgid "Contact (vCards)"
+msgstr "Contact (vCards)"
 
 msgid "Contact and registration"
 msgstr "Contact et inscription"
@@ -1750,20 +1756,8 @@ msgstr "Berger aller-retour"
 msgid "Download"
 msgstr "Télécharger"
 
-msgid "Download the information of the selected players (CSV format)."
-msgstr "Télécharger les informations des joueur·euses (format CSV)."
-
-msgid "Download the information of the selected players (ODS format)."
-msgstr "Télécharger les informations des joueur·euses (format ODS)."
-
-msgid "Download the information of the selected players (XLSX format)."
-msgstr "Télécharger les informations des joueur·euses (format XLSX)."
-
-msgid "Download the players."
-msgstr "Télécharger les joueur·euses."
-
-msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
-msgstr "Télécharger les vCards des joueur·euses (format VCF). Attention: les joueur·euses sans numéros de téléphone ou adresse email ne seront pas inclus·es."
+msgid "Download the players matching the search into a file."
+msgstr "Télécharger un fichier contenant les joueur·euses correspondant à la recherche."
 
 msgid "Download tournament fees"
 msgstr "Télécharger les droits d'homologation"
@@ -3544,6 +3538,9 @@ msgstr "Nombre de victoires"
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr "Les nombres {first} et {last} ne sont pas compatibles ({first} > {last})."
 
+msgid "ODS format"
+msgstr "Format ODS"
+
 msgid "OK"
 msgstr "OK"
 
@@ -3998,6 +3995,9 @@ msgstr "Mise à jour des joueur·euses"
 #, python-format
 msgid "Players update for tournament [%(tournament)s]"
 msgstr "Mise à jour des joueur·euses du tournoi [%(tournament)s]"
+
+msgid "Players without phone or email won't be included."
+msgstr "Les joueur·euses sans numéro de téléphone ni adresse email ne seront pas inclus·es."
 
 msgid "Players' opponent: displayed"
 msgstr "Adversaires des joueur·euses : affichée·es"
@@ -6122,6 +6122,9 @@ msgstr "Maître Internationale Femme"
 
 msgid "Wrong file extension [{ext}] ([pdf] expected)."
 msgstr "Mauvaise extension de fichier [{ext}] ([pdf] attendu)."
+
+msgid "XLSX format"
+msgstr "Format XLSX"
 
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "O"
