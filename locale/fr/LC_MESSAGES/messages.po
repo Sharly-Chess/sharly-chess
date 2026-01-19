@@ -739,6 +739,10 @@ msgid "Blz *** BLITZ RATING ACRONYM"
 msgstr "Blz"
 
 #, python-format
+msgid "Board #%(board_number)d with %(color)s"
+msgstr "Échiquier n°%(board_number)d avec les %(color)s"
+
+#, python-format
 msgid "Board %(board_number)s"
 msgstr "Échiquier %(board_number)s"
 
