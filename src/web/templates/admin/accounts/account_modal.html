@@ -111,7 +111,7 @@
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
                             name='fide_arbiter_title',
-                            label=_('FIDE arbiter title:'),
+                            label=_('%(string)s:', string=_('FIDE arbiter title')),
                             select_options=fide_arbiter_title_options,
                             data=data, errors=errors
                         ) }}
@@ -120,7 +120,6 @@
                         {% include form_fields_template %}
                     {% endfor %}
                 </div>
-
 
                 <h4>
                     {{ _('Staff member roles') }}
