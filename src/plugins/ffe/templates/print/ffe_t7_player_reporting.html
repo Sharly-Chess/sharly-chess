@@ -16,13 +16,13 @@
                     <label for="player-full-name">Nom et prénom :</label>
                 </div>
                 <div class="item">
-                    <input id="player-full-name" value="{{ player.last_name }} {{ player.first_name }}" />
+                    <input required id="player-full-name" value="{{ player.last_name }} {{ player.first_name }}" />
                 </div>
                 <div class="item">
                     <label for="player-ffe-licence-number">Numéro de licence :</label>
                 </div>
                 <div class="item">
-                    <input id="player-ffe-licence-number" value="{{ player.plugin_data.ffe.ffe_licence_number or '' }}" />
+                    <input required id="player-ffe-licence-number" value="{{ player.plugin_data.ffe.ffe_licence_number or '' }}" />
                 </div>
             </div>
         </section>

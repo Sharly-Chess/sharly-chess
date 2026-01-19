@@ -35,9 +35,11 @@ label {
 input {
     border: none;
 }
+/*
 input[type="checkbox"] {
     accent-color: black;
 }
+*/
 .grid {
     display: grid;
     margin-top: var(--row-gap);
@@ -64,10 +66,9 @@ input[type="checkbox"] {
     width: auto;
 }
 .error {
-    /* color: red; */
     position: relative;
 }
-.error input {
+input.required.missing {
     color: #ef6c00;
     border-color: #ef6c00;
 }
