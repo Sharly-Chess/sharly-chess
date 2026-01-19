@@ -1175,6 +1175,10 @@ msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
 #, ai_translation
+msgid "CSV format"
+msgstr "formato CSV"
+
+#, ai_translation
 msgid "Cambodia"
 msgstr "Camboja"
 
@@ -1415,6 +1419,10 @@ msgid "Click to check-out the player."
 msgstr "Clique para fazer o check-out do jogador."
 
 #, ai_translation
+msgid "Click to copy"
+msgstr "Clique para copiar"
+
+#, ai_translation
 msgid "Close"
 msgstr "Fechar"
 
@@ -1601,6 +1609,10 @@ msgstr "Consulte os logs para mais detalhes."
 #, ai_translation
 msgid "Consult the players and the prize assignment of this category."
 msgstr "Consulte os jogadores e a atribuição de prêmios desta categoria."
+
+#, ai_translation
+msgid "Contact (vCards)"
+msgstr "Contato (vCards)"
 
 #, ai_translation
 msgid "Contact and registration"
@@ -2243,24 +2255,8 @@ msgid "Download"
 msgstr "Download"
 
 #, ai_translation
-msgid "Download the information of the selected players (CSV format)."
-msgstr "Faça o download das informações dos jogadores selecionados (formato CSV)."
-
-#, ai_translation
-msgid "Download the information of the selected players (ODS format)."
-msgstr "Faça o download das informações dos jogadores selecionados (formato ODS)."
-
-#, ai_translation
-msgid "Download the information of the selected players (XLSX format)."
-msgstr "Faça o download das informações dos jogadores selecionados (formato XLSX)."
-
-#, ai_translation
-msgid "Download the players."
-msgstr "Baixe os jogadores."
-
-#, ai_translation
-msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
-msgstr "Faça o download dos vCards dos jogadores selecionados (formato VCF). Aviso: os jogadores sem telefone ou e-mail não serão incluídos."
+msgid "Download the players matching the search into a file."
+msgstr "Faça o download dos jogadores que correspondem à pesquisa em um arquivo."
 
 #, ai_translation
 msgid "Download tournament fees"
@@ -2779,10 +2775,6 @@ msgstr "ID da FIDE"
 #, ai_translation
 msgid "FIDE ID:"
 msgstr "ID da FIDE:"
-
-#, ai_translation, python-format
-msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
-msgstr "ID da FIDE: %(fide_id)s (clique para copiar para a área de transferência)."
 
 #, ai_translation
 msgid "FIDE Title:"
@@ -3773,10 +3765,6 @@ msgstr "Macau, China"
 msgid "Madagascar"
 msgstr "Madagáscar"
 
-#, ai_translation, python-format
-msgid "Mail: %(mail)s (click to copy to the clipboard)."
-msgstr "Mail: %(mail)s (clique para copiar para a área de transferência)."
-
 #, ai_translation
 msgid "Main category"
 msgstr "Categoria principal"
@@ -4196,10 +4184,6 @@ msgid "Nigeria"
 msgstr "Nigéria"
 
 #, ai_translation
-msgid "No FIDE ID."
-msgstr "Não há FIDE ID."
-
-#, ai_translation
 msgid "No Prize Bracket"
 msgstr "No Prize Bracket"
 
@@ -4272,10 +4256,6 @@ msgid "No internet connection"
 msgstr "Sem conexão à internet"
 
 #, ai_translation
-msgid "No mail defined."
-msgstr "Nenhum e-mail definido."
-
-#, ai_translation
 msgid "No marks"
 msgstr "Sem marcas"
 
@@ -4314,10 +4294,6 @@ msgstr "Não há permissões definidas."
 #, ai_translation
 msgid "No permissions."
 msgstr "Sem permissões."
-
-#, ai_translation
-msgid "No phone defined."
-msgstr "Nenhum telefone definido."
 
 #, ai_translation
 msgid "No players"
@@ -4582,6 +4558,10 @@ msgstr "Número de vitórias"
 #, ai_translation
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr "Os números {first} e {last} não são compatíveis ({first} > {last})."
+
+#, ai_translation
+msgid "ODS format"
+msgstr "Formato ODS"
 
 #, ai_translation
 msgid "OK"
@@ -5011,10 +4991,6 @@ msgstr "Número de telefone"
 msgid "Phone number:"
 msgstr "Número de telefone:"
 
-#, ai_translation, python-format
-msgid "Phone: %(phone)s (click to copy to the clipboard)."
-msgstr "Telefone: %(phone)s (clique para copiar para a área de transferência)."
-
 #, ai_translation
 msgid "Place Cards"
 msgstr "Cartas de Lugar"
@@ -5170,6 +5146,10 @@ msgstr "Os jogadores atualizam"
 #, ai_translation, python-format
 msgid "Players update for tournament [%(tournament)s]"
 msgstr "Atualização dos jogadores para o torneio [%(tournament)s]"
+
+#, ai_translation
+msgid "Players without phone or email won't be included."
+msgstr "Jogadores sem telefone ou e-mail não serão incluídos."
 
 #, ai_translation
 msgid "Players' opponent: displayed"
@@ -7453,6 +7433,10 @@ msgstr "Uganda"
 msgid "Ukraine"
 msgstr "Ucrânia"
 
+#, ai_translation
+msgid "Undefined"
+msgstr "Indefinido"
+
 #, fuzzy
 msgid "Undefined *** PLURAL"
 msgstr "Undefined"
@@ -7936,6 +7920,10 @@ msgstr "Mestre Internacional Mulher"
 #, ai_translation
 msgid "Wrong file extension [{ext}] ([pdf] expected)."
 msgstr "Extensão errada do ficheiro [{ext}] ([pdf] esperado)."
+
+#, ai_translation
+msgid "XLSX format"
+msgstr "Formato XLSX"
 
 #, fuzzy
 msgid "Y *** THE LETTER TO ANSWER YES"
@@ -8484,4 +8472,37 @@ msgstr "½ - 0 (U)"
 #, ai_translation
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (U)"
+
+#~ msgid "Download the information of the selected players (CSV format)."
+#~ msgstr "Faça o download das informações dos jogadores selecionados (formato CSV)."
+
+#~ msgid "Download the information of the selected players (ODS format)."
+#~ msgstr "Faça o download das informações dos jogadores selecionados (formato ODS)."
+
+#~ msgid "Download the information of the selected players (XLSX format)."
+#~ msgstr "Faça o download das informações dos jogadores selecionados (formato XLSX)."
+
+#~ msgid "Download the players."
+#~ msgstr "Baixe os jogadores."
+
+#~ msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
+#~ msgstr "Faça o download dos vCards dos jogadores selecionados (formato VCF). Aviso: os jogadores sem telefone ou e-mail não serão incluídos."
+
+#~ msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
+#~ msgstr "ID da FIDE: %(fide_id)s (clique para copiar para a área de transferência)."
+
+#~ msgid "Mail: %(mail)s (click to copy to the clipboard)."
+#~ msgstr "Mail: %(mail)s (clique para copiar para a área de transferência)."
+
+#~ msgid "No FIDE ID."
+#~ msgstr "Não há FIDE ID."
+
+#~ msgid "No mail defined."
+#~ msgstr "Nenhum e-mail definido."
+
+#~ msgid "No phone defined."
+#~ msgstr "Nenhum telefone definido."
+
+#~ msgid "Phone: %(phone)s (click to copy to the clipboard)."
+#~ msgstr "Telefone: %(phone)s (clique para copiar para a área de transferência)."
 

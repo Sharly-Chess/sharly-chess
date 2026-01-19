@@ -3,6 +3,10 @@ msgid "\"Niçois\" accelerated system"
 msgstr "Sistema acelerado \"Niçois\""
 
 #, ai_translation, python-format
+msgid "%(licence_number)s (expired)"
+msgstr "%(licence_number)s (expirado)"
+
+#, ai_translation, python-format
 msgid "%(string)s:"
 msgstr "%(string)s:"
 
@@ -201,14 +205,6 @@ msgstr "Licença FFE B (lazer)"
 #, ai_translation
 msgid "FFE licence [{ffe_licence_number}] already present in tournament [{tournament}]."
 msgstr "Licença FFE [{ffe_licence_number}] já presente no torneio [{tournament}]."
-
-#, ai_translation, python-format
-msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
-msgstr "Licença FFE: %(ffe_licence_number)s (clique para copiar para a área de transferência)."
-
-#, ai_translation, python-format
-msgid "FFE licence: %(ffe_licence_number)s (expired)."
-msgstr "Licença FFE: %(ffe_licence_number)s (expirado)."
 
 #, ai_translation
 msgid "FFE password not defined."
@@ -530,10 +526,6 @@ msgstr "Não foi possível fazer upload das regras do torneio."
 msgid "Unable to upload tournament."
 msgstr "Não foi possível carregar o torneio."
 
-#, ai_translation, python-format
-msgid "Unknown FFE Licence type [%(ffe_licence)s]."
-msgstr "Tipo de licença FFE desconhecido [%(ffe_licence)s]."
-
 #, ai_translation
 msgid "Unknown player ID [{player_id}]"
 msgstr "ID do jogador desconhecido [{player_id}]"
@@ -607,4 +599,13 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] "{count} Liga representada"
 msgstr[1] "{count} ligas representadas"
+
+#~ msgid "FFE licence: %(ffe_licence_number)s (click to copy to the clipboard)."
+#~ msgstr "Licença FFE: %(ffe_licence_number)s (clique para copiar para a área de transferência)."
+
+#~ msgid "FFE licence: %(ffe_licence_number)s (expired)."
+#~ msgstr "Licença FFE: %(ffe_licence_number)s (expirado)."
+
+#~ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
+#~ msgstr "Tipo de licença FFE desconhecido [%(ffe_licence)s]."
 
