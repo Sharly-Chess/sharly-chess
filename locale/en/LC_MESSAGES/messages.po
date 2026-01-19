@@ -937,6 +937,9 @@ msgstr ""
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
+msgid "CSV format"
+msgstr ""
+
 msgid "Cambodia"
 msgstr ""
 
@@ -1119,6 +1122,9 @@ msgstr ""
 msgid "Click to check-out the player."
 msgstr ""
 
+msgid "Click to copy"
+msgstr ""
+
 msgid "Close"
 msgstr ""
 
@@ -1261,6 +1267,9 @@ msgid "Consult the logs for more details."
 msgstr ""
 
 msgid "Consult the players and the prize assignment of this category."
+msgstr ""
+
+msgid "Contact (vCards)"
 msgstr ""
 
 msgid "Contact and registration"
@@ -1750,19 +1759,7 @@ msgstr ""
 msgid "Download"
 msgstr ""
 
-msgid "Download the information of the selected players (CSV format)."
-msgstr ""
-
-msgid "Download the information of the selected players (ODS format)."
-msgstr ""
-
-msgid "Download the information of the selected players (XLSX format)."
-msgstr ""
-
-msgid "Download the players."
-msgstr ""
-
-msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
+msgid "Download the players matching the search into a file."
 msgstr ""
 
 msgid "Download tournament fees"
@@ -2165,10 +2162,6 @@ msgid "FIDE ID"
 msgstr ""
 
 msgid "FIDE ID:"
-msgstr ""
-
-#, python-format
-msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
 msgstr ""
 
 msgid "FIDE Title:"
@@ -2919,10 +2912,6 @@ msgstr ""
 msgid "Madagascar"
 msgstr ""
 
-#, python-format
-msgid "Mail: %(mail)s (click to copy to the clipboard)."
-msgstr ""
-
 msgid "Main category"
 msgstr ""
 
@@ -3249,9 +3238,6 @@ msgstr ""
 msgid "Nigeria"
 msgstr ""
 
-msgid "No FIDE ID."
-msgstr ""
-
 msgid "No Prize Bracket"
 msgstr ""
 
@@ -3306,9 +3292,6 @@ msgstr ""
 msgid "No internet connection"
 msgstr ""
 
-msgid "No mail defined."
-msgstr ""
-
 msgid "No marks"
 msgstr ""
 
@@ -3337,9 +3320,6 @@ msgid "No permissions defined."
 msgstr ""
 
 msgid "No permissions."
-msgstr ""
-
-msgid "No phone defined."
 msgstr ""
 
 msgid "No players"
@@ -3542,6 +3522,9 @@ msgid "Number of wins"
 msgstr ""
 
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
+msgstr ""
+
+msgid "ODS format"
 msgstr ""
 
 msgid "OK"
@@ -3869,10 +3852,6 @@ msgstr ""
 msgid "Phone number:"
 msgstr ""
 
-#, python-format
-msgid "Phone: %(phone)s (click to copy to the clipboard)."
-msgstr ""
-
 msgid "Place Cards"
 msgstr ""
 
@@ -3995,6 +3974,9 @@ msgstr ""
 
 #, python-format
 msgid "Players update for tournament [%(tournament)s]"
+msgstr ""
+
+msgid "Players without phone or email won't be included."
 msgstr ""
 
 msgid "Players' opponent: displayed"
@@ -5750,6 +5732,9 @@ msgstr ""
 msgid "Ukraine"
 msgstr ""
 
+msgid "Undefined"
+msgstr ""
+
 msgid "Undefined *** PLURAL"
 msgstr "Undefined"
 
@@ -6119,6 +6104,9 @@ msgid "Woman International Master"
 msgstr ""
 
 msgid "Wrong file extension [{ext}] ([pdf] expected)."
+msgstr ""
+
+msgid "XLSX format"
 msgstr ""
 
 msgid "Y *** THE LETTER TO ANSWER YES"

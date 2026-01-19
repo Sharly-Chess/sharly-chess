@@ -8,7 +8,6 @@ from litestar.plugins.htmx import HTMXRequest
 from common.i18n import locales, DEFAULT_LOCALE
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.input_output import DataSourceManager
 from data.input_output.dict_reader import dict_to_dataclass
 from data.safety_mode import SafetyMode
 
@@ -388,6 +387,8 @@ class SessionPlayersActiveDataSource(SessionVariable[str]):
 
     @property
     def default_value(self) -> str:
+        from data.input_output import DataSourceManager
+
         return DataSourceManager().entity_types()[0].static_id()
 
 

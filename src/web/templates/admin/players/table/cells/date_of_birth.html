@@ -1,6 +1,6 @@
 <span
     {% if player.date_of_birth %}
-        {{ macros.tooltip_attributes('info', player.date_of_birth_str, 'left') }}
+        {{ macros.tooltip_attributes('', player.date_of_birth_str, 'left') }}
     {% endif %}
 >
     {{ player.year_of_birth if player.year_of_birth else '-' }}
