@@ -1,9 +1,9 @@
 <i
     class="{% if player.mail %}bi-envelope-check text-body cursor-pointer{% else %}bi-envelope text-secondary{% endif %}"
     {% if player.mail %}
-        {{ macros.tooltip_attributes('info', _('Mail: %(mail)s (click to copy to the clipboard).', mail=player.mail), 'right') }}
+        {{ macros.click_to_copy_attributes(player.mail, 'left', wide=true) }}
     {% else %}
-        {{ macros.tooltip_attributes('warning', _('No mail defined.'), 'right') }}
+        {{ macros.tooltip_attributes('', _('Undefined'), 'right') }}
     {% endif %}
     onclick="navigator.clipboard.writeText('{{ player.mail }}')"
 ></i>
