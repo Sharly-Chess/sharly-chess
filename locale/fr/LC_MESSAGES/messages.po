@@ -747,7 +747,7 @@ msgid "Board %(number)s"
 msgstr "Table %(number)s"
 
 msgid "Board & color"
-msgstr "Échiquier & couleur"
+msgstr "Éch. & coul."
 
 #, python-format
 msgid "Board (%(remaining)d)"
