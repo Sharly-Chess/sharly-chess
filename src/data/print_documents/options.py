@@ -83,23 +83,28 @@ class TournamentsPrintOption(PrintOption):
         return None
 
 
-class PlayerPrintOption(PrintOption):
-    @staticmethod
-    def static_id() -> str:
+class PlayerPrintOption(PrintOption, ABC):
+    @property
+    def template_file_name(self) -> str:
         return 'player'
+
+    @property
+    def default_value(self) -> Any:
+        return None
 
     @property
     def type(self) -> type | UnionType:
         return int | None
 
     @property
-    def default_value(self) -> Any:
-        return None
+    @abstractmethod
+    def mandatory(self) -> bool:
+        """Returns True if the selecting a player is needed to print."""
 
     @override
     def validate(self):
         super().validate()
-        if self.value is None:
+        if self.mandatory and self.value is None:
             raise OptionError(_('Please choose a player.'), self)
 
     @staticmethod
@@ -116,6 +121,26 @@ class PlayerPrintOption(PrintOption):
             ]
             for tournament in tournaments
         }
+
+
+class MandatoryPlayerPrintOption(PlayerPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'mandatory-player'
+
+    @property
+    def mandatory(self) -> bool:
+        return True
+
+
+class OptionalPlayerPrintOption(PlayerPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'optional-player'
+
+    @property
+    def mandatory(self) -> bool:
+        return False
 
 
 class PlayersPrintOption(PrintOption, ABC):
@@ -613,3 +638,32 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
     def validate(self):
         self._validate_list_type(int)
         _board_numbers = self.board_numbers
+
+
+class AccountPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'account'
+
+    @property
+    def template_file_name(self) -> str:
+        return 'account'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @property
+    def default_text(self) -> str:
+        """Returns the default text for this option."""
+        return _('Select an account')
+
+    @property
+    @abstractmethod
+    def label(self) -> str:
+        """Returns the label for this option."""
+        return _('Account:')

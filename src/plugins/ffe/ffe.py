@@ -80,6 +80,10 @@ from plugins.ffe.print_documents.ffe_options import (
     FFEDocumentTypePrintOption,
     FFET3NoLicencePlayersPrintOption,
     FFET4NoLicencePlayersPrintOption,
+    FFEWriterPrintOption,
+    FFETraineePrintOption,
+    FFEChiefArbiterPrintOption,
+    FFEArbiterPrintOption,
 )
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.ffe.utils import (
@@ -757,9 +761,13 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def insert_print_option(self, print_options: list[type['PrintOption']]):
+        print_options.insert(0, FFEArbiterPrintOption)
+        print_options.insert(0, FFEChiefArbiterPrintOption)
+        print_options.insert(0, FFEWriterPrintOption)
         print_options.insert(0, FFEDocumentTypePrintOption)
         print_options.append(FFET3NoLicencePlayersPrintOption)
         print_options.append(FFET4NoLicencePlayersPrintOption)
+        print_options.append(FFETraineePrintOption)
 
     @hookimpl
     def alter_print_and_screen_player_columns(

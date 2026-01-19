@@ -4712,6 +4712,9 @@ msgstr ""
 msgid "Select All"
 msgstr ""
 
+msgid "Select an account"
+msgstr ""
+
 msgid "Select player"
 msgstr ""
 

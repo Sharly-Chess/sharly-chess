@@ -4714,6 +4714,9 @@ msgstr "Couleur initiale"
 msgid "Select All"
 msgstr "Tout sélectionner"
 
+msgid "Select an account"
+msgstr "Sélectionner un compte"
+
 msgid "Select player"
 msgstr "Sélectionner un·e joueur·euse"
 

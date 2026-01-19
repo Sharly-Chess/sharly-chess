@@ -22,7 +22,8 @@ from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import TournamentPlayer, TournamentRating
 from data.print_documents.options import (
     PairingStylePrintOption,
-    PlayerPrintOption,
+    MandatoryPlayerPrintOption,
+    OptionalPlayerPrintOption,
     PlayerSplitPrintOption,
     PrintOption,
     QRCodeNetworkPrintOption,
@@ -109,9 +110,23 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         ]
 
     @cached_property
-    def player(self) -> TournamentPlayer:
+    def mandatory_player(self) -> TournamentPlayer:
         return self.tournament.tournament_players_by_id[
-            self._get_option(PlayerPrintOption).value
+            self._get_option(MandatoryPlayerPrintOption).value
+        ]
+
+    @cached_property
+    def optional_player(self) -> TournamentPlayer | None:
+        if player_id := self._get_option(OptionalPlayerPrintOption).value:
+            return self.tournament.tournament_players_by_id[player_id]
+        else:
+            return None
+
+    @cached_property
+    def mandatory_players(self) -> list[TournamentPlayer]:
+        return [
+            self.tournament.tournament_players_by_id[player_id]
+            for player_id in self._get_option(MandatoryPlayersPrintOption).value
         ]
 
     @cached_property
@@ -119,13 +134,6 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         return [
             self.tournament.tournament_players_by_id[player_id]
             for player_id in self._get_option(OptionalPlayersPrintOption).value
-        ]
-
-    @cached_property
-    def mandatory_players(self) -> list[TournamentPlayer]:
-        return [
-            self.tournament.tournament_players_by_id[player_id]
-            for player_id in self._get_option(MandatoryPlayersPrintOption).value
         ]
 
     @property
@@ -1104,7 +1112,7 @@ class NormReportPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, PlayerPrintOption]
+        return [TournamentPrintOption, MandatoryPlayerPrintOption]
 
     @property
     def title(self) -> str:
@@ -1126,7 +1134,7 @@ class NormReportPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        player_id = self._get_option(PlayerPrintOption).value
+        player_id = self._get_option(MandatoryPlayerPrintOption).value
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm

@@ -91,6 +91,8 @@ class EventPrintController(BaseEventAdminController):
             ]
         return {
             'modal': 'print',
+            'client': web_context.client,
+            'account_options': web_context.get_account_options(),
             'tournament_options': web_context.get_tournament_options(
                 allowed_tournaments
             ),
