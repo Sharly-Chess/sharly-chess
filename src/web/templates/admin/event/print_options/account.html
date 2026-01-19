@@ -1,20 +1,24 @@
-<div class="col-12">
-    {% set opt_account_options={'': '-- ' + option.default_text + ' --'} %}
-    {% do opt_account_options.update(account_options) %}
-    {{ admin_macros.select_input(
-        name=option.id,
-        label=option.label,
-        help_text='',
-        placeholder='',
-        select_options=opt_account_options,
-        multiple_select=false,
-        data=data, errors=errors
-    ) }}
-</div>
-<script>
-    $(document).ready(function() {
-        $(".modal #{{ option.id }} option").prop("selected", false);
-        $(".modal #{{ option.id }} option[value='{{ client.account.id }}']").prop("selected", true);
-        $(".modal #{{ option.id }}").trigger("change");
-    })
-</script>
+{% if account_options %}
+    <div class="col-12">
+        {% set opt_account_options={'': '-- ' + option.default_text + ' --'} %}
+        {% do opt_account_options.update(account_options) %}
+        {{ admin_macros.select_input(
+            name=option.id,
+            label=option.label,
+            help_text='',
+            placeholder='',
+            select_options=opt_account_options,
+            multiple_select=false,
+            data=data, errors=errors
+        ) }}
+    </div>
+    <script>
+        $(document).ready(function() {
+            $(".modal #{{ option.id }} option").prop("selected", false);
+            $(".modal #{{ option.id }} option[value='{{ client.account.id }}']").prop("selected", true);
+            $(".modal #{{ option.id }}").trigger("change");
+        })
+    </script>
+{% else %}
+    <input type="hidden" name="{{ option.id }}" value="" />
+{% endif %}

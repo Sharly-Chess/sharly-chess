@@ -1,6 +1,7 @@
 <h2>Arbitre rédacteur·ice</h2>
 <section>
     <div class="grid" style="grid-template-columns: 1fr 7fr;">
+        {% set writer_error = 'Aucun·e arbitre rédacteur·ice n\'a été déclaré·e.' if not writer else '' %}
         <div class="item">
             <label for="writer-full-name">Nom et prénom :</label>
         </div>

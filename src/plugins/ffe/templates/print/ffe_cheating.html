@@ -53,6 +53,7 @@
         <section>
             <h3 style="text-align: center; margin-top: 0;">Personne suspectée</h3>
             <div class="grid" style="grid-template-columns: 1fr 7fr;">
+                {% set player_error = 'Aucun·e personne n\'a été déclarée.' if not player else '' %}
                 <div class="item">
                     <label for="player-last-name">Nom :</label>
                 </div>
@@ -68,7 +69,8 @@
                 <div class="item">
                     <label for="player-ffe-licence-number">N° de licence :</label>
                 </div>
-                <div class="item">
+                <div class="item {%if not player or not player.plugin_data or not player.plugin_data.ffe or not player.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
+                    <div class="error-info">{{ player_error or 'Le numéro de licence FFE n\'a pas été saisi.' }}</div>
                     <input id="player-ffe-licence-number" value="{% if player %}{{ player.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}" />
                 </div>
             </div>

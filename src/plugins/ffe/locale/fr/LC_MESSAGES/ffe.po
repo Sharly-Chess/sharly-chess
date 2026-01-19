@@ -14,10 +14,10 @@ msgstr "Une chaîne de caractères non vide est attendue"
 msgid "A positive integer is expected."
 msgstr "Un entier positif est attendu."
 
-msgid "All the player with no licence A"
+msgid "All the players with no licence A"
 msgstr "Tou·tes les joueur·euses sans licence A"
 
-msgid "All the player with no licence A or B"
+msgid "All the players with no licence A or B"
 msgstr "Tou·tes les joueur·euses sans licence A ou B"
 
 msgid "Arbiter:"

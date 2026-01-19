@@ -14,10 +14,10 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
-msgid "All the player with no licence A"
+msgid "All the players with no licence A"
 msgstr ""
 
-msgid "All the player with no licence A or B"
+msgid "All the players with no licence A or B"
 msgstr ""
 
 msgid "Arbiter:"
