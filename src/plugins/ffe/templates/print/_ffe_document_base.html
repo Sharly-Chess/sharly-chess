@@ -12,23 +12,25 @@
     </head>
     <body>
         <div class="info">
+            Ce document a été généré par Sharly Chess {{ sharly_chess_config.version }} - {{ sharly_chess_config.localized_copyright('fr') }}
+            <br/>
             Tous les champs des formulaires FFE sont modifiables.
             <br/>
-            Les points nécessitant votre attention sont indiqués en rouge, ils apparaissent en noir à l'impression.
+            Les points nécessitant votre attention sont indiqués en rouge (ils apparaissent en noir à l'impression).
         </div>
         {% block body %}
             BODY
         {% endblock body %}
         <script>
             $(document).ready(function() {
-                $("input").on("input", function() {
+                $("input[required]").on("input", function() {
                     if ($(this).val()) {
                         $(this).removeClass('missing');
                     } else {
                         $(this).addClass('missing');
                     }
                 })
-                $('input').trigger('input');
+                $('input[required]').trigger('input');
             })
         </script>
     </body>

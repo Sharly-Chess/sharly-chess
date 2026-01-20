@@ -1,7 +1,7 @@
 {% extends '_ffe_document_base.html' %}
 
 {% block body %}
-    <form class="break-after arbiter-compensation">
+    <form class="arbiter-compensation">
         <h1>
              
             <br/>
@@ -38,7 +38,7 @@
                 </div>
             </div>
         </section>
-        <h2>Organisation</h2>
+        <h2 style="margin-top: 0.2rem;">Organisation</h2>
         <section>
             <div class="grid" style="grid-template-columns: 1fr 7fr 1fr 7fr;">
                 <div class="item">
@@ -67,7 +67,7 @@
                 </div>
             </div>
         </section>
-        <h2>{% if tournaments|length > 1 %}Tournois{% else %}Tournoi{% endif %}</h2>
+        <h2 style="margin-top: 0.2rem;">{% if tournaments|length > 1 %}Tournois{% else %}Tournoi{% endif %}</h2>
         <section>
             <div class="grid" style="grid-template-columns: 1fr 3fr;">
                 <div class="item">
@@ -96,7 +96,7 @@
                 </div>
             </div>
         </section>
-        <h2>Frais</h2>
+        <h2 style="margin-top: 0.2rem;">Frais</h2>
         <section>
             <div class="grid" style="grid-template-columns: 10fr 1fr;">
                 <div class="item">
@@ -137,7 +137,7 @@
                 </div>
             </div>
         </section>
-        <h2>Indemnités de la mission d'arbitrage</h2>
+        <h2 style="margin-top: 0.2rem;">Indemnités de la mission d'arbitrage</h2>
         <section>
             <div class="grid" style="grid-template-columns: 1fr;">
                 <div class="item">
@@ -178,7 +178,7 @@
                 <input id="final-2" value="" style="text-align: right;"/>€
             </div>
         </div>
-        <div class="grid" style="grid-template-columns: 1.5fr 1fr 1fr; margin-top: 3rem; margin-bottom: 4rem;">
+        <div class="grid" style="grid-template-columns: 1.5fr 1fr 1fr; margin-top: 1rem; margin-bottom: 4rem;">
             <div class="item">
                 <label for="signature-location">Fait à</label>
                 <input id="signature-location" value="{{ location }}" />

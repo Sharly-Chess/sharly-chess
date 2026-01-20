@@ -153,14 +153,14 @@
                 <div class="item">
                     <label for="adult-prize">Adultes =</label>
                 </div>
-                <div class="item">
+                <div class="item error">
                     <input id="adult-prize" value="" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />€
                 </div>
                 <div class="item"></div>
                 <div class="item">
                     <label for="young-prize">Jeunes =</label>
                 </div>
-                <div class="item">
+                <div class="item error">
                     <input id="young-prize" value="" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />€
                 </div>
                 <div class="item"></div>
@@ -179,17 +179,11 @@
                     <input required id="prizes-total" value="{{ prizes_total }}" style="width: 3.5rem; flex-grow: 0; text-align: right;" />€
                 </div>
             </div>
-            <div class="grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="grid" style="grid-template-columns: 1fr;">
                 <div class="item">
                     <label>Nom, prénom et titre des arbitres :</label>
                 </div>
-                <div class="item"></div>
-                {% for i in range(10) %}
-                    <div class="item error">
-                        <div class="error-info">TODO Replace the inputs by a textarea</div>
-                        <input id="arbiter-{{ i }}" value="{% if arbiters|length > i %}{{ arbiters[i].last_name }} {{ arbiters[i].first_name }} {{ arbiters[i].plugin_data.ffe.ffe_arbiter_title.short_name }} {{ arbiters[i].plugin_data.ffe.ffe_licence_number or '' }}{% endif %}" />
-                    </div>
-                {% endfor %}
+                <textarea id="text" class="error" style="height: 6rem;">{{ arbiters }}</textarea>
             </div>
         </section>
         <h2>Divers</h2>

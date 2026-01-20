@@ -7,6 +7,7 @@ from typing import Any, TYPE_CHECKING
 from common import BASE_DIR
 from common.i18n import _
 from common.logger import get_logger
+from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.client import Client
 from data.account import Account
 from data.event import Event
@@ -17,7 +18,7 @@ from plugins.ffe import PLUGIN_DIR
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from utils.entity import IdentifiableEntity
 from utils.enum import RoleType, PlayerRatingType
-from utils.file import image_file_inline_url
+from utils.file import image_file_inline_url, ttf_file_inline_url
 from utils.time_control import trf25_to_human_readable
 
 if TYPE_CHECKING:
@@ -107,8 +108,8 @@ class FFEDocumentType(IdentifiableEntity, ABC):
         return self.ffe_document.get_allowed_tournaments()
 
     @cached_property
-    def arbiters(self) -> list[Account]:
-        """Returns the lists of arbiters, chief arbiters first then deputy arbiters."""
+    def arbiters(self) -> str:
+        """Returns the lists of arbiters, chief arbiters first then deputy arbiters, as a textarea string."""
         accounts_by_role: dict[RoleType, set[Account]] = {
             role_type: set()
             for role_type in [
@@ -138,7 +139,25 @@ class FFEDocumentType(IdentifiableEntity, ABC):
             ),
             key=lambda a: a.full_name,
         )
-        return chief_arbiters + deputy_arbiters
+
+        def format_arbiter(arbiter: Account) -> str:
+            return ' '.join(
+                item
+                for item in [
+                    arbiter.last_name,
+                    arbiter.first_name,
+                    FFEUtils.get_account_plugin_data(arbiter).ffe_licence_number,
+                    FFEUtils.get_account_plugin_data(
+                        arbiter
+                    ).ffe_arbiter_title.short_name,
+                ]
+                if item
+            )
+
+        return (
+            f'Arbitres en chef·fe :\n{", ".join(format_arbiter(arbiter) for arbiter in chief_arbiters)}\n\n'
+            f'Arbitres en adjoint·es :\n{", ".join(format_arbiter(arbiter) for arbiter in deputy_arbiters)}\n'
+        )
 
     @cached_property
     def writer(self) -> Account | None:
@@ -182,7 +201,13 @@ class FFEDocumentType(IdentifiableEntity, ABC):
         ffe_document: 'FFEPrintDocument',
     ) -> dict[str, Any]:
         self.set_ffe_document(ffe_document)
+        font_file = (
+            BASE_DIR / 'src/web/static/fonts/AtkinsonHyperlegibleNextVF-Variable.ttf'
+        )
         return {
+            'sharly_chess_config': SharlyChessConfig(),
+            'font_family': font_file.stem,
+            'font_url': ttf_file_inline_url(font_file),
             'sharly_chess_logo_url': image_file_inline_url(
                 BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
             ),
@@ -409,7 +434,7 @@ class FFETournamentsDocumentType(FFEDocumentType, ABC):
 class FFET1Type(FFETournamentsDocumentType):
     @staticmethod
     def static_id() -> str:
-        return 'ffe-t1-heading'
+        return 'ffe-t1-cover'
 
     @staticmethod
     def static_name() -> str:
