@@ -165,7 +165,7 @@ class FFEArbiterTitle(IntEnum):
     def short_name(self) -> str:
         match self:
             case FFEArbiterTitle.NONE:
-                return '-'
+                return ''
             case FFEArbiterTitle.AS:
                 return 'STA'
             case FFEArbiterTitle.AFJ:
