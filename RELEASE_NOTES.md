@@ -17,3 +17,8 @@
 ## _FFE_
 
 - Added print views for FFE forms T1-T7 (3.5.0)
+
+## FRA Schools
+
+- Added team options to the schools ranking document (3.5.0)
+- Added an overall ranking to the schools ranking document (3.5.0)

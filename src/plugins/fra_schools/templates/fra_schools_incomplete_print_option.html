@@ -1,0 +1,11 @@
+<div class="col-12">
+    {{ admin_macros.switch_input(
+        name=option.id,
+        placeholder=_('Include incomplete teams'),
+        tooltip_text=_(
+            'Teams are considered complete when they '
+            'have 8 players including 2 boys and 2 girls.'
+        ),
+        data=data, errors=errors
+    ) }}
+</div>

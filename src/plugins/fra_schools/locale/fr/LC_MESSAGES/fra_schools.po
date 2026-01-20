@@ -2,6 +2,9 @@
 msgid "%(string)s:"
 msgstr "%(string)s :"
 
+msgid "A positive integer is expected."
+msgstr "Un entier positif est attendu."
+
 msgid "Add"
 msgstr "Ajouter"
 
@@ -51,6 +54,9 @@ msgstr "Établissement scolaire"
 msgid "Identifier"
 msgstr "Identifiant"
 
+msgid "Include incomplete teams"
+msgstr "Inclure les équipes incomplètes"
+
 msgid "Incomplete Team"
 msgstr "Équipe incomplète"
 
@@ -59,6 +65,9 @@ msgstr "Format invalide (attendu : 5 chiffres)."
 
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
+
+msgid "Maximum number of teams per school."
+msgstr "Nombre d'équipes maximum par établissement."
 
 #, python-format
 msgid "Missing boys: %(count)d"
@@ -75,17 +84,26 @@ msgstr "Nom"
 msgid "Other missing players: %(count)d"
 msgstr "Autres joueur·euses manquant·es : %(count)d"
 
+msgid "Overall ranking"
+msgstr "Classement général"
+
 msgid "Please validate the French school to continue."
 msgstr "Merci de valider l'établissement scolaire avant de continuer."
 
 msgid "Postal code"
 msgstr "Code postal"
 
+msgid "Pts *** POINTS COLUMN HEADER"
+msgstr "Pts"
+
 msgid "Ranking by school"
 msgstr "Classement par établissement"
 
 msgid "Ranking by school after round #{round}"
 msgstr "Classement par établissement après la ronde n°{round}"
+
+msgid "Rk. *** RANK COLUMN HEADER"
+msgstr "Pl."
 
 msgid "School"
 msgstr "Établissement"
@@ -99,6 +117,12 @@ msgstr "Établissements"
 #, python-format
 msgid "Search by: %(fields)s"
 msgstr "Rechercher par : %(fields)s"
+
+msgid "Teams are considered complete when they have 8 players including 2 boys and 2 girls."
+msgstr "Les équipes sont considérées complètes lorsqu'elles comprennent 8 joueur·euses dont 2 garçons et 2 filles."
+
+msgid "Teams per school:"
+msgstr "Équipes par établissement :"
 
 #, python-format
 msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
@@ -125,6 +149,9 @@ msgstr "Ce numéro de ronde n'est pas valide (le tournoi comporte {rounds} ronde
 
 msgid "Total"
 msgstr "Total"
+
+msgid "incomplete *** INCOMPLETE TEAM"
+msgstr "incomplète"
 
 msgid "{count} school represented"
 msgid_plural "{count} schools represented"

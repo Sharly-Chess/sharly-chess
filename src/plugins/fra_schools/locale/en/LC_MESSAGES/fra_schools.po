@@ -2,6 +2,9 @@
 msgid "%(string)s:"
 msgstr ""
 
+msgid "A positive integer is expected."
+msgstr ""
+
 msgid "Add"
 msgstr ""
 
@@ -51,6 +54,9 @@ msgstr ""
 msgid "Identifier"
 msgstr ""
 
+msgid "Include incomplete teams"
+msgstr ""
+
 msgid "Incomplete Team"
 msgstr ""
 
@@ -58,6 +64,9 @@ msgid "Invalid format (expected: 5 digits)."
 msgstr ""
 
 msgid "Loading more results…"
+msgstr ""
+
+msgid "Maximum number of teams per school."
 msgstr ""
 
 #, python-format
@@ -75,17 +84,26 @@ msgstr ""
 msgid "Other missing players: %(count)d"
 msgstr ""
 
+msgid "Overall ranking"
+msgstr ""
+
 msgid "Please validate the French school to continue."
 msgstr ""
 
 msgid "Postal code"
 msgstr ""
 
+msgid "Pts *** POINTS COLUMN HEADER"
+msgstr "Pts"
+
 msgid "Ranking by school"
 msgstr ""
 
 msgid "Ranking by school after round #{round}"
 msgstr ""
+
+msgid "Rk. *** RANK COLUMN HEADER"
+msgstr "Rk."
 
 msgid "School"
 msgstr ""
@@ -98,6 +116,12 @@ msgstr ""
 
 #, python-format
 msgid "Search by: %(fields)s"
+msgstr ""
+
+msgid "Teams are considered complete when they have 8 players including 2 boys and 2 girls."
+msgstr ""
+
+msgid "Teams per school:"
 msgstr ""
 
 #, python-format
@@ -125,6 +149,9 @@ msgstr ""
 
 msgid "Total"
 msgstr ""
+
+msgid "incomplete *** INCOMPLETE TEAM"
+msgstr "incomplete"
 
 msgid "{count} school represented"
 msgid_plural "{count} schools represented"

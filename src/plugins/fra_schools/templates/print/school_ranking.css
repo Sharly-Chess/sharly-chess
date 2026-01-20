@@ -2,6 +2,17 @@
     margin-bottom: 4rem;
 }
 
+.teams-overall {
+    display: grid;
+    gap: .5rem 1rem;
+    margin: 0 auto;
+    width: max-content;
+}
+
+.overall-header {
+    font-weight: bolder;
+}
+
 .teams {
     display: grid;
     gap: .5rem 1rem;
