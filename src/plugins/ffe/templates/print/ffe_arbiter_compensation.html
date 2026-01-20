@@ -149,7 +149,7 @@
                           maximumFractionDigits: 2
                         });
                     }
-                    $('#expenses-total').val(total);
+                    $('#expenses-total,#compensation-2').val(total);
                 });
             </script>
         </section>
@@ -173,7 +173,7 @@
                     <label for="compensation-2" style="font-weight: bold; text-align: right; flex-grow: 1;">Indemnité totale d'arbitrage :</label>
                 </div>
                 <div class="item">
-                    <input id="compensation-2" value="" style="text-align: right;"/>€
+                    <input id="compensation-2" value="0" style="text-align: right;"/>€
                 </div>
                 <div class="item">
                     <span style="font-size: 0.7rem;">Remarque : montant à déclarer dans les Bénéfices Non Commerciaux sur la déclaration fiscale, Sans charge sociale si le total annuel reste inférieur à 14,5% du plafond annuel de la Sécurité Sociale (6723 € en 2024).</span>
