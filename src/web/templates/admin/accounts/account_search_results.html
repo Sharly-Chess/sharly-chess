@@ -24,7 +24,6 @@
                 onclick="
                 $('#last-name').val('{{ player.last_name|replace("'", "\\'") }}');
                 $('#first-name').val('{{ player.first_name|replace("'", "\\'")}}' ?? '');
-                $('#fide-id-hidden').val('{{ player.fide_id or '' }}');
                 $('#fide-id.form-control').val('{{ player.fide_id or '' }}');
                 {% for template in result_js_templates %}
                     {% include template %}
