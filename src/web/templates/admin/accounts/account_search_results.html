@@ -21,7 +21,16 @@
     {% if search_results %}
         {% for player in search_results %}
             <li class="dropdown-item text-nowrap btn"
-                onclick="selectPlayer('{{ player.last_name|replace("'", "\\'") }}', '{{ player.first_name|replace("'", "\\'")}}', '{{ player.fide_id }}')"
+                onclick="
+                $('#last-name').val('{{ player.last_name|replace("'", "\\'") }}');
+                $('#first-name').val('{{ player.first_name|replace("'", "\\'")}}' ?? '');
+                $('#fide-id-hidden').val('{{ player.fide_id or '' }}');
+                $('#fide-id.form-control').val('{{ player.fide_id or '' }}');
+                {% for template in result_js_templates %}
+                    {% include template %}
+                {% endfor %}
+                $('#search-results').hide();
+                "
             >
                 {% include data_source.player_search_result_template %}
             </li>
@@ -33,7 +42,7 @@
                         event_uniq_id=admin_event.uniq_id,
                         page=page + 1,
                     )}}"
-                    hx-vals='{"results_template": "admin/accounts/account_search_results.html", "data_source_id": "{{ data_source.id }}", "search": "{{ search }}"}'
+                    hx-vals='{"results_template": "admin/accounts/account_search_results.html", "result_js_template_hook_name": "get_account_search_result_js_template", "data_source_id": "{{ data_source.id }}", "search": "{{ search }}"}'
                     hx-target="this"
                     hx-swap="outerHTML"
                     hx-trigger="intersect once"

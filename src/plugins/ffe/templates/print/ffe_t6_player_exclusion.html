@@ -15,26 +15,19 @@
                     <label for="to">Nom et prénom :</label>
                 </div>
                 <div class="item">
-                    <input id="to" value="{{ player.last_name }} {{ player.first_name }}" />
+                    <input required id="to" value="{{ player.last_name }} {{ player.first_name }}" />
                 </div>
                 <div class="item">
                     <label for="player-ffe-licence-number">N° de licence :</label>
                 </div>
                 <div class="item">
-                    <input id="player-ffe-licence-number" value="{{ player.plugin_data.ffe.ffe_licence_number or '' }}" />
+                    <input required id="player-ffe-licence-number" value="{{ player.plugin_data.ffe.ffe_licence_number or '' }}" />
                 </div>
             </div>
         </section>
         <h2>MOTIF DE L'EXCLUSION</h2>
         <section>
-            <div class="grid" style="grid-template-columns: 1fr;">
-                {% for i in range(10) %}
-                    <div class="item error">
-                        <div class="error-info">TODO Replace all these inputs by a textarea</div>
-                        <input id="reason-{{ i }}" value="" style="margin-left: 0;" />
-                    </div>
-                {% endfor %}
-            </div>
+            <textarea id="text" class="error" style="margin-top: 1rem; height: 20rem;"></textarea>
         </section>
         {% include '_ffe_location_date_signature.html' %}
     </form>

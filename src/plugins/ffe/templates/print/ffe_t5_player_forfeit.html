@@ -13,24 +13,20 @@
                 <div class="item">
                     <label for="writer">Nom et prénom :</label>
                 </div>
-                {% set writer_error = 'Aucun·e arbitre rédacteur·ice n\'a été déclaré·e.' if not writer else '' %}
-                <div class="item {%if writer_error %}error{% endif %}">
-                    <div class="error-info">{{ writer_error }}</div>
-                    <input id="writer" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+                <div class="item">
+                    <input required id="writer" value="{% if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
                 </div>
                 <div class="item">
-                    <label for="writer-email">Mél :</label>
+                    <label for="writer-mail">Mél :</label>
                 </div>
-                <div class="item error {% if not writer or not writer.email %}error{% endif %}">
-                    <div class="error-info">TODO Add the email to accounts.</div>
-                    <input id="writer-email" value="{%if writer %}{{ writer.email or '' }}{% endif %}" />
+                <div class="item">
+                    <input required id="writer-mail" value="{% if writer %}{{ writer.mail or '' }}{% endif %}" />
                 </div>
                 <div class="item">
                     <label for="writer-phone">Tél :</label>
                 </div>
-                <div class="item {% if not writer or not writer.phone %}error{% endif %}">
-                    <div class="error-info">{{ writer_error or 'Le tél n\'a pas été saisi.' }}</div>
-                    <input id="writer-phone" value="{%if writer %}{{ writer.address or '' }}{% endif %}" />
+                <div class="item">
+                    <input required id="writer-phone" value="{% if writer %}{{ writer.phone or '' }}{% endif %}" />
                 </div>
                 <div class="item">
                     <label for="writer-address">Adresse postale :</label>
@@ -43,20 +39,20 @@
         <div class="grid" style="grid-template-columns: 1fr; margin-top: 1rem;">
             <div class="item">
                 <label for="to">À l'intention de</label>
-                <input id="to" value="{{ player.last_name }} {{ player.first_name }} (n° de licence FFE : {{ player.plugin_data.ffe.ffe_licence_number }})" />
+                <input required id="to" value="{{ player.last_name }} {{ player.first_name }} (n° de licence FFE : {{ player.plugin_data.ffe.ffe_licence_number }})" />
             </div>
         </div>
         <div class="grid" style="grid-template-columns: 1fr; margin-top: 2rem;">
             <div class="item">
                 <label for="tournament">Vous avez participé au tournoi</label>
-                <input id="tournament" value="{{ tournament_name }}" />
+                <input required id="tournament" value="{{ tournament_name }}" />
             </div>
         </div>
         <div class="grid" style="grid-template-columns: 1fr; margin-top: 1rem;">
             <div class="item {% if not player_last_forfeit_round %}error{% endif %}">
                 <div class="error-info">Le numéro de la dernière ronde forfait n'a pas pu être déterminé.</div>
                 <label for="round">que vous avez abandonné avant la fin du tournoi, avant la ronde n°</label>
-                <input id="round" value="{{ player_last_forfeit_round }}" style="width: 1rem; flex-grow: 0;" />
+                <input required id="round" value="{{ player_last_forfeit_round }}" style="width: 1rem; flex-grow: 0;" />
             </div>
         </div>
         <div style="margin-top: 2rem;">

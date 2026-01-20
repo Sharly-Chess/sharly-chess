@@ -1142,9 +1142,7 @@ class Tournament:
             startdate=self.start_date.strftime('%Y/%m/%d'),
             enddate=self.stop_date.strftime('%Y/%m/%d'),
             numplayers=len(self.tournament_players_by_id),
-            chiefarbiter=self.chief_arbiter.full_name_and_id
-            if self.chief_arbiter
-            else '',
+            chiefarbiter=getattr(self.chief_arbiter, 'fide_arbiter_str', ''),
             players=[
                 player.to_trf(
                     after_round,

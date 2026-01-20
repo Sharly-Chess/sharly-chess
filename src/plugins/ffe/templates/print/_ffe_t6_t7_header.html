@@ -5,23 +5,20 @@
         <div class="item">
             <label for="writer-full-name">Nom et prénom :</label>
         </div>
-        <div class="item {%if writer_error %}error{% endif %}">
-            <div class="error-info">{{ writer_error }}</div>
-            <input id="writer-full-name" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+        <div class="item">
+            <input required id="writer-full-name" value="{% if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
         </div>
         <div class="item">
             <label for="writer-ffe-licence-number">Numéro de licence :</label>
         </div>
-        <div class="item {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
-            <div class="error-info">{{ writer_error or 'Le numéro de licence FFE n\'a pas été saisi.' }}</div>
-            <input id="writer-ffe-licence-number" value="{%if writer and writer.plugin_data and writer.plugin_data.ffe %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
+        <div class="item">
+            <input required id="writer-ffe-licence-number" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
         </div>
         <div class="item">
-            <label for="writer-arbiter-level">Titre :</label>
+            <label for="writer-ffe-arbiter-title">Titre :</label>
         </div>
-        <div class="item {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.arbiter_level %}error{% endif %}">
-            <div class="error-info">{{ writer_error or 'Le niveau n\'a pas été saisi.' }}</div>
-            <input id="writer-arbiter-level" value="{%if writer and writer.plugin_data and writer.plugin_data.ffe %}{{ writer.plugin_data.ffe.ffe_arbiter_level or '' }}{% endif %}"/>
+        <div class="item required">
+            <input required id="writer-ffe-arbiter-title" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_arbiter_title.short_name }}{% endif %}"/>
         </div>
     </div>
 </section>
@@ -32,20 +29,19 @@
             <label for="tournament">Nom :</label>
         </div>
         <div class="item">
-            <input id="tournament" value="{{ tournament_name }}" />
+            <input required id="tournament" value="{{ tournament_name }}" />
         </div>
         <div class="item">
             <label for="tournament-ffe-id">Numéro d'homologation FFE :</label>
         </div>
-        <div class="item {% if not tournament.plugin_data.ffe.ffe_id %}error{% endif %}">
-            <div class="error-info">Le numéro d'homologation du tournoi n'est pas défini.</div>
-            <input id="tournament-ffe-id" value="{{ tournament.plugin_data.ffe.ffe_id or '' }}" />
+        <div class="item">
+            <input required id="tournament-ffe-id" value="{{ tournament.plugin_data.ffe.ffe_id or '' }}" />
         </div>
         <div class="item">
             <label for="event-date">Dates du tournoi :</label>
         </div>
         <div class="item">
-            <input id="event-date" value="{{ tournament_date }}" />
+            <input required id="event-date" value="{{ tournament_date }}" />
         </div>
     </div>
 </section>

@@ -10,33 +10,27 @@
         <h2>Identification de l'arbitre rédacteur·ice</h2>
         <section>
             <div class="grid" style="grid-template-columns: 5fr 2fr 1fr;">
-                {% set writer_error = 'Aucun·e arbitre rédacteur·ice n\'a été déclaré·e.' if not writer else '' %}
-                <div class="item {%if writer_error %}error{% endif %}">
+                <div class="item">
                     <label for="writer-full-name">Nom et prénom :</label>
-                    <div class="error-info">{{ writer_error }}</div>
-                    <input id="writer-full-name" value="{%if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+                    <input required id="writer-full-name" value="{% if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
                 </div>
-                <div class="item {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
+                <div class="item">
                     <label for="writer-ffe-licence-number">Numéro de licence :</label>
-                    <div class="error-info">{{ writer_error or 'Le numéro de licence FFE n\'a pas été saisi.' }}</div>
-                    <input id="writer-ffe-licence-number" value="{%if writer and writer.plugin_data %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
+                    <input required id="writer-ffe-licence-number" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
                 </div>
-                <div class="item {% if not writer or not writer.plugin_data or not writer.plugin_data.ffe or not writer.plugin_data.ffe.arbiter_level %}error{% endif %}">
-                    <label for="writer-arbiter-level">Niveau :</label>
-                    <div class="error-info">{{ writer_error or 'Le niveau n\'a pas été saisi.' }}</div>
-                    <input id="writer-arbiter-level" value="{%if writer and writer.plugin_data %}{{ writer.plugin_data.ffe.ffe_arbiter_level or '' }}{% endif %}"/>
+                <div class="item">
+                    <label for="writer-ffe-arbiter-title">Niveau :</label>
+                    <input required id="writer-ffe-arbiter-title" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_arbiter_title.short_name }}{% endif %}"/>
                 </div>
             </div>
             <div class="grid" style="grid-template-columns: 1fr 1fr;">
-                <div class="item {% if not writer or not writer.email %}error{% endif %}">
-                    <label for="writer-email">Mél :</label>
-                    <div class="error-info">{{ writer_error or 'Le mél n\'a pas été saisi.' }}</div>
-                    <input id="writer-email" value="{%if writer %}{{ writer.email or '' }}{% endif %}" />
+                <div class="item">
+                    <label for="writer-mail">Mél :</label>
+                    <input required id="writer-mail" value="{% if writer %}{{ writer.mail or '' }}{% endif %}" />
                 </div>
-                <div class="item {% if not writer or not writer.phone %}error{% endif %}">
+                <div class="item">
                     <label for="writer-phone">Tél :</label>
-                    <div class="error-info">{{ writer_error or 'Le tél n\'a pas été saisi.' }}</div>
-                    <input id="writer-phone" value="{%if writer %}{{ writer.phone or '' }}{% endif %}" />
+                    <input required id="writer-phone" value="{% if writer %}{{ writer.phone or '' }}{% endif %}" />
                 </div>
             </div>
             <div class="grid" style="grid-template-columns: 1fr;">
@@ -50,7 +44,7 @@
                     <label for="chief-arbiter">Nom, prénom et n° de licence de l’arbitre principal·e (si différent·e) :</label>
                 </div>
                 <div class="item">
-                    <input id="chief-arbiter" value="{% if chief_arbiter %}{{ chief_arbiter.last_name }} {{ chief_arbiter.first_name }}{% if chief_arbiter.plugin_data and chief_arbiter.plugin_data.ffe %} {{ chief_arbiter.plugin_data.ffe.arbiter_level or '' }} {{ chief_arbiter.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}{% endif %}" style="margin-left: 0;" />
+                    <input id="chief-arbiter" value="{% if chief_arbiter %}{{ chief_arbiter.last_name }} {{ chief_arbiter.first_name }} {{ chief_arbiter.plugin_data.ffe.ffe_arbiter_title.short_name }} {{ chief_arbiter.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}" style="margin-left: 0;" />
                 </div>
             </div>
         </section>
@@ -60,30 +54,26 @@
                 <div class="item">
                     <label for="organiser-name">Nom :</label>
                 </div>
-                <div class="item {% if not event.organiser_name %}error{% endif %}">
-                    <div class="error-info">Le nom de l'organisation n'est pas défini (la définition de l'organisation se fait dans la configuration de l'évènement).</div>
+                <div class="item">
                     <input id="organiser-name" value="{{ event.organiser_name or '' }}" />
                 </div>
                 <div class="item">
                     <label for="organiser-home-page">Site web :</label>
                 </div>
-                <div class="item {% if not event.organiser_home_page %}error{% endif %}">
-                    <div class="error-info">Le site web de l'organisation n'est pas défini (la définition de l'organisation se fait dans la configuration de l'évènement).</div>
-                    <input id="organiser-home-page" value="{{ event.organiser_home_page or '' }}" />
+                <div class="item">
+                    <input required id="organiser-home-page" value="{{ event.organiser_home_page or '' }}" />
                 </div>
                 <div class="item">
                     <label for="organiser-director">Direction :</label>
                 </div>
-                <div class="item {% if not event.organiser_director %}error{% endif %}">
-                    <div class="error-info">Le·la directeur·ice de l'organisation n'est pas défini (la définition de l'organisation se fait dans la configuration de l'évènement).</div>
-                    <input id="organiser-director" value="{{ event.organiser_director or '' }}" />
+                <div class="item">
+                    <input required id="organiser-director" value="{{ event.organiser_director or '' }}" />
                 </div>
                 <div class="item">
                     <label for="organiser-email">Mél :</label>
                 </div>
-                <div class="item {% if not event.organiser_email %}error{% endif %}">
-                    <div class="error-info">Le mél de l'organisation n'est pas défini (la définition de l'organisation se fait dans la configuration de l'évènement).</div>
-                    <input id="organiser-email" value="{{ event.organiser_email or '' }}" />
+                <div class="item">
+                    <input required id="organiser-email" value="{{ event.organiser_email or '' }}" />
                 </div>
             </div>
         </section>
@@ -99,65 +89,44 @@
                 <div class="item">
                     <label for="tournaments-ffe-id">Numéro d'homologation FFE :</label>
                 </div>
-                <div class="item {% if not ffe_ids %}error{% endif %}">
-                    <div class="error-info">
-                        {% if tournaments|length > 1 %}
-                            Les numéros d'homologation des tournois ne sont pas définis.
-                        {% else %}
-                            Le numéro d'homologation du tournoi n'est pas défini.
-                        {% endif %}
-                    </div>
-                    <input id="tournaments-ffe-id" value="{{ ffe_ids }}" />
+                <div class="item">
+                    <input required id="tournaments-ffe-id" value="{{ ffe_ids }}" />
                 </div>
                 <div class="item">
                     <label for="event-date">Date(s) de l'évènement :</label>
                 </div>
                 <div class="item">
-                    <input id="event-date" value="{{ event_date }}" />
+                    <input required id="event-date" value="{{ event_date }}" />
                 </div>
                 <div class="item">
                     <label for="location">Lieu (commune, département, ligue) :</label>
                 </div>
-                <div class="item {% if not location %}error{% endif %}">
-                    <div class="error-info">
-                        {% if tournaments|length > 1 %}
-                            Les lieux des tournois ne sont pas définis (celui de l'évènement non plus).
-                        {% else %}
-                            Le lieu du tournoi n'est pas défini (celui de l'évènement non plus).
-                        {% endif %}
-                    </div>
-                    <input id="location" value="{{ location }}" />
+                <div class="item">
+                    <input required id="location" value="{{ location }}" />
                 </div>
                 <div class="item">
                     <label for="rounds">Nombre de rondes :</label>
                 </div>
                 <div class="item">
-                    <input id="rounds" value="{{ rounds }}" style="width: 1rem; flex-grow: 0; text-align: right;" />
+                    <input required id="rounds" value="{{ rounds }}" style="width: 1rem; flex-grow: 0; text-align: right;" />
                 </div>
                 <div class="item">
                     <label for="time-control">cadence :</label>
                 </div>
-                <div class="item {%if not time_control %}error{% endif %}">
-                    <div class="error-info">
-                        {% if tournaments|length > 1 %}
-                            La cadence des tournois n'est pas définie.
-                        {% else %}
-                            La cadence du tournoi n'est pas définie.
-                        {% endif %}
-                    </div>
-                    <input id="time-control" value="{{ time_control }}" />
+                <div class="item">
+                    <input required id="time-control" value="{{ time_control }}" />
                 </div>
                 <div class="item">
                     <label for="pairing">Type d'appariement :</label>
                 </div>
                 <div class="item">
-                    <input id="pairing" value="{{ pairing }}" />
+                    <input required id="pairing" value="{{ pairing }}" />
                 </div>
                 <div class="item">
                     <label for="tie_breaks">Départages :</label>
                 </div>
                 <div class="item">
-                    <input id="tie_breaks" value="{{ tie_breaks }}" />
+                    <input required id="tie_breaks" value="{{ tie_breaks }}" />
                 </div>
             </div>
             <div class="grid" style="grid-template-columns: 10fr 1fr 1fr 1fr 1fr 1fr 15fr;">
@@ -168,14 +137,14 @@
                     <label for="fide-player-count">FIDE :</label>
                 </div>
                 <div class="item">
-                    <input id="fide-player-count" value="{{ fide_player_count }}" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />
+                    <input required id="fide-player-count" value="{{ fide_player_count }}" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />
                 </div>
                 <div class="item"></div>
                 <div class="item">
                     <label for="total-player-count">Total :</label>
                 </div>
                 <div class="item">
-                    <input id="total-player-count" value="{{ total_player_count }}" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />
+                    <input required id="total-player-count" value="{{ total_player_count }}" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />
                 </div>
                 <div class="item"></div>
                 <div class="item">
@@ -184,14 +153,14 @@
                 <div class="item">
                     <label for="adult-prize">Adultes =</label>
                 </div>
-                <div class="item">
+                <div class="item error">
                     <input id="adult-prize" value="" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />€
                 </div>
                 <div class="item"></div>
                 <div class="item">
                     <label for="young-prize">Jeunes =</label>
                 </div>
-                <div class="item">
+                <div class="item error">
                     <input id="young-prize" value="" style="width: 2rem; flex-grow: 0; text-align: right; margin-left: 0;" />€
                 </div>
                 <div class="item"></div>
@@ -207,26 +176,14 @@
                     <label for="prizes-total">Montant total des prix distribués :</label>
                 </div>
                 <div class="item">
-                    <input id="prizes-total" value="{{ prizes_total }}" style="width: 3.5rem; flex-grow: 0; text-align: right;" />€
+                    <input required id="prizes-total" value="{{ prizes_total }}" style="width: 3.5rem; flex-grow: 0; text-align: right;" />€
                 </div>
             </div>
-            <div class="grid" style="grid-template-columns: 1fr 1fr;">
+            <div class="grid" style="grid-template-columns: 1fr;">
                 <div class="item">
                     <label>Nom, prénom et titre des arbitres :</label>
                 </div>
-                <div class="item"></div>
-                {% for i in range(10) %}
-                    <div class="item error">
-                        <div class="error-info">
-                            TODO
-                            <ul>
-                                <li>Add the FFE licence number and the arbiter level</li>
-                                <li>Replace the inputs by a textarea</li>
-                            </ul>
-                        </div>
-                        <input id="deputy-{{ i }}" value="{% if arbiters|length > i %}{{ arbiters[i].last_name }} {{ arbiters[i].first_name }} TODO Ajouter la licence AFJ/AFC/AFO1/AFO2/AFE1/AFE2{% endif %}" />
-                    </div>
-                {% endfor %}
+                <textarea id="text" class="error" style="height: 6rem;">{{ arbiters }}</textarea>
             </div>
         </section>
         <h2>Divers</h2>

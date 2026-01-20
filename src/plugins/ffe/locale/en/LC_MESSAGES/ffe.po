@@ -18,10 +18,10 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
-msgid "all the playerswith no licence A"
+msgid "All the players with no FFE licence A"
 msgstr ""
 
-msgid "all the playerswith no licence A or B"
+msgid "All the players with no FFE licence A or B"
 msgstr ""
 
 msgid "Arbiter:"
@@ -84,6 +84,9 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
+msgid "Club Arbiter"
+msgstr ""
+
 msgid "Connection French Chess Federation"
 msgstr ""
 
@@ -119,6 +122,12 @@ msgstr ""
 msgid "E.g.: %(string)s"
 msgstr ""
 
+msgid "Elite Arbiter (level 1)"
+msgstr ""
+
+msgid "Elite Arbiter (level 2)"
+msgstr ""
+
 msgid "Enabled"
 msgstr ""
 
@@ -148,6 +157,12 @@ msgstr ""
 
 msgid "FFE Licence"
 msgstr ""
+
+msgid "FFE Licence no. *** LICENCE NUMBER"
+msgstr "FFE Licence no."
+
+msgid "FFE arbiter title"
+msgstr "Titre d'arbitre FFE"
 
 msgid "FFE certification number and password not defined."
 msgstr ""
@@ -319,6 +334,12 @@ msgstr ""
 msgid "None *** FFE licence"
 msgstr "None"
 
+msgid "Open Arbiter (level 1)"
+msgstr ""
+
+msgid "Open Arbiter (level 2)"
+msgstr ""
+
 msgid "PAPI"
 msgstr ""
 
@@ -421,6 +442,9 @@ msgstr ""
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
 msgstr ""
 
+msgid "This field is not editable."
+msgstr ""
+
 msgid "Tournament"
 msgstr ""
 
@@ -446,6 +470,9 @@ msgid "Tournament rules are not set"
 msgstr ""
 
 msgid "Tournament visibility successfully set"
+msgstr ""
+
+msgid "Trainee Arbiter"
 msgstr ""
 
 msgid "Trainee:"
@@ -515,6 +542,9 @@ msgid "You are not allowed to publish results."
 msgstr ""
 
 msgid "You are not allowed to publish rules."
+msgstr ""
+
+msgid "Young Arbiter"
 msgstr ""
 
 msgid "{count} league represented"
