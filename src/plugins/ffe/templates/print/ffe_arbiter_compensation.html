@@ -103,39 +103,55 @@
                     <label for="expenses-1">Restauration (maximum 20€ par repas) :</label>
                 </div>
                 <div class="item">
-                    <input id="expenses-1" value="" style="text-align: right;"/>€
+                    <input id="expenses-1" class="expenses" value="" style="text-align: right;"/>€
                 </div>
                 <div class="item">
                     <label for="expenses-2">Mise à disposition du matériel informatique (maximum 20€) :</label>
                 </div>
                 <div class="item">
-                    <input id="expenses-2" value="" style="text-align: right;"/>€
+                    <input id="expenses-2" class="expenses" value="" style="text-align: right;"/>€
                 </div>
                 <div class="item">
                     <label for="expenses-3">Divers (sur justificatif : papeterie, consommables...) :</label>
                 </div>
                 <div class="item">
-                    <input id="expenses-3" value="" style="text-align: right;"/>€
+                    <input id="expenses-3" class="expenses" value="" style="text-align: right;"/>€
                 </div>
                 <div class="item">
                     <label for="expenses-4">Déplacement (voir tarifs fédéraux) :</label>
                 </div>
                 <div class="item">
-                    <input id="expenses-4" value="" style="text-align: right;"/>€
+                    <input id="expenses-4" class="expenses" value="" style="text-align: right;"/>€
                 </div>
                 <div class="item">
                     <label for="expenses-5">Hébergement :</label>
                 </div>
                 <div class="item">
-                    <input id="expenses-5" value="" style="text-align: right;"/>€
+                    <input id="expenses-5" class="expenses" value="" style="text-align: right;"/>€
                 </div>
                 <div class="item">
                     <label for="expenses-total" style="font-weight: bold; text-align: right; flex-grow: 1;">Total :</label>
                 </div>
                 <div class="item">
-                    <input id="expenses-total" value="" style="text-align: right;"/>€
+                    <input id="expenses-total" value="0" style="text-align: right;"/>€
                 </div>
             </div>
+            <script>
+                $('.expenses').on('input', function () {
+                    var total = 0;
+                    document.querySelectorAll('.expenses').forEach((element) => {
+                        const value = parseFloat(element.value.replace(',', '.'));
+                        if (value) total += value;
+                    });
+                    if (!Number.isInteger(total)) {
+                        total = total.toLocaleString('fr-FR', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        });
+                    }
+                    $('#expenses-total').val(total);
+                });
+            </script>
         </section>
         <h2 style="margin-top: 0.2rem;">Indemnités de la mission d'arbitrage</h2>
         <section>
