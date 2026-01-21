@@ -35,3 +35,4 @@
 - Added team options to the schools ranking document (3.5.0)
 - Added an overall ranking to the schools ranking document (3.5.0)
 - Added option to hide the schools UAI codes on the FFE upload (3.5.0)
+- Save the school data for batch player creation (3.5.0)
