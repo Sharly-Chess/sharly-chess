@@ -1,7 +1,7 @@
 {% set school = column.get_player_school(player) %}
 <span
     {% if school and school.tooltip %}
-        {{ macros.tooltip_attributes('', school.tooltip, 'right') }}
+        {{ macros.tooltip_attributes('', school.tooltip, 'left') }}
     {% endif %}
 >
     {% if school %}{{ school.short_name }}{% endif %}

@@ -199,13 +199,13 @@ class FRASchoolsPlayerPluginData(PluginData):
         action: str | None = None,
     ) -> Self:
         return cls(
-            fra_school_id=WebContext.form_data_to_int(data, 'fra_school'),
+            fra_school_id=WebContext.form_data_to_int(data, 'fra_school_id'),
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
             {
-                'fra_school': self.fra_school_id,
+                'fra_school_id': self.fra_school_id,
             }
         )
 
@@ -277,6 +277,16 @@ class FRASchoolsUtils:
             with EventDatabase(event.uniq_id, True) as database:
                 database.update_stored_event(event.stored_event)
         return school_id
+
+    @classmethod
+    def update_event_school(cls, event: Event, school: FRASchool):
+        plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
+        plugin_data.fra_schools_by_id[school.id] = school
+        stored_event = event.stored_event
+        stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+
+        with EventDatabase(event.uniq_id, True) as database:
+            database.update_stored_event(stored_event)
 
     @staticmethod
     def extract_school_code(school_str: str) -> str | None:
