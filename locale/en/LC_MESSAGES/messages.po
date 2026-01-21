@@ -2158,6 +2158,9 @@ msgstr ""
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
+msgid "FIDE Arbiter"
+msgstr ""
+
 msgid "FIDE ID"
 msgstr ""
 
@@ -2165,6 +2168,9 @@ msgid "FIDE ID:"
 msgstr ""
 
 msgid "FIDE Title:"
+msgstr ""
+
+msgid "FIDE arbiter title"
 msgstr ""
 
 msgid "FIDE database"
@@ -2640,6 +2646,9 @@ msgid "Installation of release [{version}] failed, exiting."
 msgstr ""
 
 msgid "Installed [{lib}]."
+msgstr ""
+
+msgid "International Arbiter"
 msgstr ""
 
 msgid "International Chess Federation"
@@ -3151,6 +3160,9 @@ msgstr ""
 
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "National"
+
+msgid "National Arbiter"
+msgstr ""
 
 msgid "Nauru"
 msgstr ""
@@ -3985,6 +3997,9 @@ msgstr ""
 msgid "Players' opponent: hidden"
 msgstr ""
 
+msgid "Players:"
+msgstr ""
+
 #, python-format
 msgid "Players: %(num)d"
 msgstr ""
@@ -4033,6 +4048,9 @@ msgid "Please launch the new version."
 msgstr ""
 
 msgid "Please select a type of criterion."
+msgstr ""
+
+msgid "Please select at least one player."
 msgstr ""
 
 msgid "Please select the account."
@@ -4686,6 +4704,9 @@ msgid "Seed color"
 msgstr ""
 
 msgid "Select All"
+msgstr ""
+
+msgid "Select an account"
 msgstr ""
 
 msgid "Select player"

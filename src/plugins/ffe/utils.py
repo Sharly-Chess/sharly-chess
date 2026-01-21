@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
@@ -5,6 +6,7 @@ from functools import partial
 from typing import Self, Any
 
 from common.i18n import _
+from data.account import Account
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
@@ -51,6 +53,12 @@ class FFEUtils:
     def get_player_plugin_data(player: Player) -> 'FfePlayerPluginData':
         plugin_data = player.plugin_data[PLUGIN_NAME]
         assert isinstance(plugin_data, FfePlayerPluginData)
+        return plugin_data
+
+    @staticmethod
+    def get_account_plugin_data(account: Account) -> 'FfeAccountPluginData':
+        plugin_data = account.plugin_data[PLUGIN_NAME]
+        assert isinstance(plugin_data, FfeAccountPluginData)
         return plugin_data
 
     @staticmethod
@@ -112,6 +120,66 @@ class PlayerFFELicence(IntEnum):
                 return 'A'
             case PlayerFFELicence.B:
                 return 'B'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @staticmethod
+    def validate(string: str) -> bool:
+        """Returns True if the string is a correct licence number."""
+        return bool(re.match(r'^[A-Z]\d{5}$', string))
+
+
+class FFEArbiterTitle(IntEnum):
+    NONE = 0
+    AS = 10
+    AFJ = 20
+    AFC = 30
+    AFO1 = 40
+    AFO2 = 41
+    AFE1 = 50
+    AFE2 = 51
+
+    @property
+    def name(self) -> str:
+        match self:
+            case FFEArbiterTitle.NONE:
+                return '-'
+            case FFEArbiterTitle.AS:
+                return _('Trainee Arbiter')
+            case FFEArbiterTitle.AFJ:
+                return _('Young Arbiter')
+            case FFEArbiterTitle.AFC:
+                return _('Club Arbiter')
+            case FFEArbiterTitle.AFO1:
+                return _('Open Arbiter (level 1)')
+            case FFEArbiterTitle.AFO2:
+                return _('Open Arbiter (level 2)')
+            case FFEArbiterTitle.AFE1:
+                return _('Elite Arbiter (level 1)')
+            case FFEArbiterTitle.AFE2:
+                return _('Elite Arbiter (level 2)')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def short_name(self) -> str:
+        match self:
+            case FFEArbiterTitle.NONE:
+                return ''
+            case FFEArbiterTitle.AS:
+                return 'STA'
+            case FFEArbiterTitle.AFJ:
+                return 'AFJ'
+            case FFEArbiterTitle.AFC:
+                return 'AFC'
+            case FFEArbiterTitle.AFO1:
+                return 'AFO1'
+            case FFEArbiterTitle.AFO2:
+                return 'AFO2'
+            case FFEArbiterTitle.AFE1:
+                return 'AFE1'
+            case FFEArbiterTitle.AFE2:
+                return 'AFE2'
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -265,5 +333,49 @@ class FfePlayerPluginData(PluginData):
                 'ffe_licence': self.ffe_licence.value,
                 'ffe_licence_number': self.ffe_licence_number,
                 'ffe_league': self.league,
+            }
+        )
+
+
+@dataclass
+class FfeAccountPluginData(PluginData):
+    ffe_licence_number: str | None
+    ffe_arbiter_title: FFEArbiterTitle
+
+    @classmethod
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        return cls(
+            ffe_licence_number=stored_value.get('ffe_licence_number', None),
+            ffe_arbiter_title=FFEArbiterTitle(
+                stored_value.get('ffe_arbiter_title', FFEArbiterTitle.NONE)
+            ),
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
+        return {
+            'ffe_arbiter_title': self.ffe_arbiter_title.value,
+            'ffe_licence_number': self.ffe_licence_number,
+        }
+
+    @classmethod
+    def from_form_data(
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
+    ) -> Self:
+        return cls(
+            ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
+            ffe_arbiter_title=FFEArbiterTitle(
+                WebContext.form_data_to_int(data, 'ffe_arbiter_title')
+                or FFEArbiterTitle.NONE
+            ),
+        )
+
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
+        return WebContext.values_dict_to_form_data(
+            {
+                'ffe_licence_number': self.ffe_licence_number,
+                'ffe_arbiter_title': self.ffe_arbiter_title.value,
             }
         )

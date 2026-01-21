@@ -1,0 +1,101 @@
+{% extends '_ffe_document_base.html' %}
+
+{% block body %}
+    <form class="cheating">
+        <h1>
+            DÉPÔT DE PLAINTE EN SUSPICION
+            <br/>
+            DE TRICHE POUR LES ARBITRES
+        </h1>
+        <div style="margin-top: 1.5rem;">
+            (à transmettre au secrétariat de la Fédération Française des Échecs à destination de la DTN et de la commission Fair-Play : Fédération Française des Échecs, Château d'Asnières-sur-Seine, 6 rue de l'Église, 92600 Asnières-sur-Seine, <u>laetitia.chollet@echecs.asso.fr</u>)
+        </div>
+        <section>
+            <h3 style="text-align: center; margin-top: 0;">Compétition</h3>
+            <div class="grid" style="grid-template-columns: 1fr 7fr;">
+                <div class="item">
+                    <label for="event-name">Nom :</label>
+                </div>
+                <div class="item">
+                    <input id="event-name" value="{{ event.name }}" />
+                </div>
+                <div class="item">
+                    <label for="event-date">Dates :</label>
+                </div>
+                <div class="item">
+                    <input id="event-date" value="{{ event_date }}" />
+                </div>
+            </div>
+        </section>
+        <section>
+            <h3 style="text-align: center; margin-top: 0;">Arbitre rédigeant le rapport</h3>
+            <div class="grid" style="grid-template-columns: 1fr 7fr;">
+                <div class="item">
+                    <label for="writer-last-name">Nom :</label>
+                </div>
+                <div class="item">
+                    <input required id="writer-last-name" value="{% if writer %}{{ writer.last_name }}{% endif %}" />
+                </div>
+                <div class="item">
+                    <label for="writer-first-name">Prénom :</label>
+                </div>
+                <div class="item">
+                    <input required id="writer-first-name" value="{% if writer %}{{ writer.first_name }}{% endif %}" />
+                </div>
+                <div class="item">
+                    <label for="writer-ffe-licence-number">N° de licence :</label>
+                </div>
+                <div class="item">
+                    <input required id="writer-ffe-licence-number" value="{% if writer and writer.plugin_data and writer.plugin_data.ffe %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
+                </div>
+            </div>
+        </section>
+        <section>
+            <h3 style="text-align: center; margin-top: 0;">Personne suspectée</h3>
+            <div class="grid" style="grid-template-columns: 1fr 7fr;">
+                {% set player_error = 'Aucun·e personne n\'a été déclarée.' if not player else '' %}
+                <div class="item">
+                    <label for="player-last-name">Nom :</label>
+                </div>
+                <div class="item">
+                    <input required id="player-last-name" value="{% if player %}{{ player.last_name }}{% endif %}" />
+                </div>
+                <div class="item">
+                    <label for="player-first-name">Prénom :</label>
+                </div>
+                <div class="item">
+                    <input required id="player-first-name" value="{% if player %}{{ player.first_name }}{% endif %}" />
+                </div>
+                <div class="item">
+                    <label for="player-ffe-licence-number">N° de licence :</label>
+                </div>
+                <div class="item {%if not player or not player.plugin_data or not player.plugin_data.ffe or not player.plugin_data.ffe.ffe_licence_number %}error{% endif %}">
+                    <div class="error-info">{{ player_error or 'Le numéro de licence FFE n\'a pas été saisi.' }}</div>
+                    <input id="player-ffe-licence-number" value="{% if player %}{{ player.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}" />
+                </div>
+            </div>
+        </section>
+        <section>
+            <h3 style="text-align: center; margin-top: 0;">Éléments de la plainte</h3>
+            <div style="text-aligne: center;">Énumérer les faits et tous les éléments connus.<br/>Joindre les éléments nécessaires (photographies, films, témoignages, parties en PGN, …)</div>
+            <textarea id="text" class="error" style="margin-top: 1rem; height: 20rem;"></textarea>
+        </section>
+        <section>
+            <h3 style="text-align: center; margin-top: 0;">Signature du·de la plaignant·e</h3>
+            <div class="grid" style="grid-template-columns: 3fr 1fr 1fr 3fr; margin-top: 1.5rem; margin-bottom: 4rem;">
+                <div class="item">
+                    <label for="location">Fait à</label>
+                    <input id="location" value="{{ location }}" />
+                </div>
+                <div class="item">
+                    <label for="date">le</label>
+                    <input id="date" value="{{ date }}" style="width: 7rem; flex-grow: 0;" />
+                </div>
+                <div class="item"></div>
+                <div class="item">
+                    <label>Signature :</label>
+                </div>
+            </div>
+        </section>
+    </form>
+{% endblock %}
