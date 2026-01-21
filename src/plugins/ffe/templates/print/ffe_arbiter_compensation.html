@@ -133,15 +133,14 @@
                     <label for="expenses-total" style="font-weight: bold; text-align: right; flex-grow: 1;">Total :</label>
                 </div>
                 <div class="item">
-                    <input id="expenses-total" value="0" style="text-align: right;"/>€
+                    <input id="expenses-total" class="compute-total" value="" style="text-align: right;"/>€
                 </div>
             </div>
             <script>
                 $('.expenses').on('input', function () {
                     var total = 0;
                     document.querySelectorAll('.expenses').forEach((element) => {
-                        const value = parseFloat(element.value.replace(',', '.'));
-                        if (value) total += value;
+                        total += parseFloat(element.value.replace(',', '.')) || 0;
                     });
                     if (!Number.isInteger(total)) {
                         total = total.toLocaleString('fr-FR', {
@@ -149,7 +148,8 @@
                           maximumFractionDigits: 2
                         });
                     }
-                    $('#expenses-total,#compensation-2').val(total);
+                    $('#expenses-total').val(total);
+                    $('#expenses-total').trigger('input');
                 });
             </script>
         </section>
@@ -157,8 +157,8 @@
         <section>
             <div class="grid" style="grid-template-columns: 1fr;">
                 <div class="item">
-                    <label for="compensation-1">
-                        <input id="compensation-1" type="checkbox" style="margin-left: 0;" />
+                    <label for="compensation-norm">
+                        <input id="compensation-norm" type="checkbox" style="margin-left: 0;" />
                         Arbitre missionné pour le calcul des normes (Uniquement possible pour un arbitre FIDE ou international).
                         <br/>
                         <span style="font-size: 0.7rem;">(La mission de calcul de normes autorise l’arbitre à augmenter son indemnité totale d’un maximum de 50 €.</span>
@@ -170,10 +170,10 @@
             </div>
             <div class="grid" style="grid-template-columns: 10fr 1fr;">
                 <div class="item">
-                    <label for="compensation-2" style="font-weight: bold; text-align: right; flex-grow: 1;">Indemnité totale d'arbitrage :</label>
+                    <label for="compensation" style="font-weight: bold; text-align: right; flex-grow: 1;">Indemnité totale d'arbitrage :</label>
                 </div>
                 <div class="item">
-                    <input id="compensation-2" value="0" style="text-align: right;"/>€
+                    <input id="compensation" class="compute-total" value="" style="text-align: right;"/>€
                 </div>
                 <div class="item">
                     <span style="font-size: 0.7rem;">Remarque : montant à déclarer dans les Bénéfices Non Commerciaux sur la déclaration fiscale, Sans charge sociale si le total annuel reste inférieur à 14,5% du plafond annuel de la Sécurité Sociale (6723 € en 2024).</span>
@@ -182,17 +182,33 @@
         </section>
         <div class="grid" style="grid-template-columns: 4fr 1fr 4fr 1fr; margin-top: 1.5rem;">
             <div class="item">
-                <label for="final-1" style="text-align: right; flex-grow: 1;">Partie reversée à l'organisation en tant que don :</label>
+                <label for="donation" style="text-align: right; flex-grow: 1;">Partie reversée à l'organisation en tant que don :</label>
             </div>
             <div class="item">
-                <input id="final-1" value="" style="text-align: right;"/>€
+                <input id="donation" class="compute-total" value="" style="text-align: right;"/>€
             </div>
             <div class="item">
-                <label for="final-2" style="font-weight: bold; text-align: right; flex-grow: 1;">Total versé à l'arbitre :</label>
+                <label for="total" style="font-weight: bold; text-align: right; flex-grow: 1;">Total versé à l'arbitre :</label>
             </div>
             <div class="item">
-                <input id="final-2" value="" style="text-align: right;"/>€
+                <input id="total" value="" style="text-align: right;"/>€
             </div>
+            <script>
+                $('.compute-total').on('input', function () {
+                    var total = 0;
+                    total += parseFloat($('#expenses-total').val().replace(',', '.')) || 0;
+                    total += parseFloat($('#compensation').val().replace(',', '.')) || 0;
+                    total -= parseFloat($('#donation').val().replace(',', '.')) || 0;
+                    if (!Number.isInteger(total)) {
+                        total = total.toLocaleString('fr-FR', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        });
+                    }
+                    $('#total').val(total);
+                });
+            </script>
+
         </div>
         <div class="grid" style="grid-template-columns: 1.5fr 1fr 1fr; margin-top: 1rem; margin-bottom: 4rem;">
             <div class="item">
