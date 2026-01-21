@@ -134,6 +134,7 @@ class FRASchool(PluginData):
 @dataclass
 class FRASchoolsEventPluginData(PluginData):
     fra_schools_by_id: dict[int, FRASchool]
+    hide_school_code_on_upload: bool
 
     @property
     def fra_schools(self) -> Collection[FRASchool]:
@@ -149,7 +150,10 @@ class FRASchoolsEventPluginData(PluginData):
                 for school_id, school_dict in stored_value.get(
                     'fra_schools_by_id', {}
                 ).items()
-            }
+            },
+            hide_school_code_on_upload=stored_value.get(
+                'hide_school_code_on_upload', False
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -157,7 +161,8 @@ class FRASchoolsEventPluginData(PluginData):
             'fra_schools_by_id': {
                 str(school_id): school.to_stored_value()
                 for school_id, school in self.fra_schools_by_id.items()
-            }
+            },
+            'hide_school_code_on_upload': self.hide_school_code_on_upload,
         }
 
     @classmethod
@@ -167,12 +172,21 @@ class FRASchoolsEventPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        if previous_object:
-            return previous_object
-        return cls({})
+        return cls(
+            fra_schools_by_id=(
+                previous_object.fra_schools_by_id if previous_object else {}
+            ),
+            hide_school_code_on_upload=WebContext.form_data_to_bool(
+                data, 'hide_school_code_on_upload'
+            ),
+        )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
-        return {}
+        return WebContext.values_dict_to_form_data(
+            {
+                'hide_school_code_on_upload': self.hide_school_code_on_upload,
+            }
+        )
 
 
 @dataclass

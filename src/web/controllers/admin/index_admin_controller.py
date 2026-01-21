@@ -998,7 +998,7 @@ class IndexAdminController(BaseAdminController):
         path='/event-export/{event_uniq_id:str}',
         name='admin-event-export',
     )
-    async def admin_tournament_export(
+    async def admin_event_export(
         self,
         request: HTMXRequest,
         include_players: str | None = None,
