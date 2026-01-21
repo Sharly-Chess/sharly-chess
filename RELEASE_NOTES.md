@@ -13,3 +13,7 @@
 ## Prizes
 
 - New type of prizes _Hybrid_ (3.5.0)
+
+## FRA Schools
+
+- Allow updating the schools data after creation (3.5.0)
