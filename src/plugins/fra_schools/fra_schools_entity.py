@@ -213,7 +213,7 @@ class FraSchoolsPlayersTabColumn(FilterPlayersTabColumn):
 
     def _get_sort_key(self, player: Player) -> tuple:
         school = FRASchoolsUtils.get_player_school(player) or FRASchool()
-        return school.sort_key
+        return not school.name, school.sort_key
 
     def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
         return (filter_value.value or FRASchool()).sort_key
