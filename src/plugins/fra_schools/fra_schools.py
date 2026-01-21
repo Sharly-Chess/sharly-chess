@@ -49,7 +49,9 @@ from plugins.fra_schools.fra_schools_entity import (
     FraSchoolsPlayersTabColumn,
 )
 from plugins.fra_schools.fra_schools_ranking_document import (
-    FraSchoolsRankingPrintDocument, FraSchoolsTeamsPrintOption, FraSchoolsIncompletePrintOption,
+    FraSchoolsRankingPrintDocument,
+    FraSchoolsTeamsPrintOption,
+    FraSchoolsIncompletePrintOption,
 )
 from plugins.fra_schools.utils import (
     FRASchoolsPlayerPluginData,
