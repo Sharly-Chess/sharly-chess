@@ -329,7 +329,7 @@ class FFETrainingCertificate2Type(FFETrainingCertificateType):
 
     @property
     def training_title(self) -> str:
-        return 'AFC'
+        return 'AFO'
 
     @property
     def training_skills(self) -> list[str]:
