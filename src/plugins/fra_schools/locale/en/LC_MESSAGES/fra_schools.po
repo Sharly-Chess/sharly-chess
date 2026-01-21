@@ -39,6 +39,9 @@ msgstr ""
 msgid "Complete Team"
 msgstr ""
 
+msgid "Edit the selected french school."
+msgstr ""
+
 msgid "Exclude: {values}"
 msgstr ""
 
@@ -49,9 +52,6 @@ msgid "French Schools"
 msgstr ""
 
 msgid "French school"
-msgstr ""
-
-msgid "Identifier"
 msgstr ""
 
 msgid "Include incomplete teams"
@@ -102,6 +102,9 @@ msgstr ""
 msgid "Ranking by school after round #{round}"
 msgstr ""
 
+msgid "Save"
+msgstr ""
+
 msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Rk."
 
@@ -132,6 +135,9 @@ msgstr ""
 msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
 msgstr ""
 
+msgid "The school with that code already exists."
+msgstr ""
+
 msgid "The tournament has not yet started."
 msgstr ""
 
@@ -148,6 +154,13 @@ msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr ""
 
 msgid "Total"
+msgstr ""
+
+msgid "UAI code"
+msgstr ""
+
+#, python-format
+msgid "Update the school [%(school_name)s]"
 msgstr ""
 
 msgid "incomplete *** INCOMPLETE TEAM"
