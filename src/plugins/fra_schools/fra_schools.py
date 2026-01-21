@@ -173,6 +173,10 @@ class FRASchoolsPlugin(Plugin):
         return FRASchoolsController.get_fra_school_template_context(web_context)
 
     @hookimpl
+    def insert_player_form_carry_over_field(self, fields: list[str]):
+        fields.append('fra_school_id')
+
+    @hookimpl
     def insert_player_form_fields_template(
         self, templates_by_section: defaultdict[str, list[str]]
     ):
