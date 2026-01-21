@@ -17,3 +17,4 @@
 ## FRA Schools
 
 - Allow updating the schools data after creation (3.5.0)
+- Save the school data for batch player creation (3.5.0)
