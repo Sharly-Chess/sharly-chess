@@ -143,11 +143,11 @@ class FRASchoolsController(BaseEventAdminController):
     async def fra_schools_add_school_form(
         self,
         request: HTMXRequest,
-        fra_school_id: int | None = None,
+        fra_school_id: str,
     ) -> Template:
-        web_context = FraSchoolsWebContext(request, fra_school_id)
+        web_context = FraSchoolsWebContext(request)
         data = FRASchool().to_form_data() | {
-            'fra_school_id': str(fra_school_id),
+            'fra_school_id': fra_school_id,
         }
         return self._render_fra_schools_form(
             web_context, FormAction.CREATE, show_form=True, data=data
