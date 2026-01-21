@@ -1,0 +1,45 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Players:'),
+        help_text='',
+        placeholder=option.placeholder,
+        select_options={},
+        multiple_select=true,
+        data=data, errors=errors
+    ) }}
+</div>
+
+<script>
+    $(document).ready(function() {
+        const tournamentSelect = $('.modal #tournament');
+        const playerSelect = $('.modal #{{ option.id }}');
+
+        const playersPerTournament = {{ option.get_players_per_tournament(allowed_tournaments) | tojson }};
+
+        function updatePlayers() {
+            const tId = parseInt(tournamentSelect.val(), 10);
+            const players = playersPerTournament[tId] || [];
+
+            playerSelect.empty();
+
+            // Add players
+            players.forEach(player => {
+                playerSelect.append(
+                    $('<option>', {
+                        value: player.id,
+                        text: player.full_name,
+                    })
+                );
+                playerSelect.prop('disabled', false);
+            });
+            playerSelect.trigger('change');
+            setTimeout(() => {
+                // Waits for the call stack to be cleared (i.e. the end of the `change` event)
+                $('.select2-search__field').css('width', '100%');
+            }, 0);
+        }
+        tournamentSelect.on('change', updatePlayers);
+        updatePlayers();
+    })
+</script>

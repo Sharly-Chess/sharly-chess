@@ -1,0 +1,23 @@
+from typing import override
+
+from plugins.ffe.print_documents import ffe_types
+from plugins.ffe.print_documents.ffe_types import FFEDocumentType
+from utils.entity import EntityManager
+
+
+class FFEDocumentTypeManager(EntityManager[FFEDocumentType]):
+    @override
+    def entity_types(self) -> list[type[FFEDocumentType]]:
+        return [
+            ffe_types.FFET1Type,
+            ffe_types.FFET2Type,
+            ffe_types.FFET3Type,
+            ffe_types.FFET4Type,
+            ffe_types.FFET5Type,
+            ffe_types.FFET6Type,
+            ffe_types.FFET7Type,
+            ffe_types.FFEArbiterCompensationType,
+            ffe_types.FFECheatingType,
+            ffe_types.FFETrainingCertificate1Type,
+            ffe_types.FFETrainingCertificate2Type,
+        ]

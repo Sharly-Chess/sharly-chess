@@ -18,6 +18,18 @@ msgstr ""
 msgid "A positive integer is expected."
 msgstr ""
 
+msgid "All the players with no FFE licence A"
+msgstr ""
+
+msgid "All the players with no FFE licence A or B"
+msgstr ""
+
+msgid "Arbiter:"
+msgstr ""
+
+msgid "Arbitration compensation"
+msgstr ""
+
 msgid "At least one league is expected."
 msgstr ""
 
@@ -57,6 +69,12 @@ msgstr ""
 msgid "By default, tournaments are not visible on the FFE site."
 msgstr ""
 
+msgid "Cheating complaint"
+msgstr ""
+
+msgid "Chief arbiter (if different):"
+msgstr ""
+
 msgid "Choose at least one league."
 msgstr ""
 
@@ -64,6 +82,9 @@ msgid "Choose at least one licence type."
 msgstr ""
 
 msgid "Close"
+msgstr ""
+
+msgid "Club Arbiter"
 msgstr ""
 
 msgid "Connection French Chess Federation"
@@ -101,6 +122,12 @@ msgstr ""
 msgid "E.g.: %(string)s"
 msgstr ""
 
+msgid "Elite Arbiter (level 1)"
+msgstr ""
+
+msgid "Elite Arbiter (level 2)"
+msgstr ""
+
 msgid "Enabled"
 msgstr ""
 
@@ -122,11 +149,20 @@ msgstr ""
 msgid "FFE"
 msgstr ""
 
+msgid "FFE Form:"
+msgstr ""
+
 msgid "FFE ID"
 msgstr ""
 
 msgid "FFE Licence"
 msgstr ""
+
+msgid "FFE Licence no. *** LICENCE NUMBER"
+msgstr "FFE Licence no."
+
+msgid "FFE arbiter title"
+msgstr "Titre d'arbitre FFE"
 
 msgid "FFE certification number and password not defined."
 msgstr ""
@@ -145,6 +181,9 @@ msgid "FFE database (local)"
 msgstr ""
 
 msgid "FFE database (online)"
+msgstr ""
+
+msgid "FFE forms"
 msgstr ""
 
 msgid "FFE licence"
@@ -295,10 +334,19 @@ msgstr ""
 msgid "None *** FFE licence"
 msgstr "None"
 
+msgid "Open Arbiter (level 1)"
+msgstr ""
+
+msgid "Open Arbiter (level 2)"
+msgstr ""
+
 msgid "PAPI"
 msgstr ""
 
 msgid "Papi file"
+msgstr ""
+
+msgid "Players:"
 msgstr ""
 
 msgid "Replace the player to update this field."
@@ -316,6 +364,18 @@ msgstr ""
 msgid "Scan to access the tournament on the FFE site."
 msgstr ""
 
+msgid "Select the arbiter"
+msgstr ""
+
+msgid "Select the chief arbiter"
+msgstr ""
+
+msgid "Select the trainee"
+msgstr ""
+
+msgid "Select the writer"
+msgstr ""
+
 msgid "Some of the tie-break values will not appear in the results on the FFE website."
 msgstr ""
 
@@ -323,6 +383,27 @@ msgid "Standard"
 msgstr ""
 
 msgid "Status"
+msgstr ""
+
+msgid "T1 Cover page"
+msgstr ""
+
+msgid "T2 Minutes"
+msgstr ""
+
+msgid "T3 Licence A certificate"
+msgstr ""
+
+msgid "T4 Licence B certificate"
+msgstr ""
+
+msgid "T5 Unjustified forfeit investigation"
+msgstr ""
+
+msgid "T6 Player exclusion"
+msgstr ""
+
+msgid "T7 Player reporting"
 msgstr ""
 
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
@@ -361,6 +442,9 @@ msgstr ""
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
 msgstr ""
 
+msgid "This field is not editable."
+msgstr ""
+
 msgid "Tournament"
 msgstr ""
 
@@ -386,6 +470,12 @@ msgid "Tournament rules are not set"
 msgstr ""
 
 msgid "Tournament visibility successfully set"
+msgstr ""
+
+msgid "Trainee Arbiter"
+msgstr ""
+
+msgid "Trainee:"
 msgstr ""
 
 msgid "Unable to download tournament fees."
@@ -442,6 +532,9 @@ msgstr ""
 msgid "Variation"
 msgstr ""
 
+msgid "Writer:"
+msgstr ""
+
 msgid "You are not allowed to download fees."
 msgstr ""
 
@@ -451,14 +544,11 @@ msgstr ""
 msgid "You are not allowed to publish rules."
 msgstr ""
 
+msgid "Young Arbiter"
+msgstr ""
+
 msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "FFE licence number"
-#~ msgstr ""
-
-#~ msgid "Replace [%(old)s] by [%(new)s]"
-#~ msgstr ""
 

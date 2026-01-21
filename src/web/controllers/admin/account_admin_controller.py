@@ -10,6 +10,7 @@ from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
+from common import is_valid_email
 from common.i18n import _
 from data.access_levels.access_levels import AccessLevel, AccessLevelScope
 from data.access_levels.actions import AuthAction
@@ -22,7 +23,8 @@ from database.sqlite.event.event_store import (
     StoredPermission,
     StoredRole,
 )
-from utils.enum import FormAction, RoleType
+from plugins.manager import plugin_manager
+from utils.enum import FormAction, RoleType, FIDEArbiterTitle
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -119,12 +121,24 @@ class AccountAdminController(BaseEventAdminController):
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
+        admin_event = web_context.get_admin_event()
+        plugin_results = plugin_manager.hook_for_event(
+            admin_event, 'get_account_form_fields_template_and_data'
+        )()
+
+        plugin_form_fields_templates = [template for template, __ in plugin_results]
+        form_fields_templates_data = {
+            key: value for __, data in plugin_results for key, value in data.items()
+        }
+
         default_data = WebContext.values_dict_to_form_data(
             {
                 'first_name': '',
                 'last_name': '',
                 'fide_id': '',
                 'password': '',
+                'mail': '',
+                'phone': '',
                 'active': True,
                 'access_levels': [],
                 'tournament_ids': [],
@@ -132,18 +146,33 @@ class AccountAdminController(BaseEventAdminController):
                 'deputy_tournament_ids': [],
             }
         )
+        fide_arbiter_title_options = {'': '-'} | {
+            title.value: title.name for title in FIDEArbiterTitle
+        }
         form_data = default_data | data
         return {
+            'fide_arbiter_title_options': fide_arbiter_title_options,
+            'plugin_form_fields_templates': plugin_form_fields_templates,
             'modal': 'account',
             'action': action,
             'tournament_options': web_context.get_tournament_options(),
             'data': form_data,
             'errors': errors or {},
-        }
+        } | form_fields_templates_data
 
     @staticmethod
     def _account_form_data_from_account(account: Account) -> dict[str, str]:
         stored_account = account.stored_account
+
+        stored_plugin_data = stored_account.plugin_data
+        plugin_form_data: dict[str, str] = {}
+        for (
+            plugin_id,
+            plugin_data_class,
+        ) in Account.plugin_data_class_by_plugin_id().items():
+            plugin_form_data |= plugin_data_class.from_stored_value(
+                stored_plugin_data.get(plugin_id, {})
+            ).to_form_data()
 
         chief_role = account.get_role(RoleType.CHIEF_ARBITER)
         deputy_role = account.get_role(RoleType.DEPUTY_ARBITER)
@@ -154,9 +183,13 @@ class AccountAdminController(BaseEventAdminController):
                 'last_name': stored_account.last_name,
                 'active': stored_account.active,
                 'fide_id': stored_account.fide_id,
+                'fide_arbiter_title': stored_account.fide_arbiter_title,
+                'mail': stored_account.mail,
+                'phone': stored_account.phone,
                 'chief_tournament_ids': chief_role.tournament_ids or [],
                 'deputy_tournament_ids': deputy_role.tournament_ids or [],
             }
+            | plugin_form_data
         )
 
     @get(
@@ -222,7 +255,7 @@ class AccountAdminController(BaseEventAdminController):
 
     @staticmethod
     def _read_account_form_data(
-        data: dict[str, str | list[str]],
+        data: dict[str, Any],
         web_context: AccountAdminWebContext,
         action: FormAction,
     ) -> tuple[StoredAccount | None, dict[str, str]]:
@@ -235,6 +268,9 @@ class AccountAdminController(BaseEventAdminController):
         first_name = WebContext.form_data_to_str(flat_data, 'first_name') or ''
         last_name = WebContext.form_data_to_str(flat_data, field := 'last_name') or ''
         fide_id = WebContext.form_data_to_int(flat_data, 'fide_id')
+        fide_arbiter_title = WebContext.form_data_to_str(
+            flat_data, 'fide_arbiter_title'
+        )
 
         if not last_name:
             errors[field] = _('This field is required.')
@@ -265,6 +301,11 @@ class AccountAdminController(BaseEventAdminController):
         else:
             password_hash = PasswordHasher().hash(password)
 
+        mail = WebContext.form_data_to_str(flat_data, field := 'mail')
+        if mail and not is_valid_email(mail):
+            errors[field] = _('Please supply a valid email address.')
+        phone = WebContext.form_data_to_str(flat_data, field := 'phone')
+
         chief_tournament_ids = WebContext.form_data_to_list_int(
             flat_data, 'chief_tournament_ids'
         )
@@ -294,8 +335,28 @@ class AccountAdminController(BaseEventAdminController):
                 )
             )
 
+        plugin_manager.hook_for_event(
+            web_context.get_admin_event(), 'validate_account_form_fields'
+        )(
+            data=data,
+            errors=errors,
+        )
+
         if errors:
             return None, errors
+
+        plugin_data: dict[str, dict[str, Any]] = {}
+        for (
+            plugin_id,
+            plugin_data_class,
+        ) in Account.plugin_data_class_by_plugin_id().items():
+            previous_object = None
+            if account is not None:
+                previous_object = account.plugin_data.get(plugin_id)
+
+            plugin_data[plugin_id] = plugin_data_class.from_form_data(
+                data, action=action, previous_object=previous_object
+            ).to_stored_value()
 
         stored_account = StoredAccount(
             id=account.id if account and action == FormAction.UPDATE else None,
@@ -303,8 +364,12 @@ class AccountAdminController(BaseEventAdminController):
             last_name=last_name,
             first_name=first_name,
             fide_id=fide_id,
+            fide_arbiter_title=fide_arbiter_title,
             password_hash=password_hash,
+            mail=mail,
+            phone=phone,
             stored_roles=stored_roles,
+            plugin_data=plugin_data,
         )
         return stored_account, errors
 
