@@ -44,11 +44,6 @@ label {
 input {
     border: none;
 }
-/*
-input[type="checkbox"] {
-    accent-color: black;
-}
-*/
 .grid {
     display: grid;
     margin-top: var(--row-gap);
@@ -118,14 +113,13 @@ input[required].missing {
     margin-bottom: 1rem;
 }
 .info {
-    background: url("{{ sharly_chess_logo_url }}") right top no-repeat;
     background-size: contain;
     background-color: #ddd;
     margin-bottom: 1rem;
-    text-align: left;
+    text-align: center;
     font-style: italic;
     font-size: 0.8rem;
-    min-height: 3rem;
+    padding: 0.2rem;
 }
 table {
     border-collapse: collapse;

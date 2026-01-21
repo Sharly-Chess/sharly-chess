@@ -208,9 +208,6 @@ class FFEDocumentType(IdentifiableEntity, ABC):
             'sharly_chess_config': SharlyChessConfig(),
             'font_family': font_file.stem,
             'font_url': ttf_file_inline_url(font_file),
-            'sharly_chess_logo_url': image_file_inline_url(
-                BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
-            ),
             'ffe_logo_url': image_file_inline_url(
                 PLUGIN_DIR / 'static/images/ffe-text.png'
             ),
