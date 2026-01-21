@@ -1,6 +1,7 @@
 from abc import ABC
 import random
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
@@ -15,10 +16,17 @@ from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
 from utils.enum import PlayerRatingType, PlayerGender, PlayerTitle
 
+if TYPE_CHECKING:
+    from data.print_documents import PrintOption
+
 
 class PlaceCardType(IdentifiableEntity, ABC):
+    @classmethod
+    def get_valid_option_ids(cls) -> list[str]:
+        return [option.static_id() for option in cls.get_valid_option_types()]
+
     @staticmethod
-    def get_valid_options() -> list[str]:
+    def get_valid_option_types() -> list[type['PrintOption']]:
         """Returns a list of valid options for the place card type."""
         from data.print_documents.options import (
             TournamentPrintOption,
@@ -28,10 +36,10 @@ class PlaceCardType(IdentifiableEntity, ABC):
         )
 
         return [
-            PlaceCardTemplatePrintOption.static_id(),
-            TournamentPrintOption.static_id(),
-            PlaceCardMirrorPrintOption.static_id(),
-            PlaceCardCropMarksPrintOption.static_id(),
+            PlaceCardTemplatePrintOption,
+            TournamentPrintOption,
+            PlaceCardMirrorPrintOption,
+            PlaceCardCropMarksPrintOption,
         ]
 
     @staticmethod
@@ -129,11 +137,11 @@ class PlayerCardType(PlaceCardType):
         return _('Player Cards')
 
     @staticmethod
-    def get_valid_options() -> list[str]:
-        from data.print_documents.options import PlayersPrintOption
+    def get_valid_option_types() -> list[type['PrintOption']]:
+        from data.print_documents.options import OptionalPlayersPrintOption
 
-        return PlaceCardType.get_valid_options() + [
-            PlayersPrintOption.static_id(),
+        return PlaceCardType.get_valid_option_types() + [
+            OptionalPlayersPrintOption,
         ]
 
     @classmethod
@@ -172,13 +180,13 @@ class BoardCardType(PlaceCardType):
         return _('Board Cards')
 
     @staticmethod
-    def get_valid_options() -> list[str]:
+    def get_valid_option_types() -> list[type['PrintOption']]:
         from data.print_documents.options import (
             PlaceCardBoardNumbersPrintOption,
         )
 
-        return PlaceCardType.get_valid_options() + [
-            PlaceCardBoardNumbersPrintOption.static_id(),
+        return PlaceCardType.get_valid_option_types() + [
+            PlaceCardBoardNumbersPrintOption,
         ]
 
     @classmethod
@@ -237,15 +245,15 @@ class PairingCardType(PlaceCardType):
         return False
 
     @staticmethod
-    def get_valid_options() -> list[str]:
+    def get_valid_option_types() -> list[type['PrintOption']]:
         from data.print_documents.options import (
             RoundPrintOption,
             PlaceCardBoardNumbersPrintOption,
         )
 
-        return PlaceCardType.get_valid_options() + [
-            RoundPrintOption.static_id(),
-            PlaceCardBoardNumbersPrintOption.static_id(),
+        return PlaceCardType.get_valid_option_types() + [
+            RoundPrintOption,
+            PlaceCardBoardNumbersPrintOption,
         ]
 
     @classmethod

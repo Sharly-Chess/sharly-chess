@@ -3,6 +3,12 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from common.i18n import _
+from data.access_levels.access_levels import (
+    AccessLevel,
+    AdministrationAccessLevel,
+    CheckInAccessLevel,
+    ResultsEntryAccessLevel,
+)
 from data.access_levels.manager import AccessLevelManager
 from data.player import Player
 from database.sqlite.event.event_store import (
@@ -10,13 +16,9 @@ from database.sqlite.event.event_store import (
     StoredPermission,
     StoredRole,
 )
-from data.access_levels.access_levels import (
-    AccessLevel,
-    AdministrationAccessLevel,
-    CheckInAccessLevel,
-    ResultsEntryAccessLevel,
-)
-from utils.enum import RoleType
+from plugins.utils import PluginData
+from plugins.manager import plugin_manager
+from utils.enum import RoleType, FIDEArbiterTitle
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -92,6 +94,26 @@ class Account:
 
     def __init__(self, stored_account: StoredAccount):
         self.stored_account = stored_account
+        self.plugin_data = self._get_plugin_data()
+
+    # -------------------------------------------------------------------------
+    # Plugin
+    # -------------------------------------------------------------------------
+
+    @staticmethod
+    def plugin_data_class_by_plugin_id() -> dict[str, type[PluginData]]:
+        return {
+            plugin_id: plugin_data_class
+            for plugin_id, plugin_data_class in plugin_manager.hook.get_account_plugin_data_class()
+        }
+
+    def _get_plugin_data(self) -> dict[str, PluginData]:
+        return {
+            plugin_id: plugin_data_class.from_stored_value(
+                self.stored_account.plugin_data.get(plugin_id, {})
+            )
+            for plugin_id, plugin_data_class in self.plugin_data_class_by_plugin_id().items()
+        }
 
     @property
     def id(self) -> int:
@@ -141,13 +163,14 @@ class Account:
         return self.stored_account.fide_id
 
     @property
-    def full_name(self) -> str:
-        return Player.player_full_name(self.first_name, self.last_name)
+    def fide_arbiter_title(self) -> FIDEArbiterTitle | None:
+        if stored_title := self.stored_account.fide_arbiter_title:
+            return FIDEArbiterTitle(stored_title)
+        return None
 
     @property
-    def full_name_and_id(self) -> str:
-        full_name = Player.player_full_name(self.first_name, self.last_name)
-        return f'{full_name} {self.fide_id}' if self.fide_id else full_name
+    def full_name(self) -> str:
+        return Player.player_full_name(self.first_name, self.last_name)
 
     @property
     def password_hash(self) -> str | None:
@@ -156,6 +179,16 @@ class Account:
 
     def update_password(self, new_hash: str):
         self.stored_account.password_hash = new_hash
+
+    @property
+    def mail(self) -> str | None:
+        """Returns the mail of the account."""
+        return self.stored_account.mail
+
+    @property
+    def phone(self) -> str | None:
+        """Returns the phone of the account."""
+        return self.stored_account.phone
 
     @property
     def roles(self) -> list[Role]:
@@ -196,6 +229,34 @@ class Account:
             self.permissions,
             key=lambda p: access_level_ids.index(p.stored_permission.access_level),
         )
+
+    @property
+    def fide_arbiter_str(self) -> str:
+        """String representation of the account as a FIDE arbiter."""
+        arbiter = self.last_name
+        if self.first_name:
+            arbiter += f', {self.first_name}'
+        suffixes: list[str] = []
+        if title := self.fide_arbiter_title:
+            suffixes.append(title.acronym)
+        if self.fide_id:
+            suffixes.append(str(self.fide_id))
+        if suffixes:
+            arbiter += f' ({", ".join(suffixes)})'
+        return arbiter
+
+    def get_card_title(self, event: 'Event') -> str:
+        card_title = self.full_name
+        suffixes: list[str] = []
+        if title := self.fide_arbiter_title:
+            suffixes.append(title.acronym)
+        plugin_suffixes = plugin_manager.hook_for_event(
+            event, 'get_account_card_title_suffix'
+        )(account=self)
+        suffixes += [suffix for suffix in plugin_suffixes if suffix]
+        if suffixes:
+            card_title += f' ({", ".join(suffixes)})'
+        return card_title
 
     @property
     def edit_properties(self) -> bool:
@@ -286,8 +347,6 @@ class Account:
                 active=True,
                 first_name=None,
                 last_name=None,
-                fide_id=None,
-                password_hash=None,
                 stored_permissions=[
                     StoredPermission(
                         cls.ADMINISTRATOR_ID, AdministrationAccessLevel.static_id()
@@ -305,14 +364,11 @@ class Account:
                 active=True,
                 first_name=None,
                 last_name=None,
-                fide_id=None,
-                password_hash=None,
                 stored_permissions=[
                     StoredPermission(cls.ANONYMOUS_ID, CheckInAccessLevel.static_id()),
                     StoredPermission(
                         cls.ANONYMOUS_ID, ResultsEntryAccessLevel.static_id()
                     ),
                 ],
-                stored_roles=[],
             )
         )

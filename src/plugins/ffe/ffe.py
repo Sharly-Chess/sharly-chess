@@ -9,6 +9,7 @@ from packaging.version import Version
 from common import TEST_ENV, DEVEL_ENV
 from common.i18n import _, ngettext
 from common.exception import SharlyChessException
+from data.account import Account
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn, ColumnUsage
@@ -25,7 +26,7 @@ from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
 from data.player_categories import PlayerCategory, JuniorCategory
-from data.print_documents import PlayerSplitter, PrintDocument
+from data.print_documents import PlayerSplitter, PrintDocument, PrintOption
 from data.print_documents.documents import StatisticsPrintDocument
 from data.print_documents.place_cards.data import PlaceCardPlayer
 from data.print_documents.player_splitters import ClubPlayerSplitter
@@ -60,6 +61,7 @@ from plugins.ffe.ffe_entity import (
     FfeLeaguePlayersTabColumn,
     FfeLicencePlayersTabColumn,
 )
+from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
 from plugins.ffe.ffe_event_controller import (
     FfeAdminEventController,
 )
@@ -75,7 +77,21 @@ from plugins.ffe.ffe_tournament_importers import (
     PapiTournamentImporter,
 )
 from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
-from plugins.ffe.utils import FFEUtils, PlayerFFELicence
+from plugins.ffe.print_documents.ffe_options import (
+    FFEDocumentTypePrintOption,
+    FFET3NoLicencePlayersPrintOption,
+    FFET4NoLicencePlayersPrintOption,
+    FFEWriterPrintOption,
+    FFETraineePrintOption,
+    FFEChiefArbiterPrintOption,
+    FFEArbiterPrintOption,
+)
+from plugins.ffe.utils import (
+    FFEUtils,
+    PlayerFFELicence,
+    FfeAccountPluginData,
+    FFEArbiterTitle,
+)
 from plugins.ffe.utils import (
     FFE_DEFAULT_UPLOAD_DELAY,
     FFE_MIN_UPLOAD_DELAY,
@@ -336,7 +352,7 @@ class FfePlugin(Plugin):
             data, field := 'ffe_licence_number'
         )
         if ffe_licence_number:
-            if not re.match(r'^[A-Z]\d{5}$', ffe_licence_number):
+            if not PlayerFFELicence.validate(ffe_licence_number):
                 errors[field] = _(
                     'Invalid FFE licence number [{ffe_licence_number}].'
                 ).format(ffe_licence_number=data[field])
@@ -746,6 +762,20 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
+    def insert_print_document(self, print_documents: list[type['PrintDocument']]):
+        print_documents.append(FFEPrintDocument)
+
+    @hookimpl
+    def insert_print_option(self, print_options: list[type['PrintOption']]):
+        print_options.insert(0, FFEArbiterPrintOption)
+        print_options.insert(0, FFEChiefArbiterPrintOption)
+        print_options.insert(0, FFEWriterPrintOption)
+        print_options.insert(0, FFEDocumentTypePrintOption)
+        print_options.append(FFET3NoLicencePlayersPrintOption)
+        print_options.append(FFET4NoLicencePlayersPrintOption)
+        print_options.append(FFETraineePrintOption)
+
+    @hookimpl
     def alter_print_and_screen_player_columns(
         self,
         usage: ColumnUsage,
@@ -866,3 +896,58 @@ class FfePlugin(Plugin):
         club: type[PlayerFilterOption] = ClubsFilterOption
         PluginUtils.insert_on_equals(player_filter_option_types, league, club)
         player_filter_option_types.append(licence)
+
+    # ---------------------------------------------------------------------------------
+    # Accounts
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_account_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        return self.id, FfeAccountPluginData
+
+    @hookimpl
+    def get_account_form_fields_template_and_data(self) -> tuple[str, dict[str, Any]]:
+        return (
+            '/ffe_account_form_fields.html',
+            {
+                'ffe_arbiter_title_options': {
+                    WebContext.value_to_form_data(
+                        ffe_arbiter_title.value
+                    ): ffe_arbiter_title.name
+                    for ffe_arbiter_title in FFEArbiterTitle
+                },
+            },
+        )
+
+    @hookimpl
+    def validate_account_form_fields(
+        self,
+        data: dict[str, str],
+        errors: dict[str, str],
+    ):
+        field: str = 'ffe_arbiter_title'
+        try:
+            if value := WebContext.form_data_to_int(data, field):
+                FFEArbiterTitle(value)
+        except ValueError:
+            errors[field] = f'Invalid FFE arbiter title [{data[field]}].'
+
+        ffe_licence_number: str | None = WebContext.form_data_to_str(
+            data, field := 'ffe_licence_number'
+        )
+        if ffe_licence_number:
+            if not PlayerFFELicence.validate(ffe_licence_number):
+                errors[field] = _(
+                    'Invalid FFE licence number [{ffe_licence_number}].'
+                ).format(ffe_licence_number=data[field])
+
+    @hookimpl
+    def get_account_search_result_js_template(self) -> str:
+        return '/ffe_account_search_result.js'
+
+    @hookimpl
+    def get_account_card_title_suffix(self, account: Account) -> str | None:
+        title = FFEUtils.get_account_plugin_data(account).ffe_arbiter_title
+        if title != FFEArbiterTitle.NONE:
+            return title.short_name
+        return None

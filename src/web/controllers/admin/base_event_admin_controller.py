@@ -335,6 +335,13 @@ class BaseEventAdminWebContext(AdminWebContext):
             for tournament in tournaments
         }
 
+    def get_account_options(self) -> dict[str, str]:
+        return {
+            self.value_to_form_data(account.id): account.full_name
+            for account in self.get_admin_event().active_user_accounts_sorted_by_name
+            if not account.administrator and not account.anonymous
+        }
+
 
 class BaseEventAdminController(BaseAdminController):
     guards = [EventGuard()]

@@ -12,13 +12,18 @@ from data.event import SharlyChessConfig
 from utils.entity import IdentifiableEntity
 
 if TYPE_CHECKING:
+    from data.print_documents import PrintOption
     from data.print_documents.documents import QRCodePrintDocument
 
 
 class QRCodeType(IdentifiableEntity, ABC):
+    @classmethod
+    def get_valid_option_ids(cls) -> list[str]:
+        return [option.static_id() for option in cls.get_valid_option_types()]
+
     @staticmethod
     @abstractmethod
-    def get_valid_options() -> list[str]:
+    def get_valid_option_types() -> list[type['PrintOption']]:
         """Returns a dict of valid options for the QR code type."""
 
     @staticmethod
@@ -93,10 +98,10 @@ class NetworkQRCodeType(QRCodeType):
         return _('Network')
 
     @staticmethod
-    def get_valid_options() -> list[str]:
+    def get_valid_option_types() -> list[type['PrintOption']]:
         from data.print_documents.options import QRCodeNetworkPrintOption
 
-        return [QRCodeNetworkPrintOption.static_id()]
+        return [QRCodeNetworkPrintOption]
 
     @staticmethod
     def title(doc: 'QRCodePrintDocument') -> str:

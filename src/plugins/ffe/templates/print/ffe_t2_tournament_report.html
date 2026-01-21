@@ -1,0 +1,16 @@
+{% extends '_ffe_document_base.html' %}
+
+{% block body %}
+    <form class="t2">
+        <h1>
+            <span style="font-style: italic;">Formulaire T2/DNA</span>
+            <br/>
+            PROCÈS-VERBAL DU TOURNOI
+        </h1>
+        <h3>Dans ce formulaire, l’arbitre indiquera tout événement qu’il lui sera nécessaire de signaler tels que les anomalies ayant pu survenir lors des appariements et ayant nécessité une intervention de sa part, les signalements de forfaits, les réclamations de joueurs et tout élément qu’il jugerait nécessaire de détailler pour ses archives personnelles ou dans le cadre d’une consultation de ce rapport par une instance de la fédération. Dans le cadre d’un tournoi sans aucun incident, ce formulaire devra être joint au rapport technique avec une annotation indiquant que l’arbitre n’a rien à signaler.</h3>
+        <section>
+            {# TODO add the unsafe mode operations #}
+            <textarea id="text" style="height: 50rem;">Rien à signaler.</textarea>
+        </section>
+    </form>
+{% endblock %}

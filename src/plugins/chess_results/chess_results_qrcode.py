@@ -1,7 +1,7 @@
 from common.i18n import _
 from data.print_documents import QRCodeType
 from data.print_documents.documents import QRCodePrintDocument
-from data.print_documents.options import TournamentPrintOption
+from data.print_documents.options import TournamentPrintOption, PrintOption
 from plugins.chess_results import PLUGIN_NAME, PLUGIN_DIR
 from plugins.chess_results.utils import ChessResultsUtils
 
@@ -16,8 +16,8 @@ class ChessResultsQRCodeType(QRCodeType):
         return _('Tournament on Chess-results.com')
 
     @staticmethod
-    def get_valid_options() -> list[str]:
-        return [TournamentPrintOption.static_id()]
+    def get_valid_option_types() -> list[type[PrintOption]]:
+        return [TournamentPrintOption]
 
     @staticmethod
     def title(doc: QRCodePrintDocument) -> str:

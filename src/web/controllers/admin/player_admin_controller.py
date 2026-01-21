@@ -1762,6 +1762,7 @@ class PlayerAdminController(BaseEventAdminController):
         search: str,
         page: int = 0,
         results_template: str | None = None,
+        result_js_template_hook_name: str | None = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
@@ -1778,19 +1779,26 @@ class PlayerAdminController(BaseEventAdminController):
                     page,
                     DataSource.SEARCH_LIMIT,
                 )
-                players = []
                 for stored_player in stored_players:
                     stored_player.id = 0
                     players.append(Player(web_context.get_admin_event(), stored_player))
             except SharlyChessException as e:
                 connection_error = str(e)
             SessionPlayersActiveDataSource(request).set(data_source.id)
+        result_js_templates: list[str] = (
+            plugin_manager.hook_for_event(
+                web_context.get_admin_event(), result_js_template_hook_name
+            )()
+            if result_js_template_hook_name
+            else []
+        )
         return HTMXTemplate(
             template_name=results_template or 'admin/players/search_results.html',
             context=web_context.template_context
             | {
                 'search': search,
                 'search_results': players,
+                'result_js_templates': result_js_templates,
                 'has_more_results': len(players) == DataSource.SEARCH_LIMIT,
                 'page': page,
                 'data_source': data_source,

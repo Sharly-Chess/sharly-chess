@@ -1,0 +1,78 @@
+{% extends '_ffe_document_base.html' %}
+
+{% block body %}
+    <form class="t5">
+        <h1>
+            <span style="font-style: italic;">Formulaire T5/DNA</span>
+            <br/>
+            ENQUÊTE POUR FORFAIT NON JUSTIFIÉ
+        </h1>
+        <h2>Coordonnées de l'arbitre</h2>
+        <section>
+            <div class="grid" style="grid-template-columns: 1fr 5fr;">
+                <div class="item">
+                    <label for="writer">Nom et prénom :</label>
+                </div>
+                <div class="item">
+                    <input required id="writer" value="{% if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+                </div>
+                <div class="item">
+                    <label for="writer-mail">Mél :</label>
+                </div>
+                <div class="item">
+                    <input required id="writer-mail" value="{% if writer %}{{ writer.mail or '' }}{% endif %}" />
+                </div>
+                <div class="item">
+                    <label for="writer-phone">Tél :</label>
+                </div>
+                <div class="item">
+                    <input required id="writer-phone" value="{% if writer %}{{ writer.phone or '' }}{% endif %}" />
+                </div>
+                <div class="item">
+                    <label for="writer-address">Adresse postale :</label>
+                </div>
+                <div class="item">
+                    <input id="writer-address" value="" />
+                </div>
+            </div>
+        </section>
+        <div class="grid" style="grid-template-columns: 1fr; margin-top: 1rem;">
+            <div class="item">
+                <label for="to">À l'intention de</label>
+                <input required id="to" value="{{ player.last_name }} {{ player.first_name }} (n° de licence FFE : {{ player.plugin_data.ffe.ffe_licence_number }})" />
+            </div>
+        </div>
+        <div class="grid" style="grid-template-columns: 1fr; margin-top: 2rem;">
+            <div class="item">
+                <label for="tournament">Vous avez participé au tournoi</label>
+                <input required id="tournament" value="{{ tournament_name }}" />
+            </div>
+        </div>
+        <div class="grid" style="grid-template-columns: 1fr; margin-top: 1rem;">
+            <div class="item {% if not player_last_forfeit_round %}error{% endif %}">
+                <div class="error-info">Le numéro de la dernière ronde forfait n'a pas pu être déterminé.</div>
+                <label for="round">que vous avez abandonné avant la fin du tournoi, avant la ronde n°</label>
+                <input required id="round" value="{{ player_last_forfeit_round }}" style="width: 1rem; flex-grow: 0;" />
+            </div>
+        </div>
+        <div style="margin-top: 2rem;">
+            Sauf erreur, vous ne nous avez pas prévenu·es de votre départ et vous avez donc été apparié·e contre une personne qui vous a attendu en vain.
+        </div>
+        <div style="margin-top: 1rem;">
+            Je vous prie de bien vouloir nous communiquer dans les plus brefs délais le motif justifié de votre abandon.
+        </div>
+        <div style="margin-top: 1rem;">
+            Sans réponse de votre part ou si vous ne répondez pas de façon satisfaisante, je serai dans l’obligation de le signaler à la Direction Juridique de la Direction Nationale de l’arbitrage.
+        </div>
+        <div style="margin-top: 1rem;">
+            Si la Direction Juridique estime qu’un simple avertissement est nécessaire, elle vous en informera par courrier électronique. Elle pourra également solliciter la saisie d’une instance disciplinaire conformément au règlement disciplinaire.
+        </div>
+        <div class="grid" style="grid-template-columns: 1fr; margin-top: 2rem;">
+            <div class="item">
+                <label for="response-date" style="font-weight: bold;">Réponse attendue au plus tard le</label>
+                <input id="response-date" value="{{ response_date }}" style="width: 5.5rem; flex-grow: 0;" />
+            </div>
+        </div>
+        {% include '_ffe_location_date_signature.html' %}
+    </form>
+{% endblock %}

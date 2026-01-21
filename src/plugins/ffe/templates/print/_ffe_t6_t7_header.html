@@ -1,0 +1,47 @@
+<h2>Arbitre rédacteur·ice</h2>
+<section>
+    <div class="grid" style="grid-template-columns: 1fr 7fr;">
+        {% set writer_error = 'Aucun·e arbitre rédacteur·ice n\'a été déclaré·e.' if not writer else '' %}
+        <div class="item">
+            <label for="writer-full-name">Nom et prénom :</label>
+        </div>
+        <div class="item">
+            <input required id="writer-full-name" value="{% if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+        </div>
+        <div class="item">
+            <label for="writer-ffe-licence-number">Numéro de licence :</label>
+        </div>
+        <div class="item">
+            <input required id="writer-ffe-licence-number" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
+        </div>
+        <div class="item">
+            <label for="writer-ffe-arbiter-title">Titre :</label>
+        </div>
+        <div class="item required">
+            <input required id="writer-ffe-arbiter-title" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_arbiter_title.short_name }}{% endif %}"/>
+        </div>
+    </div>
+</section>
+<h2>Caractéristiques techniques du tournoi</h2>
+<section>
+    <div class="grid" style="grid-template-columns: 1fr 7fr;">
+        <div class="item">
+            <label for="tournament">Nom :</label>
+        </div>
+        <div class="item">
+            <input required id="tournament" value="{{ tournament_name }}" />
+        </div>
+        <div class="item">
+            <label for="tournament-ffe-id">Numéro d'homologation FFE :</label>
+        </div>
+        <div class="item">
+            <input required id="tournament-ffe-id" value="{{ tournament.plugin_data.ffe.ffe_id or '' }}" />
+        </div>
+        <div class="item">
+            <label for="event-date">Dates du tournoi :</label>
+        </div>
+        <div class="item">
+            <input required id="event-date" value="{{ tournament_date }}" />
+        </div>
+    </div>
+</section>
