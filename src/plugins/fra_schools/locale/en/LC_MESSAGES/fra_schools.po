@@ -2,6 +2,9 @@
 msgid "%(string)s:"
 msgstr ""
 
+msgid "A positive integer is expected."
+msgstr ""
+
 msgid "Add"
 msgstr ""
 
@@ -36,6 +39,9 @@ msgstr ""
 msgid "Complete Team"
 msgstr ""
 
+msgid "Edit the selected French school."
+msgstr ""
+
 msgid "Exclude: {values}"
 msgstr ""
 
@@ -48,7 +54,10 @@ msgstr ""
 msgid "French school"
 msgstr ""
 
-msgid "Identifier"
+msgid "Hide the UAI codes for the FFE upload"
+msgstr ""
+
+msgid "Include incomplete teams"
 msgstr ""
 
 msgid "Incomplete Team"
@@ -58,6 +67,9 @@ msgid "Invalid format (expected: 5 digits)."
 msgstr ""
 
 msgid "Loading more results…"
+msgstr ""
+
+msgid "Maximum number of teams per school."
 msgstr ""
 
 #, python-format
@@ -75,17 +87,29 @@ msgstr ""
 msgid "Other missing players: %(count)d"
 msgstr ""
 
+msgid "Overall ranking"
+msgstr ""
+
 msgid "Please validate the French school to continue."
 msgstr ""
 
 msgid "Postal code"
 msgstr ""
 
+msgid "Pts *** POINTS COLUMN HEADER"
+msgstr "Pts"
+
 msgid "Ranking by school"
 msgstr ""
 
 msgid "Ranking by school after round #{round}"
 msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Rk. *** RANK COLUMN HEADER"
+msgstr "Rk."
 
 msgid "School"
 msgstr ""
@@ -100,12 +124,21 @@ msgstr ""
 msgid "Search by: %(fields)s"
 msgstr ""
 
+msgid "Teams are considered complete when they have 8 players including 2 boys and 2 girls."
+msgstr ""
+
+msgid "Teams per school:"
+msgstr ""
+
 #, python-format
 msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
 msgstr ""
 
 #, python-format
 msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
+msgstr ""
+
+msgid "The school with that code already exists."
 msgstr ""
 
 msgid "The tournament has not yet started."
@@ -125,6 +158,19 @@ msgstr ""
 
 msgid "Total"
 msgstr ""
+
+msgid "UAI codes are a necessity to distinguish schools with long names. Only enable this option if your school names are short enough."
+msgstr ""
+
+msgid "UAI code"
+msgstr ""
+
+#, python-format
+msgid "Update the school [%(school_name)s]"
+msgstr ""
+
+msgid "incomplete *** INCOMPLETE TEAM"
+msgstr "incomplete"
 
 msgid "{count} school represented"
 msgid_plural "{count} schools represented"

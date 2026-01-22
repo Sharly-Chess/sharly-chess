@@ -471,7 +471,10 @@ class FFESession(Session):
                     tmp_papi_file,
                 )
                 PapiConverter().write_papi_file(
-                    tmp_tournament, tmp_papi_file, anonymize_player_data=True
+                    tmp_tournament,
+                    tmp_papi_file,
+                    anonymize_player_data=True,
+                    is_ffe_upload=True,
                 )
             except Exception as e:
                 logger.error(

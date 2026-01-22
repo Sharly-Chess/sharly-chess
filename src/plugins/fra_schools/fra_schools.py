@@ -18,7 +18,7 @@ from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.event import Event
 from data.input_output import TournamentImporter
 from data.player import TournamentPlayer
-from data.print_documents import PlayerSplitter
+from data.print_documents import PlayerSplitter, PrintOption
 from data.print_documents.documents import (
     PrintDocument,
     PlayerRankingPrintDocument,
@@ -50,6 +50,8 @@ from plugins.fra_schools.fra_schools_entity import (
 )
 from plugins.fra_schools.fra_schools_ranking_document import (
     FraSchoolsRankingPrintDocument,
+    FraSchoolsTeamsPrintOption,
+    FraSchoolsIncompletePrintOption,
 )
 from plugins.fra_schools.utils import (
     FRASchoolsPlayerPluginData,
@@ -152,6 +154,10 @@ class FRASchoolsPlugin(Plugin):
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, FRASchoolsEventPluginData
 
+    @property
+    def event_form_fields_template(self) -> str:
+        return '/fra_schools_event_form_fields.html'
+
     # ---------------------------------------------------------------------------------
     # Players
     # ---------------------------------------------------------------------------------
@@ -165,6 +171,10 @@ class FRASchoolsPlugin(Plugin):
         self, web_context: 'PlayerAdminWebContext'
     ) -> dict[str, Any]:
         return FRASchoolsController.get_fra_school_template_context(web_context)
+
+    @hookimpl
+    def insert_player_form_carry_over_field(self, fields: list[str]):
+        fields.append('fra_school_id')
 
     @hookimpl
     def insert_player_form_fields_template(
@@ -207,6 +217,13 @@ class FRASchoolsPlugin(Plugin):
         sps: type[PrintDocument] = FraSchoolsRankingPrintDocument
         pps: type[PrintDocument] = PlayerRankingPrintDocument
         PluginUtils.insert_on_equals(print_documents, sps, pps, True)
+
+    @hookimpl
+    def insert_print_option(self, print_options: list[type['PrintOption']]):
+        print_options += [
+            FraSchoolsTeamsPrintOption,
+            FraSchoolsIncompletePrintOption,
+        ]
 
     @hookimpl(trylast=True)
     def alter_print_and_screen_player_columns(
@@ -306,10 +323,20 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl
     def update_papi_player(
-        self, papi_player: PapiPlayer, tournament_player: TournamentPlayer
+        self,
+        papi_player: PapiPlayer,
+        tournament_player: TournamentPlayer,
+        is_ffe_upload: bool,
     ):
         school = FRASchoolsUtils.get_player_school(tournament_player)
-        papi_player.club = school.full_name if school else ''
+        club = ''
+        if school:
+            plugin_data = FRASchoolsUtils.get_event_plugin_data(tournament_player.event)
+            if is_ffe_upload and plugin_data.hide_school_code_on_upload:
+                club = school.full_name_without_code
+            else:
+                club = school.full_name
+        papi_player.club = club
 
     @hookimpl
     def augment_stored_player_from_chessevent_player(
@@ -325,10 +352,11 @@ class FRASchoolsPlugin(Plugin):
             school_code = FRASchoolsUtils.extract_school_code(ce_school)
             if not school_code:
                 logger.warning(
-                    'Player [%s %s] - School code not found in [%s] (ignored).',
+                    'Player [%s %s] [%s] [%s] - School code not found (ignored).',
                     stored_player.last_name,
                     stored_player.first_name,
-                    school_code,
+                    chessevent_player.ffe_license_number,
+                    chessevent_player.school,
                 )
             else:
                 fra_schools = FRASchoolsUtils.get_event_plugin_data(event).fra_schools

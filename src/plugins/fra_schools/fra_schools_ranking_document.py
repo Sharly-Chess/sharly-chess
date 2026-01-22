@@ -1,8 +1,9 @@
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date
-from functools import partial
+from functools import partial, cached_property
 from statistics import mean
+from types import UnionType
 from typing import Any, Optional, override, Callable
 
 from common.exception import OptionError
@@ -36,6 +37,13 @@ class SchoolTeam:
     missing_boys: int = 0
     missing_slots: int = 0
 
+    @property
+    def id(self) -> str:
+        id_ = str(self.school.id)
+        if self.label:
+            id_ += f'-{self.label}'
+        return id_
+
 
 class FraSchoolsRankingPrintDocument(PrintDocument):
     @staticmethod
@@ -48,7 +56,12 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, RoundPrintOption]
+        return [
+            TournamentPrintOption,
+            RoundPrintOption,
+            FraSchoolsTeamsPrintOption,
+            FraSchoolsIncompletePrintOption,
+        ]
 
     @property
     def title(self) -> str:
@@ -62,6 +75,10 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
             self._get_option(RoundPrintOption).value
             or self.tournament.max_ranking_round
         )
+
+    @cached_property
+    def include_incomplete(self) -> bool:
+        return self._get_option(FraSchoolsIncompletePrintOption).value
 
     @property
     def template_name(self) -> str:
@@ -138,10 +155,11 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
 
         teams: list[SchoolTeam] = []
 
+        max_teams = self._get_option(FraSchoolsTeamsPrintOption).value
         for school_id, pool in schools.items():
             remaining = list(pool)
             team_idx = 0
-            while remaining:
+            while remaining and (max_teams is None or team_idx < max_teams):
                 team_idx += 1
                 label = chr(ord('A') + (team_idx - 1))  # "A", "B", ...
 
@@ -160,6 +178,9 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
                 is_complete = (
                     len(selected) == 8 and girls_selected >= 2 and boys_selected >= 2
                 )
+
+                if not is_complete and not self.include_incomplete:
+                    break
 
                 # Aggregate tiebreaks (sum over contributors)
                 num_tbs = len(self.tournament.tie_breaks)
@@ -278,4 +299,48 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
             'player_columns': self.player_columns,
             'ordinal_integer': Utils.ordinal_integer,
             'localized_number': Utils.localized_number,
+            'points_str': Utils.points_str,
+            'include_incomplete': self.include_incomplete,
         }
+
+
+class FraSchoolsTeamsPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'fra-schools-teams'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @property
+    def template_name(self) -> str:
+        return '/fra_schools_teams_print_option.html'
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is not None and self.value < 1:
+            raise OptionError(_('A positive integer is expected.'), self)
+
+
+class FraSchoolsIncompletePrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'fra-schools-incomplete'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return True
+
+    @property
+    def template_name(self) -> str:
+        return '/fra_schools_incomplete_print_option.html'
