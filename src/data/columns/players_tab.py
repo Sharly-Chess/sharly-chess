@@ -5,7 +5,7 @@ from typing import Any, Counter, Callable
 
 from common.i18n import _
 from data.event import Event
-from data.player import Player, TournamentPlayer
+from data.player import Player
 from data.player_categories import PlayerCategory
 from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
@@ -246,8 +246,7 @@ class RatingPlayersTabColumn(PlayersTabColumn):
         return True
 
     def _get_sort_key(self, player: Player) -> tuple:
-        assert isinstance(player, TournamentPlayer)
-        return (player.rating,)
+        return (player.single_tournament_player.rating,)
 
     @property
     def cell_template(self) -> str | None:
