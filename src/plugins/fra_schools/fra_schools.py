@@ -18,7 +18,7 @@ from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.event import Event
 from data.input_output import TournamentImporter
 from data.player import TournamentPlayer
-from data.print_documents import PlayerSplitter
+from data.print_documents import PlayerSplitter, PrintOption
 from data.print_documents.documents import (
     PrintDocument,
     PlayerRankingPrintDocument,
@@ -50,6 +50,8 @@ from plugins.fra_schools.fra_schools_entity import (
 )
 from plugins.fra_schools.fra_schools_ranking_document import (
     FraSchoolsRankingPrintDocument,
+    FraSchoolsTeamsPrintOption,
+    FraSchoolsIncompletePrintOption,
 )
 from plugins.fra_schools.utils import (
     FRASchoolsPlayerPluginData,
@@ -207,6 +209,13 @@ class FRASchoolsPlugin(Plugin):
         sps: type[PrintDocument] = FraSchoolsRankingPrintDocument
         pps: type[PrintDocument] = PlayerRankingPrintDocument
         PluginUtils.insert_on_equals(print_documents, sps, pps, True)
+
+    @hookimpl
+    def insert_print_option(self, print_options: list[type['PrintOption']]):
+        print_options += [
+            FraSchoolsTeamsPrintOption,
+            FraSchoolsIncompletePrintOption,
+        ]
 
     @hookimpl(trylast=True)
     def alter_print_and_screen_player_columns(

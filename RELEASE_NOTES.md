@@ -28,6 +28,8 @@
 
 - Added print views for FFE forms (3.5.0)
 
-## _fra_schools_
+## FRA Schools
 
 - Added schools to the statistics (3.5.0)
+- Added team options to the schools ranking document (3.5.0)
+- Added an overall ranking to the schools ranking document (3.5.0)
