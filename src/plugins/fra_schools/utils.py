@@ -111,7 +111,6 @@ class FRASchool(PluginData):
     @property
     def sort_key(self) -> tuple:
         return (
-            not self.name,
             self.postal_code or '',
             self.city or '',
             self.name,
@@ -135,6 +134,7 @@ class FRASchool(PluginData):
 @dataclass
 class FRASchoolsEventPluginData(PluginData):
     fra_schools_by_id: dict[int, FRASchool]
+    hide_school_code_on_upload: bool
 
     @property
     def fra_schools(self) -> Collection[FRASchool]:
@@ -150,7 +150,10 @@ class FRASchoolsEventPluginData(PluginData):
                 for school_id, school_dict in stored_value.get(
                     'fra_schools_by_id', {}
                 ).items()
-            }
+            },
+            hide_school_code_on_upload=stored_value.get(
+                'hide_school_code_on_upload', False
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -158,7 +161,8 @@ class FRASchoolsEventPluginData(PluginData):
             'fra_schools_by_id': {
                 str(school_id): school.to_stored_value()
                 for school_id, school in self.fra_schools_by_id.items()
-            }
+            },
+            'hide_school_code_on_upload': self.hide_school_code_on_upload,
         }
 
     @classmethod
@@ -168,12 +172,21 @@ class FRASchoolsEventPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        if previous_object:
-            return previous_object
-        return cls({})
+        return cls(
+            fra_schools_by_id=(
+                previous_object.fra_schools_by_id if previous_object else {}
+            ),
+            hide_school_code_on_upload=WebContext.form_data_to_bool(
+                data, 'hide_school_code_on_upload'
+            ),
+        )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
-        return {}
+        return WebContext.values_dict_to_form_data(
+            {
+                'hide_school_code_on_upload': self.hide_school_code_on_upload,
+            }
+        )
 
 
 @dataclass
@@ -199,13 +212,13 @@ class FRASchoolsPlayerPluginData(PluginData):
         action: str | None = None,
     ) -> Self:
         return cls(
-            fra_school_id=WebContext.form_data_to_int(data, 'fra_school'),
+            fra_school_id=WebContext.form_data_to_int(data, 'fra_school_id'),
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
             {
-                'fra_school': self.fra_school_id,
+                'fra_school_id': self.fra_school_id,
             }
         )
 
@@ -277,6 +290,16 @@ class FRASchoolsUtils:
             with EventDatabase(event.uniq_id, True) as database:
                 database.update_stored_event(event.stored_event)
         return school_id
+
+    @classmethod
+    def update_event_school(cls, event: Event, school: FRASchool):
+        plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
+        plugin_data.fra_schools_by_id[school.id] = school
+        stored_event = event.stored_event
+        stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+
+        with EventDatabase(event.uniq_id, True) as database:
+            database.update_stored_event(stored_event)
 
     @staticmethod
     def extract_school_code(school_str: str) -> str | None:

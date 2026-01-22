@@ -5,7 +5,7 @@
     </div>
 {% endmacro %}
 
-{% macro tooltip_attributes(tooltip_type, tooltip_text, tooltip_placement) %}
+{% macro tooltip_attributes(tooltip_type, tooltip_text, tooltip_placement='top') %}
     data-bs-toggle="tooltip"
     data-bs-placement="{{ tooltip_placement or 'top' }}"
     data-bs-html="true"

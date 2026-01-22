@@ -178,6 +178,14 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
             )
         self._filter_values_set = True
 
+    @cached_property
+    def carry_over_fields(self) -> list[str]:
+        fields = ['tournament_id']
+        plugin_manager.hook_for_event(
+            self.get_admin_event(), 'insert_player_form_carry_over_field'
+        )(fields=fields)
+        return fields
+
     @property
     def default_print_document(self) -> str:
         print_tournament_ids = self.default_tournament_for_print_modal(
@@ -641,10 +649,10 @@ class PlayerAdminController(BaseEventAdminController):
         cls,
         web_context: PlayerAdminWebContext,
         action: FormAction,
-        tournament_id: int | None = None,
         old_player_id: int | None = None,
         search_stored_player: StoredPlayer | None = None,
         data: dict[str, str] | None = None,
+        carry_over_data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
         warning_message: str | None = None,
     ) -> Template:
@@ -674,7 +682,8 @@ class PlayerAdminController(BaseEventAdminController):
             fixed: int | None = None
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             stored_player = search_stored_player
-            if not stored_player and admin_player and action != 'replace':
+            tournament_id: int | None = None
+            if not stored_player and admin_player and action != FormAction.REPLACE:
                 stored_player = admin_player.stored_player
             if stored_player:
                 first_name = stored_player.first_name
@@ -712,15 +721,9 @@ class PlayerAdminController(BaseEventAdminController):
                 rating_ = ratings[tournament_rating]
                 key = tournament_rating.form_key
                 rating_data |= {
-                    f'{key}_rating_fide': WebContext.value_to_form_data(
-                        rating_.fide or None
-                    ),
-                    f'{key}_rating_national': WebContext.value_to_form_data(
-                        rating_.national or None
-                    ),
-                    f'{key}_rating_estimated': WebContext.value_to_form_data(
-                        rating_.estimated or None
-                    ),
+                    f'{key}_rating_fide': rating_.fide or None,
+                    f'{key}_rating_national': rating_.national or None,
+                    f'{key}_rating_estimated': rating_.estimated or None,
                 }
 
             plugin_form_data: dict[str, str] = {}
@@ -752,15 +755,17 @@ class PlayerAdminController(BaseEventAdminController):
                 }
                 | rating_data
                 | plugin_form_data
+                | (carry_over_data or {})
             )
         if errors is None:
             errors = {}
         tournaments = web_context.player_addable_tournaments
         tournament_options: dict[str, str] = {}
-        if action == 'create' and len(tournaments) > 1:
+        if action == FormAction.CREATE:
             # force the choice of the tournament on player creation if several tournaments
-            tournament_options |= {'': '-'}
-        elif action in ['update', 'replace']:
+            if len(tournaments) > 1:
+                tournament_options |= {'': '-'}
+        else:
             assert admin_player is not None
             if admin_player.single_tournament not in tournaments:
                 tournaments.insert(0, admin_player.single_tournament)
@@ -769,7 +774,6 @@ class PlayerAdminController(BaseEventAdminController):
         plugin_manager.hook_for_event(event, 'insert_player_form_fields_template')(
             templates_by_section=plugin_templates_by_section
         )
-
         template_context |= {
             'gender_options': cls._get_gender_options(),
             'tournament_ratings_strings': {
@@ -816,6 +820,7 @@ class PlayerAdminController(BaseEventAdminController):
             'data_sources': DataSourceManager().objects(),
             'warning_message': warning_message,
             'add_other_active': SessionPlayersAddOtherActive(request).get(),
+            'carry_over_fields': web_context.carry_over_fields,
             'modal': 'player',
             'action': action,
             'data': data,
@@ -837,7 +842,7 @@ class PlayerAdminController(BaseEventAdminController):
             PlayerAdminWebContext(request), FormAction.CREATE
         )
 
-    @get(
+    @post(
         path=[
             '/player-modal/from-search/{event_uniq_id:str}/'
             '{data_source_id:str}/{player_source_id:str}',
@@ -849,10 +854,13 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_player_modal_create_from_search(
         self,
         request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
         data_source_id: str,
         player_source_id: str,
         player_id: int | None,
-        tournament_id: str | None,
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
@@ -874,12 +882,14 @@ class PlayerAdminController(BaseEventAdminController):
                 'Connection to the data source [{data_source}] failed. '
                 'Consult the logs for more details.'
             ).format(data_source=data_source_id)
-
         return self._render_players_form_modal(
             web_context,
             action=FormAction.REPLACE if player_id else FormAction.CREATE,
             search_stored_player=stored_player,
-            tournament_id=int(tournament_id) if tournament_id else None,
+            carry_over_data={
+                field: str(data.get(field, ''))
+                for field in web_context.carry_over_fields
+            },
             errors=errors,
         )
 
@@ -1118,7 +1128,10 @@ class PlayerAdminController(BaseEventAdminController):
                 FormAction.CREATE,
                 old_player_id=player_id,
                 warning_message=warning_message,
-                tournament_id=tournament.id,
+                carry_over_data={
+                    field: str(data.get(field, ''))
+                    for field in web_context.carry_over_fields
+                },
             )
         if warning_message:
             Message.warning(request, warning_message)
@@ -1762,6 +1775,7 @@ class PlayerAdminController(BaseEventAdminController):
         search: str,
         page: int = 0,
         results_template: str | None = None,
+        result_js_template_hook_name: str | None = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
@@ -1778,19 +1792,26 @@ class PlayerAdminController(BaseEventAdminController):
                     page,
                     DataSource.SEARCH_LIMIT,
                 )
-                players = []
                 for stored_player in stored_players:
                     stored_player.id = 0
                     players.append(Player(web_context.get_admin_event(), stored_player))
             except SharlyChessException as e:
                 connection_error = str(e)
             SessionPlayersActiveDataSource(request).set(data_source.id)
+        result_js_templates: list[str] = (
+            plugin_manager.hook_for_event(
+                web_context.get_admin_event(), result_js_template_hook_name
+            )()
+            if result_js_template_hook_name
+            else []
+        )
         return HTMXTemplate(
             template_name=results_template or 'admin/players/search_results.html',
             context=web_context.template_context
             | {
                 'search': search,
                 'search_results': players,
+                'result_js_templates': result_js_templates,
                 'has_more_results': len(players) == DataSource.SEARCH_LIMIT,
                 'page': page,
                 'data_source': data_source,

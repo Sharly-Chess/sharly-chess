@@ -1,0 +1,233 @@
+{% extends '_ffe_document_base.html' %}
+
+{% block body %}
+    <form class="arbiter-compensation">
+        <h1>
+             
+            <br/>
+            FICHE D'INDEMNISATION DE L'ARBITRE
+        </h1>
+        <h2>Identification de l'arbitre</h2>
+        <section>
+            <div class="grid" style="grid-template-columns: 2fr 1fr;">
+                <div class="item">
+                    <label for="writer">Nom et prénom :</label>
+                    <input required id="writer" value="{% if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+                </div>
+                <div class="item">
+                    <label for="writer-ffe-licence-number">Numéro de licence :</label>
+                    <input required id="writer-ffe-licence-number" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
+                </div>
+                <div class="item">
+                    <label for="writer-mail">Mél :</label>
+                    <input required id="writer-mail" value="{% if writer %}{{ writer.mail or '' }}{% endif %}" />
+                </div>
+                <div class="item">
+                    <label for="writer-ffe-arbiter-title">Niveau :</label>
+                    <input required id="writer-ffe-arbiter-title" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_arbiter_title.short_name }}{% endif %}"/>
+                </div>
+                <div class="item">
+                    <label for="writer-phone">Tél :</label>
+                    <input required id="writer-phone" value="{% if writer %}{{ writer.phone or '' }}{% endif %}" />
+                </div>
+            </div>
+            <div class="grid" style="grid-template-columns: 1fr;">
+                <div class="item">
+                    <label for="writer-address">Adresse postale :</label>
+                    <input id="writer-address" value="" />
+                </div>
+            </div>
+        </section>
+        <h2 style="margin-top: 0.2rem;">Organisation</h2>
+        <section>
+            <div class="grid" style="grid-template-columns: 1fr 7fr 1fr 7fr;">
+                <div class="item">
+                    <label for="organiser-name">Nom :</label>
+                </div>
+                <div class="item">
+                    <input required id="organiser-name" value="{{ event.organiser_name or '' }}" />
+                </div>
+                <div class="item">
+                    <label for="organiser-home-page">Site web :</label>
+                </div>
+                <div class="item">
+                    <input required id="organiser-home-page" value="{{ event.organiser_home_page or '' }}" />
+                </div>
+                <div class="item">
+                    <label for="organiser-director">Direction :</label>
+                </div>
+                <div class="item">
+                    <input required id="organiser-director" value="{{ event.organiser_director or '' }}" />
+                </div>
+                <div class="item">
+                    <label for="organiser-email">Mél :</label>
+                </div>
+                <div class="item">
+                    <input required id="organiser-email" value="{{ event.organiser_email or '' }}" />
+                </div>
+            </div>
+        </section>
+        <h2 style="margin-top: 0.2rem;">{% if tournaments|length > 1 %}Tournois{% else %}Tournoi{% endif %}</h2>
+        <section>
+            <div class="grid" style="grid-template-columns: 1fr 3fr;">
+                <div class="item">
+                    <label for="event-name">Nom de l'évènement :</label>
+                </div>
+                <div class="item">
+                    <input required id="event-name" value="{{ event_name }}" />
+                </div>
+                <div class="item">
+                    <label for="event-date">Date(s) de l'évènement :</label>
+                </div>
+                <div class="item">
+                    <input id="event-date" value="{{ event_date }} ({% if event_days == 1 %}1 jour{% else %}{{ event_days }} jours{%endif %})" />
+                </div>
+                <div class="item">
+                    <label for="tournaments-ffe-id">Numéro d'homologation FFE :</label>
+                </div>
+                <div class="item">
+                    <input required id="tournaments-ffe-id" value="{{ ffe_ids }}" />
+                </div>
+                <div class="item">
+                    <label for="location">Lieu (commune, département, ligue) :</label>
+                </div>
+                <div class="item">
+                    <input required id="location" value="{{ location }}" />
+                </div>
+            </div>
+        </section>
+        <h2 style="margin-top: 0.2rem;">Frais</h2>
+        <section>
+            <div class="grid" style="grid-template-columns: 10fr 1fr;">
+                <div class="item">
+                    <label for="expenses-1">Restauration (maximum 20€ par repas) :</label>
+                </div>
+                <div class="item">
+                    <input id="expenses-1" class="expenses" value="" style="text-align: right;"/>€
+                </div>
+                <div class="item">
+                    <label for="expenses-2">Mise à disposition du matériel informatique (maximum 20€) :</label>
+                </div>
+                <div class="item">
+                    <input id="expenses-2" class="expenses" value="" style="text-align: right;"/>€
+                </div>
+                <div class="item">
+                    <label for="expenses-3">Divers (sur justificatif : papeterie, consommables...) :</label>
+                </div>
+                <div class="item">
+                    <input id="expenses-3" class="expenses" value="" style="text-align: right;"/>€
+                </div>
+                <div class="item">
+                    <label for="expenses-4">Déplacement (voir tarifs fédéraux) :</label>
+                </div>
+                <div class="item">
+                    <input id="expenses-4" class="expenses" value="" style="text-align: right;"/>€
+                </div>
+                <div class="item">
+                    <label for="expenses-5">Hébergement :</label>
+                </div>
+                <div class="item">
+                    <input id="expenses-5" class="expenses" value="" style="text-align: right;"/>€
+                </div>
+                <div class="item">
+                    <label for="expenses-total" style="font-weight: bold; text-align: right; flex-grow: 1;">Total :</label>
+                </div>
+                <div class="item">
+                    <input id="expenses-total" class="compute-total" value="" style="text-align: right;"/>€
+                </div>
+            </div>
+            <script>
+                $('.expenses').on('input', function () {
+                    var total = 0;
+                    document.querySelectorAll('.expenses').forEach((element) => {
+                        total += parseFloat(element.value.replace(',', '.')) || 0;
+                    });
+                    if (!Number.isInteger(total)) {
+                        total = total.toLocaleString('fr-FR', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        });
+                    }
+                    $('#expenses-total').val(total);
+                    $('#expenses-total').trigger('input');
+                });
+            </script>
+        </section>
+        <h2 style="margin-top: 0.2rem;">Indemnités de la mission d'arbitrage</h2>
+        <section>
+            <div class="grid" style="grid-template-columns: 1fr;">
+                <div class="item">
+                    <label for="compensation-norm">
+                        <input id="compensation-norm" type="checkbox" style="margin-left: 0;" />
+                        Arbitre missionné pour le calcul des normes (Uniquement possible pour un arbitre FIDE ou international).
+                        <br/>
+                        <span style="font-size: 0.7rem;">(La mission de calcul de normes autorise l’arbitre à augmenter son indemnité totale d’un maximum de 50 €.</span>
+                    </label>
+                </div>
+                <div class="item">
+                    L’indemnité se calcule de manière journalière, elle doit obligatoirement être négociée de manière claire avec l’équipe d’organisation au moment du recrutement de l’arbitre en respectant le barème fédéral disponible dans le livre de l’arbitre. En l’absence d’accord préalable, l’indemnité la plus basse du type de tournoi correspondant sera appliquée.
+                </div>
+            </div>
+            <div class="grid" style="grid-template-columns: 10fr 1fr;">
+                <div class="item">
+                    <label for="compensation" style="font-weight: bold; text-align: right; flex-grow: 1;">Indemnité totale d'arbitrage :</label>
+                </div>
+                <div class="item">
+                    <input id="compensation" class="compute-total" value="" style="text-align: right;"/>€
+                </div>
+                <div class="item">
+                    <span style="font-size: 0.7rem;">Remarque : montant à déclarer dans les Bénéfices Non Commerciaux sur la déclaration fiscale, Sans charge sociale si le total annuel reste inférieur à 14,5% du plafond annuel de la Sécurité Sociale (6723 € en 2024).</span>
+                </div>
+            </div>
+        </section>
+        <div class="grid" style="grid-template-columns: 4fr 1fr 4fr 1fr; margin-top: 1.5rem;">
+            <div class="item">
+                <label for="donation" style="text-align: right; flex-grow: 1;">Partie reversée à l'organisation en tant que don :</label>
+            </div>
+            <div class="item">
+                <input id="donation" class="compute-total" value="" style="text-align: right;"/>€
+            </div>
+            <div class="item">
+                <label for="total" style="font-weight: bold; text-align: right; flex-grow: 1;">Total versé à l'arbitre :</label>
+            </div>
+            <div class="item">
+                <input id="total" value="" style="text-align: right;"/>€
+            </div>
+            <script>
+                $('.compute-total').on('input', function () {
+                    var total = 0;
+                    total += parseFloat($('#expenses-total').val().replace(',', '.')) || 0;
+                    total += parseFloat($('#compensation').val().replace(',', '.')) || 0;
+                    total -= parseFloat($('#donation').val().replace(',', '.')) || 0;
+                    if (!Number.isInteger(total)) {
+                        total = total.toLocaleString('fr-FR', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2
+                        });
+                    }
+                    $('#total').val(total);
+                });
+            </script>
+
+        </div>
+        <div class="grid" style="grid-template-columns: 1.5fr 1fr 1fr; margin-top: 1rem; margin-bottom: 4rem;">
+            <div class="item">
+                <label for="signature-location">Fait à</label>
+                <input id="signature-location" value="{{ location }}" />
+            </div>
+            <div class="item">
+                <label style="text-align: center; flex-grow: 1;">Signature de l'arbitre :</label>
+            </div>
+            <div class="item">
+                <label style="text-align: center; flex-grow: 1;">Signature de l'organisateur·ice :</label>
+            </div>
+            <div class="item">
+                <label for="date">le</label>
+                <input id="date" value="{{ date }}" style="width: 7rem; flex-grow: 0;" />
+            </div>
+        </div>
+    </form>
+    <div class="info">
+        Pour le calcul des indemnités d'arbitrage, se reporter au Livre de l'Arbitre (chapitre 5.5 : barème d'indemnisation des arbitres).
+    </div>
+{% endblock %}

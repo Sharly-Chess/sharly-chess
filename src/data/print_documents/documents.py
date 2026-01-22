@@ -10,6 +10,8 @@ from common.exception import SharlyChessException, OptionError
 from common.i18n import _, ngettext
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
+from data.access_levels.actions import AuthAction
+from data.access_levels.client import Client
 from data.board import Board
 from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
 from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
@@ -20,7 +22,8 @@ from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import TournamentPlayer, TournamentRating
 from data.print_documents.options import (
     PairingStylePrintOption,
-    PlayerPrintOption,
+    MandatoryPlayerPrintOption,
+    OptionalPlayerPrintOption,
     PlayerSplitPrintOption,
     PrintOption,
     QRCodeNetworkPrintOption,
@@ -37,7 +40,8 @@ from data.print_documents.options import (
     PlaceCardMirrorPrintOption,
     PlaceCardCropMarksPrintOption,
     PlaceCardBoardNumbersPrintOption,
-    PlayersPrintOption,
+    OptionalPlayersPrintOption,
+    MandatoryPlayersPrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
@@ -57,21 +61,23 @@ logger: logging.Logger = get_logger()
 class PrintDocument(OptionHandler[PrintOption], ABC):
     def __init__(
         self,
-        event: Event | None = None,
+        client: Client | None = None,
         options: list[PrintOption] | None = None,
-        allowed_tournaments: list[Tournament] | None = None,
     ):
-        self.event = event
+        self.client: Client | None = client
+        self.event: Event | None = None if self.client is None else self.client.event
         super().__init__(options)
-        self.allowed_tournaments = allowed_tournaments
+
+    def get_client(self) -> Client:
+        assert self.client is not None
+        return self.client
 
     def get_event(self) -> Event:
         assert self.event is not None
         return self.event
 
     def get_allowed_tournaments(self) -> list[Tournament]:
-        assert self.allowed_tournaments is not None
-        return self.allowed_tournaments
+        return self.get_client().allowed_tournaments_for_action(AuthAction.PRINT)
 
     @override
     def default_options(self) -> list[PrintOption]:
@@ -81,7 +87,7 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
     def _get_option[V: Option](self, option_type: type[V]) -> V:
         return next(
             (option for option in self.options if isinstance(option, option_type)),
-            option_type(self.event),
+            option_type(self.get_event()),
         )
 
     @property
@@ -95,22 +101,47 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
     @property
     def tournaments(self) -> list[Tournament]:
         """The tournaments for which the document is printed."""
-        event = self.get_event()
         tournament_ids = self._get_option(TournamentsPrintOption).value
         if not tournament_ids:
             return self.get_allowed_tournaments()
         return [
-            event.tournaments_by_id[int(tournament_id)]
+            self.get_event().tournaments_by_id[int(tournament_id)]
             for tournament_id in tournament_ids.split(';')
+        ]
+
+    @cached_property
+    def mandatory_player(self) -> TournamentPlayer:
+        return self.tournament.tournament_players_by_id[
+            self._get_option(MandatoryPlayerPrintOption).value
+        ]
+
+    @cached_property
+    def optional_player(self) -> TournamentPlayer | None:
+        if player_id := self._get_option(OptionalPlayerPrintOption).value:
+            return self.tournament.tournament_players_by_id[player_id]
+        else:
+            return None
+
+    @cached_property
+    def mandatory_players(self) -> list[TournamentPlayer]:
+        return [
+            self.tournament.tournament_players_by_id[player_id]
+            for player_id in self._get_option(MandatoryPlayersPrintOption).value
+        ]
+
+    @cached_property
+    def optional_players(self) -> list[TournamentPlayer]:
+        return [
+            self.tournament.tournament_players_by_id[player_id]
+            for player_id in self._get_option(OptionalPlayersPrintOption).value
         ]
 
     @property
     def subtitle(self) -> str:
         """Subtitle of the print document."""
-        event = self.get_event()
         return (
-            event.name
-            if len(self.tournaments) == len(list(event.tournaments))
+            self.get_event().name
+            if len(self.tournaments) == len(list(self.get_event().tournaments))
             else ', '.join(tournament.name for tournament in self.tournaments)
         )
 
@@ -505,7 +536,7 @@ class PairingPrintDocument(PrintDocument):
     def sub_document(self) -> PrintDocument:
         return self._get_option(
             PairingStylePrintOption
-        ).pairing_style.print_document_type(event=self.event, options=self.options)
+        ).pairing_style.print_document_type(self.client, options=self.options)
 
     @property
     def title(self) -> str:
@@ -966,7 +997,7 @@ class StatisticsPrintDocument(PrintDocument):
         statistics: list[StatisticsSection] = []
 
         per_plugin_sections = plugin_manager.hook_for_event(
-            self.event, 'get_extra_statistics_sections'
+            self.get_event(), 'get_extra_statistics_sections'
         )(document=self, tournaments=self.tournaments)
 
         for attr_name, title, sort_key, min_count, filter_func, subtitle_fn in [
@@ -1081,7 +1112,7 @@ class NormReportPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, PlayerPrintOption]
+        return [TournamentPrintOption, MandatoryPlayerPrintOption]
 
     @property
     def title(self) -> str:
@@ -1103,7 +1134,7 @@ class NormReportPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
-        player_id = self._get_option(PlayerPrintOption).value
+        player_id = self._get_option(MandatoryPlayerPrintOption).value
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm
@@ -1111,7 +1142,7 @@ class NormReportPrintDocument(PrintDocument):
             if norm.meets_gender and tournament_player.title < norm_title.player_title
         }
         return {
-            'event': self.event,
+            'event': self.get_event(),
             'tournament': self.tournament,
             'is_swiss': self.tournament.pairing_system == SwissPairingSystem(),
             'start': self.tournament.start_date.strftime('%Y.%m.%d'),
@@ -1183,7 +1214,7 @@ class PlaceCardPrintDocument(PrintDocument):
 
     @property
     def player_ids(self) -> list[int]:
-        return self._get_option(PlayersPrintOption).value
+        return self._get_option(OptionalPlayersPrintOption).value
 
     @property
     def at_round(self) -> int:
@@ -1207,7 +1238,7 @@ class PlaceCardPrintDocument(PrintDocument):
             PlaceCardPrintOption,
             PlaceCardTemplatePrintOption,
             TournamentPrintOption,
-            PlayersPrintOption,
+            OptionalPlayersPrintOption,
             RoundPrintOption,
             PlaceCardMirrorPrintOption,
             PlaceCardCropMarksPrintOption,

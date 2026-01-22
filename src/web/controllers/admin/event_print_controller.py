@@ -91,6 +91,8 @@ class EventPrintController(BaseEventAdminController):
             ]
         return {
             'modal': 'print',
+            'client': web_context.client,
+            'account_options': web_context.get_account_options(),
             'tournament_options': web_context.get_tournament_options(
                 allowed_tournaments
             ),
@@ -172,11 +174,11 @@ class EventPrintController(BaseEventAdminController):
 
         if document_type:
             options: list[PrintOption] = []
-            for option in document_type().default_options():
+            for option in document_type(web_context.client).default_options():
                 value = WebContext.form_data_to_value(flat_data, option.id, option.type)
                 options.append(type(option)(event, value))
             try:
-                document = document_type(event, options)
+                document = document_type(web_context.client, options)
                 document.validate_options()
             except OptionError as error:
                 errors[error.option.id] = str(error)
@@ -207,7 +209,7 @@ class EventPrintController(BaseEventAdminController):
                 'document': flat_data['document'],
                 'options': {
                     option.id: flat_data[option.id]
-                    for option in document_type().default_options()
+                    for option in document_type(web_context.client).default_options()
                     if option.id in data
                 },
             },
@@ -233,13 +235,14 @@ class EventPrintController(BaseEventAdminController):
                 key, raw_value = option.split('=')
                 option_data[key] = raw_value
         print_options: list[PrintOption] = []
-        for print_option in document_type().default_options():
+        for print_option in document_type(web_context.client).default_options():
             value = WebContext.form_data_to_value(
                 option_data, print_option.id, print_option.type
             )
             print_options.append(type(print_option)(event, value))
         print_document = document_type(
-            event, print_options, self._allowed_tournaments(web_context)
+            web_context.client,
+            print_options,
         )
 
         template_context = (
