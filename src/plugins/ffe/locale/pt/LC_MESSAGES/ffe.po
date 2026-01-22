@@ -23,6 +23,22 @@ msgid "A positive integer is expected."
 msgstr "Espera-se um número inteiro positivo."
 
 #, ai_translation
+msgid "All the players with no FFE licence A"
+msgstr "Todos os jogadores sem licença FFE A"
+
+#, ai_translation
+msgid "All the players with no FFE licence A or B"
+msgstr "Todos os jogadores sem licença FFE A ou B"
+
+#, ai_translation
+msgid "Arbiter:"
+msgstr "Árbitro:"
+
+#, ai_translation
+msgid "Arbitration compensation"
+msgstr "Compensação por arbitragem"
+
+#, ai_translation
 msgid "At least one league is expected."
 msgstr "Pelo menos uma liga é esperada."
 
@@ -75,6 +91,14 @@ msgid "By default, tournaments are not visible on the FFE site."
 msgstr "Por padrão, os torneios não são visíveis no site da FFE."
 
 #, ai_translation
+msgid "Cheating complaint"
+msgstr "Reclamação de traição"
+
+#, ai_translation
+msgid "Chief arbiter (if different):"
+msgstr "Árbitro-chefe (se diferente):"
+
+#, ai_translation
 msgid "Choose at least one league."
 msgstr "Escolha pelo menos uma liga."
 
@@ -85,6 +109,10 @@ msgstr "Escolha pelo menos um tipo de licença."
 #, ai_translation
 msgid "Close"
 msgstr "Fechar"
+
+#, ai_translation
+msgid "Club Arbiter"
+msgstr "Arbiter Clube"
 
 #, ai_translation
 msgid "Connection French Chess Federation"
@@ -131,6 +159,14 @@ msgid "E.g.: %(string)s"
 msgstr "p. ex.: %(string)s"
 
 #, ai_translation
+msgid "Elite Arbiter (level 1)"
+msgstr "Árbitro Elite (nível 1)"
+
+#, ai_translation
+msgid "Elite Arbiter (level 2)"
+msgstr "Árbitro Elite (nível 2)"
+
+#, ai_translation
 msgid "Enabled"
 msgstr "Ativado"
 
@@ -159,12 +195,24 @@ msgid "FFE"
 msgstr "FFE"
 
 #, ai_translation
+msgid "FFE Form:"
+msgstr "Formulário FFE:"
+
+#, ai_translation
 msgid "FFE ID"
 msgstr "ID FFE"
 
 #, ai_translation
 msgid "FFE Licence"
 msgstr "Licença FFE"
+
+#, fuzzy
+msgid "FFE Licence no. *** LICENCE NUMBER"
+msgstr "FFE Licence no."
+
+#, ai_translation
+msgid "FFE arbiter title"
+msgstr "Título do árbitro FFE"
 
 #, ai_translation
 msgid "FFE certification number and password not defined."
@@ -189,6 +237,10 @@ msgstr "Banco de dados FFE (local)"
 #, ai_translation
 msgid "FFE database (online)"
 msgstr "Banco de dados FFE (online)"
+
+#, ai_translation
+msgid "FFE forms"
+msgstr "Formas FFE"
 
 #, ai_translation
 msgid "FFE licence"
@@ -387,12 +439,24 @@ msgid "None *** FFE licence"
 msgstr "None"
 
 #, ai_translation
+msgid "Open Arbiter (level 1)"
+msgstr "Árbitro Aberto (nível 1)"
+
+#, ai_translation
+msgid "Open Arbiter (level 2)"
+msgstr "Arbiter Aberto (nível 2)"
+
+#, ai_translation
 msgid "PAPI"
 msgstr "PAPI"
 
 #, ai_translation
 msgid "Papi file"
 msgstr "Ficheiro Papi"
+
+#, ai_translation
+msgid "Players:"
+msgstr "Jogadores:"
 
 #, ai_translation
 msgid "Replace the player to update this field."
@@ -415,6 +479,22 @@ msgid "Scan to access the tournament on the FFE site."
 msgstr "Scan para acessar o torneio no site da FFE."
 
 #, ai_translation
+msgid "Select the arbiter"
+msgstr "Selecione o árbitro"
+
+#, ai_translation
+msgid "Select the chief arbiter"
+msgstr "Selecione o árbitro principal"
+
+#, ai_translation
+msgid "Select the trainee"
+msgstr "Selecione o estagiário"
+
+#, ai_translation
+msgid "Select the writer"
+msgstr "Selecione o escritor"
+
+#, ai_translation
 msgid "Some of the tie-break values will not appear in the results on the FFE website."
 msgstr "Alguns dos valores de tie-break não aparecerão nos resultados no site da FFE."
 
@@ -425,6 +505,34 @@ msgstr "Padrão"
 #, ai_translation
 msgid "Status"
 msgstr "Estado"
+
+#, ai_translation
+msgid "T1 Cover page"
+msgstr "T1 Página da capa"
+
+#, ai_translation
+msgid "T2 Minutes"
+msgstr "Minutos T2"
+
+#, ai_translation
+msgid "T3 Licence A certificate"
+msgstr "T3 Licença Um certificado"
+
+#, ai_translation
+msgid "T4 Licence B certificate"
+msgstr "Certificado de licença B T4"
+
+#, ai_translation
+msgid "T5 Unjustified forfeit investigation"
+msgstr "T5 Injustificada investigação de perda"
+
+#, ai_translation
+msgid "T6 Player exclusion"
+msgstr "Exclusão do jogador T6"
+
+#, ai_translation
+msgid "T7 Player reporting"
+msgstr "Relatório do jogador T7"
 
 #, ai_translation
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
@@ -511,6 +619,14 @@ msgid "Tournament visibility successfully set"
 msgstr "Visibilidade do torneio definida com sucesso"
 
 #, ai_translation
+msgid "Trainee Arbiter"
+msgstr "Trainee Arbiter"
+
+#, ai_translation
+msgid "Trainee:"
+msgstr "Estagiário:"
+
+#, ai_translation
 msgid "Unable to download tournament fees."
 msgstr "Não foi possível baixar taxas de torneio."
 
@@ -583,6 +699,10 @@ msgid "Variation"
 msgstr "Variação"
 
 #, ai_translation
+msgid "Writer:"
+msgstr "Escritor:"
+
+#, ai_translation
 msgid "You are not allowed to download fees."
 msgstr "Você não tem permissão para baixar taxas."
 
@@ -593,6 +713,10 @@ msgstr "Você não tem permissão para publicar resultados."
 #, ai_translation
 msgid "You are not allowed to publish rules."
 msgstr "Você não tem permissão para publicar regras."
+
+#, ai_translation
+msgid "Young Arbiter"
+msgstr "Árbitro Jovem"
 
 #, ai_translation
 msgid "{count} league represented"

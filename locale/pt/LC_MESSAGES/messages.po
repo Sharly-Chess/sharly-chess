@@ -2769,6 +2769,10 @@ msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "FIDE"
 
 #, ai_translation
+msgid "FIDE Arbiter"
+msgstr "Árbitro FIDE"
+
+#, ai_translation
 msgid "FIDE ID"
 msgstr "ID da FIDE"
 
@@ -2779,6 +2783,10 @@ msgstr "ID da FIDE:"
 #, ai_translation
 msgid "FIDE Title:"
 msgstr "Título da FIDE:"
+
+#, ai_translation
+msgid "FIDE arbiter title"
+msgstr "Título do árbitro da FIDE"
 
 #, ai_translation
 msgid "FIDE database"
@@ -3406,6 +3414,10 @@ msgstr "A instalação da liberação [{version}] falhou, saindo."
 #, ai_translation
 msgid "Installed [{lib}]."
 msgstr "Instalado [{lib}]."
+
+#, ai_translation
+msgid "International Arbiter"
+msgstr "Árbitro Internacional"
 
 #, ai_translation
 msgid "International Chess Federation"
@@ -4070,6 +4082,10 @@ msgstr "Namíbia"
 #, fuzzy
 msgid "National *** NAME FOR RATING TYPE NATIONAL"
 msgstr "Nacional"
+
+#, ai_translation
+msgid "National Arbiter"
+msgstr "Árbitro Nacional"
 
 #, ai_translation
 msgid "Nauru"
@@ -5159,6 +5175,10 @@ msgstr "O adversário dos jogadores: exibido"
 msgid "Players' opponent: hidden"
 msgstr "O adversário dos jogadores: oculto"
 
+#, ai_translation
+msgid "Players:"
+msgstr "Jogadores:"
+
 #, ai_translation, python-format
 msgid "Players: %(num)d"
 msgstr "Jogadores: %(num)d"
@@ -5222,6 +5242,10 @@ msgstr "Por favor, lance a nova versão."
 #, ai_translation
 msgid "Please select a type of criterion."
 msgstr "Por favor, selecione um tipo de critério."
+
+#, ai_translation
+msgid "Please select at least one player."
+msgstr "Por favor, selecione pelo menos um jogador."
 
 #, ai_translation
 msgid "Please select the account."
@@ -6062,6 +6086,10 @@ msgstr "Cor da semente"
 #, ai_translation
 msgid "Select All"
 msgstr "Selecionar tudo"
+
+#, ai_translation
+msgid "Select an account"
+msgstr "Selecione uma conta"
 
 #, ai_translation
 msgid "Select player"
@@ -7020,10 +7048,6 @@ msgstr "Este campo não pode ser modificado assim que o torneio começar."
 #, ai_translation
 msgid "This field can't be updated once the tournament has started."
 msgstr "Este campo não pode ser atualizado assim que o torneio começar."
-
-#, ai_translation
-msgid "This field is not editable."
-msgstr "Este campo não é editável."
 
 #, ai_translation
 msgid "This field is required (except for rounds)."
@@ -8505,4 +8529,7 @@ msgstr "½ - ½ (U)"
 
 #~ msgid "Phone: %(phone)s (click to copy to the clipboard)."
 #~ msgstr "Telefone: %(phone)s (clique para copiar para a área de transferência)."
+
+#~ msgid "This field is not editable."
+#~ msgstr "Este campo não é editável."
 

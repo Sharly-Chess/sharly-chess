@@ -442,9 +442,6 @@ msgstr ""
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
 msgstr ""
 
-msgid "This field is not editable."
-msgstr ""
-
 msgid "Tournament"
 msgstr ""
 
@@ -551,4 +548,7 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "This field is not editable."
+#~ msgstr ""
 

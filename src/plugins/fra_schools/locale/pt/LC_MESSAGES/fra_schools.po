@@ -3,6 +3,10 @@ msgid "%(string)s:"
 msgstr "%(string)s:"
 
 #, ai_translation
+msgid "A positive integer is expected."
+msgstr "Espera-se um número inteiro positivo."
+
+#, ai_translation
 msgid "Add"
 msgstr "Adicionar"
 
@@ -47,6 +51,10 @@ msgid "Complete Team"
 msgstr "Equipe completa"
 
 #, ai_translation
+msgid "Edit the selected French school."
+msgstr "Edite a escola francesa selecionada."
+
+#, ai_translation
 msgid "Exclude: {values}"
 msgstr "Exclui: {values}"
 
@@ -63,8 +71,12 @@ msgid "French school"
 msgstr "Escola de francês"
 
 #, ai_translation
-msgid "Identifier"
-msgstr "Identificador"
+msgid "Hide the UAI codes for the FFE upload"
+msgstr "Ocultar os códigos UAI para o upload FFE"
+
+#, ai_translation
+msgid "Include incomplete teams"
+msgstr "Incluir equipes incompletas"
 
 #, ai_translation
 msgid "Incomplete Team"
@@ -77,6 +89,10 @@ msgstr "Formato inválido (esperado: 5 dígitos)."
 #, ai_translation
 msgid "Loading more results…"
 msgstr "Atualizando... Hotéis similares"
+
+#, ai_translation
+msgid "Maximum number of teams per school."
+msgstr "Número máximo de equipes por escola."
 
 #, ai_translation, python-format
 msgid "Missing boys: %(count)d"
@@ -95,12 +111,20 @@ msgid "Other missing players: %(count)d"
 msgstr "Outros jogadores desaparecidos: %(count)d"
 
 #, ai_translation
+msgid "Overall ranking"
+msgstr "Ranking geral"
+
+#, ai_translation
 msgid "Please validate the French school to continue."
 msgstr "Por favor, valide a escola francesa para continuar."
 
 #, ai_translation
 msgid "Postal code"
 msgstr "Código postal"
+
+#, fuzzy
+msgid "Pts *** POINTS COLUMN HEADER"
+msgstr "Pts"
 
 #, ai_translation
 msgid "Ranking by school"
@@ -109,6 +133,14 @@ msgstr "Ranking por escola"
 #, ai_translation
 msgid "Ranking by school after round #{round}"
 msgstr "Ranking por escola após rodada n° {round}"
+
+#, fuzzy
+msgid "Rk. *** RANK COLUMN HEADER"
+msgstr "Rk."
+
+#, ai_translation
+msgid "Save"
+msgstr "Gravar"
 
 msgid "School"
 msgstr "Escola"
@@ -125,6 +157,14 @@ msgstr "Escolas"
 msgid "Search by: %(fields)s"
 msgstr "Procurar por: %(fields)s"
 
+#, ai_translation
+msgid "Teams are considered complete when they have 8 players including 2 boys and 2 girls."
+msgstr "As equipes são consideradas completas quando têm 8 jogadores, incluindo 2 meninos e 2 meninas."
+
+#, ai_translation
+msgid "Teams per school:"
+msgstr "Equipes por escola:"
+
 #, ai_translation, python-format
 msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
 msgstr "O banco de dados [%(database)s] não está instalado (para instalá-lo: Menu > Fontes de dados)."
@@ -132,6 +172,10 @@ msgstr "O banco de dados [%(database)s] não está instalado (para instalá-lo: 
 #, ai_translation, python-format
 msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
 msgstr "O banco de dados [%(database)s] foi atualizado pela última vez há mais de %(age)d meses. É preferível atualizá-lo antes de prosseguir (Menu > Fontes de dados)."
+
+#, ai_translation
+msgid "The school with that code already exists."
+msgstr "A escola com esse código já existe."
 
 #, ai_translation
 msgid "The tournament has not yet started."
@@ -157,8 +201,27 @@ msgstr "Esta rodada não é válida (o torneio tem rodadas {rounds})."
 msgid "Total"
 msgstr "Total"
 
+#, ai_translation
+msgid "UAI code"
+msgstr "Código UAI"
+
+#, ai_translation
+msgid "UAI codes are a necessity to distinguish schools with long names. Only enable this option if your school names are short enough."
+msgstr "Os códigos UAI são uma necessidade para distinguir escolas com nomes longos. Só ative esta opção se os nomes da sua escola forem curtos o suficiente."
+
+#, ai_translation, python-format
+msgid "Update the school [%(school_name)s]"
+msgstr "Atualizar a escola [%(school_name)s]"
+
+#, fuzzy
+msgid "incomplete *** INCOMPLETE TEAM"
+msgstr "incomplete"
+
 msgid "{count} school represented"
 msgid_plural "{count} schools represented"
 msgstr[0] "{count} escola representada"
 msgstr[1] "{count} escolas representadas"
+
+#~ msgid "Identifier"
+#~ msgstr "Identificador"
 
