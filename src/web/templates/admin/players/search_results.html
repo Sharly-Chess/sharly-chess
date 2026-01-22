@@ -28,7 +28,7 @@
                     player_source_id=data_source.get_player_source_id(player.stored_player),
                 ) }}"
                 {% if admin_player %}
-                    hx-vals='{player_id: {{ admin_player.id }}}'
+                    hx-vals='{"player_id": {{ admin_player.id }}}'
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
