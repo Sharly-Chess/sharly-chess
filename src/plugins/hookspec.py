@@ -113,6 +113,11 @@ class AppHookSpecs:
         """Provide additional template context for rendering the player form."""
 
     @hookspec
+    def insert_player_form_carry_over_field(self, fields: list[str]):
+        """Insert fields that are carried over in the player form. These fields
+        are saved after the player search and when clicking using the 'Add other' button."""
+
+    @hookspec
     def insert_player_form_fields_template(
         self, templates_by_section: defaultdict[str, list[str]]
     ):

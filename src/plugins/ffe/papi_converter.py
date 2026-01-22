@@ -698,11 +698,14 @@ class PapiConverter:
         tournament: Tournament,
         target_file: Path,
         anonymize_player_data: bool = False,
+        is_ffe_upload: bool = False,
     ):
         """Write the tournament data to a papi file.
         Converts a Tournament to JSON format that can be sent to papi-converter.
         Raises a SharlyChessException if the conversion fails."""
-        papi_data = self.tournament_to_papi_data(tournament, anonymize_player_data)
+        papi_data = self.tournament_to_papi_data(
+            tournament, anonymize_player_data, is_ffe_upload
+        )
         papi_data_dict = {
             'variables': {
                 key: value or '' for key, value in papi_data.variables.__dict__.items()
@@ -767,7 +770,10 @@ class PapiConverter:
         return rating_threshold_1, rating_threshold_2
 
     def tournament_to_papi_data(
-        self, tournament: Tournament, anonymize_player_data: bool = False
+        self,
+        tournament: Tournament,
+        anonymize_player_data: bool = False,
+        is_ffe_upload: bool = False,
     ) -> PapiData:
         """Convert a Tournament object to PapiData."""
         papi_tiebreaks, manual_tiebreak_by_player_id = (
@@ -818,7 +824,9 @@ class PapiConverter:
                 anonymize_player_data,
             )
             plugin_manager.hook_for_event(tournament.event, 'update_papi_player')(
-                papi_player=papi_player, tournament_player=tournament_player
+                papi_player=papi_player,
+                tournament_player=tournament_player,
+                is_ffe_upload=is_ffe_upload,
             )
             papi_players.append(papi_player)
 

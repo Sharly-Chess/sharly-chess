@@ -5,13 +5,56 @@
 {% endblock %}
 
 {% block content %}
+    <section>
+        <div class="section-title">{{ _('Overall ranking') }}</div>
+        <div
+            class="teams-overall centered"
+            style="grid-template-columns: repeat({{ tournament.tie_breaks|length + 3 }}, max-content);"
+        >
+            <div class="overall-header text-end fw-bold">
+                {{ _('Rk. *** RANK COLUMN HEADER') }}
+            </div>
+            <div class="overall-header">
+                {{ _('School') }}
+            </div>
+            <div class="overall-header text-center fw-bold">
+                {{ _('Pts *** POINTS COLUMN HEADER') }}
+            </div>
+            {% for tie_break in tournament.tie_breaks %}
+                <div class="overall-header text-center">
+                    {{ tie_break.acronym }}
+                </div>
+            {% endfor %}
+            {% for team in ordered_school_teams %}
+                <div class="overall-cell text-end fw-bold">
+                    {{ ordinal_integer(loop.index)|safe }}
+                </div>
+                <div
+                    class="overall-cell"
+                    onclick="document.getElementById('team-{{ team.id }}').scrollIntoView()"
+                    style="cursor: pointer"
+                >
+                    {{ team.school.name }}{% if team.label %}<span class="fw-bold"> {{ team.label }}</span>{% endif %}{% if team.school.city %}, {{ team.school.city }}{% endif %}
+                    {% if not team.is_complete %}
+                        <i>({{ _('incomplete *** INCOMPLETE TEAM') }})</i>
+                    {% endif %}
+                </div>
+                <div class="overall-cell text-center fw-bold">
+                   {{ points_str(team.total_points) }}
+                </div>
+                {% for tb_sum in team.tie_break_sums %}
+                     <div class="overall-cell text-center">
+                        {{ points_str(tb_sum) }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </section>
     <section class="teams" style="grid-template-columns: repeat({{player_columns|length}}, max-content);">
         {% for team in ordered_school_teams %}
-            {% if not loop.first %}
-                <div class="separator"></div>
-            {% endif %}
+            <div class="separator"></div>
 
-            <div class="team">
+            <div id="team-{{ team.id }}" class="team">
                 <div class="team-rank">{{ ordinal_integer(loop.index)|safe }}</div>
                 <div class="team-title">
                     {{ team.school.name }}{% if team.label %}<span class="team-label"> {{ team.label }}</span>{% endif %}{% if team.school.city %},
@@ -30,9 +73,11 @@
                         </div>
                     {% endif %}
                     {% if team.is_complete %}
-                        {{ _('Complete Team') }}</i>
+                        {% if include_incomplete %}
+                            <i>{{ _('Complete Team') }}</i>
+                        {% endif %}
                     {% else %}
-                        {{ _('Incomplete Team') }}</i>
+                        <i>{{ _('Incomplete Team') }}</i>
                         {% if team.missing_boys %}
                             <br/>
                             {{ _('Missing boys: %(count)d', count=team.missing_boys) }}
@@ -65,11 +110,11 @@
                     {{ _('Total') }}
                 </div>
                 <div class="total">
-                   {{ team.total_points }}
+                   {{ points_str(team.total_points) }}
                 </div>
                 {% for tb_sum in team.tie_break_sums %}
                      <div class="total">
-                        {{ '{:g}'.format(tb_sum) }}
+                        {{ points_str(tb_sum) }}
                     </div>
                 {% endfor %}
             </div>
