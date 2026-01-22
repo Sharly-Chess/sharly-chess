@@ -54,6 +54,9 @@ msgstr "Établissements Scolaires"
 msgid "French school"
 msgstr "Établissement scolaire"
 
+msgid "Hide the UAI codes for the FFE upload"
+msgstr "Cacher les codes UAI lors de la mise en ligne FFE"
+
 msgid "Include incomplete teams"
 msgstr "Inclure les équipes incomplètes"
 
@@ -158,6 +161,9 @@ msgstr "Total"
 
 msgid "UAI code"
 msgstr "Code UAI"
+
+msgid "UAI codes are a necessity to distinguish schools with long names. Only enable this option if your school names are short enough."
+msgstr "Les codes UAI sont nécessaires pour distinguer les établissements avec de longs noms. N'activez cette option que si les noms de vos établissements sont suffisamment courts."
 
 #, python-format
 msgid "Update the school [%(school_name)s]"

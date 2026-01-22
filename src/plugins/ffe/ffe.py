@@ -128,7 +128,10 @@ if TYPE_CHECKING:
 class FfePluginHooks:
     @hookspec
     def update_papi_player(
-        self, papi_player: PapiPlayer, tournament_player: TournamentPlayer
+        self,
+        papi_player: PapiPlayer,
+        tournament_player: TournamentPlayer,
+        is_ffe_upload: bool,
     ):
         """Called when a player is converted to Papi format"""
 

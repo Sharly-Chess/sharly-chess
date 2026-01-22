@@ -154,6 +154,10 @@ class FRASchoolsPlugin(Plugin):
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, FRASchoolsEventPluginData
 
+    @property
+    def event_form_fields_template(self) -> str:
+        return '/fra_schools_event_form_fields.html'
+
     # ---------------------------------------------------------------------------------
     # Players
     # ---------------------------------------------------------------------------------
@@ -315,10 +319,20 @@ class FRASchoolsPlugin(Plugin):
 
     @hookimpl
     def update_papi_player(
-        self, papi_player: PapiPlayer, tournament_player: TournamentPlayer
+        self,
+        papi_player: PapiPlayer,
+        tournament_player: TournamentPlayer,
+        is_ffe_upload: bool,
     ):
         school = FRASchoolsUtils.get_player_school(tournament_player)
-        papi_player.club = school.full_name if school else ''
+        club = ''
+        if school:
+            plugin_data = FRASchoolsUtils.get_event_plugin_data(tournament_player.event)
+            if is_ffe_upload and plugin_data.hide_school_code_on_upload:
+                club = school.full_name_without_code
+            else:
+                club = school.full_name
+        papi_player.club = club
 
     @hookimpl
     def augment_stored_player_from_chessevent_player(
