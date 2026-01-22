@@ -39,6 +39,9 @@ msgstr "Code"
 msgid "Complete Team"
 msgstr "Équipe complète"
 
+msgid "Edit the selected French school."
+msgstr "Metre à jour l'établissement scolaire sélectionné."
+
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
 
@@ -50,9 +53,6 @@ msgstr "Établissements Scolaires"
 
 msgid "French school"
 msgstr "Établissement scolaire"
-
-msgid "Identifier"
-msgstr "Identifiant"
 
 msgid "Include incomplete teams"
 msgstr "Inclure les équipes incomplètes"
@@ -105,6 +105,9 @@ msgstr "Classement par établissement après la ronde n°{round}"
 msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Pl."
 
+msgid "Save"
+msgstr "Enregistrer"
+
 msgid "School"
 msgstr "Établissement"
 
@@ -132,6 +135,9 @@ msgstr "La base de données [%(database)s] n'est pas installée (pour l'installe
 msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
 msgstr "La base de données [%(database)s] a été mise à jour pour la dernière fois il y a plus de %(age)d mois. Il est préférable de la mettre à jour avant de continuer (Menu > Sources de données)."
 
+msgid "The school with that code already exists."
+msgstr "L'établissement ayant ce code existe déjà."
+
 msgid "The tournament has not yet started."
 msgstr "Le tournoi n'est pas encore commencé."
 
@@ -149,6 +155,13 @@ msgstr "Ce numéro de ronde n'est pas valide (le tournoi comporte {rounds} ronde
 
 msgid "Total"
 msgstr "Total"
+
+msgid "UAI code"
+msgstr "Code UAI"
+
+#, python-format
+msgid "Update the school [%(school_name)s]"
+msgstr "Mettre à jour l'établissement [%(school_name)s]"
 
 msgid "incomplete *** INCOMPLETE TEAM"
 msgstr "incomplète"
