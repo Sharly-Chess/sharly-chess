@@ -203,6 +203,7 @@
                 'disabled', $(this).val() === '' || $('#fra-school-form-container').is(':visible')
             );
         });
+        $('#fra-school-id').trigger('change');
         $('#fra-school-search').on('blur', function () {
             setTimeout(function () {
                 const results = $('#fra-schools-search-results');
