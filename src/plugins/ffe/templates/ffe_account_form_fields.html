@@ -1,0 +1,16 @@
+<div class="col-12 col-md-6">
+    {{ admin_macros.text_input(
+        name='ffe_licence_number',
+        label=_('%(string)s:', string=_('FFE Licence no. *** LICENCE NUMBER')),
+        placeholder='',
+        data=data, errors=errors
+    ) }}
+</div>
+<div class="col-12 col-md-6">
+    {{ admin_macros.select_input(
+        name='ffe_arbiter_title',
+        label=_('%(string)s:', string=_('FFE arbiter title')),
+        select_options=ffe_arbiter_title_options,
+        data=data, errors=errors
+    ) }}
+</div>

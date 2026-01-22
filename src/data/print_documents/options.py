@@ -1,5 +1,5 @@
 import re
-from abc import ABC
+from abc import ABC, abstractmethod
 from functools import cached_property
 from types import UnionType
 from typing import TYPE_CHECKING, Optional, override, Any
@@ -83,23 +83,28 @@ class TournamentsPrintOption(PrintOption):
         return None
 
 
-class PlayerPrintOption(PrintOption):
-    @staticmethod
-    def static_id() -> str:
+class PlayerPrintOption(PrintOption, ABC):
+    @property
+    def template_file_name(self) -> str:
         return 'player'
+
+    @property
+    def default_value(self) -> Any:
+        return None
 
     @property
     def type(self) -> type | UnionType:
         return int | None
 
     @property
-    def default_value(self) -> Any:
-        return None
+    @abstractmethod
+    def mandatory(self) -> bool:
+        """Returns True if the selecting a player is needed to print."""
 
     @override
     def validate(self):
         super().validate()
-        if self.value is None:
+        if self.mandatory and self.value is None:
             raise OptionError(_('Please choose a player.'), self)
 
     @staticmethod
@@ -118,9 +123,34 @@ class PlayerPrintOption(PrintOption):
         }
 
 
-class PlayersPrintOption(PrintOption):
+class MandatoryPlayerPrintOption(PlayerPrintOption):
     @staticmethod
     def static_id() -> str:
+        return 'mandatory-player'
+
+    @property
+    def mandatory(self) -> bool:
+        return True
+
+
+class OptionalPlayerPrintOption(PlayerPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'optional-player'
+
+    @property
+    def mandatory(self) -> bool:
+        return False
+
+
+class PlayersPrintOption(PrintOption, ABC):
+    @property
+    @abstractmethod
+    def mandatory(self) -> bool:
+        """Returns True if at least one player must be selected."""
+
+    @property
+    def template_file_name(self) -> str:
         return 'players'
 
     @property
@@ -134,6 +164,8 @@ class PlayersPrintOption(PrintOption):
     @override
     def validate(self):
         self._validate_list_type(int)
+        if self.mandatory and not self.value:
+            raise OptionError(_('Please select at least one player.'), self)
 
     @staticmethod
     def get_players_per_tournament(
@@ -149,6 +181,26 @@ class PlayersPrintOption(PrintOption):
             ]
             for tournament in tournaments
         }
+
+
+class OptionalPlayersPrintOption(PlayersPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'optional-players'
+
+    @property
+    def mandatory(self) -> bool:
+        return False
+
+
+class MandatoryPlayersPrintOption(PlayersPrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'mandatory-players'
+
+    @property
+    def mandatory(self) -> bool:
+        return True
 
 
 class RoundPrintOption(PrintOption):
@@ -232,6 +284,7 @@ class PlayerSortPrintOption(PrintOption):
 
     @override
     def validate(self):
+        super().validate()
         try:
             _sorter = self.player_sorter
         except KeyError:
@@ -266,6 +319,7 @@ class PairingStylePrintOption(PrintOption):
 
     @override
     def validate(self):
+        super().validate()
         try:
             _style = self.pairing_style
         except KeyError:
@@ -353,17 +407,18 @@ class QRCodePrintOption(PrintOption):
         return PrintQRCodeTypeManager(self.event).get_object(self.value)
 
     @property
-    def valid_options_per_type(self) -> dict[str, list[str]]:
+    def valid_option_ids_per_type_id(self) -> dict[str, list[str]]:
         from data.print_documents import PrintQRCodeTypeManager
 
         type_options = PrintQRCodeTypeManager(self.event).type_by_id()
         return {
-            type_id: type_options[type_id].get_valid_options()
+            type_id: type_options[type_id].get_valid_option_ids()
             for type_id in type_options
         }
 
     @override
     def validate(self):
+        super().validate()
         try:
             _style = self.qrcode_type
         except KeyError:
@@ -437,17 +492,18 @@ class PlaceCardPrintOption(PrintOption):
         return PrintPlaceCardTypeManager().get_object(self.value)
 
     @property
-    def valid_options_per_type(self) -> dict[str, list[str]]:
+    def valid_option_ids_per_type_id(self) -> dict[str, list[str]]:
         from data.print_documents import PrintPlaceCardTypeManager
 
         type_options = PrintPlaceCardTypeManager().type_by_id()
         return {
-            type_id: type_options[type_id].get_valid_options()
+            type_id: type_options[type_id].get_valid_option_ids()
             for type_id in type_options
         }
 
     @override
     def validate(self):
+        super().validate()
         try:
             _style = self.place_card_type
         except KeyError:
@@ -539,6 +595,7 @@ class PlaceCardCropMarksPrintOption(PrintOption):
 
     @override
     def validate(self):
+        super().validate()
         try:
             _crop_marks = self.place_card_crop_marks
         except KeyError:
@@ -579,4 +636,34 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
 
     @override
     def validate(self):
+        self._validate_list_type(int)
         _board_numbers = self.board_numbers
+
+
+class AccountPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'account'
+
+    @property
+    def template_file_name(self) -> str:
+        return 'account'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @property
+    def default_text(self) -> str:
+        """Returns the default text for this option."""
+        return _('Select an account')
+
+    @property
+    @abstractmethod
+    def label(self) -> str:
+        """Returns the label for this option."""
+        return _('Account:')

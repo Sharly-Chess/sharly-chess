@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ document.title }}</title>
+        <script>
+            {% include '/lib/jquery/jquery-' ~ sharly_chess_config.jquery_version ~ '.min.js' %}
+        </script>
+        <style>
+            {% include 'ffe_print.css' %}
+        </style>
+    </head>
+    <body>
+        <div class="info">
+            Ce document a été généré par Sharly Chess {{ sharly_chess_config.version }} - {{ sharly_chess_config.localized_copyright('fr') }}
+            <br/>
+            Tous les champs des formulaires FFE sont modifiables.
+            <br/>
+            Les points nécessitant votre attention sont indiqués en rouge (ils apparaissent en noir à l'impression).
+        </div>
+        {% block body %}
+            BODY
+        {% endblock body %}
+        <script>
+            $(document).ready(function() {
+                $("input[required]").on("input", function() {
+                    if ($(this).val()) {
+                        $(this).removeClass('missing');
+                    } else {
+                        $(this).addClass('missing');
+                    }
+                })
+                $('input[required]').trigger('input');
+            })
+        </script>
+    </body>
+</html>

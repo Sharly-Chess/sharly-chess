@@ -1,0 +1,39 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('FFE Form:'),
+        select_options=option.ffe_document_type_options,
+        data=data, errors=errors
+    ) }}
+</div>
+<script>
+    (() => {
+        function hideInvalidOptions() {
+            const selected = $('.modal #{{ option.id }}').val();
+            const validOptions = {{ option.valid_option_ids_per_type_id | tojson }};
+            const allowed = validOptions[selected] || [];
+            {% for o in print_options %}
+                {% if o.id != option.id %}
+                    if (allowed.includes("{{ o.id }}")) {
+                        $("#{{ o.container_id }}").show();
+                    } else {
+                        $("#{{ o.container_id }}").hide();
+                    }
+                {% endif %}
+            {% endfor %}
+        }
+
+        function handleOptionsChange() {
+            const doc = $('.modal #document').val();
+            if (doc == '{{ option.ffe_print_document_id }}') {
+                // Delay to allow default hide/show script to complete
+                setTimeout(hideInvalidOptions, 0);
+            }
+        }
+
+        const $modal = $('.modal');
+        $modal.find('#{{ option.id }}').on('change', handleOptionsChange);
+        $modal.find('#document').on('change', handleOptionsChange);
+    })();
+    setTimeout(() => $('#{{ option.id }}').trigger('change'), 100);
+</script>
