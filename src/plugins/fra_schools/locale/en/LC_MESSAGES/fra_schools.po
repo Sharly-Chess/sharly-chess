@@ -39,7 +39,7 @@ msgstr ""
 msgid "Complete Team"
 msgstr ""
 
-msgid "Edit the selected french school."
+msgid "Edit the selected French school."
 msgstr ""
 
 msgid "Exclude: {values}"
