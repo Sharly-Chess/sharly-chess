@@ -610,7 +610,7 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
 
     @property
     def type(self) -> type | UnionType:
-        return str
+        return str | None
 
     @property
     def default_value(self) -> Any:
@@ -619,10 +619,11 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
     @cached_property
     def board_numbers(self) -> set[int]:
         board_numbers: set[int] = set()
-        if self.value:
-            self.value = re.sub(r'\s*-\s*', '-', self.value)
-            self.value = re.sub(r'[\s,;]+', ' ', self.value)
-            for part in re.split(' ', self.value):
+        value = self.value
+        if value:
+            value = re.sub(r'\s*-\s*', '-', value)
+            value = re.sub(r'[\s,;]+', ' ', value)
+            for part in re.split(' ', value):
                 if re.match(r'^(\d*)$', part):
                     board_numbers.add(int(part))
                 elif matches := re.match(r'^(\d*)-(\d*)$', part):
@@ -636,7 +637,7 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
 
     @override
     def validate(self):
-        self._validate_list_type(int)
+        super().validate()
         _board_numbers = self.board_numbers
 
 
