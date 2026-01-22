@@ -22,7 +22,6 @@ from data.print_documents.player_sorters import (
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
-from data.tournament import Tournament
 from utils.option import Option
 
 if TYPE_CHECKING:
@@ -107,21 +106,6 @@ class PlayerPrintOption(PrintOption, ABC):
         if self.mandatory and self.value is None:
             raise OptionError(_('Please choose a player.'), self)
 
-    @staticmethod
-    def get_players_per_tournament(
-        tournaments: list[Tournament],
-    ) -> dict[int, list[dict[str, Any]]]:
-        return {
-            tournament.id: [
-                {
-                    'id': tournament_player.id,
-                    'full_name': tournament_player.full_name,
-                }
-                for tournament_player in tournament.tournament_players_by_name_with_unpaired
-            ]
-            for tournament in tournaments
-        }
-
 
 class MandatoryPlayerPrintOption(PlayerPrintOption):
     @staticmethod
@@ -167,21 +151,6 @@ class PlayersPrintOption(PrintOption, ABC):
         if self.mandatory and not self.value:
             raise OptionError(_('Please select at least one player.'), self)
 
-    @staticmethod
-    def get_players_per_tournament(
-        tournaments: list[Tournament],
-    ) -> dict[int, list[dict[str, Any]]]:
-        return {
-            tournament.id: [
-                {
-                    'id': tournament_player.id,
-                    'full_name': tournament_player.full_name,
-                }
-                for tournament_player in tournament.tournament_players_by_name_with_unpaired
-            ]
-            for tournament in tournaments
-        }
-
 
 class OptionalPlayersPrintOption(PlayersPrintOption):
     @staticmethod
@@ -191,16 +160,6 @@ class OptionalPlayersPrintOption(PlayersPrintOption):
     @property
     def mandatory(self) -> bool:
         return False
-
-
-class MandatoryPlayersPrintOption(PlayersPrintOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'mandatory-players'
-
-    @property
-    def mandatory(self) -> bool:
-        return True
 
 
 class RoundPrintOption(PrintOption):
