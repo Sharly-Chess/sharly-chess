@@ -27,12 +27,9 @@
                     data_source_id=data_source.id,
                     player_source_id=data_source.get_player_source_id(player.stored_player),
                 ) }}"
-                hx-vals='js:{
-                    {% if admin_player %}player_id: {{ admin_player.id }}{% endif %}
-                    {% for field in carry_over_fields %}
-                        {field: $("#{{ field|replace("_", "-") }}").val(),
-                    {% endfor %}
-                }'
+                {% if admin_player %}
+                    hx-vals='{player_id: {{ admin_player.id }}}'
+                {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
