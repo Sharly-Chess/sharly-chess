@@ -1,3 +1,4 @@
+from collections import defaultdict
 from typing import Annotated, Any
 
 from litestar import get, post
@@ -77,10 +78,15 @@ class EventPrintController(BaseEventAdminController):
             }
         )
         data = default_data | (data or {})
-        containers_by_document: dict[str, list[str]] = {'': []} | {
-            document.id: [option.container_id for option in document.default_options()]
-            for document in PrintDocumentManager(event).objects()
-        }
+        document_ids_by_option_id: dict[str, list[str]] = defaultdict(list[str])
+        containers_by_document: dict[str, list[str]] = {'': []}
+        for document in PrintDocumentManager(event).objects():
+            options = document.default_options()
+            containers_by_document[document.id] = [
+                option.container_id for option in options
+            ]
+            for option in options:
+                document_ids_by_option_id[option.id].append(document.id)
         current_document_option_ids = []
         if document_id := data.get('document', None):
             current_document_option_ids = [
@@ -89,6 +95,16 @@ class EventPrintController(BaseEventAdminController):
                 .get_type(document_id)()
                 .default_options()
             ]
+        players_per_tournament_id = {
+            tournament.id: [
+                {
+                    'id': tournament_player.id,
+                    'full_name': tournament_player.full_name,
+                }
+                for tournament_player in tournament.tournament_players_by_name_with_unpaired
+            ]
+            for tournament in allowed_tournaments
+        }
         return {
             'modal': 'print',
             'client': web_context.client,
@@ -96,6 +112,8 @@ class EventPrintController(BaseEventAdminController):
             'tournament_options': web_context.get_tournament_options(
                 allowed_tournaments
             ),
+            'players_per_tournament_id': players_per_tournament_id,
+            'document_ids_by_option_id': document_ids_by_option_id,
             'allowed_tournaments': allowed_tournaments,
             'document_options': PrintDocumentManager(event).options(),
             'current_document_option_ids': current_document_option_ids,

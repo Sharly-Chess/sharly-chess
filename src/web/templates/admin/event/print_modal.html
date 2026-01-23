@@ -15,6 +15,9 @@
                 hx-post="{{ url_for('admin-event-print', event_uniq_id=admin_event.uniq_id) }}"
                 hx-indicator="#please-wait"
             >
+                <script>
+                    var playersPerTournamentId = {{ players_per_tournament_id | tojson }};
+                </script>
                 <div class="row gy-2 gx-3">
                     <div class="col-12">
                         {{ admin_macros.select_input(
