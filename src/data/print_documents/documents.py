@@ -41,7 +41,6 @@ from data.print_documents.options import (
     PlaceCardCropMarksPrintOption,
     PlaceCardBoardNumbersPrintOption,
     OptionalPlayersPrintOption,
-    MandatoryPlayersPrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
@@ -121,13 +120,6 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
             return self.tournament.tournament_players_by_id[player_id]
         else:
             return None
-
-    @cached_property
-    def mandatory_players(self) -> list[TournamentPlayer]:
-        return [
-            self.tournament.tournament_players_by_id[player_id]
-            for player_id in self._get_option(MandatoryPlayersPrintOption).value
-        ]
 
     @cached_property
     def optional_players(self) -> list[TournamentPlayer]:

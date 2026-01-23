@@ -223,7 +223,11 @@ class CheckInPlayersTabColumn(FilterPlayersTabColumn):
 
     @property
     def filter_mandatory_keys(self) -> list[str]:
-        return [str(status.value) for status in CheckInStatus]
+        return [
+            str(status.value)
+            for status in CheckInStatus
+            if status != CheckInStatus.CHECK_IN_CLOSED
+        ]
 
     def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
         return any(tournament.check_in_open for tournament in tournaments)

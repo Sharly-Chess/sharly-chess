@@ -472,20 +472,8 @@ class SharlyChessConfig(metaclass=Singleton):
     # The default delay between pages on rotators (in seconds).
     default_rotator_delay: int = 1 if TEST_ENV else 15
 
-    # The delay before checking if the user index page has changed.
-    user_index_update_delay: int = 1 if TEST_ENV else 10
-
-    # The delay before checking if a user event page has changed.
-    user_event_update_delay: int = 1 if TEST_ENV else 10
-
     # The delay before checking if a user screen page has changed.
     user_screen_update_delay: int = 1 if TEST_ENV else 10
-
-    # The numbers of columns allowed on pages with grids.
-    allowed_columns: list[int] = [1, 2, 3, 4, 6]
-
-    # The default number of columns.
-    default_columns: int = 4
 
     # The error background image.
     error_background_image: str = '/static/images/sharly-chess-error.png'
