@@ -155,8 +155,8 @@ class FFEDocumentType(IdentifiableEntity, ABC):
             )
 
         return (
-            f'Arbitres en chef·fe :\n{", ".join(format_arbiter(arbiter) for arbiter in chief_arbiters)}\n\n'
-            f'Arbitres en adjoint·es :\n{", ".join(format_arbiter(arbiter) for arbiter in deputy_arbiters)}\n'
+            f'Arbitres en chef :\n{", ".join(format_arbiter(arbiter) for arbiter in chief_arbiters)}\n\n'
+            f'Arbitres adjoint·es :\n{", ".join(format_arbiter(arbiter) for arbiter in deputy_arbiters)}\n'
         )
 
     @cached_property

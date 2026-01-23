@@ -73,7 +73,7 @@ msgid "Cheating complaint"
 msgstr "Dépot de plainte pour suspicion de triche"
 
 msgid "Chief arbiter (if different):"
-msgstr "Arbitre en chef·fe (si différent·e) :"
+msgstr "Arbitre en chef (si différent·e) :"
 
 msgid "Choose at least one league."
 msgstr "Choisir au moins une ligue."
@@ -368,7 +368,7 @@ msgid "Select the arbiter"
 msgstr "Sélectionner l'arbitre"
 
 msgid "Select the chief arbiter"
-msgstr "Sélectionner l'arbitre en chef·fe"
+msgstr "Sélectionner l'arbitre en chef"
 
 msgid "Select the trainee"
 msgstr "Sélectionner le·la stagiaire"
