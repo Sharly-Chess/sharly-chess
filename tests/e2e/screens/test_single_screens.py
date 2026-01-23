@@ -171,8 +171,8 @@ class TestSingleScreensFunctionality:
             {'name': 'BRUNO', 'result': Result.DRAW, 'button_text': '½ - ½'},
             {'name': 'MARIA', 'result': Result.LOSS, 'button_text': '0 - 1'},
         ]
-
         for i, player in enumerate(players):
+            lan_page.bring_to_front()
             row = rows.filter(has_text=player['name'])
             expect(row.locator('div.score')).to_contain_text(f'#{i + 1}')
 
@@ -186,6 +186,7 @@ class TestSingleScreensFunctionality:
             expect(row.locator('div.score')).to_contain_text(str(player['result']))
 
             # That the other page is refreshed
+            another_lan_page.bring_to_front()
             other_row = other_page_rows.filter(has_text=player['name'])
             expect(other_row.locator('div.score')).to_contain_text(
                 str(player['result'])
