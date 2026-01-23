@@ -409,7 +409,7 @@ class DeputyChiefArbitrationAccessLevel(AccessLevel):
             AuthAction.VIEW_PRIVATE_SCREENS,
             AuthAction.VIEW_PRIZES_TAB,
             AuthAction.MANAGE_PRIZES,
-            AuthAction.PRINT,
+            AuthAction.GENERATE_DOCUMENTS,
         ]
 
     def _help_text_content(self, locale: str | None = None) -> str:

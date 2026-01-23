@@ -1747,6 +1747,9 @@ msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
 msgid "Document:"
 msgstr "Document :"
 
+msgid "Documents"
+msgstr "Documents"
+
 msgid "Dominica"
 msgstr "Dominique"
 
@@ -2385,6 +2388,15 @@ msgstr "Genre :"
 msgid "Genders"
 msgstr "Genres"
 
+msgid "Generate"
+msgstr "Générer"
+
+msgid "Generate documents"
+msgstr "Générer des documents"
+
+msgid "Generate documents (players, results, etc.)."
+msgstr "Générer des documents (players, results, etc.)."
+
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
 
@@ -2815,6 +2827,9 @@ msgstr "Nom de famille :"
 
 msgid "Last player:"
 msgstr "Dernier·e joueur·euse :"
+
+msgid "Last possible round"
+msgstr "Dernière ronde possible"
 
 msgid "Last results"
 msgstr "Derniers résultats"
@@ -3533,6 +3548,9 @@ msgstr "Nombre d'écrans :"
 msgid "Number of wins"
 msgstr "Nombre de victoires"
 
+msgid "Numbers or ranges of numbers of the boards (example: 1-10 20 25)."
+msgstr "Numéros ou plage de numéros d'échiquiers (exemple : 1-10 20 25)."
+
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr "Les nombres {first} et {last} ne sont pas compatibles ({first} > {last})."
 
@@ -4114,15 +4132,6 @@ msgstr "Ronde précédente"
 
 msgid "Previous tournament"
 msgstr "Tournoi précédent"
-
-msgid "Print"
-msgstr "Imprimer"
-
-msgid "Print players, results, etc."
-msgstr "Imprimer les participant·es, les résultats, les classements…"
-
-msgid "Printing"
-msgstr "Impression"
 
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prix"
@@ -5252,9 +5261,6 @@ msgstr "Le numéro du dernier échiquier à prendre en compte."
 msgid "The number of the last player to select."
 msgstr "Le numéro du·de la dernier·e joueur·euse."
 
-msgid "The numbers (or ranges of numbers) of the boards to print."
-msgstr "Les numéros (ou plages de numéros) des échiquiers à imprimer."
-
 msgid "The pairing number can't be greater than the player count."
 msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueur·euses."
 
@@ -5299,9 +5305,6 @@ msgstr "La ronde après laquelle le classement est affiché (si vide, la derniè
 
 msgid "The round count is incompatible with the number of players (expected: {expected})."
 msgstr "Le nombre de rondes est incompatible avec le nombre de joueur·euses (attendu : {expected})."
-
-msgid "The round for which the document is printed (Defaults to the last possible round)."
-msgstr "La ronde pour laquelle le document est imprimé (par défaut la dernière ronde possible)."
 
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr "Les écrans utilisés par le pilote d'afficheurs sont désignés par l'administrateur·ice."
@@ -5434,9 +5437,6 @@ msgstr "Ce champ ne peut être modifié une fois le tournoi commencé."
 
 msgid "This field can't be updated once the tournament has started."
 msgstr "Ce champ ne peut être mis à jour après le début du tournoi."
-
-msgid "This field is not editable."
-msgstr "Ce champ n'est pas modifiable."
 
 msgid "This field is required (except for rounds)."
 msgstr "Ce champ est obligatoire (excepté pour les rondes)."
@@ -6546,4 +6546,22 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Print"
+#~ msgstr "Imprimer"
+
+#~ msgid "Print players, results, etc."
+#~ msgstr "Imprimer les participant·es, les résultats, les classements…"
+
+#~ msgid "Printing"
+#~ msgstr "Impression"
+
+#~ msgid "The numbers (or ranges of numbers) of the boards to print."
+#~ msgstr "Les numéros (ou plages de numéros) des échiquiers à imprimer."
+
+#~ msgid "The round for which the document is printed (Defaults to the last possible round)."
+#~ msgstr "La ronde pour laquelle le document est imprimé (par défaut la dernière ronde possible)."
+
+#~ msgid "This field is not editable."
+#~ msgstr "Ce champ n'est pas modifiable."
 
