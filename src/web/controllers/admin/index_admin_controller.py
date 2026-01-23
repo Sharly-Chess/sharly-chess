@@ -1029,7 +1029,6 @@ class IndexAdminController(BaseAdminController):
                 )
 
         try:
-            print(temp_file.name)
             return File(
                 path=temp_file.name,
                 filename=database.file.resolve().name,

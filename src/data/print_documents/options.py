@@ -22,7 +22,6 @@ from data.print_documents.player_sorters import (
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
-from data.tournament import Tournament
 from utils.option import Option
 
 if TYPE_CHECKING:
@@ -107,21 +106,6 @@ class PlayerPrintOption(PrintOption, ABC):
         if self.mandatory and self.value is None:
             raise OptionError(_('Please choose a player.'), self)
 
-    @staticmethod
-    def get_players_per_tournament(
-        tournaments: list[Tournament],
-    ) -> dict[int, list[dict[str, Any]]]:
-        return {
-            tournament.id: [
-                {
-                    'id': tournament_player.id,
-                    'full_name': tournament_player.full_name,
-                }
-                for tournament_player in tournament.tournament_players_by_name_with_unpaired
-            ]
-            for tournament in tournaments
-        }
-
 
 class MandatoryPlayerPrintOption(PlayerPrintOption):
     @staticmethod
@@ -167,21 +151,6 @@ class PlayersPrintOption(PrintOption, ABC):
         if self.mandatory and not self.value:
             raise OptionError(_('Please select at least one player.'), self)
 
-    @staticmethod
-    def get_players_per_tournament(
-        tournaments: list[Tournament],
-    ) -> dict[int, list[dict[str, Any]]]:
-        return {
-            tournament.id: [
-                {
-                    'id': tournament_player.id,
-                    'full_name': tournament_player.full_name,
-                }
-                for tournament_player in tournament.tournament_players_by_name_with_unpaired
-            ]
-            for tournament in tournaments
-        }
-
 
 class OptionalPlayersPrintOption(PlayersPrintOption):
     @staticmethod
@@ -191,16 +160,6 @@ class OptionalPlayersPrintOption(PlayersPrintOption):
     @property
     def mandatory(self) -> bool:
         return False
-
-
-class MandatoryPlayersPrintOption(PlayersPrintOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'mandatory-players'
-
-    @property
-    def mandatory(self) -> bool:
-        return True
 
 
 class RoundPrintOption(PrintOption):
@@ -610,7 +569,7 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
 
     @property
     def type(self) -> type | UnionType:
-        return str
+        return str | None
 
     @property
     def default_value(self) -> Any:
@@ -619,10 +578,11 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
     @cached_property
     def board_numbers(self) -> set[int]:
         board_numbers: set[int] = set()
-        if self.value:
-            self.value = re.sub(r'\s*-\s*', '-', self.value)
-            self.value = re.sub(r'[\s,;]+', ' ', self.value)
-            for part in re.split(' ', self.value):
+        value = self.value
+        if value:
+            value = re.sub(r'\s*-\s*', '-', value)
+            value = re.sub(r'[\s,;]+', ' ', value)
+            for part in re.split(' ', value):
                 if re.match(r'^(\d*)$', part):
                     board_numbers.add(int(part))
                 elif matches := re.match(r'^(\d*)-(\d*)$', part):
@@ -636,7 +596,7 @@ class PlaceCardBoardNumbersPrintOption(PrintOption):
 
     @override
     def validate(self):
-        self._validate_list_type(int)
+        super().validate()
         _board_numbers = self.board_numbers
 
 

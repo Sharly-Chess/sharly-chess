@@ -820,7 +820,6 @@ class PlayerAdminController(BaseEventAdminController):
             'data_sources': DataSourceManager().objects(),
             'warning_message': warning_message,
             'add_other_active': SessionPlayersAddOtherActive(request).get(),
-            'carry_over_fields': web_context.carry_over_fields,
             'modal': 'player',
             'action': action,
             'data': data,
@@ -860,8 +859,8 @@ class PlayerAdminController(BaseEventAdminController):
         ],
         data_source_id: str,
         player_source_id: str,
-        player_id: int | None,
     ) -> Template:
+        player_id = WebContext.form_data_to_int(data, 'player_id')
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
         )
