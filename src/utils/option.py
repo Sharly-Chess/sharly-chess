@@ -58,7 +58,7 @@ class Option(IdentifiableEntity, ABC):
         if not isinstance(self.value, list) or not all(
             isinstance(item, item_type) for item in self.value
         ):
-            raise OptionError(f'{self.value=} (expected type: {self.type})', self)
+            raise OptionError(f'{self.value=} (expected type: {item_type})', self)
 
 
 class OptionHandler[T: Option](IdentifiableEntity, ABC):
