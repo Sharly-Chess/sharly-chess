@@ -11,7 +11,6 @@
         function hideInvalidOptions() {
             const selected = $('.modal #{{option.id}}').val();
             const validOptions = {{ option.valid_option_ids_per_type_id | tojson }};
-            console.log(validOptions);
             const allowed = validOptions[selected] || [];
             {% for o in print_options %}
                 {% if o.id != option.id %}
