@@ -428,6 +428,7 @@ body[data-bs-theme="dark"] .htmx-indicator {
 .table-dropdown-menu {
     max-height: 70vh;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 .dropdown-item.no-hover:hover {
     color: var(--bs-dropdown-link-color);

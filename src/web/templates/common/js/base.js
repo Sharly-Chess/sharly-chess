@@ -359,3 +359,59 @@ function formatISODate(date) {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+
+function setPrintTournamentPlayerSelectOptions(
+    playersPerTournamentId,
+    optionId,
+    documentIds=[],
+    addEmptyOption=false,
+) {
+
+    const tournamentSelect = $('.modal #tournament');
+    const playerSelect = $('.modal #' + optionId);
+    function updatePlayers() {
+        const tId = parseInt(tournamentSelect.val(), 10);
+        const players = playersPerTournamentId[tId] || {};
+
+        playerSelect.empty();
+        if (addEmptyOption) {
+            playerSelect.append(
+                $('<option>', {
+                    value: '',
+                    text: '-- {{ _("Select player") }} --',
+                })
+            );
+        }
+
+        // Add players
+        players.forEach(player => {
+            playerSelect.append(
+                $('<option>', {
+                    value: player.id,
+                    text: player.full_name,
+                })
+            );
+            playerSelect.prop('disabled', false);
+        });
+        playerSelect.trigger('change');
+        setTimeout(() => {
+            // Waits for the call stack to be cleared (i.e. the end of the `change` event)
+            $('.select2-search__field').css('width', '100%');
+        }, 0);
+    }
+    tournamentSelect.on('change', updatePlayers);
+    const documentSelect = $('.modal #document');
+    if (documentIds.includes(documentSelect.val())){
+        updatePlayers();
+    } else {
+        // wait for the option to be visible to load it
+        documentSelect.on('change', function () {
+            if (
+                documentIds.includes($(this).val()) &&
+                playerSelect.children().length === 0
+            ) {
+                updatePlayers();
+            }
+        });
+    }
+}
