@@ -544,7 +544,7 @@ msgid "Allows entry of results via any input Screens marked as public"
 msgstr "Autorise la saisie des résultats sur des écrans de saisie publics"
 
 msgid "Allows granting or revoking the Chief Arbitration access level and editing the event"
-msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage en chef·fe » et l'édition de l'évènement"
+msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage en chef » et l'édition de l'évènement"
 
 msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments"
 msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage adjoint », l'édition de l'évènement et la gestion des tournois"
@@ -1057,7 +1057,7 @@ msgid "Chess"
 msgstr "Échecs"
 
 msgid "Chief Arbitration"
-msgstr "Arbitrage en chef·fe"
+msgstr "Arbitrage en chef"
 
 msgid "Chief arbiter"
 msgstr "Arbitre principal·e"
