@@ -6,6 +6,8 @@ from logging import Logger
 from pathlib import Path
 from typing import Any
 
+from text_unidecode import unidecode
+
 from common.exception import SharlyChessException
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
@@ -349,7 +351,9 @@ class FFESqlServer(SqlServer):
         name_str_keys: list[str] = []
         name_dob_str_keys: list[str] = []
         for name_key in name_keys:
-            name_str_key = '|'.join((name_key[0].upper(), name_key[1].upper()))
+            name_str_key = '|'.join(
+                (unidecode(name_key[0]).upper(), unidecode(name_key[1]).upper())
+            )
             name_str_keys.append(name_str_key)
             name_dob_str_keys.append(
                 '|'.join((name_str_key, name_key[2].strftime('%Y-%m-%d')))

@@ -12,6 +12,7 @@ from typing import Any, override
 from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
+from text_unidecode import unidecode
 
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
@@ -313,8 +314,8 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         params: list[str] = []
         for name_key in name_keys:
             params += [
-                name_key[0],
-                name_key[1],
+                unidecode(name_key[0]),
+                unidecode(name_key[1]),
                 self.dump_date_to_database_field(name_key[2]) or '',
             ]
         self.execute(
