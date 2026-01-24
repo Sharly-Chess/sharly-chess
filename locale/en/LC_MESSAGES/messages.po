@@ -1760,6 +1760,9 @@ msgstr ""
 msgid "Document:"
 msgstr ""
 
+msgid "Documents"
+msgstr ""
+
 msgid "Dominica"
 msgstr ""
 
@@ -2398,6 +2401,15 @@ msgstr ""
 msgid "Genders"
 msgstr ""
 
+msgid "Generate"
+msgstr ""
+
+msgid "Generate documents"
+msgstr ""
+
+msgid "Generate documents (players, results, etc.)."
+msgstr ""
+
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr ""
 
@@ -2827,6 +2839,9 @@ msgid "Last name:"
 msgstr ""
 
 msgid "Last player:"
+msgstr ""
+
+msgid "Last possible round"
 msgstr ""
 
 msgid "Last results"
@@ -3546,6 +3561,9 @@ msgstr ""
 msgid "Number of wins"
 msgstr ""
 
+msgid "Numbers or ranges of numbers of the boards (example: 1-10 20 25)."
+msgstr ""
+
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr ""
 
@@ -4129,15 +4147,6 @@ msgid "Previous round"
 msgstr ""
 
 msgid "Previous tournament"
-msgstr ""
-
-msgid "Print"
-msgstr ""
-
-msgid "Print players, results, etc."
-msgstr ""
-
-msgid "Printing"
 msgstr ""
 
 msgid "Prize *** PRIZE COLUMN HEADER"
@@ -5268,9 +5277,6 @@ msgstr ""
 msgid "The number of the last player to select."
 msgstr ""
 
-msgid "The numbers (or ranges of numbers) of the boards to print."
-msgstr ""
-
 msgid "The pairing number can't be greater than the player count."
 msgstr ""
 
@@ -5314,9 +5320,6 @@ msgid "The round after which the ranking is displayed (if left empty, the last r
 msgstr ""
 
 msgid "The round count is incompatible with the number of players (expected: {expected})."
-msgstr ""
-
-msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr ""
 
 msgid "The screens displayed by the display controller are controlled by the screen managers."
@@ -6568,4 +6571,22 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Print"
+#~ msgstr ""
+
+#~ msgid "Print players, results, etc."
+#~ msgstr ""
+
+#~ msgid "Printing"
+#~ msgstr ""
+
+#~ msgid "The numbers (or ranges of numbers) of the boards to print."
+#~ msgstr ""
+
+#~ msgid "The round for which the document is printed (Defaults to the last possible round)."
+#~ msgstr ""
+
+#~ msgid "This field is not editable."
+#~ msgstr ""
 

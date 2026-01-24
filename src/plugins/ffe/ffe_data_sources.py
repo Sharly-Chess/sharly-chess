@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from datetime import date
 
+from text_unidecode import unidecode
+
 from common import SharlyChessException
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
@@ -177,7 +179,7 @@ class _FfeDataSource(ABC):
         first_name = stored_player.first_name
         dob = stored_player.date_of_birth
         if first_name and dob:
-            return stored_player.last_name, first_name, dob
+            return unidecode(stored_player.last_name), unidecode(first_name), dob
         return None
 
     @classmethod
