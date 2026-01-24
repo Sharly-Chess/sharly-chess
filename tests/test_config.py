@@ -20,7 +20,13 @@ from database.sqlite.event.event_store import (
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
 
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
-from utils.enum import ScreenType, Result
+from utils.enum import (
+    ScreenType,
+    Result,
+    PlayersScreenPlayerFormat,
+    PlayersScreenBoardFormat,
+    PlayersScreenOpponentFormat,
+)
 
 
 class TestConfig:
@@ -312,9 +318,9 @@ class TestUtils:
             'timer_id': None,
             'input_exit_button': None,
             'players_show_unpaired': None,
-            'players_player_format': None,
-            'players_board_format': None,
-            'players_opponent_format': None,
+            'players_player_format': PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS,
+            'players_board_format': PlayersScreenBoardFormat.MINIMAL,
+            'players_opponent_format': PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS,
             'results_limit': None,
             'results_max_age': None,
             'background_color': None,
