@@ -3,6 +3,7 @@
 ## General
 
 - Improve error message when executing from a directory without write permissions (3.5.0)
+- Rename _Print_ menu to _Documents_ (3.5.0)
 
 ## Events
 

@@ -315,18 +315,18 @@
             {% endif %}
             <li>
                 <span
-                    {{ macros.tooltip_attributes('info', _('Print players, results, etc.'), 'top') }}
+                    {{ macros.tooltip_attributes('info', _('Generate documents (players, results, etc.).'), 'top') }}
                 >
                     <button
                         class="dropdown-item text-nowrap"
-                        hx-get="{{ url_for('admin-print-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                        hx-get="{{ url_for('documents-modal', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
                     >
-                        <i class="bi bi-printer-fill pe-1"></i>
-                        {{ _('Print') }}
+                        <i class="bi bi-file-earmark-text-fill pe-1"></i>
+                        {{ _('Documents') }}
                     </button>
                 </span>
             </li>

@@ -511,13 +511,10 @@ class Client:
         return AuthAction.MANAGE_PRIZES in self.allowed_actions
 
     # ---------------------------------------------------------------------------------
-    # Print
+    # Documents
     # ---------------------------------------------------------------------------------
 
-    # TODO Printing permission should be granted to other access levels
-    #  on a per-tournament basis but this needs an important
-    #  work on the print modal.
     @property
-    def can_print(self) -> bool:
-        """Returns true if the client can access the Prizes tab."""
-        return AuthAction.PRINT in self.allowed_actions
+    def can_generate_documents(self) -> bool:
+        """Returns true if the client can generate documents."""
+        return AuthAction.GENERATE_DOCUMENTS in self.allowed_actions

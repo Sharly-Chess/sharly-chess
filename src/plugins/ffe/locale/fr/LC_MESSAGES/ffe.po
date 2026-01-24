@@ -442,9 +442,6 @@ msgstr "Le·la joueur·euse avec la licence FFE [{ffe_licence_number}] joue déj
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
 msgstr "Les points des joueur·euses et la numérotation des échiquiers peuvent être différents sur le site web de la FFE car Sharly Chess utilise les numéros d'appariement pour les groupes d'appariement (la FFE utilise des seuils Elo)."
 
-msgid "This field is not editable."
-msgstr "Ce champ n'est pas modifiable."
-
 msgid "Tournament"
 msgstr "Tournoi"
 
@@ -551,4 +548,7 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] "{count} ligue représentée"
 msgstr[1] "{count} ligues représentées"
+
+#~ msgid "This field is not editable."
+#~ msgstr "Ce champ n'est pas modifiable."
 
