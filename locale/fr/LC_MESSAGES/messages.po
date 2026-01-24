@@ -2395,7 +2395,7 @@ msgid "Generate documents"
 msgstr "Générer des documents"
 
 msgid "Generate documents (players, results, etc.)."
-msgstr "Générer des documents (players, results, etc.)."
+msgstr "Générer des documents (appariements, résultats, classements…)."
 
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
