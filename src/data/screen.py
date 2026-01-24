@@ -14,7 +14,12 @@ from data.board import Board
 from data.screen_set import ScreenSet
 from data.timer import Timer
 from utils.date_time import format_timestamp_date_time
-from utils.enum import ScreenType
+from utils.enum import (
+    ScreenType,
+    PlayersScreenPlayerFormat,
+    PlayersScreenBoardFormat,
+    PlayersScreenOpponentFormat,
+)
 from database.sqlite.event.event_store import StoredScreen
 
 if TYPE_CHECKING:
@@ -512,17 +517,47 @@ class Screen:
                 raise ValueError(f'type=[{self.type}]')
 
     @property
-    def players_show_opponent(self) -> bool:
+    def players_player_format(self) -> PlayersScreenPlayerFormat:
         match self.type:
             case ScreenType.PLAYERS:
                 if self.stored_screen:
-                    show_opponent = self.stored_screen.players_show_opponent
-                    assert show_opponent is not None
-                    return show_opponent
+                    player_format = self.stored_screen.players_player_format
+                    assert player_format is not None
+                    return PlayersScreenPlayerFormat(player_format)
                 else:
                     if self.family is None:
                         raise RuntimeError('Family reference unexpectedly None')
-                    return self.family.players_show_opponent
+                    return self.family.players_player_format
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
+    def players_board_format(self) -> PlayersScreenBoardFormat:
+        match self.type:
+            case ScreenType.PLAYERS:
+                if self.stored_screen:
+                    board_format = self.stored_screen.players_board_format
+                    assert board_format is not None
+                    return PlayersScreenBoardFormat(board_format)
+                else:
+                    if self.family is None:
+                        raise RuntimeError('Family reference unexpectedly None')
+                    return self.family.players_board_format
+            case _:
+                raise ValueError(f'type=[{self.type}]')
+
+    @property
+    def players_opponent_format(self) -> PlayersScreenOpponentFormat:
+        match self.type:
+            case ScreenType.PLAYERS:
+                if self.stored_screen:
+                    opponent_format = self.stored_screen.players_player_format
+                    assert opponent_format is not None
+                    return PlayersScreenOpponentFormat(opponent_format)
+                else:
+                    if self.family is None:
+                        raise RuntimeError('Family reference unexpectedly None')
+                    return self.family.players_opponent_format
             case _:
                 raise ValueError(f'type=[{self.type}]')
 

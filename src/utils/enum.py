@@ -5,9 +5,10 @@ from math import ceil
 from typing import Iterator, Self, TYPE_CHECKING
 
 from common.i18n import _
-
+from utils import Utils
 
 if TYPE_CHECKING:
+    from data.player import TournamentPlayer
     from data.tournament import Tournament
 
 
@@ -992,6 +993,196 @@ class ScreenType(StrEnum):
                 return False
             case _:
                 raise ValueError(f'Invalid screen type: {self}')
+
+
+class PlayersScreenPlayerFormat(IntEnum):
+    NAME = 1
+    NAME_RATING = 2
+    NAME_RATING_TYPE = 3
+    NAME_RATING_TYPE_POINTS = 4
+
+    @property
+    def format_string(self) -> str:
+        match self:
+            case PlayersScreenPlayerFormat.NAME:
+                return _('{title} {full_name}')
+            case PlayersScreenPlayerFormat.NAME_RATING:
+                return _('{title} {full_name} {rating}')
+            case PlayersScreenPlayerFormat.NAME_RATING_TYPE:
+                return _('{title} {full_name} {rating}{rating_type}')
+            case PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS:
+                return _('{title} {full_name} {rating}{rating_type} [{points}]')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    def header(
+        self,
+        tournament: 'Tournament',
+    ) -> str:
+        match self:
+            case PlayersScreenPlayerFormat.NAME:
+                return _('Player')
+            case PlayersScreenPlayerFormat.NAME_RATING:
+                return _('Player Elo')
+            case PlayersScreenPlayerFormat.NAME_RATING_TYPE:
+                return _('Player Elo')
+            case PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS:
+                return (
+                    _('Player Elo [Pts]')
+                    if tournament.current_round
+                    else _('Player Elo')
+                )
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def example(self) -> str:
+        from data.player import TournamentPlayer
+
+        return self.format_string.format(
+            title=PlayerTitle.GRANDMASTER,
+            full_name=TournamentPlayer.player_full_name(
+                first_name='Magnus', last_name='CARLSEN'
+            ),
+            rating=2840,
+            rating_type=PlayerRatingType.FIDE,
+            points=4,
+        )
+
+    def format(
+        self,
+        player: 'TournamentPlayer',
+    ) -> str:
+        return self.format_string.format(
+            title=player.title.short_name,
+            full_name=player.full_name,
+            rating=player.rating,
+            rating_type=player.rating_type.short_name,
+            points=Utils.points_str(player.vpoints),
+        )
+
+
+class PlayersScreenBoardFormat(IntEnum):
+    MINIMAL = 1
+    MEDIUM = 2
+    FULL = 3
+
+    @property
+    def format_string(self) -> str:
+        match self:
+            case PlayersScreenBoardFormat.MINIMAL:
+                return _('{board_number} {color}')
+            case PlayersScreenBoardFormat.MEDIUM:
+                return _('#{board_number} with {color}')
+            case PlayersScreenBoardFormat.FULL:
+                return _('Board #{board_number} with {color}')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    def header(
+        self,
+        tournament: 'Tournament',
+    ) -> str:
+        if not tournament.current_round:
+            return ''
+        match self:
+            case PlayersScreenBoardFormat.MINIMAL:
+                return _('Board')
+            case PlayersScreenBoardFormat.MEDIUM | PlayersScreenBoardFormat.FULL:
+                return _('Board and Color')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def example(self) -> str:
+        return self.format_string.format(
+            board_number='27',
+            color=_('White'),
+        )
+
+    def format(
+        self,
+        tournament_player: 'TournamentPlayer',
+    ) -> str:
+        return self.format_string.format(
+            board_number=tournament_player.board_number,
+            color=tournament_player.color_str,
+        )
+
+
+class PlayersScreenOpponentFormat(IntEnum):
+    NONE = 1
+    NAME = 2
+    NAME_RATING = 3
+    NAME_RATING_TYPE = 4
+    NAME_RATING_TYPE_POINTS = 5
+
+    @property
+    def format_string(self) -> str:
+        match self:
+            case PlayersScreenOpponentFormat.NONE:
+                return ''
+            case PlayersScreenOpponentFormat.NAME:
+                return PlayersScreenPlayerFormat.NAME.format_string
+            case PlayersScreenOpponentFormat.NAME_RATING:
+                return PlayersScreenPlayerFormat.NAME_RATING.format_string
+            case PlayersScreenOpponentFormat.NAME_RATING_TYPE:
+                return PlayersScreenPlayerFormat.NAME_RATING_TYPE.format_string
+            case PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS:
+                return PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS.format_string
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    def header(
+        self,
+        tournament: 'Tournament',
+    ) -> str:
+        match self:
+            case PlayersScreenOpponentFormat.NONE:
+                return ''
+            case PlayersScreenOpponentFormat.NAME:
+                return _('Opponent')
+            case PlayersScreenOpponentFormat.NAME_RATING:
+                return _('Opponent Elo')
+            case PlayersScreenOpponentFormat.NAME_RATING_TYPE:
+                return _('Opponent Elo')
+            case PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS:
+                return (
+                    _('Opponent Elo [Pts]')
+                    if tournament.current_round
+                    else _('Opponent Elo')
+                )
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def example(self) -> str:
+        from data.player import TournamentPlayer
+
+        return (
+            self.format_string.format(
+                title=PlayerTitle.GRANDMASTER,
+                full_name=TournamentPlayer.player_full_name(
+                    first_name='Yifan', last_name='HOU'
+                ),
+                rating=2613,
+                rating_type=PlayerRatingType.FIDE,
+                points=Utils.points_str(6),
+            )
+            or '-'
+        )
+
+    def format(
+        self,
+        tournament_player: 'TournamentPlayer',
+    ) -> str:
+        return self.format_string.format(
+            title=tournament_player.title.short_name,
+            full_name=tournament_player.full_name,
+            rating=tournament_player.rating,
+            rating_type=tournament_player.rating_type.short_name,
+            points=tournament_player.vpoints_str,
+        )
 
 
 class NeedsUpload(Enum):

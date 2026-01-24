@@ -9,7 +9,12 @@ from common.i18n import _
 from data.board import Board
 from data.player import TournamentPlayer
 from utils.date_time import format_timestamp_date_time
-from utils.enum import ScreenType
+from utils.enum import (
+    ScreenType,
+    PlayersScreenPlayerFormat,
+    PlayersScreenBoardFormat,
+    PlayersScreenOpponentFormat,
+)
 from database.sqlite.event.event_store import StoredScreenSet
 
 if TYPE_CHECKING:
@@ -157,8 +162,16 @@ class ScreenSet:
         return self.screen.players_show_unpaired
 
     @property
-    def players_show_opponent(self) -> bool:
-        return self.screen.players_show_opponent
+    def players_player_format(self) -> PlayersScreenPlayerFormat:
+        return self.screen.players_player_format
+
+    @property
+    def players_board_format(self) -> PlayersScreenBoardFormat:
+        return self.screen.players_board_format
+
+    @property
+    def players_opponent_format(self) -> PlayersScreenOpponentFormat:
+        return self.screen.players_opponent_format
 
     @property
     def name_for_boards(self) -> str:

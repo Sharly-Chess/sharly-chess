@@ -44,11 +44,13 @@
                     {% endif %}
                 </div>
                 <div>
-                    {% if family.players_show_opponent %}
-                        {{ _('Players\' opponent: displayed') }}
-                    {% else %}
-                        {{ _('Players\' opponent: hidden') }}
-                    {% endif %}
+                    {{ _('Player display: %(display)s', display=family.players_player_format.example) }}
+                </div>
+                <div>
+                    {{ _('Board display: %(display)s', display=family.players_board_format.example) }}
+                </div>
+                <div>
+                    {{ _('Opponent display: %(display)s', display=family.players_opponent_format.example) }}
                 </div>
             {% endif %}
             {% if family.type == 'ranking' %}

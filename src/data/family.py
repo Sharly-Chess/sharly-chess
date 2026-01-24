@@ -8,7 +8,12 @@ from _weakref import ReferenceType
 from common.i18n import _
 from data.screen import Screen
 from utils.date_time import format_timestamp_date_time
-from utils.enum import ScreenType
+from utils.enum import (
+    ScreenType,
+    PlayersScreenPlayerFormat,
+    PlayersScreenBoardFormat,
+    PlayersScreenOpponentFormat,
+)
 from database.sqlite.event.event_store import StoredFamily
 
 if TYPE_CHECKING:
@@ -155,10 +160,22 @@ class Family:
         return show_unpaired
 
     @property
-    def players_show_opponent(self) -> bool:
-        show_opponent = self.stored_family.players_show_opponent
-        assert show_opponent is not None
-        return show_opponent
+    def players_player_format(self) -> PlayersScreenPlayerFormat:
+        player_format = self.stored_family.players_player_format
+        assert player_format is not None
+        return PlayersScreenPlayerFormat(player_format)
+
+    @property
+    def players_board_format(self) -> PlayersScreenBoardFormat:
+        board_format = self.stored_family.players_board_format
+        assert board_format is not None
+        return PlayersScreenBoardFormat(board_format)
+
+    @property
+    def players_opponent_format(self) -> PlayersScreenOpponentFormat:
+        opponent_format = self.stored_family.players_opponent_format
+        assert opponent_format is not None
+        return PlayersScreenOpponentFormat(opponent_format)
 
     @property
     def ranking_crosstable(self) -> bool:

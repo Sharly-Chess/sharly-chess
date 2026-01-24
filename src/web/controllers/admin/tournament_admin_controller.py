@@ -691,7 +691,15 @@ class TournamentAdminController(BaseEventAdminController):
                                 timer_id=timer_id,
                                 input_exit_button=False,
                                 players_show_unpaired=False,
-                                players_show_opponent=False,
+                                players_player_format=self.get_default_players_screen_player_format(
+                                    event
+                                ).value,
+                                players_board_format=self.get_default_players_screen_board_format(
+                                    event
+                                ).value,
+                                players_opponent_format=self.get_default_players_screen_opponent_format(
+                                    event
+                                ).value,
                                 results_limit=None,
                                 results_max_age=None,
                                 results_tournament_ids=[],
