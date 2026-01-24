@@ -236,7 +236,6 @@ class TestSingleScreensFunctionality:
             {'init_set_tournament_id': paired_tournament.id},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
-        TestUtils.take_screenshot(lan_page, 'test_step_1')
         rows = lan_page.locator('div.player-row')
         expect(rows).to_have_count(16)
 
