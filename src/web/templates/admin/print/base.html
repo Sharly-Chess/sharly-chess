@@ -1,9 +1,10 @@
 {% import '/common/macros.j2' as macros with context %}
+<!DOCTYPE html>
 <html translate="no">
     <head>
-        <meta http-equiv="Content-Type" content="text/html;" charset=UTF-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <title>{{ document.name }}{% if tournament %} - {{ tournament.name }}{% endif %}</title>
-        <style type="text/css">
+        <style>
             {% include 'print.css' %}
             {{ extra_css }}
             {% block css %}{% endblock %}
