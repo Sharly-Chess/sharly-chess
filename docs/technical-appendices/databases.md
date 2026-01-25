@@ -76,6 +76,7 @@
 | `organiser_director`             | `TEXT`    |                           | The name of the organiser's director                                                                                                                |
 | `age_category_base_date`         | `TEXT`    |                           | The base date to calculate the players' category (`YYYY-MM-DD`)                                                                                     |
 | `age_categories`                 | `TEXT`    |                           | The age categories used to split the players                                                                                                        |
+| `age_category_change_month`      | `TEXT`    |                           | The number of the month on which the category of the players changes                                                                                |
 
 ### `metadata` table (event metadata)
 
@@ -147,7 +148,6 @@
 | `deprecated_chessevent_tournament_name`   | `TEXT`    |                                            | _Deprecated_                                                                                                                                               |
 | `deprecated_last_chessevent_download_md5` | `TEXT`    |                                            | _Deprecated_                                                                                                                                               |
 | `plugin_data`                             | `TEXT`    |                                            | Additional data used by plugins, in JSON format                                                                                                            |
-
 
 ### `tournament_criterion` table (tournament criteria)
 
@@ -349,13 +349,27 @@
 
 ### `prize` table (prizes)
 
-| Field               | Type      | Constraint                                                | Description                               |
-|---------------------|-----------|-----------------------------------------------------------|-------------------------------------------|
-| `id`                | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE     | The prize ID                              |
-| `prize_category_id` | `INTEGER` | NOT NULL<br/>REFERENCES `prize_category`(`id`)            | The prize category ID                     |
-| `value`             | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                                  | The monetary value of the prize           |
-| `is_monetary`       | `INTEGER` | NOT NULL<br/>DEFAULT 1                                    | Boolean: whether the prize is monetary    |
-| `description`       | `TEXT`    |                                                           | The prize description                     |
+| Field               | Type      | Constraint                                            | Description                                                    |
+|---------------------|-----------|-------------------------------------------------------|----------------------------------------------------------------|
+| `id`                | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE | The prize ID                                                   |
+| `prize_category_id` | `INTEGER` | NOT NULL<br/>REFERENCES `prize_category`(`id`)        | The prize category ID                                          |
+| `value`             | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                              | The monetary value of the prize                                |
+| `type`              | `TEXT`    |                                                       | The type of the prize (`MONETARY`, `NON_MONETARY` or `HYBRID`) |
+| `description`       | `TEXT`    |                                                       | The prize description                                          |
+
+### `account` table (accounts)
+
+| Field                | Type      | Constraint                                 | Description                                                                            |
+|----------------------|-----------|--------------------------------------------|----------------------------------------------------------------------------------------|
+| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The account ID<br/>- `1`: administrator<br/>- `2`: anonymous<br/>- `3+`: user accounts |
+| `last_name`          | `TEXT`    |                                            | The person's last name (`NULL` for administrator and anonymous accounts)               |
+| `first_name`         | `TEXT`    |                                            | The person's first name                                                                |
+| `password_hash`      | `TEXT`    |                                            | A hash of the password                                                                 |
+| `fide_id`            | `INTEGER` |                                            | The person's FIDE ID                                                                   |
+| `mail`               | `TEXT`    |                                            | The person's email address                                                             |
+| `phone`              | `TEXT`    |                                            | The person's phone number                                                              |
+| `fide_arbiter_title` | `TEXT`    |                                            | The person's FIDE arbiter title (`'IA'`, `'FA'`, `'NA'`, `NULL`)                       |
+| `plugin_data`        | `TEXT`    | NOT NULL                                   | Additional data used by plugins, in JSON format                                        |
 
 ## FIDE Local Database (`tmp/fide.db`)
 
