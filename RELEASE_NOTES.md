@@ -31,7 +31,7 @@
 
 ## FRA Schools
 
-- Allow updating the schools data after creation (3.5.0)
+- Allow updating and deleting the schools (3.5.0)
 - Added schools to the statistics (3.5.0)
 - Added team options to the schools ranking document (3.5.0)
 - Added an overall ranking to the schools ranking document (3.5.0)
