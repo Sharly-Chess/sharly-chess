@@ -12,6 +12,7 @@ from data.player import Player
 from data.tournament import Tournament
 from plugins.ffe import PLUGIN_NAME
 from plugins.utils import PluginUtils, PluginData
+from utils.enum import FormAction
 from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -327,6 +328,8 @@ class FfePlayerPluginData(PluginData):
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
+        if action == FormAction.REPLACE:
+            return {}
         return WebContext.values_dict_to_form_data(
             {
                 'ffe_id': self.ffe_id,

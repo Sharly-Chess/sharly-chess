@@ -683,8 +683,11 @@ class PlayerAdminController(BaseEventAdminController):
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             stored_player = search_stored_player
             tournament_id: int | None = None
-            if not stored_player and admin_player and action != FormAction.REPLACE:
-                stored_player = admin_player.stored_player
+            if not stored_player and admin_player:
+                if action == FormAction.REPLACE:
+                    stored_plugin_data = admin_player.stored_player.plugin_data
+                else:
+                    stored_player = admin_player.stored_player
             if stored_player:
                 first_name = stored_player.first_name
                 last_name = stored_player.last_name
