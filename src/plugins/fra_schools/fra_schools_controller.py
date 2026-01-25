@@ -2,11 +2,12 @@ from functools import partial
 from operator import attrgetter
 from typing import Any, Annotated
 
-from litestar import get, post, patch
+from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException
 from litestar.params import Body
 from litestar.response import Template
+from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from common.i18n import _
@@ -80,8 +81,8 @@ class FRASchoolsController(BaseEventAdminController):
 
     @get(
         path=[
-            'fra-schools/search-player/{event_uniq_id:str}',
-            'fra-schools/search-player/{event_uniq_id:str}/{page:int}',
+            '/fra-schools/search-player/{event_uniq_id:str}',
+            '/fra-schools/search-player/{event_uniq_id:str}/{page:int}',
         ],
         name='fra-schools-search',
     )
@@ -122,11 +123,22 @@ class FRASchoolsController(BaseEventAdminController):
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
     ) -> HTMXTemplate:
+        event = web_context.get_admin_event()
         template_context = cls.get_fra_school_template_context(web_context, action)
+        show_delete_button = False
+        if action == FormAction.UPDATE:
+            school = web_context.get_fra_school()
+            show_delete_button = all(
+                school.id
+                != getattr(FRASchoolsUtils.get_player_school(player), 'id', None)
+                for player in event.players
+            )
+
         template_context |= {
             'show_fra_school_form': show_form or bool(errors),
             'data': data,
             'errors': errors or {},
+            'show_fra_school_delete_button': show_delete_button,
         }
         return HTMXTemplate(
             template_name='/fra_schools_player_form_fields.html',
@@ -136,7 +148,7 @@ class FRASchoolsController(BaseEventAdminController):
         )
 
     @get(
-        path='fra-schools/add-school-form/{event_uniq_id:str}',
+        path='/fra-schools/add-school-form/{event_uniq_id:str}',
         name='fra-schools-add-school-form',
         guards=[EventGuard()],
     )
@@ -154,7 +166,7 @@ class FRASchoolsController(BaseEventAdminController):
         )
 
     @get(
-        path='fra-schools/update-school-form/{event_uniq_id:str}',
+        path='/fra-schools/update-school-form/{event_uniq_id:str}',
         name='fra-schools-update-school-form',
         guards=[EventGuard()],
     )
@@ -183,7 +195,7 @@ class FRASchoolsController(BaseEventAdminController):
         return errors
 
     @post(
-        path='fra-schools/add-school/{event_uniq_id:str}',
+        path='/fra-schools/add-school/{event_uniq_id:str}',
         name='fra-schools-add-school',
         guards=[EventGuard(), ActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
@@ -210,7 +222,7 @@ class FRASchoolsController(BaseEventAdminController):
         return self._render_fra_schools_form(web_context, data=data, errors=errors)
 
     @patch(
-        path='fra-schools/update-school/{event_uniq_id:str}/{fra_school_id:int}',
+        path='/fra-schools/update-school/{event_uniq_id:str}/{fra_school_id:int}',
         name='fra-schools-update-school',
         guards=[EventGuard(), ActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
@@ -245,3 +257,18 @@ class FRASchoolsController(BaseEventAdminController):
         return self._render_fra_schools_form(
             web_context, FormAction.UPDATE, data=data, errors=errors
         )
+
+    @delete(
+        path='/fra-schools/delete-school/{event_uniq_id:str}/{fra_school_id:int}',
+        name='fra-schools-delete-school',
+        status_code=HTTP_200_OK,
+    )
+    async def fra_schools_delete_school(
+        self,
+        request: HTMXRequest,
+        fra_school_id: int,
+    ) -> Template:
+        web_context = FraSchoolsWebContext(request, fra_school_id)
+        event = web_context.get_admin_event()
+        FRASchoolsUtils.delete_event_school(event, fra_school_id)
+        return self._render_fra_schools_form(web_context)

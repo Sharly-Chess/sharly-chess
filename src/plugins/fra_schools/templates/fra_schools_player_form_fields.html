@@ -169,6 +169,20 @@
                     </div>
                 </div>
                 <div class="d-flex gap-2 mt-4">
+                    {% if show_fra_school_delete_button %}
+                        <button
+                            type="button"
+                            class="btn btn-outline-danger btn-sm text-nowrap"
+                            hx-delete="{{ url_for(
+                                'fra-schools-delete-school',
+                                event_uniq_id=admin_event.uniq_id,
+                                fra_school_id=fra_school.id,
+                            ) }}"
+                        >
+                            <i class="bi-trash-fill pe-1"></i>
+                            {{ _('Delete') }}
+                        </button>
+                    {% endif %}
                     <div class="flex-grow-1"></div>
                     <button
                         id="fra-school-cancel-button"
