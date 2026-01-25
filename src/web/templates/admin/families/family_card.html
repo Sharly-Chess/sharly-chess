@@ -36,22 +36,9 @@
                 </div>
             {% endif %}
             {% if family.type == 'players' %}
-                <div>
-                    {% if family.players_show_unpaired %}
-                        {{ _('Unpaired: displayed') }}
-                    {% else %}
-                        {{ _('Unpaired: hidden') }}
-                    {% endif %}
-                </div>
-                <div>
-                    {{ _('Player display: %(display)s', display=family.players_player_format.example) }}
-                </div>
-                <div>
-                    {{ _('Board display: %(display)s', display=family.players_board_format.example) }}
-                </div>
-                <div>
-                    {{ _('Opponent display: %(display)s', display=family.players_opponent_format.example) }}
-                </div>
+                {% with entity=family, tournament=family.tournament %}
+                    {% include '../common/card_players_screen_display.html' %}
+                {% endwith %}
             {% endif %}
             {% if family.type == 'ranking' %}
                 <div class="{% if family.ranking_round %}text-secondary{% endif %}">

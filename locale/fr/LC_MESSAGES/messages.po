@@ -1732,6 +1732,9 @@ msgstr "Afficher un bouton de sortie d'écran"
 msgid "Display the unpaired players"
 msgstr "Afficher les joueur·euses non-apparié·es"
 
+msgid "Display:"
+msgstr "Affichage :"
+
 #, python-format
 msgid "Displayed round: %(round)d"
 msgstr "Ronde affichée : %(round)d"

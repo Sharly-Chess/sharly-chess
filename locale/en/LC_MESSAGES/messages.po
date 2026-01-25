@@ -1732,6 +1732,9 @@ msgstr ""
 msgid "Display the unpaired players"
 msgstr ""
 
+msgid "Display:"
+msgstr ""
+
 #, python-format
 msgid "Displayed round: %(round)d"
 msgstr ""
