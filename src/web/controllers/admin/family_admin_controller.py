@@ -336,15 +336,9 @@ class FamilyAdminController(BaseEventAdminController):
                     timer_id: int | None = None
                     input_exit_button: bool | None = None
                     players_show_unpaired: bool = True
-                    players_player_format: int | None = (
-                        cls.get_default_players_screen_player_format(event).value
-                    )
-                    players_board_format: int | None = (
-                        cls.get_default_players_screen_board_format(event).value
-                    )
-                    players_opponent_format: int | None = (
-                        cls.get_default_players_screen_opponent_format(event).value
-                    )
+                    players_player_format: int | None = None
+                    players_board_format: int | None = None
+                    players_opponent_format: int | None = None
                     ranking_crosstable: bool = False
                     ranking_round: int | None = None
                     ranking_min_points: float | None = None
@@ -435,6 +429,24 @@ class FamilyAdminController(BaseEventAdminController):
                                     menu = '@input'
                                 case ScreenType.PLAYERS:
                                     menu = '@players'
+                                    columns = cls.get_default_players_screen_columns(
+                                        event
+                                    )
+                                    players_player_format = (
+                                        cls.get_default_players_screen_player_format(
+                                            event
+                                        ).value
+                                    )
+                                    players_board_format = (
+                                        cls.get_default_players_screen_board_format(
+                                            event
+                                        ).value
+                                    )
+                                    players_opponent_format = (
+                                        cls.get_default_players_screen_opponent_format(
+                                            event
+                                        ).value
+                                    )
                                 case ScreenType.RANKING:
                                     menu = '@ranking'
                                 case _:

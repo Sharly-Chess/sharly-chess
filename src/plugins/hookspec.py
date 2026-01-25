@@ -327,6 +327,10 @@ class AppHookSpecs:
     def get_default_players_screen_opponent_format(self) -> PlayersScreenOpponentFormat:
         """Return default display format for the opponents on the Players Screens."""
 
+    @hookspec(firstresult=True)
+    def get_default_players_screen_columns(self) -> int:
+        """Return default number of columns of the Players Screens."""
+
     # ---------------------------------------------------------------------------------
     # Printing
     # ---------------------------------------------------------------------------------

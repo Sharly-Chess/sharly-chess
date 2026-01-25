@@ -429,3 +429,12 @@ class BaseEventAdminController(BaseAdminController):
             )()
             or PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS
         )
+
+    @staticmethod
+    def get_default_players_screen_columns(
+        event: Event,
+    ) -> int:
+        return (
+            plugin_manager.hook_for_event(event, 'get_default_players_screen_columns')()
+            or 1
+        )

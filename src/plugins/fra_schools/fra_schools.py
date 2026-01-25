@@ -229,6 +229,10 @@ class FRASchoolsPlugin(Plugin):
     def get_default_players_screen_opponent_format(self) -> PlayersScreenOpponentFormat:
         return PlayersScreenOpponentFormat.NONE
 
+    @hookimpl
+    def get_default_players_screen_columns(self) -> int:
+        return 3
+
     # ---------------------------------------------------------------------------------
     # Printing
     # ---------------------------------------------------------------------------------

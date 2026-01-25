@@ -704,6 +704,9 @@ class ScreenAdminController(BaseEventAdminController):
                                     menu = '@input'
                                 case ScreenType.PLAYERS:
                                     menu = '@players'
+                                    columns = cls.get_default_players_screen_columns(
+                                        event
+                                    )
                                     players_player_format = (
                                         cls.get_default_players_screen_player_format(
                                             event
