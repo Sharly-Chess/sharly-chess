@@ -14,8 +14,18 @@ class Migration(BaseMigration):
                 f'ALTER TABLE `{table}` ADD `players_opponent_format` INT'
             )
             for params in {
-                (1, 1, 1, 0),
-                (4, 4, 5, 1),
+                (
+                    1,  # PlayersScreenPlayerFormat.NAME
+                    1,  # PlayersScreenPlayerFormat.MINIMAL
+                    1,  # PlayersScreenPlayerFormat.NONE
+                    0,  # for players screens actually hiding the opponents
+                ),
+                (
+                    4,  # PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS
+                    4,  # PlayersScreenPlayerFormat.FULL
+                    5,  # PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS
+                    1,  # for players screens actually showing the opponents
+                ),
             }:
                 self.database.execute(
                     f'UPDATE `{table}` SET `players_player_format` = ?, `players_board_format` = ?, `players_opponent_format` = ? WHERE players_show_opponent = ?',
