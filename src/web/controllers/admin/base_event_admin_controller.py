@@ -13,7 +13,13 @@ from data.rotator import Rotator
 from data.screen import Screen
 from data.tournament import Tournament
 from plugins.utils import NavUploadItem
-from utils.enum import FormAction, ScreenType
+from utils.enum import (
+    FormAction,
+    ScreenType,
+    PlayersScreenPlayerFormat,
+    PlayersScreenBoardFormat,
+    PlayersScreenOpponentFormat,
+)
 from web.controllers.admin.base_admin_controller import (
     AdminWebContext,
     BaseAdminController,
@@ -342,6 +348,27 @@ class BaseEventAdminWebContext(AdminWebContext):
             if not account.administrator and not account.anonymous
         }
 
+    @staticmethod
+    def get_players_screen_player_format_options() -> dict[str, str]:
+        return {
+            str(player_format.value): player_format.example
+            for player_format in PlayersScreenPlayerFormat
+        }
+
+    @staticmethod
+    def get_players_screen_board_format_options() -> dict[str, str]:
+        return {
+            str(player_format.value): player_format.example
+            for player_format in PlayersScreenBoardFormat
+        }
+
+    @staticmethod
+    def get_players_screen_opponent_format_options() -> dict[str, str]:
+        return {
+            str(player_format.value): player_format.example
+            for player_format in PlayersScreenOpponentFormat
+        }
+
 
 class BaseEventAdminController(BaseAdminController):
     guards = [EventGuard()]
@@ -369,3 +396,44 @@ class BaseEventAdminController(BaseAdminController):
             trigger_event='modal_opened',
             after='settle',
         )
+
+    @staticmethod
+    def get_default_players_screen_player_format(
+        event: Event,
+    ) -> PlayersScreenPlayerFormat:
+        return (
+            plugin_manager.hook_for_event(
+                event, 'get_default_players_screen_player_format'
+            )()
+            or PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS
+        )
+
+    @staticmethod
+    def get_default_players_screen_board_format(
+        event: Event,
+    ) -> PlayersScreenBoardFormat:
+        return (
+            plugin_manager.hook_for_event(
+                event, 'get_default_players_screen_board_format'
+            )()
+            or PlayersScreenBoardFormat.FULL
+        )
+
+    @staticmethod
+    def get_default_players_screen_opponent_format(
+        event: Event,
+    ) -> PlayersScreenOpponentFormat:
+        return (
+            plugin_manager.hook_for_event(
+                event, 'get_default_players_screen_opponent_format'
+            )()
+            or PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS
+        )
+
+    @staticmethod
+    def get_default_players_screen_columns(
+        event: Event,
+    ) -> int | None:
+        return plugin_manager.hook_for_event(
+            event, 'get_default_players_screen_columns'
+        )()

@@ -14,7 +14,12 @@ from data.board import Board
 from data.screen_set import ScreenSet
 from data.timer import Timer
 from utils.date_time import format_timestamp_date_time
-from utils.enum import ScreenType
+from utils.enum import (
+    ScreenType,
+    PlayersScreenPlayerFormat,
+    PlayersScreenBoardFormat,
+    PlayersScreenOpponentFormat,
+)
 from database.sqlite.event.event_store import StoredScreen
 
 if TYPE_CHECKING:
@@ -480,18 +485,16 @@ class Screen:
 
     @property
     def input_exit_button(self) -> bool:
-        match self.type:
-            case ScreenType.INPUT:
-                if self.stored_screen:
-                    exit_button = self.stored_screen.input_exit_button
-                    assert exit_button is not None
-                    return exit_button
-                else:
-                    if self.family is None:
-                        raise RuntimeError('Family reference unexpectedly None')
-                    return self.family.input_exit_button
-            case _:
-                raise ValueError(f'type=[{self.type}]')
+        if self.type != ScreenType.INPUT:
+            raise ValueError(f'type=[{self.type}]')
+        if self.stored_screen:
+            exit_button = self.stored_screen.input_exit_button
+            assert exit_button is not None
+            return exit_button
+        else:
+            if self.family is None:
+                raise RuntimeError('Family reference unexpectedly None')
+            return self.family.input_exit_button
 
     @property
     def players_show_unpaired(self) -> bool:
@@ -512,19 +515,42 @@ class Screen:
                 raise ValueError(f'type=[{self.type}]')
 
     @property
-    def players_show_opponent(self) -> bool:
-        match self.type:
-            case ScreenType.PLAYERS:
-                if self.stored_screen:
-                    show_opponent = self.stored_screen.players_show_opponent
-                    assert show_opponent is not None
-                    return show_opponent
-                else:
-                    if self.family is None:
-                        raise RuntimeError('Family reference unexpectedly None')
-                    return self.family.players_show_opponent
-            case _:
-                raise ValueError(f'type=[{self.type}]')
+    def players_player_format(self) -> PlayersScreenPlayerFormat:
+        if self.type != ScreenType.PLAYERS:
+            raise ValueError(f'type=[{self.type}]')
+        if self.stored_screen:
+            player_format = self.stored_screen.players_player_format
+            assert player_format is not None
+            return PlayersScreenPlayerFormat(player_format)
+        else:
+            if self.family is None:
+                raise RuntimeError('Family reference unexpectedly None')
+            return self.family.players_player_format
+
+    @property
+    def players_board_format(self) -> PlayersScreenBoardFormat:
+        if self.type != ScreenType.PLAYERS:
+            raise ValueError(f'type=[{self.type}]')
+        if self.stored_screen:
+            board_format = self.stored_screen.players_board_format
+            assert board_format is not None
+            return PlayersScreenBoardFormat(board_format)
+        elif self.family is None:
+            raise RuntimeError('Family reference unexpectedly None')
+        return self.family.players_board_format
+
+    @property
+    def players_opponent_format(self) -> PlayersScreenOpponentFormat:
+        if self.type != ScreenType.PLAYERS:
+            raise ValueError(f'type=[{self.type}]')
+        if self.stored_screen:
+            opponent_format = self.stored_screen.players_player_format
+            assert opponent_format is not None
+            return PlayersScreenOpponentFormat(opponent_format)
+        else:
+            if self.family is None:
+                raise RuntimeError('Family reference unexpectedly None')
+            return self.family.players_opponent_format
 
     @property
     def icon_str(self) -> str:

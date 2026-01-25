@@ -11,7 +11,14 @@ from plugins.utils import (
     NavUploadItem,
     PluginData,
 )
-from utils.enum import Result, TournamentRating, FormAction
+from utils.enum import (
+    Result,
+    TournamentRating,
+    FormAction,
+    PlayersScreenPlayerFormat,
+    PlayersScreenBoardFormat,
+    PlayersScreenOpponentFormat,
+)
 
 if TYPE_CHECKING:
     from data.account import Account
@@ -303,6 +310,26 @@ class AppHookSpecs:
     @hookspec
     def get_nav_upload_items(self, event: 'Event') -> Iterable['NavUploadItem']:
         """Provide upload items for the menu"""
+
+    # ---------------------------------------------------------------------------------
+    # Screens
+    # ---------------------------------------------------------------------------------
+
+    @hookspec(firstresult=True)
+    def get_default_players_screen_player_format(self) -> PlayersScreenPlayerFormat:
+        """Return default format for the players on the Players Screens."""
+
+    @hookspec(firstresult=True)
+    def get_default_players_screen_board_format(self) -> PlayersScreenBoardFormat:
+        """Return default display format for the boards on the Players Screens."""
+
+    @hookspec(firstresult=True)
+    def get_default_players_screen_opponent_format(self) -> PlayersScreenOpponentFormat:
+        """Return default display format for the opponents on the Players Screens."""
+
+    @hookspec(firstresult=True)
+    def get_default_players_screen_columns(self) -> int | None:
+        """Return default number of columns of the Players Screens."""
 
     # ---------------------------------------------------------------------------------
     # Printing

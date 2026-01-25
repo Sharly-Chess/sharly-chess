@@ -20,6 +20,7 @@
 
 - Fixed the display of first and last players on family card (3.5.0)
 - Display the unpaired players by default on screens and families (3.5.0)
+- Added options to Players Screens to display more pairings with minimal information (3.5.0)
 
 ## Prizes
 

@@ -7,6 +7,9 @@ msgstr " [{yes_answer}/{no_answer}] ?"
 msgid "#{board_number}"
 msgstr "n°{board_number}"
 
+msgid "#{board_number} with {color}"
+msgstr "N°{board_number} avec les {color}"
+
 #, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
 msgstr "%%s est remplacé par le temps passé depuis l'horaire."
@@ -799,9 +802,18 @@ msgstr "Blitz :"
 msgid "Blz *** BLITZ RATING ACRONYM"
 msgstr "Blz"
 
+msgid "Board"
+msgstr "Échiquier"
+
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Échiquier n°%(board_number)d avec les %(color)s"
+
+msgid "Board #{board_number} with {color}"
+msgstr "Échiquier n°{board_number} avec les {color}"
+
+msgid "Board #{board_number} {color}"
+msgstr "Échiquier n°{board_number} {color}"
 
 #, python-format
 msgid "Board %(board_number)s"
@@ -810,9 +822,6 @@ msgstr "Échiquier %(board_number)s"
 #, python-format
 msgid "Board %(number)s"
 msgstr "Table %(number)s"
-
-msgid "Board & color"
-msgstr "Échiquier & couleur"
 
 #, python-format
 msgid "Board (%(remaining)d)"
@@ -823,6 +832,13 @@ msgstr "Chevalets des échiquiers"
 
 msgid "Board Pairings"
 msgstr "Appariements par échiquier"
+
+msgid "Board and Color"
+msgstr "Échiquier et couleur"
+
+#, python-format
+msgid "Board display: %(display)s"
+msgstr "Affichage échiquiers : %(display)s"
 
 msgid "Board is not the same as the opponent's."
 msgstr "L'échiquier n'est pas le même que celui de l'adversaire."
@@ -836,6 +852,9 @@ msgstr "Sélection des échiquiers (par numéro)"
 #, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"
 msgstr "Ensembles d'échiquiers de l'écran [%(screen_uniq_id)s]"
+
+msgid "Board:"
+msgstr "Échiquier :"
 
 msgid "Boards"
 msgstr "Échiquiers"
@@ -1710,11 +1729,11 @@ msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de
 msgid "Display the exit button"
 msgstr "Afficher un bouton de sortie d'écran"
 
-msgid "Display the players' opponent"
-msgstr "Afficher les adversaires"
-
 msgid "Display the unpaired players"
 msgstr "Afficher les joueur·euses non-apparié·es"
+
+msgid "Display:"
+msgstr "Affichage :"
 
 #, python-format
 msgid "Displayed round: %(round)d"
@@ -3644,6 +3663,13 @@ msgstr "Adversaire Elo"
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
 
+#, python-format
+msgid "Opponent display: %(display)s"
+msgstr "Affichage adversaires : %(display)s"
+
+msgid "Opponent:"
+msgstr "Adversaire :"
+
 msgid "Opponents"
 msgstr "Adversaires"
 
@@ -3937,6 +3963,10 @@ msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tourno
 msgid "Player [{player}] has returned for this round."
 msgstr "Le·la joueur·euse [{player}] est de retour pour cette ronde."
 
+#, python-format
+msgid "Player display: %(display)s"
+msgstr "Affichage joueur·euses : %(display)s"
+
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
 
@@ -4010,12 +4040,6 @@ msgstr "Mise à jour des joueur·euses du tournoi [%(tournament)s]"
 
 msgid "Players without phone or email won't be included."
 msgstr "Les joueur·euses sans numéro de téléphone ni adresse email ne seront pas inclus·es."
-
-msgid "Players' opponent: displayed"
-msgstr "Adversaires des joueur·euses : affichée·es"
-
-msgid "Players' opponent: hidden"
-msgstr "Adversaires des joueur·euses : cachée·es"
 
 msgid "Players:"
 msgstr "Joueur·euses :"
@@ -6087,9 +6111,6 @@ msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne peuvent quitter l'écran accidentellement."
 
-msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
-msgstr "Lorsque les adversaires ne sont pas affiché·es, moins d'écrans sont nécessaires pour afficher l'ensemble des joueur·euses (multi-colonnes)."
-
 msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."
 msgstr "Lorsqu'il y a des joueur·euses non-classées, le règlement FIDE stipule que les départages basés sur le classement ne peuvent être utilisés que si le règlement du tournoi explique comment les classements estimés sont attribués."
 
@@ -6462,9 +6483,6 @@ msgstr "puis"
 msgid "value: {value}"
 msgstr "valeur : {value}"
 
-msgid "vs"
-msgstr "contre"
-
 #, python-format
 msgid "vs %(player)s"
 msgstr "contre %(player)s"
@@ -6474,6 +6492,9 @@ msgstr "oui"
 
 msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
 msgstr "{age_limit}+"
+
+msgid "{board_number} {color}"
+msgstr "{board_number} {color}"
 
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
@@ -6540,6 +6561,18 @@ msgstr "{status_code} - Erreur inconnue"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
+
+msgid "{title} {full_name}"
+msgstr "{title} {full_name}"
+
+msgid "{title} {full_name} {rating}"
+msgstr "{title} {full_name} {rating}"
+
+msgid "{title} {full_name} {rating}{rating_type}"
+msgstr "{title} {full_name} {rating}{rating_type}"
+
+msgid "{title} {full_name} {rating}{rating_type} [{points}]"
+msgstr "{title} {full_name} {rating}{rating_type} [{points}]"
 
 msgid "½ - 0 (U)"
 msgstr "½ - 0 (NC)"

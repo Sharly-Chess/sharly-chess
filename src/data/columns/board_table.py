@@ -162,7 +162,7 @@ class ScreenResultColumn(BoardColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'score'
+        return 'score text-center'
 
 
 class BlackIllegalMovesColumn(IllegalMovesColumn):
