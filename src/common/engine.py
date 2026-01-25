@@ -120,6 +120,9 @@ class Engine:
             )
             previous_versions: list[tuple[Version, Path]] = []
             for version_dir in Path('..').glob('*'):
+                if version_dir.samefile(Path('.')):
+                    # do not inspect the current directory
+                    continue
                 if not version_dir.is_dir():
                     logger.debug('Not a directory: [%s]', version_dir)
                     continue
