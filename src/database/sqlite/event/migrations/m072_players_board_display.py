@@ -15,7 +15,7 @@ class Migration(BaseMigration):
             )
             for params in {
                 (1, 1, 1, 0),
-                (4, 3, 5, 1),
+                (4, 4, 5, 1),
             }:
                 self.database.execute(
                     f'UPDATE `{table}` SET `players_player_format` = ?, `players_board_format` = ?, `players_opponent_format` = ? WHERE players_show_opponent = ?',

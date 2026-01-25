@@ -1064,16 +1064,19 @@ class PlayersScreenPlayerFormat(IntEnum):
 
 class PlayersScreenBoardFormat(IntEnum):
     MINIMAL = 1
-    MEDIUM = 2
-    FULL = 3
+    MEDIUM_1 = 2
+    MEDIUM_2 = 3
+    FULL = 4
 
     @property
     def format_string(self) -> str:
         match self:
             case PlayersScreenBoardFormat.MINIMAL:
                 return _('{board_number} {color}')
-            case PlayersScreenBoardFormat.MEDIUM:
+            case PlayersScreenBoardFormat.MEDIUM_1:
                 return _('#{board_number} with {color}')
+            case PlayersScreenBoardFormat.MEDIUM_2:
+                return _('Board #{board_number} {color}')
             case PlayersScreenBoardFormat.FULL:
                 return _('Board #{board_number} with {color}')
             case _:
@@ -1088,7 +1091,11 @@ class PlayersScreenBoardFormat(IntEnum):
         match self:
             case PlayersScreenBoardFormat.MINIMAL:
                 return _('Board')
-            case PlayersScreenBoardFormat.MEDIUM | PlayersScreenBoardFormat.FULL:
+            case (
+                PlayersScreenBoardFormat.MEDIUM_1
+                | PlayersScreenBoardFormat.MEDIUM_2
+                | PlayersScreenBoardFormat.FULL
+            ):
                 return _('Board and Color')
             case _:
                 raise ValueError(f'Unknown value: {self}')

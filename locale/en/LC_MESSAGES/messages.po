@@ -812,6 +812,9 @@ msgstr ""
 msgid "Board #{board_number} with {color}"
 msgstr ""
 
+msgid "Board #{board_number} {color}"
+msgstr ""
+
 #, python-format
 msgid "Board %(board_number)s"
 msgstr ""

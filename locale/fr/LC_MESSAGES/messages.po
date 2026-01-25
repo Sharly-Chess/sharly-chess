@@ -812,6 +812,9 @@ msgstr "Échiquier n°%(board_number)d avec les %(color)s"
 msgid "Board #{board_number} with {color}"
 msgstr "Échiquier n°{board_number} avec les {color}"
 
+msgid "Board #{board_number} {color}"
+msgstr "Échiquier n°{board_number} {color}"
+
 #, python-format
 msgid "Board %(board_number)s"
 msgstr "Échiquier %(board_number)s"
