@@ -836,10 +836,6 @@ msgstr "Appariements par échiquier"
 msgid "Board and Color"
 msgstr "Échiquier et couleur"
 
-#, python-format
-msgid "Board display: %(display)s"
-msgstr "Affichage échiquiers : %(display)s"
-
 msgid "Board is not the same as the opponent's."
 msgstr "L'échiquier n'est pas le même que celui de l'adversaire."
 
@@ -3663,10 +3659,6 @@ msgstr "Adversaire Elo"
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
 
-#, python-format
-msgid "Opponent display: %(display)s"
-msgstr "Affichage adversaires : %(display)s"
-
 msgid "Opponent:"
 msgstr "Adversaire :"
 
@@ -3962,10 +3954,6 @@ msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tourno
 
 msgid "Player [{player}] has returned for this round."
 msgstr "Le·la joueur·euse [{player}] est de retour pour cette ronde."
-
-#, python-format
-msgid "Player display: %(display)s"
-msgstr "Affichage joueur·euses : %(display)s"
 
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
@@ -6350,6 +6338,9 @@ msgstr "échiquiers sur {parts} écrans"
 
 msgid "boards {board_numbers}"
 msgstr "échiquiers {board_numbers}"
+
+msgid "clear filters"
+msgstr "effacer les filtres"
 
 msgid "either the duration or the increment must be greater than 0."
 msgstr "la durée ou l’incrément doit être supérieur à 0."
