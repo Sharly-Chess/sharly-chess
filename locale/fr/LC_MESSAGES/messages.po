@@ -3937,6 +3937,9 @@ msgstr "Joueur·euse [{player_id}] - ronde {round} : "
 msgid "Player [{player_id}]: {error}"
 msgstr "Joueur·euse [{player_id}] : {error}"
 
+msgid "Player [{player}] already plays tournament [{tournament}]."
+msgstr "Le·la joueur·euse [{player}] joue déjà le tournoi [{tournament}]."
+
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse [{player}] a été créé·e. Cependant, il·elle ne correspond pas aux critères du tournoi : {names}"
 
@@ -3954,6 +3957,9 @@ msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tourno
 
 msgid "Player [{player}] has returned for this round."
 msgstr "Le·la joueur·euse [{player}] est de retour pour cette ronde."
+
+msgid "Player [{player}] is duplicated."
+msgstr "Le·la joueur·euse [{player}] est dupliqué·e."
 
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
@@ -3979,6 +3985,12 @@ msgstr "Sélection des joueur·euses (par classement)"
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Ensembles de joueur·euses de l'écran [%(screen_uniq_id)s]"
+
+msgid "Player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
+msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] joue déjà le tournoi [{tournament}]."
+
+msgid "Player with FIDE ID [{fide_id}] is duplicated."
+msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] est dupliqué·e."
 
 msgid "Player's club"
 msgstr "Club du·de la joueur·euse"
@@ -5284,9 +5296,6 @@ msgstr "Le·la joueur·euse n’a remporté aucune partie contre des adversaires
 
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
-
-msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
-msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] joue déjà le tournoi [{tournament}]."
 
 msgid "The rank of the first player to select."
 msgstr "Le classement du·de la premier·e joueur·euse."

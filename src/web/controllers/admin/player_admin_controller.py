@@ -38,6 +38,7 @@ from data.print_documents.documents import (
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from utils import Utils
+from utils.date_time import format_date
 from utils.enum import (
     PlayerGender,
     TournamentRating,
@@ -974,11 +975,13 @@ class PlayerAdminController(BaseEventAdminController):
                 except ValueError as e:
                     errors[field] = str(e)
 
-        last_name: str | None = WebContext.form_data_to_str(data, field := 'last_name')
+        last_name = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
             errors[field] = _('This field is required.')
+        first_name = WebContext.form_data_to_str(data, 'first_name')
+        date_of_birth: date | None = None
         try:
-            WebContext.form_data_to_date(data, field := 'date_of_birth')
+            date_of_birth = WebContext.form_data_to_date(data, field := 'date_of_birth')
         except FormError:
             year_str = data.get(field, '')
             if year_str:
@@ -1009,17 +1012,9 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
+        fide_id: int | None = None
         try:
             fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
-            if (
-                action == 'create'
-                and tournament
-                and fide_id
-                and fide_id in tournament.tournament_players_by_fide_id
-            ):
-                errors[field] = _(
-                    'The player with FIDE ID [{fide_id}] already plays tournament [{tournament}].'
-                ).format(fide_id=fide_id, tournament=tournament.name)
         except ValueError:
             errors[field] = _('Invalid FIDE ID [{fide_id}].').format(
                 fide_id=data[field]
@@ -1042,7 +1037,27 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Invalid fixed board number [{fixed_board}].').format(
                 fixed_board=data[field]
             )
-
+        if tournament and (fide_id or date_of_birth):
+            for tournament_player in tournament.tournament_players:
+                if player and tournament_player.id == player.id:
+                    continue
+                if fide_id and tournament_player.fide_id == fide_id:
+                    errors['fide_id'] = _(
+                        'Player with FIDE ID [{fide_id}] '
+                        'already plays tournament [{tournament}].'
+                    ).format(fide_id=fide_id, tournament=tournament.name)
+                if (
+                    date_of_birth
+                    and tournament_player.last_name == last_name
+                    and tournament_player.first_name == first_name
+                    and tournament_player.date_of_birth == date_of_birth
+                ):
+                    errors['last_name'] = _(
+                        'Player [{player}] already plays tournament [{tournament}].'
+                    ).format(
+                        player=f'{tournament_player.full_name} {format_date(date_of_birth)}',
+                        tournament=tournament.name,
+                    )
         plugin_manager.hook_for_event(event, 'validate_player_form_fields')(
             action=action,
             tournament=tournament,

@@ -141,8 +141,8 @@ class AppHookSpecs:
     def validate_player_form_fields(
         self,
         action: 'FormAction',
-        tournament: 'Tournament',
-        player: 'Player',
+        tournament: Optional['Tournament'],
+        player: Optional['Player'],
         data: dict[str, str],
         errors: dict[str, str],
     ):
