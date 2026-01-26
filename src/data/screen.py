@@ -544,7 +544,7 @@ class Screen:
         if self.type != ScreenType.PLAYERS:
             raise ValueError(f'type=[{self.type}]')
         if self.stored_screen:
-            opponent_format = self.stored_screen.players_player_format
+            opponent_format = self.stored_screen.players_opponent_format
             assert opponent_format is not None
             return PlayersScreenOpponentFormat(opponent_format)
         else:
