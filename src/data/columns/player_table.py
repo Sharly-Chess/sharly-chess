@@ -47,7 +47,9 @@ class RankColumn(TournamentPlayerTableColumn):
         return _('Rk. *** RANK COLUMN HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return tournament_player.rank
+        return tournament_player.tournament.ex_aequo_rank_by_player_id[
+            tournament_player.id
+        ]
 
     @property
     def shared_classes(self) -> str:

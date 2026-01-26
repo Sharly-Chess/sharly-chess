@@ -207,7 +207,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
             'tournament': self.tournament,
             'tournaments': self.tournaments,
             'subtitle': self.subtitle,
-            'tournament_players': self.ordered_split_players,
+            'ordered_split_players': self.ordered_split_players,
             'player_columns': self.player_columns,
             'row_count': [1],
         }
