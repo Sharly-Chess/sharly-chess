@@ -38,6 +38,7 @@ from database.sqlite.event.event_store import (
     StoredBoard,
     StoredPairing,
 )
+from utils.date_time import format_date
 from utils.enum import TournamentRating, Result, BoardColor
 from utils.option import OptionHandler
 
@@ -119,6 +120,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         stored_tournament, stored_players = self.load_stored_tournament(
             event, existing_stored_tournament
         )
+        self.check_players_unicity(stored_players)
         self.check_pairing_inconsistencies(stored_tournament)
         with EventDatabase(event.uniq_id, True) as database:
             if tournament:
@@ -349,6 +351,32 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 ]
                 pairing.result = result.value
                 other_pairing.result = other_result.value
+
+    @classmethod
+    def check_players_unicity(cls, stored_players: list[StoredPlayer]):
+        fide_ids: list[int] = []
+        name_keys: list[tuple[str, str | None, date]] = []
+        for player in stored_players:
+            if player.date_of_birth:
+                name_key = player.last_name, player.first_name, player.date_of_birth
+                if name_key in name_keys:
+                    raise ImporterError(
+                        _('The player [{player}] is duplicated.').format(
+                            player=(
+                                f'{player.last_name} {player.first_name} '
+                                f'{format_date(player.date_of_birth)}'
+                            )
+                        )
+                    )
+                name_keys.append(name_key)
+            if fide_id := player.fide_id:
+                if fide_id in fide_ids:
+                    raise ImporterError(
+                        _('The player with FIDE ID [{fide_id}] is duplicated.').format(
+                            fide_id=fide_id
+                        )
+                    )
+                fide_ids.append(fide_id)
 
 
 class FileTournamentImporter(TournamentImporter, ABC):

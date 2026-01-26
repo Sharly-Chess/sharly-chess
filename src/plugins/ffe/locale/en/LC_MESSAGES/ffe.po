@@ -244,9 +244,6 @@ msgstr ""
 msgid "Import Papi file"
 msgstr ""
 
-msgid "Invalid FFE ID [{ffe_id}]."
-msgstr ""
-
 msgid "Invalid FFE certification number or password."
 msgstr ""
 
@@ -431,9 +428,6 @@ msgid "The delay must be at least {min_delay} minutes to avoid overloading the F
 msgstr ""
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
-msgstr ""
-
-msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament}]."
 msgstr ""
 
 msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."

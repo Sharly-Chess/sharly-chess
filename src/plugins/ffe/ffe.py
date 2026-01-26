@@ -316,8 +316,8 @@ class FfePlugin(Plugin):
     def validate_player_form_fields(
         self,
         action: FormAction,
-        tournament: 'Tournament',
-        player: 'Player',
+        tournament: Optional['Tournament'],
+        player: Optional['Player'],
         data: dict[str, str],
         errors: dict[str, str],
     ):
@@ -326,25 +326,6 @@ class FfePlugin(Plugin):
             # should never happen, not translated.
             errors[field] = f'Invalid league value [{data[field]}].'
             data[field] = ''
-        if tournament:
-            # When adding a player, the tournament may not be chosen (in this case do not test)
-            try:
-                ffe_id = WebContext.form_data_to_int(data, field := 'ffe_id', minimum=1)
-                ffe_ids = [
-                    FFEUtils.get_player_plugin_data(p).ffe_id
-                    for p in tournament.tournament_players_by_id.values()
-                    if not player or p.id != player.id
-                ]
-
-                if ffe_id and ffe_id in ffe_ids:
-                    errors[field] = _(
-                        'The player with FFE ID [{ffe_id}] already '
-                        'plays tournament [{tournament}].'
-                    ).format(ffe_id=ffe_id, tournament=tournament.name)
-            except ValueError:
-                errors[field] = _('Invalid FFE ID [{ffe_id}].').format(
-                    ffe_id=data[field]
-                )
         try:
             if value := WebContext.form_data_to_int(data, field := 'ffe_licence'):
                 PlayerFFELicence(value)
@@ -360,21 +341,19 @@ class FfePlugin(Plugin):
                     'Invalid FFE licence number [{ffe_licence_number}].'
                 ).format(ffe_licence_number=data[field])
             elif tournament:
-                # When adding a player, the tournament may not be chosen (in this case do not test)
-                ffe_licence_numbers = [
-                    FFEUtils.get_player_plugin_data(p).ffe_licence_number
-                    for p in tournament.tournament_players_by_id.values()
-                    if not player or p.id != player.id
-                ]
-                if ffe_licence_number in ffe_licence_numbers:
-                    errors[field] = _(
-                        'The player with FFE licence number '
-                        '[{ffe_licence_number}] already plays '
-                        'tournament [{tournament}].'
-                    ).format(
-                        ffe_licence_number=ffe_licence_number,
-                        tournament=tournament.name,
-                    )
+                for tournament_player in tournament.tournament_players:
+                    if player and tournament_player.id == player.id:
+                        continue
+                    plugin_data = FFEUtils.get_player_plugin_data(tournament_player)
+                    if ffe_licence_number == plugin_data.ffe_licence_number:
+                        errors[field] = _(
+                            'The player with FFE licence number '
+                            '[{ffe_licence_number}] already plays '
+                            'tournament [{tournament}].'
+                        ).format(
+                            ffe_licence_number=ffe_licence_number,
+                            tournament=tournament.name,
+                        )
 
     @hookimpl
     async def augment_player_after_search(

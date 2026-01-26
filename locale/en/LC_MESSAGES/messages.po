@@ -5280,6 +5280,12 @@ msgstr ""
 msgid "The permissions of this account can not be updated."
 msgstr ""
 
+msgid "The player [{player}] already plays tournament [{tournament}]."
+msgstr ""
+
+msgid "The player [{player}] is duplicated."
+msgstr ""
+
 msgid "The player did not win any games against FIDE rated opponents."
 msgstr ""
 
@@ -5287,6 +5293,9 @@ msgid "The player has already been paired, removing them from the tournament is 
 msgstr ""
 
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
+msgstr ""
+
+msgid "The player with FIDE ID [{fide_id}] is duplicated."
 msgstr ""
 
 msgid "The rank of the first player to select."

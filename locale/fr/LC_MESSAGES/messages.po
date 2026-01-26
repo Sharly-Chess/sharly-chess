@@ -5282,6 +5282,12 @@ msgstr "Le numéro d'appariement est déjà attribué."
 msgid "The permissions of this account can not be updated."
 msgstr "Les permissions de ce compte ne peuvent être modifiées."
 
+msgid "The player [{player}] already plays tournament [{tournament}]."
+msgstr "Le·la joueur·euse [{player}] joue déjà le tournoi [{tournament}]."
+
+msgid "The player [{player}] is duplicated."
+msgstr "Le·la joueur·euse [{player}] est dupliqué·e."
+
 msgid "The player did not win any games against FIDE rated opponents."
 msgstr "Le·la joueur·euse n’a remporté aucune partie contre des adversaires classé·es FIDE."
 
@@ -5290,6 +5296,9 @@ msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever 
 
 msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
 msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] joue déjà le tournoi [{tournament}]."
+
+msgid "The player with FIDE ID [{fide_id}] is duplicated."
+msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] est dupliqué·e."
 
 msgid "The rank of the first player to select."
 msgstr "Le classement du·de la premier·e joueur·euse."
