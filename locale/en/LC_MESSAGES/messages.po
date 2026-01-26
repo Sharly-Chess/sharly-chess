@@ -836,10 +836,6 @@ msgstr ""
 msgid "Board and Color"
 msgstr ""
 
-#, python-format
-msgid "Board display: %(display)s"
-msgstr ""
-
 msgid "Board is not the same as the opponent's."
 msgstr ""
 
@@ -3661,10 +3657,6 @@ msgstr ""
 msgid "Opponent Elo [Pts]"
 msgstr ""
 
-#, python-format
-msgid "Opponent display: %(display)s"
-msgstr ""
-
 msgid "Opponent:"
 msgstr ""
 
@@ -3959,10 +3951,6 @@ msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr ""
 
 msgid "Player [{player}] has returned for this round."
-msgstr ""
-
-#, python-format
-msgid "Player display: %(display)s"
 msgstr ""
 
 msgid "Player does not match tournament criteria: {names}"
@@ -4707,9 +4695,6 @@ msgstr ""
 
 msgid "Scroll down to review all the norms…"
 msgstr ""
-
-msgid "Search *** PLACEHOLDER"
-msgstr "Search"
 
 msgid "Search *** SECTION TITLE"
 msgstr "Search"
@@ -6347,6 +6332,9 @@ msgid "boards on {parts} screens"
 msgstr ""
 
 msgid "boards {board_numbers}"
+msgstr ""
+
+msgid "clear filters"
 msgstr ""
 
 msgid "either the duration or the increment must be greater than 0."
