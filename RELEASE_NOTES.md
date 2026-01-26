@@ -20,6 +20,7 @@
 
 - Fixed the display of first and last players on family card (3.5.0)
 - Display the unpaired players by default on screens and families (3.5.0)
+- Added options to Players Screens to display more pairings with minimal information (3.5.0)
 
 ## Prizes
 
@@ -31,7 +32,7 @@
 
 ## FRA Schools
 
-- Allow updating the schools data after creation (3.5.0)
+- Allow updating and deleting the schools (3.5.0)
 - Added schools to the statistics (3.5.0)
 - Added team options to the schools ranking document (3.5.0)
 - Added an overall ranking to the schools ranking document (3.5.0)

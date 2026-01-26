@@ -1,0 +1,38 @@
+<div>
+    {% if entity.players_show_unpaired %}
+        {{ _('Unpaired: displayed') }}
+    {% else %}
+        {{ _('Unpaired: hidden') }}
+    {% endif %}
+</div>
+<div>
+    {{ _('Display:') }}
+    <table class="screen-card-table">
+        <tr>
+            <th class="overflow-hidden text-nowrap">
+                {{ entity.players_player_format.header(tournament) }}
+            </th>
+            <th class="overflow-hidden text-nowrap">
+                {{ entity.players_board_format.header(tournament) }}
+            </th>
+            <th class="overflow-hidden text-nowrap">
+                {% if entity.players_opponent_format.value != 1 %}
+                    {{ entity.players_opponent_format.header(tournament) }}
+                {% endif %}
+            </th>
+        </tr>
+        <tr>
+            <td class="overflow-hidden text-nowrap">
+                {{ entity.players_player_format.example }}
+            </td>
+            <td class="overflow-hidden text-nowrap">
+                {{ entity.players_board_format.example }}
+            </td>
+            <td class="overflow-hidden text-nowrap">
+                {% if entity.players_opponent_format.value != 1 %}
+                    {{ entity.players_opponent_format.example }}
+                {% endif %}
+            </td>
+        </tr>
+    </table>
+</div>

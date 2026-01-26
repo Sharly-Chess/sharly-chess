@@ -65,6 +65,11 @@ from plugins.utils import (
     PluginData,
     PluginUtils,
 )
+from utils.enum import (
+    PlayersScreenPlayerFormat,
+    PlayersScreenBoardFormat,
+    PlayersScreenOpponentFormat,
+)
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController
 
@@ -207,6 +212,26 @@ class FRASchoolsPlugin(Plugin):
             PluginUtils.insert_on_isinstance(
                 datasheet_columns, column, club, after=True
             )
+
+    # ---------------------------------------------------------------------------------
+    # Screens
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_default_players_screen_player_format(self) -> PlayersScreenPlayerFormat:
+        return PlayersScreenPlayerFormat.NAME
+
+    @hookimpl
+    def get_default_players_screen_board_format(self) -> PlayersScreenBoardFormat:
+        return PlayersScreenBoardFormat.MINIMAL
+
+    @hookimpl
+    def get_default_players_screen_opponent_format(self) -> PlayersScreenOpponentFormat:
+        return PlayersScreenOpponentFormat.NONE
+
+    @hookimpl
+    def get_default_players_screen_columns(self) -> int | None:
+        return 3
 
     # ---------------------------------------------------------------------------------
     # Printing

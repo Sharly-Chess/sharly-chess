@@ -141,10 +141,7 @@
                         {% endif %}
                         {% if family_type == 'players' %}
                             <div class="col-12 col-md-6">
-                                {% include '../common/modal/show_unpaired.html' %}
-                            </div>
-                            <div class="col-12 col-md-6">
-                                {% include '../common/modal/show_opponent.html' %}
+                                {% include '../common/modal/players_show_unpaired.html' %}
                             </div>
                         {% endif %}
                     </div>
@@ -214,6 +211,17 @@
                         {% if family_type == 'input' %}
                             <div class="col-12 col-md-6">
                                 {% include '../common/modal/exit_button.html' %}
+                            </div>
+                        {% endif %}
+                        {% if family_type == 'players' %}
+                            <div class="col-12 col-md-6">
+                                {% include '../common/modal/players_player_format.html' %}
+                            </div>
+                            <div class="col-12 col-md-6">
+                                {% include '../common/modal/players_board_format.html' %}
+                            </div>
+                            <div class="col-12 col-md-6">
+                                {% include '../common/modal/players_opponent_format.html' %}
                             </div>
                         {% endif %}
                         <div class="col-12">

@@ -54,7 +54,7 @@
         {% for team in ordered_school_teams %}
             <div class="separator"></div>
 
-            <div id="team-{{ team.id }}" class="team">
+            <div id="team-{{ team.id }}" class="team no-page-break">
                 <div class="team-rank">{{ ordinal_integer(loop.index)|safe }}</div>
                 <div class="team-title">
                     {{ team.school.name }}{% if team.label %}<span class="team-label"> {{ team.label }}</span>{% endif %}{% if team.school.city %},

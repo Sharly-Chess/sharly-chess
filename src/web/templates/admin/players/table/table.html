@@ -3,7 +3,9 @@
 
 <table
     id="players-table"
-    class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
+    class="table prominent table-striped table-sm table-hover
+        w-100 bg-light mx-auto justify-content-center
+        {% if is_search_active %}table-danger-warning{% endif %}"
     hx-swap="outerHTML"
 >
     {% include '/admin/players/table/header.html' %}
@@ -12,7 +14,17 @@
         <tr id="players-table-empty-row">
             {% if not players_by_index %}
                 <td colspan="100%" class="px-3 text-center">
-                    {{ _('No players.') }}
+                    {% if is_search_active %}
+                        {{ _('No players') }}
+                        (<a
+                            href=""
+                            hx-get="{{ url_for('admin-event-players-clear-filters', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        >{{ _('clear filters') }}</a>).
+                    {% else %}
+                        {{ _('No players.') }}
+                    {% endif %}
                 </td>
             {% endif %}
         </tr>

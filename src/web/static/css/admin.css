@@ -374,3 +374,12 @@
         border-color: var(--adp-cell-background-color-selected);
     }
 }
+.screen-card-table {
+    width: 100%;
+    max-width: 100%;
+    font-size: 0.75rem;
+}
+.screen-card-table th, .screen-card-table td {
+    border-width: 1px;
+    text-overflow: ellipsis;
+}

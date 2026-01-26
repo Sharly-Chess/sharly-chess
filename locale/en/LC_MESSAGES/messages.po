@@ -7,6 +7,9 @@ msgstr ""
 msgid "#{board_number}"
 msgstr ""
 
+msgid "#{board_number} with {color}"
+msgstr ""
+
 #, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
 msgstr ""
@@ -799,8 +802,17 @@ msgstr ""
 msgid "Blz *** BLITZ RATING ACRONYM"
 msgstr "Blz"
 
+msgid "Board"
+msgstr ""
+
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
+msgstr ""
+
+msgid "Board #{board_number} with {color}"
+msgstr ""
+
+msgid "Board #{board_number} {color}"
 msgstr ""
 
 #, python-format
@@ -811,9 +823,6 @@ msgstr ""
 msgid "Board %(number)s"
 msgstr ""
 
-msgid "Board & color"
-msgstr ""
-
 #, python-format
 msgid "Board (%(remaining)d)"
 msgstr ""
@@ -822,6 +831,9 @@ msgid "Board Cards"
 msgstr ""
 
 msgid "Board Pairings"
+msgstr ""
+
+msgid "Board and Color"
 msgstr ""
 
 msgid "Board is not the same as the opponent's."
@@ -835,6 +847,9 @@ msgstr ""
 
 #, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+msgid "Board:"
 msgstr ""
 
 msgid "Boards"
@@ -1710,10 +1725,10 @@ msgstr ""
 msgid "Display the exit button"
 msgstr ""
 
-msgid "Display the players' opponent"
+msgid "Display the unpaired players"
 msgstr ""
 
-msgid "Display the unpaired players"
+msgid "Display:"
 msgstr ""
 
 #, python-format
@@ -3642,6 +3657,9 @@ msgstr ""
 msgid "Opponent Elo [Pts]"
 msgstr ""
 
+msgid "Opponent:"
+msgstr ""
+
 msgid "Opponents"
 msgstr ""
 
@@ -3917,6 +3935,9 @@ msgstr ""
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
+msgid "Player [{player}] already plays tournament [{tournament}]."
+msgstr ""
+
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
 msgstr ""
 
@@ -3933,6 +3954,9 @@ msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr ""
 
 msgid "Player [{player}] has returned for this round."
+msgstr ""
+
+msgid "Player [{player}] is duplicated."
 msgstr ""
 
 msgid "Player does not match tournament criteria: {names}"
@@ -3958,6 +3982,12 @@ msgstr ""
 
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+msgid "Player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
+msgstr ""
+
+msgid "Player with FIDE ID [{fide_id}] is duplicated."
 msgstr ""
 
 msgid "Player's club"
@@ -4007,12 +4037,6 @@ msgid "Players update for tournament [%(tournament)s]"
 msgstr ""
 
 msgid "Players without phone or email won't be included."
-msgstr ""
-
-msgid "Players' opponent: displayed"
-msgstr ""
-
-msgid "Players' opponent: hidden"
 msgstr ""
 
 msgid "Players:"
@@ -4684,9 +4708,6 @@ msgstr ""
 msgid "Scroll down to review all the norms…"
 msgstr ""
 
-msgid "Search *** PLACEHOLDER"
-msgstr "Search"
-
 msgid "Search *** SECTION TITLE"
 msgstr "Search"
 
@@ -5272,9 +5293,6 @@ msgid "The player did not win any games against FIDE rated opponents."
 msgstr ""
 
 msgid "The player has already been paired, removing them from the tournament is impossible."
-msgstr ""
-
-msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
 msgstr ""
 
 msgid "The rank of the first player to select."
@@ -6085,9 +6103,6 @@ msgstr ""
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr ""
 
-msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
-msgstr ""
-
 msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."
 msgstr ""
 
@@ -6328,6 +6343,9 @@ msgstr ""
 msgid "boards {board_numbers}"
 msgstr ""
 
+msgid "clear filters"
+msgstr ""
+
 msgid "either the duration or the increment must be greater than 0."
 msgstr ""
 
@@ -6460,9 +6478,6 @@ msgstr ""
 msgid "value: {value}"
 msgstr ""
 
-msgid "vs"
-msgstr ""
-
 #, python-format
 msgid "vs %(player)s"
 msgstr ""
@@ -6472,6 +6487,9 @@ msgstr ""
 
 msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
 msgstr "{age_limit}+"
+
+msgid "{board_number} {color}"
+msgstr ""
 
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
@@ -6537,6 +6555,18 @@ msgid "{status_code} - Unknown error"
 msgstr ""
 
 msgid "{string}: {value}"
+msgstr ""
+
+msgid "{title} {full_name}"
+msgstr ""
+
+msgid "{title} {full_name} {rating}"
+msgstr ""
+
+msgid "{title} {full_name} {rating}{rating_type}"
+msgstr ""
+
+msgid "{title} {full_name} {rating}{rating_type} [{points}]"
 msgstr ""
 
 msgid "½ - 0 (U)"

@@ -78,6 +78,15 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
         """Get the sort key from a player to sort by this column.
         After the values of this key the players are sorted by name."""
 
+    @property
+    def is_searchable(self) -> bool:
+        """Defines if the column can be searched from the global search bar."""
+        return False
+
+    def get_search_key(self, player: Player) -> str:
+        """Get the key that the search should match for the player to be filtered in."""
+        raise NotImplementedError('Required if is_searchable=True')
+
     # -------------------------------------------------------------------------
     # Filter
     # -------------------------------------------------------------------------
@@ -185,6 +194,13 @@ class NamePlayersTabColumn(PlayersTabColumn):
     @property
     def cell_template(self) -> str | None:
         return 'cells/name.html'
+
+    @property
+    def is_searchable(self) -> bool:
+        return True
+
+    def get_search_key(self, player: Player) -> str:
+        return f'{player.last_name} {player.first_name}'
 
 
 class CheckInPlayersTabColumn(FilterPlayersTabColumn):
@@ -325,6 +341,13 @@ class ClubPlayersTabColumn(FilterPlayersTabColumn):
             player.federation.name,
             player.club.name,
         )
+
+    @property
+    def is_searchable(self) -> bool:
+        return True
+
+    def get_search_key(self, player: Player) -> str:
+        return player.club.name
 
 
 class DateOfBirthPlayersTabColumn(PlayersTabColumn):

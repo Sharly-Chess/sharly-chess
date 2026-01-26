@@ -43,20 +43,9 @@
                 {% endif %}
             {% endif %}
             {% if screen.type == 'players' %}
-                <div>
-                    {% if screen.players_show_unpaired %}
-                        {{ _('Unpaired: displayed') }}
-                    {% else %}
-                        {{ _('Unpaired: hidden') }}
-                    {% endif %}
-                </div>
-                <div>
-                    {% if screen.players_show_opponent %}
-                        {{ _('Players\' opponent: displayed') }}
-                    {% else %}
-                        {{ _('Players\' opponent: hidden') }}
-                    {% endif %}
-                </div>
+                {% with entity=screen, tournament=screen.screen_sets_sorted_by_order[0].tournament %}
+                    {% include '../common/card_players_screen_display.html' %}
+                {% endwith %}
             {% endif %}
             {% if screen.type == 'results' %}
                 <div>
