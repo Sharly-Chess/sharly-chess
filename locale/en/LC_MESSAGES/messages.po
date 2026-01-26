@@ -4696,9 +4696,6 @@ msgstr ""
 msgid "Scroll down to review all the norms…"
 msgstr ""
 
-msgid "Search *** PLACEHOLDER"
-msgstr "Search"
-
 msgid "Search *** SECTION TITLE"
 msgstr "Search"
 

@@ -221,3 +221,13 @@ class FraSchoolsPlayersTabColumn(FilterPlayersTabColumn):
     @staticmethod
     def get_player_school(player: Player) -> FRASchool | None:
         return FRASchoolsUtils.get_player_school(player)
+
+    @property
+    def is_searchable(self) -> bool:
+        return True
+
+    def get_search_key(self, player: Player) -> str:
+        school = self.get_player_school(player)
+        if not school:
+            return ''
+        return school.full_name

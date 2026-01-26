@@ -234,11 +234,14 @@ class PlayerAdminController(BaseEventAdminController):
         search = normalized_key(SessionPlayersSearch(request, event.uniq_id).get())
         session_filters = SessionPlayersFilters(request, event.uniq_id)
         if search:
+            search_key_getters: list[Callable[[Player], str]] = [
+                column.get_search_key for column in handler.searchable_columns
+            ]
             players = [
                 player
                 for player in players
                 if cls._matches_string_search(
-                    search, f'{player.last_name} {player.first_name}'
+                    search, ' '.join(getter(player) for getter in search_key_getters)
                 )
             ]
         getters_active_keys: list[tuple[Callable[[Player], str], list[str]]] = []
@@ -422,12 +425,16 @@ class PlayerAdminController(BaseEventAdminController):
             | cls._player_table_header_context(web_context)
             | cls._player_table_page_context(web_context)
         )
+        searchable_column_names = [
+            column.name for column in web_context.column_handler.searchable_columns
+        ]
         template_context |= {
             'default_print_document': web_context.default_print_document,
             'data_sources': DataSourceManager().objects(),
             'search': SessionPlayersSearch(request, event.uniq_id).get(),
             'allowed_tournaments': web_context.allowed_tournaments,
             'enabled_columns': web_context.column_handler.enabled_columns,
+            'searchable_column_names': searchable_column_names,
             'player_exporters': PlayerExporterManager().objects(),
         }
         return cls._admin_base_event_render(template_context)
