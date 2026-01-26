@@ -118,6 +118,7 @@ class PlayerColumnHandler:
                 pt.CategoryColumn,
                 pt.GenderColumn,
                 pt.FederationColumn,
+                pt.ClubColumn,
             ]
             + [
                 partial(pt.RoundColumn, round_=round_)
