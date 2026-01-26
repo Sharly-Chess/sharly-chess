@@ -180,7 +180,15 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
 
     @cached_property
     def carry_over_fields(self) -> list[str]:
-        fields = ['tournament_id']
+        fields = [
+            'tournament_id',
+            'mail',
+            'phone',
+            'comment',
+            'owed',
+            'paid',
+            'fixed',
+        ]
         plugin_manager.hook_for_event(
             self.get_admin_event(), 'insert_player_form_carry_over_field'
         )(fields=fields)
@@ -694,25 +702,27 @@ class PlayerAdminController(BaseEventAdminController):
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             stored_player = search_stored_player
             tournament_id: int | None = None
-            if not stored_player and admin_player and action != FormAction.REPLACE:
+            if not stored_player and admin_player:
                 stored_player = admin_player.stored_player
             if stored_player:
-                first_name = stored_player.first_name
-                last_name = stored_player.last_name
-                gender = stored_player.gender
-                date_of_birth = WebContext.value_to_date_form_data(
-                    stored_player.date_of_birth
-                )
-                if stored_player.year_of_birth:
-                    date_of_birth = str(stored_player.year_of_birth)
-                for tr_value, rating in stored_player.ratings.items():
-                    ratings[TournamentRating(tr_value)] = (
-                        PlayerRating.from_stored_value(rating)
+                if search_stored_player or action != FormAction.REPLACE:
+                    first_name = stored_player.first_name
+                    last_name = stored_player.last_name
+                    gender = stored_player.gender
+                    date_of_birth = WebContext.value_to_date_form_data(
+                        stored_player.date_of_birth
                     )
-                title = stored_player.title
-                federation = stored_player.federation
-                club = stored_player.club
-                fide_id = stored_player.fide_id or None
+                    if stored_player.year_of_birth:
+                        date_of_birth = str(stored_player.year_of_birth)
+                    for tr_value, rating in stored_player.ratings.items():
+                        ratings[TournamentRating(tr_value)] = (
+                            PlayerRating.from_stored_value(rating)
+                        )
+                    title = stored_player.title
+                    federation = stored_player.federation
+                    club = stored_player.club
+                    fide_id = stored_player.fide_id or None
+                # Fields unused by the search, kept on replace
                 mail = stored_player.mail
                 phone = stored_player.phone
                 comment = stored_player.comment
@@ -744,7 +754,7 @@ class PlayerAdminController(BaseEventAdminController):
             ) in Player.plugin_data_class_by_plugin_id().items():
                 plugin_form_data |= plugin_data_class.from_stored_value(
                     stored_plugin_data.get(plugin_id, {})
-                ).to_form_data(action=action)
+                ).to_form_data(action=action if not search_stored_player else None)
 
             data = WebContext.values_dict_to_form_data(
                 {
