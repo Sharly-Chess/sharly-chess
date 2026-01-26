@@ -721,6 +721,19 @@ class Tournament:
             key=by('last_name', 'first_name'),
         )
 
+    @cached_property
+    def ex_aequo_rank_by_player_id(self) -> dict[int, int]:
+        rank_by_player_id: dict[int, int] = {}
+        previous_rank_key: tuple | None = None
+        previous_rank: int = 0
+        for rank, player in self.tournament_players_by_rank.items():
+            rank_key = player.rank_sort_key_without_pairing_number
+            if rank_key != previous_rank_key:
+                previous_rank_key = rank_key
+                previous_rank = player.rank
+            rank_by_player_id[player.id] = previous_rank
+        return rank_by_player_id
+
     @property
     def not_checked_in_players(self) -> list[TournamentPlayer]:
         return [

@@ -88,7 +88,7 @@ class PlayerColumnHandler:
     ) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
             [
-                pt.RankColumn,
+                pt.ExAequoRankColumn,
                 pt.TitleColumn,
                 pt.NameColumn,
                 pt.RatingColumn,
