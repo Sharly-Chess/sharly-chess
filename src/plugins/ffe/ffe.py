@@ -347,7 +347,7 @@ class FfePlugin(Plugin):
                     plugin_data = FFEUtils.get_player_plugin_data(tournament_player)
                     if ffe_licence_number == plugin_data.ffe_licence_number:
                         errors[field] = _(
-                            'The player with FFE licence number '
+                            'Player with FFE licence number '
                             '[{ffe_licence_number}] already plays '
                             'tournament [{tournament}].'
                         ).format(

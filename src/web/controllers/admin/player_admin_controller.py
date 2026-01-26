@@ -1026,7 +1026,7 @@ class PlayerAdminController(BaseEventAdminController):
                     continue
                 if fide_id and tournament_player.fide_id == fide_id:
                     errors['fide_id'] = _(
-                        'The player with FIDE ID [{fide_id}] '
+                        'Player with FIDE ID [{fide_id}] '
                         'already plays tournament [{tournament}].'
                     ).format(fide_id=fide_id, tournament=tournament.name)
                 if (
@@ -1036,7 +1036,7 @@ class PlayerAdminController(BaseEventAdminController):
                     and tournament_player.date_of_birth == date_of_birth
                 ):
                     errors['last_name'] = _(
-                        'The player [{player}] already plays tournament [{tournament}].'
+                        'Player [{player}] already plays tournament [{tournament}].'
                     ).format(
                         player=f'{tournament_player.full_name} {format_date(date_of_birth)}',
                         tournament=tournament.name,

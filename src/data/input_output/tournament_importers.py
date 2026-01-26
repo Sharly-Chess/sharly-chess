@@ -361,7 +361,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 name_key = player.last_name, player.first_name, player.date_of_birth
                 if name_key in name_keys:
                     raise ImporterError(
-                        _('The player [{player}] is duplicated.').format(
+                        _('Player [{player}] is duplicated.').format(
                             player=(
                                 f'{player.last_name} {player.first_name} '
                                 f'{format_date(player.date_of_birth)}'
@@ -372,7 +372,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             if fide_id := player.fide_id:
                 if fide_id in fide_ids:
                     raise ImporterError(
-                        _('The player with FIDE ID [{fide_id}] is duplicated.').format(
+                        _('Player with FIDE ID [{fide_id}] is duplicated.').format(
                             fide_id=fide_id
                         )
                     )
