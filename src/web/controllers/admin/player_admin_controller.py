@@ -233,13 +233,15 @@ class PlayerAdminController(BaseEventAdminController):
         web_context.set_column_filter_values()
         search = normalized_key(SessionPlayersSearch(request, event.uniq_id).get())
         session_filters = SessionPlayersFilters(request, event.uniq_id)
-        filter_functions: list[Callable[[Player], bool]] = []
         if search:
-            filter_functions.append(
-                lambda player: cls._matches_string_search(
+            players = [
+                player
+                for player in players
+                if cls._matches_string_search(
                     search, f'{player.last_name} {player.first_name}'
                 )
-            )
+            ]
+        getters_active_keys: list[tuple[Callable[[Player], str], list[str]]] = []
         for column_id, filter_keys in session_filters.get().items():
             column = handler.get_column(column_id)
             if not column or not column.is_visible:
@@ -252,13 +254,14 @@ class PlayerAdminController(BaseEventAdminController):
             ]
             if len(active_keys) in (len(column.filter_values), 0):
                 continue
-            filter_functions.append(
-                lambda player: column.get_filter_key(player) in active_keys
-            )
+            getters_active_keys.append((column.get_filter_key, active_keys))
         return [
             player
             for player in players
-            if all(filter_function(player) for filter_function in filter_functions)
+            if all(
+                key_getter(player) in active_keys
+                for key_getter, active_keys in getters_active_keys
+            )
         ]
 
     @staticmethod
