@@ -4698,9 +4698,6 @@ msgstr "Écrans : %(num)d"
 msgid "Scroll down to review all the norms…"
 msgstr "Faites défiler vers le bas pour consulter toutes les normes…"
 
-msgid "Search *** PLACEHOLDER"
-msgstr "Rechercher"
-
 msgid "Search *** SECTION TITLE"
 msgstr "Recherche"
 

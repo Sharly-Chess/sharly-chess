@@ -275,5 +275,13 @@ class PlayersTabColumnHandler:
     def enabled_columns(self) -> list[PlayersTabColumn]:
         return [column for column in self.columns if column.is_enabled]
 
+    @property
+    def searchable_columns(self) -> list[PlayersTabColumn]:
+        return [
+            column
+            for column in self.columns
+            if column.is_searchable and column.is_visible
+        ]
+
     def get_column(self, column_id: str) -> PlayersTabColumn | None:
         return self._columns_by_id.get(column_id, None)
