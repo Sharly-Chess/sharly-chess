@@ -374,6 +374,7 @@ class PlayerAdminController(BaseEventAdminController):
             'filtered_player_count': len(search_results),
             'sort_column': sort_column,
             'is_sort_asc': is_sort_asc,
+            'is_search_active': len(allowed_players) > len(search_results),
         }
 
     @classmethod
