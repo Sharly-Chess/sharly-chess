@@ -16,7 +16,7 @@ class AuthActionCategory(StrEnum):
     RESULTS = auto()
     SCREENS = auto()
     PRIZES = auto()
-    PRINT = auto()
+    DOCUMENTS = auto()
 
     @classmethod
     def categories(cls) -> list[Self]:
@@ -50,8 +50,8 @@ class AuthActionCategory(StrEnum):
                 return _('Screens', locale)
             case AuthActionCategory.PRIZES:
                 return _('Prizes', locale)
-            case AuthActionCategory.PRINT:
-                return _('Printing', locale)
+            case AuthActionCategory.DOCUMENTS:
+                return _('Documents', locale)
             case _:
                 raise ValueError(f'auth={self}')
 
@@ -129,8 +129,8 @@ class AuthAction(StrEnum):
     VIEW_PRIZES_TAB = auto()
     MANAGE_PRIZES = auto()
 
-    # Print
-    PRINT = auto()
+    # Documents
+    GENERATE_DOCUMENTS = auto()
 
     @classmethod
     def actions(cls) -> list[Self]:
@@ -209,8 +209,8 @@ class AuthAction(StrEnum):
                 return AuthActionCategory.SCREENS
             case AuthAction.VIEW_PRIZES_TAB | AuthAction.MANAGE_PRIZES:
                 return AuthActionCategory.PRIZES
-            case AuthAction.PRINT:
-                return AuthActionCategory.PRINT
+            case AuthAction.GENERATE_DOCUMENTS:
+                return AuthActionCategory.DOCUMENTS
             case _:
                 raise ValueError(f'auth={self}')
 
@@ -316,7 +316,7 @@ class AuthAction(StrEnum):
                 return _('View Prizes tab', locale)
             case AuthAction.MANAGE_PRIZES:
                 return _('Manage prizes', locale)
-            case AuthAction.PRINT:
-                return _('Print', locale)
+            case AuthAction.GENERATE_DOCUMENTS:
+                return _('Generate documents', locale)
             case _:
                 raise ValueError(f'auth={self}')

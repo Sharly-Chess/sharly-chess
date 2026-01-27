@@ -18,6 +18,11 @@ class FFEDocumentTypeManager(EntityManager[FFEDocumentType]):
             ffe_types.FFET7Type,
             ffe_types.FFEArbiterCompensationType,
             ffe_types.FFECheatingType,
-            ffe_types.FFETrainingCertificate1Type,
-            ffe_types.FFETrainingCertificate2Type,
+            # FIXME(Amaras): après une conversation avec le directeur des titres,
+            # il est évident que toutes les ASP générées par Sharly Chess seront immédiatement
+            # refusées.
+            # J'ai décidé de les désactiver mais de garder le code.
+            # TODO(Amaras): fix the template in a separate PR
+            # ffe_types.FFETrainingCertificate1Type,
+            # ffe_types.FFETrainingCertificate2Type,
         ]

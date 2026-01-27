@@ -301,6 +301,16 @@ class FRASchoolsUtils:
         with EventDatabase(event.uniq_id, True) as database:
             database.update_stored_event(stored_event)
 
+    @classmethod
+    def delete_event_school(cls, event: Event, fra_school_id: int):
+        plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
+        if fra_school_id in plugin_data.fra_schools_by_id:
+            del plugin_data.fra_schools_by_id[fra_school_id]
+        stored_event = event.stored_event
+        stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+        with EventDatabase(event.uniq_id, True) as database:
+            database.update_stored_event(stored_event)
+
     @staticmethod
     def extract_school_code(school_str: str) -> str | None:
         if re.match(r'^\d{7}[A-Z]', school_str):

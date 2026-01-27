@@ -38,6 +38,7 @@ from data.print_documents.documents import (
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from utils import Utils
+from utils.date_time import format_date
 from utils.enum import (
     PlayerGender,
     TournamentRating,
@@ -180,7 +181,15 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
 
     @cached_property
     def carry_over_fields(self) -> list[str]:
-        fields = ['tournament_id']
+        fields = [
+            'tournament_id',
+            'mail',
+            'phone',
+            'comment',
+            'owed',
+            'paid',
+            'fixed',
+        ]
         plugin_manager.hook_for_event(
             self.get_admin_event(), 'insert_player_form_carry_over_field'
         )(fields=fields)
@@ -233,13 +242,18 @@ class PlayerAdminController(BaseEventAdminController):
         web_context.set_column_filter_values()
         search = normalized_key(SessionPlayersSearch(request, event.uniq_id).get())
         session_filters = SessionPlayersFilters(request, event.uniq_id)
-        filter_functions: list[Callable[[Player], bool]] = []
         if search:
-            filter_functions.append(
-                lambda player: cls._matches_string_search(
-                    search, f'{player.last_name} {player.first_name}'
+            search_key_getters: list[Callable[[Player], str]] = [
+                column.get_search_key for column in handler.searchable_columns
+            ]
+            players = [
+                player
+                for player in players
+                if cls._matches_string_search(
+                    search, ' '.join(getter(player) for getter in search_key_getters)
                 )
-            )
+            ]
+        getters_active_keys: list[tuple[Callable[[Player], str], list[str]]] = []
         for column_id, filter_keys in session_filters.get().items():
             column = handler.get_column(column_id)
             if not column or not column.is_visible:
@@ -252,13 +266,14 @@ class PlayerAdminController(BaseEventAdminController):
             ]
             if len(active_keys) in (len(column.filter_values), 0):
                 continue
-            filter_functions.append(
-                lambda player: column.get_filter_key(player) in active_keys
-            )
+            getters_active_keys.append((column.get_filter_key, active_keys))
         return [
             player
             for player in players
-            if all(filter_function(player) for filter_function in filter_functions)
+            if all(
+                key_getter(player) in active_keys
+                for key_getter, active_keys in getters_active_keys
+            )
         ]
 
     @staticmethod
@@ -374,6 +389,7 @@ class PlayerAdminController(BaseEventAdminController):
             'filtered_player_count': len(search_results),
             'sort_column': sort_column,
             'is_sort_asc': is_sort_asc,
+            'is_search_active': len(allowed_players) > len(search_results),
         }
 
     @classmethod
@@ -418,12 +434,16 @@ class PlayerAdminController(BaseEventAdminController):
             | cls._player_table_header_context(web_context)
             | cls._player_table_page_context(web_context)
         )
+        searchable_column_names = [
+            column.name for column in web_context.column_handler.searchable_columns
+        ]
         template_context |= {
             'default_print_document': web_context.default_print_document,
             'data_sources': DataSourceManager().objects(),
             'search': SessionPlayersSearch(request, event.uniq_id).get(),
             'allowed_tournaments': web_context.allowed_tournaments,
             'enabled_columns': web_context.column_handler.enabled_columns,
+            'searchable_column_names': searchable_column_names,
             'player_exporters': PlayerExporterManager().objects(),
         }
         return cls._admin_base_event_render(template_context)
@@ -683,25 +703,27 @@ class PlayerAdminController(BaseEventAdminController):
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             stored_player = search_stored_player
             tournament_id: int | None = None
-            if not stored_player and admin_player and action != FormAction.REPLACE:
+            if not stored_player and admin_player:
                 stored_player = admin_player.stored_player
             if stored_player:
-                first_name = stored_player.first_name
-                last_name = stored_player.last_name
-                gender = stored_player.gender
-                date_of_birth = WebContext.value_to_date_form_data(
-                    stored_player.date_of_birth
-                )
-                if stored_player.year_of_birth:
-                    date_of_birth = str(stored_player.year_of_birth)
-                for tr_value, rating in stored_player.ratings.items():
-                    ratings[TournamentRating(tr_value)] = (
-                        PlayerRating.from_stored_value(rating)
+                if search_stored_player or action != FormAction.REPLACE:
+                    first_name = stored_player.first_name
+                    last_name = stored_player.last_name
+                    gender = stored_player.gender
+                    date_of_birth = WebContext.value_to_date_form_data(
+                        stored_player.date_of_birth
                     )
-                title = stored_player.title
-                federation = stored_player.federation
-                club = stored_player.club
-                fide_id = stored_player.fide_id or None
+                    if stored_player.year_of_birth:
+                        date_of_birth = str(stored_player.year_of_birth)
+                    for tr_value, rating in stored_player.ratings.items():
+                        ratings[TournamentRating(tr_value)] = (
+                            PlayerRating.from_stored_value(rating)
+                        )
+                    title = stored_player.title
+                    federation = stored_player.federation
+                    club = stored_player.club
+                    fide_id = stored_player.fide_id or None
+                # Fields unused by the search, kept on replace
                 mail = stored_player.mail
                 phone = stored_player.phone
                 comment = stored_player.comment
@@ -733,7 +755,7 @@ class PlayerAdminController(BaseEventAdminController):
             ) in Player.plugin_data_class_by_plugin_id().items():
                 plugin_form_data |= plugin_data_class.from_stored_value(
                     stored_plugin_data.get(plugin_id, {})
-                ).to_form_data(action=action)
+                ).to_form_data(action=action if not search_stored_player else None)
 
             data = WebContext.values_dict_to_form_data(
                 {
@@ -953,11 +975,13 @@ class PlayerAdminController(BaseEventAdminController):
                 except ValueError as e:
                     errors[field] = str(e)
 
-        last_name: str | None = WebContext.form_data_to_str(data, field := 'last_name')
+        last_name = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
             errors[field] = _('This field is required.')
+        first_name = WebContext.form_data_to_str(data, 'first_name')
+        date_of_birth: date | None = None
         try:
-            WebContext.form_data_to_date(data, field := 'date_of_birth')
+            date_of_birth = WebContext.form_data_to_date(data, field := 'date_of_birth')
         except FormError:
             year_str = data.get(field, '')
             if year_str:
@@ -988,17 +1012,9 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
+        fide_id: int | None = None
         try:
             fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
-            if (
-                action == 'create'
-                and tournament
-                and fide_id
-                and fide_id in tournament.tournament_players_by_fide_id
-            ):
-                errors[field] = _(
-                    'The player with FIDE ID [{fide_id}] already plays tournament [{tournament}].'
-                ).format(fide_id=fide_id, tournament=tournament.name)
         except ValueError:
             errors[field] = _('Invalid FIDE ID [{fide_id}].').format(
                 fide_id=data[field]
@@ -1021,7 +1037,27 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Invalid fixed board number [{fixed_board}].').format(
                 fixed_board=data[field]
             )
-
+        if tournament and (fide_id or date_of_birth):
+            for tournament_player in tournament.tournament_players:
+                if player and tournament_player.id == player.id:
+                    continue
+                if fide_id and tournament_player.fide_id == fide_id:
+                    errors['fide_id'] = _(
+                        'Player with FIDE ID [{fide_id}] '
+                        'already plays tournament [{tournament}].'
+                    ).format(fide_id=fide_id, tournament=tournament.name)
+                if (
+                    date_of_birth
+                    and tournament_player.last_name == last_name
+                    and tournament_player.first_name == first_name
+                    and tournament_player.date_of_birth == date_of_birth
+                ):
+                    errors['last_name'] = _(
+                        'Player [{player}] already plays tournament [{tournament}].'
+                    ).format(
+                        player=f'{tournament_player.full_name} {format_date(date_of_birth)}',
+                        tournament=tournament.name,
+                    )
         plugin_manager.hook_for_event(event, 'validate_player_form_fields')(
             action=action,
             tournament=tournament,

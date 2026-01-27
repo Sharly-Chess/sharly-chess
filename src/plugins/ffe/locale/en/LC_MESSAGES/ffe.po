@@ -244,9 +244,6 @@ msgstr ""
 msgid "Import Papi file"
 msgstr ""
 
-msgid "Invalid FFE ID [{ffe_id}]."
-msgstr ""
-
 msgid "Invalid FFE certification number or password."
 msgstr ""
 
@@ -346,6 +343,9 @@ msgstr ""
 msgid "Papi file"
 msgstr ""
 
+msgid "Player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
+msgstr ""
+
 msgid "Players:"
 msgstr ""
 
@@ -433,16 +433,7 @@ msgstr ""
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr ""
 
-msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament}]."
-msgstr ""
-
-msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
-msgstr ""
-
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
-msgstr ""
-
-msgid "This field is not editable."
 msgstr ""
 
 msgid "Tournament"
@@ -551,4 +542,7 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "This field is not editable."
+#~ msgstr ""
 

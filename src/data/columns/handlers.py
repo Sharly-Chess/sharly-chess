@@ -26,7 +26,7 @@ from data.columns.players_tab import (
 from data.event import Event
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
-from web.utils import ColumnUsage
+from .column import ColumnUsage
 
 
 class PlayerColumnHandler:
@@ -88,7 +88,7 @@ class PlayerColumnHandler:
     ) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
             [
-                pt.RankColumn,
+                pt.ExAequoRankColumn,
                 pt.TitleColumn,
                 pt.NameColumn,
                 pt.RatingColumn,
@@ -118,7 +118,6 @@ class PlayerColumnHandler:
                 pt.CategoryColumn,
                 pt.GenderColumn,
                 pt.FederationColumn,
-                pt.ClubColumn,
             ]
             + [
                 partial(pt.RoundColumn, round_=round_)
@@ -274,6 +273,14 @@ class PlayersTabColumnHandler:
     @property
     def enabled_columns(self) -> list[PlayersTabColumn]:
         return [column for column in self.columns if column.is_enabled]
+
+    @property
+    def searchable_columns(self) -> list[PlayersTabColumn]:
+        return [
+            column
+            for column in self.columns
+            if column.is_searchable and column.is_visible
+        ]
 
     def get_column(self, column_id: str) -> PlayersTabColumn | None:
         return self._columns_by_id.get(column_id, None)

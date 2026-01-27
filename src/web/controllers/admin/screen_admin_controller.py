@@ -151,7 +151,9 @@ class ScreenAdminController(BaseEventAdminController):
         timer_id: int | None = None
         input_exit_button: bool | None = None
         players_show_unpaired: bool | None = None
-        players_show_opponent: bool | None = None
+        players_player_format: int | None = None
+        players_board_format: int | None = None
+        players_opponent_format: int | None = None
         results_limit: int | None = None
         results_max_age: int | None = None
         results_tournament_ids: list[int] = []
@@ -201,8 +203,14 @@ class ScreenAdminController(BaseEventAdminController):
                         players_show_unpaired = WebContext.form_data_to_bool(
                             data, 'players_show_unpaired'
                         )
-                        players_show_opponent = WebContext.form_data_to_bool(
-                            data, 'players_show_opponent'
+                        players_player_format = WebContext.form_data_to_int(
+                            data, 'players_player_format'
+                        )
+                        players_board_format = WebContext.form_data_to_int(
+                            data, 'players_board_format'
+                        )
+                        players_opponent_format = WebContext.form_data_to_int(
+                            data, 'players_opponent_format'
                         )
                     case ScreenType.RESULTS:
                         field = 'results_limit'
@@ -322,7 +330,9 @@ class ScreenAdminController(BaseEventAdminController):
             timer_id=timer_id,
             input_exit_button=input_exit_button,
             players_show_unpaired=players_show_unpaired,
-            players_show_opponent=players_show_opponent,
+            players_player_format=players_player_format,
+            players_board_format=players_board_format,
+            players_opponent_format=players_opponent_format,
             results_limit=results_limit,
             results_max_age=results_max_age,
             results_tournament_ids=results_tournament_ids,
@@ -563,7 +573,9 @@ class ScreenAdminController(BaseEventAdminController):
                     message_text: str | None = None
                     input_exit_button: bool | None = None
                     players_show_unpaired: bool = True
-                    players_show_opponent: bool | None = None
+                    players_player_format: int | None = None
+                    players_board_format: int | None = None
+                    players_opponent_format: int | None = None
                     results_limit: int | None = None
                     results_max_age: int | None = None
                     results_tournament_ids: list[int] | None = None
@@ -645,8 +657,14 @@ class ScreenAdminController(BaseEventAdminController):
                                     players_show_unpaired = (
                                         stored_screen.players_show_unpaired or False
                                     )
-                                    players_show_opponent = (
-                                        stored_screen.players_show_opponent
+                                    players_player_format = (
+                                        stored_screen.players_player_format
+                                    )
+                                    players_board_format = (
+                                        stored_screen.players_board_format
+                                    )
+                                    players_opponent_format = (
+                                        stored_screen.players_opponent_format
                                     )
                                 case ScreenType.RESULTS:
                                     results_limit = stored_screen.results_limit
@@ -686,6 +704,24 @@ class ScreenAdminController(BaseEventAdminController):
                                     menu = '@input'
                                 case ScreenType.PLAYERS:
                                     menu = '@players'
+                                    columns = cls.get_default_players_screen_columns(
+                                        event
+                                    )
+                                    players_player_format = (
+                                        cls.get_default_players_screen_player_format(
+                                            event
+                                        ).value
+                                    )
+                                    players_board_format = (
+                                        cls.get_default_players_screen_board_format(
+                                            event
+                                        ).value
+                                    )
+                                    players_opponent_format = (
+                                        cls.get_default_players_screen_opponent_format(
+                                            event
+                                        ).value
+                                    )
                                 case ScreenType.RANKING:
                                     menu = '@ranking'
                                 case ScreenType.RESULTS | ScreenType.IMAGE:
@@ -710,7 +746,9 @@ class ScreenAdminController(BaseEventAdminController):
                             'timer_id': timer_id,
                             'input_exit_button': input_exit_button,
                             'players_show_unpaired': players_show_unpaired,
-                            'players_show_opponent': players_show_opponent,
+                            'players_player_format': players_player_format,
+                            'players_board_format': players_board_format,
+                            'players_opponent_format': players_opponent_format,
                             'results_limit': results_limit,
                             'results_max_age': results_max_age,
                             'ranking_crosstable': ranking_crosstable,
@@ -741,6 +779,9 @@ class ScreenAdminController(BaseEventAdminController):
                     'timer_options': cls._get_timer_options(event),
                     'ranking_crosstable_options': cls._get_ranking_crosstable_options(),
                     'screen_uniq_ids': list(event.screens_by_uniq_id.keys()),
+                    'players_player_format_options': web_context.get_players_screen_player_format_options(),
+                    'players_board_format_options': web_context.get_players_screen_board_format_options(),
+                    'players_opponent_format_options': web_context.get_players_screen_opponent_format_options(),
                     'modal': modal,
                     'action': action,
                     'data': data,

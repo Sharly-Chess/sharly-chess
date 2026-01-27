@@ -87,6 +87,10 @@ class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):
     def default_value(cls, tournament: 'Tournament') -> tuple[int, int]:
         return cls.default_values_by_group(tournament)[cls.group()]
 
+    @classmethod
+    def check_value(cls, tournament: 'Tournament', value: tuple[int, int]) -> bool:
+        return value[0] < value[1] <= tournament.player_count
+
 
 class Base2GroupsSetting(PairingGroupSetting, ABC):
     @staticmethod

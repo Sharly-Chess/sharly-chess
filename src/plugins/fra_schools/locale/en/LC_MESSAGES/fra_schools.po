@@ -39,6 +39,9 @@ msgstr ""
 msgid "Complete Team"
 msgstr ""
 
+msgid "Delete"
+msgstr ""
+
 msgid "Edit the selected French school."
 msgstr ""
 
@@ -105,11 +108,11 @@ msgstr ""
 msgid "Ranking by school after round #{round}"
 msgstr ""
 
-msgid "Save"
-msgstr ""
-
 msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Rk."
+
+msgid "Save"
+msgstr ""
 
 msgid "School"
 msgstr ""
@@ -159,10 +162,10 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
-msgid "UAI codes are a necessity to distinguish schools with long names. Only enable this option if your school names are short enough."
+msgid "UAI code"
 msgstr ""
 
-msgid "UAI code"
+msgid "UAI codes are a necessity to distinguish schools with long names. Only enable this option if your school names are short enough."
 msgstr ""
 
 #, python-format
