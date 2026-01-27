@@ -38,14 +38,12 @@ def _filtered_warn(*args, **kwargs):
 
 warnings.warn = _filtered_warn
 
-match sys.platform:
-    case 'win32':
+try:
+    if sys.platform == 'win32':
         # Windows marks the downloaded files as unsure and blocks their usage.
         # On the first run, all the files of the distribution are unmarked.
-        from pathlib import Path
-
         base_dir: Path = Path(sys.argv[0]).resolve().parent
-        tracer: Path = base_dir / '_internal' / '.unblock_files'
+        tracer: Path = base_dir / 'tmp' / '.unblock_files'
         if tracer.exists():
             print(f'Unblocking files in : {base_dir}')
             for root_, __, files in os.walk(base_dir):
@@ -63,7 +61,7 @@ match sys.platform:
             # Remove not to run twice
             tracer.unlink()
 
-    case 'darwin':
+    elif sys.platform == 'darwin':
         # Prevent MacOS from sleeping the windowed app when it's in the background
         from rubicon.objc import ObjCClass
 
@@ -73,7 +71,7 @@ match sys.platform:
             'Prevent App Nap',
         )
 
-    case 'linux':
+    elif sys.platform == 'linux':
         # Patch gi.require_version to handle "already required" case gracefully
         # This prevents errors when GTK is required multiple times (e.g., by runtime hook and toga_gtk)
         try:
@@ -112,10 +110,6 @@ match sys.platform:
             # gi not available, skip patching
             pass
 
-    case _:
-        raise NotImplementedError(f'{sys.platform=}')
-
-try:
     import argparse
     import asyncio
 
@@ -402,35 +396,30 @@ except Exception:
 
     title = 'Sharly Chess startup error'
 
-    match sys.platform:
-        case 'win32':
-            import tkinter
-            from tkinter import messagebox
+    if sys.platform == 'win32':
+        import tkinter
+        from tkinter import messagebox
 
-            base_dir = Path(sys.argv[0]).resolve().parent
-            if not os.access(base_dir, os.W_OK):
-                message = (
-                    f'Write permission is missing from [{base_dir.absolute()}].\n'
-                    'Check the permissions of the directory then try again.'
-                )
-
-            root = tkinter.Tk()
-            root.withdraw()
-            messagebox.showerror(title, message)
-            root.destroy()
-
-        case 'darwin':
-            import subprocess
-
-            message = message.replace('"', '\\"')
-            script = (
-                f'display alert "{title}" message "{message}" '
-                'as critical buttons {"OK"}'
+        base_dir = Path(sys.argv[0]).resolve().parent
+        if not os.access(base_dir, os.W_OK):
+            message = (
+                f'Write permission is missing from [{base_dir.absolute()}].\n'
+                'Check the permissions of the directory then try again.'
             )
-            subprocess.run(['osascript', '-e', script], check=True)
 
-        case 'linux':
-            print(f'{title}: {message}')
+        root = tkinter.Tk()
+        root.withdraw()
+        messagebox.showerror(title, message)
+        root.destroy()
 
-        case _:
-            raise NotImplementedError(f'{sys.platform=}')
+    elif sys.platform == 'darwin':
+        import subprocess
+
+        message = message.replace('"', '\\"')
+        script = (
+            f'display alert "{title}" message "{message}" as critical buttons {{"OK"}}'
+        )
+        subprocess.run(['osascript', '-e', script], check=True)
+
+    elif sys.platform == 'linux':
+        print(f'{title}: {message}')
