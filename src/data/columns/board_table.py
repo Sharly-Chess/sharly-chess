@@ -3,7 +3,7 @@ from typing import Any
 
 from common.i18n import _
 from data.board import Board
-from web.utils import Column, ColumnUsage
+from .column import Column, ColumnUsage
 
 
 class BoardColumn(Column[Board], ABC):
