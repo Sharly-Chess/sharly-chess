@@ -3,7 +3,6 @@
 ## General
 
 - Improve error message when executing from a directory without write permissions (3.5.0)
-- Rename _Print_ menu to _Documents_ (3.5.0)
 
 ## Events
 
@@ -28,6 +27,11 @@
 ## Prizes
 
 - New type of prizes _Hybrid_ (3.5.0)
+
+## Documents
+
+- Rename _Print_ menu to _Documents_ (3.5.0)
+- Fixed the pairings by player document (3.5.1)
 
 ## _FFE_
 
