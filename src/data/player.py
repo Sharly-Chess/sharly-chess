@@ -1205,11 +1205,15 @@ class TournamentPlayer(Player):
         return (-(self.points or 0.0),) + tie_break_sort_key + (self.pairing_number,)
 
     @property
-    def rank_sort_key(self) -> tuple:
+    def rank_sort_key_without_pairing_number(self) -> tuple:
         tie_break_sort_key = tuple(
             -float(tie_break_value.value) for tie_break_value in self.tie_break_values
         )
-        return (-(self.points or 0.0),) + tie_break_sort_key + (self.pairing_number,)
+        return (-(self.points or 0.0),) + tie_break_sort_key
+
+    @property
+    def rank_sort_key(self) -> tuple:
+        return self.rank_sort_key_without_pairing_number + (self.pairing_number,)
 
     def __le__(self, other: 'TournamentPlayer') -> bool:
         # p1 <= p2 calls p1.__le__(p2)

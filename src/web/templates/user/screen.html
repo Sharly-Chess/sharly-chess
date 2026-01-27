@@ -13,6 +13,7 @@
                     'admin-event-screens-tab' if client.can_manage_screens else 'admin-event-' ~ screen.type.value ~ '-screens-tab',
                     event_uniq_id=user_event.uniq_id
                 ) }}"
+                hx-push-url="true"
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
@@ -75,7 +76,7 @@
 {% endblock %}
 
 {% block content %}
-    <div id="top-nav-wrapper" class="pt-0" style="background-color: {{ screen.background_color }}">
+    <div id="top-nav-wrapper" class="pt-0">
         {% if timer %}
             {% include 'screen/timer.html' %}
         {% endif %}

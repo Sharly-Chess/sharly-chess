@@ -1310,9 +1310,9 @@ class EventDatabase(MigrationDatabase):
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
             ),
-            players_show_opponent=cls.load_bool_or_none_from_database_field(
-                row.get('players_show_opponent', None)
-            ),
+            players_player_format=row.get('players_player_format', None),
+            players_board_format=row.get('players_board_format', None),
+            players_opponent_format=row.get('players_opponent_format', None),
             ranking_crosstable=cls.load_bool_from_database_field(
                 row['ranking_crosstable']
             ),
@@ -1369,7 +1369,9 @@ class EventDatabase(MigrationDatabase):
             'timer_id',
             'input_exit_button',
             'players_show_unpaired',
-            'players_show_opponent',
+            'players_player_format',
+            'players_board_format',
+            'players_opponent_format',
             'ranking_crosstable',
             'ranking_round',
             'ranking_min_points',
@@ -1396,7 +1398,9 @@ class EventDatabase(MigrationDatabase):
             stored_family.timer_id,
             stored_family.input_exit_button,
             stored_family.players_show_unpaired,
-            stored_family.players_show_opponent,
+            stored_family.players_player_format,
+            stored_family.players_board_format,
+            stored_family.players_opponent_format,
             stored_family.ranking_crosstable,
             stored_family.ranking_round,
             stored_family.ranking_min_points,
@@ -1472,9 +1476,9 @@ class EventDatabase(MigrationDatabase):
             players_show_unpaired=cls.load_bool_or_none_from_database_field(
                 row['players_show_unpaired']
             ),
-            players_show_opponent=cls.load_bool_or_none_from_database_field(
-                row['players_show_opponent']
-            ),
+            players_player_format=row['players_player_format'],
+            players_board_format=row['players_board_format'],
+            players_opponent_format=row['players_opponent_format'],
             results_limit=row['results_limit'],
             results_max_age=row['results_max_age'],
             results_tournament_ids=cls.load_json_from_database_field(
@@ -1536,7 +1540,9 @@ class EventDatabase(MigrationDatabase):
             'public',
             'input_exit_button',
             'players_show_unpaired',
-            'players_show_opponent',
+            'players_player_format',
+            'players_board_format',
+            'players_opponent_format',
             'columns',
             'font_size',
             'menu_link',
@@ -1565,7 +1571,13 @@ class EventDatabase(MigrationDatabase):
             stored_screen.players_show_unpaired
             if stored_screen.type == 'players'
             else None,
-            stored_screen.players_show_opponent
+            stored_screen.players_player_format
+            if stored_screen.type == 'players'
+            else None,
+            stored_screen.players_board_format
+            if stored_screen.type == 'players'
+            else None,
+            stored_screen.players_opponent_format
             if stored_screen.type == 'players'
             else None,
             stored_screen.columns,

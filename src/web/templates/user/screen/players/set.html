@@ -18,7 +18,7 @@
                             grid-template-columns:
                                 1fr            /* player */
                                 auto           /* pairing */
-                                {% if screen_set.players_show_opponent %}
+                                {% if screen_set.players_opponent_format != 1 %}
                                     1fr            /* opponent */
                                 {% endif %}
                         "
@@ -26,17 +26,17 @@
                         <div
                             class="grid-header text-nowrap"
                         >
-                            {% if tournament.current_round %}{{ _('Player Elo [Pts]') }}{% else %}{{ _('Player Elo') }}{% endif %}
+                            {{ screen_set.players_player_format.header(tournament) }}
                         </div>
                         <div class="grid-header">
-                            {{ _('Board & color') }}
+                            {{ screen_set.players_board_format.header(tournament) }}
                         </div>
-                        {% if screen_set.players_show_opponent %}
+                        {% if screen_set.players_opponent_format != 1 %}
                             <div
                                 class="grid-header text-nowrap"
                                 style="text-overflow: ellipsis;"
                             >
-                                {% if tournament.current_round %}{{ _('Opponent Elo [Pts]') }}{% else %}{{ _('Opponent Elo') }}{% endif %}
+                                {{ screen_set.players_opponent_format.header(tournament) }}
                             </div>
                         {% endif %}
                         {% for tournament_player in tournament_players %}
@@ -48,7 +48,7 @@
                                             class="player overflow-hidden text-nowrap"
                                             style="text-overflow: ellipsis;"
                                         >
-                                            {% if tournament_player.title.short_name %}{{ tournament_player.title.short_name }}&nbsp;{% endif %}{{ tournament_player.full_name }} {{ tournament_player.rating_str }} [{{ tournament_player.vpoints_str }}]
+                                            {{ screen_set.players_player_format.format(tournament_player) }}
                                         </div>
                                         <div class="pairing text-nowrap">
                                             {% if pairing.exempt %}
@@ -56,10 +56,10 @@
                                             {% elif not opponent_id %}
                                                 {{ tournament_player.not_paired_str }}
                                             {% else %}
-                                                {{ _('Board #%(board_number)d with %(color)s', board_number=tournament_player.board_number, color=tournament_player.color_str) }}
+                                                {{ screen_set.players_board_format.format(tournament_player) }}
                                             {% endif %}
                                         </div>
-                                        {% if screen_set.players_show_opponent %}
+                                        {% if screen_set.players_opponent_format != 1 %}
                                             <div
                                                 class="opponent overflow-hidden text-nowrap"
                                                 style="text-overflow: ellipsis;"
@@ -67,9 +67,7 @@
                                                 {% if pairing.exempt %}
                                                 {% elif not opponent_id %}
                                                 {% else %}
-                                                    {% with opponent=tournament.tournament_players_by_id[opponent_id] %}
-                                                        {{ _('vs') }} {% if opponent.title.short_name %}{{ opponent.title.short_name }}&nbsp;{% endif %}{{ opponent.full_name }} {{ opponent.rating_str }} [{{ opponent.vpoints_str }}]
-                                                    {% endwith %}
+                                                    {{ screen_set.players_opponent_format.format(tournament.tournament_players_by_id[opponent_id]) }}
                                                 {% endif %}
                                             </div>
                                         {% endif %}
@@ -94,7 +92,7 @@
                                     <div class="pairing text-nowrap">
                                         {{ tournament_player.not_paired_str }}
                                     </div>
-                                    {% if screen_set.players_show_opponent %}
+                                    {% if screen_set.players_opponent_format != 1 %}
                                         <div class="opponent text-nowrap">
                                         </div>
                                     {% endif %}

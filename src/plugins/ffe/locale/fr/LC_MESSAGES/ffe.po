@@ -73,7 +73,7 @@ msgid "Cheating complaint"
 msgstr "Dépot de plainte pour suspicion de triche"
 
 msgid "Chief arbiter (if different):"
-msgstr "Arbitre en chef·fe (si différent·e) :"
+msgstr "Arbitre en chef (si différent·e) :"
 
 msgid "Choose at least one league."
 msgstr "Choisir au moins une ligue."
@@ -244,9 +244,6 @@ msgstr "Importer un fichier JSON (format papi-converter)"
 msgid "Import Papi file"
 msgstr "Importer un fichier Papi"
 
-msgid "Invalid FFE ID [{ffe_id}]."
-msgstr "Identifiant FFE [{ffe_id}] non valide."
-
 msgid "Invalid FFE certification number or password."
 msgstr "Identifiant FFE ou mot de passe invalide."
 
@@ -346,6 +343,9 @@ msgstr "PAPI"
 msgid "Papi file"
 msgstr "Fichier Papi"
 
+msgid "Player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
+msgstr "Le·la joueur·euse avec la licence FFE [{ffe_licence_number}] joue déjà le tournoi [{tournament}]."
+
 msgid "Players:"
 msgstr "Joueur·euses :"
 
@@ -368,7 +368,7 @@ msgid "Select the arbiter"
 msgstr "Sélectionner l'arbitre"
 
 msgid "Select the chief arbiter"
-msgstr "Sélectionner l'arbitre en chef·fe"
+msgstr "Sélectionner l'arbitre en chef"
 
 msgid "Select the trainee"
 msgstr "Sélectionner le·la stagiaire"
@@ -433,17 +433,8 @@ msgstr "Le délai doit au moins être de {min_delay} minutes pour éviter de sur
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."
 
-msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament}]."
-msgstr "Le·la joueur·euse avec l'identifiant FFE [{ffe_id}] joue déjà le tournoi [{tournament}]."
-
-msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
-msgstr "Le·la joueur·euse avec la licence FFE [{ffe_licence_number}] joue déjà le tournoi [{tournament}]."
-
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
 msgstr "Les points des joueur·euses et la numérotation des échiquiers peuvent être différents sur le site web de la FFE car Sharly Chess utilise les numéros d'appariement pour les groupes d'appariement (la FFE utilise des seuils Elo)."
-
-msgid "This field is not editable."
-msgstr "Ce champ n'est pas modifiable."
 
 msgid "Tournament"
 msgstr "Tournoi"
@@ -551,4 +542,7 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] "{count} ligue représentée"
 msgstr[1] "{count} ligues représentées"
+
+#~ msgid "This field is not editable."
+#~ msgstr "Ce champ n'est pas modifiable."
 

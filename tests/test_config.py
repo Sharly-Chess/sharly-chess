@@ -20,7 +20,13 @@ from database.sqlite.event.event_store import (
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
 
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
-from utils.enum import ScreenType, Result
+from utils.enum import (
+    ScreenType,
+    Result,
+    PlayersScreenPlayerFormat,
+    PlayersScreenBoardFormat,
+    PlayersScreenOpponentFormat,
+)
 
 
 class TestConfig:
@@ -312,7 +318,15 @@ class TestUtils:
             'timer_id': None,
             'input_exit_button': None,
             'players_show_unpaired': None,
-            'players_show_opponent': None,
+            'players_player_format': PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS
+            if screen_type == ScreenType.PLAYERS
+            else None,
+            'players_board_format': PlayersScreenBoardFormat.MINIMAL
+            if screen_type == ScreenType.PLAYERS
+            else None,
+            'players_opponent_format': PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS
+            if screen_type == ScreenType.PLAYERS
+            else None,
             'results_limit': None,
             'results_max_age': None,
             'background_color': None,
@@ -381,7 +395,15 @@ class TestUtils:
             'timer_id': None,
             'input_exit_button': None,
             'players_show_unpaired': None,
-            'players_show_opponent': None,
+            'players_player_format': PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS
+            if family_type == ScreenType.PLAYERS
+            else None,
+            'players_board_format': PlayersScreenBoardFormat.MINIMAL
+            if family_type == ScreenType.PLAYERS
+            else None,
+            'players_opponent_format': PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS
+            if family_type == ScreenType.PLAYERS
+            else None,
             'ranking_crosstable': False,
             'ranking_round': None,
             'ranking_min_points': None,

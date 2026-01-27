@@ -114,11 +114,8 @@
                         </h4>
                         <div class="row gy-2 gx-3">
                             {% if screen_type.value == 'players' %}
-                                <div class="col-12">
-                                    {% include '../common/modal/show_unpaired.html' %}
-                                </div>
-                                <div class="col-12">
-                                    {% include '../common/modal/show_opponent.html' %}
+                                <div class="col-12 col-md-6">
+                                    {% include '../common/modal/players_show_unpaired.html' %}
                                 </div>
                             {% endif %}
                             {% if screen_type.value == 'ranking' %}
@@ -198,6 +195,17 @@
                             {% if screen_type.value == 'input' %}
                                 <div class="col-12 col-md-6">
                                     {% include '../common/modal/exit_button.html' %}
+                                </div>
+                            {% endif %}
+                            {% if screen_type.value == 'players' %}
+                                <div class="col-12 col-md-6">
+                                    {% include '../common/modal/players_player_format.html' %}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    {% include '../common/modal/players_board_format.html' %}
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    {% include '../common/modal/players_opponent_format.html' %}
                                 </div>
                             {% endif %}
                             <div class="col-12">

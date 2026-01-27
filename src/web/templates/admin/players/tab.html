@@ -75,7 +75,7 @@
                 </span>
             </div>
             <div class="w-100 d-flex gap-2 pt-1">
-                <span style="width: 300px">
+                <span style="width: 400px">
                     {{ admin_macros.text_input(
                         name='search',
                         input_type='search',
@@ -84,7 +84,7 @@
                         hx_target='#players-table',
                         hx_trigger='input changed delay:0.5s, paste delay:0.1s, search',
                         hx_indicator='#please-wait',
-                        placeholder=_('Search *** PLACEHOLDER'),
+                        placeholder=_('Search by: %(fields)s', fields=', '.join(searchable_column_names)),
                         data={'search': search or ''},
                     ) }}
                 </span>

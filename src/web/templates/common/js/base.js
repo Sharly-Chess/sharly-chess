@@ -69,7 +69,7 @@ window.addEventListener("do_print", function(event) {
     const form = document.createElement('form');
     form.method = 'get';
     form.action = window.location.origin +
-        '/print-view/' +
+        '/document-view/' +
         event.detail.event_uniq_id + '/' +
         event.detail.document;
     const input = document.createElement('input');

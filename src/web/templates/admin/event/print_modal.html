@@ -5,14 +5,14 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Print') }}<span style="font-size: 70%">{{ macros.doc_icon('printing', 'ms-2') }}</span>
+                {{ _('Documents') }}<span style="font-size: 70%">{{ macros.doc_icon('documents', 'ms-2') }}</span>
             </h2>
         </div>
         <div class="modal-body">
             <form
                 id="modal-form"
                 hx-target="body"
-                hx-post="{{ url_for('admin-event-print', event_uniq_id=admin_event.uniq_id) }}"
+                hx-post="{{ url_for('event-generate-document', event_uniq_id=admin_event.uniq_id) }}"
                 hx-indicator="#please-wait"
             >
                 <script>
@@ -69,8 +69,8 @@
                 form="modal-form"
                 class="text-nowrap white btn btn-primary"
             >
-                <i class="bi bi-printer-fill pe-1"></i>
-                {{ _('Print') }}
+                <i class="bi bi-file-earmark-arrow-down-fill pe-1"></i>
+                {{ _('Generate') }}
             </button>
         </div>
     </div>

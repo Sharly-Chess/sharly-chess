@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Annotated, Any
+from typing import Annotated
 
 from litestar import get, post
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
@@ -32,28 +32,20 @@ from web.guards import EventGuard, ActionGuard, PrintGuard
 from web.session import SessionPrintLastTournaments
 
 
-class EventPrintController(BaseEventAdminController):
+class EventDocumentsController(BaseEventAdminController):
     guards = [
         EventGuard(),
-        ActionGuard(AuthAction.PRINT),
+        ActionGuard(AuthAction.GENERATE_DOCUMENTS),
     ]
 
     @staticmethod
     def _allowed_tournaments(web_context: BaseEventAdminWebContext) -> list[Tournament]:
-        return web_context.client.allowed_tournaments_for_action(AuthAction.PRINT)
-
-    @classmethod
-    def _admin_print_render(
-        cls,
-        web_context: BaseEventAdminWebContext,
-        template_context: dict[str, Any] | None = None,
-    ) -> Template:
-        return cls._admin_base_event_render(
-            web_context.template_context | (template_context or {}),
+        return web_context.client.allowed_tournaments_for_action(
+            AuthAction.GENERATE_DOCUMENTS
         )
 
     @classmethod
-    def _print_modal_context(
+    def _render_documents_modal(
         cls,
         web_context: BaseEventAdminWebContext,
         document_id: str | None = None,
@@ -61,7 +53,7 @@ class EventPrintController(BaseEventAdminController):
         _round: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
-    ) -> dict[str, Any]:
+    ) -> HTMXTemplate:
         event = web_context.get_admin_event()
         print_options = PrintDocumentOptionManager(event).objects()
         allowed_tournaments = cls._allowed_tournaments(web_context)
@@ -105,7 +97,7 @@ class EventPrintController(BaseEventAdminController):
             ]
             for tournament in allowed_tournaments
         }
-        return {
+        template_context = {
             'modal': 'print',
             'client': web_context.client,
             'account_options': web_context.get_account_options(),
@@ -122,15 +114,18 @@ class EventPrintController(BaseEventAdminController):
             'data': data,
             'errors': errors or {},
         }
+        return cls._admin_base_event_render(
+            web_context.template_context | template_context
+        )
 
     @get(
         path=[
-            '/print-modal/{event_uniq_id:str}',
-            '/print-modal/{event_uniq_id:str}/{tournament_id:int}',
+            '/documents-modal/{event_uniq_id:str}',
+            '/documents-modal/{event_uniq_id:str}/{tournament_id:int}',
         ],
-        name='admin-print-modal',
+        name='documents-modal',
     )
-    async def htmx_admin_print_modal(
+    async def htmx_documents_modal(
         self,
         request: HTMXRequest,
         document_id: str | None = None,
@@ -139,16 +134,11 @@ class EventPrintController(BaseEventAdminController):
     ) -> Template:
         web_context = BaseEventAdminWebContext(request)
         tournament_ids = web_context.default_tournament_for_print_modal(tournament_id)
-
-        template_context = self._print_modal_context(
-            web_context,
+        return self._render_documents_modal(
+            web_context=web_context,
             document_id=document_id,
             tournament_ids=tournament_ids,
             _round=round,
-        )
-        return self._admin_print_render(
-            web_context=web_context,
-            template_context=template_context,
         )
 
     @staticmethod
@@ -163,10 +153,10 @@ class EventPrintController(BaseEventAdminController):
         return None
 
     @post(
-        path='/event-print/{event_uniq_id:str}',
-        name='admin-event-print',
+        path='/event-generate-document/{event_uniq_id:str}',
+        name='event-generate-document',
     )
-    async def htmx_admin_event_print(
+    async def htmx_event_generate_document(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -208,12 +198,8 @@ class EventPrintController(BaseEventAdminController):
                         tournament_ids
                     )
         if errors:
-            template_context = self._print_modal_context(
+            return self._render_documents_modal(
                 web_context, data=flat_data, errors=errors
-            )
-            return self._admin_print_render(
-                web_context=web_context,
-                template_context=template_context,
             )
         assert document_type is not None
         # Clear the modal contents, and send an event
@@ -234,11 +220,11 @@ class EventPrintController(BaseEventAdminController):
         )
 
     @get(
-        path='/print-view/{event_uniq_id:str}/{document: str}',
-        name='admin-print-view',
+        path='/document-view/{event_uniq_id:str}/{document: str}',
+        name='document-view',
         guards=[PrintGuard()],
     )
-    async def htmx_tournament_print_view(
+    async def htmx_document_view(
         self,
         request: HTMXRequest,
         document: str,
