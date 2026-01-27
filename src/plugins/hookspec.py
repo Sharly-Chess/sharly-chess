@@ -56,7 +56,7 @@ if TYPE_CHECKING:
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
-    from web.utils import ColumnUsage
+    from data.columns.column import ColumnUsage
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)

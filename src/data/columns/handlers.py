@@ -26,7 +26,7 @@ from data.columns.players_tab import (
 from data.event import Event
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
-from web.utils import ColumnUsage
+from .column import ColumnUsage
 
 
 class PlayerColumnHandler:
