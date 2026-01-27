@@ -5,7 +5,7 @@ from common.i18n import _
 from data.player import TournamentPlayer
 from data.tournament import Tournament
 from utils import Utils
-from web.utils import Column, ColumnUsage
+from .column import Column, ColumnUsage
 
 
 class TournamentPlayerTableColumn(Column[TournamentPlayer], ABC):

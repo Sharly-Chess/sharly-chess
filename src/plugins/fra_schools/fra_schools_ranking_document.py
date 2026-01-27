@@ -20,7 +20,7 @@ from data.print_documents.documents import (
 )
 from plugins.fra_schools.fra_schools_controller import FRASchool, FRASchoolsUtils
 from utils.enum import PlayerGender
-from web.utils import ColumnUsage
+from data.columns.column import ColumnUsage
 
 
 @dataclass

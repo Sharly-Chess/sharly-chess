@@ -10,7 +10,7 @@ from data.player_categories import PlayerCategory
 from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
 from utils.enum import CheckInStatus, PlayerGender
-from web.utils import Column
+from .column import Column
 
 
 @dataclass

@@ -23,7 +23,7 @@ from plugins.utils import (
 )
 from utils.time_control import parse_time_control_trf25
 from web.controllers.base_controller import WebContext
-from web.utils import ColumnUsage
+from data.columns.column import ColumnUsage
 
 if TYPE_CHECKING:
     from data.event import Event
