@@ -1,5 +1,6 @@
 import logging
 import os
+import platform
 import sys
 import warnings
 from pathlib import Path
@@ -38,14 +39,12 @@ def _filtered_warn(*args, **kwargs):
 
 warnings.warn = _filtered_warn
 
-match sys.platform:
-    case 'win32':
+try:
+    if platform.system() == 'Windows':
         # Windows marks the downloaded files as unsure and blocks their usage.
         # On the first run, all the files of the distribution are unmarked.
-        from pathlib import Path
-
         base_dir: Path = Path(sys.argv[0]).resolve().parent
-        tracer: Path = base_dir / '_internal' / '.unblock_files'
+        tracer: Path = base_dir / 'tmp' / '.unblock_files'
         if tracer.exists():
             print(f'Unblocking files in : {base_dir}')
             for root_, __, files in os.walk(base_dir):
@@ -63,7 +62,7 @@ match sys.platform:
             # Remove not to run twice
             tracer.unlink()
 
-    case 'darwin':
+    elif platform.system() == 'Darwin':
         # Prevent MacOS from sleeping the windowed app when it's in the background
         from rubicon.objc import ObjCClass
 
@@ -73,7 +72,7 @@ match sys.platform:
             'Prevent App Nap',
         )
 
-    case 'linux':
+    elif platform.system() == 'Linux':
         # Patch gi.require_version to handle "already required" case gracefully
         # This prevents errors when GTK is required multiple times (e.g., by runtime hook and toga_gtk)
         try:
@@ -112,10 +111,6 @@ match sys.platform:
             # gi not available, skip patching
             pass
 
-    case _:
-        raise NotImplementedError(f'{sys.platform=}')
-
-try:
     import argparse
     import asyncio
 
