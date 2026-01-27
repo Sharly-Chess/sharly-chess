@@ -31,39 +31,37 @@
         {% for round in range(1, admin_tournament.rounds + 1) %}
             <tr>
                 <th class="round text-center">{{ _('R %(round)d *** ROUND COLUMN HEADER', round=round) }}</th>
-                {%with pairing = player.single_tournament_player.pairings[round], opponent_id = player.single_tournament_player.pairings[round].opponent_id %}
-                    {% if opponent_id %}
-                        {%with opponent = player.single_tournament.tournament_players_by_id[opponent_id] %}
-                            <td>{{ pairing.color.to_crosstable }}</td>
-                            <td class='text-center'>{{ pairing.result }}</td>
-                            <td class='text-center'>{{ opponent.rank }}</td>
-                            <td class='text-nowrap'>{{ opponent.title.short_name }} {{ opponent.full_name }}</td>
-                            <td>{{ opponent.rating_str }}</td>
-                            <td>{{ opponent.category.name }}</td>
-                            <td>{{ opponent.federation }}</td>
-                            <td class='text-center'>{{ opponent.points_str }}</td>
-                            {% for tie_break_value in opponent.tie_break_values %}
-                                <td class="tie-break text-center">
-                                    {{ tie_break_value }}
-                                </td>
-                            {% endfor %}
-                        {% endwith %}
-                    {% else %}
-                        <td colspan="1000" class="fst-italic">
-                        {% if pairing.zero_point_bye %}
-                            {{ _('Zero-Point Bye') }}
-                        {% elif pairing.exempt %}
-                            {{ _('Pairing Allocated Bye') }}
-                        {% elif pairing.half_point_bye %}
-                            {{ _('Half-Point Bye') }}
-                        {% elif pairing.full_point_bye %}
-                            {{ _('Full-Point Bye') }}
-                        {% else %}
-                            {{ _('Not paired for this round') }}
-                        {% endif %}
+                {% set pairing = player.single_tournament_player.pairings[round] %}
+                {% set opponent = pairing.opponent %}
+                {% if opponent %}
+                    <td>{{ pairing.color.to_crosstable }}</td>
+                    <td class='text-center'>{{ pairing.points_str }}</td>
+                    <td class='text-center'>{{ opponent.rank }}</td>
+                    <td class='text-nowrap'>{{ opponent.title.short_name }} {{ opponent.full_name }}</td>
+                    <td>{{ opponent.rating_str }}</td>
+                    <td>{{ opponent.category.name }}</td>
+                    <td>{{ opponent.federation }}</td>
+                    <td class='text-center'>{{ opponent.points_str }}</td>
+                    {% for tie_break_value in opponent.tie_break_values %}
+                        <td class="tie-break text-center">
+                            {{ tie_break_value }}
                         </td>
+                    {% endfor %}
+                {% else %}
+                    <td colspan="1000" class="fst-italic">
+                    {% if pairing.zero_point_bye %}
+                        {{ _('Zero-Point Bye') }}
+                    {% elif pairing.exempt %}
+                        {{ _('Pairing Allocated Bye') }}
+                    {% elif pairing.half_point_bye %}
+                        {{ _('Half-Point Bye') }}
+                    {% elif pairing.full_point_bye %}
+                        {{ _('Full-Point Bye') }}
+                    {% else %}
+                        {{ _('Not paired for this round') }}
                     {% endif %}
-                {% endwith %}
+                    </td>
+                {% endif %}
             </tr>
         {% endfor %}
     </tbody>
