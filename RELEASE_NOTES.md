@@ -17,6 +17,7 @@
 - Fixed deleted ratings not taken into account during player update (3.5.0)
 - Fixed the text of player norm tooltips (3.5.0)
 - Update FFE players by FFE licence number, FIDE ID (new), then name/DOB (3.5.0)
+- Use score instead of result in history popover (3.5.1)
 
 ## Screens
 
