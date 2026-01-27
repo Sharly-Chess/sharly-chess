@@ -12,10 +12,12 @@
 
 ## Players
 
+- Make all player columns sortable (3.5.0)
+- Globalize the club and name search (3.5.0)
+- Apply the download to the searched players (3.5.0)
 - Fixed deleted ratings not taken into account during player update (3.5.0)
 - Fixed the text of player norm tooltips (3.5.0)
 - Update FFE players by FFE licence number, FIDE ID (new), then name/DOB (3.5.0)
-- Improved player filtering on the Players tab (3.5.0)
 
 ## Screens
 
