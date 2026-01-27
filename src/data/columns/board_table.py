@@ -3,7 +3,7 @@ from typing import Any
 
 from common.i18n import _
 from data.board import Board
-from web.utils import Column, ColumnUsage
+from .column import Column, ColumnUsage
 
 
 class BoardColumn(Column[Board], ABC):
@@ -162,7 +162,7 @@ class ScreenResultColumn(BoardColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'score'
+        return 'score text-center'
 
 
 class BlackIllegalMovesColumn(IllegalMovesColumn):

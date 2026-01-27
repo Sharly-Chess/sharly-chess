@@ -3,6 +3,7 @@
 ## General
 
 - Improve error message when executing from a directory without write permissions (3.5.0)
+- Rename _Print_ menu to _Documents_ (3.5.0)
 
 ## Events
 
@@ -11,6 +12,9 @@
 
 ## Players
 
+- Make all player columns sortable (3.5.0)
+- Globalize the club and name search (3.5.0)
+- Apply the download to the searched players (3.5.0)
 - Fixed deleted ratings not taken into account during player update (3.5.0)
 - Fixed the text of player norm tooltips (3.5.0)
 - Update FFE players by FFE licence number, FIDE ID (new), then name/DOB (3.5.0)
@@ -19,6 +23,7 @@
 
 - Fixed the display of first and last players on family card (3.5.0)
 - Display the unpaired players by default on screens and families (3.5.0)
+- Added options to Players Screens to display more pairings with minimal information (3.5.0)
 
 ## Prizes
 
@@ -30,7 +35,7 @@
 
 ## FRA Schools
 
-- Allow updating the schools data after creation (3.5.0)
+- Allow updating and deleting the schools (3.5.0)
 - Added schools to the statistics (3.5.0)
 - Added team options to the schools ranking document (3.5.0)
 - Added an overall ranking to the schools ranking document (3.5.0)

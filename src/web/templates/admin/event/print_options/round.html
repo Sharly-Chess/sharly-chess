@@ -2,7 +2,7 @@
     {{ admin_macros.number_input(
         name=option.id,
         label=_('Round:'),
-        tooltip_text=_('The round for which the document is printed (Defaults to the last possible round).'),
+        placeholder=_('Last possible round'),
         min=1,
         data=data, errors=errors
     ) }}

@@ -3,7 +3,7 @@ from typing import Any
 
 from data.player import Player
 from utils.enum import TournamentRating, PlayerRatingType
-from web.utils import Column
+from .column import Column
 
 
 class DatasheetColumn(Column[Player], ABC):

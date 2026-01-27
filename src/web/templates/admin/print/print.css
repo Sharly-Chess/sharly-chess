@@ -84,6 +84,7 @@ tr td, tr th {
     height: auto;
 }
 
+{# ========== PRINT ========== #}
 @media print {
     body {
         margin-left: 2.5rem;
@@ -93,4 +94,8 @@ tr td, tr th {
         max-width: 80%;
         width: 80%;
     }
+    .no-page-break {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
 }

@@ -7,6 +7,9 @@ msgstr ""
 msgid "#{board_number}"
 msgstr ""
 
+msgid "#{board_number} with {color}"
+msgstr ""
+
 #, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
 msgstr ""
@@ -799,8 +802,17 @@ msgstr ""
 msgid "Blz *** BLITZ RATING ACRONYM"
 msgstr "Blz"
 
+msgid "Board"
+msgstr ""
+
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
+msgstr ""
+
+msgid "Board #{board_number} with {color}"
+msgstr ""
+
+msgid "Board #{board_number} {color}"
 msgstr ""
 
 #, python-format
@@ -811,9 +823,6 @@ msgstr ""
 msgid "Board %(number)s"
 msgstr ""
 
-msgid "Board & color"
-msgstr ""
-
 #, python-format
 msgid "Board (%(remaining)d)"
 msgstr ""
@@ -822,6 +831,9 @@ msgid "Board Cards"
 msgstr ""
 
 msgid "Board Pairings"
+msgstr ""
+
+msgid "Board and Color"
 msgstr ""
 
 msgid "Board is not the same as the opponent's."
@@ -835,6 +847,9 @@ msgstr ""
 
 #, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+msgid "Board:"
 msgstr ""
 
 msgid "Boards"
@@ -1710,10 +1725,10 @@ msgstr ""
 msgid "Display the exit button"
 msgstr ""
 
-msgid "Display the players' opponent"
+msgid "Display the unpaired players"
 msgstr ""
 
-msgid "Display the unpaired players"
+msgid "Display:"
 msgstr ""
 
 #, python-format
@@ -1745,6 +1760,9 @@ msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
 msgstr ""
 
 msgid "Document:"
+msgstr ""
+
+msgid "Documents"
 msgstr ""
 
 msgid "Dominica"
@@ -2385,6 +2403,15 @@ msgstr ""
 msgid "Genders"
 msgstr ""
 
+msgid "Generate"
+msgstr ""
+
+msgid "Generate documents"
+msgstr ""
+
+msgid "Generate documents (players, results, etc.)."
+msgstr ""
+
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr ""
 
@@ -2814,6 +2841,9 @@ msgid "Last name:"
 msgstr ""
 
 msgid "Last player:"
+msgstr ""
+
+msgid "Last possible round"
 msgstr ""
 
 msgid "Last results"
@@ -3533,6 +3563,9 @@ msgstr ""
 msgid "Number of wins"
 msgstr ""
 
+msgid "Numbers or ranges of numbers of the boards (example: 1-10 20 25)."
+msgstr ""
+
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr ""
 
@@ -3622,6 +3655,9 @@ msgid "Opponent Elo"
 msgstr ""
 
 msgid "Opponent Elo [Pts]"
+msgstr ""
+
+msgid "Opponent:"
 msgstr ""
 
 msgid "Opponents"
@@ -3899,6 +3935,9 @@ msgstr ""
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
+msgid "Player [{player}] already plays tournament [{tournament}]."
+msgstr ""
+
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
 msgstr ""
 
@@ -3915,6 +3954,9 @@ msgid "Player [{player}] has pairings in tournament [{tournament}]."
 msgstr ""
 
 msgid "Player [{player}] has returned for this round."
+msgstr ""
+
+msgid "Player [{player}] is duplicated."
 msgstr ""
 
 msgid "Player does not match tournament criteria: {names}"
@@ -3940,6 +3982,12 @@ msgstr ""
 
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
+msgstr ""
+
+msgid "Player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
+msgstr ""
+
+msgid "Player with FIDE ID [{fide_id}] is duplicated."
 msgstr ""
 
 msgid "Player's club"
@@ -3989,12 +4037,6 @@ msgid "Players update for tournament [%(tournament)s]"
 msgstr ""
 
 msgid "Players without phone or email won't be included."
-msgstr ""
-
-msgid "Players' opponent: displayed"
-msgstr ""
-
-msgid "Players' opponent: hidden"
 msgstr ""
 
 msgid "Players:"
@@ -4111,15 +4153,6 @@ msgid "Previous round"
 msgstr ""
 
 msgid "Previous tournament"
-msgstr ""
-
-msgid "Print"
-msgstr ""
-
-msgid "Print players, results, etc."
-msgstr ""
-
-msgid "Printing"
 msgstr ""
 
 msgid "Prize *** PRIZE COLUMN HEADER"
@@ -4674,9 +4707,6 @@ msgstr ""
 
 msgid "Scroll down to review all the norms…"
 msgstr ""
-
-msgid "Search *** PLACEHOLDER"
-msgstr "Search"
 
 msgid "Search *** SECTION TITLE"
 msgstr "Search"
@@ -5250,9 +5280,6 @@ msgstr ""
 msgid "The number of the last player to select."
 msgstr ""
 
-msgid "The numbers (or ranges of numbers) of the boards to print."
-msgstr ""
-
 msgid "The pairing number can't be greater than the player count."
 msgstr ""
 
@@ -5266,9 +5293,6 @@ msgid "The player did not win any games against FIDE rated opponents."
 msgstr ""
 
 msgid "The player has already been paired, removing them from the tournament is impossible."
-msgstr ""
-
-msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
 msgstr ""
 
 msgid "The rank of the first player to select."
@@ -5296,9 +5320,6 @@ msgid "The round after which the ranking is displayed (if left empty, the last r
 msgstr ""
 
 msgid "The round count is incompatible with the number of players (expected: {expected})."
-msgstr ""
-
-msgid "The round for which the document is printed (Defaults to the last possible round)."
 msgstr ""
 
 msgid "The screens displayed by the display controller are controlled by the screen managers."
@@ -6082,9 +6103,6 @@ msgstr ""
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr ""
 
-msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
-msgstr ""
-
 msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."
 msgstr ""
 
@@ -6325,6 +6343,9 @@ msgstr ""
 msgid "boards {board_numbers}"
 msgstr ""
 
+msgid "clear filters"
+msgstr ""
+
 msgid "either the duration or the increment must be greater than 0."
 msgstr ""
 
@@ -6457,9 +6478,6 @@ msgstr ""
 msgid "value: {value}"
 msgstr ""
 
-msgid "vs"
-msgstr ""
-
 #, python-format
 msgid "vs %(player)s"
 msgstr ""
@@ -6469,6 +6487,9 @@ msgstr ""
 
 msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
 msgstr "{age_limit}+"
+
+msgid "{board_number} {color}"
+msgstr ""
 
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
@@ -6536,12 +6557,21 @@ msgstr ""
 msgid "{string}: {value}"
 msgstr ""
 
+msgid "{title} {full_name}"
+msgstr ""
+
+msgid "{title} {full_name} {rating}"
+msgstr ""
+
+msgid "{title} {full_name} {rating}{rating_type}"
+msgstr ""
+
+msgid "{title} {full_name} {rating}{rating_type} [{points}]"
+msgstr ""
+
 msgid "½ - 0 (U)"
 msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "This field is not editable."
-#~ msgstr ""
 

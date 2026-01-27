@@ -39,6 +39,9 @@ msgstr "Code"
 msgid "Complete Team"
 msgstr "Équipe complète"
 
+msgid "Delete"
+msgstr "Supprimer"
+
 msgid "Edit the selected French school."
 msgstr "Metre à jour l'établissement scolaire sélectionné."
 

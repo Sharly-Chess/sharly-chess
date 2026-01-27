@@ -7,6 +7,9 @@ msgstr " [{yes_answer}/{no_answer}] ?"
 msgid "#{board_number}"
 msgstr "n°{board_number}"
 
+msgid "#{board_number} with {color}"
+msgstr "N°{board_number} avec les {color}"
+
 #, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
 msgstr "%%s est remplacé par le temps passé depuis l'horaire."
@@ -544,7 +547,7 @@ msgid "Allows entry of results via any input Screens marked as public"
 msgstr "Autorise la saisie des résultats sur des écrans de saisie publics"
 
 msgid "Allows granting or revoking the Chief Arbitration access level and editing the event"
-msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage en chef·fe » et l'édition de l'évènement"
+msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage en chef » et l'édition de l'évènement"
 
 msgid "Allows granting or revoking the Deputy Chief Arbitration access level, editing the event, and managing tournaments"
 msgstr "Autorise l'attribution et la révocation du niveau d'accès « Arbitrage adjoint », l'édition de l'évènement et la gestion des tournois"
@@ -799,9 +802,18 @@ msgstr "Blitz :"
 msgid "Blz *** BLITZ RATING ACRONYM"
 msgstr "Blz"
 
+msgid "Board"
+msgstr "Échiquier"
+
 #, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Échiquier n°%(board_number)d avec les %(color)s"
+
+msgid "Board #{board_number} with {color}"
+msgstr "Échiquier n°{board_number} avec les {color}"
+
+msgid "Board #{board_number} {color}"
+msgstr "Échiquier n°{board_number} {color}"
 
 #, python-format
 msgid "Board %(board_number)s"
@@ -810,9 +822,6 @@ msgstr "Échiquier %(board_number)s"
 #, python-format
 msgid "Board %(number)s"
 msgstr "Table %(number)s"
-
-msgid "Board & color"
-msgstr "Échiquier & couleur"
 
 #, python-format
 msgid "Board (%(remaining)d)"
@@ -823,6 +832,9 @@ msgstr "Chevalets des échiquiers"
 
 msgid "Board Pairings"
 msgstr "Appariements par échiquier"
+
+msgid "Board and Color"
+msgstr "Échiquier et couleur"
 
 msgid "Board is not the same as the opponent's."
 msgstr "L'échiquier n'est pas le même que celui de l'adversaire."
@@ -836,6 +848,9 @@ msgstr "Sélection des échiquiers (par numéro)"
 #, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"
 msgstr "Ensembles d'échiquiers de l'écran [%(screen_uniq_id)s]"
+
+msgid "Board:"
+msgstr "Échiquier :"
 
 msgid "Boards"
 msgstr "Échiquiers"
@@ -1057,7 +1072,7 @@ msgid "Chess"
 msgstr "Échecs"
 
 msgid "Chief Arbitration"
-msgstr "Arbitrage en chef·fe"
+msgstr "Arbitrage en chef"
 
 msgid "Chief arbiter"
 msgstr "Arbitre principal·e"
@@ -1710,11 +1725,11 @@ msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de
 msgid "Display the exit button"
 msgstr "Afficher un bouton de sortie d'écran"
 
-msgid "Display the players' opponent"
-msgstr "Afficher les adversaires"
-
 msgid "Display the unpaired players"
 msgstr "Afficher les joueur·euses non-apparié·es"
+
+msgid "Display:"
+msgstr "Affichage :"
 
 #, python-format
 msgid "Displayed round: %(round)d"
@@ -1746,6 +1761,9 @@ msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
 
 msgid "Document:"
 msgstr "Document :"
+
+msgid "Documents"
+msgstr "Documents"
 
 msgid "Dominica"
 msgstr "Dominique"
@@ -2385,6 +2403,15 @@ msgstr "Genre :"
 msgid "Genders"
 msgstr "Genres"
 
+msgid "Generate"
+msgstr "Générer"
+
+msgid "Generate documents"
+msgstr "Générer des documents"
+
+msgid "Generate documents (players, results, etc.)."
+msgstr "Générer des documents (appariements, résultats, classements…)."
+
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Générer les appariements pour toutes les rondes du tournoi."
 
@@ -2815,6 +2842,9 @@ msgstr "Nom de famille :"
 
 msgid "Last player:"
 msgstr "Dernier·e joueur·euse :"
+
+msgid "Last possible round"
+msgstr "Dernière ronde possible"
 
 msgid "Last results"
 msgstr "Derniers résultats"
@@ -3533,6 +3563,9 @@ msgstr "Nombre d'écrans :"
 msgid "Number of wins"
 msgstr "Nombre de victoires"
 
+msgid "Numbers or ranges of numbers of the boards (example: 1-10 20 25)."
+msgstr "Numéros ou plage de numéros d'échiquiers (exemple : 1-10 20 25)."
+
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr "Les nombres {first} et {last} ne sont pas compatibles ({first} > {last})."
 
@@ -3625,6 +3658,9 @@ msgstr "Adversaire Elo"
 
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
+
+msgid "Opponent:"
+msgstr "Adversaire :"
 
 msgid "Opponents"
 msgstr "Adversaires"
@@ -3901,6 +3937,9 @@ msgstr "Joueur·euse [{player_id}] - ronde {round} : "
 msgid "Player [{player_id}]: {error}"
 msgstr "Joueur·euse [{player_id}] : {error}"
 
+msgid "Player [{player}] already plays tournament [{tournament}]."
+msgstr "Le·la joueur·euse [{player}] joue déjà le tournoi [{tournament}]."
+
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse [{player}] a été créé·e. Cependant, il·elle ne correspond pas aux critères du tournoi : {names}"
 
@@ -3918,6 +3957,9 @@ msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tourno
 
 msgid "Player [{player}] has returned for this round."
 msgstr "Le·la joueur·euse [{player}] est de retour pour cette ronde."
+
+msgid "Player [{player}] is duplicated."
+msgstr "Le·la joueur·euse [{player}] est dupliqué·e."
 
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
@@ -3943,6 +3985,12 @@ msgstr "Sélection des joueur·euses (par classement)"
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Ensembles de joueur·euses de l'écran [%(screen_uniq_id)s]"
+
+msgid "Player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
+msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] joue déjà le tournoi [{tournament}]."
+
+msgid "Player with FIDE ID [{fide_id}] is duplicated."
+msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] est dupliqué·e."
 
 msgid "Player's club"
 msgstr "Club du·de la joueur·euse"
@@ -3992,12 +4040,6 @@ msgstr "Mise à jour des joueur·euses du tournoi [%(tournament)s]"
 
 msgid "Players without phone or email won't be included."
 msgstr "Les joueur·euses sans numéro de téléphone ni adresse email ne seront pas inclus·es."
-
-msgid "Players' opponent: displayed"
-msgstr "Adversaires des joueur·euses : affichée·es"
-
-msgid "Players' opponent: hidden"
-msgstr "Adversaires des joueur·euses : cachée·es"
 
 msgid "Players:"
 msgstr "Joueur·euses :"
@@ -4114,15 +4156,6 @@ msgstr "Ronde précédente"
 
 msgid "Previous tournament"
 msgstr "Tournoi précédent"
-
-msgid "Print"
-msgstr "Imprimer"
-
-msgid "Print players, results, etc."
-msgstr "Imprimer les participant·es, les résultats, les classements…"
-
-msgid "Printing"
-msgstr "Impression"
 
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prix"
@@ -4676,9 +4709,6 @@ msgstr "Écrans : %(num)d"
 
 msgid "Scroll down to review all the norms…"
 msgstr "Faites défiler vers le bas pour consulter toutes les normes…"
-
-msgid "Search *** PLACEHOLDER"
-msgstr "Rechercher"
 
 msgid "Search *** SECTION TITLE"
 msgstr "Recherche"
@@ -5252,9 +5282,6 @@ msgstr "Le numéro du dernier échiquier à prendre en compte."
 msgid "The number of the last player to select."
 msgstr "Le numéro du·de la dernier·e joueur·euse."
 
-msgid "The numbers (or ranges of numbers) of the boards to print."
-msgstr "Les numéros (ou plages de numéros) des échiquiers à imprimer."
-
 msgid "The pairing number can't be greater than the player count."
 msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueur·euses."
 
@@ -5269,9 +5296,6 @@ msgstr "Le·la joueur·euse n’a remporté aucune partie contre des adversaires
 
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
-
-msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
-msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] joue déjà le tournoi [{tournament}]."
 
 msgid "The rank of the first player to select."
 msgstr "Le classement du·de la premier·e joueur·euse."
@@ -5299,9 +5323,6 @@ msgstr "La ronde après laquelle le classement est affiché (si vide, la derniè
 
 msgid "The round count is incompatible with the number of players (expected: {expected})."
 msgstr "Le nombre de rondes est incompatible avec le nombre de joueur·euses (attendu : {expected})."
-
-msgid "The round for which the document is printed (Defaults to the last possible round)."
-msgstr "La ronde pour laquelle le document est imprimé (par défaut la dernière ronde possible)."
 
 msgid "The screens displayed by the display controller are controlled by the screen managers."
 msgstr "Les écrans utilisés par le pilote d'afficheurs sont désignés par l'administrateur·ice."
@@ -6084,9 +6105,6 @@ msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne peuvent quitter l'écran accidentellement."
 
-msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
-msgstr "Lorsque les adversaires ne sont pas affiché·es, moins d'écrans sont nécessaires pour afficher l'ensemble des joueur·euses (multi-colonnes)."
-
 msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."
 msgstr "Lorsqu'il y a des joueur·euses non-classées, le règlement FIDE stipule que les départages basés sur le classement ne peuvent être utilisés que si le règlement du tournoi explique comment les classements estimés sont attribués."
 
@@ -6327,6 +6345,9 @@ msgstr "échiquiers sur {parts} écrans"
 msgid "boards {board_numbers}"
 msgstr "échiquiers {board_numbers}"
 
+msgid "clear filters"
+msgstr "effacer les filtres"
+
 msgid "either the duration or the increment must be greater than 0."
 msgstr "la durée ou l’incrément doit être supérieur à 0."
 
@@ -6459,9 +6480,6 @@ msgstr "puis"
 msgid "value: {value}"
 msgstr "valeur : {value}"
 
-msgid "vs"
-msgstr "contre"
-
 #, python-format
 msgid "vs %(player)s"
 msgstr "contre %(player)s"
@@ -6471,6 +6489,9 @@ msgstr "oui"
 
 msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
 msgstr "{age_limit}+"
+
+msgid "{board_number} {color}"
+msgstr "{board_number} {color}"
 
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
@@ -6538,12 +6559,21 @@ msgstr "{status_code} - Erreur inconnue"
 msgid "{string}: {value}"
 msgstr "{string} : {value}"
 
+msgid "{title} {full_name}"
+msgstr "{title} {full_name}"
+
+msgid "{title} {full_name} {rating}"
+msgstr "{title} {full_name} {rating}"
+
+msgid "{title} {full_name} {rating}{rating_type}"
+msgstr "{title} {full_name} {rating}{rating_type}"
+
+msgid "{title} {full_name} {rating}{rating_type} [{points}]"
+msgstr "{title} {full_name} {rating}{rating_type} [{points}]"
+
 msgid "½ - 0 (U)"
 msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "This field is not editable."
-#~ msgstr "Ce champ n'est pas modifiable."
 

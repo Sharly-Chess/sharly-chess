@@ -253,7 +253,7 @@ class PrintGuard(BaseGuard):
             if tournament_id not in event.tournaments_by_id:
                 raise NotFoundException(f'Tournament [{tournament_id}] not found.')
             self._authorize_tournament_action(
-                AuthAction.PRINT,
+                AuthAction.GENERATE_DOCUMENTS,
                 client,
                 request,
                 tournament=event.tournaments_by_id[tournament_id],

@@ -76,7 +76,9 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         return self.event
 
     def get_allowed_tournaments(self) -> list[Tournament]:
-        return self.get_client().allowed_tournaments_for_action(AuthAction.PRINT)
+        return self.get_client().allowed_tournaments_for_action(
+            AuthAction.GENERATE_DOCUMENTS
+        )
 
     @override
     def default_options(self) -> list[PrintOption]:
@@ -205,7 +207,7 @@ class PlayerPrintDocument(PrintDocument, ABC):
             'tournament': self.tournament,
             'tournaments': self.tournaments,
             'subtitle': self.subtitle,
-            'tournament_players': self.ordered_split_players,
+            'ordered_split_players': self.ordered_split_players,
             'player_columns': self.player_columns,
             'row_count': [1],
         }

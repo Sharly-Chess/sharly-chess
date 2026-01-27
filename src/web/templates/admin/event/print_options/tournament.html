@@ -1,4 +1,9 @@
-<div class="col-12">
+<div
+    class="col-12"
+    {% if allowed_tournaments|length == 1 %}
+        style="display:none"
+    {% endif %}
+>
     {{ admin_macros.select_input(
         name=option.id,
         label=_('Tournament:'),

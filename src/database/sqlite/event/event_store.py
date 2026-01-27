@@ -227,7 +227,9 @@ class StoredScreen:
     timer_id: int | None
     input_exit_button: bool | None
     players_show_unpaired: bool | None
-    players_show_opponent: bool | None
+    players_player_format: int | None
+    players_board_format: int | None
+    players_opponent_format: int | None
     results_limit: int | None
     results_max_age: int | None
     background_image: str | None
@@ -263,7 +265,9 @@ class StoredFamily:
     timer_id: int | None
     input_exit_button: bool | None
     players_show_unpaired: bool | None
-    players_show_opponent: bool | None
+    players_player_format: int | None
+    players_board_format: int | None
+    players_opponent_format: int | None
     ranking_crosstable: bool
     ranking_round: int | None
     ranking_min_points: float | None
