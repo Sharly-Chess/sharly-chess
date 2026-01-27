@@ -10,6 +10,10 @@ msgstr " [{yes_answer}/{no_answer}]?"
 msgid "#{board_number}"
 msgstr "n° {board_number}"
 
+#, ai_translation
+msgid "#{board_number} with {color}"
+msgstr "#{board_number} com {color}"
+
 #, ai_translation, python-format
 msgid "%%s is replaced by the time elapsed since the hour."
 msgstr "%%s é substituído pelo tempo decorrido desde a hora."
@@ -1004,9 +1008,21 @@ msgstr "Blitz:"
 msgid "Blz *** BLITZ RATING ACRONYM"
 msgstr "Blz"
 
+#, ai_translation
+msgid "Board"
+msgstr "Conselho de Administração"
+
 #, ai_translation, python-format
 msgid "Board #%(board_number)d with %(color)s"
 msgstr "Quadro n° %(board_number)d com %(color)s"
+
+#, ai_translation
+msgid "Board #{board_number} with {color}"
+msgstr "#{board_number} com {color}"
+
+#, ai_translation
+msgid "Board #{board_number} {color}"
+msgstr "#{board_number} {color}"
 
 #, ai_translation, python-format
 msgid "Board %(board_number)s"
@@ -1015,10 +1031,6 @@ msgstr "Quadro %(board_number)s"
 #, ai_translation, python-format
 msgid "Board %(number)s"
 msgstr "Quadro %(number)s"
-
-#, ai_translation
-msgid "Board & color"
-msgstr "Quadro & cor"
 
 #, ai_translation, python-format
 msgid "Board (%(remaining)d)"
@@ -1031,6 +1043,10 @@ msgstr "Cartas de Conselho"
 #, ai_translation
 msgid "Board Pairings"
 msgstr "Emparelhamentos"
+
+#, ai_translation
+msgid "Board and Color"
+msgstr "Quadro e Cor"
 
 #, ai_translation
 msgid "Board is not the same as the opponent's."
@@ -1047,6 +1063,10 @@ msgstr "Seleção do Conselho de Administração (por número)"
 #, ai_translation, python-format
 msgid "Board sets of screen [%(screen_uniq_id)s]"
 msgstr "Conjuntos de painéis de ecrã [%(screen_uniq_id)s]"
+
+#, ai_translation
+msgid "Board:"
+msgstr "Conselho de Administração:"
 
 #, ai_translation
 msgid "Boards"
@@ -2191,12 +2211,12 @@ msgid "Display the exit button"
 msgstr "Mostrar o botão de saída"
 
 #, ai_translation
-msgid "Display the players' opponent"
-msgstr "Mostrar o adversário dos jogadores"
-
-#, ai_translation
 msgid "Display the unpaired players"
 msgstr "Mostrar os jogadores não emparelhados"
+
+#, ai_translation
+msgid "Display:"
+msgstr "Exibição:"
 
 #, ai_translation, python-format
 msgid "Displayed round: %(round)d"
@@ -2237,6 +2257,10 @@ msgstr "Você quer atualizar de [{old_version}] para [{new_version}]"
 #, ai_translation
 msgid "Document:"
 msgstr "Documento:"
+
+#, ai_translation
+msgid "Documents"
+msgstr "Documentos"
 
 #, ai_translation
 msgid "Dominica"
@@ -3068,6 +3092,18 @@ msgid "Genders"
 msgstr "Géneros"
 
 #, ai_translation
+msgid "Generate"
+msgstr "Gerar"
+
+#, ai_translation
+msgid "Generate documents"
+msgstr "Gerar documentos"
+
+#, ai_translation
+msgid "Generate documents (players, results, etc.)."
+msgstr "Gerar documentos (jogadores, resultados, etc.)."
+
+#, ai_translation
 msgid "Generate pairings for all the rounds of the tournament."
 msgstr "Gerar emparelhamentos para todas as rodadas do torneio."
 
@@ -3638,6 +3674,10 @@ msgstr "Sobrenome:"
 #, ai_translation
 msgid "Last player:"
 msgstr "ltimo jogador:"
+
+#, ai_translation
+msgid "Last possible round"
+msgstr "ltima rodada possível"
 
 #, ai_translation
 msgid "Last results"
@@ -4572,6 +4612,10 @@ msgid "Number of wins"
 msgstr "Número de vitórias"
 
 #, ai_translation
+msgid "Numbers or ranges of numbers of the boards (example: 1-10 20 25)."
+msgstr "Números ou intervalos de números das placas (exemplo: 1-10 20 25)."
+
+#, ai_translation
 msgid "Numbers {first} and {last} are not compatible ({first} > {last})."
 msgstr "Os números {first} e {last} não são compatíveis ({first} > {last})."
 
@@ -4690,6 +4734,10 @@ msgstr "Opositor Elo"
 #, ai_translation
 msgid "Opponent Elo [Pts]"
 msgstr "Opositor Elo [Pts]"
+
+#, ai_translation
+msgid "Opponent:"
+msgstr "Oponente:"
 
 #, ai_translation
 msgid "Opponents"
@@ -5052,6 +5100,10 @@ msgid "Player [{player_id}]: {error}"
 msgstr "Jogador [{player_id}]: {error}"
 
 #, ai_translation
+msgid "Player [{player}] already plays tournament [{tournament}]."
+msgstr "Jogador [{player}] já joga torneio [{tournament}]."
+
+#, ai_translation
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
 msgstr "Jogador [{player}] foi criado, mas não corresponde aos critérios do torneio: {names}"
 
@@ -5074,6 +5126,10 @@ msgstr "Jogador [{player}] tem pares no torneio [{tournament}]."
 #, ai_translation
 msgid "Player [{player}] has returned for this round."
 msgstr "O jogador [{player}] voltou para esta rodada."
+
+#, ai_translation
+msgid "Player [{player}] is duplicated."
+msgstr "O jogador [{player}] é duplicado."
 
 #, ai_translation
 msgid "Player does not match tournament criteria: {names}"
@@ -5106,6 +5162,14 @@ msgstr "Seleção de jogadores (por classificação)"
 #, ai_translation, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Conjuntos de ecrã do jogador [%(screen_uniq_id)s]"
+
+#, ai_translation
+msgid "Player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
+msgstr "Jogador com FIDE ID [{fide_id}] já joga torneio [{tournament}]."
+
+#, ai_translation
+msgid "Player with FIDE ID [{fide_id}] is duplicated."
+msgstr "O jogador com FIDE ID [{fide_id}] é duplicado."
 
 #, ai_translation
 msgid "Player's club"
@@ -5166,14 +5230,6 @@ msgstr "Atualização dos jogadores para o torneio [%(tournament)s]"
 #, ai_translation
 msgid "Players without phone or email won't be included."
 msgstr "Jogadores sem telefone ou e-mail não serão incluídos."
-
-#, ai_translation
-msgid "Players' opponent: displayed"
-msgstr "O adversário dos jogadores: exibido"
-
-#, ai_translation
-msgid "Players' opponent: hidden"
-msgstr "O adversário dos jogadores: oculto"
 
 #, ai_translation
 msgid "Players:"
@@ -5322,18 +5378,6 @@ msgstr "Rodada anterior"
 #, ai_translation
 msgid "Previous tournament"
 msgstr "Torneio Anterior"
-
-#, ai_translation
-msgid "Print"
-msgstr "Imprimir"
-
-#, ai_translation
-msgid "Print players, results, etc."
-msgstr "Imprima jogadores, resultados, etc."
-
-#, ai_translation
-msgid "Printing"
-msgstr "Impressão"
 
 #, fuzzy
 msgid "Prize *** PRIZE COLUMN HEADER"
@@ -6046,10 +6090,6 @@ msgstr "Telas: %(num)d"
 #, ai_translation
 msgid "Scroll down to review all the norms…"
 msgstr "Para rever todas as normas..."
-
-#, fuzzy
-msgid "Search *** PLACEHOLDER"
-msgstr "Search"
 
 #, fuzzy
 msgid "Search *** SECTION TITLE"
@@ -6806,10 +6846,6 @@ msgid "The number of the last player to select."
 msgstr "O número do último jogador a escolher."
 
 #, ai_translation
-msgid "The numbers (or ranges of numbers) of the boards to print."
-msgstr "Os números (ou intervalos de números) das placas para imprimir."
-
-#, ai_translation
 msgid "The pairing number can't be greater than the player count."
 msgstr "O número de emparelhamento não pode ser maior do que a contagem de jogadores."
 
@@ -6828,10 +6864,6 @@ msgstr "O jogador não ganhou nenhum jogo contra adversários classificados pela
 #, ai_translation
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "O jogador já foi emparelhado, removê-los do torneio é impossível."
-
-#, ai_translation
-msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
-msgstr "O jogador com FIDE ID [{fide_id}] já joga torneio [{tournament}]."
 
 #, ai_translation
 msgid "The rank of the first player to select."
@@ -6868,10 +6900,6 @@ msgstr "A rodada após a qual o ranking é exibido (se deixado vazio, a última 
 #, ai_translation
 msgid "The round count is incompatible with the number of players (expected: {expected})."
 msgstr "A contagem de rodadas é incompatível com o número de jogadores (esperado: {expected})."
-
-#, ai_translation
-msgid "The round for which the document is printed (Defaults to the last possible round)."
-msgstr "A rodada para a qual o documento é impresso (Padrões para a última rodada possível)."
 
 #, ai_translation
 msgid "The screens displayed by the display controller are controlled by the screen managers."
@@ -7890,10 +7918,6 @@ msgid "When not displaying the exit button, users can not accidentally exit inpu
 msgstr "Ao não exibir o botão de saída, os usuários não podem sair acidentalmente das telas de entrada."
 
 #, ai_translation
-msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
-msgstr "Ao não exibir o adversário dos jogadores (apenas números de cor e de tabuleiro), menos telas são necessárias (com várias colunas)."
-
-#, ai_translation
 msgid "When there are unrated players, FIDE rules stipulate that rating-based tie-breaks can only be used if the tournament rules explains how the estimations are decided."
 msgstr "Quando há jogadores não classificados, as regras da FIDE estipulam que os tie-breaks baseados em classificação só podem ser usados se as regras do torneio explicarem como as estimativas são decididas."
 
@@ -8214,6 +8238,10 @@ msgid "boards {board_numbers}"
 msgstr "placas {board_numbers}"
 
 #, ai_translation
+msgid "clear filters"
+msgstr "filtros claros"
+
+#, ai_translation
 msgid "either the duration or the increment must be greater than 0."
 msgstr "A duração ou o incremento devem ser maiores que 0."
 
@@ -8389,10 +8417,6 @@ msgstr "então"
 msgid "value: {value}"
 msgstr "valor: {value}"
 
-#, ai_translation
-msgid "vs"
-msgstr "vs vs vs"
-
 #, ai_translation, python-format
 msgid "vs %(player)s"
 msgstr "vs %(player)s"
@@ -8404,6 +8428,10 @@ msgstr "sim"
 #, fuzzy
 msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
 msgstr "{age_limit}+"
+
+#, ai_translation
+msgid "{board_number} {color}"
+msgstr "{board_number} {color}"
 
 #, ai_translation
 msgid "{count} club represented"
@@ -8490,6 +8518,22 @@ msgid "{string}: {value}"
 msgstr "{string}: {value}"
 
 #, ai_translation
+msgid "{title} {full_name}"
+msgstr "{title} {full_name}"
+
+#, ai_translation
+msgid "{title} {full_name} {rating}"
+msgstr "{title} {full_name} {rating}"
+
+#, ai_translation
+msgid "{title} {full_name} {rating}{rating_type}"
+msgstr "{title} {full_name} {rating}{rating_type}"
+
+#, ai_translation
+msgid "{title} {full_name} {rating}{rating_type} [{points}]"
+msgstr "{full_name} {title} (0) {rating} {rating_type} [{points}]"
+
+#, ai_translation
 msgid "½ - 0 (U)"
 msgstr "½ - 0 (U)"
 
@@ -8532,4 +8576,43 @@ msgstr "½ - ½ (U)"
 
 #~ msgid "This field is not editable."
 #~ msgstr "Este campo não é editável."
+
+#~ msgid "Board & color"
+#~ msgstr "Quadro & cor"
+
+#~ msgid "Display the players' opponent"
+#~ msgstr "Mostrar o adversário dos jogadores"
+
+#~ msgid "Players' opponent: displayed"
+#~ msgstr "O adversário dos jogadores: exibido"
+
+#~ msgid "Players' opponent: hidden"
+#~ msgstr "O adversário dos jogadores: oculto"
+
+#~ msgid "Print"
+#~ msgstr "Imprimir"
+
+#~ msgid "Print players, results, etc."
+#~ msgstr "Imprima jogadores, resultados, etc."
+
+#~ msgid "Printing"
+#~ msgstr "Impressão"
+
+#~ msgid "Search *** PLACEHOLDER"
+#~ msgstr "Search"
+
+#~ msgid "The numbers (or ranges of numbers) of the boards to print."
+#~ msgstr "Os números (ou intervalos de números) das placas para imprimir."
+
+#~ msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
+#~ msgstr "O jogador com FIDE ID [{fide_id}] já joga torneio [{tournament}]."
+
+#~ msgid "The round for which the document is printed (Defaults to the last possible round)."
+#~ msgstr "A rodada para a qual o documento é impresso (Padrões para a última rodada possível)."
+
+#~ msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
+#~ msgstr "Ao não exibir o adversário dos jogadores (apenas números de cor e de tabuleiro), menos telas são necessárias (com várias colunas)."
+
+#~ msgid "vs"
+#~ msgstr "vs vs vs"
 

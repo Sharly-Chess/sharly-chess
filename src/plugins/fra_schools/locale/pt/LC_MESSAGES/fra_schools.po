@@ -51,6 +51,10 @@ msgid "Complete Team"
 msgstr "Equipe completa"
 
 #, ai_translation
+msgid "Delete"
+msgstr "Apagar"
+
+#, ai_translation
 msgid "Edit the selected French school."
 msgstr "Edite a escola francesa selecionada."
 

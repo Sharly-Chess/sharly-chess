@@ -319,10 +319,6 @@ msgid "Import Papi file"
 msgstr "Importar arquivo Papi"
 
 #, ai_translation
-msgid "Invalid FFE ID [{ffe_id}]."
-msgstr "ID FFE inválido [{ffe_id}]."
-
-#, ai_translation
 msgid "Invalid FFE certification number or password."
 msgstr "Número ou senha de certificação FFE inválido."
 
@@ -455,6 +451,10 @@ msgid "Papi file"
 msgstr "Ficheiro Papi"
 
 #, ai_translation
+msgid "Player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
+msgstr "Jogador com número de licença FFE [{ffe_licence_number}] já joga torneio [{tournament}]."
+
+#, ai_translation
 msgid "Players:"
 msgstr "Jogadores:"
 
@@ -569,14 +569,6 @@ msgstr "O atraso deve ser de pelo menos {min_delay} minutos para evitar sobrecar
 #, ai_translation
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "A senha do torneio no site da FFE é feita de 10 letras maiúsculas."
-
-#, ai_translation
-msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament}]."
-msgstr "O jogador com FFE ID [{ffe_id}] já joga torneio [{tournament}]."
-
-#, ai_translation
-msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
-msgstr "O jogador com número de licença FFE [{ffe_licence_number}] já joga torneio [{tournament}]."
 
 #, ai_translation
 msgid "The player's points and the board numbers may differ on the FFE website because Sharly Chess uses pairing numbers for the acceleration groups (the FFE website uses rating thresholds)."
@@ -732,4 +724,13 @@ msgstr[1] "{count} ligas representadas"
 
 #~ msgid "Unknown FFE Licence type [%(ffe_licence)s]."
 #~ msgstr "Tipo de licença FFE desconhecido [%(ffe_licence)s]."
+
+#~ msgid "Invalid FFE ID [{ffe_id}]."
+#~ msgstr "ID FFE inválido [{ffe_id}]."
+
+#~ msgid "The player with FFE ID [{ffe_id}] already plays tournament [{tournament}]."
+#~ msgstr "O jogador com FFE ID [{ffe_id}] já joga torneio [{tournament}]."
+
+#~ msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
+#~ msgstr "O jogador com número de licença FFE [{ffe_licence_number}] já joga torneio [{tournament}]."
 
