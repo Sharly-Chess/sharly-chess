@@ -50,6 +50,7 @@ from plugins.chessevent.tournament_importer.mappers import (
     ChessEventFFELicence,
     ChessEventTitle,
     ChessEventRatingType,
+    ChessEventGender,
 )
 from plugins.chessevent.utils import ChessEventTournamentPluginData, ChessEventUtils
 from plugins.ffe.ffe import FfePlugin
@@ -263,6 +264,10 @@ class ChessEventTournamentImporter(TournamentImporter):
             title = ChessEventTitle.get_core_object(player.title)
         except KeyError:
             raise unknown_exception('title')
+        try:
+            gender = ChessEventGender.get_core_object(player.gender)
+        except KeyError:
+            raise unknown_exception('gender')
         if player.federation not in SharlyChessConfig().federations:
             # Error raised in the form as it's the only field manually input by the user
             raise ImporterError(
@@ -324,13 +329,13 @@ class ChessEventTournamentImporter(TournamentImporter):
             date_of_birth=(epoch + timedelta(seconds=float(player.birth))).astimezone(
                 paris_tz
             ),
-            gender=player.gender.value,
+            gender=gender.value,
             mail=player.email,
             phone=player.phone,
             comment=None,
             owed=float(player.fee),
             paid=float(player.paid),
-            title=title,
+            title=title.value,
             ratings=ratings,
             fide_id=player.fide_id or None,
             federation=player.federation,

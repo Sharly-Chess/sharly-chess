@@ -1162,7 +1162,7 @@ class TournamentPlayer(Player):
     def starting_rank_sort_key(self) -> tuple:
         return (
             -self.rating,
-            -self.title,
+            -self.title.sort_index,
             self.last_name,
             self.first_name or '',
         )

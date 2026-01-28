@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional, Literal
 from database.sqlite.event.event_store import StoredBoard
 from database.sqlite.event.event_database import EventDatabase
 from utils.date_time import format_timestamp_date_time
-from utils.enum import Result, PlayerRatingType
+from utils.enum import Result, PlayerRatingType, PlayerTitle
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
@@ -203,8 +203,8 @@ class Board:
         return (
             f'[{field_prefix} "{cls._format_pgn_string(name)}"]\n'
             + (
-                f'[{field_prefix}Title "{tournament_player.title.to_fide_value}"]\n'
-                if tournament_player.title.to_fide_value
+                f'[{field_prefix}Title "{tournament_player.title.value}"]\n'
+                if tournament_player.title != PlayerTitle.NONE
                 else ''
             )
             + f'[{field_prefix}Elo "{rating}"]\n'

@@ -122,11 +122,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             'name': ('name', None),
             'country': ('federation', lambda s: s.upper()),
             'sex': ('gender', PlayerGender.from_fide_value),
-            # exception for 1001710 Vreeken, Corry
-            'title': (
-                'fide_title',
-                lambda s: PlayerTitle.from_fide_value('' if s == 'WH' else s),
-            ),
+            'title': ('fide_title', PlayerTitle.from_fide_value),
             'rating': ('standard_rating', int),
             'rapid_rating': ('rapid_rating', int),
             'blitz_rating': ('blitz_rating', int),
