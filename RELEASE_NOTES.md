@@ -3,7 +3,6 @@
 ## General
 
 - Improve error message when executing from a directory without write permissions (3.5.0)
-- Rename _Print_ menu to _Documents_ (3.5.0)
 
 ## Events
 
@@ -18,6 +17,7 @@
 - Fixed deleted ratings not taken into account during player update (3.5.0)
 - Fixed the text of player norm tooltips (3.5.0)
 - Update FFE players by FFE licence number, FIDE ID (new), then name/DOB (3.5.0)
+- Use score instead of result in history popover (3.5.1)
 
 ## Screens
 
@@ -28,6 +28,11 @@
 ## Prizes
 
 - New type of prizes _Hybrid_ (3.5.0)
+
+## Documents
+
+- Rename _Print_ menu to _Documents_ (3.5.0)
+- Fixed the pairings by player document (3.5.1)
 
 ## _FFE_
 
