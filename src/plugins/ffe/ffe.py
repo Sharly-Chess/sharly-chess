@@ -327,7 +327,7 @@ class FfePlugin(Plugin):
             errors[field] = f'Invalid league value [{data[field]}].'
             data[field] = ''
         try:
-            if value := WebContext.form_data_to_int(data, field := 'ffe_licence'):
+            if value := WebContext.form_data_to_str(data, field := 'ffe_licence'):
                 PlayerFFELicence(value)
         except ValueError:
             errors[field] = f'Invalid FFE licence [{data[field]}].'

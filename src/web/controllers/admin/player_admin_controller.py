@@ -686,11 +686,11 @@ class PlayerAdminController(BaseEventAdminController):
             first_name: str | None = None
             last_name: str | None = None
             date_of_birth: str | None = None
-            gender: int = PlayerGender.NONE.value
+            gender = PlayerGender.NONE.value
             ratings: dict[TournamentRating, PlayerRating] = {
                 tr: PlayerRating(estimated=0) for tr in TournamentRating
             }
-            title: int = PlayerTitle.NONE.value
+            title = PlayerTitle.NONE.value
             federation = event.federation
             club: str | None = None
             fide_id: int | None = None
@@ -994,14 +994,14 @@ class PlayerAdminController(BaseEventAdminController):
                         ),
                     )
         try:
-            if value := WebContext.form_data_to_int(data, field := 'gender'):
+            if value := WebContext.form_data_to_str(data, field := 'gender'):
                 PlayerGender(value)
         except ValueError:
             # should never happen, not translated.
             errors[field] = f'Invalid gender value [{data[field]}].'
             data[field] = ''
         try:
-            if value := WebContext.form_data_to_int(data, field := 'title'):
+            if value := WebContext.form_data_to_str(data, field := 'title'):
                 PlayerTitle(value)
         except ValueError:
             # should never happen, not translated.
@@ -1082,14 +1082,14 @@ class PlayerAdminController(BaseEventAdminController):
             last_name=(WebContext.form_data_to_str(data, 'last_name') or '').upper(),
             date_of_birth=date_of_birth,
             year_of_birth=year_of_birth,
-            gender=WebContext.form_data_to_int(data, 'gender')
+            gender=WebContext.form_data_to_str(data, 'gender')
             or PlayerGender.NONE.value,
             mail=WebContext.form_data_to_str(data, 'mail'),
             phone=WebContext.form_data_to_str(data, 'phone'),
             comment=data.get('comment'),
             owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
             paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
-            title=WebContext.form_data_to_int(data, 'title') or PlayerTitle.NONE.value,
+            title=WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value,
             ratings={
                 tr.value: PlayerRating(
                     estimated=WebContext.form_data_to_int(

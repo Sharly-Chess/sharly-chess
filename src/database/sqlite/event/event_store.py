@@ -129,13 +129,13 @@ class StoredPlayer:
     first_name: str | None = None
     date_of_birth: date | None = None
     year_of_birth: int | None = None
-    gender: int = 0
+    gender: str = ''
     mail: str | None = None
     phone: str | None = None
     comment: str | None = None
     owed: float = 0.0
     paid: float = 0.0
-    title: int = 0
+    title: str = ''
     fide_id: int | None = None
     federation: str = 'FID'
     club: str | None = None

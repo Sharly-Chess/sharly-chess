@@ -16,14 +16,14 @@ class Migration(BaseMigration):
             for params in {
                 (
                     1,  # PlayersScreenPlayerFormat.NAME
-                    1,  # PlayersScreenPlayerFormat.MINIMAL
-                    1,  # PlayersScreenPlayerFormat.NONE
+                    1,  # PlayersScreenBoardFormat.MINIMAL
+                    1,  # PlayersScreenOpponentFormat.NONE
                     0,  # for players screens actually hiding the opponents
                 ),
                 (
                     4,  # PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS
-                    4,  # PlayersScreenPlayerFormat.FULL
-                    5,  # PlayersScreenPlayerFormat.NAME_RATING_TYPE_POINTS
+                    4,  # PlayersScreenBoardFormat.FULL
+                    5,  # PlayersScreenOpponentFormat.NAME_RATING_TYPE_POINTS
                     1,  # for players screens actually showing the opponents
                 ),
             }:

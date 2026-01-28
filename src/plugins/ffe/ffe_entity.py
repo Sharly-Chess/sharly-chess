@@ -320,7 +320,7 @@ class FfeLicencePlayerFilter(PlayerFilter):
         return f'{self.name} ({", ".join(licence_types)})'
 
 
-class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
+class FfeLicenceFilterOption(SelectPlayerFilterOption[str]):
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-LICENCES'
@@ -331,17 +331,17 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
 
     @property
     def type(self) -> type | UnionType:
-        return list[int]
+        return list[str]
 
     @property
     def default_value(self) -> Any:
         return []
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[int]:
+    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
         return [licence.value for licence in PlayerFFELicence]
 
-    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[int]:
-        counter: Counter[int] = Counter[int]()
+    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
+        counter: Counter[str] = Counter[str]()
         for tournament_player in tournament.tournament_players:
             if ffe_licence := FFEUtils.get_player_plugin_data(
                 tournament_player
@@ -349,15 +349,15 @@ class FfeLicenceFilterOption(SelectPlayerFilterOption[int]):
                 counter[ffe_licence] += 1
         return counter
 
-    def get_key(self, object_: int) -> str:
-        return str(object_)
+    def get_key(self, object_: str) -> str:
+        return object_
 
-    def get_name(self, object_: int) -> str:
+    def get_name(self, object_: str) -> str:
         licence = PlayerFFELicence(object_)
         return licence.compact_name
 
     def validate(self):
-        self._validate_list_type(int)
+        self._validate_list_type(str)
         if not self.value:
             raise OptionError(_('At least one licence type is expected.'), self)
 
@@ -424,10 +424,10 @@ class FfeLicencePlayersTabColumn(FilterPlayersTabColumn):
         return (FFEUtils.get_player_plugin_data(player).ffe_licence,)
 
     def get_filter_key(self, player: Player) -> str:
-        return str(FFEUtils.get_player_plugin_data(player).ffe_licence.value)
+        return FFEUtils.get_player_plugin_data(player).ffe_licence.value
 
     def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
-        return PlayerFFELicence(int(filter_key))
+        return PlayerFFELicence(filter_key)
 
     def get_filter_row_content(self, value: Any) -> str:
         return value.compact_name
@@ -483,7 +483,7 @@ class FfeLicenceDatasheetColumn(DatasheetColumn):
         return 'ffe_licence'
 
     def get_cell_content(self, player: Player) -> Any:
-        return FFEUtils.get_player_plugin_data(player).ffe_licence.short_name
+        return FFEUtils.get_player_plugin_data(player).ffe_licence.value
 
 
 class FfeLeagueDatasheetColumn(DatasheetColumn):
