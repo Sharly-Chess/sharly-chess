@@ -13,7 +13,7 @@ CREATE TABLE `player` (
     `city` TEXT,
     `club` TEXT,
     `fide_id` INTEGER,
-    `fide_title` INTEGER NOT NULL,
+    `fide_title` TEXT NOT NULL,
     `standard_rating` INTEGER NOT NULL,
     `rapid_rating` INTEGER NOT NULL,
     `blitz_rating` INTEGER NOT NULL,
