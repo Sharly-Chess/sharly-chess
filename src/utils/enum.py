@@ -276,6 +276,42 @@ class Result(IntEnum):
                 raise ValueError(f'Unknown value: {self}')
 
     @property
+    def to_pairing_points(self) -> str:
+        match self:
+            case Result.FORFEIT_LOSS | Result.DOUBLE_FORFEIT:
+                return '<'
+            case (
+                Result.NO_RESULT
+                | Result.ZERO_POINT_BYE
+                | Result.LOSS
+                | Result.UNRATED_LOSS
+                | Result.REST_GAME
+                | Result.PENALTY_LL
+                | Result.UNRATED_PENALTY_LL
+                | Result.PENALTY_LD
+                | Result.UNRATED_PENALTY_LD
+            ):
+                return '0'
+            case (
+                Result.DRAW
+                | Result.UNRATED_DRAW
+                | Result.HALF_POINT_BYE
+                | Result.PENALTY_DL
+                | Result.UNRATED_PENALTY_DL
+            ):
+                return '½'
+            case Result.WIN | Result.UNRATED_WIN:
+                return '1'
+            case (
+                Result.FORFEIT_WIN
+                | Result.PAIRING_ALLOCATED_BYE
+                | Result.FULL_POINT_BYE
+            ):
+                return '>'
+            case _:
+                raise ValueError(f'{self=}')
+
+    @property
     def to_berger_table(self) -> str:
         return self.to_trf
 

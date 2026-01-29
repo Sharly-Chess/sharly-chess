@@ -34,7 +34,7 @@
             <tr>
                 <td>{{ round_id }}</td>
                 <td>{{ pairing.color and pairing.color.name[0] }}</td>
-                <td>{{ pairing.result.point_value }}</td>
+                <td>{{ pairing.result.to_pairing_points }}</td>
                 <td>{{ pairing.opponent.full_name }}</td>
             </tr>
         {% endfor %}
