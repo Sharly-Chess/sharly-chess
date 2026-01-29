@@ -1,0 +1,13 @@
+{{ object.full_name }}
+<p>Extra information for player, should be displayed on hover
+    <table>
+        {% for round_id, pairing in object.pairings_by_round.items() %}
+            <tr>
+               <td>{{ round_id }}</td>
+               <td>{{ pairing.color and pairing.color.name[0] }}</td>
+               <td>{{ pairing.result.point_value }}</td>
+               <td>{{ pairing.opponent.full_name }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</p>
