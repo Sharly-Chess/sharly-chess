@@ -1,13 +1,42 @@
-{{ object.full_name }}
-<p>Extra information for player, should be displayed on hover
-    <table>
+<style>
+    .player_name {
+        position: relative;
+    }
+
+    .player_name .data {
+        display: none;
+        border-collapse: collapse;
+        position: absolute;
+        left: 40px;
+        top: 10px;
+        padding: 5px;
+        border: 1px solid grey;
+        background-color: #FFFFFF !important;
+        z-index: 999;
+    }
+
+    .player_name:hover .data {
+        display: block;
+    }
+
+    .data tr:nth-child(even) * {
+        background-color: #FFFFFF !important;
+    }
+
+    .data tr:nth-child(odd) * {
+        background-color: #E0E0E0 !important;
+    }
+</style>
+<div class="player_name">
+    {{ object.full_name }}
+    <table class="data">
         {% for round_id, pairing in object.pairings_by_round.items() %}
             <tr>
-               <td>{{ round_id }}</td>
-               <td>{{ pairing.color and pairing.color.name[0] }}</td>
-               <td>{{ pairing.result.point_value }}</td>
-               <td>{{ pairing.opponent.full_name }}</td>
+                <td>{{ round_id }}</td>
+                <td>{{ pairing.color and pairing.color.name[0] }}</td>
+                <td>{{ pairing.result.point_value }}</td>
+                <td>{{ pairing.opponent.full_name }}</td>
             </tr>
         {% endfor %}
     </table>
-</p>
+</div>
