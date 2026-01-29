@@ -25,6 +25,7 @@ from utils.enum import (
     PlayerGender,
     PlayerTitle,
     TournamentRating,
+    ArbiterTitle,
 )
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -123,6 +124,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             'country': ('federation', lambda s: s.upper()),
             'sex': ('gender', PlayerGender.from_fide_value),
             'title': ('fide_title', PlayerTitle.from_fide_value),
+            'o_title': ('fide_arbiter_title', ArbiterTitle.from_fide_value),
             'rating': ('standard_rating', int),
             'rapid_rating': ('rapid_rating', int),
             'blitz_rating': ('blitz_rating', int),
