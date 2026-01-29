@@ -24,7 +24,7 @@ from database.sqlite.event.event_store import (
     StoredRole,
 )
 from plugins.manager import plugin_manager
-from utils.enum import FormAction, RoleType, FIDEArbiterTitle
+from utils.enum import FormAction, RoleType, ArbiterTitle
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -147,7 +147,7 @@ class AccountAdminController(BaseEventAdminController):
             }
         )
         fide_arbiter_title_options = {'': '-'} | {
-            title.value: title.name for title in FIDEArbiterTitle
+            title.value: title.name for title in ArbiterTitle
         }
         form_data = default_data | data
         return {
