@@ -263,6 +263,7 @@
                             select_options=title_options,
                             data=data, errors=errors
                         ) }}
+                        <input type="hidden" name="arbiter_title" value="{{ data['arbiter_title'] }}" />
                     </div>
                 </div>
                 {% for template in plugin_templates_by_section['fide'] %}

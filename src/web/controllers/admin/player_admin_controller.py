@@ -44,6 +44,7 @@ from utils.enum import (
     TournamentRating,
     PlayerRatingType,
     PlayerTitle,
+    ArbiterTitle,
     Result,
     FormAction,
 )
@@ -691,6 +692,7 @@ class PlayerAdminController(BaseEventAdminController):
                 tr: PlayerRating(estimated=0) for tr in TournamentRating
             }
             title = PlayerTitle.NONE.value
+            arbiter_title = ArbiterTitle.NONE.value
             federation = event.federation
             club: str | None = None
             fide_id: int | None = None
@@ -720,6 +722,7 @@ class PlayerAdminController(BaseEventAdminController):
                             PlayerRating.from_stored_value(rating)
                         )
                     title = stored_player.title
+                    arbiter_title = stored_player.arbiter_title
                     federation = stored_player.federation
                     club = stored_player.club
                     fide_id = stored_player.fide_id or None
@@ -764,6 +767,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'gender': gender,
                     'tournament_id': tournament_id,
                     'title': title,
+                    'arbiter_title': arbiter_title,
                     'federation': federation,
                     'fide_id': fide_id,
                     'club': club,
@@ -1090,6 +1094,8 @@ class PlayerAdminController(BaseEventAdminController):
             owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
             paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
             title=WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value,
+            arbiter_title=WebContext.form_data_to_str(data, 'arbiter_title')
+            or ArbiterTitle.NONE.value,
             ratings={
                 tr.value: PlayerRating(
                     estimated=WebContext.form_data_to_int(
@@ -1828,8 +1834,19 @@ class PlayerAdminController(BaseEventAdminController):
                     DataSource.SEARCH_LIMIT,
                 )
                 for stored_player in stored_players:
-                    stored_player.id = 0
-                    players.append(Player(web_context.get_admin_event(), stored_player))
+                    player_source_id = data_source.get_player_source_id(stored_player)
+                    fetched_player: (
+                        StoredPlayer | None
+                    ) = await data_source.fetch_player(player_source_id)
+                    if not fetched_player:
+                        raise NotFoundException(
+                            f'Player [{player_source_id}] unexpectedly '
+                            f'not found in data source [{data_source_id}]'
+                        )
+                    fetched_player.id = 0
+                    players.append(
+                        Player(web_context.get_admin_event(), fetched_player)
+                    )
             except SharlyChessException as e:
                 connection_error = str(e)
             SessionPlayersActiveDataSource(request).set(data_source.id)

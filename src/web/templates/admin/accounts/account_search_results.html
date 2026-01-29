@@ -22,13 +22,15 @@
         {% for player in search_results %}
             <li class="dropdown-item text-nowrap btn"
                 onclick="
-                $('#last-name').val('{{ player.last_name|replace("'", "\\'") }}');
-                $('#first-name').val('{{ player.first_name|replace("'", "\\'")}}' ?? '');
-                $('#fide-id.form-control').val('{{ player.fide_id or '' }}');
                 {% for template in result_js_templates %}
                     {% include template %}
                 {% endfor %}
-                $('#search-results').hide();
+                selectPlayer(
+                    '{{ player.last_name|replace("'", "\\'") }}',
+                    '{{ player.first_name|replace("'", "\\'")}}' ?? '',
+                    '{{ player.fide_id or '' }}',
+                    '{{ player.arbiter_title or '' }}'
+                );
                 "
             >
                 {% include data_source.player_search_result_template %}
@@ -57,6 +59,15 @@
         </li>
     {% endif %}
     <script>
+        function selectPlayer(lastName, firstName, fideId, arbiterTitle) {
+            alert('firsName='+firstName+', lastName='+lastName+', arbiterTitle='+arbiterTitle);
+            $('#last-name').val(lastName);
+            $('#first-name').val(firstName);
+            $('#fide-id.form-control').val(fideId);
+            $('#fide-arbiter-title').val(arbiterTitle);
+            $('#fide-arbiter-title').trigger('change');
+            $('#search-results').hide();
+        }
         $('#{{ data_source.id }}-search-results').show();
     </script>
 {% endif %}

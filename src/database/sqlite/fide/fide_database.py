@@ -224,6 +224,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             year_of_birth=row['year_of_birth'],
             gender=row['gender'],
             title=row['fide_title'],
+            arbiter_title=row['fide_arbiter_title'],
             ratings=ratings,
             fide_id=row['fide_id'],
             federation=row['federation'],

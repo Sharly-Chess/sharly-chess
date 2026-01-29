@@ -136,6 +136,7 @@ class StoredPlayer:
     owed: float = 0.0
     paid: float = 0.0
     title: str = ''
+    arbiter_title: str = ''
     fide_id: int | None = None
     federation: str = 'FID'
     club: str | None = None

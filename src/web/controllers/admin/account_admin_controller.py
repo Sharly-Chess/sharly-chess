@@ -136,6 +136,7 @@ class AccountAdminController(BaseEventAdminController):
                 'first_name': '',
                 'last_name': '',
                 'fide_id': '',
+                'fide_arbiter_title': '',
                 'password': '',
                 'mail': '',
                 'phone': '',

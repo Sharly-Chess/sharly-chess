@@ -742,9 +742,6 @@ class ArbiterTitle(StrEnum):
             case _:
                 raise ValueError(f'Unknown title: {self}')
 
-    def __str__(self) -> str:
-        return self.short_name
-
 
 class RoleType(StrEnum):
     CHIEF_ARBITER = 'chief_arbiter'
