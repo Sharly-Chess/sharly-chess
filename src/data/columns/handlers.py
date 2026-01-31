@@ -114,12 +114,13 @@ class PlayerColumnHandler:
         self,
         tournament: Tournament,
         ranking_round: int,
+        should_include_popover: bool = False,
     ) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
             [
                 pt.RankColumn,
                 pt.TitleColumn,
-                pt.NameColumn,
+                partial(pt.NameColumn, should_include_popover=should_include_popover),
                 pt.RatingColumn,
                 pt.CategoryColumn,
                 pt.GenderColumn,

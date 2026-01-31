@@ -354,7 +354,7 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_crosstable_columns(
-            self.tournament, self.ranking_round
+            self.tournament, self.ranking_round, True
         )
 
 
