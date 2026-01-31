@@ -61,10 +61,9 @@
     {% endif %}
     <script>
         function selectPlayer(lastName, firstName, fideId, arbiterTitle) {
-            alert('firsName='+firstName+', lastName='+lastName+', arbiterTitle='+arbiterTitle);
             $('#last-name').val(lastName);
             $('#first-name').val(firstName);
-            $('#fide-id.form-control').val(fideId);
+            $('#fide-id').val(fideId);
             $('#fide-arbiter-title').val(arbiterTitle);
             $('#fide-arbiter-title').trigger('change');
             $('#search-results').hide();

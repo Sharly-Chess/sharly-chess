@@ -225,7 +225,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
                     ffe_licence=PlayerFFELicence(row['ffe_licence']),
                     ffe_licence_number=row['ffe_licence_number'],
                     league=row['league'],
-                    ffe_arbiter_title=row['ffe_arbiter_title'],
+                    ffe_arbiter_title=FFEArbiterTitle(row['ffe_arbiter_title']),
                 ).to_stored_value()
             },
         )
