@@ -328,6 +328,9 @@ msgstr "Aucune licence FFE"
 msgid "No internet connection"
 msgstr "Aucune connexion à internet"
 
+msgid "No title"
+msgstr "Aucun titre"
+
 msgid "None *** FFE licence"
 msgstr "Aucune"
 
