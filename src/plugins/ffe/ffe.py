@@ -357,25 +357,30 @@ class FfePlugin(Plugin):
 
     @hookimpl
     async def augment_player_after_search(
-        self, stored_player: StoredPlayer, data_source: DataSource
+        self,
+        stored_player: StoredPlayer,
+        data_source: DataSource,
+        augment_arbiter_title: bool,
     ):
-        if data_source.id in (
-            FfeOnlineDataSource.static_id(),
-            FfeLocalDataSource.static_id(),
-        ):
-            return
-        # Try to get more information by requesting the FFE SQL server
         fide_id = stored_player.fide_id
         if not fide_id:
             return
+        if data_source.id == FfeLocalDataSource.static_id():
+            # nothing more to get from the online database for local searches
+            return
         ffe_stored_player: StoredPlayer | None = None
-        try:
-            # Try to get more information by requesting the FFE database
-            async with FFESqlServer() as ffe_sql_server:
-                ffe_stored_player = await ffe_sql_server.get_stored_player_by_fide_id(
-                    fide_id
-                )
-        except SharlyChessException:
+        if data_source.id != FfeOnlineDataSource.static_id():
+            # Try to get more information by requesting the FFE SQL server
+            ffe_stored_player: StoredPlayer | None = None
+            try:
+                # Try to get more information by requesting the FFE database
+                async with FFESqlServer() as ffe_sql_server:
+                    ffe_stored_player = (
+                        await ffe_sql_server.get_stored_player_by_fide_id(fide_id)
+                    )
+            except SharlyChessException:
+                pass
+        if not ffe_stored_player or augment_arbiter_title:
             if (ffe_database := FfeDatabase()).exists():
                 # Try to get more information by requesting the FFE database
                 with ffe_database:
@@ -909,7 +914,7 @@ class FfePlugin(Plugin):
     ):
         field: str = 'ffe_arbiter_title'
         try:
-            if value := WebContext.form_data_to_int(data, field):
+            if value := WebContext.form_data_to_str(data, field):
                 FFEArbiterTitle(value)
         except ValueError:
             errors[field] = f'Invalid FFE arbiter title [{data[field]}].'
@@ -928,8 +933,5 @@ class FfePlugin(Plugin):
         return '/ffe_account_search_result.js'
 
     @hookimpl
-    def get_account_card_title_suffix(self, account: Account) -> str | None:
-        title = FFEUtils.get_account_plugin_data(account).ffe_arbiter_title
-        if title != FFEArbiterTitle.NONE:
-            return title.short_name
-        return None
+    def get_account_card_title_suffix(self, account: Account) -> str:
+        return FFEUtils.get_account_plugin_data(account).ffe_arbiter_title.short_name

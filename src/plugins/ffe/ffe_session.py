@@ -2,7 +2,6 @@ import re
 import shutil
 import tempfile
 import time
-from datetime import datetime
 from functools import partial
 from logging import Logger
 from pathlib import Path
@@ -17,15 +16,15 @@ from common.logger import get_logger
 from data.event import Event
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_converter import PapiConverter
-from plugins.ffe.utils import FFEUtils
+from plugins.ffe.utils import FFEUtils, PlayerFFELicence, FFEArbiterTitle
 from plugins.utils import PluginUtils
 
 logger: Logger = get_logger()
 
-FFE_URL: str = 'http://admin.echecs.asso.fr'
+FFE_PUBLIC_URL: str = 'http://echecs.asso.fr'
+FFE_ADMIN_URL: str = 'http://admin.echecs.asso.fr'
 
 VIEW_STATE_INPUT_ID: str = '__VIEWSTATE'
 VIEW_STATE_GENERATOR_INPUT_ID: str = '__VIEWSTATEGENERATOR'
@@ -111,19 +110,20 @@ class FFESession(Session):
                     }
                     response = self.post(url, data=data, files=handlers)
             content: str = response.content.decode()
-            date_str = datetime.strftime(
-                datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
-            )
-            debug_file = (
-                ffe.TMP_DIR
-                / f'{url.replace("://", "_").replace("/", "_")}-{date_str}-raw.html'
-            )
-            try:
-                with open(debug_file, 'w', encoding='utf-8') as f:
-                    f.write(content)
-                logger.debug('Raw content stored to %s.', debug_file)
-            except OSError:
-                logger.debug('Unable to store file [%s].', debug_file)
+            # if DEVEL_ENV:
+            #    date_str = datetime.strftime(
+            #        datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
+            #    )
+            #    debug_file = (
+            #        ffe.TMP_DIR
+            #        / f'{url.replace("://", "_").replace("/", "_")}-{date_str}-raw.html'
+            #    )
+            #    try:
+            #        with open(debug_file, 'w', encoding='utf-8') as f:
+            #            f.write(content)
+            #        logger.debug('Raw content stored to %s.', debug_file)
+            #    except OSError:
+            #        logger.debug('Unable to store file [%s].', debug_file)
             return content
         except ConnectionError as ex:
             logger.error('Failed to read [%s] (connection error): [%s].', url, ex)
@@ -150,19 +150,20 @@ class FFESession(Session):
         error: str | None = None
         parser.parseStr(html)
         assert self.last_url_read is not None
-        date_str = datetime.strftime(
-            datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
-        )
-        debug_file = (
-            ffe.TMP_DIR
-            / f'{(self.last_url_read or "").replace("://", "_").replace("/", "_")}-{date_str}-parsed.html'
-        )
-        try:
-            with open(debug_file, 'w', encoding='utf-8') as f:
-                f.write(parser.getHTML())
-            logger.debug('Parsed content stored to %s.', debug_file)
-        except OSError:
-            logger.debug('Unable to store file [%s].', debug_file)
+        # if DEVEL_ENV:
+        #   date_str = datetime.strftime(
+        #        datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
+        #    )
+        #   debug_file = (
+        #        ffe.TMP_DIR
+        #        / f'{(self.last_url_read or "").replace("://", "_").replace("/", "_")}-{date_str}-parsed.html'
+        #    )
+        #    try:
+        #        with open(debug_file, 'w', encoding='utf-8') as f:
+        #            f.write(parser.asHTML())
+        #        logger.debug('Parsed content stored to %s.', debug_file)
+        #    except OSError:
+        #        logger.debug('Unable to store file [%s].', debug_file)
         tag: AdvancedTag | None = parser.getElementById(
             tag_id := 'ctl00_ContentPlaceHolderMain_LabelError'
         )
@@ -178,14 +179,21 @@ class FFESession(Session):
                     logger.error('Tag [%s] does not match: [%s]', tag_id, tag.innerText)
         return parser, error
 
-    def read_ffe_state(self, parser: AdvancedHTMLParser, url: str) -> bool:
+    def read_ffe_state(
+        self,
+        parser: AdvancedHTMLParser,
+        url: str,
+        admin: bool,
+    ) -> bool:
         """Reads the main state variables of a request and stores them into self.ffe_state.
         Returns True on success, False otherwise."""
-        for id_ in [
+        ids: list[str] = [
             VIEW_STATE_INPUT_ID,
             VIEW_STATE_GENERATOR_INPUT_ID,
-            EVENT_VALIDATION_INPUT_ID,
-        ]:
+        ]
+        if admin:
+            ids.append(EVENT_VALIDATION_INPUT_ID)
+        for id_ in ids:
             tag: AdvancedTag | None = parser.getElementById(id_)
             if not tag:
                 logger.error(
@@ -193,6 +201,7 @@ class FFESession(Session):
                     url,
                     id_,
                 )
+                logger.error(parser.asHTML())
                 return False
             value = getattr(tag, 'attributesDict', {}).get('value', '')
             self.ffe_state[id_] = str(value)
@@ -206,10 +215,13 @@ class FFESession(Session):
             )
         return True
 
-    def _ffe_init(self) -> bool:
+    def _ffe_init(
+        self,
+        admin: bool,
+    ) -> bool:
         """Initializes a session on the FFE admin website (mostly gets state variables).
         Return True on success, False otherwise."""
-        url = FFE_URL
+        url = FFE_ADMIN_URL if admin else FFE_PUBLIC_URL
         logger.debug('Initializing a session to [%s]...', url)
         html: str | None = self._read_url(url=url, data=None, files=None)
         if not html:
@@ -217,7 +229,7 @@ class FFESession(Session):
         parser, error = self._parse_html_content(html)
         if error:
             return False
-        if result := self.read_ffe_state(parser, url):
+        if result := self.read_ffe_state(parser, url, admin):
             logger.debug('Session initialized.')
         return result
 
@@ -230,7 +242,7 @@ class FFESession(Session):
         if ffe_id is None or ffe_password is None:
             return False
         logger.debug('Authenticating...')
-        url = FFE_URL + '/Default.aspx'
+        url = FFE_ADMIN_URL + '/Default.aspx'
         post_data: dict[str, str] = {
             VIEW_STATE_INPUT_ID: self.ffe_state[VIEW_STATE_INPUT_ID],
             VIEW_STATE_GENERATOR_INPUT_ID: self.ffe_state[
@@ -249,7 +261,7 @@ class FFESession(Session):
         if error:
             return False
         assert parser is not None
-        if not self.read_ffe_state(parser, url):
+        if not self.read_ffe_state(parser, url, True):
             return False
         for id_ in [
             SET_VISIBLE_LINK_ID,
@@ -284,7 +296,7 @@ class FFESession(Session):
         None if they couldn't be tested."""
 
         logger.info('Testing FFE authentication for tournament [%d]...', ffe_id)
-        if not self._ffe_init():
+        if not self._ffe_init(admin=True):
             return None
         if auth := self._ffe_auth(ffe_id, ffe_password):
             logger.info('FFE authentication succeeded.')
@@ -300,7 +312,7 @@ class FFESession(Session):
 
         logger.info('Getting fees for tournament [%d]...', ffe_id)
 
-        if not self._ffe_init():
+        if not self._ffe_init(admin=True):
             return None
         if not self._ffe_auth(ffe_id, ffe_password):
             return None
@@ -324,7 +336,7 @@ class FFESession(Session):
                 _('Invalid fees link text [{text}].').format(text=fees_link_id)
             )
             return None
-        url = FFE_URL + '/MonTournoi.aspx'
+        url = FFE_ADMIN_URL + '/MonTournoi.aspx'
         post_data: dict[str, str] = {
             '__EVENTTARGET': FEES_EVENT,
             '__EVENTARGUMENT': '',
@@ -338,7 +350,7 @@ class FFESession(Session):
         if not html:
             return None
         base: AdvancedTag = AdvancedTag('base')
-        base.setAttribute('href', FFE_URL)
+        base.setAttribute('href', FFE_ADMIN_URL)
         parser, error = self._parse_html_content(html)
         assert parser is not None
         if error:
@@ -395,7 +407,7 @@ class FFESession(Session):
             ffe_id,
             self.tournament.name,
         )
-        if not self._ffe_init():
+        if not self._ffe_init(admin=True):
             return
         if not self._ffe_auth(ffe_id, ffe_password):
             return
@@ -409,7 +421,7 @@ class FFESession(Session):
                 )
             )
             return
-        url = FFE_URL + '/MonTournoi.aspx'
+        url = FFE_ADMIN_URL + '/MonTournoi.aspx'
         post: dict[str, str] = {
             '__EVENTTARGET': UPLOAD_EVENT,
             '__EVENTARGUMENT': '',
@@ -545,7 +557,7 @@ class FFESession(Session):
                 )
             )
             return
-        url = FFE_URL + '/MonTournoi.aspx'
+        url = FFE_ADMIN_URL + '/MonTournoi.aspx'
         post_data: dict[str, str] = {
             '__EVENTTARGET': SET_VISIBLE_EVENT,
             '__EVENTARGUMENT': '',
@@ -575,7 +587,7 @@ class FFESession(Session):
             ffe_id,
             self.tournament.rules,
         )
-        if not self._ffe_init():
+        if not self._ffe_init(admin=True):
             return
         if not self._ffe_auth(ffe_id, ffe_password):
             return
@@ -591,7 +603,7 @@ class FFESession(Session):
                 )
             )
             return
-        url = FFE_URL + '/MonTournoi.aspx'
+        url = FFE_ADMIN_URL + '/MonTournoi.aspx'
         post: dict[str, str] = {
             '__EVENTTARGET': UPLOAD_RULES_EVENT,
             '__EVENTARGUMENT': '',
@@ -634,3 +646,82 @@ class FFESession(Session):
             )
         logger.info('Rules uploaded')
         self.report_success(_('Rules uploaded'))
+
+
+class FFEArbitersLoader(FFESession):
+    def __init__(self):
+        super().__init__(tournament=None)
+
+    def load_ffe_arbiter_titles_by_ffe_licence_number(
+        self,
+    ) -> dict[str, FFEArbiterTitle]:
+        """Returns a dict with FFE licence numbers as keys and arbiter strings as values."""
+        from plugins.ffe.ffe import FfePlugin
+
+        data: dict[str, FFEArbiterTitle] = {}
+        if self._ffe_init(admin=False):
+            for league in FfePlugin.FFE_LEAGUES:
+                page_data, load_next_page = self._read_league_page_data(
+                    league, page := 1
+                )
+                while load_next_page:
+                    data |= page_data
+                    page += 1
+                    page_data, load_next_page = self._read_league_page_data(
+                        league, page
+                    )
+        return data
+
+    def _read_league_page_data(
+        self, league: str, page_number: int = 1
+    ) -> tuple[dict[str, FFEArbiterTitle], bool]:
+        """Reads one page for a league, returns a dict with FFE licence numbers as keys and arbiter strings as values."""
+        data: dict[str, FFEArbiterTitle] = {}
+        load_next_page: bool = False
+        assert self.ffe_state
+        url = f'{FFE_PUBLIC_URL}/ListeArbitres.aspx?Action=DNALIGUE&Ligue={league}'
+        post_data: dict[str, str] = {}
+        if page_number > 1:
+            post_data: dict[str, str] = {
+                '__EVENTTARGET': 'ctl00$ContentPlaceHolderMain$PagerFooter',
+                '__EVENTARGUMENT': 'd',
+                VIEW_STATE_INPUT_ID: self.ffe_state[VIEW_STATE_INPUT_ID],
+                VIEW_STATE_GENERATOR_INPUT_ID: self.ffe_state[
+                    VIEW_STATE_GENERATOR_INPUT_ID
+                ],
+            }
+        if html := self._read_url(url=url, data=post_data, files=None):
+            parser, error = self._parse_html_content(html)
+            if not error:
+                assert parser is not None
+                if self.read_ffe_state(parser, url, False):
+                    """
+                        <tr class=liste_clair>
+                            <td align=center>A06885</td>
+                            <td align=left><a href=mailto:luco.alain22@gmail.com class=lien_texte>LUCO Alain</td>
+                            <td align=Left>Arbitre Club</td>
+                            <td align=Left>2027-28</td>
+                            <td align=left>Echiquier Guingampais</td>
+                        </tr>
+                    """
+                    for tr_tag in parser.getElementsByTagName('tr'):
+                        try:
+                            ffe_licence_number: str = tr_tag.children[0].innerHTML
+                            if PlayerFFELicence.validate(ffe_licence_number):
+                                if (
+                                    ffe_arbiter_title := FFEArbiterTitle.from_html(
+                                        tr_tag.children[2].innerHTML
+                                    )
+                                ) != FFEArbiterTitle.NONE:
+                                    data[ffe_licence_number] = ffe_arbiter_title
+                        except IndexError:
+                            pass
+                    """
+                        <a href="javascript:__doPostBack('ctl00$ContentPlaceHolderMain$PagerFooter','d')"><img src=Images/t_fleche_d.gif border=0/></a>
+                    """
+                    for img_tag in parser.getElementsByTagName('img'):
+                        if img_tag.attributes['src'].lower() == 'images/t_fleche_d.gif':
+                            load_next_page = True
+                            break
+
+        return data, load_next_page

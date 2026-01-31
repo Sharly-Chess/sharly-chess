@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from enum import IntEnum, StrEnum
+from enum import StrEnum
 from functools import partial
 from typing import Self, Any
 
@@ -122,21 +122,39 @@ class PlayerFFELicence(StrEnum):
         return bool(re.match(r'^[A-Z]\d{5}$', string))
 
 
-class FFEArbiterTitle(IntEnum):
-    NONE = 0
-    AS = 10
-    AFJ = 20
-    AFC = 30
-    AFO1 = 40
-    AFO2 = 41
-    AFE1 = 50
-    AFE2 = 51
+class FFEArbiterTitle(StrEnum):
+    NONE = ''
+    AS = 'AS'
+    AFJ = 'AFJ'
+    AFC = 'AFC'
+    AFO1 = 'AFO1'
+    AFO2 = 'AFO2'
+    AFE1 = 'AFE1'
+    AFE2 = 'AFE2'
+
+    @classmethod
+    def from_html(cls, html_arbiter_string: str) -> 'FFEArbiterTitle':
+        match html_arbiter_string:
+            case 'Arbitre Jeune':
+                return cls.AFJ
+            case 'Arbitre Club':
+                return cls.AFC
+            case 'Arbitre Open 1':
+                return cls.AFO1
+            case 'Arbitre Open 2':
+                return cls.AFO2
+            case 'Arbitre Elite 1':
+                return cls.AFE1
+            case 'Arbitre Elite 2':
+                return cls.AFE2
+            case _:
+                return cls.NONE
 
     @property
     def name(self) -> str:
         match self:
             case FFEArbiterTitle.NONE:
-                return '-'
+                return _('No title')
             case FFEArbiterTitle.AS:
                 return _('Trainee Arbiter')
             case FFEArbiterTitle.AFJ:
@@ -156,25 +174,7 @@ class FFEArbiterTitle(IntEnum):
 
     @property
     def short_name(self) -> str:
-        match self:
-            case FFEArbiterTitle.NONE:
-                return ''
-            case FFEArbiterTitle.AS:
-                return 'STA'
-            case FFEArbiterTitle.AFJ:
-                return 'AFJ'
-            case FFEArbiterTitle.AFC:
-                return 'AFC'
-            case FFEArbiterTitle.AFO1:
-                return 'AFO1'
-            case FFEArbiterTitle.AFO2:
-                return 'AFO2'
-            case FFEArbiterTitle.AFE1:
-                return 'AFE1'
-            case FFEArbiterTitle.AFE2:
-                return 'AFE2'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
+        return self.value
 
 
 @dataclass
@@ -282,6 +282,7 @@ class FfePlayerPluginData(PluginData):
     ffe_licence: PlayerFFELicence
     ffe_licence_number: str | None
     league: str | None
+    ffe_arbiter_title: FFEArbiterTitle
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -292,6 +293,9 @@ class FfePlayerPluginData(PluginData):
             ),
             ffe_licence_number=stored_value.get('ffe_licence_number', None),
             league=stored_value.get('league', None),
+            ffe_arbiter_title=FFEArbiterTitle(
+                stored_value.get('ffe_arbiter_title', FFEArbiterTitle.NONE)
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -300,6 +304,7 @@ class FfePlayerPluginData(PluginData):
             'ffe_licence': self.ffe_licence.value,
             'ffe_licence_number': self.ffe_licence_number,
             'league': self.league,
+            'ffe_arbiter_title': self.ffe_arbiter_title.value,
         }
 
     @classmethod
@@ -317,6 +322,10 @@ class FfePlayerPluginData(PluginData):
             ),
             ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
             league=WebContext.form_data_to_str(data, 'ffe_league'),
+            ffe_arbiter_title=FFEArbiterTitle(
+                WebContext.form_data_to_str(data, 'ffe_arbiter_title')
+                or FFEArbiterTitle.NONE
+            ),
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
@@ -328,6 +337,7 @@ class FfePlayerPluginData(PluginData):
                 'ffe_licence': self.ffe_licence.value,
                 'ffe_licence_number': self.ffe_licence_number,
                 'ffe_league': self.league,
+                'ffe_arbiter_title': self.ffe_arbiter_title.value,
             }
         )
 
@@ -362,7 +372,7 @@ class FfeAccountPluginData(PluginData):
         return cls(
             ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
             ffe_arbiter_title=FFEArbiterTitle(
-                WebContext.form_data_to_int(data, 'ffe_arbiter_title')
+                WebContext.form_data_to_str(data, 'ffe_arbiter_title')
                 or FFEArbiterTitle.NONE
             ),
         )

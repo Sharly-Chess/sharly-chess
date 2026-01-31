@@ -20,6 +20,7 @@ from data.player import PlayerRating
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
+from database.sqlite.local_source_database.databases import DatabaseLoaderProgress
 from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
 from utils.enum import (
     PlayerGender,
@@ -55,8 +56,8 @@ class FideDatabase(LocalSourcePlayerDatabase):
 
     @property
     def min_recovery_version(self) -> Version:
-        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/713
-        return Version('2.7.8')
+        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/1739
+        return Version('3.6.0')
 
     @property
     def _schema_file_path(self) -> Path:
@@ -139,7 +140,19 @@ class FideDatabase(LocalSourcePlayerDatabase):
         player_count: int = 0
         to_write = []
         data: dict[str, Any] = {}
+        # extract the number of items to calculate the ETA
+        with open(source_file_path, 'r') as f:
+            total_player_count: int = sum(
+                1 for line in f if line.startswith('<player>')
+            )
+        logger.debug(self.log_prefix + '%d players to add.', total_player_count)
+        logger.debug(self.log_prefix + 'Loading XML data...')
         context = ElementTree.iterparse(source_file_path, events=('start', 'end'))
+        logger.debug(self.log_prefix + 'Storing players...')
+        progress: DatabaseLoaderProgress = DatabaseLoaderProgress(
+            log_prefix=self.log_prefix,
+            total_count=total_player_count,
+        )
         root = next(context)[1]
         with database:
             for event, elem in context:
@@ -154,6 +167,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
                         to_write.clear()
                         if self.stop_event.is_set():
                             return False
+                        progress.log(player_count)
                     if player_count % 100_000 == 0:
                         database.commit()
 
@@ -177,6 +191,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             if to_write:
                 database.executemany(query, to_write)
                 database.commit()
+                progress.log(player_count)
 
         logger.info(
             self.log_prefix + '%d players written to the database.', player_count

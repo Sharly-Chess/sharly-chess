@@ -177,12 +177,18 @@ class DataSource(IdentifiableEntity, ABC):
     def get_player_source_id(self, stored_player: StoredPlayer) -> str:
         """Get the id of the player in the source formatted as a string."""
 
-    async def fetch_player(self, player_source_id: str) -> StoredPlayer | None:
+    async def fetch_player(
+        self,
+        player_source_id: str,
+        augment_arbiter_title: bool,
+    ) -> StoredPlayer | None:
         stored_player = await self.get_stored_player_by_source_id(player_source_id)
         if stored_player:
             self._adjust_player_from_fide_database(stored_player)
             await plugin_manager.ahook.augment_player_after_search(
-                stored_player=stored_player, data_source=self
+                stored_player=stored_player,
+                data_source=self,
+                augment_arbiter_title=augment_arbiter_title,
             )
         return stored_player
 

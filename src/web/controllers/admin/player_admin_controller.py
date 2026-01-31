@@ -896,7 +896,10 @@ class PlayerAdminController(BaseEventAdminController):
         if not data_source.is_available:
             raise ClientException(f'Data source [{data_source_id}] is not available.')
         try:
-            stored_player = await data_source.fetch_player(player_source_id)
+            stored_player = await data_source.fetch_player(
+                player_source_id=player_source_id,
+                augment_arbiter_title=False,
+            )
             if not stored_player:
                 raise NotFoundException(
                     f'Player [{player_source_id}] unexpectedly '
@@ -1817,6 +1820,7 @@ class PlayerAdminController(BaseEventAdminController):
         page: int = 0,
         results_template: str | None = None,
         result_js_template_hook_name: str | None = None,
+        augment_arbiter_title: bool = False,
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
@@ -1837,7 +1841,10 @@ class PlayerAdminController(BaseEventAdminController):
                     player_source_id = data_source.get_player_source_id(stored_player)
                     fetched_player: (
                         StoredPlayer | None
-                    ) = await data_source.fetch_player(player_source_id)
+                    ) = await data_source.fetch_player(
+                        player_source_id=player_source_id,
+                        augment_arbiter_title=augment_arbiter_title,
+                    )
                     if not fetched_player:
                         raise NotFoundException(
                             f'Player [{player_source_id}] unexpectedly '
