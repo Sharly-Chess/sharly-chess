@@ -6584,21 +6584,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Print"
-#~ msgstr ""
-
-#~ msgid "Print players, results, etc."
-#~ msgstr ""
-
-#~ msgid "Printing"
-#~ msgstr ""
-
-#~ msgid "The numbers (or ranges of numbers) of the boards to print."
-#~ msgstr ""
-
-#~ msgid "The round for which the document is printed (Defaults to the last possible round)."
-#~ msgstr ""
-
-#~ msgid "This field is not editable."
-#~ msgstr ""
-
