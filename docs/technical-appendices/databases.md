@@ -363,43 +363,50 @@
 
 ### `account` table (accounts)
 
-| Field                | Type      | Constraint                                 | Description                                                                            |
-|----------------------|-----------|--------------------------------------------|----------------------------------------------------------------------------------------|
-| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The account ID<br/>- `1`: administrator<br/>- `2`: anonymous<br/>- `3+`: user accounts |
-| `last_name`          | `TEXT`    |                                            | The person's last name (`NULL` for administrator and anonymous accounts)               |
-| `first_name`         | `TEXT`    |                                            | The person's first name                                                                |
-| `password_hash`      | `TEXT`    |                                            | A hash of the password                                                                 |
-| `fide_id`            | `INTEGER` |                                            | The person's FIDE ID                                                                   |
-| `mail`               | `TEXT`    |                                            | The person's email address                                                             |
-| `phone`              | `TEXT`    |                                            | The person's phone number                                                              |
-| `fide_arbiter_title` | `TEXT`    |                                            | The person's FIDE arbiter title (`'IA'`, `'FA'`, `'NA'`, `NULL`)                       |
-| `plugin_data`        | `TEXT`    | NOT NULL                                   | Additional data used by plugins, in JSON format                                        |
+| Field           | Type      | Constraint                                 | Description                                                                            |
+|-----------------|-----------|--------------------------------------------|----------------------------------------------------------------------------------------|
+| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The account ID<br/>- `1`: administrator<br/>- `2`: anonymous<br/>- `3+`: user accounts |
+| `last_name`     | `TEXT`    |                                            | The person's last name (`NULL` for administrator and anonymous accounts)               |
+| `first_name`    | `TEXT`    |                                            | The person's first name                                                                |
+| `password_hash` | `TEXT`    |                                            | A hash of the password                                                                 |
+| `fide_id`       | `INTEGER` |                                            | The person's FIDE ID                                                                   |
+| `mail`          | `TEXT`    |                                            | The person's email address                                                             |
+| `phone`         | `TEXT`    |                                            | The person's phone number                                                              |
+| `arbiter_title` | `TEXT`    |                                            | The person's FIDE arbiter title (`'IA'`, `'FA'`, `'NA'`, `NULL`)                       |
+| `plugin_data`   | `TEXT`    | NOT NULL                                   | Additional data used by plugins, in JSON format                                        |
 
 ## FIDE Local Database (`tmp/fide.db`)
 
-### `player` table (players)
+### `player` table (FIDE players)
 
-| Field                | Type      | Constraint                                 | Description                              |
-|----------------------|-----------|--------------------------------------------|------------------------------------------|
-| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID                 |
-| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's FFE ID                      |
-| `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                   |
-| `first_name`         | `TEXT`    |                                            | The player's first name                  |
-| `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code             |
-| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Female, 2: Male) |
-| `fide_title`         | `TEXT`    | NOT NULL                                   | The player's FIDE title                  |
-| `fide_arbiter_title` | `TEXT`    | NOT NULL                                   | The player's FIDE arbiter title          |
-| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating             |
-| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating                |
-| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating                |
-| `year_of_birth`      | `INTEGER` | NOT NULL                                   | The player's year of birth               |
+| Field             | Type      | Constraint                                 | Description                              |
+|-------------------|-----------|--------------------------------------------|------------------------------------------|
+| `id`              | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID                 |
+| `fide_id`         | `INTEGER` | NOT NULL                                   | The player's FFE ID                      |
+| `last_name`       | `TEXT`    | NOT NULL                                   | The player's last name                   |
+| `first_name`      | `TEXT`    |                                            | The player's first name                  |
+| `federation`      | `TEXT`    | NOT NULL                                   | The player's federation code             |
+| `gender`          | `INTEGER` | NOT NULL                                   | The player's gender (1: Female, 2: Male) |
+| `title`           | `TEXT`    | NOT NULL                                   | The player's FIDE title                  |
+| `arbiter_title`   | `TEXT`    | NOT NULL                                   | The player's FIDE arbiter title          |
+| `standard_rating` | `INTEGER` | NOT NULL                                   | The player's standard rating             |
+| `rapid_rating`    | `INTEGER` | NOT NULL                                   | The player's rapid rating                |
+| `blitz_rating`    | `INTEGER` | NOT NULL                                   | The player's blitz rating                |
+| `year_of_birth`   | `INTEGER` | NOT NULL                                   | The player's year of birth               |
+
+### `arbiter` table (FIDE arbiters)
+
+| Field             | Type      | Constraint                           | Description                              |
+|-------------------|-----------|--------------------------------------|------------------------------------------|
+| `player_id`       | `INTEGER` | NOT NULL<br/>REFERENCES(`player.id`) | The player's internal ID                 |
+| `arbiter_title`   | `TEXT`    | NOT NULL                             | The player's FIDE arbiter title          |
 
 ## FFE Local Database (`tmp/ffe/ffe.db`)
 
 > [!NOTE]
 > :information_source: This database is managed by plugin `ffe`.
 
-### `player` table (players)
+### `player` table (FFE players)
 
 | Field                | Type      | Constraint                                 | Description                                             |
 |----------------------|-----------|--------------------------------------------|---------------------------------------------------------|
@@ -421,6 +428,12 @@
 | `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating                               |
 | `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating                               |
 
+### `arbiter` table (FFE arbiters)
+
+| Field           | Type      | Constraint                           | Description                    |
+|-----------------|-----------|--------------------------------------|--------------------------------|
+| `player_id`     | `INTEGER` | NOT NULL<br/>REFERENCES(`player.id`) | The player's internal ID       |
+| `arbiter_title` | `TEXT`    | NOT NULL                             | The player's FFE arbiter title |
 
 ## FRA Schools Local Database (`tmp/fra_schools/fra_schools.db`)
 

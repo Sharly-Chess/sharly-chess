@@ -163,8 +163,8 @@ class Account:
         return self.stored_account.fide_id
 
     @property
-    def fide_arbiter_title(self) -> ArbiterTitle:
-        return ArbiterTitle(self.stored_account.fide_arbiter_title or '')
+    def arbiter_title(self) -> ArbiterTitle:
+        return ArbiterTitle(self.stored_account.arbiter_title or '')
 
     @property
     def full_name(self) -> str:
@@ -235,7 +235,7 @@ class Account:
         if self.first_name:
             arbiter += f', {self.first_name}'
         suffixes: list[str] = []
-        if title := self.fide_arbiter_title:
+        if title := self.arbiter_title:
             suffixes.append(title.short_name)
         if self.fide_id:
             suffixes.append(str(self.fide_id))
@@ -246,7 +246,7 @@ class Account:
     def get_card_title(self, event: 'Event') -> str:
         card_title = self.full_name
         suffixes: list[str] = []
-        if title := self.fide_arbiter_title:
+        if title := self.arbiter_title:
             suffixes.append(title.short_name)
         plugin_suffixes = plugin_manager.hook_for_event(
             event, 'get_account_card_title_suffix'

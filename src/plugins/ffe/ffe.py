@@ -360,7 +360,7 @@ class FfePlugin(Plugin):
         self,
         stored_player: StoredPlayer,
         data_source: DataSource,
-        augment_arbiter_title: bool,
+        with_arbiter_title: bool,
     ):
         fide_id = stored_player.fide_id
         if not fide_id:
@@ -376,16 +376,19 @@ class FfePlugin(Plugin):
                 # Try to get more information by requesting the FFE database
                 async with FFESqlServer() as ffe_sql_server:
                     ffe_stored_player = (
-                        await ffe_sql_server.get_stored_player_by_fide_id(fide_id)
+                        await ffe_sql_server.get_stored_player_by_fide_id(
+                            player_fide_id=fide_id,
+                        )
                     )
             except SharlyChessException:
                 pass
-        if not ffe_stored_player or augment_arbiter_title:
+        if not ffe_stored_player or with_arbiter_title:
             if (ffe_database := FfeDatabase()).exists():
                 # Try to get more information by requesting the FFE database
                 with ffe_database:
                     ffe_stored_player = ffe_database.get_stored_player_by_fide_id(
-                        fide_id
+                        player_fide_id=fide_id,
+                        with_arbiter_title=with_arbiter_title,
                     )
         if ffe_stored_player:
             for rating_type in TournamentRating:

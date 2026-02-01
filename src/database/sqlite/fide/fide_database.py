@@ -119,13 +119,26 @@ class FideDatabase(LocalSourcePlayerDatabase):
     def _populate_from_source_file(
         self, source_file_path: Path, database: SQLiteDatabase
     ) -> bool:
-        fields: dict[str, tuple[str, Callable[[Any], Any] | None]] = {
+        # extract the number of items to calculate the ETA
+        with open(source_file_path, 'r') as f:
+            player_total_count: int = sum(
+                1 for line in f if line.startswith('<player>')
+            )
+        logger.debug(self.log_prefix + '%d players to add.', player_total_count)
+        logger.debug(self.log_prefix + 'Loading XML data...')
+        context = ElementTree.iterparse(source_file_path, events=('start', 'end'))
+        logger.debug(self.log_prefix + 'Storing players...')
+        progress: DatabaseLoaderProgress = DatabaseLoaderProgress(
+            log_prefix=self.log_prefix,
+            total_count=player_total_count,
+        )
+        player_fields: dict[str, tuple[str, Callable[[Any], Any] | None]] = {
             'fideid': ('fide_id', lambda s: int(s.strip())),
             'name': ('name', None),
             'country': ('federation', lambda s: s.upper()),
             'sex': ('gender', PlayerGender.from_fide_value),
             'title': ('fide_title', PlayerTitle.from_fide_value),
-            'o_title': ('fide_arbiter_title', ArbiterTitle.from_fide_value),
+            'o_title': ('arbiter_title', ArbiterTitle.from_fide_value),
             'rating': ('standard_rating', int),
             'rapid_rating': ('rapid_rating', int),
             'blitz_rating': ('blitz_rating', int),
@@ -134,67 +147,101 @@ class FideDatabase(LocalSourcePlayerDatabase):
             'rapid_k': ('k_rapid', lambda s: int(s) if s else None),
             'blitz_k': ('k_blitz', lambda s: int(s) if s else None),
         }
-        db_columns = [field[0] for field in fields.values() if field[0] != 'name']
-        db_columns += ['first_name', 'last_name']
-        query = f"""INSERT INTO player({', '.join(db_columns)}) VALUES({', '.join([f':{c}' for c in db_columns])})"""
+        player_db_columns: list[str] = [
+            field[0]
+            for field in player_fields.values()
+            if field[0]
+            not in [
+                'name',
+                'arbiter_title',
+            ]
+        ]
+        player_db_columns += [
+            'first_name',
+            'last_name',
+        ]
+        player_query = f"""INSERT INTO `player`({', '.join(player_db_columns)}) VALUES({', '.join([f':{c}' for c in player_db_columns])})"""
+        arbiter_db_columns: list[str] = [
+            'player_id',
+            'arbiter_title',
+        ]
+        arbiter_query = f"""
+        INSERT INTO `arbiter`({', '.join(arbiter_db_columns)})
+        SELECT  `id`, :arbiter_title
+        FROM `player`
+        WHERE `fide_id` = :player_fide_id
+        """
         player_count: int = 0
-        to_write = []
-        data: dict[str, Any] = {}
-        # extract the number of items to calculate the ETA
-        with open(source_file_path, 'r') as f:
-            total_player_count: int = sum(
-                1 for line in f if line.startswith('<player>')
-            )
-        logger.debug(self.log_prefix + '%d players to add.', total_player_count)
-        logger.debug(self.log_prefix + 'Loading XML data...')
-        context = ElementTree.iterparse(source_file_path, events=('start', 'end'))
-        logger.debug(self.log_prefix + 'Storing players...')
-        progress: DatabaseLoaderProgress = DatabaseLoaderProgress(
-            log_prefix=self.log_prefix,
-            total_count=total_player_count,
-        )
+        arbiter_count: int = 0
+        players_to_write: list[dict[str, Any]] = []
+        arbiters_to_write: list[dict[str, Any]] = []
+        player_data: dict[str, Any] = {}
+        arbiter_data: dict[str, ArbiterTitle] = {}
         root = next(context)[1]
         with database:
             for event, elem in context:
                 if event == 'start' and elem.tag == 'player':
-                    data = {}
+                    player_data = {}
+                    arbiter_data = {}
 
                 if event == 'end' and elem.tag == 'player':
-                    to_write.append(data)
+                    players_to_write.append(player_data)
                     player_count += 1
+                    if arbiter_data:
+                        arbiters_to_write.append(arbiter_data)
+                        arbiter_count += 1
                     if player_count % 1000 == 0:
-                        database.executemany(query, to_write)
-                        to_write.clear()
                         if self.stop_event.is_set():
                             return False
+                        database.executemany(player_query, players_to_write)
+                        players_to_write.clear()
+                        if arbiters_to_write:
+                            database.executemany(arbiter_query, arbiters_to_write)
+                            arbiters_to_write.clear()
                         progress.log(player_count)
                     if player_count % 100_000 == 0:
                         database.commit()
 
-                elif event == 'end' and elem.tag in fields:
-                    (field_name, field_function) = fields[elem.tag]
-                    data[field_name] = elem.text or ''
+                elif event == 'end' and elem.tag in player_fields:
+                    (field_name, field_function) = player_fields[elem.tag]
+                    player_data[field_name] = elem.text or ''
                     elem.clear()
                     root.clear()
                     if field_function:
-                        data[field_name] = field_function(data[field_name])
+                        player_data[field_name] = field_function(
+                            player_data[field_name]
+                        )
 
                     if field_name == 'name':
-                        if ',' in data['name']:
-                            last_name, first_name = data['name'].split(',', maxsplit=1)
-                            data['last_name'] = last_name.strip()
-                            data['first_name'] = first_name.strip()
+                        if ',' in player_data['name']:
+                            last_name, first_name = player_data['name'].split(
+                                ',', maxsplit=1
+                            )
+                            player_data['last_name'] = last_name.strip()
+                            player_data['first_name'] = first_name.strip()
                         else:
-                            data['last_name'] = data['name'].strip()
-                            data['first_name'] = None
-                        del data['name']
-            if to_write:
-                database.executemany(query, to_write)
+                            player_data['last_name'] = player_data['name'].strip()
+                            player_data['first_name'] = None
+                        del player_data['name']
+                    # elif field_name == 'arbiter_title':
+                    #   if player_data['arbiter_title']:
+                    #        arbiter_data['player_fide_id'] = player_data['fide_id']
+                    #        arbiter_data['arbiter_title'] = player_data['arbiter_title']
+                    #        del player_data['arbiter_title']
+
+            if players_to_write:
+                database.executemany(player_query, players_to_write)
                 database.commit()
                 progress.log(player_count)
+            if arbiters_to_write:
+                database.executemany(arbiter_query, arbiters_to_write)
+                database.commit()
 
         logger.info(
-            self.log_prefix + '%d players written to the database.', player_count
+            self.log_prefix
+            + '%d players (including %d arbiters) written to the database.',
+            player_count,
+            arbiter_count,
         )
         return True
 
@@ -239,7 +286,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             year_of_birth=row['year_of_birth'],
             gender=row['gender'],
             title=row['fide_title'],
-            arbiter_title=row['fide_arbiter_title'],
+            arbiter_title=row['arbiter_title'],
             ratings=ratings,
             fide_id=row['fide_id'],
             federation=row['federation'],
@@ -324,8 +371,21 @@ class FideDatabase(LocalSourcePlayerDatabase):
         self.execute(query, tuple(params))
         return [self._get_player_from_row(row) for row in self.fetchall()]
 
-    def get_stored_player_by_fide_id(self, player_fide_id: int) -> StoredPlayer | None:
-        self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
+    def get_stored_player_by_fide_id(
+        self,
+        player_fide_id: int,
+        with_arbiter_title: bool,
+    ) -> StoredPlayer | None:
+        if with_arbiter_title:
+            self.execute(
+                'SELECT `player`.*, `arbiter`.`arbiter_title` AS `arbiter_title` FROM `player` LEFT JOIN `arbiter` ON `arbiter`.`player_id` = `player`.`id` WHERE `fide_id` = ?',
+                (player_fide_id,),
+            )
+        else:
+            self.execute(
+                "SELECT `player`.*, '' AS `arbiter_title` FROM `player` WHERE `fide_id` = ?",
+                (player_fide_id,),
+            )
         if player_row := self.fetchone():
             return self._get_player_from_row(player_row)
         return None

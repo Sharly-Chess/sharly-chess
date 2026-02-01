@@ -65,7 +65,7 @@
                 {% with
                     results_template='admin/accounts/account_search_results.html',
                     result_js_template_hook_name='get_account_search_result_js_template',
-                    augment_arbiter_title=true
+                    with_arbiter_title=true
                 %}
                     {% include '/admin/common/player_search.html' %}
                 {% endwith %}
@@ -112,9 +112,9 @@
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.select_input(
-                            name='fide_arbiter_title',
+                            name='arbiter_title',
                             label=_('%(string)s:', string=_('FIDE arbiter title')),
-                            select_options=fide_arbiter_title_options,
+                            select_options=arbiter_title_options,
                             data=data, errors=errors
                         ) }}
                     </div>

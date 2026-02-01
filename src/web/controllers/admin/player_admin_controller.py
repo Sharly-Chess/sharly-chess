@@ -895,7 +895,7 @@ class PlayerAdminController(BaseEventAdminController):
         try:
             stored_player = await data_source.fetch_player(
                 player_source_id=player_source_id,
-                augment_arbiter_title=False,
+                with_arbiter_title=False,
             )
             if not stored_player:
                 raise NotFoundException(
@@ -1816,7 +1816,7 @@ class PlayerAdminController(BaseEventAdminController):
         page: int = 0,
         results_template: str | None = None,
         result_js_template_hook_name: str | None = None,
-        augment_arbiter_title: bool = False,
+        with_arbiter_title: bool = False,
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
@@ -1839,7 +1839,7 @@ class PlayerAdminController(BaseEventAdminController):
                         StoredPlayer | None
                     ) = await data_source.fetch_player(
                         player_source_id=player_source_id,
-                        augment_arbiter_title=augment_arbiter_title,
+                        with_arbiter_title=with_arbiter_title,
                     )
                     if not fetched_player:
                         raise NotFoundException(

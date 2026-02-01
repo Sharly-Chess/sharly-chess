@@ -287,12 +287,17 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
         return self._get_player_source_id(stored_player)
 
     async def get_stored_player_by_source_id(
-        self, player_source_id: str
+        self,
+        player_source_id: str,
+        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
         if not player_source_id.isdigit():
             return None
         with FfeDatabase() as database:
-            return database.get_stored_player_by_ffe_id(int(player_source_id))
+            return database.get_stored_player_by_ffe_id(
+                player_ffe_id=int(player_source_id),
+                with_arbiter_title=with_arbiter_title,
+            )
 
 
 class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
@@ -365,7 +370,9 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
         return self._get_player_source_id(stored_player)
 
     async def get_stored_player_by_source_id(
-        self, player_source_id: str
+        self,
+        player_source_id: str,
+        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
         if not player_source_id.isdigit():
             return None

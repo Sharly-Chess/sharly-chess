@@ -169,7 +169,9 @@ class DataSource(IdentifiableEntity, ABC):
 
     @abstractmethod
     async def get_stored_player_by_source_id(
-        self, player_source_id: str
+        self,
+        player_source_id: str,
+        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
         """Get a player by its identifier in the data source."""
 
@@ -180,20 +182,29 @@ class DataSource(IdentifiableEntity, ABC):
     async def fetch_player(
         self,
         player_source_id: str,
-        augment_arbiter_title: bool,
+        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
-        stored_player = await self.get_stored_player_by_source_id(player_source_id)
+        stored_player = await self.get_stored_player_by_source_id(
+            player_source_id=player_source_id,
+            with_arbiter_title=with_arbiter_title,
+        )
         if stored_player:
-            self._adjust_player_from_fide_database(stored_player)
+            self._adjust_player_from_fide_database(
+                src_stored_player=stored_player,
+                with_arbiter_title=with_arbiter_title,
+            )
             await plugin_manager.ahook.augment_player_after_search(
                 stored_player=stored_player,
                 data_source=self,
-                augment_arbiter_title=augment_arbiter_title,
+                with_arbiter_title=with_arbiter_title,
             )
         return stored_player
 
     @staticmethod
-    def _adjust_player_from_fide_database(src_stored_player: StoredPlayer):
+    def _adjust_player_from_fide_database(
+        src_stored_player: StoredPlayer,
+        with_arbiter_title: bool,
+    ):
         """Cross-references the player with the FIDE Database.
         Override this method to disable this behavior."""
         fide_id = src_stored_player.fide_id
@@ -201,7 +212,10 @@ class DataSource(IdentifiableEntity, ABC):
         if not fide_id or not database.exists():
             return
         with database:
-            fide_stored_player = database.get_stored_player_by_fide_id(fide_id)
+            fide_stored_player = database.get_stored_player_by_fide_id(
+                player_fide_id=fide_id,
+                with_arbiter_title=with_arbiter_title,
+            )
             if not fide_stored_player:
                 return
             src_stored_player.federation = fide_stored_player.federation
@@ -372,7 +386,10 @@ class FideDataSource(LocalDataSource):
 
     @staticmethod
     @override
-    def _adjust_player_from_fide_database(src_stored_player: StoredPlayer):
+    def _adjust_player_from_fide_database(
+        src_stored_player: StoredPlayer,
+        with_arbiter_title: bool,
+    ):
         pass
 
     def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
@@ -397,12 +414,17 @@ class FideDataSource(LocalDataSource):
         return '/admin/players/fide_search_result.html'
 
     async def get_stored_player_by_source_id(
-        self, player_source_id: str
+        self,
+        player_source_id: str,
+        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
         if not player_source_id.isdigit():
             return None
         with FideDatabase() as database:
-            return database.get_stored_player_by_fide_id(int(player_source_id))
+            return database.get_stored_player_by_fide_id(
+                player_fide_id=int(player_source_id),
+                with_arbiter_title=with_arbiter_title,
+            )
 
     def get_player_source_id(self, stored_player: StoredPlayer) -> str:
         return str(stored_player.fide_id)

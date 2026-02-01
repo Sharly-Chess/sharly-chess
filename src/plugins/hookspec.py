@@ -157,7 +157,7 @@ class AppHookSpecs:
         self,
         stored_player: 'StoredPlayer',
         data_source: 'DataSource',
-        augment_arbiter_title: bool,
+        with_arbiter_title: bool,
     ):
         """Add plugin specific data to a player after a successful player search"""
 

@@ -373,10 +373,19 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 self.file.unlink(missing_ok=True)
                 return self.stop_update(False)
 
-            # Copy the new database to its proper location
-            self.file.unlink(missing_ok=True)
-            shutil.copy(tmp_file, self.file)
-            logger.debug(self.log_prefix + f'file copied to [{self.file}].')
+            try:
+                # Copy the new database to its proper location
+                self.file.unlink(missing_ok=True)
+                shutil.copy(tmp_file, self.file)
+                logger.debug(self.log_prefix + f'file copied to [{self.file}].')
+            except OSError as e:
+                logger.error(
+                    self.log_prefix
+                    + 'Could not copy generated database file to [%s]: %s.',
+                    self.file,
+                    e,
+                )
+                return self.stop_update(False)
 
             try:
                 logger.debug(self.log_prefix + 'Creating indices…')

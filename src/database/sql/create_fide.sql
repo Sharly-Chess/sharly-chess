@@ -8,7 +8,6 @@ CREATE TABLE `player` (
     `federation` TEXT NOT NULL,
     `gender` TEXT NOT NULL,
     `fide_title` TEXT,
-    `fide_arbiter_title` TEXT,
     `standard_rating` INTEGER NOT NULL,
     `rapid_rating` INTEGER NOT NULL,
     `blitz_rating` INTEGER NOT NULL,
@@ -17,4 +16,11 @@ CREATE TABLE `player` (
     `k_rapid` INTEGER NOT NULL,
     `k_blitz` INTEGER NOT NULL,
     PRIMARY KEY(`id` AUTOINCREMENT)
+);
+
+CREATE TABLE `arbiter` (
+    `player_id` INTEGER NOT NULL,
+    `arbiter_title` TEXT NOT NULL/*,
+    FOREIGN KEY (`player_id`) REFERENCES `player`(`id`),
+    UNIQUE(`player_id`)*/
 );

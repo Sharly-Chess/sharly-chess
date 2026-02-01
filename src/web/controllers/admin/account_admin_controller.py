@@ -136,7 +136,7 @@ class AccountAdminController(BaseEventAdminController):
                 'first_name': '',
                 'last_name': '',
                 'fide_id': '',
-                'fide_arbiter_title': '',
+                'arbiter_title': '',
                 'password': '',
                 'mail': '',
                 'phone': '',
@@ -147,12 +147,12 @@ class AccountAdminController(BaseEventAdminController):
                 'deputy_tournament_ids': [],
             }
         )
-        fide_arbiter_title_options = {'': '-'} | {
+        arbiter_title_options = {'': '-'} | {
             title.value: title.name for title in ArbiterTitle
         }
         form_data = default_data | data
         return {
-            'fide_arbiter_title_options': fide_arbiter_title_options,
+            'arbiter_title_options': arbiter_title_options,
             'plugin_form_fields_templates': plugin_form_fields_templates,
             'modal': 'account',
             'action': action,
@@ -184,7 +184,7 @@ class AccountAdminController(BaseEventAdminController):
                 'last_name': stored_account.last_name,
                 'active': stored_account.active,
                 'fide_id': stored_account.fide_id,
-                'fide_arbiter_title': stored_account.fide_arbiter_title,
+                'arbiter_title': stored_account.arbiter_title,
                 'mail': stored_account.mail,
                 'phone': stored_account.phone,
                 'chief_tournament_ids': chief_role.tournament_ids or [],
@@ -269,9 +269,7 @@ class AccountAdminController(BaseEventAdminController):
         first_name = WebContext.form_data_to_str(flat_data, 'first_name') or ''
         last_name = WebContext.form_data_to_str(flat_data, field := 'last_name') or ''
         fide_id = WebContext.form_data_to_int(flat_data, 'fide_id')
-        fide_arbiter_title = WebContext.form_data_to_str(
-            flat_data, 'fide_arbiter_title'
-        )
+        arbiter_title = WebContext.form_data_to_str(flat_data, 'arbiter_title')
 
         if not last_name:
             errors[field] = _('This field is required.')
@@ -365,7 +363,7 @@ class AccountAdminController(BaseEventAdminController):
             last_name=last_name,
             first_name=first_name,
             fide_id=fide_id,
-            fide_arbiter_title=fide_arbiter_title,
+            arbiter_title=arbiter_title,
             password_hash=password_hash,
             mail=mail,
             phone=phone,

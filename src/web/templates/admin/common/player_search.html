@@ -25,7 +25,7 @@
                     "result_js_template_hook_name": "{{ result_js_template_hook_name or '' }}",
                     "data_source_id": $("#data-source-select").val(),
                     {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
-                    "augment_arbiter_title": "{{ augment_arbiter_title }}",
+                    "with_arbiter_title": "{{ with_arbiter_title }}",
                 }'
                 hx-on::before-request="$('#search-results').show();"
                 hx-on::after-request="$('#search-results').show();"

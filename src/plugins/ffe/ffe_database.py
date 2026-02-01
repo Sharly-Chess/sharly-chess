@@ -163,9 +163,25 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         )
         self.write = True
         with self:
-            self.execute("ALTER TABLE `player` ADD `ffe_arbiter_title` TEXT DEFAULT ''")
+            self.execute(
+                """
+                CREATE TABLE `arbiter` (
+                    `player_id` INTEGER NOT NULL,
+                    `ffe_arbiter_title` TEXT NOT NULL,
+                    UNIQUE(`player_id`),
+                    FOREIGN KEY (`player_id`) REFERENCES `player`(`id`)
+                )
+                """
+            )
             self.commit()
-            query: str = 'UPDATE `player` SET `ffe_arbiter_title` = :ffe_arbiter_title WHERE `ffe_licence_number` = :ffe_licence_number'
+            query: str = """
+            INSERT INTO `arbiter`(
+                `player_id`, `ffe_arbiter_title`
+            )
+            SELECT `id`, :ffe_arbiter_title
+            FROM `player`
+            WHERE `ffe_licence_number` = :ffe_licence_number
+            """
             arbiter_count: int = 0
             to_write: list[dict[str, Any]] = []
             for (
@@ -222,7 +238,9 @@ class FfeDatabase(LocalSourcePlayerDatabase):
                     ffe_licence=PlayerFFELicence(row['ffe_licence']),
                     ffe_licence_number=row['ffe_licence_number'],
                     league=row['league'],
-                    ffe_arbiter_title=FFEArbiterTitle(row['ffe_arbiter_title']),
+                    ffe_arbiter_title=FFEArbiterTitle(
+                        row.get('ffe_arbiter_title') or ''
+                    ),
                 ).to_stored_value()
             },
         )
@@ -314,8 +332,18 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         self,
         field: str,
         id_: int,
+        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
-        self.execute(f'SELECT * FROM player WHERE {field} = ?', (id_,))
+        if with_arbiter_title:
+            self.execute(
+                f'SELECT `player`.*, `arbiter`.`ffe_arbiter_title` FROM `player` LEFT JOIN `arbiter` ON `arbiter`.`player_id` = `player`.`id` WHERE {field} = ?',
+                (id_,),
+            )
+        else:
+            self.execute(
+                f"SELECT `player`.*, '' as `ffe_arbiter_title` FROM `player` WHERE {field} = ?",
+                (id_,),
+            )
         if row := self.fetchone():
             return self.get_stored_player_from_row(row)
         else:
@@ -324,21 +352,31 @@ class FfeDatabase(LocalSourcePlayerDatabase):
     def get_stored_player_by_ffe_id(
         self,
         player_ffe_id: int,
+        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
-        return self._get_stored_player_by_id('ffe_id', player_ffe_id)
+        return self._get_stored_player_by_id(
+            field='ffe_id',
+            id_=player_ffe_id,
+            with_arbiter_title=with_arbiter_title,
+        )
 
     def get_stored_player_by_fide_id(
         self,
         player_fide_id: int,
+        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
-        return self._get_stored_player_by_id('fide_id', player_fide_id)
+        return self._get_stored_player_by_id(
+            field='fide_id',
+            id_=player_fide_id,
+            with_arbiter_title=with_arbiter_title,
+        )
 
     def get_stored_players_by_licence_numbers(
         self, licence_numbers: list[str]
     ) -> list[StoredPlayer]:
         query_array = ', '.join('?' for _ in licence_numbers)
         self.execute(
-            f'SELECT * FROM player WHERE ffe_licence_number IN ({query_array})',
+            f'SELECT * FROM `player` WHERE `ffe_licence_number` IN ({query_array})',
             tuple(licence_numbers),
         )
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]

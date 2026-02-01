@@ -153,7 +153,7 @@ class Player:
 
     @property
     def arbiter_title(self) -> ArbiterTitle:
-        return ArbiterTitle(self.stored_player.arbiter_title)
+        return ArbiterTitle(self.stored_player.arbiter_title or '')
 
     @cached_property
     def category(self) -> PlayerCategory:

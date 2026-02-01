@@ -42,7 +42,7 @@
                         'admin-search-player',
                         event_uniq_id=admin_event.uniq_id,
                         page=page + 1,
-                        augment_arbiter_title=true,
+                        with_arbiter_title=true,
                     )}}"
                     hx-vals='{"results_template": "admin/accounts/account_search_results.html", "result_js_template_hook_name": "get_account_search_result_js_template", "data_source_id": "{{ data_source.id }}", "search": "{{ search }}"}'
                     hx-target="this"
@@ -64,8 +64,8 @@
             $('#last-name').val(lastName);
             $('#first-name').val(firstName);
             $('#fide-id').val(fideId);
-            $('#fide-arbiter-title').val(arbiterTitle);
-            $('#fide-arbiter-title').trigger('change');
+            $('#arbiter-title').val(arbiterTitle);
+            $('#arbiter-title').trigger('change');
             $('#search-results').hide();
         }
         $('#{{ data_source.id }}-search-results').show();
