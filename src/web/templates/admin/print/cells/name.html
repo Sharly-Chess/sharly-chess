@@ -1,32 +1,3 @@
-<style>
-    .player_name {
-        position: relative;
-    }
-
-    .player_name .data table {
-        display: none;
-        border-collapse: collapse;
-        position: absolute;
-        left: 40px;
-        top: 10px;
-        padding: 5px;
-        border: 1px solid grey;
-        background-color: #FFFFFF !important;
-        z-index: 999;
-    }
-
-    .player_name:hover .data table {
-        display: block;
-    }
-
-    .data table tr:nth-child(even) * {
-        background-color: #FFFFFF !important;
-    }
-
-    .data table tr:nth-child(odd) * {
-        background-color: #E0E0E0 !important;
-    }
-</style>
 <div class="player_name">
     {{ object.full_name }}
     {% set admin_tournament = object.tournament %}
