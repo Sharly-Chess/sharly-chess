@@ -130,23 +130,6 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             logger.error(self.log_prefix + 'Papi-converter failed: %s', e)
             return False
 
-    def _create_indexes(self):
-        self.write = True
-        with self:
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player`(`fide_id`)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
-            )
-            self.commit()
-
     def _post_generation(self) -> bool:
         logger.debug(self.log_prefix + 'Scrapping FFE arbiters from the FFE website...')
         ffe_arbiter_titles_by_ffe_licence_number: dict[str, FFEArbiterTitle] = (
@@ -166,22 +149,18 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             self.execute(
                 """
                 CREATE TABLE `arbiter` (
-                    `player_id` INTEGER NOT NULL,
+                    `player_ffe_licence_number` TEXT NOT NULL,
                     `ffe_arbiter_title` TEXT NOT NULL,
-                    UNIQUE(`player_id`),
-                    FOREIGN KEY (`player_id`) REFERENCES `player`(`id`)
+                    UNIQUE(`player_ffe_licence_number`)
                 )
                 """
             )
             self.commit()
-            query: str = """
-            INSERT INTO `arbiter`(
-                `player_id`, `ffe_arbiter_title`
-            )
-            SELECT `id`, :ffe_arbiter_title
-            FROM `player`
-            WHERE `ffe_licence_number` = :ffe_licence_number
-            """
+            player_db_columns: list[str] = [
+                'player_ffe_licence_number',
+                'ffe_arbiter_title',
+            ]
+            query = f"""INSERT INTO `arbiter`({', '.join(player_db_columns)}) VALUES({', '.join([f':{c}' for c in player_db_columns])})"""
             arbiter_count: int = 0
             to_write: list[dict[str, Any]] = []
             for (
@@ -190,8 +169,8 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             ) in ffe_arbiter_titles_by_ffe_licence_number.items():
                 to_write.append(
                     {
+                        'player_ffe_licence_number': ffe_licence_number,
                         'ffe_arbiter_title': ffe_arbiter_title,
-                        'ffe_licence_number': ffe_licence_number,
                     }
                 )
                 arbiter_count += 1
@@ -207,6 +186,26 @@ class FfeDatabase(LocalSourcePlayerDatabase):
                 self.commit()
                 progress.log(arbiter_count)
         return True
+
+    def _create_indexes(self):
+        self.write = True
+        with self:
+            self.execute(
+                'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
+            )
+            self.execute(
+                'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
+            )
+            self.execute(
+                'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player`(`fide_id`)'
+            )
+            self.execute(
+                'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
+            )
+            self.execute(
+                'CREATE INDEX IF NOT EXISTS `arbiter_ffe_licence_number` ON `arbiter`(`player_ffe_licence_number`)'
+            )
+            self.commit()
 
     @staticmethod
     def get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
@@ -336,7 +335,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
     ) -> StoredPlayer | None:
         if with_arbiter_title:
             self.execute(
-                f'SELECT `player`.*, `arbiter`.`ffe_arbiter_title` FROM `player` LEFT JOIN `arbiter` ON `arbiter`.`player_id` = `player`.`id` WHERE {field} = ?',
+                f'SELECT `player`.*, `arbiter`.`ffe_arbiter_title` FROM `player` LEFT JOIN `arbiter` ON `arbiter`.`player_ffe_licence_number` = `player`.`ffe_licence_number` WHERE {field} = ?',
                 (id_,),
             )
         else:

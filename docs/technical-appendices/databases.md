@@ -396,10 +396,10 @@
 
 ### `arbiter` table (FIDE arbiters)
 
-| Field             | Type      | Constraint                           | Description                              |
-|-------------------|-----------|--------------------------------------|------------------------------------------|
-| `player_id`       | `INTEGER` | NOT NULL<br/>REFERENCES(`player.id`) | The player's internal ID                 |
-| `arbiter_title`   | `TEXT`    | NOT NULL                             | The player's FIDE arbiter title          |
+| Field            | Type      | Constraint                                | Description                     |
+|------------------|-----------|-------------------------------------------|---------------------------------|
+| `player_fide_id` | `INTEGER` | NOT NULL<br/>REFERENCES(`player.fide_id`) | The player's FIDE ID            |
+| `arbiter_title`  | `TEXT`    | NOT NULL                                  | The player's FIDE arbiter title |
 
 ## FFE Local Database (`tmp/ffe/ffe.db`)
 
@@ -430,10 +430,10 @@
 
 ### `arbiter` table (FFE arbiters)
 
-| Field           | Type      | Constraint                           | Description                    |
-|-----------------|-----------|--------------------------------------|--------------------------------|
-| `player_id`     | `INTEGER` | NOT NULL<br/>REFERENCES(`player.id`) | The player's internal ID       |
-| `arbiter_title` | `TEXT`    | NOT NULL                             | The player's FFE arbiter title |
+| Field                       | Type      | Constraint | Description                     |
+|-----------------------------|-----------|------------|---------------------------------|
+| `player_ffe_licence_number` | `INTEGER` | NOT NULL   | The player's FFE licence number |
+| `arbiter_title`             | `TEXT`    | NOT NULL   | The player's FFE arbiter title  |
 
 ## FRA Schools Local Database (`tmp/fra_schools/fra_schools.db`)
 

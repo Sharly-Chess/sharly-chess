@@ -388,21 +388,21 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 return self.stop_update(False)
 
             try:
-                logger.debug(self.log_prefix + 'Creating indices…')
-                self._create_indexes()
-            except DatabaseError as e:
-                logger.error(
-                    self.log_prefix + 'Could not create database indices: %s.',
-                    e,
-                )
-                return self.stop_update(False)
-
-            try:
                 if not self._post_generation():
                     return self.stop_update(False)
             except (DatabaseError, SharlyChessException) as e:
                 logger.error(
                     self.log_prefix + 'Could not perform post operations: %s.',
+                    e,
+                )
+                return self.stop_update(False)
+
+            try:
+                logger.debug(self.log_prefix + 'Creating indices…')
+                self._create_indexes()
+            except DatabaseError as e:
+                logger.error(
+                    self.log_prefix + 'Could not create database indices: %s.',
                     e,
                 )
                 return self.stop_update(False)

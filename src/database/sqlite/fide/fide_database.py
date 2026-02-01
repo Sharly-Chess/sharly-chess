@@ -162,15 +162,10 @@ class FideDatabase(LocalSourcePlayerDatabase):
         ]
         player_query = f"""INSERT INTO `player`({', '.join(player_db_columns)}) VALUES({', '.join([f':{c}' for c in player_db_columns])})"""
         arbiter_db_columns: list[str] = [
-            'player_id',
+            'player_fide_id',
             'arbiter_title',
         ]
-        arbiter_query = f"""
-        INSERT INTO `arbiter`({', '.join(arbiter_db_columns)})
-        SELECT  `id`, :arbiter_title
-        FROM `player`
-        WHERE `fide_id` = :player_fide_id
-        """
+        arbiter_query = f"""INSERT INTO `arbiter`({', '.join(arbiter_db_columns)}) VALUES({', '.join([f':{c}' for c in arbiter_db_columns])})"""
         player_count: int = 0
         arbiter_count: int = 0
         players_to_write: list[dict[str, Any]] = []
@@ -223,11 +218,11 @@ class FideDatabase(LocalSourcePlayerDatabase):
                             player_data['last_name'] = player_data['name'].strip()
                             player_data['first_name'] = None
                         del player_data['name']
-                    # elif field_name == 'arbiter_title':
-                    #   if player_data['arbiter_title']:
-                    #        arbiter_data['player_fide_id'] = player_data['fide_id']
-                    #        arbiter_data['arbiter_title'] = player_data['arbiter_title']
-                    #        del player_data['arbiter_title']
+                    elif field_name == 'arbiter_title':
+                        if player_data['arbiter_title']:
+                            arbiter_data['player_fide_id'] = player_data['fide_id']
+                            arbiter_data['arbiter_title'] = player_data['arbiter_title']
+                            del player_data['arbiter_title']
 
             if players_to_write:
                 database.executemany(player_query, players_to_write)
@@ -256,6 +251,9 @@ class FideDatabase(LocalSourcePlayerDatabase):
             )
             self.execute(
                 'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player` (`fide_id`)'
+            )
+            self.execute(
+                'CREATE INDEX IF NOT EXISTS `arbiter_fide_id` ON `arbiter`(`player_fide_id`)'
             )
             self.commit()
 
@@ -286,7 +284,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             year_of_birth=row['year_of_birth'],
             gender=row['gender'],
             title=row['fide_title'],
-            arbiter_title=row['arbiter_title'],
+            arbiter_title=row.get('arbiter_title', ''),
             ratings=ratings,
             fide_id=row['fide_id'],
             federation=row['federation'],
@@ -378,7 +376,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
     ) -> StoredPlayer | None:
         if with_arbiter_title:
             self.execute(
-                'SELECT `player`.*, `arbiter`.`arbiter_title` AS `arbiter_title` FROM `player` LEFT JOIN `arbiter` ON `arbiter`.`player_id` = `player`.`id` WHERE `fide_id` = ?',
+                'SELECT `player`.*, `arbiter`.`arbiter_title` AS `arbiter_title` FROM `player` LEFT JOIN `arbiter` ON `arbiter`.`player_fide_id` = `player`.`fide_id` WHERE `fide_id` = ?',
                 (player_fide_id,),
             )
         else:
