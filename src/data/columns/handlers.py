@@ -4,6 +4,8 @@ from typing import Callable, Collection
 from data.columns import player_table as pt, board_table as bt
 from data.columns.board_table import BoardColumn
 from data.columns.player_table import TournamentPlayerTableColumn
+from data.columns.player_datasheet import DatasheetColumn
+import data.columns.player_datasheet as pds
 from data.columns.players_tab import (
     PlayersTabColumn,
     NamePlayersTabColumn,
@@ -26,6 +28,7 @@ from data.columns.players_tab import (
 from data.event import Event
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
+from utils.enum import TournamentRating, PlayerRatingType
 from .column import ColumnUsage
 
 
@@ -284,3 +287,47 @@ class PlayersTabColumnHandler:
 
     def get_column(self, column_id: str) -> PlayersTabColumn | None:
         return self._columns_by_id.get(column_id, None)
+
+
+class PlayerDatasheetColumnHandler:
+    def __init__(self, event: Event):
+        self.columns_by_id = self._get_columns_by_id(event)
+
+    @staticmethod
+    def _get_columns_by_id(event: Event) -> dict[str, DatasheetColumn]:
+        columns: list[DatasheetColumn] = [
+            pds.TitleColumn(),
+            pds.LastNameColumn(),
+            pds.FirstNameColumn(),
+            pds.DateOfBirthColumn(),
+            pds.YearOfBirthColumn(),
+            pds.MailColumn(),
+            pds.PhoneColumn(),
+            pds.GenderColumn(),
+            pds.FideIDColumn(),
+            pds.TournamentColumn(),
+            pds.FederationColumn(),
+            pds.ClubColumn(),
+            pds.OwedColumn(),
+            pds.PaidColumn(),
+            pds.CommentColumn(),
+        ]
+        for tournament_type in TournamentRating:
+            for rating_type in PlayerRatingType:
+                columns.append(pds.RatingColumn(tournament_type, rating_type))
+        plugin_manager.hook_for_event(event, 'insert_player_datasheet_columns')(
+            datasheet_columns=columns
+        )
+        return {column.id: column for column in columns}
+
+    @property
+    def columns(self) -> Collection[DatasheetColumn]:
+        return self.columns_by_id.values()
+
+    @property
+    def export_columns(self) -> Collection[DatasheetColumn]:
+        return self.columns
+
+    @property
+    def import_columns(self) -> Collection[DatasheetColumn]:
+        return [column for column in self.columns if not column.export_only]

@@ -46,8 +46,9 @@
                         </p>
                     </div>
                     <div class="col-6 text-end">
-                        <p>
+                        <div class="form-check form-switch d-inline-block pe-3">
                             <input
+                                class="form-check-input"
                                 type="checkbox"
                                 onclick="
                                     if ($(this).is(':checked')) {
@@ -58,8 +59,8 @@
                                 "
                                 {% if not update_enabled %}checked{% endif %}
                             />
-                            {{ _('Show all the players') }}
-                        </p>
+                            {{ _('Show unmodified players') }}
+                        </div>
                     </div>
                 </div>
                 {% set show_tournament=not admin_tournament and admin_event.tournaments_by_id|length > 1 %}
@@ -67,7 +68,7 @@
                     id="player-matches-table"
                     class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center"
                 >
-                    <thead id="player-matches-table-header">
+                    <thead class="modal-table-sticky-header">
                         <tr>
                             {% if update_enabled %}
                                 <th scope="col" class="text-nowrap text-center">
@@ -175,7 +176,7 @@
                 id="update-players-button"
                 type="submit"
                 form="modal-form"
-                class="text-nowrap white btn {% if action == 'delete' %}btn-danger{% else %}btn-primary{% endif %}"
+                class="text-nowrap white btn btn-primary"
                 {% if not update_enabled %}disabled{% endif %}
             >
                 <i class="bi-floppy-fill pe-1"></i>

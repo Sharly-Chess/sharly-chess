@@ -66,8 +66,8 @@ msgstr "Inclure les équipes incomplètes"
 msgid "Incomplete Team"
 msgstr "Équipe incomplète"
 
-msgid "Invalid format (expected: 5 digits)."
-msgstr "Format invalide (attendu : 5 chiffres)."
+msgid "Invalid format (expected: {format})."
+msgstr "Format invalide (attendu : {format})."
 
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
@@ -164,6 +164,9 @@ msgstr "Total"
 
 msgid "UAI code"
 msgstr "Code UAI"
+
+msgid "UAI code not found in the database."
+msgstr "Code UAI non trouvé dans la base de données."
 
 msgid "UAI codes are a necessity to distinguish schools with long names. Only enable this option if your school names are short enough."
 msgstr "Les codes UAI sont nécessaires pour distinguer les établissements avec de longs noms. N'activez cette option que si les noms de vos établissements sont suffisamment courts."

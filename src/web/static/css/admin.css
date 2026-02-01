@@ -49,10 +49,14 @@
     left: var(--side-bar-width);
 }
 
-.player-table-club-cell {
+.modal-table-sticky-header {
+    z-index: 2 !important;
+    position: sticky !important;
+    top: -1em;
+}
 
-    overflow: hidden;
-    text-overflow: ellipsis;
+.error-cell {
+    border: 2px solid rgba(var(--bs-danger-rgb));
 }
 
 .mw-15em {

@@ -210,8 +210,10 @@ class Player:
 
     def _get_ratings(self) -> dict[TournamentRating, PlayerRating]:
         return {
-            TournamentRating(tr_value): PlayerRating.from_stored_value(rating)
-            for tr_value, rating in self.stored_player.ratings.items()
+            tournament_rating: PlayerRating.from_stored_value(
+                self.stored_player.ratings.get(tournament_rating.value, {})
+            )
+            for tournament_rating in TournamentRating
         }
 
     def get_rating_and_type(
@@ -631,7 +633,7 @@ class TournamentPlayer(Player):
             trf_dob = f'{self.year_of_birth}/00/00'
         return TrfPlayer(
             startrank=self.pairing_number,
-            name=f'{self.last_name}, {self.first_name or ""}'[:32],
+            name=f'{self.last_name.title()}, {self.first_name or ""}'[:32],
             sex=TrfPlayerGender.get_outer_value(self.gender),
             title=TrfPlayerTitle.get_outer_value(self.title),
             rating=self.rating,
