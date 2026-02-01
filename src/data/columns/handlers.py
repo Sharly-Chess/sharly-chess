@@ -121,7 +121,8 @@ class PlayerColumnHandler:
                 pt.RankColumn,
                 pt.TitleColumn,
                 partial(
-                    pt.NameColumn, should_include_popover=include_player_history_popover
+                    pt.NameColumn,
+                    include_player_history_popover=include_player_history_popover,
                 ),
                 pt.RatingColumn,
                 pt.CategoryColumn,

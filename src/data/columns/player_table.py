@@ -100,9 +100,11 @@ class TitleColumn(TournamentPlayerTableColumn):
 
 
 class NameColumn(TournamentPlayerTableColumn):
-    def __init__(self, usage: ColumnUsage, should_include_popover: bool = False):
+    def __init__(
+        self, usage: ColumnUsage, include_player_history_popover: bool = False
+    ):
         super().__init__(usage)
-        self.should_include_popover = should_include_popover
+        self.include_player_history_popover = include_player_history_popover
 
     @property
     def grid_column_template(self) -> str:
@@ -114,7 +116,7 @@ class NameColumn(TournamentPlayerTableColumn):
 
     @property
     def cell_template(self) -> str | None:
-        if self.should_include_popover:
+        if self.include_player_history_popover:
             return '/admin/print/cells/name.html'
         return None
 
