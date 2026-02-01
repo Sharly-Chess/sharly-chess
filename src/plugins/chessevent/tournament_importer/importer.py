@@ -54,7 +54,7 @@ from plugins.chessevent.tournament_importer.mappers import (
 )
 from plugins.chessevent.utils import ChessEventTournamentPluginData, ChessEventUtils
 from plugins.ffe.ffe import FfePlugin
-from plugins.ffe.utils import FfePlayerPluginData
+from plugins.ffe.utils import FfePlayerPluginData, FFEArbiterTitle
 from plugins.manager import plugin_manager
 from utils.enum import TournamentRating, Result
 
@@ -320,6 +320,7 @@ class ChessEventTournamentImporter(TournamentImporter):
             ffe_licence,
             player.ffe_license_number or None,
             player.ffe_league or None,
+            FFEArbiterTitle.NONE,
         )
 
         return StoredPlayer(
