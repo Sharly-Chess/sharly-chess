@@ -661,22 +661,19 @@ class FFEArbitersLoader(FFESession):
         data: dict[str, FFEArbiterTitle] = {}
         if self._ffe_init(admin=False):
             for league in FfePlugin.FFE_LEAGUES:
-                page_data, load_next_page = self._read_league_page_data(
-                    league, page := 1
-                )
+                load_next_page = self._read_league_page_data(league, data, page := 1)
                 while load_next_page:
-                    data |= page_data
                     page += 1
-                    page_data, load_next_page = self._read_league_page_data(
-                        league, page
-                    )
+                    load_next_page = self._read_league_page_data(league, data, page)
         return data
 
     def _read_league_page_data(
-        self, league: str, page_number: int = 1
-    ) -> tuple[dict[str, FFEArbiterTitle], bool]:
+        self,
+        league: str,
+        data: dict[str, FFEArbiterTitle],
+        page_number: int = 1,
+    ) -> bool:
         """Reads one page for a league, returns a dict with FFE licence numbers as keys and arbiter strings as values."""
-        data: dict[str, FFEArbiterTitle] = {}
         load_next_page: bool = False
         assert self.ffe_state
         url = f'{FFE_PUBLIC_URL}/ListeArbitres.aspx?Action=DNALIGUE&Ligue={league}'
@@ -724,4 +721,4 @@ class FFEArbitersLoader(FFESession):
                             load_next_page = True
                             break
 
-        return data, load_next_page
+        return load_next_page
