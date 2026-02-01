@@ -692,7 +692,6 @@ class PlayerAdminController(BaseEventAdminController):
                 tr: PlayerRating(estimated=0) for tr in TournamentRating
             }
             title = PlayerTitle.NONE.value
-            arbiter_title = ArbiterTitle.NONE.value
             federation = event.federation
             club: str | None = None
             fide_id: int | None = None
@@ -722,7 +721,6 @@ class PlayerAdminController(BaseEventAdminController):
                             PlayerRating.from_stored_value(rating)
                         )
                     title = stored_player.title
-                    arbiter_title = stored_player.arbiter_title
                     federation = stored_player.federation
                     club = stored_player.club
                     fide_id = stored_player.fide_id or None
@@ -767,7 +765,6 @@ class PlayerAdminController(BaseEventAdminController):
                     'gender': gender,
                     'tournament_id': tournament_id,
                     'title': title,
-                    'arbiter_title': arbiter_title,
                     'federation': federation,
                     'fide_id': fide_id,
                     'club': club,
@@ -1097,8 +1094,7 @@ class PlayerAdminController(BaseEventAdminController):
             owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
             paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
             title=WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value,
-            arbiter_title=WebContext.form_data_to_str(data, 'arbiter_title')
-            or ArbiterTitle.NONE.value,
+            arbiter_title=ArbiterTitle.NONE.value,
             ratings={
                 tr.value: PlayerRating(
                     estimated=WebContext.form_data_to_int(
