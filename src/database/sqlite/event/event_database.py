@@ -912,7 +912,6 @@ class EventDatabase(MigrationDatabase):
             owed=row['owed'],
             paid=row['paid'],
             title=row['title'],
-            arbiter_title=row['arbiter_title'],
             ratings=cls.set_dict_int_keys(
                 cls.load_json_from_database_field(row['ratings'])
             ),
@@ -947,7 +946,6 @@ class EventDatabase(MigrationDatabase):
                 'owed',
                 'paid',
                 'title',
-                'arbiter_title',
                 'fide_id',
                 'federation',
                 'club',

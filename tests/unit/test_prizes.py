@@ -57,7 +57,6 @@ from utils.enum import (
     PlayerTitle,
     Result,
     TournamentRating,
-    ArbiterTitle,
 )
 
 ROUNDS = 6
@@ -146,7 +145,6 @@ class PrizesTestCase(TestCase):
             gender=gender,
             federation=federation,
             title=PlayerTitle.NONE,
-            arbiter_title=ArbiterTitle.NONE,
             ratings={
                 rating: PlayerRating.from_type(elo, rating_type).stored_value
                 for rating in TournamentRating

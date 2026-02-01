@@ -44,7 +44,6 @@ from utils.enum import (
     TournamentRating,
     PlayerRatingType,
     PlayerTitle,
-    ArbiterTitle,
     Result,
     FormAction,
 )
@@ -1094,7 +1093,6 @@ class PlayerAdminController(BaseEventAdminController):
             owed=WebContext.form_data_to_float(data, 'owed') or 0.0,
             paid=WebContext.form_data_to_float(data, 'paid') or 0.0,
             title=WebContext.form_data_to_str(data, 'title') or PlayerTitle.NONE.value,
-            arbiter_title=ArbiterTitle.NONE.value,
             ratings={
                 tr.value: PlayerRating(
                     estimated=WebContext.form_data_to_int(
