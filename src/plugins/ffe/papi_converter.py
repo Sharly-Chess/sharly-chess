@@ -48,7 +48,7 @@ from plugins.ffe.papi_mappers import (
     PapiPlayerTitle,
     PapiPairingSystem,
 )
-from plugins.ffe.utils import FFEUtils
+from plugins.ffe.utils import FFEUtils, FFEArbiterTitle
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence, FFE_EPOCH
 from plugins.manager import plugin_manager
 from plugins.pairing_acceleration.pairing_variations import (
@@ -560,6 +560,7 @@ class PapiConverter:
                     ffe_licence=ffe_licence,
                     ffe_licence_number=papi_player.nrFFE,
                     league=papi_player.league,
+                    ffe_arbiter_title=FFEArbiterTitle.NONE,
                 ).to_stored_value()
             },
         )
