@@ -109,22 +109,7 @@ class FFESession(Session):
                         for file_id, file_name in files.items()
                     }
                     response = self.post(url, data=data, files=handlers)
-            content: str = response.content.decode()
-            # if DEVEL_ENV:
-            #    date_str = datetime.strftime(
-            #        datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
-            #    )
-            #    debug_file = (
-            #        ffe.TMP_DIR
-            #        / f'{url.replace("://", "_").replace("/", "_")}-{date_str}-raw.html'
-            #    )
-            #    try:
-            #        with open(debug_file, 'w', encoding='utf-8') as f:
-            #            f.write(content)
-            #        logger.debug('Raw content stored to %s.', debug_file)
-            #    except OSError:
-            #        logger.debug('Unable to store file [%s].', debug_file)
-            return content
+            return response.content.decode()
         except ConnectionError as ex:
             logger.error('Failed to read [%s] (connection error): [%s].', url, ex)
         except Timeout as ex:
@@ -150,20 +135,6 @@ class FFESession(Session):
         error: str | None = None
         parser.parseStr(html)
         assert self.last_url_read is not None
-        # if DEVEL_ENV:
-        #   date_str = datetime.strftime(
-        #        datetime.fromtimestamp(time.time()), '%Y-%m-%d-%H-%M-%S'
-        #    )
-        #   debug_file = (
-        #        ffe.TMP_DIR
-        #        / f'{(self.last_url_read or "").replace("://", "_").replace("/", "_")}-{date_str}-parsed.html'
-        #    )
-        #    try:
-        #        with open(debug_file, 'w', encoding='utf-8') as f:
-        #            f.write(parser.asHTML())
-        #        logger.debug('Parsed content stored to %s.', debug_file)
-        #    except OSError:
-        #        logger.debug('Unable to store file [%s].', debug_file)
         tag: AdvancedTag | None = parser.getElementById(
             tag_id := 'ctl00_ContentPlaceHolderMain_LabelError'
         )
