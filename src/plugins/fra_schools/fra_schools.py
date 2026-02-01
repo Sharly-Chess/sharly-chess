@@ -41,7 +41,8 @@ from plugins.fra_schools import PLUGIN_NAME
 from plugins.fra_schools.fra_schools_controller import FRASchoolsController
 from plugins.fra_schools.fra_schools_database import FRASchoolsDatabase
 from plugins.fra_schools.fra_schools_entity import (
-    FraSchoolDatasheetColumn,
+    FraSchoolCodeDatasheetColumn,
+    FraSchoolNameDatasheetColumn,
     FraSchoolPlayerSplitter,
     FraSchoolTableColumn,
     FRASchoolPlayerFilter,
@@ -206,7 +207,8 @@ class FRASchoolsPlugin(Plugin):
     def insert_player_datasheet_columns(self, datasheet_columns: list[DatasheetColumn]):
         club: type[DatasheetColumn] = player_datasheet.ClubColumn
         fra_school_columns: list[DatasheetColumn] = [
-            FraSchoolDatasheetColumn(),
+            FraSchoolCodeDatasheetColumn(),
+            FraSchoolNameDatasheetColumn(),
         ]
         for column in fra_school_columns:
             PluginUtils.insert_on_isinstance(

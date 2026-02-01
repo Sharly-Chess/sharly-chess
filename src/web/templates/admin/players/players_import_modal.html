@@ -1,0 +1,70 @@
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 550px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Players import') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-post="{{ url_for(
+                    'players-import-diff-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                ) }}"
+                enctype="multipart/form-data"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% if errors.alert %}
+                    {% with type='error', message=errors.alert %}
+                        {% include '/common/alert.html' %}
+                    {% endwith %}
+                {% endif %}
+                {% if player_addable_tournaments|length == 1 %}
+                    <input name="tournament_id" type="hidden" value="{{ player_addable_tournaments[0].id }}">
+                {% else %}
+                    <div class="row gy-2 gx-3">
+                        {{ admin_macros.select_input(
+                            name='tournament_id',
+                            label=_('%(string)s:', string=_('Tournament')),
+                            select_options=tournament_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                {% endif %}
+                <div class="row gy-2 gx-3">
+                    {{ admin_macros.file_input(
+                        name='file',
+                        label=_('%(string)s:', string=_('CSV file')),
+                        file_accept='.csv',
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                {% include 'players_import_columns.html' %}
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                id="import-button"
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi-box-arrow-in-right pe-1"></i>
+                {{ _('Import') }}
+            </button>
+        </div>
+    </div>
+</div>

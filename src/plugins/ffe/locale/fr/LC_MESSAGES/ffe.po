@@ -259,6 +259,9 @@ msgstr "Text du lien d'affichage non valide [{text}]."
 msgid "Invalid fees link text [{text}]."
 msgstr "Texte du lien des droits d'homologation non valide [{text}]."
 
+msgid "Invalid format (expected: {format})."
+msgstr "Format invalide (attendu : {format})."
+
 msgid "Invalid response from the FFE website."
 msgstr "Réponse non valide du site FFE."
 
@@ -481,8 +484,14 @@ msgstr "Impossible de mettre en ligne le règlement du tournoi."
 msgid "Unable to upload tournament."
 msgstr "Impossible de mettre en ligne le tournoi."
 
+msgid "Unknown league."
+msgstr "Ligue inconnue."
+
 msgid "Unknown player ID [{player_id}]"
 msgstr "Identifiant de joueur inconnu [{player_id}]."
+
+msgid "Unknown value (expected: {expected})."
+msgstr "Valeur inconnue (attendu : {expected})."
 
 msgid "Unknown value [{value}]"
 msgstr "Valeur [{value}] inconnue."

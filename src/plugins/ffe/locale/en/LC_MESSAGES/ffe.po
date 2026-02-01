@@ -259,6 +259,9 @@ msgstr ""
 msgid "Invalid fees link text [{text}]."
 msgstr ""
 
+msgid "Invalid format (expected: {format})."
+msgstr ""
+
 msgid "Invalid response from the FFE website."
 msgstr ""
 
@@ -481,7 +484,13 @@ msgstr ""
 msgid "Unable to upload tournament."
 msgstr ""
 
+msgid "Unknown league."
+msgstr ""
+
 msgid "Unknown player ID [{player_id}]"
+msgstr ""
+
+msgid "Unknown value (expected: {expected})."
 msgstr ""
 
 msgid "Unknown value [{value}]"
