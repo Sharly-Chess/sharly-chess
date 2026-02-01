@@ -126,7 +126,7 @@ class StoredPlayer:
     id: int | None
     last_name: str = ''
     ratings: dict[int, dict[str, int | None]] = field(
-        default_factory=dict[str, int | None]
+        default_factory=dict[int, dict[str, int | None]]
     )
     first_name: str | None = None
     date_of_birth: date | None = None
