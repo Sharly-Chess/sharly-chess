@@ -552,6 +552,3 @@ msgid_plural "{count} leagues represented"
 msgstr[0] ""
 msgstr[1] ""
 
-#~ msgid "This field is not editable."
-#~ msgstr ""
-
