@@ -1817,6 +1817,8 @@ class PlayerAdminController(BaseEventAdminController):
         assert file_path is not None
         overwrite_players = WebContext.form_data_to_bool(flat_data, 'overwrite_players')
         row_indexes = WebContext.form_data_to_list_int(flat_data, 'row_indexes')
+        if overwrite_players and tournament.started:
+            raise ClientException('Overwrite is forbidden on started tournaments.')
         handler = PlayerDatasheetColumnHandler(event)
         columns = handler.import_columns
         content_by_column_id = self._read_csv_file(file_path)
