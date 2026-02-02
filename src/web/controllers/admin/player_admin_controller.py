@@ -9,6 +9,7 @@ import math
 from pathlib import Path
 from typing import Annotated, Any, Iterable
 
+import chardet
 from litestar.exceptions import NotFoundException, ClientException
 
 from common.i18n.utils import normalized_key
@@ -1579,6 +1580,9 @@ class PlayerAdminController(BaseEventAdminController):
         template_context = {
             'modal': 'players_import',
             'player_addable_tournaments': tournaments,
+            'started_tournament_ids': [
+                str(tournament.id) for tournament in tournaments if tournament.started
+            ],
             'tournament_options': tournament_options,
             'build_list_tooltip': cls._build_list_tooltip,
             'split_column_ids': cls._split_datasheet_columns_ids,
@@ -1608,7 +1612,9 @@ class PlayerAdminController(BaseEventAdminController):
                 )
             )
         content_by_column: dict[str, list[str]] = {}
-        with open(file_path, 'r', newline='', encoding='latin1') as csvfile:
+        with open(file_path, 'rb') as raw_file:
+            encoding = chardet.detect(raw_file.read())['encoding']
+        with open(file_path, 'r', encoding=encoding) as csvfile:
             dialect = csv.Sniffer().sniff(''.join(islice(csvfile, 2)))
             csvfile.seek(0)
             reader = csv.DictReader(csvfile, dialect=dialect)
@@ -1625,22 +1631,25 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext,
         used_columns: list[DatasheetColumn],
         content_by_column_id: dict[str, list[str]],
+        overwrite_players: bool,
     ) -> tuple[dict[int, StoredPlayer], dict[int, dict[str, str]]]:
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
         unique_values_by_column_id: dict[str, list[str]] = defaultdict(list)
-        for column in used_columns:
-            if not column.is_unique:
-                continue
-            for player in tournament.tournament_players:
-                unique_values_by_column_id[column.id].append(
-                    str(column.get_cell_content(player) or '')
-                )
-        name_keys: list[tuple[str, str, date | None]] = [
-            (player.last_name, player.first_name, player.date_of_birth)
-            for player in tournament.tournament_players
-            if player.date_of_birth
-        ]
+        name_keys: list[tuple[str, str, date | None]] = []
+        if not overwrite_players:
+            for column in used_columns:
+                if not column.is_unique:
+                    continue
+                for player in tournament.tournament_players:
+                    unique_values_by_column_id[column.id].append(
+                        str(column.get_cell_content(player) or '')
+                    )
+            name_keys = [
+                (player.last_name, player.first_name, player.date_of_birth)
+                for player in tournament.tournament_players
+                if player.date_of_birth
+            ]
         stored_players_by_index: dict[int, StoredPlayer] = {}
         import_errors_by_index: dict[int, dict[str, str]] = defaultdict(dict)
         row_count = len(content_by_column_id[used_columns[0].id])
@@ -1698,14 +1707,15 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext,
         columns: list[DatasheetColumn],
         content_by_column_id: dict[str, list[str]],
-        file_path_data: str,
+        file_path: Path,
+        overwrite_players: bool,
     ) -> HTMXTemplate:
         used_columns = [
             column for column in columns if column.id in content_by_column_id
         ]
         used_column_ids = [column.id for column in used_columns]
         __, import_errors_by_index = cls._get_imported_stored_players(
-            web_context, used_columns, content_by_column_id
+            web_context, used_columns, content_by_column_id, overwrite_players
         )
         template_context: dict[str, Any] = {
             'modal': 'players_import_diff',
@@ -1719,7 +1729,8 @@ class PlayerAdminController(BaseEventAdminController):
             'import_errors_by_index': import_errors_by_index,
             'row_count': len(content_by_column_id[used_column_ids[0]]),
             'content_by_column_id': content_by_column_id,
-            'file_path': file_path_data,
+            'file_path': WebContext.value_to_form_data(file_path),
+            'overwrite_players': overwrite_players,
         }
         return cls._admin_base_event_render(
             web_context.template_context | template_context
@@ -1771,16 +1782,19 @@ class PlayerAdminController(BaseEventAdminController):
                         column=column.id
                     )
                     break
+        overwrite_players = WebContext.form_data_to_bool(data, 'overwrite_players')
         if errors:
             return self._render_players_import_modal(
                 web_context, normalized_data, errors
             )
+        assert file_path is not None
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         return self._render_players_import_diff_modal(
             web_context,
             list(columns),
             content_by_column_id,
-            WebContext.value_to_form_data(file_path),
+            file_path,
+            overwrite_players,
         )
 
     @post(
@@ -1801,6 +1815,7 @@ class PlayerAdminController(BaseEventAdminController):
         flat_data = WebContext.flatten_list_data(data)
         file_path = WebContext.form_data_to_path(flat_data, 'file_path')
         assert file_path is not None
+        overwrite_players = WebContext.form_data_to_bool(flat_data, 'overwrite_players')
         row_indexes = WebContext.form_data_to_list_int(flat_data, 'row_indexes')
         handler = PlayerDatasheetColumnHandler(event)
         columns = handler.import_columns
@@ -1809,7 +1824,7 @@ class PlayerAdminController(BaseEventAdminController):
             column for column in columns if column.id in content_by_column_id
         ]
         stored_players_by_index, __ = self._get_imported_stored_players(
-            web_context, used_columns, content_by_column_id
+            web_context, used_columns, content_by_column_id, overwrite_players
         )
         if row_indexes:
             stored_players = [
@@ -1822,6 +1837,8 @@ class PlayerAdminController(BaseEventAdminController):
 
         if stored_players:
             with EventDatabase(event.uniq_id, True) as database:
+                if overwrite_players:
+                    database.delete_players_in_tournament(tournament.id)
                 for stored_player in stored_players:
                     player_id = database.add_stored_player(stored_player)
                     database.add_stored_tournament_player(
