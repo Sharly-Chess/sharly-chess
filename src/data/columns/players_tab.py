@@ -483,10 +483,10 @@ class GenderPlayersTabColumn(FilterPlayersTabColumn):
         return (player.gender,)
 
     def get_filter_key(self, player: Player) -> str:
-        return str(player.gender.value)
+        return player.gender.value
 
     def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
-        return PlayerGender(int(filter_key))
+        return PlayerGender(filter_key)
 
     def get_filter_row_content(self, value: Any) -> str:
         return value.name

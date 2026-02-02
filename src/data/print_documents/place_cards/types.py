@@ -65,10 +65,10 @@ class PlaceCardType(IdentifiableEntity, ABC):
         year: int = datetime.now().year
         place_card_player.year_of_birth = str(random.randint(year - 100, year - 5))
         place_card_player.gender = PlayerGender(
-            random.choice(PlayerGender.values())
+            random.choice(list(PlayerGender))
         ).short_name
         place_card_player.title = PlayerTitle(
-            random.choice(PlayerTitle.values())
+            random.choice(list(PlayerTitle))
         ).short_name
         config = SharlyChessConfig()
         place_card_player.federation = random.choice(list(config.federations.keys()))
