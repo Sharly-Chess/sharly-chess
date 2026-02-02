@@ -233,7 +233,7 @@ class Account:
     @property
     def fide_arbiter_str(self) -> str:
         """String representation of the account as a FIDE arbiter."""
-        arbiter = self.last_name.title()
+        arbiter = self.last_name
         if self.first_name:
             arbiter += f', {self.first_name}'
         suffixes: list[str] = []
