@@ -6646,30 +6646,4 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-#~ msgid "Print"
-#~ msgstr "Imprimer"
-
-#~ msgid "Print players, results, etc."
-#~ msgstr "Imprimer les participant·es, les résultats, les classements…"
-
-#~ msgid "Printing"
-#~ msgstr "Impression"
-
-#~ msgid "The numbers (or ranges of numbers) of the boards to print."
-#~ msgstr "Les numéros (ou plages de numéros) des échiquiers à imprimer."
-
-#~ msgid "The round for which the document is printed (Defaults to the last possible round)."
-#~ msgstr "La ronde pour laquelle le document est imprimé (par défaut la dernière ronde possible)."
-
-#~ msgid "This field is not editable."
-#~ msgstr "Ce champ n'est pas modifiable."
-
-#~ msgid "Add player"
-#~ msgstr "Ajouter"
-
-#~ msgid "Show all the players"
-#~ msgstr "Afficher tou·tes les joueur·euses"
-
-#~ msgid "Hide invalid rows"
-#~ msgstr "Cacher les rangs invalides"
 

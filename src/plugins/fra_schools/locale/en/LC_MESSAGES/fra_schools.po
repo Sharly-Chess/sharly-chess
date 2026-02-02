@@ -183,6 +183,3 @@ msgid_plural "{count} schools represented"
 msgstr[0] ""
 msgstr[1] ""
 
-#~ msgid "Invalid format (expected: 5 digits)."
-#~ msgstr ""
-
