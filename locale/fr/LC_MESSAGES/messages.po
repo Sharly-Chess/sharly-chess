@@ -4894,13 +4894,13 @@ msgid "Show Log"
 msgstr "Montrer les logs"
 
 msgid "Show invalid rows"
-msgstr "Afficher les rangs invalides"
+msgstr "Afficher les lignes invalides"
 
 msgid "Show logging level"
 msgstr "Afficher le niveau de log"
 
 msgid "Show unmodified players"
-msgstr "Afficher les joueur·euses non-modifié·es"
+msgstr "Afficher les joueur·euses non modifié·es"
 
 msgid "Show warnings"
 msgstr "Afficher les avertissements"
@@ -5337,7 +5337,7 @@ msgstr "Le numéro d'appariement est déjà attribué."
 msgid "The permissions of this account can not be updated."
 msgstr "Les permissions de ce compte ne peuvent être modifiées."
 
-msgid "The player [{player}] already exists in the tournament."
+msgid "Player [{player}] already exists in the tournament."
 msgstr "Le·le joueur·euse [{player}] existe déjà dans le tournoi."
 
 msgid "The player did not win any games against FIDE rated opponents."
@@ -5346,8 +5346,8 @@ msgstr "Le·la joueur·euse n’a remporté aucune partie contre des adversaires
 msgid "The player has already been paired, removing them from the tournament is impossible."
 msgstr "Le·la joueur·euse a déjà été apparié·e, impossible de l'enlever du tournoi."
 
-msgid "The player with this value already exists in the tournament."
-msgstr "Le·le joueur·euse avec cette valeur existe déjà dans le tournoi."
+msgid "A player with this value already exists in the tournament."
+msgstr "Un·e joueur·euse avec cette valeur existe déjà dans le tournoi."
 
 msgid "The rank of the first player to select."
 msgstr "Le classement du·de la premier·e joueur·euse."
