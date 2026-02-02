@@ -9,9 +9,17 @@
         </div>
         <div class="modal-body">
             {% set selected_rows = row_count - import_errors_by_index|length %}
+            {% if overwrite_players %}
+                <h4 class="text-danger">
+                    {{ _(
+                        'Warning: the %(player_count)d players in the tournament will be deleted.',
+                        player_count=admin_tournament.tournament_players|length,
+                    ) }}
+                </h4>
+            {% endif %}
             <div class="d-flex">
                 {% if unknown_column_ids %}
-                    <h4 class="text-warning">
+                    <h5 class="text-warning">
                         {{ ngettext(
                             '%(num)d unknown column (ignored)',
                             '%(num)d unknown columns (ignored)',
@@ -22,20 +30,14 @@
                             style="font-size: 90%"
                             {{ macros.tooltip_attributes('', build_list_tooltip(unknown_column_ids), 'right') }}
                         ></i>
-                    </h4>
+                    </h5>
                 {% endif %}
                 <div class="flex-grow-1"></div>
                 <div class="form-check form-switch d-inline-block pe-3">
                     <input
                         class="form-check-input"
                         type="checkbox"
-                        onclick="
-                            if ($(this).is(':checked')) {
-                                $('.error-row').show();
-                            } else {
-                                $('.error-row').hide();
-                            }
-                        "
+                        onclick="$('.error-row').toggle(this.checked)"
                         checked
                     />
                     <label class="form-check-label"> {{ _('Show invalid rows') }}</label>
@@ -53,6 +55,7 @@
                 hx-indicator="#please-wait"
             >
                 <input name="file_path" value="{{ file_path }}" type="hidden"/>
+                <input name="overwrite_players" value="{{ 'on' if overwrite_players else 'off' }}" type="hidden"/>
                 <table class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center">
                     <thead class="modal-table-sticky-header">
                         <tr>

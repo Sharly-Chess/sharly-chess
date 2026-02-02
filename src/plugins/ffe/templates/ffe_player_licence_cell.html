@@ -8,7 +8,7 @@
         {{ macros.tooltip_attributes('', licence.name, 'right') }}
     {% else %}
         class="cursor-pointer"
-        {% if licence == N %}
+        {% if licence == 'N' %}
             {{ macros.click_to_copy_attributes(
                 _('%(licence_number)s (expired)', licence_number=licence_number),
                 'right',

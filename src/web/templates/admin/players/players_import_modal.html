@@ -25,7 +25,12 @@
                     {% endwith %}
                 {% endif %}
                 {% if player_addable_tournaments|length == 1 %}
-                    <input name="tournament_id" type="hidden" value="{{ player_addable_tournaments[0].id }}">
+                    <input
+                        id="tournament-id"
+                        name="tournament_id"
+                        type="hidden"
+                        value="{{ player_addable_tournaments[0].id }}"
+                    >
                 {% else %}
                     <div class="row gy-2 gx-3">
                         {{ admin_macros.select_input(
@@ -44,6 +49,52 @@
                         data=data, errors=errors
                     ) }}
                 </div>
+                <div class="d-flex my-2">
+                    <span
+                        id="overwrite-players-container"
+                        {{ macros.tooltip_attributes(
+                            '', _('Players can\'t be overwritten once the tournament has started.')
+                        ) }}
+                    >
+                        {{ admin_macros.switch_input(
+                            name='overwrite_players',
+                            placeholder=_('Overwrite the existing players'),
+                            data=data, errors=errors
+                        ) }}
+                    </span>
+
+                    <i
+                        id="overwrite-warning"
+                        class="bi-exclamation-triangle-fill text-warning"
+                        {{ macros.tooltip_attributes(
+                            'warning',
+                            _('All the player data of the selected tournament will be deleted.'),
+                        ) }}
+                    ></i>
+                    <script>
+                        $('#tournament-id').change(function () {
+                            const isStarted = {{ started_tournament_ids|tojson }}.includes($(this).val());
+
+                            $('#overwrite-players').prop('disabled', isStarted);
+                            const tooltip = new bootstrap.Tooltip(
+                                document.getElementById('overwrite-players-container')
+                            );
+                            console.log(tooltip);
+                            if (isStarted) {
+                                tooltip.enable();
+                                $('#overwrite-players').prop('checked', false).trigger('change');
+                            } else {
+                                tooltip.disable();
+                            }
+                        });
+                        $('#overwrite-players').change(function () {
+                            $('#overwrite-warning').toggle(this.checked);
+                        });
+                        $('#overwrite-players').trigger('change');
+                        setTimeout(() => $('#tournament-id').trigger('change'), 100);
+                    </script>
+                </div>
+
                 {% include 'players_import_columns.html' %}
             </form>
         </div>

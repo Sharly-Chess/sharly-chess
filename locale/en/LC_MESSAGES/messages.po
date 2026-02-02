@@ -324,6 +324,9 @@ msgstr ""
 msgid "A file is expected."
 msgstr ""
 
+msgid "A player with this value already exists in the tournament."
+msgstr ""
+
 msgid "A plugin specific to this federation is used, it can no longer be modified."
 msgstr ""
 
@@ -535,6 +538,9 @@ msgid "All the candidate ports [{ports}] are already in use, can not start Sharl
 msgstr ""
 
 msgid "All the dependant objects will also be deleted:"
+msgstr ""
+
+msgid "All the player data of the selected tournament will be deleted."
 msgstr ""
 
 msgid "All the players"
@@ -3733,6 +3739,9 @@ msgstr ""
 msgid "Overwrite"
 msgstr ""
 
+msgid "Overwrite the existing players"
+msgstr ""
+
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
 msgstr ""
 
@@ -3975,6 +3984,9 @@ msgstr ""
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
+msgid "Player [{player}] already exists in the tournament."
+msgstr ""
+
 msgid "Player [{player}] already plays tournament [{tournament}]."
 msgstr ""
 
@@ -4046,6 +4058,9 @@ msgid "Players (none now)"
 msgstr ""
 
 msgid "Players ({num})"
+msgstr ""
+
+msgid "Players can't be overwritten once the tournament has started."
 msgstr ""
 
 msgid "Players check-in list"
@@ -5335,16 +5350,10 @@ msgstr ""
 msgid "The permissions of this account can not be updated."
 msgstr ""
 
-msgid "Player [{player}] already exists in the tournament."
-msgstr ""
-
 msgid "The player did not win any games against FIDE rated opponents."
 msgstr ""
 
 msgid "The player has already been paired, removing them from the tournament is impossible."
-msgstr ""
-
-msgid "A player with this value already exists in the tournament."
 msgstr ""
 
 msgid "The rank of the first player to select."

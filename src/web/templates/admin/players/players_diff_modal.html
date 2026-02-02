@@ -50,13 +50,7 @@
                             <input
                                 class="form-check-input"
                                 type="checkbox"
-                                onclick="
-                                    if ($(this).is(':checked')) {
-                                        $('tr.player-unchanged').show();
-                                    } else {
-                                        $('tr.player-unchanged').hide();
-                                    }
-                                "
+                                onclick="$('tr.player-unchanged').toggle(this.checked)"
                                 {% if not update_enabled %}checked{% endif %}
                             />
                             {{ _('Show unmodified players') }}
