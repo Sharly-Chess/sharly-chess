@@ -633,7 +633,7 @@ class TournamentPlayer(Player):
             trf_dob = f'{self.year_of_birth}/00/00'
         return TrfPlayer(
             startrank=self.pairing_number,
-            name=f'{self.last_name.title()}, {self.first_name or ""}'[:32],
+            name=f'{self.last_name}, {self.first_name or ""}'[:32],
             sex=TrfPlayerGender.get_outer_value(self.gender),
             title=TrfPlayerTitle.get_outer_value(self.title),
             rating=self.rating,
