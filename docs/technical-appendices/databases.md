@@ -160,26 +160,26 @@
 
 ### `player` table (players)
 
-| Field           | Type      | Constraint                                 | Description                                             |
-|-----------------|-----------|--------------------------------------------|---------------------------------------------------------|
-| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player ID                                           |
-| `last_name`     | `TEXT`    | NOT NULL                                   | The player's last name                                  |
-| `first_name`    | `TEXT`    |                                            | The player's first name                                 |
-| `date_of_birth` | `TEXT`    |                                            | The player's date of birth in YYYY-MM-DD format         |
-| `gender`        | `INTEGER` | NOT NULL                                   | The player's gender (1: Male, 2: Female, 0: Other)      |
-| `mail`          | `TEXT`    |                                            | The player's email address                              |
-| `phone`         | `TEXT`    |                                            | The player's phone number                               |
-| `comment`       | `TEXT`    |                                            | Comments about the player                               |
-| `owed`          | `FLOAT`   | NOT NULL                                   | Amount of money owed by the player                      |
-| `paid`          | `FLOAT`   | NOT NULL                                   | Amount of money paid by the player                      |
-| `title`         | `INTEGER` | NOT NULL                                   | The player's chess title                                |
-| `ratings`       | `TEXT`    | NOT NULL                                   | The player's ratings in JSON format                     |
-| `fide_id`       | `INTEGER` |                                            | The player's FIDE ID                                    |
-| `federation`    | `TEXT`    |                                            | The player's federation code                            |
-| `club`          | `TEXT`    |                                            | The player's chess club                                 |
-| `fixed`         | `INTEGER` |                                            | Boolean: whether the player's is assigned a fixed table |
-| `check_in`      | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean: whether the player has checked in              |
-| `plugin_data`   | `TEXT`    | NOT NULL                                   | Additional data used by plugins, in JSON format         |
+| Field           | Type      | Constraint                                 | Description                                     |
+|-----------------|-----------|--------------------------------------------|-------------------------------------------------|
+| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player ID                                   |
+| `last_name`     | `TEXT`    | NOT NULL                                   | The player's last name                          |
+| `first_name`    | `TEXT`    |                                            | The player's first name                         |
+| `date_of_birth` | `TEXT`    |                                            | The player's date of birth in YYYY-MM-DD format |
+| `gender`        | `TEXT`    | NOT NULL                                   | The player's gender                             |
+| `mail`          | `TEXT`    |                                            | The player's email address                      |
+| `phone`         | `TEXT`    |                                            | The player's phone number                       |
+| `comment`       | `TEXT`    |                                            | Comments about the player                       |
+| `owed`          | `FLOAT`   | NOT NULL                                   | Amount of money owed by the player              |
+| `paid`          | `FLOAT`   | NOT NULL                                   | Amount of money paid by the player              |
+| `title`         | `TEXT`    | NOT NULL                                   | The player's chess title                        |
+| `ratings`       | `TEXT`    | NOT NULL                                   | The player's ratings in JSON format             |
+| `fide_id`       | `INTEGER` |                                            | The player's FIDE ID                            |
+| `federation`    | `TEXT`    |                                            | The player's federation code                    |
+| `club`          | `TEXT`    |                                            | The player's chess club                         |
+| `fixed`         | `INTEGER` |                                            | The player's fixed table (if any)               |
+| `check_in`      | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean: whether the player has checked in      |
+| `plugin_data`   | `TEXT`    | NOT NULL                                   | Additional data used by plugins, in JSON format |
 
 ### `tournament_player` table (tournament player associations)
 

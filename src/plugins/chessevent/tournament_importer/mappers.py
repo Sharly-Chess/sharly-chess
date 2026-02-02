@@ -17,7 +17,7 @@ from plugins.pairing_acceleration.pairing_variations import (
     ProgressiveSwissVariation,
 )
 from utils import CoreMapper
-from utils.enum import PlayerRatingType, PlayerTitle
+from utils.enum import PlayerRatingType, PlayerTitle, PlayerGender
 
 
 class ChessEventPairingSystem(CoreMapper[int, PairingSystem]):
@@ -83,6 +83,16 @@ class ChessEventRatingType(CoreMapper[int, PlayerRatingType]):
             1: PlayerRatingType.ESTIMATED,
             2: PlayerRatingType.NATIONAL,
             3: PlayerRatingType.FIDE,
+        }
+
+
+class ChessEventGender(CoreMapper[int, PlayerGender]):
+    @staticmethod
+    def _core_object_by_outer_value() -> dict[int, PlayerGender]:
+        return {
+            0: PlayerGender.NONE,
+            1: PlayerGender.FEMALE,
+            2: PlayerGender.MALE,
         }
 
 
