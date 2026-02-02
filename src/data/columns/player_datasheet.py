@@ -79,7 +79,7 @@ class GenderColumn(DatasheetColumn):
         return 'gender'
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.gender.short_name
+        return player.gender.value
 
 
 class FideIDColumn(DatasheetColumn):

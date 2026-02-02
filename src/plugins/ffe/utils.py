@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from enum import IntEnum
+from enum import IntEnum, StrEnum
 from functools import partial
 from typing import Self, Any
 
@@ -76,11 +76,11 @@ class FFEUtils:
         return PapiConverter.papi_export_unavailable_message(tournament)
 
 
-class PlayerFFELicence(IntEnum):
-    NONE = 0
-    N = 1
-    A = 2
-    B = 3
+class PlayerFFELicence(StrEnum):
+    NONE = ''
+    N = 'N'
+    A = 'A'
+    B = 'B'
 
     @property
     def name(self) -> str:
@@ -112,17 +112,9 @@ class PlayerFFELicence(IntEnum):
 
     @property
     def short_name(self) -> str:
-        match self:
-            case PlayerFFELicence.NONE:
-                return '-'
-            case PlayerFFELicence.N:
-                return 'N'
-            case PlayerFFELicence.A:
-                return 'A'
-            case PlayerFFELicence.B:
-                return 'B'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
+        if self == PlayerFFELicence.NONE:
+            return '-'
+        return self.value
 
     @staticmethod
     def validate(string: str) -> bool:
@@ -320,7 +312,7 @@ class FfePlayerPluginData(PluginData):
         return cls(
             ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
             ffe_licence=PlayerFFELicence(
-                WebContext.form_data_to_int(data, 'ffe_licence')
+                WebContext.form_data_to_str(data, 'ffe_licence')
                 or PlayerFFELicence.NONE
             ),
             ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
