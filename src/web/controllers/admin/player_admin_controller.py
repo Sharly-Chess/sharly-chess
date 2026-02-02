@@ -1657,7 +1657,7 @@ class PlayerAdminController(BaseEventAdminController):
                     ):
                         raise ValueError(
                             _(
-                                'The player with this value already exists in the tournament.'
+                                'A player with this value already exists in the tournament.'
                             )
                         )
                 except ValueError as error:
@@ -1670,7 +1670,7 @@ class PlayerAdminController(BaseEventAdminController):
             if stored_player.date_of_birth:
                 if name_key in name_keys:
                     import_errors_by_index[index]['last_name'] = _(
-                        'The player [{player}] already exists in the tournament.'
+                        'Player [{player}] already exists in the tournament.'
                     ).format(
                         player=' '.join(
                             [
