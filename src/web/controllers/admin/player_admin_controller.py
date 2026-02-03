@@ -1726,7 +1726,6 @@ class PlayerAdminController(BaseEventAdminController):
             stored_players_by_identifier = (
                 await data_source.get_stored_players_by_import_identifier(identifiers)
             )
-            assert stored_players_by_identifier is not None
             for index in range(row_count):
                 if index in import_errors_by_index:
                     continue

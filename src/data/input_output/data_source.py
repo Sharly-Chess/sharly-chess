@@ -253,7 +253,7 @@ class DataSource(IdentifiableEntity, ABC):
     @abstractmethod
     async def get_stored_players_by_import_identifier(
         self, identifier_values: list[str]
-    ) -> dict[str, StoredPlayer] | None:
+    ) -> dict[str, StoredPlayer]:
         """Fetch stored players from their identifier values.
         Return a dict with the ones that have been found."""
 
@@ -455,7 +455,7 @@ class FideDataSource(LocalDataSource):
 
     async def get_stored_players_by_import_identifier(
         self, identifier_values: list[str]
-    ) -> dict[str, StoredPlayer] | None:
+    ) -> dict[str, StoredPlayer]:
         with FideDatabase() as database:
             stored_players = database.get_stored_players_by_fide_id(
                 [int(value) for value in identifier_values]

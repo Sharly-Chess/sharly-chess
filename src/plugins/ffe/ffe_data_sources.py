@@ -261,15 +261,13 @@ class _FfeDataSource(ABC):
 
     async def _get_stored_players_by_import_identifier(
         self, identifier_values: list[str]
-    ) -> dict[str, StoredPlayer] | None:
+    ) -> dict[str, StoredPlayer]:
         stored_players = await self._get_ffe_match_stored_players(
             identifier_values, [], []
         )
-        if stored_players is None:
-            return None
         return {
             stored_player.plugin_data[PLUGIN_NAME]['ffe_licence_number']: stored_player
-            for stored_player in stored_players
+            for stored_player in stored_players or []
         }
 
 
@@ -350,7 +348,7 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
 
     async def get_stored_players_by_import_identifier(
         self, identifier_values: list[str]
-    ) -> dict[str, StoredPlayer] | None:
+    ) -> dict[str, StoredPlayer]:
         return await self._get_stored_players_by_import_identifier(identifier_values)
 
 
@@ -451,5 +449,5 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
 
     async def get_stored_players_by_import_identifier(
         self, identifier_values: list[str]
-    ) -> dict[str, StoredPlayer] | None:
+    ) -> dict[str, StoredPlayer]:
         return await self._get_stored_players_by_import_identifier(identifier_values)
