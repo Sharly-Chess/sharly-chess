@@ -237,7 +237,7 @@ class _FfeDataSource(ABC):
 
     @property
     def _import_identifier_column(self) -> DatasheetColumn:
-        return FfeLicenceNumberDatasheetColumn(True)
+        return FfeLicenceNumberDatasheetColumn()
 
     @property
     def _imported_datasheet_columns(self) -> list[DatasheetColumn]:
@@ -253,7 +253,6 @@ class _FfeDataSource(ABC):
             FfeLeagueDatasheetColumn(),
             pds.ClubColumn(),
             FfeIdDatasheetColumn(),
-            FfeLicenceNumberDatasheetColumn(),
             FfeLicenceDatasheetColumn(),
         ]
         columns += PlayerDatasheetColumnHandler.get_rating_columns()

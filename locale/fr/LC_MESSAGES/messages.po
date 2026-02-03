@@ -53,6 +53,12 @@ msgstr[0] "%(num)d famille"
 msgstr[1] "%(num)d familles"
 
 #, python-format
+msgid "%(num)d informative *** COLUMNS"
+msgid_plural "%(num)d informative *** COLUMNS"
+msgstr[0] "%(num)d informative"
+msgstr[1] "%(num)d informatives"
+
+#, python-format
 msgid "%(num)d optional *** COLUMNS"
 msgid_plural "%(num)d optional *** COLUMNS"
 msgstr[0] "%(num)d facultative"
@@ -540,14 +546,14 @@ msgstr "Tous les ports candidats [{ports}] sont déjà utilisés, impossible de 
 msgid "All the dependant objects will also be deleted:"
 msgstr "Tous les objets dépendants seront également supprimés :"
 
-msgid "All the player data of the selected tournament will be deleted."
-msgstr "Toutes les données des joueur·euses du tournoi sélectionné seront supprimées."
-
 msgid "All the players"
 msgstr "Tou·tes les joueur·euses"
 
 msgid "All the players intended to play the coming round did check-in."
 msgstr "Tou·tes les joueur·euses supposé·es jouer la ronde ont pointé."
+
+msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
+msgstr "Tou·tes les joueur·euses du tournoi sélectionné seront supprimé·es avant d'importer ceux du fichier."
 
 msgid "All the tournaments"
 msgstr "Tous les tournois"
@@ -1667,6 +1673,9 @@ msgstr "Supprimer la catégorie."
 
 msgid "Delete the display controller."
 msgstr "Supprimer le pilote d'afficheurs."
+
+msgid "Delete the existing players"
+msgstr "Supprimer les joueur·euses existant·es"
 
 msgid "Delete the rotator."
 msgstr "Supprimer l'écran rotatif."
@@ -3750,9 +3759,6 @@ msgstr "Autres"
 msgid "Overwrite"
 msgstr "Remplacement"
 
-msgid "Overwrite the existing players"
-msgstr "Écraser les joueur·euses existant·es"
-
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
 msgstr "Remplace les résultats lorsque l'on utilise les raccourcis clavier."
 
@@ -5562,6 +5568,9 @@ msgstr "Cette ronde n'est pas terminée (dernière ronde terminée : n°{round}
 msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr "Ce numéro de ronde n'est pas valide (le tournoi comporte {rounds} rondes)."
 
+msgid "This row contains errors that prevent it from being imported."
+msgstr "Cette ligne contient des erreurs empêchant son import."
+
 msgid "This screen family is private (not visible by the spectators)."
 msgstr "Cette famille d'écrans est privée (non visible des spectateur·ices)."
 
@@ -6061,6 +6070,9 @@ msgstr "Valider"
 
 msgid "Value"
 msgstr "Valeur"
+
+msgid "Value does not match the one from the data source."
+msgstr "La valeur ne correspond pas à celle de la source de données."
 
 msgid "Value not found in the data source."
 msgstr "Valeur non trouvée dans la source de données."
@@ -6672,4 +6684,10 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "All the player data of the selected tournament will be deleted."
+#~ msgstr "Toutes les données des joueur·euses du tournoi sélectionné seront supprimées."
+
+#~ msgid "Overwrite the existing players"
+#~ msgstr "Écraser les joueur·euses existant·es"
 

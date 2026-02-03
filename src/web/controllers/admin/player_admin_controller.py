@@ -1558,10 +1558,18 @@ class PlayerAdminController(BaseEventAdminController):
     @staticmethod
     def _split_datasheet_columns_ids(
         columns: list[DatasheetColumn],
-    ) -> tuple[list[str], list[str]]:
-        required = [column.id for column in columns if column.is_required]
-        optional = [column.id for column in columns if not column.is_required]
-        return required, optional
+    ) -> tuple[list[str], list[str], list[str]]:
+        required: list[str] = []
+        optional: list[str] = []
+        informative: list[str] = []
+        for column in columns:
+            if column.is_required:
+                required.append(column.id)
+            elif column.is_informative:
+                informative.append(column.id)
+            else:
+                optional.append(column.id)
+        return required, optional, informative
 
     @classmethod
     def _render_players_import_modal(
@@ -1599,7 +1607,7 @@ class PlayerAdminController(BaseEventAdminController):
             'data_sources': data_sources,
             'build_list_tooltip': cls._build_list_tooltip,
             'split_column_ids': cls._split_datasheet_columns_ids,
-            'columns': PlayerDatasheetColumnHandler(event).import_columns,
+            'columns': PlayerDatasheetColumnHandler(event).columns,
             'data': (data or {}) | default_data,
             'errors': errors or {},
         }
@@ -1635,7 +1643,7 @@ class PlayerAdminController(BaseEventAdminController):
                 content_by_column = {header: [] for header in reader.fieldnames}
                 for row in reader:
                     for header in reader.fieldnames:
-                        content_by_column[header].append(row[header])
+                        content_by_column[header].append(row[header].strip())
         return content_by_column
 
     @classmethod
@@ -1653,7 +1661,7 @@ class PlayerAdminController(BaseEventAdminController):
         name_keys: list[tuple[str, str, date | None]] = []
         if not overwrite_players:
             for column in used_columns:
-                if not column.is_unique:
+                if column.is_informative or not column.is_unique:
                     continue
                 for player in tournament.tournament_players:
                     unique_values_by_column_id[column.id].append(
@@ -1670,6 +1678,8 @@ class PlayerAdminController(BaseEventAdminController):
         for index in range(row_count):
             stored_player = StoredPlayer(id=None, federation=event.federation)
             for column in used_columns:
+                if column.is_informative:
+                    continue
                 value = content_by_column_id[column.id][index]
                 try:
                     column.augment_stored_player_with_event(event, stored_player, value)
@@ -1737,6 +1747,8 @@ class PlayerAdminController(BaseEventAdminController):
                     continue
                 stored_player = stored_players_by_identifier[identifier]
                 for column in used_columns:
+                    if column.is_informative:
+                        continue
                     value = content_by_column_id[column.id][index]
                     column.augment_stored_player_with_event(event, stored_player, value)
                 stored_players_by_index[index] = stored_player
@@ -1839,8 +1851,7 @@ class PlayerAdminController(BaseEventAdminController):
                 WebContext.form_data_to_str(data, 'data_source') or ''
             )
             SessionPlayersActiveDataSource(request).set(data_source.id)
-        handler = PlayerDatasheetColumnHandler(event, data_source)
-        columns = handler.import_columns
+        columns = PlayerDatasheetColumnHandler(event, data_source).columns
         if not errors:
             for column in columns:
                 if column.is_required and column.id not in content_by_column_id:
@@ -1926,14 +1937,14 @@ class PlayerAdminController(BaseEventAdminController):
         )
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
+        data_source = web_context.admin_data_source
         file_path = WebContext.form_data_to_path(flat_data, 'file_path')
         assert file_path is not None
         row_indexes = WebContext.form_data_to_list_int(flat_data, 'row_indexes')
         overwrite_players = WebContext.form_data_to_bool(flat_data, 'overwrite_players')
         if overwrite_players and tournament.started:
             raise ClientException('Overwrite is forbidden on started tournaments.')
-        handler = PlayerDatasheetColumnHandler(event, web_context.admin_data_source)
-        columns = handler.import_columns
+        columns = PlayerDatasheetColumnHandler(event, data_source).columns
         content_by_column_id = self._read_csv_file(file_path)
         used_columns = [
             column for column in columns if column.id in content_by_column_id

@@ -1,6 +1,6 @@
 <div
     class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 550px);"
+    style="--bs-modal-width: min(90vw, 600px);"
 >
     <div class="modal-content">
         <div class="modal-header">
@@ -78,21 +78,20 @@
                     >
                         {{ admin_macros.switch_input(
                             name='overwrite_players',
-                            placeholder=_('Overwrite the existing players'),
+                            placeholder=_('Delete the existing players'),
                             data=data, errors=errors
                         ) }}
                     </span>
 
                     <i
-                        id="overwrite-warning"
                         class="bi-exclamation-triangle-fill text-warning"
                         {{ macros.tooltip_attributes(
                             'warning',
-                            _('All the player data of the selected tournament will be deleted.'),
+                            _(
+                                'All the players of the selected tournament will '
+                                'be deleted before importing the ones from the file.'
+                            ),
                         ) }}
-                        {% if data['overwrite_players'] != 'on' %}
-                            style="display:none"
-                        {% endif %}
                     ></i>
                     <script>
                         $('#tournament-id').change(function () {
@@ -104,16 +103,12 @@
                             );
                             if (isStarted) {
                                 tooltip.enable();
-                                $('#overwrite-players').prop('checked', false).trigger('change');
+                                $('#overwrite-players').prop('checked', false);
                             } else {
                                 tooltip.disable();
                             }
                         });
-                        $('#overwrite-players').change(function () {
-                            $('#overwrite-warning').toggle(this.checked);
-                        });
-                        $('#overwrite-players').trigger('change');
-                        setTimeout(() => $('#tournament-id').trigger('change'), 100);
+                        setTimeout(() => $('#tournament-id').trigger('change'), 200);
                     </script>
                 </div>
                 <div
@@ -133,7 +128,7 @@
                                 style="display:none"
                             {% endif %}
                         >
-                            {% with columns = data_source.get_importable_datasheet_columns(admin_event) %}
+                            {% with columns = data_source.get_all_datasheet_columns(admin_event) %}
                                 {% include 'players_import_columns.html' %}
                             {% endwith %}
                         </div>

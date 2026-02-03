@@ -244,11 +244,9 @@ class DataSource(IdentifiableEntity, ABC):
         """IDs of the datasheet columns that the datasource is importing.
         These columns won't be available on import."""
 
-    def get_importable_datasheet_columns(
-        self, event: Event
-    ) -> Collection[DatasheetColumn]:
+    def get_all_datasheet_columns(self, event: Event) -> Collection[DatasheetColumn]:
         """Fetch the datasheet columns that can be imported with the data source."""
-        return PlayerDatasheetColumnHandler(event, self).import_columns
+        return PlayerDatasheetColumnHandler(event, self).columns
 
     @abstractmethod
     async def get_stored_players_by_import_identifier(
@@ -434,7 +432,7 @@ class FideDataSource(LocalDataSource):
 
     @property
     def import_identifier_column(self) -> DatasheetColumn:
-        return pds.FideIDColumn(True)
+        return pds.FideIDColumn()
 
     @property
     def imported_datasheet_columns(self) -> list[DatasheetColumn]:
@@ -445,7 +443,6 @@ class FideDataSource(LocalDataSource):
             pds.DateOfBirthColumn(),
             pds.YearOfBirthColumn(),
             pds.GenderColumn(),
-            pds.FideIDColumn(),
             pds.FederationColumn(),
         ]
         columns += PlayerDatasheetColumnHandler.get_rating_columns(

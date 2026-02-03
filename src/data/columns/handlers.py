@@ -294,12 +294,30 @@ class PlayersTabColumnHandler:
 
 class PlayerDatasheetColumnHandler:
     def __init__(self, event: Event, data_source: Optional['DataSource'] = None):
-        self.columns_by_id = self._get_columns_by_id(event, data_source)
+        columns = self._base_columns
+        plugin_manager.hook_for_event(event, 'insert_player_datasheet_columns')(
+            datasheet_columns=columns
+        )
+        if data_source:
+            identifier_column = data_source.import_identifier_column
+            source_column_ids = [
+                column.id for column in data_source.imported_datasheet_columns
+            ]
+            pop_index = 0
+            for index, column in enumerate(columns):
+                if column.id in source_column_ids:
+                    column.is_informative = True
+                    column.is_required = False
+                if column.id == identifier_column.id:
+                    pop_index = index
+            if pop_index:
+                columns.pop(pop_index)
+            identifier_column.is_required = True
+            columns.insert(0, identifier_column)
+        self.columns = columns
 
-    @classmethod
-    def _get_columns_by_id(
-        cls, event: Event, data_source: Optional['DataSource'] = None
-    ) -> dict[str, DatasheetColumn]:
+    @property
+    def _base_columns(self) -> list[DatasheetColumn]:
         columns: list[DatasheetColumn] = [
             pds.TitleColumn(),
             pds.LastNameColumn(),
@@ -317,19 +335,8 @@ class PlayerDatasheetColumnHandler:
             pds.PaidColumn(),
             pds.CommentColumn(),
         ]
-        columns += cls.get_rating_columns()
-        plugin_manager.hook_for_event(event, 'insert_player_datasheet_columns')(
-            datasheet_columns=columns
-        )
-        if data_source:
-            source_column_ids = [
-                column.id for column in data_source.imported_datasheet_columns
-            ]
-            columns = [
-                column for column in columns if column.id not in source_column_ids
-            ]
-            columns.insert(0, data_source.import_identifier_column)
-        return {column.id: column for column in columns}
+        columns += self.get_rating_columns()
+        return columns
 
     @staticmethod
     def get_rating_columns(
@@ -342,14 +349,6 @@ class PlayerDatasheetColumnHandler:
             for rating_type in rating_types:
                 columns.append(pds.RatingColumn(tournament_type, rating_type))
         return columns
-
-    @property
-    def columns(self) -> Collection[DatasheetColumn]:
-        return self.columns_by_id.values()
-
-    @property
-    def export_columns(self) -> Collection[DatasheetColumn]:
-        return self.columns
 
     @property
     def import_columns(self) -> Collection[DatasheetColumn]:

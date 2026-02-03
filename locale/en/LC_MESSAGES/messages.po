@@ -53,6 +53,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d informative *** COLUMNS"
+msgid_plural "%(num)d informative *** COLUMNS"
+msgstr[0] "%(num)d informative"
+msgstr[1] "%(num)d informative"
+
+#, python-format
 msgid "%(num)d optional *** COLUMNS"
 msgid_plural "%(num)d optional *** COLUMNS"
 msgstr[0] "%(num)d optional"
@@ -540,13 +546,13 @@ msgstr ""
 msgid "All the dependant objects will also be deleted:"
 msgstr ""
 
-msgid "All the player data of the selected tournament will be deleted."
-msgstr ""
-
 msgid "All the players"
 msgstr ""
 
 msgid "All the players intended to play the coming round did check-in."
+msgstr ""
+
+msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
 msgstr ""
 
 msgid "All the tournaments"
@@ -1666,6 +1672,9 @@ msgid "Delete the category."
 msgstr ""
 
 msgid "Delete the display controller."
+msgstr ""
+
+msgid "Delete the existing players"
 msgstr ""
 
 msgid "Delete the rotator."
@@ -3748,9 +3757,6 @@ msgstr ""
 msgid "Overwrite"
 msgstr ""
 
-msgid "Overwrite the existing players"
-msgstr ""
-
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
 msgstr ""
 
@@ -5560,6 +5566,9 @@ msgstr ""
 msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr ""
 
+msgid "This row contains errors that prevent it from being imported."
+msgstr ""
+
 msgid "This screen family is private (not visible by the spectators)."
 msgstr ""
 
@@ -6058,6 +6067,9 @@ msgid "Validate"
 msgstr ""
 
 msgid "Value"
+msgstr ""
+
+msgid "Value does not match the one from the data source."
 msgstr ""
 
 msgid "Value not found in the data source."
@@ -6670,4 +6682,10 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "All the player data of the selected tournament will be deleted."
+#~ msgstr ""
+
+#~ msgid "Overwrite the existing players"
+#~ msgstr ""
 

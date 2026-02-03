@@ -59,6 +59,10 @@
     border: 2px solid rgba(var(--bs-danger-rgb));
 }
 
+.warning-cell {
+    border: 2px solid rgba(var(--bs-warning-rgb));
+}
+
 .mw-15em {
     max-width: 15em;
 }
