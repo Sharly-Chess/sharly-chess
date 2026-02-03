@@ -476,9 +476,16 @@ class FfeIdDatasheetColumn(DatasheetColumn):
 
 
 class FfeLicenceNumberDatasheetColumn(DatasheetColumn):
+    def __init__(self, is_required: bool = False):
+        self._is_required = is_required
+
     @property
     def id(self) -> str:
         return 'ffe_licence_number'
+
+    @property
+    def is_required(self) -> bool:
+        return self._is_required
 
     def get_cell_content(self, player: Player) -> Any:
         return FFEUtils.get_player_plugin_data(player).ffe_licence_number or ''
