@@ -18,6 +18,7 @@
 - Fixed the text of player norm tooltips (3.5.0)
 - Update FFE players by FFE licence number, FIDE ID (new), then name/DOB (3.5.0)
 - Use score instead of result in history popover (3.5.1)
+- Remove table header transparency (3.5.2)
 
 ## Screens
 
