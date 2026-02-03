@@ -1549,6 +1549,9 @@ msgstr "Un jour"
 msgid "Dashed border"
 msgstr "Bordure pointillée"
 
+msgid "Data source"
+msgstr "Source de données"
+
 #, python-format
 msgid "Data source: %(data_source)s"
 msgstr "Source de données : %(data_source)s"
@@ -2623,6 +2626,9 @@ msgstr "Importer un tournoi"
 msgid "Import a tournament to the event from an external source."
 msgstr "Importer un tournoi à l'évènement depuis une source externe."
 
+msgid "Import from a data source"
+msgstr "Importer depuis une source de données"
+
 msgid "Import is unavailable once the tournament has started."
 msgstr "L'import n'est plus disponible une fois le tournoi démarré."
 
@@ -2632,6 +2638,9 @@ msgstr "Importer des joueur·euses depuis un fichier CSV."
 #, python-format
 msgid "Import players to tournament [%(tournament)s]"
 msgstr "Importer des joueur·euses dans le tournoi [%(tournament)s]"
+
+msgid "Imported player"
+msgstr "Joueur·euse importé·e"
 
 msgid "Impossible to add players to tournament [{tournament}]."
 msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament}]."
@@ -4917,6 +4926,9 @@ msgstr "Afficher le niveau de log"
 msgid "Show unmodified players"
 msgstr "Afficher les joueur·euses non modifié·es"
 
+msgid "Show valid rows"
+msgstr "Afficher les lignes valides"
+
 msgid "Show warnings"
 msgstr "Afficher les avertissements"
 
@@ -5996,6 +6008,9 @@ msgstr "Uruguay"
 msgid "Use Fore Buchholz"
 msgstr "Utiliser le Fore Buchholz"
 
+msgid "Use a data source to import players from their identifier."
+msgstr "Utiliser une source de données pour importer des joueur·euses à partir de leur identifiant."
+
 msgid "Use default"
 msgstr "Par défaut"
 
@@ -6046,6 +6061,9 @@ msgstr "Valider"
 
 msgid "Value"
 msgstr "Valeur"
+
+msgid "Value not found in the data source."
+msgstr "Valeur non trouvée dans la source de données."
 
 msgid "Value of the pairing allocated bye:"
 msgstr "Points attribués en cas d’exemption :"

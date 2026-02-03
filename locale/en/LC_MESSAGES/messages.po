@@ -1549,6 +1549,9 @@ msgstr ""
 msgid "Dashed border"
 msgstr ""
 
+msgid "Data source"
+msgstr ""
+
 #, python-format
 msgid "Data source: %(data_source)s"
 msgstr ""
@@ -2623,6 +2626,9 @@ msgstr ""
 msgid "Import a tournament to the event from an external source."
 msgstr ""
 
+msgid "Import from a data source"
+msgstr ""
+
 msgid "Import is unavailable once the tournament has started."
 msgstr ""
 
@@ -2631,6 +2637,9 @@ msgstr ""
 
 #, python-format
 msgid "Import players to tournament [%(tournament)s]"
+msgstr ""
+
+msgid "Imported player"
 msgstr ""
 
 msgid "Impossible to add players to tournament [{tournament}]."
@@ -4915,6 +4924,9 @@ msgstr ""
 msgid "Show unmodified players"
 msgstr ""
 
+msgid "Show valid rows"
+msgstr ""
+
 msgid "Show warnings"
 msgstr ""
 
@@ -5994,6 +6006,9 @@ msgstr ""
 msgid "Use Fore Buchholz"
 msgstr ""
 
+msgid "Use a data source to import players from their identifier."
+msgstr ""
+
 msgid "Use default"
 msgstr ""
 
@@ -6043,6 +6058,9 @@ msgid "Validate"
 msgstr ""
 
 msgid "Value"
+msgstr ""
+
+msgid "Value not found in the data source."
 msgstr ""
 
 msgid "Value of the pairing allocated bye:"
