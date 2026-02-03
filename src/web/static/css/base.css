@@ -730,7 +730,7 @@ body[data-bs-theme=light] .btn-primary {
 }
 
 [data-bs-theme=dark] table.prominent.table-danger-warning thead th {
-    background-color: rgb(var(--bs-warning-rgb), 0.8);
+    background-color: rgb(var(--bs-warning-rgb));
     padding: 5px;
     border-bottom: 7px solid var(--bs-body-bg);
     vertical-align: middle;
