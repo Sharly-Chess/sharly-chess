@@ -128,7 +128,7 @@ def parse_bbp_checklist_text(text_content: str) -> TournamentHistory:
 
         # Parse player data lines
         # Format: " 6\t2.0\t WB\t  w \t Y\t   \t   \t(16W)\t\t17\t15\t"
-        # Columns: ID, Pts, [color_history], Pref, C2, C12, C14, Cur, [empty], R1, R2, ...
+        # Columns: ID, Pts, [color_history], Pref, C2, C14, C16, Cur, [empty], R1, R2, ...
         parts = line.split('\t')
         if len(parts) >= 8:
             # First part should be player ID
@@ -164,26 +164,26 @@ def parse_bbp_checklist_text(text_content: str) -> TournamentHistory:
             except IndexError:
                 eligible_for_bye = False
 
-            # Extract C12 - floater round n-1 (column 6)
+            # Extract C14 - floater round n-1 (column 6)
             floater_prev: Floater | None
             try:
-                c12_value = parts[5].strip() if len(parts) > 5 else ''
-                if c12_value == 'U':
+                c14_value = parts[5].strip() if len(parts) > 5 else ''
+                if c14_value == 'U':
                     floater_prev = Floater.UP
-                elif c12_value == 'D':
+                elif c14_value == 'D':
                     floater_prev = Floater.DOWN
                 else:
                     floater_prev = Floater.NONE
             except IndexError:
                 floater_prev = Floater.NONE
 
-            # Extract C14 - floater round n-2 (column 7)
+            # Extract C16 - floater round n-2 (column 7)
             floater_prev_prev: Floater | None
             try:
-                c14_value = parts[6].strip() if len(parts) > 6 else ''
-                if c14_value == 'U':
+                c16_value = parts[6].strip() if len(parts) > 6 else ''
+                if c16_value == 'U':
                     floater_prev_prev = Floater.UP
-                elif c14_value == 'D':
+                elif c16_value == 'D':
                     floater_prev_prev = Floater.DOWN
                 else:
                     floater_prev_prev = Floater.NONE
