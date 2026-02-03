@@ -331,7 +331,7 @@ class BbpPairingsInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
-        return Version('5.0.2')
+        return Version('6.0.0')
 
     @cached_property
     def system_handler(self) -> SystemHandler:
