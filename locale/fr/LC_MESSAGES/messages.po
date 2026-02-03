@@ -2299,6 +2299,9 @@ msgstr "Fédérations"
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Femme"
 
+msgid "Fetch from a data source"
+msgstr "Récupérer depuis une source de données"
+
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr "L'identifiant Fide [{fide_id}] est déjà présent dans le tournoi [{tournament}]."
 
@@ -2634,9 +2637,6 @@ msgstr "Importer un tournoi"
 
 msgid "Import a tournament to the event from an external source."
 msgstr "Importer un tournoi à l'évènement depuis une source externe."
-
-msgid "Import from a data source"
-msgstr "Importer depuis une source de données"
 
 msgid "Import is unavailable once the tournament has started."
 msgstr "L'import n'est plus disponible une fois le tournoi démarré."
@@ -6690,4 +6690,7 @@ msgstr "½ - ½ (NC)"
 
 #~ msgid "Overwrite the existing players"
 #~ msgstr "Écraser les joueur·euses existant·es"
+
+#~ msgid "Import from a data source"
+#~ msgstr "Importer depuis une source de données"
 

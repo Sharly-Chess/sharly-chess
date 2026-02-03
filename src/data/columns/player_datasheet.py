@@ -3,6 +3,8 @@ from datetime import datetime
 from abc import abstractmethod, ABC
 from typing import Any
 
+from text_unidecode import unidecode
+
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
@@ -109,7 +111,7 @@ class LastNameColumn(DatasheetColumn):
         stored_player.last_name = value.upper()
 
     def check_data_source_value_match(self, value: str, player: Player) -> bool:
-        return player.last_name == value.upper()
+        return unidecode(player.last_name) == unidecode(value.upper())
 
 
 class FirstNameColumn(DatasheetColumn):
@@ -124,7 +126,7 @@ class FirstNameColumn(DatasheetColumn):
         stored_player.first_name = value.title() or None
 
     def check_data_source_value_match(self, value: str, player: Player) -> bool:
-        return player.first_name == value.title()
+        return unidecode(player.first_name) == unidecode(value.title())
 
 
 class DateOfBirthColumn(DatasheetColumn):

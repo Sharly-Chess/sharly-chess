@@ -2299,6 +2299,9 @@ msgstr ""
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Female"
 
+msgid "Fetch from a data source"
+msgstr ""
+
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr ""
 
@@ -2633,9 +2636,6 @@ msgid "Import a tournament"
 msgstr ""
 
 msgid "Import a tournament to the event from an external source."
-msgstr ""
-
-msgid "Import from a data source"
 msgstr ""
 
 msgid "Import is unavailable once the tournament has started."
@@ -6687,5 +6687,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Overwrite the existing players"
+#~ msgstr ""
+
+#~ msgid "Import from a data source"
 #~ msgstr ""
 

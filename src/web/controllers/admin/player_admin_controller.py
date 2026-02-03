@@ -1608,7 +1608,7 @@ class PlayerAdminController(BaseEventAdminController):
             'build_list_tooltip': cls._build_list_tooltip,
             'split_column_ids': cls._split_datasheet_columns_ids,
             'columns': PlayerDatasheetColumnHandler(event).columns,
-            'data': (data or {}) | default_data,
+            'data': default_data | (data or {}),
             'errors': errors or {},
         }
         return cls._admin_base_event_render(
