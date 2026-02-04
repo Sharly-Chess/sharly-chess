@@ -1638,9 +1638,6 @@ class TournamentAdminController(BaseEventAdminController):
         return HTMXTemplate(
             template_name='admin/tournaments/random_player_modal.html',
             context={
-                'player_name': tournament_player.full_name
-                if tournament_player
-                else None,
                 'random_player': tournament_player,
                 'opponent_name': opponent.full_name if opponent else None,
                 'tournament': tournament,
