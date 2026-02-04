@@ -22,6 +22,7 @@
 {# ========== PLAYER NAME POPOVER ========== #}
 .player-name {
     position: relative;
+    font-weight: bold;
 }
 
 .player-name .player-history table {
