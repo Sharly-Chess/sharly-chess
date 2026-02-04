@@ -14,8 +14,8 @@ from tests.test_config import TestUtils
 
 session_config = ServerSideSessionConfig()
 
-EVENT_ID = 'test-documents-event'
-TOURNAMENT_NAME = 'test-documents-tournament'
+EVENT_ID = 'test-event-documents-event'
+TOURNAMENT_NAME = 'test-event-documents-tournament'
 
 
 @pytest.fixture(scope='function')
