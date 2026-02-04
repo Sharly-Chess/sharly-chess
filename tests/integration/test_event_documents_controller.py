@@ -74,7 +74,7 @@ def test_client(account: Account) -> Iterator[TestClient[Litestar]]:
 PLAYER_HISTORY_HTML_PATTERN = 'class="player-history"'
 
 
-@pytest.mark.unit
+@pytest.mark.integration
 class TestEventDocumentsController:
     def test_crosstable_document_view_includes_player_histories_when_option_is_on(
         self, test_client: TestClient, event: Event, tournament: Tournament

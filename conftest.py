@@ -33,6 +33,11 @@ def pytest_configure(config):
     )
     config.addinivalue_line(
         'markers',
+        'integration: mark test as integration test requiring Litestar app with basic config '
+        '(runs on commit, pull request and release)',
+    )
+    config.addinivalue_line(
+        'markers',
         'unit: mark test as unit test (runs on commit, pull request and release)',
     )
     config.addinivalue_line(
