@@ -5,6 +5,7 @@ import pytest
 from litestar import Litestar
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.middleware.session.server_side import ServerSideSessionConfig
+from litestar.status_codes import HTTP_200_OK
 from litestar.template import TemplateConfig
 from litestar.testing import TestClient
 from requests import Response
@@ -40,9 +41,11 @@ def tournament(event: Event) -> Iterator[Tournament]:
 
 @pytest.fixture(scope='function')
 def account(event: Event, tournament: Tournament) -> Iterator[Account]:
-    yield TestUtils.create_account(
-        EVENT_ID, tournament.id, 'admin', overrides={'id': 3}
+    user_account = TestUtils.create_account(event.uniq_id, 'admin', overrides={'id': 3})
+    TestUtils.create_permission(
+        event.uniq_id, tournament.id, user_account.id, 'ADMINISTRATION'
     )
+    yield user_account
 
 
 @pytest.fixture(scope='function')
@@ -83,6 +86,7 @@ class TestEventDocumentsController:
             f'/document-view/{EVENT_ID}/crosstable?options=player-history-popover%3Don'
         )
 
+        assert html_response.status_code == HTTP_200_OK
         assert html_response.text.count(PLAYER_HISTORY_HTML_PATTERN) == len(
             tournament.tournament_players
         )
@@ -94,4 +98,5 @@ class TestEventDocumentsController:
             f'/document-view/{EVENT_ID}/crosstable'
         )
 
+        assert html_response.status_code == HTTP_200_OK
         assert PLAYER_HISTORY_HTML_PATTERN not in html_response.text
