@@ -7,18 +7,29 @@ import sys
 import time
 from io import TextIOWrapper
 from pathlib import Path
+
+from litestar import Litestar
+from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.template import TemplateConfig
+from litestar.testing import TestClient
+
+from common import BASE_DIR
+from common.i18n import gettext, ngettext
 from common.sharly_chess_config import SharlyChessConfig
 from playwright.sync_api import Browser, Playwright, APIRequestContext
-from typing import Generator
+from typing import Generator, Iterator
 
 import pytest
 import requests
 
+from tests.integration.test_event_documents_controller import session_config
 # Note: Keeping default event loop policy for Windows (ProactorEventLoop)
 # The WindowsSelectorEventLoop doesn't support subprocess operations
 
 from tests.test_config import TestConfig
 from utils.file import shutil_delete_onerror
+from web.controllers.admin.event_admin_controller import EventAdminController
+from web.controllers.admin.event_documents_controller import EventDocumentsController
 
 # Set up environment variables here to make TEST_ENV available in common.i18n
 env = os.environ.copy()
@@ -222,3 +233,31 @@ def api_request_context(
     request_context = playwright.request.new_context(base_url='http://127.0.0.1:9000')
     yield request_context
     request_context.dispose()
+
+
+# Integration tests fixtures
+
+
+@pytest.fixture(scope='session')
+def test_client() -> Iterator[TestClient[Litestar]]:
+    template_dirs: list[Path] = [
+        BASE_DIR / 'src/web/templates',
+        BASE_DIR / 'src/web/templates/admin/print',
+        BASE_DIR / 'src/web/static',
+    ]
+
+    jinja_template_engine = JinjaTemplateEngine(template_dirs)
+    jinja_template_engine.engine.add_extension('jinja2.ext.i18n')
+    jinja_template_engine.engine.install_gettext_callables(
+        gettext=gettext, ngettext=ngettext, newstyle=True
+    )
+    jinja_template_engine.engine.add_extension('jinja2.ext.do')
+    template_config: TemplateConfig = TemplateConfig(engine=jinja_template_engine)
+    app = Litestar(
+        route_handlers=[EventDocumentsController, EventAdminController],
+        middleware=[session_config.middleware],
+        template_config=template_config,
+        debug=True,
+    )
+    with TestClient(app=app, session_config=session_config) as client:
+        yield client
