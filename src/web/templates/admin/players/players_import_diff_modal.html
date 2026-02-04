@@ -37,7 +37,16 @@
                     <input
                         class="form-check-input"
                         type="checkbox"
-                        onclick="$('.error-row').toggle(this.checked)"
+                        onclick="$('.valid-row').toggle(this.checked)"
+                        checked
+                    />
+                    <label class="form-check-label"> {{ _('Show valid rows') }}</label>
+                </div>
+                <div class="form-check form-switch d-inline-block pe-3">
+                    <input
+                        class="form-check-input"
+                        type="checkbox"
+                        onclick="$('.invalid-row').toggle(this.checked)"
                         checked
                     />
                     <label class="form-check-label"> {{ _('Show invalid rows') }}</label>
@@ -56,19 +65,30 @@
             >
                 <input name="file_path" value="{{ file_path }}" type="hidden"/>
                 <input name="overwrite_players" value="{{ 'on' if overwrite_players else 'off' }}" type="hidden"/>
+                {% if data_source %}
+                    <input name="data_source" value="{{ data_source.id }}" type="hidden"/>
+                {% endif %}
                 <table class="table prominent table-striped table-sm table-hover w-100 bg-light mx-auto justify-content-center">
                     <thead class="modal-table-sticky-header">
                         <tr>
-                            <th class="text-nowrap text-center">
+                            <th class="text-nowrap text-start">
                                 <input
                                     type="checkbox"
                                     onclick="
                                         $('.row-index-checkbox').prop('checked', this.checked);
-                                        $('.row-index-checkbox').first().trigger('change');"
+                                        $('.row-index-checkbox').trigger('change');"
                                     checked
                                 />
                                 <span id="checked-player-count">{{ selected_rows }}</span>/{{ row_count }}
                             </th>
+                            {% if data_source %}
+                                <th class="text-nowrap text-start">
+                                    {{ identifier_column.id }}
+                                </th>
+                                <th class="text-nowrap text-start">
+                                    {{ _('Imported player') }}
+                                </th>
+                            {% endif %}
                             {% for column in used_columns %}
                                 <th class="text-nowrap text-start">
                                     {{ column.id }}
@@ -79,20 +99,32 @@
                     <tbody>
                         {% for index in range(row_count) %}
                             {% set has_error = index in import_errors_by_index %}
-                            <tr class="{% if has_error %}error-row{% endif %}">
+                            {% set data_source_player = data_source_players_by_index[index] %}
+                            <tr class="{% if has_error %}invalid-row{% else %}valid-row{% endif %}">
                                 <td>
-                                    {% if not has_error %}
-                                        <input
-                                            class="row-index-checkbox ps-1"
-                                            type="checkbox"
-                                            name="row_indexes"
-                                            value="{{ index }}"
-                                            checked
-                                        />
-                                    {% endif %}
+                                    <span class="d-flex">
+                                        {% if has_error %}
+                                            <i
+                                                class="bi-exclamation-triangle-fill text-danger"
+                                                {{ macros.tooltip_attributes(
+                                                    'warning', _('This row contains errors that prevent it from being imported.')
+                                                ) }}
+                                            ></i>
+                                        {% else %}
+                                            <input
+                                                class="row-index-checkbox ps-1"
+                                                type="checkbox"
+                                                name="row_indexes"
+                                                value="{{ index }}"
+                                                checked
+                                            />
+                                        {% endif %}
+                                        <div class="flex-grow-1"></div>
+                                        <span class="pe-3">{{ index + 1 }}</span>
+                                    </span>
                                 </td>
-                                {% for column in used_columns %}
-                                    {% set error_message = import_errors_by_index[index].get(column.id, '') if has_error else '' %}
+                                {% if data_source %}
+                                    {% set error_message = import_errors_by_index[index].get(identifier_column.id, '') if has_error else '' %}
                                     <td
                                         class="text-nowrap text-start mw-15em
                                             {% if has_error %}text-secondary{% endif %}
@@ -101,7 +133,37 @@
                                             {{ macros.tooltip_attributes('warning', error_message) }}
                                         {% endif %}
                                     >
-                                        {{ content_by_column_id[column.id][index] }}
+                                        {{ content_by_column_id[identifier_column.id][index] }}
+                                    </td>
+                                    <td class="text-nowrap text-start">
+                                        {% if data_source_player %}
+                                            {% with player = data_source_player, no_identifier = true %}
+                                                {% include data_source.player_search_result_template %}
+                                            {% endwith %}
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                                {% for column in used_columns %}
+                                    {% set value = content_by_column_id[column.id][index] %}
+                                    {% set error_message = import_errors_by_index[index].get(column.id, '') if has_error else '' %}
+                                    {% set warning_message = (
+                                        _('Value does not match the one from the data source.')
+                                        if data_source_player and not column.check_data_source_value_match(value, data_source_player)
+                                        else ''
+                                    ) %}
+                                    <td
+                                        class="text-nowrap text-start mw-15em
+                                            {% if column.is_informative %}informative-cell{% endif %}
+                                            {% if has_error or column.is_informative %}text-secondary{% endif %}
+                                            {% if error_message %}error-cell{% endif %}
+                                            {% if warning_message %}warning-cell{% endif %}"
+                                        {% if error_message %}
+                                            {{ macros.tooltip_attributes('warning', error_message) }}
+                                        {% elif warning_message %}
+                                            {{ macros.tooltip_attributes('', warning_message) }}
+                                        {% endif %}
+                                    >
+                                        {{ value }}
                                     </td>
                                 {% endfor %}
                             </tr>
@@ -114,6 +176,12 @@
                     var playerCount = $('.row-index-checkbox:checked').length;
                     $('#import-players-button').prop('disabled', playerCount == 0);
                     $('#checked-player-count').html(playerCount);
+                    const rowCells = $(this).closest('tr').find('td:not(.informative-cell)');
+                    if (this.checked) {
+                        rowCells.removeClass('text-secondary');
+                    } else {
+                        rowCells.addClass('text-secondary');
+                    }
                 });
             </script>
         </div>

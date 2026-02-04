@@ -1,6 +1,6 @@
 <div
     class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: min(90vw, 550px);"
+    style="--bs-modal-width: min(90vw, 600px);"
 >
     <div class="modal-content">
         <div class="modal-header">
@@ -49,6 +49,26 @@
                         data=data, errors=errors
                     ) }}
                 </div>
+                {% if data_sources %}
+                    <div class="row gy-2 gx-3">
+                        {{ admin_macros.switch_input(
+                            name='use_data_source',
+                            placeholder=_('Fetch from a data source'),
+                            tooltip_text=_(
+                                'Use a data source to import players from their identifier.'
+                            ),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                    <div id="data-source-container" class="row gy-2 gx-3">
+                        {{ admin_macros.select_input(
+                            name='data_source',
+                            label=_('%(string)s:', string=_('Data source')),
+                            select_options=data_source_options,
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                {% endif %}
                 <div class="d-flex my-2">
                     <span
                         id="overwrite-players-container"
@@ -58,17 +78,19 @@
                     >
                         {{ admin_macros.switch_input(
                             name='overwrite_players',
-                            placeholder=_('Overwrite the existing players'),
+                            placeholder=_('Delete the existing players'),
                             data=data, errors=errors
                         ) }}
                     </span>
 
                     <i
-                        id="overwrite-warning"
                         class="bi-exclamation-triangle-fill text-warning"
                         {{ macros.tooltip_attributes(
                             'warning',
-                            _('All the player data of the selected tournament will be deleted.'),
+                            _(
+                                'All the players of the selected tournament will '
+                                'be deleted before importing the ones from the file.'
+                            ),
                         ) }}
                     ></i>
                     <script>
@@ -79,23 +101,53 @@
                             const tooltip = new bootstrap.Tooltip(
                                 document.getElementById('overwrite-players-container')
                             );
-                            console.log(tooltip);
                             if (isStarted) {
                                 tooltip.enable();
-                                $('#overwrite-players').prop('checked', false).trigger('change');
+                                $('#overwrite-players').prop('checked', false);
                             } else {
                                 tooltip.disable();
                             }
                         });
-                        $('#overwrite-players').change(function () {
-                            $('#overwrite-warning').toggle(this.checked);
-                        });
-                        $('#overwrite-players').trigger('change');
-                        setTimeout(() => $('#tournament-id').trigger('change'), 100);
+                        setTimeout(() => $('#tournament-id').trigger('change'), 200);
                     </script>
                 </div>
-
-                {% include 'players_import_columns.html' %}
+                <div
+                    id="no-source-columns"
+                    {% if data['use_data_source'] == 'on' %}
+                        style="display:none"
+                    {% endif %}
+                >
+                    {% include 'players_import_columns.html' %}
+                </div>
+                {% if data_sources %}
+                    {% for data_source in data_sources %}
+                        <div
+                            id="data-source-{{ data_source.id }}-columns"
+                            class="data-source-columns"
+                            {% if data['data_source'] != data_source.id %}
+                                style="display:none"
+                            {% endif %}
+                        >
+                            {% with columns = data_source.get_all_datasheet_columns(admin_event) %}
+                                {% include 'players_import_columns.html' %}
+                            {% endwith %}
+                        </div>
+                    {% endfor %}
+                    <script>
+                        $('#use-data-source').change(function () {
+                            $('#data-source-container').toggle(this.checked);
+                            $('#no-source-columns').toggle(!this.checked);
+                            $('#data-source').trigger('change');
+                        });
+                        $('#data-source').change(function () {
+                            $('.data-source-columns').hide();
+                            if ($('#use-data-source').is(':checked')) {
+                                $('#data-source-' + $(this).val() + '-columns').show();
+                            }
+                        });
+                        $('#use-data-source').trigger('change');
+                    </script>
+                {% endif %}
             </form>
         </div>
         <div class="modal-footer">

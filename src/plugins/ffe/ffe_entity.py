@@ -226,18 +226,12 @@ class FfeLeaguePlayerFilter(PlayerFilter):
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         leagues, exclude = self.get_option_values()
         if exclude:
-            return (
-                lambda tournament_player: FFEUtils.get_player_plugin_data(
-                    tournament_player
-                ).league
-                not in leagues
+            return lambda tournament_player: (
+                FFEUtils.get_player_plugin_data(tournament_player).league not in leagues
             )
         else:
-            return (
-                lambda tournament_player: FFEUtils.get_player_plugin_data(
-                    tournament_player
-                ).league
-                in leagues
+            return lambda tournament_player: (
+                FFEUtils.get_player_plugin_data(tournament_player).league in leagues
             )
 
     def full_name(self, tournament: 'Tournament') -> str:
@@ -305,11 +299,8 @@ class FfeLicencePlayerFilter(PlayerFilter):
     @cached_property
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         licences = self.get_option_values()[0]
-        return (
-            lambda tournament_player: FFEUtils.get_player_plugin_data(
-                tournament_player
-            ).ffe_licence
-            in licences
+        return lambda tournament_player: (
+            FFEUtils.get_player_plugin_data(tournament_player).ffe_licence in licences
         )
 
     def full_name(self, tournament: 'Tournament') -> str:

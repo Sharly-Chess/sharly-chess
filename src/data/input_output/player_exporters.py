@@ -41,7 +41,7 @@ class PlayerTabularExporter(PlayerExporter):
     def download_players_file(
         self, players: list[Player], event: Event
     ) -> Response[str] | File:
-        columns = PlayerDatasheetColumnHandler(event).export_columns
+        columns = PlayerDatasheetColumnHandler(event).columns
         header = [column.id for column in columns]
         data = [
             [column.get_cell_content(player) for column in columns]

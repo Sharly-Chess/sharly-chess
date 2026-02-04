@@ -53,6 +53,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d informative *** COLUMNS"
+msgid_plural "%(num)d informative *** COLUMNS"
+msgstr[0] "%(num)d informative"
+msgstr[1] "%(num)d informative"
+
+#, python-format
 msgid "%(num)d optional *** COLUMNS"
 msgid_plural "%(num)d optional *** COLUMNS"
 msgstr[0] "%(num)d optional"
@@ -540,13 +546,13 @@ msgstr ""
 msgid "All the dependant objects will also be deleted:"
 msgstr ""
 
-msgid "All the player data of the selected tournament will be deleted."
-msgstr ""
-
 msgid "All the players"
 msgstr ""
 
 msgid "All the players intended to play the coming round did check-in."
+msgstr ""
+
+msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
 msgstr ""
 
 msgid "All the tournaments"
@@ -1549,6 +1555,9 @@ msgstr ""
 msgid "Dashed border"
 msgstr ""
 
+msgid "Data source"
+msgstr ""
+
 #, python-format
 msgid "Data source: %(data_source)s"
 msgstr ""
@@ -1663,6 +1672,9 @@ msgid "Delete the category."
 msgstr ""
 
 msgid "Delete the display controller."
+msgstr ""
+
+msgid "Delete the existing players"
 msgstr ""
 
 msgid "Delete the rotator."
@@ -2287,6 +2299,9 @@ msgstr ""
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Female"
 
+msgid "Fetch from a data source"
+msgstr ""
+
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr ""
 
@@ -2631,6 +2646,9 @@ msgstr ""
 
 #, python-format
 msgid "Import players to tournament [%(tournament)s]"
+msgstr ""
+
+msgid "Imported player"
 msgstr ""
 
 msgid "Impossible to add players to tournament [{tournament}]."
@@ -3737,9 +3755,6 @@ msgid "Others"
 msgstr ""
 
 msgid "Overwrite"
-msgstr ""
-
-msgid "Overwrite the existing players"
 msgstr ""
 
 msgid "Overwrite the result of the pairing when using the keyboard shortcuts."
@@ -4915,6 +4930,9 @@ msgstr ""
 msgid "Show unmodified players"
 msgstr ""
 
+msgid "Show valid rows"
+msgstr ""
+
 msgid "Show warnings"
 msgstr ""
 
@@ -5548,6 +5566,9 @@ msgstr ""
 msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr ""
 
+msgid "This row contains errors that prevent it from being imported."
+msgstr ""
+
 msgid "This screen family is private (not visible by the spectators)."
 msgstr ""
 
@@ -5994,6 +6015,9 @@ msgstr ""
 msgid "Use Fore Buchholz"
 msgstr ""
 
+msgid "Use a data source to import players from their identifier."
+msgstr ""
+
 msgid "Use default"
 msgstr ""
 
@@ -6043,6 +6067,12 @@ msgid "Validate"
 msgstr ""
 
 msgid "Value"
+msgstr ""
+
+msgid "Value does not match the one from the data source."
+msgstr ""
+
+msgid "Value not found in the data source."
 msgstr ""
 
 msgid "Value of the pairing allocated bye:"
@@ -6652,4 +6682,13 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "All the player data of the selected tournament will be deleted."
+#~ msgstr ""
+
+#~ msgid "Overwrite the existing players"
+#~ msgstr ""
+
+#~ msgid "Import from a data source"
+#~ msgstr ""
 

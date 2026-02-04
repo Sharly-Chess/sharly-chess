@@ -1,8 +1,9 @@
 from functools import partial
-from typing import Callable, Collection
+from typing import Callable, Collection, TYPE_CHECKING, Optional
 
 from data.columns import player_table as pt, board_table as bt
 from data.columns.board_table import BoardColumn
+from data.columns.column import ColumnUsage
 from data.columns.player_table import TournamentPlayerTableColumn
 from data.columns.player_datasheet import DatasheetColumn
 import data.columns.player_datasheet as pds
@@ -29,7 +30,9 @@ from data.event import Event
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils.enum import TournamentRating, PlayerRatingType
-from .column import ColumnUsage
+
+if TYPE_CHECKING:
+    from data.input_output import DataSource
 
 
 class PlayerColumnHandler:
@@ -290,11 +293,31 @@ class PlayersTabColumnHandler:
 
 
 class PlayerDatasheetColumnHandler:
-    def __init__(self, event: Event):
-        self.columns_by_id = self._get_columns_by_id(event)
+    def __init__(self, event: Event, data_source: Optional['DataSource'] = None):
+        columns = self._base_columns
+        plugin_manager.hook_for_event(event, 'insert_player_datasheet_columns')(
+            datasheet_columns=columns
+        )
+        if data_source:
+            identifier_column = data_source.import_identifier_column
+            source_column_ids = [
+                column.id for column in data_source.imported_datasheet_columns
+            ]
+            pop_index = 0
+            for index, column in enumerate(columns):
+                if column.id in source_column_ids:
+                    column.is_informative = True
+                    column.is_required = False
+                if column.id == identifier_column.id:
+                    pop_index = index
+            if pop_index:
+                columns.pop(pop_index)
+            identifier_column.is_required = True
+            columns.insert(0, identifier_column)
+        self.columns = columns
 
-    @staticmethod
-    def _get_columns_by_id(event: Event) -> dict[str, DatasheetColumn]:
+    @property
+    def _base_columns(self) -> list[DatasheetColumn]:
         columns: list[DatasheetColumn] = [
             pds.TitleColumn(),
             pds.LastNameColumn(),
@@ -312,21 +335,20 @@ class PlayerDatasheetColumnHandler:
             pds.PaidColumn(),
             pds.CommentColumn(),
         ]
+        columns += self.get_rating_columns()
+        return columns
+
+    @staticmethod
+    def get_rating_columns(
+        rating_types: list[PlayerRatingType] | None = None,
+    ) -> list[DatasheetColumn]:
+        if rating_types is None:
+            rating_types = [rating for rating in PlayerRatingType]
+        columns: list[DatasheetColumn] = []
         for tournament_type in TournamentRating:
-            for rating_type in PlayerRatingType:
+            for rating_type in rating_types:
                 columns.append(pds.RatingColumn(tournament_type, rating_type))
-        plugin_manager.hook_for_event(event, 'insert_player_datasheet_columns')(
-            datasheet_columns=columns
-        )
-        return {column.id: column for column in columns}
-
-    @property
-    def columns(self) -> Collection[DatasheetColumn]:
-        return self.columns_by_id.values()
-
-    @property
-    def export_columns(self) -> Collection[DatasheetColumn]:
-        return self.columns
+        return columns
 
     @property
     def import_columns(self) -> Collection[DatasheetColumn]:

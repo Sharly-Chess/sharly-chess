@@ -152,9 +152,6 @@ msgstr ""
 msgid "FFE Form:"
 msgstr ""
 
-msgid "FFE ID"
-msgstr ""
-
 msgid "FFE Licence"
 msgstr ""
 
@@ -288,6 +285,9 @@ msgstr "Lic."
 
 msgid "Licence no. *** LICENCE NUMBER"
 msgstr "Licence no."
+
+msgid "Licence number"
+msgstr ""
 
 msgid "Licence types"
 msgstr ""

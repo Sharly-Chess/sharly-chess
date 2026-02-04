@@ -1,5 +1,5 @@
-{% set required_column_ids, optional_column_ids = split_column_ids(columns) %}
-<div class="row gy-2 gx-3">
+{% set required_column_ids, optional_column_ids, informative_column_ids = split_column_ids(columns) %}
+<div class="row mt-2">
     <span>
         {{ _('Columns:') }}
         {{ ngettext(
@@ -7,7 +7,10 @@
             '%(num)d required *** COLUMNS',
             required_column_ids|length
         ) }}
-        ({% for column_id in required_column_ids %}<span class="fw-bold">{{ column_id }}</span>{% if not loop.last %}, {% endif %}{% endfor %}),
+        <i
+            class="bi-info-circle-fill ps-1"
+            {{ macros.tooltip_attributes('', build_list_tooltip(required_column_ids), 'right') }}
+        ></i>,
         {{ ngettext(
             '%(num)d optional *** COLUMNS',
             '%(num)d optional *** COLUMNS',
@@ -16,6 +19,15 @@
         <i
             class="bi-info-circle-fill ps-1"
             {{ macros.tooltip_attributes('', build_list_tooltip(optional_column_ids), 'right') }}
+        ></i>,
+        {{ ngettext(
+            '%(num)d informative *** COLUMNS',
+            '%(num)d informative *** COLUMNS',
+            informative_column_ids|length
+        ) }}
+        <i
+            class="bi-info-circle-fill ps-1"
+            {{ macros.tooltip_attributes('', build_list_tooltip(informative_column_ids), 'right') }}
         ></i>
     </span>
 </div>

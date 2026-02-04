@@ -3,6 +3,8 @@ from datetime import datetime
 from abc import abstractmethod, ABC
 from typing import Any
 
+from text_unidecode import unidecode
+
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
@@ -17,6 +19,10 @@ from utils.types import PlayerRating
 class DatasheetColumn(ABC):
     """Column of the datasheet, both used for player export and import."""
 
+    def __init__(self):
+        self.is_informative = self.export_only
+        self.is_required = self.is_default_required
+
     @property
     @abstractmethod
     def id(self) -> str:
@@ -27,7 +33,7 @@ class DatasheetColumn(ABC):
         """Get the content of a cell of the datasheet from a player."""
 
     @property
-    def is_required(self) -> bool:
+    def is_default_required(self) -> bool:
         """Defines if the column is required."""
         return False
 
@@ -60,6 +66,14 @@ class DatasheetColumn(ABC):
         """Augment the stored player object from a cell value.
         Raise a ValueError if the value is not valid."""
 
+    def check_data_source_value_match(self, value: str, player: Player) -> bool:
+        """Check if an informative cell value matches the
+        stored player found in the data source.
+        If so, a warning is displayed on the cell."""
+        if not self.is_informative or self.export_only:
+            return True
+        return str(self.get_cell_content(player) or '') == value
+
 
 class TitleColumn(DatasheetColumn):
     @property
@@ -90,11 +104,14 @@ class LastNameColumn(DatasheetColumn):
         return player.last_name
 
     @property
-    def is_required(self) -> bool:
+    def is_default_required(self) -> bool:
         return True
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         stored_player.last_name = value.upper()
+
+    def check_data_source_value_match(self, value: str, player: Player) -> bool:
+        return unidecode(player.last_name) == unidecode(value.upper())
 
 
 class FirstNameColumn(DatasheetColumn):
@@ -108,11 +125,14 @@ class FirstNameColumn(DatasheetColumn):
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         stored_player.first_name = value.title() or None
 
+    def check_data_source_value_match(self, value: str, player: Player) -> bool:
+        return unidecode(player.first_name) == unidecode(value.title())
+
 
 class DateOfBirthColumn(DatasheetColumn):
     @property
     def id(self) -> str:
-        return 'dob'
+        return 'date_of_birth'
 
     def get_cell_content(self, player: Player) -> Any:
         if not player.date_of_birth:
@@ -138,7 +158,7 @@ class DateOfBirthColumn(DatasheetColumn):
 class YearOfBirthColumn(DatasheetColumn):
     @property
     def id(self) -> str:
-        return 'yob'
+        return 'year_of_birth'
 
     def get_cell_content(self, player: Player) -> Any:
         return player.stored_player.year_of_birth
@@ -242,16 +262,9 @@ class ClubColumn(DatasheetColumn):
 
 
 class FideIDColumn(DatasheetColumn):
-    def __init__(self, is_required: bool = False):
-        self._is_required = is_required
-
     @property
     def id(self) -> str:
         return 'fide_id'
-
-    @property
-    def is_required(self) -> bool:
-        return self._is_required
 
     def get_cell_content(self, player: Player) -> Any:
         return player.fide_id
@@ -340,6 +353,7 @@ class RatingColumn(DatasheetColumn):
     def __init__(
         self, tournament_type: TournamentRating, rating_type: PlayerRatingType
     ):
+        super().__init__()
         self.tournament_type = tournament_type
         self.rating_type = rating_type
 

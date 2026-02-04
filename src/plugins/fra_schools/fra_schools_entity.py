@@ -150,17 +150,13 @@ class FRASchoolPlayerFilter(PlayerFilter):
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         school_ids, exclude = self.get_option_values()
         if exclude:
-            return (
-                lambda tournament_player: FRASchoolsUtils.get_player_plugin_data(
-                    tournament_player
-                ).fra_school_id
+            return lambda tournament_player: (
+                FRASchoolsUtils.get_player_plugin_data(tournament_player).fra_school_id
                 not in school_ids
             )
         else:
-            return (
-                lambda tournament_player: FRASchoolsUtils.get_player_plugin_data(
-                    tournament_player
-                ).fra_school_id
+            return lambda tournament_player: (
+                FRASchoolsUtils.get_player_plugin_data(tournament_player).fra_school_id
                 in school_ids
             )
 
