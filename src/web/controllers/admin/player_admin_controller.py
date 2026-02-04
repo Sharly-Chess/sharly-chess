@@ -1693,7 +1693,7 @@ class PlayerAdminController(BaseEventAdminController):
                                 'A player with this value already exists in the tournament.'
                             )
                         )
-                except ValueError as error:
+                except SharlyChessException as error:
                     import_errors_by_index[index][column.id] = str(error)
             name_key = (
                 stored_player.last_name,

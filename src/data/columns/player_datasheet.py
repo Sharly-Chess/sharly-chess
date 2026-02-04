@@ -5,6 +5,7 @@ from typing import Any
 
 from text_unidecode import unidecode
 
+from common import SharlyChessException
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
@@ -48,7 +49,7 @@ class DatasheetColumn(ABC):
     ):
         """Save the data of the cell value."""
         if self.is_required and not value:
-            raise ValueError(_('This field is required.'))
+            raise SharlyChessException(_('This field is required.'))
         self._augment_stored_player(stored_player, value)
 
     @property
@@ -64,7 +65,7 @@ class DatasheetColumn(ABC):
     @abstractmethod
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         """Augment the stored player object from a cell value.
-        Raise a ValueError if the value is not valid."""
+        Raise a SharlyChessException if the value is not valid."""
 
     def check_data_source_value_match(self, value: str, player: Player) -> bool:
         """Check if an informative cell value matches the
@@ -88,7 +89,7 @@ class TitleColumn(DatasheetColumn):
             PlayerTitle(value)
             stored_player.title = value
         except ValueError:
-            raise ValueError(
+            raise SharlyChessException(
                 _('Unknown value (expected: {expected}).').format(
                     expected='|'.join(PlayerTitle)
                 )
@@ -148,7 +149,7 @@ class DateOfBirthColumn(DatasheetColumn):
                 value, formatter.python_format
             ).date()
         except ValueError:
-            raise ValueError(
+            raise SharlyChessException(
                 _('Invalid format (expected: {format}).').format(
                     format=formatter.humanized_format
                 )
@@ -167,9 +168,11 @@ class YearOfBirthColumn(DatasheetColumn):
         if not value:
             return
         if not value.isdigit() or int(value) == 0:
-            raise ValueError(_('A positive integer is expected.'))
+            raise SharlyChessException(_('A positive integer is expected.'))
         if stored_player.date_of_birth:
-            raise ValueError(_('This field is only valid without date of birth.'))
+            raise SharlyChessException(
+                _('This field is only valid without date of birth.')
+            )
         stored_player.year_of_birth = int(value)
 
 
@@ -183,7 +186,7 @@ class MailColumn(DatasheetColumn):
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         if value and not re.match(Utils.EMAIL_REGEX, value):
-            raise ValueError(_('Invalid email format.'))
+            raise SharlyChessException(_('Invalid email format.'))
         stored_player.mail = value or None
 
 
@@ -212,7 +215,7 @@ class GenderColumn(DatasheetColumn):
             PlayerGender(value)
             stored_player.gender = value
         except ValueError:
-            raise ValueError(
+            raise SharlyChessException(
                 _('Unknown value (expected: {expected}).').format(
                     expected='|'.join(PlayerGender)
                 )
@@ -245,7 +248,7 @@ class FederationColumn(DatasheetColumn):
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         if value not in SharlyChessConfig().federations:
-            raise ValueError(_('Unknown federation.'))
+            raise SharlyChessException(_('Unknown federation.'))
         stored_player.federation = value
 
 
@@ -273,7 +276,7 @@ class FideIDColumn(DatasheetColumn):
         if not value:
             return
         if not value.isdigit() or int(value) == 0:
-            raise ValueError(_('A positive integer is expected.'))
+            raise SharlyChessException(_('A positive integer is expected.'))
         stored_player.fide_id = int(value)
 
     @property
@@ -293,7 +296,7 @@ class FixedColumn(DatasheetColumn):
         if not value:
             return
         if not value.isdigit() or int(value) == 0:
-            raise ValueError(_('A positive integer is expected.'))
+            raise SharlyChessException(_('A positive integer is expected.'))
         stored_player.fixed = int(value)
 
 
@@ -314,7 +317,7 @@ class OwedColumn(DatasheetColumn):
                 raise ValueError
             stored_player.owed = float_value
         except ValueError:
-            raise ValueError(_('A positive float is expected.'))
+            raise SharlyChessException(_('A positive float is expected.'))
 
 
 class PaidColumn(DatasheetColumn):
@@ -334,7 +337,7 @@ class PaidColumn(DatasheetColumn):
                 raise ValueError
             stored_player.paid = float_value
         except ValueError:
-            raise ValueError(_('A positive float is expected.'))
+            raise SharlyChessException(_('A positive float is expected.'))
 
 
 class CommentColumn(DatasheetColumn):
@@ -369,7 +372,7 @@ class RatingColumn(DatasheetColumn):
         if not value:
             return
         if not value.isdigit() or int(value) == 0:
-            raise ValueError(_('A positive integer is expected.'))
+            raise SharlyChessException(_('A positive integer is expected.'))
         rating = PlayerRating.from_stored_value(
             stored_player.ratings.get(self.tournament_type.value, {})
         )

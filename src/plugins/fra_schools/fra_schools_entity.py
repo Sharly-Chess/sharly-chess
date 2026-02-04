@@ -3,7 +3,7 @@ from operator import attrgetter
 from types import UnionType
 from typing import Any, Counter, Callable
 
-from common.exception import OptionError
+from common.exception import OptionError, SharlyChessException
 from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn
@@ -91,7 +91,7 @@ class FraSchoolCodeDatasheetColumn(DatasheetColumn):
             return
         school_code = FRASchoolsUtils.extract_school_code(value)
         if not school_code:
-            raise ValueError(
+            raise SharlyChessException(
                 _('Invalid format (expected: {format}).').format(format='1234567A')
             )
         fra_schools = FRASchoolsUtils.get_event_plugin_data(event).fra_schools
@@ -103,7 +103,7 @@ class FraSchoolCodeDatasheetColumn(DatasheetColumn):
             with FRASchoolsDatabase() as database:
                 school = database.get_school_by_code(school_code)
             if not school:
-                raise ValueError(_('UAI code not found in the database.'))
+                raise SharlyChessException(_('UAI code not found in the database.'))
             else:
                 school_id = FRASchoolsUtils.add_event_school(event, school, save=False)
         stored_player.plugin_data[PLUGIN_NAME] = FRASchoolsPlayerPluginData(

@@ -5,7 +5,7 @@ from functools import partial, cached_property, cache
 from types import UnionType
 from typing import Any
 
-from common.exception import OptionError
+from common.exception import OptionError, SharlyChessException
 from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn
@@ -458,7 +458,7 @@ class FfeIdDatasheetColumn(DatasheetColumn):
         if not value:
             return
         if not value.isdigit() or int(value) == 0:
-            raise ValueError(_('A positive integer is expected.'))
+            raise SharlyChessException(_('A positive integer is expected.'))
         plugin_data = FfePlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
         )
@@ -478,7 +478,7 @@ class FfeLicenceNumberDatasheetColumn(DatasheetColumn):
         if not value:
             return
         if not re.match(r'^[A-Z]\d{5}', value):
-            raise ValueError(
+            raise SharlyChessException(
                 _('Invalid format (expected: {format}).').format(format='A12345')
             )
         plugin_data = FfePlayerPluginData.from_stored_value(
@@ -507,7 +507,7 @@ class FfeLicenceDatasheetColumn(DatasheetColumn):
         try:
             plugin_data.ffe_licence = PlayerFFELicence(value)
         except ValueError:
-            raise ValueError(
+            raise SharlyChessException(
                 _('Unknown value (expected: {expected}).').format(
                     expected='|'.join(PlayerFFELicence)
                 )
@@ -527,7 +527,7 @@ class FfeLeagueDatasheetColumn(DatasheetColumn):
         if not value:
             return
         if value not in FFE_LEAGUES:
-            raise ValueError(_('Unknown league.'))
+            raise SharlyChessException(_('Unknown league.'))
         plugin_data = FfePlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
         )
