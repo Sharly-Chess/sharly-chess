@@ -16,6 +16,8 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredTournament,
+    StoredAccount,
+    StoredPermission,
 )
 from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
 
@@ -293,6 +295,57 @@ class TestUtils:
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
         )
         cls.check_api_response(res)
+
+    @classmethod
+    def create_account(
+        cls,
+        event_uniq_id: str,
+        tournament_uniq_id: int,
+        first_name: str,
+        via_api_request_context: APIRequestContext | None = None,
+        overrides: dict | None = None,
+    ):
+        overrides = overrides or {}
+
+        # Provide defaults
+        defaults: dict[str, Any] = {
+            'id': None,
+            'active': True,
+            'first_name': first_name,
+            'last_name': None,
+            'fide_id': None,
+            'fide_arbiter_title': None,
+            'password_hash': None,
+            'mail': None,
+            'phone': None,
+            'plugin_data': {},
+        }
+
+        # Merge overrides
+        data = {**defaults, **overrides}
+
+        if via_api_request_context:
+            pass
+        else:
+            with EventDatabase(event_uniq_id, write=True) as event_database:
+                stored_account = StoredAccount(**data)
+                event_database.add_stored_account(stored_account)
+
+        with EventDatabase(event_uniq_id) as event_database:
+            accounts = event_database.load_stored_accounts()
+            stored_account = next(
+                account for account in accounts if account.first_name == first_name
+            )
+
+        with EventDatabase(event_uniq_id, write=True) as event_database:
+            stored_permission = StoredPermission(
+                account_id=stored_account.id,
+                access_level='ADMINISTRATION',
+                tournament_ids=[tournament_uniq_id],
+            )
+            event_database.add_stored_permission(stored_permission)
+
+        return stored_account
 
     @classmethod
     def create_screen(

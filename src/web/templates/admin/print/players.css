@@ -20,11 +20,11 @@
     .player-table .color { font-weight: bold; }
 }
 {# ========== PLAYER NAME POPOVER ========== #}
-.player_name {
+.player-name {
     position: relative;
 }
 
-.player_name .player_history table {
+.player-name .player-history table {
     display: none;
     border-collapse: collapse;
     position: absolute;
@@ -36,14 +36,14 @@
     z-index: 999;
 }
 
-.player_name:hover .player_history table {
+.player-name:hover .player-history table {
     display: block;
 }
 
-.player_history table tr:nth-child(even) * {
+.player-history table tr:nth-child(even) * {
     background-color: #FFFFFF !important;
 }
 
-.player_history table tr:nth-child(odd) * {
+.player-history table tr:nth-child(odd) * {
     background-color: #E0E0E0 !important;
 }
