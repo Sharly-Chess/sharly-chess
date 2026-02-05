@@ -1611,64 +1611,37 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: int | None,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
-
-        assert web_context.admin_event is not None
-        admin_event: Event = web_context.admin_event
-        admin_tournament: Tournament | None = web_context.admin_tournament
-        allowed_tournaments = web_context.client.allowed_tournaments_for_action(
-            AuthAction.VIEW_TOURNAMENTS_TAB
-        )
-        if not admin_tournament:
-            admin_tournament = random.choice(allowed_tournaments)
-
-        tournament_players = (
-            admin_tournament.tournament_players if admin_tournament else None
-        )
-        random_tournament_player = (
-            random.choice(list(tournament_players)) if tournament_players else None
-        )
+        event = web_context.get_admin_event()
+        tournament = web_context.admin_tournament
+        if not tournament:
+            allowed_tournaments = web_context.client.allowed_tournaments_for_action(
+                AuthAction.VIEW_TOURNAMENTS_TAB
+            )
+            tournament = random.choice(
+                [
+                    tournament_
+                    for tournament_ in allowed_tournaments
+                    if tournament_.tournament_players
+                ]
+            )
+        tournament_player: TournamentPlayer | None = None
+        if tournament and tournament.tournament_players:
+            tournament_player = random.choice(list(tournament.tournament_players))
 
         board: Board | None = None
-        if random_tournament_player is not None:
-            board = next(
-                (
-                    b
-                    for b in admin_tournament.boards
-                    if (
-                        b.white_tournament_player is not None
-                        and b.white_tournament_player.id == random_tournament_player.id
-                    )
-                    or (
-                        b.black_tournament_player is not None
-                        and b.black_tournament_player.id == random_tournament_player.id
-                    )
-                ),
-                None,
-            )
-
         opponent: TournamentPlayer | None = None
-        if random_tournament_player and board is not None:
-            if (
-                board.white_tournament_player
-                and board.white_tournament_player.id != random_tournament_player.id
-            ):
-                opponent = board.white_tournament_player
-            elif (
-                board.black_tournament_player
-                and board.black_tournament_player.id != random_tournament_player.id
-            ):
-                opponent = board.black_tournament_player
+        if tournament_player and tournament.started:
+            pairing = tournament_player.pairings[tournament.current_round]
+            board = pairing.board
+            opponent = pairing.opponent
 
         return HTMXTemplate(
             template_name='admin/tournaments/random_player_modal.html',
             context={
-                'player_name': random_tournament_player.full_name
-                if random_tournament_player
-                else None,
-                'random_player': random_tournament_player,
+                'random_player': tournament_player,
                 'opponent_name': opponent.full_name if opponent else None,
-                'tournament': admin_tournament,
-                'admin_event': admin_event,
+                'tournament': tournament,
+                'admin_event': event,
                 'board': board,
             },
             re_target='#modal-wrapper',

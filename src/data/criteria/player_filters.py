@@ -263,9 +263,8 @@ class FederationPlayerFilter(PlayerFilter):
         federation_query_params, exclude = self.get_option_values()
         federations = self.get_federations(federation_query_params)
         if exclude:
-            return (
-                lambda tournament_player: tournament_player.federation
-                not in federations
+            return lambda tournament_player: (
+                tournament_player.federation not in federations
             )
         else:
             return lambda tournament_player: tournament_player.federation in federations
