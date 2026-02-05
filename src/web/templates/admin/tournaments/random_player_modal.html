@@ -1,4 +1,7 @@
-<div class="modal-dialog modal-dialog-scrollable">
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 550px);"
+>
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
@@ -12,7 +15,7 @@
                 </p>
             {% else %}
                 <h3 class="text-center">
-                    {{ player_name }} ({{ random_player.rating }})
+                    {{ random_player.full_name }} ({{ random_player.rating_str }})
                 </h3>
                 {% if random_player.club %}
                     <h4 class="col-12 text-center">
