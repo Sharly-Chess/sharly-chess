@@ -91,6 +91,7 @@ class AuthAction(StrEnum):
     UPDATE_PLAYERS = auto()
     UPDATE_PLAYERS_HISTORY = auto()
     DELETE_PLAYERS = auto()
+    DISTRIBUTE_PLAYERS = auto()
 
     # Check-in
     OPEN_CLOSE_CHECK_IN = auto()
@@ -173,6 +174,7 @@ class AuthAction(StrEnum):
                 | AuthAction.UPDATE_PLAYERS
                 | AuthAction.UPDATE_PLAYERS_HISTORY
                 | AuthAction.DELETE_PLAYERS
+                | AuthAction.DISTRIBUTE_PLAYERS
             ):
                 return AuthActionCategory.PLAYERS
             case AuthAction.OPEN_CLOSE_CHECK_IN | AuthAction.CHECK_IN_PLAYERS:
@@ -266,6 +268,8 @@ class AuthAction(StrEnum):
                 return _("Update players' history", locale)
             case AuthAction.DELETE_PLAYERS:
                 return _('Delete players', locale)
+            case AuthAction.DISTRIBUTE_PLAYERS:
+                return _('Distribute the players among the tournaments', locale)
             case AuthAction.OPEN_CLOSE_CHECK_IN:
                 return _('Open/close check-in', locale)
             case AuthAction.CHECK_IN_PLAYERS:

@@ -687,6 +687,9 @@ msgstr ""
 msgid "Auto-update"
 msgstr ""
 
+msgid "Automatic filling settings"
+msgstr ""
+
 msgid "Average"
 msgstr ""
 
@@ -740,6 +743,9 @@ msgid "Bahamas"
 msgstr ""
 
 msgid "Bahrain"
+msgstr ""
+
+msgid "Balanced tournaments"
 msgstr ""
 
 msgid "Bangladesh"
@@ -908,6 +914,9 @@ msgstr ""
 msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
 msgstr ""
 
+msgid "By default, players are distributed across tournaments in descending order of rating. By checking this box, the player distribution balances the strengths of the tournaments (only for tournaments that are automatically filled)."
+msgstr ""
+
 msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
 msgstr ""
 
@@ -959,6 +968,15 @@ msgid "Cambodia"
 msgstr ""
 
 msgid "Cameroon"
+msgstr ""
+
+msgid "Can not distribute the players (no players found)."
+msgstr ""
+
+msgid "Can not distribute the players (no tournaments found)."
+msgstr ""
+
+msgid "Can not distribute the players (only one tournament)."
 msgstr ""
 
 msgid "Can't see your event?"
@@ -1029,6 +1047,9 @@ msgid "Check the box to allow other screens to display a link to the screen of t
 msgstr ""
 
 msgid "Check the box to allow other screens to display a link to this screen."
+msgstr ""
+
+msgid "Check this box to automatically fill tournaments with an even number of players (only the last one may have an odd number of players)."
 msgstr ""
 
 msgid "Check-in"
@@ -1580,6 +1601,9 @@ msgstr ""
 msgid "Define the criteria for players to participate in this tournament."
 msgstr ""
 
+msgid "Define the number of players per tournament and distribute the players by descending rating."
+msgstr ""
+
 msgid "Define the prizes of the category."
 msgstr ""
 
@@ -1733,6 +1757,22 @@ msgstr ""
 
 #, python-format
 msgid "Displayed round: %(round)d"
+msgstr ""
+
+msgid "Distribute"
+msgstr ""
+
+#, python-format
+msgid "Distribute the players (%(num)d)"
+msgstr ""
+
+msgid "Distribute the players among the tournaments"
+msgstr ""
+
+msgid "Distributing the players is allowed only if all the tournaments use the same rating."
+msgstr ""
+
+msgid "Distributing the players is not allowed once one tournament is started."
 msgstr ""
 
 msgid "Djibouti"
@@ -2060,6 +2100,9 @@ msgstr ""
 msgid "Email:"
 msgstr ""
 
+msgid "Empty values are allowed for the last tournaments only."
+msgstr ""
+
 msgid "Enable this account"
 msgstr ""
 
@@ -2101,6 +2144,9 @@ msgid "Eswatini"
 msgstr ""
 
 msgid "Ethiopia"
+msgstr ""
+
+msgid "Even number of players in tournaments"
 msgstr ""
 
 msgid "Event"
@@ -3542,6 +3588,9 @@ msgid "Number of half-points above or below the 50%% limit required for opponent
 msgstr ""
 
 msgid "Number of players"
+msgstr ""
+
+msgid "Number of players per tournament"
 msgstr ""
 
 #, python-format
@@ -5250,6 +5299,9 @@ msgstr ""
 msgid "The number of games won over the board."
 msgstr ""
 
+msgid "The number of players for the last tournaments (or all tournaments) is optional (in which case tournaments will be automatically populated)."
+msgstr ""
+
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr ""
 
@@ -6185,6 +6237,9 @@ msgid "You are not allowed to delete the tournament."
 msgstr ""
 
 msgid "You are not allowed to delete this account."
+msgstr ""
+
+msgid "You are not allowed to distribute the players."
 msgstr ""
 
 msgid "You are not allowed to duplicate this account."

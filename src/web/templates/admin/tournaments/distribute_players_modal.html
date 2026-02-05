@@ -1,0 +1,82 @@
+<div style="--bs-modal-width: min(90vw, 600px);" class="modal-dialog modal-dialog-scrollable admin-distribute-players-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ _('Distribute the players (%(num)d)', num=admin_event.player_count) }}
+            </div>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-post="{{ url_for('admin-distribute-players', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <h4>
+                    {{ _('Number of players per tournament') }}
+                </h4>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ _('The number of players for the last tournaments (or all tournaments) is optional (in which case tournaments will be automatically populated).') }}
+                    </div>
+                </div>
+                {% for tournament in admin_event.tournaments_sorted_by_index %}
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12">
+                            {{ admin_macros.number_input(
+                                name='player_count_' ~ tournament.id,
+                                label=tournament.name,
+                                tooltip_text='',
+                                min=0,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                {% endfor %}
+                <h4>
+                    {{ _('Automatic filling settings') }}
+                </h4>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.switch_input(
+                            name='even_numbers',
+                            label='',
+                            placeholder=_('Even number of players in tournaments'),
+                            tooltip_text=_('Check this box to automatically fill tournaments with an even number of players (only the last one may have an odd number of players).'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+                <div class="row gy-2 gx-3">
+                    <div class="col-12">
+                        {{ admin_macros.switch_input(
+                            name='balance_tournaments',
+                            label='',
+                            placeholder=_('Balanced tournaments'),
+                            tooltip_text=_('By default, players are distributed across tournaments in descending order of rating. By checking this box, the player distribution balances the strengths of the tournaments (only for tournaments that are automatically filled).'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi bi-sort-numeric-down-alt pe-1"></i>
+                {{ _('Distribute') }}
+            </button>
+        </div>
+    </div>
+</div>

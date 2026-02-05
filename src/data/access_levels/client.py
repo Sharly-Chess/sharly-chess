@@ -328,6 +328,11 @@ class Client:
         (including with local or remote databases)."""
         return AuthAction.UPDATE_PLAYERS in self.allowed_actions
 
+    @property
+    def can_distribute_players(self) -> bool:
+        """Returns true if the client can distribute the players in the tournaments."""
+        return AuthAction.DISTRIBUTE_PLAYERS in self.allowed_actions
+
     def can_update_players_history(self, tournament_id: int) -> bool:
         """Returns True if the client can update the players's history."""
         return self.action_allowed_for_tournament(

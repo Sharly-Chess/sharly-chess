@@ -687,6 +687,9 @@ msgstr "Autriche"
 msgid "Auto-update"
 msgstr "Mise à jour"
 
+msgid "Automatic filling settings"
+msgstr "Paramètres de remplissage automatique"
+
 msgid "Average"
 msgstr "Moyenne"
 
@@ -741,6 +744,9 @@ msgstr "Bahamas"
 
 msgid "Bahrain"
 msgstr "Bahreïn"
+
+msgid "Balanced tournaments"
+msgstr "Tournois équilibrés"
 
 msgid "Bangladesh"
 msgstr "Bangladesh"
@@ -908,6 +914,9 @@ msgstr "Par échiquier"
 msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
 msgstr "Par défaut, les autres appareils ne peuvent qu'interagir avec les écrans publics. Cet onglet vous permet de configurer ce comportement."
 
+msgid "By default, players are distributed across tournaments in descending order of rating. By checking this box, the player distribution balances the strengths of the tournaments (only for tournaments that are automatically filled)."
+msgstr "Par défaut, les joueur·euses sont réparti·es dans les tournois par classement décroissant. En cochant cette case, la répartition des joueur·euses équilibre les forces des tournois (seulement pour les tournois remplis automatiquement)."
+
 msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
 msgstr "Par défaut, ce départage est désactivé lorsqu'il y a des joueur·euses non-classé·es ({count} dans le tournoi). Vous devez spécifier que l'estimation des joueur·euses est expliquée dans le règlement."
 
@@ -960,6 +969,15 @@ msgstr "Cambodge"
 
 msgid "Cameroon"
 msgstr "Cameroun"
+
+msgid "Can not distribute the players (no players found)."
+msgstr "Impossible de répartir les joueur·euses (aucun·e joueur·euse)."
+
+msgid "Can not distribute the players (no tournaments found)."
+msgstr "Impossible de répartir les joueur·euses (aucun tournoi)."
+
+msgid "Can not distribute the players (only one tournament)."
+msgstr "Impossible de répartir les joueur·euses (un seul tournoi)."
 
 msgid "Can't see your event?"
 msgstr "Vous ne voyez pas votre événement ?"
@@ -1030,6 +1048,9 @@ msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien ver
 
 msgid "Check the box to allow other screens to display a link to this screen."
 msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien vers cet écran."
+
+msgid "Check this box to automatically fill tournaments with an even number of players (only the last one may have an odd number of players)."
+msgstr "Cochez cette case pour remplir automatiquement les tournois avec un nombre pair de joueur·euses (le dernier seulement pourra avoir un nombre impair de joueur·euses)."
 
 msgid "Check-in"
 msgstr "Pointage"
@@ -1580,6 +1601,9 @@ msgstr "Définir les critères selon lesquels les joueur·euses appartiennent à
 msgid "Define the criteria for players to participate in this tournament."
 msgstr "Définissez les critères permettant aux joueur·euses de participer à ce tournoi."
 
+msgid "Define the number of players per tournament and distribute the players by descending rating."
+msgstr "Définir le nombre de joueur·euses par tournoi et répartir les joueur·euses par classement décroissant."
+
 msgid "Define the prizes of the category."
 msgstr "Définir les prix de la catégorie."
 
@@ -1734,6 +1758,22 @@ msgstr "Affichage :"
 #, python-format
 msgid "Displayed round: %(round)d"
 msgstr "Ronde affichée : %(round)d"
+
+msgid "Distribute"
+msgstr "Répartir"
+
+#, python-format
+msgid "Distribute the players (%(num)d)"
+msgstr "Répartir les joueur·euses (%(num)d)"
+
+msgid "Distribute the players among the tournaments"
+msgstr "Répartir les joueur·euses dans les tournois"
+
+msgid "Distributing the players is allowed only if all the tournaments use the same rating."
+msgstr "Répartir les joueur·euses dans les tournois n'est autorisé que lorsque tous les tournois utilisent le même classement."
+
+msgid "Distributing the players is not allowed once one tournament is started."
+msgstr "La répartition des joueur·euses dans les tournois n'est plus autorisée lorsqu'un tournoi est démarré."
 
 msgid "Djibouti"
 msgstr "Djibouti"
@@ -2060,6 +2100,9 @@ msgstr "Adresse e-mail"
 msgid "Email:"
 msgstr "Mél :"
 
+msgid "Empty values are allowed for the last tournaments only."
+msgstr "Les valeurs vides ne sont autorisées que pour les derniers tournois."
+
 msgid "Enable this account"
 msgstr "Activer ce compte"
 
@@ -2102,6 +2145,9 @@ msgstr "Eswatini"
 
 msgid "Ethiopia"
 msgstr "Éthiopie"
+
+msgid "Even number of players in tournaments"
+msgstr "Nombre pair de joueur·euses dans les tournois"
 
 msgid "Event"
 msgstr "Évènement"
@@ -3543,6 +3589,9 @@ msgstr "Le nombre de demi-points au-dessus ou en dessous des 50 %% de points re
 
 msgid "Number of players"
 msgstr "Nombre de joueur·euses"
+
+msgid "Number of players per tournament"
+msgstr "Nombre de joueur·euses par tournoi"
 
 #, python-format
 msgid "Number of players: %(num)d"
@@ -5252,6 +5301,9 @@ msgstr "Le nombre de parties gagnées sur l'échiquier avec les Noirs."
 msgid "The number of games won over the board."
 msgstr "Le nombre de parties gagnées sur l'échiquier."
 
+msgid "The number of players for the last tournaments (or all tournaments) is optional (in which case tournaments will be automatically populated)."
+msgstr "Le nombre de joueur·euses des derniers tournois (ou tous les tournois) est facultatif (dans ce cas le remplissage des tournois est automatique)."
+
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr "Le nombre de joueur·euses par écran, facultatif (le nombre d'écrans s'adapte au nombre de joueur·euses)."
 
@@ -6188,6 +6240,9 @@ msgstr "Vous n'êtes pas autorisé·e à supprimer le tournoi."
 
 msgid "You are not allowed to delete this account."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."
+
+msgid "You are not allowed to distribute the players."
+msgstr "Vous n'êtes pas autorisé·e à répartir les joueur·euses."
 
 msgid "You are not allowed to duplicate this account."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."

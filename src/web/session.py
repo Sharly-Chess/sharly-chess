@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, asdict, is_dataclass
+from dataclasses import dataclass, asdict, is_dataclass, field
 from logging import Logger
 from typing import Any, ClassVar, cast, get_args, get_origin
 
@@ -469,3 +469,18 @@ class SessionPrintLastTournaments(EventSessionVariable[list[int]]):
     @property
     def default_value(self) -> list[int]:
         return []
+
+
+@dataclass
+class PlayerDistributionSettings:
+    player_count_by_tournament_id: dict[int, int | None] = field(default_factory=dict)
+    balance_tournaments: bool = False
+    even_numbers: bool = True
+
+
+class SessionPlayerDistributionSettings(
+    DataclassSessionVariable[PlayerDistributionSettings]
+):
+    @property
+    def key(self) -> str:
+        return 'player-distribution-settings'
