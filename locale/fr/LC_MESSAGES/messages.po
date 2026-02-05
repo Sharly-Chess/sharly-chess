@@ -1764,6 +1764,12 @@ msgstr "Pilotes d'afficheurs ({num})"
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé)."
 
+msgid "Display history on hover"
+msgstr "Afficher l'historique au survol"
+
+msgid "Display player tournament history on hover of their name. Warning: document may take up to 30 seconds to render if the tournament is big."
+msgstr "Afficher l'historique de tournoi du·de la joueur·euse au survol de son nom. Attention : la génération du document peut prendre jusqu'à 30 secondes si le tournoi est conséquent."
+
 msgid "Display the exit button"
 msgstr "Afficher un bouton de sortie d'écran"
 
@@ -2684,9 +2690,6 @@ msgstr "Inclure les joueur·euses"
 
 msgid "Include private player data (emails, phone numbers, etc.)"
 msgstr "Inclure les données privées des joueur·euses (mél, tél, etc.)"
-
-msgid "Include player history popover"
-msgstr "Inclure l'historique du joueur au survol"
 
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
 msgstr "Inclut tous les autres rôles et donne un accès complet à l'application ; ce niveau d'accès est donné seulement en accédant à Sharly Chess sur l'ordinateur sur lequel est lancé le serveur (à aucun autre appareil du réseau)."

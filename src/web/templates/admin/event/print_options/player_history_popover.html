@@ -2,7 +2,11 @@
     {{ admin_macros.switch_input(
         name=option.id,
         label='',
-        placeholder=_('Include player history popover'),
+        placeholder=_('Display history on hover'),
+        tooltip_text=_(
+            'Display player tournament history on hover of their name. '
+            'Warning: document may take up to 30 seconds to render if the tournament is big.'
+        ),
         data=data, errors=errors
     ) }}
 </div>
