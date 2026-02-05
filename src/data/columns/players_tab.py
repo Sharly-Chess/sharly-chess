@@ -266,7 +266,7 @@ class RatingPlayersTabColumn(PlayersTabColumn):
         return True
 
     def _get_sort_key(self, player: Player) -> tuple:
-        return (player.single_tournament_player.rating,)
+        return (player.single_tournament_player.starting_rank_sort_key,)
 
     @property
     def cell_template(self) -> str | None:
