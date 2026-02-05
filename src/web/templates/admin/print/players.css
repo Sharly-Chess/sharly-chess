@@ -19,7 +19,7 @@
     .player-table .board,
     .player-table .color { font-weight: bold; }
 }
-{# ========== PLAYER NAME POPOVER ========== #}
+{# ========== PLAYER NAME TOOLTIP ========== #}
 .player-name {
     position: relative;
     font-weight: bold;
@@ -39,6 +39,10 @@
 
 .player-name:hover .player-history table {
     display: block;
+}
+
+.player-history th {
+    font-weight: bold;
 }
 
 .player-history table tr:nth-child(even) * {
