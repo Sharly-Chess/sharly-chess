@@ -1767,9 +1767,6 @@ msgstr ""
 msgid "Display history on hover"
 msgstr ""
 
-msgid "Display player tournament history on hover of their name. Warning: document may take up to 30 seconds to render if the tournament is big."
-msgstr ""
-
 msgid "Display the exit button"
 msgstr ""
 
@@ -6207,6 +6204,9 @@ msgid "Welcome to Sharly Chess!"
 msgstr ""
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
+msgstr ""
+
+msgid "When hovering a player's name with the mouse, display its history. Warning: the document takes much longer to load."
 msgstr ""
 
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
