@@ -8,6 +8,7 @@ preventing server blocking on large templates.
 import asyncio
 from typing import Any
 
+from common.i18n import get_locale, set_locale
 from litestar.plugins.htmx import HTMXTemplate
 from litestar.response import Template, Stream
 
@@ -33,8 +34,13 @@ def _streaming_to_asgi_response(
     """
 
     async def stream_template():
+        # Capture the current locale before switching threads
+        current_locale = get_locale()
+
         # Render template chunks in thread pool
         def render_in_thread():
+            set_locale(current_locale)
+
             template_engine = request.app.template_engine
             jinja_env = template_engine.engine
             template = jinja_env.get_template(self.template_name)
