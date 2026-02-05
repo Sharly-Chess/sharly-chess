@@ -94,7 +94,7 @@ class Player:
             )
         return last_name
 
-    @property
+    @cached_property
     def full_name(self) -> str:
         return self.player_full_name(self.first_name, self.last_name)
 
@@ -158,6 +158,10 @@ class Player:
             self.event.start_date,
             self.event.stop_date,
         )
+
+    @cached_property
+    def category_name(self) -> str:
+        return self.category.name
 
     @property
     def fide_id(self) -> int | None:
@@ -386,7 +390,7 @@ class TournamentPlayer(Player):
     def rating_type(self) -> PlayerRatingType:
         return self._tournament_rating.type
 
-    @property
+    @cached_property
     def rating_str(self) -> str:
         return str(self._tournament_rating)
 
@@ -436,7 +440,7 @@ class TournamentPlayer(Player):
             self.tournament.rating, self.tournament.player_rating_type, self.category
         )
 
-    @property
+    @cached_property
     def _tournament_rating(self) -> PlayerRatingAndType:
         if self.rating_is_overridden(
             self.tournament.rating, self.tournament.player_rating_type
