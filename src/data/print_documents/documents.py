@@ -893,9 +893,9 @@ class StatisticsPrintDocument(PrintDocument):
         title: str,
         *,
         sort_key: Callable[[tuple[Any, int]], Any] | None = None,
-        label_getter: Callable[[Any], Any] = lambda x: x.name
-        if hasattr(x, 'name')
-        else x,
+        label_getter: Callable[[Any], Any] = lambda x: (
+            x.name if hasattr(x, 'name') else x
+        ),
         min_count: int | None = None,
         filter_func: Callable[[Any], bool] | None = None,
         subtitle_fn: Callable[[int], str] | None = None,
