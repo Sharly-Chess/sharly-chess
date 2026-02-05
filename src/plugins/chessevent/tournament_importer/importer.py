@@ -53,8 +53,7 @@ from plugins.chessevent.tournament_importer.mappers import (
     ChessEventGender,
 )
 from plugins.chessevent.utils import ChessEventTournamentPluginData, ChessEventUtils
-from plugins.ffe.ffe import FfePlugin
-from plugins.ffe.utils import FfePlayerPluginData
+from plugins.ffe.utils import FfePlayerPluginData, FFE_LEAGUES
 from plugins.manager import plugin_manager
 from utils.enum import TournamentRating, Result
 
@@ -313,7 +312,7 @@ class ChessEventTournamentImporter(TournamentImporter):
             ffe_licence = ChessEventFFELicence.get_core_object(player.ffe_license)
         except KeyError:
             raise unknown_exception('ffe_license')
-        if player.ffe_league and player.ffe_league not in FfePlugin.FFE_LEAGUES:
+        if player.ffe_league and player.ffe_league not in FFE_LEAGUES:
             raise unknown_exception('ffe_league')
         ffe_plugin_data = FfePlayerPluginData(
             player.ffe_id,

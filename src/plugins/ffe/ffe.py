@@ -91,6 +91,7 @@ from plugins.ffe.utils import (
     PlayerFFELicence,
     FfeAccountPluginData,
     FFEArbiterTitle,
+    FFE_LEAGUES,
 )
 from plugins.ffe.utils import (
     FFE_DEFAULT_UPLOAD_DELAY,
@@ -208,29 +209,6 @@ class FfePlugin(Plugin):
             return True
         return False
 
-    # The FFE league names.
-    FFE_LEAGUES: dict[str, str] = {
-        'ARA': 'Auvergne-Rhône-Alpes',
-        'BFC': 'Bourgogne-Franche-Comté',
-        'BRE': 'Bretagne',
-        'CRS': 'Corse',
-        'CVL': 'Centre-Val de Loire',
-        'EST': 'Grand-Est',
-        'GUA': 'Guadeloupe',
-        'GUY': 'Guyane',
-        'HDF': 'Hauts-de-France',
-        'IDF': 'Île-de-France',
-        'MAR': 'Martinique',
-        'NAQ': 'Nouvelle-Aquitaine',
-        'NCA': 'Nouvelle-Calédonie',
-        'NOR': 'Normandie',
-        'OCC': 'Occitanie',
-        'PAC': "Provence-Alpes-Côte d'azur",
-        'PDL': 'Pays de la Loire',
-        'POL': 'Saint-Pierre-et-Miquelon',
-        'REU': 'Réunion',
-    }
-
     # ---------------------------------------------------------------------------------
     # Initialisation and configuration
     # ---------------------------------------------------------------------------------
@@ -300,7 +278,7 @@ class FfePlugin(Plugin):
                 str(licence.value): licence.compact_name for licence in PlayerFFELicence
             },
             'ffe_league_options': {'': '-'}
-            | {code: f'{code} - {name}' for code, name in self.FFE_LEAGUES.items()},
+            | {code: f'{code} - {name}' for code, name in FFE_LEAGUES.items()},
         }
 
     @hookimpl
@@ -322,7 +300,7 @@ class FfePlugin(Plugin):
         errors: dict[str, str],
     ):
         league: str | None = WebContext.form_data_to_str(data, field := 'ffe_league')
-        if league and league not in self.FFE_LEAGUES:
+        if league and league not in FFE_LEAGUES:
             # should never happen, not translated.
             errors[field] = f'Invalid league value [{data[field]}].'
             data[field] = ''

@@ -604,6 +604,18 @@ class PlayerRatingType(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
+    @property
+    def key(self) -> str:
+        match self:
+            case PlayerRatingType.ESTIMATED:
+                return 'e'
+            case PlayerRatingType.NATIONAL:
+                return 'n'
+            case PlayerRatingType.FIDE:
+                return 'f'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
     def __str__(self) -> str:
         return self.short_name
 

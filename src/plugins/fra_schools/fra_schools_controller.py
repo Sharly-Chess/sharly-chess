@@ -191,7 +191,9 @@ class FRASchoolsController(BaseEventAdminController):
         if school.postal_code and not (
             school.postal_code.isdigit() and len(school.postal_code) == 5
         ):
-            errors['fra_school_postal_code'] = _('Invalid format (expected: 5 digits).')
+            errors['fra_school_postal_code'] = _(
+                'Invalid format (expected: {format}).'
+            ).format(format=12345)
         return errors
 
     @post(

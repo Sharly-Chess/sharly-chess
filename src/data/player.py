@@ -214,8 +214,10 @@ class Player:
 
     def _get_ratings(self) -> dict[TournamentRating, PlayerRating]:
         return {
-            TournamentRating(tr_value): PlayerRating.from_stored_value(rating)
-            for tr_value, rating in self.stored_player.ratings.items()
+            tournament_rating: PlayerRating.from_stored_value(
+                self.stored_player.ratings.get(tournament_rating.value, {})
+            )
+            for tournament_rating in TournamentRating
         }
 
     def get_rating_and_type(
