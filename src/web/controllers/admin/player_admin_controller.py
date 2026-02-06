@@ -1,11 +1,15 @@
+import csv
 from collections import defaultdict
 from collections.abc import Callable
 from datetime import date
 from functools import cached_property
+from itertools import islice
 from logging import Logger
 import math
+from pathlib import Path
 from typing import Annotated, Any, Iterable
 
+import chardet
 from litestar.exceptions import NotFoundException, ClientException
 
 from common.i18n.utils import normalized_key
@@ -23,7 +27,8 @@ from common.exception import SharlyChessException, FormError
 from common.i18n import _, ngettext
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
-from data.columns.handlers import PlayersTabColumnHandler
+from data.columns.handlers import PlayersTabColumnHandler, PlayerDatasheetColumnHandler
+from data.columns.player_datasheet import DatasheetColumn
 from data.columns.players_tab import PlayersTabColumn
 from data.event import Event
 from data.access_levels.actions import AuthAction
@@ -36,7 +41,8 @@ from data.print_documents.documents import (
     PlayerCheckinListPrintDocument,
 )
 from data.tournament import Tournament
-from database.sqlite.event.event_store import StoredPlayer
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredPlayer, StoredTournamentPlayer
 from utils import Utils
 from utils.date_time import format_date
 from utils.enum import (
@@ -71,6 +77,7 @@ from web.session import (
     SessionPlayersDisabledColumns,
     SessionPlayersSearch,
     SessionPlayersFilters,
+    SessionPlayersImportUseDataSource,
 )
 from web.utils import SelectOption
 
@@ -220,6 +227,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
             'admin_event_tab': 'admin-event-players-tab',
             'admin_player': self.admin_player,
             'admin_tournament': self.admin_tournament,
+            'data_source': self.admin_data_source,
         }
 
 
@@ -832,7 +840,6 @@ class PlayerAdminController(BaseEventAdminController):
             'federation_options': cls._get_federation_options(),
             'tournament_options': tournament_options,
             'selected_data_source': SessionPlayersActiveDataSource(request).get(),
-            'data_source_options': DataSourceManager().options(),
             'plugin_templates_by_section': plugin_templates_by_section,
             'previous_player': (
                 allowed_players_by_id.get(old_player_id, None)
@@ -1536,6 +1543,423 @@ class PlayerAdminController(BaseEventAdminController):
         player = web_context.get_admin_player()
         player.single_tournament.check_in_player(player, check_in=False)
         return self._render_player_table_row(web_context)
+
+    # -------------------------------------------------------------------------
+    # Import
+    # -------------------------------------------------------------------------
+
+    @staticmethod
+    def _build_list_tooltip(values: list[str]) -> str:
+        message = ''
+        for value in values:
+            message += f'<div>{value}</div>'
+        return message
+
+    @staticmethod
+    def _split_datasheet_columns_ids(
+        columns: list[DatasheetColumn],
+    ) -> tuple[list[str], list[str], list[str]]:
+        required: list[str] = []
+        optional: list[str] = []
+        informative: list[str] = []
+        for column in columns:
+            if column.is_required:
+                required.append(column.id)
+            elif column.is_informative:
+                informative.append(column.id)
+            else:
+                optional.append(column.id)
+        return required, optional, informative
+
+    @classmethod
+    def _render_players_import_modal(
+        cls,
+        web_context: PlayerAdminWebContext,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> HTMXTemplate:
+        request = web_context.request
+        event = web_context.get_admin_event()
+        default_data = WebContext.values_dict_to_form_data(
+            {
+                'tournament_id': '',
+                'file': '',
+                'overwrite_players': False,
+                'use_data_source': SessionPlayersImportUseDataSource(request).get(),
+                'data_source': SessionPlayersActiveDataSource(request).get(),
+            }
+        )
+        tournaments = web_context.player_addable_tournaments
+        tournament_options = {'': '-'} | web_context.get_tournament_options(tournaments)
+        data_sources = [
+            source for source in DataSourceManager().objects() if source.is_available
+        ]
+        template_context = {
+            'modal': 'players_import',
+            'player_addable_tournaments': tournaments,
+            'started_tournament_ids': [
+                str(tournament.id) for tournament in tournaments if tournament.started
+            ],
+            'tournament_options': tournament_options,
+            'data_source_options': {
+                data_source.id: data_source.name for data_source in data_sources
+            },
+            'data_sources': data_sources,
+            'build_list_tooltip': cls._build_list_tooltip,
+            'split_column_ids': cls._split_datasheet_columns_ids,
+            'columns': PlayerDatasheetColumnHandler(event).columns,
+            'data': default_data | (data or {}),
+            'errors': errors or {},
+        }
+        return cls._admin_base_event_render(
+            web_context.template_context | template_context
+        )
+
+    @get(
+        path='/players-import-modal/{event_uniq_id:str}',
+        name='players-import-modal',
+    )
+    async def players_import_modal(self, request: HTMXRequest) -> HTMXTemplate:
+        web_context = PlayerAdminWebContext(request)
+        return self._render_players_import_modal(web_context)
+
+    @classmethod
+    def _read_csv_file(cls, file_path: Path) -> dict[str, list[str]]:
+        if file_path.suffix != '.csv':
+            raise SharlyChessException(
+                _('Unhandled file type [{suffix}] (expected: {expected}).').format(
+                    suffix=file_path.suffix,
+                    expected='.csv',
+                )
+            )
+        content_by_column: dict[str, list[str]] = {}
+        with open(file_path, 'rb') as raw_file:
+            encoding = chardet.detect(raw_file.read())['encoding']
+        with open(file_path, 'r', encoding=encoding) as csvfile:
+            dialect = csv.Sniffer().sniff(''.join(islice(csvfile, 2)))
+            csvfile.seek(0)
+            reader = csv.DictReader(csvfile, dialect=dialect)
+            if reader.fieldnames:
+                content_by_column = {header: [] for header in reader.fieldnames}
+                for row in reader:
+                    for header in reader.fieldnames:
+                        content_by_column[header].append(row[header].strip())
+        return content_by_column
+
+    @classmethod
+    async def _get_imported_stored_players(
+        cls,
+        web_context: PlayerAdminWebContext,
+        used_columns: list[DatasheetColumn],
+        content_by_column_id: dict[str, list[str]],
+        overwrite_players: bool,
+    ) -> tuple[dict[int, StoredPlayer], dict[int, dict[str, str]]]:
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        data_source = web_context.admin_data_source
+        unique_values_by_column_id: dict[str, list[str]] = defaultdict(list)
+        name_keys: list[tuple[str, str, date | None]] = []
+        if not overwrite_players:
+            for column in used_columns:
+                if column.is_informative or not column.is_unique:
+                    continue
+                for player in tournament.tournament_players:
+                    unique_values_by_column_id[column.id].append(
+                        str(column.get_cell_content(player) or '')
+                    )
+            name_keys = [
+                (player.last_name, player.first_name, player.date_of_birth)
+                for player in tournament.tournament_players
+                if player.date_of_birth
+            ]
+        stored_players_by_index: dict[int, StoredPlayer] = {}
+        import_errors_by_index: dict[int, dict[str, str]] = defaultdict(dict)
+        row_count = len(content_by_column_id[used_columns[0].id])
+        for index in range(row_count):
+            stored_player = StoredPlayer(id=None, federation=event.federation)
+            for column in used_columns:
+                if column.is_informative:
+                    continue
+                value = content_by_column_id[column.id][index]
+                try:
+                    column.augment_stored_player_with_event(event, stored_player, value)
+                    if (
+                        column.is_unique
+                        and value
+                        and value in unique_values_by_column_id[column.id]
+                    ):
+                        raise ValueError(
+                            _(
+                                'A player with this value already exists in the tournament.'
+                            )
+                        )
+                except SharlyChessException as error:
+                    import_errors_by_index[index][column.id] = str(error)
+            name_key = (
+                stored_player.last_name,
+                stored_player.first_name or '',
+                stored_player.date_of_birth,
+            )
+            if stored_player.date_of_birth:
+                if name_key in name_keys:
+                    import_errors_by_index[index]['last_name'] = _(
+                        'Player [{player}] already exists in the tournament.'
+                    ).format(
+                        player=' '.join(
+                            [
+                                stored_player.last_name,
+                                stored_player.first_name or '',
+                                format_date(stored_player.date_of_birth),
+                            ]
+                        )
+                    )
+            if index in import_errors_by_index:
+                continue
+            stored_players_by_index[index] = stored_player
+            if stored_player.date_of_birth:
+                name_keys.append(name_key)
+            for column in used_columns:
+                if column.is_unique:
+                    unique_values_by_column_id[column.id].append(
+                        content_by_column_id[column.id][index]
+                    )
+
+        if data_source:
+            stored_players_by_index = {}
+            identifier_column = data_source.import_identifier_column
+            column_content = content_by_column_id[identifier_column.id]
+            identifiers = [
+                identifier
+                for index, identifier in enumerate(column_content)
+                if index not in import_errors_by_index
+            ]
+            stored_players_by_identifier = (
+                await data_source.get_stored_players_by_import_identifier(identifiers)
+            )
+            for index in range(row_count):
+                if index in import_errors_by_index:
+                    continue
+                identifier = content_by_column_id[identifier_column.id][index]
+                if identifier not in stored_players_by_identifier:
+                    import_errors_by_index[index][identifier_column.id] = _(
+                        'Value not found in the data source.'
+                    )
+                    continue
+                stored_player = stored_players_by_identifier[identifier]
+                for column in used_columns:
+                    if column.is_informative:
+                        continue
+                    value = content_by_column_id[column.id][index]
+                    column.augment_stored_player_with_event(event, stored_player, value)
+                stored_players_by_index[index] = stored_player
+
+        return stored_players_by_index, import_errors_by_index
+
+    @classmethod
+    async def _render_players_import_diff_modal(
+        cls,
+        web_context: PlayerAdminWebContext,
+        columns: list[DatasheetColumn],
+        content_by_column_id: dict[str, list[str]],
+        file_path: Path,
+        overwrite_players: bool,
+    ) -> HTMXTemplate:
+        event = web_context.get_admin_event()
+        used_columns = [
+            column for column in columns if column.id in content_by_column_id
+        ]
+        used_column_ids = [column.id for column in used_columns]
+        (
+            stored_players_by_index,
+            import_errors_by_index,
+        ) = await cls._get_imported_stored_players(
+            web_context, used_columns, content_by_column_id, overwrite_players
+        )
+        identifier_column: DatasheetColumn | None = None
+        data_source_players_by_index: dict[int, Player] = {}
+        if web_context.admin_data_source:
+            identifier_column = used_columns.pop(0)
+            data_source_players_by_index = {
+                index: Player(event, stored_player)
+                for index, stored_player in stored_players_by_index.items()
+            }
+        template_context: dict[str, Any] = {
+            'modal': 'players_import_diff',
+            'identifier_column': identifier_column,
+            'used_columns': used_columns,
+            'unknown_column_ids': [
+                column_id
+                for column_id in content_by_column_id
+                if column_id not in used_column_ids
+            ],
+            'build_list_tooltip': cls._build_list_tooltip,
+            'import_errors_by_index': import_errors_by_index,
+            'data_source_players_by_index': data_source_players_by_index,
+            'row_count': len(content_by_column_id[used_column_ids[0]]),
+            'content_by_column_id': content_by_column_id,
+            'file_path': WebContext.value_to_form_data(file_path),
+            'overwrite_players': overwrite_players,
+        }
+        return cls._admin_base_event_render(
+            web_context.template_context | template_context
+        )
+
+    @post(
+        path='/players-import-diff-modal/{event_uniq_id:str}',
+        name='players-import-diff-modal',
+    )
+    async def players_import_diff_modal(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, Any], Body(media_type=RequestEncodingType.MULTI_PART)
+        ],
+    ) -> HTMXTemplate:
+        web_context = PlayerAdminWebContext(request)
+        event = web_context.get_admin_event()
+        normalized_data = await WebContext.normalize_multipart_data(data)
+        errors: dict[str, str] = {}
+        tournament_id = web_context.form_data_to_int(
+            normalized_data, field := 'tournament_id'
+        )
+        if not tournament_id:
+            errors[field] = _('This field is required.')
+        file_path = WebContext.form_data_to_path(normalized_data, field := 'file')
+        content_by_column_id: dict[str, list[str]] = {}
+        if not file_path:
+            errors[field] = _('This field is required.')
+        else:
+            try:
+                content_by_column_id = self._read_csv_file(file_path)
+            except SharlyChessException as error:
+                if isinstance(error, SharlyChessException):
+                    message = str(error)
+                else:
+                    message = _(
+                        'An unexpected error occurred while reading '
+                        'the CSV file. Consult the logs for more details.'
+                    )
+                    logger.error(error)
+                errors['alert'] = message
+        use_data_source = WebContext.form_data_to_bool(
+            normalized_data, 'use_data_source'
+        )
+        SessionPlayersImportUseDataSource(request).set(use_data_source)
+        data_source: DataSource | None = None
+        if use_data_source:
+            data_source = DataSourceManager().get_object(
+                WebContext.form_data_to_str(data, 'data_source') or ''
+            )
+            SessionPlayersActiveDataSource(request).set(data_source.id)
+        columns = PlayerDatasheetColumnHandler(event, data_source).columns
+        if not errors:
+            for column in columns:
+                if column.is_required and column.id not in content_by_column_id:
+                    errors['alert'] = _('Missing required column [{column}].').format(
+                        column=column.id
+                    )
+                    break
+        overwrite_players = WebContext.form_data_to_bool(data, 'overwrite_players')
+        if errors:
+            return self._render_players_import_modal(
+                web_context, normalized_data, errors
+            )
+        assert file_path is not None
+        web_context = PlayerAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            data_source_id=data_source.id if data_source else None,
+        )
+        return await self._render_players_import_diff_modal(
+            web_context,
+            list(columns),
+            content_by_column_id,
+            file_path,
+            overwrite_players,
+        )
+
+    @classmethod
+    def _create_imported_stored_players(
+        cls,
+        web_context: PlayerAdminWebContext,
+        stored_players: list[StoredPlayer],
+        used_columns: list[DatasheetColumn],
+        overwrite_players: bool,
+    ):
+        request = web_context.request
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        if stored_players:
+            with EventDatabase(event.uniq_id, True) as database:
+                if overwrite_players:
+                    database.delete_players_in_tournament(tournament.id)
+                for stored_player in stored_players:
+                    player_id = database.add_stored_player(stored_player)
+                    database.add_stored_tournament_player(
+                        StoredTournamentPlayer(
+                            player_id=player_id,
+                            tournament_id=tournament.id,
+                        )
+                    )
+                if any(column.save_stored_event for column in used_columns):
+                    database.update_stored_event(event.stored_event)
+            Message.success(
+                request,
+                ngettext(
+                    '{count} player successfully imported.',
+                    '{count} players successfully imported.',
+                    len(stored_players),
+                ).format(count=len(stored_players)),
+            )
+        else:
+            Message.warning(request, _('No players imported.'))
+        return cls._render_players_tab(
+            PlayerAdminWebContext(request, reload_event=True)
+        )
+
+    @post(
+        path='/import-players/{event_uniq_id:str}/{tournament_id:int}',
+        name='import-players',
+    )
+    async def import_players(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+        tournament_id: int,
+    ) -> HTMXTemplate:
+        flat_data = WebContext.flatten_list_data(data)
+        web_context = PlayerAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            data_source_id=WebContext.form_data_to_str(flat_data, 'data_source'),
+        )
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        data_source = web_context.admin_data_source
+        file_path = WebContext.form_data_to_path(flat_data, 'file_path')
+        assert file_path is not None
+        row_indexes = WebContext.form_data_to_list_int(flat_data, 'row_indexes')
+        overwrite_players = WebContext.form_data_to_bool(flat_data, 'overwrite_players')
+        if overwrite_players and tournament.started:
+            raise ClientException('Overwrite is forbidden on started tournaments.')
+        columns = PlayerDatasheetColumnHandler(event, data_source).columns
+        content_by_column_id = self._read_csv_file(file_path)
+        used_columns = [
+            column for column in columns if column.id in content_by_column_id
+        ]
+        stored_players_by_index, __ = await self._get_imported_stored_players(
+            web_context, used_columns, content_by_column_id, overwrite_players
+        )
+        stored_players = [
+            stored_player
+            for index, stored_player in stored_players_by_index.items()
+            if index in row_indexes
+        ]
+        return self._create_imported_stored_players(
+            web_context, stored_players, used_columns, overwrite_players
+        )
 
     # -------------------------------------------------------------------------
     # Misc

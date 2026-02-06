@@ -3,7 +3,7 @@ from operator import attrgetter
 from types import UnionType
 from typing import Any, Counter, Callable
 
-from common.exception import OptionError
+from common.exception import OptionError, SharlyChessException
 from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn
@@ -18,8 +18,14 @@ from data.event import Event
 from data.player import Player, TournamentPlayer
 from data.print_documents import PlayerSplitter
 from data.tournament import Tournament
+from database.sqlite.event.event_store import StoredPlayer
 from plugins.fra_schools import PLUGIN_NAME
-from plugins.fra_schools.utils import FRASchoolsUtils, FRASchool
+from plugins.fra_schools.fra_schools_database import FRASchoolsDatabase
+from plugins.fra_schools.utils import (
+    FRASchoolsUtils,
+    FRASchool,
+    FRASchoolsPlayerPluginData,
+)
 from plugins.utils import PluginUtils
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -60,13 +66,68 @@ class FraSchoolTableColumn(TournamentPlayerTableColumn):
         return 'text-start'
 
 
-class FraSchoolDatasheetColumn(DatasheetColumn):
+class FraSchoolCodeDatasheetColumn(DatasheetColumn):
     @property
-    def header_content(self) -> str:
-        return 'school'
+    def id(self) -> str:
+        return 'fra_school_code'
 
     def get_cell_content(self, player: Player) -> Any:
-        return getattr(FRASchoolsUtils.get_player_school(player), 'full_name', '')
+        school = FRASchoolsUtils.get_player_school(player)
+        if not school:
+            return None
+        return school.code
+
+    @property
+    def save_stored_event(self) -> bool:
+        return True
+
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+        pass
+
+    def augment_stored_player_with_event(
+        self, event: Event, stored_player: StoredPlayer, value: str
+    ):
+        if not value:
+            return
+        school_code = FRASchoolsUtils.extract_school_code(value)
+        if not school_code:
+            raise SharlyChessException(
+                _('Invalid format (expected: {format}).').format(format='1234567A')
+            )
+        fra_schools = FRASchoolsUtils.get_event_plugin_data(event).fra_schools
+        school_id = next(
+            (s.id for s in fra_schools if s.code == school_code),
+            None,
+        )
+        if not school_id:
+            with FRASchoolsDatabase() as database:
+                school = database.get_school_by_code(school_code)
+            if not school:
+                raise SharlyChessException(_('UAI code not found in the database.'))
+            else:
+                school_id = FRASchoolsUtils.add_event_school(event, school, save=False)
+        stored_player.plugin_data[PLUGIN_NAME] = FRASchoolsPlayerPluginData(
+            school_id
+        ).to_stored_value()
+
+
+class FraSchoolNameDatasheetColumn(DatasheetColumn):
+    @property
+    def id(self) -> str:
+        return 'fra_school_name'
+
+    def get_cell_content(self, player: Player) -> Any:
+        school = FRASchoolsUtils.get_player_school(player)
+        if not school:
+            return None
+        return school.full_name_without_code
+
+    @property
+    def export_only(self) -> bool:
+        return True
+
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+        pass
 
 
 class FRASchoolPlayerFilter(PlayerFilter):
@@ -89,17 +150,13 @@ class FRASchoolPlayerFilter(PlayerFilter):
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         school_ids, exclude = self.get_option_values()
         if exclude:
-            return (
-                lambda tournament_player: FRASchoolsUtils.get_player_plugin_data(
-                    tournament_player
-                ).fra_school_id
+            return lambda tournament_player: (
+                FRASchoolsUtils.get_player_plugin_data(tournament_player).fra_school_id
                 not in school_ids
             )
         else:
-            return (
-                lambda tournament_player: FRASchoolsUtils.get_player_plugin_data(
-                    tournament_player
-                ).fra_school_id
+            return lambda tournament_player: (
+                FRASchoolsUtils.get_player_plugin_data(tournament_player).fra_school_id
                 in school_ids
             )
 
