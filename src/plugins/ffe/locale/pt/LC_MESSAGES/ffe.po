@@ -199,10 +199,6 @@ msgid "FFE Form:"
 msgstr "Formulário FFE:"
 
 #, ai_translation
-msgid "FFE ID"
-msgstr "ID FFE"
-
-#, ai_translation
 msgid "FFE Licence"
 msgstr "Licença FFE"
 
@@ -339,6 +335,10 @@ msgid "Invalid fees link text [{text}]."
 msgstr "Texto de link de taxas inválidas [{text}]."
 
 #, ai_translation
+msgid "Invalid format (expected: {format})."
+msgstr "Formato inválido (esperado: {format})."
+
+#, ai_translation
 msgid "Invalid response from the FFE website."
 msgstr "Resposta inválida do site da FFE."
 
@@ -373,6 +373,10 @@ msgstr "Lic."
 #, fuzzy
 msgid "Licence no. *** LICENCE NUMBER"
 msgstr "Licence no."
+
+#, ai_translation
+msgid "Licence number"
+msgstr "Número da licença"
 
 #, ai_translation
 msgid "Licence types"
@@ -635,8 +639,16 @@ msgid "Unable to upload tournament."
 msgstr "Não foi possível carregar o torneio."
 
 #, ai_translation
+msgid "Unknown league."
+msgstr "Liga desconhecida."
+
+#, ai_translation
 msgid "Unknown player ID [{player_id}]"
 msgstr "ID do jogador desconhecido [{player_id}]"
+
+#, ai_translation
+msgid "Unknown value (expected: {expected})."
+msgstr "Valor desconhecido (esperado: {expected})."
 
 #, ai_translation
 msgid "Unknown value [{value}]"
@@ -733,4 +745,7 @@ msgstr[1] "{count} ligas representadas"
 
 #~ msgid "The player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
 #~ msgstr "O jogador com número de licença FFE [{ffe_licence_number}] já joga torneio [{tournament}]."
+
+#~ msgid "FFE ID"
+#~ msgstr "ID FFE"
 

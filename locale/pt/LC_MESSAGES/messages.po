@@ -57,6 +57,18 @@ msgstr[0] "%(num)d família"
 msgstr[1] "%(num)d famílias"
 
 #, ai_translation, python-format
+msgid "%(num)d informative *** COLUMNS"
+msgid_plural "%(num)d informative *** COLUMNS"
+msgstr[0] "%(num)d informativa"
+msgstr[1] "%(num)d informativas"
+
+#, ai_translation, python-format
+msgid "%(num)d optional *** COLUMNS"
+msgid_plural "%(num)d optional *** COLUMNS"
+msgstr[0] "%(num)d opcional"
+msgstr[1] "%(num)d opcionais"
+
+#, ai_translation, python-format
 msgid "%(num)d player"
 msgid_plural "%(num)d players"
 msgstr[0] "%(num)d jogador"
@@ -92,6 +104,12 @@ msgid_plural "%(num)d prizes successfully created!"
 msgstr[0] "%(num)d prêmio criado com sucesso!"
 msgstr[1] "%(num)d prêmios criados com sucesso!"
 
+#, python-format
+msgid "%(num)d required *** COLUMNS"
+msgid_plural "%(num)d required *** COLUMNS"
+msgstr[0] "%(num)d necessária"
+msgstr[1] "%(num)d necessárias"
+
 #, ai_translation, python-format
 msgid "%(num)d screen"
 msgid_plural "%(num)d screens"
@@ -103,6 +121,12 @@ msgid "%(num)d tournament"
 msgid_plural "%(num)d tournaments"
 msgstr[0] "%(num)d torneio"
 msgstr[1] "%(num)d torneios"
+
+#, python-format
+msgid "%(num)d unknown column (ignored)"
+msgid_plural "%(num)d unknown columns (ignored)"
+msgstr[0] "%(num)d ignorada"
+msgstr[1] "%(num)d ignoradas"
 
 #, ai_translation, python-format
 msgid "%(player)s - Round %(num)s"
@@ -355,8 +379,16 @@ msgid "A file is expected."
 msgstr "Um arquivo é esperado."
 
 #, ai_translation
+msgid "A player with this value already exists in the tournament."
+msgstr "Um jogador com esse valor já existe no torneio."
+
+#, ai_translation
 msgid "A plugin specific to this federation is used, it can no longer be modified."
 msgstr "Um plugin específico para esta federação é usado, ele não pode mais ser modificado."
+
+#, ai_translation
+msgid "A positive float is expected."
+msgstr "Espera-se um flutuador positivo."
 
 #, ai_translation
 msgid "A positive integer is expected."
@@ -559,10 +591,6 @@ msgid "Add period"
 msgstr "Adicionar período"
 
 #, ai_translation
-msgid "Add player"
-msgstr "Adicionar jogador"
-
-#, ai_translation
 msgid "Add players"
 msgstr "Adicionar jogadores"
 
@@ -647,6 +675,10 @@ msgid "All the players intended to play the coming round did check-in."
 msgstr "Todos os jogadores que pretendiam jogar a próxima rodada fizeram check-in."
 
 #, ai_translation
+msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
+msgstr "Todos os jogadores do torneio selecionado serão excluídos antes de importar os do arquivo."
+
+#, ai_translation
 msgid "All the tournaments"
 msgstr "Todos os torneios"
 
@@ -697,6 +729,10 @@ msgstr "Permite o emparelhamento dos jogadores, seja usando um motor de emparelh
 #, ai_translation
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Ocorreu um erro. Consulte os registros para obter mais detalhes."
+
+#, ai_translation
+msgid "An unexpected error occurred while reading the CSV file. Consult the logs for more details."
+msgstr "Ocorreu um erro inesperado durante a leitura do ficheiro CSV. Consulte os registos para obter mais detalhes."
 
 #, ai_translation
 msgid "An unexpected error occurred."
@@ -1193,6 +1229,10 @@ msgstr "CLEAR O RESULTADO"
 #, fuzzy
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
+
+#, ai_translation
+msgid "CSV file"
+msgstr "ficheiro CSV"
 
 #, ai_translation
 msgid "CSV format"
@@ -1938,6 +1978,10 @@ msgstr "Diariamente"
 msgid "Dashed border"
 msgstr "Fronteira Dashed"
 
+#, ai_translation
+msgid "Data source"
+msgstr "Fonte de dados"
+
 #, ai_translation, python-format
 msgid "Data source: %(data_source)s"
 msgstr "Fonte: %(data_source)s"
@@ -2089,6 +2133,10 @@ msgstr "Apagar a categoria."
 #, ai_translation
 msgid "Delete the display controller."
 msgstr "Exclua o controlador de exibição."
+
+#, ai_translation
+msgid "Delete the existing players"
+msgstr "Apagar os jogadores existentes"
 
 #, ai_translation
 msgid "Delete the rotator."
@@ -2900,6 +2948,10 @@ msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Female"
 
 #, ai_translation
+msgid "Fetch from a data source"
+msgstr "Buscar a partir de uma fonte de dados"
+
+#, ai_translation
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr "Fide ID [{fide_id}] já presente no torneio [{tournament}]."
 
@@ -3348,6 +3400,18 @@ msgid "Import is unavailable once the tournament has started."
 msgstr "A importação não está disponível uma vez que o torneio tenha começado."
 
 #, ai_translation
+msgid "Import players from a CSV file."
+msgstr "Importar jogadores de um arquivo CSV."
+
+#, ai_translation, python-format
+msgid "Import players to tournament [%(tournament)s]"
+msgstr "Importar jogadores para o torneio [%(tournament)s]"
+
+#, ai_translation
+msgid "Imported player"
+msgstr "Jogador importado"
+
+#, ai_translation
 msgid "Impossible to add players to tournament [{tournament}]."
 msgstr "Impossível adicionar jogadores ao torneio [{tournament}]."
 
@@ -3502,6 +3566,10 @@ msgstr "Formato de data inválido [{date}] (esperado: {format})"
 #, ai_translation
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr "Atraso inválido [{delay}] (número inteiro positivo esperado)."
+
+#, ai_translation
+msgid "Invalid email format."
+msgstr "Formato de e-mail inválido."
 
 #, ai_translation
 msgid "Invalid expression [{expression}]"
@@ -4012,6 +4080,10 @@ msgid "Minimum rating"
 msgstr "Classificação mínima"
 
 #, ai_translation
+msgid "Missing required column [{column}]."
+msgstr "Coluna em falta [{column}]."
+
+#, ai_translation
 msgid "Missing required field [{field}]."
 msgstr "Faltando campo obrigatório [{field}]."
 
@@ -4354,6 +4426,10 @@ msgstr "Sem permissões."
 #, ai_translation
 msgid "No players"
 msgstr "Nenhum jogador"
+
+#, ai_translation
+msgid "No players imported."
+msgstr "Nenhum jogador importado."
 
 #, ai_translation
 msgid "No players matching the criteria."
@@ -5100,6 +5176,10 @@ msgid "Player [{player_id}]: {error}"
 msgstr "Jogador [{player_id}]: {error}"
 
 #, ai_translation
+msgid "Player [{player}] already exists in the tournament."
+msgstr "O jogador [{player}] já existe no torneio."
+
+#, ai_translation
 msgid "Player [{player}] already plays tournament [{tournament}]."
 msgstr "Jogador [{player}] já joga torneio [{tournament}]."
 
@@ -5196,6 +5276,10 @@ msgid "Players ({num})"
 msgstr "Jogadores ({num})"
 
 #, ai_translation
+msgid "Players can't be overwritten once the tournament has started."
+msgstr "Os jogadores não podem ser substituídos assim que o torneio começar."
+
+#, ai_translation
 msgid "Players check-in list"
 msgstr "Lista de check-in dos jogadores"
 
@@ -5206,6 +5290,10 @@ msgstr "Jogadores de n° %(first)d a n° #%(last)d"
 #, ai_translation, python-format
 msgid "Players from %(first)s to %(last)s"
 msgstr "Jogadores de %(first)s a %(last)s"
+
+#, ai_translation
+msgid "Players import"
+msgstr "Importar jogadores"
 
 #, ai_translation
 msgid "Players may have default estimated ratings depending on the activated plugins."
@@ -6276,12 +6364,20 @@ msgid "Show Log"
 msgstr "Mostrar registo"
 
 #, ai_translation
-msgid "Show all the players"
-msgstr "Mostrar todos os jogadores"
+msgid "Show invalid rows"
+msgstr "Mostrar linhas inválidas"
 
 #, ai_translation
 msgid "Show logging level"
 msgstr "Mostrar nível de registo"
+
+#, ai_translation
+msgid "Show unmodified players"
+msgstr "Mostrar jogadores não modificados"
+
+#, ai_translation
+msgid "Show valid rows"
+msgstr "Mostrar linhas válidas"
 
 #, ai_translation
 msgid "Show warnings"
@@ -7078,6 +7174,10 @@ msgid "This field can't be updated once the tournament has started."
 msgstr "Este campo não pode ser atualizado assim que o torneio começar."
 
 #, ai_translation
+msgid "This field is only valid without date of birth."
+msgstr "Este campo só é válido sem data de nascimento."
+
+#, ai_translation
 msgid "This field is required (except for rounds)."
 msgstr "Este campo é necessário (exceto para rodadas)."
 
@@ -7116,6 +7216,10 @@ msgstr "Esta rodada não está terminada (última terminada: {round})."
 #, ai_translation
 msgid "This round is not valid (the tournament has {rounds} rounds)."
 msgstr "Esta rodada não é válida (o torneio tem rodadas {rounds})."
+
+#, ai_translation
+msgid "This row contains errors that prevent it from being imported."
+msgstr "Esta linha contém erros que impedem que ele seja importado."
 
 #, ai_translation
 msgid "This screen family is private (not visible by the spectators)."
@@ -7501,6 +7605,10 @@ msgstr "Undefined"
 msgid "Unexpected error during installation: [{ex}]."
 msgstr "Erro inesperado durante a instalação: [{ex}]."
 
+#, ai_translation
+msgid "Unhandled file type [{suffix}] (expected: {expected})."
+msgstr "Tipo de ficheiro não tratado [{suffix}] (esperado: {expected})."
+
 #, ai_translation, python-format
 msgid "Unique ID: %(uniq_id)s"
 msgstr "ID nico: %(uniq_id)s"
@@ -7530,6 +7638,10 @@ msgid "Unknown federation [{federation}]."
 msgstr "Federação Desconhecida [{federation}]."
 
 #, ai_translation
+msgid "Unknown federation."
+msgstr "Federação Desconhecida."
+
+#, ai_translation
 msgid "Unknown gender [{gender}]."
 msgstr "Gênero desconhecido [{gender}]."
 
@@ -7540,6 +7652,10 @@ msgstr "Resultado desconhecido [{result}]."
 #, ai_translation
 msgid "Unknown title [{title}]."
 msgstr "Título desconhecido [{title}]."
+
+#, ai_translation
+msgid "Unknown value (expected: {expected})."
+msgstr "Valor desconhecido (esperado: {expected})."
 
 #, ai_translation
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
@@ -7682,6 +7798,10 @@ msgid "Use Fore Buchholz"
 msgstr "Use Fore Buchholz"
 
 #, ai_translation
+msgid "Use a data source to import players from their identifier."
+msgstr "Use uma fonte de dados para importar jogadores de seu identificador."
+
+#, ai_translation
 msgid "Use default"
 msgstr "Usar padrão"
 
@@ -7744,6 +7864,14 @@ msgstr "Validar"
 #, ai_translation
 msgid "Value"
 msgstr "Valor"
+
+#, ai_translation
+msgid "Value does not match the one from the data source."
+msgstr "O valor não corresponde ao da fonte de dados."
+
+#, ai_translation
+msgid "Value not found in the data source."
+msgstr "Valor não encontrado na fonte de dados."
 
 #, ai_translation
 msgid "Value of the pairing allocated bye:"
@@ -8457,11 +8585,15 @@ msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] "Não foi possível alterar {count} hora (conflito de horário)."
 msgstr[1] "{count} horas não puderam ser alteradas (conflito de fuso horário)."
 
-#, ai_translation
+msgid "{count} player successfully imported."
+msgid_plural "{count} players successfully imported."
+msgstr[0] "{count} jogador importado com sucesso."
+msgstr[1] "{count} jogadores importados com sucesso."
+
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
-msgstr[0] "{count} jogador atualizado."
-msgstr[1] "{count} jogadores atualizados."
+msgstr[0] "{count} jogador atualizou com sucesso."
+msgstr[1] "{count} jogadores atualizaram com sucesso."
 
 #, ai_translation
 msgid "{date_format} HH:MM"
@@ -8615,4 +8747,10 @@ msgstr "½ - ½ (U)"
 
 #~ msgid "vs"
 #~ msgstr "vs vs vs"
+
+#~ msgid "Add player"
+#~ msgstr "Adicionar jogador"
+
+#~ msgid "Show all the players"
+#~ msgstr "Mostrar todos os jogadores"
 

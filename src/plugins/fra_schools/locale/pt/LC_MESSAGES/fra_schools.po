@@ -87,8 +87,8 @@ msgid "Incomplete Team"
 msgstr "Equipe Incompleta"
 
 #, ai_translation
-msgid "Invalid format (expected: 5 digits)."
-msgstr "Formato inválido (esperado: 5 dígitos)."
+msgid "Invalid format (expected: {format})."
+msgstr "Formato inválido (esperado: {format})."
 
 #, ai_translation
 msgid "Loading more results…"
@@ -210,6 +210,10 @@ msgid "UAI code"
 msgstr "Código UAI"
 
 #, ai_translation
+msgid "UAI code not found in the database."
+msgstr "Código UAI não encontrado no banco de dados."
+
+#, ai_translation
 msgid "UAI codes are a necessity to distinguish schools with long names. Only enable this option if your school names are short enough."
 msgstr "Os códigos UAI são uma necessidade para distinguir escolas com nomes longos. Só ative esta opção se os nomes da sua escola forem curtos o suficiente."
 
@@ -228,4 +232,7 @@ msgstr[1] "{count} escolas representadas"
 
 #~ msgid "Identifier"
 #~ msgstr "Identificador"
+
+#~ msgid "Invalid format (expected: 5 digits)."
+#~ msgstr "Formato inválido (esperado: 5 dígitos)."
 
