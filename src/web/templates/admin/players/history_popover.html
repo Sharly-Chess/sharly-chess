@@ -39,7 +39,7 @@
                     <td class='text-center'>{{ opponent.rank }}</td>
                     <td class='text-nowrap'>{{ opponent.title.short_name }} {{ opponent.full_name }}</td>
                     <td>{{ opponent.rating_str }}</td>
-                    <td>{{ opponent.category.name }}</td>
+                    <td>{{ opponent.category_name }}</td>
                     <td>{{ opponent.federation }}</td>
                     <td class='text-center'>{{ opponent.points_str }}</td>
                     {% for tie_break_value in opponent.tie_break_values %}

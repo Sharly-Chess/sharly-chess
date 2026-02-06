@@ -1,10 +1,11 @@
+import re
 from collections import Counter
 from collections.abc import Callable
 from functools import partial, cached_property, cache
 from types import UnionType
 from typing import Any
 
-from common.exception import OptionError
+from common.exception import OptionError, SharlyChessException
 from common.i18n import _
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn
@@ -21,9 +22,10 @@ from data.print_documents import PlayerSplitter, PrintOption
 from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
 from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
+from database.sqlite.event.event_store import StoredPlayer
 from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.ffe_database import PlayerFFELicence
-from plugins.ffe.utils import FFEUtils
+from plugins.ffe.utils import FFEUtils, FfePlayerPluginData, FFE_LEAGUES
 from plugins.pairing_acceleration.pairing_settings import AccelerationGroup
 from plugins.pairing_acceleration.pairing_variations import (
     Acceleration3GroupsSwissVariation,
@@ -224,18 +226,12 @@ class FfeLeaguePlayerFilter(PlayerFilter):
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         leagues, exclude = self.get_option_values()
         if exclude:
-            return (
-                lambda tournament_player: FFEUtils.get_player_plugin_data(
-                    tournament_player
-                ).league
-                not in leagues
+            return lambda tournament_player: (
+                FFEUtils.get_player_plugin_data(tournament_player).league not in leagues
             )
         else:
-            return (
-                lambda tournament_player: FFEUtils.get_player_plugin_data(
-                    tournament_player
-                ).league
-                in leagues
+            return lambda tournament_player: (
+                FFEUtils.get_player_plugin_data(tournament_player).league in leagues
             )
 
     def full_name(self, tournament: 'Tournament') -> str:
@@ -264,9 +260,7 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
-        from plugins.ffe.ffe import FfePlugin
-
-        return list(FfePlugin.FFE_LEAGUES)
+        return list(FFE_LEAGUES)
 
     def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
         counter: Counter[str] = Counter[str]()
@@ -279,11 +273,9 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
         return object_
 
     def get_name(self, object_: str) -> str:
-        from plugins.ffe.ffe import FfePlugin
-
-        if object_ not in FfePlugin.FFE_LEAGUES:
+        if object_ not in FFE_LEAGUES:
             return object_
-        return f'{object_} - {FfePlugin.FFE_LEAGUES[object_]}'
+        return f'{object_} - {FFE_LEAGUES[object_]}'
 
     def validate(self):
         self._validate_list_type(str)
@@ -307,11 +299,8 @@ class FfeLicencePlayerFilter(PlayerFilter):
     @cached_property
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         licences = self.get_option_values()[0]
-        return (
-            lambda tournament_player: FFEUtils.get_player_plugin_data(
-                tournament_player
-            ).ffe_licence
-            in licences
+        return lambda tournament_player: (
+            FFEUtils.get_player_plugin_data(tournament_player).ffe_licence in licences
         )
 
     def full_name(self, tournament: 'Tournament') -> str:
@@ -390,13 +379,11 @@ class FfeLeaguePlayersTabColumn(FilterPlayersTabColumn):
         return self._get_league(player)
 
     def get_filter_row_content(self, value: Any) -> str:
-        from plugins.ffe.ffe import FfePlugin
-
         if not value:
             return '-'
-        if value not in FfePlugin.FFE_LEAGUES:
+        if value not in FFE_LEAGUES:
             return value
-        return f'{value} - {FfePlugin.FFE_LEAGUES[value]}'
+        return f'{value} - {FFE_LEAGUES[value]}'
 
 
 class FfeLicencePlayersTabColumn(FilterPlayersTabColumn):
@@ -461,35 +448,88 @@ class FfeLicenceTypeTableColumn(TournamentPlayerTableColumn):
 
 class FfeIdDatasheetColumn(DatasheetColumn):
     @property
-    def header_content(self) -> str:
+    def id(self) -> str:
         return 'ffe_id'
 
     def get_cell_content(self, player: Player) -> Any:
-        return FFEUtils.get_player_plugin_data(player).ffe_id or ''
+        return FFEUtils.get_player_plugin_data(player).ffe_id
+
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+        if not value:
+            return
+        if not value.isdigit() or int(value) == 0:
+            raise SharlyChessException(_('A positive integer is expected.'))
+        plugin_data = FfePlayerPluginData.from_stored_value(
+            stored_player.plugin_data.get(PLUGIN_NAME, {})
+        )
+        plugin_data.ffe_id = int(value)
+        stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
 
 
 class FfeLicenceNumberDatasheetColumn(DatasheetColumn):
     @property
-    def header_content(self) -> str:
+    def id(self) -> str:
         return 'ffe_licence_number'
 
     def get_cell_content(self, player: Player) -> Any:
         return FFEUtils.get_player_plugin_data(player).ffe_licence_number or ''
 
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+        if not value:
+            return
+        if not re.match(r'^[A-Z]\d{5}', value):
+            raise SharlyChessException(
+                _('Invalid format (expected: {format}).').format(format='A12345')
+            )
+        plugin_data = FfePlayerPluginData.from_stored_value(
+            stored_player.plugin_data.get(PLUGIN_NAME, {})
+        )
+        plugin_data.ffe_licence_number = value or None
+        stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+
+    @property
+    def is_unique(self) -> bool:
+        return True
+
 
 class FfeLicenceDatasheetColumn(DatasheetColumn):
     @property
-    def header_content(self) -> str:
+    def id(self) -> str:
         return 'ffe_licence'
 
     def get_cell_content(self, player: Player) -> Any:
         return FFEUtils.get_player_plugin_data(player).ffe_licence.value
 
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+        plugin_data = FfePlayerPluginData.from_stored_value(
+            stored_player.plugin_data.get(PLUGIN_NAME, {})
+        )
+        try:
+            plugin_data.ffe_licence = PlayerFFELicence(value)
+        except ValueError:
+            raise SharlyChessException(
+                _('Unknown value (expected: {expected}).').format(
+                    expected='|'.join(PlayerFFELicence)
+                )
+            )
+        stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+
 
 class FfeLeagueDatasheetColumn(DatasheetColumn):
     @property
-    def header_content(self) -> str:
-        return 'league'
+    def id(self) -> str:
+        return 'ffe_league'
 
     def get_cell_content(self, player: Player) -> Any:
         return FFEUtils.get_player_plugin_data(player).league or ''
+
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+        if not value:
+            return
+        if value not in FFE_LEAGUES:
+            raise SharlyChessException(_('Unknown league.'))
+        plugin_data = FfePlayerPluginData.from_stored_value(
+            stored_player.plugin_data.get(PLUGIN_NAME, {})
+        )
+        plugin_data.league = value
+        stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()

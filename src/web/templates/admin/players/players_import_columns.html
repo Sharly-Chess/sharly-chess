@@ -1,0 +1,33 @@
+{% set required_column_ids, optional_column_ids, informative_column_ids = split_column_ids(columns) %}
+<div class="row mt-2">
+    <span>
+        {{ _('Columns:') }}
+        {{ ngettext(
+            '%(num)d required *** COLUMNS',
+            '%(num)d required *** COLUMNS',
+            required_column_ids|length
+        ) }}
+        <i
+            class="bi-info-circle-fill ps-1"
+            {{ macros.tooltip_attributes('', build_list_tooltip(required_column_ids), 'right') }}
+        ></i>,
+        {{ ngettext(
+            '%(num)d optional *** COLUMNS',
+            '%(num)d optional *** COLUMNS',
+            optional_column_ids|length
+        ) }}
+        <i
+            class="bi-info-circle-fill ps-1"
+            {{ macros.tooltip_attributes('', build_list_tooltip(optional_column_ids), 'right') }}
+        ></i>,
+        {{ ngettext(
+            '%(num)d informative *** COLUMNS',
+            '%(num)d informative *** COLUMNS',
+            informative_column_ids|length
+        ) }}
+        <i
+            class="bi-info-circle-fill ps-1"
+            {{ macros.tooltip_attributes('', build_list_tooltip(informative_column_ids), 'right') }}
+        ></i>
+    </span>
+</div>

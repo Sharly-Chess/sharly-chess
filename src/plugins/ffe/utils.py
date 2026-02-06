@@ -21,6 +21,29 @@ FFE_MIN_UPLOAD_DELAY = 3
 FFE_DEFAULT_UPLOAD_DELAY = 3
 FFE_EPOCH = datetime(2000, 1, 1)
 
+# The FFE league names.
+FFE_LEAGUES: dict[str, str] = {
+    'ARA': 'Auvergne-Rhône-Alpes',
+    'BFC': 'Bourgogne-Franche-Comté',
+    'BRE': 'Bretagne',
+    'CRS': 'Corse',
+    'CVL': 'Centre-Val de Loire',
+    'EST': 'Grand-Est',
+    'GUA': 'Guadeloupe',
+    'GUY': 'Guyane',
+    'HDF': 'Hauts-de-France',
+    'IDF': 'Île-de-France',
+    'MAR': 'Martinique',
+    'NAQ': 'Nouvelle-Aquitaine',
+    'NCA': 'Nouvelle-Calédonie',
+    'NOR': 'Normandie',
+    'OCC': 'Occitanie',
+    'PAC': "Provence-Alpes-Côte d'azur",
+    'PDL': 'Pays de la Loire',
+    'POL': 'Saint-Pierre-et-Miquelon',
+    'REU': 'Réunion',
+}
+
 
 class FFEUtils:
     @classmethod

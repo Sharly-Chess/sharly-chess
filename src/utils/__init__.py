@@ -18,6 +18,8 @@ from text_unidecode import unidecode
 class Utils:
     """Class containing the utils functions"""
 
+    EMAIL_REGEX = r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}$'
+
     PERFORMANCE_TABLE: list[int] = [
         0,
         7,
