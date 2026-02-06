@@ -53,6 +53,18 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d informative *** COLUMNS"
+msgid_plural "%(num)d informative *** COLUMNS"
+msgstr[0] "%(num)d informative"
+msgstr[1] "%(num)d informative"
+
+#, python-format
+msgid "%(num)d optional *** COLUMNS"
+msgid_plural "%(num)d optional *** COLUMNS"
+msgstr[0] "%(num)d optional"
+msgstr[1] "%(num)d optional"
+
+#, python-format
 msgid "%(num)d player"
 msgid_plural "%(num)d players"
 msgstr[0] ""
@@ -89,6 +101,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d required *** COLUMNS"
+msgid_plural "%(num)d required *** COLUMNS"
+msgstr[0] "%(num)d required"
+msgstr[1] "%(num)d required"
+
+#, python-format
 msgid "%(num)d screen"
 msgid_plural "%(num)d screens"
 msgstr[0] ""
@@ -97,6 +115,12 @@ msgstr[1] ""
 #, python-format
 msgid "%(num)d tournament"
 msgid_plural "%(num)d tournaments"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d unknown column (ignored)"
+msgid_plural "%(num)d unknown columns (ignored)"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -306,7 +330,13 @@ msgstr ""
 msgid "A file is expected."
 msgstr ""
 
+msgid "A player with this value already exists in the tournament."
+msgstr ""
+
 msgid "A plugin specific to this federation is used, it can no longer be modified."
+msgstr ""
+
+msgid "A positive float is expected."
 msgstr ""
 
 msgid "A positive integer is expected."
@@ -459,9 +489,6 @@ msgstr ""
 msgid "Add period"
 msgstr ""
 
-msgid "Add player"
-msgstr ""
-
 msgid "Add players"
 msgstr ""
 
@@ -525,6 +552,9 @@ msgstr ""
 msgid "All the players intended to play the coming round did check-in."
 msgstr ""
 
+msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
+msgstr ""
+
 msgid "All the tournaments"
 msgstr ""
 
@@ -562,6 +592,9 @@ msgid "Allows pairing of the players, either using a pairing engine or manually"
 msgstr ""
 
 msgid "An error occurred. Consult the logs for more details."
+msgstr ""
+
+msgid "An unexpected error occurred while reading the CSV file. Consult the logs for more details."
 msgstr ""
 
 msgid "An unexpected error occurred."
@@ -951,6 +984,9 @@ msgstr ""
 
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
+
+msgid "CSV file"
+msgstr ""
 
 msgid "CSV format"
 msgstr ""
@@ -1519,6 +1555,9 @@ msgstr ""
 msgid "Dashed border"
 msgstr ""
 
+msgid "Data source"
+msgstr ""
+
 #, python-format
 msgid "Data source: %(data_source)s"
 msgstr ""
@@ -1633,6 +1672,9 @@ msgid "Delete the category."
 msgstr ""
 
 msgid "Delete the display controller."
+msgstr ""
+
+msgid "Delete the existing players"
 msgstr ""
 
 msgid "Delete the rotator."
@@ -2257,6 +2299,9 @@ msgstr ""
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Female"
 
+msgid "Fetch from a data source"
+msgstr ""
+
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr ""
 
@@ -2596,6 +2641,16 @@ msgstr ""
 msgid "Import is unavailable once the tournament has started."
 msgstr ""
 
+msgid "Import players from a CSV file."
+msgstr ""
+
+#, python-format
+msgid "Import players to tournament [%(tournament)s]"
+msgstr ""
+
+msgid "Imported player"
+msgstr ""
+
 msgid "Impossible to add players to tournament [{tournament}]."
 msgstr ""
 
@@ -2712,6 +2767,9 @@ msgid "Invalid date format [{date}] (expected: {format})"
 msgstr ""
 
 msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr ""
+
+msgid "Invalid email format."
 msgstr ""
 
 msgid "Invalid expression [{expression}]"
@@ -3102,6 +3160,9 @@ msgstr ""
 msgid "Minimum rating"
 msgstr ""
 
+msgid "Missing required column [{column}]."
+msgstr ""
+
 msgid "Missing required field [{field}]."
 msgstr ""
 
@@ -3365,6 +3426,9 @@ msgid "No permissions."
 msgstr ""
 
 msgid "No players"
+msgstr ""
+
+msgid "No players imported."
 msgstr ""
 
 msgid "No players matching the criteria."
@@ -3935,6 +3999,9 @@ msgstr ""
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
+msgid "Player [{player}] already exists in the tournament."
+msgstr ""
+
 msgid "Player [{player}] already plays tournament [{tournament}]."
 msgstr ""
 
@@ -4008,6 +4075,9 @@ msgstr ""
 msgid "Players ({num})"
 msgstr ""
 
+msgid "Players can't be overwritten once the tournament has started."
+msgstr ""
+
 msgid "Players check-in list"
 msgstr ""
 
@@ -4017,6 +4087,9 @@ msgstr ""
 
 #, python-format
 msgid "Players from %(first)s to %(last)s"
+msgstr ""
+
+msgid "Players import"
 msgstr ""
 
 msgid "Players may have default estimated ratings depending on the activated plugins."
@@ -4848,10 +4921,16 @@ msgstr ""
 msgid "Show Log"
 msgstr ""
 
-msgid "Show all the players"
+msgid "Show invalid rows"
 msgstr ""
 
 msgid "Show logging level"
+msgstr ""
+
+msgid "Show unmodified players"
+msgstr ""
+
+msgid "Show valid rows"
 msgstr ""
 
 msgid "Show warnings"
@@ -5454,6 +5533,9 @@ msgstr ""
 msgid "This field can't be updated once the tournament has started."
 msgstr ""
 
+msgid "This field is only valid without date of birth."
+msgstr ""
+
 msgid "This field is required (except for rounds)."
 msgstr ""
 
@@ -5482,6 +5564,9 @@ msgid "This round is not finished (last finished: #{round})."
 msgstr ""
 
 msgid "This round is not valid (the tournament has {rounds} rounds)."
+msgstr ""
+
+msgid "This row contains errors that prevent it from being imported."
 msgstr ""
 
 msgid "This screen family is private (not visible by the spectators)."
@@ -5783,6 +5868,9 @@ msgstr "Undefined"
 msgid "Unexpected error during installation: [{ex}]."
 msgstr ""
 
+msgid "Unhandled file type [{suffix}] (expected: {expected})."
+msgstr ""
+
 #, python-format
 msgid "Unique ID: %(uniq_id)s"
 msgstr ""
@@ -5806,6 +5894,9 @@ msgstr ""
 msgid "Unknown federation [{federation}]."
 msgstr ""
 
+msgid "Unknown federation."
+msgstr ""
+
 msgid "Unknown gender [{gender}]."
 msgstr ""
 
@@ -5813,6 +5904,9 @@ msgid "Unknown result [{result}]."
 msgstr ""
 
 msgid "Unknown title [{title}]."
+msgstr ""
+
+msgid "Unknown value (expected: {expected})."
 msgstr ""
 
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
@@ -5921,6 +6015,9 @@ msgstr ""
 msgid "Use Fore Buchholz"
 msgstr ""
 
+msgid "Use a data source to import players from their identifier."
+msgstr ""
+
 msgid "Use default"
 msgstr ""
 
@@ -5970,6 +6067,12 @@ msgid "Validate"
 msgstr ""
 
 msgid "Value"
+msgstr ""
+
+msgid "Value does not match the one from the data source."
+msgstr ""
+
+msgid "Value not found in the data source."
 msgstr ""
 
 msgid "Value of the pairing allocated bye:"
@@ -6511,6 +6614,11 @@ msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "{count} player successfully imported."
+msgid_plural "{count} players successfully imported."
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] ""
@@ -6575,21 +6683,12 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Print"
+#~ msgid "All the player data of the selected tournament will be deleted."
 #~ msgstr ""
 
-#~ msgid "Print players, results, etc."
+#~ msgid "Overwrite the existing players"
 #~ msgstr ""
 
-#~ msgid "Printing"
-#~ msgstr ""
-
-#~ msgid "The numbers (or ranges of numbers) of the boards to print."
-#~ msgstr ""
-
-#~ msgid "The round for which the document is printed (Defaults to the last possible round)."
-#~ msgstr ""
-
-#~ msgid "This field is not editable."
+#~ msgid "Import from a data source"
 #~ msgstr ""
 
