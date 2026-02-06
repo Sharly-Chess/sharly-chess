@@ -111,19 +111,13 @@ class PlayerColumnHandler:
         )
 
     def get_player_crosstable_columns(
-        self,
-        tournament: Tournament,
-        ranking_round: int,
-        include_player_history_popover: bool = False,
+        self, tournament: Tournament, ranking_round: int
     ) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
             [
                 pt.RankColumn,
                 pt.TitleColumn,
-                partial(
-                    pt.NameColumn,
-                    include_player_history_popover=include_player_history_popover,
-                ),
+                pt.NameColumn,
                 pt.RatingColumn,
                 pt.CategoryColumn,
                 pt.GenderColumn,

@@ -1,8 +1,12 @@
-<div class="player-name">
-    {{ object.full_name }}
-    {% set admin_tournament = object.tournament %}
-    {% set player = object %}
-    <div class="player-history">
-        {% include '/admin/players/history_popover.html' %}
+{% if include_player_history %}
+    <div class="player-name">
+        {{ object.full_name }}
+        {% set admin_tournament = object.tournament %}
+        {% set player = object %}
+        <div class="player-history">
+            {% include '/admin/players/history_popover.html' %}
+        </div>
     </div>
-</div>
+{% else %}
+    {{ object.full_name }}
+{% endif %}

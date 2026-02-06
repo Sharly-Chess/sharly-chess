@@ -353,13 +353,13 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
         return _('Crosstable after round #{round}').format(round=self.ranking_round)
 
     @property
-    def include_player_history_popover(self) -> bool:
+    def include_player_history(self) -> bool:
         return self._get_option(PlayerHistoryPopoverOption).value
 
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_crosstable_columns(
-            self.tournament, self.ranking_round, self.include_player_history_popover
+            self.tournament, self.ranking_round
         )
 
     @staticmethod
@@ -367,6 +367,12 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
         return AbstractPlayerRankingPrintDocument.available_options() + [
             PlayerHistoryPopoverOption
         ]
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return super().template_context | {
+            'include_player_history': self.include_player_history
+        }
 
 
 class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
