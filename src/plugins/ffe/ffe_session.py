@@ -18,7 +18,7 @@ from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_converter import PapiConverter
-from plugins.ffe.utils import FFEUtils, PlayerFFELicence, FFEArbiterTitle
+from plugins.ffe.utils import FFEUtils, PlayerFFELicence, FFEArbiterTitle, FFE_LEAGUES
 from plugins.utils import PluginUtils
 
 logger: Logger = get_logger()
@@ -627,11 +627,10 @@ class FFEArbitersLoader(FFESession):
         self,
     ) -> dict[str, FFEArbiterTitle]:
         """Returns a dict with FFE licence numbers as keys and arbiter strings as values."""
-        from plugins.ffe.ffe import FfePlugin
 
         data: dict[str, FFEArbiterTitle] = {}
         if self._ffe_init(admin=False):
-            for league in FfePlugin.FFE_LEAGUES:
+            for league in FFE_LEAGUES:
                 load_next_page = self._read_league_page_data(league, data, page := 1)
                 while load_next_page:
                     page += 1
