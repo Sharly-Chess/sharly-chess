@@ -233,8 +233,10 @@ class RatingUpdaterField(PlayerUpdaterField, ABC):
         self, stored_player: StoredPlayer, match_stored_player: StoredPlayer
     ):
         tr = self.tournament_rating().value
-        src_ratings = PlayerRating.from_stored_value(stored_player.ratings[tr])
-        match_ratings = PlayerRating.from_stored_value(match_stored_player.ratings[tr])
+        src_ratings = PlayerRating.from_stored_value(stored_player.ratings.get(tr, {}))
+        match_ratings = PlayerRating.from_stored_value(
+            match_stored_player.ratings.get(tr, {})
+        )
         for rating_type in self.rating_types:
             src_ratings.set_value_from_type(
                 match_ratings.get_type_value(rating_type), rating_type

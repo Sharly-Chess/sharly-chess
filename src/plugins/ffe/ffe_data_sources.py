@@ -6,6 +6,9 @@ from text_unidecode import unidecode
 from common import SharlyChessException
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
+from data.columns.handlers import PlayerDatasheetColumnHandler
+import data.columns.player_datasheet as pds
+from data.columns.player_datasheet import DatasheetColumn
 from data.input_output import OnlineDataSource
 from data.input_output.data_source import LocalDataSource
 from data.input_output.player_updater_fields import (
@@ -26,6 +29,12 @@ from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_database import FfeDatabase
+from plugins.ffe.ffe_entity import (
+    FfeLicenceNumberDatasheetColumn,
+    FfeIdDatasheetColumn,
+    FfeLicenceDatasheetColumn,
+    FfeLeagueDatasheetColumn,
+)
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.utils import FFEUtils, FfePlayerPluginData, get_data
 
@@ -216,7 +225,7 @@ class _FfeDataSource(ABC):
 
     @property
     def _search_fields(self) -> list[str]:
-        return [_('Name'), _('FFE ID'), _('FIDE ID')]
+        return [_('Name'), _('Licence number'), _('FIDE ID')]
 
     @property
     def _player_search_result_template(self) -> str:
@@ -225,6 +234,40 @@ class _FfeDataSource(ABC):
     @staticmethod
     def _get_player_source_id(stored_player: StoredPlayer) -> str:
         return str(get_data(stored_player.plugin_data, 'ffe_id'))
+
+    @property
+    def _import_identifier_column(self) -> DatasheetColumn:
+        return FfeLicenceNumberDatasheetColumn()
+
+    @property
+    def _imported_datasheet_columns(self) -> list[DatasheetColumn]:
+        columns: list[DatasheetColumn] = [
+            pds.TitleColumn(),
+            pds.LastNameColumn(),
+            pds.FirstNameColumn(),
+            pds.DateOfBirthColumn(),
+            pds.YearOfBirthColumn(),
+            pds.GenderColumn(),
+            pds.FideIDColumn(),
+            pds.FederationColumn(),
+            FfeLeagueDatasheetColumn(),
+            pds.ClubColumn(),
+            FfeIdDatasheetColumn(),
+            FfeLicenceDatasheetColumn(),
+        ]
+        columns += PlayerDatasheetColumnHandler.get_rating_columns()
+        return columns
+
+    async def _get_stored_players_by_import_identifier(
+        self, identifier_values: list[str]
+    ) -> dict[str, StoredPlayer]:
+        stored_players = await self._get_ffe_match_stored_players(
+            identifier_values, [], []
+        )
+        return {
+            stored_player.plugin_data[PLUGIN_NAME]['ffe_licence_number']: stored_player
+            for stored_player in stored_players or []
+        }
 
 
 class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
@@ -298,6 +341,19 @@ class FfeLocalDataSource(LocalDataSource, _FfeDataSource):
                 player_ffe_id=int(player_source_id),
                 with_arbiter_title=with_arbiter_title,
             )
+
+    @property
+    def import_identifier_column(self) -> DatasheetColumn:
+        return self._import_identifier_column
+
+    @property
+    def imported_datasheet_columns(self) -> list[DatasheetColumn]:
+        return self._imported_datasheet_columns
+
+    async def get_stored_players_by_import_identifier(
+        self, identifier_values: list[str]
+    ) -> dict[str, StoredPlayer]:
+        return await self._get_stored_players_by_import_identifier(identifier_values)
 
 
 class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
@@ -388,3 +444,16 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
             return await ffe_sql_server.search_player(
                 unicode_normalize(string), federation, page, limit
             )
+
+    @property
+    def import_identifier_column(self) -> DatasheetColumn:
+        return self._import_identifier_column
+
+    @property
+    def imported_datasheet_columns(self) -> list[DatasheetColumn]:
+        return self._imported_datasheet_columns
+
+    async def get_stored_players_by_import_identifier(
+        self, identifier_values: list[str]
+    ) -> dict[str, StoredPlayer]:
+        return await self._get_stored_players_by_import_identifier(identifier_values)

@@ -3,12 +3,16 @@ import time
 from abc import ABC, abstractmethod
 from functools import cached_property
 from logging import Logger
-from typing import override, ClassVar
+from typing import override, ClassVar, Collection
 
 from common import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
+import data.columns.player_datasheet as pds
+from data.columns.handlers import PlayerDatasheetColumnHandler
+from data.columns.player_datasheet import DatasheetColumn
+from data.event import Event
 from data.input_output.player_updater_fields import (
     PlayerUpdaterField,
     FideIDUpdaterField,
@@ -246,6 +250,32 @@ class DataSource(IdentifiableEntity, ABC):
                         estimated=source_rating.estimated,
                     ).stored_value
 
+    # --------------------------------------------------------------------------
+    # Player Import
+    # --------------------------------------------------------------------------
+
+    @property
+    @abstractmethod
+    def import_identifier_column(self) -> DatasheetColumn:
+        """Column of the identifier of the import."""
+
+    @property
+    @abstractmethod
+    def imported_datasheet_columns(self) -> list[DatasheetColumn]:
+        """IDs of the datasheet columns that the datasource is importing.
+        These columns won't be available on import."""
+
+    def get_all_datasheet_columns(self, event: Event) -> Collection[DatasheetColumn]:
+        """Fetch the datasheet columns that can be imported with the data source."""
+        return PlayerDatasheetColumnHandler(event, self).columns
+
+    @abstractmethod
+    async def get_stored_players_by_import_identifier(
+        self, identifier_values: list[str]
+    ) -> dict[str, StoredPlayer]:
+        """Fetch stored players from their identifier values.
+        Return a dict with the ones that have been found."""
+
 
 class LocalDataSource(DataSource, ABC):
     @property
@@ -428,3 +458,35 @@ class FideDataSource(LocalDataSource):
 
     def get_player_source_id(self, stored_player: StoredPlayer) -> str:
         return str(stored_player.fide_id)
+
+    @property
+    def import_identifier_column(self) -> DatasheetColumn:
+        return pds.FideIDColumn()
+
+    @property
+    def imported_datasheet_columns(self) -> list[DatasheetColumn]:
+        columns: list[DatasheetColumn] = [
+            pds.TitleColumn(),
+            pds.LastNameColumn(),
+            pds.FirstNameColumn(),
+            pds.DateOfBirthColumn(),
+            pds.YearOfBirthColumn(),
+            pds.GenderColumn(),
+            pds.FederationColumn(),
+        ]
+        columns += PlayerDatasheetColumnHandler.get_rating_columns(
+            [PlayerRatingType.FIDE]
+        )
+        return columns
+
+    async def get_stored_players_by_import_identifier(
+        self, identifier_values: list[str]
+    ) -> dict[str, StoredPlayer]:
+        with FideDatabase() as database:
+            stored_players = database.get_stored_players_by_fide_id(
+                [int(value) for value in identifier_values]
+            )
+        return {
+            str(stored_player.fide_id): stored_player
+            for stored_player in stored_players
+        }

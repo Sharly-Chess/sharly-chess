@@ -59,7 +59,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-lint = ["ruff", "validate-pyproject", "pipdeptree", "mypy", "pre-commit"]
+lint = [
+  "ruff ~= 0.15.0",
+  "validate-pyproject",
+  "pipdeptree",
+  "mypy",
+  "pre-commit",
+]
 
 translate = ["transformers", "torch", "sentencepiece", "sacremoses"]
 

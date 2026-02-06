@@ -4,7 +4,9 @@
     class="player-federation-flag pe-1"
     src="{{ macros.federation_flag_url(player.federation) }}"
 />
-{{ player.fide_id }}
+{% if not no_identifier %}
+    {{ player.fide_id }}
+{% endif %}
 <span class="fw-bold">
     {{ player.full_name }}
 </span>

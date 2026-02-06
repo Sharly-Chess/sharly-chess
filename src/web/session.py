@@ -398,6 +398,12 @@ class SessionPlayersAddOtherActive(BoolSessionVariable):
         return 'players_add_other_active'
 
 
+class SessionPlayersImportUseDataSource(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'players_import_use_data_source'
+
+
 class SessionPairingsSafetyMode(SessionVariable[SafetyMode]):
     @property
     def key(self) -> str:

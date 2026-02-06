@@ -10,29 +10,10 @@ from litestar.response import File
 from pyexcel_ods3 import save_data
 
 from common.i18n import _
-from data.columns.player_datasheet import (
-    DatasheetColumn,
-    LastNameColumn,
-    FirstNameColumn,
-    YearOfBirthColumn,
-    DateOfBirthColumn,
-    MailColumn,
-    PhoneColumn,
-    GenderColumn,
-    FideIDColumn,
-    TournamentColumn,
-    FederationColumn,
-    ClubColumn,
-    OwedColumn,
-    PaidColumn,
-    CommentColumn,
-    RatingColumn,
-)
+from data.columns.handlers import PlayerDatasheetColumnHandler
 from data.event import Event
 from data.player import Player
-from plugins.manager import plugin_manager
 from utils.entity import IdentifiableEntity
-from utils.enum import TournamentRating, PlayerRatingType
 
 
 class PlayerExporter(IdentifiableEntity, ABC):
@@ -60,42 +41,14 @@ class PlayerTabularExporter(PlayerExporter):
     def download_players_file(
         self, players: list[Player], event: Event
     ) -> Response[str] | File:
-        columns = self.get_players_datasheet_column(event)
-        header = [column.header_content for column in columns]
+        columns = PlayerDatasheetColumnHandler(event).columns
+        header = [column.id for column in columns]
         data = [
             [column.get_cell_content(player) for column in columns]
             for player in players
         ]
         file_path = self._get_tabular_file_path(header, data)
         return File(path=file_path, filename=f'{event.uniq_id}{self.suffix}')
-
-    @classmethod
-    def get_players_datasheet_column(cls, event: Event) -> list[DatasheetColumn]:
-        """Returns the names of the columns used in the datasheets that can be downloaded."""
-
-        datasheet_columns: list[DatasheetColumn] = [
-            LastNameColumn(),
-            FirstNameColumn(),
-            YearOfBirthColumn(),
-            DateOfBirthColumn(),
-            MailColumn(),
-            PhoneColumn(),
-            GenderColumn(),
-            FideIDColumn(),
-            TournamentColumn(),
-            FederationColumn(),
-            ClubColumn(),
-            OwedColumn(),
-            PaidColumn(),
-            CommentColumn(),
-        ]
-        for tournament_type in TournamentRating:
-            for rating_type in PlayerRatingType:
-                datasheet_columns.append(RatingColumn(tournament_type, rating_type))
-        plugin_manager.hook_for_event(event, 'insert_player_datasheet_columns')(
-            datasheet_columns=datasheet_columns
-        )
-        return datasheet_columns
 
 
 class VcfPlayerExporter(PlayerExporter):
@@ -128,9 +81,9 @@ class VcfPlayerExporter(PlayerExporter):
                 data += f'N:{player.last_name.title()}\nFN:{player.last_name.title()}\n'
             data += (
                 f'ORG:{player.club}\n'
-                f'item1.TEL:{player.phone}\n'
+                f'item1.TEL:{player.phone or ""}\n'
                 f'item1.X-ABLabel:{_("Personal")}\n'
-                f'item2.EMAIL;type=INTERNET:{player.mail}\n'
+                f'item2.EMAIL;type=INTERNET:{player.mail or ""}\n'
                 f'item2.X-ABLabel:{_("Personal")}\n'
                 f'CATEGORIES:{_("Chess")}\n'
                 'END:VCARD\n\n'
