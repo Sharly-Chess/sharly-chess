@@ -275,7 +275,9 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             and self.admin_tournament.pairings_generation_disabled_message(
                 self.admin_round
             ),
-            'show_without_results': SessionPairingsShowWithoutResults,
+            'show_without_results': SessionPairingsShowWithoutResults(
+                self.request
+            ).get(),
             'board': self.admin_board,
             'wtp': self.admin_board.white_tournament_player
             if self.admin_board
