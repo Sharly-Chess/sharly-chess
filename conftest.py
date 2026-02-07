@@ -7,53 +7,15 @@ import sys
 import time
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Generator, Iterator
+from typing import Generator
 
 import pytest
 import requests
-from litestar import Litestar
-from litestar.contrib.jinja import JinjaTemplateEngine
-from litestar.template import TemplateConfig
-from litestar.testing import TestClient
 from playwright.sync_api import Browser, Playwright, APIRequestContext
 
-from common import BASE_DIR
-from common.i18n import gettext, ngettext
 from common.sharly_chess_config import SharlyChessConfig
-from tests.integration.test_event_documents_controller import session_config
 from tests.test_config import TestConfig
 from utils.file import shutil_delete_onerror
-from web.controllers.admin.account_admin_controller import AccountAdminController
-from web.controllers.admin.display_controller_admin_controller import (
-    DisplayControllerAdminController,
-)
-from web.controllers.admin.event_admin_controller import EventAdminController
-from web.controllers.admin.event_documents_controller import EventDocumentsController
-from web.controllers.admin.family_admin_controller import FamilyAdminController
-from web.controllers.admin.index_admin_controller import IndexAdminController
-from web.controllers.admin.pairings_admin_controller import PairingsAdminController
-from web.controllers.admin.player_admin_controller import PlayerAdminController
-from web.controllers.admin.prize_admin_controller import PrizeAdminController
-from web.controllers.admin.prize_config_admin_controller import (
-    PrizeConfigAdminController,
-)
-from web.controllers.admin.rotator_admin_controller import RotatorAdminController
-from web.controllers.admin.screen_admin_controller import ScreenAdminController
-from web.controllers.admin.screen_config_admin_controller import (
-    ScreenConfigAdminController,
-)
-from web.controllers.admin.timer_admin_controller import TimerAdminController
-from web.controllers.admin.tournament_admin_controller import TournamentAdminController
-from web.controllers.background_controller import BackgroundController
-from web.controllers.index_controller import IndexController
-from web.controllers.profile_controller import ProfileController
-from web.controllers.qrcode_controller import QRCodeController
-from web.controllers.user.screen_user_controller import ScreenUserController
-from web.controllers.user.tournament_user_controller import (
-    ResultUserController,
-    CheckInUserController,
-    IllegalMoveUserController,
-)
 
 # Note: Keeping default event loop policy for Windows (ProactorEventLoop)
 # The WindowsSelectorEventLoop doesn't support subprocess operations
@@ -68,11 +30,6 @@ def pytest_configure(config):
     config.addinivalue_line(
         'markers',
         'e2e: mark test as end-to-end test requiring server (runs on commit, pull request and release)',
-    )
-    config.addinivalue_line(
-        'markers',
-        'integration: mark test as integration test requiring Litestar app with basic config '
-        '(runs on commit, pull request and release)',
     )
     config.addinivalue_line(
         'markers',
@@ -260,55 +217,3 @@ def api_request_context(
     request_context = playwright.request.new_context(base_url='http://127.0.0.1:9000')
     yield request_context
     request_context.dispose()
-
-
-# Integration tests fixtures
-
-
-@pytest.fixture(scope='session')
-def test_client() -> Iterator[TestClient[Litestar]]:
-    template_dirs: list[Path] = [
-        BASE_DIR / 'src/web/templates',
-        BASE_DIR / 'src/web/templates/admin/print',
-        BASE_DIR / 'src/web/static',
-    ]
-
-    jinja_template_engine = JinjaTemplateEngine(template_dirs)
-    jinja_template_engine.engine.add_extension('jinja2.ext.i18n')
-    jinja_template_engine.engine.install_gettext_callables(
-        gettext=gettext, ngettext=ngettext, newstyle=True
-    )
-    jinja_template_engine.engine.add_extension('jinja2.ext.do')
-    template_config: TemplateConfig = TemplateConfig(engine=jinja_template_engine)
-    app = Litestar(
-        route_handlers=[
-            IndexController,
-            BackgroundController,
-            ScreenUserController,
-            ResultUserController,
-            CheckInUserController,
-            IllegalMoveUserController,
-            IndexAdminController,
-            EventAdminController,
-            EventDocumentsController,
-            TournamentAdminController,
-            PairingsAdminController,
-            PrizeConfigAdminController,
-            PrizeAdminController,
-            ScreenConfigAdminController,
-            ScreenAdminController,
-            TimerAdminController,
-            FamilyAdminController,
-            RotatorAdminController,
-            PlayerAdminController,
-            DisplayControllerAdminController,
-            QRCodeController,
-            AccountAdminController,
-            ProfileController,
-        ],
-        middleware=[session_config.middleware],
-        template_config=template_config,
-        debug=True,
-    )
-    with TestClient(app=app, session_config=session_config) as client:
-        yield client

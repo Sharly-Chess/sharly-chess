@@ -1,26 +1,24 @@
 """Test configuration and utilities."""
 
+import re
 import time
+from datetime import date, datetime
+from pathlib import Path
+from typing import Callable, Dict, Optional, Any
 from urllib import parse
+
+from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
+
 from common import BASE_DIR
 from data.board import PlayerRatingType
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
-from datetime import date, datetime
-from pathlib import Path
-from typing import Callable, Dict, Optional, Any
-import re
-
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredTournament,
-    StoredAccount,
-    StoredPermission,
 )
-from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
-
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from utils.enum import (
     ScreenType,
@@ -295,60 +293,6 @@ class TestUtils:
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
         )
         cls.check_api_response(res)
-
-    @classmethod
-    def create_account(
-        cls,
-        event_uniq_id: str,
-        first_name: str,
-        overrides: dict | None = None,
-    ):
-        overrides = overrides or {}
-
-        # Provide defaults
-        defaults: dict[str, Any] = {
-            'id': None,
-            'active': True,
-            'first_name': first_name,
-            'last_name': None,
-            'fide_id': None,
-            'fide_arbiter_title': None,
-            'password_hash': None,
-            'mail': None,
-            'phone': None,
-            'plugin_data': {},
-        }
-
-        # Merge overrides
-        data = {**defaults, **overrides}
-
-        with EventDatabase(event_uniq_id, write=True) as event_database:
-            stored_account = StoredAccount(**data)
-            event_database.add_stored_account(stored_account)
-
-        with EventDatabase(event_uniq_id) as event_database:
-            accounts = event_database.load_stored_accounts()
-            stored_account = next(
-                account for account in accounts if account.first_name == first_name
-            )
-
-        return stored_account
-
-    @classmethod
-    def create_permission(
-        cls,
-        event_uniq_id: str,
-        tournament_uniq_id: int,
-        account_uniq_id: int,
-        access_level: str,
-    ):
-        with EventDatabase(event_uniq_id, write=True) as event_database:
-            stored_permission = StoredPermission(
-                account_id=account_uniq_id,
-                access_level=access_level,
-                tournament_ids=[tournament_uniq_id],
-            )
-            event_database.add_stored_permission(stored_permission)
 
     @classmethod
     def create_screen(
