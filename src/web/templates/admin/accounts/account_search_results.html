@@ -29,7 +29,7 @@
                     '{{ player.last_name|replace("'", "\\'") }}',
                     '{{ player.first_name|replace("'", "\\'")}}' ?? '',
                     '{{ player.fide_id or '' }}',
-                    '{{ player.arbiter_title or '' }}'
+                    '{{ player.fide_arbiter_title or '' }}'
                 );
                 "
             >
@@ -60,12 +60,12 @@
         </li>
     {% endif %}
     <script>
-        function selectPlayer(lastName, firstName, fideId, arbiterTitle) {
+        function selectPlayer(lastName, firstName, fideId, fideArbiterTitle) {
             $('#last-name').val(lastName);
             $('#first-name').val(firstName);
             $('#fide-id').val(fideId);
-            $('#arbiter-title').val(arbiterTitle);
-            $('#arbiter-title').trigger('change');
+            $('#fide-arbiter-title').val(fideArbiterTitle);
+            $('#fide-arbiter-title').trigger('change');
             $('#search-results').hide();
         }
         $('#{{ data_source.id }}-search-results').show();

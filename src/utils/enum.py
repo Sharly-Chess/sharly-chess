@@ -699,7 +699,7 @@ class PlayerTitle(StrEnum):
         return self.short_name
 
 
-class ArbiterTitle(StrEnum):
+class FideArbiterTitle(StrEnum):
     """The possible FIDE arbiter titles: IA, FA, NA.
     Also includes the "no title" case."""
 
@@ -712,30 +712,30 @@ class ArbiterTitle(StrEnum):
     def sort_index(self) -> int:
         if self == self.NONE:
             return 0
-        return list(ArbiterTitle).index(self)
+        return list(FideArbiterTitle).index(self)
 
     @classmethod
-    def from_fide_value(cls, value: str) -> 'ArbiterTitle':
+    def from_fide_value(cls, value: str) -> 'FideArbiterTitle':
         for string in value.split(','):
             match string:
                 case 'NA':
-                    return ArbiterTitle.NATIONAL
+                    return FideArbiterTitle.NATIONAL
                 case 'FA':
-                    return ArbiterTitle.FIDE
+                    return FideArbiterTitle.FIDE
                 case 'IA':
-                    return ArbiterTitle.INTERNATIONAL
-        return ArbiterTitle.NONE
+                    return FideArbiterTitle.INTERNATIONAL
+        return FideArbiterTitle.NONE
 
     @property
     def name(self) -> str:
         match self:
-            case ArbiterTitle.NONE:
+            case FideArbiterTitle.NONE:
                 return _('No title')
-            case ArbiterTitle.NATIONAL:
+            case FideArbiterTitle.NATIONAL:
                 return _('National Arbiter')
-            case ArbiterTitle.FIDE:
+            case FideArbiterTitle.FIDE:
                 return _('FIDE Arbiter')
-            case ArbiterTitle.INTERNATIONAL:
+            case FideArbiterTitle.INTERNATIONAL:
                 return _('International Arbiter')
             case _:
                 raise ValueError(f'Unknown title: {self}')
@@ -743,13 +743,13 @@ class ArbiterTitle(StrEnum):
     @property
     def short_name(self) -> str:
         match self:
-            case ArbiterTitle.NONE:
+            case FideArbiterTitle.NONE:
                 return ''
-            case ArbiterTitle.NATIONAL:
+            case FideArbiterTitle.NATIONAL:
                 return _('NA *** SHORT NAME FOR National Arbiter')
-            case ArbiterTitle.FIDE:
+            case FideArbiterTitle.FIDE:
                 return _('FA *** SHORT NAME FOR FIDE Arbiter')
-            case ArbiterTitle.INTERNATIONAL:
+            case FideArbiterTitle.INTERNATIONAL:
                 return _('IA *** SHORT NAME FOR International Arbiter')
             case _:
                 raise ValueError(f'Unknown title: {self}')

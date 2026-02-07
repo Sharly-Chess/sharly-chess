@@ -26,7 +26,7 @@ from utils.enum import (
     PlayerGender,
     PlayerTitle,
     TournamentRating,
-    ArbiterTitle,
+    FideArbiterTitle,
 )
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -138,7 +138,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             'country': ('federation', lambda s: s.upper()),
             'sex': ('gender', PlayerGender.from_fide_value),
             'title': ('fide_title', PlayerTitle.from_fide_value),
-            'o_title': ('arbiter_title', ArbiterTitle.from_fide_value),
+            'o_title': ('fide_arbiter_title', FideArbiterTitle.from_fide_value),
             'rating': ('standard_rating', int),
             'rapid_rating': ('rapid_rating', int),
             'blitz_rating': ('blitz_rating', int),
@@ -153,7 +153,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             if field[0]
             not in [
                 'name',
-                'arbiter_title',
+                'fide_arbiter_title',
             ]
         ]
         player_db_columns += [
@@ -163,7 +163,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
         player_query = f"""INSERT INTO `player`({', '.join(player_db_columns)}) VALUES({', '.join([f':{c}' for c in player_db_columns])})"""
         arbiter_db_columns: list[str] = [
             'player_fide_id',
-            'arbiter_title',
+            'fide_arbiter_title',
         ]
         arbiter_query = f"""INSERT INTO `arbiter`({', '.join(arbiter_db_columns)}) VALUES({', '.join([f':{c}' for c in arbiter_db_columns])})"""
         player_count: int = 0
@@ -171,7 +171,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
         players_to_write: list[dict[str, Any]] = []
         arbiters_to_write: list[dict[str, Any]] = []
         player_data: dict[str, Any] = {}
-        arbiter_data: dict[str, ArbiterTitle] = {}
+        arbiter_data: dict[str, FideArbiterTitle] = {}
         root = next(context)[1]
         with database:
             for event, elem in context:
@@ -218,11 +218,13 @@ class FideDatabase(LocalSourcePlayerDatabase):
                             player_data['last_name'] = player_data['name'].strip()
                             player_data['first_name'] = None
                         del player_data['name']
-                    elif field_name == 'arbiter_title':
-                        if player_data['arbiter_title']:
+                    elif field_name == 'fide_arbiter_title':
+                        if player_data['fide_arbiter_title']:
                             arbiter_data['player_fide_id'] = player_data['fide_id']
-                            arbiter_data['arbiter_title'] = player_data['arbiter_title']
-                            del player_data['arbiter_title']
+                            arbiter_data['fide_arbiter_title'] = player_data[
+                                'fide_arbiter_title'
+                            ]
+                            del player_data['fide_arbiter_title']
 
             if players_to_write:
                 database.executemany(player_query, players_to_write)
@@ -284,7 +286,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             year_of_birth=row['year_of_birth'],
             gender=row['gender'],
             title=row['fide_title'],
-            arbiter_title=row.get('arbiter_title', ''),
+            fide_arbiter_title=row.get('fide_arbiter_title', ''),
             ratings=ratings,
             fide_id=row['fide_id'],
             federation=row['federation'],
@@ -376,12 +378,12 @@ class FideDatabase(LocalSourcePlayerDatabase):
     ) -> StoredPlayer | None:
         if with_arbiter_title:
             self.execute(
-                'SELECT `player`.*, `arbiter`.`arbiter_title` AS `arbiter_title` FROM `player` LEFT JOIN `arbiter` ON `arbiter`.`player_fide_id` = `player`.`fide_id` WHERE `fide_id` = ?',
+                'SELECT `player`.*, `arbiter`.`fide_arbiter_title` AS `fide_arbiter_title` FROM `player` LEFT JOIN `arbiter` ON `arbiter`.`player_fide_id` = `player`.`fide_id` WHERE `fide_id` = ?',
                 (player_fide_id,),
             )
         else:
             self.execute(
-                "SELECT `player`.*, '' AS `arbiter_title` FROM `player` WHERE `fide_id` = ?",
+                "SELECT `player`.*, '' AS `fide_arbiter_title` FROM `player` WHERE `fide_id` = ?",
                 (player_fide_id,),
             )
         if player_row := self.fetchone():

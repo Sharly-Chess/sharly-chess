@@ -224,7 +224,7 @@ class DataSource(IdentifiableEntity, ABC):
                 return
             src_stored_player.federation = fide_stored_player.federation
             src_stored_player.title = fide_stored_player.title
-            src_stored_player.arbiter_title = fide_stored_player.arbiter_title
+            src_stored_player.fide_arbiter_title = fide_stored_player.fide_arbiter_title
             for rating_type in TournamentRating:
                 stored_fide_rating = fide_stored_player.ratings.get(
                     rating_type.value, None

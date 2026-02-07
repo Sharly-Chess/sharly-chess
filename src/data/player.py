@@ -29,7 +29,7 @@ from utils.enum import (
     TournamentRating,
     PlayerRatingType,
     CheckInStatus,
-    ArbiterTitle,
+    FideArbiterTitle,
 )
 from utils.types import (
     Federation,
@@ -152,8 +152,8 @@ class Player:
         return PlayerTitle(self.stored_player.title)
 
     @property
-    def arbiter_title(self) -> ArbiterTitle:
-        return ArbiterTitle(self.stored_player.arbiter_title or '')
+    def fide_arbiter_title(self) -> FideArbiterTitle:
+        return FideArbiterTitle(self.stored_player.fide_arbiter_title or '')
 
     @cached_property
     def category(self) -> PlayerCategory:

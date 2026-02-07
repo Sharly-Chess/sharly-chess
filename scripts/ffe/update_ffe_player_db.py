@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from database.sqlite.fide.fide_database import FideDatabase
 from plugins.ffe.ffe_database import FfeDatabase
 from plugins.ffe.utils import FFEArbiterTitle
-from utils.enum import ArbiterTitle
+from utils.enum import FideArbiterTitle
 
 FFE_ARBITER_TITLES: list[FFEArbiterTitle] = [
     FFEArbiterTitle.AFC,
@@ -13,32 +13,32 @@ FFE_ARBITER_TITLES: list[FFEArbiterTitle] = [
     FFEArbiterTitle.AFE2,
 ]
 
-HIGHLIGHTS: dict[FFEArbiterTitle, set[ArbiterTitle]] = {
+HIGHLIGHTS: dict[FFEArbiterTitle, set[FideArbiterTitle]] = {
     FFEArbiterTitle.AFC: {
-        ArbiterTitle.NATIONAL,
-        ArbiterTitle.FIDE,
-        ArbiterTitle.INTERNATIONAL,
+        FideArbiterTitle.NATIONAL,
+        FideArbiterTitle.FIDE,
+        FideArbiterTitle.INTERNATIONAL,
     },
     FFEArbiterTitle.AFO1: {
-        ArbiterTitle.NATIONAL,
-        ArbiterTitle.INTERNATIONAL,
+        FideArbiterTitle.NATIONAL,
+        FideArbiterTitle.INTERNATIONAL,
     },
     FFEArbiterTitle.AFO2: {
-        ArbiterTitle.NONE,
-        ArbiterTitle.NATIONAL,
-        ArbiterTitle.FIDE,
-        ArbiterTitle.INTERNATIONAL,
+        FideArbiterTitle.NONE,
+        FideArbiterTitle.NATIONAL,
+        FideArbiterTitle.FIDE,
+        FideArbiterTitle.INTERNATIONAL,
     },
     FFEArbiterTitle.AFE1: {
-        ArbiterTitle.NONE,
-        ArbiterTitle.NATIONAL,
-        ArbiterTitle.INTERNATIONAL,
+        FideArbiterTitle.NONE,
+        FideArbiterTitle.NATIONAL,
+        FideArbiterTitle.INTERNATIONAL,
     },
     FFEArbiterTitle.AFE2: {
-        ArbiterTitle.NONE,
-        ArbiterTitle.NATIONAL,
-        ArbiterTitle.FIDE,
-        ArbiterTitle.INTERNATIONAL,
+        FideArbiterTitle.NONE,
+        FideArbiterTitle.NATIONAL,
+        FideArbiterTitle.FIDE,
+        FideArbiterTitle.INTERNATIONAL,
     },
 }
 
@@ -51,7 +51,7 @@ class FFEArbiter:
     name: str
     ffe_licence_number: str
     fide_id: int | None
-    fide_arbiter_title: ArbiterTitle = ArbiterTitle.NONE
+    fide_arbiter_title: FideArbiterTitle = FideArbiterTitle.NONE
 
 
 class FfeDatabaseWrapper(FfeDatabase):
@@ -91,12 +91,12 @@ class FideDatabaseWrapper(FideDatabase):
     def get_ffe_arbiters_by_ffe_fide_title(
         self,
         ffe_arbiters_by_ffe_title: dict[FFEArbiterTitle, list[FFEArbiter]],
-    ) -> dict[FFEArbiterTitle, dict[ArbiterTitle, list[FFEArbiter]]]:
+    ) -> dict[FFEArbiterTitle, dict[FideArbiterTitle, list[FFEArbiter]]]:
         ffe_arbiters_by_ffe_fide_title: dict[
-            FFEArbiterTitle, dict[ArbiterTitle, list[FFEArbiter]]
+            FFEArbiterTitle, dict[FideArbiterTitle, list[FFEArbiter]]
         ] = {
             ffe_arbiter_title: {
-                fide_arbiter_title: [] for fide_arbiter_title in ArbiterTitle
+                fide_arbiter_title: [] for fide_arbiter_title in FideArbiterTitle
             }
             for ffe_arbiter_title in FFE_ARBITER_TITLES
         }
@@ -108,7 +108,7 @@ class FideDatabaseWrapper(FideDatabase):
                         (ffe_arbiter.fide_id,),
                     )
                     if row := self.fetchone():
-                        ffe_arbiter.fide_arbiter_title = ArbiterTitle(
+                        ffe_arbiter.fide_arbiter_title = FideArbiterTitle(
                             row['arbiter_title']
                         )
                     ffe_arbiters_by_ffe_fide_title[ffe_arbiter_title][
@@ -132,7 +132,7 @@ class Analyser:
             print('Updating the FIDE player database...')
             FideDatabase()._update()
         ffe_arbiters_by_ffe_fide_title: dict[
-            FFEArbiterTitle, dict[ArbiterTitle, list[FFEArbiter]]
+            FFEArbiterTitle, dict[FideArbiterTitle, list[FFEArbiter]]
         ] = fide_database.get_ffe_arbiters_by_ffe_fide_title(ffe_arbiters_by_ffe_title)
         for (
             ffe_arbiter_title,

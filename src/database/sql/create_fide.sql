@@ -21,7 +21,7 @@ CREATE TABLE `player` (
 
 CREATE TABLE `arbiter` (
     `player_fide_id` INTEGER NOT NULL,
-    `arbiter_title` TEXT NOT NULL,
+    `fide_arbiter_title` TEXT NOT NULL,
     UNIQUE(`player_fide_id`),
     FOREIGN KEY (`player_fide_id`) REFERENCES `player`(`fide_id`)
 );

@@ -18,7 +18,7 @@ from database.sqlite.event.event_store import (
 )
 from plugins.utils import PluginData
 from plugins.manager import plugin_manager
-from utils.enum import RoleType, ArbiterTitle
+from utils.enum import RoleType, FideArbiterTitle
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -163,8 +163,8 @@ class Account:
         return self.stored_account.fide_id
 
     @property
-    def arbiter_title(self) -> ArbiterTitle:
-        return ArbiterTitle(self.stored_account.arbiter_title or '')
+    def fide_arbiter_title(self) -> FideArbiterTitle:
+        return FideArbiterTitle(self.stored_account.fide_arbiter_title or '')
 
     @property
     def full_name(self) -> str:
@@ -235,8 +235,8 @@ class Account:
         if self.first_name:
             arbiter += f', {self.first_name}'
         suffixes: list[str] = []
-        if title := self.arbiter_title:
-            suffixes.append(title.short_name)
+        if self.fide_arbiter_title != FideArbiterTitle.NONE:
+            suffixes.append(self.fide_arbiter_title.short_name)
         if self.fide_id:
             suffixes.append(str(self.fide_id))
         if suffixes:
@@ -246,7 +246,7 @@ class Account:
     def get_card_title(self, event: 'Event') -> str:
         card_title = self.full_name
         suffixes: list[str] = []
-        if title := self.arbiter_title:
+        if title := self.fide_arbiter_title:
             suffixes.append(title.short_name)
         plugin_suffixes = plugin_manager.hook_for_event(
             event, 'get_account_card_title_suffix'

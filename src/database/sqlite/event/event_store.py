@@ -138,7 +138,6 @@ class StoredPlayer:
     owed: float = 0.0
     paid: float = 0.0
     title: str = ''
-    arbiter_title: str = ''
     fide_id: int | None = None
     federation: str = 'FID'
     club: str | None = None
@@ -148,6 +147,8 @@ class StoredPlayer:
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]
     )
+
+    fide_arbiter_title: str = ''
 
 
 @dataclass
@@ -340,7 +341,7 @@ class StoredAccount:
     first_name: str | None
     last_name: str | None
     fide_id: int | None = None
-    arbiter_title: str | None = None
+    fide_arbiter_title: str = ''
     password_hash: str | None = None
     mail: str | None = None
     phone: str | None = None
