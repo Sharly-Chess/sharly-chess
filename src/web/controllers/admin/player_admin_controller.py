@@ -159,12 +159,8 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
     def column_handler(self) -> PlayersTabColumnHandler:
         event = self.get_admin_event()
         handler = PlayersTabColumnHandler(event)
-        hidden_column_ids = SessionPlayersHiddenColumns(
-            self.request, event.uniq_id
-        ).get()
-        disabled_column_ids = SessionPlayersDisabledColumns(
-            self.request, event.uniq_id
-        ).get()
+        hidden_column_ids = SessionPlayersHiddenColumns(self.request, event).get()
+        disabled_column_ids = SessionPlayersDisabledColumns(self.request, event).get()
         handler.set_column_states(disabled_column_ids, hidden_column_ids)
         return handler
 
@@ -173,9 +169,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
             return
         event = self.get_admin_event()
         allowed_players = list(self.client.allowed_players)
-        filter_keys_by_column_id = SessionPlayersFilters(
-            self.request, event.uniq_id
-        ).get()
+        filter_keys_by_column_id = SessionPlayersFilters(self.request, event).get()
         for column in self.column_handler.visible_columns:
             if not column.is_filtrable:
                 continue
@@ -248,8 +242,8 @@ class PlayerAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         handler = web_context.column_handler
         web_context.set_column_filter_values()
-        search = normalized_key(SessionPlayersSearch(request, event.uniq_id).get())
-        session_filters = SessionPlayersFilters(request, event.uniq_id)
+        search = normalized_key(SessionPlayersSearch(request, event).get())
+        session_filters = SessionPlayersFilters(request, event)
         if search:
             search_key_getters: list[Callable[[Player], str]] = [
                 column.get_search_key for column in handler.searchable_columns
@@ -300,7 +294,7 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> list[int]:
         request = web_context.request
         event = web_context.get_admin_event()
-        sort_column, is_asc = SessionPlayersSort(request, event.uniq_id).get()
+        sort_column, is_asc = SessionPlayersSort(request, event).get()
         column = web_context.column_handler.get_column(sort_column)
         sort_key_function = (
             column.sort_key_function
@@ -361,10 +355,10 @@ class PlayerAdminController(BaseEventAdminController):
             if not column.is_enabled_for_tournaments(allowed_tournaments)
             or not column.is_enabled_for_players(allowed_players)
         ]
-        SessionPlayersDisabledColumns(request, event.uniq_id).set(disabled_column_ids)
+        SessionPlayersDisabledColumns(request, event).set(disabled_column_ids)
         handler.set_column_states(
             disabled_column_ids,
-            SessionPlayersHiddenColumns(request, event.uniq_id).get(),
+            SessionPlayersHiddenColumns(request, event).get(),
         )
 
     @classmethod
@@ -388,7 +382,7 @@ class PlayerAdminController(BaseEventAdminController):
         request = web_context.request
         event = web_context.get_admin_event()
         web_context.set_column_filter_values()
-        sort_column, is_sort_asc = SessionPlayersSort(request, event.uniq_id).get()
+        sort_column, is_sort_asc = SessionPlayersSort(request, event).get()
         search_results = cls.get_search_results(web_context)
         allowed_players = list(web_context.client.allowed_players)
         return {
@@ -448,7 +442,7 @@ class PlayerAdminController(BaseEventAdminController):
         template_context |= {
             'default_print_document': web_context.default_print_document,
             'data_sources': DataSourceManager().objects(),
-            'search': SessionPlayersSearch(request, event.uniq_id).get(),
+            'search': SessionPlayersSearch(request, event).get(),
             'allowed_tournaments': web_context.allowed_tournaments,
             'enabled_columns': web_context.column_handler.enabled_columns,
             'searchable_column_names': searchable_column_names,
@@ -526,10 +520,8 @@ class PlayerAdminController(BaseEventAdminController):
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
         handler = web_context.column_handler
-        disabled_column_ids = SessionPlayersDisabledColumns(
-            request, event.uniq_id
-        ).get()
-        session_hidden = SessionPlayersHiddenColumns(request, event.uniq_id)
+        disabled_column_ids = SessionPlayersDisabledColumns(request, event).get()
+        session_hidden = SessionPlayersHiddenColumns(request, event)
         current_hidden_column_ids = session_hidden.get() or []
         hidden_column_ids: list[str] = []
         for column in handler.columns:
@@ -545,7 +537,7 @@ class PlayerAdminController(BaseEventAdminController):
             hidden_column_ids.append(column.id)
         session_hidden.set(hidden_column_ids)
 
-        session_filters = SessionPlayersFilters(request, event.uniq_id)
+        session_filters = SessionPlayersFilters(request, event)
         filters = session_filters.get()
         for column_id in column_ids:
             if column_id in filters:
@@ -579,9 +571,7 @@ class PlayerAdminController(BaseEventAdminController):
                 logger.error(
                     f'Invalid filter key [{filter_key}] for column [{column.id}].'
                 )
-        SessionPlayersFilters(request, event_uniq_id).set_column_filters(
-            column_id, filter_keys
-        )
+        SessionPlayersFilters(request, event).set_column_filters(column_id, filter_keys)
         return self._render_players_table(web_context)
 
     @get(
@@ -589,14 +579,12 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-event-players-sort',
     )
     async def htmx_admin_event_players_sort(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        column_id: str,
+        self, request: HTMXRequest, column_id: str
     ) -> Template:
         web_context = PlayerAdminWebContext(request, column_id=column_id)
+        event = web_context.get_admin_event()
         column = web_context.get_admin_column()
-        session_sort = SessionPlayersSort(request, event_uniq_id)
+        session_sort = SessionPlayersSort(request, event)
         current_column_id, current_is_asc = session_sort.get()
         if current_column_id != column.id:
             sort_column_id = column.id
@@ -615,13 +603,11 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-event-players-search',
     )
     async def htmx_admin_event_players_search(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
-        search: str | None = None,
+        self, request: HTMXRequest, search: str | None = None
     ) -> Template:
         web_context = PlayerAdminWebContext(request)
-        SessionPlayersSearch(request, event_uniq_id).set(search)
+        event = web_context.get_admin_event()
+        SessionPlayersSearch(request, event).set(search)
         return self._render_players_table(web_context)
 
     @get(
@@ -629,13 +615,14 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-event-players-clear-filters',
     )
     async def htmx_admin_event_players_clear_filters(
-        self, request: HTMXRequest, event_uniq_id: str
+        self, request: HTMXRequest
     ) -> Template:
         web_context = PlayerAdminWebContext(request)
-        SessionPlayersSearch(request, event_uniq_id).unset()
-        SessionPlayersFilters(request, event_uniq_id).unset()
-        SessionPlayersSearch(request, event_uniq_id).unset()
-        SessionPlayersSort(request, event_uniq_id).unset()
+        event = web_context.get_admin_event()
+        SessionPlayersSearch(request, event).unset()
+        SessionPlayersFilters(request, event).unset()
+        SessionPlayersSearch(request, event).unset()
+        SessionPlayersSort(request, event).unset()
         return self._render_players_tab(web_context)
 
     @get(

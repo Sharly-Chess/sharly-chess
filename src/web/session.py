@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, asdict, is_dataclass, field
+from dataclasses import dataclass, asdict, is_dataclass
 from logging import Logger
 from typing import Any, ClassVar, cast, get_args, get_origin
 
@@ -8,8 +8,10 @@ from litestar.plugins.htmx import HTMXRequest
 from common.i18n import locales, DEFAULT_LOCALE
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
+from data.event import Event
 from data.input_output.dict_reader import dict_to_dataclass
 from data.safety_mode import SafetyMode
+from data.tournament import Tournament
 
 logger: Logger = get_logger()
 
@@ -106,8 +108,8 @@ class SubKeySessionVariable[T](SessionVariable[T], ABC):
 
 
 class EventSessionVariable[T](SubKeySessionVariable[T], ABC):
-    def __init__(self, request: HTMXRequest, event_uniq_id: str):
-        super().__init__(request, event_uniq_id)
+    def __init__(self, request: HTMXRequest, event: Event):
+        super().__init__(request, event.uniq_id)
 
 
 class EventNoneSessionVariable[T](EventSessionVariable[T | None], ABC):
@@ -116,9 +118,9 @@ class EventNoneSessionVariable[T](EventSessionVariable[T | None], ABC):
         return None
 
 
-class TournamentSessionVariable[T](EventSessionVariable[T], ABC):
-    def __init__(self, request: HTMXRequest, event_uniq_id: str, tournament_id: int):
-        super().__init__(request, f'{event_uniq_id}|{tournament_id}')
+class TournamentSessionVariable[T](SubKeySessionVariable[T], ABC):
+    def __init__(self, request: HTMXRequest, tournament: Tournament):
+        super().__init__(request, f'{tournament.event.uniq_id}|{tournament.id}')
 
 
 class DataclassSessionVariable[T](SessionVariable[T], ABC):
@@ -477,16 +479,37 @@ class SessionPrintLastTournaments(EventSessionVariable[list[int]]):
         return []
 
 
-@dataclass
-class PlayerDistributionSettings:
-    player_count_by_tournament_id: dict[int, int | None] = field(default_factory=dict)
-    balance_tournaments: bool = False
-    even_numbers: bool = True
-
-
-class SessionPlayerDistributionSettings(
-    DataclassSessionVariable[PlayerDistributionSettings]
-):
+class SessionDistributeType(StrSessionVariable):
     @property
     def key(self) -> str:
-        return 'player-distribution-settings'
+        return 'distribute_type'
+
+    @property
+    def default_value(self) -> str:
+        return 'rating'
+
+
+class SessionDistributeUseBalanceGroups(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'distribute_use_balance_groups'
+
+
+class SessionDistributeUnselectedTournaments(EventSessionVariable[list[int]]):
+    @property
+    def key(self) -> str:
+        return 'distribute_unselected_tournaments'
+
+    @property
+    def default_value(self) -> list[int]:
+        return []
+
+
+class SessionDistributeGroupsById(EventSessionVariable[dict[str, list[int]]]):
+    @property
+    def key(self) -> str:
+        return 'distribute_groups_by_id'
+
+    @property
+    def default_value(self) -> dict[str, list[int]]:
+        return {}

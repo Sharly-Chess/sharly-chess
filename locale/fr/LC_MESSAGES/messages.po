@@ -561,6 +561,9 @@ msgstr "Tous les tournois"
 msgid "All values may be modified by the arbiter if necessary."
 msgstr "Toutes les valeurs peuvent être modifiées par l’arbitre si nécessaire."
 
+msgid "Allocate players to the first tournament that they match the criteria of."
+msgstr "Attribuer les joueur·euses au premier tournoi pour lequel ils correspondent aux critères."
+
 msgid "Allow links to this screen"
 msgstr "Autoriser les liens vers cet écran"
 
@@ -708,9 +711,6 @@ msgstr "Autriche"
 msgid "Auto-update"
 msgstr "Mise à jour"
 
-msgid "Automatic filling settings"
-msgstr "Paramètres de remplissage automatique"
-
 msgid "Average"
 msgstr "Moyenne"
 
@@ -765,9 +765,6 @@ msgstr "Bahamas"
 
 msgid "Bahrain"
 msgstr "Bahreïn"
-
-msgid "Balanced tournaments"
-msgstr "Tournois équilibrés"
 
 msgid "Bangladesh"
 msgstr "Bangladesh"
@@ -935,9 +932,6 @@ msgstr "Par échiquier"
 msgid "By default, other devices can only interact with public screens. This tab allows you to configure this behavior."
 msgstr "Par défaut, les autres appareils ne peuvent qu'interagir avec les écrans publics. Cet onglet vous permet de configurer ce comportement."
 
-msgid "By default, players are distributed across tournaments in descending order of rating. By checking this box, the player distribution balances the strengths of the tournaments (only for tournaments that are automatically filled)."
-msgstr "Par défaut, les joueur·euses sont réparti·es dans les tournois par classement décroissant. En cochant cette case, la répartition des joueur·euses équilibre les forces des tournois (seulement pour les tournois remplis automatiquement)."
-
 msgid "By default, this tie-break is disabled when there are unrated players ({count} in the tournament). You must specify that the player estimation is explained in the rules."
 msgstr "Par défaut, ce départage est désactivé lorsqu'il y a des joueur·euses non-classé·es ({count} dans le tournoi). Vous devez spécifier que l'estimation des joueur·euses est expliquée dans le règlement."
 
@@ -1072,9 +1066,6 @@ msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien ver
 
 msgid "Check the box to allow other screens to display a link to this screen."
 msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien vers cet écran."
-
-msgid "Check this box to automatically fill tournaments with an even number of players (only the last one may have an odd number of players)."
-msgstr "Cochez cette case pour remplir automatiquement les tournois avec un nombre pair de joueur·euses (le dernier seulement pourra avoir un nombre impair de joueur·euses)."
 
 msgid "Check-in"
 msgstr "Pointage"
@@ -1613,20 +1604,23 @@ msgstr "Définir comme catégorie générale"
 msgid "Define as public"
 msgstr "Définir comme public"
 
+msgid "Define balance groups"
+msgstr "Définir des groupes équilibrés"
+
 msgid "Define the criteria for players to belong to this category."
 msgstr "Définir les critères selon lesquels les joueur·euses appartiennent à cette catégorie."
 
 msgid "Define the criteria for players to participate in this tournament."
 msgstr "Définissez les critères permettant aux joueur·euses de participer à ce tournoi."
 
-msgid "Define the number of players per tournament and distribute the players by descending rating."
-msgstr "Définir le nombre de joueur·euses par tournoi et répartir les joueur·euses par classement décroissant."
-
 msgid "Define the prizes of the category."
 msgstr "Définir les prix de la catégorie."
 
 msgid "Define the screens and screen families to display."
 msgstr "Définir les écrans et familles d'écrans à afficher."
+
+msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
+msgstr "Définir des groupes de tournois parmi lesquels les joueur·euses sont répartis un par un, aboutissant à des tournois aux classements équilibrés."
 
 #, python-format
 msgid "Delay #%(num)d:"
@@ -1722,6 +1716,9 @@ msgstr "Arbitre adjoint·e"
 msgid "Deputy arbiters"
 msgstr "Arbitres adjoint·es"
 
+msgid "Descending rating"
+msgstr "Classement décroissant"
+
 msgid "Description"
 msgstr "Description"
 
@@ -1793,11 +1790,17 @@ msgstr "Répartir les joueur·euses (%(num)d)"
 msgid "Distribute the players among the tournaments"
 msgstr "Répartir les joueur·euses dans les tournois"
 
+msgid "Distribute the players by descending rating and choose how many goes into each tournament."
+msgstr "Répartir les joueur·euses par classement décroissant et choisir combien vont dans chaque tournoi."
+
 msgid "Distributing the players is allowed only if all the tournaments use the same rating."
 msgstr "Répartir les joueur·euses dans les tournois n'est autorisé que lorsque tous les tournois utilisent le même classement."
 
 msgid "Distributing the players is not allowed once one tournament is started."
 msgstr "La répartition des joueur·euses dans les tournois n'est plus autorisée lorsqu'un tournoi est démarré."
+
+msgid "Distribution type"
+msgstr "Type de répartition"
 
 msgid "Djibouti"
 msgstr "Djibouti"
@@ -2124,9 +2127,6 @@ msgstr "Adresse e-mail"
 msgid "Email:"
 msgstr "Mél :"
 
-msgid "Empty values are allowed for the last tournaments only."
-msgstr "Les valeurs vides ne sont autorisées que pour les derniers tournois."
-
 msgid "Enable this account"
 msgstr "Activer ce compte"
 
@@ -2169,9 +2169,6 @@ msgstr "Eswatini"
 
 msgid "Ethiopia"
 msgstr "Éthiopie"
-
-msgid "Even number of players in tournaments"
-msgstr "Nombre pair de joueur·euses dans les tournois"
 
 msgid "Event"
 msgstr "Évènement"
@@ -3636,9 +3633,6 @@ msgstr "Le nombre de demi-points au-dessus ou en dessous des 50 %% de points re
 msgid "Number of players"
 msgstr "Nombre de joueur·euses"
 
-msgid "Number of players per tournament"
-msgstr "Nombre de joueur·euses par tournoi"
-
 #, python-format
 msgid "Number of players: %(num)d"
 msgstr "Nombre de joueur·euses : %(num)d"
@@ -4132,8 +4126,14 @@ msgstr "Les joueur·euses peuvent avoir des classements estimés par défaut en 
 msgid "Players of category [%(category)s]"
 msgstr "Joueur·euses de la catégorie [%(category)s]"
 
+msgid "Players per tournament"
+msgstr "Joueur·euses par tournoi"
+
 msgid "Players screens show pairings by alphabetical order."
 msgstr "Les écrans d'affichage des joueur·euses présentent les appariements par ordre alphabétique."
+
+msgid "Players successfully distributed among the tournaments."
+msgstr "Les joueur·euses ont été répartis dans les tournois."
 
 msgid "Players update"
 msgstr "Mise à jour des joueur·euses"
@@ -4851,6 +4851,9 @@ msgstr "Sélectionner un·e joueur·euse"
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
 
+msgid "Select the tournaments to add players to."
+msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
+
 msgid "Selection"
 msgstr "Sélection"
 
@@ -5361,9 +5364,6 @@ msgstr "Le nombre de parties gagnées sur l'échiquier avec les Noirs."
 
 msgid "The number of games won over the board."
 msgstr "Le nombre de parties gagnées sur l'échiquier."
-
-msgid "The number of players for the last tournaments (or all tournaments) is optional (in which case tournaments will be automatically populated)."
-msgstr "Le nombre de joueur·euses des derniers tournois (ou tous les tournois) est facultatif (dans ce cas le remplissage des tournois est automatique)."
 
 msgid "The number of players per screen, optional (the number of screens adapts to the number of players)."
 msgstr "Le nombre de joueur·euses par écran, facultatif (le nombre d'écrans s'adapte au nombre de joueur·euses)."
@@ -6060,6 +6060,9 @@ msgstr "Par défaut"
 msgid "Use default - {option}"
 msgstr "Par défaut – {option}"
 
+msgid "Use click and drag to select balance groups."
+msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
+
 msgid "Use pairing engines"
 msgstr "Utiliser les moteurs d'appariement"
 
@@ -6211,12 +6214,21 @@ msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 msgid "Warning: round #%(round)d is not finished."
 msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
 
+msgid "Warning: some players do not match the criteria of any of the selected tournaments."
+msgstr "Attention : certain·es joueur·euses ne correspondent aux critères d'aucun des tournois sélectionnés."
+
 #, python-format
 msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr "Attention : les %(player_count)d joueur·euses du tournoi seront supprimé·es."
 
 msgid "Warning: the deletion is permanent!"
 msgstr "Attention : la suppression est définitive !"
+
+msgid "Warning: too few players selected."
+msgstr "Attention : trop peu de joueur·euses sélectionné·es."
+
+msgid "Warning: too many players selected."
+msgstr "Attention : trop de joueur·euses sélectionné·es."
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
@@ -6734,4 +6746,31 @@ msgstr "½ - ½ (NC)"
 
 #~ msgid "Import from a data source"
 #~ msgstr "Importer depuis une source de données"
+
+#~ msgid "Automatic filling settings"
+#~ msgstr "Paramètres de remplissage automatique"
+
+#~ msgid "Balanced tournaments"
+#~ msgstr "Tournois équilibrés"
+
+#~ msgid "By default, players are distributed across tournaments in descending order of rating. By checking this box, the player distribution balances the strengths of the tournaments (only for tournaments that are automatically filled)."
+#~ msgstr "Par défaut, les joueur·euses sont réparti·es dans les tournois par classement décroissant. En cochant cette case, la répartition des joueur·euses équilibre les forces des tournois (seulement pour les tournois remplis automatiquement)."
+
+#~ msgid "Check this box to automatically fill tournaments with an even number of players (only the last one may have an odd number of players)."
+#~ msgstr "Cochez cette case pour remplir automatiquement les tournois avec un nombre pair de joueur·euses (le dernier seulement pourra avoir un nombre impair de joueur·euses)."
+
+#~ msgid "Define the number of players per tournament and distribute the players by descending rating."
+#~ msgstr "Définir le nombre de joueur·euses par tournoi et répartir les joueur·euses par classement décroissant."
+
+#~ msgid "Empty values are allowed for the last tournaments only."
+#~ msgstr "Les valeurs vides ne sont autorisées que pour les derniers tournois."
+
+#~ msgid "Even number of players in tournaments"
+#~ msgstr "Nombre pair de joueur·euses dans les tournois"
+
+#~ msgid "Number of players per tournament"
+#~ msgstr "Nombre de joueur·euses par tournoi"
+
+#~ msgid "The number of players for the last tournaments (or all tournaments) is optional (in which case tournaments will be automatically populated)."
+#~ msgstr "Le nombre de joueur·euses des derniers tournois (ou tous les tournois) est facultatif (dans ce cas le remplissage des tournois est automatique)."
 

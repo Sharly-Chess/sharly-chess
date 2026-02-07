@@ -48,12 +48,12 @@ class Client:
             return Account.predefined_administrator_account()
         if not self.event:
             return Account.predefined_anonymous_account()
-        account_id_handler = SessionUserAccountId(self.request, self.event.uniq_id)
+        account_id_handler = SessionUserAccountId(self.request, self.event)
         account_id = account_id_handler.get()
         accounts_by_id = self.event.active_user_accounts_by_id
         if not account_id or account_id not in accounts_by_id:
             return self.event.anonymous_account
-        hash_handler = SessionUserAccountPasswordHash(self.request, self.event.uniq_id)
+        hash_handler = SessionUserAccountPasswordHash(self.request, self.event)
         account = accounts_by_id[account_id]
         if account.password_hash != hash_handler.get():
             logger.info(

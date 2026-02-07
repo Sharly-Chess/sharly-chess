@@ -1,4 +1,5 @@
 import copy
+import itertools
 from collections import defaultdict
 from contextlib import suppress
 from datetime import date
@@ -16,7 +17,7 @@ from data.account import Account, Permission
 from data.board import PlayerRatingType
 from data.display_controller import DisplayController
 from data.family import Family
-from data.player import Player
+from data.player import Player, TournamentPlayer
 from data.player_categories import (
     PlayerCategory,
     NoCategory,
@@ -464,6 +465,14 @@ class Event:
         return sorted(
             self.players_by_id.values(),
             key=by('last_name', 'first_name'),
+        )
+
+    @property
+    def tournament_players(self) -> list[TournamentPlayer]:
+        return list(
+            itertools.chain.from_iterable(
+                [tournament.tournament_players for tournament in self.tournaments]
+            )
         )
 
     def get_unused_tournament_name(

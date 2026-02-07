@@ -59,8 +59,6 @@
                             {{ macros.tooltip_attributes('warning', _('You are not allowed to distribute the players.'), 'right') }}
                         {% elif admin_event.player_distribution_error_message %}
                             {{ macros.tooltip_attributes('warning', admin_event.player_distribution_error_message, 'right') }}
-                        {% else %}
-                            {{ macros.tooltip_attributes('info', _('Define the number of players per tournament and distribute the players by descending rating.'), 'right') }}
                         {% endif %}
                     >
                         <button

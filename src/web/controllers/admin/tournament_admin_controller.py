@@ -1,10 +1,9 @@
 import copy
-import itertools
+import json
 import random
 from collections import defaultdict
 from datetime import date
 from functools import partial
-from operator import attrgetter
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
@@ -62,8 +61,10 @@ from web.session import (
     SessionTournamentsShowDetails,
     SessionTournamentCriteriaAddOtherActive,
     SessionTieBreakAddOtherActive,
-    SessionPlayerDistributionSettings,
-    PlayerDistributionSettings,
+    SessionDistributeType,
+    SessionDistributeUseBalanceGroups,
+    SessionDistributeUnselectedTournaments,
+    SessionDistributeGroupsById,
 )
 from web.utils import SelectOption
 
@@ -1653,74 +1654,69 @@ class TournamentAdminController(BaseEventAdminController):
             after='settle',
         )
 
-    @staticmethod
-    def player_distribution_settings_to_form_data(
-        player_distribution_settings: PlayerDistributionSettings,
-    ) -> dict[str, str]:
-        return WebContext.values_dict_to_form_data(
-            {
-                f'player_count_{tournament_id}': player_count
-                for tournament_id, player_count in player_distribution_settings.player_count_by_tournament_id.items()
-            }
-            | {
-                'last_tournaments': player_distribution_settings.balance_tournaments,
-                'even_numbers': player_distribution_settings.even_numbers,
-            }
-        )
-
-    @staticmethod
-    def form_data_to_player_distribution_settings(
-        event: Event,
-        data: dict[str, str],
-    ) -> PlayerDistributionSettings:
-        return PlayerDistributionSettings(
-            player_count_by_tournament_id={
-                tournament.id: WebContext.form_data_to_int(
-                    data, f'player_count_{tournament.id}'
-                )
-                for tournament in event.tournaments_sorted_by_index
-            },
-            balance_tournaments=WebContext.form_data_to_bool(
-                data, 'balance_tournaments'
-            ),
-            even_numbers=WebContext.form_data_to_bool(data, 'even_numbers'),
-        )
-
-    @staticmethod
-    def get_player_distribution_settings_errors(
-        event: Event,
-        player_distribution_settings: PlayerDistributionSettings,
-    ) -> dict[str, str]:
-        errors: dict[str, str] = {}
-        # check that only the values for the last tournaments are left empty
-        empty_allowed: bool = True
-        for tournament in reversed(event.tournaments_sorted_by_index):
-            player_count: int | None = (
-                player_distribution_settings.player_count_by_tournament_id.get(
-                    tournament.id
-                )
-            )
-            if player_count == 0:
-                break  # allowed anywhen
-            if player_count is None:
-                if not empty_allowed:
-                    errors[f'player_count_{tournament.id}'] = _(
-                        'Empty values are allowed for the last tournaments only.'
-                    )
-            else:
-                empty_allowed = False
-        return errors
-
     @classmethod
-    def _player_distribution_settings_modal_context(
-        cls,
-        player_distribution_settings: PlayerDistributionSettings,
+    def _player_distribution_modal_context(
+        cls, web_context: TournamentAdminWebContext
     ) -> dict[str, Any]:
+        request = web_context.request
+        event = web_context.get_admin_event()
+        session_groups_by_id = SessionDistributeGroupsById(request, event).get()
+        groups_by_id: dict[int, list[int]] = {}
+        tournament_ids = list(event.tournaments_by_id)
+        for group_id, group_tournament_ids in session_groups_by_id.items():
+            group = [
+                tournament_id
+                for tournament_id in group_tournament_ids
+                if tournament_id in tournament_ids
+            ]
+            if len(group) > 1:
+                groups_by_id[int(group_id)] = group
+        tournament_players = event.tournament_players
+        criteria_player_ids_by_tournament_id = {
+            tournament.id: [
+                player.id
+                for player in tournament_players
+                if tournament.player_matches_criteria(player)
+            ]
+            for tournament in event.tournaments
+        }
         return {
             'modal': 'distribute-players',
-            'data': cls.player_distribution_settings_to_form_data(
-                player_distribution_settings
+            'distribution_type_options': {
+                'rating': SelectOption(
+                    _('Descending rating'),
+                    _(
+                        'Distribute the players by descending rating and '
+                        'choose how many goes into each tournament.'
+                    ),
+                ),
+                'criteria': SelectOption(
+                    _('Criteria'),
+                    _(
+                        'Allocate players to the first tournament '
+                        'that they match the criteria of.'
+                    ),
+                ),
+            },
+            'groups_by_id': groups_by_id,
+            'unselected_tournament_ids': SessionDistributeUnselectedTournaments(
+                request, event
+            ).get(),
+            'player_count_by_tournament_id': {
+                tournament.id: str(tournament.player_count or '')
+                for tournament in event.tournaments
+            },
+            'criteria_player_ids_by_tournament_id': criteria_player_ids_by_tournament_id,
+            'player_ids': list(event.players),
+            'data': WebContext.values_dict_to_form_data(
+                {
+                    'distribution_type': SessionDistributeType(request).get(),
+                    'use_balance_groups': SessionDistributeUseBalanceGroups(
+                        request
+                    ).get(),
+                }
             ),
+            'errors': {},
         }
 
     @get(
@@ -1732,20 +1728,9 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
     ) -> Template:
         web_context = TournamentAdminWebContext(request)
-        player_distribution_settings: PlayerDistributionSettings = (
-            SessionPlayerDistributionSettings(request).get()
-        )
         return self._admin_event_tournaments_render(
             web_context,
-            self._player_distribution_settings_modal_context(
-                player_distribution_settings
-            )
-            | {
-                'errors': self.get_player_distribution_settings_errors(
-                    web_context.get_admin_event(),
-                    player_distribution_settings,
-                )
-            },
+            self._player_distribution_modal_context(web_context),
         )
 
     @staticmethod
@@ -1775,109 +1760,48 @@ class TournamentAdminController(BaseEventAdminController):
         return True
 
     @classmethod
-    def _distribute_players(
+    def _distribute_players_by_rating(
         cls,
-        admin_event: Event,
-        player_distribution_settings: PlayerDistributionSettings,
+        event: Event,
+        player_count_by_tournament_id: dict[int, int],
+        groups_by_id: dict[str, list[int]],
     ):
         """Distribute the players among the tournaments with the given settings."""
         tournament_players: list[TournamentPlayer] = sorted(
-            itertools.chain.from_iterable(
-                [
-                    tournament.tournament_players
-                    for tournament in admin_event.tournaments_sorted_by_index
-                ]
-            ),
-            key=attrgetter('starting_rank_sort_key'),
+            event.tournament_players,
+            key=lambda player: (player.rating, player.last_name, player.first_name),
+            reverse=True,
         )
-        tournaments_to_fill: list[Tournament] = [
-            tournament
-            for tournament in admin_event.tournaments_sorted_by_index
-            if player_distribution_settings.player_count_by_tournament_id.get(
-                tournament.id
+        group_id_by_tournament_id = {
+            tournament.id: next(
+                (
+                    group_id
+                    for group_id, tournament_ids in groups_by_id.items()
+                    if tournament.id in tournament_ids
+                ),
+                None,
             )
-            != 0
-        ]
-        last_tournaments: list[Tournament] = []
-        for tournament in tournaments_to_fill:
-            tournament_size: int | None = (
-                player_distribution_settings.player_count_by_tournament_id.get(
-                    tournament.id
-                )
-            )
-            if tournament_size is not None:
-                # tournament size imposed, pick the desired number of players
-                logger.debug(
-                    'Moving %d players to tournament [%s]...',
-                    tournament_size,
-                    tournament.name,
-                )
-                for i in range(tournament_size):
-                    if not cls._move_next_player_to_tournament(
-                        tournament_players, tournament
-                    ):
-                        return
+            for tournament in event.tournaments_sorted_by_index
+        }
+        tournament_groups: list[list[Tournament]] = []
+        previous_group_id: str | None = None
+        for tournament in event.tournaments_sorted_by_index:
+            group_id = group_id_by_tournament_id[tournament.id]
+            if group_id is not None and group_id == previous_group_id:
+                tournament_groups[-1].append(tournament)
             else:
-                # no player count imposed by the settings, players will be automatically distributed among the remaining tournaments
-                last_tournaments.append(tournament)
-        if not tournament_players:
-            logger.debug('No more players.')
-            return
-        if last_tournaments:
-            logger.debug(
-                'Remaining players (%d) will be moved to tournaments %s...',
-                len(tournament_players),
-                ', '.join(f'[{tournament.name}]' for tournament in last_tournaments),
-            )
-            # equally distribute the players among the last tournaments if any
-            if player_distribution_settings.balance_tournaments:
-                if player_distribution_settings.even_numbers:
-                    batch_size: int = 2 * len(last_tournaments)
-                    while len(tournament_players) >= batch_size:
-                        tournament_index: int = 0
-                        for __ in range(batch_size):
-                            cls._move_next_player_to_tournament(
-                                tournament_players, last_tournaments[tournament_index]
-                            )
-                            tournament_index = (tournament_index + 1) % len(
-                                last_tournaments
-                            )
-                    for tournament in last_tournaments:
-                        if len(tournament_players) >= 2:
-                            for __ in range(2):
-                                cls._move_next_player_to_tournament(
-                                    tournament_players, tournament
-                                )
-                else:
-                    tournament_index: int = 0
-                    while cls._move_next_player_to_tournament(
-                        tournament_players, last_tournaments[tournament_index]
-                    ):
-                        tournament_index = (tournament_index + 1) % len(
-                            last_tournaments
-                        )
-            else:
-                last_tournaments_size: int = len(tournament_players) // len(
-                    last_tournaments
-                )
-                if (
-                    player_distribution_settings.even_numbers
-                    and last_tournaments_size % 2
-                ):
-                    last_tournaments_size += 1
-                for tournament in last_tournaments:
-                    for __ in range(last_tournaments_size):
-                        if not cls._move_next_player_to_tournament(
-                            tournament_players, tournament
-                        ):
-                            return
-        if tournament_players:
-            # if remaining players, simply move them to the very last tournaments
-            logger.debug('Moving the remaining players to the last tournament...')
-            while cls._move_next_player_to_tournament(
-                tournament_players, tournaments_to_fill[-1]
-            ):
-                pass
+                previous_group_id = group_id
+                tournament_groups.append([tournament])
+        for tournament_group in tournament_groups:
+            while tournament_group:
+                tournament_group = [
+                    tournament
+                    for tournament in tournament_group
+                    if player_count_by_tournament_id[tournament.id] > 0
+                ]
+                for tournament in tournament_group:
+                    cls._move_next_player_to_tournament(tournament_players, tournament)
+                    player_count_by_tournament_id[tournament.id] -= 1
 
     @post(
         path='/distribute-players/{event_uniq_id:str}',
@@ -1887,38 +1811,59 @@ class TournamentAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
         web_context = TournamentAdminWebContext(request)
-        admin_event: Event = web_context.get_admin_event()
-        player_distribution_settings: PlayerDistributionSettings = (
-            self.form_data_to_player_distribution_settings(
-                web_context.get_admin_event(), data
-            )
-        )
-        SessionPlayerDistributionSettings(request).set(player_distribution_settings)
+        event = web_context.get_admin_event()
+        flat_data = WebContext.flatten_list_data(data)
 
-        if errors := self.get_player_distribution_settings_errors(
-            admin_event,
-            player_distribution_settings,
-        ):
-            return self._admin_event_tournaments_render(
-                web_context,
-                self._player_distribution_settings_modal_context(
-                    player_distribution_settings
+        distribution_type = (
+            WebContext.form_data_to_str(flat_data, 'distribution_type') or ''
+        )
+        groups_by_id = json.loads(flat_data.get('groups_by_id', '{}'))
+        tournament_ids = WebContext.form_data_to_list_int(flat_data, 'tournament_ids')
+        use_balance_groups = WebContext.form_data_to_bool(
+            flat_data, 'use_balance_groups'
+        )
+
+        SessionDistributeType(request).set(distribution_type)
+        SessionDistributeGroupsById(request, event).set(groups_by_id)
+        SessionDistributeUseBalanceGroups(request).set(use_balance_groups)
+        SessionDistributeUnselectedTournaments(request, event).set(
+            [
+                tournament_id
+                for tournament_id in event.tournaments_by_id
+                if tournament_id not in tournament_ids
+            ]
+        )
+
+        if distribution_type == 'rating':
+            player_count_by_tournament_id = {
+                tournament.id: WebContext.form_data_to_int(
+                    flat_data, f'player_count_{tournament.id}'
                 )
-                | {
-                    'errors': errors,
-                },
+                or 0
+                for tournament in event.tournaments_sorted_by_index
+            }
+            self._distribute_players_by_rating(
+                event,
+                player_count_by_tournament_id,
+                groups_by_id if use_balance_groups else {},
             )
-
-        self._distribute_players(admin_event, player_distribution_settings)
-
-        return self._admin_event_tournaments_render(
-            web_context,
-            {
-                'success_message': 'YES',
-            },
+        else:
+            tournament_players = event.tournament_players
+            for tournament in event.tournaments_sorted_by_index:
+                if tournament.id not in tournament_ids:
+                    continue
+                for player in tournament_players:
+                    if (
+                        tournament.player_matches_criteria(player)
+                        and player.tournament.id != tournament.id
+                    ):
+                        event.move_player_to_tournament(player, tournament)
+        Message.success(
+            request, _('Players successfully distributed among the tournaments.')
         )
+        return self._admin_event_tournaments_render(web_context)

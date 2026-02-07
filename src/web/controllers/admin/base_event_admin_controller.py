@@ -56,7 +56,7 @@ class BaseEventAdminWebContext(AdminWebContext):
         event = self.get_admin_event()
         tournament_ids: list[int] | None = None
         if last_tournament_ids := (
-            SessionPrintLastTournaments(self.request, event.uniq_id).get()
+            SessionPrintLastTournaments(self.request, event).get()
         ):
             # Remove ids that are not in the event anymore
             tournament_ids = [

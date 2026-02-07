@@ -70,6 +70,7 @@ __pycache__/
 /src/web/static/lib/htmx/ws-*
 /src/web/static/lib/htmx/remove-me-*
 /src/web/static/lib/Sortable
+/src/web/static/lib/Selectable
 /src/web/static/lib/jstree
 /src/web/static/lib/morphdom
 /src/web/static/lib/select2/select2-*
