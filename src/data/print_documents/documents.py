@@ -371,7 +371,8 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
-            'include_player_history': self.include_player_history
+            'include_player_history': self.include_player_history,
+            'max_round': self.ranking_round,
         }
 
 

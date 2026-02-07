@@ -28,7 +28,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for round in range(1, admin_tournament.rounds + 1) %}
+        {% for round in range(1, max_round + 1) %}
             <tr>
                 <th class="round text-center">{{ _('R %(round)d *** ROUND COLUMN HEADER', round=round) }}</th>
                 {% set pairing = player.single_tournament_player.pairings[round] %}
