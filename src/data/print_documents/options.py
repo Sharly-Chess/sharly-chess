@@ -629,10 +629,10 @@ class AccountPrintOption(PrintOption):
         return _('Account:')
 
 
-class PlayerHistoryPopoverOption(PrintOption):
+class PlayerHistoryOption(PrintOption):
     @staticmethod
     def static_id() -> str:
-        return 'player-history-popover'
+        return 'player-history'
 
     @property
     def type(self) -> type | UnionType:

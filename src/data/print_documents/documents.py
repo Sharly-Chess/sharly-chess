@@ -41,7 +41,7 @@ from data.print_documents.options import (
     PlaceCardCropMarksPrintOption,
     PlaceCardBoardNumbersPrintOption,
     OptionalPlayersPrintOption,
-    PlayerHistoryPopoverOption,
+    PlayerHistoryOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
@@ -354,7 +354,7 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
 
     @property
     def include_player_history(self) -> bool:
-        return self._get_option(PlayerHistoryPopoverOption).value
+        return self._get_option(PlayerHistoryOption).value
 
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
@@ -365,7 +365,7 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
         return AbstractPlayerRankingPrintDocument.available_options() + [
-            PlayerHistoryPopoverOption
+            PlayerHistoryOption
         ]
 
     @property

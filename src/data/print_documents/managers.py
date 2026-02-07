@@ -79,7 +79,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.PlaceCardBoardNumbersPrintOption,
             options.PlaceCardMirrorPrintOption,
             options.PlaceCardCropMarksPrintOption,
-            options.PlayerHistoryPopoverOption,
+            options.PlayerHistoryOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_print_option')(
             print_options=print_options

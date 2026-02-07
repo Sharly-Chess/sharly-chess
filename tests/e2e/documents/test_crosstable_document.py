@@ -62,7 +62,7 @@ class TestCrosstableDocument:
 
         self.select_document_type(page, 'Crosstable')
 
-        page.get_by_test_id('player-history-popover').click()
+        page.get_by_test_id('player-history').click()
 
         with context.expect_page() as new_page_info:
             TestUtils.button_by_text(page, 'Generate').click()
