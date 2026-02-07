@@ -1006,7 +1006,7 @@ class StatisticsPrintDocument(PrintDocument):
             (
                 'title',
                 _('Titled players'),
-                lambda item: -item[0].value,
+                lambda item: -item[0].sort_index,
                 None,
                 lambda x: x != PlayerTitle.NONE,
                 None,
