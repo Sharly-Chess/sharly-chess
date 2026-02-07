@@ -1854,15 +1854,17 @@ class TournamentAdminController(BaseEventAdminController):
             )
         else:
             tournament_players = event.tournament_players
+            matched_player_ids: list[int] = []
             for tournament in event.tournaments_sorted_by_index:
                 if tournament.id not in tournament_ids:
                     continue
                 for player in tournament_players:
-                    if (
-                        tournament.player_matches_criteria(player)
-                        and player.tournament.id != tournament.id
-                    ):
-                        event.move_player_to_tournament(player, tournament)
+                    if player.id in matched_player_ids:
+                        continue
+                    if tournament.player_matches_criteria(player):
+                        matched_player_ids.append(player.id)
+                        if player.tournament.id != tournament.id:
+                            event.move_player_to_tournament(player, tournament)
         Message.success(
             request, _('Players successfully distributed among the tournaments.')
         )
