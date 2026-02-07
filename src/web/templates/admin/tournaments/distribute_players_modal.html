@@ -212,10 +212,13 @@
                                 $(element).prop('placeholder', '');
                                 return;
                             }
-                            const elementCount = Math.min(
+                            var elementCount = Math.min(
                                 playerCount,
                                 Math.ceil(playerCount / (2 * remainingTournaments)) * 2,
                             );
+                            if (remainingTournaments === 2 && elementCount * 2 - playerCount == 3) {
+                                elementCount -= 2;
+                            }
                             $(element).prop('placeholder', elementCount);
                             $('#' + $(element).attr('data-hidden-id')).val(elementCount);
                             playerCount -= elementCount;
