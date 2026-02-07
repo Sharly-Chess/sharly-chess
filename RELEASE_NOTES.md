@@ -21,6 +21,10 @@
 - Remove table header transparency (3.5.2)
 - Fixed tombola with no players (3.5.2)
 
+## Pairings
+
+- Fixed the _All / In play_ button (3.5.2)
+
 ## Screens
 
 - Fixed the display of first and last players on family card (3.5.0)
