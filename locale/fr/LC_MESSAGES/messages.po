@@ -6208,8 +6208,8 @@ msgstr "Bienvenue dans Sharly Chess !"
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans."
 
-msgid "When hovering a player's name with the mouse, display its history. Warning: the document takes much longer to load."
-msgstr "Au survol du nom d'un·une joueur·euse avec la souris, affiche son historique de tournoi. Attention : le chargement du document peut prendre bien plus de temps."
+msgid "When hovering a player's name with the mouse, display its history."
+msgstr "Au survol du nom d'un·une joueur·euse avec la souris, affiche son historique de tournoi."
 
 
 msgid "When not displaying the exit button, users can not accidentally exit input screens."

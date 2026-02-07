@@ -6206,7 +6206,7 @@ msgstr ""
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr ""
 
-msgid "When hovering a player's name with the mouse, display its history. Warning: the document takes much longer to load."
+msgid "When hovering a player's name with the mouse, display its history."
 msgstr ""
 
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
