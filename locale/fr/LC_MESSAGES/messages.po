@@ -6738,39 +6738,3 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-#~ msgid "All the player data of the selected tournament will be deleted."
-#~ msgstr "Toutes les données des joueur·euses du tournoi sélectionné seront supprimées."
-
-#~ msgid "Overwrite the existing players"
-#~ msgstr "Écraser les joueur·euses existant·es"
-
-#~ msgid "Import from a data source"
-#~ msgstr "Importer depuis une source de données"
-
-#~ msgid "Automatic filling settings"
-#~ msgstr "Paramètres de remplissage automatique"
-
-#~ msgid "Balanced tournaments"
-#~ msgstr "Tournois équilibrés"
-
-#~ msgid "By default, players are distributed across tournaments in descending order of rating. By checking this box, the player distribution balances the strengths of the tournaments (only for tournaments that are automatically filled)."
-#~ msgstr "Par défaut, les joueur·euses sont réparti·es dans les tournois par classement décroissant. En cochant cette case, la répartition des joueur·euses équilibre les forces des tournois (seulement pour les tournois remplis automatiquement)."
-
-#~ msgid "Check this box to automatically fill tournaments with an even number of players (only the last one may have an odd number of players)."
-#~ msgstr "Cochez cette case pour remplir automatiquement les tournois avec un nombre pair de joueur·euses (le dernier seulement pourra avoir un nombre impair de joueur·euses)."
-
-#~ msgid "Define the number of players per tournament and distribute the players by descending rating."
-#~ msgstr "Définir le nombre de joueur·euses par tournoi et répartir les joueur·euses par classement décroissant."
-
-#~ msgid "Empty values are allowed for the last tournaments only."
-#~ msgstr "Les valeurs vides ne sont autorisées que pour les derniers tournois."
-
-#~ msgid "Even number of players in tournaments"
-#~ msgstr "Nombre pair de joueur·euses dans les tournois"
-
-#~ msgid "Number of players per tournament"
-#~ msgstr "Nombre de joueur·euses par tournoi"
-
-#~ msgid "The number of players for the last tournaments (or all tournaments) is optional (in which case tournaments will be automatically populated)."
-#~ msgstr "Le nombre de joueur·euses des derniers tournois (ou tous les tournois) est facultatif (dans ce cas le remplissage des tournois est automatique)."
-

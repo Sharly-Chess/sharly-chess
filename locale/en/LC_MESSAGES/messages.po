@@ -6735,39 +6735,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "All the player data of the selected tournament will be deleted."
-#~ msgstr ""
-
-#~ msgid "Overwrite the existing players"
-#~ msgstr ""
-
-#~ msgid "Import from a data source"
-#~ msgstr ""
-
-#~ msgid "Automatic filling settings"
-#~ msgstr ""
-
-#~ msgid "Balanced tournaments"
-#~ msgstr ""
-
-#~ msgid "By default, players are distributed across tournaments in descending order of rating. By checking this box, the player distribution balances the strengths of the tournaments (only for tournaments that are automatically filled)."
-#~ msgstr ""
-
-#~ msgid "Check this box to automatically fill tournaments with an even number of players (only the last one may have an odd number of players)."
-#~ msgstr ""
-
-#~ msgid "Define the number of players per tournament and distribute the players by descending rating."
-#~ msgstr ""
-
-#~ msgid "Empty values are allowed for the last tournaments only."
-#~ msgstr ""
-
-#~ msgid "Even number of players in tournaments"
-#~ msgstr ""
-
-#~ msgid "Number of players per tournament"
-#~ msgstr ""
-
-#~ msgid "The number of players for the last tournaments (or all tournaments) is optional (in which case tournaments will be automatically populated)."
-#~ msgstr ""
-
