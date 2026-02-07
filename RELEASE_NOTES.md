@@ -6,7 +6,7 @@
 
 ## Players
 
-- Import players via CSV (3.6.0)
+- Import players from CSV files (3.6.0)
 
 ## Pairings
 
