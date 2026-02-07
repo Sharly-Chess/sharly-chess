@@ -678,20 +678,8 @@ msgstr "Attribuer à un pilote d'écran."
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr "Au moins un Elo minimum ou un Elo maximum doit être défini."
 
-msgid "At least one age category is expected."
-msgstr "Au moins une catégorie d'age est attendue."
-
-msgid "At least one club is expected."
-msgstr "Au moins un club est attendu."
-
-msgid "At least one federation is expected."
-msgstr "Au moins une fédération est attendue."
-
 msgid "At least one player is expected."
 msgstr "Au moins un·e joueur·euse doit être sélectionné·e."
-
-msgid "At least one rating type is expected."
-msgstr "Au moins un type de classement est attendu."
 
 msgid "At least one value is expected."
 msgstr "Au moins une valeur est attendue."
@@ -1125,20 +1113,8 @@ msgstr "Taipei chinois"
 msgid "Choose a player at random"
 msgstr "Choisir un·e joueur·euse au hasard"
 
-msgid "Choose at least one category."
-msgstr "Choisir au moins une catégorie."
-
-msgid "Choose at least one club."
-msgstr "Choisir au moins un club."
-
-msgid "Choose at least one federation."
-msgstr "Choisir au moins une fédération."
-
-msgid "Choose at least one player."
-msgstr "Choisir au moins un·e joueur·euse."
-
-msgid "Choose at least one rating type."
-msgstr "Choisir au moins un type de classement."
+msgid "Choose at least one value."
+msgstr "Choisir au moins une valeur."
 
 msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
@@ -1250,6 +1226,9 @@ msgstr "Commentaire"
 
 msgid "Comment:"
 msgstr "Commentaire :"
+
+msgid "Comments"
+msgstr "Commentaires"
 
 msgid "Comments *** COMMENTS COLUMN HEADER"
 msgstr "Commentaires"
