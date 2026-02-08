@@ -153,7 +153,7 @@ class Player:
 
     @property
     def fide_arbiter_title(self) -> FideArbiterTitle:
-        return FideArbiterTitle(self.stored_player.fide_arbiter_title or '')
+        return FideArbiterTitle(self.stored_player.transient_fide_arbiter_title or '')
 
     @cached_property
     def category(self) -> PlayerCategory:

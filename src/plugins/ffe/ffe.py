@@ -366,7 +366,6 @@ class FfePlugin(Plugin):
                 with ffe_database:
                     ffe_stored_player = ffe_database.get_stored_player_by_fide_id(
                         player_fide_id=fide_id,
-                        with_arbiter_title=with_arbiter_title,
                     )
         if ffe_stored_player:
             for rating_type in TournamentRating:

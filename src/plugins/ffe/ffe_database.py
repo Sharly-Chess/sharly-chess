@@ -146,21 +146,9 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         )
         self.write = True
         with self:
-            self.execute(
-                """
-                CREATE TABLE `arbiter` (
-                    `player_ffe_licence_number` TEXT NOT NULL,
-                    `ffe_arbiter_title` TEXT NOT NULL,
-                    UNIQUE(`player_ffe_licence_number`)
-                )
-                """
-            )
+            self.execute('ALTER TABLE `player` ADD `ffe_arbiter_title` TEXT')
             self.commit()
-            player_db_columns: list[str] = [
-                'player_ffe_licence_number',
-                'ffe_arbiter_title',
-            ]
-            query = f"""INSERT INTO `arbiter`({', '.join(player_db_columns)}) VALUES({', '.join([f':{c}' for c in player_db_columns])})"""
+            query = """UPDATE `player` SET `ffe_arbiter_title` = :ffe_arbiter_title WHERE ffe_licence_number = :ffe_licence_number"""
             arbiter_count: int = 0
             to_write: list[dict[str, Any]] = []
             for (
@@ -169,7 +157,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             ) in ffe_arbiter_titles_by_ffe_licence_number.items():
                 to_write.append(
                     {
-                        'player_ffe_licence_number': ffe_licence_number,
+                        'ffe_licence_number': ffe_licence_number,
                         'ffe_arbiter_title': ffe_arbiter_title,
                     }
                 )
@@ -201,9 +189,6 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             )
             self.execute(
                 'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `arbiter_ffe_licence_number` ON `arbiter`(`player_ffe_licence_number`)'
             )
             self.commit()
 
@@ -237,7 +222,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
                     ffe_licence=PlayerFFELicence(row['ffe_licence']),
                     ffe_licence_number=row['ffe_licence_number'],
                     league=row['league'],
-                    ffe_arbiter_title=FFEArbiterTitle(
+                    transient_ffe_arbiter_title=FFEArbiterTitle(
                         row.get('ffe_arbiter_title') or ''
                     ),
                 ).to_stored_value()
@@ -331,18 +316,11 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         self,
         field: str,
         id_: int,
-        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
-        if with_arbiter_title:
-            self.execute(
-                f'SELECT `player`.*, `arbiter`.`ffe_arbiter_title` FROM `player` LEFT JOIN `arbiter` ON `arbiter`.`player_ffe_licence_number` = `player`.`ffe_licence_number` WHERE {field} = ?',
-                (id_,),
-            )
-        else:
-            self.execute(
-                f"SELECT `player`.*, '' as `ffe_arbiter_title` FROM `player` WHERE {field} = ?",
-                (id_,),
-            )
+        self.execute(
+            f'SELECT `player`.* FROM `player` WHERE {field} = ?',
+            (id_,),
+        )
         if row := self.fetchone():
             return self.get_stored_player_from_row(row)
         else:
@@ -351,23 +329,19 @@ class FfeDatabase(LocalSourcePlayerDatabase):
     def get_stored_player_by_ffe_id(
         self,
         player_ffe_id: int,
-        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
         return self._get_stored_player_by_id(
             field='ffe_id',
             id_=player_ffe_id,
-            with_arbiter_title=with_arbiter_title,
         )
 
     def get_stored_player_by_fide_id(
         self,
         player_fide_id: int,
-        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
         return self._get_stored_player_by_id(
             field='fide_id',
             id_=player_fide_id,
-            with_arbiter_title=with_arbiter_title,
         )
 
     def get_stored_players_by_licence_numbers(

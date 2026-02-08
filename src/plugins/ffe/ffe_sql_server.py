@@ -24,7 +24,7 @@ from plugins.ffe.papi_mappers import (
     PapiPlayerRatingType,
     PapiPlayerFFELicence,
 )
-from plugins.ffe.utils import FfePlayerPluginData, FFEArbiterTitle
+from plugins.ffe.utils import FfePlayerPluginData
 from utils.enum import TournamentRating, PlayerRatingType, FideArbiterTitle
 
 logger: Logger = get_logger()
@@ -123,7 +123,6 @@ class FFESqlServer(SqlServer):
             date_of_birth=date_of_birth,
             gender=PapiPlayerGender.get_core_object(row['Sexe']),
             title=PapiPlayerTitle.get_core_object(row['FideTitre'] or ''),
-            fide_arbiter_title=FideArbiterTitle.NONE,
             ratings={
                 TournamentRating.STANDARD.value: PlayerRating.from_type(
                     row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])
@@ -146,9 +145,10 @@ class FFESqlServer(SqlServer):
                     ),
                     ffe_licence_number=row['NrFFE'],
                     league=row['ClubLigue'],
-                    ffe_arbiter_title=FFEArbiterTitle.NONE,
+                    transient_ffe_arbiter_title=None,
                 ).to_stored_value()
             },
+            transient_fide_arbiter_title=FideArbiterTitle.NONE,
         )
 
     def get_player_fields(self) -> list[str]:

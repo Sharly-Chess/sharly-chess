@@ -958,7 +958,16 @@ class EventDatabase(MigrationDatabase):
                 stored_player.date_of_birth
             ),
             'ratings': cls.dump_to_json_database_field(stored_player.ratings),
-            'plugin_data': cls.dump_to_json_database_field(stored_player.plugin_data),
+            'plugin_data': cls.dump_to_json_database_field(
+                {
+                    plugin_name: {
+                        key: value
+                        for key, value in plugin_data_dict.items()
+                        if not key.startswith('transient_')
+                    }
+                    for plugin_name, plugin_data_dict in stored_player.plugin_data.items()
+                }
+            ),
         }
 
     def add_stored_player(

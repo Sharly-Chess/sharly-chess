@@ -305,7 +305,7 @@ class FfePlayerPluginData(PluginData):
     ffe_licence: PlayerFFELicence
     ffe_licence_number: str | None
     league: str | None
-    ffe_arbiter_title: FFEArbiterTitle
+    transient_ffe_arbiter_title: FFEArbiterTitle | None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -316,8 +316,8 @@ class FfePlayerPluginData(PluginData):
             ),
             ffe_licence_number=stored_value.get('ffe_licence_number', None),
             league=stored_value.get('league', None),
-            ffe_arbiter_title=FFEArbiterTitle(
-                stored_value.get('ffe_arbiter_title', FFEArbiterTitle.NONE)
+            transient_ffe_arbiter_title=stored_value.get(
+                'transient_ffe_arbiter_title', None
             ),
         )
 
@@ -327,7 +327,9 @@ class FfePlayerPluginData(PluginData):
             'ffe_licence': self.ffe_licence.value,
             'ffe_licence_number': self.ffe_licence_number,
             'league': self.league,
-            'ffe_arbiter_title': self.ffe_arbiter_title.value,
+            'transient_ffe_arbiter_title': self.transient_ffe_arbiter_title.value
+            if self.transient_ffe_arbiter_title
+            else None,
         }
 
     @classmethod
@@ -345,10 +347,7 @@ class FfePlayerPluginData(PluginData):
             ),
             ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
             league=WebContext.form_data_to_str(data, 'ffe_league'),
-            ffe_arbiter_title=FFEArbiterTitle(
-                WebContext.form_data_to_str(data, 'ffe_arbiter_title')
-                or FFEArbiterTitle.NONE
-            ),
+            transient_ffe_arbiter_title=None,
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
@@ -360,7 +359,6 @@ class FfePlayerPluginData(PluginData):
                 'ffe_licence': self.ffe_licence.value,
                 'ffe_licence_number': self.ffe_licence_number,
                 'ffe_league': self.league,
-                'ffe_arbiter_title': self.ffe_arbiter_title.value,
             }
         )
 

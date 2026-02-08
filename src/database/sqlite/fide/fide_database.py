@@ -153,7 +153,6 @@ class FideDatabase(LocalSourcePlayerDatabase):
             if field[0]
             not in [
                 'name',
-                'fide_arbiter_title',
             ]
         ]
         player_db_columns += [
@@ -161,38 +160,23 @@ class FideDatabase(LocalSourcePlayerDatabase):
             'last_name',
         ]
         player_query = f"""INSERT INTO `player`({', '.join(player_db_columns)}) VALUES({', '.join([f':{c}' for c in player_db_columns])})"""
-        arbiter_db_columns: list[str] = [
-            'player_fide_id',
-            'fide_arbiter_title',
-        ]
-        arbiter_query = f"""INSERT INTO `arbiter`({', '.join(arbiter_db_columns)}) VALUES({', '.join([f':{c}' for c in arbiter_db_columns])})"""
         player_count: int = 0
-        arbiter_count: int = 0
         players_to_write: list[dict[str, Any]] = []
-        arbiters_to_write: list[dict[str, Any]] = []
         player_data: dict[str, Any] = {}
-        arbiter_data: dict[str, FideArbiterTitle] = {}
         root = next(context)[1]
         with database:
             for event, elem in context:
                 if event == 'start' and elem.tag == 'player':
                     player_data = {}
-                    arbiter_data = {}
 
                 if event == 'end' and elem.tag == 'player':
                     players_to_write.append(player_data)
                     player_count += 1
-                    if arbiter_data:
-                        arbiters_to_write.append(arbiter_data)
-                        arbiter_count += 1
                     if player_count % 1000 == 0:
                         if self.stop_event.is_set():
                             return False
                         database.executemany(player_query, players_to_write)
                         players_to_write.clear()
-                        if arbiters_to_write:
-                            database.executemany(arbiter_query, arbiters_to_write)
-                            arbiters_to_write.clear()
                         progress.log(player_count)
                     if player_count % 100_000 == 0:
                         database.commit()
@@ -218,27 +202,15 @@ class FideDatabase(LocalSourcePlayerDatabase):
                             player_data['last_name'] = player_data['name'].strip()
                             player_data['first_name'] = None
                         del player_data['name']
-                    elif field_name == 'fide_arbiter_title':
-                        if player_data['fide_arbiter_title']:
-                            arbiter_data['player_fide_id'] = player_data['fide_id']
-                            arbiter_data['fide_arbiter_title'] = player_data[
-                                'fide_arbiter_title'
-                            ]
-                            del player_data['fide_arbiter_title']
 
             if players_to_write:
                 database.executemany(player_query, players_to_write)
                 database.commit()
                 progress.log(player_count)
-            if arbiters_to_write:
-                database.executemany(arbiter_query, arbiters_to_write)
-                database.commit()
 
         logger.info(
-            self.log_prefix
-            + '%d players (including %d arbiters) written to the database.',
+            self.log_prefix + '%d players written to the database.',
             player_count,
-            arbiter_count,
         )
         return True
 
@@ -253,9 +225,6 @@ class FideDatabase(LocalSourcePlayerDatabase):
             )
             self.execute(
                 'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player` (`fide_id`)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `arbiter_fide_id` ON `arbiter`(`player_fide_id`)'
             )
             self.commit()
 
@@ -286,7 +255,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             year_of_birth=row['year_of_birth'],
             gender=row['gender'],
             title=row['fide_title'],
-            fide_arbiter_title=row.get('fide_arbiter_title', ''),
+            transient_fide_arbiter_title=row.get('fide_arbiter_title', ''),
             ratings=ratings,
             fide_id=row['fide_id'],
             federation=row['federation'],
@@ -374,18 +343,11 @@ class FideDatabase(LocalSourcePlayerDatabase):
     def get_stored_player_by_fide_id(
         self,
         player_fide_id: int,
-        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
-        if with_arbiter_title:
-            self.execute(
-                'SELECT `player`.*, `arbiter`.`fide_arbiter_title` AS `fide_arbiter_title` FROM `player` LEFT JOIN `arbiter` ON `arbiter`.`player_fide_id` = `player`.`fide_id` WHERE `fide_id` = ?',
-                (player_fide_id,),
-            )
-        else:
-            self.execute(
-                "SELECT `player`.*, '' AS `fide_arbiter_title` FROM `player` WHERE `fide_id` = ?",
-                (player_fide_id,),
-            )
+        self.execute(
+            'SELECT `player`.* FROM `player` WHERE `fide_id` = ?',
+            (player_fide_id,),
+        )
         if player_row := self.fetchone():
             return self._get_player_from_row(player_row)
         return None

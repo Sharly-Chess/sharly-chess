@@ -175,7 +175,6 @@ class DataSource(IdentifiableEntity, ABC):
     async def get_stored_player_by_source_id(
         self,
         player_source_id: str,
-        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
         """Get a player by its identifier in the data source."""
 
@@ -190,12 +189,10 @@ class DataSource(IdentifiableEntity, ABC):
     ) -> StoredPlayer | None:
         stored_player = await self.get_stored_player_by_source_id(
             player_source_id=player_source_id,
-            with_arbiter_title=with_arbiter_title,
         )
         if stored_player:
             self._adjust_player_from_fide_database(
                 src_stored_player=stored_player,
-                with_arbiter_title=with_arbiter_title,
             )
             await plugin_manager.ahook.augment_player_after_search(
                 stored_player=stored_player,
@@ -207,7 +204,6 @@ class DataSource(IdentifiableEntity, ABC):
     @staticmethod
     def _adjust_player_from_fide_database(
         src_stored_player: StoredPlayer,
-        with_arbiter_title: bool,
     ):
         """Cross-references the player with the FIDE Database.
         Override this method to disable this behavior."""
@@ -218,13 +214,14 @@ class DataSource(IdentifiableEntity, ABC):
         with database:
             fide_stored_player = database.get_stored_player_by_fide_id(
                 player_fide_id=fide_id,
-                with_arbiter_title=with_arbiter_title,
             )
             if not fide_stored_player:
                 return
             src_stored_player.federation = fide_stored_player.federation
             src_stored_player.title = fide_stored_player.title
-            src_stored_player.fide_arbiter_title = fide_stored_player.fide_arbiter_title
+            src_stored_player.transient_fide_arbiter_title = (
+                fide_stored_player.transient_fide_arbiter_title
+            )
             for rating_type in TournamentRating:
                 stored_fide_rating = fide_stored_player.ratings.get(
                     rating_type.value, None
@@ -418,7 +415,6 @@ class FideDataSource(LocalDataSource):
     @override
     def _adjust_player_from_fide_database(
         src_stored_player: StoredPlayer,
-        with_arbiter_title: bool,
     ):
         pass
 
@@ -446,14 +442,12 @@ class FideDataSource(LocalDataSource):
     async def get_stored_player_by_source_id(
         self,
         player_source_id: str,
-        with_arbiter_title: bool,
     ) -> StoredPlayer | None:
         if not player_source_id.isdigit():
             return None
         with FideDatabase() as database:
             return database.get_stored_player_by_fide_id(
                 player_fide_id=int(player_source_id),
-                with_arbiter_title=with_arbiter_title,
             )
 
     def get_player_source_id(self, stored_player: StoredPlayer) -> str:

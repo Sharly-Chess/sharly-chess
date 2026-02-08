@@ -15,13 +15,7 @@ CREATE TABLE `player` (
     `k_standard` INTEGER NOT NULL,
     `k_rapid` INTEGER NOT NULL,
     `k_blitz` INTEGER NOT NULL,
+    `fide_arbiter_title` TEXT NOT NULL,
     PRIMARY KEY(`id` AUTOINCREMENT),
     UNIQUE(`fide_id`)
-);
-
-CREATE TABLE `arbiter` (
-    `player_fide_id` INTEGER NOT NULL,
-    `fide_arbiter_title` TEXT NOT NULL,
-    UNIQUE(`player_fide_id`),
-    FOREIGN KEY (`player_fide_id`) REFERENCES `player`(`fide_id`)
 );
