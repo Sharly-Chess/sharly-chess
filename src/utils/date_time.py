@@ -60,3 +60,19 @@ def format_date_range(start_date: date, stop_date: date | None = None) -> str:
 
 def get_date_timestamp(date_: date) -> float:
     return datetime.combine(date_, datetime.min.time()).timestamp()
+
+
+def timestamp_to_datetime(ts: float | None) -> datetime | None:
+    return datetime.fromtimestamp(ts) if ts is not None else None
+
+
+def datetime_to_timestamp(dt: datetime | None) -> float | None:
+    return dt.timestamp() if dt is not None else None
+
+
+def timestamp_to_date(ts: float | None) -> date | None:
+    return datetime.fromtimestamp(ts).date() if ts is not None else None
+
+
+def date_to_timestamp(d: date | None) -> float | None:
+    return get_date_timestamp(d) if d is not None else None
