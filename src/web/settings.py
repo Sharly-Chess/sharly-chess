@@ -63,7 +63,6 @@ from web.controllers.user.tournament_user_controller import (
     ResultUserController,
 )
 from web.sqlite_store import SQLiteStore
-from web.streaming_patch import apply_streaming_patch
 
 static_files_base_dir = BASE_DIR / 'src/web/static'
 
@@ -111,10 +110,6 @@ _route_handlers: Sequence[ControllerRouterHandler] = [
         for controller in plugin.controllers
     ],
 ]
-
-# Apply streaming to ALL Template responses globally via monkey-patching
-# This prevents large template rendering from blocking the server
-apply_streaming_patch()
 
 route_handlers = _route_handlers
 
