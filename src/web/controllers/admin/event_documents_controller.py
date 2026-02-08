@@ -3,6 +3,7 @@ from typing import Annotated
 
 from litestar import get, post
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
+from web.streaming_template import StreamingHTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
@@ -256,6 +257,6 @@ class EventDocumentsController(BaseEventAdminController):
             }
             | print_document.template_context
         )
-        return HTMXTemplate(
+        return StreamingHTMXTemplate(
             template_name=print_document.template_name, context=template_context
         )

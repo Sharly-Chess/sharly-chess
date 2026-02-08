@@ -1,8 +1,8 @@
 <div class="col-12">
     {{ admin_macros.select_input(
         name=option.id,
-        label=_('%(string)s:', string=_('Clubs')),
-        select_options=option.select_options(admin_tournament),
+        label=_('%(string)s:', string=_('Comments')),
+        select_options=option.select_options(admin_tournament, false),
         multiple_select=true,
         placeholder=_('Choose at least one value.'),
         data=data, errors=errors

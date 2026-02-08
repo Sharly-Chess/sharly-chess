@@ -19,3 +19,36 @@
     .player-table .board,
     .player-table .color { font-weight: bold; }
 }
+{# ========== PLAYER NAME TOOLTIP ========== #}
+.player-name {
+    position: relative;
+    font-weight: bold;
+}
+
+.player-name .player-history table {
+    display: none;
+    border-collapse: collapse;
+    position: absolute;
+    left: 40px;
+    top: 10px;
+    padding: 5px;
+    border: 1px solid grey;
+    background-color: #FFFFFF !important;
+    z-index: 999;
+}
+
+.player-name:hover .player-history table {
+    display: block;
+}
+
+.player-history th {
+    font-weight: bold;
+}
+
+.player-history table tr:nth-child(even) * {
+    background-color: #FFFFFF !important;
+}
+
+.player-history table tr:nth-child(odd) * {
+    background-color: #E0E0E0 !important;
+}

@@ -30,7 +30,7 @@ tr td, tr th {
 }
 .section-title { margin: 16px 0 12px; }
 .section-sub-title {margin: 0 0 8px;}
-.separator { width: 50vw; height: 1px; margin: 30pt 0 30pt; border-top: 1px solid #CCCCCC; }
+.separator { width: 50vw; height: 1px; margin: 30pt auto; border-top: 1px solid #CCCCCC; }
 .short-separator { width: 10vw; height: 1px; margin: 30pt 0 30pt; border-top: 1px solid #CCCCCC; }
 
 {# ========== FONT SIZE ========== #}

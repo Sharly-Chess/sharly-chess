@@ -41,6 +41,7 @@ from data.print_documents.options import (
     PlaceCardCropMarksPrintOption,
     PlaceCardBoardNumbersPrintOption,
     OptionalPlayersPrintOption,
+    PlayerHistoryOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
@@ -352,10 +353,27 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
         return _('Crosstable after round #{round}').format(round=self.ranking_round)
 
     @property
+    def include_player_history(self) -> bool:
+        return self._get_option(PlayerHistoryOption).value
+
+    @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_crosstable_columns(
             self.tournament, self.ranking_round
         )
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return AbstractPlayerRankingPrintDocument.available_options() + [
+            PlayerHistoryOption
+        ]
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return super().template_context | {
+            'include_player_history': self.include_player_history,
+            'max_round': self.ranking_round,
+        }
 
 
 class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
