@@ -226,7 +226,7 @@ class AgeCategoriesOption(SelectPlayerFilterOption[PlayerCategory]):
     def validate(self):
         self._validate_list_type(str)
         if not self.value:
-            raise OptionError(_('At least one age category is expected.'), self)
+            raise OptionError(_('At least one value is expected.'), self)
         for category in self.value:
             try:
                 PlayerCategory.from_id(category)
@@ -316,7 +316,7 @@ class RatingTypesFilterOption(SelectPlayerFilterOption[PlayerRatingType]):
     def validate(self):
         self._validate_list_type(int)
         if not self.value:
-            raise OptionError(_('At least one rating type is expected.'), self)
+            raise OptionError(_('At least one value is expected.'), self)
         for rating_type in self.value:
             try:
                 PlayerRatingType(rating_type)
@@ -357,7 +357,7 @@ class ClubsFilterOption(SelectPlayerFilterOption[Club]):
     def validate(self):
         self._validate_list_type(str)
         if not self.value:
-            raise OptionError(_('At least one club is expected.'), self)
+            raise OptionError(_('At least one value is expected.'), self)
 
 
 class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
@@ -398,7 +398,44 @@ class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
     def validate(self):
         self._validate_list_type(str)
         if not self.value:
-            raise OptionError(_('At least one federation is expected.'), self)
+            raise OptionError(_('At least one value is expected.'), self)
+
+
+class CommentsFilterOption(SelectPlayerFilterOption[str]):
+    @staticmethod
+    def static_id() -> str:
+        return 'COMMENTS'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[str]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
+        return list(
+            {player.comment for player in tournament.event.players if player.comment}
+        )
+
+    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
+        counter = Counter[str]()
+        for player in tournament.tournament_players:
+            if player.comment:
+                counter[player.comment] += 1
+        return counter
+
+    def get_key(self, object_: str) -> str:
+        return object_
+
+    def get_name(self, object_: str) -> str:
+        return object_
+
+    def validate(self):
+        self._validate_list_type(str)
+        if not self.value:
+            raise OptionError(_('At least one value is expected.'), self)
 
 
 class PlayersFilterOption(SelectPlayerFilterOption[TournamentPlayer]):

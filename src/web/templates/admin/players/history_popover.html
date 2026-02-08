@@ -28,7 +28,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for round in range(1, admin_tournament.rounds + 1) %}
+        {% for round in range(1, max_round + 1) %}
             <tr>
                 <th class="round text-center">{{ _('R %(round)d *** ROUND COLUMN HEADER', round=round) }}</th>
                 {% set pairing = player.single_tournament_player.pairings[round] %}
@@ -41,7 +41,7 @@
                     <td>{{ opponent.rating_str }}</td>
                     <td>{{ opponent.category_name }}</td>
                     <td>{{ opponent.federation }}</td>
-                    <td class='text-center'>{{ opponent.points_str }}</td>
+                    <td class='text-center fw-bold'>{{ opponent.points_str }}</td>
                     {% for tie_break_value in opponent.tie_break_values %}
                         <td class="tie-break text-center">
                             {{ tie_break_value }}

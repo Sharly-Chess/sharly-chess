@@ -2072,6 +2072,7 @@ class PlayerAdminController(BaseEventAdminController):
             context=web_context.template_context
             | {
                 'player': web_context.get_admin_player(),
+                'max_round': tournament.rounds,
             },
         )
 
