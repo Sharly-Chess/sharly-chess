@@ -627,3 +627,17 @@ class AccountPrintOption(PrintOption):
     def label(self) -> str:
         """Returns the label for this option."""
         return _('Account:')
+
+
+class PlayerHistoryOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'player-history'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return False
