@@ -6190,7 +6190,6 @@ msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans
 msgid "When hovering a player's name with the mouse, display its history."
 msgstr "Au survol du nom d'un·une joueur·euse avec la souris, affiche son historique de tournoi."
 
-
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne peuvent quitter l'écran accidentellement."
 

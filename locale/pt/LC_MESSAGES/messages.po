@@ -842,24 +842,8 @@ msgid "At least a minimum or a maximum rating must be defined."
 msgstr "Pelo menos uma classificação mínima ou máxima deve ser definida."
 
 #, ai_translation
-msgid "At least one age category is expected."
-msgstr "Pelo menos uma categoria etária é esperada."
-
-#, ai_translation
-msgid "At least one club is expected."
-msgstr "Pelo menos um clube é esperado."
-
-#, ai_translation
-msgid "At least one federation is expected."
-msgstr "Pelo menos uma federação é esperada."
-
-#, ai_translation
 msgid "At least one player is expected."
 msgstr "Pelo menos um jogador é esperado."
-
-#, ai_translation
-msgid "At least one rating type is expected."
-msgstr "Pelo menos um tipo de classificação é esperado."
 
 #, ai_translation
 msgid "At least one value is expected."
@@ -1414,25 +1398,8 @@ msgstr "chinês Taipei"
 msgid "Choose a player at random"
 msgstr "Escolha um jogador ao acaso"
 
-#, ai_translation
-msgid "Choose at least one category."
-msgstr "Escolha pelo menos uma categoria."
-
-#, ai_translation
-msgid "Choose at least one club."
-msgstr "Escolha pelo menos um clube."
-
-#, ai_translation
-msgid "Choose at least one federation."
-msgstr "Escolha pelo menos uma federação."
-
-#, ai_translation
-msgid "Choose at least one player."
-msgstr "Escolha pelo menos um jogador."
-
-#, ai_translation
-msgid "Choose at least one rating type."
-msgstr "Escolha pelo menos um tipo de classificação."
+msgid "Choose at least one value."
+msgstr ""
 
 #, ai_translation
 msgid "Choose families to add"
@@ -1577,6 +1544,9 @@ msgstr "Comentário"
 #, ai_translation
 msgid "Comment:"
 msgstr "Comentário:"
+
+msgid "Comments"
+msgstr ""
 
 #, fuzzy
 msgid "Comments *** COMMENTS COLUMN HEADER"
@@ -2253,6 +2223,9 @@ msgstr "Controladores de exibição ({num})"
 #, ai_translation
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr "Os controladores de exibição permitem que você controle telas em seu evento a partir do seu servidor (ou qualquer dispositivo permitido)."
+
+msgid "Display history on hover"
+msgstr ""
 
 #, ai_translation
 msgid "Display the exit button"
@@ -8041,6 +8014,9 @@ msgstr "Bem-vindo ao Sharly Chess!"
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr "Quando definida, a mensagem de alerta é exibida em um banner de rolagem na parte inferior das telas."
 
+msgid "When hovering a player's name with the mouse, display its history."
+msgstr ""
+
 #, ai_translation
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Ao não exibir o botão de saída, os usuários não podem sair acidentalmente das telas de entrada."
@@ -8753,4 +8729,31 @@ msgstr "½ - ½ (U)"
 
 #~ msgid "Show all the players"
 #~ msgstr "Mostrar todos os jogadores"
+
+#~ msgid "At least one age category is expected."
+#~ msgstr "Pelo menos uma categoria etária é esperada."
+
+#~ msgid "At least one club is expected."
+#~ msgstr "Pelo menos um clube é esperado."
+
+#~ msgid "At least one federation is expected."
+#~ msgstr "Pelo menos uma federação é esperada."
+
+#~ msgid "At least one rating type is expected."
+#~ msgstr "Pelo menos um tipo de classificação é esperado."
+
+#~ msgid "Choose at least one category."
+#~ msgstr "Escolha pelo menos uma categoria."
+
+#~ msgid "Choose at least one club."
+#~ msgstr "Escolha pelo menos um clube."
+
+#~ msgid "Choose at least one federation."
+#~ msgstr "Escolha pelo menos uma federação."
+
+#~ msgid "Choose at least one player."
+#~ msgstr "Escolha pelo menos um jogador."
+
+#~ msgid "Choose at least one rating type."
+#~ msgstr "Escolha pelo menos um tipo de classificação."
 
