@@ -111,9 +111,7 @@ class PlayerColumnHandler:
         )
 
     def get_player_crosstable_columns(
-        self,
-        tournament: Tournament,
-        ranking_round: int,
+        self, tournament: Tournament, ranking_round: int
     ) -> list[TournamentPlayerTableColumn]:
         return self.get_columns(
             [

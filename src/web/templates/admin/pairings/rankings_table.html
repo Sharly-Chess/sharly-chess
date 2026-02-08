@@ -92,7 +92,7 @@
                     class="btn player-info p-1"
                     data-content-id="popover-content-{{ tournament_player.id }}"
                     aria-label="More info"
-                    hx-get="{{ url_for('admin-player-history-popover', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, player_id=tournament_player.id) }}" -
+                    hx-get="{{ url_for('admin-player-history-popover', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, player_id=tournament_player.id) }}"
                     hx-trigger="mouseover once, focus once"
                     hx-target="#popover-content-{{ tournament_player.id }}"
                     hx-swap="innerHTML"
