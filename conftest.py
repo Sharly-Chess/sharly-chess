@@ -7,18 +7,18 @@ import sys
 import time
 from io import TextIOWrapper
 from pathlib import Path
-from common.sharly_chess_config import SharlyChessConfig
-from playwright.sync_api import Browser, Playwright, APIRequestContext
 from typing import Generator
 
 import pytest
 import requests
+from playwright.sync_api import Browser, Playwright, APIRequestContext
+
+from common.sharly_chess_config import SharlyChessConfig
+from tests.test_config import TestConfig
+from utils.file import shutil_delete_onerror
 
 # Note: Keeping default event loop policy for Windows (ProactorEventLoop)
 # The WindowsSelectorEventLoop doesn't support subprocess operations
-
-from tests.test_config import TestConfig
-from utils.file import shutil_delete_onerror
 
 # Set up environment variables here to make TEST_ENV available in common.i18n
 env = os.environ.copy()

@@ -1,24 +1,24 @@
 """Test configuration and utilities."""
 
+import re
 import time
+from datetime import date, datetime
+from pathlib import Path
+from typing import Callable, Dict, Optional, Any
 from urllib import parse
+
+from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
+
 from common import BASE_DIR
 from data.board import PlayerRatingType
 from data.input_output.tournament_importer_options import FileOption
 from data.loader import EventLoader
 from data.pairings.variations import StandardSwissVariation
-from datetime import date, datetime
-from pathlib import Path
-from typing import Callable, Dict, Optional, Any
-import re
-
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredEvent,
     StoredTournament,
 )
-from playwright.sync_api import Page, Locator, APIRequestContext, APIResponse, expect
-
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from utils.enum import (
     ScreenType,
