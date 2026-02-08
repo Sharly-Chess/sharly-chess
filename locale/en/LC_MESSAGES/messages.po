@@ -678,19 +678,7 @@ msgstr ""
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr ""
 
-msgid "At least one age category is expected."
-msgstr ""
-
-msgid "At least one club is expected."
-msgstr ""
-
-msgid "At least one federation is expected."
-msgstr ""
-
 msgid "At least one player is expected."
-msgstr ""
-
-msgid "At least one rating type is expected."
 msgstr ""
 
 msgid "At least one value is expected."
@@ -1125,19 +1113,7 @@ msgstr ""
 msgid "Choose a player at random"
 msgstr ""
 
-msgid "Choose at least one category."
-msgstr ""
-
-msgid "Choose at least one club."
-msgstr ""
-
-msgid "Choose at least one federation."
-msgstr ""
-
-msgid "Choose at least one player."
-msgstr ""
-
-msgid "Choose at least one rating type."
+msgid "Choose at least one value."
 msgstr ""
 
 msgid "Choose families to add"
@@ -1249,6 +1225,9 @@ msgid "Comment"
 msgstr ""
 
 msgid "Comment:"
+msgstr ""
+
+msgid "Comments"
 msgstr ""
 
 msgid "Comments *** COMMENTS COLUMN HEADER"

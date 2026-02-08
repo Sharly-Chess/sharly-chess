@@ -20,6 +20,7 @@ from data.criteria.player_filter_options import (
     RatingTypesFilterOption,
     PlayersFilterOption,
     ExcludeFilterOption,
+    CommentsFilterOption,
 )
 from data.player_categories import NoCategory, PlayerCategory
 from utils.enum import PlayerGender, PlayerRatingType
@@ -273,6 +274,38 @@ class FederationPlayerFilter(PlayerFilter):
         federation_query_params, exclude = self.get_option_values()
         federations = self.get_federations(federation_query_params)
         option_str = ', '.join(federation.name for federation in federations)
+        if exclude:
+            option_str = _('Exclude: {values}').format(values=option_str)
+        return f'{self.name} ({option_str})'
+
+
+class CommentPlayerFilter(PlayerFilter):
+    @staticmethod
+    def static_id() -> str:
+        return 'COMMENT'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Comment')
+
+    @staticmethod
+    def available_options() -> list[type[PlayerFilterOption]]:
+        return [
+            CommentsFilterOption,
+            ExcludeFilterOption,
+        ]
+
+    @cached_property
+    def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
+        comments, exclude = self.get_option_values()
+        if exclude:
+            return lambda player: player.comment not in comments
+        else:
+            return lambda player: player.comment in comments
+
+    def full_name(self, tournament: 'Tournament') -> str:
+        comments, exclude = self.get_option_values()
+        option_str = ', '.join(comments)
         if exclude:
             option_str = _('Exclude: {values}').format(values=option_str)
         return f'{self.name} ({option_str})'
