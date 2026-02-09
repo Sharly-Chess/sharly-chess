@@ -9,7 +9,7 @@
         </div>
         <div class="modal-body">
             {% set selected_rows = row_count - import_errors_by_index|length %}
-            {% if overwrite_players %}
+            {% if overwrite_players and admin_tournament.tournament_players %}
                 <h4 class="text-danger">
                     {{ _(
                         'Warning: the %(player_count)d players in the tournament will be deleted.',

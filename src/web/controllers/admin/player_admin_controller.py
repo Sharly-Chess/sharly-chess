@@ -1678,7 +1678,7 @@ class PlayerAdminController(BaseEventAdminController):
                         and value
                         and value in unique_values_by_column_id[column.id]
                     ):
-                        raise ValueError(
+                        raise SharlyChessException(
                             _(
                                 'A player with this value already exists in the tournament.'
                             )
