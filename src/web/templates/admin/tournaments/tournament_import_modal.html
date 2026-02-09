@@ -46,6 +46,22 @@
                         </h5>
                     {% endif %}
                 {% endif %}
+                {% if importer.has_not_exhaustive_exporter %}
+                    <h5>
+                        <span class="text-danger">
+                            {{ _('Warning: potential data loss') }}
+                        </span>
+                        <i
+                            class="bi-info-circle-fill ps-1"
+                            style="font-size: 90%"
+                            {{ macros.tooltip_attributes('', _(
+                                'If this file has been exported from Sharly Chess, '
+                                'some data will be lost. For data transfer, exporting '
+                                'the event to the .sce format is highly recommended.'
+                            )) }}
+                        ></i>
+                    </h5>
+                {% endif %}
                 <div class="row gy-2 gx-3">
                     {% for option in importer.default_options() %}
                         {% include option.template_name %}

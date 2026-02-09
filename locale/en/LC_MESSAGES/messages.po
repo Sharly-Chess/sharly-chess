@@ -2242,6 +2242,12 @@ msgstr ""
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
 msgstr ""
 
+msgid "Export event"
+msgstr ""
+
+msgid "Export event to the .sce format"
+msgstr ""
+
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
 msgstr ""
 
@@ -2647,6 +2653,9 @@ msgid "Iceland"
 msgstr ""
 
 msgid "Identity"
+msgstr ""
+
+msgid "If this file has been exported from Sharly Chess, some data will be lost. For data transfer, exporting the event to the .sce format is highly recommended."
 msgstr ""
 
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
@@ -4936,12 +4945,6 @@ msgstr ""
 msgid "Seychelles"
 msgstr ""
 
-msgid "Share"
-msgstr ""
-
-msgid "Share event"
-msgstr ""
-
 msgid "Share the prizes"
 msgstr ""
 
@@ -6235,6 +6238,9 @@ msgid "Warning: closing this window will stop Sharly Chess."
 msgstr ""
 
 msgid "Warning: experimental features are enabled!"
+msgstr ""
+
+msgid "Warning: potential data loss"
 msgstr ""
 
 #, python-format

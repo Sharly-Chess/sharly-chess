@@ -25,6 +25,10 @@ class FfeTournamentImporter(FileTournamentImporter):
     def sub_id() -> str:
         """ID of the importer amongst the plugin."""
 
+    @property
+    def has_not_exhaustive_exporter(self) -> bool:
+        return True
+
     def _add_rating_threshold_task(self, papi_data: PapiData):
         variables = papi_data.variables
         rating_threshold_1 = 0

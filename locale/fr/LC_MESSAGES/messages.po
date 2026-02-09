@@ -2242,6 +2242,12 @@ msgstr "Exporter"
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
 msgstr "Exporter toutes les parties de la dernère ronde du tournoi au format PGN (usage : transfert d'appariements)."
 
+msgid "Export event"
+msgstr "Exporter un évènement"
+
+msgid "Export event to the .sce format"
+msgstr "Exporter l'évènement au format .sce"
+
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
 msgstr "Exporter le tournoi au format TRF(bx) (usage : génération d'appariements)."
 
@@ -2648,6 +2654,9 @@ msgstr "Espagne"
 
 msgid "Identity"
 msgstr "Identité"
+
+msgid "If this file has been exported from Sharly Chess, some data will be lost. For data transfer, exporting the event to the .sce format is highly recommended."
+msgstr "Si ce fichier a été exporté depuis Shaly Chess, certaines données seront perdues. Pour transférer des données, exporter l'évènement au format .sce est fortement recommandé."
 
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr "Si vous ne pouvez pas contrôler qui a accès au réseau auquel vous êtes connecté, il est fortement recommandé de ne pas créer de compte."
@@ -4938,12 +4947,6 @@ msgstr "Paramètres"
 msgid "Seychelles"
 msgstr "Seychelles"
 
-msgid "Share"
-msgstr "Partager"
-
-msgid "Share event"
-msgstr "Partager l'évènement"
-
 msgid "Share the prizes"
 msgstr "Partager les prix"
 
@@ -6238,6 +6241,9 @@ msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
 
 msgid "Warning: experimental features are enabled!"
 msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
+
+msgid "Warning: potential data loss"
+msgstr "Attention : perte de données potentielle"
 
 #, python-format
 msgid "Warning: round #%(round)d is not finished."

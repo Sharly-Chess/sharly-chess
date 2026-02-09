@@ -2,10 +2,13 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Share event') }}
+                {{ _('Export event') }}
             </h2>
         </div>
         <div class="modal-body">
+            <h4>
+                {{ _('%(string)s: %(value)s', string=_('Event'), value=admin_event.uniq_id) }}
+            </h4>
             <form
                 id="modal-form"
                 hx-target="body"
@@ -59,8 +62,8 @@
                 ) }}"
                 onclick="downloadFile(this, 'modal-form'); closeModal();"
             >
-                <i class="bi-save-fill pe-1"></i>
-                {{ _('Share') }}
+                <i class="bi-box-arrow-right pe-1"></i>
+                {{ _('Export') }}
             </button>
         </div>
     </div>

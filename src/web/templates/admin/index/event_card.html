@@ -144,10 +144,12 @@
 
 {% block card_buttons_left %}
     {% if client.can_manage_events and event.are_all_plugins_enabled %}
-        <div class="dropup">
+        <div
+            {{ macros.tooltip_attributes('info', _('Export event to the .sce format')) }}
+        >
             <button
                 class="btn btn-sm btn-outline-primary"
-                hx-get="{{ url_for('admin-event-share-modal', event_uniq_id=event.uniq_id) }}"
+                hx-get="{{ url_for('event-export-modal', event_uniq_id=event.uniq_id) }}"
                 hx-push-url="false"
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -155,8 +157,8 @@
                 data-bs-target="#modal-wrapper"
                 onclick="event.stopPropagation();"
             >
-                <i class="bi bi-save-fill pe-1"></i>
-                {{ _('Share') }}
+                <i class="bi bi-box-arrow-right pe-1"></i>
+                {{ _('Export') }}
             </button>
         </div>
     {% endif %}
