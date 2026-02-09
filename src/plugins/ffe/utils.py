@@ -177,7 +177,7 @@ class FFEArbiterTitle(StrEnum):
     def name(self) -> str:
         match self:
             case FFEArbiterTitle.NONE:
-                return _('No title')
+                return '-'
             case FFEArbiterTitle.AS:
                 return _('Trainee Arbiter')
             case FFEArbiterTitle.AFJ:
@@ -305,7 +305,6 @@ class FfePlayerPluginData(PluginData):
     ffe_licence: PlayerFFELicence
     ffe_licence_number: str | None
     league: str | None
-    transient_ffe_arbiter_title: FFEArbiterTitle | None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -316,9 +315,6 @@ class FfePlayerPluginData(PluginData):
             ),
             ffe_licence_number=stored_value.get('ffe_licence_number', None),
             league=stored_value.get('league', None),
-            transient_ffe_arbiter_title=stored_value.get(
-                'transient_ffe_arbiter_title', None
-            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -327,9 +323,6 @@ class FfePlayerPluginData(PluginData):
             'ffe_licence': self.ffe_licence.value,
             'ffe_licence_number': self.ffe_licence_number,
             'league': self.league,
-            'transient_ffe_arbiter_title': self.transient_ffe_arbiter_title.value
-            if self.transient_ffe_arbiter_title
-            else None,
         }
 
     @classmethod
@@ -347,7 +340,6 @@ class FfePlayerPluginData(PluginData):
             ),
             ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
             league=WebContext.form_data_to_str(data, 'ffe_league'),
-            transient_ffe_arbiter_title=None,
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:

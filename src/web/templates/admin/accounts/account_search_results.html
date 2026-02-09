@@ -29,7 +29,7 @@
                     '{{ player.last_name|replace("'", "\\'") }}',
                     '{{ player.first_name|replace("'", "\\'")}}' ?? '',
                     '{{ player.fide_id or '' }}',
-                    '{{ player.fide_arbiter_title or '' }}'
+                    '{{ player.stored_player.transient_arbiter_titles.fide or '' }}'
                 );
                 "
             >

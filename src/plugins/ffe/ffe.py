@@ -411,6 +411,9 @@ class FfePlugin(Plugin):
             stored_player.plugin_data[self.id] = copy.copy(
                 ffe_stored_player.plugin_data.get(self.id, {})
             )
+            stored_player.transient_arbiter_titles['ffe'] = (
+                ffe_stored_player.transient_arbiter_titles.get('ffe', '')
+            )
 
     @hookimpl
     def augment_place_card_player(
@@ -913,5 +916,8 @@ class FfePlugin(Plugin):
         return '/ffe_account_search_result.js'
 
     @hookimpl
-    def get_account_card_title_suffix(self, account: Account) -> str:
-        return FFEUtils.get_account_plugin_data(account).ffe_arbiter_title.short_name
+    def get_account_card_title_suffix(self, account: Account) -> str | None:
+        title = FFEUtils.get_account_plugin_data(account).ffe_arbiter_title
+        if title != FFEArbiterTitle.NONE:
+            return title.short_name
+        return None

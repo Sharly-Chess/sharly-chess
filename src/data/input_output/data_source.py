@@ -187,13 +187,9 @@ class DataSource(IdentifiableEntity, ABC):
         player_source_id: str,
         with_arbiter_title: bool,
     ) -> StoredPlayer | None:
-        stored_player = await self.get_stored_player_by_source_id(
-            player_source_id=player_source_id,
-        )
+        stored_player = await self.get_stored_player_by_source_id(player_source_id)
         if stored_player:
-            self._adjust_player_from_fide_database(
-                src_stored_player=stored_player,
-            )
+            self._adjust_player_from_fide_database(stored_player)
             await plugin_manager.ahook.augment_player_after_search(
                 stored_player=stored_player,
                 data_source=self,
@@ -219,8 +215,8 @@ class DataSource(IdentifiableEntity, ABC):
                 return
             src_stored_player.federation = fide_stored_player.federation
             src_stored_player.title = fide_stored_player.title
-            src_stored_player.transient_fide_arbiter_title = (
-                fide_stored_player.transient_fide_arbiter_title
+            src_stored_player.transient_arbiter_titles['fide'] = (
+                fide_stored_player.transient_arbiter_titles.get('fide', '')
             )
             for rating_type in TournamentRating:
                 stored_fide_rating = fide_stored_player.ratings.get(

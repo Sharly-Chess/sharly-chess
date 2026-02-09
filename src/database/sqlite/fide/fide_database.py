@@ -132,9 +132,8 @@ class FideDatabase(LocalSourcePlayerDatabase):
             log_prefix=self.log_prefix,
             total_count=player_total_count,
         )
-        player_fields: dict[str, tuple[str, Callable[[Any], Any] | None]] = {
+        fields: dict[str, tuple[str, Callable[[Any], Any] | None]] = {
             'fideid': ('fide_id', lambda s: int(s.strip())),
-            'name': ('name', None),
             'country': ('federation', lambda s: s.upper()),
             'sex': ('gender', PlayerGender.from_fide_value),
             'title': ('fide_title', PlayerTitle.from_fide_value),
@@ -147,70 +146,58 @@ class FideDatabase(LocalSourcePlayerDatabase):
             'rapid_k': ('k_rapid', lambda s: int(s) if s else None),
             'blitz_k': ('k_blitz', lambda s: int(s) if s else None),
         }
-        player_db_columns: list[str] = [
-            field[0]
-            for field in player_fields.values()
-            if field[0]
-            not in [
-                'name',
-            ]
-        ]
-        player_db_columns += [
+        db_columns = [field[0] for field in fields.values() if field[0] != 'name']
+        db_columns += [
             'first_name',
             'last_name',
         ]
-        player_query = f"""INSERT INTO `player`({', '.join(player_db_columns)}) VALUES({', '.join([f':{c}' for c in player_db_columns])})"""
+        query = f"""INSERT INTO `player`({', '.join(db_columns)}) VALUES({', '.join([f':{c}' for c in db_columns])})"""
         player_count: int = 0
-        players_to_write: list[dict[str, Any]] = []
-        player_data: dict[str, Any] = {}
+        to_write: list[dict[str, Any]] = []
+        data: dict[str, Any] = {}
         root = next(context)[1]
         with database:
             for event, elem in context:
                 if event == 'start' and elem.tag == 'player':
-                    player_data = {}
+                    data = {}
 
                 if event == 'end' and elem.tag == 'player':
-                    players_to_write.append(player_data)
+                    to_write.append(data)
                     player_count += 1
                     if player_count % 1000 == 0:
                         if self.stop_event.is_set():
                             return False
-                        database.executemany(player_query, players_to_write)
-                        players_to_write.clear()
+                        database.executemany(query, to_write)
+                        to_write.clear()
                         progress.log(player_count)
                     if player_count % 100_000 == 0:
                         database.commit()
 
-                elif event == 'end' and elem.tag in player_fields:
-                    (field_name, field_function) = player_fields[elem.tag]
-                    player_data[field_name] = elem.text or ''
+                elif event == 'end' and elem.tag in fields:
+                    (field_name, field_function) = fields[elem.tag]
+                    data[field_name] = elem.text or ''
                     elem.clear()
                     root.clear()
                     if field_function:
-                        player_data[field_name] = field_function(
-                            player_data[field_name]
-                        )
+                        data[field_name] = field_function(data[field_name])
 
                     if field_name == 'name':
-                        if ',' in player_data['name']:
-                            last_name, first_name = player_data['name'].split(
-                                ',', maxsplit=1
-                            )
-                            player_data['last_name'] = last_name.strip()
-                            player_data['first_name'] = first_name.strip()
+                        if ',' in data['name']:
+                            last_name, first_name = data['name'].split(',', maxsplit=1)
+                            data['last_name'] = last_name.strip()
+                            data['first_name'] = first_name.strip()
                         else:
-                            player_data['last_name'] = player_data['name'].strip()
-                            player_data['first_name'] = None
-                        del player_data['name']
+                            data['last_name'] = data['name'].strip()
+                            data['first_name'] = None
+                        del data['name']
 
-            if players_to_write:
-                database.executemany(player_query, players_to_write)
+            if to_write:
+                database.executemany(query, to_write)
                 database.commit()
                 progress.log(player_count)
 
         logger.info(
-            self.log_prefix + '%d players written to the database.',
-            player_count,
+            self.log_prefix + '%d players written to the database.', player_count
         )
         return True
 
@@ -255,7 +242,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             year_of_birth=row['year_of_birth'],
             gender=row['gender'],
             title=row['fide_title'],
-            transient_fide_arbiter_title=row.get('fide_arbiter_title', ''),
+            transient_arbiter_titles={'fide': row['fide_arbiter_title']},
             ratings=ratings,
             fide_id=row['fide_id'],
             federation=row['federation'],
@@ -340,14 +327,8 @@ class FideDatabase(LocalSourcePlayerDatabase):
         self.execute(query, tuple(params))
         return [self._get_player_from_row(row) for row in self.fetchall()]
 
-    def get_stored_player_by_fide_id(
-        self,
-        player_fide_id: int,
-    ) -> StoredPlayer | None:
-        self.execute(
-            'SELECT `player`.* FROM `player` WHERE `fide_id` = ?',
-            (player_fide_id,),
-        )
+    def get_stored_player_by_fide_id(self, player_fide_id: int) -> StoredPlayer | None:
+        self.execute('SELECT * FROM `player` WHERE `fide_id` = ?', (player_fide_id,))
         if player_row := self.fetchone():
             return self._get_player_from_row(player_row)
         return None
