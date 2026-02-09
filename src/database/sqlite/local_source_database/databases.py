@@ -66,7 +66,7 @@ class DatabaseLoaderProgress:
             + count / (now - self.start_time)
         ) / 2
         eta: int = floor(remaining_count / items_per_second)
-        logger.debug(
+        logger.info(
             self.log_prefix + '%d%% ETA: %02d:%02d',
             floor(count / self.total_count * 100),
             eta // 60,

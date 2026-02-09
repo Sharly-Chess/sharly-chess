@@ -651,7 +651,7 @@ class PlayerTitle(StrEnum):
     def name(self) -> str:
         match self:
             case PlayerTitle.NONE:
-                return _('No title')
+                return '-'
             case PlayerTitle.WOMAN_CANDIDATE_MASTER:
                 return _('Woman Candidate Master')
             case PlayerTitle.CANDIDATE_MASTER:
@@ -730,7 +730,7 @@ class FideArbiterTitle(StrEnum):
     def name(self) -> str:
         match self:
             case FideArbiterTitle.NONE:
-                return _('No title')
+                return '-'
             case FideArbiterTitle.NATIONAL:
                 return _('National Arbiter')
             case FideArbiterTitle.FIDE:
@@ -753,6 +753,10 @@ class FideArbiterTitle(StrEnum):
                 return _('IA *** SHORT NAME FOR International Arbiter')
             case _:
                 raise ValueError(f'Unknown title: {self}')
+
+    @property
+    def fide_acronym(self) -> str:
+        return self.value
 
 
 class RoleType(StrEnum):

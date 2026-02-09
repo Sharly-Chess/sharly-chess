@@ -235,8 +235,9 @@ class Account:
         if self.first_name:
             arbiter += f', {self.first_name}'
         suffixes: list[str] = []
-        if self.fide_arbiter_title != FideArbiterTitle.NONE:
-            suffixes.append(self.fide_arbiter_title.short_name)
+        title = self.fide_arbiter_title
+        if title != FideArbiterTitle.NONE:
+            suffixes.append(title.fide_acronym)
         if self.fide_id:
             suffixes.append(str(self.fide_id))
         if suffixes:
@@ -246,7 +247,8 @@ class Account:
     def get_card_title(self, event: 'Event') -> str:
         card_title = self.full_name
         suffixes: list[str] = []
-        if title := self.fide_arbiter_title:
+        title = self.fide_arbiter_title
+        if title != FideArbiterTitle.NONE:
             suffixes.append(title.short_name)
         plugin_suffixes = plugin_manager.hook_for_event(
             event, 'get_account_card_title_suffix'

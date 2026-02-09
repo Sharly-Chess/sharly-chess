@@ -560,7 +560,6 @@ class PapiConverter:
                     ffe_licence=ffe_licence,
                     ffe_licence_number=papi_player.nrFFE,
                     league=papi_player.league,
-                    transient_ffe_arbiter_title=None,
                 ).to_stored_value()
             },
         )

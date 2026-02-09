@@ -331,9 +331,6 @@ msgstr ""
 msgid "No internet connection"
 msgstr ""
 
-msgid "No title"
-msgstr ""
-
 msgid "None *** FFE licence"
 msgstr "None"
 

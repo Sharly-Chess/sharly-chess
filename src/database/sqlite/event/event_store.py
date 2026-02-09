@@ -147,8 +147,7 @@ class StoredPlayer:
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]
     )
-
-    transient_fide_arbiter_title: str = ''
+    transient_arbiter_titles: dict[str, Any] = field(default_factory=dict[str, Any])
 
 
 @dataclass

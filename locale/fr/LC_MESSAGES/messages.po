@@ -3540,9 +3540,6 @@ msgstr "Aucun départage"
 msgid "No timers"
 msgstr "Aucun chronomètre"
 
-msgid "No title"
-msgstr "Aucun titre"
-
 msgid "No tournaments"
 msgstr "Aucun tournoi"
 

@@ -3540,9 +3540,6 @@ msgstr ""
 msgid "No timers"
 msgstr ""
 
-msgid "No title"
-msgstr ""
-
 msgid "No tournaments"
 msgstr ""
 

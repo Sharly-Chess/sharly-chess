@@ -216,15 +216,13 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
             federation=row['federation'],
             club=row['club'],
+            transient_arbiter_titles={'ffe': row['ffe_arbiter_title']},
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
                     ffe_id=row['ffe_id'],
                     ffe_licence=PlayerFFELicence(row['ffe_licence']),
                     ffe_licence_number=row['ffe_licence_number'],
                     league=row['league'],
-                    transient_ffe_arbiter_title=FFEArbiterTitle(
-                        row.get('ffe_arbiter_title') or ''
-                    ),
                 ).to_stored_value()
             },
         )
@@ -312,15 +310,8 @@ class FfeDatabase(LocalSourcePlayerDatabase):
 
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 
-    def _get_stored_player_by_id(
-        self,
-        field: str,
-        id_: int,
-    ) -> StoredPlayer | None:
-        self.execute(
-            f'SELECT `player`.* FROM `player` WHERE {field} = ?',
-            (id_,),
-        )
+    def _get_stored_player_by_id(self, field: str, id_: int) -> StoredPlayer | None:
+        self.execute(f'SELECT * FROM `player` WHERE {field} = ?', (id_,))
         if row := self.fetchone():
             return self.get_stored_player_from_row(row)
         else:
@@ -330,19 +321,13 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         self,
         player_ffe_id: int,
     ) -> StoredPlayer | None:
-        return self._get_stored_player_by_id(
-            field='ffe_id',
-            id_=player_ffe_id,
-        )
+        return self._get_stored_player_by_id('ffe_id', player_ffe_id)
 
     def get_stored_player_by_fide_id(
         self,
         player_fide_id: int,
     ) -> StoredPlayer | None:
-        return self._get_stored_player_by_id(
-            field='fide_id',
-            id_=player_fide_id,
-        )
+        return self._get_stored_player_by_id('fide_id', player_fide_id)
 
     def get_stored_players_by_licence_numbers(
         self, licence_numbers: list[str]
