@@ -1,4 +1,5 @@
 import copy
+import json
 import random
 from collections import defaultdict
 from datetime import date
@@ -7,18 +8,23 @@ from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
 
 from litestar import post, get, patch, delete
-from litestar.exceptions import NotFoundException, ClientException, ValidationException
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.enums import RequestEncodingType
+from litestar.exceptions import NotFoundException, ClientException, ValidationException
 from litestar.params import Body
+from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
 from common.exception import SharlyChessException, OptionError, ImporterError, FormError
-from common.logger import get_logger
 from common.i18n import _
+from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.board import Board, PlayerRatingType
+from data.criteria.managers import (
+    PlayerFilter,
+    TournamentPlayerFilterManager,
+    PlayerFilterOptionManager,
+)
 from data.event import Event
 from data.input_output import (
     DataSourceManager,
@@ -31,16 +37,9 @@ from data.input_output.tournament_importers import TournamentImporter
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem
 from data.player import TournamentPlayer
-from data.criteria.managers import (
-    PlayerFilter,
-    TournamentPlayerFilterManager,
-    PlayerFilterOptionManager,
-)
 from data.tie_breaks import TieBreakManager, TieBreak, TieBreakOptionManager
 from data.tournament import Tournament
 from data.tournament_criterion import TournamentCriterion
-from utils import Utils
-from utils.enum import FormAction, Result, TournamentRating
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredTournament,
@@ -49,6 +48,8 @@ from database.sqlite.event.event_store import (
     StoredPairing,
 )
 from plugins.manager import plugin_manager
+from utils import Utils
+from utils.enum import FormAction, Result, TournamentRating
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -60,6 +61,11 @@ from web.session import (
     SessionTournamentsShowDetails,
     SessionTournamentCriteriaAddOtherActive,
     SessionTieBreakAddOtherActive,
+    SessionDistributeType,
+    SessionDistributeUseBalanceGroups,
+    SessionDistributeUnselectedTournaments,
+    SessionDistributeGroupsById,
+    SessionDistributePlayerCountByTournamentId,
 )
 from web.utils import SelectOption
 
@@ -1648,3 +1654,233 @@ class TournamentAdminController(BaseEventAdminController):
             trigger_event='modal_opened',
             after='settle',
         )
+
+    @classmethod
+    def _player_distribution_modal_context(
+        cls, web_context: TournamentAdminWebContext
+    ) -> dict[str, Any]:
+        request = web_context.request
+        event = web_context.get_admin_event()
+        session_groups_by_id = SessionDistributeGroupsById(request, event).get()
+        groups_by_id: dict[int, list[int]] = {}
+        tournament_ids = list(event.tournaments_by_id)
+        for group_id, group_tournament_ids in session_groups_by_id.items():
+            group = [
+                tournament_id
+                for tournament_id in group_tournament_ids
+                if tournament_id in tournament_ids
+            ]
+            if len(group) > 1:
+                groups_by_id[int(group_id)] = group
+        tournament_players = event.tournament_players
+        criteria_player_ids_by_tournament_id = {
+            tournament.id: [
+                player.id
+                for player in tournament_players
+                if tournament.player_matches_criteria(player)
+            ]
+            for tournament in event.tournaments
+        }
+        session_count_by_tournament_id = SessionDistributePlayerCountByTournamentId(
+            request, event
+        ).get()
+        return {
+            'modal': 'distribute-players',
+            'distribution_type_options': {
+                'rating': SelectOption(
+                    _('Descending rating'),
+                    _(
+                        'Distribute the players by descending rating and '
+                        'choose the number of players participating in each tournament.'
+                    ),
+                ),
+                'criteria': SelectOption(
+                    _('Criteria'),
+                    _(
+                        'Allocate players to the first tournament '
+                        'for which the criteria are met.'
+                    ),
+                ),
+            },
+            'groups_by_id': groups_by_id,
+            'unselected_tournament_ids': SessionDistributeUnselectedTournaments(
+                request, event
+            ).get(),
+            'player_count_by_tournament_id': {
+                int(tournament_id): player_count
+                for tournament_id, player_count in session_count_by_tournament_id.items()
+                if int(tournament_id) in event.tournaments_by_id
+            },
+            'criteria_player_ids_by_tournament_id': criteria_player_ids_by_tournament_id,
+            'player_ids': list(event.players),
+            'data': WebContext.values_dict_to_form_data(
+                {
+                    'distribution_type': SessionDistributeType(request).get(),
+                    'use_balance_groups': SessionDistributeUseBalanceGroups(
+                        request
+                    ).get(),
+                }
+            ),
+            'errors': {},
+        }
+
+    @get(
+        path='/distribute-players-modal/{event_uniq_id:str}',
+        name='admin-distribute-players-modal',
+    )
+    async def htmx_admin_distribute_players_modal(
+        self,
+        request: HTMXRequest,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request)
+        return self._admin_event_tournaments_render(
+            web_context,
+            self._player_distribution_modal_context(web_context),
+        )
+
+    @staticmethod
+    def _move_next_player_to_tournament(
+        tournament_players: list[TournamentPlayer],
+        tournament: Tournament,
+    ) -> bool:
+        """Moves the next player of the list to the target tournament, returns True on success, False otherwise."""
+        try:
+            tournament_player: TournamentPlayer = tournament_players.pop(0)
+        except IndexError:
+            logger.debug('No more players.')
+            return False
+        if tournament_player.tournament != tournament:
+            logger.debug(
+                'Moving player [%s] to tournament [%s]...',
+                tournament_player.full_name,
+                tournament.name,
+            )
+            tournament.event.move_player_to_tournament(tournament_player, tournament)
+        else:
+            logger.debug(
+                'Player [%s] already in tournament [%s]...',
+                tournament_player.full_name,
+                tournament.name,
+            )
+        return True
+
+    @classmethod
+    def _distribute_players_by_rating(
+        cls,
+        event: Event,
+        player_count_by_tournament_id: dict[int, int],
+        groups_by_id: dict[str, list[int]],
+    ):
+        """Distribute the players among the tournaments with the given settings."""
+        tournament_players: list[TournamentPlayer] = sorted(
+            event.tournament_players,
+            key=lambda player: (player.rating, player.last_name, player.first_name),
+            reverse=True,
+        )
+        group_id_by_tournament_id = {
+            tournament.id: next(
+                (
+                    group_id
+                    for group_id, tournament_ids in groups_by_id.items()
+                    if tournament.id in tournament_ids
+                ),
+                None,
+            )
+            for tournament in event.tournaments_sorted_by_index
+        }
+        tournament_groups: list[list[Tournament]] = []
+        previous_group_id: str | None = None
+        for tournament in event.tournaments_sorted_by_index:
+            group_id = group_id_by_tournament_id[tournament.id]
+            if group_id is not None and group_id == previous_group_id:
+                tournament_groups[-1].append(tournament)
+            else:
+                previous_group_id = group_id
+                tournament_groups.append([tournament])
+        for tournament_group in tournament_groups:
+            while tournament_group:
+                tournament_group = [
+                    tournament
+                    for tournament in tournament_group
+                    if player_count_by_tournament_id[tournament.id] > 0
+                ]
+                for tournament in tournament_group:
+                    cls._move_next_player_to_tournament(tournament_players, tournament)
+                    player_count_by_tournament_id[tournament.id] -= 1
+
+    @post(
+        path='/distribute-players/{event_uniq_id:str}',
+        name='admin-distribute-players',
+    )
+    async def htmx_admin_distribute_players(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request)
+        event = web_context.get_admin_event()
+        flat_data = WebContext.flatten_list_data(data)
+
+        distribution_type = (
+            WebContext.form_data_to_str(flat_data, 'distribution_type') or ''
+        )
+        groups_by_id = json.loads(flat_data.get('groups_by_id', '{}'))
+        tournament_ids = WebContext.form_data_to_list_int(flat_data, 'tournament_ids')
+        use_balance_groups = WebContext.form_data_to_bool(
+            flat_data, 'use_balance_groups'
+        )
+        user_player_count_by_tournament_id: dict[str, str] = {}
+        for tournament in event.tournaments:
+            count = WebContext.form_data_to_int(
+                flat_data, f'user_player_count_{tournament.id}'
+            )
+            if count is not None:
+                user_player_count_by_tournament_id[str(tournament.id)] = str(count)
+
+        SessionDistributeType(request).set(distribution_type)
+        SessionDistributeGroupsById(request, event).set(groups_by_id)
+        SessionDistributeUseBalanceGroups(request).set(use_balance_groups)
+        SessionDistributeUnselectedTournaments(request, event).set(
+            [
+                tournament_id
+                for tournament_id in event.tournaments_by_id
+                if tournament_id not in tournament_ids
+            ]
+        )
+        SessionDistributePlayerCountByTournamentId(request, event).set(
+            user_player_count_by_tournament_id
+        )
+
+        if distribution_type == 'rating':
+            player_count_by_tournament_id = {
+                tournament.id: WebContext.form_data_to_int(
+                    flat_data, f'player_count_{tournament.id}'
+                )
+                or 0
+                for tournament in event.tournaments_sorted_by_index
+            }
+            self._distribute_players_by_rating(
+                event,
+                player_count_by_tournament_id,
+                groups_by_id if use_balance_groups else {},
+            )
+        else:
+            tournament_players = event.tournament_players
+            matched_player_ids: list[int] = []
+            for tournament in event.tournaments_sorted_by_index:
+                if tournament.id not in tournament_ids:
+                    continue
+                for player in tournament_players:
+                    if player.id in matched_player_ids:
+                        continue
+                    if tournament.player_matches_criteria(player):
+                        matched_player_ids.append(player.id)
+                        if player.tournament.id != tournament.id:
+                            event.move_player_to_tournament(player, tournament)
+        Message.success(
+            request, _('Players successfully distributed among the tournaments.')
+        )
+        return self._admin_event_tournaments_render(web_context)

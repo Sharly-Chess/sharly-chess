@@ -23,6 +23,7 @@
             {# https://github.com/SortableJS/Sortable #}
             <script src="{{ url_for('static', file_path='/lib/Sortable/Sortable-' ~ sharly_chess_config.sortable_version ~ '/Sortable.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/sortable.js') }}?version={{ sharly_chess_config.version }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/Selectable/Selectable-' ~ sharly_chess_config.selectable_version ~ '/selectable.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/morphdom/morphdom-' ~ sharly_chess_config.morphdom_version ~ '/dist/morphdom-umd.min.js') }}"></script>
             <script src="{{ url_for('static', file_path='/lib/htmx/morphdom-swap.js') }}?version={{ sharly_chess_config.version }}"></script>
             <script src="{{ url_for('static', file_path='/lib/polyglot/polyglot.js') }}?version={{ sharly_chess_config.version }}"></script>
