@@ -1419,6 +1419,9 @@ msgstr "Créer un évènement"
 msgid "Create hour"
 msgstr "Créer un horaire"
 
+msgid "Create manually"
+msgstr "Créer manuellement"
+
 msgid "Create permission"
 msgstr "Créer une permission"
 
@@ -2176,6 +2179,9 @@ msgstr "Éthiopie"
 msgid "Event"
 msgstr "Évènement"
 
+msgid "Event [{event}] has been imported."
+msgstr "L'évènement [{event}] a été importé."
+
 msgid "Event [{uniq_id}] has been created."
 msgstr "L'évènement [{uniq_id}] a été créé."
 
@@ -2665,6 +2671,9 @@ msgstr "Importer"
 
 msgid "Import TRF file"
 msgstr "Importer un fichier TRF"
+
+msgid "Import a SCE file"
+msgstr "Importer un fichier SCE"
 
 msgid "Import a tournament"
 msgstr "Importer un tournoi"
@@ -4228,6 +4237,9 @@ msgstr "La configuration est en cours sur le serveur, veuillez patienter…"
 msgid "Please wait…"
 msgstr "Veuillez patienter…"
 
+msgid "Plugin [{plugin}] was enabled."
+msgstr "Le plugin [{plugin}] a été activé."
+
 msgid "Plugins"
 msgstr "Plug-ins"
 
@@ -5559,6 +5571,9 @@ msgstr "Ce document est seulement disponible pour les tournois toutes rondes."
 
 msgid "This document is only available for standard time control tournaments."
 msgstr "Ce document est disponible uniquement pour les tournois en cadence classique."
+
+msgid "This event can't be used by the current version of Sharly Chess."
+msgstr "Cet évènement ne peut pas être utilisé par la version actuelle de Sharly Chess."
 
 msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr "Cet évènement est privé (par défaut, les écrans ne sont pas visibles des spectateur·ices)."

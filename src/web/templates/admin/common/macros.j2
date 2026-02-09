@@ -1702,7 +1702,7 @@ with_indicator: display a loading indicator, optional
         >
             <span class="visually-hidden">Toggle Dropdown</span>
         </button>
-        <ul class="dropdown-menu">
+        <div class="dropdown-menu">
             {% for option_id, option_name in options.items() %}
                 <button
                     type="submit"
@@ -1711,9 +1711,9 @@ with_indicator: display a loading indicator, optional
                     class="dropdown-item {% if option_id == active_option %}active{% endif %}"
                 >
                     {{ option_name }}
-                </li>
+                </button>
             {% endfor %}
-        </ul>
+        </div>
     </div>
 {% endmacro %}
 

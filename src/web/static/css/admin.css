@@ -280,6 +280,10 @@
     text-overflow: ellipsis;
 }
 
+.dropdown-item-lg {
+    font-size: 1.25rem;
+}
+
 /* Air DatePicker */
 
 #air-datepicker-global-container {
