@@ -1,5 +1,9 @@
 # _Sharly Chess_ release notes
 
+## Events
+
+- Import events from .sce files (3.6.0)
+
 ## Tournaments
 
 - Distribute the players among the tournaments (3.6.0)
