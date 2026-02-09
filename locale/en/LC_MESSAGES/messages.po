@@ -2240,6 +2240,9 @@ msgstr "F"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
+msgid "FA *** SHORT NAME FOR FIDE Arbiter"
+msgstr "FA"
+
 msgid "FIDE"
 msgstr ""
 
@@ -2619,6 +2622,9 @@ msgstr ""
 
 msgid "I confirm that I want to overwrite the player data of this tournament."
 msgstr ""
+
+msgid "IA *** SHORT NAME FOR International Arbiter"
+msgstr "IA"
 
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
@@ -3258,6 +3264,9 @@ msgstr "N"
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
 
+msgid "NA *** SHORT NAME FOR National Arbiter"
+msgstr "NA"
+
 msgid "Name"
 msgstr ""
 
@@ -3529,9 +3538,6 @@ msgid "No tie-breaks"
 msgstr ""
 
 msgid "No timers"
-msgstr ""
-
-msgid "No title"
 msgstr ""
 
 msgid "No tournaments"

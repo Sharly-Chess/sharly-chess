@@ -147,6 +147,7 @@ class StoredPlayer:
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]
     )
+    transient_arbiter_titles: dict[str, Any] = field(default_factory=dict[str, Any])
 
 
 @dataclass
@@ -339,7 +340,7 @@ class StoredAccount:
     first_name: str | None
     last_name: str | None
     fide_id: int | None = None
-    fide_arbiter_title: str | None = None
+    fide_arbiter_title: str = ''
     password_hash: str | None = None
     mail: str | None = None
     phone: str | None = None
@@ -347,7 +348,7 @@ class StoredAccount:
         default_factory=list[StoredPermission]
     )
     stored_roles: list[StoredRole] = field(default_factory=list[StoredRole])
-    # Plugins can add their own tournament data
+    # Plugins can add their own account data
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]
     )

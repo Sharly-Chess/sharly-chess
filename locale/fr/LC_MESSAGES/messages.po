@@ -2240,6 +2240,9 @@ msgstr "F"
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
 
+msgid "FA *** SHORT NAME FOR FIDE Arbiter"
+msgstr "AF"
+
 msgid "FIDE"
 msgstr "FIDE"
 
@@ -2619,6 +2622,9 @@ msgstr "Je confirme vouloir supprimer ce tournoi."
 
 msgid "I confirm that I want to overwrite the player data of this tournament."
 msgstr "Je confirme vouloir écraser les données des joueur·euses de ce tournoi."
+
+msgid "IA *** SHORT NAME FOR International Arbiter"
+msgstr "AI"
 
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "MI"
@@ -3258,6 +3264,9 @@ msgstr "N"
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
 
+msgid "NA *** SHORT NAME FOR National Arbiter"
+msgstr "AN"
+
 msgid "Name"
 msgstr "Nom"
 
@@ -3530,9 +3539,6 @@ msgstr "Aucun départage"
 
 msgid "No timers"
 msgstr "Aucun chronomètre"
-
-msgid "No title"
-msgstr "Aucun titre"
 
 msgid "No tournaments"
 msgstr "Aucun tournoi"

@@ -21,10 +21,11 @@
                 hx-target="#search-results"
                 hx-get="{{ url_for('admin-search-player', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals='js:{
-                    results_template: "{{ results_template or '' }}",
-                    result_js_template_hook_name: "{{ result_js_template_hook_name or '' }}",
-                    data_source_id: $("#data-source-select").val(),
-                    {% if admin_player %}player_id: {{ admin_player.id }}{% endif %}
+                    "results_template": "{{ results_template or '' }}",
+                    "result_js_template_hook_name": "{{ result_js_template_hook_name or '' }}",
+                    "data_source_id": $("#data-source-select").val(),
+                    {% if admin_player %}player_id: {{ admin_player.id }},{% endif %}
+                    "with_arbiter_title": "{{ with_arbiter_title }}",
                 }'
                 hx-on::before-request="$('#search-results').show();"
                 hx-on::after-request="$('#search-results').show();"
