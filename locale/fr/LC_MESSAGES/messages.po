@@ -2666,8 +2666,8 @@ msgstr "Importer"
 msgid "Import TRF file"
 msgstr "Importer un fichier TRF"
 
-msgid "Import a .sce file"
-msgstr "Importer un fichier .sce"
+msgid "Import a SCE file"
+msgstr "Importer un fichier SCE"
 
 msgid "Import a tournament"
 msgstr "Importer un tournoi"

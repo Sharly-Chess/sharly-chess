@@ -2,7 +2,7 @@
 
 ## Events
 
-- Import events from .sce files (3.6.0)
+- Import events from SCE files (3.6.0)
 
 ## Tournaments
 
