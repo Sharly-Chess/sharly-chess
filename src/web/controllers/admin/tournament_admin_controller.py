@@ -1681,6 +1681,9 @@ class TournamentAdminController(BaseEventAdminController):
             ]
             for tournament in event.tournaments
         }
+        session_count_by_tournament_id = SessionDistributePlayerCountByTournamentId(
+            request, event
+        ).get()
         return {
             'modal': 'distribute-players',
             'distribution_type_options': {
@@ -1705,11 +1708,7 @@ class TournamentAdminController(BaseEventAdminController):
             ).get(),
             'player_count_by_tournament_id': {
                 int(tournament_id): player_count
-                for tournament_id, player_count in SessionDistributePlayerCountByTournamentId(
-                    request, event
-                )
-                .get()
-                .items()
+                for tournament_id, player_count in session_count_by_tournament_id.items()
                 if int(tournament_id) in event.tournaments_by_id
             },
             'criteria_player_ids_by_tournament_id': criteria_player_ids_by_tournament_id,
