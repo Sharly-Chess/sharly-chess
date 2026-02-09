@@ -216,7 +216,7 @@
                                 playerCount,
                                 Math.ceil(playerCount / (2 * remainingTournaments)) * 2,
                             );
-                            if (remainingTournaments === 2 && elementCount * 2 - playerCount == 3) {
+                            if (playerCount === ((elementCount - 2) * remainingTournaments) + 1) {
                                 elementCount -= 2;
                             }
                             $(element).prop('placeholder', elementCount);
