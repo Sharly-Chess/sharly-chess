@@ -1774,8 +1774,7 @@ class TournamentAdminController(BaseEventAdminController):
         """Distribute the players among the tournaments with the given settings."""
         tournament_players: list[TournamentPlayer] = sorted(
             event.tournament_players,
-            key=lambda player: (player.rating, player.last_name, player.first_name),
-            reverse=True,
+            key=lambda player: player.starting_rank_sort_key,
         )
         group_id_by_tournament_id = {
             tournament.id: next(
