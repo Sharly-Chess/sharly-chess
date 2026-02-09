@@ -450,6 +450,7 @@ class ChiefArbitrationAccessLevel(AccessLevel):
             AuthAction.MANAGE_ACCOUNTS,
             AuthAction.ADD_TOURNAMENTS,
             AuthAction.DELETE_TOURNAMENTS,
+            AuthAction.DISTRIBUTE_PLAYERS,
         ]
 
     def _help_text_content(self, locale: str | None = None) -> str:

@@ -561,6 +561,9 @@ msgstr ""
 msgid "All values may be modified by the arbiter if necessary."
 msgstr ""
 
+msgid "Allocate players to the first tournament for which the criteria are met."
+msgstr ""
+
 msgid "Allow links to this screen"
 msgstr ""
 
@@ -985,6 +988,15 @@ msgstr ""
 msgid "Cameroon"
 msgstr ""
 
+msgid "Can not distribute the players (no players found)."
+msgstr ""
+
+msgid "Can not distribute the players (no tournaments found)."
+msgstr ""
+
+msgid "Can not distribute the players (only one tournament)."
+msgstr ""
+
 msgid "Can't see your event?"
 msgstr ""
 
@@ -1141,6 +1153,9 @@ msgid "Clear Log"
 msgstr ""
 
 msgid "Clear all the filters."
+msgstr ""
+
+msgid "Click and drag to select balanced groups."
 msgstr ""
 
 msgid "Click to check-in the player."
@@ -1592,6 +1607,9 @@ msgstr ""
 msgid "Define as public"
 msgstr ""
 
+msgid "Define balanced groups"
+msgstr ""
+
 msgid "Define the criteria for players to belong to this category."
 msgstr ""
 
@@ -1602,6 +1620,9 @@ msgid "Define the prizes of the category."
 msgstr ""
 
 msgid "Define the screens and screen families to display."
+msgstr ""
+
+msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
 msgstr ""
 
 #, python-format
@@ -1698,6 +1719,9 @@ msgstr ""
 msgid "Deputy arbiters"
 msgstr ""
 
+msgid "Descending rating"
+msgstr ""
+
 msgid "Description"
 msgstr ""
 
@@ -1757,6 +1781,28 @@ msgstr ""
 
 #, python-format
 msgid "Displayed round: %(round)d"
+msgstr ""
+
+msgid "Distribute"
+msgstr ""
+
+#, python-format
+msgid "Distribute the players (%(num)d)"
+msgstr ""
+
+msgid "Distribute the players among the tournaments"
+msgstr ""
+
+msgid "Distribute the players by descending rating and choose the number of players participating in each tournament."
+msgstr ""
+
+msgid "Distributing the players is allowed only if all the tournaments use the same rating."
+msgstr ""
+
+msgid "Distributing the players is not allowed once one tournament is started."
+msgstr ""
+
+msgid "Distribution type"
 msgstr ""
 
 msgid "Djibouti"
@@ -4081,7 +4127,13 @@ msgstr ""
 msgid "Players of category [%(category)s]"
 msgstr ""
 
+msgid "Players per tournament"
+msgstr ""
+
 msgid "Players screens show pairings by alphabetical order."
+msgstr ""
+
+msgid "Players successfully distributed among the tournaments."
 msgstr ""
 
 msgid "Players update"
@@ -4798,6 +4850,9 @@ msgid "Select player"
 msgstr ""
 
 msgid "Select the players and the data to update:"
+msgstr ""
+
+msgid "Select the tournaments to add players to."
 msgstr ""
 
 msgid "Selection"
@@ -6157,11 +6212,20 @@ msgstr ""
 msgid "Warning: round #%(round)d is not finished."
 msgstr ""
 
+msgid "Warning: some players do not match the criteria of any of the selected tournaments."
+msgstr ""
+
 #, python-format
 msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr ""
 
 msgid "Warning: the deletion is permanent!"
+msgstr ""
+
+msgid "Warning: too few players selected."
+msgstr ""
+
+msgid "Warning: too many players selected."
 msgstr ""
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
@@ -6273,6 +6337,9 @@ msgid "You are not allowed to delete the tournament."
 msgstr ""
 
 msgid "You are not allowed to delete this account."
+msgstr ""
+
+msgid "You are not allowed to distribute the players."
 msgstr ""
 
 msgid "You are not allowed to duplicate this account."
@@ -6667,13 +6734,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "All the player data of the selected tournament will be deleted."
-#~ msgstr ""
-
-#~ msgid "Overwrite the existing players"
-#~ msgstr ""
-
-#~ msgid "Import from a data source"
-#~ msgstr ""
 

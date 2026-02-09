@@ -1,4 +1,5 @@
 import copy
+import itertools
 from collections import defaultdict
 from contextlib import suppress
 from datetime import date
@@ -16,7 +17,7 @@ from data.account import Account, Permission
 from data.board import PlayerRatingType
 from data.display_controller import DisplayController
 from data.family import Family
-from data.player import Player
+from data.player import Player, TournamentPlayer
 from data.player_categories import (
     PlayerCategory,
     NoCategory,
@@ -374,6 +375,28 @@ class Event:
         ]
 
     @cached_property
+    def player_distribution_error_message(self) -> str | None:
+        """Returns an error message if distributing the player among the tournaments is not allowed, None otherwise."""
+        if not self.tournaments:
+            return _('Can not distribute the players (no tournaments found).')
+        if not self.player_count:
+            return _('Can not distribute the players (no players found).')
+        if len(self.tournaments) == 1:
+            return _('Can not distribute the players (only one tournament).')
+        if any(tournament.started for tournament in self.tournaments):
+            return _(
+                'Distributing the players is not allowed once one tournament is started.'
+            )
+        if any(
+            tournament.rating != self.tournaments_sorted_by_index[0].rating
+            for tournament in self.tournaments_sorted_by_index[1:]
+        ):
+            return _(
+                'Distributing the players is allowed only if all the tournaments use the same rating.'
+            )
+        return None
+
+    @cached_property
     def plugin_data(self) -> dict[str, PluginData]:
         return {
             plugin_id: plugin_data_class.from_stored_value(
@@ -442,6 +465,14 @@ class Event:
         return sorted(
             self.players_by_id.values(),
             key=by('last_name', 'first_name'),
+        )
+
+    @property
+    def tournament_players(self) -> list[TournamentPlayer]:
+        return list(
+            itertools.chain.from_iterable(
+                [tournament.tournament_players for tournament in self.tournaments]
+            )
         )
 
     def get_unused_tournament_name(
