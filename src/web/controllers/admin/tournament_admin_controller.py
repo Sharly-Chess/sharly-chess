@@ -65,6 +65,7 @@ from web.session import (
     SessionDistributeUseBalanceGroups,
     SessionDistributeUnselectedTournaments,
     SessionDistributeGroupsById,
+    SessionDistributePlayerCountByTournamentId,
 )
 from web.utils import SelectOption
 
@@ -1703,8 +1704,13 @@ class TournamentAdminController(BaseEventAdminController):
                 request, event
             ).get(),
             'player_count_by_tournament_id': {
-                tournament.id: str(tournament.player_count or '')
-                for tournament in event.tournaments
+                int(tournament_id): player_count
+                for tournament_id, player_count in SessionDistributePlayerCountByTournamentId(
+                    request, event
+                )
+                .get()
+                .items()
+                if int(tournament_id) in event.tournaments_by_id
             },
             'criteria_player_ids_by_tournament_id': criteria_player_ids_by_tournament_id,
             'player_ids': list(event.players),
@@ -1827,6 +1833,13 @@ class TournamentAdminController(BaseEventAdminController):
         use_balance_groups = WebContext.form_data_to_bool(
             flat_data, 'use_balance_groups'
         )
+        user_player_count_by_tournament_id: dict[str, str] = {}
+        for tournament in event.tournaments:
+            count = WebContext.form_data_to_int(
+                flat_data, f'user_player_count_{tournament.id}'
+            )
+            if count is not None:
+                user_player_count_by_tournament_id[str(tournament.id)] = str(count)
 
         SessionDistributeType(request).set(distribution_type)
         SessionDistributeGroupsById(request, event).set(groups_by_id)
@@ -1837,6 +1850,9 @@ class TournamentAdminController(BaseEventAdminController):
                 for tournament_id in event.tournaments_by_id
                 if tournament_id not in tournament_ids
             ]
+        )
+        SessionDistributePlayerCountByTournamentId(request, event).set(
+            user_player_count_by_tournament_id
         )
 
         if distribution_type == 'rating':

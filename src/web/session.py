@@ -505,6 +505,16 @@ class SessionDistributeUnselectedTournaments(EventSessionVariable[list[int]]):
         return []
 
 
+class SessionDistributePlayerCountByTournamentId(EventSessionVariable[dict[str, str]]):
+    @property
+    def key(self) -> str:
+        return 'distribute_player_count_by_tournament_id'
+
+    @property
+    def default_value(self) -> dict[str, str]:
+        return {}
+
+
 class SessionDistributeGroupsById(EventSessionVariable[dict[str, list[int]]]):
     @property
     def key(self) -> str:
