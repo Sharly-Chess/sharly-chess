@@ -1419,6 +1419,9 @@ msgstr ""
 msgid "Create hour"
 msgstr ""
 
+msgid "Create manually"
+msgstr ""
+
 msgid "Create permission"
 msgstr ""
 
@@ -2176,6 +2179,9 @@ msgstr ""
 msgid "Event"
 msgstr ""
 
+msgid "Event [{event}] has been imported."
+msgstr ""
+
 msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
@@ -2658,6 +2664,9 @@ msgid "Import"
 msgstr ""
 
 msgid "Import TRF file"
+msgstr ""
+
+msgid "Import a .sce file"
 msgstr ""
 
 msgid "Import a tournament"
@@ -4220,6 +4229,9 @@ msgstr ""
 msgid "Please wait…"
 msgstr ""
 
+msgid "Plugin [{plugin}] was enabled."
+msgstr ""
+
 msgid "Plugins"
 msgstr ""
 
@@ -5550,6 +5562,9 @@ msgid "This document is only available for Round-Robin tournaments."
 msgstr ""
 
 msgid "This document is only available for standard time control tournaments."
+msgstr ""
+
+msgid "This event can't be used by the current version of Sharly Chess."
 msgstr ""
 
 msgid "This event is private (by default, screens are not visible by the spectators)."
