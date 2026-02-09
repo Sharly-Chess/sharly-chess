@@ -1,0 +1,8 @@
+msgid "Custom location"
+msgstr ""
+
+msgid "Custom Upload"
+msgstr ""
+
+msgid "Upload tournament documents to custom location."
+msgstr ""

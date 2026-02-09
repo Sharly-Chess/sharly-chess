@@ -1,0 +1,8 @@
+msgid "Custom location"
+msgstr "Site personnel"
+
+msgid "Custom Upload"
+msgstr "Mise en ligne personnalisée"
+
+msgid "Upload tournament documents to custom location."
+msgstr "Mise en ligne de documents sur un site personnel"

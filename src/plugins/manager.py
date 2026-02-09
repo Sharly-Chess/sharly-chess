@@ -33,6 +33,7 @@ class AppPluginManager(PluginManager):
             HandicapGamesPlugin,
         )
         from plugins.fra_schools.fra_schools import FRASchoolsPlugin
+        from plugins.custom_upload.custom_upload import CustomUploadPlugin
 
         plugins = [
             PairingAccelerationPlugin(),
@@ -41,6 +42,7 @@ class AppPluginManager(PluginManager):
             ChessEventPlugin(),
             FRASchoolsPlugin(),
             HandicapGamesPlugin(),
+            CustomUploadPlugin(),
         ]
         return {plugin.id: plugin for plugin in plugins}
 

@@ -1,0 +1,40 @@
+<tbody
+    id="upload-results"
+    hx-get="{{ url_for('custom-upload-results', event_uniq_id=admin_event.uniq_id) }}"
+    hx-trigger="ws:upload-event from:body"
+    hx-swap="outerHTML"
+>
+    {% for tournament in allowed_tournaments %}
+        <tr>
+            <td style="width: 0;" class="text-nowrap">
+                {{ tournament.name }}
+            </td>
+            <td style="width: 0;" class="text-nowrap">
+                <!-- TODO: display whether upload is automatic/manual -->
+            </td>
+            <td>
+                <!-- TODO: show results -->
+            </td>
+            <td class="text-center text-nowrap" style="width: 0;">
+                <!-- TODO: show last update date -->
+            </td>
+            <td style="width: 0;">
+                <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm text-nowrap"
+                    hx-post="{{ url_for('custom-upload-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                    hx-target="#upload-results"
+                    hx-swap="outerHTML"
+                    class="text-nowrap white btn btn-secondary"
+                    hx-on::before-request="$('#t_{{tournament.id}}.status').addClass('invisible')"
+                >
+                    <i class="bi bi-cloud-arrow-up-fill"></i>
+                    {{ _('Upload') }}
+                </button>
+            </td>
+            <td class="text-center" style="width: 0;">
+                <!-- TODO: link to uploaded location? link to website root? -->
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>
