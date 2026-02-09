@@ -561,8 +561,8 @@ msgstr "Tous les tournois"
 msgid "All values may be modified by the arbiter if necessary."
 msgstr "Toutes les valeurs peuvent être modifiées par l’arbitre si nécessaire."
 
-msgid "Allocate players to the first tournament that they match the criteria of."
-msgstr "Attribuer les joueur·euses au premier tournoi pour lequel ils correspondent aux critères."
+msgid "Allocate players to the first tournament for which the criteria are met."
+msgstr "Attribuer les joueur·euses au premier tournoi pour lequel les critères sont vérifiés."
 
 msgid "Allow links to this screen"
 msgstr "Autoriser les liens vers cet écran"
@@ -1155,6 +1155,9 @@ msgstr "Effacer le journal"
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
 
+msgid "Click and drag to select balanced groups."
+msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
+
 msgid "Click to check-in the player."
 msgstr "Cliquer ici pour pointer le·la joueur·euse."
 
@@ -1604,7 +1607,7 @@ msgstr "Définir comme catégorie générale"
 msgid "Define as public"
 msgstr "Définir comme public"
 
-msgid "Define balance groups"
+msgid "Define balanced groups"
 msgstr "Définir des groupes équilibrés"
 
 msgid "Define the criteria for players to belong to this category."
@@ -1790,8 +1793,8 @@ msgstr "Répartir les joueur·euses (%(num)d)"
 msgid "Distribute the players among the tournaments"
 msgstr "Répartir les joueur·euses dans les tournois"
 
-msgid "Distribute the players by descending rating and choose how many goes into each tournament."
-msgstr "Répartir les joueur·euses par classement décroissant et choisir combien vont dans chaque tournoi."
+msgid "Distribute the players by descending rating and choose the number of players participating in each tournament."
+msgstr "Répartir les joueur·euses par classement décroissant et choisir combien participent à chaque chaque tournoi."
 
 msgid "Distributing the players is allowed only if all the tournaments use the same rating."
 msgstr "Répartir les joueur·euses dans les tournois n'est autorisé que lorsque tous les tournois utilisent le même classement."
@@ -4133,7 +4136,7 @@ msgid "Players screens show pairings by alphabetical order."
 msgstr "Les écrans d'affichage des joueur·euses présentent les appariements par ordre alphabétique."
 
 msgid "Players successfully distributed among the tournaments."
-msgstr "Les joueur·euses ont été répartis dans les tournois."
+msgstr "Les joueur·euses ont été réparti·es dans les tournois."
 
 msgid "Players update"
 msgstr "Mise à jour des joueur·euses"
@@ -6060,9 +6063,6 @@ msgstr "Par défaut"
 msgid "Use default - {option}"
 msgstr "Par défaut – {option}"
 
-msgid "Use click and drag to select balance groups."
-msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
-
 msgid "Use pairing engines"
 msgstr "Utiliser les moteurs d'appariement"
 
@@ -6253,7 +6253,6 @@ msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans
 
 msgid "When hovering a player's name with the mouse, display its history."
 msgstr "Au survol du nom d'un·une joueur·euse avec la souris, affiche son historique de tournoi."
-
 
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
 msgstr "Lorsque l'on n'affiche pas le bouton de sortie, les utilisateur·ices ne peuvent quitter l'écran accidentellement."

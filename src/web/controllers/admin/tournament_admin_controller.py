@@ -1687,14 +1687,14 @@ class TournamentAdminController(BaseEventAdminController):
                     _('Descending rating'),
                     _(
                         'Distribute the players by descending rating and '
-                        'choose how many goes into each tournament.'
+                        'choose the number of players participating in each tournament.'
                     ),
                 ),
                 'criteria': SelectOption(
                     _('Criteria'),
                     _(
                         'Allocate players to the first tournament '
-                        'that they match the criteria of.'
+                        'for which the criteria are met.'
                     ),
                 ),
             },

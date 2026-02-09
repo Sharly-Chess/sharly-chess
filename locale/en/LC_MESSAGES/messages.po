@@ -561,7 +561,7 @@ msgstr ""
 msgid "All values may be modified by the arbiter if necessary."
 msgstr ""
 
-msgid "Allocate players to the first tournament that they match the criteria of."
+msgid "Allocate players to the first tournament for which the criteria are met."
 msgstr ""
 
 msgid "Allow links to this screen"
@@ -1155,6 +1155,9 @@ msgstr ""
 msgid "Clear all the filters."
 msgstr ""
 
+msgid "Click and drag to select balanced groups."
+msgstr ""
+
 msgid "Click to check-in the player."
 msgstr ""
 
@@ -1604,7 +1607,7 @@ msgstr ""
 msgid "Define as public"
 msgstr ""
 
-msgid "Define balance groups"
+msgid "Define balanced groups"
 msgstr ""
 
 msgid "Define the criteria for players to belong to this category."
@@ -1790,7 +1793,7 @@ msgstr ""
 msgid "Distribute the players among the tournaments"
 msgstr ""
 
-msgid "Distribute the players by descending rating and choose how many goes into each tournament."
+msgid "Distribute the players by descending rating and choose the number of players participating in each tournament."
 msgstr ""
 
 msgid "Distributing the players is allowed only if all the tournaments use the same rating."
@@ -6056,9 +6059,6 @@ msgid "Use default"
 msgstr ""
 
 msgid "Use default - {option}"
-msgstr ""
-
-msgid "Use click and drag to select balance groups."
 msgstr ""
 
 msgid "Use pairing engines"
