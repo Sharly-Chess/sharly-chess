@@ -10,7 +10,7 @@
                 {{ tournament.name }}
             </td>
             <td style="width: 0;" class="text-nowrap">
-                <!-- TODO: display whether upload is automatic/manual -->
+                {{ _('Manual') }}
             </td>
             <td>
                 <!-- TODO: show results -->
@@ -26,7 +26,7 @@
                     hx-target="#upload-results"
                     hx-swap="outerHTML"
                     class="text-nowrap white btn btn-secondary"
-                    hx-on::before-request="$('#t_{{tournament.id}}.status').addClass('invisible')"
+                    hx-on--before-request="$('#t_{{tournament.id}}.status').addClass('invisible')"
                 >
                     <i class="bi bi-cloud-arrow-up-fill"></i>
                     {{ _('Upload') }}

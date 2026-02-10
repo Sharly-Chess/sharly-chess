@@ -2,7 +2,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Upload tournaments to custom location') }}
+                {{ _('Upload tournament documents to custom location') }}
             </h2>
         </div>
         <div class="modal-body">
@@ -22,7 +22,12 @@
                     <th class="text-center text-nowrap">
                         {{ _('Last upload') }}
                     </th>
+                    <th class="text-center">
+                        {{ _('Site') }}
+                    </th>
+                    <th></th>
                 </thead>
+                {% include 'custom_upload_results.html' %}
             </table>
 
             <div class="text-center mt-4 mb-1">
@@ -32,7 +37,7 @@
                     hx-target="#upload-results"
                     hx-swap="outerHTML"
                     class="text-nowrap white btn btn-outline-primary"
-                    hx-on::before-request="$('#upload-results .status').addClass('invisible')"
+                    hx-on--before-request="$('#upload-results .status').addClass('invisible')"
                 >
                     <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
                     {{ _('Upload tournaments now') }}

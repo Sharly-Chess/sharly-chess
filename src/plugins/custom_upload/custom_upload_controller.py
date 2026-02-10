@@ -11,7 +11,8 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
-from web.guards import EventGuard, ActionGuard
+from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
+from web.guards import EventGuard, ActionGuard, TournamentActionGuard
 
 
 class CustomUploadAdminEventController(BaseEventAdminController):
@@ -57,6 +58,15 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             context=cls._upload_results_context(web_context),
         )
 
+    @get(
+        path='/custom-upload/upload-results/{event_uniq_id:str}',
+        name='custom-upload-results',
+        guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
+    )
+    async def htmx_admin_ffe_upload_results(self, request: HTMXRequest) -> Template:
+        web_context = BaseEventAdminWebContext(request)
+        return self._render_upload_results(web_context)
+
     @post(
         path='/custom-upload/upload/{event_uniq_id:str}',
         name='custom-upload',
@@ -64,5 +74,24 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     )
     async def htmx_admin_custom_upload(self, request: HTMXRequest) -> Template:
         web_context = BaseEventAdminWebContext(request)
+
         # TODO: upload to custom location
+
+        return self._render_upload_results(web_context)
+
+    @post(
+        path='/custom-upload/upload-tournament/{event_uniq_id:str}/{tournament_id:int}',
+        name='custom-upload-tournament',
+        guards=[EventGuard(), TournamentActionGuard(AuthAction.PUBLISH_RESULTS)],
+    )
+    async def htmx_admin_ffe_upload_tournament(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        tournament = web_context.get_admin_tournament()
+
+        # TODO: upload to custom location
+
         return self._render_upload_results(web_context)

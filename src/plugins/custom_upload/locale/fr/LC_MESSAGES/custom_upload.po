@@ -4,5 +4,29 @@ msgstr "Site personnel"
 msgid "Custom Upload"
 msgstr "Mise en ligne personnalisée"
 
-msgid "Upload tournament documents to custom location."
+msgid "Last upload"
+msgstr "Dernière mise en ligne"
+
+msgid "Manual"
+msgstr "Manuel"
+
+msgid "Mode"
+msgstr "Mode"
+
+msgid "Site"
+msgstr "Site"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Tournament"
+msgstr "Tournoi"
+
+msgid "Upload"
+msgstr "Mettre en ligne"
+
+msgid "Upload tournament documents to custom location"
 msgstr "Mise en ligne de documents sur un site personnel"
+
+msgid "Upload tournaments now"
+msgstr "Mettre en ligne les tournois maintenant"

@@ -4,5 +4,29 @@ msgstr ""
 msgid "Custom Upload"
 msgstr ""
 
+msgid "Last upload"
+msgstr ""
+
+msgid "Manual"
+msgstr ""
+
+msgid "Mode"
+msgstr ""
+
+msgid "Site"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Tournament"
+msgstr ""
+
+msgid "Upload"
+msgstr ""
+
 msgid "Upload tournament documents to custom location."
+msgstr ""
+
+msgid "Upload tournaments now"
 msgstr ""
