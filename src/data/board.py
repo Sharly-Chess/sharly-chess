@@ -122,9 +122,7 @@ class Board:
 
     @property
     def last_result_update(self) -> datetime | None:
-        if self.stored_board.last_result_update:
-            return datetime.fromisoformat(self.stored_board.last_result_update)
-        return None
+        return self.stored_board.last_result_update
 
     @property
     def last_result_update_str(self) -> str:

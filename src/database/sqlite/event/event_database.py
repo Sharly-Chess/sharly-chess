@@ -1,6 +1,7 @@
 import shutil
 import time
 from collections import defaultdict
+from datetime import datetime
 from collections.abc import Iterator
 from functools import cached_property
 from logging import Logger
@@ -1216,7 +1217,9 @@ class EventDatabase(MigrationDatabase):
             white_player_id=row['white_player_id'],
             black_player_id=row['black_player_id'],
             index=row['index'],
-            last_result_update=row['last_result_update'],
+            last_result_update=cls.load_optional_timestamp_from_database_field(
+                row['last_result_update']
+            ),
         )
 
     def load_tournament_stored_boards_by_round(
@@ -1272,8 +1275,8 @@ class EventDatabase(MigrationDatabase):
 
     def update_board_last_result_update(
         self, board_id: int, clear: bool = False
-    ) -> str | None:
-        """Updates board timestamp to current UTC datetime"""
+    ) -> datetime | None:
+        """Updates board timestamp"""
 
         if clear:
             self.execute(
@@ -1282,18 +1285,14 @@ class EventDatabase(MigrationDatabase):
             )
             return None
         else:
-            self.execute(
-                "UPDATE `board` SET `last_result_update` = datetime('now') WHERE `id` = ?",
-                (board_id,),
-            )
+            date = time.time()
 
             self.execute(
-                'SELECT `last_result_update` FROM `board` WHERE `id` = ?',
-                (board_id,),
+                'UPDATE `board` SET `last_result_update` = ? WHERE `id` = ?',
+                (date, board_id),
             )
-            result = self.fetchone()
 
-            return result['last_result_update'] if result else None
+            return datetime.fromtimestamp(date)
 
     # ---------------------------------------------------------------------------------
     # StoredFamily
