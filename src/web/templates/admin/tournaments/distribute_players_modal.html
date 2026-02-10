@@ -1,0 +1,278 @@
+<div
+    class="modal-dialog modal-dialog-scrollable admin-distribute-players-modal"
+    style="--bs-modal-width: min(90vw, 550px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ _('Distribute the players (%(num)d)', num=admin_event.player_count) }}
+            </div>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-post="{{ url_for('admin-distribute-players', event_uniq_id=admin_event.uniq_id) }}"
+                hx-vals="js:{groups_by_id: JSON.stringify(groupsById)}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                <h4>{{ _('Settings') }}</h4>
+                <div class="row gy-2">
+                    {{ admin_macros.select_input(
+                        name='distribution_type',
+                        label=_('%(string)s:', string=_('Distribution type')),
+                        select_options=distribution_type_options,
+                        tooltip_select=true,
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <div id="use-balance-groups-container" class="row gy-2">
+                    {{ admin_macros.switch_input(
+                        name='use_balance_groups',
+                        placeholder=_('Define balanced groups'),
+                        tooltip_text=_(
+                            'Define tournament groups among which players are distributed '
+                            'one at a time, leading up to tournaments with balanced ratings.'
+                        ),
+                        data=data, errors=errors
+                    ) }}
+                </div>
+                <h4 class="mt-3 mb-2">{{ _('Players per tournament') }}</h4>
+                <h5 id="over-warning" class="warning-message text-danger mt-1" style="display:none">
+                    {{ _('Warning: too many players selected.') }}
+                </h5>
+                <h5 id="under-warning" class="warning-message text-danger mt-1" style="display:none">
+                    {{ _('Warning: too few players selected.') }}
+                </h5>
+                <h5 id="criteria-warning" class="warning-message text-danger mt-1" style="display:none">
+                    {{ _(
+                        'Warning: some players do not match the '
+                        'criteria of any of the selected tournaments.'
+                    ) }}
+                </h5>
+                <span id="balance-groups-help">
+                    {{ _('Click and drag to select balanced groups.') }}
+                </span>
+                <span id="criteria-help">
+                    {{ _('Select the tournaments to add players to.') }}
+                </span>
+                <div id="selectable-items" class="d-flex flex-column gap-2 mt-2">
+                    {% for tournament in admin_event.tournaments_sorted_by_index %}
+                        <div
+                            class="selectable-item border border-secondary bg-body-tertiary"
+                            data-tournament-id="{{ tournament.id }}"
+                        >
+                            <div class="p-2 d-flex align-items-center gap-2">
+                                <input
+                                    id="tournament-checkbox-{{ tournament.id }}"
+                                    name="tournament_ids"
+                                    value="{{ tournament.id }}"
+                                    class="form-check-input tournament-checkbox mb-2"
+                                    type="checkbox"
+                                    {% if tournament.id not in unselected_tournament_ids %}
+                                        checked
+                                    {% endif %}
+                                >
+                                <div class="text-start text-nowrap flex-grow-1">
+                                    {{ tournament.name }}
+                                </div>
+                                <input
+                                    id="player-count-{{ tournament.id }}"
+                                    name="user_player_count_{{ tournament.id }}"
+                                    type="number"
+                                    data-hidden-id="player-count-hidden-{{ tournament.id }}"
+                                    class="player-count form-control"
+                                    value=""
+                                    min="0"
+                                    step="1"
+                                    style="width: 100px"
+                                />
+                                <input
+                                    id="player-count-hidden-{{ tournament.id }}"
+                                    name="player_count_{{ tournament.id }}"
+                                    type="hidden"
+                                >
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <script>
+                    var groupsById = {{ groups_by_id | tojson }};
+                    var playerCountByTournamentId = {{ player_count_by_tournament_id | tojson }};
+                    var criteriaPlayerIdsByTournamentId = {{ criteria_player_ids_by_tournament_id | tojson }};
+                    var selectable = null;
+
+                    $('#distribution-type').change(function() {
+                        const type = $(this).val();
+                        $('#use-balance-groups-container').toggle(type === 'rating');
+                        $('.tournament-checkbox').toggle(type === 'criteria');
+                        $('#criteria-help').toggle(type === 'criteria');
+                        $('.player-count').prop('disabled', type === 'criteria');
+
+                        $('.warning-message').hide();
+                        if (type === 'rating') {
+                            for (const tournamentId in playerCountByTournamentId) {
+                                $('#player-count-' + tournamentId).val(
+                                    playerCountByTournamentId[tournamentId]
+                                );
+                            }
+                            $('.player-count').first().trigger('input');
+                        } else {
+                            $('.tournament-checkbox').first().trigger('change');
+                        }
+                        $('#use-balance-groups').trigger('change');
+                    });
+                    $('#use-balance-groups').change(function () {
+                        const isEnabled = $('#distribution-type').val() === 'rating' && this.checked;
+                        $('#balance-groups-help').toggle(isEnabled);
+                        if (isEnabled) {
+                            selectable = new Selectable({
+                                filter: '.selectable-item',
+                                ignore: '.player-count',
+                                appendTo: '#selectable-items',
+                                keys: [],
+                                toggle: true,
+                            });
+                            selectable.on('end', function(e, selected, unselected) {
+                                const groupId = Array(10).keys().find(key => !(key in groupsById));
+                                const groupClass = 'ui-selected-' + groupId;
+                                const group = [];
+                                const allItems = selected.concat(unselected);
+                                allItems.forEach((item) => {
+                                    const node = item.node;
+                                    const tournamentId = parseInt($(node).attr('data-tournament-id'));
+                                    for (const groupId in groupsById) {
+                                        if (groupsById[groupId].includes(tournamentId)) {
+                                            const groupClass = 'ui-selected-' + groupId;
+                                            $('.' + groupClass).removeClass([groupClass, 'ui-selected']);
+                                            delete groupsById[groupId];
+                                        }
+                                    };
+                                    if (allItems.length > 1) {
+                                        $(node).addClass([groupClass, 'ui-selected']);
+                                        group.push(tournamentId);
+                                    }
+                                });
+                                if (allItems.length > 1) {
+                                    groupsById[groupId] = group;
+                                }
+                            });
+                            for (const groupId in groupsById) {
+                                for (const tournamentId of groupsById[groupId]) {
+                                    $(`.selectable-item[data-tournament-id="${tournamentId}"]`).addClass(
+                                        ['ui-selected', 'ui-selected-' + groupId]
+                                    );
+                                }
+                            }
+                        } else {
+                            if (selectable) {
+                                selectable.detachEvents();
+                                selectable.destroy();
+                                selectable = null;
+                            }
+                            const selectedClasses = Array.from({ length: 10 }, (_, x) => `ui-selected-${x}`);
+                            $('.selectable-item').removeClass(['ui-selected'].concat(selectedClasses));
+                        }
+                    });
+
+                    $('.player-count').on('input', function () {
+                        const tournamentId = parseInt(
+                            $(this).closest('.selectable-item').attr('data-tournament-id')
+                        );
+                        playerCountByTournamentId[tournamentId] = this.value;
+                        var playerCount = {{ admin_event.player_count }};
+                        var hasError = false;
+                        const countElements = document.querySelectorAll('.player-count');
+                        const emptyCountElements = [];
+                        countElements.forEach((element) => {
+                            const value = parseFloat(element.value);
+                            if (isNaN(value)) {
+                                emptyCountElements.push(element);
+                                $(element).removeClass('is-invalid');
+                            } else if (Number.isInteger(value)) {
+                                playerCount -= value;
+                                $('#' + $(element).attr('data-hidden-id')).val(value);
+                                $(element).removeClass('is-invalid');
+                            } else {
+                                $(element).addClass('is-invalid');
+                                hasError = true;
+                            }
+                        });
+                        var remainingTournaments = emptyCountElements.length;
+                        $('.warning-message').hide();
+                        if (playerCount < 0) {
+                            hasError = true;
+                            $('#over-warning').show();
+                        } else if (playerCount > 0 && !remainingTournaments) {
+                            hasError = true;
+                            $('#under-warning').show();
+                        }
+                        $('#submit-button').prop('disabled', hasError);
+                        emptyCountElements.forEach((element) => {
+                            if (hasError) {
+                                $(element).prop('placeholder', '');
+                                return;
+                            }
+                            var elementCount = Math.min(
+                                playerCount,
+                                Math.ceil(playerCount / (2 * remainingTournaments)) * 2,
+                            );
+                            if (playerCount === ((elementCount - 2) * remainingTournaments) + 1) {
+                                elementCount -= 2;
+                            }
+                            $(element).prop('placeholder', elementCount);
+                            $('#' + $(element).attr('data-hidden-id')).val(elementCount);
+                            playerCount -= elementCount;
+                            remainingTournaments -= 1;
+                        });
+
+                    });
+
+                    $('.tournament-checkbox').change(function () {
+                        var playerCount = {{ admin_event.player_count }};
+                        var distributedPlayerIds = [];
+                        document.querySelectorAll('.tournament-checkbox').forEach((checkbox) => {
+                            const tournamentId = parseInt(
+                                $(checkbox).closest('.selectable-item').attr('data-tournament-id')
+                            );
+                            var tournamentCount = 0;
+                            if (checkbox.checked) {
+                                for (const playerId of criteriaPlayerIdsByTournamentId[tournamentId]) {
+                                    if (!distributedPlayerIds.includes(playerId)) {
+                                        distributedPlayerIds.push(playerId);
+                                        tournamentCount += 1;
+                                    }
+                                }
+                            }
+                            $('#player-count-' + tournamentId).val(tournamentCount);
+                            playerCount -= tournamentCount;
+                        });
+                        const hasError = playerCount > 0;
+                        $('#submit-button').prop('disabled', hasError);
+                        $('#criteria-warning').toggle(hasError);
+                    });
+                    $('#distribution-type').trigger('change');
+                </script>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                id="submit-button"
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi bi-sort-numeric-down-alt pe-1"></i>
+                {{ _('Distribute') }}
+            </button>
+        </div>
+    </div>
+</div>

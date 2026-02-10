@@ -67,6 +67,7 @@
                             {% if update_enabled %}
                                 <th scope="col" class="text-nowrap text-center">
                                     <input
+                                        class="form-check-input blue-checkbox"
                                         type="checkbox"
                                         onclick="
                                             $('input.player-id-checkbox').prop('checked', this.checked);
@@ -81,10 +82,10 @@
                                     {% if update_enabled and field.id in updated_field_ids %}
                                         <input
                                             type="checkbox"
+                                            class="form-check-input blue-checkbox field-id-checkbox"
                                             name="field_ids"
                                             value="{{ field.id }}"
                                             checked
-                                            class="field-id-checkbox"
                                         />
                                     {% endif %}
                                     {{ field.name }}
@@ -124,7 +125,7 @@
                                                 onclick="
                                                     $('#update-players-button').prop('disabled', $('input.player-id-checkbox:checked').length == 0);
                                                 "
-                                                class="player-id-checkbox"
+                                                class="form-check-input blue-checkbox player-id-checkbox"
                                             />
                                         {% endif %}
                                     </td>

@@ -13,6 +13,7 @@ from common.logger import get_logger
 from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.local_source_database import LocalSourceDatabase
 from database.sqlite.local_source_database.actions import AutoUpdateOutdatedAction
+from database.sqlite.local_source_database.databases import DatabaseLoaderProgress
 from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins import fra_schools
@@ -179,6 +180,12 @@ class FRASchoolsDatabase(LocalSourceDatabase):
         with open(source_file_path, 'r', encoding='utf-8') as f:
             data = json.load(f)
 
+        logger.debug(self.log_prefix + 'Storing the schools...')
+        progress: DatabaseLoaderProgress = DatabaseLoaderProgress(
+            log_prefix=self.log_prefix,
+            total_count=len(data),
+            delay=2,
+        )
         with database:
             for school in data:
                 row = {}
@@ -215,6 +222,7 @@ class FRASchoolsDatabase(LocalSourceDatabase):
                     to_write_schools.clear()
                     if self.stop_event.is_set():
                         return False
+                    progress.log(school_count)
                 if school_count % 100_000 == 0:
                     database.commit()
 

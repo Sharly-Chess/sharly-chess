@@ -57,6 +57,18 @@ class InstallationChecker:
             licence_type='MIT',
         ),
         WebLibArchiveInstaller(
+            'Selectable',
+            SharlyChessConfig.selectable_version,
+            'Selectable',
+            'Selectable-{version}',
+            {
+                'selectable.min.js',
+            },
+            'https://github.com/Mobius1/Selectable/archive/refs/tags/{version}.zip',
+            'Selectable-{version}.zip',
+            licence_type='MIT',
+        ),
+        WebLibArchiveInstaller(
             'MorphDom',
             SharlyChessConfig.morphdom_version,
             'morphdom',

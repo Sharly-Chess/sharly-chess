@@ -105,10 +105,9 @@ class WebContext:
         normalized_data: dict[str, str] = {}
         for key, value in data.items():
             if isinstance(value, UploadFile):
-                suffix = Path(value.filename).suffix
-                __, tmp_name = tempfile.mkstemp(suffix=suffix)
-                Path(tmp_name).write_bytes(await value.read())
-                normalized_data[key] = tmp_name
+                file_path = Path(tempfile.mkdtemp()) / value.filename
+                file_path.write_bytes(await value.read())
+                normalized_data[key] = str(file_path)
             else:
                 normalized_data[key] = cls.value_to_form_data(value)
         return normalized_data

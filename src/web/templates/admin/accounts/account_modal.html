@@ -62,7 +62,11 @@
                     {{ _('Staff information') }}
                 </h4>
 
-                {% with results_template='admin/accounts/account_search_results.html', result_js_template_hook_name='get_account_search_result_js_template' %}
+                {% with
+                    results_template='admin/accounts/account_search_results.html',
+                    result_js_template_hook_name='get_account_search_result_js_template',
+                    with_arbiter_title=true
+                %}
                     {% include '/admin/common/player_search.html' %}
                 {% endwith %}
 
