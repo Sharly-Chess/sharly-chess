@@ -258,14 +258,10 @@
 {% endmacro %}
 
 {% macro column_cell(column, object) %}
-    {% if column.cell_template %}
-        {% include column.cell_template %}
+    {% set content = column.get_cell_content(object) %}
+    {% if column.is_cell_content_safe %}
+        {{ content|safe }}
     {% else %}
-        {% set content = column.get_cell_content(object) %}
-        {% if column.is_cell_content_safe %}
-            {{ content|safe }}
-        {% else %}
-            {{ content }}
-        {% endif %}
+        {{ content }}
     {% endif %}
 {% endmacro %}
