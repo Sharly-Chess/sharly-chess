@@ -79,6 +79,11 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
         After the values of this key the players are sorted by name."""
 
     @property
+    def swap_asc_desc_icon(self) -> bool:
+        """Defines if the first sort icon to appear is the asc sort."""
+        return False
+
+    @property
     def is_searchable(self) -> bool:
         """Defines if the column can be searched from the global search bar."""
         return False
@@ -266,7 +271,11 @@ class RatingPlayersTabColumn(PlayersTabColumn):
         return True
 
     def _get_sort_key(self, player: Player) -> tuple:
-        return (player.single_tournament_player.rating,)
+        return -player.single_tournament_player.rating, -player.title.sort_index
+
+    @property
+    def swap_asc_desc_icon(self) -> bool:
+        return True
 
     @property
     def cell_template(self) -> str | None:

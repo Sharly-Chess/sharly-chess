@@ -621,7 +621,7 @@ class PlayerRatingType(IntEnum):
 
 
 class PlayerTitle(StrEnum):
-    """The possible FIDE titles: GM, WGM, IM, WIM, FM, WFM, CM, WCM.
+    """The possible FIDE player titles: GM, WGM, IM, WIM, FM, WFM, CM, WCM.
     Also includes the "no title" case."""
 
     NONE = ''
@@ -651,7 +651,7 @@ class PlayerTitle(StrEnum):
     def name(self) -> str:
         match self:
             case PlayerTitle.NONE:
-                return _('No title')
+                return '-'
             case PlayerTitle.WOMAN_CANDIDATE_MASTER:
                 return _('Woman Candidate Master')
             case PlayerTitle.CANDIDATE_MASTER:
@@ -697,6 +697,66 @@ class PlayerTitle(StrEnum):
 
     def __str__(self) -> str:
         return self.short_name
+
+
+class FideArbiterTitle(StrEnum):
+    """The possible FIDE arbiter titles: IA, FA, NA.
+    Also includes the "no title" case."""
+
+    NONE = ''
+    NATIONAL = 'NA'
+    FIDE = 'FA'
+    INTERNATIONAL = 'IA'
+
+    @property
+    def sort_index(self) -> int:
+        if self == self.NONE:
+            return 0
+        return list(FideArbiterTitle).index(self)
+
+    @classmethod
+    def from_fide_value(cls, value: str) -> 'FideArbiterTitle':
+        for string in value.split(','):
+            match string:
+                case 'NA':
+                    return FideArbiterTitle.NATIONAL
+                case 'FA':
+                    return FideArbiterTitle.FIDE
+                case 'IA':
+                    return FideArbiterTitle.INTERNATIONAL
+        return FideArbiterTitle.NONE
+
+    @property
+    def name(self) -> str:
+        match self:
+            case FideArbiterTitle.NONE:
+                return '-'
+            case FideArbiterTitle.NATIONAL:
+                return _('National Arbiter')
+            case FideArbiterTitle.FIDE:
+                return _('FIDE Arbiter')
+            case FideArbiterTitle.INTERNATIONAL:
+                return _('International Arbiter')
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    @property
+    def short_name(self) -> str:
+        match self:
+            case FideArbiterTitle.NONE:
+                return ''
+            case FideArbiterTitle.NATIONAL:
+                return _('NA *** SHORT NAME FOR National Arbiter')
+            case FideArbiterTitle.FIDE:
+                return _('FA *** SHORT NAME FOR FIDE Arbiter')
+            case FideArbiterTitle.INTERNATIONAL:
+                return _('IA *** SHORT NAME FOR International Arbiter')
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    @property
+    def fide_acronym(self) -> str:
+        return self.value
 
 
 class RoleType(StrEnum):
@@ -1193,25 +1253,3 @@ class CheckInStatus(IntEnum):
     NEXT_ROUND_BYE = 1
     NOT_CHECKED_IN = 2
     CHECKED_IN = 3
-
-
-class FIDEArbiterTitle(StrEnum):
-    IA = 'IA'
-    FA = 'FA'
-    NA = 'NA'
-
-    @property
-    def name(self) -> str:
-        match self:
-            case self.IA:
-                return _('International Arbiter')
-            case self.FA:
-                return _('FIDE Arbiter')
-            case self.NA:
-                return _('National Arbiter')
-            case _:
-                raise ValueError(f'Unknown value: {self}')
-
-    @property
-    def acronym(self) -> str:
-        return self.value

@@ -33,7 +33,11 @@
                                     <tr id="player-{{ tournament_player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
                                         {% for column in player_columns %}
                                             <td class="{{ column.get_cell_classes(tournament_player) }}">
-                                                {{ macros.column_cell(column, tournament_player) }}
+                                                {% if column.cell_template %}
+                                                    {% include column.cell_template %}
+                                                {% else %}
+                                                    {{ macros.column_cell(column, tournament_player) }}
+                                                {% endif %}
                                             </td>
                                         {% endfor %}
                                     </tr>

@@ -83,7 +83,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_tournament = event.tournaments_by_id[tournament_id]
         elif self.allowed_tournaments:
             session_tournament_id = SessionPairingsSelectedTournament(
-                self.request, event.uniq_id
+                self.request, event
             ).get()
             if session_tournament_id in [
                 tournament.id for tournament in self.allowed_tournaments
@@ -102,9 +102,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         elif round_:
             self.admin_round = round_
         elif session_round := SessionPairingsSelectedRound(
-            self.request,
-            event.uniq_id,
-            self.admin_tournament.id,
+            self.request, self.admin_tournament
         ).get():
             max_round = (
                 self.admin_tournament.current_round or 1
@@ -338,11 +336,9 @@ class PairingsAdminController(BaseEventAdminController):
         web_context = PairingsAdminWebContext(request, tournament_id, round)
         event = web_context.get_admin_event()
         if tournament := web_context.admin_tournament:
-            SessionPairingsSelectedTournament(request, event.uniq_id).set(tournament.id)
+            SessionPairingsSelectedTournament(request, event).set(tournament.id)
             if admin_round := web_context.admin_round:
-                SessionPairingsSelectedRound(request, event.uniq_id, tournament.id).set(
-                    admin_round
-                )
+                SessionPairingsSelectedRound(request, tournament).set(admin_round)
 
         return self._admin_event_pairings_render(
             web_context,

@@ -335,30 +335,37 @@ class FfePlugin(Plugin):
 
     @hookimpl
     async def augment_player_after_search(
-        self, stored_player: StoredPlayer, data_source: DataSource
+        self,
+        stored_player: StoredPlayer,
+        data_source: DataSource,
+        with_arbiter_title: bool,
     ):
-        if data_source.id in (
-            FfeOnlineDataSource.static_id(),
-            FfeLocalDataSource.static_id(),
-        ):
-            return
-        # Try to get more information by requesting the FFE SQL server
         fide_id = stored_player.fide_id
         if not fide_id:
             return
+        if data_source.id == FfeLocalDataSource.static_id():
+            # nothing more to get from the online database for local searches
+            return
         ffe_stored_player: StoredPlayer | None = None
-        try:
-            # Try to get more information by requesting the FFE database
-            async with FFESqlServer() as ffe_sql_server:
-                ffe_stored_player = await ffe_sql_server.get_stored_player_by_fide_id(
-                    fide_id
-                )
-        except SharlyChessException:
+        if data_source.id != FfeOnlineDataSource.static_id():
+            # Try to get more information by requesting the FFE SQL server
+            ffe_stored_player: StoredPlayer | None = None
+            try:
+                # Try to get more information by requesting the FFE database
+                async with FFESqlServer() as ffe_sql_server:
+                    ffe_stored_player = (
+                        await ffe_sql_server.get_stored_player_by_fide_id(
+                            player_fide_id=fide_id,
+                        )
+                    )
+            except SharlyChessException:
+                pass
+        if not ffe_stored_player or with_arbiter_title:
             if (ffe_database := FfeDatabase()).exists():
                 # Try to get more information by requesting the FFE database
                 with ffe_database:
                     ffe_stored_player = ffe_database.get_stored_player_by_fide_id(
-                        fide_id
+                        player_fide_id=fide_id,
                     )
         if ffe_stored_player:
             for rating_type in TournamentRating:
@@ -403,6 +410,9 @@ class FfePlugin(Plugin):
                 stored_player.club = ffe_stored_player.club
             stored_player.plugin_data[self.id] = copy.copy(
                 ffe_stored_player.plugin_data.get(self.id, {})
+            )
+            stored_player.transient_arbiter_titles['ffe'] = (
+                ffe_stored_player.transient_arbiter_titles.get('ffe', '')
             )
 
     @hookimpl
@@ -887,7 +897,7 @@ class FfePlugin(Plugin):
     ):
         field: str = 'ffe_arbiter_title'
         try:
-            if value := WebContext.form_data_to_int(data, field):
+            if value := WebContext.form_data_to_str(data, field):
                 FFEArbiterTitle(value)
         except ValueError:
             errors[field] = f'Invalid FFE arbiter title [{data[field]}].'

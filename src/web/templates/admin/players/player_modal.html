@@ -44,7 +44,9 @@
                     <h4>
                         {{ _('Search *** SECTION TITLE') }}
                     </h4>
-                    {% include '/admin/common/player_search.html' %}
+                    {% with with_arbiter_title=false %}
+                        {% include '/admin/common/player_search.html' %}
+                    {% endwith %}
                 {% endif %}
 
                 <h4>

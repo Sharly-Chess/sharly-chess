@@ -1,11 +1,60 @@
-<button
-    class="btn btn-primary text-nowrap {{ button_class }}"
-    hx-get="{{ url_for('admin-event-modal', admin_tab=admin_tab, action='create') }}"
+<div class="btn-group dropdown">
+    <button
+        class="btn btn-primary text-nowrap {% if is_large %}btn-lg{% endif %}"
+        hx-get="{{ url_for('admin-event-modal', admin_tab=admin_tab, action='create') }}"
+        hx-target="body"
+        hx-indicator="#please-wait"
+        data-bs-toggle="modal"
+        data-bs-target="#modal-wrapper"
+    >
+        {{ _('Create an event') }}
+    </button>
+    <button
+        type="button"
+        class="btn btn-primary dropdown-toggle dropdown-toggle-split"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+    >
+    </button>
+    <div class="dropdown-menu dropdown-menu-end">
+        {% set item_class = 'dropdown-item-lg' if is_large else '' %}
+        <button
+            class="dropdown-item active {{ item_class }}"
+            hx-get="{{ url_for('admin-event-modal', admin_tab=admin_tab, action='create') }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            {{ _('Create manually') }}
+        </button>
+        <button
+            id="import-button"
+            class="dropdown-item {{ item_class }}"
+        >
+            {{ _('Import a SCE file') }}
+        </button>
+    </div>
+</div>
+<form
+    style="display: none"
+    hx-post="{{ url_for('event-import', admin_tab=admin_tab) }}"
+    enctype="multipart/form-data"
     hx-target="body"
     hx-indicator="#please-wait"
-    data-bs-toggle="modal"
-    data-bs-target="#modal-wrapper"
 >
-    <i class="bi-plus-square pe-1"></i>
-    {{ _('Create an event') }}
-</button>
+    <input
+        id="import-file-input"
+        type="file"
+        name="file"
+    />
+    <button id="import-form-submit-button" type="submit"></button>
+    <script>
+        $('#import-button').click(function () {
+            $('#import-file-input').click();
+        });
+        $('#import-file-input').on('input', function () {
+            $('#import-form-submit-button').click();
+        });
+    </script>
+</form>

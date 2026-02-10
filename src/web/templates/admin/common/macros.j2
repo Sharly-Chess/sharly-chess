@@ -802,9 +802,9 @@ with_indicator: display a loading indicator, optional
                                 id="{{ default_checkbox_id }}"
                                 name="{{ default_checkbox_name }}"
                                 type="checkbox"
+                                class="form-check-input me-2 mb-2"
                                 aria-describedby="{{ id }}-help {{ id }}-error"
                                 {% if data[default_checkbox_name] == 'on' %}checked{% endif %}
-                                class="me-2"
 
                             />
                             {{ default_checkbox_text or _('Use default') }}
@@ -1702,7 +1702,7 @@ with_indicator: display a loading indicator, optional
         >
             <span class="visually-hidden">Toggle Dropdown</span>
         </button>
-        <ul class="dropdown-menu">
+        <div class="dropdown-menu">
             {% for option_id, option_name in options.items() %}
                 <button
                     type="submit"
@@ -1711,9 +1711,9 @@ with_indicator: display a loading indicator, optional
                     class="dropdown-item {% if option_id == active_option %}active{% endif %}"
                 >
                     {{ option_name }}
-                </li>
+                </button>
             {% endfor %}
-        </ul>
+        </div>
     </div>
 {% endmacro %}
 

@@ -195,9 +195,7 @@ class EventDocumentsController(BaseEventAdminController):
             if not errors:
                 tournament_ids = self._get_tournament_ids_from_options(options)
                 if tournament_ids:
-                    SessionPrintLastTournaments(request, event.uniq_id).set(
-                        tournament_ids
-                    )
+                    SessionPrintLastTournaments(request, event).set(tournament_ids)
         if errors:
             return self._render_documents_modal(
                 web_context, data=flat_data, errors=errors
