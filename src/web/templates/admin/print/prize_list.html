@@ -5,33 +5,31 @@
         {% if not loop.first %}
             <div class="separator"></div>
         {% endif %}
-        <div class="no-page-break">
-            <div class="tournament-title">{{ tournament.name }}</div>
-            {% for prize_group in tournament.sorted_prize_groups %}
-                {% if not loop.first %}
-                    <div class="short-separator"></div>
-                {% endif %}
-                {% for prize_category in prize_group.sorted_categories %}
-                    <div class="section-title">
-                        {{ prize_category.name }}
-                    </div>
-                    <div class="section-sub-title">
-                        {{ prize_category.format_shared_prizes(prize_currency) }}
-                    </div>
-                    <table>
-                        <tbody>
-                            {% for prize in prize_category.sorted_prizes %}
-                                <tr>
-                                    <td class="important-cell">
-                                        {{ ordinal_integer(loop.index)|safe }}
-                                    </td>
-                                    <td>{{ prize.name }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% endfor %}
+        <div class="tournament-title">{{ tournament.name }}</div>
+        {% for prize_group in tournament.sorted_prize_groups %}
+            {% if not loop.first %}
+                <div class="short-separator"></div>
+            {% endif %}
+            {% for prize_category in prize_group.sorted_categories %}
+                <div class="section-title">
+                    {{ prize_category.name }}
+                </div>
+                <div class="section-sub-title">
+                    {{ prize_category.format_shared_prizes(prize_currency) }}
+                </div>
+                <table>
+                    <tbody>
+                        {% for prize in prize_category.sorted_prizes %}
+                            <tr>
+                                <td class="important-cell">
+                                    {{ ordinal_integer(loop.index)|safe }}
+                                </td>
+                                <td>{{ prize.name }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             {% endfor %}
-        </div>
+        {% endfor %}
     {% endfor %}
 {% endblock %}
