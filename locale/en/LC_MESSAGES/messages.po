@@ -129,6 +129,14 @@ msgid "%(player)s - Round %(num)s"
 msgstr ""
 
 #, python-format
+msgid "%(rating)s (%(rating_type)s)"
+msgstr ""
+
+#, python-format
+msgid "%(rating)s (%(rating_type)s): %(min)d→%(max)d"
+msgstr ""
+
+#, python-format
 msgid "%(set_name)s (check-in)"
 msgstr ""
 
