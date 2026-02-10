@@ -57,12 +57,6 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         return True
 
     @property
-    def has_not_exhaustive_exporter(self) -> bool:
-        """Defines if the import has a matching exporter.
-        Displays a warning on the modal."""
-        return False
-
-    @property
     @abstractmethod
     def modal_title(self) -> str:
         """The title to display in the import modal."""
@@ -432,10 +426,6 @@ class TrfTournamentImporter(FileTournamentImporter):
             FileOption,
             TournamentRatingOption,
         ]
-
-    @property
-    def has_not_exhaustive_exporter(self) -> bool:
-        return True
 
     @property
     def modal_title(self) -> str:

@@ -145,7 +145,7 @@
 {% block card_buttons_left %}
     {% if client.can_manage_events and event.are_all_plugins_enabled %}
         <div
-            {{ macros.tooltip_attributes('info', _('Export event to the .sce format')) }}
+            {{ macros.tooltip_attributes('info', _('Export event in SCE format')) }}
         >
             <button
                 class="btn btn-sm btn-outline-primary"

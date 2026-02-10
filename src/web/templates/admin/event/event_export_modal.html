@@ -2,7 +2,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Export event') }}
+                {{ _('Event export') }}
             </h2>
         </div>
         <div class="modal-body">
@@ -55,7 +55,6 @@
             <button
                 type="button"
                 class="text-nowrap white btn btn-primary"
-                class="dropdown-item text-start cursor-pointer"
                 data-export-url="{{ url_for(
                     'admin-event-export',
                     event_uniq_id=admin_event.uniq_id,

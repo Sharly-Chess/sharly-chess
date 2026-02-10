@@ -194,6 +194,10 @@ msgid "'EUR' or '€'"
 msgstr "'EUR' ou '€'"
 
 #, python-format
+msgid "(%(format)s format)"
+msgstr "(format %(format)s)"
+
+#, python-format
 msgid "(%(num)d screen)"
 msgid_plural "(%(num)d screens)"
 msgstr[0] "(%(num)d écran)"
@@ -1560,6 +1564,9 @@ msgstr "Un jour"
 msgid "Dashed border"
 msgstr "Bordure pointillée"
 
+msgid "Data loss"
+msgstr "Perte de données"
+
 msgid "Data source"
 msgstr "Source de données"
 
@@ -2199,6 +2206,9 @@ msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été
 msgid "Event [{uniq_id}] has been updated."
 msgstr "L'évènement [{uniq_id}] a été modifié."
 
+msgid "Event export"
+msgstr "Export d'évènement"
+
 msgid "Event name"
 msgstr "Nom de l'évènement"
 
@@ -2243,16 +2253,22 @@ msgid "Export all the games of the last round of the tournament to the PGN forma
 msgstr "Exporter toutes les parties de la dernère ronde du tournoi au format PGN (usage : transfert d'appariements)."
 
 msgid "Export event"
-msgstr "Exporter un évènement"
+msgstr "Exporter l'évènement"
 
-msgid "Export event to the .sce format"
-msgstr "Exporter l'évènement au format .sce"
+msgid "Export event in SCE format"
+msgstr "Exporter l'évènement au format SCE"
+
+msgid "Export players"
+msgstr "Exporter les joueur·euses"
 
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
 msgstr "Exporter le tournoi au format TRF(bx) (usage : génération d'appariements)."
 
 msgid "Export the tournament to the TRF16 format."
 msgstr "Exporter le tournoi au format TRF16."
+
+msgid "Export tournament"
+msgstr "Exporter le tournoi"
 
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
@@ -2654,9 +2670,6 @@ msgstr "Espagne"
 
 msgid "Identity"
 msgstr "Identité"
-
-msgid "If this file has been exported from Sharly Chess, some data will be lost. For data transfer, exporting the event to the .sce format is highly recommended."
-msgstr "Si ce fichier a été exporté depuis Shaly Chess, certaines données seront perdues. Pour transférer des données, exporter l'évènement au format .sce est fortement recommandé."
 
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr "Si vous ne pouvez pas contrôler qui a accès au réseau auquel vous êtes connecté, il est fortement recommandé de ne pas créer de compte."
@@ -4507,6 +4520,9 @@ msgstr "Classement :"
 msgid "Ratings"
 msgstr "Classements"
 
+msgid "Recommended"
+msgstr "Recommandé"
+
 #, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
@@ -5045,6 +5061,10 @@ msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les 
 
 msgid "Some files are missing."
 msgstr "Des fichiers sont manquants."
+
+#, python-format
+msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using other formats is highly recommended."
+msgstr "Certaines des données de Sharly Chess ne sont pas inclus dans le format %(format)s. Pour transférer des données ou faire des sauvegardes, l'utilisation d'autres formats est fortement recommendée."
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
@@ -5810,6 +5830,9 @@ msgstr "Le tournoi [{tournament}] a été modifié."
 
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
+
+msgid "Tournament export"
+msgstr "Export de tournoi"
 
 msgid "Tournament name"
 msgstr "Nom du tournoi"

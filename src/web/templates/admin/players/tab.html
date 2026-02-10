@@ -143,7 +143,7 @@
                                     <form
                                         id="exporter-{{ exporter.id }}-form"
                                         action="{{ url_for(
-                                            'admin-download-event-players',
+                                            'event-export-players',
                                             event_uniq_id=admin_event.uniq_id,
                                             exporter_id=exporter.id
                                         ) }}"

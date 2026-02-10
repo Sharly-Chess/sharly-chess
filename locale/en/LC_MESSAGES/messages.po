@@ -194,6 +194,10 @@ msgid "'EUR' or '€'"
 msgstr ""
 
 #, python-format
+msgid "(%(format)s format)"
+msgstr ""
+
+#, python-format
 msgid "(%(num)d screen)"
 msgid_plural "(%(num)d screens)"
 msgstr[0] ""
@@ -1560,6 +1564,9 @@ msgstr ""
 msgid "Dashed border"
 msgstr ""
 
+msgid "Data loss"
+msgstr ""
+
 msgid "Data source"
 msgstr ""
 
@@ -2199,6 +2206,9 @@ msgstr ""
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
+msgid "Event export"
+msgstr ""
+
 msgid "Event name"
 msgstr ""
 
@@ -2245,13 +2255,19 @@ msgstr ""
 msgid "Export event"
 msgstr ""
 
-msgid "Export event to the .sce format"
+msgid "Export event in SCE format"
+msgstr ""
+
+msgid "Export players"
 msgstr ""
 
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
 msgstr ""
 
 msgid "Export the tournament to the TRF16 format."
+msgstr ""
+
+msgid "Export tournament"
 msgstr ""
 
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
@@ -2653,9 +2669,6 @@ msgid "Iceland"
 msgstr ""
 
 msgid "Identity"
-msgstr ""
-
-msgid "If this file has been exported from Sharly Chess, some data will be lost. For data transfer, exporting the event to the .sce format is highly recommended."
 msgstr ""
 
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
@@ -4505,6 +4518,9 @@ msgstr ""
 msgid "Ratings"
 msgstr ""
 
+msgid "Recommended"
+msgstr ""
+
 #, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr ""
@@ -5042,6 +5058,10 @@ msgid "Some accounts can have very high access levels, making them dangerous in 
 msgstr ""
 
 msgid "Some files are missing."
+msgstr ""
+
+#, python-format
+msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using other formats is highly recommended."
 msgstr ""
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
@@ -5807,6 +5827,9 @@ msgid "Tournament [{tournament}] has been updated."
 msgstr ""
 
 msgid "Tournament [{tournament}] successfully imported."
+msgstr ""
+
+msgid "Tournament export"
 msgstr ""
 
 msgid "Tournament name"

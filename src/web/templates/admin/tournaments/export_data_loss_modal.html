@@ -1,0 +1,85 @@
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 450px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Tournament export') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <h4>
+                {{ _('%(string)s: %(value)s', string=_('Tournament'), value=admin_tournament.name) }}
+            </h4>
+            <h5 class="text-danger">
+                {{ _('Warning: potential data loss') }}
+            </h5>
+            <p>
+                {{ _(
+                    'Some of the Sharly Chess data is not included in the %(format)s format. '
+                    'For data transfers or backups, using other formats is highly recommended.',
+                    format=admin_exporter.name,
+                ) }}
+            </p>
+            <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                <button
+                    class="export-button btn btn-outline-primary text-nowrap w-100"
+                    data-export-url="{{ url_for(
+                        'admin-event-export',
+                        event_uniq_id=admin_event.uniq_id,
+                    ) }}"
+                >
+                    <i class="bi-star-fill pe-1" {{ macros.tooltip_attributes('', _('Recommended')) }}></i>
+                    {{ _('Export event') }}
+                    {{ _('(%(format)s format)', format='SCE') }}
+                </button>
+                <button
+                    class="export-button btn btn-outline-primary text-nowrap w-100"
+                    data-export-url="{{ url_for(
+                        'event-export-players',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        exporter_id='csv',
+                    ) }}"
+                >
+                    <i class="bi-star-fill pe-1" {{ macros.tooltip_attributes('', _('Recommended')) }}></i>
+                    {{ _('Export players') }}
+                    {{ _('(%(format)s format)', format='CSV') }}
+                </button>
+                <button
+                    class="export-button btn btn-outline-danger text-nowrap w-100"
+                    data-export-url="{{ url_for(
+                        'admin-tournament-export',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        exporter_id=admin_exporter.id,
+                    ) }}"
+                >
+                    <i
+                        class="bi-exclamation-triangle-fill pe-1"
+                        {{ macros.tooltip_attributes('warning', _('Data loss')) }}
+                    ></i>
+                    {{ _('Export tournament') }}
+                    {{ _('(%(format)s format)', format=admin_exporter.name) }}
+                </button>
+            </div>
+            <script>
+                $('.export-button').click(function () {
+                    downloadFile(this);
+                    closeModal();
+                });
+            </script>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="btn btn-secondary text-nowrap"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Cancel') }}
+            </button>
+        </div>
+    </div>
+</div>
