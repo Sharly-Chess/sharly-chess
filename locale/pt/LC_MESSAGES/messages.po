@@ -133,6 +133,14 @@ msgid "%(player)s - Round %(num)s"
 msgstr "%(player)s - Redondo %(num)s"
 
 #, ai_translation, python-format
+msgid "%(rating)s (%(rating_type)s)"
+msgstr "%(rating)s (0) (0) (0) (0) %(rating_type)s)"
+
+#, ai_translation, python-format
+msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
+msgstr "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
+
+#, ai_translation, python-format
 msgid "%(set_name)s (check-in)"
 msgstr "%(set_name)s (check-in)"
 
@@ -687,6 +695,10 @@ msgid "All values may be modified by the arbiter if necessary."
 msgstr "Todos os valores podem ser modificados pelo árbitro, se necessário."
 
 #, ai_translation
+msgid "Allocate players to the first tournament for which the criteria are met."
+msgstr "Alocar os jogadores ao primeiro torneio para o qual os critérios são atendidos."
+
+#, ai_translation
 msgid "Allow links to this screen"
 msgstr "Permitir links para esta tela"
 
@@ -1231,6 +1243,18 @@ msgid "Cameroon"
 msgstr "Camarões"
 
 #, ai_translation
+msgid "Can not distribute the players (no players found)."
+msgstr "Não é possível distribuir os jogadores (nenhum jogador encontrado)."
+
+#, ai_translation
+msgid "Can not distribute the players (no tournaments found)."
+msgstr "Não é possível distribuir os jogadores (nenhum torneio encontrado)."
+
+#, ai_translation
+msgid "Can not distribute the players (only one tournament)."
+msgstr "Não é possível distribuir os jogadores (apenas um torneio)."
+
+#, ai_translation
 msgid "Can't see your event?"
 msgstr "Não consegue ver o seu evento?"
 
@@ -1398,8 +1422,9 @@ msgstr "chinês Taipei"
 msgid "Choose a player at random"
 msgstr "Escolha um jogador ao acaso"
 
+#, ai_translation
 msgid "Choose at least one value."
-msgstr ""
+msgstr "Escolha pelo menos um valor."
 
 #, ai_translation
 msgid "Choose families to add"
@@ -1436,6 +1461,10 @@ msgstr "Limpar Log"
 #, ai_translation
 msgid "Clear all the filters."
 msgstr "Limpar todos os filtros."
+
+#, ai_translation
+msgid "Click and drag to select balanced groups."
+msgstr "Clique e arraste para selecionar grupos equilibrados."
 
 #, ai_translation
 msgid "Click to check-in the player."
@@ -1545,8 +1574,9 @@ msgstr "Comentário"
 msgid "Comment:"
 msgstr "Comentário:"
 
+#, ai_translation
 msgid "Comments"
-msgstr ""
+msgstr "Comentários"
 
 #, fuzzy
 msgid "Comments *** COMMENTS COLUMN HEADER"
@@ -1779,6 +1809,10 @@ msgstr "Criar evento"
 #, ai_translation
 msgid "Create hour"
 msgstr "Criar hora"
+
+#, ai_translation
+msgid "Create manually"
+msgstr "Criar manualmente"
 
 #, ai_translation
 msgid "Create permission"
@@ -2025,6 +2059,10 @@ msgid "Define as public"
 msgstr "Definir como público"
 
 #, ai_translation
+msgid "Define balanced groups"
+msgstr "Definir grupos equilibrados"
+
+#, ai_translation
 msgid "Define the criteria for players to belong to this category."
 msgstr "Defina os critérios para os jogadores pertencerem a esta categoria."
 
@@ -2039,6 +2077,10 @@ msgstr "Defina os prêmios da categoria."
 #, ai_translation
 msgid "Define the screens and screen families to display."
 msgstr "Defina as telas e as famílias de tela para exibir."
+
+#, ai_translation
+msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
+msgstr "Defina grupos de torneios entre os quais os jogadores são distribuídos um de cada vez, levando a torneios com classificações equilibradas."
 
 #, ai_translation, python-format
 msgid "Delay #%(num)d:"
@@ -2165,6 +2207,10 @@ msgid "Deputy arbiters"
 msgstr "árbitros adjuntos"
 
 #, ai_translation
+msgid "Descending rating"
+msgstr "Avaliação descendente"
+
+#, ai_translation
 msgid "Description"
 msgstr "Descrição"
 
@@ -2224,8 +2270,9 @@ msgstr "Controladores de exibição ({num})"
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr "Os controladores de exibição permitem que você controle telas em seu evento a partir do seu servidor (ou qualquer dispositivo permitido)."
 
+#, ai_translation
 msgid "Display history on hover"
-msgstr ""
+msgstr "Histórico de exibição no hover"
 
 #, ai_translation
 msgid "Display the exit button"
@@ -2242,6 +2289,34 @@ msgstr "Exibição:"
 #, ai_translation, python-format
 msgid "Displayed round: %(round)d"
 msgstr "Exibido em redondo: %(round)d"
+
+#, ai_translation
+msgid "Distribute"
+msgstr "Distribuir"
+
+#, ai_translation, python-format
+msgid "Distribute the players (%(num)d)"
+msgstr "Distribua os jogadores (%(num)d)"
+
+#, ai_translation
+msgid "Distribute the players among the tournaments"
+msgstr "Distribua os jogadores entre os torneios"
+
+#, ai_translation
+msgid "Distribute the players by descending rating and choose the number of players participating in each tournament."
+msgstr "Distribua os jogadores por classificação decrescente e escolha o número de jogadores que participam em cada torneio."
+
+#, ai_translation
+msgid "Distributing the players is allowed only if all the tournaments use the same rating."
+msgstr "A distribuição dos jogadores só é permitida se todos os torneios utilizarem a mesma classificação."
+
+#, ai_translation
+msgid "Distributing the players is not allowed once one tournament is started."
+msgstr "Distribuir os jogadores não é permitido uma vez que um torneio é iniciado."
+
+#, ai_translation
+msgid "Distribution type"
+msgstr "Tipo de distribuição"
 
 #, ai_translation
 msgid "Djibouti"
@@ -2722,8 +2797,12 @@ msgid "Event"
 msgstr "Evento"
 
 #, ai_translation
+msgid "Event [{event}] has been imported."
+msgstr "Evento [{event}] foi importado."
+
+#, ai_translation
 msgid "Event [{uniq_id}] has been created."
-msgstr "O evento [{uniq_id}] foi criado."
+msgstr "Evento [{uniq_id}] foi criado."
 
 #, ai_translation
 msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch})."
@@ -2804,6 +2883,10 @@ msgstr "F"
 #, ai_translation
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
+
+#, fuzzy
+msgid "FA *** SHORT NAME FOR FIDE Arbiter"
+msgstr "FA"
 
 #, ai_translation
 msgid "FIDE"
@@ -3309,6 +3392,10 @@ msgid "I confirm that I want to overwrite the player data of this tournament."
 msgstr "Eu confirmo que eu quero substituir os dados do jogador deste torneio."
 
 #, fuzzy
+msgid "IA *** SHORT NAME FOR International Arbiter"
+msgstr "IA"
+
+#, fuzzy
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
 
@@ -3359,6 +3446,10 @@ msgstr "Importação"
 #, ai_translation
 msgid "Import TRF file"
 msgstr "Importar o ficheiro TRF"
+
+#, ai_translation
+msgid "Import a SCE file"
+msgstr "Importar um ficheiro SCE"
 
 #, ai_translation
 msgid "Import a tournament"
@@ -4140,6 +4231,10 @@ msgstr "N"
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
 
+#, fuzzy
+msgid "NA *** SHORT NAME FOR National Arbiter"
+msgstr "NA"
+
 #, ai_translation
 msgid "Name"
 msgstr "Nome"
@@ -4499,10 +4594,6 @@ msgstr "Sem tie-breaks"
 #, ai_translation
 msgid "No timers"
 msgstr "Sem temporizadores"
-
-#, ai_translation
-msgid "No title"
-msgstr "Sem título"
 
 #, ai_translation
 msgid "No tournaments"
@@ -5277,8 +5368,16 @@ msgid "Players of category [%(category)s]"
 msgstr "Jogadores da categoria [%(category)s]"
 
 #, ai_translation
+msgid "Players per tournament"
+msgstr "Jogadores por torneio"
+
+#, ai_translation
 msgid "Players screens show pairings by alphabetical order."
 msgstr "As telas dos jogadores mostram emparelhamentos por ordem alfabética."
+
+#, ai_translation
+msgid "Players successfully distributed among the tournaments."
+msgstr "Jogadores distribuídos com sucesso entre os torneios."
 
 #, ai_translation
 msgid "Players update"
@@ -5387,6 +5486,10 @@ msgstr "Aguarde até que as configurações do aplicativo tenham sido definidas 
 #, ai_translation
 msgid "Please wait…"
 msgstr "Por favor aguarde..."
+
+#, ai_translation
+msgid "Plugin [{plugin}] was enabled."
+msgstr "O plugin [{plugin}] foi ativado."
 
 #, ai_translation
 msgid "Plugins"
@@ -6199,6 +6302,10 @@ msgstr "Seleccionar jogador"
 #, ai_translation
 msgid "Select the players and the data to update:"
 msgstr "Selecione os jogadores e os dados a serem atualizados:"
+
+#, ai_translation
+msgid "Select the tournaments to add players to."
+msgstr "Selecione os torneios para adicionar jogadores."
 
 #, ai_translation
 msgid "Selection"
@@ -7123,6 +7230,10 @@ msgid "This document is only available for standard time control tournaments."
 msgstr "Este documento está disponível apenas para torneios de controle de tempo padrão."
 
 #, ai_translation
+msgid "This event can't be used by the current version of Sharly Chess."
+msgstr "Este evento não pode ser usado pela versão atual do Sharly Chess."
+
+#, ai_translation
 msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr "Este evento é privado (por padrão, as telas não são visíveis pelos espectadores)."
 
@@ -7978,6 +8089,10 @@ msgstr "Aviso: recursos experimentais estão ativados!"
 msgid "Warning: round #%(round)d is not finished."
 msgstr "Aviso: a rodada n° %(round)d não está terminada."
 
+#, ai_translation
+msgid "Warning: some players do not match the criteria of any of the selected tournaments."
+msgstr "Aviso: alguns jogadores não correspondem aos critérios de qualquer um dos torneios selecionados."
+
 #, ai_translation, python-format
 msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr "Aviso: os jogadores %(player_count)d no torneio serão excluídos."
@@ -7985,6 +8100,14 @@ msgstr "Aviso: os jogadores %(player_count)d no torneio serão excluídos."
 #, ai_translation
 msgid "Warning: the deletion is permanent!"
 msgstr "Aviso: a eliminação é permanente!"
+
+#, ai_translation
+msgid "Warning: too few players selected."
+msgstr "Aviso: muito poucos jogadores selecionados."
+
+#, ai_translation
+msgid "Warning: too many players selected."
+msgstr "Aviso: muitos jogadores selecionados."
 
 #, ai_translation
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
@@ -8014,8 +8137,9 @@ msgstr "Bem-vindo ao Sharly Chess!"
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr "Quando definida, a mensagem de alerta é exibida em um banner de rolagem na parte inferior das telas."
 
+#, ai_translation
 msgid "When hovering a player's name with the mouse, display its history."
-msgstr ""
+msgstr "Ao passar o nome de um jogador com o mouse, exiba sua história."
 
 #, ai_translation
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
@@ -8132,6 +8256,10 @@ msgstr "Você não tem permissão para excluir o torneio."
 #, ai_translation
 msgid "You are not allowed to delete this account."
 msgstr "Você não tem permissão para excluir esta conta."
+
+#, ai_translation
+msgid "You are not allowed to distribute the players."
+msgstr "Você não tem permissão para distribuir os jogadores."
 
 #, ai_translation
 msgid "You are not allowed to duplicate this account."
@@ -8756,4 +8884,7 @@ msgstr "½ - ½ (U)"
 
 #~ msgid "Choose at least one rating type."
 #~ msgstr "Escolha pelo menos um tipo de classificação."
+
+#~ msgid "No title"
+#~ msgstr "Sem título"
 
