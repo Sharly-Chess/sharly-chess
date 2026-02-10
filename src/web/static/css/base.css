@@ -677,8 +677,8 @@ body[data-bs-theme=light] .btn-primary {
 [data-bs-theme=dark] .dropdown-menu {
     --bs-dropdown-bg: #515b5c;
     --bs-dropdown-link-color: var(--bs-body-color);
-    --bs-dropdown-link-hover-color: var(--pw-contrast-text);
-    --bs-dropdown-link-hover-bg: var(--bs-primary);
+    --bs-dropdown-link-hover-color: var(--bs-body-color);
+    --bs-dropdown-link-hover-bg: var(--bs-secondary);
     --bs-dropdown-link-active-color: var(--pw-contrast-text);
     --bs-dropdown-link-active-bg: var(--bs-primary);
     --bs-dropdown-link-disabled-color: var(--bs-tertiary-color);

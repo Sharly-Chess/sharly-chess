@@ -619,7 +619,6 @@ class ProjectBuilder(ABC):
         sql_dir: Path = self.src_dir / 'database' / 'sql'
         files += [
             sql_dir / 'create_fide.sql',
-            PLUGINS_DIR / 'ffe' / 'create_ffe.sql',
             PLUGINS_DIR / 'fra_schools' / 'create_fra_schools.sql',
         ]
         custom_dir: Path = self.src_dir / 'custom'

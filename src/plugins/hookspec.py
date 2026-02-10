@@ -154,7 +154,10 @@ class AppHookSpecs:
 
     @hookspec
     async def augment_player_after_search(
-        self, stored_player: 'StoredPlayer', data_source: 'DataSource'
+        self,
+        stored_player: 'StoredPlayer',
+        data_source: 'DataSource',
+        with_arbiter_title: bool,
     ):
         """Add plugin specific data to a player after a successful player search"""
 

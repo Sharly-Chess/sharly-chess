@@ -24,7 +24,7 @@ from database.sqlite.event.event_store import (
     StoredRole,
 )
 from plugins.manager import plugin_manager
-from utils.enum import FormAction, RoleType, FIDEArbiterTitle
+from utils.enum import FormAction, RoleType, FideArbiterTitle
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -136,6 +136,7 @@ class AccountAdminController(BaseEventAdminController):
                 'first_name': '',
                 'last_name': '',
                 'fide_id': '',
+                'fide_arbiter_title': '',
                 'password': '',
                 'mail': '',
                 'phone': '',
@@ -147,7 +148,7 @@ class AccountAdminController(BaseEventAdminController):
             }
         )
         fide_arbiter_title_options = {'': '-'} | {
-            title.value: title.name for title in FIDEArbiterTitle
+            title.value: title.name for title in FideArbiterTitle
         }
         form_data = default_data | data
         return {
@@ -268,8 +269,8 @@ class AccountAdminController(BaseEventAdminController):
         first_name = WebContext.form_data_to_str(flat_data, 'first_name') or ''
         last_name = WebContext.form_data_to_str(flat_data, field := 'last_name') or ''
         fide_id = WebContext.form_data_to_int(flat_data, 'fide_id')
-        fide_arbiter_title = WebContext.form_data_to_str(
-            flat_data, 'fide_arbiter_title'
+        fide_arbiter_title = (
+            WebContext.form_data_to_str(flat_data, 'fide_arbiter_title') or ''
         )
 
         if not last_name:

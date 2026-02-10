@@ -129,6 +129,14 @@ msgid "%(player)s - Round %(num)s"
 msgstr "%(player)s - Ronde %(num)s"
 
 #, python-format
+msgid "%(rating)s (%(rating_type)s)"
+msgstr "%(rating)s (%(rating_type)s)"
+
+#, python-format
+msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
+msgstr "%(rating)s (%(rating_type)s) : %(min)d → %(max)d"
+
+#, python-format
 msgid "%(set_name)s (check-in)"
 msgstr "%(set_name)s (pointage)"
 
@@ -561,6 +569,9 @@ msgstr "Tous les tournois"
 msgid "All values may be modified by the arbiter if necessary."
 msgstr "Toutes les valeurs peuvent être modifiées par l’arbitre si nécessaire."
 
+msgid "Allocate players to the first tournament for which the criteria are met."
+msgstr "Attribuer les joueur·euses au premier tournoi pour lequel les critères sont vérifiés."
+
 msgid "Allow links to this screen"
 msgstr "Autoriser les liens vers cet écran"
 
@@ -985,6 +996,15 @@ msgstr "Cambodge"
 msgid "Cameroon"
 msgstr "Cameroun"
 
+msgid "Can not distribute the players (no players found)."
+msgstr "Impossible de répartir les joueur·euses (aucun·e joueur·euse)."
+
+msgid "Can not distribute the players (no tournaments found)."
+msgstr "Impossible de répartir les joueur·euses (aucun tournoi)."
+
+msgid "Can not distribute the players (only one tournament)."
+msgstr "Impossible de répartir les joueur·euses (un seul tournoi)."
+
 msgid "Can't see your event?"
 msgstr "Vous ne voyez pas votre événement ?"
 
@@ -1142,6 +1162,9 @@ msgstr "Effacer le journal"
 
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
+
+msgid "Click and drag to select balanced groups."
+msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
 
 msgid "Click to check-in the player."
 msgstr "Cliquer ici pour pointer le·la joueur·euse."
@@ -1404,6 +1427,9 @@ msgstr "Créer un évènement"
 msgid "Create hour"
 msgstr "Créer un horaire"
 
+msgid "Create manually"
+msgstr "Créer manuellement"
+
 msgid "Create permission"
 msgstr "Créer une permission"
 
@@ -1592,6 +1618,9 @@ msgstr "Définir comme catégorie générale"
 msgid "Define as public"
 msgstr "Définir comme public"
 
+msgid "Define balanced groups"
+msgstr "Définir des groupes équilibrés"
+
 msgid "Define the criteria for players to belong to this category."
 msgstr "Définir les critères selon lesquels les joueur·euses appartiennent à cette catégorie."
 
@@ -1603,6 +1632,9 @@ msgstr "Définir les prix de la catégorie."
 
 msgid "Define the screens and screen families to display."
 msgstr "Définir les écrans et familles d'écrans à afficher."
+
+msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
+msgstr "Définir des groupes de tournois parmi lesquels les joueur·euses sont répartis un par un, aboutissant à des tournois aux classements équilibrés."
 
 #, python-format
 msgid "Delay #%(num)d:"
@@ -1698,6 +1730,9 @@ msgstr "Arbitre adjoint·e"
 msgid "Deputy arbiters"
 msgstr "Arbitres adjoint·es"
 
+msgid "Descending rating"
+msgstr "Classement décroissant"
+
 msgid "Description"
 msgstr "Description"
 
@@ -1758,6 +1793,28 @@ msgstr "Affichage :"
 #, python-format
 msgid "Displayed round: %(round)d"
 msgstr "Ronde affichée : %(round)d"
+
+msgid "Distribute"
+msgstr "Répartir"
+
+#, python-format
+msgid "Distribute the players (%(num)d)"
+msgstr "Répartir les joueur·euses (%(num)d)"
+
+msgid "Distribute the players among the tournaments"
+msgstr "Répartir les joueur·euses dans les tournois"
+
+msgid "Distribute the players by descending rating and choose the number of players participating in each tournament."
+msgstr "Répartir les joueur·euses par classement décroissant et choisir combien participent à chaque chaque tournoi."
+
+msgid "Distributing the players is allowed only if all the tournaments use the same rating."
+msgstr "Répartir les joueur·euses dans les tournois n'est autorisé que lorsque tous les tournois utilisent le même classement."
+
+msgid "Distributing the players is not allowed once one tournament is started."
+msgstr "La répartition des joueur·euses dans les tournois n'est plus autorisée lorsqu'un tournoi est démarré."
+
+msgid "Distribution type"
+msgstr "Type de répartition"
 
 msgid "Djibouti"
 msgstr "Djibouti"
@@ -2130,6 +2187,9 @@ msgstr "Éthiopie"
 msgid "Event"
 msgstr "Évènement"
 
+msgid "Event [{event}] has been imported."
+msgstr "L'évènement [{event}] a été importé."
+
 msgid "Event [{uniq_id}] has been created."
 msgstr "L'évènement [{uniq_id}] a été créé."
 
@@ -2193,6 +2253,9 @@ msgstr "F"
 
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
+
+msgid "FA *** SHORT NAME FOR FIDE Arbiter"
+msgstr "AF"
 
 msgid "FIDE"
 msgstr "FIDE"
@@ -2574,6 +2637,9 @@ msgstr "Je confirme vouloir supprimer ce tournoi."
 msgid "I confirm that I want to overwrite the player data of this tournament."
 msgstr "Je confirme vouloir écraser les données des joueur·euses de ce tournoi."
 
+msgid "IA *** SHORT NAME FOR International Arbiter"
+msgstr "AI"
+
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "MI"
 
@@ -2613,6 +2679,9 @@ msgstr "Importer"
 
 msgid "Import TRF file"
 msgstr "Importer un fichier TRF"
+
+msgid "Import a SCE file"
+msgstr "Importer un fichier SCE"
 
 msgid "Import a tournament"
 msgstr "Importer un tournoi"
@@ -3212,6 +3281,9 @@ msgstr "N"
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
 
+msgid "NA *** SHORT NAME FOR National Arbiter"
+msgstr "AN"
+
 msgid "Name"
 msgstr "Nom"
 
@@ -3484,9 +3556,6 @@ msgstr "Aucun départage"
 
 msgid "No timers"
 msgstr "Aucun chronomètre"
-
-msgid "No title"
-msgstr "Aucun titre"
 
 msgid "No tournaments"
 msgstr "Aucun tournoi"
@@ -4083,8 +4152,14 @@ msgstr "Les joueur·euses peuvent avoir des classements estimés par défaut en 
 msgid "Players of category [%(category)s]"
 msgstr "Joueur·euses de la catégorie [%(category)s]"
 
+msgid "Players per tournament"
+msgstr "Joueur·euses par tournoi"
+
 msgid "Players screens show pairings by alphabetical order."
 msgstr "Les écrans d'affichage des joueur·euses présentent les appariements par ordre alphabétique."
+
+msgid "Players successfully distributed among the tournaments."
+msgstr "Les joueur·euses ont été réparti·es dans les tournois."
 
 msgid "Players update"
 msgstr "Mise à jour des joueur·euses"
@@ -4169,6 +4244,9 @@ msgstr "La configuration est en cours sur le serveur, veuillez patienter…"
 
 msgid "Please wait…"
 msgstr "Veuillez patienter…"
+
+msgid "Plugin [{plugin}] was enabled."
+msgstr "Le plugin [{plugin}] a été activé."
 
 msgid "Plugins"
 msgstr "Plug-ins"
@@ -4801,6 +4879,9 @@ msgstr "Sélectionner un·e joueur·euse"
 
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
+
+msgid "Select the tournaments to add players to."
+msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
 
 msgid "Selection"
 msgstr "Sélection"
@@ -5499,6 +5580,9 @@ msgstr "Ce document est seulement disponible pour les tournois toutes rondes."
 msgid "This document is only available for standard time control tournaments."
 msgstr "Ce document est disponible uniquement pour les tournois en cadence classique."
 
+msgid "This event can't be used by the current version of Sharly Chess."
+msgstr "Cet évènement ne peut pas être utilisé par la version actuelle de Sharly Chess."
+
 msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr "Cet évènement est privé (par défaut, les écrans ne sont pas visibles des spectateur·ices)."
 
@@ -6159,12 +6243,21 @@ msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 msgid "Warning: round #%(round)d is not finished."
 msgstr "Attention : la ronde n°%(round)d n'est pas terminée."
 
+msgid "Warning: some players do not match the criteria of any of the selected tournaments."
+msgstr "Attention : certain·es joueur·euses ne correspondent aux critères d'aucun des tournois sélectionnés."
+
 #, python-format
 msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr "Attention : les %(player_count)d joueur·euses du tournoi seront supprimé·es."
 
 msgid "Warning: the deletion is permanent!"
 msgstr "Attention : la suppression est définitive !"
+
+msgid "Warning: too few players selected."
+msgstr "Attention : trop peu de joueur·euses sélectionné·es."
+
+msgid "Warning: too many players selected."
+msgstr "Attention : trop de joueur·euses sélectionné·es."
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
 msgstr "Attention : vous essayez d'exécuter une opération interdite par le règlement FIDE."
@@ -6276,6 +6369,9 @@ msgstr "Vous n'êtes pas autorisé·e à supprimer le tournoi."
 
 msgid "You are not allowed to delete this account."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."
+
+msgid "You are not allowed to distribute the players."
+msgstr "Vous n'êtes pas autorisé·e à répartir les joueur·euses."
 
 msgid "You are not allowed to duplicate this account."
 msgstr "Vous n'êtes pas autorisé·e à dupliquer ce compte."

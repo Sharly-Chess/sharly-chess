@@ -122,7 +122,7 @@ class FFESqlServer(SqlServer):
             last_name=row['Nom'].upper(),
             date_of_birth=date_of_birth,
             gender=PapiPlayerGender.get_core_object(row['Sexe']),
-            title=PapiPlayerTitle.get_core_object(row['FideTitre'] or '').value,
+            title=PapiPlayerTitle.get_core_object(row['FideTitre'] or ''),
             ratings={
                 TournamentRating.STANDARD.value: PlayerRating.from_type(
                     row['Elo'], PapiPlayerRatingType.get_core_object(row['Fide'])

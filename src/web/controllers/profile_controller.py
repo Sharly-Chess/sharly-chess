@@ -158,8 +158,8 @@ class ProfileController(BaseController):
                             'Something went wrong. Please ask your administrator to recreate your account.'
                         )
                     else:
-                        SessionUserAccountId(request, event_uniq_id).set(account.id)
-                        SessionUserAccountPasswordHash(request, event_uniq_id).set(
+                        SessionUserAccountId(request, admin_event).set(account.id)
+                        SessionUserAccountPasswordHash(request, admin_event).set(
                             account.password_hash
                         )
                         Message.success(
@@ -185,7 +185,7 @@ class ProfileController(BaseController):
     async def htmx_profile_logout(self, request: HTMXRequest) -> ClientRedirect:
         web_context = ProfileWebContext(request)
         event = web_context.get_admin_event()
-        SessionUserAccountId(request, event.uniq_id).unset()
-        SessionUserAccountPasswordHash(request, event.uniq_id).unset()
+        SessionUserAccountId(request, event).unset()
+        SessionUserAccountPasswordHash(request, event).unset()
         Message.success(request, _('Successfully logged out.'))
         return ClientRedirect(admin_event_url(request, event.uniq_id))

@@ -410,7 +410,7 @@ msgid "T7 Player reporting"
 msgstr "T7 Signalement d'un·e joueur·euse"
 
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
-msgstr "e système d'accélération de Bakou n'est pas reconnu par la FFE, il peut y avoir des différences dans l'affichage des appariements sur le site web de la FFE."
+msgstr "Le système d'accélération de Bakou n'est pas reconnu par la FFE, il peut y avoir des différences dans l'affichage des appariements sur le site web de la FFE."
 
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."

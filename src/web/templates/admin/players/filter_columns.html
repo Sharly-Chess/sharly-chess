@@ -26,6 +26,7 @@
             <li class="dropdown-item title text-nowrap">
                 <input
                     type="checkbox"
+                    class="form-check-input blue-checkbox"
                     {% if enabled_columns|length == visible_columns|length %}checked{% endif %}
                     onclick="$('input.hideable-columns').prop('checked', this.checked)"
                 />
@@ -42,9 +43,9 @@
                         id="{{ name }}-{{ loop.index }}"
                         name="{{ name }}"
                         value="{{ column.id }}"
+                        class="form-check-input blue-checkbox mb-1 {% if column.is_hideable %}hideable-columns{% endif %}"
                         {% if column.is_visible %}checked{% endif %}
                         {% if not column.is_hideable %}disabled{% endif %}
-                        class="{% if column.is_hideable %}hideable-columns{% endif %}"
                     />
                     <label for="{{ name }}-{{ loop.index }}" class="form-label w-100 my-0">
                         {{ column.name }}
