@@ -6,6 +6,7 @@ from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from data.access_levels.actions import AuthAction
 from data.tournament import Tournament
+from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
 from utils.date_time import format_timestamp_date_time
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
@@ -92,6 +93,6 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
 
-        # TODO: upload to custom location
+        CustomUploadUploader.schedule_upload(tournament, True)
 
         return self._render_upload_results(web_context)
