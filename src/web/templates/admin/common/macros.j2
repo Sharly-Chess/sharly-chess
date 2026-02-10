@@ -802,9 +802,9 @@ with_indicator: display a loading indicator, optional
                                 id="{{ default_checkbox_id }}"
                                 name="{{ default_checkbox_name }}"
                                 type="checkbox"
+                                class="form-check-input me-2 mb-2"
                                 aria-describedby="{{ id }}-help {{ id }}-error"
                                 {% if data[default_checkbox_name] == 'on' %}checked{% endif %}
-                                class="me-2"
 
                             />
                             {{ default_checkbox_text or _('Use default') }}

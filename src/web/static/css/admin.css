@@ -284,6 +284,15 @@
     font-size: 1.25rem;
 }
 
+.blue-checkbox {
+    font-size: 90%;
+}
+
+.blue-checkbox:checked {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
 /* Air DatePicker */
 
 #air-datepicker-global-container {

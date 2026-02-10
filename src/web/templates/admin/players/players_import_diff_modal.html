@@ -74,6 +74,7 @@
                             <th class="text-nowrap text-start">
                                 <input
                                     type="checkbox"
+                                    class="form-check-input blue-checkbox"
                                     onclick="
                                         $('.row-index-checkbox').prop('checked', this.checked);
                                         $('.row-index-checkbox').trigger('change');"
@@ -112,7 +113,7 @@
                                             ></i>
                                         {% else %}
                                             <input
-                                                class="row-index-checkbox ps-1"
+                                                class="form-check-input blue-checkbox row-index-checkbox ps-1"
                                                 type="checkbox"
                                                 name="row_indexes"
                                                 value="{{ index }}"
