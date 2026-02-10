@@ -1272,8 +1272,8 @@ class EventDatabase(MigrationDatabase):
 
     def update_board_last_result_update(
         self, board_id: int, clear: bool = False
-    ) -> float | None:
-        """Updates board timestamp"""
+    ) -> str | None:
+        """Updates board timestamp to current UTC datetime"""
 
         if clear:
             self.execute(
@@ -1282,14 +1282,18 @@ class EventDatabase(MigrationDatabase):
             )
             return None
         else:
-            date = time.time()
-
             self.execute(
-                'UPDATE `board` SET `last_result_update` = ? WHERE `id` = ?',
-                (date, board_id),
+                "UPDATE `board` SET `last_result_update` = datetime('now') WHERE `id` = ?",
+                (board_id,),
             )
 
-            return date
+            self.execute(
+                'SELECT `last_result_update` FROM `board` WHERE `id` = ?',
+                (board_id,),
+            )
+            result = self.fetchone()
+
+            return result['last_result_update'] if result else None
 
     # ---------------------------------------------------------------------------------
     # StoredFamily

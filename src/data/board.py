@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional, Literal
 
 from database.sqlite.event.event_store import StoredBoard
 from database.sqlite.event.event_database import EventDatabase
-from utils.date_time import timestamp_to_datetime, format_datetime
+from utils.date_time import format_datetime
 from utils.enum import Result, PlayerRatingType, PlayerTitle
 
 if TYPE_CHECKING:
@@ -122,7 +122,9 @@ class Board:
 
     @property
     def last_result_update(self) -> datetime | None:
-        return timestamp_to_datetime(self.stored_board.last_result_update)
+        if self.stored_board.last_result_update:
+            return datetime.fromisoformat(self.stored_board.last_result_update)
+        return None
 
     @property
     def last_result_update_str(self) -> str:
