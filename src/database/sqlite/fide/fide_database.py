@@ -134,6 +134,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
         )
         fields: dict[str, tuple[str, Callable[[Any], Any] | None]] = {
             'fideid': ('fide_id', lambda s: int(s.strip())),
+            'name': ('name', None),
             'country': ('federation', lambda s: s.upper()),
             'sex': ('gender', PlayerGender.from_fide_value),
             'title': ('fide_title', PlayerTitle.from_fide_value),
