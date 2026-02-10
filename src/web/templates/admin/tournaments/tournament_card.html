@@ -64,7 +64,21 @@
     <div class="card-block">
         <div class="card-block-content">
             <div class="text-start">
-                {{ tournament.rating }} ({{ tournament.player_rating_type.name }})
+                {{
+                    _(
+                        '%(rating)s (%(rating_type)s)',
+                        rating=tournament.rating,
+                        rating_type=tournament.player_rating_type.name,
+                    )
+                    if tournament.tournament_players else
+                    _(
+                        '%(rating)s (%(rating_type)s): %(min)d→%(max)d',
+                        rating=tournament.rating,
+                        rating_type=tournament.player_rating_type.name,
+                        min=tournament.min_player_rating,
+                        max=tournament.max_player_rating
+                    )
+                }}
             </div>
             {% if tournament.rating != 1 %}
                 <div class="text-start d-flex gap-2">
