@@ -54,7 +54,8 @@
                             {{ column.header_content }}
                         {% endif %}
                         {% if is_sort_column %}
-                            <i class="bi-sort-{{ 'up' if is_sort_asc else 'down' }} text-danger ps-1"></i>
+                            {% set is_asc_sort_icon = not is_sort_asc if column.swap_asc_desc_icon else is_sort_asc %}
+                            <i class="bi-sort-{{ 'up' if is_asc_sort_icon else 'down' }} text-danger ps-1"></i>
                         {% endif %}
                     </div>
                     {% if column.is_filtrable and column.filter_values|length > 1 %}
