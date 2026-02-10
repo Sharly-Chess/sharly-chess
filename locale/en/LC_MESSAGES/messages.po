@@ -133,7 +133,7 @@ msgid "%(rating)s (%(rating_type)s)"
 msgstr ""
 
 #, python-format
-msgid "%(rating)s (%(rating_type)s): %(min)d→%(max)d"
+msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
 msgstr ""
 
 #, python-format
