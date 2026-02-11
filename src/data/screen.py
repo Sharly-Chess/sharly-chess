@@ -714,7 +714,7 @@ class Screen:
             return self.stored_screen.last_update or 0.0
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
-        return self.family.last_update or 0.0
+        return self.family.last_update.timestamp() if self.family.last_update else 0.0
 
     @property
     def background_image(self) -> str:

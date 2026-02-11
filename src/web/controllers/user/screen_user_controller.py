@@ -105,7 +105,9 @@ class ScreenUserController(BaseScreenUserController):
             if (
                 max(
                     web_context.family.event.last_update,
-                    web_context.family.last_update or 0,
+                    web_context.family.last_update.timestamp()
+                    if web_context.family.last_update
+                    else 0,
                 )
                 > date
             ):

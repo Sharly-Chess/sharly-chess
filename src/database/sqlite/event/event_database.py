@@ -1334,7 +1334,9 @@ class EventDatabase(MigrationDatabase):
             number=row['number'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
-            last_update=row['last_update'],
+            last_update=cls.load_optional_timestamp_from_database_field(
+                row['last_update']
+            ),
         )
 
     def get_stored_family(self, family_id: int) -> StoredFamily | None:

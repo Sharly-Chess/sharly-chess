@@ -463,7 +463,9 @@ class ScreenSet:
             return self.stored_screen_set.last_update
         else:
             assert self.family is not None
-            return self.family.last_update
+            return (
+                self.family.last_update.timestamp() if self.family.last_update else None
+            )
 
     @property
     def last_update_str(self) -> str:
