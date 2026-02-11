@@ -5067,8 +5067,8 @@ msgid "Some files are missing."
 msgstr "Des fichiers sont manquants."
 
 #, python-format
-msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using other formats is highly recommended."
-msgstr "Certaines des données de Sharly Chess ne sont pas incluses dans le format %(format)s. Pour transférer des données ou faire des sauvegardes, l'utilisation d'autres formats est fortement recommandée."
+msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using the SCE format is highly recommended."
+msgstr "Certaines des données de Sharly Chess ne sont pas incluses dans le format %(format)s. Pour transférer des données ou faire des sauvegardes, l'utilisation du format SCE est fortement recommandée."
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
