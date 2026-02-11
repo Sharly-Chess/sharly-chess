@@ -16,7 +16,7 @@ from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
 from common.exception import SharlyChessException, OptionError, ImporterError, FormError
-from common.i18n import _
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.board import Board, PlayerRatingType
@@ -153,7 +153,7 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
 class TournamentAdminController(BaseEventAdminController):
     guards = [
         EventGuard(),
-        ActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB),
+        TournamentActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB),
     ]
 
     @classmethod
@@ -890,7 +890,6 @@ class TournamentAdminController(BaseEventAdminController):
     @get(
         path='/tournament-export/data-loss-modal/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
         name='tournament-export-data-loss-modal',
-        guards=[TournamentActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB)],
     )
     async def htmx_tournament_export_loss_warning_modal(
         self,
@@ -908,7 +907,6 @@ class TournamentAdminController(BaseEventAdminController):
     @get(
         path='/tournament-export/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
         name='admin-tournament-export',
-        guards=[TournamentActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB)],
     )
     async def admin_tournament_export(
         self,
@@ -1643,7 +1641,6 @@ class TournamentAdminController(BaseEventAdminController):
             '/random-player/{event_uniq_id:str}/{tournament_id:int}',
         ],
         name='admin-random-player',
-        guards=[TournamentActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB)],
     )
     async def htmx_random_player(
         self,
@@ -1688,6 +1685,42 @@ class TournamentAdminController(BaseEventAdminController):
             trigger_event='modal_opened',
             after='settle',
         )
+
+    @get(
+        path='/delete-unpaired-players/{event_uniq_id:str}/{tournament_id:int}',
+        name='delete-unpaired-players',
+    )
+    async def htmx_delete_unpaired_players(
+            self,
+            request: HTMXRequest,
+            tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        players = [
+            player
+            for player in tournament.tournament_players
+            if not player.has_real_pairings
+        ]
+        with EventDatabase(event.uniq_id, True) as database:
+            for player in players:
+                database.delete_stored_player(player.id)
+        if players:
+            Message.success(
+                request,
+                ngettext(
+                    '{count} player deleted.',
+                    '{count} players deleted.',
+                    len(players),
+                ).format(count=len(players)),
+            )
+        else:
+            Message.warning(request, _('No players deleted.'))
+        web_context = TournamentAdminWebContext(
+            request, tournament_id, reload_event=True
+        )
+        return self._admin_event_tournaments_render(web_context)
 
     @classmethod
     def _player_distribution_modal_context(

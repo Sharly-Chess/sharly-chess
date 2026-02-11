@@ -346,13 +346,17 @@
             </li>
             {% if tournament.started %}
                 <li
-                    class="dropdown-item text-start text-secondary"
                     {{ macros.tooltip_attributes(
-                        'warning', _('Import is unavailable once the tournament has started.'), 'right'
+                        'warning', _('Unavailable once the tournament has started.'), 'top'
                     ) }}
                 >
-                    <i class="bi-box-arrow-in-right pe-1"></i>
-                    {{ _('Import') }}
+                    <button
+                        class="dropdown-item text-start text-secondary"
+                        disabled
+                    >
+                        <i class="bi-box-arrow-in-right pe-1"></i>
+                        {{ _('Import') }}
+                    </button>
                 </li>
             {% else %}
                 <li class="dropdown-submenu">
@@ -397,10 +401,14 @@
                         {% set is_unavailable_message = exporter.is_unavailable_message(tournament)  %}
                         {% if is_unavailable_message %}
                             <li
-                                class="dropdown-item text-start text-secondary"
-                                {{ macros.tooltip_attributes('warning', is_unavailable_message, 'right') }}
+                                {{ macros.tooltip_attributes('warning', is_unavailable_message, 'top') }}
                             >
-                                {{ exporter.name }}
+                                <button
+                                    class="dropdown-item text-start text-secondary"
+                                    disabled
+                                >
+                                    {{ exporter.name }}
+                                </button>
                             </li>
                         {% else %}
                             {% set warning_message = exporter.warning_message(tournament) %}
@@ -438,6 +446,34 @@
             </li>
             <li>
                 <span
+                    {% if not tournament.started %}
+                        {{ macros.tooltip_attributes(
+                            'warning', _('Unavailable before the tournament start.')
+                        ) }}
+                    {% endif %}
+                >
+                    <button
+                        {% if tournament.started %}
+                            class="dropdown-item text-nowrap"
+                            hx-get="{{ url_for(
+                                'delete-unpaired-players',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=tournament.id
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                        {% else %}
+                            class="dropdown-item text-nowrap text-secondary"
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi-trash-fill pe-1"></i>
+                        {{ _('Delete unpaired players') }}
+                    </button>
+                </span>
+            </li>
+            <li>
+                <span
                     {{ macros.tooltip_attributes('info', _('May be used for per-round prize giveaways etc.'), 'top') }}
                 >
                     <button
@@ -447,7 +483,7 @@
                         hx-indicator="#please-wait"
                     >
                         <i class="bi bi-dice-3-fill pe-1"></i>
-                        {{ _('Choose a player at random') }}
+                        {{ _('Choose a random player') }}
                     </button>
                 </span>
             </li>

@@ -1134,7 +1134,7 @@ msgstr "Chine"
 msgid "Chinese Taipei"
 msgstr "Taipei chinois"
 
-msgid "Choose a player at random"
+msgid "Choose a random player"
 msgstr "Choisir un·e joueur·euse au hasard"
 
 msgid "Choose at least one value."
@@ -1715,6 +1715,9 @@ msgstr "Supprimer le tournoi"
 
 msgid "Delete tournaments"
 msgstr "Supprimer des tournois"
+
+msgid "Delete unpaired players"
+msgstr "Supprimer les joueur·euses non-apparié·es"
 
 msgid "Deletes all the criteria of this category."
 msgstr "Supprime tous les critères de cette catégorie."
@@ -2718,9 +2721,6 @@ msgstr "Importer un tournoi"
 msgid "Import a tournament to the event from an external source."
 msgstr "Importer un tournoi à l'évènement depuis une source externe."
 
-msgid "Import is unavailable once the tournament has started."
-msgstr "L'import n'est plus disponible une fois le tournoi démarré."
-
 msgid "Import players from a CSV file."
 msgstr "Importer des joueur·euses depuis un fichier CSV."
 
@@ -3510,6 +3510,9 @@ msgstr "Aucune permission."
 
 msgid "No players"
 msgstr "Aucun·e joueur·euse"
+
+msgid "No players deleted."
+msgstr "Aucun·e joueur·euse supprimé·e."
 
 msgid "No players imported."
 msgstr "Aucun·e joueur·euse importé·e."
@@ -5954,6 +5957,12 @@ msgstr "Ouganda"
 msgid "Ukraine"
 msgstr "Ukraine"
 
+msgid "Unavailable before the tournament start."
+msgstr "Non-disponible avant le début du tournoi."
+
+msgid "Unavailable once the tournament has started."
+msgstr "Non-disponible une fois le tournoi démarré."
+
 msgid "Undefined"
 msgstr "Non défini"
 
@@ -6729,6 +6738,11 @@ msgid "{count} hour could not be moved (time conflict)."
 msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] "{count} horaire n'a pas pu être déplacé (conflit d'heures)."
 msgstr[1] "{count} horaires n'ont pas pu être déplacés (conflit d'heures)."
+
+msgid "{count} player deleted."
+msgid_plural "{count} players deleted."
+msgstr[0] "{count} joueur·euse supprimé·e."
+msgstr[1] "{count} joueur·euses supprimé·es."
 
 msgid "{count} player successfully imported."
 msgid_plural "{count} players successfully imported."
