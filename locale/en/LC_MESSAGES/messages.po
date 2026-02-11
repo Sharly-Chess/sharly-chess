@@ -1564,7 +1564,7 @@ msgstr ""
 msgid "Dashed border"
 msgstr ""
 
-msgid "Data loss"
+msgid "Data loss at tournaments, players and pairings level."
 msgstr ""
 
 msgid "Data source"
@@ -2247,6 +2247,13 @@ msgid "Experimental features in version %(version)s are:"
 msgstr ""
 
 msgid "Export"
+msgstr ""
+
+msgid "Export ALL the data of the event."
+msgstr ""
+
+#, python-format
+msgid "Export ALL the data of the tournament's %(player_count)d players (but ONLY the player data)."
 msgstr ""
 
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
@@ -4516,9 +4523,6 @@ msgid "Rating:"
 msgstr ""
 
 msgid "Ratings"
-msgstr ""
-
-msgid "Recommended"
 msgstr ""
 
 #, python-format

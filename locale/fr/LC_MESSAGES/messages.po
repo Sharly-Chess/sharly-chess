@@ -1564,8 +1564,8 @@ msgstr "Un jour"
 msgid "Dashed border"
 msgstr "Bordure pointillée"
 
-msgid "Data loss"
-msgstr "Perte de données"
+msgid "Data loss at tournaments, players and pairings level."
+msgstr "Perte de données au niveau du tournoi, des joueur·euses et des appariements."
 
 msgid "Data source"
 msgstr "Source de données"
@@ -2248,6 +2248,13 @@ msgstr "Les fonctionnalités expérimentales en version %(version)s sont :"
 
 msgid "Export"
 msgstr "Exporter"
+
+msgid "Export ALL the data of the event."
+msgstr "Exporter TOUTES les données de l'évènement."
+
+#, python-format
+msgid "Export ALL the data of the tournament's %(player_count)d players (but ONLY the player data)."
+msgstr "Exporter TOUTES les données des %(player_count)d joueur·euses du tournoi (mais UNIQUEMENT les données des joueur·euses)."
 
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
 msgstr "Exporter toutes les parties de la dernère ronde du tournoi au format PGN (usage : transfert d'appariements)."
@@ -4520,9 +4527,6 @@ msgstr "Classement :"
 msgid "Ratings"
 msgstr "Classements"
 
-msgid "Recommended"
-msgstr "Recommandé"
-
 #, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
@@ -5064,7 +5068,7 @@ msgstr "Des fichiers sont manquants."
 
 #, python-format
 msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using other formats is highly recommended."
-msgstr "Certaines des données de Sharly Chess ne sont pas inclus dans le format %(format)s. Pour transférer des données ou faire des sauvegardes, l'utilisation d'autres formats est fortement recommendée."
+msgstr "Certaines des données de Sharly Chess ne sont pas incluses dans le format %(format)s. Pour transférer des données ou faire des sauvegardes, l'utilisation d'autres formats est fortement recommandée."
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."

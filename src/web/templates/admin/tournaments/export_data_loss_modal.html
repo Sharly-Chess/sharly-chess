@@ -29,24 +29,34 @@
                         'admin-event-export',
                         event_uniq_id=admin_event.uniq_id,
                     ) }}"
+                    {{ macros.tooltip_attributes(
+                        'info', _('Export ALL the data of the event.'), 'right'
+                    ) }}
                 >
-                    <i class="bi-star-fill pe-1" {{ macros.tooltip_attributes('', _('Recommended')) }}></i>
+                    <i class="bi-star-fill pe-1"></i>
                     {{ _('Export event') }}
                     {{ _('(%(format)s format)', format='SCE') }}
                 </button>
-                <button
-                    class="export-button btn btn-outline-primary text-nowrap w-100"
-                    data-export-url="{{ url_for(
-                        'event-export-players',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        exporter_id='csv',
-                    ) }}"
-                >
-                    <i class="bi-star-fill pe-1" {{ macros.tooltip_attributes('', _('Recommended')) }}></i>
-                    {{ _('Export players') }}
-                    {{ _('(%(format)s format)', format='CSV') }}
-                </button>
+                {% if admin_tournament.player_count %}
+                    <button
+                        class="export-button btn btn-outline-primary text-nowrap w-100"
+                        data-export-url="{{ url_for(
+                            'event-export-players',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            exporter_id='csv',
+                        ) }}"
+                        {{ macros.tooltip_attributes('info', _(
+                            'Export ALL the data of the tournament\'s '
+                            '%(player_count)d players (but ONLY the player data).',
+                            player_count=admin_tournament.player_count
+                        ), 'right') }}
+                    >
+                        <i class="bi-star-fill pe-1"></i>
+                        {{ _('Export players') }}
+                        {{ _('(%(format)s format)', format='CSV') }}
+                    </button>
+                {% endif %}
                 <button
                     class="export-button btn btn-outline-danger text-nowrap w-100"
                     data-export-url="{{ url_for(
@@ -55,11 +65,11 @@
                         tournament_id=admin_tournament.id,
                         exporter_id=admin_exporter.id,
                     ) }}"
+                    {{ macros.tooltip_attributes(
+                        'warning', _('Data loss at tournaments, players and pairings level.'), 'right'
+                    ) }}
                 >
-                    <i
-                        class="bi-exclamation-triangle-fill pe-1"
-                        {{ macros.tooltip_attributes('warning', _('Data loss')) }}
-                    ></i>
+                    <i class="bi-exclamation-triangle-fill pe-1"></i>
                     {{ _('Export tournament') }}
                     {{ _('(%(format)s format)', format=admin_exporter.name) }}
                 </button>
