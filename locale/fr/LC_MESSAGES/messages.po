@@ -194,6 +194,10 @@ msgid "'EUR' or '€'"
 msgstr "'EUR' ou '€'"
 
 #, python-format
+msgid "(%(format)s format)"
+msgstr "(format %(format)s)"
+
+#, python-format
 msgid "(%(num)d screen)"
 msgid_plural "(%(num)d screens)"
 msgstr[0] "(%(num)d écran)"
@@ -1560,6 +1564,9 @@ msgstr "Un jour"
 msgid "Dashed border"
 msgstr "Bordure pointillée"
 
+msgid "Data loss at tournaments, players and pairings level."
+msgstr "Perte de données au niveau du tournoi, des joueur·euses et des appariements."
+
 msgid "Data source"
 msgstr "Source de données"
 
@@ -2199,6 +2206,9 @@ msgstr "L'évènement [{uniq_id}] a été supprimé, la base de données a été
 msgid "Event [{uniq_id}] has been updated."
 msgstr "L'évènement [{uniq_id}] a été modifié."
 
+msgid "Event export"
+msgstr "Export d'évènement"
+
 msgid "Event name"
 msgstr "Nom de l'évènement"
 
@@ -2239,14 +2249,33 @@ msgstr "Les fonctionnalités expérimentales en version %(version)s sont :"
 msgid "Export"
 msgstr "Exporter"
 
+msgid "Export ALL the data of the event."
+msgstr "Exporter TOUTES les données de l'évènement."
+
+#, python-format
+msgid "Export ALL the data of the tournament's %(player_count)d players (but ONLY the player data)."
+msgstr "Exporter TOUTES les données des %(player_count)d joueur·euses du tournoi (mais UNIQUEMENT les données des joueur·euses)."
+
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
 msgstr "Exporter toutes les parties de la dernère ronde du tournoi au format PGN (usage : transfert d'appariements)."
+
+msgid "Export event"
+msgstr "Exporter l'évènement"
+
+msgid "Export event in SCE format"
+msgstr "Exporter l'évènement au format SCE"
+
+msgid "Export players"
+msgstr "Exporter les joueur·euses"
 
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
 msgstr "Exporter le tournoi au format TRF(bx) (usage : génération d'appariements)."
 
 msgid "Export the tournament to the TRF16 format."
 msgstr "Exporter le tournoi au format TRF16."
+
+msgid "Export tournament"
+msgstr "Exporter le tournoi"
 
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
@@ -4938,12 +4967,6 @@ msgstr "Paramètres"
 msgid "Seychelles"
 msgstr "Seychelles"
 
-msgid "Share"
-msgstr "Partager"
-
-msgid "Share event"
-msgstr "Partager l'évènement"
-
 msgid "Share the prizes"
 msgstr "Partager les prix"
 
@@ -5042,6 +5065,10 @@ msgstr "Certains comptes peuvent avoir des niveaux d'accès très élevés, les 
 
 msgid "Some files are missing."
 msgstr "Des fichiers sont manquants."
+
+#, python-format
+msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using the SCE format is highly recommended."
+msgstr "Certaines des données de Sharly Chess ne sont pas incluses dans le format %(format)s. Pour transférer des données ou faire des sauvegardes, l'utilisation du format SCE est fortement recommandée."
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
 msgstr "Une erreur est survenue. Veuillez demander à votre administrateur⋅ice de recréer votre compte."
@@ -5808,6 +5835,9 @@ msgstr "Le tournoi [{tournament}] a été modifié."
 msgid "Tournament [{tournament}] successfully imported."
 msgstr "Le tournoi [{tournament}] a été importé avec succès."
 
+msgid "Tournament export"
+msgstr "Export de tournoi"
+
 msgid "Tournament name"
 msgstr "Nom du tournoi"
 
@@ -6238,6 +6268,9 @@ msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
 
 msgid "Warning: experimental features are enabled!"
 msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
+
+msgid "Warning: potential data loss"
+msgstr "Attention : perte de données potentielle"
 
 #, python-format
 msgid "Warning: round #%(round)d is not finished."
