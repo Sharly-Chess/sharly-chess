@@ -1691,9 +1691,9 @@ class TournamentAdminController(BaseEventAdminController):
         name='delete-unpaired-players',
     )
     async def htmx_delete_unpaired_players(
-            self,
-            request: HTMXRequest,
-            tournament_id: int,
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         event = web_context.get_admin_event()
