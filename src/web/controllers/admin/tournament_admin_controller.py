@@ -1699,9 +1699,7 @@ class TournamentAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
         if not tournament.started:
-            raise ClientException(
-                f'Tournament [{tournament.name}] is not started.'
-            )
+            raise ClientException(f'Tournament [{tournament.name}] is not started.')
         players = [
             player
             for player in tournament.tournament_players

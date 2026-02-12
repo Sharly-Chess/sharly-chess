@@ -1080,9 +1080,7 @@ class Tournament:
 
     @property
     def has_never_paired_players(self) -> bool:
-        return any(
-            not player.has_real_pairings for player in self.tournament_players
-        )
+        return any(not player.has_real_pairings for player in self.tournament_players)
 
     def set_for_round(self, round_: int | None = None):
         """Set the tournament for the given round (defaults to the current round)"""
