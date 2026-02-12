@@ -203,6 +203,10 @@ msgid "'EUR' or '€'"
 msgstr "'EUR' ou '€'"
 
 #, ai_translation, python-format
+msgid "(%(format)s format)"
+msgstr "%(format)s formato)"
+
+#, ai_translation, python-format
 msgid "(%(num)d screen)"
 msgid_plural "(%(num)d screens)"
 msgstr[0] "(%(num)d tela)"
@@ -661,6 +665,10 @@ msgstr "Todos"
 #, ai_translation
 msgid "All Events"
 msgstr "Todos os Eventos"
+
+#, ai_translation
+msgid "All players are paired."
+msgstr "Todos os jogadores estão emparelhados."
 
 #, ai_translation
 msgid "All the boards"
@@ -1419,8 +1427,8 @@ msgid "Chinese Taipei"
 msgstr "chinês Taipei"
 
 #, ai_translation
-msgid "Choose a player at random"
-msgstr "Escolha um jogador ao acaso"
+msgid "Choose a random player"
+msgstr "Escolha um jogador aleatório"
 
 #, ai_translation
 msgid "Choose at least one value."
@@ -1983,6 +1991,10 @@ msgid "Dashed border"
 msgstr "Fronteira Dashed"
 
 #, ai_translation
+msgid "Data loss at tournaments, players and pairings level."
+msgstr "Perda de dados em torneios, jogadores e pares de nível."
+
+#, ai_translation
 msgid "Data source"
 msgstr "Fonte de dados"
 
@@ -2177,6 +2189,10 @@ msgstr "Apagar torneio"
 #, ai_translation
 msgid "Delete tournaments"
 msgstr "Apagar torneios"
+
+#, ai_translation
+msgid "Delete unpaired players"
+msgstr "Apagar jogadores não emparelhados"
 
 #, ai_translation
 msgid "Deletes all the criteria of this category."
@@ -2813,6 +2829,10 @@ msgid "Event [{uniq_id}] has been updated."
 msgstr "Evento [{uniq_id}] foi atualizado."
 
 #, ai_translation
+msgid "Event export"
+msgstr "Exportação do evento"
+
+#, ai_translation
 msgid "Event name"
 msgstr "Nome do evento"
 
@@ -2865,8 +2885,28 @@ msgid "Export"
 msgstr "Exportação"
 
 #, ai_translation
+msgid "Export ALL the data of the event."
+msgstr "Exporte todos os dados do evento."
+
+#, ai_translation, python-format
+msgid "Export ALL the data of the tournament's %(player_count)d players (but ONLY the player data)."
+msgstr "Exporte TODOS os dados dos %(player_count)d jogadores do torneio (mas SOMENTE os dados do jogador)."
+
+#, ai_translation
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
 msgstr "Exporte todos os jogos da última rodada do torneio para o formato PGN (uso: transferência de pares)."
+
+#, ai_translation
+msgid "Export event"
+msgstr "Evento de exportação"
+
+#, ai_translation
+msgid "Export event in SCE format"
+msgstr "Evento de exportação em formato SCE"
+
+#, ai_translation
+msgid "Export players"
+msgstr "Jogadores de exportação"
 
 #, ai_translation
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
@@ -2875,6 +2915,10 @@ msgstr "Exportar o torneio para o formato TRF (bx) (uso: geração de pares)."
 #, ai_translation
 msgid "Export the tournament to the TRF16 format."
 msgstr "Exporte o torneio para o formato TRF16."
+
+#, ai_translation
+msgid "Export tournament"
+msgstr "Torneio de exportação"
 
 #, ai_translation
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
@@ -3458,10 +3502,6 @@ msgstr "Importar um torneio"
 #, ai_translation
 msgid "Import a tournament to the event from an external source."
 msgstr "Importar um torneio para o evento de uma fonte externa."
-
-#, ai_translation
-msgid "Import is unavailable once the tournament has started."
-msgstr "A importação não está disponível uma vez que o torneio tenha começado."
 
 #, ai_translation
 msgid "Import players from a CSV file."
@@ -6380,14 +6420,6 @@ msgid "Seychelles"
 msgstr "Seicheles"
 
 #, ai_translation
-msgid "Share"
-msgstr "Partilhar"
-
-#, ai_translation
-msgid "Share event"
-msgstr "Partilhar evento"
-
-#, ai_translation
 msgid "Share the prizes"
 msgstr "Compartilhe os prêmios"
 
@@ -6518,6 +6550,10 @@ msgstr "Algumas contas podem ter níveis de acesso muito altos, tornando-as peri
 #, ai_translation
 msgid "Some files are missing."
 msgstr "Alguns arquivos estão faltando."
+
+#, ai_translation, python-format
+msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using the SCE format is highly recommended."
+msgstr "Alguns dos dados do Sharly Chess não estão incluídos no formato %(format)s. Para transferências de dados ou backups, o uso do formato SCE é altamente recomendado."
 
 #, ai_translation
 msgid "Something went wrong. Please ask your administrator to recreate your account."
@@ -7526,6 +7562,10 @@ msgid "Tournament [{tournament}] successfully imported."
 msgstr "Torneio [{tournament}] importado com sucesso."
 
 #, ai_translation
+msgid "Tournament export"
+msgstr "Exportação do torneio"
+
+#, ai_translation
 msgid "Tournament name"
 msgstr "Nome do torneio"
 
@@ -7672,6 +7712,14 @@ msgstr "Uganda"
 #, ai_translation
 msgid "Ukraine"
 msgstr "Ucrânia"
+
+#, ai_translation
+msgid "Unavailable before the tournament start."
+msgstr "Não disponível antes do início do torneio."
+
+#, ai_translation
+msgid "Unavailable once the tournament has started."
+msgstr "Indisponível assim que o torneio começar."
 
 #, ai_translation
 msgid "Undefined"
@@ -8084,6 +8132,10 @@ msgstr "Aviso: fechar esta janela vai parar Sharly Chess."
 #, ai_translation
 msgid "Warning: experimental features are enabled!"
 msgstr "Aviso: recursos experimentais estão ativados!"
+
+#, ai_translation
+msgid "Warning: potential data loss"
+msgstr "Aviso: potencial perda de dados"
 
 #, ai_translation, python-format
 msgid "Warning: round #%(round)d is not finished."
@@ -8689,11 +8741,19 @@ msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] "Não foi possível alterar {count} hora (conflito de horário)."
 msgstr[1] "{count} horas não puderam ser alteradas (conflito de fuso horário)."
 
+#, ai_translation
+msgid "{count} player deleted."
+msgid_plural "{count} players deleted."
+msgstr[0] "{count} jogador excluído."
+msgstr[1] "{count} jogadores excluídos."
+
+#, ai_translation
 msgid "{count} player successfully imported."
 msgid_plural "{count} players successfully imported."
 msgstr[0] "{count} jogador importado com sucesso."
 msgstr[1] "{count} jogadores importados com sucesso."
 
+#, ai_translation
 msgid "{count} player updated."
 msgid_plural "{count} players updated."
 msgstr[0] "{count} jogador atualizou com sucesso."
@@ -8776,115 +8836,4 @@ msgstr "½ - 0 (U)"
 #, ai_translation
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (U)"
-
-#~ msgid "Download the information of the selected players (CSV format)."
-#~ msgstr "Faça o download das informações dos jogadores selecionados (formato CSV)."
-
-#~ msgid "Download the information of the selected players (ODS format)."
-#~ msgstr "Faça o download das informações dos jogadores selecionados (formato ODS)."
-
-#~ msgid "Download the information of the selected players (XLSX format)."
-#~ msgstr "Faça o download das informações dos jogadores selecionados (formato XLSX)."
-
-#~ msgid "Download the players."
-#~ msgstr "Baixe os jogadores."
-
-#~ msgid "Download the vCards of the selected players (VCF format). Warning: players without phone or email won't be included."
-#~ msgstr "Faça o download dos vCards dos jogadores selecionados (formato VCF). Aviso: os jogadores sem telefone ou e-mail não serão incluídos."
-
-#~ msgid "FIDE ID: %(fide_id)s (click to copy to the clipboard)."
-#~ msgstr "ID da FIDE: %(fide_id)s (clique para copiar para a área de transferência)."
-
-#~ msgid "Mail: %(mail)s (click to copy to the clipboard)."
-#~ msgstr "Mail: %(mail)s (clique para copiar para a área de transferência)."
-
-#~ msgid "No FIDE ID."
-#~ msgstr "Não há FIDE ID."
-
-#~ msgid "No mail defined."
-#~ msgstr "Nenhum e-mail definido."
-
-#~ msgid "No phone defined."
-#~ msgstr "Nenhum telefone definido."
-
-#~ msgid "Phone: %(phone)s (click to copy to the clipboard)."
-#~ msgstr "Telefone: %(phone)s (clique para copiar para a área de transferência)."
-
-#~ msgid "This field is not editable."
-#~ msgstr "Este campo não é editável."
-
-#~ msgid "Board & color"
-#~ msgstr "Quadro & cor"
-
-#~ msgid "Display the players' opponent"
-#~ msgstr "Mostrar o adversário dos jogadores"
-
-#~ msgid "Players' opponent: displayed"
-#~ msgstr "O adversário dos jogadores: exibido"
-
-#~ msgid "Players' opponent: hidden"
-#~ msgstr "O adversário dos jogadores: oculto"
-
-#~ msgid "Print"
-#~ msgstr "Imprimir"
-
-#~ msgid "Print players, results, etc."
-#~ msgstr "Imprima jogadores, resultados, etc."
-
-#~ msgid "Printing"
-#~ msgstr "Impressão"
-
-#~ msgid "Search *** PLACEHOLDER"
-#~ msgstr "Search"
-
-#~ msgid "The numbers (or ranges of numbers) of the boards to print."
-#~ msgstr "Os números (ou intervalos de números) das placas para imprimir."
-
-#~ msgid "The player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
-#~ msgstr "O jogador com FIDE ID [{fide_id}] já joga torneio [{tournament}]."
-
-#~ msgid "The round for which the document is printed (Defaults to the last possible round)."
-#~ msgstr "A rodada para a qual o documento é impresso (Padrões para a última rodada possível)."
-
-#~ msgid "When not displaying the players' opponent (color and board numbers only), less screens are needed (with several columns)."
-#~ msgstr "Ao não exibir o adversário dos jogadores (apenas números de cor e de tabuleiro), menos telas são necessárias (com várias colunas)."
-
-#~ msgid "vs"
-#~ msgstr "vs vs vs"
-
-#~ msgid "Add player"
-#~ msgstr "Adicionar jogador"
-
-#~ msgid "Show all the players"
-#~ msgstr "Mostrar todos os jogadores"
-
-#~ msgid "At least one age category is expected."
-#~ msgstr "Pelo menos uma categoria etária é esperada."
-
-#~ msgid "At least one club is expected."
-#~ msgstr "Pelo menos um clube é esperado."
-
-#~ msgid "At least one federation is expected."
-#~ msgstr "Pelo menos uma federação é esperada."
-
-#~ msgid "At least one rating type is expected."
-#~ msgstr "Pelo menos um tipo de classificação é esperado."
-
-#~ msgid "Choose at least one category."
-#~ msgstr "Escolha pelo menos uma categoria."
-
-#~ msgid "Choose at least one club."
-#~ msgstr "Escolha pelo menos um clube."
-
-#~ msgid "Choose at least one federation."
-#~ msgstr "Escolha pelo menos uma federação."
-
-#~ msgid "Choose at least one player."
-#~ msgstr "Escolha pelo menos um jogador."
-
-#~ msgid "Choose at least one rating type."
-#~ msgstr "Escolha pelo menos um tipo de classificação."
-
-#~ msgid "No title"
-#~ msgstr "Sem título"
 
