@@ -16,7 +16,7 @@ from litestar.response import Template, File
 from litestar.status_codes import HTTP_200_OK
 
 from common.exception import SharlyChessException, OptionError, ImporterError, FormError
-from common.i18n import _
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.board import Board, PlayerRatingType
@@ -79,6 +79,7 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
         tournament_id: int | None = None,
         criterion_id: int | None = None,
         tie_break_id: int | None = None,
+        exporter_id: str | None = None,
         reload_event: bool = False,
     ):
         super().__init__(request, reload_event)
@@ -111,6 +112,14 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
                     f'Unknown tie-break ID [{tie_break_id}] '
                     f'for tournament [{self.admin_tournament.name}].'
                 )
+        self.admin_exporter: TournamentExporter | None = None
+        if exporter_id:
+            try:
+                self.admin_exporter = TournamentExporterManager(
+                    self.get_admin_event()
+                ).get_object(exporter_id)
+            except KeyError:
+                raise NotFoundException(f'Unknown tournament exporter [{exporter_id}].')
 
     def get_admin_tournament(self) -> Tournament:
         assert self.admin_tournament is not None
@@ -124,12 +133,17 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
         assert self.admin_tie_break_id is not None
         return self.get_admin_tournament().tie_breaks_by_id[self.admin_tie_break_id]
 
+    def get_admin_exporter(self) -> TournamentExporter:
+        assert self.admin_exporter is not None
+        return self.admin_exporter
+
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_tournament': self.admin_tournament,
             'admin_tournament_criterion': self.admin_tournament_criterion,
             'admin_tie_break_id': self.admin_tie_break_id,
+            'admin_exporter': self.admin_exporter,
             'allowed_tournaments': self.client.allowed_tournaments_for_action(
                 AuthAction.VIEW_TOURNAMENTS_TAB
             ),
@@ -139,7 +153,7 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
 class TournamentAdminController(BaseEventAdminController):
     guards = [
         EventGuard(),
-        ActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB),
+        TournamentActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB),
     ]
 
     @classmethod
@@ -874,9 +888,25 @@ class TournamentAdminController(BaseEventAdminController):
     # -------------------------------------------------------------------------
 
     @get(
+        path='/tournament-export/data-loss-modal/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
+        name='tournament-export-data-loss-modal',
+    )
+    async def htmx_tournament_export_loss_warning_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        exporter_id: str,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(
+            request, tournament_id, exporter_id=exporter_id
+        )
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'tournament-export-data-loss'}
+        )
+
+    @get(
         path='/tournament-export/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
         name='admin-tournament-export',
-        guards=[TournamentActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB)],
     )
     async def admin_tournament_export(
         self,
@@ -884,10 +914,12 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: int,
         exporter_id: str,
     ) -> File | Template:
-        web_context = TournamentAdminWebContext(request, tournament_id)
-        event = web_context.get_admin_event()
+        web_context = TournamentAdminWebContext(
+            request, tournament_id, exporter_id=exporter_id
+        )
         tournament = web_context.get_admin_tournament()
-        exporter = TournamentExporterManager(event).get_object(exporter_id)
+        exporter = web_context.get_admin_exporter()
+
         temp_file = NamedTemporaryFile(
             delete=False,
             mode='wb' if exporter.is_binary_file else 'w',
@@ -1609,7 +1641,6 @@ class TournamentAdminController(BaseEventAdminController):
             '/random-player/{event_uniq_id:str}/{tournament_id:int}',
         ],
         name='admin-random-player',
-        guards=[TournamentActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB)],
     )
     async def htmx_random_player(
         self,
@@ -1654,6 +1685,41 @@ class TournamentAdminController(BaseEventAdminController):
             trigger_event='modal_opened',
             after='settle',
         )
+
+    @get(
+        path='/delete-unpaired-players/{event_uniq_id:str}/{tournament_id:int}',
+        name='delete-unpaired-players',
+    )
+    async def htmx_delete_unpaired_players(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        if not tournament.started:
+            raise ClientException(f'Tournament [{tournament.name}] is not started.')
+        players = [
+            player
+            for player in tournament.tournament_players
+            if not player.has_real_pairings
+        ]
+        with EventDatabase(event.uniq_id, True) as database:
+            for player in players:
+                database.delete_stored_player(player.id)
+        Message.success(
+            request,
+            ngettext(
+                '{count} player deleted.',
+                '{count} players deleted.',
+                len(players),
+            ).format(count=len(players)),
+        )
+        web_context = TournamentAdminWebContext(
+            request, tournament_id, reload_event=True
+        )
+        return self._admin_event_tournaments_render(web_context)
 
     @classmethod
     def _player_distribution_modal_context(

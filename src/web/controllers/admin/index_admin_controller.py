@@ -1034,20 +1034,18 @@ class IndexAdminController(BaseAdminController):
             return self._admin_render(web_context)
 
     @get(
-        path='/event-modal/share/{event_uniq_id:str}',
-        name='admin-event-share-modal',
+        path='/event-export-modal/{event_uniq_id:str}',
+        name='event-export-modal',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
-    async def htmx_admin_event_share_modal(
-        self, request: HTMXRequest, event_uniq_id: str
-    ) -> Template:
+    async def htmx_admin_event_export_modal(self, request: HTMXRequest) -> Template:
         web_context = AdminWebContext(request)
         return HTMXTemplate(
             template_name='admin/modals.html',
             context=(
                 web_context.template_context
                 | {
-                    'modal': 'event-share',
+                    'modal': 'event-export',
                     'data': WebContext.values_dict_to_form_data(
                         {
                             'include_players': True,

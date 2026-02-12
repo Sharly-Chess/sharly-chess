@@ -2,10 +2,13 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Share event') }}
+                {{ _('Event export') }}
             </h2>
         </div>
         <div class="modal-body">
+            <h4>
+                {{ _('%(string)s: %(value)s', string=_('Event'), value=admin_event.uniq_id) }}
+            </h4>
             <form
                 id="modal-form"
                 hx-target="body"
@@ -52,15 +55,14 @@
             <button
                 type="button"
                 class="text-nowrap white btn btn-primary"
-                class="dropdown-item text-start cursor-pointer"
                 data-export-url="{{ url_for(
                     'admin-event-export',
                     event_uniq_id=admin_event.uniq_id,
                 ) }}"
                 onclick="downloadFile(this, 'modal-form'); closeModal();"
             >
-                <i class="bi-save-fill pe-1"></i>
-                {{ _('Share') }}
+                <i class="bi-box-arrow-right pe-1"></i>
+                {{ _('Export') }}
             </button>
         </div>
     </div>
