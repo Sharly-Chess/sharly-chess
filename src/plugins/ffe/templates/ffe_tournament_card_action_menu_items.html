@@ -1,19 +1,21 @@
 {% set ffe_actions_unavailable_message=ffe_utils.ffe_actions_unavailable_message(tournament) %}
 {% if ffe_actions_unavailable_message %}
     <li
-        class="dropdown-item text-start text-secondary"
         {{ macros.tooltip_attributes(
-            'warning', ffe_actions_unavailable_message, 'right'
+            'warning', ffe_actions_unavailable_message, 'top'
         ) }}
     >
-        <span>
+        <button
+            class="dropdown-item text-start text-secondary"
+            disabled
+        >
             <img
                 src="{{ url_for('static', file_path='/images/ffe.png') }}?version={{ sharly_chess_config.version }}"
                 style="height: 1.2em"
                 class="pe-1"
             />
             {{ _('FFE site') }}
-        </span>
+        </button>
     </li>
 {% else %}
     <li class="dropdown-submenu">

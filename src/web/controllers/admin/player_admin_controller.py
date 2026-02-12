@@ -231,7 +231,7 @@ class PlayerAdminController(BaseEventAdminController):
 
     guards = [
         EventGuard(),
-        ActionGuard(AuthAction.VIEW_PLAYERS_TAB),
+        TournamentActionGuard(AuthAction.VIEW_PLAYERS_TAB),
     ]
 
     @classmethod
@@ -2285,22 +2285,30 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/download-event-players/{event_uniq_id:str}/{exporter_id:str}',
-        name='admin-download-event-players',
+        path=[
+            '/event-export-players/{event_uniq_id:str}/{exporter_id:str}',
+            '/event-export-players/{event_uniq_id:str}/{tournament_id:int}/{exporter_id:str}',
+        ],
+        name='event-export-players',
     )
-    async def htmx_admin_event_download_players(
+    async def htmx_event_export_players(
         self,
         request: HTMXRequest,
+        tournament_id: int | None,
         exporter_id: str,
     ) -> Response[str] | File:
-        web_context = PlayerAdminWebContext(request)
+        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         event = web_context.get_admin_event()
-        search_results = self.get_search_results(web_context)
-        players: list[Player] = [
-            event.players_by_id[player_id]
-            for player_id in search_results
-            if player_id in event.players_by_id
-        ]
+        tournament = web_context.admin_tournament
+        if tournament:
+            players: list[Player] = list(tournament.tournament_players)
+        else:
+            search_results = self.get_search_results(web_context)
+            players: list[Player] = [
+                event.players_by_id[player_id]
+                for player_id in search_results
+                if player_id in event.players_by_id
+            ]
         try:
             exporter = PlayerExporterManager().get_object(exporter_id)
         except KeyError:

@@ -163,6 +163,13 @@ class SQLiteDatabase:
         return datetime.strptime(data, '%Y-%m-%dT%H:%M')
 
     @staticmethod
+    def load_optional_timestamp_from_database_field(
+        ts: float | None,
+    ) -> datetime | None:
+        """Load optional timestamp from database field (FLOAT) to datetime."""
+        return datetime.fromtimestamp(ts) if ts else None
+
+    @staticmethod
     def dump_datetime_to_database_field(datetime_: datetime) -> str:
         return datetime_.strftime('%Y-%m-%dT%H:%M')
 

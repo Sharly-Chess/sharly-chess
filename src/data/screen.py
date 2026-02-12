@@ -1,7 +1,7 @@
 import fnmatch
-import time
 import weakref
 from collections.abc import Iterator
+from datetime import datetime, timedelta
 from functools import cached_property
 from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
@@ -639,7 +639,7 @@ class Screen:
     @cached_property
     def _results(self) -> list[Board]:
         boards: list[Board] = []
-        oldest = time.time() - self.results_max_age * 60
+        oldest = datetime.now() - timedelta(minutes=self.results_max_age)
         for tournament in self.event.tournaments:
             if (
                 self.results_tournament_ids
@@ -649,7 +649,7 @@ class Screen:
             for board in tournament.get_round_boards(tournament.current_round):
                 if board.last_result_update and board.last_result_update >= oldest:
                     boards.append(board)
-        boards.sort(key=lambda b: b.last_result_update or float('-inf'), reverse=True)
+        boards.sort(key=lambda b: b.last_result_update or datetime.min, reverse=True)
         return boards
 
     def _clear_results_cache(self):
