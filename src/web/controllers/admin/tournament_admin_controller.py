@@ -1698,6 +1698,10 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id)
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
+        if not tournament.started:
+            raise ClientException(
+                f'Tournament [{tournament.name}] is not started.'
+            )
         players = [
             player
             for player in tournament.tournament_players
@@ -1706,17 +1710,14 @@ class TournamentAdminController(BaseEventAdminController):
         with EventDatabase(event.uniq_id, True) as database:
             for player in players:
                 database.delete_stored_player(player.id)
-        if players:
-            Message.success(
-                request,
-                ngettext(
-                    '{count} player deleted.',
-                    '{count} players deleted.',
-                    len(players),
-                ).format(count=len(players)),
-            )
-        else:
-            Message.warning(request, _('No players deleted.'))
+        Message.success(
+            request,
+            ngettext(
+                '{count} player deleted.',
+                '{count} players deleted.',
+                len(players),
+            ).format(count=len(players)),
+        )
         web_context = TournamentAdminWebContext(
             request, tournament_id, reload_event=True
         )

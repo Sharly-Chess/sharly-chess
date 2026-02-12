@@ -445,15 +445,22 @@
                 </ul>
             </li>
             <li>
+                {% set disabled_message = (
+                    _('Unavailable before the tournament start.')
+                    if not tournament.started else
+                    _('All players are paired.')
+                    if not tournament.has_never_paired_players else ''
+                ) %}
                 <span
-                    {% if not tournament.started %}
-                        {{ macros.tooltip_attributes(
-                            'warning', _('Unavailable before the tournament start.')
-                        ) }}
+                    {% if disabled_message %}
+                        {{ macros.tooltip_attributes('warning', disabled_message) }}
                     {% endif %}
                 >
                     <button
-                        {% if tournament.started %}
+                        {% if disabled_message %}
+                            class="dropdown-item text-nowrap text-secondary"
+                            disabled
+                        {% else %}
                             class="dropdown-item text-nowrap"
                             hx-get="{{ url_for(
                                 'delete-unpaired-players',
@@ -462,9 +469,6 @@
                             ) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
-                        {% else %}
-                            class="dropdown-item text-nowrap text-secondary"
-                            disabled
                         {% endif %}
                     >
                         <i class="bi-trash-fill pe-1"></i>

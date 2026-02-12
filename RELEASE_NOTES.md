@@ -8,7 +8,7 @@
 ## Tournaments
 
 - Distribute the players among the tournaments (3.6.0)
-- Delete the unpaired players (3.6.0)
+- Delete all unpaired players at once (3.6.0)
 
 ## Players
 

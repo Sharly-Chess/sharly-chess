@@ -549,6 +549,9 @@ msgstr ""
 msgid "All Events"
 msgstr ""
 
+msgid "All players are paired."
+msgstr ""
+
 msgid "All the boards"
 msgstr ""
 
@@ -3509,9 +3512,6 @@ msgid "No permissions."
 msgstr ""
 
 msgid "No players"
-msgstr ""
-
-msgid "No players deleted."
 msgstr ""
 
 msgid "No players imported."

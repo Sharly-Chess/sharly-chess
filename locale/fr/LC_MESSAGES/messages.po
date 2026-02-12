@@ -549,6 +549,9 @@ msgstr "Tous"
 msgid "All Events"
 msgstr "Évènements"
 
+msgid "All players are paired."
+msgstr ""
+
 msgid "All the boards"
 msgstr "Tous les échiquiers"
 
@@ -3511,9 +3514,6 @@ msgstr "Aucune permission."
 msgid "No players"
 msgstr "Aucun·e joueur·euse"
 
-msgid "No players deleted."
-msgstr "Aucun·e joueur·euse supprimé·e."
-
 msgid "No players imported."
 msgstr "Aucun·e joueur·euse importé·e."
 
@@ -5958,10 +5958,10 @@ msgid "Ukraine"
 msgstr "Ukraine"
 
 msgid "Unavailable before the tournament start."
-msgstr "Non-disponible avant le début du tournoi."
+msgstr "Non disponible avant le début du tournoi."
 
 msgid "Unavailable once the tournament has started."
-msgstr "Non-disponible une fois le tournoi démarré."
+msgstr "Non disponible une fois le tournoi démarré."
 
 msgid "Undefined"
 msgstr "Non défini"
