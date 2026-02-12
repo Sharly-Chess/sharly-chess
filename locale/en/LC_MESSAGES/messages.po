@@ -549,6 +549,9 @@ msgstr ""
 msgid "All Events"
 msgstr ""
 
+msgid "All players are paired."
+msgstr ""
+
 msgid "All the boards"
 msgstr ""
 
@@ -1134,7 +1137,7 @@ msgstr ""
 msgid "Chinese Taipei"
 msgstr ""
 
-msgid "Choose a player at random"
+msgid "Choose a random player"
 msgstr ""
 
 msgid "Choose at least one value."
@@ -1714,6 +1717,9 @@ msgid "Delete tournament"
 msgstr ""
 
 msgid "Delete tournaments"
+msgstr ""
+
+msgid "Delete unpaired players"
 msgstr ""
 
 msgid "Deletes all the criteria of this category."
@@ -2716,9 +2722,6 @@ msgid "Import a tournament"
 msgstr ""
 
 msgid "Import a tournament to the event from an external source."
-msgstr ""
-
-msgid "Import is unavailable once the tournament has started."
 msgstr ""
 
 msgid "Import players from a CSV file."
@@ -5952,6 +5955,12 @@ msgstr ""
 msgid "Ukraine"
 msgstr ""
 
+msgid "Unavailable before the tournament start."
+msgstr ""
+
+msgid "Unavailable once the tournament has started."
+msgstr ""
+
 msgid "Undefined"
 msgstr ""
 
@@ -6725,6 +6734,11 @@ msgstr[1] ""
 
 msgid "{count} hour could not be moved (time conflict)."
 msgid_plural "{count} hours could not be moved (time conflict)."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} player deleted."
+msgid_plural "{count} players deleted."
 msgstr[0] ""
 msgstr[1] ""
 
