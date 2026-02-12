@@ -194,6 +194,10 @@ msgid "'EUR' or '€'"
 msgstr ""
 
 #, python-format
+msgid "(%(format)s format)"
+msgstr ""
+
+#, python-format
 msgid "(%(num)d screen)"
 msgid_plural "(%(num)d screens)"
 msgstr[0] ""
@@ -1560,6 +1564,9 @@ msgstr ""
 msgid "Dashed border"
 msgstr ""
 
+msgid "Data loss at tournaments, players and pairings level."
+msgstr ""
+
 msgid "Data source"
 msgstr ""
 
@@ -2199,6 +2206,9 @@ msgstr ""
 msgid "Event [{uniq_id}] has been updated."
 msgstr ""
 
+msgid "Event export"
+msgstr ""
+
 msgid "Event name"
 msgstr ""
 
@@ -2239,13 +2249,32 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
+msgid "Export ALL the data of the event."
+msgstr ""
+
+#, python-format
+msgid "Export ALL the data of the tournament's %(player_count)d players (but ONLY the player data)."
+msgstr ""
+
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
+msgstr ""
+
+msgid "Export event"
+msgstr ""
+
+msgid "Export event in SCE format"
+msgstr ""
+
+msgid "Export players"
 msgstr ""
 
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
 msgstr ""
 
 msgid "Export the tournament to the TRF16 format."
+msgstr ""
+
+msgid "Export tournament"
 msgstr ""
 
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
@@ -4936,12 +4965,6 @@ msgstr ""
 msgid "Seychelles"
 msgstr ""
 
-msgid "Share"
-msgstr ""
-
-msgid "Share event"
-msgstr ""
-
 msgid "Share the prizes"
 msgstr ""
 
@@ -5039,6 +5062,10 @@ msgid "Some accounts can have very high access levels, making them dangerous in 
 msgstr ""
 
 msgid "Some files are missing."
+msgstr ""
+
+#, python-format
+msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using the SCE format is highly recommended."
 msgstr ""
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
@@ -5806,6 +5833,9 @@ msgstr ""
 msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
+msgid "Tournament export"
+msgstr ""
+
 msgid "Tournament name"
 msgstr ""
 
@@ -6235,6 +6265,9 @@ msgid "Warning: closing this window will stop Sharly Chess."
 msgstr ""
 
 msgid "Warning: experimental features are enabled!"
+msgstr ""
+
+msgid "Warning: potential data loss"
 msgstr ""
 
 #, python-format

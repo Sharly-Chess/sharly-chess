@@ -18,6 +18,11 @@ class TournamentExporter(IdentifiableEntity, ABC):
     def tooltip(self) -> str:
         """Tooltip to display on the export button."""
 
+    @property
+    def data_loss_modal_redirect(self) -> bool:
+        """Defines if the export button should redirect to the data loss warning modal."""
+        return True
+
     def is_unavailable_message(self, tournament: Tournament) -> str | None:
         """Get a message about why the export is unavailable for the tournament.
         Returns None if the export is available."""
@@ -120,6 +125,10 @@ class PgnTournamentExporter(TournamentExporter):
             'Export all the games of the last round of the tournament '
             'to the PGN format (usage: pairings transfer).'
         )
+
+    @property
+    def data_loss_modal_redirect(self) -> bool:
+        return False
 
     @property
     def file_extension(self) -> str:

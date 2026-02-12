@@ -127,8 +127,8 @@
                             aria-expanded="false"
 
                         >
-                            <i class="bi-download pe-1"></i>
-                            {{ _('Download') }}
+                            <i class="bi-box-arrow-right pe-1"></i>
+                            {{ _('Export') }}
                         </button>
                         <ul class="dropdown-menu">
                             {% for exporter in player_exporters %}
@@ -143,7 +143,7 @@
                                     <form
                                         id="exporter-{{ exporter.id }}-form"
                                         action="{{ url_for(
-                                            'admin-download-event-players',
+                                            'event-export-players',
                                             event_uniq_id=admin_event.uniq_id,
                                             exporter_id=exporter.id
                                         ) }}"
