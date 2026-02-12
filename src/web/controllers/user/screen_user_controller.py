@@ -34,15 +34,20 @@ class ScreenUserController(BaseScreenUserController):
         tournament: Tournament = screen_set.tournament
         if (
             max(
-                tournament.last_update,
-                tournament.last_player_update,
+                tournament.last_update.timestamp() if tournament.last_update else 0,
+                tournament.last_player_update.timestamp()
+                if tournament.last_player_update
+                else 0,
             )
             > date
         ):
             return True
         match screen_set.type:
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
-                if tournament.last_pairing_update > date:
+                if (
+                    tournament.last_pairing_update
+                    and tournament.last_pairing_update.timestamp() > date
+                ):
                     return True
             case ScreenType.PLAYERS:
                 pass
@@ -61,7 +66,10 @@ class ScreenUserController(BaseScreenUserController):
             assert web_context.screen.event is not None
             if web_context.screen.event.last_update > date:
                 return True
-            if web_context.screen.last_update > date:
+            if (
+                web_context.screen.last_update
+                and web_context.screen.last_update.timestamp() > date
+            ):
                 return True
             match web_context.screen.type:
                 case ScreenType.IMAGE:
@@ -91,8 +99,12 @@ class ScreenUserController(BaseScreenUserController):
                             )
                             if (
                                 max(
-                                    tournament.last_update,
-                                    tournament.last_pairing_update,
+                                    tournament.last_update.timestamp()
+                                    if tournament.last_update
+                                    else 0,
+                                    tournament.last_pairing_update.timestamp()
+                                    if tournament.last_pairing_update
+                                    else 0,
                                 )
                                 > date
                             ):

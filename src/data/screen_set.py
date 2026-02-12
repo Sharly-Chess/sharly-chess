@@ -8,7 +8,8 @@ from _weakref import ReferenceType
 from common.i18n import _
 from data.board import Board
 from data.player import TournamentPlayer
-from utils.date_time import format_timestamp_date_time
+from datetime import datetime
+from utils.date_time import format_datetime
 from utils.enum import (
     ScreenType,
     PlayersScreenPlayerFormat,
@@ -458,18 +459,16 @@ class ScreenSet:
         return self.last_item
 
     @property
-    def last_update(self) -> float | None:
+    def last_update(self) -> datetime | None:
         if self.stored_screen_set:
             return self.stored_screen_set.last_update
         else:
             assert self.family is not None
-            return (
-                self.family.last_update.timestamp() if self.family.last_update else None
-            )
+            return self.family.last_update
 
     @property
-    def last_update_str(self) -> str:
-        return format_timestamp_date_time(self.last_update)
+    def last_update_str(self) -> str | None:
+        return format_datetime(self.last_update) if self.last_update else None
 
     @property
     def numbers_str(self) -> str:

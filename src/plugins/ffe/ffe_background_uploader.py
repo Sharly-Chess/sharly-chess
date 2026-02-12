@@ -132,9 +132,13 @@ class FfeBackgroundUploader:
     @classmethod
     def ffe_upload_needed(cls, tournament: Tournament | StoredTournament) -> bool:
         return cls.ffe_last_upload(tournament) < max(
-            tournament.last_update,
-            tournament.last_player_update,
-            tournament.last_pairing_update,
+            tournament.last_update.timestamp() if tournament.last_update else 0,
+            tournament.last_player_update.timestamp()
+            if tournament.last_player_update
+            else 0,
+            tournament.last_pairing_update.timestamp()
+            if tournament.last_pairing_update
+            else 0,
         )
 
     @classmethod

@@ -587,9 +587,15 @@ class EventDatabase(MigrationDatabase):
             check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             rounds=row['rounds'],
             rating=row['rating'],
-            last_update=row['last_update'],
-            last_player_update=row['last_player_update'],
-            last_pairing_update=row['last_pairing_update'],
+            last_update=cls.load_optional_timestamp_from_database_field(
+                row['last_update']
+            ),
+            last_player_update=cls.load_optional_timestamp_from_database_field(
+                row['last_player_update']
+            ),
+            last_pairing_update=cls.load_optional_timestamp_from_database_field(
+                row['last_pairing_update']
+            ),
             start_date=cls.load_optional_date_from_database_field(row['start_date']),
             stop_date=cls.load_optional_date_from_database_field(row['stop_date']),
             location=row['location'],
@@ -1499,7 +1505,9 @@ class EventDatabase(MigrationDatabase):
             background_color=row['background_color'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
-            last_update=row['last_update'],
+            last_update=cls.load_optional_timestamp_from_database_field(
+                row['last_update']
+            ),
         )
 
     def get_stored_screen(self, screen_id: int) -> StoredScreen | None:
@@ -1655,8 +1663,8 @@ class EventDatabase(MigrationDatabase):
     # StoredScreenSet
     # ---------------------------------------------------------------------------------
 
-    @staticmethod
-    def _row_to_stored_screen_set(row: dict[str, Any]) -> StoredScreenSet:
+    @classmethod
+    def _row_to_stored_screen_set(cls, row: dict[str, Any]) -> StoredScreenSet:
         return StoredScreenSet(
             id=row['id'],
             screen_id=row['screen_id'],
@@ -1666,7 +1674,9 @@ class EventDatabase(MigrationDatabase):
             fixed_boards_str=row['fixed_boards_str'],
             first=row['first'],
             last=row['last'],
-            last_update=row['last_update'],
+            last_update=cls.load_optional_timestamp_from_database_field(
+                row['last_update']
+            ),
         )
 
     def get_stored_screen_set(self, screen_set_id: int) -> StoredScreenSet | None:
@@ -1771,7 +1781,6 @@ class EventDatabase(MigrationDatabase):
         assert stored_screen_set is not None
         stored_screen_set.id = None
         stored_screen_set.screen_id = screen_id
-        stored_screen_set.last_update = time.time()
         stored_screen_set.order = self.get_stored_screen_next_set_order(
             stored_screen_set.screen_id
         )
