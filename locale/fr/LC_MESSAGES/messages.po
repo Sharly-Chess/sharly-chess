@@ -550,7 +550,7 @@ msgid "All Events"
 msgstr "Évènements"
 
 msgid "All players are paired."
-msgstr ""
+msgstr "Tou·tes les joueur·euses sont apparié·es."
 
 msgid "All the boards"
 msgstr "Tous les échiquiers"
