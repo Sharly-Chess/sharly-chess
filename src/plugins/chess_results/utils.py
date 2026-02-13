@@ -282,7 +282,7 @@ class ChessResultsTournamentPluginData(PluginData):
     auto_upload: bool | None = None
     tnr: str | None = None
     creator_id: str | None = None
-    last_upload: float | None = None
+    last_upload: datetime | None = None
     remark: str | None = None
     remark_default: bool = True
 
@@ -294,7 +294,9 @@ class ChessResultsTournamentPluginData(PluginData):
             auto_upload=stored_value.get('auto_upload', None),
             remark=stored_value.get('remark'),
             remark_default=stored_value.get('remark_default', True),
-            last_upload=stored_value.get('last_upload', 0.0),
+            last_upload=datetime.fromtimestamp(ts)
+            if (ts := stored_value.get('last_upload'))
+            else None,
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -304,7 +306,7 @@ class ChessResultsTournamentPluginData(PluginData):
             'auto_upload': self.auto_upload,
             'remark': self.remark,
             'remark_default': self.remark_default,
-            'last_upload': self.last_upload,
+            'last_upload': self.last_upload.timestamp() if self.last_upload else None,
         }
 
     @classmethod
@@ -316,7 +318,7 @@ class ChessResultsTournamentPluginData(PluginData):
     ) -> Self:
         tnr: str | None = None
         creator_id: str | None = None
-        last_upload: float | None = None
+        last_upload: datetime | None = None
         if previous_object and action != 'clone':
             tnr = previous_object.tnr
             creator_id = previous_object.creator_id

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
+from datetime import datetime, timedelta
 from enum import IntEnum
 from functools import partial
 from threading import Thread, Timer
-from time import time
 
 from common.i18n import _, set_locale
 from common.logger import (
@@ -109,7 +109,7 @@ class ChessResultsBackgroundUploader:
     @classmethod
     def chess_results_last_upload(
         cls, tournament: Tournament | StoredTournament
-    ) -> float:
+    ) -> datetime | None:
         plugin_data: ChessResultsTournamentPluginData
         if isinstance(tournament, Tournament):
             assert isinstance(tournament, Tournament)
@@ -120,20 +120,16 @@ class ChessResultsBackgroundUploader:
                 raw_plugin_data
             )
 
-        return plugin_data.last_upload or 0.0
+        return plugin_data.last_upload
 
     @classmethod
     def chess_results_upload_needed(
         cls, tournament: Tournament | StoredTournament
     ) -> bool:
-        return cls.chess_results_last_upload(tournament) < max(
-            tournament.last_update.timestamp() if tournament.last_update else 0,
-            tournament.last_player_update.timestamp()
-            if tournament.last_player_update
-            else 0,
-            tournament.last_pairing_update.timestamp()
-            if tournament.last_pairing_update
-            else 0,
+        return (cls.chess_results_last_upload(tournament) or datetime.min) < max(
+            tournament.last_update or datetime.min,
+            tournament.last_player_update or datetime.min,
+            tournament.last_pairing_update or datetime.min,
         )
 
     @classmethod
@@ -333,8 +329,13 @@ class ChessResultsBackgroundUploader:
         delay = ChessResultsUtils.resolve_auto_upload_delay(tournament.event)
         wait_time = 0.1
         result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
-        if not force and time() < chess_results_last_upload + delay * 60:
-            wait_time = max(delay * 60 - (time() - chess_results_last_upload), 0.1)
+        if (
+            not force
+            and chess_results_last_upload
+            and datetime.now() < chess_results_last_upload + timedelta(minutes=delay)
+        ):
+            elapsed = (datetime.now() - chess_results_last_upload).total_seconds()
+            wait_time = max(delay * 60 - elapsed, 0.1)
             cls.upload_status_messages[result_id] = ChessResultsUploadResult(
                 ChessResultsUploadStatus.PENDING,
                 _('Tournament modified, awaiting auto-upload'),

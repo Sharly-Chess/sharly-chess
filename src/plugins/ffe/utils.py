@@ -247,8 +247,8 @@ class FfeTournamentPluginData(PluginData):
     ffe_id: int | None = None
     password: str | None = None
     auto_upload: bool | None = False
-    last_upload: float | None = None
-    last_rules_upload: float | None = None
+    last_upload: datetime | None = None
+    last_rules_upload: datetime | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -256,8 +256,12 @@ class FfeTournamentPluginData(PluginData):
             ffe_id=stored_value.get('ffe_id', None),
             password=stored_value.get('password', None),
             auto_upload=stored_value.get('auto_upload', None),
-            last_upload=stored_value.get('last_upload', 0.0),
-            last_rules_upload=stored_value.get('last_rules_upload', 0.0),
+            last_upload=datetime.fromtimestamp(ts)
+            if (ts := stored_value.get('last_upload'))
+            else None,
+            last_rules_upload=datetime.fromtimestamp(ts)
+            if (ts := stored_value.get('last_rules_upload'))
+            else None,
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -265,8 +269,10 @@ class FfeTournamentPluginData(PluginData):
             'ffe_id': self.ffe_id,
             'password': self.password,
             'auto_upload': self.auto_upload,
-            'last_upload': self.last_upload,
-            'last_rules_upload': self.last_rules_upload,
+            'last_upload': self.last_upload.timestamp() if self.last_upload else None,
+            'last_rules_upload': self.last_rules_upload.timestamp()
+            if self.last_rules_upload
+            else None,
         }
 
     @classmethod
@@ -276,8 +282,8 @@ class FfeTournamentPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        last_upload: float | None = None
-        last_rules_upload: float | None = None
+        last_upload: datetime | None = None
+        last_rules_upload: datetime | None = None
         if previous_object and action != 'clone':
             last_upload = previous_object.last_upload
             last_rules_upload = previous_object.last_rules_upload

@@ -1,4 +1,5 @@
 from contextlib import suppress
+from datetime import datetime
 
 from litestar import head, get
 from litestar.plugins.htmx import HTMXRequest, Reswap
@@ -29,15 +30,13 @@ class ScreenUserController(BaseScreenUserController):
     @staticmethod
     def _user_screen_set_refresh_needed(
         screen_set: ScreenSet,
-        date: float,
+        date: datetime,
     ) -> bool:
         tournament: Tournament = screen_set.tournament
         if (
             max(
-                tournament.last_update.timestamp() if tournament.last_update else 0,
-                tournament.last_player_update.timestamp()
-                if tournament.last_player_update
-                else 0,
+                tournament.last_update or datetime.min,
+                tournament.last_player_update or datetime.min,
             )
             > date
         ):
@@ -46,7 +45,7 @@ class ScreenUserController(BaseScreenUserController):
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
                 if (
                     tournament.last_pairing_update
-                    and tournament.last_pairing_update.timestamp() > date
+                    and tournament.last_pairing_update > date
                 ):
                     return True
             case ScreenType.PLAYERS:
@@ -62,13 +61,14 @@ class ScreenUserController(BaseScreenUserController):
         | DisplayControllerUserWebContext,
         date: float,
     ) -> bool:
+        date_dt = datetime.fromtimestamp(date)
         if web_context.screen:
             assert web_context.screen.event is not None
             if web_context.screen.event.last_update > date:
                 return True
             if (
                 web_context.screen.last_update
-                and web_context.screen.last_update.timestamp() > date
+                and web_context.screen.last_update > date_dt
             ):
                 return True
             match web_context.screen.type:
@@ -81,7 +81,7 @@ class ScreenUserController(BaseScreenUserController):
                     | ScreenType.RANKING
                 ):
                     for screen_set in web_context.screen.screen_sets:
-                        if cls._user_screen_set_refresh_needed(screen_set, date):
+                        if cls._user_screen_set_refresh_needed(screen_set, date_dt):
                             return True
                 case ScreenType.RESULTS:
                     assert web_context.screen.event is not None
@@ -99,14 +99,10 @@ class ScreenUserController(BaseScreenUserController):
                             )
                             if (
                                 max(
-                                    tournament.last_update.timestamp()
-                                    if tournament.last_update
-                                    else 0,
-                                    tournament.last_pairing_update.timestamp()
-                                    if tournament.last_pairing_update
-                                    else 0,
+                                    tournament.last_update or datetime.min,
+                                    tournament.last_pairing_update or datetime.min,
                                 )
-                                > date
+                                > date_dt
                             ):
                                 return True
                 case _:
@@ -116,12 +112,10 @@ class ScreenUserController(BaseScreenUserController):
             assert web_context.family.event is not None
             if (
                 max(
-                    web_context.family.event.last_update,
-                    web_context.family.last_update.timestamp()
-                    if web_context.family.last_update
-                    else 0,
+                    datetime.fromtimestamp(web_context.family.event.last_update),
+                    web_context.family.last_update or datetime.min,
                 )
-                > date
+                > date_dt
             ):
                 return True
         return False

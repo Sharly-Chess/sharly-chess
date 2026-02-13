@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from functools import partial
 from typing import Any, Self, override
 
@@ -160,7 +161,7 @@ class ChessEventTournamentPluginData(PluginData):
     event_id: str | None = None
     tournament_name: str | None = None
     status: str | None = None
-    last_sync: float | None = None
+    last_sync: datetime | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -170,7 +171,9 @@ class ChessEventTournamentPluginData(PluginData):
             event_id=stored_value.get('event_id'),
             tournament_name=stored_value.get('tournament_name'),
             status=stored_value.get('status'),
-            last_sync=stored_value.get('last_sync', 0.0),
+            last_sync=datetime.fromtimestamp(ts)
+            if (ts := stored_value.get('last_sync'))
+            else None,
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -180,7 +183,7 @@ class ChessEventTournamentPluginData(PluginData):
             'event_id': self.event_id,
             'tournament_name': self.tournament_name,
             'status': self.status,
-            'last_sync': self.last_sync,
+            'last_sync': self.last_sync.timestamp() if self.last_sync else None,
         }
 
     @classmethod
@@ -195,7 +198,7 @@ class ChessEventTournamentPluginData(PluginData):
         event_id: str | None = None
         tournament_name: str | None = None
         status: str | None = None
-        last_sync: float | None = None
+        last_sync: datetime | None = None
         if previous_object and action != 'clone':
             user = previous_object.user
             password = previous_object.password
