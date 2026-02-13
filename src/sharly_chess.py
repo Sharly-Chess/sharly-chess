@@ -4,7 +4,12 @@ import sys
 import warnings
 from pathlib import Path
 
+# Flatpak Update Test: This comment forces a new build hash
 from pathvalidate import validate_filepath, ValidationError
+
+from database.sqlite.adapters import register_adapters
+
+register_adapters()
 
 # Nuclear option: Override warnings.warn to block specific messages
 # warnings.filterwarnings simply would not work
