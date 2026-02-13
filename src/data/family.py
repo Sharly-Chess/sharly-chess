@@ -8,7 +8,7 @@ from _weakref import ReferenceType
 
 from common.i18n import _
 from data.screen import Screen
-from utils.date_time import format_datetime
+
 from utils.enum import (
     ScreenType,
     PlayersScreenPlayerFormat,
@@ -252,10 +252,6 @@ class Family:
     @property
     def last_update(self) -> datetime | None:
         return self.stored_family.last_update
-
-    @property
-    def last_update_str(self) -> str | None:
-        return format_datetime(self.last_update) if self.last_update else None
 
     def _calculate_screens(self) -> bool:
         players_instead_of_boards: bool

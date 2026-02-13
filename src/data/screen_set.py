@@ -9,7 +9,7 @@ from common.i18n import _
 from data.board import Board
 from data.player import TournamentPlayer
 from datetime import datetime
-from utils.date_time import format_datetime
+
 from utils.enum import (
     ScreenType,
     PlayersScreenPlayerFormat,
@@ -465,10 +465,6 @@ class ScreenSet:
         else:
             assert self.family is not None
             return self.family.last_update
-
-    @property
-    def last_update_str(self) -> str | None:
-        return format_datetime(self.last_update) if self.last_update else None
 
     @property
     def numbers_str(self) -> str:
