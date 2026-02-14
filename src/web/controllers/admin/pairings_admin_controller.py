@@ -38,6 +38,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
+from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.base_controller import WebContext
 from web.guards import (
     EventGuard,
@@ -1090,13 +1091,17 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/pairings-check-in-out/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}/{check_in:int}',
+        path=(
+            '/pairings-check-in-out/{event_uniq_id:str}/{tournament_id:int}'
+            '/{round:int}/{player_id:int}/{check_in:int}'
+        ),
         name='admin-pairings-check-in-out',
         guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
     async def htmx_admin_pairings_check_in_out(
         self,
         request: HTMXRequest,
+        channels: ChannelsPlugin,
         tournament_id: int,
         player_id: int,
         check_in: int,
@@ -1108,10 +1113,10 @@ class PairingsAdminController(BaseEventAdminController):
             player_id=player_id,
             round_=round,
         )
-
         tournament_player = web_context.get_admin_tournament_player()
         tournament = web_context.get_admin_tournament()
         tournament.check_in_player(tournament_player, bool(check_in))
+        PlayerAdminController.publish_new_checkin(channels, tournament)
         return self._admin_event_pairings_render(web_context)
 
     @get(

@@ -16,12 +16,17 @@
                 {% if tournament_player.check_in %}
                     class="bi-check-circle-fill text-success cursor-pointer"
                     {{ macros.tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
-                    hx-patch="{{ url_for('admin-player-check-out', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                 {% else %}
                     class="bi-circle-fill text-warning cursor-pointer"
                     {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
-                    hx-patch="{{ url_for('admin-player-check-in', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
                 {% endif %}
+                hx-patch="{{ url_for(
+                    'admin-player-check-in-out',
+                    event_uniq_id=admin_event.uniq_id,
+                    player_id=player.id,
+                    check_in=(not tournament_player.check_in)|int
+                ) }}"
+                onclick="ignoreNextRefreshMessage()"
                 hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
                 hx-swap="multi:#players-table-header,#player-{{ player.id }}:outerHTML,#players-table-empty-row:outerHTML"
                 hx-indicator="#please-wait"

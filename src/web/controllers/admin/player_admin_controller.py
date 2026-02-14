@@ -1506,32 +1506,38 @@ class PlayerAdminController(BaseEventAdminController):
             after='settle',
         )
 
-    @patch(
-        path='/player-check-in/{event_uniq_id:str}/{player_id:int}',
-        name='admin-player-check-in',
-        guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
-    )
-    async def htmx_admin_player_check_in(
-        self, request: HTMXRequest, player_id: int
-    ) -> Template:
-        web_context = PlayerAdminWebContext(request, player_id)
-        player = web_context.get_admin_player()
-        player.single_tournament.check_in_player(player, check_in=True)
-        return self._render_player_table_row(web_context)
+    @classmethod
+    def publish_new_checkin(cls, channels: ChannelsPlugin, tournament: Tournament):
+        event = tournament.event
+        channels.publish(
+            {'event': f'new-checkins|{event.uniq_id}', 'data': ''},
+            ['ws'],
+        )
+        channels.publish(
+            {
+                'event': f'new-checkins|{event.uniq_id}|{tournament.id}|{tournament.current_round}',
+                'data': '',
+            },
+            ['ws'],
+        )
 
     @patch(
-        path='/player-check-out/{event_uniq_id:str}/{player_id:int}',
-        name='admin-player-check-out',
+        path='/player-check-in-out/{event_uniq_id:str}/{player_id:int}/{check_in:int}',
+        name='admin-player-check-in-out',
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
-    async def htmx_admin_player_check_out(
+    async def htmx_admin_player_check_in_out(
         self,
         request: HTMXRequest,
+        channels: ChannelsPlugin,
         player_id: int,
+        check_in: int,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
         player = web_context.get_admin_player()
-        player.single_tournament.check_in_player(player, check_in=False)
+        tournament = player.single_tournament
+        tournament.check_in_player(player, bool(check_in))
+        self.publish_new_checkin(channels, tournament)
         return self._render_player_table_row(web_context)
 
     # -------------------------------------------------------------------------
@@ -2173,22 +2179,6 @@ class PlayerAdminController(BaseEventAdminController):
         }
         return self._admin_base_event_render(template_context)
 
-    @classmethod
-    def publish_new_checkin(
-        cls, channels: ChannelsPlugin, event_uniq_id: str, player: Player
-    ):
-        channels.publish(
-            {'event': f'new-checkins|{event_uniq_id}', 'data': ''},
-            ['ws'],
-        )
-        channels.publish(
-            {
-                'event': f'new-checkins|{event_uniq_id}|{player.single_tournament.id}|{player.single_tournament.current_round}',
-                'data': '',
-            },
-            ['ws'],
-        )
-
     @get(
         path='/players/needs-refresh-message/{event_uniq_id:str}/{reason:str}',
         name='admin-players-needs-refresh-message',
@@ -2198,7 +2188,10 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         event_uniq_id: str,
         reason: str,
+        ignore: bool = False,
     ) -> Template:
+        if ignore:
+            return HTMXTemplate(template_name='/common/empty.html')
         return HTMXTemplate(
             template_name='/admin/common/needs_refresh.html',
             context={
