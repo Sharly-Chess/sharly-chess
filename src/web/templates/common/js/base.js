@@ -417,9 +417,10 @@ function setPrintTournamentPlayerSelectOptions(
 }
 
 var isNextRefreshMessageIgnored = false;
-function ignoreNextRefreshMessage() {
-    isNextRefreshMessageIgnored = true;
-    setTimeout(function(){
+function getIsNextRefreshMessageIgnored() {
+    if (isNextRefreshMessageIgnored) {
         isNextRefreshMessageIgnored = false;
-    }, 500);
+        return true;
+    }
+    return false;
 }

@@ -26,7 +26,7 @@
                     player_id=player.id,
                     check_in=(not tournament_player.check_in)|int
                 ) }}"
-                onclick="ignoreNextRefreshMessage()"
+                onclick="isNextRefreshMessageIgnored = true;"
                 hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
                 hx-swap="multi:#players-table-header,#player-{{ player.id }}:outerHTML,#players-table-empty-row:outerHTML"
                 hx-indicator="#please-wait"

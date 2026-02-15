@@ -10,7 +10,7 @@
         hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
         hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }} from:body"
         hx-target="#refresh-message"
-        hx-vals="js:{ignore: isNextRefreshMessageIgnored && $('#refresh-message').is(':empty')}"
+        hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
         hx-swap="innerHTML"
     >
     </div>
