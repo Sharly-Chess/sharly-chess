@@ -192,18 +192,22 @@
                 </button>
             </span>
         {% endif %}
-        {% if not screen.family %}
             <span {{ macros.tooltip_attributes('info', _('Go to the screen.'), 'top') }}>
 
                 <a
                     class="btn btn-sm btn-outline-primary"
-                    href="{{ url_for('user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=screen.uniq_id) }}"
+                    href="{{ url_for(
+                        'user-screen', event_uniq_id=admin_event.uniq_id, screen_uniq_id=screen.uniq_id
+                    ) }}"
                     target="_blank"
                 >
                     <i class="bi bi-eye"></i>
                 </a>
             </span>
-            {{ admin_macros.display_controller_assign_dropdown(admin_event.sorted_display_controllers, 'screen', screen.uniq_id) }}
+        {% if not screen.family %}
+            {{ admin_macros.display_controller_assign_dropdown(
+                admin_event.sorted_display_controllers, 'screen', screen.uniq_id
+            ) }}
         {% endif %}
     {% endif %}
 {% endblock %}
