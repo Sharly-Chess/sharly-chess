@@ -22,3 +22,7 @@
 ## Prizes
 
 - Added criteria type _Comment_ (3.6.0)
+
+## _FFE_
+
+- Fixed T2 and arbiter compensation forms

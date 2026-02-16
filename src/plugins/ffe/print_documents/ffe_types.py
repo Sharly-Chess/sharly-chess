@@ -586,6 +586,14 @@ class FFEArbiterCompensationType(FFETournamentsDocumentType):
         else:
             return None
 
+    def template_context(
+        self,
+        ffe_document: 'FFEPrintDocument',
+    ) -> dict[str, Any]:
+        return super().template_context(ffe_document) | {
+            'arbiter': self.arbiter,
+        }
+
 
 class FFETournamentDocumentType(FFEDocumentType, ABC):
     @cached_property
