@@ -80,7 +80,7 @@
 {% block cards_container_cards %}
     <div class="row gy-2 gx-3">
         {% if admin_event.families_by_id %}
-            {% for family in admin_event.families_sorted_by_name %}
+            {% for family in admin_event.sorted_families %}
                 {% include 'family_card.html' %}
             {% endfor %}
         {% else %}

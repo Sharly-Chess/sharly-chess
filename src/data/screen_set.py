@@ -349,12 +349,10 @@ class ScreenSet:
     def _extract_players_by_name(self):
         if self.items_lists is None:
             if self.players_show_unpaired:
-                self._extract_data(
-                    self.tournament.tournament_players_by_name_with_unpaired
-                )
+                self._extract_data(self.tournament.sorted_tournament_players)
             else:
                 self._extract_data(
-                    self.tournament.tournament_players_by_name_without_unpaired
+                    self.tournament.sorted_tournament_players_without_unpaired
                 )
 
     @property

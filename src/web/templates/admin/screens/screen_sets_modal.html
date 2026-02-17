@@ -20,7 +20,7 @@
                     {{ _('Drag the sets to order them.') }}
                 {% endif %}
             </p>
-            {% if not admin_screen_set and admin_screen.screen_sets_sorted_by_order|length > 1 %}
+            {% if not admin_screen_set and admin_screen.sorted_screen_sets|length > 1 %}
                 <form
                     class="sortable"
                     hx-patch="{{ url_for('admin-screen-reorder-sets', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id) }}"
@@ -29,10 +29,10 @@
                     hx-indicator="#please-wait"
                 >
             {% endif %}
-                {% for screen_set in admin_screen.screen_sets_sorted_by_order %}
+                {% for screen_set in admin_screen.sorted_screen_sets %}
                     {% include 'screen_sets_modal_set_div.html' %}
                 {% endfor %}
-            {% if not admin_screen_set and admin_screen.screen_sets_sorted_by_order|length > 1 %}
+            {% if not admin_screen_set and admin_screen.sorted_screen_sets|length > 1 %}
                 </form>
             {% endif %}
         </div>

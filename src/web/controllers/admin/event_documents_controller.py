@@ -94,7 +94,7 @@ class EventDocumentsController(BaseEventAdminController):
                     'id': tournament_player.id,
                     'full_name': tournament_player.full_name,
                 }
-                for tournament_player in tournament.tournament_players_by_name_with_unpaired
+                for tournament_player in tournament.sorted_tournament_players
             ]
             for tournament in allowed_tournaments
         }
