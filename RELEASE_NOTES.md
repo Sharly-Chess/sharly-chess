@@ -22,3 +22,7 @@
 ## Prizes
 
 - Added criteria type _Comment_ (3.6.0)
+
+## Screens
+
+- Added missing link on the family screens card (3.6.0)
