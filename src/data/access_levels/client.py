@@ -1,9 +1,9 @@
 from functools import cached_property, cache
-from operator import attrgetter
 from typing import TYPE_CHECKING, Optional, Collection
 
 from litestar_htmx import HTMXRequest
 
+from common.i18n.utils import by
 from common.logger import get_logger
 from common.network import LOCALHOST_IP, LOCALHOST_NAME
 from data.access_levels.actions import AuthAction
@@ -140,7 +140,7 @@ class Client:
         assert self.event is not None
         return [
             tournament
-            for tournament in self.event.tournaments_sorted_by_index
+            for tournament in self.event.sorted_tournaments
             if self.action_allowed_for_tournament(action, tournament.id)
         ]
 
@@ -163,7 +163,7 @@ class Client:
 
     @property
     def sorted_allowed_players(self) -> list[Player]:
-        return sorted(self.allowed_players, key=attrgetter('full_name'))
+        return sorted(self.allowed_players, key=by('full_name'))
 
     # ---------------------------------------------------------------------------------
     # Application

@@ -7,7 +7,6 @@ from common import experimental_features_enabled
 from collections import defaultdict
 from typing import Annotated, Any, Optional
 
-from common.i18n.utils import by
 from data.access_levels.actions import AuthAction
 from data.pairings.engines import BbpPairings
 from data.pairings.bbp_history import TournamentHistoryPlayer
@@ -147,7 +146,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_tournament
             and self.admin_tournament.pairing_system.split_unpaired_and_bye_players
         ):
-            for tournament_player in sorted(unpaired, key=by('last_name')):
+            for tournament_player in sorted(unpaired, key=attrgetter('name_sort_key')):
                 if tournament_player.pairings[
                     self.admin_round
                 ] and tournament_player.pairings[self.admin_round].result in (
@@ -159,7 +158,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 else:
                     self.admin_unpaired.append(tournament_player)
         else:
-            self.admin_unpaired = sorted(unpaired, key=by('last_name'))
+            self.admin_unpaired = sorted(unpaired, key=attrgetter('name_sort_key'))
 
         self.admin_board: Board | None = None
         if board_id is not None:

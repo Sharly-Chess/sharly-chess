@@ -548,7 +548,7 @@ class FFET1Type(FFETournamentsDocumentType):
         }
 
 
-class FFET2Type(FFETournamentsDocumentType):
+class FFET2Type(FFEDocumentType):
     @staticmethod
     def static_id() -> str:
         return 'ffe-t2-tournament-report'
@@ -556,6 +556,10 @@ class FFET2Type(FFETournamentsDocumentType):
     @staticmethod
     def static_name() -> str:
         return _('T2 Minutes')
+
+    @classmethod
+    def get_valid_option_types(cls) -> list[type[PrintOption]]:
+        return []
 
 
 class FFEArbiterCompensationType(FFETournamentsDocumentType):

@@ -232,7 +232,7 @@ class PlayerListPrintDocument(PlayerPrintDocument):
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
             player.single_tournament_player
-            for player in self.get_event().players_sorted_by_name
+            for player in self.get_event().sorted_players
             if player.single_tournament.id in tournament_ids
         ]
 
@@ -259,7 +259,7 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
             player.single_tournament_player
-            for player in self.get_event().players_sorted_by_name
+            for player in self.get_event().sorted_players
             if player.single_tournament.id in tournament_ids
         ]
 
@@ -603,7 +603,7 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
     @property
     def ordered_tournament_players(self) -> list[TournamentPlayer]:
         self.tournament.set_for_round(self.at_round)
-        return self.tournament.tournament_players_by_name_with_unpaired
+        return self.tournament.sorted_tournament_players
 
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
@@ -1016,7 +1016,7 @@ class StatisticsPrintDocument(PrintDocument):
             (
                 'tournament',
                 _('Tournaments'),
-                lambda item: item[0].name,
+                lambda item: item[0].index,
                 None,
                 lambda x: x is not None,
                 None,

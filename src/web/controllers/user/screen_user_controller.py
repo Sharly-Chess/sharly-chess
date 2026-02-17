@@ -72,7 +72,7 @@ class ScreenUserController(BaseScreenUserController):
                     | ScreenType.PLAYERS
                     | ScreenType.RANKING
                 ):
-                    for screen_set in web_context.screen.screen_sets_by_id.values():
+                    for screen_set in web_context.screen.screen_sets:
                         if cls._user_screen_set_refresh_needed(screen_set, date):
                             return True
                 case ScreenType.RESULTS:

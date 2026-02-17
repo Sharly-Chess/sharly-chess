@@ -105,7 +105,7 @@ class FFENoLicencePlayersPrintOption(FFEPrintOption, OptionalPlayersPrintOption,
     ) -> list[TournamentPlayer]:
         return [
             tournament_player
-            for tournament_player in tournament.tournament_players_by_name_with_unpaired
+            for tournament_player in tournament.sorted_tournament_players
             if FFEUtils.get_player_plugin_data(tournament_player).ffe_licence
             not in cls.allowed_licences()
         ]

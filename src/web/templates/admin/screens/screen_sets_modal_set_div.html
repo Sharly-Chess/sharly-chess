@@ -1,4 +1,4 @@
-<div class="admin-screen-sets-modal-screen-set-div {% if not admin_screen_set and admin_screen.screen_sets_sorted_by_order|length > 1 %}cursor-grab{% endif %}">
+<div class="admin-screen-sets-modal-screen-set-div {% if not admin_screen_set and admin_screen.sorted_screen_sets|length > 1 %}cursor-grab{% endif %}">
     <input type='hidden' name='item' value='{{ screen_set.id }}'/>
     {% if admin_screen_set.id == screen_set.id %}
         <form>
@@ -109,7 +109,7 @@
     {% else %}
         <div class="admin-screen-set-div border border-secondary p-1 mb-1">
             <div class="d-flex gap-3 px-2 align-items-center">
-                {% if not admin_screen_set and admin_screen.screen_sets_sorted_by_order|length > 1 %}
+                {% if not admin_screen_set and admin_screen.sorted_screen_sets|length > 1 %}
                     <i class="bi-grip-horizontal"></i>
                 {% endif %}
                 <div class="flex-grow-1">
@@ -160,7 +160,7 @@
                             hx-delete="{{ url_for('admin-screen-set-delete', event_uniq_id=admin_event.uniq_id, screen_id=admin_screen.id, screen_set_id=screen_set.id) }}"
                             hx-target="body"
                             hx-indicator="#please-wait"
-                            {% if admin_screen.screen_sets_sorted_by_order|length <= 1 %}
+                            {% if admin_screen.sorted_screen_sets|length <= 1 %}
                                 disabled
                             {% endif %}
                         >

@@ -283,9 +283,7 @@ class Family:
                         )
                 else:
                     players_instead_of_boards = True
-                    cut_items_number = len(
-                        self.tournament.tournament_players_by_name_with_unpaired
-                    )
+                    cut_items_number = len(self.tournament.sorted_tournament_players)
                     if cut_items_number:
                         self._calculated_first = 1
                         self._calculated_last = cut_items_number
@@ -295,15 +293,15 @@ class Family:
                     if self.tournament.current_round:
                         if self.players_show_unpaired:
                             total_items_number = len(
-                                self.tournament.tournament_players_by_name_with_unpaired
+                                self.tournament.sorted_tournament_players
                             )
                         else:
                             total_items_number = len(
-                                self.tournament.tournament_players_by_name_without_unpaired
+                                self.tournament.sorted_tournament_players_without_unpaired
                             )
                     else:
                         total_items_number = len(
-                            self.tournament.tournament_players_by_name_with_unpaired
+                            self.tournament.sorted_tournament_players
                         )
                 else:
                     self.tournament.compute_tournament_player_ranks(
