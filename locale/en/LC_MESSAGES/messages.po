@@ -6701,6 +6701,10 @@ msgstr ""
 msgid "then"
 msgstr ""
 
+#, python-format
+msgid "total: %(total)s"
+msgstr ""
+
 msgid "value: {value}"
 msgstr ""
 
