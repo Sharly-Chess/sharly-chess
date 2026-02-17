@@ -27,7 +27,7 @@ class NamePlayerSorter(PlayerSorter):
     def sorted_tournament_players(
         self, tournament: Tournament
     ) -> list[TournamentPlayer]:
-        return tournament.tournament_players_by_name_with_unpaired
+        return tournament.sorted_tournament_players
 
 
 class RankPlayerSorter(PlayerSorter):

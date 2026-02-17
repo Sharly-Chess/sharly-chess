@@ -50,10 +50,10 @@
                         </button>
                     </li>
                 {% endfor %}
-                {% if admin_event.rotators_sorted_by_name|length > 0 and sorted_screens|length > 0 %}
+                {% if admin_event.sorted_rotators|length > 0 and sorted_screens|length > 0 %}
                    <li><hr class="dropdown-divider"></li>
                 {% endif %}
-                {% for rotator in admin_event.rotators_sorted_by_name %}
+                {% for rotator in admin_event.sorted_rotators %}
                     <li>
                         <button
                             class="dropdown-item text-start cursor-pointer"

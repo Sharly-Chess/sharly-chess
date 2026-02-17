@@ -303,9 +303,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         sorted_players = sorted(
             players,
-            key=lambda player: (
-                sort_key_function(player) + (player.last_name, player.first_name)
-            ),
+            key=lambda player: sort_key_function(player) + player.name_sort_key,
             reverse=not is_asc,
         )
         return [player.id for player in sorted_players]
@@ -727,8 +725,8 @@ class PlayerAdminController(BaseEventAdminController):
                 fixed = stored_player.fixed
                 stored_plugin_data = stored_player.plugin_data
             if action == FormAction.CREATE:
-                if len(event.not_finished_tournaments_sorted_by_index) == 1:
-                    tournament_id = event.not_finished_tournaments_sorted_by_index[0].id
+                if len(event.sorted_not_finished_tournaments) == 1:
+                    tournament_id = event.sorted_not_finished_tournaments[0].id
             else:
                 assert admin_player is not None
                 tournament_id = admin_player.single_tournament.id
@@ -2148,9 +2146,7 @@ class PlayerAdminController(BaseEventAdminController):
         data_source = web_context.get_admin_data_source()
         players: list[Player] = []
         if tournament := web_context.admin_tournament:
-            for (
-                tournament_player
-            ) in tournament.tournament_players_by_name_with_unpaired:
+            for tournament_player in tournament.sorted_tournament_players:
                 players.append(tournament_player)
         else:
             players = web_context.client.sorted_allowed_players

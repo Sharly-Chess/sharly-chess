@@ -1851,11 +1851,11 @@ class TournamentAdminController(BaseEventAdminController):
                 ),
                 None,
             )
-            for tournament in event.tournaments_sorted_by_index
+            for tournament in event.sorted_tournaments
         }
         tournament_groups: list[list[Tournament]] = []
         previous_group_id: str | None = None
-        for tournament in event.tournaments_sorted_by_index:
+        for tournament in event.sorted_tournaments:
             group_id = group_id_by_tournament_id[tournament.id]
             if group_id is not None and group_id == previous_group_id:
                 tournament_groups[-1].append(tournament)
@@ -1925,7 +1925,7 @@ class TournamentAdminController(BaseEventAdminController):
                     flat_data, f'player_count_{tournament.id}'
                 )
                 or 0
-                for tournament in event.tournaments_sorted_by_index
+                for tournament in event.sorted_tournaments
             }
             self._distribute_players_by_rating(
                 event,
@@ -1935,7 +1935,7 @@ class TournamentAdminController(BaseEventAdminController):
         else:
             tournament_players = event.tournament_players
             matched_player_ids: list[int] = []
-            for tournament in event.tournaments_sorted_by_index:
+            for tournament in event.sorted_tournaments:
                 if tournament.id not in tournament_ids:
                     continue
                 for player in tournament_players:

@@ -52,7 +52,7 @@ class ProfileController(BaseController):
         if isinstance(web_context, ProfileWebContext):
             active_user_account_options = (
                 ProfileWebContext.get_active_user_account_options(
-                    web_context.get_admin_event().active_user_accounts_sorted_by_name
+                    web_context.get_admin_event().sorted_active_user_accounts
                 )
             )
         return HTMXTemplate(
@@ -105,7 +105,7 @@ class ProfileController(BaseController):
             data, field := 'account_id'
         )
         admin_event: Event = web_context.get_admin_event()
-        accounts: list[Account] = admin_event.active_user_accounts_sorted_by_name
+        accounts: list[Account] = admin_event.sorted_active_user_accounts
         if not account_id and len(accounts) == 1:
             account_id = accounts[0].id
         if not account_id:

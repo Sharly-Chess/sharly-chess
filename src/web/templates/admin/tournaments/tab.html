@@ -161,7 +161,7 @@
         {% endif %}
     >
         <div class="row gy-2 gx-3 {% if sortable %}sortable{% endif %}">
-            {% if admin_event.tournaments_sorted_by_index %}
+            {% if admin_event.sorted_tournaments %}
                 {% for tournament in allowed_tournaments %}
                     {% include 'tournament_card.html' %}
                 {% endfor %}
