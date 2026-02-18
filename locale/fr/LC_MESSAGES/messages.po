@@ -6703,6 +6703,10 @@ msgstr "classement complet"
 msgid "then"
 msgstr "puis"
 
+#, python-format
+msgid "total: %(total)s"
+msgstr "total : %(total)s"
+
 msgid "value: {value}"
 msgstr "valeur : {value}"
 
