@@ -1,17 +1,26 @@
 from dataclasses import dataclass
+from datetime import datetime
 from enum import IntEnum
 from functools import partial
+from pathlib import Path
 from threading import Thread
 
-from common.logger import get_logger
+import paramiko.client
+from paramiko import SFTPClient
+
+from common import BASE_DIR
 from common.i18n import _, set_locale
+from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.loader import EventLoader
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament
 from plugins.custom_upload import PLUGIN_NAME
-from plugins.custom_upload.utils import CustomUploadUtils
+from plugins.custom_upload.utils import (
+    CustomUploadUtils,
+    CustomUploadTournamentPluginData,
+)
 from plugins.utils import PluginUtils
 from web.channels import channels_plugin
 
@@ -53,7 +62,7 @@ class CustomUploadUploader:
         result = cls.upload_status_messages.get(result_id, None)
 
         # Clear the message if it is a SETTINGS_ERROR, and refresh it later...
-        if result and result.status == CustomUploadResult.SETTINGS_ERROR:
+        if result and result.status == CustomUploadStatus.SETTINGS_ERROR:
             result = None
 
         # Default status when we don't have a result
@@ -77,7 +86,7 @@ class CustomUploadUploader:
                 CustomUploadStatus.SETTINGS_ERROR, unavailable_message
             )
             cls.upload_status_messages[result_id] = result
-        elif result.status != CustomUploadStatus.NEVER and cls.ffe_upload_needed(
+        elif result.status != CustomUploadStatus.NEVER and cls.custom_upload_needed(
             tournament
         ):
             # For manual updates tell the user that the tournament has been modified
@@ -103,21 +112,24 @@ class CustomUploadUploader:
         return eligible_tournaments
 
     @classmethod
-    def custom_last_upload(cls, tournament: Tournament | StoredTournament) -> float:
+    def custom_last_upload(
+        cls, tournament: Tournament | StoredTournament
+    ) -> datetime | None:
+        plugin_date: CustomUploadTournamentPluginData
         if isinstance(tournament, Tournament):
             plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
         else:
             raw_plugin_data = tournament.plugin_data.get(PLUGIN_NAME, {})
             plugin_data = raw_plugin_data
 
-        return plugin_data.last_upload or 0.0
+        return plugin_data.last_upload
 
     @classmethod
     def custom_upload_needed(cls, tournament: Tournament | StoredTournament) -> bool:
-        return cls.ffe_last_upload(tournament) < max(
-            tournament.last_update,
-            tournament.last_player_update,
-            tournament.last_pairing_update,
+        return (cls.custom_last_upload(tournament) or datetime.min) < max(
+            tournament.last_update or datetime.min,
+            tournament.last_player_update or datetime.min,
+            tournament.last_pairing_update or datetime.min,
         )
 
     @classmethod
@@ -153,12 +165,12 @@ class CustomUploadUploader:
             return None
 
         current_result = cls.get_updated_tournament_upload_result(tournament)
-        if current_result.status == CustomUploadResult.SETTINGS_ERROR:
+        if current_result.status == CustomUploadStatus.SETTINGS_ERROR:
             # Skip this tournament if we now have a SETTINGS_ERROR
             return current_result
 
         result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
-        if current_result.status != CustomUploadStatus.NEVER:
+        if not force and current_result.status != CustomUploadStatus.NEVER:
             cls.upload_status_messages[result_id] = CustomUploadResult(
                 CustomUploadStatus.CHANGED,
                 _('Modified since last upload'),
@@ -181,20 +193,34 @@ class CustomUploadUploader:
 
         logger.info('Uploading tournament [%s]...', tournament.name)
 
-        def report(status: CustomUploadStatus, message: str) -> None:
-            cls.upload_status_messages[result_id] = CustomUploadResult(status, message)
+        with paramiko.SSHClient() as client:
+            plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
 
-        try:
-            # TODO: do FTP upload here
-            pass
-        except Exception as e:
-            logger.error('Error uploading tournament [%s]: [%s]', tournament.name, e)
-            cls.upload_status_messages[result_id] = CustomUploadResult(
-                CustomUploadStatus.ERROR,
-                _('Error uploading tournament'),
-            )
-        finally:
-            cls.publish_upload_event()
+            host = plugin_data.ftp_host
+            username = plugin_data.ftp_username
+            password = plugin_data.ftp_password
+            # TODO: replace test file by actual document(s) picked by user
+            file_name = 'README.md'
+            upload_location = Path(plugin_data.server_path) / file_name
+            exported_file = BASE_DIR / file_name
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            try:
+                client.connect(host, username=username, password=password)
+                sftp_client: SFTPClient = client.open_sftp()
+                sftp_client.put(
+                    exported_file.absolute().as_posix(), upload_location.as_posix()
+                )
+                sftp_client.close()
+            except Exception as e:
+                logger.error(
+                    'Error uploading tournament [%s]: [%s]', tournament.name, e
+                )
+                cls.upload_status_messages[result_id] = CustomUploadResult(
+                    CustomUploadStatus.ERROR,
+                    _('Error uploading tournament'),
+                )
+            finally:
+                cls.publish_upload_event()
 
         return cls.upload_status_messages[result_id]
 

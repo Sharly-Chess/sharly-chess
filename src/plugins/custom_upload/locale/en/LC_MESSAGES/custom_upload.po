@@ -1,7 +1,31 @@
+msgid "Connection Custom Upload"
+msgstr ""
+
 msgid "Custom location"
 msgstr ""
 
 msgid "Custom Upload"
+msgstr ""
+
+msgid "E.g.: ftp.example.com"
+msgstr ""
+
+msgid "E.g.: my_password"
+msgstr ""
+
+msgid "E.g.: my_username"
+msgstr ""
+
+msgid "E.g.: /tournaments/my_tournament/"
+msgstr ""
+
+msgid "FTP username:"
+msgstr ""
+
+msgid "FTP password:"
+msgstr ""
+
+msgid "Host:"
 msgstr ""
 
 msgid "Last upload"
@@ -11,6 +35,9 @@ msgid "Manual"
 msgstr ""
 
 msgid "Mode"
+msgstr ""
+
+msgid "Path in the server:"
 msgstr ""
 
 msgid "Site"

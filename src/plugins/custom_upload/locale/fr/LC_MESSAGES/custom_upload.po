@@ -1,8 +1,32 @@
+msgid "Connection Custom Upload"
+msgstr "Connexion au site personnel"
+
 msgid "Custom location"
 msgstr "Site personnel"
 
 msgid "Custom Upload"
 msgstr "Mise en ligne personnalisée"
+
+msgid "E.g.: ftp.example.com"
+msgstr "Exemple : ftp.exemple.com"
+
+msgid "E.g.: my_password"
+msgstr "Exemple : mon_mot_de_passe"
+
+msgid "E.g.: my_username"
+msgstr "Exemple : mon_identifiant"
+
+msgid "E.g.: /tournaments/my_tournament/"
+msgstr "Exemple : /tournois/mon_tournoi"
+
+msgid "FTP username:"
+msgstr "Identifiant FTP :"
+
+msgid "FTP password:"
+msgstr "Mot de passe FTP :"
+
+msgid "Host:"
+msgstr "Hôte :"
 
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
@@ -12,6 +36,9 @@ msgstr "Manuel"
 
 msgid "Mode"
 msgstr "Mode"
+
+msgid "Path in the server:"
+msgstr "Chemin sur le serveur :"
 
 msgid "Site"
 msgstr "Site"

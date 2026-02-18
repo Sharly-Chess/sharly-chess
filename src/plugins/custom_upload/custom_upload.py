@@ -1,4 +1,4 @@
-from typing import Iterable
+from typing import Iterable, Any
 
 from packaging.version import Version
 
@@ -9,8 +9,9 @@ from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_controller import (
     CustomUploadAdminEventController,
 )
+from plugins.custom_upload.utils import CustomUploadTournamentPluginData
 from plugins.hookspec import hookimpl
-from plugins.utils import Plugin, NavUploadItem
+from plugins.utils import Plugin, NavUploadItem, PluginData
 from web.controllers.base_controller import BaseController
 
 
@@ -25,7 +26,7 @@ class CustomUploadPlugin(Plugin):
 
     @property
     def description(self) -> str:
-        return _('Upload tournament documents to custom location.')
+        return _('Upload tournament documents to custom location')
 
     @property
     def version(self) -> Version:
@@ -45,6 +46,23 @@ class CustomUploadPlugin(Plugin):
         return [
             CustomUploadAdminEventController,
         ]
+
+    # ---------------------------------------------------------------------------------
+    # Tournaments
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def get_tournament_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+        return self.id, CustomUploadTournamentPluginData
+
+    @hookimpl
+    def get_tournament_form_fields_template_and_data(
+        self, event: 'Event', tournament: 'Tournament | None'
+    ) -> tuple[str, dict[str, Any]]:
+        return (
+            '/custom_upload_tournament_form_fields.html',
+            {},
+        )
 
     # ---------------------------------------------------------------------------------
     # Upload

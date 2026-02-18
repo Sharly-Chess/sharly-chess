@@ -1,14 +1,21 @@
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any, Self
+
 from data.tournament import Tournament
+from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.custom_upload import PLUGIN_NAME
+from plugins.utils import PluginData
+from web.controllers.base_controller import WebContext
 
 
 class CustomUploadUtils:
     @staticmethod
     def get_tournament_plugin_data(
         tournament: Tournament,
-    ) -> 'CustomUploadTournamentData':
+    ) -> 'CustomUploadTournamentPluginData':
         plugin_data = tournament.plugin_data[PLUGIN_NAME]
-        # TODO: make sure plugin data is in the correct format
+        assert isinstance(plugin_data, CustomUploadTournamentPluginData)
         return plugin_data
 
     @staticmethod
@@ -18,3 +25,60 @@ class CustomUploadUtils:
         plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
         # TODO: verify FTP settings are properly configured for given tournament
         return PapiConverter.papi_export_unavailable_message(tournament)
+
+
+@dataclass
+class CustomUploadTournamentPluginData(PluginData):
+    ftp_host: str | None = None
+    server_path: str | None = None
+    ftp_username: str | None = None
+    ftp_password: str | None = None
+    last_upload: datetime | None = None
+
+    @classmethod
+    def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        return cls(
+            ftp_host=stored_value.get('ftp_host', None),
+            server_path=stored_value.get('server_path', None),
+            ftp_username=stored_value.get('ftp_username', None),
+            ftp_password=stored_value.get('ftp_password', None),
+            last_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_upload')
+            ),
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
+        return {
+            'ftp_host': self.ftp_host,
+            'server_path': self.server_path,
+            'ftp_username': self.ftp_username,
+            'ftp_password': self.ftp_password,
+        }
+
+    @classmethod
+    def from_form_data(
+        cls,
+        data: dict[str, str],
+        previous_object: Self | None = None,
+        action: str | None = None,
+    ) -> Self:
+        last_upload: datetime | None = None
+        if previous_object and action != 'clone':
+            last_upload = previous_object.last_upload
+        return cls(
+            ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
+            server_path=WebContext.form_data_to_str(data, 'server_path'),
+            last_upload=last_upload,
+            ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
+            ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
+        )
+
+    def to_form_data(self, action: str | None = None) -> dict[str, str]:
+        return WebContext.values_dict_to_form_data(
+            {
+                'ftp_host': self.ftp_host if action != 'clone' else '',
+                'server_path': self.server_path if action != 'clone' else '',
+                'ftp_username': self.ftp_username if action != 'clone' else '',
+                'ftp_password': self.ftp_password if action != 'clone' else '',
+            }
+        )

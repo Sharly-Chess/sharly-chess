@@ -1,13 +1,15 @@
-from typing import Any
+from typing import Any, Annotated
 
 from litestar import get, post
+from litestar.enums import RequestEncodingType
+from litestar.params import Body
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
 from data.access_levels.actions import AuthAction
 from data.tournament import Tournament
 from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
-from utils.date_time import format_timestamp_date_time
+from utils.date_time import format_datetime
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
@@ -30,7 +32,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         cls, web_context: BaseEventAdminWebContext
     ) -> dict[str, Any]:
         return web_context.template_context | {
-            'format_timestamp_date_time': format_timestamp_date_time,
+            'format_datetime': format_datetime,
             'allowed_tournaments': cls._allowed_tournaments(web_context),
         }
 
@@ -64,7 +66,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         name='custom-upload-results',
         guards=[EventGuard(), ActionGuard(AuthAction.PUBLISH_RESULTS)],
     )
-    async def htmx_admin_ffe_upload_results(self, request: HTMXRequest) -> Template:
+    async def htmx_admin_custom_upload_results(self, request: HTMXRequest) -> Template:
         web_context = BaseEventAdminWebContext(request)
         return self._render_upload_results(web_context)
 
@@ -76,7 +78,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
     async def htmx_admin_custom_upload(self, request: HTMXRequest) -> Template:
         web_context = BaseEventAdminWebContext(request)
 
-        # TODO: upload to custom location
+        # TODO: upload event to custom location
 
         return self._render_upload_results(web_context)
 
@@ -85,7 +87,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         name='custom-upload-tournament',
         guards=[EventGuard(), TournamentActionGuard(AuthAction.PUBLISH_RESULTS)],
     )
-    async def htmx_admin_ffe_upload_tournament(
+    async def htmx_admin_custom_upload_tournament(
         self,
         request: HTMXRequest,
         tournament_id: int,
@@ -96,3 +98,30 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         CustomUploadUploader.schedule_upload(tournament, True)
 
         return self._render_upload_results(web_context)
+
+    @post(
+        path='/custom-upload/test-auth',
+        name='custom-upload-test-auth',
+    )
+    async def htmx_ffe_test_auth(
+        self,
+        data: Annotated[
+            dict[str, Any],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        # TODO: Check if FTP connection is working
+
+        return HTMXTemplate(
+            template_name='custom_upload_tournament_auth_fields.html',
+            context={
+                'data': {
+                    'ftp_host': data['ftp_host'],
+                    'server_path': data['server_path'],
+                    'ftp_username': data['ftp_username'],
+                    'ftp_password': data['ftp_password'],
+                },
+                'custom_upload_auth_valid': False,
+                'errors': [],
+            },
+        )
