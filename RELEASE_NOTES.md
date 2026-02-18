@@ -13,6 +13,7 @@
 ## Players
 
 - Import players from CSV files (3.6.0)
+- Fixed the number of titled players on norm reports (3.6.1)
 
 ## Pairings
 
@@ -33,3 +34,7 @@
 - Fixed T2 and arbiter compensation forms (3.6.0)
 - Fixed access to upload modal (3.6.1)
 - Fixed invalid type on account FFE arbiter title (3.6.1)
+
+## _FRA Schools_
+
+- Only take into account the players with real pairings for the ranking by school (3.6.1)
