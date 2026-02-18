@@ -415,3 +415,12 @@ function setPrintTournamentPlayerSelectOptions(
         });
     }
 }
+
+var isNextRefreshMessageIgnored = false;
+function getIsNextRefreshMessageIgnored() {
+    if (isNextRefreshMessageIgnored) {
+        isNextRefreshMessageIgnored = false;
+        return true;
+    }
+    return false;
+}

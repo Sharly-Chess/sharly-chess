@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from common.i18n import _
+from common.i18n.utils import normalized_key
 from data.access_levels.access_levels import (
     AccessLevel,
     AdministrationAccessLevel,
@@ -18,7 +19,7 @@ from database.sqlite.event.event_store import (
 )
 from plugins.utils import PluginData
 from plugins.manager import plugin_manager
-from utils.enum import RoleType, FIDEArbiterTitle
+from utils.enum import RoleType, FideArbiterTitle
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -47,8 +48,11 @@ class Role:
         if not self.tournament_ids:
             return []
         return sorted(
-            event.tournaments_by_id[tournament_id].name
-            for tournament_id in self.tournament_ids
+            (
+                event.tournaments_by_id[tournament_id].name
+                for tournament_id in self.tournament_ids
+            ),
+            key=normalized_key,
         )
 
 
@@ -80,8 +84,11 @@ class Permission:
         if not self.tournament_ids:
             return []
         return sorted(
-            event.tournaments_by_id[tournament_id].name
-            for tournament_id in self.tournament_ids
+            (
+                event.tournaments_by_id[tournament_id].name
+                for tournament_id in self.tournament_ids
+            ),
+            key=normalized_key,
         )
 
 
@@ -163,10 +170,8 @@ class Account:
         return self.stored_account.fide_id
 
     @property
-    def fide_arbiter_title(self) -> FIDEArbiterTitle | None:
-        if stored_title := self.stored_account.fide_arbiter_title:
-            return FIDEArbiterTitle(stored_title)
-        return None
+    def fide_arbiter_title(self) -> FideArbiterTitle:
+        return FideArbiterTitle(self.stored_account.fide_arbiter_title or '')
 
     @property
     def full_name(self) -> str:
@@ -237,8 +242,9 @@ class Account:
         if self.first_name:
             arbiter += f', {self.first_name}'
         suffixes: list[str] = []
-        if title := self.fide_arbiter_title:
-            suffixes.append(title.acronym)
+        title = self.fide_arbiter_title
+        if title != FideArbiterTitle.NONE:
+            suffixes.append(title.fide_acronym)
         if self.fide_id:
             suffixes.append(str(self.fide_id))
         if suffixes:
@@ -248,8 +254,9 @@ class Account:
     def get_card_title(self, event: 'Event') -> str:
         card_title = self.full_name
         suffixes: list[str] = []
-        if title := self.fide_arbiter_title:
-            suffixes.append(title.acronym)
+        title = self.fide_arbiter_title
+        if title != FideArbiterTitle.NONE:
+            suffixes.append(title.short_name)
         plugin_suffixes = plugin_manager.hook_for_event(
             event, 'get_account_card_title_suffix'
         )(account=self)

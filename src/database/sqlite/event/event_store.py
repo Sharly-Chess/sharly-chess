@@ -109,7 +109,7 @@ class StoredBoard:
     white_player_id: int
     black_player_id: int | None
     index: int
-    last_result_update: float | None = None
+    last_result_update: datetime | None = None
 
 
 @dataclass
@@ -124,18 +124,20 @@ class StoredTournamentPlayer:
 @dataclass
 class StoredPlayer:
     id: int | None
-    last_name: str
-    ratings: dict[int, dict[str, int | None]]
+    last_name: str = ''
+    ratings: dict[int, dict[str, int | None]] = field(
+        default_factory=dict[int, dict[str, int | None]]
+    )
     first_name: str | None = None
     date_of_birth: date | None = None
     year_of_birth: int | None = None
-    gender: int = 0
+    gender: str = ''
     mail: str | None = None
     phone: str | None = None
     comment: str | None = None
     owed: float = 0.0
     paid: float = 0.0
-    title: int = 0
+    title: str = ''
     fide_id: int | None = None
     federation: str = 'FID'
     club: str | None = None
@@ -145,6 +147,7 @@ class StoredPlayer:
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]
     )
+    transient_arbiter_titles: dict[str, Any] = field(default_factory=dict[str, Any])
 
 
 @dataclass
@@ -169,9 +172,9 @@ class StoredTournament:
     rounds: int = 1
     rating: int = 1
     player_rating_type: int | None = None
-    last_update: float = 0.0
-    last_player_update: float = 0.0
-    last_pairing_update: float = 0.0
+    last_update: datetime | None = None
+    last_player_update: datetime | None = None
+    last_pairing_update: datetime | None = None
     three_points_for_a_win: bool = False
     override_unrated_rapid_blitz: bool = True
     pab_value: int = Result.WIN.value
@@ -209,7 +212,7 @@ class StoredScreenSet:
     fixed_boards_str: str | None
     first: int | None
     last: int | None
-    last_update: float = 0.0
+    last_update: datetime | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
@@ -242,7 +245,7 @@ class StoredScreen:
     stored_screen_sets: list[StoredScreenSet] = field(
         default_factory=list[StoredScreenSet]
     )
-    last_update: float = 0.0
+    last_update: datetime | None = None
     public: bool = True
     message_default: bool = True
     message_text: str | None = None
@@ -279,7 +282,7 @@ class StoredFamily:
     public: bool = True
     message_default: bool = True
     message_text: str | None = None
-    last_update: float = 0.0
+    last_update: datetime | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
@@ -337,7 +340,7 @@ class StoredAccount:
     first_name: str | None
     last_name: str | None
     fide_id: int | None = None
-    fide_arbiter_title: str | None = None
+    fide_arbiter_title: str = ''
     password_hash: str | None = None
     mail: str | None = None
     phone: str | None = None
@@ -345,7 +348,7 @@ class StoredAccount:
         default_factory=list[StoredPermission]
     )
     stored_roles: list[StoredRole] = field(default_factory=list[StoredRole])
-    # Plugins can add their own tournament data
+    # Plugins can add their own account data
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]
     )

@@ -1,11 +1,12 @@
 import weakref
+from datetime import datetime
 from functools import total_ordering
 from typing import TYPE_CHECKING, Optional, Literal
 
 from database.sqlite.event.event_store import StoredBoard
 from database.sqlite.event.event_database import EventDatabase
-from utils.date_time import format_timestamp_date_time
-from utils.enum import Result, PlayerRatingType
+from utils.date_time import format_datetime
+from utils.enum import Result, PlayerRatingType, PlayerTitle
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
@@ -120,15 +121,13 @@ class Board:
         return str(self.result)
 
     @property
-    def last_result_update(self) -> float | None:
+    def last_result_update(self) -> datetime | None:
         return self.stored_board.last_result_update
 
     @property
     def last_result_update_str(self) -> str:
         return (
-            format_timestamp_date_time(self.last_result_update)
-            if self.last_result_update
-            else ''
+            format_datetime(self.last_result_update) if self.last_result_update else ''
         )
 
     def replace_player(
@@ -203,8 +202,8 @@ class Board:
         return (
             f'[{field_prefix} "{cls._format_pgn_string(name)}"]\n'
             + (
-                f'[{field_prefix}Title "{tournament_player.title.to_fide_value}"]\n'
-                if tournament_player.title.to_fide_value
+                f'[{field_prefix}Title "{tournament_player.title.value}"]\n'
+                if tournament_player.title != PlayerTitle.NONE
                 else ''
             )
             + f'[{field_prefix}Elo "{rating}"]\n'

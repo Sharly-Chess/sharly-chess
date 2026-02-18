@@ -3,6 +3,7 @@ from collections import defaultdict
 from typing import Iterable
 
 from common.i18n import _
+from common.i18n.utils import normalized_key
 from data.event import Event
 from data.player import TournamentPlayer
 from utils.entity import IdentifiableEntity
@@ -18,7 +19,7 @@ class PlayerSplitter(IdentifiableEntity, ABC):
     @staticmethod
     def sorted_split_keys(event: Event, split_keys: Iterable[str]) -> list[str]:
         """Returns the split keys ordered. Defaults to alphabetical sort."""
-        return sorted(split_keys)
+        return sorted(split_keys, key=normalized_key)
 
     def split_players(
         self, event: Event, tournament_players: list[TournamentPlayer]

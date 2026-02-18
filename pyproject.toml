@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "sharly-chess"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.13.0"
-version = "3.5.0"
+version = "3.6.0"
 
 authors = [
   { name = "Pascal Aubry", email = "support@sharly-chess.com" },
@@ -59,7 +59,13 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-lint = ["ruff", "validate-pyproject", "pipdeptree", "mypy", "pre-commit"]
+lint = [
+  "ruff ~= 0.15.0",
+  "validate-pyproject",
+  "pipdeptree",
+  "mypy",
+  "pre-commit",
+]
 
 translate = ["transformers", "torch", "sentencepiece", "sacremoses"]
 

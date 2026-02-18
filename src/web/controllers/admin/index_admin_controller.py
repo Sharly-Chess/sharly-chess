@@ -1,4 +1,5 @@
 from collections import defaultdict
+from copy import copy
 from datetime import date
 from logging import Logger
 from pathlib import Path
@@ -13,7 +14,7 @@ from common import (
     is_http_url,
     is_valid_email,
 )
-from common.exception import FormError
+from common.exception import FormError, SharlyChessException
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.access_levels.actions import AuthAction
@@ -967,21 +968,84 @@ class IndexAdminController(BaseAdminController):
             ),
         )
 
-    @get(
-        path='/event-modal/share/{event_uniq_id:str}',
-        name='admin-event-share-modal',
+    @classmethod
+    def _enable_missing_plugins(cls, request: HTMXRequest, event_uniq_id: str):
+        with EventDatabase(event_uniq_id) as database:
+            stored_event = database.load_stored_event_metadata()
+        disabled_plugins: list[Plugin] = []
+        for plugin_id in stored_event.enabled_plugins:
+            plugin = plugin_manager.plugins_by_id[plugin_id]
+            if not plugin.is_enabled:
+                disabled_plugins.append(plugin)
+        plugins_to_enable = [
+            plugin
+            for plugin in plugin_manager.get_plugins_with_dependencies(disabled_plugins)
+            if not plugin.is_enabled
+        ]
+        if not plugins_to_enable:
+            return
+        with ConfigDatabase(True) as database:
+            for plugin in plugins_to_enable:
+                stored_plugin = copy(plugin.context.stored_plugin)
+                stored_plugin.is_enabled = True
+                database.update_stored_plugin(stored_plugin)
+                Message.warning(
+                    request,
+                    _('Plugin [{plugin}] was enabled.').format(plugin=plugin.name),
+                )
+        plugin_manager.reload_register()
+
+    @post(
+        path='/event-import/{admin_tab:str}',
+        name='event-import',
         guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
-    async def htmx_admin_event_share_modal(
-        self, request: HTMXRequest, event_uniq_id: str
-    ) -> Template:
+    async def htmx_event_import(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, Any], Body(media_type=RequestEncodingType.MULTI_PART)
+        ],
+        admin_tab: str,
+    ) -> Template | ClientRedirect:
+        web_context = AdminWebContext(request, admin_tab)
+        normalized_data = await WebContext.normalize_multipart_data(data)
+        file_path = WebContext.form_data_to_path(normalized_data, 'file')
+        assert file_path is not None
+        try:
+            event_uniq_id = EventLoader().import_event(file_path)
+            self._enable_missing_plugins(request, event_uniq_id)
+            Message.success(
+                request,
+                _('Event [{event}] has been imported.').format(event=event_uniq_id),
+            )
+            return ClientRedirect(admin_event_url(request, event_uniq_id))
+        except Exception as error:
+            logger.error(error)
+            if isinstance(error, SharlyChessException):
+                message = _(
+                    "This event can't be used by the current version of Sharly Chess."
+                )
+            else:
+                message = _('An unexpected error occurred.')
+            Message.error(
+                request, message + ' ' + _('Consult the logs for more details.')
+            )
+            return self._admin_render(web_context)
+
+    @get(
+        path='/event-export-modal/{event_uniq_id:str}',
+        name='event-export-modal',
+        guards=[ActionGuard(AuthAction.MANAGE_EVENTS)],
+    )
+    async def htmx_admin_event_export_modal(self, request: HTMXRequest) -> Template:
         web_context = AdminWebContext(request)
         return HTMXTemplate(
             template_name='admin/modals.html',
             context=(
                 web_context.template_context
                 | {
-                    'modal': 'event-share',
+                    'modal': 'event-export',
                     'data': WebContext.values_dict_to_form_data(
                         {
                             'include_players': True,
@@ -1061,6 +1125,7 @@ class IndexAdminController(BaseAdminController):
             raise NotFoundException(f'Unknown archive [{archive_name}]')
         uniq_id = archive.restore()
         if uniq_id:
+            self._enable_missing_plugins(request, uniq_id)
             Message.success(
                 request,
                 _(

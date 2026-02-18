@@ -1,12 +1,13 @@
 import atexit
 import shutil
 import tempfile
-import time
+from time import time
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
+from math import floor
 from pathlib import Path
 import threading
-from sqlite3 import OperationalError, IntegrityError
+from sqlite3 import connect, DatabaseError
 from typing import override
 
 from packaging.version import Version
@@ -32,6 +33,47 @@ from database.sqlite.sqlite_database import SQLiteDatabase
 from web.channels import channels_plugin
 
 logger = get_logger()
+
+
+class DatabaseLoaderProgress:
+    """A utility class to display the progress of database operations."""
+
+    def __init__(
+        self,
+        log_prefix: str,
+        total_count: int,
+        delay: int = 10,
+    ):
+        self.log_prefix = log_prefix
+        self.total_count = total_count
+        assert self.total_count > 0
+        self.delay: int = delay
+        assert self.delay > 0
+        self.start_time: float = time()
+        self.last_message_time: float = self.start_time
+        self.last_message_count: int = 0
+
+    def log(
+        self,
+        count: int,
+    ):
+        now: float = time()
+        if now - self.last_message_time < self.delay:
+            return
+        remaining_count: int = self.total_count - count
+        items_per_second: float = (
+            (count - self.last_message_count) / (now - self.last_message_time)
+            + count / (now - self.start_time)
+        ) / 2
+        eta: int = floor(remaining_count / items_per_second)
+        logger.info(
+            self.log_prefix + '%d%% ETA: %02d:%02d',
+            floor(count / self.total_count * 100),
+            eta // 60,
+            eta % 60,
+        )
+        self.last_message_count = count
+        self.last_message_time = now
 
 
 class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
@@ -84,9 +126,12 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         """The minimal app version for which the database can be recovered."""
 
     @property
-    @abstractmethod
     def _schema_file_path(self) -> Path:
         """Path to the SQL file describing the schema of the database."""
+        # Default implementation - subclasses should override this if they don't use external generation
+        raise NotImplementedError(
+            'Subclass must implement _schema_file_path if _use_external_generator returns False'
+        )
 
     @property
     @abstractmethod
@@ -122,6 +167,11 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         raise NotImplementedError(
             'Subclass must implement _populate_from_source_file if _use_external_generator returns False'
         )
+
+    def _post_generation(self) -> bool:
+        """Perform post operations after the database has been populated."""
+        # Default implementation - subclasses should override this if needed
+        return True
 
     @abstractmethod
     def _create_indexes(self):
@@ -302,37 +352,62 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                     )
                 if not success:
                     return self.stop_update(False)
-            except (OperationalError, IntegrityError, SharlyChessException) as ex:
+            except (DatabaseError, SharlyChessException) as ex:
                 logger.error(
                     self.log_prefix + 'Error while creating the database: %s.', ex
                 )
                 return self.stop_update(False)
 
-            # Copy the new database to its proper location
-            self.file.unlink(missing_ok=True)
-            shutil.copy(tmp_file, self.file)
-            logger.debug(self.log_prefix + f'file copied to [{self.file}].')
+            # Validate that the database file is actually a SQLite database before creating indexes
+            try:
+                # Test if we can open the database
+                test_conn = connect(tmp_file)
+                test_conn.execute('SELECT 1')  # Simple test query
+                test_conn.close()
+            except DatabaseError as e:
+                logger.error(
+                    self.log_prefix
+                    + 'Generated database file is not a valid SQLite database: %s.',
+                    e,
+                )
+                self.file.unlink(missing_ok=True)
+                return self.stop_update(False)
 
-        # Validate that the database file is actually a SQLite database before creating indexes
-        try:
-            import sqlite3
+            try:
+                # Copy the new database to its proper location
+                self.file.unlink(missing_ok=True)
+                shutil.copy(tmp_file, self.file)
+                logger.debug(self.log_prefix + f'file copied to [{self.file}].')
+            except OSError as e:
+                logger.error(
+                    self.log_prefix
+                    + 'Could not copy generated database file to [%s]: %s.',
+                    self.file,
+                    e,
+                )
+                return self.stop_update(False)
 
-            # Test if we can open the database
-            test_conn = sqlite3.connect(str(self.file))
-            test_conn.execute('SELECT 1')  # Simple test query
-            test_conn.close()
-        except (sqlite3.DatabaseError, sqlite3.OperationalError) as e:
-            logger.error(
-                self.log_prefix
-                + 'Generated database file is not a valid SQLite database: %s.',
-                e,
-            )
-            self.file.unlink(missing_ok=True)
-            return self.stop_update(False)
+            try:
+                if not self._post_generation():
+                    return self.stop_update(False)
+            except (DatabaseError, SharlyChessException) as e:
+                logger.error(
+                    self.log_prefix + 'Could not perform post operations: %s.',
+                    e,
+                )
+                return self.stop_update(False)
 
-        self._create_indexes()
-        logger.debug(self.log_prefix + 'Indexes created.')
-        self.stored_source_database.updated_at = time.time()
+            try:
+                logger.debug(self.log_prefix + 'Creating indices…')
+                self._create_indexes()
+            except DatabaseError as e:
+                logger.error(
+                    self.log_prefix + 'Could not create database indices: %s.',
+                    e,
+                )
+                return self.stop_update(False)
+
+        self.stored_source_database.updated_at = time()
         with ConfigDatabase(write=True) as database:
             database.update_stored_local_source_database(self.stored_source_database)
         logger.info(self.log_prefix + 'Database successfully updated.')

@@ -1,6 +1,5 @@
 import os.path
 import re
-import sqlite3
 import tempfile
 import zipfile
 from contextlib import suppress
@@ -9,6 +8,7 @@ from logging import Logger
 from pathlib import Path
 from typing import Any, override
 
+import pytds
 from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
@@ -23,11 +23,13 @@ from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
+from database.sqlite.local_source_database.databases import DatabaseLoaderProgress
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
 from plugins import ffe
-from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
+from plugins.ffe import PLUGIN_NAME
+from plugins.ffe.ffe_session import FFEArbitersLoader
 from plugins.ffe.papi_converter import PapiConverter
-from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
+from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData, FFEArbiterTitle
 from utils.enum import (
     TournamentRating,
     PlayerRatingType,
@@ -60,16 +62,12 @@ class FfeDatabase(LocalSourcePlayerDatabase):
 
     @property
     def min_recovery_version(self) -> Version:
-        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/713
-        return Version('2.7.8')
+        # Last change done in https://github.com/Sharly-Chess/sharly-chess/pull/1739
+        return Version('3.6.0')
 
     @staticmethod
     def _dir() -> Path:
         return ffe.TMP_DIR
-
-    @property
-    def _schema_file_path(self) -> Path:
-        return PLUGIN_DIR / 'create_ffe.sql'
 
     @property
     def _source_file_name(self) -> str:
@@ -126,29 +124,74 @@ class FfeDatabase(LocalSourcePlayerDatabase):
     def _generate_from_source_file(
         self, source_file_path: Path, tmp_file: Path
     ) -> bool:
-        PapiConverter().convert_player_database(source_file_path, tmp_file)
+        try:
+            PapiConverter().convert_player_database(source_file_path, tmp_file)
+            return True
+        except pytds.DatabaseError as e:
+            logger.error(self.log_prefix + 'Papi-converter failed: %s', e)
+            return False
+
+    def _post_generation(self) -> bool:
+        logger.debug(self.log_prefix + 'Scrapping FFE arbiters from the FFE website...')
+        ffe_arbiter_titles_by_ffe_licence_number: dict[str, FFEArbiterTitle] = (
+            FFEArbitersLoader().load_ffe_arbiter_titles_by_ffe_licence_number()
+        )
+        logger.debug(
+            self.log_prefix + '%d arbiters to add.',
+            len(ffe_arbiter_titles_by_ffe_licence_number),
+        )
+        logger.debug(self.log_prefix + 'Storing the arbiters...')
+        progress: DatabaseLoaderProgress = DatabaseLoaderProgress(
+            log_prefix=self.log_prefix,
+            total_count=len(ffe_arbiter_titles_by_ffe_licence_number),
+        )
+        self.write = True
+        with self:
+            self.execute('ALTER TABLE `player` ADD `ffe_arbiter_title` TEXT')
+            self.commit()
+            query = """UPDATE `player` SET `ffe_arbiter_title` = :ffe_arbiter_title WHERE ffe_licence_number = :ffe_licence_number"""
+            arbiter_count: int = 0
+            to_write: list[dict[str, Any]] = []
+            for (
+                ffe_licence_number,
+                ffe_arbiter_title,
+            ) in ffe_arbiter_titles_by_ffe_licence_number.items():
+                to_write.append(
+                    {
+                        'ffe_licence_number': ffe_licence_number,
+                        'ffe_arbiter_title': ffe_arbiter_title,
+                    }
+                )
+                arbiter_count += 1
+                if arbiter_count % 100 == 0:
+                    self.executemany(query, to_write)
+                    to_write.clear()
+                    if self.stop_event.is_set():
+                        return False
+                    progress.log(arbiter_count)
+                    self.commit()
+            if to_write:
+                self.executemany(query, to_write)
+                self.commit()
+                progress.log(arbiter_count)
         return True
 
     def _create_indexes(self):
-        try:
-            self.write = True
-            with self:
-                self.execute(
-                    'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
-                )
-                self.execute(
-                    'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
-                )
-                self.execute(
-                    'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player`(`fide_id`)'
-                )
-                self.execute(
-                    'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
-                )
-                self.commit()
-        except (sqlite3.DatabaseError, sqlite3.OperationalError) as e:
-            logger.error(self.log_prefix + 'Error creating database indexes: %s.', e)
-            raise
+        self.write = True
+        with self:
+            self.execute(
+                'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
+            )
+            self.execute(
+                'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
+            )
+            self.execute(
+                'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player`(`fide_id`)'
+            )
+            self.execute(
+                'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
+            )
+            self.commit()
 
     @staticmethod
     def get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:
@@ -174,6 +217,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             fide_id=int(row['fide_id']) if row['fide_id'] else None,
             federation=row['federation'],
             club=row['club'],
+            transient_arbiter_titles={'ffe': row['ffe_arbiter_title']},
             plugin_data={
                 PLUGIN_NAME: FfePlayerPluginData(
                     ffe_id=row['ffe_id'],
@@ -267,12 +311,8 @@ class FfeDatabase(LocalSourcePlayerDatabase):
 
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]
 
-    def _get_stored_player_by_id(
-        self,
-        field: str,
-        id_: int,
-    ) -> StoredPlayer | None:
-        self.execute(f'SELECT * FROM player WHERE {field} = ?', (id_,))
+    def _get_stored_player_by_id(self, field: str, id_: int) -> StoredPlayer | None:
+        self.execute(f'SELECT * FROM `player` WHERE {field} = ?', (id_,))
         if row := self.fetchone():
             return self.get_stored_player_from_row(row)
         else:
@@ -295,7 +335,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
     ) -> list[StoredPlayer]:
         query_array = ', '.join('?' for _ in licence_numbers)
         self.execute(
-            f'SELECT * FROM player WHERE ffe_licence_number IN ({query_array})',
+            f'SELECT * FROM `player` WHERE `ffe_licence_number` IN ({query_array})',
             tuple(licence_numbers),
         )
         return [self.get_stored_player_from_row(row) for row in self.fetchall()]

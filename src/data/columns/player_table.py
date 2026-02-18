@@ -108,6 +108,10 @@ class NameColumn(TournamentPlayerTableColumn):
     def header_content(self) -> str:
         return _('Name *** NAME COLUMN HEADER')
 
+    @property
+    def cell_template(self) -> str | None:
+        return '/admin/print/cells/name.html'
+
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.full_name
 

@@ -23,7 +23,11 @@
                 >
                     {% for column in board_columns %}
                         <td class="{{ column.get_cell_classes(board) }}">
-                            {{ macros.column_cell(column, board) }}
+                            {% if column.cell_template %}
+                                {% include column.cell_template %}
+                            {% else %}
+                                {{ macros.column_cell(column, board) }}
+                            {% endif %}
                         </td>
                     {% endfor %}
                 </tr>

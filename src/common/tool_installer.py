@@ -331,7 +331,7 @@ class BbpPairingsInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
-        return Version('5.0.2')
+        return Version('6.0.0')
 
     @cached_property
     def system_handler(self) -> SystemHandler:
@@ -459,7 +459,7 @@ class PapiConverterInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
-        return Version('1.2.0')
+        return Version('1.3.0')
 
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename

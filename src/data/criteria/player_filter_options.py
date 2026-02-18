@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from collections import Counter
-from operator import attrgetter
 from types import UnionType
 from typing import Any, TYPE_CHECKING
 
 from common.exception import OptionError
 from common.i18n import _
+from common.i18n.utils import normalized_key, by
 from common.sharly_chess_config import SharlyChessConfig
 from data.player import Club, Federation, TournamentPlayer
 from data.player_categories import PlayerCategory, NoCategory
@@ -132,7 +132,7 @@ class GenderOption(SelectPlayerFilterOption[PlayerGender]):
 
     @property
     def type(self) -> type | UnionType:
-        return int
+        return str
 
     @property
     def default_value(self) -> Any:
@@ -226,7 +226,7 @@ class AgeCategoriesOption(SelectPlayerFilterOption[PlayerCategory]):
     def validate(self):
         self._validate_list_type(str)
         if not self.value:
-            raise OptionError(_('At least one age category is expected.'), self)
+            raise OptionError(_('At least one value is expected.'), self)
         for category in self.value:
             try:
                 PlayerCategory.from_id(category)
@@ -316,7 +316,7 @@ class RatingTypesFilterOption(SelectPlayerFilterOption[PlayerRatingType]):
     def validate(self):
         self._validate_list_type(int)
         if not self.value:
-            raise OptionError(_('At least one rating type is expected.'), self)
+            raise OptionError(_('At least one value is expected.'), self)
         for rating_type in self.value:
             try:
                 PlayerRatingType(rating_type)
@@ -339,7 +339,9 @@ class ClubsFilterOption(SelectPlayerFilterOption[Club]):
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[Club]:
         event_club_names = {player.club.name for player in tournament.event.players}
-        return [Club(name) for name in sorted(event_club_names) if name]
+        return [
+            Club(name) for name in sorted(event_club_names, key=normalized_key) if name
+        ]
 
     def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[Club]:
         counter = tournament.club_counts
@@ -357,7 +359,7 @@ class ClubsFilterOption(SelectPlayerFilterOption[Club]):
     def validate(self):
         self._validate_list_type(str)
         if not self.value:
-            raise OptionError(_('At least one club is expected.'), self)
+            raise OptionError(_('At least one value is expected.'), self)
 
 
 class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
@@ -398,7 +400,44 @@ class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
     def validate(self):
         self._validate_list_type(str)
         if not self.value:
-            raise OptionError(_('At least one federation is expected.'), self)
+            raise OptionError(_('At least one value is expected.'), self)
+
+
+class CommentsFilterOption(SelectPlayerFilterOption[str]):
+    @staticmethod
+    def static_id() -> str:
+        return 'COMMENTS'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[str]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
+        return list(
+            {player.comment for player in tournament.event.players if player.comment}
+        )
+
+    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
+        counter = Counter[str]()
+        for player in tournament.tournament_players:
+            if player.comment:
+                counter[player.comment] += 1
+        return counter
+
+    def get_key(self, object_: str) -> str:
+        return object_
+
+    def get_name(self, object_: str) -> str:
+        return object_
+
+    def validate(self):
+        self._validate_list_type(str)
+        if not self.value:
+            raise OptionError(_('At least one value is expected.'), self)
 
 
 class PlayersFilterOption(SelectPlayerFilterOption[TournamentPlayer]):
@@ -415,7 +454,7 @@ class PlayersFilterOption(SelectPlayerFilterOption[TournamentPlayer]):
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[TournamentPlayer]:
-        return sorted(tournament.tournament_players, key=attrgetter('full_name'))
+        return sorted(tournament.tournament_players, key=by('full_name'))
 
     def get_tournament_player_counter(
         self, tournament: 'Tournament'

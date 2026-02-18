@@ -22,13 +22,15 @@
         {% for player in search_results %}
             <li class="dropdown-item text-nowrap btn"
                 onclick="
-                $('#last-name').val('{{ player.last_name|replace("'", "\\'") }}');
-                $('#first-name').val('{{ player.first_name|replace("'", "\\'")}}' ?? '');
-                $('#fide-id.form-control').val('{{ player.fide_id or '' }}');
                 {% for template in result_js_templates %}
                     {% include template %}
                 {% endfor %}
-                $('#search-results').hide();
+                selectPlayer(
+                    '{{ player.last_name|replace("'", "\\'") }}',
+                    '{{ player.first_name|replace("'", "\\'")}}' ?? '',
+                    '{{ player.fide_id or '' }}',
+                    '{{ player.stored_player.transient_arbiter_titles.fide or '' }}'
+                );
                 "
             >
                 {% include data_source.player_search_result_template %}
@@ -40,6 +42,7 @@
                         'admin-search-player',
                         event_uniq_id=admin_event.uniq_id,
                         page=page + 1,
+                        with_arbiter_title=true,
                     )}}"
                     hx-vals='{"results_template": "admin/accounts/account_search_results.html", "result_js_template_hook_name": "get_account_search_result_js_template", "data_source_id": "{{ data_source.id }}", "search": "{{ search }}"}'
                     hx-target="this"
@@ -57,6 +60,14 @@
         </li>
     {% endif %}
     <script>
+        function selectPlayer(lastName, firstName, fideId, fideArbiterTitle) {
+            $('#last-name').val(lastName);
+            $('#first-name').val(firstName);
+            $('#fide-id').val(fideId);
+            $('#fide-arbiter-title').val(fideArbiterTitle);
+            $('#fide-arbiter-title').trigger('change');
+            $('#search-results').hide();
+        }
         $('#{{ data_source.id }}-search-results').show();
     </script>
 {% endif %}

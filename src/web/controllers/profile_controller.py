@@ -52,7 +52,7 @@ class ProfileController(BaseController):
         if isinstance(web_context, ProfileWebContext):
             active_user_account_options = (
                 ProfileWebContext.get_active_user_account_options(
-                    web_context.get_admin_event().active_user_accounts_sorted_by_name
+                    web_context.get_admin_event().sorted_active_user_accounts
                 )
             )
         return HTMXTemplate(
@@ -105,7 +105,7 @@ class ProfileController(BaseController):
             data, field := 'account_id'
         )
         admin_event: Event = web_context.get_admin_event()
-        accounts: list[Account] = admin_event.active_user_accounts_sorted_by_name
+        accounts: list[Account] = admin_event.sorted_active_user_accounts
         if not account_id and len(accounts) == 1:
             account_id = accounts[0].id
         if not account_id:
@@ -158,8 +158,8 @@ class ProfileController(BaseController):
                             'Something went wrong. Please ask your administrator to recreate your account.'
                         )
                     else:
-                        SessionUserAccountId(request, event_uniq_id).set(account.id)
-                        SessionUserAccountPasswordHash(request, event_uniq_id).set(
+                        SessionUserAccountId(request, admin_event).set(account.id)
+                        SessionUserAccountPasswordHash(request, admin_event).set(
                             account.password_hash
                         )
                         Message.success(
@@ -185,7 +185,7 @@ class ProfileController(BaseController):
     async def htmx_profile_logout(self, request: HTMXRequest) -> ClientRedirect:
         web_context = ProfileWebContext(request)
         event = web_context.get_admin_event()
-        SessionUserAccountId(request, event.uniq_id).unset()
-        SessionUserAccountPasswordHash(request, event.uniq_id).unset()
+        SessionUserAccountId(request, event).unset()
+        SessionUserAccountPasswordHash(request, event).unset()
         Message.success(request, _('Successfully logged out.'))
         return ClientRedirect(admin_event_url(request, event.uniq_id))

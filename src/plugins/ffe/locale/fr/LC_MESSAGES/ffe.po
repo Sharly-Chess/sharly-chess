@@ -152,9 +152,6 @@ msgstr "FFE"
 msgid "FFE Form:"
 msgstr "Formulaire FFE :"
 
-msgid "FFE ID"
-msgstr "Identifiant FFE"
-
 msgid "FFE Licence"
 msgstr "Licence FFE"
 
@@ -259,6 +256,9 @@ msgstr "Text du lien d'affichage non valide [{text}]."
 msgid "Invalid fees link text [{text}]."
 msgstr "Texte du lien des droits d'homologation non valide [{text}]."
 
+msgid "Invalid format (expected: {format})."
+msgstr "Format invalide (attendu : {format})."
+
 msgid "Invalid response from the FFE website."
 msgstr "Réponse non valide du site FFE."
 
@@ -285,6 +285,9 @@ msgstr "Lic."
 
 msgid "Licence no. *** LICENCE NUMBER"
 msgstr "N° licence"
+
+msgid "Licence number"
+msgstr "Numéro de licence"
 
 msgid "Licence types"
 msgstr "Types de licence"
@@ -407,7 +410,7 @@ msgid "T7 Player reporting"
 msgstr "T7 Signalement d'un·e joueur·euse"
 
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
-msgstr "e système d'accélération de Bakou n'est pas reconnu par la FFE, il peut y avoir des différences dans l'affichage des appariements sur le site web de la FFE."
+msgstr "Le système d'accélération de Bakou n'est pas reconnu par la FFE, il peut y avoir des différences dans l'affichage des appariements sur le site web de la FFE."
 
 msgid "The FFE ID is a positive integer."
 msgstr "L'identifiant FFE est un entier positif."
@@ -481,8 +484,14 @@ msgstr "Impossible de mettre en ligne le règlement du tournoi."
 msgid "Unable to upload tournament."
 msgstr "Impossible de mettre en ligne le tournoi."
 
+msgid "Unknown league."
+msgstr "Ligue inconnue."
+
 msgid "Unknown player ID [{player_id}]"
 msgstr "Identifiant de joueur inconnu [{player_id}]."
+
+msgid "Unknown value (expected: {expected})."
+msgstr "Valeur inconnue (attendu : {expected})."
 
 msgid "Unknown value [{value}]"
 msgstr "Valeur [{value}] inconnue."
@@ -542,7 +551,4 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] "{count} ligue représentée"
 msgstr[1] "{count} ligues représentées"
-
-#~ msgid "This field is not editable."
-#~ msgstr "Ce champ n'est pas modifiable."
 

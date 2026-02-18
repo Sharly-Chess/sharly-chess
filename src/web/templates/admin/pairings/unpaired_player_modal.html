@@ -1,7 +1,7 @@
 {% import '/common/macros.j2' as macros with context %}
 
 {% with
-    no_bye_possible = admin_round >= tournament_player.tournament.rounds - tournament_player.tournament.last_rounds_no_byes,
+    no_bye_possible = admin_round > tournament_player.tournament.rounds - tournament_player.tournament.last_rounds_no_byes,
     pairing = tournament_player.pairings[admin_round]
 %}
     <div style="--bs-modal-width: min(90vw, 400px);" class="modal-dialog pairing-modal">

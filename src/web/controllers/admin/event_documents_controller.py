@@ -3,6 +3,7 @@ from typing import Annotated
 
 from litestar import get, post
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
+from web.streaming_template import StreamingHTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
@@ -93,7 +94,7 @@ class EventDocumentsController(BaseEventAdminController):
                     'id': tournament_player.id,
                     'full_name': tournament_player.full_name,
                 }
-                for tournament_player in tournament.tournament_players_by_name_with_unpaired
+                for tournament_player in tournament.sorted_tournament_players
             ]
             for tournament in allowed_tournaments
         }
@@ -194,9 +195,7 @@ class EventDocumentsController(BaseEventAdminController):
             if not errors:
                 tournament_ids = self._get_tournament_ids_from_options(options)
                 if tournament_ids:
-                    SessionPrintLastTournaments(request, event.uniq_id).set(
-                        tournament_ids
-                    )
+                    SessionPrintLastTournaments(request, event).set(tournament_ids)
         if errors:
             return self._render_documents_modal(
                 web_context, data=flat_data, errors=errors
@@ -256,6 +255,6 @@ class EventDocumentsController(BaseEventAdminController):
             }
             | print_document.template_context
         )
-        return HTMXTemplate(
+        return StreamingHTMXTemplate(
             template_name=print_document.template_name, context=template_context
         )

@@ -64,7 +64,6 @@ from web.controllers.user.tournament_user_controller import (
 )
 from web.sqlite_store import SQLiteStore
 
-
 static_files_base_dir = BASE_DIR / 'src/web/static'
 
 static_files_folders = [
@@ -79,7 +78,7 @@ static_files_router: Router = create_static_files_router(
     cache_control=CacheControlHeader(max_age=3600),
 )
 
-route_handlers: Sequence[ControllerRouterHandler] = [
+_route_handlers: Sequence[ControllerRouterHandler] = [
     IndexController,
     BackgroundController,
     ScreenUserController,
@@ -111,6 +110,8 @@ route_handlers: Sequence[ControllerRouterHandler] = [
         for controller in plugin.controllers
     ],
 ]
+
+route_handlers = _route_handlers
 
 exception_handlers = {
     HTTP_400_BAD_REQUEST: IndexController.handle_exception,

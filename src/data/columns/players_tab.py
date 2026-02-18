@@ -4,6 +4,7 @@ from datetime import date
 from typing import Any, Counter, Callable
 
 from common.i18n import _
+from common.i18n.utils import normalized_key
 from data.event import Event
 from data.player import Player
 from data.player_categories import PlayerCategory
@@ -79,6 +80,11 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
         After the values of this key the players are sorted by name."""
 
     @property
+    def swap_asc_desc_icon(self) -> bool:
+        """Defines if the first sort icon to appear is the asc sort."""
+        return False
+
+    @property
     def is_searchable(self) -> bool:
         """Defines if the column can be searched from the global search bar."""
         return False
@@ -127,7 +133,7 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
         return []
 
     def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
-        return filter_value.key
+        return normalized_key(filter_value.key)
 
     def set_filter_values(
         self, players: list[Player], event: Event, active_keys: list[str]
@@ -266,7 +272,11 @@ class RatingPlayersTabColumn(PlayersTabColumn):
         return True
 
     def _get_sort_key(self, player: Player) -> tuple:
-        return (player.single_tournament_player.rating,)
+        return -player.single_tournament_player.rating, -player.title.sort_index
+
+    @property
+    def swap_asc_desc_icon(self) -> bool:
+        return True
 
     @property
     def cell_template(self) -> str | None:
@@ -483,10 +493,10 @@ class GenderPlayersTabColumn(FilterPlayersTabColumn):
         return (player.gender,)
 
     def get_filter_key(self, player: Player) -> str:
-        return str(player.gender.value)
+        return player.gender.value
 
     def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
-        return PlayerGender(int(filter_key))
+        return PlayerGender(filter_key)
 
     def get_filter_row_content(self, value: Any) -> str:
         return value.name

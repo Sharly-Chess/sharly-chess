@@ -8,6 +8,7 @@ from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
 from common.i18n import _
+from common.i18n.utils import normalized_key
 from data.pairing import Pairing
 from data.player_categories import PlayerCategory
 from database.sqlite.event.event_database import EventDatabase
@@ -94,9 +95,13 @@ class Player:
             )
         return last_name
 
-    @property
+    @cached_property
     def full_name(self) -> str:
         return self.player_full_name(self.first_name, self.last_name)
+
+    @cached_property
+    def name_sort_key(self) -> tuple[str, str]:
+        return normalized_key(self.last_name), normalized_key(self.first_name)
 
     @property
     def date_of_birth(self) -> date | None:
@@ -159,6 +164,10 @@ class Player:
             self.event.stop_date,
         )
 
+    @cached_property
+    def category_name(self) -> str:
+        return self.category.name
+
     @property
     def fide_id(self) -> int | None:
         return self.stored_player.fide_id
@@ -210,8 +219,10 @@ class Player:
 
     def _get_ratings(self) -> dict[TournamentRating, PlayerRating]:
         return {
-            TournamentRating(tr_value): PlayerRating.from_stored_value(rating)
-            for tr_value, rating in self.stored_player.ratings.items()
+            tournament_rating: PlayerRating.from_stored_value(
+                self.stored_player.ratings.get(tournament_rating.value, {})
+            )
+            for tournament_rating in TournamentRating
         }
 
     def get_rating_and_type(
@@ -386,7 +397,7 @@ class TournamentPlayer(Player):
     def rating_type(self) -> PlayerRatingType:
         return self._tournament_rating.type
 
-    @property
+    @cached_property
     def rating_str(self) -> str:
         return str(self._tournament_rating)
 
@@ -436,7 +447,7 @@ class TournamentPlayer(Player):
             self.tournament.rating, self.tournament.player_rating_type, self.category
         )
 
-    @property
+    @cached_property
     def _tournament_rating(self) -> PlayerRatingAndType:
         if self.rating_is_overridden(
             self.tournament.rating, self.tournament.player_rating_type
@@ -1160,12 +1171,7 @@ class TournamentPlayer(Player):
 
     @property
     def starting_rank_sort_key(self) -> tuple:
-        return (
-            -self.rating,
-            -self.title,
-            self.last_name,
-            self.first_name or '',
-        )
+        return (-self.rating, -self.title.sort_index) + self.name_sort_key
 
     @property
     def board_number_sort_key(self) -> tuple:

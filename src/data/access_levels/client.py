@@ -1,9 +1,9 @@
 from functools import cached_property, cache
-from operator import attrgetter
 from typing import TYPE_CHECKING, Optional, Collection
 
 from litestar_htmx import HTMXRequest
 
+from common.i18n.utils import by
 from common.logger import get_logger
 from common.network import LOCALHOST_IP, LOCALHOST_NAME
 from data.access_levels.actions import AuthAction
@@ -48,12 +48,12 @@ class Client:
             return Account.predefined_administrator_account()
         if not self.event:
             return Account.predefined_anonymous_account()
-        account_id_handler = SessionUserAccountId(self.request, self.event.uniq_id)
+        account_id_handler = SessionUserAccountId(self.request, self.event)
         account_id = account_id_handler.get()
         accounts_by_id = self.event.active_user_accounts_by_id
         if not account_id or account_id not in accounts_by_id:
             return self.event.anonymous_account
-        hash_handler = SessionUserAccountPasswordHash(self.request, self.event.uniq_id)
+        hash_handler = SessionUserAccountPasswordHash(self.request, self.event)
         account = accounts_by_id[account_id]
         if account.password_hash != hash_handler.get():
             logger.info(
@@ -140,7 +140,7 @@ class Client:
         assert self.event is not None
         return [
             tournament
-            for tournament in self.event.tournaments_sorted_by_index
+            for tournament in self.event.sorted_tournaments
             if self.action_allowed_for_tournament(action, tournament.id)
         ]
 
@@ -163,7 +163,7 @@ class Client:
 
     @property
     def sorted_allowed_players(self) -> list[Player]:
-        return sorted(self.allowed_players, key=attrgetter('full_name'))
+        return sorted(self.allowed_players, key=by('full_name'))
 
     # ---------------------------------------------------------------------------------
     # Application
@@ -327,6 +327,11 @@ class Client:
         """Returns true if the client can update the players
         (including with local or remote databases)."""
         return AuthAction.UPDATE_PLAYERS in self.allowed_actions
+
+    @property
+    def can_distribute_players(self) -> bool:
+        """Returns true if the client can distribute the players in the tournaments."""
+        return AuthAction.DISTRIBUTE_PLAYERS in self.allowed_actions
 
     def can_update_players_history(self, tournament_id: int) -> bool:
         """Returns True if the client can update the players's history."""

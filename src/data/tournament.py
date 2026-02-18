@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 import weakref
 from babel.lists import format_list
 from common.i18n import get_locale
@@ -10,7 +10,6 @@ from operator import attrgetter
 from typing import TYPE_CHECKING, Any
 from _weakref import ReferenceType
 
-from common.i18n.utils import by
 from trf import Tournament as TrfTournament
 
 from common.i18n import _
@@ -219,15 +218,15 @@ class Tournament:
             return self.stored_tournament.last_rounds_no_byes
 
     @property
-    def last_update(self) -> float:
+    def last_update(self) -> datetime | None:
         return self.stored_tournament.last_update
 
     @property
-    def last_player_update(self) -> float:
+    def last_player_update(self) -> datetime | None:
         return self.stored_tournament.last_player_update
 
     @property
-    def last_pairing_update(self) -> float:
+    def last_pairing_update(self) -> datetime | None:
         return self.stored_tournament.last_pairing_update
 
     @property
@@ -700,26 +699,23 @@ class Tournament:
         }
 
     @cached_property
-    def tournament_players_by_name_with_unpaired(self) -> list[TournamentPlayer]:
+    def sorted_tournament_players(self) -> list[TournamentPlayer]:
         return sorted(
             self.tournament_players,
-            key=by('last_name', 'first_name'),
+            key=attrgetter('name_sort_key'),
         )
 
     @cached_property
-    def tournament_players_by_name_without_unpaired(self) -> list[TournamentPlayer]:
+    def sorted_tournament_players_without_unpaired(self) -> list[TournamentPlayer]:
         unpaired_ids = [
             tournament_player.id
             for tournament_player in self.get_unpaired_tournament_players(self.boards)
         ]
-        return sorted(
-            [
-                tournament_player
-                for tournament_player in self.tournament_players
-                if tournament_player.id not in unpaired_ids
-            ],
-            key=by('last_name', 'first_name'),
-        )
+        return [
+            player
+            for player in self.sorted_tournament_players
+            if player.id not in unpaired_ids
+        ]
 
     @cached_property
     def ex_aequo_rank_by_player_id(self) -> dict[int, int]:
@@ -910,7 +906,7 @@ class Tournament:
                 ):
                     if all(
                         screen_set.tournament.id == self.id
-                        for screen_set in screen.screen_sets_by_id.values()
+                        for screen_set in screen.screen_sets
                     ):
                         dependent_screens.append(screen)
                 case ScreenType.RESULTS:
@@ -934,7 +930,7 @@ class Tournament:
                     | ScreenType.PLAYERS
                     | ScreenType.RANKING
                 ):
-                    for screen_set in screen.screen_sets_sorted_by_order:
+                    for screen_set in screen.sorted_screen_sets:
                         if screen_set.tournament.id == self.id:
                             related_screens.append(screen)
                 case ScreenType.RESULTS:
@@ -1077,6 +1073,10 @@ class Tournament:
             for tournament_player in self.tournament_players
             if tournament_player.id not in paired_player_ids
         ]
+
+    @property
+    def has_never_paired_players(self) -> bool:
+        return any(not player.has_real_pairings for player in self.tournament_players)
 
     def set_for_round(self, round_: int | None = None):
         """Set the tournament for the given round (defaults to the current round)"""

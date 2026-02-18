@@ -56,7 +56,7 @@ class BaseEventAdminWebContext(AdminWebContext):
         event = self.get_admin_event()
         tournament_ids: list[int] | None = None
         if last_tournament_ids := (
-            SessionPrintLastTournaments(self.request, event.uniq_id).get()
+            SessionPrintLastTournaments(self.request, event).get()
         ):
             # Remove ids that are not in the event anymore
             tournament_ids = [
@@ -186,23 +186,21 @@ class BaseEventAdminWebContext(AdminWebContext):
                 },
             }
         elif self.client.can_view_public_screens:
-            screens_by_screen_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
+            sorted_screens_by_screen_type: dict[ScreenType, list[Screen]]
             rotators: list[Rotator]
             display_controllers: list[DisplayController]
             if self.client.can_view_private_screens:
-                screens_by_screen_type_sorted_by_uniq_id = (
-                    event.screens_by_screen_type_sorted_by_uniq_id
-                )
-                rotators = event.rotators_sorted_by_name
-                display_controllers = event.display_controllers_sorted_by_name
+                sorted_screens_by_screen_type = event.sorted_screens_by_screen_type
+                rotators = event.sorted_rotators
+                display_controllers = event.sorted_display_controllers
             else:
-                screens_by_screen_type_sorted_by_uniq_id = (
-                    event.public_screens_by_screen_type_sorted_by_uniq_id
+                sorted_screens_by_screen_type = (
+                    event.sorted_public_screens_by_screen_type
                 )
-                rotators = event.public_rotators_sorted_by_name
-                display_controllers = event.public_display_controllers_sorted_by_name
+                rotators = event.public_sorted_rotators
+                display_controllers = event.sorted_public_display_controllers
             screens: list[Screen]
-            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.BOARDS]
+            screens = sorted_screens_by_screen_type[ScreenType.BOARDS]
             nav_tabs |= {
                 'admin-event-boards-screens-tab': {
                     'title': _('Pairings by board ({num})').format(
@@ -213,7 +211,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': ScreenType.BOARDS.icon_str,
                 },
             }
-            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.INPUT]
+            screens = sorted_screens_by_screen_type[ScreenType.INPUT]
             nav_tabs |= {
                 'admin-event-input-screens-tab': {
                     'title': _('Check-in / Results ({num})').format(
@@ -224,7 +222,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': ScreenType.INPUT.icon_str,
                 },
             }
-            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.PLAYERS]
+            screens = sorted_screens_by_screen_type[ScreenType.PLAYERS]
             nav_tabs |= {
                 'admin-event-players-screens-tab': {
                     'title': _('Pairings by player ({num})').format(
@@ -235,7 +233,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': ScreenType.PLAYERS.icon_str,
                 },
             }
-            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.RESULTS]
+            screens = sorted_screens_by_screen_type[ScreenType.RESULTS]
             nav_tabs |= {
                 'admin-event-results-screens-tab': {
                     'title': _('Last results ({num})').format(num=len(screens) or '-'),
@@ -244,7 +242,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': ScreenType.RESULTS.icon_str,
                 },
             }
-            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.RANKING]
+            screens = sorted_screens_by_screen_type[ScreenType.RANKING]
             nav_tabs |= {
                 'admin-event-ranking-screens-tab': {
                     'title': _('Ranking ({num})').format(num=len(screens) or '-'),
@@ -253,7 +251,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': ScreenType.RANKING.icon_str,
                 },
             }
-            screens = screens_by_screen_type_sorted_by_uniq_id[ScreenType.IMAGE]
+            screens = sorted_screens_by_screen_type[ScreenType.IMAGE]
             nav_tabs |= {
                 'admin-event-image-screens-tab': {
                     'title': _('Image ({num})').format(num=len(screens) or '-'),
@@ -335,7 +333,7 @@ class BaseEventAdminWebContext(AdminWebContext):
         self, tournaments: list[Tournament] | None = None
     ) -> dict[str, str]:
         if not tournaments:
-            tournaments = self.get_admin_event().tournaments_sorted_by_index
+            tournaments = self.get_admin_event().sorted_tournaments
         return {
             self.value_to_form_data(tournament.id): tournament.name
             for tournament in tournaments
@@ -344,7 +342,7 @@ class BaseEventAdminWebContext(AdminWebContext):
     def get_account_options(self) -> dict[str, str]:
         return {
             self.value_to_form_data(account.id): account.full_name
-            for account in self.get_admin_event().active_user_accounts_sorted_by_name
+            for account in self.get_admin_event().sorted_active_user_accounts
             if not account.administrator and not account.anonymous
         }
 

@@ -53,6 +53,18 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d informative *** COLUMNS"
+msgid_plural "%(num)d informative *** COLUMNS"
+msgstr[0] "%(num)d informative"
+msgstr[1] "%(num)d informative"
+
+#, python-format
+msgid "%(num)d optional *** COLUMNS"
+msgid_plural "%(num)d optional *** COLUMNS"
+msgstr[0] "%(num)d optional"
+msgstr[1] "%(num)d optional"
+
+#, python-format
 msgid "%(num)d player"
 msgid_plural "%(num)d players"
 msgstr[0] ""
@@ -89,6 +101,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d required *** COLUMNS"
+msgid_plural "%(num)d required *** COLUMNS"
+msgstr[0] "%(num)d required"
+msgstr[1] "%(num)d required"
+
+#, python-format
 msgid "%(num)d screen"
 msgid_plural "%(num)d screens"
 msgstr[0] ""
@@ -101,7 +119,21 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d unknown column (ignored)"
+msgid_plural "%(num)d unknown columns (ignored)"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(player)s - Round %(num)s"
+msgstr ""
+
+#, python-format
+msgid "%(rating)s (%(rating_type)s)"
+msgstr ""
+
+#, python-format
+msgid "%(rating)s (%(rating_type)s): %(min)d → %(max)d"
 msgstr ""
 
 #, python-format
@@ -159,6 +191,10 @@ msgid "%t ranking"
 msgstr ""
 
 msgid "'EUR' or '€'"
+msgstr ""
+
+#, python-format
+msgid "(%(format)s format)"
 msgstr ""
 
 #, python-format
@@ -306,7 +342,13 @@ msgstr ""
 msgid "A file is expected."
 msgstr ""
 
+msgid "A player with this value already exists in the tournament."
+msgstr ""
+
 msgid "A plugin specific to this federation is used, it can no longer be modified."
+msgstr ""
+
+msgid "A positive float is expected."
 msgstr ""
 
 msgid "A positive integer is expected."
@@ -459,9 +501,6 @@ msgstr ""
 msgid "Add period"
 msgstr ""
 
-msgid "Add player"
-msgstr ""
-
 msgid "Add players"
 msgstr ""
 
@@ -510,6 +549,9 @@ msgstr ""
 msgid "All Events"
 msgstr ""
 
+msgid "All players are paired."
+msgstr ""
+
 msgid "All the boards"
 msgstr ""
 
@@ -525,10 +567,16 @@ msgstr ""
 msgid "All the players intended to play the coming round did check-in."
 msgstr ""
 
+msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
+msgstr ""
+
 msgid "All the tournaments"
 msgstr ""
 
 msgid "All values may be modified by the arbiter if necessary."
+msgstr ""
+
+msgid "Allocate players to the first tournament for which the criteria are met."
 msgstr ""
 
 msgid "Allow links to this screen"
@@ -562,6 +610,9 @@ msgid "Allows pairing of the players, either using a pairing engine or manually"
 msgstr ""
 
 msgid "An error occurred. Consult the logs for more details."
+msgstr ""
+
+msgid "An unexpected error occurred while reading the CSV file. Consult the logs for more details."
 msgstr ""
 
 msgid "An unexpected error occurred."
@@ -645,19 +696,7 @@ msgstr ""
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr ""
 
-msgid "At least one age category is expected."
-msgstr ""
-
-msgid "At least one club is expected."
-msgstr ""
-
-msgid "At least one federation is expected."
-msgstr ""
-
 msgid "At least one player is expected."
-msgstr ""
-
-msgid "At least one rating type is expected."
 msgstr ""
 
 msgid "At least one value is expected."
@@ -952,6 +991,9 @@ msgstr ""
 msgid "CM *** SHORT NAME FOR Candidate Master"
 msgstr "CM"
 
+msgid "CSV file"
+msgstr ""
+
 msgid "CSV format"
 msgstr ""
 
@@ -959,6 +1001,15 @@ msgid "Cambodia"
 msgstr ""
 
 msgid "Cameroon"
+msgstr ""
+
+msgid "Can not distribute the players (no players found)."
+msgstr ""
+
+msgid "Can not distribute the players (no tournaments found)."
+msgstr ""
+
+msgid "Can not distribute the players (only one tournament)."
 msgstr ""
 
 msgid "Can't see your event?"
@@ -1086,22 +1137,10 @@ msgstr ""
 msgid "Chinese Taipei"
 msgstr ""
 
-msgid "Choose a player at random"
+msgid "Choose a random player"
 msgstr ""
 
-msgid "Choose at least one category."
-msgstr ""
-
-msgid "Choose at least one club."
-msgstr ""
-
-msgid "Choose at least one federation."
-msgstr ""
-
-msgid "Choose at least one player."
-msgstr ""
-
-msgid "Choose at least one rating type."
+msgid "Choose at least one value."
 msgstr ""
 
 msgid "Choose families to add"
@@ -1129,6 +1168,9 @@ msgid "Clear Log"
 msgstr ""
 
 msgid "Clear all the filters."
+msgstr ""
+
+msgid "Click and drag to select balanced groups."
 msgstr ""
 
 msgid "Click to check-in the player."
@@ -1213,6 +1255,9 @@ msgid "Comment"
 msgstr ""
 
 msgid "Comment:"
+msgstr ""
+
+msgid "Comments"
 msgstr ""
 
 msgid "Comments *** COMMENTS COLUMN HEADER"
@@ -1389,6 +1434,9 @@ msgstr ""
 msgid "Create hour"
 msgstr ""
 
+msgid "Create manually"
+msgstr ""
+
 msgid "Create permission"
 msgstr ""
 
@@ -1519,6 +1567,12 @@ msgstr ""
 msgid "Dashed border"
 msgstr ""
 
+msgid "Data loss at tournaments, players and pairings level."
+msgstr ""
+
+msgid "Data source"
+msgstr ""
+
 #, python-format
 msgid "Data source: %(data_source)s"
 msgstr ""
@@ -1574,6 +1628,9 @@ msgstr ""
 msgid "Define as public"
 msgstr ""
 
+msgid "Define balanced groups"
+msgstr ""
+
 msgid "Define the criteria for players to belong to this category."
 msgstr ""
 
@@ -1584,6 +1641,9 @@ msgid "Define the prizes of the category."
 msgstr ""
 
 msgid "Define the screens and screen families to display."
+msgstr ""
+
+msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
 msgstr ""
 
 #, python-format
@@ -1635,6 +1695,9 @@ msgstr ""
 msgid "Delete the display controller."
 msgstr ""
 
+msgid "Delete the existing players"
+msgstr ""
+
 msgid "Delete the rotator."
 msgstr ""
 
@@ -1656,6 +1719,9 @@ msgstr ""
 msgid "Delete tournaments"
 msgstr ""
 
+msgid "Delete unpaired players"
+msgstr ""
+
 msgid "Deletes all the criteria of this category."
 msgstr ""
 
@@ -1675,6 +1741,9 @@ msgid "Deputy arbiter"
 msgstr ""
 
 msgid "Deputy arbiters"
+msgstr ""
+
+msgid "Descending rating"
 msgstr ""
 
 msgid "Description"
@@ -1722,6 +1791,9 @@ msgstr ""
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr ""
 
+msgid "Display history on hover"
+msgstr ""
+
 msgid "Display the exit button"
 msgstr ""
 
@@ -1733,6 +1805,28 @@ msgstr ""
 
 #, python-format
 msgid "Displayed round: %(round)d"
+msgstr ""
+
+msgid "Distribute"
+msgstr ""
+
+#, python-format
+msgid "Distribute the players (%(num)d)"
+msgstr ""
+
+msgid "Distribute the players among the tournaments"
+msgstr ""
+
+msgid "Distribute the players by descending rating and choose the number of players participating in each tournament."
+msgstr ""
+
+msgid "Distributing the players is allowed only if all the tournaments use the same rating."
+msgstr ""
+
+msgid "Distributing the players is not allowed once one tournament is started."
+msgstr ""
+
+msgid "Distribution type"
 msgstr ""
 
 msgid "Djibouti"
@@ -2106,6 +2200,9 @@ msgstr ""
 msgid "Event"
 msgstr ""
 
+msgid "Event [{event}] has been imported."
+msgstr ""
+
 msgid "Event [{uniq_id}] has been created."
 msgstr ""
 
@@ -2113,6 +2210,9 @@ msgid "Event [{uniq_id}] has been deleted, the database has been archived ({arch
 msgstr ""
 
 msgid "Event [{uniq_id}] has been updated."
+msgstr ""
+
+msgid "Event export"
 msgstr ""
 
 msgid "Event name"
@@ -2155,7 +2255,23 @@ msgstr ""
 msgid "Export"
 msgstr ""
 
+msgid "Export ALL the data of the event."
+msgstr ""
+
+#, python-format
+msgid "Export ALL the data of the tournament's %(player_count)d players (but ONLY the player data)."
+msgstr ""
+
 msgid "Export all the games of the last round of the tournament to the PGN format (usage: pairings transfer)."
+msgstr ""
+
+msgid "Export event"
+msgstr ""
+
+msgid "Export event in SCE format"
+msgstr ""
+
+msgid "Export players"
 msgstr ""
 
 msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
@@ -2164,11 +2280,17 @@ msgstr ""
 msgid "Export the tournament to the TRF16 format."
 msgstr ""
 
+msgid "Export tournament"
+msgstr ""
+
 msgid "F *** SHORT NAME FOR GENDER FEMALE"
 msgstr "F"
 
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
+
+msgid "FA *** SHORT NAME FOR FIDE Arbiter"
+msgstr "FA"
 
 msgid "FIDE"
 msgstr ""
@@ -2256,6 +2378,9 @@ msgstr ""
 
 msgid "Female *** NAME FOR GENDER FEMALE"
 msgstr "Female"
+
+msgid "Fetch from a data source"
+msgstr ""
 
 msgid "Fide ID [{fide_id}] already present in tournament [{tournament}]."
 msgstr ""
@@ -2547,6 +2672,9 @@ msgstr ""
 msgid "I confirm that I want to overwrite the player data of this tournament."
 msgstr ""
 
+msgid "IA *** SHORT NAME FOR International Arbiter"
+msgstr "IA"
+
 msgid "IM *** SHORT NAME FOR International Master"
 msgstr "IM"
 
@@ -2587,13 +2715,23 @@ msgstr ""
 msgid "Import TRF file"
 msgstr ""
 
+msgid "Import a SCE file"
+msgstr ""
+
 msgid "Import a tournament"
 msgstr ""
 
 msgid "Import a tournament to the event from an external source."
 msgstr ""
 
-msgid "Import is unavailable once the tournament has started."
+msgid "Import players from a CSV file."
+msgstr ""
+
+#, python-format
+msgid "Import players to tournament [%(tournament)s]"
+msgstr ""
+
+msgid "Imported player"
 msgstr ""
 
 msgid "Impossible to add players to tournament [{tournament}]."
@@ -2712,6 +2850,9 @@ msgid "Invalid date format [{date}] (expected: {format})"
 msgstr ""
 
 msgid "Invalid delay [{delay}] (positive integer expected)."
+msgstr ""
+
+msgid "Invalid email format."
 msgstr ""
 
 msgid "Invalid expression [{expression}]"
@@ -3102,6 +3243,9 @@ msgstr ""
 msgid "Minimum rating"
 msgstr ""
 
+msgid "Missing required column [{column}]."
+msgstr ""
+
 msgid "Missing required field [{field}]."
 msgstr ""
 
@@ -3168,6 +3312,9 @@ msgstr "N"
 
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
+
+msgid "NA *** SHORT NAME FOR National Arbiter"
+msgstr "NA"
 
 msgid "Name"
 msgstr ""
@@ -3367,6 +3514,9 @@ msgstr ""
 msgid "No players"
 msgstr ""
 
+msgid "No players imported."
+msgstr ""
+
 msgid "No players matching the criteria."
 msgstr ""
 
@@ -3437,9 +3587,6 @@ msgid "No tie-breaks"
 msgstr ""
 
 msgid "No timers"
-msgstr ""
-
-msgid "No title"
 msgstr ""
 
 msgid "No tournaments"
@@ -3935,6 +4082,9 @@ msgstr ""
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
+msgid "Player [{player}] already exists in the tournament."
+msgstr ""
+
 msgid "Player [{player}] already plays tournament [{tournament}]."
 msgstr ""
 
@@ -4008,6 +4158,9 @@ msgstr ""
 msgid "Players ({num})"
 msgstr ""
 
+msgid "Players can't be overwritten once the tournament has started."
+msgstr ""
+
 msgid "Players check-in list"
 msgstr ""
 
@@ -4019,6 +4172,9 @@ msgstr ""
 msgid "Players from %(first)s to %(last)s"
 msgstr ""
 
+msgid "Players import"
+msgstr ""
+
 msgid "Players may have default estimated ratings depending on the activated plugins."
 msgstr ""
 
@@ -4026,7 +4182,13 @@ msgstr ""
 msgid "Players of category [%(category)s]"
 msgstr ""
 
+msgid "Players per tournament"
+msgstr ""
+
 msgid "Players screens show pairings by alphabetical order."
+msgstr ""
+
+msgid "Players successfully distributed among the tournaments."
 msgstr ""
 
 msgid "Players update"
@@ -4111,6 +4273,9 @@ msgid "Please wait until the application settings have been set on the server…
 msgstr ""
 
 msgid "Please wait…"
+msgstr ""
+
+msgid "Plugin [{plugin}] was enabled."
 msgstr ""
 
 msgid "Plugins"
@@ -4745,6 +4910,9 @@ msgstr ""
 msgid "Select the players and the data to update:"
 msgstr ""
 
+msgid "Select the tournaments to add players to."
+msgstr ""
+
 msgid "Selection"
 msgstr ""
 
@@ -4800,12 +4968,6 @@ msgstr ""
 msgid "Seychelles"
 msgstr ""
 
-msgid "Share"
-msgstr ""
-
-msgid "Share event"
-msgstr ""
-
 msgid "Share the prizes"
 msgstr ""
 
@@ -4848,10 +5010,16 @@ msgstr ""
 msgid "Show Log"
 msgstr ""
 
-msgid "Show all the players"
+msgid "Show invalid rows"
 msgstr ""
 
 msgid "Show logging level"
+msgstr ""
+
+msgid "Show unmodified players"
+msgstr ""
+
+msgid "Show valid rows"
 msgstr ""
 
 msgid "Show warnings"
@@ -4897,6 +5065,10 @@ msgid "Some accounts can have very high access levels, making them dangerous in 
 msgstr ""
 
 msgid "Some files are missing."
+msgstr ""
+
+#, python-format
+msgid "Some of the Sharly Chess data is not included in the %(format)s format. For data transfers or backups, using the SCE format is highly recommended."
 msgstr ""
 
 msgid "Something went wrong. Please ask your administrator to recreate your account."
@@ -5436,6 +5608,9 @@ msgstr ""
 msgid "This document is only available for standard time control tournaments."
 msgstr ""
 
+msgid "This event can't be used by the current version of Sharly Chess."
+msgstr ""
+
 msgid "This event is private (by default, screens are not visible by the spectators)."
 msgstr ""
 
@@ -5452,6 +5627,9 @@ msgid "This field can't be modified once the tournament has started."
 msgstr ""
 
 msgid "This field can't be updated once the tournament has started."
+msgstr ""
+
+msgid "This field is only valid without date of birth."
 msgstr ""
 
 msgid "This field is required (except for rounds)."
@@ -5482,6 +5660,9 @@ msgid "This round is not finished (last finished: #{round})."
 msgstr ""
 
 msgid "This round is not valid (the tournament has {rounds} rounds)."
+msgstr ""
+
+msgid "This row contains errors that prevent it from being imported."
 msgstr ""
 
 msgid "This screen family is private (not visible by the spectators)."
@@ -5655,6 +5836,9 @@ msgstr ""
 msgid "Tournament [{tournament}] successfully imported."
 msgstr ""
 
+msgid "Tournament export"
+msgstr ""
+
 msgid "Tournament name"
 msgstr ""
 
@@ -5771,6 +5955,12 @@ msgstr ""
 msgid "Ukraine"
 msgstr ""
 
+msgid "Unavailable before the tournament start."
+msgstr ""
+
+msgid "Unavailable once the tournament has started."
+msgstr ""
+
 msgid "Undefined"
 msgstr ""
 
@@ -5781,6 +5971,9 @@ msgid "Undefined *** SINGULAR"
 msgstr "Undefined"
 
 msgid "Unexpected error during installation: [{ex}]."
+msgstr ""
+
+msgid "Unhandled file type [{suffix}] (expected: {expected})."
 msgstr ""
 
 #, python-format
@@ -5806,6 +5999,9 @@ msgstr ""
 msgid "Unknown federation [{federation}]."
 msgstr ""
 
+msgid "Unknown federation."
+msgstr ""
+
 msgid "Unknown gender [{gender}]."
 msgstr ""
 
@@ -5813,6 +6009,9 @@ msgid "Unknown result [{result}]."
 msgstr ""
 
 msgid "Unknown title [{title}]."
+msgstr ""
+
+msgid "Unknown value (expected: {expected})."
 msgstr ""
 
 msgid "Unlike single Screens, families can only be used to display information about a single tournament."
@@ -5921,6 +6120,9 @@ msgstr ""
 msgid "Use Fore Buchholz"
 msgstr ""
 
+msgid "Use a data source to import players from their identifier."
+msgstr ""
+
 msgid "Use default"
 msgstr ""
 
@@ -5970,6 +6172,12 @@ msgid "Validate"
 msgstr ""
 
 msgid "Value"
+msgstr ""
+
+msgid "Value does not match the one from the data source."
+msgstr ""
+
+msgid "Value not found in the data source."
 msgstr ""
 
 msgid "Value of the pairing allocated bye:"
@@ -6068,8 +6276,14 @@ msgstr ""
 msgid "Warning: experimental features are enabled!"
 msgstr ""
 
+msgid "Warning: potential data loss"
+msgstr ""
+
 #, python-format
 msgid "Warning: round #%(round)d is not finished."
+msgstr ""
+
+msgid "Warning: some players do not match the criteria of any of the selected tournaments."
 msgstr ""
 
 #, python-format
@@ -6077,6 +6291,12 @@ msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr ""
 
 msgid "Warning: the deletion is permanent!"
+msgstr ""
+
+msgid "Warning: too few players selected."
+msgstr ""
+
+msgid "Warning: too many players selected."
 msgstr ""
 
 msgid "Warning: you are trying to execute an operation forbidden by the FIDE rules."
@@ -6098,6 +6318,9 @@ msgid "Welcome to Sharly Chess!"
 msgstr ""
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
+msgstr ""
+
+msgid "When hovering a player's name with the mouse, display its history."
 msgstr ""
 
 msgid "When not displaying the exit button, users can not accidentally exit input screens."
@@ -6185,6 +6408,9 @@ msgid "You are not allowed to delete the tournament."
 msgstr ""
 
 msgid "You are not allowed to delete this account."
+msgstr ""
+
+msgid "You are not allowed to distribute the players."
 msgstr ""
 
 msgid "You are not allowed to duplicate this account."
@@ -6475,6 +6701,10 @@ msgstr ""
 msgid "then"
 msgstr ""
 
+#, python-format
+msgid "total: %(total)s"
+msgstr ""
+
 msgid "value: {value}"
 msgstr ""
 
@@ -6508,6 +6738,16 @@ msgstr[1] ""
 
 msgid "{count} hour could not be moved (time conflict)."
 msgid_plural "{count} hours could not be moved (time conflict)."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} player deleted."
+msgid_plural "{count} players deleted."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} player successfully imported."
+msgid_plural "{count} players successfully imported."
 msgstr[0] ""
 msgstr[1] ""
 
@@ -6574,22 +6814,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Print"
-#~ msgstr ""
-
-#~ msgid "Print players, results, etc."
-#~ msgstr ""
-
-#~ msgid "Printing"
-#~ msgstr ""
-
-#~ msgid "The numbers (or ranges of numbers) of the boards to print."
-#~ msgstr ""
-
-#~ msgid "The round for which the document is printed (Defaults to the last possible round)."
-#~ msgstr ""
-
-#~ msgid "This field is not editable."
-#~ msgstr ""
 

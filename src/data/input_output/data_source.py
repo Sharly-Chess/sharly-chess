@@ -3,12 +3,16 @@ import time
 from abc import ABC, abstractmethod
 from functools import cached_property
 from logging import Logger
-from typing import override, ClassVar
+from typing import override, ClassVar, Collection
 
 from common import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
+import data.columns.player_datasheet as pds
+from data.columns.handlers import PlayerDatasheetColumnHandler
+from data.columns.player_datasheet import DatasheetColumn
+from data.event import Event
 from data.input_output.player_updater_fields import (
     PlayerUpdaterField,
     FideIDUpdaterField,
@@ -169,7 +173,8 @@ class DataSource(IdentifiableEntity, ABC):
 
     @abstractmethod
     async def get_stored_player_by_source_id(
-        self, player_source_id: str
+        self,
+        player_source_id: str,
     ) -> StoredPlayer | None:
         """Get a player by its identifier in the data source."""
 
@@ -177,17 +182,25 @@ class DataSource(IdentifiableEntity, ABC):
     def get_player_source_id(self, stored_player: StoredPlayer) -> str:
         """Get the id of the player in the source formatted as a string."""
 
-    async def fetch_player(self, player_source_id: str) -> StoredPlayer | None:
+    async def fetch_player(
+        self,
+        player_source_id: str,
+        with_arbiter_title: bool,
+    ) -> StoredPlayer | None:
         stored_player = await self.get_stored_player_by_source_id(player_source_id)
         if stored_player:
             self._adjust_player_from_fide_database(stored_player)
             await plugin_manager.ahook.augment_player_after_search(
-                stored_player=stored_player, data_source=self
+                stored_player=stored_player,
+                data_source=self,
+                with_arbiter_title=with_arbiter_title,
             )
         return stored_player
 
     @staticmethod
-    def _adjust_player_from_fide_database(src_stored_player: StoredPlayer):
+    def _adjust_player_from_fide_database(
+        src_stored_player: StoredPlayer,
+    ):
         """Cross-references the player with the FIDE Database.
         Override this method to disable this behavior."""
         fide_id = src_stored_player.fide_id
@@ -195,11 +208,16 @@ class DataSource(IdentifiableEntity, ABC):
         if not fide_id or not database.exists():
             return
         with database:
-            fide_stored_player = database.get_stored_player_by_fide_id(fide_id)
+            fide_stored_player = database.get_stored_player_by_fide_id(
+                player_fide_id=fide_id,
+            )
             if not fide_stored_player:
                 return
             src_stored_player.federation = fide_stored_player.federation
             src_stored_player.title = fide_stored_player.title
+            src_stored_player.transient_arbiter_titles['fide'] = (
+                fide_stored_player.transient_arbiter_titles.get('fide', '')
+            )
             for rating_type in TournamentRating:
                 stored_fide_rating = fide_stored_player.ratings.get(
                     rating_type.value, None
@@ -224,6 +242,32 @@ class DataSource(IdentifiableEntity, ABC):
                         national=source_rating.national,
                         estimated=source_rating.estimated,
                     ).stored_value
+
+    # --------------------------------------------------------------------------
+    # Player Import
+    # --------------------------------------------------------------------------
+
+    @property
+    @abstractmethod
+    def import_identifier_column(self) -> DatasheetColumn:
+        """Column of the identifier of the import."""
+
+    @property
+    @abstractmethod
+    def imported_datasheet_columns(self) -> list[DatasheetColumn]:
+        """IDs of the datasheet columns that the datasource is importing.
+        These columns won't be available on import."""
+
+    def get_all_datasheet_columns(self, event: Event) -> Collection[DatasheetColumn]:
+        """Fetch the datasheet columns that can be imported with the data source."""
+        return PlayerDatasheetColumnHandler(event, self).columns
+
+    @abstractmethod
+    async def get_stored_players_by_import_identifier(
+        self, identifier_values: list[str]
+    ) -> dict[str, StoredPlayer]:
+        """Fetch stored players from their identifier values.
+        Return a dict with the ones that have been found."""
 
 
 class LocalDataSource(DataSource, ABC):
@@ -365,7 +409,9 @@ class FideDataSource(LocalDataSource):
 
     @staticmethod
     @override
-    def _adjust_player_from_fide_database(src_stored_player: StoredPlayer):
+    def _adjust_player_from_fide_database(
+        src_stored_player: StoredPlayer,
+    ):
         pass
 
     def check_player_match(self, player1: StoredPlayer, player2: StoredPlayer) -> bool:
@@ -390,12 +436,47 @@ class FideDataSource(LocalDataSource):
         return '/admin/players/fide_search_result.html'
 
     async def get_stored_player_by_source_id(
-        self, player_source_id: str
+        self,
+        player_source_id: str,
     ) -> StoredPlayer | None:
         if not player_source_id.isdigit():
             return None
         with FideDatabase() as database:
-            return database.get_stored_player_by_fide_id(int(player_source_id))
+            return database.get_stored_player_by_fide_id(
+                player_fide_id=int(player_source_id),
+            )
 
     def get_player_source_id(self, stored_player: StoredPlayer) -> str:
         return str(stored_player.fide_id)
+
+    @property
+    def import_identifier_column(self) -> DatasheetColumn:
+        return pds.FideIDColumn()
+
+    @property
+    def imported_datasheet_columns(self) -> list[DatasheetColumn]:
+        columns: list[DatasheetColumn] = [
+            pds.TitleColumn(),
+            pds.LastNameColumn(),
+            pds.FirstNameColumn(),
+            pds.DateOfBirthColumn(),
+            pds.YearOfBirthColumn(),
+            pds.GenderColumn(),
+            pds.FederationColumn(),
+        ]
+        columns += PlayerDatasheetColumnHandler.get_rating_columns(
+            [PlayerRatingType.FIDE]
+        )
+        return columns
+
+    async def get_stored_players_by_import_identifier(
+        self, identifier_values: list[str]
+    ) -> dict[str, StoredPlayer]:
+        with FideDatabase() as database:
+            stored_players = database.get_stored_players_by_fide_id(
+                [int(value) for value in identifier_values]
+            )
+        return {
+            str(stored_player.fide_id): stored_player
+            for stored_player in stored_players
+        }

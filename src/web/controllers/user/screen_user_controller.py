@@ -1,4 +1,5 @@
 from contextlib import suppress
+from datetime import datetime
 
 from litestar import head, get
 from litestar.plugins.htmx import HTMXRequest, Reswap
@@ -29,20 +30,23 @@ class ScreenUserController(BaseScreenUserController):
     @staticmethod
     def _user_screen_set_refresh_needed(
         screen_set: ScreenSet,
-        date: float,
+        date: datetime,
     ) -> bool:
         tournament: Tournament = screen_set.tournament
         if (
             max(
-                tournament.last_update,
-                tournament.last_player_update,
+                tournament.last_update or datetime.min,
+                tournament.last_player_update or datetime.min,
             )
             > date
         ):
             return True
         match screen_set.type:
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
-                if tournament.last_pairing_update > date:
+                if (
+                    tournament.last_pairing_update
+                    and tournament.last_pairing_update > date
+                ):
                     return True
             case ScreenType.PLAYERS:
                 pass
@@ -57,11 +61,15 @@ class ScreenUserController(BaseScreenUserController):
         | DisplayControllerUserWebContext,
         date: float,
     ) -> bool:
+        date_dt = datetime.fromtimestamp(date)
         if web_context.screen:
             assert web_context.screen.event is not None
-            if web_context.screen.event.last_update > date:
+            if web_context.screen.event.last_update > date_dt:
                 return True
-            if web_context.screen.last_update > date:
+            if (
+                web_context.screen.last_update
+                and web_context.screen.last_update > date_dt
+            ):
                 return True
             match web_context.screen.type:
                 case ScreenType.IMAGE:
@@ -72,8 +80,8 @@ class ScreenUserController(BaseScreenUserController):
                     | ScreenType.PLAYERS
                     | ScreenType.RANKING
                 ):
-                    for screen_set in web_context.screen.screen_sets_by_id.values():
-                        if cls._user_screen_set_refresh_needed(screen_set, date):
+                    for screen_set in web_context.screen.screen_sets:
+                        if cls._user_screen_set_refresh_needed(screen_set, date_dt):
                             return True
                 case ScreenType.RESULTS:
                     assert web_context.screen.event is not None
@@ -91,10 +99,10 @@ class ScreenUserController(BaseScreenUserController):
                             )
                             if (
                                 max(
-                                    tournament.last_update,
-                                    tournament.last_pairing_update,
+                                    tournament.last_update or datetime.min,
+                                    tournament.last_pairing_update or datetime.min,
                                 )
-                                > date
+                                > date_dt
                             ):
                                 return True
                 case _:
@@ -105,9 +113,9 @@ class ScreenUserController(BaseScreenUserController):
             if (
                 max(
                     web_context.family.event.last_update,
-                    web_context.family.last_update or 0,
+                    web_context.family.last_update or datetime.min,
                 )
-                > date
+                > date_dt
             ):
                 return True
         return False

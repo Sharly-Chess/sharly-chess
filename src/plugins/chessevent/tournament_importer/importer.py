@@ -1,5 +1,4 @@
 import json
-import time
 import zoneinfo
 from datetime import datetime, timedelta
 
@@ -50,10 +49,10 @@ from plugins.chessevent.tournament_importer.mappers import (
     ChessEventFFELicence,
     ChessEventTitle,
     ChessEventRatingType,
+    ChessEventGender,
 )
 from plugins.chessevent.utils import ChessEventTournamentPluginData, ChessEventUtils
-from plugins.ffe.ffe import FfePlugin
-from plugins.ffe.utils import FfePlayerPluginData
+from plugins.ffe.utils import FfePlayerPluginData, FFE_LEAGUES
 from plugins.manager import plugin_manager
 from utils.enum import TournamentRating, Result
 
@@ -181,7 +180,7 @@ class ChessEventTournamentImporter(TournamentImporter):
             event_id=request_data.event_id,
             tournament_name=request_data.tournament_name,
             status=SuccessChessEventStatus().id,
-            last_sync=time.time(),
+            last_sync=datetime.now(),
         ).to_stored_value()
 
         stored_players: list[StoredPlayer] = []
@@ -263,6 +262,10 @@ class ChessEventTournamentImporter(TournamentImporter):
             title = ChessEventTitle.get_core_object(player.title)
         except KeyError:
             raise unknown_exception('title')
+        try:
+            gender = ChessEventGender.get_core_object(player.gender)
+        except KeyError:
+            raise unknown_exception('gender')
         if player.federation not in SharlyChessConfig().federations:
             # Error raised in the form as it's the only field manually input by the user
             raise ImporterError(
@@ -308,7 +311,7 @@ class ChessEventTournamentImporter(TournamentImporter):
             ffe_licence = ChessEventFFELicence.get_core_object(player.ffe_license)
         except KeyError:
             raise unknown_exception('ffe_license')
-        if player.ffe_league and player.ffe_league not in FfePlugin.FFE_LEAGUES:
+        if player.ffe_league and player.ffe_league not in FFE_LEAGUES:
             raise unknown_exception('ffe_league')
         ffe_plugin_data = FfePlayerPluginData(
             player.ffe_id,
@@ -324,13 +327,13 @@ class ChessEventTournamentImporter(TournamentImporter):
             date_of_birth=(epoch + timedelta(seconds=float(player.birth))).astimezone(
                 paris_tz
             ),
-            gender=player.gender.value,
+            gender=gender.value,
             mail=player.email,
             phone=player.phone,
             comment=None,
             owed=float(player.fee),
             paid=float(player.paid),
-            title=title,
+            title=title.value,
             ratings=ratings,
             fide_id=player.fide_id or None,
             federation=player.federation,

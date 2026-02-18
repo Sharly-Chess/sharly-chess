@@ -6,7 +6,7 @@ from typing import Any, Self
 
 from common import BASE_DIR, SharlyChessException
 from common.i18n import _
-from common.i18n.utils import parse_jinja_string, parse_jinja_template
+from common.i18n.utils import parse_jinja_string, parse_jinja_template, normalized_key
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
@@ -447,7 +447,7 @@ class PlaceCardTemplate(PlaceCardItemStyle):
                 ),
                 key=lambda template: (
                     template.embedded,
-                    template.id if template.embedded else template.name,
+                    template.id if template.embedded else normalized_key(template.name),
                 ),
             )
             for place_card_type in PrintPlaceCardTypeManager().objects()

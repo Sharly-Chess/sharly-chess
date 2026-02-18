@@ -7,8 +7,8 @@
     {% include 'event/event_modal.html' %}
 {% elif modal == 'event-delete' %}
     {% include 'event/event_delete_modal.html' %}
-{% elif modal == 'event-share' %}
-    {% include 'event/event_share_modal.html' %}
+{% elif modal == 'event-export' %}
+    {% include 'event/event_export_modal.html' %}
 {% elif modal == 'print' %}
     {% include 'event/print_modal.html' %}
 {% elif modal == 'tournament' %}
@@ -21,10 +21,14 @@
     {% include 'tournaments/tournament_criteria_modal.html' %}
 {% elif modal == 'tournament_criterion_form' %}
     {% include 'tournaments/tournament_criterion_form_modal.html' %}
+{% elif modal == 'distribute-players' %}
+    {% include 'tournaments/distribute_players_modal.html' %}
 {% elif modal == 'tie_breaks' %}
     {% include 'tournaments/tie_breaks_modal.html' %}
 {% elif modal == 'tie_break_form' %}
     {% include 'tournaments/tie_break_form_modal.html' %}
+{% elif modal == 'tournament-export-data-loss' %}
+    {% include 'tournaments/export_data_loss_modal.html' %}
 {% elif modal == 'player' %}
     {% include 'players/player_modal.html' %}
 {% elif modal == 'player-delete' %}
@@ -35,6 +39,10 @@
     {% include 'players/close_check_in_modal.html' %}
 {% elif modal == 'players_diff' %}
     {% include 'players/players_diff_modal.html' %}
+{% elif modal == 'players_import' %}
+    {% include 'players/players_import_modal.html' %}
+{% elif modal == 'players_import_diff' %}
+    {% include 'players/players_import_diff_modal.html' %}
 {% elif modal == 'unpaired-player' %}
     {% include 'pairings/unpaired_player_modal.html' %}
 {% elif modal == 'safety-mode' %}

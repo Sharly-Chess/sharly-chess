@@ -49,10 +49,18 @@
     left: var(--side-bar-width);
 }
 
-.player-table-club-cell {
+.modal-table-sticky-header {
+    z-index: 2 !important;
+    position: sticky !important;
+    top: -1em;
+}
 
-    overflow: hidden;
-    text-overflow: ellipsis;
+.error-cell {
+    border: 2px solid rgba(var(--bs-danger-rgb));
+}
+
+.warning-cell {
+    border: 2px solid rgba(var(--bs-warning-rgb));
 }
 
 .mw-15em {
@@ -262,6 +270,29 @@
     opacity: 0;
 }
 
+.screen-card-table {
+    width: 100%;
+    max-width: 100%;
+    font-size: 0.75rem;
+}
+.screen-card-table th, .screen-card-table td {
+    border-width: 1px;
+    text-overflow: ellipsis;
+}
+
+.dropdown-item-lg {
+    font-size: 1.25rem;
+}
+
+.blue-checkbox {
+    font-size: 90%;
+}
+
+.blue-checkbox:checked {
+    background-color: #0d6efd !important;
+    border-color: #0d6efd !important;
+}
+
 /* Air DatePicker */
 
 #air-datepicker-global-container {
@@ -374,12 +405,59 @@
         border-color: var(--adp-cell-background-color-selected);
     }
 }
-.screen-card-table {
-    width: 100%;
-    max-width: 100%;
-    font-size: 0.75rem;
+
+/* Selectable */
+
+.ui-selected-0 {
+    background-color: #4A5568 !important;
+    color: #E2E8F0 !important;
 }
-.screen-card-table th, .screen-card-table td {
-    border-width: 1px;
-    text-overflow: ellipsis;
+
+.ui-selected-1 {
+    background-color: #718096 !important;
+    color: #F7FAFC !important;
+}
+
+.ui-selected-2 {
+    background-color: #A0AEC0 !important;
+    color: #2D3748 !important;
+}
+
+.ui-selected-3 {
+    background-color: #CBD5E0 !important;
+    color: #1A202C !important;
+}
+
+.ui-selected-4 {
+    background-color: #48BB78 !important;
+    color: #F7FAFC !important;
+}
+
+.ui-selected-5 {
+    background-color: #2D3748 !important;
+    color: #E2E8F0 !important;
+}
+
+.ui-selected-6 {
+    background-color: #ED8936 !important;
+    color: #1A202C !important;
+}
+
+.ui-selected-7 {
+    background-color: #4299E1 !important;
+    color: #F7FAFC !important;
+}
+
+.ui-selected-8 {
+    background-color: #A0AEC0 !important;
+    color: #2D3748 !important;
+}
+
+.ui-selected-9 {
+    background-color: #F7FAFC !important;
+    color: #1A202C !important;
+}
+
+.ui-selecting {
+   background-color: var(--bs-secondary) !important;
 }

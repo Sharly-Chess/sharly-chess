@@ -6,8 +6,8 @@ CREATE TABLE `player` (
     `last_name` TEXT NOT NULL,
     `first_name` TEXT,
     `federation` TEXT NOT NULL,
-    `gender` INTEGER NOT NULL,
-    `fide_title` INTEGER,
+    `gender` TEXT NOT NULL,
+    `fide_title` TEXT,
     `standard_rating` INTEGER NOT NULL,
     `rapid_rating` INTEGER NOT NULL,
     `blitz_rating` INTEGER NOT NULL,
@@ -15,5 +15,7 @@ CREATE TABLE `player` (
     `k_standard` INTEGER NOT NULL,
     `k_rapid` INTEGER NOT NULL,
     `k_blitz` INTEGER NOT NULL,
-    PRIMARY KEY(`id` AUTOINCREMENT)
+    `fide_arbiter_title` TEXT NOT NULL,
+    PRIMARY KEY(`id` AUTOINCREMENT),
+    UNIQUE(`fide_id`)
 );

@@ -29,6 +29,7 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.client_tracker import ClientTracker
 from data.player import Federation, Club
+from utils import Utils
 from utils.date_time import format_date, format_date_range, format_datetime
 from web.messages import Message
 from web.session import SessionLocale
@@ -104,10 +105,9 @@ class WebContext:
         normalized_data: dict[str, str] = {}
         for key, value in data.items():
             if isinstance(value, UploadFile):
-                suffix = Path(value.filename).suffix
-                __, tmp_name = tempfile.mkstemp(suffix=suffix)
-                Path(tmp_name).write_bytes(await value.read())
-                normalized_data[key] = tmp_name
+                file_path = Path(tempfile.mkdtemp()) / value.filename
+                file_path.write_bytes(await value.read())
+                normalized_data[key] = str(file_path)
             else:
                 normalized_data[key] = cls.value_to_form_data(value)
         return normalized_data
@@ -315,7 +315,7 @@ class WebContext:
             data[field] = data[field].strip().lower()
         if not data[field]:
             return None
-        if re.match(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}$', data[field]):
+        if re.match(Utils.EMAIL_REGEX, data[field]):
             return data[field]
         raise ValueError(f'data[{field}]=[{data[field]}] (mail expected)')
 

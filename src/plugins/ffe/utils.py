@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from datetime import datetime
-from enum import IntEnum
+from enum import StrEnum
 from functools import partial
 from typing import Self, Any
 
@@ -10,6 +10,7 @@ from data.account import Account
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
+from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.utils import PluginUtils, PluginData
 from utils.enum import FormAction
@@ -20,6 +21,29 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 FFE_MIN_UPLOAD_DELAY = 3
 FFE_DEFAULT_UPLOAD_DELAY = 3
 FFE_EPOCH = datetime(2000, 1, 1)
+
+# The FFE league names.
+FFE_LEAGUES: dict[str, str] = {
+    'ARA': 'Auvergne-Rhône-Alpes',
+    'BFC': 'Bourgogne-Franche-Comté',
+    'BRE': 'Bretagne',
+    'CRS': 'Corse',
+    'CVL': 'Centre-Val de Loire',
+    'EST': 'Grand-Est',
+    'GUA': 'Guadeloupe',
+    'GUY': 'Guyane',
+    'HDF': 'Hauts-de-France',
+    'IDF': 'Île-de-France',
+    'MAR': 'Martinique',
+    'NAQ': 'Nouvelle-Aquitaine',
+    'NCA': 'Nouvelle-Calédonie',
+    'NOR': 'Normandie',
+    'OCC': 'Occitanie',
+    'PAC': "Provence-Alpes-Côte d'azur",
+    'PDL': 'Pays de la Loire',
+    'POL': 'Saint-Pierre-et-Miquelon',
+    'REU': 'Réunion',
+}
 
 
 class FFEUtils:
@@ -76,11 +100,11 @@ class FFEUtils:
         return PapiConverter.papi_export_unavailable_message(tournament)
 
 
-class PlayerFFELicence(IntEnum):
-    NONE = 0
-    N = 1
-    A = 2
-    B = 3
+class PlayerFFELicence(StrEnum):
+    NONE = ''
+    N = 'N'
+    A = 'A'
+    B = 'B'
 
     @property
     def name(self) -> str:
@@ -112,17 +136,9 @@ class PlayerFFELicence(IntEnum):
 
     @property
     def short_name(self) -> str:
-        match self:
-            case PlayerFFELicence.NONE:
-                return '-'
-            case PlayerFFELicence.N:
-                return 'N'
-            case PlayerFFELicence.A:
-                return 'A'
-            case PlayerFFELicence.B:
-                return 'B'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
+        if self == PlayerFFELicence.NONE:
+            return '-'
+        return self.value
 
     @staticmethod
     def validate(string: str) -> bool:
@@ -130,15 +146,33 @@ class PlayerFFELicence(IntEnum):
         return bool(re.match(r'^[A-Z]\d{5}$', string))
 
 
-class FFEArbiterTitle(IntEnum):
-    NONE = 0
-    AS = 10
-    AFJ = 20
-    AFC = 30
-    AFO1 = 40
-    AFO2 = 41
-    AFE1 = 50
-    AFE2 = 51
+class FFEArbiterTitle(StrEnum):
+    NONE = ''
+    AS = 'AS'
+    AFJ = 'AFJ'
+    AFC = 'AFC'
+    AFO1 = 'AFO1'
+    AFO2 = 'AFO2'
+    AFE1 = 'AFE1'
+    AFE2 = 'AFE2'
+
+    @classmethod
+    def from_html(cls, html_arbiter_string: str) -> 'FFEArbiterTitle':
+        match html_arbiter_string:
+            case 'Arbitre Jeune':
+                return cls.AFJ
+            case 'Arbitre Club':
+                return cls.AFC
+            case 'Arbitre Open 1':
+                return cls.AFO1
+            case 'Arbitre Open 2':
+                return cls.AFO2
+            case 'Arbitre Elite 1':
+                return cls.AFE1
+            case 'Arbitre Elite 2':
+                return cls.AFE2
+            case _:
+                return cls.NONE
 
     @property
     def name(self) -> str:
@@ -164,25 +198,7 @@ class FFEArbiterTitle(IntEnum):
 
     @property
     def short_name(self) -> str:
-        match self:
-            case FFEArbiterTitle.NONE:
-                return ''
-            case FFEArbiterTitle.AS:
-                return 'STA'
-            case FFEArbiterTitle.AFJ:
-                return 'AFJ'
-            case FFEArbiterTitle.AFC:
-                return 'AFC'
-            case FFEArbiterTitle.AFO1:
-                return 'AFO1'
-            case FFEArbiterTitle.AFO2:
-                return 'AFO2'
-            case FFEArbiterTitle.AFE1:
-                return 'AFE1'
-            case FFEArbiterTitle.AFE2:
-                return 'AFE2'
-            case _:
-                raise ValueError(f'Unknown value: {self}')
+        return self.value
 
 
 @dataclass
@@ -232,8 +248,8 @@ class FfeTournamentPluginData(PluginData):
     ffe_id: int | None = None
     password: str | None = None
     auto_upload: bool | None = False
-    last_upload: float | None = None
-    last_rules_upload: float | None = None
+    last_upload: datetime | None = None
+    last_rules_upload: datetime | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -241,8 +257,12 @@ class FfeTournamentPluginData(PluginData):
             ffe_id=stored_value.get('ffe_id', None),
             password=stored_value.get('password', None),
             auto_upload=stored_value.get('auto_upload', None),
-            last_upload=stored_value.get('last_upload', 0.0),
-            last_rules_upload=stored_value.get('last_rules_upload', 0.0),
+            last_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_upload')
+            ),
+            last_rules_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_rules_upload')
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -250,8 +270,12 @@ class FfeTournamentPluginData(PluginData):
             'ffe_id': self.ffe_id,
             'password': self.password,
             'auto_upload': self.auto_upload,
-            'last_upload': self.last_upload,
-            'last_rules_upload': self.last_rules_upload,
+            'last_upload': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_upload
+            ),
+            'last_rules_upload': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_rules_upload
+            ),
         }
 
     @classmethod
@@ -261,8 +285,8 @@ class FfeTournamentPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        last_upload: float | None = None
-        last_rules_upload: float | None = None
+        last_upload: datetime | None = None
+        last_rules_upload: datetime | None = None
         if previous_object and action != 'clone':
             last_upload = previous_object.last_upload
             last_rules_upload = previous_object.last_rules_upload
@@ -320,7 +344,7 @@ class FfePlayerPluginData(PluginData):
         return cls(
             ffe_id=WebContext.form_data_to_int(data, 'ffe_id'),
             ffe_licence=PlayerFFELicence(
-                WebContext.form_data_to_int(data, 'ffe_licence')
+                WebContext.form_data_to_str(data, 'ffe_licence')
                 or PlayerFFELicence.NONE
             ),
             ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
@@ -370,7 +394,7 @@ class FfeAccountPluginData(PluginData):
         return cls(
             ffe_licence_number=WebContext.form_data_to_str(data, 'ffe_licence_number'),
             ffe_arbiter_title=FFEArbiterTitle(
-                WebContext.form_data_to_int(data, 'ffe_arbiter_title')
+                WebContext.form_data_to_str(data, 'ffe_arbiter_title')
                 or FFEArbiterTitle.NONE
             ),
         )

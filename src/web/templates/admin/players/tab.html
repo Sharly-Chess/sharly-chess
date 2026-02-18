@@ -10,6 +10,7 @@
         hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
         hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }} from:body"
         hx-target="#refresh-message"
+        hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
         hx-swap="innerHTML"
     >
     </div>
@@ -47,30 +48,57 @@
                 {% if allowed_tournaments %}
                     {% include 'check_in_tournaments.html' %}
                 {% endif %}
+                {% set add_player_error_message = (
+                    _('You are not allowed to add players to the event.')
+                    if not client.can_add_player else
+                    _('Tournaments are finished, you can not add players any longer.')
+                    if not player_addable_tournaments and allowed_tournaments else
+                    _('Add a tournament before adding players.')
+                    if not player_addable_tournaments else ''
+                ) %}
                 <span
-                    {% if not client.can_add_player %}
-                        {{ macros.tooltip_attributes('warning', _('You are not allowed to add players to the event.'), 'top') }}
-                    {% elif admin_event.not_finished_tournaments_sorted_by_index %}
-                        {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
-                    {% elif admin_event.tournaments_sorted_by_index %}
-                        {{ macros.tooltip_attributes('warning', _('Tournaments are finished, you can not add players any longer.'), 'top') }}
+                    {%if add_player_error_message %}
+                        {{ macros.tooltip_attributes('warning', add_player_error_message, 'top') }}
                     {% else %}
-                        {{ macros.tooltip_attributes('warning', _('Add a tournament before adding players.'), 'top') }}
+                        {{ macros.tooltip_attributes('info', _('Import players from a CSV file.'), 'top') }}
                     {% endif %}
                 >
                     <button
-                        data-testid="add-player-button"class="btn btn-primary text-nowrap"
+                        class="btn btn-primary text-nowrap"
+                        hx-get="{{ url_for('players-import-modal', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        {% if add_player_error_message %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi-box-arrow-in-right pe-1"></i>
+                        {{ _('Import') }}
+                    </button>
+                </span>
+                <span
+                    {%if add_player_error_message %}
+                        {{ macros.tooltip_attributes('warning', add_player_error_message, 'top') }}
+                    {% else %}
+                        {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
+                    {% endif %}
+                >
+                    <button
+                        data-testid="add-player-button"
+                        class="btn btn-primary text-nowrap"
                         hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
-                        {% if not client.can_add_player or not admin_event.not_finished_tournaments_sorted_by_index %}
+                        {% if add_player_error_message %}
                             disabled
                         {% endif %}
                     >
                         <i class="bi-plus-square pe-1"></i>
-                        {{ _('Add player') }}
+                        {{ _('Add') }}
                     </button>
                 </span>
             </div>
@@ -100,8 +128,8 @@
                             aria-expanded="false"
 
                         >
-                            <i class="bi-download pe-1"></i>
-                            {{ _('Download') }}
+                            <i class="bi-box-arrow-right pe-1"></i>
+                            {{ _('Export') }}
                         </button>
                         <ul class="dropdown-menu">
                             {% for exporter in player_exporters %}
@@ -116,7 +144,7 @@
                                     <form
                                         id="exporter-{{ exporter.id }}-form"
                                         action="{{ url_for(
-                                            'admin-download-event-players',
+                                            'event-export-players',
                                             event_uniq_id=admin_event.uniq_id,
                                             exporter_id=exporter.id
                                         ) }}"

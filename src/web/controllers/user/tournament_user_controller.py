@@ -122,13 +122,12 @@ class CheckInUserController(BaseInputUserController):
         self,
         request: HTMXRequest,
         channels: ChannelsPlugin,
-        event_uniq_id: str,
     ) -> Template:
         web_context = PlayerUserWebContext(request)
         tournament = web_context.tournament
         player = web_context.tournament_player
         tournament.check_in_player(player, not player.check_in)
-        PlayerAdminController.publish_new_checkin(channels, event_uniq_id, player)
+        PlayerAdminController.publish_new_checkin(channels, tournament)
         SessionLastCheckInUpdated(request).set(
             LastPlayerUpdated(
                 tournament_id=tournament.id,

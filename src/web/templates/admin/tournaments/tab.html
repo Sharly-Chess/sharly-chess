@@ -35,6 +35,23 @@
                 {{ _('Actions') }}
             </button>
             <ul class="dropdown-menu">
+                {% if client.can_manage_events %}
+                    <li>
+                        <button
+                            class="dropdown-item text-nowrap"
+                            hx-get="{{ url_for('event-export-modal', event_uniq_id=admin_event.uniq_id) }}"
+                            hx-push-url="false"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                            onclick="event.stopPropagation();"
+                        >
+                            <i class="bi-box-arrow-right pe-1"></i>
+                            {{ _('Export event in SCE format') }}
+                        </button>
+                    </li>
+                {% endif %}
                 {% for menu_items_template in plugin_tab_action_menu_items_templates %}
                     {% include menu_items_template %}
                 {% endfor %}
@@ -49,7 +66,30 @@
                             hx-indicator="#please-wait"
                         >
                             <i class="bi bi-dice-3-fill pe-1"></i>
-                            {{ _('Choose a player at random') }}
+                            {{ _('Choose a random player') }}
+                        </button>
+                    </span>
+                </li>
+                <li>
+                    <span
+                        {% if not client.can_distribute_players %}
+                            {{ macros.tooltip_attributes('warning', _('You are not allowed to distribute the players.'), 'right') }}
+                        {% elif admin_event.player_distribution_error_message %}
+                            {{ macros.tooltip_attributes('warning', admin_event.player_distribution_error_message, 'right') }}
+                        {% endif %}
+                    >
+                        <button
+                            class="dropdown-item text-nowrap"
+                            {% if not admin_event.player_distribution_error_message and client.can_distribute_players %}
+                                hx-get="{{ url_for('admin-distribute-players-modal', event_uniq_id=admin_event.uniq_id) }}"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
+                            {% else %}
+                                disabled
+                            {% endif %}
+                        >
+                            <i class="bi bi-sort-numeric-down-alt pe-1"></i>
+                            {{ _('Distribute the players among the tournaments') }}
                         </button>
                     </span>
                 </li>
@@ -69,7 +109,7 @@
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
             >
-                <i class="bi-download pe-1"></i>
+                <i class="bi-box-arrow-in-right pe-1"></i>
                 {{ _('Import a tournament') }}
             </button>
             <ul class="dropdown-menu">
@@ -121,7 +161,7 @@
         {% endif %}
     >
         <div class="row gy-2 gx-3 {% if sortable %}sortable{% endif %}">
-            {% if admin_event.tournaments_sorted_by_index %}
+            {% if admin_event.sorted_tournaments %}
                 {% for tournament in allowed_tournaments %}
                     {% include 'tournament_card.html' %}
                 {% endfor %}

@@ -4,11 +4,11 @@
 {% set licence = player.plugin_data.ffe.ffe_licence %}
 {% set licence_number = player.plugin_data.ffe.ffe_licence_number or '' %}
 <span
-    {% if not licence_number or licence == 0 %}
+    {% if not licence_number or licence == '' %}
         {{ macros.tooltip_attributes('', licence.name, 'right') }}
     {% else %}
         class="cursor-pointer"
-        {% if licence == 1 %}
+        {% if licence == 'N' %}
             {{ macros.click_to_copy_attributes(
                 _('%(licence_number)s (expired)', licence_number=licence_number),
                 'right',

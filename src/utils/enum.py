@@ -535,14 +535,10 @@ class TournamentRating(IntEnum):
         return self.name
 
 
-class PlayerGender(IntEnum):
-    NONE = 0
-    FEMALE = 1
-    MALE = 2
-
-    @classmethod
-    def values(cls) -> tuple[int, ...]:
-        return tuple(item.value for item in cls)
+class PlayerGender(StrEnum):
+    NONE = ''
+    FEMALE = 'F'
+    MALE = 'M'
 
     @classmethod
     def from_fide_value(cls, value: str) -> 'PlayerGender':
@@ -608,82 +604,54 @@ class PlayerRatingType(IntEnum):
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
+    @property
+    def key(self) -> str:
+        match self:
+            case PlayerRatingType.ESTIMATED:
+                return 'e'
+            case PlayerRatingType.NATIONAL:
+                return 'n'
+            case PlayerRatingType.FIDE:
+                return 'f'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
     def __str__(self) -> str:
         return self.short_name
 
 
-class PlayerTitle(IntEnum):
-    """The possible FIDE titles: GM, WGM, IM, WIM, FM, WFM, CM, WCM.
-    Also includes the "no title" case.
-    This is for Papi-compatibility reasons."""
+class PlayerTitle(StrEnum):
+    """The possible FIDE player titles: GM, WGM, IM, WIM, FM, WFM, CM, WCM.
+    Also includes the "no title" case."""
 
-    NONE = 0
-    WOMAN_CANDIDATE_MASTER = 1
-    CANDIDATE_MASTER = 2
-    WOMAN_FIDE_MASTER = 3
-    FIDE_MASTER = 4
-    WOMAN_INTERNATIONAL_MASTER = 5
-    INTERNATIONAL_MASTER = 6
-    WOMAN_GRANDMASTER = 7
-    GRANDMASTER = 8
+    NONE = ''
+    WOMAN_CANDIDATE_MASTER = 'WCM'
+    CANDIDATE_MASTER = 'CM'
+    WOMAN_FIDE_MASTER = 'WFM'
+    FIDE_MASTER = 'FM'
+    WOMAN_INTERNATIONAL_MASTER = 'WIM'
+    INTERNATIONAL_MASTER = 'IM'
+    WOMAN_GRANDMASTER = 'WGM'
+    GRANDMASTER = 'GM'
 
-    @classmethod
-    def values(cls) -> tuple[int, ...]:
-        return tuple(item.value for item in cls)
+    @property
+    def sort_index(self) -> int:
+        if self == self.NONE:
+            return 0
+        return list(PlayerTitle).index(self)
 
     @classmethod
     def from_fide_value(cls, value: str) -> 'PlayerTitle':
-        match value.strip():
-            case '':
-                return PlayerTitle.NONE
-            case 'WCM':
-                return PlayerTitle.WOMAN_CANDIDATE_MASTER
-            case 'CM':
-                return PlayerTitle.CANDIDATE_MASTER
-            case 'WFM':
-                return PlayerTitle.WOMAN_FIDE_MASTER
-            case 'FM':
-                return PlayerTitle.FIDE_MASTER
-            case 'WIM':
-                return PlayerTitle.WOMAN_INTERNATIONAL_MASTER
-            case 'IM':
-                return PlayerTitle.INTERNATIONAL_MASTER
-            case 'WGM':
-                return PlayerTitle.WOMAN_GRANDMASTER
-            case 'GM':
-                return PlayerTitle.GRANDMASTER
-            case _:
-                raise ValueError(f'Unknown title value: {value}')
-
-    @property
-    def to_fide_value(self) -> str:
-        match self:
-            case PlayerTitle.NONE:
-                return ''
-            case PlayerTitle.WOMAN_CANDIDATE_MASTER:
-                return 'WCM'
-            case PlayerTitle.CANDIDATE_MASTER:
-                return 'CM'
-            case PlayerTitle.WOMAN_FIDE_MASTER:
-                return 'WFM'
-            case PlayerTitle.FIDE_MASTER:
-                return 'FM'
-            case PlayerTitle.WOMAN_INTERNATIONAL_MASTER:
-                return 'WIM'
-            case PlayerTitle.INTERNATIONAL_MASTER:
-                return 'IM'
-            case PlayerTitle.WOMAN_GRANDMASTER:
-                return 'WGM'
-            case PlayerTitle.GRANDMASTER:
-                return 'GM'
-            case _:
-                raise ValueError(f'Unknown title: {self}')
+        try:
+            return cls(value)
+        except ValueError:
+            return cls.NONE
 
     @property
     def name(self) -> str:
         match self:
             case PlayerTitle.NONE:
-                return _('No title')
+                return '-'
             case PlayerTitle.WOMAN_CANDIDATE_MASTER:
                 return _('Woman Candidate Master')
             case PlayerTitle.CANDIDATE_MASTER:
@@ -729,6 +697,66 @@ class PlayerTitle(IntEnum):
 
     def __str__(self) -> str:
         return self.short_name
+
+
+class FideArbiterTitle(StrEnum):
+    """The possible FIDE arbiter titles: IA, FA, NA.
+    Also includes the "no title" case."""
+
+    NONE = ''
+    NATIONAL = 'NA'
+    FIDE = 'FA'
+    INTERNATIONAL = 'IA'
+
+    @property
+    def sort_index(self) -> int:
+        if self == self.NONE:
+            return 0
+        return list(FideArbiterTitle).index(self)
+
+    @classmethod
+    def from_fide_value(cls, value: str) -> 'FideArbiterTitle':
+        for string in value.split(','):
+            match string:
+                case 'NA':
+                    return FideArbiterTitle.NATIONAL
+                case 'FA':
+                    return FideArbiterTitle.FIDE
+                case 'IA':
+                    return FideArbiterTitle.INTERNATIONAL
+        return FideArbiterTitle.NONE
+
+    @property
+    def name(self) -> str:
+        match self:
+            case FideArbiterTitle.NONE:
+                return '-'
+            case FideArbiterTitle.NATIONAL:
+                return _('National Arbiter')
+            case FideArbiterTitle.FIDE:
+                return _('FIDE Arbiter')
+            case FideArbiterTitle.INTERNATIONAL:
+                return _('International Arbiter')
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    @property
+    def short_name(self) -> str:
+        match self:
+            case FideArbiterTitle.NONE:
+                return ''
+            case FideArbiterTitle.NATIONAL:
+                return _('NA *** SHORT NAME FOR National Arbiter')
+            case FideArbiterTitle.FIDE:
+                return _('FA *** SHORT NAME FOR FIDE Arbiter')
+            case FideArbiterTitle.INTERNATIONAL:
+                return _('IA *** SHORT NAME FOR International Arbiter')
+            case _:
+                raise ValueError(f'Unknown title: {self}')
+
+    @property
+    def fide_acronym(self) -> str:
+        return self.value
 
 
 class RoleType(StrEnum):
@@ -1225,25 +1253,3 @@ class CheckInStatus(IntEnum):
     NEXT_ROUND_BYE = 1
     NOT_CHECKED_IN = 2
     CHECKED_IN = 3
-
-
-class FIDEArbiterTitle(StrEnum):
-    IA = 'IA'
-    FA = 'FA'
-    NA = 'NA'
-
-    @property
-    def name(self) -> str:
-        match self:
-            case self.IA:
-                return _('International Arbiter')
-            case self.FA:
-                return _('FIDE Arbiter')
-            case self.NA:
-                return _('National Arbiter')
-            case _:
-                raise ValueError(f'Unknown value: {self}')
-
-    @property
-    def acronym(self) -> str:
-        return self.value

@@ -17,6 +17,7 @@ from common import (
     EVENTS_DIR,
 )
 from common.exception import SharlyChessException
+from common.i18n.utils import normalized_key
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 from data.event import Event
@@ -77,6 +78,23 @@ class EventLoader:
                     f'Event [{event_uniq_id}] - Unknown plugin [{plugin_id}]'
                 )
 
+    def import_event(self, file_path: Path) -> str:
+        """Import an event. Raise a SharlyChessException if it fails,
+        the event's uniq_id otherwise."""
+        uniq_id = self.get_unused_event_uniq_id(self.format_uniq_id(file_path.stem))
+        new_path = EventDatabase.event_database_path(uniq_id)
+        shutil.move(file_path, new_path)
+        try:
+            EventLoader.check_event_database(uniq_id)
+            return uniq_id
+        except SharlyChessException as exception:
+            new_path.unlink()
+            raise exception
+
+    @staticmethod
+    def event_file_path(uniq_id: str) -> Path:
+        return EventDatabase.event_database_path(uniq_id)
+
     @classmethod
     def _clean_not_existing_event_database_files(cls, event_uniq_ids: set[str]):
         to_remove = [
@@ -93,33 +111,25 @@ class EventLoader:
         return list(self._valid_event_ids)
 
     @classmethod
+    def format_uniq_id(cls, uniq_id: str) -> str:
+        return re.sub(r'[^a-zA-Z0-9_\-]', '_', uniq_id)
+
+    @classmethod
     def all_event_ids(cls) -> list[str]:
         ids: list[str] = []
         for file in EVENTS_DIR.glob(f'*.{SharlyChessConfig.event_database_ext}'):
-            if SharlyChessConfig.uniq_id_regex.match(file.stem):
-                ids.append(file.stem)
-            else:
-                new_id: str = re.sub(r'[^a-zA-Z0-9_\-]', '_', file.stem)
+            uniq_id = cls.format_uniq_id(file.stem)
+            if uniq_id != file.stem:
                 index: int = 1
-                new_file: Path = (
-                    file.parent / f'{new_id}.{SharlyChessConfig.event_database_ext}'
-                )
+                new_file = cls.event_file_path(uniq_id)
                 while new_file.exists():
                     index += 1
-                    new_file = (
-                        file.parent
-                        / f'{new_id}-{index}.{SharlyChessConfig.event_database_ext}'
-                    )
+                    new_file = cls.event_file_path(f'{uniq_id}-{index}')
                 shutil.move(file, new_file)
-                for old_file in [
-                    file.with_suffix(f'.{SharlyChessConfig.event_database_ext}-shm'),
-                    file.with_suffix(f'.{SharlyChessConfig.event_database_ext}-wal'),
-                ]:
-                    old_file.unlink(missing_ok=True)
                 logger.warning(
                     'File [%s] has been renamed [%s]', file.name, new_file.name
                 )
-                ids.append(new_file.stem)
+            ids.append(file.stem)
         return ids
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
@@ -168,7 +178,7 @@ class EventLoader:
             key=lambda event: (
                 get_date_timestamp(event.stop_date) * sort_order,
                 get_date_timestamp(event.start_date) * sort_order,
-                event.name,
+                normalized_key(event.name),
             ),
         )
 

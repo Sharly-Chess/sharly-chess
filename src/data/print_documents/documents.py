@@ -41,6 +41,7 @@ from data.print_documents.options import (
     PlaceCardCropMarksPrintOption,
     PlaceCardBoardNumbersPrintOption,
     OptionalPlayersPrintOption,
+    PlayerHistoryOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
@@ -231,7 +232,7 @@ class PlayerListPrintDocument(PlayerPrintDocument):
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
             player.single_tournament_player
-            for player in self.get_event().players_sorted_by_name
+            for player in self.get_event().sorted_players
             if player.single_tournament.id in tournament_ids
         ]
 
@@ -258,7 +259,7 @@ class PlayerCheckinListPrintDocument(PlayerPrintDocument):
         tournament_ids = [tournament.id for tournament in self.tournaments]
         return [
             player.single_tournament_player
-            for player in self.get_event().players_sorted_by_name
+            for player in self.get_event().sorted_players
             if player.single_tournament.id in tournament_ids
         ]
 
@@ -352,10 +353,27 @@ class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
         return _('Crosstable after round #{round}').format(round=self.ranking_round)
 
     @property
+    def include_player_history(self) -> bool:
+        return self._get_option(PlayerHistoryOption).value
+
+    @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
         return self.column_handler.get_player_crosstable_columns(
             self.tournament, self.ranking_round
         )
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return AbstractPlayerRankingPrintDocument.available_options() + [
+            PlayerHistoryOption
+        ]
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return super().template_context | {
+            'include_player_history': self.include_player_history,
+            'max_round': self.ranking_round,
+        }
 
 
 class PlayerRoundPerformanceIndicatorPrintDocument(PrintDocument):
@@ -585,7 +603,7 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
     @property
     def ordered_tournament_players(self) -> list[TournamentPlayer]:
         self.tournament.set_for_round(self.at_round)
-        return self.tournament.tournament_players_by_name_with_unpaired
+        return self.tournament.sorted_tournament_players
 
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
@@ -893,9 +911,9 @@ class StatisticsPrintDocument(PrintDocument):
         title: str,
         *,
         sort_key: Callable[[tuple[Any, int]], Any] | None = None,
-        label_getter: Callable[[Any], Any] = lambda x: x.name
-        if hasattr(x, 'name')
-        else x,
+        label_getter: Callable[[Any], Any] = lambda x: (
+            x.name if hasattr(x, 'name') else x
+        ),
         min_count: int | None = None,
         filter_func: Callable[[Any], bool] | None = None,
         subtitle_fn: Callable[[int], str] | None = None,
@@ -998,7 +1016,7 @@ class StatisticsPrintDocument(PrintDocument):
             (
                 'tournament',
                 _('Tournaments'),
-                lambda item: item[0].name,
+                lambda item: item[0].index,
                 None,
                 lambda x: x is not None,
                 None,
@@ -1006,7 +1024,7 @@ class StatisticsPrintDocument(PrintDocument):
             (
                 'title',
                 _('Titled players'),
-                lambda item: -item[0].value,
+                lambda item: -item[0].sort_index,
                 None,
                 lambda x: x != PlayerTitle.NONE,
                 None,

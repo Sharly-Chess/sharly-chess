@@ -1,19 +1,20 @@
 import fnmatch
-import time
 import weakref
-from collections.abc import Iterator
+from collections.abc import Iterator, Collection
+from datetime import datetime, timedelta
 from functools import cached_property
 from typing import TYPE_CHECKING, Optional
 from _weakref import ReferenceType
 
 from common.background import inline_image_url
 from common.i18n import _
+from common.i18n.utils import normalized_key
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.screen_set import ScreenSet
 from data.timer import Timer
-from utils.date_time import format_timestamp_date_time
+
 from utils.enum import (
     ScreenType,
     PlayersScreenPlayerFormat,
@@ -94,6 +95,10 @@ class Screen:
                 raise ValueError(f'type=[{self.type}]')
 
     @property
+    def screen_sets(self) -> Collection[ScreenSet]:
+        return self.screen_sets_by_id.values()
+
+    @property
     def id(self) -> int:
         return (
             self.stored_screen.id
@@ -136,11 +141,11 @@ class Screen:
                 return self.stored_screen.name
         match self.type:
             case ScreenType.BOARDS | ScreenType.INPUT:
-                return self.screen_sets_sorted_by_order[0].name_for_boards
+                return self.sorted_screen_sets[0].name_for_boards
             case ScreenType.PLAYERS:
-                return self.screen_sets_sorted_by_order[0].name_for_players
+                return self.sorted_screen_sets[0].name_for_players
             case ScreenType.RANKING:
-                return self.screen_sets_sorted_by_order[0].name_for_ranking
+                return self.sorted_screen_sets[0].name_for_ranking
             case ScreenType.RESULTS:
                 return _('Last results')
             case ScreenType.IMAGE:
@@ -252,7 +257,7 @@ class Screen:
                 | ScreenType.RANKING
             ):
                 single_tournament = len(self.event.tournaments_by_id) == 1
-                screen_set: ScreenSet = self.screen_sets_sorted_by_order[0]
+                screen_set: ScreenSet = self.sorted_screen_sets[0]
                 first_last = (
                     bool(screen_set.first or screen_set.last)
                     and screen_set.first_item is not None
@@ -368,51 +373,41 @@ class Screen:
                 match menu_part:
                     case '@boards':
                         menu_screens += (
-                            self.event.screens_by_screen_type_sorted_by_uniq_id[
-                                ScreenType.BOARDS
-                            ]
+                            self.event.sorted_screens_by_screen_type[ScreenType.BOARDS]
                             if admin
-                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                            else self.event.sorted_public_screens_by_screen_type[
                                 ScreenType.BOARDS
                             ]
                         )
                     case '@input':
                         menu_screens += (
-                            self.event.screens_by_screen_type_sorted_by_uniq_id[
-                                ScreenType.INPUT
-                            ]
+                            self.event.sorted_screens_by_screen_type[ScreenType.INPUT]
                             if admin
-                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                            else self.event.sorted_public_screens_by_screen_type[
                                 ScreenType.INPUT
                             ]
                         )
                     case '@players':
                         menu_screens += (
-                            self.event.screens_by_screen_type_sorted_by_uniq_id[
-                                ScreenType.PLAYERS
-                            ]
+                            self.event.sorted_screens_by_screen_type[ScreenType.PLAYERS]
                             if admin
-                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                            else self.event.sorted_public_screens_by_screen_type[
                                 ScreenType.PLAYERS
                             ]
                         )
                     case '@results':
                         menu_screens += (
-                            self.event.screens_by_screen_type_sorted_by_uniq_id[
-                                ScreenType.RESULTS
-                            ]
+                            self.event.sorted_screens_by_screen_type[ScreenType.RESULTS]
                             if admin
-                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                            else self.event.sorted_public_screens_by_screen_type[
                                 ScreenType.RESULTS
                             ]
                         )
                     case '@ranking':
                         menu_screens += (
-                            self.event.screens_by_screen_type_sorted_by_uniq_id[
-                                ScreenType.RANKING
-                            ]
+                            self.event.sorted_screens_by_screen_type[ScreenType.RANKING]
                             if admin
-                            else self.event.public_screens_by_screen_type_sorted_by_uniq_id[
+                            else self.event.sorted_public_screens_by_screen_type[
                                 ScreenType.RANKING
                             ]
                         )
@@ -471,15 +466,12 @@ class Screen:
 
     @cached_property
     def screen_sets_by_uniq_id(self) -> dict[str, ScreenSet]:
-        return {
-            screen_set.uniq_id: screen_set
-            for screen_set in self.screen_sets_by_id.values()
-        }
+        return {screen_set.uniq_id: screen_set for screen_set in self.screen_sets}
 
     @cached_property
-    def screen_sets_sorted_by_order(self) -> list[ScreenSet]:
+    def sorted_screen_sets(self) -> list[ScreenSet]:
         return sorted(
-            self.screen_sets_by_id.values(),
+            self.screen_sets,
             key=lambda screen_set: screen_set.order or 0,
         )
 
@@ -629,17 +621,18 @@ class Screen:
     def results_tournament_names(self) -> str:
         return ', '.join(
             sorted(
-                [
-                    self.event.tournaments_by_id[results_tournament_id].name
-                    for results_tournament_id in self.results_tournament_ids
-                ]
+                (
+                    self.event.tournaments_by_id[tournament_id].name
+                    for tournament_id in self.results_tournament_ids
+                ),
+                key=normalized_key,
             )
         )
 
     @cached_property
     def _results(self) -> list[Board]:
         boards: list[Board] = []
-        oldest = time.time() - self.results_max_age * 60
+        oldest = datetime.now() - timedelta(minutes=self.results_max_age)
         for tournament in self.event.tournaments:
             if (
                 self.results_tournament_ids
@@ -649,7 +642,7 @@ class Screen:
             for board in tournament.get_round_boards(tournament.current_round):
                 if board.last_result_update and board.last_result_update >= oldest:
                     boards.append(board)
-        boards.sort(key=lambda b: b.last_result_update or float('-inf'), reverse=True)
+        boards.sort(key=lambda b: b.last_result_update or datetime.min, reverse=True)
         return boards
 
     def _clear_results_cache(self):
@@ -716,12 +709,12 @@ class Screen:
                 raise ValueError(f'type=[{self.type}]')
 
     @property
-    def last_update(self) -> float:
+    def last_update(self) -> datetime | None:
         if self.stored_screen:
-            return self.stored_screen.last_update or 0.0
+            return self.stored_screen.last_update
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
-        return self.family.last_update or 0.0
+        return self.family.last_update
 
     @property
     def background_image(self) -> str:
@@ -757,7 +750,3 @@ class Screen:
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
         return self.family.message_text
-
-    @property
-    def last_update_str(self) -> str | None:
-        return format_timestamp_date_time(self.last_update)
