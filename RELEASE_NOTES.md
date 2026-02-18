@@ -22,6 +22,7 @@
 ## Prizes
 
 - Added criteria type _Comment_ (3.6.0b1)
+- Improved the prizes documents (3.6.0b2)
 
 ## Screens
 

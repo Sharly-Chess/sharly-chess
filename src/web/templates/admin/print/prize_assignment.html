@@ -25,6 +25,9 @@
                         {% for prize_category in prize_group.sorted_categories %}
                             <div class="section-title">
                                 {{ prize_category.name }}
+                                {% if prize_category.total_prize_value %}
+                                    ({{ _('total: %(total)s', total=prize_category.format_total_prize_value(prize_currency)) }})
+                                {% endif %}
                             </div>
                             <div class="subheading">
                                 {{ prize_category.format_shared_prizes(prize_currency) }}
