@@ -73,10 +73,11 @@ jobs:
           if [[ -n "${{ inputs.version_tag }}" ]]; then
             VERSION="${{ inputs.version_tag }}"
             VERSION="${VERSION#v}"
-          elif [[ "${GITHUB_REF_TYPE}" == "tag" && "${GITHUB_REF_NAME}" =~ ^v[0-9] ]]; then
+          elif [[ "${GITHUB_REF_TYPE}" == "tag" && "${GITHUB_REF_NAME}" =~ ^v?[0-9] ]]; then
             VERSION="${GITHUB_REF_NAME#v}"
           else
-            VERSION="${GITHUB_REF_NAME}"
+            # Push on branch: extract version from pyproject.toml
+            VERSION=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
           fi
           echo "DESKTOP_VERSION=${VERSION}" >> "$GITHUB_ENV"
           echo "BUILD_VERSION=${VERSION}" >> "$GITHUB_ENV"
@@ -197,10 +198,11 @@ jobs:
           if [[ -n "${{ inputs.version_tag }}" ]]; then
             VERSION="${{ inputs.version_tag }}"
             VERSION="${VERSION#v}"
-          elif [[ "${GITHUB_REF_TYPE}" == "tag" && "${GITHUB_REF_NAME}" =~ ^v[0-9] ]]; then
+          elif [[ "${GITHUB_REF_TYPE}" == "tag" && "${GITHUB_REF_NAME}" =~ ^v?[0-9] ]]; then
             VERSION="${GITHUB_REF_NAME#v}"
           else
-            VERSION="${GITHUB_REF_NAME}"
+            # Push on branch: extract version from pyproject.toml
+            VERSION=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
           fi
           echo "DESKTOP_VERSION=${VERSION}" >> "$GITHUB_ENV"
           echo "BUILD_VERSION=${VERSION}" >> "$GITHUB_ENV"
