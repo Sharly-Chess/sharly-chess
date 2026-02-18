@@ -699,15 +699,16 @@ class TournamentPlayer(Player):
 
                 # 1.4.2b (Ignore games against unrated players who score zero against rated opponents in round robin tournaments.)
                 if is_round_robin and opponent.rating_type != PlayerRatingType.FIDE:
-                    scored_zero_against_rated = False
+                    scored_zero_against_rated = True
                     for opponent_pairing in opponent.pairings_by_round.values():
                         if (
                             opponent_pairing.opponent
-                            and opponent_pairing.result.is_loss
+                            and not opponent_pairing.result.is_loss
+                            and not opponent_pairing.result.is_unplayed
                             and opponent_pairing.opponent.rating_type
                             == PlayerRatingType.FIDE
                         ):
-                            scored_zero_against_rated = True
+                            scored_zero_against_rated = False
                             break
                     if scored_zero_against_rated:
                         ignored_opponents_ids.add(opponent.id)
