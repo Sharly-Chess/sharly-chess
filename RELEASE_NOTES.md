@@ -37,4 +37,4 @@
 
 ## _FRA Schools_
 
-- Only take into account the players with real pairings for the ranking by school (3.6.1)
+- Only take into account the players with games played for the ranking by school (3.6.1)
