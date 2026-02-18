@@ -172,9 +172,9 @@ class StoredTournament:
     rounds: int = 1
     rating: int = 1
     player_rating_type: int | None = None
-    last_update: float = 0.0
-    last_player_update: float = 0.0
-    last_pairing_update: float = 0.0
+    last_update: datetime | None = None
+    last_player_update: datetime | None = None
+    last_pairing_update: datetime | None = None
     three_points_for_a_win: bool = False
     override_unrated_rapid_blitz: bool = True
     pab_value: int = Result.WIN.value
@@ -212,7 +212,7 @@ class StoredScreenSet:
     fixed_boards_str: str | None
     first: int | None
     last: int | None
-    last_update: float = 0.0
+    last_update: datetime | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
@@ -245,7 +245,7 @@ class StoredScreen:
     stored_screen_sets: list[StoredScreenSet] = field(
         default_factory=list[StoredScreenSet]
     )
-    last_update: float = 0.0
+    last_update: datetime | None = None
     public: bool = True
     message_default: bool = True
     message_text: str | None = None
@@ -282,7 +282,7 @@ class StoredFamily:
     public: bool = True
     message_default: bool = True
     message_text: str | None = None
-    last_update: float = 0.0
+    last_update: datetime | None = None
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 

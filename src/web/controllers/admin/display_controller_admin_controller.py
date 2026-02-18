@@ -131,22 +131,22 @@ class DisplayControllerAdminController(BaseEventAdminController):
             ),
         )
 
-        admin_display_controllers_sorted_by_name: list[DisplayController]
+        admin_sorted_display_controllers: list[DisplayController]
         if web_context.client.can_view_private_screens:
-            admin_display_controllers_sorted_by_name = (
-                web_context.get_admin_event().display_controllers_sorted_by_name
+            admin_sorted_display_controllers = (
+                web_context.get_admin_event().sorted_display_controllers
             )
         elif web_context.client.can_view_public_screens:
-            admin_display_controllers_sorted_by_name = (
-                web_context.get_admin_event().public_display_controllers_sorted_by_name
+            admin_sorted_display_controllers = (
+                web_context.get_admin_event().sorted_public_display_controllers
             )
         else:
-            admin_display_controllers_sorted_by_name = []
+            admin_sorted_display_controllers = []
 
         template_context: dict[str, Any] = web_context.template_context | {
             'admin_event_tab': 'admin-event-display-controllers-tab',
             'sorted_screens': sorted_screens,
-            'admin_display_controllers': admin_display_controllers_sorted_by_name,
+            'admin_display_controllers': admin_sorted_display_controllers,
         }
 
         match modal:

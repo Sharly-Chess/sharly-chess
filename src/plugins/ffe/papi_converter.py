@@ -537,8 +537,8 @@ class PapiConverter:
                 raise_unknown_value('licenceType', papi_player.licenceType)
         return StoredPlayer(
             id=None,
-            last_name=papi_player.lastName,
-            first_name=papi_player.firstName,
+            last_name=papi_player.lastName.upper(),
+            first_name=papi_player.firstName.title() if papi_player.firstName else None,
             date_of_birth=date_of_birth,
             year_of_birth=year_of_birth,
             gender=gender.value,

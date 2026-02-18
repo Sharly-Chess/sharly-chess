@@ -11,24 +11,24 @@
         <section>
             <div class="grid" style="grid-template-columns: 2fr 1fr;">
                 <div class="item">
-                    <label for="writer">Nom et prénom :</label>
-                    <input required id="writer" value="{% if writer %}{{ writer.last_name }} {{ writer.first_name }}{% endif %}" />
+                    <label for="arbiter">Nom et prénom :</label>
+                    <input required id="arbiter" value="{% if arbiter %}{{ arbiter.last_name }} {{ arbiter.first_name }}{% endif %}" />
                 </div>
                 <div class="item">
-                    <label for="writer-ffe-licence-number">Numéro de licence :</label>
-                    <input required id="writer-ffe-licence-number" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
+                    <label for="arbiter-ffe-licence-number">Numéro de licence :</label>
+                    <input required id="arbiter-ffe-licence-number" value="{% if arbiter %}{{ arbiter.plugin_data.ffe.ffe_licence_number or '' }}{% endif %}"/>
                 </div>
                 <div class="item">
-                    <label for="writer-mail">Mél :</label>
-                    <input required id="writer-mail" value="{% if writer %}{{ writer.mail or '' }}{% endif %}" />
+                    <label for="arbiter-mail">Mél :</label>
+                    <input required id="arbiter-mail" value="{% if arbiter %}{{ arbiter.mail or '' }}{% endif %}" />
                 </div>
                 <div class="item">
-                    <label for="writer-ffe-arbiter-title">Niveau :</label>
-                    <input required id="writer-ffe-arbiter-title" value="{% if writer %}{{ writer.plugin_data.ffe.ffe_arbiter_title.short_name }}{% endif %}"/>
+                    <label for="arbiter-ffe-arbiter-title">Niveau :</label>
+                    <input required id="arbiter-ffe-arbiter-title" value="{% if arbiter %}{{ arbiter.plugin_data.ffe.ffe_arbiter_title.short_name }}{% endif %}"/>
                 </div>
                 <div class="item">
-                    <label for="writer-phone">Tél :</label>
-                    <input required id="writer-phone" value="{% if writer %}{{ writer.phone or '' }}{% endif %}" />
+                    <label for="arbiter-phone">Tél :</label>
+                    <input required id="arbiter-phone" value="{% if arbiter %}{{ arbiter.phone or '' }}{% endif %}" />
                 </div>
             </div>
             <div class="grid" style="grid-template-columns: 1fr;">

@@ -108,19 +108,19 @@
     >
         {% if screen.type == 'boards' %}
             <div class="screen boards-screen">
-                {% for screen_set in screen.screen_sets_sorted_by_order %}
+                {% for screen_set in screen.sorted_screen_sets %}
                     {% include 'screen/boards/set.html' %}
                 {% endfor %}
             </div>
         {% elif screen.type == 'input' %}
             <div class="screen input-screen">
-                {% for screen_set in screen.screen_sets_sorted_by_order %}
+                {% for screen_set in screen.sorted_screen_sets %}
                     {% include 'screen/boards/set.html' %}
                 {% endfor %}
             </div>
         {% elif screen.type == 'players' %}
             <div class="screen players-screen">
-                {% for screen_set in screen.screen_sets_sorted_by_order %}
+                {% for screen_set in screen.sorted_screen_sets %}
                     {% include 'screen/players/set.html' %}
                 {% endfor %}
             </div>
@@ -130,7 +130,7 @@
             </div>
         {% elif screen.type == 'ranking' %}
             <div class="screen ranking-screen">
-                {% for screen_set in screen.screen_sets_sorted_by_order %}
+                {% for screen_set in screen.sorted_screen_sets %}
                     {% include 'screen/ranking/set.html' %}
                 {% endfor %}
             </div>

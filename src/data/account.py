@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from common.i18n import _
+from common.i18n.utils import normalized_key
 from data.access_levels.access_levels import (
     AccessLevel,
     AdministrationAccessLevel,
@@ -47,8 +48,11 @@ class Role:
         if not self.tournament_ids:
             return []
         return sorted(
-            event.tournaments_by_id[tournament_id].name
-            for tournament_id in self.tournament_ids
+            (
+                event.tournaments_by_id[tournament_id].name
+                for tournament_id in self.tournament_ids
+            ),
+            key=normalized_key,
         )
 
 
@@ -80,8 +84,11 @@ class Permission:
         if not self.tournament_ids:
             return []
         return sorted(
-            event.tournaments_by_id[tournament_id].name
-            for tournament_id in self.tournament_ids
+            (
+                event.tournaments_by_id[tournament_id].name
+                for tournament_id in self.tournament_ids
+            ),
+            key=normalized_key,
         )
 
 

@@ -99,7 +99,7 @@
 
 {% block cards_container_cards %}
     {% if client.can_manage_screens %}
-        {% with screens=admin_event.screens_sorted_by_uniq_id if show_family_screens else admin_event.basic_screens_sorted_by_name %}
+        {% with screens=admin_event.sorted_screens if show_family_screens else admin_event.sorted_basic_screens %}
             {% if not screens %}
                 <div class="mx-auto" style="max-width: 500px;">
                     <h5 class="mt-2 my-5 text-center">

@@ -79,15 +79,17 @@ class EventAdminController(BaseEventAdminController):
 
         # Search for screens
         if web_context.client.can_view_public_screens:
-            screens_by_screen_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
+            sorted_screens_by_screen_type: dict[ScreenType, list[Screen]]
             if web_context.client.can_view_private_screens:
-                screens_by_screen_type_sorted_by_uniq_id = (
-                    web_context.admin_event.screens_by_screen_type_sorted_by_uniq_id
+                sorted_screens_by_screen_type = (
+                    web_context.admin_event.sorted_screens_by_screen_type
                 )
             else:
-                screens_by_screen_type_sorted_by_uniq_id = web_context.admin_event.public_screens_by_screen_type_sorted_by_uniq_id
+                sorted_screens_by_screen_type = (
+                    web_context.admin_event.sorted_public_screens_by_screen_type
+                )
             for screen_type in ScreenType.screen_types():
-                if screens_by_screen_type_sorted_by_uniq_id[screen_type]:
+                if sorted_screens_by_screen_type[screen_type]:
                     return Redirect(
                         path=request.app.route_reverse(
                             f'admin-event-{screen_type.value}-screens-tab',
@@ -98,9 +100,9 @@ class EventAdminController(BaseEventAdminController):
         if web_context.client.can_view_public_screens:
             rotators: list[Rotator]
             if web_context.client.can_view_private_screens:
-                rotators = web_context.admin_event.rotators_sorted_by_name
+                rotators = web_context.admin_event.sorted_rotators
             else:
-                rotators = web_context.admin_event.public_rotators_sorted_by_name
+                rotators = web_context.admin_event.public_sorted_rotators
             if rotators:
                 return Redirect(
                     path=request.app.route_reverse(
@@ -111,12 +113,10 @@ class EventAdminController(BaseEventAdminController):
         if web_context.client.can_view_public_screens:
             display_controllers: list[DisplayController]
             if web_context.client.can_view_private_screens:
-                display_controllers = (
-                    web_context.admin_event.display_controllers_sorted_by_name
-                )
+                display_controllers = web_context.admin_event.sorted_display_controllers
             else:
                 display_controllers = (
-                    web_context.admin_event.public_display_controllers_sorted_by_name
+                    web_context.admin_event.sorted_public_display_controllers
                 )
             if display_controllers:
                 return Redirect(

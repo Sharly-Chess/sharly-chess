@@ -57,7 +57,7 @@
                     {{ _('Select the tournaments to add players to.') }}
                 </span>
                 <div id="selectable-items" class="d-flex flex-column gap-2 mt-2">
-                    {% for tournament in admin_event.tournaments_sorted_by_index %}
+                    {% for tournament in admin_event.sorted_tournaments %}
                         <div
                             class="selectable-item border border-secondary bg-body-tertiary"
                             data-tournament-id="{{ tournament.id }}"
