@@ -350,6 +350,8 @@ class OnlineDataSource(DataSource, ABC):
 
     @property
     def connection_last_checked_at_str(self) -> str:
+        if not self._connection_last_checked_at:
+            return ''
         return format_datetime(self._connection_last_checked_at)
 
     @property
