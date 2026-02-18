@@ -248,7 +248,14 @@ jobs:
         if: steps.merge.outputs.success == 'true'
         run: |
           git push origin linux-flatpak
-          echo "Pushed merged linux-flatpak — dev build will trigger automatically"
+          echo "Pushed merged linux-flatpak"
+
+      - name: Sync dev branch
+        if: steps.merge.outputs.success == 'true'
+        run: |
+          git checkout -B dev linux-flatpak
+          git push origin dev --force
+          echo "Synced dev branch to linux-flatpak"
 
       - name: Trigger production build
         if: steps.merge.outputs.success == 'true' && steps.detect.outputs.is_prerelease != 'true' && inputs.skip_production != true
