@@ -3,6 +3,7 @@ from dataclasses import dataclass, asdict
 from functools import partial, cached_property
 from typing import Self, Any, Counter, Collection
 
+from common.i18n.utils import normalized_key
 from data.event import Player, Event
 from database.sqlite.event.event_database import EventDatabase
 from plugins.fra_schools import PLUGIN_NAME
@@ -112,8 +113,8 @@ class FRASchool(PluginData):
     def sort_key(self) -> tuple:
         return (
             self.postal_code or '',
-            self.city or '',
-            self.name,
+            normalized_key(self.city),
+            normalized_key(self.name),
             self.code or '',
         )
 

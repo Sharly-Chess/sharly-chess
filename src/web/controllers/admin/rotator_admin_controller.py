@@ -43,9 +43,9 @@ class RotatorAdminWebContext(BaseEventAdminWebContext):
         event = self.get_admin_event()
         admin_rotators: list[Rotator] = []
         if self.client.can_view_private_screens:
-            admin_rotators = event.rotators_sorted_by_name
+            admin_rotators = event.sorted_rotators
         elif self.client.can_view_public_screens:
-            admin_rotators = event.public_rotators_sorted_by_name
+            admin_rotators = event.public_sorted_rotators
         return super().template_context | {
             'admin_event_tab': 'admin-event-rotators-tab',
             'show_details': SessionRotatorsShowDetails(self.request).get(),
@@ -145,7 +145,7 @@ class RotatorAdminController(BaseEventAdminController):
         return {
             'modal': 'rotator_screens',
             'screen_options': cls._screen_or_family_options(
-                event.basic_screens_by_screen_type_sorted_by_uniq_id,
+                event.sorted_basic_screens_by_screen_type,
                 rotator.screens,
             ),
             'family_options': cls._screen_or_family_options(

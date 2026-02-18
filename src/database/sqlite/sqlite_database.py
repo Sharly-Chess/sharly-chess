@@ -170,6 +170,12 @@ class SQLiteDatabase:
         return datetime.fromtimestamp(ts) if ts else None
 
     @staticmethod
+    def dump_optional_datetime_to_timestamp_field(
+        datetime_: datetime | None,
+    ) -> float | None:
+        return datetime_.timestamp() if datetime_ else None
+
+    @staticmethod
     def dump_datetime_to_database_field(datetime_: datetime) -> str:
         return datetime_.strftime('%Y-%m-%dT%H:%M')
 

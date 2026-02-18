@@ -106,7 +106,7 @@
 
         {% if family.screens_by_uniq_id|length > 0 %}
             {% for screen in family.screens_by_uniq_id.values() %}
-                {% set screen_set=screen.screen_sets_sorted_by_order[0] %}
+                {% set screen_set=screen.sorted_screen_sets[0] %}
                 {% set tournament=family.tournament %}
                 <div>
                     {{ loop.index }}.

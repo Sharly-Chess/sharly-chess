@@ -156,8 +156,7 @@ class BaseScreenUserController(BaseUserController):
         if web_context.screen:
             screen = web_context.screen
             for tournament in {
-                screen_set.tournament
-                for screen_set in screen.screen_sets_sorted_by_order
+                screen_set.tournament for screen_set in screen.sorted_screen_sets
             }:
                 if screen.type != ScreenType.RANKING:
                     tournament.set_for_round()

@@ -10,6 +10,7 @@ from data.account import Account
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
+from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.utils import PluginUtils, PluginData
 from utils.enum import FormAction
@@ -247,8 +248,8 @@ class FfeTournamentPluginData(PluginData):
     ffe_id: int | None = None
     password: str | None = None
     auto_upload: bool | None = False
-    last_upload: float | None = None
-    last_rules_upload: float | None = None
+    last_upload: datetime | None = None
+    last_rules_upload: datetime | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -256,8 +257,12 @@ class FfeTournamentPluginData(PluginData):
             ffe_id=stored_value.get('ffe_id', None),
             password=stored_value.get('password', None),
             auto_upload=stored_value.get('auto_upload', None),
-            last_upload=stored_value.get('last_upload', 0.0),
-            last_rules_upload=stored_value.get('last_rules_upload', 0.0),
+            last_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_upload')
+            ),
+            last_rules_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_rules_upload')
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -265,8 +270,12 @@ class FfeTournamentPluginData(PluginData):
             'ffe_id': self.ffe_id,
             'password': self.password,
             'auto_upload': self.auto_upload,
-            'last_upload': self.last_upload,
-            'last_rules_upload': self.last_rules_upload,
+            'last_upload': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_upload
+            ),
+            'last_rules_upload': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_rules_upload
+            ),
         }
 
     @classmethod
@@ -276,8 +285,8 @@ class FfeTournamentPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        last_upload: float | None = None
-        last_rules_upload: float | None = None
+        last_upload: datetime | None = None
+        last_rules_upload: datetime | None = None
         if previous_object and action != 'clone':
             last_upload = previous_object.last_upload
             last_rules_upload = previous_object.last_rules_upload

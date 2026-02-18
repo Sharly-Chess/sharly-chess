@@ -8,6 +8,7 @@ from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
 from common.i18n import _
+from common.i18n.utils import normalized_key
 from data.pairing import Pairing
 from data.player_categories import PlayerCategory
 from database.sqlite.event.event_database import EventDatabase
@@ -97,6 +98,10 @@ class Player:
     @cached_property
     def full_name(self) -> str:
         return self.player_full_name(self.first_name, self.last_name)
+
+    @cached_property
+    def name_sort_key(self) -> tuple[str, str]:
+        return normalized_key(self.last_name), normalized_key(self.first_name)
 
     @property
     def date_of_birth(self) -> date | None:
@@ -1166,12 +1171,7 @@ class TournamentPlayer(Player):
 
     @property
     def starting_rank_sort_key(self) -> tuple:
-        return (
-            -self.rating,
-            -self.title.sort_index,
-            self.last_name,
-            self.first_name or '',
-        )
+        return (-self.rating, -self.title.sort_index) + self.name_sort_key
 
     @property
     def board_number_sort_key(self) -> tuple:

@@ -17,6 +17,7 @@ from common import (
     EVENTS_DIR,
 )
 from common.exception import SharlyChessException
+from common.i18n.utils import normalized_key
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
 from data.event import Event
@@ -177,7 +178,7 @@ class EventLoader:
             key=lambda event: (
                 get_date_timestamp(event.stop_date) * sort_order,
                 get_date_timestamp(event.start_date) * sort_order,
-                event.name,
+                normalized_key(event.name),
             ),
         )
 

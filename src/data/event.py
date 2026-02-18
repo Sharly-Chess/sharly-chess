@@ -2,7 +2,7 @@ import copy
 import itertools
 from collections import defaultdict
 from contextlib import suppress
-from datetime import date
+from datetime import date, datetime
 from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
@@ -10,7 +10,7 @@ from types import NotImplementedType
 from typing import Collection
 
 from common.i18n import _
-from common.i18n.utils import by
+from common.i18n.utils import by, normalized_key
 from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from data.account import Account, Permission
@@ -32,7 +32,7 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from plugins.utils import PluginData, Plugin
 from utils import Utils
-from utils.date_time import format_date, format_date_range, format_timestamp_date_time
+from utils.date_time import format_date, format_date_range
 from utils.enum import (
     RoleType,
     ScreenType,
@@ -250,53 +250,54 @@ class Event:
         )
 
     @property
-    def screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return sorted(self.screens_by_uniq_id.values(), key=by('name'))
+    def screens(self) -> Collection[Screen]:
+        return self.screens_by_uniq_id.values()
 
     @property
-    def screens_by_screen_type_sorted_by_uniq_id(
+    def sorted_screens(self) -> list[Screen]:
+        return sorted(self.screens, key=by('name'))
+
+    @property
+    def sorted_screens_by_screen_type(
         self,
     ) -> defaultdict[ScreenType, list[Screen]]:
-        screens_of_type_sorted_by_uniq_id: defaultdict[ScreenType, list[Screen]] = (
+        sorted_screens_by_screen_type: defaultdict[ScreenType, list[Screen]] = (
             defaultdict(list[Screen])
         )
-        for screen in self.screens_sorted_by_uniq_id:
-            screens_of_type_sorted_by_uniq_id[screen.type].append(screen)
-        return screens_of_type_sorted_by_uniq_id
+        for screen in self.sorted_screens:
+            sorted_screens_by_screen_type[screen.type].append(screen)
+        return sorted_screens_by_screen_type
 
     @property
-    def public_screens_sorted_by_uniq_id(self) -> list[Screen]:
-        return [screen for screen in self.screens_by_uniq_id.values() if screen.public]
+    def sorted_public_screens(self) -> list[Screen]:
+        return [screen for screen in self.sorted_screens if screen.public]
 
     @property
-    def public_screens_by_screen_type_sorted_by_uniq_id(
+    def sorted_public_screens_by_screen_type(
         self,
     ) -> defaultdict[ScreenType, list[Screen]]:
-        public_screens_by_screen_type_sorted_by_uniq_id: defaultdict[
-            ScreenType, list[Screen]
-        ] = defaultdict(list[Screen])
-        for screen in self.public_screens_sorted_by_uniq_id:
-            public_screens_by_screen_type_sorted_by_uniq_id[screen.type].append(screen)
-        return public_screens_by_screen_type_sorted_by_uniq_id
-
-    @cached_property
-    def rotators_sorted_by_name(self) -> list[Rotator]:
-        return sorted(self.rotators_by_id.values(), key=lambda rotator: rotator.name)
-
-    @cached_property
-    def public_rotators_sorted_by_name(self) -> list[Rotator]:
-        return sorted(
-            filter(attrgetter('public'), self.rotators_by_id.values()),
-            key=attrgetter('name'),
+        sorted_public_screens_by_screen_type: defaultdict[ScreenType, list[Screen]] = (
+            defaultdict(list[Screen])
         )
+        for screen in self.sorted_public_screens:
+            sorted_public_screens_by_screen_type[screen.type].append(screen)
+        return sorted_public_screens_by_screen_type
 
     @property
-    def last_update(self) -> float:
-        return EventDatabase.database_modified_timestamp(self.uniq_id)
+    def rotators(self) -> Collection[Rotator]:
+        return self.rotators_by_id.values()
 
     @cached_property
-    def last_update_str(self) -> str:
-        return format_timestamp_date_time(self.last_update)
+    def sorted_rotators(self) -> list[Rotator]:
+        return sorted(self.rotators, key=by('name'))
+
+    @cached_property
+    def public_sorted_rotators(self) -> list[Rotator]:
+        return [rotator for rotator in self.sorted_rotators if rotator.public]
+
+    @property
+    def last_update(self) -> datetime:
+        return EventDatabase.database_modified_at(self.uniq_id)
 
     @cached_property
     def timers_by_id(self) -> dict[int, Timer]:
@@ -308,8 +309,12 @@ class Event:
         return timers_by_id
 
     @property
+    def timers(self) -> Collection[Timer]:
+        return self.timers_by_id.values()
+
+    @property
     def timers_by_name(self) -> dict[str, Timer]:
-        return {timer.name: timer for timer in self.timers_by_id.values()}
+        return {timer.name: timer for timer in self.timers}
 
     def get_unused_timer_name(self, base_name: str | None = None) -> str:
         """Returns the first unused timer name looking like base_name:
@@ -353,24 +358,19 @@ class Event:
 
     @cached_property
     def tournaments_by_name(self) -> dict[str, Tournament]:
-        return {
-            tournament.name: tournament
-            for tournament in self.tournaments_by_id.values()
-        }
+        return {tournament.name: tournament for tournament in self.tournaments}
 
     @cached_property
-    def tournaments_sorted_by_index(self) -> list[Tournament]:
-        return sorted(
-            self.tournaments_by_id.values(), key=lambda tournament: tournament.index
-        )
+    def sorted_tournaments(self) -> list[Tournament]:
+        return sorted(self.tournaments, key=attrgetter('index'))
 
     @cached_property
-    def not_finished_tournaments_sorted_by_index(self) -> list[Tournament]:
+    def sorted_not_finished_tournaments(self) -> list[Tournament]:
         """Returns the playing tournaments where the Papi file exists
         (useful not to create players when there is no Papi file)."""
         return [
             tournament
-            for tournament in self.tournaments_sorted_by_index
+            for tournament in self.sorted_tournaments
             if not tournament.finished
         ]
 
@@ -388,8 +388,8 @@ class Event:
                 'Distributing the players is not allowed once one tournament is started.'
             )
         if any(
-            tournament.rating != self.tournaments_sorted_by_index[0].rating
-            for tournament in self.tournaments_sorted_by_index[1:]
+            tournament.rating != self.sorted_tournaments[0].rating
+            for tournament in self.sorted_tournaments[1:]
         ):
             return _(
                 'Distributing the players is allowed only if all the tournaments use the same rating.'
@@ -414,7 +414,7 @@ class Event:
             self,
             'player_count',
             'players_by_id',
-            'players_sorted_by_name',
+            'sorted_players',
         )
 
     def add_player(
@@ -456,16 +456,13 @@ class Event:
             if stored_player.id is not None
         }
 
-    @cached_property
+    @property
     def players(self) -> Collection[Player]:
         return self.players_by_id.values()
 
     @cached_property
-    def players_sorted_by_name(self) -> list[Player]:
-        return sorted(
-            self.players_by_id.values(),
-            key=by('last_name', 'first_name'),
-        )
+    def sorted_players(self) -> list[Player]:
+        return sorted(self.players, key=attrgetter('name_sort_key'))
 
     @property
     def tournament_players(self) -> list[TournamentPlayer]:
@@ -483,7 +480,7 @@ class Event:
         base_name, or base_name (2), or base_name (n+1)..."""
         return Utils.get_unused_item_name(
             base_name or _('New tournament'),
-            [tournament.name for tournament in self.tournaments_by_id.values()],
+            [tournament.name for tournament in self.tournaments],
         )
 
     def move_player_to_tournament(
@@ -509,13 +506,17 @@ class Event:
         }
         return screens_by_id
 
-    @cached_property
-    def basic_screens_by_uniq_id(self) -> dict[str, Screen]:
-        return {screen.uniq_id: screen for screen in self.basic_screens_by_id.values()}
+    @property
+    def basic_screens(self) -> Collection[Screen]:
+        return self.basic_screens_by_id.values()
 
     @cached_property
-    def basic_screens_sorted_by_name(self) -> list[Screen]:
-        return sorted(self.basic_screens_by_id.values(), key=by('name'))
+    def basic_screens_by_uniq_id(self) -> dict[str, Screen]:
+        return {screen.uniq_id: screen for screen in self.basic_screens}
+
+    @cached_property
+    def sorted_basic_screens(self) -> list[Screen]:
+        return sorted(self.basic_screens, key=by('name'))
 
     def get_unused_screen_uniq_id(
         self,
@@ -550,7 +551,7 @@ class Event:
             base_name or screen_type.name,
             [
                 str(screen.name)
-                for screen in self.basic_screens_by_id.values()
+                for screen in self.basic_screens
                 if screen.name is not None
             ],
         )
@@ -562,23 +563,24 @@ class Event:
         basic_screens_by_screen_type_by_id: defaultdict[
             ScreenType, dict[int, Screen]
         ] = defaultdict(dict[int, Screen])
-        for screen in self.basic_screens_by_id.values():
+        for screen in self.basic_screens:
             basic_screens_by_screen_type_by_id[screen.type][screen.id] = screen
         return basic_screens_by_screen_type_by_id
 
     @property
-    def basic_screens_by_screen_type_sorted_by_uniq_id(
+    def sorted_basic_screens_by_screen_type(
         self,
     ) -> defaultdict[ScreenType, list[Screen]]:
-        basic_screens_by_screen_type_sorted_by_uniq_id: defaultdict[
-            ScreenType, list[Screen]
-        ] = defaultdict(list[Screen])
+        sorted_basic_screens_by_screen_type: defaultdict[ScreenType, list[Screen]] = (
+            defaultdict(list[Screen])
+        )
+
         for screen_type in self.basic_screens_by_screen_type_by_id:
-            basic_screens_by_screen_type_sorted_by_uniq_id[screen_type] = sorted(
+            sorted_basic_screens_by_screen_type[screen_type] = sorted(
                 self.basic_screens_by_screen_type_by_id[screen_type].values(),
-                key=lambda screen: screen.uniq_id,
+                key=by('uniq_id'),
             )
-        return basic_screens_by_screen_type_sorted_by_uniq_id
+        return sorted_basic_screens_by_screen_type
 
     @cached_property
     def families_by_id(self) -> dict[int, Family]:
@@ -589,18 +591,22 @@ class Event:
         }
         return families_by_id
 
+    @property
+    def families(self) -> Collection[Family]:
+        return self.families_by_id.values()
+
     @cached_property
-    def families_sorted_by_name(self) -> list[Family]:
-        return sorted(self.families_by_id.values(), key=by('name'))
+    def sorted_families(self) -> list[Family]:
+        return sorted(self.families, key=by('name'))
 
     @cached_property
     def families_by_uniq_id(self) -> dict[str, Family]:
-        return {family.uniq_id: family for family in self.families_by_id.values()}
+        return {family.uniq_id: family for family in self.families}
 
     @property
     def families_by_screen_type(self) -> dict[ScreenType, list[Family]]:
         families_by_screen_type: dict[ScreenType, list[Family]] = defaultdict(list)
-        for family in self.families_sorted_by_name:
+        for family in self.sorted_families:
             families_by_screen_type[family.type].append(family)
         return families_by_screen_type
 
@@ -634,20 +640,20 @@ class Event:
         family_type is used when the given name is empty to set a name that corresponds to the family type."""
         return Utils.get_unused_item_name(
             base_name or family_type.name,
-            [screen.name for screen in self.families_by_id.values()],
+            [family.name for family in self.families],
         )
 
     @property
     def screens_by_uniq_id(self) -> dict[str, Screen]:
         screens_by_uniq_id: dict[str, Screen] = copy.copy(self.basic_screens_by_uniq_id)
-        for family in self.families_by_id.values():
+        for family in self.families:
             screens_by_uniq_id |= family.screens_by_uniq_id
         return screens_by_uniq_id
 
     @property
     def family_screens_by_uniq_id(self) -> dict[str, Screen]:
         family_screens_by_uniq_id: dict[str, Screen] = {}
-        for family in self.families_by_id.values():
+        for family in self.families:
             family_screens_by_uniq_id |= family.screens_by_uniq_id
         return family_screens_by_uniq_id
 
@@ -662,7 +668,7 @@ class Event:
 
     @cached_property
     def rotators_by_name(self) -> dict[str, Rotator]:
-        return {rotator.name: rotator for rotator in self.rotators_by_id.values()}
+        return {rotator.name: rotator for rotator in self.rotators}
 
     def get_unused_rotator_name(self, base_name: str | None = None) -> str:
         """Returns the first unused rotator name looking like base_name:
@@ -708,26 +714,28 @@ class Event:
         }
         return display_controllers_by_id
 
+    @property
+    def display_controllers(self) -> Collection[DisplayController]:
+        return self.display_controllers_by_id.values()
+
     @cached_property
     def display_controllers_by_name(self) -> dict[str, DisplayController]:
         return {
             display_controller.name: display_controller
-            for display_controller in self.display_controllers_by_id.values()
+            for display_controller in self.display_controllers
         }
 
     @cached_property
-    def display_controllers_sorted_by_name(self) -> list[DisplayController]:
-        return sorted(
-            self.display_controllers_by_id.values(),
-            key=attrgetter('name'),
-        )
+    def sorted_display_controllers(self) -> list[DisplayController]:
+        return sorted(self.display_controllers, key=by('name'))
 
     @cached_property
-    def public_display_controllers_sorted_by_name(self) -> list[DisplayController]:
-        return sorted(
-            filter(attrgetter('public'), self.display_controllers_by_id.values()),
-            key=attrgetter('name'),
-        )
+    def sorted_public_display_controllers(self) -> list[DisplayController]:
+        return [
+            controller
+            for controller in self.sorted_display_controllers
+            if controller.public
+        ]
 
     def get_unused_display_controller_name(
         self,
@@ -739,7 +747,7 @@ class Event:
             base_name or _('New display controller'),
             [
                 display_controller.name
-                for display_controller in self.display_controllers_by_id.values()
+                for display_controller in self.display_controllers
             ],
         )
 
@@ -769,12 +777,16 @@ class Event:
                 if stored_account.id is not None
             }
 
+    @property
+    def accounts(self) -> Collection[Account]:
+        return self.accounts_by_id.values()
+
     def create_predefined_accounts(self):
         """Sets own accounts if not already done"""
         if not self.predefined_accounts:
             raise ValueError('Default accounts already exist.')
         with EventDatabase(self.uniq_id, True) as database:
-            for account in self.accounts_by_id.values():
+            for account in self.accounts:
                 stored_account = account.stored_account
                 database.add_stored_account(stored_account)
                 for stored_permission in stored_account.stored_permissions:
@@ -873,29 +885,27 @@ class Event:
         account.stored_account.stored_permissions.remove(stored_permission)
 
     @property
-    def accounts_sorted_by_name(self) -> list[Account]:
+    def sorted_accounts(self) -> list[Account]:
         return sorted(
-            self.accounts_by_id.values(),
+            self.accounts,
             key=lambda account: (
                 not account.administrator,
                 account.anonymous,
-                account.full_name,
+                normalized_key(account.full_name),
             ),
         )
 
     @property
     def user_accounts_by_id(self) -> dict[int, Account]:
         return {
-            account.id: account
-            for account in self.accounts_by_id.values()
-            if account.user_account
+            account.id: account for account in self.accounts if account.user_account
         }
 
     @property
     def active_user_accounts_by_id(self) -> dict[int, Account]:
         return {
             account.id: account
-            for account in self.accounts_by_id.values()
+            for account in self.accounts
             if account.user_account and account.active
         }
 
@@ -903,12 +913,12 @@ class Event:
     def user_accounts_by_name(self) -> dict[str, Account]:
         return {
             account.full_name: account
-            for account in self.accounts_by_id.values()
+            for account in self.accounts
             if account.user_account
         }
 
     @property
-    def user_accounts_sorted_by_name(self) -> list[Account]:
+    def sorted_user_accounts(self) -> list[Account]:
         return sorted(
             self.user_accounts_by_name.values(),
             key=by('full_name'),
@@ -918,12 +928,12 @@ class Event:
     def active_user_accounts_by_name(self) -> dict[str, Account]:
         return {
             account.full_name: account
-            for account in self.accounts_by_id.values()
+            for account in self.accounts
             if account.user_account and account.active
         }
 
     @property
-    def active_user_accounts_sorted_by_name(self) -> list[Account]:
+    def sorted_active_user_accounts(self) -> list[Account]:
         return sorted(
             self.active_user_accounts_by_name.values(),
             key=by('full_name'),
