@@ -13,6 +13,7 @@
 ## Players
 
 - Import players from CSV files (3.6.0)
+- Fixed the number of titled players on norm reports (3.6.1)
 
 ## Pairings
 
