@@ -50,10 +50,10 @@ class EventLoader:
 
     @classmethod
     def load_event_ids(cls, uniq_id: str | None = None):
+        event_ids = [uniq_id] if uniq_id is not None else cls.all_event_ids()
         cls._clean_not_existing_event_database_files(cls._valid_event_ids)
         cls._clean_not_existing_event_database_files(cls._invalid_uniq_ids)
         known_event_ids = cls._valid_event_ids | cls._invalid_uniq_ids
-        event_ids = [uniq_id] if uniq_id is not None else cls.all_event_ids()
         for event_id in event_ids:
             if event_id in known_event_ids:
                 continue
@@ -129,7 +129,7 @@ class EventLoader:
                 logger.warning(
                     'File [%s] has been renamed [%s]', file.name, new_file.name
                 )
-            ids.append(file.stem)
+            ids.append(uniq_id)
         return ids
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
