@@ -257,6 +257,7 @@ jobs:
           TAG="${{ steps.merge.outputs.tag }}"
           echo "Triggering production build for $TAG..."
           gh workflow run publish-multiarch.yml \
+            -R "${{ github.repository }}" \
             --ref linux-flatpak \
             -f version_tag="$TAG"
           echo "Production build triggered for $TAG"
