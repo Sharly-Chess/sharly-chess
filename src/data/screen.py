@@ -14,7 +14,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.board import Board
 from data.screen_set import ScreenSet
 from data.timer import Timer
-from utils.date_time import format_timestamp_date_time
+
 from utils.enum import (
     ScreenType,
     PlayersScreenPlayerFormat,
@@ -709,12 +709,12 @@ class Screen:
                 raise ValueError(f'type=[{self.type}]')
 
     @property
-    def last_update(self) -> float:
+    def last_update(self) -> datetime | None:
         if self.stored_screen:
-            return self.stored_screen.last_update or 0.0
+            return self.stored_screen.last_update
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
-        return self.family.last_update or 0.0
+        return self.family.last_update
 
     @property
     def background_image(self) -> str:
@@ -750,7 +750,3 @@ class Screen:
         if self.family is None:
             raise RuntimeError('Family reference unexpectedly None')
         return self.family.message_text
-
-    @property
-    def last_update_str(self) -> str | None:
-        return format_timestamp_date_time(self.last_update)
