@@ -53,7 +53,8 @@ jobs:
       - name: Add upstream remote
         run: |
           git remote add upstream https://github.com/Sharly-Chess/sharly-chess.git || true
-          git fetch upstream --tags
+          # --force to overwrite local tags that diverge from upstream (e.g. after history rewrite)
+          git fetch upstream --tags --force
 
       - name: Determine release to sync
         id: detect
