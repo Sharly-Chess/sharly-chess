@@ -328,48 +328,15 @@
                         <div class="item">
                             <label>Numbers of:</label>
                         </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 8 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
+                        {% for title in ['GM', 'IM', 'WGM', 'WIM', 'FM', 'WFM', ] %}
+                            <div class="item {{ 'error' if norm.not_enough_required_titles and title in norm.required_titles else '' }}">
+                                <div class="error-info">
+                                    {{ norm.not_enough_required_titles | safe }}
+                                </div>
+                                <label>{{ title }}:</label>
+                                <input value="{{ norm.title_counts[title] }}" />
                             </div>
-                            <label>GM:</label>
-                            <input value="{{ norm.title_counts[8] }}" />
-                        </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 6 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
-                            </div>
-                            <label>IM:</label>
-                            <input value="{{ norm.title_counts[6] }}" />
-                        </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 7 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
-                            </div>
-                            <label>WGM:</label>
-                            <input value="{{ norm.title_counts[7] }}" />
-                        </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 5 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
-                            </div>
-                            <label>WIM:</label>
-                            <input value="{{ norm.title_counts[5] }}" />
-                        </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 4 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
-                            </div>
-                            <label>FM:</label>
-                            <input value="{{ norm.title_counts[4] }}" />
-                        </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 3 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
-                            </div>
-                            <label>WFM:</label>
-                            <input value="{{ norm.title_counts[3] }}" />
-                        </div>
+                        {% endfor %}
                     </div>
                 </section>
 
