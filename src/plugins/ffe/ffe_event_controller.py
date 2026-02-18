@@ -16,7 +16,7 @@ from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence
 from plugins.utils import PluginUtils
-from utils.date_time import format_timestamp_date_time
+from utils.date_time import format_datetime
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
@@ -106,7 +106,7 @@ class FfeAdminEventController(BaseEventAdminController):
         cls, web_context: BaseEventAdminWebContext
     ) -> dict[str, Any]:
         return web_context.template_context | {
-            'format_timestamp_date_time': format_timestamp_date_time,
+            'format_datetime': format_datetime,
             'result_id': FfeBackgroundUploader.result_id,
             'upload_status_messages': FfeBackgroundUploader.upload_status_messages,
             'ffe_utils': FFEUtils,
