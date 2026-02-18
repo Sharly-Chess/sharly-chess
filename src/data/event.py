@@ -32,7 +32,7 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from plugins.utils import PluginData, Plugin
 from utils import Utils
-from utils.date_time import format_date, format_date_range, format_datetime
+from utils.date_time import format_date, format_date_range
 from utils.enum import (
     RoleType,
     ScreenType,
@@ -298,10 +298,6 @@ class Event:
     @property
     def last_update(self) -> datetime:
         return EventDatabase.database_modified_at(self.uniq_id)
-
-    @cached_property
-    def last_update_str(self) -> str:
-        return format_datetime(self.last_update)
 
     @cached_property
     def timers_by_id(self) -> dict[int, Timer]:
