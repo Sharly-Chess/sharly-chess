@@ -34,7 +34,9 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.version_tag || github.ref }}
+          # Always checkout the branch — version_tag is for versioning only,
+          # the tag content is already merged into the branch by sync-upstream
+          ref: ${{ github.ref }}
 
       - name: Set up environment variables
         run: |
@@ -157,7 +159,9 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.version_tag || github.ref }}
+          # Always checkout the branch — version_tag is for versioning only,
+          # the tag content is already merged into the branch by sync-upstream
+          ref: ${{ github.ref }}
 
       - name: Set up environment variables
         run: |
