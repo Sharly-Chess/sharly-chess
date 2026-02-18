@@ -10,6 +10,7 @@ from data.account import Account
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
+from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.utils import PluginUtils, PluginData
 from utils.enum import FormAction
@@ -256,12 +257,12 @@ class FfeTournamentPluginData(PluginData):
             ffe_id=stored_value.get('ffe_id', None),
             password=stored_value.get('password', None),
             auto_upload=stored_value.get('auto_upload', None),
-            last_upload=datetime.fromtimestamp(ts)
-            if (ts := stored_value.get('last_upload'))
-            else None,
-            last_rules_upload=datetime.fromtimestamp(ts)
-            if (ts := stored_value.get('last_rules_upload'))
-            else None,
+            last_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_upload')
+            ),
+            last_rules_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_rules_upload')
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -269,10 +270,12 @@ class FfeTournamentPluginData(PluginData):
             'ffe_id': self.ffe_id,
             'password': self.password,
             'auto_upload': self.auto_upload,
-            'last_upload': self.last_upload.timestamp() if self.last_upload else None,
-            'last_rules_upload': self.last_rules_upload.timestamp()
-            if self.last_rules_upload
-            else None,
+            'last_upload': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_upload
+            ),
+            'last_rules_upload': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_rules_upload
+            ),
         }
 
     @classmethod

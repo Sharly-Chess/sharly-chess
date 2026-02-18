@@ -18,6 +18,7 @@ from common import DEVEL_ENV, SharlyChessException
 from common.logger import get_logger
 from data.event import Event
 from data.tournament import Tournament
+from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.chess_results import PLUGIN_NAME, PLUGIN_DIR
 from plugins.utils import PluginData, PluginUtils
 from web.controllers.base_controller import WebContext
@@ -294,9 +295,9 @@ class ChessResultsTournamentPluginData(PluginData):
             auto_upload=stored_value.get('auto_upload', None),
             remark=stored_value.get('remark'),
             remark_default=stored_value.get('remark_default', True),
-            last_upload=datetime.fromtimestamp(ts)
-            if (ts := stored_value.get('last_upload'))
-            else None,
+            last_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_upload')
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -306,7 +307,9 @@ class ChessResultsTournamentPluginData(PluginData):
             'auto_upload': self.auto_upload,
             'remark': self.remark,
             'remark_default': self.remark_default,
-            'last_upload': self.last_upload.timestamp() if self.last_upload else None,
+            'last_upload': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_upload
+            ),
         }
 
     @classmethod

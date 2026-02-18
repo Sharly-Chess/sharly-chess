@@ -64,7 +64,7 @@ class ScreenUserController(BaseScreenUserController):
         date_dt = datetime.fromtimestamp(date)
         if web_context.screen:
             assert web_context.screen.event is not None
-            if web_context.screen.event.last_update > date:
+            if web_context.screen.event.last_update > date_dt:
                 return True
             if (
                 web_context.screen.last_update
@@ -112,7 +112,7 @@ class ScreenUserController(BaseScreenUserController):
             assert web_context.family.event is not None
             if (
                 max(
-                    datetime.fromtimestamp(web_context.family.event.last_update),
+                    web_context.family.event.last_update,
                     web_context.family.last_update or datetime.min,
                 )
                 > date_dt

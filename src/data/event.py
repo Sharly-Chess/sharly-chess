@@ -2,7 +2,7 @@ import copy
 import itertools
 from collections import defaultdict
 from contextlib import suppress
-from datetime import date
+from datetime import date, datetime
 from functools import total_ordering, cached_property
 from logging import Logger
 from operator import attrgetter
@@ -32,7 +32,7 @@ from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from plugins.utils import PluginData, Plugin
 from utils import Utils
-from utils.date_time import format_date, format_date_range, format_timestamp_date_time
+from utils.date_time import format_date, format_date_range, format_datetime
 from utils.enum import (
     RoleType,
     ScreenType,
@@ -296,12 +296,12 @@ class Event:
         return [rotator for rotator in self.sorted_rotators if rotator.public]
 
     @property
-    def last_update(self) -> float:
-        return EventDatabase.database_modified_timestamp(self.uniq_id)
+    def last_update(self) -> datetime:
+        return EventDatabase.database_modified_at(self.uniq_id)
 
     @cached_property
     def last_update_str(self) -> str:
-        return format_timestamp_date_time(self.last_update)
+        return format_datetime(self.last_update)
 
     @cached_property
     def timers_by_id(self) -> dict[int, Timer]:

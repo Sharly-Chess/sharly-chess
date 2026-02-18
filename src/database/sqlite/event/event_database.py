@@ -179,8 +179,8 @@ class EventDatabase(MigrationDatabase):
         return EVENTS_DIR / f'{uniq_id}.{SharlyChessConfig.event_database_ext}'
 
     @classmethod
-    def database_modified_timestamp(cls, uniq_id: str) -> float:
-        return cls.event_database_path(uniq_id).lstat().st_mtime
+    def database_modified_at(cls, uniq_id: str) -> datetime:
+        return datetime.fromtimestamp(cls.event_database_path(uniq_id).lstat().st_mtime)
 
     def delete(self) -> Path:
         """Soft-deletes the event database file by archiving it."""

@@ -5,6 +5,7 @@ from typing import Any, Self, override
 
 from data.event import Event
 from data.tournament import Tournament
+from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.chessevent import PLUGIN_NAME
 from plugins.utils import PluginData, PluginUtils
 from plugins.chessevent.chessevent_status import (
@@ -171,9 +172,9 @@ class ChessEventTournamentPluginData(PluginData):
             event_id=stored_value.get('event_id'),
             tournament_name=stored_value.get('tournament_name'),
             status=stored_value.get('status'),
-            last_sync=datetime.fromtimestamp(ts)
-            if (ts := stored_value.get('last_sync'))
-            else None,
+            last_sync=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_sync')
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -183,7 +184,9 @@ class ChessEventTournamentPluginData(PluginData):
             'event_id': self.event_id,
             'tournament_name': self.tournament_name,
             'status': self.status,
-            'last_sync': self.last_sync.timestamp() if self.last_sync else None,
+            'last_sync': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_sync
+            ),
         }
 
     @classmethod
