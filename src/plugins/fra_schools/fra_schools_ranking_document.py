@@ -138,11 +138,13 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
 
         assert self.event is not None
         plugin_data = FRASchoolsUtils.get_event_plugin_data(self.event)
-        ordered_players: list[TournamentPlayer] = list(
-            self.tournament.compute_tournament_player_ranks(
+        ordered_players: list[TournamentPlayer] = [
+            tournament_player
+            for tournament_player in self.tournament.compute_tournament_player_ranks(
                 after_round=self.ranking_round
             ).values()
-        )
+            if not self.tournament.started or tournament_player.has_real_pairings
+        ]
 
         # Group by school
         schools: dict[int, list[TournamentPlayer]] = {}
