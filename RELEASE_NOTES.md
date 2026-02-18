@@ -32,3 +32,4 @@
 
 - Fixed T2 and arbiter compensation forms (3.6.0)
 - Fixed access to upload modal (3.6.1)
+- Fixed invalid type on account FFE arbiter title (3.6.1)
