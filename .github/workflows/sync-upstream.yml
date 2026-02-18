@@ -250,6 +250,20 @@ jobs:
           git push origin linux-flatpak
           echo "Pushed merged linux-flatpak"
 
+      - name: Create tag on fork
+        if: steps.merge.outputs.success == 'true'
+        run: |
+          TAG="${{ steps.merge.outputs.tag }}"
+          # Créer le tag sur le commit HEAD actuel (post-merge avec appdata)
+          # plutôt que de copier le tag upstream (qui pointe vers un commit sans nos patches)
+          if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "$TAG"; then
+            echo "Tag $TAG already exists on fork, skipping"
+          else
+            git tag -a "$TAG" -m "Release $TAG (synced from upstream)"
+            git push origin "$TAG"
+            echo "Created and pushed tag $TAG on fork"
+          fi
+
       - name: Sync dev branch
         if: steps.merge.outputs.success == 'true'
         run: |
