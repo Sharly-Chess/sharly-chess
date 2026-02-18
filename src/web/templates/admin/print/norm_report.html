@@ -323,12 +323,18 @@
                             <input value="{{ norm.num_title_holders }}" />
                         </div>
                     </div>
-
                     <div class="grid" style="grid-template-columns: repeat(7, 1fr);">
                         <div class="item">
                             <label>Numbers of:</label>
                         </div>
-                        {% for title in ['GM', 'IM', 'WGM', 'WIM', 'FM', 'WFM', ] %}
+                        {% for title in [
+                            PlayerTitle.GRANDMASTER,
+                            PlayerTitle.INTERNATIONAL_MASTER,
+                            PlayerTitle.WOMAN_GRANDMASTER,
+                            PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+                            PlayerTitle.FIDE_MASTER,
+                            PlayerTitle.WOMAN_FIDE_MASTER,
+                        ] %}
                             <div class="item {{ 'error' if norm.not_enough_required_titles and title in norm.required_titles else '' }}">
                                 <div class="error-info">
                                     {{ norm.not_enough_required_titles | safe }}
