@@ -6,6 +6,7 @@ from typing_extensions import TYPE_CHECKING
 
 from common.exception import OptionError
 from common.i18n import _
+from common.i18n.utils import normalized_key
 from data.player import Club, Federation, TournamentPlayer
 from data.criteria.player_filter_options import (
     PlayerFilterOption,
@@ -342,7 +343,7 @@ class PlayerIdPlayerFilter(PlayerFilter):
             for tournament_player in tournament.tournament_players
             if tournament_player.id in player_ids
         ]
-        option_str = ', '.join(sorted(player_names))
+        option_str = ', '.join(sorted(player_names, key=normalized_key))
         if exclude:
             option_str = _('Exclude: {values}').format(values=option_str)
         return f'{self.name} ({option_str})'

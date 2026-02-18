@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 from collections import Counter
-from operator import attrgetter
 from types import UnionType
 from typing import Any, TYPE_CHECKING
 
 from common.exception import OptionError
 from common.i18n import _
+from common.i18n.utils import normalized_key, by
 from common.sharly_chess_config import SharlyChessConfig
 from data.player import Club, Federation, TournamentPlayer
 from data.player_categories import PlayerCategory, NoCategory
@@ -339,7 +339,9 @@ class ClubsFilterOption(SelectPlayerFilterOption[Club]):
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[Club]:
         event_club_names = {player.club.name for player in tournament.event.players}
-        return [Club(name) for name in sorted(event_club_names) if name]
+        return [
+            Club(name) for name in sorted(event_club_names, key=normalized_key) if name
+        ]
 
     def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[Club]:
         counter = tournament.club_counts
@@ -452,7 +454,7 @@ class PlayersFilterOption(SelectPlayerFilterOption[TournamentPlayer]):
         return []
 
     def get_all_known_values(self, tournament: 'Tournament') -> list[TournamentPlayer]:
-        return sorted(tournament.tournament_players, key=attrgetter('full_name'))
+        return sorted(tournament.tournament_players, key=by('full_name'))
 
     def get_tournament_player_counter(
         self, tournament: 'Tournament'

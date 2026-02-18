@@ -7,7 +7,6 @@ from common import experimental_features_enabled
 from collections import defaultdict
 from typing import Annotated, Any, Optional
 
-from common.i18n.utils import by
 from data.access_levels.actions import AuthAction
 from data.pairings.engines import BbpPairings
 from data.pairings.bbp_history import TournamentHistoryPlayer
@@ -38,6 +37,7 @@ from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
+from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.base_controller import WebContext
 from web.guards import (
     EventGuard,
@@ -146,7 +146,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             self.admin_tournament
             and self.admin_tournament.pairing_system.split_unpaired_and_bye_players
         ):
-            for tournament_player in sorted(unpaired, key=by('last_name')):
+            for tournament_player in sorted(unpaired, key=attrgetter('name_sort_key')):
                 if tournament_player.pairings[
                     self.admin_round
                 ] and tournament_player.pairings[self.admin_round].result in (
@@ -158,7 +158,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 else:
                     self.admin_unpaired.append(tournament_player)
         else:
-            self.admin_unpaired = sorted(unpaired, key=by('last_name'))
+            self.admin_unpaired = sorted(unpaired, key=attrgetter('name_sort_key'))
 
         self.admin_board: Board | None = None
         if board_id is not None:
@@ -1090,13 +1090,17 @@ class PairingsAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/pairings-check-in-out/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{player_id:int}/{check_in:int}',
+        path=(
+            '/pairings-check-in-out/{event_uniq_id:str}/{tournament_id:int}'
+            '/{round:int}/{player_id:int}/{check_in:int}'
+        ),
         name='admin-pairings-check-in-out',
         guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
     async def htmx_admin_pairings_check_in_out(
         self,
         request: HTMXRequest,
+        channels: ChannelsPlugin,
         tournament_id: int,
         player_id: int,
         check_in: int,
@@ -1108,10 +1112,10 @@ class PairingsAdminController(BaseEventAdminController):
             player_id=player_id,
             round_=round,
         )
-
         tournament_player = web_context.get_admin_tournament_player()
         tournament = web_context.get_admin_tournament()
         tournament.check_in_player(tournament_player, bool(check_in))
+        PlayerAdminController.publish_new_checkin(channels, tournament)
         return self._admin_event_pairings_render(web_context)
 
     @get(

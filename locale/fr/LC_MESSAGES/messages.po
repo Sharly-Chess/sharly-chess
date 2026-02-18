@@ -791,7 +791,7 @@ msgid "Base date"
 msgstr "Date de référence"
 
 msgid "Bd. *** BOARD NUMBER COLUMN HEADER"
-msgstr "Ech."
+msgstr "Éch."
 
 msgid "Before configuring accounts, you have to be aware of a few security warnings:"
 msgstr "Avant de configurer des comptes, vous devez avoir en tête quelques avertissements de sécurité :"

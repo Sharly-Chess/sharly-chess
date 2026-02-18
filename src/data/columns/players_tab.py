@@ -4,6 +4,7 @@ from datetime import date
 from typing import Any, Counter, Callable
 
 from common.i18n import _
+from common.i18n.utils import normalized_key
 from data.event import Event
 from data.player import Player
 from data.player_categories import PlayerCategory
@@ -132,7 +133,7 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
         return []
 
     def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
-        return filter_value.key
+        return normalized_key(filter_value.key)
 
     def set_filter_values(
         self, players: list[Player], event: Event, active_keys: list[str]

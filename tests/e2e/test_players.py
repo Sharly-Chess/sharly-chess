@@ -61,7 +61,7 @@ class TestPlayersFunctionality:
         with EventDatabase(EVENT_ID) as database:
             event = Event(database.load_stored_event())
             assert event.player_count == 1
-            player = next(iter(event.players_sorted_by_name))
+            player = next(iter(event.sorted_players))
             assert player.last_name == 'DOE'
             assert player.first_name == 'John'
             assert player.date_of_birth == date(2000, 10, 30)

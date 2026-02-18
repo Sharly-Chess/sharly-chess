@@ -1,9 +1,11 @@
 from dataclasses import dataclass
+from datetime import datetime
 from functools import partial
 from typing import Any, Self, override
 
 from data.event import Event
 from data.tournament import Tournament
+from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.chessevent import PLUGIN_NAME
 from plugins.utils import PluginData, PluginUtils
 from plugins.chessevent.chessevent_status import (
@@ -160,7 +162,7 @@ class ChessEventTournamentPluginData(PluginData):
     event_id: str | None = None
     tournament_name: str | None = None
     status: str | None = None
-    last_sync: float | None = None
+    last_sync: datetime | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -170,7 +172,9 @@ class ChessEventTournamentPluginData(PluginData):
             event_id=stored_value.get('event_id'),
             tournament_name=stored_value.get('tournament_name'),
             status=stored_value.get('status'),
-            last_sync=stored_value.get('last_sync', 0.0),
+            last_sync=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_sync')
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -180,7 +184,9 @@ class ChessEventTournamentPluginData(PluginData):
             'event_id': self.event_id,
             'tournament_name': self.tournament_name,
             'status': self.status,
-            'last_sync': self.last_sync,
+            'last_sync': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_sync
+            ),
         }
 
     @classmethod
@@ -195,7 +201,7 @@ class ChessEventTournamentPluginData(PluginData):
         event_id: str | None = None
         tournament_name: str | None = None
         status: str | None = None
-        last_sync: float | None = None
+        last_sync: datetime | None = None
         if previous_object and action != 'clone':
             user = previous_object.user
             password = previous_object.password

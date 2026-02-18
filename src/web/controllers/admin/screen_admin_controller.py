@@ -493,12 +493,10 @@ class ScreenAdminController(BaseEventAdminController):
             show_family_screens = SessionScreensShowFamilyScreens(request).get()
             screens_by_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
             if show_family_screens:
-                screens_by_type_sorted_by_uniq_id = (
-                    event.screens_by_screen_type_sorted_by_uniq_id
-                )
+                screens_by_type_sorted_by_uniq_id = event.sorted_screens_by_screen_type
             else:
                 screens_by_type_sorted_by_uniq_id = (
-                    event.basic_screens_by_screen_type_sorted_by_uniq_id
+                    event.sorted_basic_screens_by_screen_type
                 )
             for screen_type_ in ScreenType.screen_types():
                 admin_screen_types_data[screen_type_]['screens'] = (
@@ -524,27 +522,23 @@ class ScreenAdminController(BaseEventAdminController):
             # 'user' view
             if web_context.screen_type is None:
                 raise RuntimeError('screen_type not defined')
-            screens_sorted_by_uniq_id: list[Screen]
+            sorted_screens: list[Screen]
             if web_context.client.can_view_private_screens:
-                screens_sorted_by_uniq_id = (
-                    event.screens_by_screen_type_sorted_by_uniq_id[
-                        web_context.screen_type
-                    ]
-                )
+                sorted_screens = event.sorted_screens_by_screen_type[
+                    web_context.screen_type
+                ]
             else:
-                screens_sorted_by_uniq_id = (
-                    event.public_screens_by_screen_type_sorted_by_uniq_id[
-                        web_context.screen_type
-                    ]
-                )
+                sorted_screens = event.sorted_public_screens_by_screen_type[
+                    web_context.screen_type
+                ]
 
-            if not screens_sorted_by_uniq_id:
+            if not sorted_screens:
                 return Redirect(admin_event_url(request, event_uniq_id=event.uniq_id))
 
             admin_screen_type_data: dict[str, Any] = admin_screen_types_data[
                 web_context.screen_type
             ]
-            admin_screen_type_data['screens'] = screens_sorted_by_uniq_id
+            admin_screen_type_data['screens'] = sorted_screens
             admin_screen_type_data['title'] = admin_screen_type_data['title'].format(
                 num=len(admin_screen_type_data['screens']) or '-'
             )
@@ -991,7 +985,7 @@ class ScreenAdminController(BaseEventAdminController):
                         ScreenType.PLAYERS,
                         ScreenType.RANKING,
                     ]:
-                        for screen_set in screen.screen_sets_sorted_by_order:
+                        for screen_set in screen.sorted_screen_sets:
                             assert screen_set.id is not None
                             event_database.clone_stored_screen_set(
                                 screen_set.id, stored_screen.id
@@ -1210,7 +1204,7 @@ class ScreenAdminController(BaseEventAdminController):
         screen = web_context.get_admin_screen()
         match action:
             case 'delete':
-                if len(screen.screen_sets_sorted_by_order) <= 1:
+                if len(screen.sorted_screen_sets) <= 1:
                     raise ClientException(
                         'The last set of a screen can not be deleted.'
                     )

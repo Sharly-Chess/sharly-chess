@@ -1,5 +1,6 @@
 import functools
 import weakref
+from datetime import datetime
 from functools import cached_property
 from math import ceil
 from typing import TYPE_CHECKING, Optional
@@ -7,7 +8,7 @@ from _weakref import ReferenceType
 
 from common.i18n import _
 from data.screen import Screen
-from utils.date_time import format_timestamp_date_time
+
 from utils.enum import (
     ScreenType,
     PlayersScreenPlayerFormat,
@@ -249,12 +250,8 @@ class Family:
         )
 
     @property
-    def last_update(self) -> float | None:
+    def last_update(self) -> datetime | None:
         return self.stored_family.last_update
-
-    @property
-    def last_update_str(self) -> str | None:
-        return format_timestamp_date_time(self.last_update)
 
     def _calculate_screens(self) -> bool:
         players_instead_of_boards: bool
@@ -283,9 +280,7 @@ class Family:
                         )
                 else:
                     players_instead_of_boards = True
-                    cut_items_number = len(
-                        self.tournament.tournament_players_by_name_with_unpaired
-                    )
+                    cut_items_number = len(self.tournament.sorted_tournament_players)
                     if cut_items_number:
                         self._calculated_first = 1
                         self._calculated_last = cut_items_number
@@ -295,15 +290,15 @@ class Family:
                     if self.tournament.current_round:
                         if self.players_show_unpaired:
                             total_items_number = len(
-                                self.tournament.tournament_players_by_name_with_unpaired
+                                self.tournament.sorted_tournament_players
                             )
                         else:
                             total_items_number = len(
-                                self.tournament.tournament_players_by_name_without_unpaired
+                                self.tournament.sorted_tournament_players_without_unpaired
                             )
                     else:
                         total_items_number = len(
-                            self.tournament.tournament_players_by_name_with_unpaired
+                            self.tournament.sorted_tournament_players
                         )
                 else:
                     self.tournament.compute_tournament_player_ranks(
