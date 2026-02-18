@@ -50,9 +50,9 @@
   <content_rating type="oars-1.1" />
 
   <releases>
-    <release version="" date="">
+    <release version="3.6.0" date="2026-02-18">
       <description>
-        <p>Release </p>
+        <p>Release 3.6.0</p>
         <ul>
             <li>See upstream release notes for details</li>
         </ul>

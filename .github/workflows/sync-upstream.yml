@@ -176,8 +176,8 @@ jobs:
       - name: Update appdata version
         if: steps.merge.outputs.success == 'true' && steps.detect.outputs.is_prerelease != 'true'
         run: |
-          TAG="${{ steps.merge.outputs.tag }}"
-          TODAY=$(date +%Y-%m-%d)
+          export TAG="${{ steps.merge.outputs.tag }}"
+          export TODAY=$(date +%Y-%m-%d)
           RELEASE_BODY_B64="${{ steps.detect.outputs.release_body_b64 }}"
 
           # Vérifier si cette version existe déjà dans appdata
@@ -189,9 +189,9 @@ jobs:
 
             # Décoder les release notes upstream
             if [ -n "$RELEASE_BODY_B64" ]; then
-              RELEASE_BODY=$(echo "$RELEASE_BODY_B64" | base64 -d)
+              export RELEASE_BODY=$(echo "$RELEASE_BODY_B64" | base64 -d)
             else
-              RELEASE_BODY=""
+              export RELEASE_BODY=""
             fi
 
             # Utiliser python pour insérer le XML avec les release notes upstream
