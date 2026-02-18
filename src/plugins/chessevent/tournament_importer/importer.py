@@ -1,5 +1,4 @@
 import json
-import time
 import zoneinfo
 from datetime import datetime, timedelta
 
@@ -181,7 +180,7 @@ class ChessEventTournamentImporter(TournamentImporter):
             event_id=request_data.event_id,
             tournament_name=request_data.tournament_name,
             status=SuccessChessEventStatus().id,
-            last_sync=time.time(),
+            last_sync=datetime.now(),
         ).to_stored_value()
 
         stored_players: list[StoredPlayer] = []
