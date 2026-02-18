@@ -143,7 +143,7 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
             for tournament_player in self.tournament.compute_tournament_player_ranks(
                 after_round=self.ranking_round
             ).values()
-            if not self.tournament.started or tournament_player.has_real_pairings
+            if not self.tournament.started or tournament_player.has_played_games
         ]
 
         # Group by school
