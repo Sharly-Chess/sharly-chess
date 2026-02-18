@@ -106,9 +106,10 @@ jobs:
               fi
 
               # Vérifier si déjà mergé
+              # If a newer release is already merged, all older ones are covered → stop
               if git merge-base --is-ancestor "$TAG" HEAD 2>/dev/null; then
-                echo "Tag $TAG already merged, skipping"
-                continue
+                echo "Tag $TAG already merged — older releases are covered, stopping search"
+                break
               fi
 
               # Trouvé ! C'est la release la plus récente non encore mergée
@@ -264,6 +265,7 @@ jobs:
 
       - name: Create success issue
         if: steps.merge.outputs.success == 'true'
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           script: |
@@ -311,6 +313,7 @@ jobs:
 
       - name: Create conflict issue
         if: steps.merge.outputs.success == 'false'
+        continue-on-error: true
         uses: actions/github-script@v7
         with:
           script: |
