@@ -13,7 +13,7 @@ from plugins.chess_results.chess_results_background_uploader import (
 )
 from plugins.chess_results.utils import ChessResultsUtils
 from plugins.utils import PluginUtils
-from utils.date_time import format_timestamp_date_time
+from utils.date_time import format_datetime
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
@@ -38,7 +38,7 @@ class ChessResultsAdminEventController(BaseEventAdminController):
         cls, web_context: BaseEventAdminWebContext
     ) -> dict[str, Any]:
         return web_context.template_context | {
-            'format_timestamp_date_time': format_timestamp_date_time,
+            'format_datetime': format_datetime,
             'result_id': ChessResultsBackgroundUploader.result_id,
             'upload_status_messages': ChessResultsBackgroundUploader.upload_status_messages,
             'chess_results_utils': ChessResultsUtils,

@@ -94,7 +94,7 @@
                             <td class="text-center">
                                 {% set tournament_last_sync = tournament.plugin_data.chessevent.chessevent_last_sync %}
                                 {% if tournament_last_sync %}
-                                    {{ format_timestamp_date_time(tournament_last_sync) }}
+                                    {{ format_datetime(tournament_last_sync) }}
                                 {% endif %}
                             </td>
                             <td>

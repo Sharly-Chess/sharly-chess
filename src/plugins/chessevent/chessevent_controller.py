@@ -19,7 +19,7 @@ from plugins.chessevent.tournament_importer.options import (
     ChessEventTournamentOption,
 )
 from plugins.chessevent.utils import ChessEventUtils
-from utils.date_time import format_timestamp_date_time
+from utils.date_time import format_datetime
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
@@ -53,7 +53,7 @@ class ChessEventController(BaseEventAdminController):
     ):
         template_context = {
             'chessevent_utils': ChessEventUtils,
-            'format_timestamp_date_time': format_timestamp_date_time,
+            'format_datetime': format_datetime,
             'chessevent_importer': ChessEventTournamentImporter(),
             'tournament': tournament,
             'allow_sync': allow_sync,
