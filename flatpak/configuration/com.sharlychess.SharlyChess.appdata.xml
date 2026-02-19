@@ -50,6 +50,23 @@
   <content_rating type="oars-1.1" />
 
   <releases>
+    <release version="3.6.1" date="2026-02-19">
+      <description>
+        <p>Release 3.6.1</p>
+        <ul>
+            <li>Import events from SCE files</li>
+            <li>Push forward SCE export</li>
+            <li>Distribute the players among the tournaments</li>
+            <li>Delete all unpaired players at once</li>
+            <li>Import players from CSV files</li>
+            <li>Fixed the number of titled players on norm reports</li>
+            <li>Upgrade bbpPairings engine to v6.0.0</li>
+            <li>Display player history on crosstable document</li>
+            <li>Added criteria type _Comment_</li>
+            <li>Improved the prizes documents</li>
+        </ul>
+      </description>
+    </release>
     <release version="3.6.0" date="2026-02-18">
       <description>
         <p>Release 3.6.0</p>
