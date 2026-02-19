@@ -1039,8 +1039,6 @@ class TournamentPlayer(Player):
 
             # 1.5.6a
             # Check if the average rating of the top 40 eligible players is at least 2000 in every round
-            # if n_players < 40:
-            #     meets_156 = False
             top_rated = sorted([p.rating for p in present], reverse=True)[:40]
             if len(top_rated) < 40:
                 meets_156 = False
