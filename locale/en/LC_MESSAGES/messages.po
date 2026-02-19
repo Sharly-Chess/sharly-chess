@@ -3316,6 +3316,9 @@ msgstr "N"
 msgid "NA *** SHORT NAME FOR National Arbiter"
 msgstr "NA"
 
+msgid "NOTE: Norms are computed only on <em>completed</em> games."
+msgstr ""
+
 msgid "Name"
 msgstr ""
 
