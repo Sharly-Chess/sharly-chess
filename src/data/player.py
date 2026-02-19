@@ -939,6 +939,7 @@ class TournamentPlayer(Player):
         for rnd in range(1, self.tournament.rounds + 1):
             present: list[TournamentPlayer] = []
             for p in eligible_players:
+                missing_games: int = 0
                 pairing: Pairing | None = p.pairings_by_round.get(rnd)
                 if pairing and (
                     pairing.played
@@ -948,6 +949,10 @@ class TournamentPlayer(Player):
                         Result.REST_GAME,
                     ]
                 ):
+                    missing_games += 1
+                    if missing_games > 1:
+                        break
+                else:
                     present.append(p)
 
             n_players = len(present)
@@ -1018,6 +1023,7 @@ class TournamentPlayer(Player):
         for rnd in range(1, self.tournament.rounds + 1):
             present: list[TournamentPlayer] = []
             for p in eligible_players:
+                missed_rounds: int = 0
                 pairing: Pairing | None = p.pairings_by_round.get(rnd)
                 if pairing and (
                     pairing.played
@@ -1027,6 +1033,10 @@ class TournamentPlayer(Player):
                         Result.REST_GAME,
                     ]
                 ):
+                    missed_rounds += 1
+                    if missed_rounds > 1:
+                        break
+                else:
                     present.append(p)
 
             n_players = len(present)
