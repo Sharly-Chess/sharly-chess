@@ -103,7 +103,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         path='/custom-upload/test-auth',
         name='custom-upload-test-auth',
     )
-    async def htmx_ffe_test_auth(
+    async def htmx_custom_upload_test_auth(
         self,
         data: Annotated[
             dict[str, Any],
@@ -121,6 +121,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                     'ftp_username': data['ftp_username'],
                     'ftp_password': data['ftp_password'],
                 },
+                'ftp_password_visible': data['ftp_password_visible'] == 'true',
                 'custom_upload_auth_valid': False,
                 'errors': [],
             },

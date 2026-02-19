@@ -10,6 +10,7 @@
             hx_trigger='input changed delay:500ms',
             hx_target="closest .auth-fields",
             hx_swap="morphdom",
+            hx_vals='js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}',
             hx_sync="closest .auth-fields:replace",
             hx_indicator="unset",
             data=data, errors=errors
@@ -22,6 +23,7 @@
             placeholder=_('E.g.: /tournaments/my_tournament/'),
             hx_target="closest .auth-fields",
             hx_swap="morphdom",
+            hx_vals='js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}',
             hx_sync="closest .auth-fields:replace",
             hx_indicator="unset",
             data=data, errors=errors
@@ -36,12 +38,12 @@
             hx_trigger='input changed delay:500ms',
             hx_target="closest .auth-fields",
             hx_swap="morphdom",
+            hx_vals='js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}',
             hx_sync="closest .auth-fields:replace",
             hx_indicator="unset",
             data=data, errors=errors
         ) }}
     </div>
-    <!-- TODO: handle persistence of show password state after template is regenerated -->
     <div class="col-12 col-md-6">
         {{ admin_macros.password_input(
             name='ftp_password',
@@ -49,10 +51,12 @@
             autocomplete='new-password',
             placeholder=_('E.g.: my_password'),
             valid=custom_upload_auth_valid,
+            password_visible=ftp_password_visible,
             hx_post=url_for('custom-upload-test-auth'),
             hx_trigger='input changed delay:500ms',
             hx_target="closest .auth-fields",
             hx_swap="morphdom",
+            hx_vals='js:{ftp_password_visible: $("#ftp-password").attr("type") === "text"}',
             hx_sync="closest .auth-fields:replace",
             hx_indicator="unset",
             data=data, errors=errors
