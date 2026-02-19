@@ -715,7 +715,7 @@ class TournamentPlayer(Player):
                         continue
 
                 # 1.4.2a (Ignore games against opponents who do not belong to FIDE federations)
-                if opponent.federation == 'NON':
+                if opponent.federation == Federation('NON'):
                     ignored_opponents_ids.add(opponent.id)
                     continue
                 else:
