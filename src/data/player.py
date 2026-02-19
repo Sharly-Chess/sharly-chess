@@ -999,7 +999,7 @@ class TournamentPlayer(Player):
         if len(top_rated) < 40:
             meets_156 = False
         else:
-            avg = sum(top_rated) / len(top_rated)
+            avg: float = sum(top_rated) / len(top_rated)
             meets_156 = avg >= 2000
 
         for tn, res in results.items():
