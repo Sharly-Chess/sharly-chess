@@ -279,6 +279,10 @@ jobs:
     # Run only on tags or manual dispatch to avoid publishing every commit
     if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/linux-flatpak'
     runs-on: ubuntu-24.04
+    # Serialize all publish jobs to prevent binary merge conflicts on gh-pages
+    concurrency:
+      group: gh-pages-publish
+      cancel-in-progress: false
     permissions:
       contents: write
     steps:
@@ -477,8 +481,27 @@ jobs:
             COMMIT_MSG="$COMMIT_MSG - Version $VERSION"
           fi
           git commit -m "$COMMIT_MSG"
-          git pull --rebase origin gh-pages || true
-          git push
+
+          # Robust push with retry — handles concurrent pushes on binary OSTree files
+          MAX_RETRIES=3
+          for i in $(seq 1 $MAX_RETRIES); do
+            if git push origin gh-pages; then
+              echo "Push succeeded on attempt $i"
+              exit 0
+            fi
+            echo "Push failed (attempt $i/$MAX_RETRIES), rebasing on latest gh-pages..."
+            # Abort any in-progress rebase from a previous attempt
+            git rebase --abort 2>/dev/null || true
+            # Fetch the latest gh-pages
+            git fetch origin gh-pages
+            # Soft reset to latest remote: keeps our working tree intact but moves HEAD
+            git reset --soft origin/gh-pages
+            # Re-stage and re-commit our changes on top of the new base
+            git add .
+            git commit -m "$COMMIT_MSG" || echo "Nothing new to commit"
+          done
+          echo "ERROR: Push failed after $MAX_RETRIES attempts"
+          exit 1
 
   # Job de notification en cas d'échec de build ou de publication
   notify-failure:
