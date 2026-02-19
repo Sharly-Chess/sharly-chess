@@ -259,6 +259,8 @@ jobs:
           if git ls-remote --tags origin "refs/tags/$TAG" | grep -q "$TAG"; then
             echo "Tag $TAG already exists on fork, skipping"
           else
+            # Supprimer le tag local s'il existe (importé depuis upstream via fetch --tags)
+            git tag -d "$TAG" 2>/dev/null || true
             git tag -a "$TAG" -m "Release $TAG (synced from upstream)"
             git push origin "$TAG"
             echo "Created and pushed tag $TAG on fork"
