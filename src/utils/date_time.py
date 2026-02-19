@@ -1,4 +1,3 @@
-import time
 from datetime import datetime, date
 
 from utils.date_formatter import (
@@ -23,19 +22,6 @@ def _date_formatter() -> DateFormatter:
     from common.sharly_chess_config import SharlyChessConfig
 
     return SharlyChessConfig().date_formatter
-
-
-def format_timestamp(ts: float | None, format_: str) -> str:
-    """Formats a timestamp (now if None) to the given format."""
-    return datetime.strftime(datetime.fromtimestamp(ts or time.time()), format_)
-
-
-def format_timestamp_date_time(ts: float | None = None) -> str:
-    return format_timestamp(ts, _date_formatter().datetime_python_format)
-
-
-def format_timestamp_date(ts: float | None = None) -> str:
-    return format_timestamp(ts, _date_formatter().python_format)
 
 
 def format_date(date_: date | None = None) -> str:

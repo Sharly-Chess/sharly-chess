@@ -1161,6 +1161,7 @@ class NormReportPrintDocument(PrintDocument):
             'end': self.tournament.stop_date.strftime('%Y.%m.%d'),
             'norms': norms,
             'tournament_player': tournament_player,
+            'PlayerTitle': PlayerTitle,
         }
 
 
