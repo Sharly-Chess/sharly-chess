@@ -689,7 +689,7 @@ class TournamentPlayer(Player):
 
         is_round_robin = self.tournament.pairing_system == RoundRobinPairingSystem()
 
-        for pairing in self.pairings_by_round.values():
+        for rnd, pairing in self.pairings_by_round.items():
             if pairing.result.is_board_bye or pairing.result == Result.FORFEIT_WIN:
                 forfeits_or_byes += 1
 
@@ -918,50 +918,80 @@ class TournamentPlayer(Player):
             ):
                 continue
             missed_rounds = 0
-            for pairing in p.pairings_by_round.values():
+            for r, pairing in p.pairings_by_round.items():
                 if pairing.unplayed and pairing.result not in [
+                    Result.FORFEIT_WIN,
                     Result.PAIRING_ALLOCATED_BYE,
                     Result.REST_GAME,
                 ]:
                     missed_rounds += 1
-                    if missed_rounds > 1:
-                        # stop searching once we get 2 missing rounds
-                        break
-            else:  # no-break
-                eligible_players.append(p)
+            if missed_rounds > 1:
+                continue
+            eligible_players.append(p)
 
-        # NOTE(Amaras): here `eligible_players` holds *all* the FIDE-rated players not from
-        # the host federation that have missed at most 1 round
+        # Per-round counts among eligible & present -----------------
+        worst_players: float = float('inf')
+        worst_federations: float = float('inf')
+        worst_titled: float = float('inf')
+        meets_156 = True
 
-        foreign_rated = len(eligible_players)
-        other_federations = len({p.federation for p in eligible_players})
-        foreign_titled = sum(
-            1
-            for p in eligible_players
-            if p.title
-            in (
-                PlayerTitle.GRANDMASTER,
-                PlayerTitle.INTERNATIONAL_MASTER,
-                PlayerTitle.WOMAN_GRANDMASTER,
-                PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+        for rnd in range(1, self.tournament.rounds + 1):
+            present: list[TournamentPlayer] = []
+            for p in eligible_players:
+                pairing: Pairing | None = p.pairings_by_round.get(rnd)
+                if pairing and (
+                    pairing.played
+                    or pairing.result
+                    in [
+                        Result.PAIRING_ALLOCATED_BYE,
+                        Result.REST_GAME,
+                    ]
+                ):
+                    present.append(p)
+
+            n_players = len(present)
+            n_titled = sum(
+                1
+                for p in present
+                if p.title
+                in (
+                    PlayerTitle.GRANDMASTER,
+                    PlayerTitle.INTERNATIONAL_MASTER,
+                    PlayerTitle.WOMAN_GRANDMASTER,
+                    PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+                )
             )
-        )
+
+            # 1.4.2a
+            present_not_fid = [p for p in present if p.federation != Federation('FID')]
+            n_feds = len({p.federation for p in present_not_fid})
+
+            # Track worst (minimum) across rounds
+            worst_players = min(worst_players, n_players)
+            worst_federations = min(worst_federations, n_feds)
+            worst_titled = min(worst_titled, n_titled)
+
+        # Handle case of zero rounds gracefully
+        if worst_players is float('inf'):
+            worst_players = 0
+            worst_federations = 0
+            worst_titled = 0
 
         msg = _(
             '<b>1.4.3d</b> Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles.'
         )
         for tn, res in results.items():
-            res.all_federations_count = int(other_federations)
+            res.all_federations_count = int(worst_federations)
             res.not_enough_all_federations = (
                 msg if res.all_federations_count < 3 else None
             )
 
-            res.eligible_players_title_count = int(foreign_titled)
+            res.eligible_players_title_count = int(worst_titled)
             res.not_enough_all_title_holders = (
                 msg if res.eligible_players_title_count < 10 else None
             )
 
-            res.eligible_players_count = int(foreign_rated)
+            res.eligible_players_count = int(worst_players)
             res.not_enough_foreign_players = (
                 msg if res.eligible_players_count < 20 else None
             )
@@ -980,27 +1010,44 @@ class TournamentPlayer(Player):
                 p.federation == Federation('NON')  # 1.4.2a
             ):
                 continue
+
             missed_rounds: int = 0
-            for pairing in p.pairings_by_round.values():
+            for r, pairing in p.pairings_by_round.items():
                 if pairing.unplayed and pairing.result not in [
+                    Result.FORFEIT_WIN,
                     Result.PAIRING_ALLOCATED_BYE,
                     Result.REST_GAME,
                 ]:
                     missed_rounds += 1
-                    if missed_rounds > 1:
-                        break
-            else:
-                eligible_players.append(p)
+            if missed_rounds > 1:
+                continue
+            eligible_players.append(p)
 
-        # NOTE(Amaras): here `eligible_players` hold all players from valid federations who
-        # missed at most one round.
+        for rnd in range(1, self.tournament.rounds + 1):
+            present: list[TournamentPlayer] = []
+            for p in eligible_players:
+                pairing: Pairing | None = p.pairings_by_round.get(rnd)
+                if pairing and (
+                    pairing.played
+                    or pairing.result
+                    in [
+                        Result.PAIRING_ALLOCATED_BYE,
+                        Result.REST_GAME,
+                    ]
+                ):
+                    present.append(p)
 
-        top_rated = sorted([p.rating for p in eligible_players])[:40]
-        if len(top_rated) < 40:
-            meets_156 = False
-        else:
+            # 1.5.6a
+            # Check if the average rating of the top 40 eligible players is at least 2000 in every round
+            # if n_players < 40:
+            #     meets_156 = False
+            top_rated = sorted([p.rating for p in present], reverse=True)[:40]
+            if len(top_rated) < 40:
+                meets_156 = False
             avg: float = sum(top_rated) / len(top_rated)
-            meets_156 = avg >= 2000
+            meets_156 = meets_156 and avg >= 2000
+            if not meets_156:
+                break
 
         for tn, res in results.items():
             res.requirement_156a_met = meets_156
