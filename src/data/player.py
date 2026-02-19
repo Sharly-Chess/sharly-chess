@@ -914,7 +914,7 @@ class TournamentPlayer(Player):
                 continue
             if (
                 p.federation == Federation(self.tournament.event.federation)
-                or p.federation == 'NON'  # 1.4.2a
+                or p.federation == Federation('NON')  # 1.4.2a
             ):
                 continue
             missed_rounds = 0
