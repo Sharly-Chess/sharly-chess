@@ -254,8 +254,12 @@ jobs:
               f.write(content)
           PYEOF
 
-            git add "$APPDATA"
-            git commit -m "Update appdata for $TAG release"
+            # Mettre à jour la version dans le fichier .desktop
+            git show "$TAG:pyproject.toml" > pyproject.toml 2>/dev/null || true # Ensure we have correct version source if not checked out
+            python3 scripts/sync_desktop_version.py
+
+            git add "$APPDATA" flatpak/configuration/com.sharlychess.SharlyChess.desktop
+            git commit -m "Update metadata for $TAG release"
           fi
 
       - name: Push merged branch
