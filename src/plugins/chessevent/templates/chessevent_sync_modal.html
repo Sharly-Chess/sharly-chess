@@ -92,7 +92,7 @@
                                 {% endif %}
                             </td>
                             <td class="text-center">
-                                {% set tournament_last_sync = tournament.plugin_data.chessevent.chessevent_last_sync %}
+                                {% set tournament_last_sync = tournament.plugin_data.chessevent.last_sync %}
                                 {% if tournament_last_sync %}
                                     {{ format_datetime(tournament_last_sync) }}
                                 {% endif %}
