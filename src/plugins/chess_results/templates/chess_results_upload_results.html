@@ -26,7 +26,7 @@
             </td>
             <td class="text-center text-nowrap" style="width: 0;">
                 {% if tournament.plugin_data.chess_results.last_upload %}
-                    {{ format_timestamp_date_time(tournament.plugin_data.chess_results.last_upload) }}
+                    {{ format_datetime(tournament.plugin_data.chess_results.last_upload) }}
                 {% else %}
                     -
                 {% endif %}

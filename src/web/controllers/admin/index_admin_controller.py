@@ -28,7 +28,6 @@ from data.player_categories import (
     PlayerCategory,
 )
 from utils.date_time import (
-    format_timestamp_date,
     format_date_range,
     format_date,
     DateFormatterManager,
@@ -279,7 +278,6 @@ class IndexAdminController(BaseAdminController):
             web_context.template_context
             | {
                 'messages': Message.messages(web_context.request),
-                'format_timestamp_date': format_timestamp_date,
                 'format_date_range': format_date_range,
                 'format_date': format_date,
                 'nav_tabs': nav_tabs,

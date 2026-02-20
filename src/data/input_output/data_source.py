@@ -1,6 +1,6 @@
 import asyncio
-import time
 from abc import ABC, abstractmethod
+from datetime import datetime
 from functools import cached_property
 from logging import Logger
 from typing import override, ClassVar, Collection
@@ -30,7 +30,7 @@ from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
 from database.sqlite.local_source_database.databases import LocalSourcePlayerDatabase
 from plugins.manager import plugin_manager
-from utils.date_time import format_timestamp_date_time
+from utils.date_time import format_datetime
 from utils.entity import IdentifiableEntity
 from utils.enum import TournamentRating, PlayerRatingType
 
@@ -319,7 +319,7 @@ class LocalDataSource(DataSource, ABC):
 
 class OnlineDataSource(DataSource, ABC):
     connection_status: ClassVar[bool | None] = None
-    _connection_last_checked_at: ClassVar[float | None] = None
+    _connection_last_checked_at: ClassVar[datetime | None] = None
 
     @classmethod
     @abstractmethod
@@ -339,7 +339,7 @@ class OnlineDataSource(DataSource, ABC):
 
     @classmethod
     async def reload_connection_status(cls):
-        cls._connection_last_checked_at = time.time()
+        cls._connection_last_checked_at = datetime.now()
         if not NetworkMonitor.connected():
             cls.connection_status = None
         cls.connection_status = await cls.check_connection()
@@ -350,7 +350,9 @@ class OnlineDataSource(DataSource, ABC):
 
     @property
     def connection_last_checked_at_str(self) -> str:
-        return format_timestamp_date_time(self._connection_last_checked_at)
+        if not self._connection_last_checked_at:
+            return ''
+        return format_datetime(self._connection_last_checked_at)
 
     @property
     def search_error_icon(self) -> str:
@@ -360,7 +362,7 @@ class OnlineDataSource(DataSource, ABC):
         self, string: str, federation: str, page: int = 0, limit: int | None = None
     ) -> list[StoredPlayer]:
         cls = self.__class__
-        cls._connection_last_checked_at = time.time()
+        cls._connection_last_checked_at = datetime.now()
         if not NetworkMonitor.connected():
             cls.connection_status = None
             raise SharlyChessException(_('No internet connection'))
