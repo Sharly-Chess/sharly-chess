@@ -4720,6 +4720,10 @@ msgid "Not specified"
 msgstr "Não especificado"
 
 #, ai_translation
+msgid "Note: norms are computed based only on <em>completed</em> games."
+msgstr "Nota: as normas são computadas com base apenas em jogos em>completados/em>."
+
+#, ai_translation
 msgid "Notification"
 msgstr "Notificação"
 
@@ -8696,6 +8700,10 @@ msgstr "todo o ranking"
 #, ai_translation
 msgid "then"
 msgstr "então"
+
+#, ai_translation, python-format
+msgid "total: %(total)s"
+msgstr "total: %(total)s"
 
 #, ai_translation
 msgid "value: {value}"
