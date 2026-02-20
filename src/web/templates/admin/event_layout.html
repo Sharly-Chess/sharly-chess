@@ -32,7 +32,7 @@
     {% for nav_id, nav_tab in nav_tabs.items() %}
         {% include '/admin/event_layout_nav_item.html' %}
     {% endfor %}
-    {% if client.can_generate_documents %}
+    {% if client.can_generate_documents and allowed_tournaments %}
         {% include '/admin/common/print_button.html' %}
     {% endif %}
     {% if client.can_manage_source_databases or client.can_manage_application_settings %}

@@ -83,10 +83,9 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
 
     @classmethod
     def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
-        if (
-            not allowed_tournaments
-            and TournamentPrintOption in cls.available_options()
-            and TournamentsPrintOption in cls.available_options()
+        if not allowed_tournaments and (
+            TournamentPrintOption in cls.available_options()
+            or TournamentsPrintOption in cls.available_options()
         ):
             return False
         return True
