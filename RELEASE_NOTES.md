@@ -14,6 +14,7 @@
 
 - Import players from CSV files (3.6.0)
 - Fixed the number of titled players on norm reports (3.6.1)
+- Fixed CSV import with one column (3.6.2)
 
 ## Pairings
 
@@ -28,6 +29,12 @@
 ## Screens
 
 - Added missing link on the family screens card (3.6.0)
+
+## Documents
+
+- Fix player norms computation (3.6.2)
+- Added a note that norms are only computed based on completed games (3.6.2)
+- Fix inaccessible Woman title documents (3.6.2)
 
 ## _FFE_
 

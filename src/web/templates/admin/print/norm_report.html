@@ -205,6 +205,8 @@
                     {{_('Unmet requirements are highlighted in red and should be verified. They will appear in black when printed.')}}
                     <br />
                     {{_('All values may be modified by the arbiter if necessary.')}}
+                    <br />
+                    {{_('NOTE: Norms are computed based only on <em>completed</em> games.')}}
                 </div>
             {% else %}
                 <div class="spacer"></div>
@@ -351,7 +353,7 @@
                             norm.not_enough_federations or
                             norm.too_many_own_federation or
                             norm.too_many_one_federation
-                        ) and norm.is_143d_met
+                        )
                     %}
                     <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.4.3d:</div>
                     <div class="grid" style="grid-template-columns: 3fr 5fr;">
@@ -435,7 +437,14 @@
                             </td>
                             <td><input class="center" size="5" value="{{ opp.rating }}"  /></td>
                             <td><input class="center" size="5" value="{{ adjusted_opp_rating if opp is not none}}" /></td>
-                            <td><input class="center" size="4" value="{{ opp.title.to_fide_value or '-' if opp is not none }}"  /></td>
+                            <td><input class="center" size="4" value="{% if opp is not none %}{{ opp.title.value if opp.title in [
+                                PlayerTitle.GRANDMASTER,
+                                PlayerTitle.INTERNATIONAL_MASTER,
+                                PlayerTitle.WOMAN_GRANDMASTER,
+                                PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+                                PlayerTitle.FIDE_MASTER,
+                                PlayerTitle.WOMAN_FIDE_MASTER,
+                            ] else '-' }}{% endif %}" /></td>
                             <td><input class="center" size="4" value="{{ pairing.result.to_norm_report }}" /></td>
                         </tr>
                     {% endfor %}
