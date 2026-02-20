@@ -21,11 +21,6 @@
 - Upgrade bbpPairings engine to v6.0.0 (3.6.0)
 - Display player history on crosstable document (3.6.0)
 
-## Norms
-
-- Fix player norms computation (3.6.2)
-- Added a note that norms are only computed based on completed games (3.6.2)
-
 ## Prizes
 
 - Added criteria type _Comment_ (3.6.0)
@@ -34,6 +29,12 @@
 ## Screens
 
 - Added missing link on the family screens card (3.6.0)
+
+## Documents
+
+- Fix player norms computation (3.6.2)
+- Added a note that norms are only computed based on completed games (3.6.2)
+- Fix inaccessible Woman title documents (3.6.2)
 
 ## _FFE_
 
