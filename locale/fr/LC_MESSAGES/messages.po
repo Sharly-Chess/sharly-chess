@@ -5703,6 +5703,9 @@ msgstr "Ce départage n'est pas compatible avec le système d'appariements [{pai
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
 msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es ({count} dans le tournoi)."
 
+msgid "This tournament has no titled players."
+msgstr "Ce tournoi n'a pas de joueur·euses titré·es."
+
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
 

@@ -73,7 +73,15 @@ class EventDocumentsController(BaseEventAdminController):
         data = default_data | (data or {})
         document_ids_by_option_id: dict[str, list[str]] = defaultdict(list[str])
         containers_by_document: dict[str, list[str]] = {'': []}
-        for document in PrintDocumentManager(event).objects():
+        allowed_tournaments = web_context.client.allowed_tournaments_for_action(
+            AuthAction.GENERATE_DOCUMENTS
+        )
+        documents = [
+            doc
+            for doc in PrintDocumentManager(event).objects()
+            if doc.is_available(allowed_tournaments)
+        ]
+        for document in documents:
             options = document.default_options()
             containers_by_document[document.id] = [
                 option.container_id for option in options
@@ -108,7 +116,7 @@ class EventDocumentsController(BaseEventAdminController):
             'players_per_tournament_id': players_per_tournament_id,
             'document_ids_by_option_id': document_ids_by_option_id,
             'allowed_tournaments': allowed_tournaments,
-            'document_options': PrintDocumentManager(event).options(),
+            'document_options': {document.id: document.name for document in documents},
             'current_document_option_ids': current_document_option_ids,
             'print_options': print_options,
             'containers_by_document': containers_by_document,
