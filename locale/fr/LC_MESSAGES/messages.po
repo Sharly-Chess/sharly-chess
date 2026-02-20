@@ -3652,6 +3652,9 @@ msgstr "Non-apparié·e pour cette ronde"
 msgid "Not specified"
 msgstr "Non-spécifié"
 
+msgid "Note: norms are computed based only on <em>completed</em> games."
+msgstr "Note : les normes ne sont calculées qu'à partir des parties <em>terminées</em>."
+
 msgid "Notification"
 msgstr "Notification"
 
@@ -6702,6 +6705,10 @@ msgstr "classement complet"
 
 msgid "then"
 msgstr "puis"
+
+#, python-format
+msgid "total: %(total)s"
+msgstr "total : %(total)s"
 
 msgid "value: {value}"
 msgstr "valeur : {value}"

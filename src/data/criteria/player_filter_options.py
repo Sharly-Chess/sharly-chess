@@ -132,7 +132,7 @@ class GenderOption(SelectPlayerFilterOption[PlayerGender]):
 
     @property
     def type(self) -> type | UnionType:
-        return int
+        return str
 
     @property
     def default_value(self) -> Any:

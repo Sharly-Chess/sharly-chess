@@ -2,7 +2,7 @@ import re
 import shutil
 from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from functools import cached_property
 from logging import Logger
 from pathlib import Path
@@ -25,7 +25,7 @@ from data.event_metadata import EventMetadata
 from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.date_time import get_date_timestamp, format_timestamp_date_time
+from utils.date_time import get_date_timestamp, format_datetime
 
 logger: Logger = get_logger()
 
@@ -50,10 +50,10 @@ class EventLoader:
 
     @classmethod
     def load_event_ids(cls, uniq_id: str | None = None):
+        event_ids = [uniq_id] if uniq_id is not None else cls.all_event_ids()
         cls._clean_not_existing_event_database_files(cls._valid_event_ids)
         cls._clean_not_existing_event_database_files(cls._invalid_uniq_ids)
         known_event_ids = cls._valid_event_ids | cls._invalid_uniq_ids
-        event_ids = [uniq_id] if uniq_id is not None else cls.all_event_ids()
         for event_id in event_ids:
             if event_id in known_event_ids:
                 continue
@@ -129,7 +129,7 @@ class EventLoader:
                 logger.warning(
                     'File [%s] has been renamed [%s]', file.name, new_file.name
                 )
-            ids.append(file.stem)
+            ids.append(uniq_id)
         return ids
 
     def get_unused_event_uniq_id(self, base_uniq_id: str) -> str:
@@ -203,11 +203,11 @@ class Archive:
 
     file: Path
     name: str
-    date: float
+    date: datetime
 
     @property
     def date_str(self):
-        return format_timestamp_date_time(self.date)
+        return format_datetime(self.date)
 
     @property
     def url_name(self) -> str:
@@ -234,7 +234,7 @@ class ArchiveLoader:
     def get_sorted_archives() -> list[Archive]:
         return sorted(
             [
-                Archive(file, file.stem, file.lstat().st_ctime)
+                Archive(file, file.stem, datetime.fromtimestamp(file.lstat().st_ctime))
                 for file in SharlyChessConfig.event_archive_base_path.glob(
                     f'*.{SharlyChessConfig.event_archive_ext}'
                 )
@@ -248,7 +248,11 @@ class ArchiveLoader:
         arch_file = cls.get_archive_path(archive_name)
         if not arch_file.exists():
             return None
-        return Archive(arch_file, arch_file.stem, arch_file.lstat().st_ctime)
+        return Archive(
+            arch_file,
+            arch_file.stem,
+            datetime.fromtimestamp(arch_file.lstat().st_ctime),
+        )
 
     @staticmethod
     def get_archive_path(archive_name: str) -> Path:
