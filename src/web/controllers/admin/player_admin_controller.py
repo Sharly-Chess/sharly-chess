@@ -1630,7 +1630,11 @@ class PlayerAdminController(BaseEventAdminController):
         with open(file_path, 'rb') as raw_file:
             encoding = chardet.detect(raw_file.read())['encoding']
         with open(file_path, 'r', encoding=encoding) as csvfile:
-            dialect = csv.Sniffer().sniff(''.join(islice(csvfile, 2)))
+            try:
+                dialect = csv.Sniffer().sniff(''.join(islice(csvfile, 2)))
+            except csv.Error:
+                dialect = csv.excel
+
             csvfile.seek(0)
             reader = csv.DictReader(csvfile, dialect=dialect)
             if reader.fieldnames:
