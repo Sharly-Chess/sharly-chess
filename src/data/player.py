@@ -715,7 +715,7 @@ class TournamentPlayer(Player):
                         continue
 
                 # 1.4.2a (Ignore games against opponents who do not belong to FIDE federations)
-                if opponent.federation == 'NON':
+                if opponent.federation == Federation('NON'):
                     ignored_opponents_ids.add(opponent.id)
                     continue
                 else:
@@ -914,7 +914,7 @@ class TournamentPlayer(Player):
                 continue
             if (
                 p.federation == Federation(self.tournament.event.federation)
-                or p.federation == 'NON'  # 1.4.2a
+                or p.federation == Federation('NON')  # 1.4.2a
             ):
                 continue
             missed_rounds = 0
@@ -927,7 +927,6 @@ class TournamentPlayer(Player):
                     missed_rounds += 1
             if missed_rounds > 1:
                 continue
-
             eligible_players.append(p)
 
         # Per-round counts among eligible & present -----------------
@@ -951,10 +950,20 @@ class TournamentPlayer(Player):
                     present.append(p)
 
             n_players = len(present)
-            n_titled = sum(1 for p in present if p.title != PlayerTitle.NONE)
+            n_titled = sum(
+                1
+                for p in present
+                if p.title
+                in (
+                    PlayerTitle.GRANDMASTER,
+                    PlayerTitle.INTERNATIONAL_MASTER,
+                    PlayerTitle.WOMAN_GRANDMASTER,
+                    PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+                )
+            )
 
             # 1.4.2a
-            present_not_fid = [p for p in present if p.federation != 'FID']
+            present_not_fid = [p for p in present if p.federation != Federation('FID')]
             n_feds = len({p.federation for p in present_not_fid})
 
             # Track worst (minimum) across rounds
@@ -998,11 +1007,11 @@ class TournamentPlayer(Player):
             if p.rating_type != PlayerRatingType.FIDE:
                 continue
             if (
-                p.federation == 'NON'  # 1.4.2a
+                p.federation == Federation('NON')  # 1.4.2a
             ):
                 continue
 
-            missed_rounds = 0
+            missed_rounds: int = 0
             for r, pairing in p.pairings_by_round.items():
                 if pairing.unplayed and pairing.result not in [
                     Result.FORFEIT_WIN,
@@ -1012,7 +1021,6 @@ class TournamentPlayer(Player):
                     missed_rounds += 1
             if missed_rounds > 1:
                 continue
-
             eligible_players.append(p)
 
         for rnd in range(1, self.tournament.rounds + 1):
@@ -1029,17 +1037,15 @@ class TournamentPlayer(Player):
                 ):
                     present.append(p)
 
-            n_players = len(present)
-
             # 1.5.6a
             # Check if the average rating of the top 40 eligible players is at least 2000 in every round
-            if n_players < 40:
+            top_rated = sorted([p.rating for p in present], reverse=True)[:40]
+            if len(top_rated) < 40:
                 meets_156 = False
-            else:
-                top_rated = sorted([p.rating for p in present], reverse=True)[:40]
-                avg: float = sum(top_rated) / len(top_rated) if top_rated else 0
-                if avg < 2000:
-                    meets_156 = False
+            avg: float = sum(top_rated) / len(top_rated)
+            meets_156 = meets_156 and avg >= 2000
+            if not meets_156:
+                break
 
         for tn, res in results.items():
             res.requirement_156a_met = meets_156

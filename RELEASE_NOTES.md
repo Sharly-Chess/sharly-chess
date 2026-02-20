@@ -21,6 +21,11 @@
 - Upgrade bbpPairings engine to v6.0.0 (3.6.0)
 - Display player history on crosstable document (3.6.0)
 
+## Norms
+
+- Fix player norms computation (3.6.2)
+- Added a note that norms are only computed based on completed games (3.6.2)
+
 ## Prizes
 
 - Added criteria type _Comment_ (3.6.0)
