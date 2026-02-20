@@ -32,8 +32,8 @@
                 {% endif %}
             </td>
             <td class="text-center text-nowrap" style="width: 0;">
-                {% if tournament.plugin_data.ffe.ffe_last_upload %}
-                    {{ format_timestamp_date_time(tournament.plugin_data.ffe.ffe_last_upload) }}
+                {% if tournament.plugin_data.ffe.last_upload %}
+                    {{ format_datetime(tournament.plugin_data.ffe.last_upload) }}
                 {% else %}
                     -
                 {% endif %}
