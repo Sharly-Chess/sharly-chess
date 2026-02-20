@@ -1042,9 +1042,9 @@ class TournamentPlayer(Player):
             top_rated = sorted([p.rating for p in present], reverse=True)[:40]
             if len(top_rated) < 40:
                 meets_156 = False
-            avg: float = sum(top_rated) / len(top_rated)
-            meets_156 = meets_156 and avg >= 2000
-            if not meets_156:
+                break
+            if sum(top_rated) / len(top_rated) < 2000:
+                meets_156 = False
                 break
 
         for tn, res in results.items():
