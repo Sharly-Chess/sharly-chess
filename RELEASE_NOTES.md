@@ -36,6 +36,7 @@
 - Added a note that norms are only computed based on completed games (3.6.2)
 - Fix inaccessible Woman title documents (3.6.2)
 - Restrict document options to the ones that can be generated (3.6.3)
+- Fix slowness after document generation (3.6.3)
 
 ## _FFE_
 
