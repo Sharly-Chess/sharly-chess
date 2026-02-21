@@ -8,6 +8,7 @@ function closeModal() {
         modal.hide();
     }
     closeTooltips();
+    activateTooltips();
 }
 
 window.addEventListener('show.bs.modal', function(event) {
