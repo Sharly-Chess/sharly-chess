@@ -64,6 +64,15 @@ function scrollToFirstError() {
     }
 }
 
+const generateHash = (string) => {
+    let hash = 0;
+    for (const char of string) {
+        hash = (hash << 5) - hash + char.charCodeAt(0);
+        hash |= 0; // Constrain to 32bit integer
+    }
+    return hash;
+};
+
 window.addEventListener("do_print", function(event) {
     closeModal();
     const form = document.createElement('form');
@@ -77,7 +86,8 @@ window.addEventListener("do_print", function(event) {
     input.name = 'options';
     input.value = Object.keys(event.detail.options).map(k => k + '=' + event.detail.options[k]).join('|');
     form.appendChild(input);
-    form.target = '_blank';
+    /* Each document has its own browser tab (when a document is generated twice, the same tab is used). */
+    form.target = generateHash(input.value);
     document.body.appendChild(form);
     form.submit();
     document.body.removeChild(form);

@@ -35,6 +35,7 @@
 - Fix player norms computation (3.6.2)
 - Added a note that norms are only computed based on completed games (3.6.2)
 - Fix inaccessible Woman title documents (3.6.2)
+- Do not open new browser tabs when refreshing documents (3.6.3)
 
 ## _FFE_
 
