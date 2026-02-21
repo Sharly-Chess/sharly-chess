@@ -3,6 +3,8 @@ from typing import Annotated
 
 from litestar import get, post
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
+
+from data.event import Event
 from web.streaming_template import StreamingHTMXTemplate
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -264,5 +266,28 @@ class EventDocumentsController(BaseEventAdminController):
             | print_document.template_context
         )
         return StreamingHTMXTemplate(
+            template_name=print_document.template_name, context=template_context
+        )
+
+    @classmethod
+    def document_view(cls, event: Event, document: str, options: str | None = None):
+        document_type = PrintDocumentManager(event).get_type(document)
+        option_data: dict[str, str] = {}
+        if options:
+            for option in urllib.parse.unquote(options).split('|'):
+                key, raw_value = option.split('=')
+                option_data[key] = raw_value
+        print_options: list[PrintOption] = []
+        for print_option in document_type(event=event).default_options():
+            value = WebContext.form_data_to_value(
+                option_data, print_option.id, print_option.type
+            )
+            print_options.append(type(print_option)(event, value))
+        print_document = document_type(options=print_options, event=event)
+
+        template_context = {
+            'document': print_document,
+        } | print_document.template_context
+        return HTMXTemplate(
             template_name=print_document.template_name, context=template_context
         )

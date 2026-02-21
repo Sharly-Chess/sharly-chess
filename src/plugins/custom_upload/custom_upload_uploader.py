@@ -1,3 +1,4 @@
+import io
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
@@ -6,10 +7,9 @@ from pathlib import Path
 from threading import Thread
 
 import paramiko.client
-from paramiko import SFTPClient
 
-from common import BASE_DIR
 from common.i18n import _, set_locale
+from common.i18n.utils import parse_jinja_template
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
@@ -23,6 +23,7 @@ from plugins.custom_upload.utils import (
 )
 from plugins.utils import PluginUtils
 from web.channels import channels_plugin
+from web.controllers.admin.event_documents_controller import EventDocumentsController
 
 logger = get_logger()
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
@@ -194,23 +195,33 @@ class CustomUploadUploader:
         logger.info('Uploading tournament [%s]...', tournament.name)
 
         with paramiko.SSHClient() as client:
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+
             plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
 
             host = plugin_data.ftp_host
             username = plugin_data.ftp_username
             password = plugin_data.ftp_password
-            # TODO: replace test file by actual document(s) picked by user
-            file_name = 'README.md'
+
+            # TODO: replace sample document by document(s) picked by user
+            document_htmx_template = EventDocumentsController.document_view(
+                event=event,
+                document='player-list',
+                options='tournaments%3D1%7Cplayer-split%3Dclub',
+            )
+            html_content = parse_jinja_template(
+                document_htmx_template.template_name, document_htmx_template.context
+            )
+            temporary_document_file = io.BytesIO(html_content.encode())
+
+            file_name = 'player-list.html'
             upload_location = Path(plugin_data.server_path) / file_name
-            exported_file = BASE_DIR / file_name
-            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             try:
                 client.connect(host, username=username, password=password)
-                sftp_client: SFTPClient = client.open_sftp()
-                sftp_client.put(
-                    exported_file.absolute().as_posix(), upload_location.as_posix()
-                )
+                sftp_client = client.open_sftp()
+                sftp_client.putfo(temporary_document_file, upload_location.as_posix())
                 sftp_client.close()
+                temporary_document_file.close()
             except Exception as e:
                 logger.error(
                     'Error uploading tournament [%s]: [%s]', tournament.name, e
