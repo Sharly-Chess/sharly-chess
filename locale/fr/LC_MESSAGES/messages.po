@@ -3316,9 +3316,6 @@ msgstr "N"
 msgid "NA *** SHORT NAME FOR National Arbiter"
 msgstr "AN"
 
-msgid "NOTE: Norms are computed based only on <em>completed</em> games."
-msgstr "NOTE : Les normes ne sont calculées qu'à partir des parties <em>terminées</em>."
-
 msgid "Name"
 msgstr "Nom"
 
@@ -3654,6 +3651,9 @@ msgstr "Non-apparié·e pour cette ronde"
 
 msgid "Not specified"
 msgstr "Non-spécifié"
+
+msgid "Note: norms are computed based only on <em>completed</em> games."
+msgstr "Note : les normes ne sont calculées qu'à partir des parties <em>terminées</em>."
 
 msgid "Notification"
 msgstr "Notification"
