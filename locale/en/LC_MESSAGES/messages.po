@@ -4444,6 +4444,10 @@ msgstr "R %(round)d"
 msgid "R {round} *** ROUND COLUMN HEADER"
 msgstr "R {round}"
 
+#, python-format
+msgid "R%(round)d: %(datetime)s"
+msgstr "R%(round)d: %(datetime)s"
+
 msgid "RES"
 msgstr ""
 
