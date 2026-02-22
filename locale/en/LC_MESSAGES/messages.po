@@ -4701,6 +4701,9 @@ msgstr ""
 msgid "Round"
 msgstr ""
 
+msgid "Round #"
+msgstr ""
+
 #, python-format
 msgid "Round #%(round)d"
 msgstr ""
@@ -4711,6 +4714,10 @@ msgstr ""
 
 #, python-format
 msgid "Round #%(round)d is running."
+msgstr ""
+
+#, python-format
+msgid "Round #%(round)d must be scheduled after round #%(prev)d."
 msgstr ""
 
 msgid "Round #0 is forbidden."
@@ -4810,6 +4817,9 @@ msgid "Save"
 msgstr ""
 
 msgid "Save the set or cancel."
+msgstr ""
+
+msgid "Schedule"
 msgstr ""
 
 msgid "Scope"

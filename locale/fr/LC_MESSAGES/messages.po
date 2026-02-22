@@ -4703,6 +4703,9 @@ msgstr "Écrans rotatifs : %(num)d"
 msgid "Round"
 msgstr "Ronde"
 
+msgid "Round #"
+msgstr "Ronde n°"
+
 #, python-format
 msgid "Round #%(round)d"
 msgstr "Ronde n°%(round)d"
@@ -4714,6 +4717,10 @@ msgstr "La ronde %(round)d est terminée."
 #, python-format
 msgid "Round #%(round)d is running."
 msgstr "La ronde %(round)d est en cours."
+
+#, python-format
+msgid "Round #%(round)d must be scheduled after round #%(prev)d."
+msgstr "La ronde n°%(round)d doit être programmée après la ronde n°%(prev)d."
 
 msgid "Round #0 is forbidden."
 msgstr "La ronde n°0 est interdite."
@@ -4813,6 +4820,9 @@ msgstr "Enregistrer"
 
 msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
+
+msgid "Schedule"
+msgstr "Horaires"
 
 msgid "Scope"
 msgstr "Périmètre"
