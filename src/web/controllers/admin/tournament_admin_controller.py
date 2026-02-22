@@ -656,7 +656,7 @@ class TournamentAdminController(BaseEventAdminController):
         """Return just the schedule section for an outerHTML swap.
 
         Called by the rounds number input on change so the schedule fields
-        update live without a full modal re-render, saves from annoying retraction of dropdown.
+        update live without a full modal re-render.
         """
         web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
         event = web_context.get_admin_event()
@@ -684,7 +684,6 @@ class TournamentAdminController(BaseEventAdminController):
             'schedule_rounds': rounds,
             'data': schedule_form_data,
             'errors': {},
-            'is_htmx_schedule_update': True,
         }
 
         return HTMXTemplate(

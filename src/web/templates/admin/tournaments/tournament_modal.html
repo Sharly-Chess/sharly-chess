@@ -50,7 +50,21 @@
                         {{ admin_macros.number_input(
                             name='rounds',
                             label=_('%(string)s:', string=_('Rounds')),
-                            data=data, errors=errors
+                            data=data, errors=errors,
+                            hx_get=url_for(
+                                'admin-tournament-schedule-section',
+                                event_uniq_id=admin_event.uniq_id,
+                            ) ~ '?action=' ~ action
+                            ~ (
+                                '&tournament_id=' ~ admin_tournament.id
+                                if action != 'create'
+                                else ''
+                            ),
+                            hx_trigger='change delay:0.3s',
+                            hx_target='#schedule-section',
+                            hx_swap='outerHTML',
+                            hx_include='[name="rounds"]',
+                            hx_indicator='#please-wait',
                         ) }}
                     </div>
                 </div>
@@ -305,7 +319,9 @@
                         ) }}
                     </div>
                 </div>
+                {% include '/admin/tournaments/tournament_schedule_section.html' %}
             </form>
+
         </div>
         <div class="modal-footer">
             <button
