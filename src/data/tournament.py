@@ -1209,7 +1209,7 @@ class Tournament:
                 for player in self.tournament_players_by_pairing_number.values()
             ],
             rounddates=[
-                dt.strftime('%Y/%m/%d') if dt else '  /  /  '
+                dt.strftime('%y/%m/%d') if dt else '  /  /  '
                 for idx in range(1, after_round + 1)
                 for dt in [self.round_datetimes.get(idx)]
             ],
