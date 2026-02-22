@@ -29,6 +29,7 @@
 ## Screens
 
 - Added missing link on the family screens card (3.6.0)
+- Fix rotators always public (3.6.3)
 
 ## Documents
 
