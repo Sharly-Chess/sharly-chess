@@ -168,6 +168,43 @@ class Tournament:
     def stop_date_str(self) -> str:
         return format_date(self.stop_date)
 
+    # Round schedule
+
+    @property
+    def round_datetimes(self) -> dict[int, datetime | None]:
+        """Return the per-round scheduled datetimes: {round_number: datetime | None}."""
+        return self.stored_tournament.round_datetimes
+
+    @property
+    def has_schedule(self) -> bool:
+        """True if at least one round has a scheduled datetime."""
+        return any(v is not None for v in self.round_datetimes.values())
+
+    @property
+    def schedule_first_datetime(self) -> datetime | None:
+        """Return the earliest scheduled round datetime, or None if no schedule."""
+        datetimes = [v for v in self.round_datetimes.values() if v is not None]
+        return min(datetimes) if datetimes else None
+
+    @property
+    def schedule_last_datetime(self) -> datetime | None:
+        """Return the latest scheduled round datetime, or None if no schedule."""
+        datetimes = [v for v in self.round_datetimes.values() if v is not None]
+        return max(datetimes) if datetimes else None
+
+    @property
+    def round_schedule_tooltip_str(self) -> str:
+        """Return a multi-line string listing each round with its scheduled time."""
+        lines: list[str] = []
+        for round_num in sorted(self.round_datetimes.keys()):
+            dt = self.round_datetimes[round_num]
+            if dt is not None:
+                lines.append(
+                    _('R%(round)d: %(datetime)s')
+                    % {'round': round_num, 'datetime': dt.strftime('%a %d/%m %H:%M')}
+                )
+        return '<br>'.join(lines)
+
     @property
     def location(self) -> str | None:
         return self.stored_tournament.location or self.event.location
@@ -1170,6 +1207,11 @@ class Tournament:
                     include_next_round_bye=trf_type == TrfType.TRF_BX,
                 )
                 for player in self.tournament_players_by_pairing_number.values()
+            ],
+            rounddates=[
+                dt.strftime('%Y/%m/%d') if dt else '  /  /  '
+                for idx in range(1, after_round + 1)
+                for dt in [self.round_datetimes.get(idx)]
             ],
             federation=self.event.federation,
             xx_fields=(
