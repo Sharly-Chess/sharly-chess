@@ -4701,9 +4701,6 @@ msgstr ""
 msgid "Round"
 msgstr ""
 
-msgid "Round #"
-msgstr ""
-
 #, python-format
 msgid "Round #%(round)d"
 msgstr ""
