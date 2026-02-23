@@ -782,7 +782,7 @@ class TimerAdminController(BaseEventAdminController):
             ).format(count=created, name=tournament.name)
         else:
             message = _(
-                'No new hours to create from "{name}" (all rounds are already covered).'
+                'No new hours to create from tournament [{name}] (all rounds are already covered).'
             ).format(name=tournament.name)
 
         web_context = TimerAdminWebContext(request, timer_id, reload_event=True)
