@@ -54,6 +54,7 @@ from utils.enum import (
     PlayerRatingType,
     ScreenType,
     RoleType,
+    PlayerTitle,
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
@@ -995,6 +996,12 @@ class Tournament:
     def has_pairings(self) -> bool:
         return any(
             self.round_has_pairings(round_) for round_ in range(1, self.rounds + 1)
+        )
+
+    @property
+    def has_titled_players(self) -> bool:
+        return any(
+            player.title != PlayerTitle.NONE for player in self.tournament_players
         )
 
     @cached_property

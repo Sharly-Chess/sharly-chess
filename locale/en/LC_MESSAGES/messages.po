@@ -5701,6 +5701,9 @@ msgstr ""
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
 msgstr ""
 
+msgid "This tournament has no titled players."
+msgstr ""
+
 msgid "This unique ID is already used."
 msgstr ""
 
