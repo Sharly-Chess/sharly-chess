@@ -4819,7 +4819,7 @@ msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
 
 msgid "Schedule"
-msgstr "Horaires"
+msgstr "Calendrier"
 
 msgid "Scope"
 msgstr "Périmètre"
