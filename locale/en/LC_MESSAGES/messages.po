@@ -4446,7 +4446,7 @@ msgstr "R {round}"
 
 #, python-format
 msgid "R%(round)d: %(datetime)s"
-msgstr "R%(round)d: %(datetime)s"
+msgstr ""
 
 msgid "RES"
 msgstr ""
