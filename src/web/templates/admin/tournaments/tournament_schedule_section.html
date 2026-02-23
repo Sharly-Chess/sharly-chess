@@ -8,7 +8,7 @@
             <div class="col-12 col-md-6">
                 {{ admin_macros.datetime_input(
                     name='round_' ~ round_num ~ '_datetime',
-                    label=_('Round #') ~ round_num ~ ':',
+                    label=_('Round #%(round)d:', round=round_num),
                     min_date=admin_event.start_date_str,
                     max_date=admin_event.stop_date_str,
                     now_button=true,
