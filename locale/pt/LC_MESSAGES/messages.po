@@ -7390,6 +7390,10 @@ msgid "This tie-break is not recommended with estimated players ({count} in the 
 msgstr "Este tie-break não é recomendado com jogadores estimados ({count} no torneio)."
 
 #, ai_translation
+msgid "This tournament has no titled players."
+msgstr "Este torneio não tem jogadores intitulados."
+
+#, ai_translation
 msgid "This unique ID is already used."
 msgstr "Este ID único já é usado."
 
