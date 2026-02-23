@@ -2,19 +2,32 @@
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
 <div id="schedule-section">
-    <h4>{{ _('Schedule') }}</h4>
-    <div class="row gy-2 gx-3">
-        {% for round_num in range(1, schedule_rounds + 1) %}
-            <div class="col-12 col-md-6">
-                {{ admin_macros.datetime_input(
-                    name='round_' ~ round_num ~ '_datetime',
-                    label=_('Round #%(round)d:', round=round_num),
-                    min_date=admin_event.start_date_str,
-                    max_date=admin_event.stop_date_str,
-                    now_button=true,
-                    data=data, errors=errors
-                ) }}
-            </div>
-        {% endfor %}
+    <button
+        type="button"
+        class="collapse-button {% if not force_schedule_open %}collapsed{% endif %} mt-3"
+        data-bs-toggle="collapse"
+        data-bs-target="#schedule-collapse"
+        aria-expanded="false"
+    >
+        <h4 class="form-check-label d-inline-flex align-items-center gap-2">
+            <i class="bi-chevron-down text-body"></i>
+            {{ _('Schedule') }}
+        </h4>
+    </button>
+    <div id="schedule-collapse" class="{% if not force_schedule_open %}collapse{% endif %}">
+        <div class="row gy-2 gx-3">
+            {% for round_num in range(1, schedule_rounds + 1) %}
+                <div class="col-12 col-md-6">
+                    {{ admin_macros.datetime_input(
+                        name='round_' ~ round_num ~ '_datetime',
+                        label=_('Round #%(round)d:', round=round_num),
+                        min_date=admin_event.start_date_str,
+                        max_date=admin_event.stop_date_str,
+                        now_button=true,
+                        data=data, errors=errors
+                    ) }}
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </div>

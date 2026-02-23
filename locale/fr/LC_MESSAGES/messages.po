@@ -4742,7 +4742,7 @@ msgstr "La ronde n°%(round)d doit être programmée après la ronde n°%(prev)d
 
 #, python-format
 msgid "Round #%(round)d:"
-msgstr ""
+msgstr "Ronde n°%(round)d\u00a0:"
 
 msgid "Round #0 is forbidden."
 msgstr "La ronde n°0 est interdite."

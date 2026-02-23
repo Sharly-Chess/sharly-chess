@@ -402,7 +402,11 @@ class TournamentAdminController(BaseEventAdminController):
             'data': data,
             'errors': errors,
             # The current rounds count is needed to render the schedule inputs
-            'schedule_rounds': WebContext.form_data_to_int(data, 'rounds') or 1,
+            'schedule_rounds': rounds,
+            'force_schedule_open': any(
+                f'round_{n}_datetime' in errors for n in range(1, rounds + 1)
+            )
+            or any(data.get(f'round_{n}_datetime') for n in range(1, rounds + 1)),
         } | form_fields_templates_data
 
         return template_context
@@ -684,6 +688,7 @@ class TournamentAdminController(BaseEventAdminController):
             'schedule_rounds': rounds,
             'data': schedule_form_data,
             'errors': {},
+            'force_schedule_open': True,
         }
 
         return HTMXTemplate(
