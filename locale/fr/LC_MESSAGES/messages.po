@@ -1678,7 +1678,7 @@ msgid "Delete account"
 msgstr "Supprimer le compte"
 
 msgid "Delete all hours for this timer and start fresh."
-msgstr "Supprimer tous les horaires de ce minuteur et recommencer."
+msgstr "Supprimer tous les horaires de ce chronomètre et recommencer."
 
 msgid "Delete display controller"
 msgstr "Supprimer le pilote d'afficheurs"
@@ -4469,7 +4469,7 @@ msgstr "R {round}"
 
 #, python-format
 msgid "R%(round)d: %(datetime)s"
-msgstr "R%(round)d\\u00a0: %(datetime)s"
+msgstr "R%(round)d : %(datetime)s"
 
 msgid "RES"
 msgstr "RÉS"
@@ -4742,7 +4742,7 @@ msgstr "La ronde n°%(round)d doit être programmée après la ronde n°%(prev)d
 
 #, python-format
 msgid "Round #%(round)d:"
-msgstr "Ronde n°%(round)d\u00a0:"
+msgstr "Ronde n°%(round)d :"
 
 msgid "Round #0 is forbidden."
 msgstr "La ronde n°0 est interdite."
@@ -5887,7 +5887,7 @@ msgid "Tournament name"
 msgstr "Nom du tournoi"
 
 msgid "Tournament not found or has no schedule."
-msgstr "Tournoi introuvable ou sans horaires."
+msgstr "Tournoi introuvable ou sans horaire."
 
 msgid "Tournament performance rating"
 msgstr "Performance"
@@ -6318,7 +6318,7 @@ msgid "Wales"
 msgstr "Pays de Galles"
 
 msgid "Warning: all hours for this timer will be permanently deleted!"
-msgstr "Attention\u00a0: tous les horaires de ce minuteur seront définitivement supprimés\u00a0!"
+msgstr "Attention : tous les horaires de ce chronomètre seront définitivement supprimés !"
 
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."

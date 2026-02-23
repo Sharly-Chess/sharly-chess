@@ -384,6 +384,9 @@ class TournamentAdminController(BaseEventAdminController):
             str(Result.LOSS.value): _('Loss'),
         }
 
+        # data and errors are always populated by the if/else block above
+        assert data is not None
+        assert errors is not None
         template_context = {
             'rating_options': cls._get_rating_options(),
             'pairing_systems': pairing_systems,
