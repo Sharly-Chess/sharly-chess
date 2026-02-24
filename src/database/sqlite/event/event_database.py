@@ -1,5 +1,4 @@
 import shutil
-import time
 from collections import defaultdict
 from datetime import datetime
 from collections.abc import Iterator
@@ -677,7 +676,7 @@ class EventDatabase(MigrationDatabase):
                 stored_tournament.start_date
             ),
             'stop_date': self.dump_date_to_database_field(stored_tournament.stop_date),
-            'last_update': time.time(),
+            'last_update': self.now_as_database_timestamp(),
             'plugin_data': self.dump_to_json_database_field(
                 stored_tournament.plugin_data, {}
             ),
@@ -742,7 +741,7 @@ class EventDatabase(MigrationDatabase):
             'WHERE `id` = ?',
             (
                 self.dump_to_json_database_field(pairing_settings),
-                time.time(),
+                self.now_as_database_timestamp(),
                 tournament_id,
             ),
         )
@@ -756,7 +755,7 @@ class EventDatabase(MigrationDatabase):
             'WHERE `id` = ?',
             (
                 current_round,
-                time.time(),
+                self.now_as_database_timestamp(),
                 tournament_id,
             ),
         )
@@ -1291,14 +1290,12 @@ class EventDatabase(MigrationDatabase):
             )
             return None
         else:
-            date = time.time()
-
+            now = datetime.now()
             self.execute(
                 'UPDATE `board` SET `last_result_update` = ? WHERE `id` = ?',
-                (date, board_id),
+                (self.dump_optional_datetime_to_timestamp_field(now), board_id),
             )
-
-            return datetime.fromtimestamp(date)
+            return now
 
     # ---------------------------------------------------------------------------------
     # StoredFamily
@@ -1422,7 +1419,7 @@ class EventDatabase(MigrationDatabase):
             stored_family.number,
             stored_family.message_default,
             stored_family.message_text,
-            time.time(),
+            self.now_as_database_timestamp(),
         ]
         if stored_family.id is None:
             protected_fields = [f'`{f}`' for f in fields]
@@ -1537,7 +1534,7 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             'UPDATE `screen` SET `last_update` = ? WHERE `id` = ?',
             (
-                time.time(),
+                self.now_as_database_timestamp(),
                 screen_id,
             ),
         )
@@ -1618,7 +1615,7 @@ class EventDatabase(MigrationDatabase):
             stored_screen.background_color if stored_screen.type == 'image' else None,
             stored_screen.message_default,
             stored_screen.message_text,
-            time.time(),
+            self.now_as_database_timestamp(),
         ]
         if stored_screen.id is None:
             protected_fields = [f'`{f}`' for f in fields]
@@ -1715,7 +1712,7 @@ class EventDatabase(MigrationDatabase):
                 'UPDATE `screen_set` SET `order` = ?, `last_update` = ? WHERE `id` = ?',
                 (
                     order,
-                    time.time(),
+                    self.now_as_database_timestamp(),
                     screen_set_id,
                 ),
             )
@@ -1744,7 +1741,7 @@ class EventDatabase(MigrationDatabase):
             stored_screen_set.fixed_boards_str,
             stored_screen_set.first,
             stored_screen_set.last,
-            time.time(),
+            self.now_as_database_timestamp(),
         ]
         if stored_screen_set.id is None:
             protected_fields = [f'`{f}`' for f in fields]
@@ -1820,7 +1817,7 @@ class EventDatabase(MigrationDatabase):
                 'UPDATE `screen_set` SET `order` = ?, `last_update` = ? WHERE `id` = ?',
                 (
                     order,
-                    time.time(),
+                    self.now_as_database_timestamp(),
                     stored_screen_set.id,
                 ),
             )
@@ -2014,7 +2011,7 @@ class EventDatabase(MigrationDatabase):
             stored_display_controller.public,
             stored_display_controller.screen_id,
             stored_display_controller.rotator_id,
-            time.time(),
+            self.now_as_database_timestamp(),
         ]
         if stored_display_controller.id is None:
             protected_fields = [f'`{f}`' for f in fields]
