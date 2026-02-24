@@ -29,18 +29,22 @@
 ## Screens
 
 - Added missing link on the family screens card (3.6.0)
+- Fixed rotators always public (3.6.3)
 
 ## Documents
 
-- Fix player norms computation (3.6.2)
+- Fixed player norms computation (3.6.2)
 - Added a note that norms are only computed based on completed games (3.6.2)
-- Fix inaccessible Woman title documents (3.6.2)
+- Fixed inaccessible Woman title documents (3.6.2)
+- Restrict document options to the ones that can be generated (3.6.3)
+- Fixed slowness after document generation (3.6.3)
 
 ## _FFE_
 
 - Fixed T2 and arbiter compensation forms (3.6.0)
 - Fixed access to upload modal (3.6.1)
 - Fixed invalid type on account FFE arbiter title (3.6.1)
+- Added missing fields to the arbiter compensation form (3.6.3)
 
 ## _FRA Schools_
 

@@ -7,6 +7,19 @@
             <br/>
             FICHE D'INDEMNISATION DE L'ARBITRE
         </h1>
+        <div class="grid" style="grid-template-columns: 3fr 1fr 1fr;">
+            <div class="item">
+                <label>Indexation des arbitrages interne à l'arbitre :</label>
+            </div>
+            <div class="item">
+                <label for="year">Année :</label>
+                <input required id="year" value="{{ event.start_date.year }}" />
+            </div>
+            <div class="item">
+                <label for="number">Arbitrage n° :</label>
+                <input required id="number" />
+            </div>
+        </div>
         <h2>Identification de l'arbitre</h2>
         <section>
             <div class="grid" style="grid-template-columns: 2fr 1fr;">

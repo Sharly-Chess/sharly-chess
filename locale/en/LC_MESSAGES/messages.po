@@ -3316,9 +3316,6 @@ msgstr "N"
 msgid "NA *** SHORT NAME FOR National Arbiter"
 msgstr "NA"
 
-msgid "NOTE: Norms are computed based only on <em>completed</em> games."
-msgstr ""
-
 msgid "Name"
 msgstr ""
 
@@ -3653,6 +3650,9 @@ msgid "Not paired for this round"
 msgstr ""
 
 msgid "Not specified"
+msgstr ""
+
+msgid "Note: norms are computed based only on <em>completed</em> games."
 msgstr ""
 
 msgid "Notification"
@@ -5699,6 +5699,9 @@ msgid "This tie-break is not compatible with the pairing system [{pairing_system
 msgstr ""
 
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
+msgstr ""
+
+msgid "This tournament has no titled players."
 msgstr ""
 
 msgid "This unique ID is already used."
