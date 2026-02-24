@@ -358,7 +358,8 @@
     min_date='',
     max_date='',
     now_button=false,
-    disabled_dates=[]
+    disabled_dates=[],
+    position=''
 ) %}
     {% set formatter = sharly_chess_config.date_formatter %}
     <script>
@@ -368,6 +369,9 @@
             timeFormat: 'HH:mm',
             firstDay: 1,
             keyboardNav: false,
+            {% if position %}
+                position: '{{ position }}',
+            {% endif %}
             {% if min_date %}
                 minDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ min_date }} 00:00`),
             {% endif %}
@@ -531,6 +535,7 @@ with_indicator: display a loading indicator, optional
     min_date='',
     max_date='',
     date_now_button=false,
+    date_position='',
     number_min='',
     number_max='',
     min_disabled=false,
@@ -788,6 +793,7 @@ with_indicator: display a loading indicator, optional
                             min_date=min_date,
                             max_date=max_date,
                             now_button=date_now_button,
+                            position=date_position,
                         ) }}
                     {% endif %}
                     {% if default_checkbox %}
@@ -1319,6 +1325,7 @@ with_indicator: display a loading indicator, optional
     min_date='',
     max_date='',
     now_button=false,
+    position='',
     data={},
     errors={},
     error=false,
@@ -1334,6 +1341,7 @@ with_indicator: display a loading indicator, optional
         min_date=min_date,
         max_date=max_date,
         date_now_button=now_button,
+        date_position=position,
         data=data,
         errors=errors,
         error=error,
