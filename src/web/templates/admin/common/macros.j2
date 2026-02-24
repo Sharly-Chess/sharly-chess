@@ -384,6 +384,7 @@
             {% elif input_type == 'datetime' %}
                 timepicker: true,
                 minutesStep: 5,
+                startDate: new Date(new Date().setHours(0, 0, 0, 0)),
             {% endif %}
             {% if now_button %}
                 buttons: [
