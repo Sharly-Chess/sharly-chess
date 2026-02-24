@@ -14,7 +14,7 @@
             {{ _('Schedule') }}
         </h4>
     </button>
-    <div id="schedule-collapse" class="{% if not force_schedule_open %}collapse{% endif %}">
+    <div id="schedule-collapse" class="collapse{% if force_schedule_open %} show{% endif %}">
         <div class="row gy-2 gx-3">
             {% for round_num in range(1, schedule_rounds + 1) %}
                 <div class="col-12 col-md-6">

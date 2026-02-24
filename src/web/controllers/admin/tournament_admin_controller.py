@@ -387,6 +387,7 @@ class TournamentAdminController(BaseEventAdminController):
         # data and errors are always populated by the if/else block above
         assert data is not None
         assert errors is not None
+        rounds = int(data.get('rounds') or 1)
         template_context = {
             'rating_options': cls._get_rating_options(),
             'pairing_systems': pairing_systems,
@@ -674,24 +675,48 @@ class TournamentAdminController(BaseEventAdminController):
             else:
                 rounds = 1
 
-        # preserve the datetimes to handle the case when the user changes the number of rounds
+        # preserve datetimes when the user changes the number of rounds.
+        # prefer values submitted from the form i.e user-typed, not yet saved
+        # over values from the database.
         existing_datetimes: dict[int, datetime | None] = {}
         if tournament_id and (t := event.tournaments_by_id.get(tournament_id)):
             existing_datetimes = t.round_datetimes
 
+        # extract form-submitted round datetime values (sent via hx-include)
+        form_datetimes: dict[str, str] = {}
+        for key, value in request.query_params.items():
+            if key.startswith('round_') and key.endswith('_datetime'):
+                form_datetimes[key] = value
+
         schedule_form_data: dict[str, str] = {}
+        has_any_value = False
         for round_num in range(1, rounds + 1):
-            dt = existing_datetimes.get(round_num)
-            schedule_form_data[f'round_{round_num}_datetime'] = (
-                WebContext.value_to_form_data(dt) if dt else ''
-            )
+            field = f'round_{round_num}_datetime'
+            if field in form_datetimes and form_datetimes[field]:
+                schedule_form_data[field] = form_datetimes[field]
+                has_any_value = True
+            else:
+                dt = existing_datetimes.get(round_num)
+                schedule_form_data[field] = (
+                    WebContext.value_to_form_data(dt) if dt else ''
+                )
+                if dt:
+                    has_any_value = True
+
+        # evaluate if the schedule section should be open or collapsed
+        # if collapsed it should remain collapsed
+        schedule_collapsed_form = request.query_params.get('schedule_collapsed')
+        if schedule_collapsed_form is not None:
+            force_schedule_open = schedule_collapsed_form == 'false'
+        else:
+            force_schedule_open = has_any_value
 
         template_context = web_context.template_context | {
             'admin_event': event,
             'schedule_rounds': rounds,
             'data': schedule_form_data,
             'errors': {},
-            'force_schedule_open': True,
+            'force_schedule_open': force_schedule_open,
         }
 
         return HTMXTemplate(
