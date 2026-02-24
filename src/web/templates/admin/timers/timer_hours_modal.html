@@ -29,11 +29,11 @@
                     <div class="text-danger">{{ _('No hours.') }}</div>
                     {% set tournaments_with_schedule = admin_event.tournaments | selectattr('has_schedule') | list %}
                     {% if tournaments_with_schedule %}
-                        <div class="mt-2">
-                            <div class="btn-group">
+                        <div class="mt-2 text-center">
+                            <div class="btn-group dropup">
                                 <button
                                     type="button"
-                                    class="btn btn-sm btn-outline-secondary dropdown-toggle text-nowrap"
+                                    class="btn btn-outline-primary dropdown-toggle text-nowrap"
                                     data-bs-toggle="dropdown"
                                     aria-expanded="false"
                                     {{ macros.tooltip_attributes('info', _('Automatically create timer hours matching the round schedule of a specific tournament.'), 'top') }}

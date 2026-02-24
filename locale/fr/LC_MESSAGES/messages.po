@@ -1447,7 +1447,7 @@ msgid "Create hour"
 msgstr "Créer un horaire"
 
 msgid "Create hours from tournament"
-msgstr "Créer les horaires depuis le tournoi"
+msgstr "Créer les horaires depuis un tournoi"
 
 msgid "Create manually"
 msgstr "Créer manuellement"

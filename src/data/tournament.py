@@ -44,7 +44,7 @@ from database.sqlite.event.event_store import (
 from plugins.utils import PluginData
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.date_time import format_date_range, format_date
+from utils.date_time import format_date_range, format_date, format_datetime
 from utils.enum import (
     BoardColor,
     PlayerGender,
@@ -201,7 +201,7 @@ class Tournament:
             if dt is not None:
                 lines.append(
                     _('R%(round)d: %(datetime)s')
-                    % {'round': round_num, 'datetime': dt.strftime('%a %d/%m %H:%M')}
+                    % {'round': round_num, 'datetime': format_datetime(dt)}
                 )
         return '<br>'.join(lines)
 

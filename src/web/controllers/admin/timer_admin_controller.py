@@ -751,7 +751,7 @@ class TimerAdminController(BaseEventAdminController):
         created: int = 0
 
         # Collect unique, new datetimes not already in the timer
-        new_datetimes: list[datetime] = []
+        new_timer_hours: list[tuple[int, datetime]] = []
         seen_datetimes: set[datetime] = set()
         for round_num in sorted(tournament.round_datetimes.keys()):
             dt = tournament.round_datetimes[round_num]
@@ -759,14 +759,14 @@ class TimerAdminController(BaseEventAdminController):
                 continue
             if dt not in seen_datetimes and dt not in existing_datetimes:
                 seen_datetimes.add(dt)
-                new_datetimes.append(dt)
+                new_timer_hours.append((round_num, dt))
 
-        new_datetimes.sort()
-        for dt in new_datetimes:
+        for round_num, dt in new_timer_hours:
+            uniq_id = timer.get_unused_hour_name(str(round_num))
             stored_timer_hour = StoredTimerHour(
                 id=None,
                 timer_id=timer.id,
-                uniq_id=str(timer.next_round),
+                uniq_id=uniq_id,
                 triggered_at=dt,
                 text_before='',
                 text_after='',
