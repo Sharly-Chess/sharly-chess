@@ -1,7 +1,7 @@
 import json
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 from sqlite3 import Connection, Cursor, connect, OperationalError
 from typing import Self, Any
@@ -160,24 +160,40 @@ class SQLiteDatabase:
 
     @staticmethod
     def load_datetime_from_database_field(data: str) -> datetime:
-        return datetime.strptime(data, '%Y-%m-%dT%H:%M')
+        return datetime.fromisoformat(data).astimezone().replace(tzinfo=None)
+
+    @staticmethod
+    def now_as_database_timestamp() -> str:
+        """Returns current time as UTC ISO 8601 string for DB storage (e.g. '2026-02-20 08:07:52.662+00:00')."""
+        return datetime.now(timezone.utc).isoformat(sep=' ', timespec='milliseconds')
 
     @staticmethod
     def load_optional_timestamp_from_database_field(
-        ts: float | None,
+        ts: str | None,
     ) -> datetime | None:
-        """Load optional timestamp from database field (FLOAT) to datetime."""
-        return datetime.fromtimestamp(ts) if ts else None
+        """Load optional timestamp from database field (UTC ISO TEXT) to local naive datetime."""
+        return (
+            datetime.fromisoformat(ts).astimezone().replace(tzinfo=None) if ts else None
+        )
 
     @staticmethod
     def dump_optional_datetime_to_timestamp_field(
         datetime_: datetime | None,
-    ) -> float | None:
-        return datetime_.timestamp() if datetime_ else None
+    ) -> str | None:
+        """Dump local naive datetime to UTC ISO TEXT for DB storage."""
+        return (
+            datetime_.astimezone(timezone.utc).isoformat(
+                sep=' ', timespec='milliseconds'
+            )
+            if datetime_
+            else None
+        )
 
     @staticmethod
     def dump_datetime_to_database_field(datetime_: datetime) -> str:
-        return datetime_.strftime('%Y-%m-%dT%H:%M')
+        return datetime_.astimezone(timezone.utc).isoformat(
+            sep=' ', timespec='milliseconds'
+        )
 
     @staticmethod
     def load_json_from_database_field(json_data: str | None, if_none=None) -> Any:
