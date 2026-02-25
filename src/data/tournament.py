@@ -194,16 +194,31 @@ class Tournament:
 
     @property
     def round_schedule_tooltip_str(self) -> str:
-        """Return a multi-line string listing each round with its scheduled time."""
-        lines: list[str] = []
+        """Return a multi-line string listing each round with its scheduled time, grouped by date."""
+        from collections import defaultdict
+        from utils.date_time import format_time
+
+        rounds_by_date = defaultdict(list)
         for round_num in sorted(self.round_datetimes.keys()):
             dt = self.round_datetimes[round_num]
             if dt is not None:
-                lines.append(
-                    _('R%(round)d: %(datetime)s')
-                    % {'round': round_num, 'datetime': format_datetime(dt)}
-                )
-        return '<br>'.join(lines)
+                rounds_by_date[format_date(dt.date())].append((round_num, dt))
+
+        lines: list[str] = ['<div class="text-start text-nowrap d-flex flex-column">']
+        for date_str, rounds in rounds_by_date.items():
+            if len(rounds) == 1:
+                round_num, dt = rounds[0]
+                round_str = _('Round #{round}').format(round=round_num)
+                lines.append(f'<div><b>{format_datetime(dt)}</b> {round_str}</div>')
+            else:
+                lines.append(f'<div><b>{date_str}</b></div>')
+                for round_num, dt in rounds:
+                    round_str = _('Round #{round}').format(round=round_num)
+                    lines.append(
+                        f'<div class="d-flex gap-2 ms-2"><b class="text-end" style="min-width: 45px">{format_time(dt)}</b><span>{round_str}</span></div>'
+                    )
+        lines.append('</div>')
+        return ''.join(lines)
 
     @property
     def location(self) -> str | None:
