@@ -384,7 +384,13 @@
             {% elif input_type == 'datetime' %}
                 timepicker: true,
                 minutesStep: 5,
-                startDate: new Date(new Date().setHours(0, 0, 0, 0)),
+                startDate: (
+                    {% if min_date or max_date %}
+                        ({{ formatter.value_to_date_js_function|safe }})(`{{ min_date or max_date }} 00:00`)
+                    {% else %}
+                        new Date(new Date().setHours(0, 0, 0, 0))
+                    {% endif %}
+                ),
             {% endif %}
             {% if now_button %}
                 buttons: [
