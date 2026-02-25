@@ -92,14 +92,14 @@ If you have just installed Flatpak for the **first time**, you **must restart** 
 
 ```bash
 flatpak remote-add --user --if-not-exists sharly-chess \
-  https://sharly-chess.github.io/sharly-chess/sharly-chess.flatpakrepo
+  https://flatpak.sharly-chess.com/sharly-chess.flatpakrepo
 
 flatpak install --user sharly-chess com.sharlychess.SharlyChess
 ```
 
 ### Graphical method
 
-1. Download [sharly-chess.flatpakrepo](https://sharly-chess.github.io/sharly-chess/sharly-chess.flatpakrepo)
+1. Download [sharly-chess.flatpakrepo](https://flatpak.sharly-chess.com/sharly-chess.flatpakrepo)
 2. Double-click the file → the software centre opens
 3. Add the repository, then search for "Sharly Chess" and click **Install**
 

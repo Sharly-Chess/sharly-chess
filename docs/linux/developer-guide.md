@@ -38,7 +38,7 @@ The `linux-flatpak` branch provides the Linux Flatpak distribution of Sharly Che
 
 ### OSTree repository (GitHub Pages)
 
-The OSTree repository is published to `repo/` on GitHub Pages at `https://sharly-chess.github.io/sharly-chess/repo/` on every tagged release.
+The OSTree repository is published to `repo/` on GitHub Pages at `https://flatpak.sharly-chess.com/repo/` on every tagged release.
 
 ---
 

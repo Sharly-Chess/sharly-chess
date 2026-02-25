@@ -27,7 +27,7 @@ This document is for the **maintainer** setting up the deployment infrastructure
 └─────────────────────────────────────────────────────────────────┘
                            │
                            ▼
-          https://sharly-chess.github.io/sharly-chess/
+          https://flatpak.sharly-chess.com/
           ├── repo/                    ← users
           └── sharly-chess.flatpakrepo ← remote config file
 ```
@@ -179,7 +179,7 @@ The workflow:
 ```ini
 [Flatpak Repo]
 Title=Sharly Chess
-Url=https://sharly-chess.github.io/sharly-chess/repo/
+Url=https://flatpak.sharly-chess.com/repo/
 Homepage=https://github.com/Sharly-Chess/sharly-chess
 Comment=Official repository for Sharly Chess
 Description=Play chess and manage tournaments with Sharly Chess
@@ -187,7 +187,7 @@ GPGKey=<BASE64_PUBLIC_KEY>
 ```
 
 Public URL:
-- https://sharly-chess.github.io/sharly-chess/sharly-chess.flatpakrepo
+- https://flatpak.sharly-chess.com/sharly-chess.flatpakrepo
 
 ### Static deltas
 
@@ -222,7 +222,7 @@ If the GPG key expires or is compromised:
 4. Users will need to re-add the remote (because the `GPGKey` in `.flatpakrepo` will have changed):
    ```bash
    flatpak remote-delete --user sharly-chess
-   flatpak remote-add --user sharly-chess https://sharly-chess.github.io/sharly-chess/sharly-chess.flatpakrepo
+   flatpak remote-add --user sharly-chess https://flatpak.sharly-chess.com/sharly-chess.flatpakrepo
    ```
 
 ---

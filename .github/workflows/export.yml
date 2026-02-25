@@ -310,7 +310,7 @@ jobs:
           cat > flatpak-repo-publish/sharly-chess.flatpakrepo <<EOF
           [Flatpak Repo]
           Title=Sharly Chess
-          Url=https://sharly-chess.github.io/sharly-chess/repo/
+          Url=https://flatpak.sharly-chess.com/repo/
           Homepage=https://github.com/Sharly-Chess/sharly-chess
           Comment=Official repository for Sharly Chess
           Description=Play chess and manage tournaments with Sharly Chess
