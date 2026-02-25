@@ -730,7 +730,7 @@ msgid "Auto-update"
 msgstr "Mise à jour"
 
 msgid "Automatically create timer hours matching the round schedule of a specific tournament."
-msgstr "Créer automatiquement les horaires à partir du calendrier des rondes d'un tournoi."
+msgstr "Créer automatiquement les horaires à partir des horaires des rondes d'un tournoi."
 
 msgid "Average"
 msgstr "Moyenne"
@@ -4467,10 +4467,6 @@ msgstr "R %(round)d"
 msgid "R {round} *** ROUND COLUMN HEADER"
 msgstr "R {round}"
 
-#, python-format
-msgid "R%(round)d: %(datetime)s"
-msgstr "R%(round)d : %(datetime)s"
-
 msgid "RES"
 msgstr "RÉS"
 
@@ -4844,7 +4840,7 @@ msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
 
 msgid "Schedule"
-msgstr "Calendrier"
+msgstr "Horaires"
 
 msgid "Scope"
 msgstr "Périmètre"
@@ -6791,10 +6787,10 @@ msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] "{count} horaire n'a pas pu être déplacé (conflit d'heures)."
 msgstr[1] "{count} horaires n'ont pas pu être déplacés (conflit d'heures)."
 
-msgid "{count} hour has been created from the schedule of tournament [{name}]."
-msgid_plural "{count} hours have been created from the schedule of tournament [{name}]."
-msgstr[0] "{count} horaire a été créé depuis le calendrier du tournoi [{name}]."
-msgstr[1] "{count} horaires ont été créés depuis le calendrier du tournoi [{name}]."
+msgid "{count} hour created."
+msgid_plural "{count} hours created."
+msgstr[0] "{count} horaire créé."
+msgstr[1] "{count} horaires créés."
 
 msgid "{count} player deleted."
 msgid_plural "{count} players deleted."

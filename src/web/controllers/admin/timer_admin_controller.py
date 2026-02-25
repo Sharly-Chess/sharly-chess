@@ -776,9 +776,7 @@ class TimerAdminController(BaseEventAdminController):
 
         if created:
             message = ngettext(
-                '{count} hour has been created from the schedule of tournament [{name}].',
-                '{count} hours have been created from the schedule of tournament [{name}].',
-                created,
+                '{count} hour created.', '{count} hours created.', created
             ).format(count=created, name=tournament.name)
         else:
             message = _(

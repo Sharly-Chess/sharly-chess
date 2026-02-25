@@ -4465,10 +4465,6 @@ msgstr "R %(round)d"
 msgid "R {round} *** ROUND COLUMN HEADER"
 msgstr "R {round}"
 
-#, python-format
-msgid "R%(round)d: %(datetime)s"
-msgstr ""
-
 msgid "RES"
 msgstr ""
 
@@ -6789,8 +6785,8 @@ msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "{count} hour has been created from the schedule of tournament [{name}]."
-msgid_plural "{count} hours have been created from the schedule of tournament [{name}]."
+msgid "{count} hour created."
+msgid_plural "{count} hours created."
 msgstr[0] ""
 msgstr[1] ""
 
