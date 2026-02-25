@@ -185,13 +185,14 @@ class ChessResultsSession(Session):
         # --- Rounds section ---
         rdata = ET.SubElement(root, 'rounds')
         for rnd in range(1, tournament.rounds + 1):
+            dt = tournament.round_datetimes.get(rnd)
             ET.SubElement(
                 rdata,
                 'round',
                 {
                     'round': str(rnd),
-                    'date': '',
-                    'time': '',
+                    'date': dt.strftime('%Y/%m/%d') if dt else '',
+                    'time': dt.strftime('%H:%M') if dt else '',
                 },
             )
 

@@ -196,6 +196,8 @@ class StoredTournament:
         default_factory=dict[int, list[StoredBoard]]
     )
 
+    round_datetimes: dict[int, datetime | None] = field(default_factory=dict)
+
     # Plugins can add their own tournament data
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]

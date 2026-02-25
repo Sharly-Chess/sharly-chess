@@ -352,6 +352,21 @@ class TimerAdminController(BaseEventAdminController):
             {'modal': 'timer_delete'},
         )
 
+    @get(
+        path='/timer-hours-modal/clear/{event_uniq_id:str}/{timer_id:int}',
+        name='admin-timer-hours-clear-modal',
+    )
+    async def htmx_admin_timer_hours_clear_modal(
+        self,
+        request: HTMXRequest,
+        timer_id: int,
+    ) -> Template:
+        web_context = TimerAdminWebContext(request, timer_id)
+        return self._admin_event_timers_render(
+            web_context,
+            {'modal': 'timer_hours_clear'},
+        )
+
     @post(path='/timer-create/{event_uniq_id:str}', name='admin-timer-create')
     async def htmx_admin_timer_create(
         self,
@@ -707,6 +722,72 @@ class TimerAdminController(BaseEventAdminController):
             template_context = self._timer_hours_modal_context(message)
         return self._admin_event_timers_render(web_context, template_context)
 
+    @post(
+        path='/timer-hours/from-tournament/{event_uniq_id:str}/{timer_id:int}/{tournament_id:int}',
+        name='admin-timer-hours-from-tournament',
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_timer_hours_from_tournament(
+        self,
+        request: HTMXRequest,
+        timer_id: int,
+        tournament_id: int,
+    ) -> Template:
+        """Create timer hours matching the round schedule of a specific tournament."""
+        web_context = TimerAdminWebContext(request, timer_id)
+        timer = web_context.get_admin_timer()
+        event = web_context.get_admin_event()
+
+        tournament = event.tournaments_by_id.get(tournament_id)
+        if tournament is None or not tournament.has_schedule:
+            message = _('Tournament not found or has no schedule.')
+            return self._admin_event_timers_render(
+                web_context, self._timer_hours_modal_context(message)
+            )
+
+        existing_datetimes = {
+            hour.triggered_at for hour in timer.timer_hours_by_id.values()
+        }
+        created: int = 0
+
+        # Collect unique, new datetimes not already in the timer
+        new_timer_hours: list[tuple[int, datetime]] = []
+        seen_datetimes: set[datetime] = set()
+        for round_num in sorted(tournament.round_datetimes.keys()):
+            dt = tournament.round_datetimes[round_num]
+            if dt is None:
+                continue
+            if dt not in seen_datetimes and dt not in existing_datetimes:
+                seen_datetimes.add(dt)
+                new_timer_hours.append((round_num, dt))
+
+        for round_num, dt in new_timer_hours:
+            uniq_id = timer.get_unused_hour_name(str(round_num))
+            stored_timer_hour = StoredTimerHour(
+                id=None,
+                timer_id=timer.id,
+                uniq_id=uniq_id,
+                triggered_at=dt,
+                text_before='',
+                text_after='',
+            )
+            timer.add_timer_hour(stored_timer_hour)
+            created += 1
+
+        if created:
+            message = ngettext(
+                '{count} hour created.', '{count} hours created.', created
+            ).format(count=created, name=tournament.name)
+        else:
+            message = _(
+                'No new hours to create from tournament [{name}] (all rounds are already covered).'
+            ).format(name=tournament.name)
+
+        web_context = TimerAdminWebContext(request, timer_id, reload_event=True)
+        return self._admin_event_timers_render(
+            web_context, self._timer_hours_modal_context(message)
+        )
+
     @patch(
         path='/timer-hours/update-date/{event_uniq_id:str}/{timer_id:int}/{iso_date:str}',
         name='admin-timer-hours-update-date',
@@ -793,4 +874,23 @@ class TimerAdminController(BaseEventAdminController):
         web_context.get_admin_timer().delete_timer_hour(timer_hour_id)
         return self._admin_event_timers_render(
             web_context, self._timer_hours_modal_context()
+        )
+
+    @delete(
+        path='/timer-hours/clear/{event_uniq_id:str}/{timer_id:int}',
+        name='admin-timer-hours-clear',
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_admin_timer_hours_clear(
+        self,
+        request: HTMXRequest,
+        timer_id: int,
+    ) -> Template:
+        """Delete all timer hours for a timer in one shot."""
+        web_context = TimerAdminWebContext(request, timer_id)
+        web_context.get_admin_timer().delete_all_timer_hours()
+        message = _('All hours have been cleared.')
+        web_context = TimerAdminWebContext(request, timer_id, reload_event=True)
+        return self._admin_event_timers_render(
+            web_context, self._timer_hours_modal_context(message)
         )
