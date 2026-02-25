@@ -101,14 +101,14 @@
             {% endif %}
             {% if tournament.has_schedule or tournament.date_range_str != admin_event.date_range_str %}
                 <div class="text-start d-flex align-items-center gap-1">
-                    <i class="bi-calendar2-week-fill"></i>
-                    <span
-                        {% if tournament.has_schedule %}
-                            {{ macros.tooltip_attributes('info', tournament.round_schedule_tooltip_str, 'top') }}
-                        {% endif %}
-                    >
-                        {{ tournament.date_range_str }}
-                    </span>
+                    <i class="bi-calendar2-week-fill pe-1"></i>
+                    {{ tournament.date_range_str }}
+                    {% if tournament.has_schedule %}
+                        <i
+                            class="bi-info-circle-fill ps-1"
+                            {{ macros.tooltip_attributes('', tournament.round_schedule_tooltip_str, 'top') }}
+                        ></i>
+                    {% endif %}
                 </div>
             {% endif %}
             <div class="text-start">
