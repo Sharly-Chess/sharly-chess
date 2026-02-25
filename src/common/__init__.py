@@ -41,6 +41,11 @@ EMAIL_RE = re.compile(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 """ The temporary directory. """
 TMP_DIR: Path = Path('tmp')
 
+# On Flatpak, large downloads must land in TMP_DIR (within the sandbox's writable area)
+# rather than the system /tmp (a small tmpfs). On other platforms, None lets tempfile
+# use the OS default so behaviour is unchanged.
+TEMPFILE_DIR: Path | None = TMP_DIR if os.environ.get('FLATPAK_ID') else None
+
 
 def app_base_dir() -> Path:
     """
@@ -68,22 +73,6 @@ def app_base_dir() -> Path:
                 return resources
     except Exception:
         pass
-
-    # Linux AppImage - return AppDir/usr/share (bundled resources)
-    if getattr(sys, 'frozen', False):
-        try:
-            # Check if we're running from AppImage (APPDIR is set by AppImage runtime)
-            appdir = os.environ.get('APPDIR')
-            if appdir:
-                # AppImage sets APPDIR to the mount point
-                # Bundled resources are in usr/share
-                usr_share = Path(appdir) / 'usr' / 'share'
-                if usr_share.exists():
-                    return usr_share
-                # Fallback to APPDIR itself
-                return Path(appdir)
-        except Exception:
-            pass
 
     # Other frozen (non-.app) onedir
     if getattr(sys, 'frozen', False):

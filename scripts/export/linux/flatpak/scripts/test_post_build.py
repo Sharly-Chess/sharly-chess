@@ -2,15 +2,15 @@
 """
 Post-Build Flatpak Test Suite
 
-Tests locaux à exécuter après construction du package Flatpak :
-1. Valide le manifest
-2. Teste les permissions critiques
-3. Teste la structure des fichiers
-4. Vérifie les 3 points essentiels
-5. Test de lancement (si possible)
+Local tests to run after building the Flatpak package:
+1. Validate the manifest
+2. Test critical permissions
+3. Test file structure
+4. Verify the 3 essential requirements
+5. Launch test (if possible)
 
 Usage:
-    python flatpak/scripts/test_post_build.py
+    python scripts/export/linux/flatpak/scripts/test_post_build.py
 """
 
 import subprocess
@@ -50,7 +50,9 @@ class FlatpakPostBuildTester:
 
     def test_manifest_exists(self) -> bool:
         """Test 1: Manifest file exists."""
-        manifest_path = Path('flatpak/configuration/com.sharlychess.SharlyChess.json')
+        manifest_path = Path(
+            'scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.json'
+        )
         exists = manifest_path.exists()
         self.print_test('Manifest file exists', exists, f'Path: {manifest_path}')
         return exists
@@ -58,7 +60,9 @@ class FlatpakPostBuildTester:
     def test_manifest_valid_json(self) -> bool:
         """Test 2: Manifest is valid JSON."""
         try:
-            with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
+            with open(
+                'scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.json'
+            ) as f:
                 json.load(f)
             self.print_test('Manifest is valid JSON', True)
             return True
@@ -68,7 +72,9 @@ class FlatpakPostBuildTester:
 
     def test_required_fields(self) -> bool:
         """Test 3: Manifest has all required fields."""
-        with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
+        with open(
+            'scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.json'
+        ) as f:
             manifest = json.load(f)
 
         required = ['app-id', 'runtime', 'sdk', 'command', 'finish-args', 'modules']
@@ -85,7 +91,9 @@ class FlatpakPostBuildTester:
 
     def test_critical_permissions(self) -> bool:
         """Test 4: Critical permissions configured."""
-        with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
+        with open(
+            'scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.json'
+        ) as f:
             manifest = json.load(f)
 
         args = manifest.get('finish-args', [])
@@ -109,7 +117,9 @@ class FlatpakPostBuildTester:
 
     def test_point_1_tcp_binding(self) -> bool:
         """Test 5: Point 1 - TCP Binding Network."""
-        with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
+        with open(
+            'scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.json'
+        ) as f:
             manifest = json.load(f)
 
         has_network = '--share=network' in manifest.get('finish-args', [])
@@ -124,7 +134,9 @@ class FlatpakPostBuildTester:
 
     def test_point_2_file_storage(self) -> bool:
         """Test 6: Point 2 - File Storage Read/Write."""
-        with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
+        with open(
+            'scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.json'
+        ) as f:
             manifest = json.load(f)
 
         has_rw = '--filesystem=home:rw' in manifest.get('finish-args', [])
@@ -139,30 +151,25 @@ class FlatpakPostBuildTester:
 
     def test_point_3_internet_deps(self) -> bool:
         """Test 7: Point 3 - Internet Dependencies."""
-        with open('flatpak/configuration/com.sharlychess.SharlyChess.json') as f:
+        with open(
+            'scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.json'
+        ) as f:
             manifest = json.load(f)
 
         # Network permission needed
         has_network = '--share=network' in manifest.get('finish-args', [])
 
-        # Check for external sources OR python-dependencies module (which uses pip)
+        # Check that some module runs pip install (which fetches deps from PyPI)
         modules = manifest.get('modules', [])
         has_external_sources = False
 
         for module in modules:
-            # Check if it's the python-dependencies module
-            if isinstance(module, dict) and module.get('name') == 'python-dependencies':
-                has_external_sources = True
-                break
-
-            # Check for archive sources with http/https
-            sources = module.get('sources', []) if isinstance(module, dict) else []
-            for source in sources:
-                if source.get('type') == 'archive':
-                    url = source.get('url', '')
-                    if 'http' in url:
-                        has_external_sources = True
-                        break
+            if not isinstance(module, dict):
+                continue
+            for cmd in module.get('build-commands', []):
+                if 'pip' in cmd and 'install' in cmd and '--no-deps' not in cmd:
+                    has_external_sources = True
+                    break
             if has_external_sources:
                 break
 
@@ -179,8 +186,8 @@ class FlatpakPostBuildTester:
     def test_configuration_files(self) -> bool:
         """Test 8: Configuration files exist."""
         files_to_check = [
-            'flatpak/configuration/com.sharlychess.SharlyChess.desktop',
-            'flatpak/configuration/com.sharlychess.SharlyChess.appdata.xml',
+            'scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.desktop',
+            'scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.appdata.xml',
         ]
 
         all_exist = True
@@ -197,8 +204,8 @@ class FlatpakPostBuildTester:
     def test_security_no_secrets(self) -> bool:
         """Test 9: No hardcoded secrets in files."""
         dangerous_files = [
-            'flatpak/scripts/launcher.py',
-            'flatpak/scripts/validate.py',
+            'scripts/export/linux/flatpak/scripts/launcher.py',
+            'scripts/export/linux/flatpak/scripts/validate.py',
             'init-credentials.py',
         ]
 

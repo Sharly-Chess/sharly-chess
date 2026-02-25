@@ -137,27 +137,12 @@ class FlatpakTestSuite:
             return True, f'✓ Command defined: {command}'
         return False, '✗ No command entry point'
 
-    def test_requirements_file_exists(self) -> Tuple[bool, str]:
-        """Test 11: Requirements file exists."""
-        req_file = self.flatpak_dir.parent / 'requirements-flatpak.txt'
-        if req_file.exists():
-            return True, f'✓ Requirements file exists: {req_file}'
-        return False, f'✗ Requirements file not found: {req_file}'
-
-    def test_requirements_not_empty(self) -> Tuple[bool, str]:
-        """Test 12: Requirements file has dependencies."""
-        req_file = self.flatpak_dir.parent / 'requirements-flatpak.txt'
-        if not req_file.exists():
-            return False, 'Requirements file not found'
-
-        with open(req_file, 'r') as f:
-            lines = [
-                line.strip() for line in f if line.strip() and not line.startswith('#')
-            ]
-
-        if len(lines) > 10:
-            return True, f'✓ Requirements file has {len(lines)} dependencies'
-        return False, f'✗ Too few dependencies ({len(lines)})'
+    def test_pyproject_toml_exists(self) -> Tuple[bool, str]:
+        """Test 11: pyproject.toml exists (source of dependencies)."""
+        pyproject = self.flatpak_dir.parents[3] / 'pyproject.toml'
+        if pyproject.exists():
+            return True, f'✓ pyproject.toml exists: {pyproject}'
+        return False, f'✗ pyproject.toml not found: {pyproject}'
 
     def test_appdata_file_exists(self) -> Tuple[bool, str]:
         """Test 13: AppData XML file exists."""
@@ -203,8 +188,7 @@ class FlatpakTestSuite:
             ('Display socket', self.test_display_socket),
             ('Network permission', self.test_network_permission),
             ('Command defined', self.test_command_exists),
-            ('Requirements file', self.test_requirements_file_exists),
-            ('Requirements not empty', self.test_requirements_not_empty),
+            ('pyproject.toml exists', self.test_pyproject_toml_exists),
             ('AppData file', self.test_appdata_file_exists),
             ('Desktop file', self.test_desktop_file_exists),
             ('Launcher script', self.test_launcher_script_exists),

@@ -154,18 +154,6 @@ def main():
     # Setup Flatpak environment
     setup_flatpak_environment()
 
-    # Apply Flatpak-specific patches
-    try:
-        import flatpak_patches  # noqa: F401
-
-        logger.info('Flatpak patches applied successfully.')
-    except ImportError:
-        logger.warning(
-            'Could not import flatpak_patches. Update mechanism might not be patched.'
-        )
-    except Exception as e:
-        logger.error(f'Error applying flatpak patches: {e}')
-
     # Verify dependencies
     if not verify_dependencies():
         logger.error('Dependency verification failed')

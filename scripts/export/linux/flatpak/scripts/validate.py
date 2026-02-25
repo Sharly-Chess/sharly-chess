@@ -167,41 +167,6 @@ class FlatpakManifestValidator:
         return self.generate_report()
 
 
-def validate_requirements_file(req_path: Path) -> Tuple[bool, List[str]]:
-    """Validate requirements-flatpak.txt file."""
-    logger.info(f'Validating requirements: {req_path}')
-
-    issues = []
-
-    if not req_path.exists():
-        issues.append(f'Requirements file not found: {req_path}')
-        return False, issues
-
-    try:
-        with open(req_path, 'r') as f:
-            lines = f.readlines()
-
-        for i, line in enumerate(lines, 1):
-            line = line.strip()
-            if not line or line.startswith('#'):
-                continue
-
-            # Basic validation
-            if '==' in line and '>=' in line:
-                issues.append(f'Line {i}: Invalid version specifier: {line}')
-
-        if not issues:
-            logger.info(
-                f'Requirements file valid ({len([line for line in lines if line.strip() and not line.strip().startswith("#")])} packages)'
-            )
-
-        return len(issues) == 0, issues
-
-    except Exception as e:
-        issues.append(f'Failed to read requirements file: {e}')
-        return False, issues
-
-
 def main():
     """Main validation script."""
     logger.info('Starting Flatpak validation...')
@@ -209,25 +174,13 @@ def main():
     # Paths
     flatpak_dir = Path(__file__).parent.parent
     manifest_path = flatpak_dir / 'configuration' / 'com.sharlychess.SharlyChess.json'
-    requirements_path = flatpak_dir.parent / 'requirements-flatpak.txt'
 
     # Validate manifest
     validator = FlatpakManifestValidator(manifest_path)
     manifest_ok, manifest_report = validator.validate()
     print(manifest_report)
 
-    # Validate requirements
-    req_ok, req_issues = validate_requirements_file(requirements_path)
-    if req_issues:
-        print(f'\n❌ Requirements file issues ({len(req_issues)}):')
-        for issue in req_issues:
-            print(f'  - {issue}')
-    else:
-        print('\n✓ Requirements file valid')
-
-    # Overall result
-    success = manifest_ok and req_ok
-    if success:
+    if manifest_ok:
         logger.info('✓ All validations passed!')
         return 0
     else:

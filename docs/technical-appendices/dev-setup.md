@@ -48,9 +48,9 @@ An unpublished (draft) version is automatically created by the action with the r
 
 The Linux Flatpak is automatically built and published to a GitHub Pages repository by a GitHub action triggered by a new tag or manually.
 
-- [View the GitHub action](https://github.com/sharly-chess/sharly-chess/actions/workflows/publish-multiarch.yml)
+- [View the GitHub action](https://github.com/Sharly-Chess/sharly-chess/actions/workflows/export.yml)
 
-The Flatpak repository is hosted at `https://<username>.github.io/sharly-chess/repo/`.
+The Flatpak repository is hosted at `https://sharly-chess.github.io/sharly-chess/repo/`.
 
 ## Installing Tools and Libraries
 

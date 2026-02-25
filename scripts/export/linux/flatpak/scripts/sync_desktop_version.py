@@ -7,11 +7,10 @@ import re
 from pathlib import Path
 import tomllib
 
-ROOT = Path(__file__).resolve().parents[1]
-PYPROJECT = ROOT / 'pyproject.toml'
-DESKTOP_FILE = (
-    ROOT / 'flatpak' / 'configuration' / 'com.sharlychess.SharlyChess.desktop'
-)
+FLATPAK_DIR = Path(__file__).resolve().parents[1]
+PROJECT_ROOT = FLATPAK_DIR.parents[3]
+PYPROJECT = PROJECT_ROOT / 'pyproject.toml'
+DESKTOP_FILE = FLATPAK_DIR / 'configuration' / 'com.sharlychess.SharlyChess.desktop'
 
 
 def load_version_from_pyproject() -> str:

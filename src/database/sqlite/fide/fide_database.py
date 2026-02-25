@@ -12,7 +12,7 @@ from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
-from common import TMP_DIR
+from common import TEMPFILE_DIR
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
@@ -81,7 +81,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
         fide_database_url: str = (
             'https://ratings.fide.com/download/players_list_xml_legacy.zip'
         )
-        with tempfile.TemporaryDirectory(dir=TMP_DIR) as tmpdir:
+        with tempfile.TemporaryDirectory(dir=TEMPFILE_DIR) as tmpdir:
             tmp_dir: Path = Path(tmpdir)
             local_zip_file: Path = tmp_dir / os.path.basename(fide_database_url)
             try:
