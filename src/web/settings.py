@@ -245,6 +245,7 @@ async def create_connection(path: os.PathLike[str]) -> aiosqlite.Connection:
     await conn.execute('PRAGMA temp_store = MEMORY')
     await conn.execute('PRAGMA foreign_keys = ON')
     await conn.execute('PRAGMA mmap_size = 268435456')
+    await conn.execute('PRAGMA busy_timeout = 5000')
 
     return conn
 

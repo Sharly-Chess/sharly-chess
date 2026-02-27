@@ -1,5 +1,9 @@
 # _Sharly Chess_ release notes
 
+## General
+
+- Prevent "database locked" errors on session databases (3.6.4)
+
 ## Events
 
 - Import events from SCE files (3.6.0)
