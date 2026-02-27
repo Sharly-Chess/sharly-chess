@@ -3,6 +3,18 @@
         {{ admin_macros.admin_title(_('Pairings'), 'pairings') }}
         <div class="flex-grow-1"></div>
         {% if admin_tournament %}
+            <span
+                class="pe-2 me-1"
+                    style="z-index: 1;"
+                {{ macros.tooltip_attributes('info', _('Search for player'), 'bottom') }}
+            >
+                {{ admin_macros.text_input(
+                    name='search_player',
+                    input_type='search',
+                    label='',
+                    placeholder=_('Player'),
+                ) }}
+            </span>
             {% include '/admin/pairings/round_controls.html' %}
         {% endif %}
     </div>
