@@ -20,6 +20,7 @@ class SQLiteStore(Store):
         self, key: str, renew_for: int | timedelta | None = None
     ) -> bytes | None:
         async with self.pool.connection() as db:
+            await db.execute('BEGIN DEFERRED')
             async with db.execute(
                 'SELECT data, expires_at FROM store WHERE key = ?', parameters=(key,)
             ) as cursor:
@@ -33,7 +34,7 @@ class SQLiteStore(Store):
 
             if storage_object.expired:
                 await db.execute('DELETE FROM store WHERE key = ?', parameters=(key,))
-                await db.commit()
+                await db.execute('COMMIT')
                 return None
 
             if renew_for and storage_object.expires_at:
@@ -45,7 +46,7 @@ class SQLiteStore(Store):
                         key,
                     ),
                 )
-                await db.commit()
+                await db.execute('COMMIT')
 
         return storage_object.data
 
@@ -57,6 +58,7 @@ class SQLiteStore(Store):
 
         storage_object = StorageObject.new(value, expires_in)
         async with self.pool.connection() as db:
+            await db.execute('BEGIN IMMEDIATE')
             await db.execute(
                 """
                 INSERT INTO store (key, data, expires_at) VALUES (?, ?, ?)
@@ -64,31 +66,41 @@ class SQLiteStore(Store):
                 UPDATE SET data = excluded.data, expires_at = excluded.expires_at""",
                 parameters=(key, storage_object.data, storage_object.expires_at),
             )
-            await db.commit()
+            await db.execute('COMMIT')
 
     async def delete(self, key: str):
         async with self.pool.connection() as db:
+            await db.execute('BEGIN IMMEDIATE')
             await db.execute('DELETE FROM store WHERE key = ?', parameters=(key,))
-            await db.commit()
+            await db.execute('COMMIT')
 
     async def delete_all(self):
         async with self.pool.connection() as db:
+            # NOTE(Amaras): exclusive transaction because we don't want other connections to use
+            # soon to be invalidated values
+            # NOTE(Amaras): the above is only valid outside of WAL mode
+            await db.execute('BEGIN EXCLUSIVE')
             await db.execute('DELETE FROM store')
-            await db.commit()
+            await db.execute('COMMIT')
 
     async def delete_expired(self):
         async with self.pool.connection() as db:
+            # NOTE(Amaras): exclusive transaction because we don't want other connections to use
+            # soon to be invalidated values
+            # NOTE(Amaras): the above is only valid outside of WAL mode
+            await db.execute('BEGIN EXCLUSIVE')
             await db.execute("DELETE FROM store WHERE expires_at < datetime('now')")
-            await db.commit()
+            await db.execute('COMMIT')
 
     async def exists(self, key: str) -> bool:
         async with self.pool.connection() as db:
+            await db.execute('BEGIN DEFERRED')
             async with db.execute(
                 'SELECT EXISTS(SELECT 1 from store where key = ?) as exists',
                 parameters=(key,),
             ) as cursor:
                 row = await cursor.fetchone()
-            await db.commit()
+            await db.execute('COMMIT')
         return int(row[0]) == 1
 
     async def expires_in(self, key: str) -> int | None:
@@ -97,7 +109,7 @@ class SQLiteStore(Store):
                 'SELECT expires_at FROM store where key = ?', parameters=(key,)
             ) as cursor:
                 row = await cursor.fetchone()
-            await db.commit()
+            await db.execute('COMMIT')
         if not row:
             return None
         return int((datetime.fromisoformat(row[0]) - datetime.now()).total_seconds())
