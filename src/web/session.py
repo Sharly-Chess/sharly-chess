@@ -97,9 +97,14 @@ class SubKeySessionVariable[T](SessionVariable[T], ABC):
         self.request.session[self.key][self.sub_key] = value
 
     def get(self) -> T:
-        if self.key not in self.request.session:
-            self.request.session[self.key] = {}
-        return self.request.session[self.key].get(self.sub_key, self.default_value)
+        # NOTE(Amaras): It is important not to write anything during a pure read
+        # The previous version is kept in comments below to explain where it went wrong
+        # if self.key not in self.request.session:
+        #     self.request.session[self.key] = {} ## <- This writes to the session, we're not supposed to do that
+        # return self.request.session[self.key].get(self.sub_key, self.default_value)
+        return self.request.session.get(self.key, {}).get(
+            self.sub_key, self.default_value
+        )
 
     def unset(self):
         if self.key not in self.request.session:
