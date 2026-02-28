@@ -237,7 +237,7 @@ create_sessions_database(sessions_path)
 
 
 async def create_connection(path: os.PathLike[str]) -> aiosqlite.Connection:
-    conn = await aiosqlite.connect(Path(path))
+    conn = await aiosqlite.connect(Path(path), autocommit=False)
     # Apply high-performance pragmas
     await conn.execute('PRAGMA journal_mode = WAL')
     await conn.execute('PRAGMA synchronous = NORMAL')
