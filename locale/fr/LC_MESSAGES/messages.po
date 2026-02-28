@@ -2562,7 +2562,7 @@ msgid "Give/take away access level {access_level_short_name}"
 msgstr "Donner/retirer le niveau d'accès {access_level_short_name}"
 
 msgid "Go to the display controller."
-msgstr "Aller au pilote d'écran."
+msgstr "Aller au pilote d'afficheur."
 
 msgid "Go to the first screen."
 msgstr "Aller au premier écran."
