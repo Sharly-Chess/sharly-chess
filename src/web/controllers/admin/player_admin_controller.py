@@ -8,6 +8,7 @@ from logging import Logger
 import math
 from pathlib import Path
 from typing import Annotated, Any, Iterable
+import asyncio
 
 import chardet
 from litestar.exceptions import NotFoundException, ClientException
@@ -2226,6 +2227,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
         data_source = web_context.get_admin_data_source()
         players: list[Player] = []
+        unordered_players: list[tuple[int, Player]] = []
         connection_error: str | None = None
         search = search.strip()
         if search:
@@ -2236,7 +2238,8 @@ class PlayerAdminController(BaseEventAdminController):
                     page,
                     DataSource.SEARCH_LIMIT,
                 )
-                for stored_player in stored_players:
+
+                async def process_stored_player(stored_player, index):
                     player_source_id = data_source.get_player_source_id(stored_player)
                     fetched_player: (
                         StoredPlayer | None
@@ -2250,9 +2253,26 @@ class PlayerAdminController(BaseEventAdminController):
                             f'not found in data source [{data_source_id}]'
                         )
                     fetched_player.id = 0
-                    players.append(
-                        Player(web_context.get_admin_event(), fetched_player)
+                    unordered_players.append(
+                        (
+                            index,  # This index let us keep the same order as the initial query
+                            Player(web_context.get_admin_event(), fetched_player),
+                        )
                     )
+
+                async def processing_task():  # parallelize processing to improve server response time
+                    await asyncio.gather(
+                        *[
+                            process_stored_player(stored_player, index)
+                            for index, stored_player in enumerate(stored_players)
+                        ]
+                    )
+
+                await asyncio.get_event_loop().create_task(processing_task())
+                players = [
+                    player for index, player in sorted(unordered_players)
+                ]  # reorder players
+
             except SharlyChessException as e:
                 connection_error = str(e)
             SessionPlayersActiveDataSource(request).set(data_source.id)
