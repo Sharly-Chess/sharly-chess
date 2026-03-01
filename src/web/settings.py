@@ -13,6 +13,8 @@ from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
 from litestar.events import listener
+from litestar.middleware import DefineMiddleware
+from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.static_files import create_static_files_router
 from litestar.status_codes import (
@@ -62,6 +64,7 @@ from web.controllers.user.tournament_user_controller import (
     IllegalMoveUserController,
     ResultUserController,
 )
+from web.session_backend import SkipUnchangedSessionBackend
 from web.sqlite_store import SQLiteStore
 
 static_files_base_dir = BASE_DIR / 'src/web/static'
@@ -255,15 +258,20 @@ session_pool = SQLiteConnectionPool(
     acquisition_timeout=30,
 )
 
+session_config = ServerSideSessionConfig(
+    key='sharly-chess-session',
+    exclude=[
+        r'^/static/*',
+        r'.*\.(png|jpg|jpeg|gif|css|js|svg|ico)$',
+        r'^/ws$',
+    ],
+)
+
 stores: dict[str, Store] = {'sessions': SQLiteStore(session_pool)}
 
 middlewares: Sequence[Middleware] = [
-    ServerSideSessionConfig(
-        key='sharly-chess-session',
-        exclude=[
-            r'^/static/*',
-            r'.*\.(png|jpg|jpeg|gif|css|js|svg|ico)$',
-            r'^/ws$',
-        ],
-    ).middleware,
+    DefineMiddleware(
+        SessionMiddleware,
+        backend=SkipUnchangedSessionBackend(config=session_config),
+    ),
 ]
