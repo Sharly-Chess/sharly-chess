@@ -20,12 +20,12 @@ class SQLiteStore(Store):
         self, key: str, renew_for: int | timedelta | None = None
     ) -> bytes | None:
         async with self.pool.connection() as db:
-            await db.execute('BEGIN DEFERRED')
             async with db.execute(
                 'SELECT data, expires_at FROM store WHERE key = ?', parameters=(key,)
             ) as cursor:
                 row = await cursor.fetchone()
             if not row:
+                await db.execute('COMMIT')
                 return None
 
             storage_object = StorageObject(
@@ -94,7 +94,6 @@ class SQLiteStore(Store):
 
     async def exists(self, key: str) -> bool:
         async with self.pool.connection() as db:
-            await db.execute('BEGIN DEFERRED')
             async with db.execute(
                 'SELECT EXISTS(SELECT 1 from store where key = ?) as exists',
                 parameters=(key,),

@@ -15,7 +15,7 @@ def _hash_session(data: ScopeSession) -> str:
         return ''
 
     # the repr and sorting are done to ensure a deterministic hash
-    return sha256(repr(sorted(data.__dict__.items())).encode()).hexdigest()
+    return sha256(repr(sorted(data.items())).encode()).hexdigest()
 
 
 class SkipUnchangedSessionBackend(ServerSideSessionBackend):
@@ -36,7 +36,7 @@ class SkipUnchangedSessionBackend(ServerSideSessionBackend):
         if scope_session is Empty:
             return await self.store_in_message(scope_session, message, connection)
 
-        original_hash = scope.get(SESSION_HASH_KEY, default='')
+        original_hash = scope.get(SESSION_HASH_KEY, '')
         current_hash = _hash_session(scope_session)
 
         if original_hash != current_hash:
