@@ -262,10 +262,8 @@ middlewares: Sequence[Middleware] = [
         key='sharly-chess-session',
         exclude=[
             r'^/static/*',
-            r'.*\.(png|jpg|jpeg|gif|css|js|svg)$',
-            r'^/view/*',
+            r'.*\.(png|jpg|jpeg|gif|css|js|svg|ico)$',
             r'^/ws$',
-            r'^/favicon.ico$',
         ],
     ).middleware,
 ]
