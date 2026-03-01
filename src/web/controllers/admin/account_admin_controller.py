@@ -25,6 +25,7 @@ from database.sqlite.event.event_store import (
     StoredRole,
 )
 from plugins.manager import plugin_manager
+from plugins.utils import AccountPluginData
 from utils.enum import FormAction, RoleType, FideArbiterTitle
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -409,7 +410,7 @@ class AccountAdminController(BaseEventAdminController):
             plugin_id,
             plugin_data_class,
         ) in Account.plugin_data_class_by_plugin_id().items():
-            previous_object = None
+            previous_object: AccountPluginData | None = None
             if account is not None:
                 previous_object = account.plugin_data.get(plugin_id)
 

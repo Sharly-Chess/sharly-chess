@@ -17,7 +17,7 @@ from database.sqlite.event.event_store import (
     StoredPermission,
     StoredRole,
 )
-from plugins.utils import PluginData, AccountPluginData
+from plugins.utils import AccountPluginData
 from plugins.manager import plugin_manager
 from utils.enum import RoleType, FideArbiterTitle
 
@@ -114,7 +114,7 @@ class Account:
             for plugin_id, plugin_data_class in plugin_manager.hook.get_account_plugin_data_class()
         }
 
-    def _get_plugin_data(self) -> dict[str, PluginData]:
+    def _get_plugin_data(self) -> dict[str, AccountPluginData]:
         return {
             plugin_id: plugin_data_class.from_stored_value(
                 self.stored_account.plugin_data.get(plugin_id, {})
