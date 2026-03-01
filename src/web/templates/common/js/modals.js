@@ -50,6 +50,11 @@ function handleModalOpened(static) {
         modal.show();
     }
 
+    var fields = modal._element.getElementsByClassName("form-control");
+    if (fields.length > 0) {
+        fields[0].select(); // If the modal contains a form, set focus on the first field
+    }
+
     closeTooltips();
     activateTooltips();
     scrollToFirstError();
