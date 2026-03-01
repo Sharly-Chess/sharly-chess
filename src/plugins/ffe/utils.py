@@ -10,9 +10,10 @@ from data.account import Account
 from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
+from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe import PLUGIN_NAME
-from plugins.utils import PluginUtils, PluginData
+from plugins.utils import PluginUtils, PluginData, AccountPluginData
 from utils.enum import FormAction
 from web.controllers.base_controller import WebContext
 
@@ -365,7 +366,7 @@ class FfePlayerPluginData(PluginData):
 
 
 @dataclass
-class FfeAccountPluginData(PluginData):
+class FfeAccountPluginData(AccountPluginData):
     ffe_licence_number: str | None
     ffe_arbiter_title: FFEArbiterTitle
 
@@ -375,6 +376,18 @@ class FfeAccountPluginData(PluginData):
             ffe_licence_number=stored_value.get('ffe_licence_number', None),
             ffe_arbiter_title=FFEArbiterTitle(
                 stored_value.get('ffe_arbiter_title', FFEArbiterTitle.NONE)
+            ),
+        )
+
+    @classmethod
+    def from_stored_player(cls, stored_player: StoredPlayer) -> Self:
+        return cls(
+            ffe_licence_number=stored_player.plugin_data.get(PLUGIN_NAME, {}).get(
+                'ffe_licence_number', None
+            ),
+            ffe_arbiter_title=FFEArbiterTitle(
+                stored_player.transient_arbiter_titles.get('ffe')
+                or FFEArbiterTitle.NONE
             ),
         )
 
