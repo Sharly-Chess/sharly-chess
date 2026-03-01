@@ -10,7 +10,7 @@ from litestar.utils.dataclass import extract_dataclass_items
 SESSION_HASH_KEY = 'sharly-session-hash'
 
 
-def _hash_session(data: ScopeSession | dict[str, Any]) -> str:
+def _hash_session(data: ScopeSession) -> str:
     if data is Empty or data is None:
         return ''
 
