@@ -175,6 +175,11 @@ class YearOfBirthColumn(DatasheetColumn):
             )
         stored_player.year_of_birth = int(value)
 
+    def check_data_source_value_match(self, value: str, player: Player) -> bool:
+        if player.date_of_birth and not value:
+            return True
+        return value == str(player.year_of_birth or '')
+
 
 class MailColumn(DatasheetColumn):
     @property
