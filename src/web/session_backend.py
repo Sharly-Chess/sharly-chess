@@ -13,7 +13,7 @@ read-only requests (screen polling, 304 responses, etc.).
 """
 
 from hashlib import sha256
-from typing import Any
+from typing import Any, cast
 
 from litestar.connection import ASGIConnection
 from litestar.datastructures import MutableScopeHeaders, Cookie
@@ -33,7 +33,9 @@ class SkipUnchangedSessionBackend(ServerSideSessionBackend):
         """Load session data and store a hash of the original state in the connection scope."""
         data = await super().load_from_connection(connection)
         # Store a fingerprint of the loaded data so we can detect changes later.
-        connection.scope[_SESSION_HASH_KEY] = _hash_session(data)
+        # Cast to dict because at runtime ASGI scopes are plain dicts, but
+        # Litestar types them as TypedDict which forbids dynamic keys.
+        cast(dict[str, Any], connection.scope)[_SESSION_HASH_KEY] = _hash_session(data)
         return data
 
     async def store_in_message(
@@ -69,7 +71,7 @@ class SkipUnchangedSessionBackend(ServerSideSessionBackend):
             )
         else:
             # Check whether the session actually changed.
-            original_hash = scope.get(_SESSION_HASH_KEY)
+            original_hash = cast(dict[str, Any], scope).get(_SESSION_HASH_KEY)
             current_hash = _hash_session(scope_session)
 
             if original_hash != current_hash:
@@ -90,6 +92,8 @@ def _hash_session(data: ScopeSession) -> str:
     """Compute a deterministic hash of session data for change detection."""
     if data is Empty or data is None:
         return ''
+    if not isinstance(data, dict):
+        return sha256(repr(data).encode()).hexdigest()
     # Use repr for a quick deterministic serialisation of a dict.
     # Sorting keys ensures deterministic ordering.
     return sha256(repr(sorted(data.items())).encode()).hexdigest()

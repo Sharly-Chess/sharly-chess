@@ -28,7 +28,7 @@ from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
 from litestar.middleware.base import DefineMiddleware
 
-from common import BASE_DIR, DEVEL_ENV, TMP_DIR
+from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
 from data.input_output import OnlineDataSourceManager
 
@@ -191,7 +191,6 @@ class SharlyChessEnvironment(Environment):
             loader=template_loader,
             autoescape=True,
             trim_blocks=True,
-            auto_reload=DEVEL_ENV,
         )
         self.add_extension('jinja2.ext.i18n')
         self.install_gettext_callables(  # type: ignore
@@ -244,7 +243,6 @@ async def create_connection(path: os.PathLike[str]) -> aiosqlite.Connection:
     conn = await aiosqlite.connect(Path(path))
     # Apply high-performance pragmas
     await conn.execute('PRAGMA journal_mode = WAL')
-    await conn.execute('PRAGMA busy_timeout = 5000')
     await conn.execute('PRAGMA synchronous = NORMAL')
     await conn.execute('PRAGMA cache_size = 10000')
     await conn.execute('PRAGMA temp_store = MEMORY')
