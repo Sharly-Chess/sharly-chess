@@ -26,7 +26,6 @@ from common.installation_checker import (  # noqa: E402
 )
 
 from project_builder import ProjectBuilder  # type: ignore  # noqa: E402
-from linux.linux_project_builder import LinuxProjectBuilder  # type: ignore  # noqa: E402
 from macos.mac_project_builder import MacProjectBuilder  # type: ignore  # noqa: E402
 from windows.win_project_builder import WinProjectBuilder  # type: ignore  # noqa: E402
 
@@ -45,7 +44,9 @@ def get_project_builder() -> ProjectBuilder:
         case 'darwin':
             return MacProjectBuilder()
         case 'linux':
-            return LinuxProjectBuilder()
+            raise RuntimeError(
+                'Linux builds use Flatpak. Run flatpak-builder with the manifest at scripts/export/linux/flatpak/configuration/.'
+            )
         case _:
             raise RuntimeError(f'No project builder for platform [{sys.platform}].')
 

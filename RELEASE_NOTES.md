@@ -3,3 +3,7 @@
 ## General
 
 - Detect antivirus software and suggest adding exclusions on _Sharly Chess_ folder (3.7.0)
+
+## Tournaments
+
+- Add round schedule to tournaments (3.7.0)

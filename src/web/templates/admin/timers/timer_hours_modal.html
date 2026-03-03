@@ -27,6 +27,42 @@
             <div id="timer-hours-container" class="d-flex flex-column gap-2">
                 {% if not admin_timer.timer_hours %}
                     <div class="text-danger">{{ _('No hours.') }}</div>
+                    {% set tournaments_with_schedule = admin_event.tournaments | selectattr('has_schedule') | list %}
+                    {% if tournaments_with_schedule %}
+                        <div class="mt-2 text-center">
+                            <div class="btn-group dropup">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary dropdown-toggle text-nowrap"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    {{ macros.tooltip_attributes('info', _('Automatically create timer hours matching the round schedule of a specific tournament.'), 'top') }}
+                                >
+                                    <i class="bi-calendar2-check-fill pe-1"></i>
+                                    {{ _('Create hours from tournament') }}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    {% for t in tournaments_with_schedule %}
+                                        <li>
+                                            <button
+                                                class="dropdown-item"
+                                                hx-post="{{ url_for(
+                                                    'admin-timer-hours-from-tournament',
+                                                    event_uniq_id=admin_event.uniq_id,
+                                                    timer_id=admin_timer.id,
+                                                    tournament_id=t.id,
+                                                ) }}"
+                                                hx-target="body"
+                                                hx-indicator="#please-wait"
+                                            >
+                                                {{ t.name }}
+                                            </button>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    {% endif %}
                 {% endif %}
                 {% set has_available_date = admin_timer.has_available_date %}
                 {% for date_str, timer_hours in admin_timer.timer_hours_by_date_str.items() %}
@@ -157,7 +193,24 @@
             </div>
         </div>
         <div class="modal-footer">
-            <div class="flex-grow-1"></div>
+            <div class="flex-grow-1">
+                {% if admin_timer.timer_hours %}
+                    <button
+                        class="btn btn-sm btn-outline-danger text-nowrap"
+                        hx-get="{{ url_for(
+                            'admin-timer-hours-clear-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            timer_id=admin_timer.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        {{ macros.tooltip_attributes('info', _('Delete all hours for this timer and start fresh.'), 'top') }}
+                    >
+                        <i class="bi-trash-fill pe-1"></i>
+                        {{ _('Clear all') }}
+                    </button>
+                {% endif %}
+            </div>
             <button
                 type="button"
                 class="btn btn-secondary text-nowrap"
