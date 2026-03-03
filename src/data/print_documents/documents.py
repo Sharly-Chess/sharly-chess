@@ -1169,7 +1169,7 @@ class NormReportPrintDocument(PrintDocument):
                 ),
                 self._get_option(TournamentPrintOption),
             )
-        if tournament.has_titled_players:
+        if not tournament.has_titled_players:
             raise OptionError(
                 _('This tournament has no titled players.'),
                 self._get_option(TournamentPrintOption),
