@@ -13,6 +13,7 @@ from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
 from litestar.events import listener
+from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.static_files import create_static_files_router
 from litestar.status_codes import (
@@ -25,6 +26,7 @@ from litestar.status_codes import (
 from litestar.stores.base import Store
 from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
+from litestar.middleware.base import DefineMiddleware
 
 from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
@@ -63,6 +65,7 @@ from web.controllers.user.tournament_user_controller import (
     ResultUserController,
 )
 from web.sqlite_store import SQLiteStore
+from web.session_backend import SkipUnchangedSessionBackend
 
 static_files_base_dir = BASE_DIR / 'src/web/static'
 
@@ -257,12 +260,18 @@ session_pool = SQLiteConnectionPool(
 
 stores: dict[str, Store] = {'sessions': SQLiteStore(session_pool)}
 
+_session_config = ServerSideSessionConfig(
+    key='sharly-chess-session',
+    exclude=[
+        r'^/static/*',
+        r'^/ws$',
+        r'.*\.(png|jpg|jpeg|gif|css|js|svg|ico|json)$',
+    ],
+)
+
 middlewares: Sequence[Middleware] = [
-    ServerSideSessionConfig(
-        key='sharly-chess-session',
-        exclude=[
-            r'^/static/*',
-            r'.*\.(png|jpg|jpeg|gif|css|js|svg)$',
-        ],
-    ).middleware,
+    DefineMiddleware(
+        SessionMiddleware,
+        backend=SkipUnchangedSessionBackend(config=_session_config),
+    ),
 ]
