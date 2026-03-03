@@ -52,6 +52,25 @@ __pycache__/
 
 # Environment variables (contains secrets)
 .env
+.env.local
+.env.*.local
+
+# GitHub Actions secrets (NEVER commit)
+# Secrets are stored in GitHub repository settings, not in files
+/secrets/
+*-secrets.*
+
+# Initialization script credentials (NEVER commit actual values)
+# Use GitHub Secrets instead: CHESS_RESULTS_ENCRYPTION_KEY, FFE_SQL_SERVER_*
+init-credentials-local.py
+
+# Any credentials files
+*credentials*
+*credential*
+*password*
+*secret*
+*.key
+*.pem
 
 # virtual environments
 /.venv-*
