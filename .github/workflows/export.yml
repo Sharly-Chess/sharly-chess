@@ -107,7 +107,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
         with:
-          fetch-tags: true
+          fetch-depth: 0
       - name: Install system dependencies
         shell: bash
         run: |
@@ -137,7 +137,15 @@ jobs:
         run: python3 scripts/export/linux/flatpak/scripts/sync_desktop_version.py --version "$BUILD_VERSION"
       - name: Sync AppData releases from git tags
         shell: bash
-        run: python3 scripts/export/linux/flatpak/scripts/sync_appdata_releases.py
+        run: |
+          python3 scripts/export/linux/flatpak/scripts/sync_appdata_releases.py
+          echo "--- Generated <releases> section ---"
+          python3 -c "
+          import re, pathlib
+          content = pathlib.Path('scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.appdata.xml').read_text()
+          m = re.search(r'  <releases>.*?</releases>', content, re.DOTALL)
+          print(m.group(0) if m else 'NOT FOUND')
+          "
       - name: Inject secrets into manifest
         shell: bash
         env:
@@ -273,6 +281,7 @@ jobs:
           flatpak build-update-repo \
             --generate-static-deltas \
             --prune \
+            --prune-depth=5 \
             --gpg-sign="$GPG_KEY_ID" \
             --gpg-homedir="$HOME/.gnupg" \
             flatpak-repo-publish/repo
