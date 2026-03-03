@@ -66,11 +66,12 @@ def launch_browser(url: str):
             requests.get(url, timeout=REQUEST_TIMEOUT)
             break
         except requests.RequestException as e:
-            print_interactive_info(
-                _('Web server not started yet ({ex}), waiting…').format(
-                    ex=e.__class__.__name__
-                )
+            msg = _('Web server not started yet ({ex}), waiting…').format(
+                ex=e.__class__.__name__
             )
+            if isinstance(e, requests.TooManyRedirects) and e.response is not None:
+                msg += f' History: {[r.url for r in e.response.history]}'
+            print_interactive_info(msg)
             sleep(1)
     open(url, new=2)
 
