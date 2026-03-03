@@ -566,6 +566,30 @@ class EventDatabase(MigrationDatabase):
     # ---------------------------------------------------------------------------------
 
     @classmethod
+    def _load_round_datetimes_from_database_field(
+        cls, value: str | None
+    ) -> dict[int, datetime | None]:
+        """Load round_datetimes from a JSON database field."""
+        raw: dict[str, str | None] = cls.load_json_from_database_field(value, {})
+        result: dict[int, datetime | None] = {}
+        for k, v in raw.items():
+            result[int(k)] = datetime.fromisoformat(v) if v else None
+        return result
+
+    @classmethod
+    def _dump_round_datetimes_to_database_field(
+        cls, round_datetimes: dict[int, datetime | None]
+    ) -> str | None:
+        """Serialize round_datetimes to a JSON string for storage."""
+        if not round_datetimes:
+            return None
+        raw: dict[str, str | None] = {
+            str(k): v.isoformat() if v is not None else None
+            for k, v in round_datetimes.items()
+        }
+        return cls.dump_to_json_database_field(raw)
+
+    @classmethod
     def _row_to_stored_tournament(cls, row: dict[str, Any]) -> StoredTournament:
         stored_tournament = StoredTournament(
             id=row['id'],
@@ -607,6 +631,9 @@ class EventDatabase(MigrationDatabase):
             ),
             pab_value=row['pab_value'],
             plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
+            round_datetimes=cls._load_round_datetimes_from_database_field(
+                row['round_datetimes']
+            ),
         )
 
         return stored_tournament
@@ -679,6 +706,9 @@ class EventDatabase(MigrationDatabase):
             'last_update': self.now_as_database_timestamp(),
             'plugin_data': self.dump_to_json_database_field(
                 stored_tournament.plugin_data, {}
+            ),
+            'round_datetimes': self._dump_round_datetimes_to_database_field(
+                stored_tournament.round_datetimes
             ),
         }
 
