@@ -45,6 +45,7 @@
 - Fixed access to upload modal (3.6.1)
 - Fixed invalid type on account FFE arbiter title (3.6.1)
 - Added missing fields to the arbiter compensation form (3.6.3)
+- Fixed error when accessing database before fully generated (3.6.4)
 
 ## _FRA Schools_
 
