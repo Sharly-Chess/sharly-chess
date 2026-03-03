@@ -24,7 +24,7 @@
                 {{ _('Pts *** POINTS COLUMN HEADER') }}
             </th>
             {% for tie_break in admin_tournament.tie_breaks %}
-                <th class="tie-break text-center">{{ tie_break.acronym }}</th>
+                <th class="tie-break text-nowrap text-center">{{ tie_break.acronym }}</th>
             {% endfor %}
         </tr>
     </thead>
