@@ -106,6 +106,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
+        with:
+          fetch-tags: true
       - name: Install system dependencies
         shell: bash
         run: |
@@ -133,18 +135,9 @@ jobs:
       - name: Sync desktop version
         shell: bash
         run: python3 scripts/export/linux/flatpak/scripts/sync_desktop_version.py --version "$BUILD_VERSION"
-      - name: Update AppData for new release
-        if: startsWith(github.ref, 'refs/tags/')
+      - name: Sync AppData releases from git tags
         shell: bash
-        run: |
-          APPDATA="scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.appdata.xml"
-          DATE=$(date +%Y-%m-%d)
-          if ! grep -q "version=\"$BUILD_VERSION\"" "$APPDATA"; then
-            sed -i "s|<releases>|<releases>\n    <release version=\"$BUILD_VERSION\" date=\"$DATE\">\n      <description><p>Version $BUILD_VERSION</p></description>\n    </release>|" "$APPDATA"
-            echo "Added version $BUILD_VERSION to AppData"
-          else
-            echo "Version $BUILD_VERSION already in AppData"
-          fi
+        run: python3 scripts/export/linux/flatpak/scripts/sync_appdata_releases.py
       - name: Inject secrets into manifest
         shell: bash
         env:
