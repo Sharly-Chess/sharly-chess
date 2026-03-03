@@ -1,7 +1,6 @@
 import re
 import shutil
 import tempfile
-import time
 from functools import partial
 from logging import Logger
 from pathlib import Path
@@ -16,6 +15,7 @@ from common.logger import get_logger
 from data.event import Event
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.papi_converter import PapiConverter
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence, FFEArbiterTitle, FFE_LEAGUES
@@ -485,7 +485,7 @@ class FFESession(Session):
         with EventDatabase(
             event_uniq_id, write=True, check_dirty_tournaments=False
         ) as event_database:
-            now = time.time()
+            now = SQLiteDatabase.now_as_database_timestamp()
             event_database.execute(
                 """
                 UPDATE tournament
@@ -601,8 +601,7 @@ class FFESession(Session):
         with EventDatabase(
             self.tournament.event.uniq_id, write=True, check_dirty_tournaments=False
         ) as event_database:
-            now = time.time()
-
+            now = SQLiteDatabase.now_as_database_timestamp()
             event_database.execute(
                 """
                 UPDATE tournament

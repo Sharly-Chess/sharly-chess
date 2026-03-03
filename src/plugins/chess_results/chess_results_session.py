@@ -1,5 +1,4 @@
 import random
-import time
 import xml.etree.ElementTree as ET
 from functools import partial
 from logging import Logger
@@ -12,6 +11,7 @@ from common.logger import get_logger
 from data.tournament import Tournament
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.chess_results import PLUGIN_NAME, MAX_TIE_BREAKS
 from plugins.chess_results.chess_results_mappers import (
     ChessResultTournamentRating,
@@ -185,13 +185,14 @@ class ChessResultsSession(Session):
         # --- Rounds section ---
         rdata = ET.SubElement(root, 'rounds')
         for rnd in range(1, tournament.rounds + 1):
+            dt = tournament.round_datetimes.get(rnd)
             ET.SubElement(
                 rdata,
                 'round',
                 {
                     'round': str(rnd),
-                    'date': '',
-                    'time': '',
+                    'date': dt.strftime('%Y/%m/%d') if dt else '',
+                    'time': dt.strftime('%H:%M') if dt else '',
                 },
             )
 
@@ -404,7 +405,7 @@ class ChessResultsSession(Session):
             with EventDatabase(
                 self.tournament.event.uniq_id, write=True, check_dirty_tournaments=False
             ) as event_database:
-                now = time.time()
+                now = SQLiteDatabase.now_as_database_timestamp()
                 event_database.execute(
                     """
                     UPDATE tournament
