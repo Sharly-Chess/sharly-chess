@@ -81,6 +81,15 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
             AuthAction.GENERATE_DOCUMENTS
         )
 
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not allowed_tournaments and (
+            TournamentPrintOption in cls.available_options()
+            or TournamentsPrintOption in cls.available_options()
+        ):
+            return False
+        return True
+
     @override
     def default_options(self) -> list[PrintOption]:
         return [option_type(self.event) for option_type in self.available_options()]
@@ -665,6 +674,16 @@ class BergerGridPrintDocument(PrintDocument):
     def template_name(self) -> str:
         return '/admin/print/berger_grid.html'
 
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(
+            tournament.pairing_system == RoundRobinPairingSystem()
+            and tournament.is_fully_paired
+            for tournament in allowed_tournaments
+        )
+
     def validate_options(self):
         super().validate_options()
         option = self._get_option(TournamentPrintOption)
@@ -1130,13 +1149,29 @@ class NormReportPrintDocument(PrintDocument):
     def title(self) -> str:
         return 'Certificate of Title Results'
 
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(
+            tournament.rating == TournamentRating.STANDARD
+            and tournament.has_titled_players
+            for tournament in allowed_tournaments
+        )
+
     def validate_options(self):
         super().validate_options()
-        if self.tournament.rating != TournamentRating.STANDARD:
+        tournament = self.tournament
+        if tournament.rating != TournamentRating.STANDARD:
             raise OptionError(
                 _(
                     'This document is only available for standard time control tournaments.'
                 ),
+                self._get_option(TournamentPrintOption),
+            )
+        if tournament.has_titled_players:
+            raise OptionError(
+                _('This tournament has no titled players.'),
                 self._get_option(TournamentPrintOption),
             )
 
@@ -1151,7 +1186,8 @@ class NormReportPrintDocument(PrintDocument):
         norms = {
             norm_title: norm
             for norm_title, norm in tournament_player.achieves_any_title_norm().items()
-            if norm.meets_gender and tournament_player.title < norm_title.player_title
+            if norm.meets_gender
+            and tournament_player.title.sort_index < norm_title.player_title.sort_index
         }
         return {
             'event': self.get_event(),
@@ -1161,6 +1197,7 @@ class NormReportPrintDocument(PrintDocument):
             'end': self.tournament.stop_date.strftime('%Y.%m.%d'),
             'norms': norms,
             'tournament_player': tournament_player,
+            'PlayerTitle': PlayerTitle,
         }
 
 

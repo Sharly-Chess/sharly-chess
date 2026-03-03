@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.sharlychess.SharlyChess</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>AGPL-3.0-or-later</project_license>
+
+  <name>Sharly Chess</name>
+  <summary>Tournament Management System for Chess</summary>
+
+  <description>
+    <p>
+      Sharly Chess is a comprehensive application designed for chess arbiters
+      and tournament organizers to manage all aspects of chess tournaments.
+    </p>
+    <p>Features include:</p>
+    <ul>
+      <li>Tournament creation and management</li>
+      <li>Player registration and categorization</li>
+      <li>Pairing generation (Swiss, Round-robin systems)</li>
+      <li>Real-time result display</li>
+      <li>Scoring and tie-break calculations</li>
+      <li>Export to Chess-Results, FFE, and other formats</li>
+      <li>Multi-language support (French, English)</li>
+      <li>Integration with chess federations (FFE, FIDE)</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">com.sharlychess.SharlyChess.desktop</launchable>
+
+  <url type="homepage">https://sharly-chess.com</url>
+  <url type="help">https://sharly-chess.com/getting-started/</url>
+  <url type="bugtracker">https://github.com/sharly-chess/sharly-chess</url>
+
+  <content_rating type="oars-1.1" />
+
+  <releases>
+  </releases>
+
+  <categories>
+    <category>Utility</category>
+    <category>Office</category>
+  </categories>
+
+  <keywords>
+    <keyword>chess</keyword>
+    <keyword>tournament</keyword>
+    <keyword>arbiter</keyword>
+    <keyword>organizer</keyword>
+    <keyword>pairing</keyword>
+  </keywords>
+
+  <translation type="gettext">sharly-chess</translation>
+
+  <developer_name>Sharly Chess Team</developer_name>
+  <update_contact>support@sharly-chess.com</update_contact>
+</component>

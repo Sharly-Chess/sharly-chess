@@ -549,6 +549,9 @@ msgstr "Tous"
 msgid "All Events"
 msgstr "Évènements"
 
+msgid "All hours have been cleared."
+msgstr "Tous les horaires ont été supprimés."
+
 msgid "All players are paired."
 msgstr "Tou·tes les joueur·euses sont apparié·es."
 
@@ -725,6 +728,9 @@ msgstr "Autriche"
 
 msgid "Auto-update"
 msgstr "Mise à jour"
+
+msgid "Automatically create timer hours matching the round schedule of a specific tournament."
+msgstr "Créer automatiquement les horaires à partir des horaires des rondes d'un tournoi."
 
 msgid "Average"
 msgstr "Moyenne"
@@ -1167,6 +1173,12 @@ msgstr "Veuillez choisir votre langue"
 msgid "Clear Log"
 msgstr "Effacer le journal"
 
+msgid "Clear all"
+msgstr "Tout supprimer"
+
+msgid "Clear all hours"
+msgstr "Supprimer tous les horaires"
+
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
 
@@ -1434,6 +1446,9 @@ msgstr "Créer un évènement"
 msgid "Create hour"
 msgstr "Créer un horaire"
 
+msgid "Create hours from tournament"
+msgstr "Créer les horaires depuis un tournoi"
+
 msgid "Create manually"
 msgstr "Créer manuellement"
 
@@ -1661,6 +1676,9 @@ msgstr "Supprimer <b>{value}</b>"
 
 msgid "Delete account"
 msgstr "Supprimer le compte"
+
+msgid "Delete all hours for this timer and start fresh."
+msgstr "Supprimer tous les horaires de ce chronomètre et recommencer."
 
 msgid "Delete display controller"
 msgstr "Supprimer le pilote d'afficheurs"
@@ -3490,6 +3508,9 @@ msgstr "Aucun prix monétaire assigné à une·e joueur·euse pour ce tournoi."
 msgid "No network detected, use the Refresh button when connected."
 msgstr "Aucun réseau détecté, utilisez le bouton Actualiser après connexion."
 
+msgid "No new hours to create from tournament [{name}] (all rounds are already covered)."
+msgstr "Aucun nouvel horaire à créer depuis le tournoi [{name}] (toutes les rondes sont déjà couvertes)."
+
 msgid "No organiser"
 msgstr "Aucun organisateur·ice"
 
@@ -3651,6 +3672,9 @@ msgstr "Non-apparié·e pour cette ronde"
 
 msgid "Not specified"
 msgstr "Non-spécifié"
+
+msgid "Note: norms are computed based only on <em>completed</em> games."
+msgstr "Note : les normes ne sont calculées qu'à partir des parties <em>terminées</em>."
 
 msgid "Notification"
 msgstr "Notification"
@@ -4708,6 +4732,14 @@ msgstr "La ronde %(round)d est terminée."
 msgid "Round #%(round)d is running."
 msgstr "La ronde %(round)d est en cours."
 
+#, python-format
+msgid "Round #%(round)d must be scheduled after round #%(prev)d."
+msgstr "La ronde n°%(round)d doit être programmée après la ronde n°%(prev)d."
+
+#, python-format
+msgid "Round #%(round)d:"
+msgstr "Ronde n°%(round)d :"
+
 msgid "Round #0 is forbidden."
 msgstr "La ronde n°0 est interdite."
 
@@ -4806,6 +4838,9 @@ msgstr "Enregistrer"
 
 msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
+
+msgid "Schedule"
+msgstr "Horaires"
 
 msgid "Scope"
 msgstr "Périmètre"
@@ -5700,6 +5735,9 @@ msgstr "Ce départage n'est pas compatible avec le système d'appariements [{pai
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
 msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es ({count} dans le tournoi)."
 
+msgid "This tournament has no titled players."
+msgstr "Ce tournoi n'a pas de joueur·euses titré·es."
+
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
 
@@ -5843,6 +5881,9 @@ msgstr "Export de tournoi"
 
 msgid "Tournament name"
 msgstr "Nom du tournoi"
+
+msgid "Tournament not found or has no schedule."
+msgstr "Tournoi introuvable ou sans horaire."
 
 msgid "Tournament performance rating"
 msgstr "Performance"
@@ -6271,6 +6312,9 @@ msgstr "MIF"
 
 msgid "Wales"
 msgstr "Pays de Galles"
+
+msgid "Warning: all hours for this timer will be permanently deleted!"
+msgstr "Attention : tous les horaires de ce chronomètre seront définitivement supprimés !"
 
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
@@ -6742,6 +6786,11 @@ msgid "{count} hour could not be moved (time conflict)."
 msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] "{count} horaire n'a pas pu être déplacé (conflit d'heures)."
 msgstr[1] "{count} horaires n'ont pas pu être déplacés (conflit d'heures)."
+
+msgid "{count} hour created."
+msgid_plural "{count} hours created."
+msgstr[0] "{count} horaire créé."
+msgstr[1] "{count} horaires créés."
 
 msgid "{count} player deleted."
 msgid_plural "{count} players deleted."

@@ -205,6 +205,8 @@
                     {{_('Unmet requirements are highlighted in red and should be verified. They will appear in black when printed.')}}
                     <br />
                     {{_('All values may be modified by the arbiter if necessary.')}}
+                    <br />
+                    {{_('Note: norms are computed based only on <em>completed</em> games.')}}
                 </div>
             {% else %}
                 <div class="spacer"></div>
@@ -323,53 +325,26 @@
                             <input value="{{ norm.num_title_holders }}" />
                         </div>
                     </div>
-
                     <div class="grid" style="grid-template-columns: repeat(7, 1fr);">
                         <div class="item">
                             <label>Numbers of:</label>
                         </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 8 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
+                        {% for title in [
+                            PlayerTitle.GRANDMASTER,
+                            PlayerTitle.INTERNATIONAL_MASTER,
+                            PlayerTitle.WOMAN_GRANDMASTER,
+                            PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+                            PlayerTitle.FIDE_MASTER,
+                            PlayerTitle.WOMAN_FIDE_MASTER,
+                        ] %}
+                            <div class="item {{ 'error' if norm.not_enough_required_titles and title in norm.required_titles else '' }}">
+                                <div class="error-info">
+                                    {{ norm.not_enough_required_titles | safe }}
+                                </div>
+                                <label>{{ title }}:</label>
+                                <input value="{{ norm.title_counts[title] }}" />
                             </div>
-                            <label>GM:</label>
-                            <input value="{{ norm.title_counts[8] }}" />
-                        </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 6 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
-                            </div>
-                            <label>IM:</label>
-                            <input value="{{ norm.title_counts[6] }}" />
-                        </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 7 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
-                            </div>
-                            <label>WGM:</label>
-                            <input value="{{ norm.title_counts[7] }}" />
-                        </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 5 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
-                            </div>
-                            <label>WIM:</label>
-                            <input value="{{ norm.title_counts[5] }}" />
-                        </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 4 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
-                            </div>
-                            <label>FM:</label>
-                            <input value="{{ norm.title_counts[4] }}" />
-                        </div>
-                        <div class="item {{ 'error' if norm.not_enough_required_titles and 3 in norm.required_titles else '' }}">
-                            <div class="error-info">
-                                {{ norm.not_enough_required_titles | safe }}
-                            </div>
-                            <label>WFM:</label>
-                            <input value="{{ norm.title_counts[3] }}" />
-                        </div>
+                        {% endfor %}
                     </div>
                 </section>
 
@@ -378,7 +353,7 @@
                             norm.not_enough_federations or
                             norm.too_many_own_federation or
                             norm.too_many_one_federation
-                        ) and norm.is_143d_met
+                        )
                     %}
                     <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.4.3d:</div>
                     <div class="grid" style="grid-template-columns: 3fr 5fr;">
@@ -462,7 +437,14 @@
                             </td>
                             <td><input class="center" size="5" value="{{ opp.rating }}"  /></td>
                             <td><input class="center" size="5" value="{{ adjusted_opp_rating if opp is not none}}" /></td>
-                            <td><input class="center" size="4" value="{{ opp.title.to_fide_value or '-' if opp is not none }}"  /></td>
+                            <td><input class="center" size="4" value="{% if opp is not none %}{{ opp.title.value if opp.title in [
+                                PlayerTitle.GRANDMASTER,
+                                PlayerTitle.INTERNATIONAL_MASTER,
+                                PlayerTitle.WOMAN_GRANDMASTER,
+                                PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+                                PlayerTitle.FIDE_MASTER,
+                                PlayerTitle.WOMAN_FIDE_MASTER,
+                            ] else '-' }}{% endif %}" /></td>
                             <td><input class="center" size="4" value="{{ pairing.result.to_norm_report }}" /></td>
                         </tr>
                     {% endfor %}

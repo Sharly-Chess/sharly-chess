@@ -98,7 +98,7 @@ class SubKeySessionVariable[T](SessionVariable[T], ABC):
 
     def get(self) -> T:
         if self.key not in self.request.session:
-            self.request.session[self.key] = {}
+            return self.default_value
         return self.request.session[self.key].get(self.sub_key, self.default_value)
 
     def unset(self):

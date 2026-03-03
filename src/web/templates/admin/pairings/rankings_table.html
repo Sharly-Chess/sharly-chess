@@ -49,7 +49,7 @@
                 </th>
                 {% for tie_break in admin_tournament.tie_breaks %}
                     <th
-                        class="tie-break text-center"
+                        class="tie-break text-nowrap text-center"
                         {{ macros.tooltip_attributes('info', tie_break.full_name, 'top') }}
                     >
                         {{ tie_break.acronym }}
