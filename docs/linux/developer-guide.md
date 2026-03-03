@@ -8,26 +8,6 @@ This document is for **developers** contributing to the project. It explains the
 
 The `linux-flatpak` branch provides the Linux Flatpak distribution of Sharly Chess. It is integrated into the main `export.yml` workflow alongside the Windows and macOS builds.
 
-```
-┌────────────────────────────────┐
-│  Sharly-Chess/sharly-chess     │
-│  Branch: linux-flatpak         │
-│                                │
-│  .github/workflows/export.yml  │
-│  ┌──────────────────────┐      │
-│  │ export-sharly-chess- │      │
-│  │ linux                │      │
-│  │ (build + publish)    │      │
-│  └──────┬───────┬───────┘      │
-│         │       │              │
-│    ┌────▼──┐                   │
-│    │repo/  │                   │
-│    └───────┘                   │
-│                                │
-│    GitHub Pages (gh-pages)     │
-└────────────────────────────────┘
-```
-
 ### Branches
 
 | Branch | Role |
