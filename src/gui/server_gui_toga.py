@@ -11,12 +11,14 @@ import asyncio
 import io
 import json
 import logging
+import os
 import queue
 import re
 import sys
 import threading
 import webbrowser
 from datetime import datetime
+from pathlib import Path
 from typing import Optional, Any
 from PIL import Image as PILImage
 
@@ -26,7 +28,8 @@ from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 import qrcode
 
-from common import BASE_DIR, SHARLY_CHESS_VERSION
+import web
+from common import SHARLY_CHESS_VERSION
 from common.i18n import _
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
@@ -273,10 +276,17 @@ class SharlyChessServerToga(toga.App):
                 icon_file_name = 'sharly-chess.png'
             case _:
                 raise NotImplementedError(f'{sys.platform=}')
+
+        # Resolve icon path dynamically to support both dev and installed environments
+        icon_path = Path(web.__file__).parent / 'static' / 'images' / icon_file_name
+
+        # Use FLATPAK_ID if available to match the sandbox ID
+        app_id = os.environ.get('FLATPAK_ID', 'com.sharlychess.app')
+
         super().__init__(
             formal_name='Sharly Chess',
-            app_id='com.sharlychess.app',
-            icon=BASE_DIR / 'src' / 'web' / 'static' / 'images' / icon_file_name,
+            app_id=app_id,
+            icon=icon_path,
             home_page='https://sharly-chess.com',
             version=str(SHARLY_CHESS_VERSION),
         )

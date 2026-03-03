@@ -44,7 +44,7 @@ from database.sqlite.event.event_store import (
 from plugins.utils import PluginData
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.date_time import format_date_range, format_date
+from utils.date_time import format_date_range, format_date, format_datetime
 from utils.enum import (
     BoardColor,
     PlayerGender,
@@ -167,6 +167,58 @@ class Tournament:
     @property
     def stop_date_str(self) -> str:
         return format_date(self.stop_date)
+
+    # Round schedule
+
+    @property
+    def round_datetimes(self) -> dict[int, datetime | None]:
+        """Return the per-round scheduled datetimes: {round_number: datetime | None}."""
+        return self.stored_tournament.round_datetimes
+
+    @property
+    def has_schedule(self) -> bool:
+        """True if at least one round has a scheduled datetime."""
+        return any(v is not None for v in self.round_datetimes.values())
+
+    @property
+    def schedule_first_datetime(self) -> datetime | None:
+        """Return the earliest scheduled round datetime, or None if no schedule."""
+        datetimes = [v for v in self.round_datetimes.values() if v is not None]
+        return min(datetimes) if datetimes else None
+
+    @property
+    def schedule_last_datetime(self) -> datetime | None:
+        """Return the latest scheduled round datetime, or None if no schedule."""
+        datetimes = [v for v in self.round_datetimes.values() if v is not None]
+        return max(datetimes) if datetimes else None
+
+    @property
+    def round_schedule_tooltip_str(self) -> str:
+        """Return a multi-line string listing each round with its scheduled time, grouped by date."""
+        from collections import defaultdict
+        from utils.date_time import format_time
+
+        rounds_by_date = defaultdict(list)
+        for round_num in sorted(self.round_datetimes.keys()):
+            dt = self.round_datetimes[round_num]
+            if dt is not None:
+                rounds_by_date[format_date(dt.date())].append((round_num, dt))
+
+        lines: list[str] = ['<div class="text-start text-nowrap d-flex flex-column">']
+        for date_str, rounds in rounds_by_date.items():
+            if len(rounds) == 1:
+                round_num, dt = rounds[0]
+                round_str = _('Round #{round}').format(round=round_num)
+                lines.append(f'<div><b>{format_datetime(dt)}</b> {round_str}</div>')
+            else:
+                lines.append(f'<div><b>{date_str}</b></div>')
+                for round_num, dt in rounds:
+                    round_str = _('Round #{round}').format(round=round_num)
+                    lines.append(
+                        f'<div class="d-flex gap-2 ms-2"><b class="text-end" style="min-width: 45px">{format_time(dt)}</b><span>{round_str}</span></div>'
+                    )
+        lines.append('</div>')
+        return ''.join(lines)
 
     @property
     def location(self) -> str | None:
@@ -1170,6 +1222,11 @@ class Tournament:
                     include_next_round_bye=trf_type == TrfType.TRF_BX,
                 )
                 for player in self.tournament_players_by_pairing_number.values()
+            ],
+            rounddates=[
+                dt.strftime('%y/%m/%d') if dt else '  /  /  '
+                for idx in range(1, after_round + 1)
+                for dt in [self.round_datetimes.get(idx)]
             ],
             federation=self.event.federation,
             xx_fields=(

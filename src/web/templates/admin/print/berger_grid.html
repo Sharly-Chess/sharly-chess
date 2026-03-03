@@ -18,7 +18,7 @@
                 {% endfor %}
                 <th class="result">{{ _('Pts *** POINTS COLUMN HEADER') }}</th>
                 {% for tie_break in tournament.tie_breaks %}
-                    <th class="tie-break">{{ tie_break.acronym }}</th>
+                    <th class="text-nowrap tie-break">{{ tie_break.acronym }}</th>
                 {% endfor %}
             </tr>
         </thead>
@@ -53,7 +53,7 @@
                     <td class="result">{{ document.grid_results_points(results) }}</td>
                     {% with player=tournament.tournament_players_by_id[player_id] %}
                         {% for tie_break_value in player.tie_break_values %}
-                            <td class="tie-break">
+                            <td class="tie-break text-nowrap">
                                 {{ tie_break_value }}
                             </td>
                         {% endfor %}

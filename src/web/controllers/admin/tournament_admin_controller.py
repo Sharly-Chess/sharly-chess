@@ -2,7 +2,7 @@ import copy
 import json
 import random
 from collections import defaultdict
-from datetime import date
+from datetime import date, datetime
 from functools import partial
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
@@ -316,6 +316,19 @@ class TournamentAdminController(BaseEventAdminController):
                     stored_plugin_data.get(plugin_id, {})
                 ).to_form_data(action=action)
 
+            round_datetimes: dict[int, datetime | None] = {}
+            if action in ('update', 'clone'):
+                # admin_tournament shouldn't be none here in update or clone scenario
+                assert admin_tournament is not None
+                round_datetimes = admin_tournament.round_datetimes
+            # schedule_form_data {'round_1_datetime': '2026-03-01 10:00', 'round_2_datetime': '2026-03-02 10:00'}
+            schedule_form_data: dict[str, str] = {}
+            for round_num in range(1, rounds + 1):
+                dt = round_datetimes.get(round_num)
+                schedule_form_data[f'round_{round_num}_datetime'] = (
+                    WebContext.value_to_form_data(dt) if dt else ''
+                )
+
             data: dict[str, str] = WebContext.values_dict_to_form_data(
                 {
                     'name': name,
@@ -339,6 +352,7 @@ class TournamentAdminController(BaseEventAdminController):
                 }
                 | {field: variation for field, variation in pairing_variations.items()}
                 | plugin_form_data
+                | schedule_form_data
             )
             stored_tournament, errors = cls._admin_get_validated_tournament_data(
                 action, web_context, data
@@ -370,6 +384,10 @@ class TournamentAdminController(BaseEventAdminController):
             str(Result.LOSS.value): _('Loss'),
         }
 
+        # data and errors are always populated by the if/else block above
+        assert data is not None
+        assert errors is not None
+        rounds = int(data.get('rounds') or 1)
         template_context = {
             'rating_options': cls._get_rating_options(),
             'pairing_systems': pairing_systems,
@@ -387,6 +405,12 @@ class TournamentAdminController(BaseEventAdminController):
             'action': action,
             'data': data,
             'errors': errors,
+            # The current rounds count is needed to render the schedule inputs
+            'schedule_rounds': rounds,
+            'force_schedule_open': any(
+                f'round_{n}_datetime' in errors for n in range(1, rounds + 1)
+            )
+            or any(data.get(f'round_{n}_datetime') for n in range(1, rounds + 1)),
         } | form_fields_templates_data
 
         return template_context
@@ -493,7 +517,47 @@ class TournamentAdminController(BaseEventAdminController):
         )
         pab_value = WebContext.form_data_to_int(data, 'pab_value')
 
-        # Validate
+        # validation of rounds within the range of the event and sequentially ordered
+        round_datetimes: dict[int, datetime | None] = {}
+        prev_dt: datetime | None = None
+        for round_num in range(1, rounds + 1):
+            field = f'round_{round_num}_datetime'
+            try:
+                dt = WebContext.form_data_to_datetime(data, field)
+                if dt is not None:
+                    # validate for date range and sequential ordering
+                    if not event.start_date <= dt.date() <= event.stop_date:
+                        errors[field] = _(
+                            'Time outside of event time range ({range}).'
+                        ).format(range=event.date_range_str)
+                    elif prev_dt is not None and dt <= prev_dt:
+                        errors[field] = _(
+                            'Round #%(round)d must be scheduled after round #%(prev)d.'
+                        ) % {'round': round_num, 'prev': round_num - 1}
+                    else:
+                        prev_dt = dt
+                round_datetimes[round_num] = dt
+            except FormError as e:
+                errors[field] = str(e)
+                round_datetimes[round_num] = None
+
+        # if the date_range_checkbox is checked ("by default") and the schedule
+        # provides at least one valid datetime, derive start_date / stop_date from it.
+        date_range_is_default = WebContext.form_data_to_bool(
+            data, 'date_range_checkbox'
+        )
+        schedule_has_errors = any(
+            f'round_{n}_datetime' in errors for n in range(1, rounds + 1)
+        )
+        if date_range_is_default and round_datetimes and not schedule_has_errors:
+            defined_datetimes = [v for v in round_datetimes.values() if v is not None]
+            if defined_datetimes:
+                start_date = min(dt.date() for dt in defined_datetimes)
+                stop_date = max(dt.date() for dt in defined_datetimes)
+                # clamp to event bounds
+                start_date = max(start_date, event.start_date)
+                stop_date = min(stop_date, event.stop_date)
+
         plugin_manager.hook_for_event(
             web_context.get_admin_event(), 'validate_tournament_form_fields'
         )(
@@ -546,6 +610,7 @@ class TournamentAdminController(BaseEventAdminController):
             pab_value=pab_value or Result.WIN.value,
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             plugin_data=plugin_data,
+            round_datetimes=round_datetimes,
         )
         return stored_tournament, errors
 
@@ -583,6 +648,83 @@ class TournamentAdminController(BaseEventAdminController):
         return self._admin_event_tournaments_render(
             web_context=web_context,
             template_context=template_context,
+        )
+
+    @get(
+        path='/tournament-schedule-section/{event_uniq_id:str}',
+        name='admin-tournament-schedule-section',
+    )
+    async def htmx_admin_tournament_schedule_section(
+        self,
+        request: HTMXRequest,
+        action: str | None = None,
+        tournament_id: int | None = None,
+        rounds: int | None = None,
+    ) -> Template:
+        """Return just the schedule section for an outerHTML swap.
+
+        Called by the rounds number input on change so the schedule fields
+        update live without a full modal re-render.
+        """
+        web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
+        event = web_context.get_admin_event()
+
+        if rounds is None or rounds < 1:
+            if tournament_id and (t := event.tournaments_by_id.get(tournament_id)):
+                rounds = t.rounds
+            else:
+                rounds = 1
+
+        # preserve datetimes when the user changes the number of rounds.
+        # prefer values submitted from the form i.e user-typed, not yet saved
+        # over values from the database.
+        existing_datetimes: dict[int, datetime | None] = {}
+        if tournament_id and (t := event.tournaments_by_id.get(tournament_id)):
+            existing_datetimes = t.round_datetimes
+
+        # extract form-submitted round datetime values (sent via hx-include)
+        form_datetimes: dict[str, str] = {}
+        for key, value in request.query_params.items():
+            if key.startswith('round_') and key.endswith('_datetime'):
+                form_datetimes[key] = value
+
+        schedule_form_data: dict[str, str] = {}
+        has_any_value = False
+        for round_num in range(1, rounds + 1):
+            field = f'round_{round_num}_datetime'
+            if field in form_datetimes and form_datetimes[field]:
+                schedule_form_data[field] = form_datetimes[field]
+                has_any_value = True
+            else:
+                dt = existing_datetimes.get(round_num)
+                schedule_form_data[field] = (
+                    WebContext.value_to_form_data(dt) if dt else ''
+                )
+                if dt:
+                    has_any_value = True
+
+        # evaluate if the schedule section should be open or collapsed
+        # if collapsed it should remain collapsed
+        schedule_collapsed_form = request.query_params.get('schedule_collapsed')
+        if schedule_collapsed_form is not None:
+            force_schedule_open = schedule_collapsed_form == 'false'
+        else:
+            force_schedule_open = has_any_value
+
+        template_context = web_context.template_context | {
+            'admin_event': event,
+            'schedule_rounds': rounds,
+            'data': schedule_form_data,
+            'errors': {},
+            'force_schedule_open': force_schedule_open,
+        }
+
+        return HTMXTemplate(
+            template_name='/admin/tournaments/tournament_schedule_section.html',
+            # replace the entire schedule section, looks cleaner
+            re_swap='outerHTML',
+            re_target='#schedule-section',
+            context=template_context,
         )
 
     def _admin_tournament_update(

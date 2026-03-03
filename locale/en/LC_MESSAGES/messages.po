@@ -549,6 +549,9 @@ msgstr ""
 msgid "All Events"
 msgstr ""
 
+msgid "All hours have been cleared."
+msgstr ""
+
 msgid "All players are paired."
 msgstr ""
 
@@ -724,6 +727,9 @@ msgid "Austria"
 msgstr ""
 
 msgid "Auto-update"
+msgstr ""
+
+msgid "Automatically create timer hours matching the round schedule of a specific tournament."
 msgstr ""
 
 msgid "Average"
@@ -1167,6 +1173,12 @@ msgstr ""
 msgid "Clear Log"
 msgstr ""
 
+msgid "Clear all"
+msgstr ""
+
+msgid "Clear all hours"
+msgstr ""
+
 msgid "Clear all the filters."
 msgstr ""
 
@@ -1434,6 +1446,9 @@ msgstr ""
 msgid "Create hour"
 msgstr ""
 
+msgid "Create hours from tournament"
+msgstr ""
+
 msgid "Create manually"
 msgstr ""
 
@@ -1660,6 +1675,9 @@ msgid "Delete <b>{value}</b>"
 msgstr ""
 
 msgid "Delete account"
+msgstr ""
+
+msgid "Delete all hours for this timer and start fresh."
 msgstr ""
 
 msgid "Delete display controller"
@@ -3490,6 +3508,9 @@ msgstr ""
 msgid "No network detected, use the Refresh button when connected."
 msgstr ""
 
+msgid "No new hours to create from tournament [{name}] (all rounds are already covered)."
+msgstr ""
+
 msgid "No organiser"
 msgstr ""
 
@@ -4709,6 +4730,14 @@ msgstr ""
 msgid "Round #%(round)d is running."
 msgstr ""
 
+#, python-format
+msgid "Round #%(round)d must be scheduled after round #%(prev)d."
+msgstr ""
+
+#, python-format
+msgid "Round #%(round)d:"
+msgstr ""
+
 msgid "Round #0 is forbidden."
 msgstr ""
 
@@ -4806,6 +4835,9 @@ msgid "Save"
 msgstr ""
 
 msgid "Save the set or cancel."
+msgstr ""
+
+msgid "Schedule"
 msgstr ""
 
 msgid "Scope"
@@ -5848,6 +5880,9 @@ msgstr ""
 msgid "Tournament name"
 msgstr ""
 
+msgid "Tournament not found or has no schedule."
+msgstr ""
+
 msgid "Tournament performance rating"
 msgstr ""
 
@@ -6274,6 +6309,9 @@ msgid "WIM *** SHORT NAME FOR Woman International Master"
 msgstr "WIM"
 
 msgid "Wales"
+msgstr ""
+
+msgid "Warning: all hours for this timer will be permanently deleted!"
 msgstr ""
 
 msgid "Warning: closing this window will stop Sharly Chess."
@@ -6744,6 +6782,11 @@ msgstr[1] ""
 
 msgid "{count} hour could not be moved (time conflict)."
 msgid_plural "{count} hours could not be moved (time conflict)."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} hour created."
+msgid_plural "{count} hours created."
 msgstr[0] ""
 msgstr[1] ""
 

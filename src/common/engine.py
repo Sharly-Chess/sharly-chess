@@ -369,6 +369,9 @@ class Engine:
         Returns the most recent version available and the corresponding down URL if any, None otherwise."""
         if TEST_ENV:
             return None, None
+        if sys.platform == 'linux':
+            # On Linux, updates are managed by Flatpak (flatpak update / GNOME Software etc.)
+            return None, None
         most_recent_version, download_url = cls._get_most_recent_version()
         if not most_recent_version:
             return None, None
