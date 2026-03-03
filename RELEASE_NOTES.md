@@ -38,6 +38,7 @@
 - Fixed inaccessible Woman title documents (3.6.2)
 - Restrict document options to the ones that can be generated (3.6.3)
 - Fixed slowness after document generation (3.6.3)
+- Fixed norm report document access (3.6.4)
 
 ## _FFE_
 
