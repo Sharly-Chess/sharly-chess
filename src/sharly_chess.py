@@ -6,10 +6,6 @@ from pathlib import Path
 
 from pathvalidate import validate_filepath, ValidationError
 
-from database.sqlite.adapters import register_adapters
-
-register_adapters()
-
 # Nuclear option: Override warnings.warn to block specific messages
 # warnings.filterwarnings simply would not work
 _original_warn = warnings.warn
