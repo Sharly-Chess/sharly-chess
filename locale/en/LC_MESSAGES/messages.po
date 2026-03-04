@@ -1287,9 +1287,6 @@ msgstr ""
 msgid "Configure the tie-breaks of the tournament."
 msgstr ""
 
-msgid "Congo"
-msgstr ""
-
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr ""
 
@@ -2603,6 +2600,9 @@ msgstr ""
 msgid "Guernsey"
 msgstr ""
 
+msgid "Guinea"
+msgstr ""
+
 msgid "Guyana"
 msgstr ""
 
@@ -2954,6 +2954,9 @@ msgstr ""
 msgid "Keyboard shortcuts:"
 msgstr ""
 
+msgid "Kiribati"
+msgstr ""
+
 msgid "Kosovo"
 msgstr ""
 
@@ -3156,6 +3159,9 @@ msgid "March"
 msgstr ""
 
 msgid "Mark this round as over and define the next one as the current round."
+msgstr ""
+
+msgid "Marshall Islands"
 msgstr ""
 
 msgid "Mauritania"
@@ -6820,4 +6826,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Congo"
+#~ msgstr ""
 

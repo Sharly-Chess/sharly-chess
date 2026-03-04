@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg version="1.1" viewBox="0 0 992.13 496.06" xmlns="http://www.w3.org/2000/svg">
-<rect y="4.474e-5" width="992.13" height="496.06" fill="#c10000" fill-rule="evenodd" stroke-width="1pt"/>
-<rect width="311.16" height="249.36" fill="#fff" fill-rule="evenodd" stroke-width="1pt"/>
-<g transform="translate(0 6e-5)" fill="#c10000" fill-rule="evenodd" stroke-width="1pt">
-<rect x="128.04" y="38.89" width="49.595" height="173.71"/>
-<rect transform="matrix(0,1,-1,0,278.59,-27.098)" x="128.04" y="38.89" width="49.595" height="173.71"/>
+<svg width="960" height="480" viewBox="0 0 96 48" xmlns="http://www.w3.org/2000/svg">
+<g fill="#C10000">
+<rect width="96" height="48"/>
+<rect width="40" height="24" fill="#fff"/>
+<rect x="17" y="3" width="6" height="18"/>
+<rect x="11" y="9" width="18" height="6"/>
 </g>
 </svg>
