@@ -1,14 +1,11 @@
-import os.path
 import re
-import tempfile
-import zipfile
+import shutil
 from contextlib import suppress
 from datetime import datetime, date
 from logging import Logger
 from pathlib import Path
 from typing import Any, override
 
-import pytds
 from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
@@ -22,20 +19,19 @@ from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
-from database.sqlite.local_source_database.databases import DatabaseLoaderProgress
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.ffe_session import FFEArbitersLoader
-from plugins.ffe.papi_converter import PapiConverter
-from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData, FFEArbiterTitle
+from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
 from utils.enum import (
     TournamentRating,
     PlayerRatingType,
     PlayerGender,
     PlayerTitle,
 )
+
+FFE_SQLITE_URL = 'https://raw.githubusercontent.com/Sharly-Chess/sharly-chess/ffe-database/ffe_players_v1.db'
 
 logger: Logger = get_logger()
 
@@ -71,7 +67,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
 
     @property
     def _source_file_name(self) -> str:
-        return 'Data.mdb'
+        return 'ffe_players_v1.db'
 
     @override
     @property
@@ -83,40 +79,40 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         )
 
     def _download_source_file(self, source_file_dir: Path) -> bool:
-        with tempfile.TemporaryDirectory() as tmpdir:
-            tmp_dir: Path = Path(tmpdir)
-            ffe_database_url: str = 'https://www.echecs.asso.fr/Papi/PapiData.zip'
-            local_zip_file: Path = tmp_dir / os.path.basename(ffe_database_url)
-            try:
-                response: Response = get(
-                    ffe_database_url, allow_redirects=True, timeout=10
+        target: Path = source_file_dir / self._source_file_name
+        logger.info(self.log_prefix + 'Downloading [%s]...', FFE_SQLITE_URL)
+        try:
+            response: Response = get(
+                FFE_SQLITE_URL, allow_redirects=True, timeout=60, stream=True
+            )
+            if response.status_code != 200:
+                logger.error(
+                    self.log_prefix + 'Could not download [%s], error code [%d].',
+                    FFE_SQLITE_URL,
+                    response.status_code,
                 )
-                if response.status_code != 200:
-                    logger.error(
-                        self.log_prefix + 'Could not download [%s], error code [%d].',
-                        ffe_database_url,
-                        response.status_code,
+                return False
+            total = int(response.headers.get('content-length', 0))
+            logger.info(self.log_prefix + 'Receiving %.1f MB...', total / 1_048_576)
+            received = 0
+            with open(target, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    f.write(chunk)
+                    received += len(chunk)
+                    logger.debug(
+                        self.log_prefix + 'Downloaded %d / %d bytes.', received, total
                     )
-                    return False
-            except ConnectionError as ex:
-                logger.error(
-                    self.log_prefix + 'Could not download [%s]: %s.',
-                    ffe_database_url,
-                    ex,
-                )
-                return False
-            local_zip_file.write_bytes(response.content)
-            if not local_zip_file.exists():
-                logger.error(
-                    self.log_prefix + 'No data received from [%s].', ffe_database_url
-                )
-                return False
-            with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
-                zip_ref.extractall(source_file_dir)
-            if not Path(source_file_dir / self._source_file_name).exists():
-                logger.error(self.log_prefix + 'Could not unzip data.')
-                return False
-            return True
+        except ConnectionError as ex:
+            logger.error(
+                self.log_prefix + 'Could not download [%s]: %s.',
+                FFE_SQLITE_URL,
+                ex,
+            )
+            return False
+        logger.info(
+            self.log_prefix + 'Download complete (%.1f MB).', received / 1_048_576
+        )
+        return True
 
     def _use_external_generator(self):
         return True
@@ -124,55 +120,9 @@ class FfeDatabase(LocalSourcePlayerDatabase):
     def _generate_from_source_file(
         self, source_file_path: Path, tmp_file: Path
     ) -> bool:
-        try:
-            PapiConverter().convert_player_database(source_file_path, tmp_file)
-            return True
-        except pytds.DatabaseError as e:
-            logger.error(self.log_prefix + 'Papi-converter failed: %s', e)
-            return False
-
-    def _post_generation(self, tmp_file: Path) -> bool:
-        logger.debug(self.log_prefix + 'Scrapping FFE arbiters from the FFE website...')
-        ffe_arbiter_titles_by_ffe_licence_number: dict[str, FFEArbiterTitle] = (
-            FFEArbitersLoader().load_ffe_arbiter_titles_by_ffe_licence_number()
-        )
-        logger.debug(
-            self.log_prefix + '%d arbiters to add.',
-            len(ffe_arbiter_titles_by_ffe_licence_number),
-        )
-        logger.debug(self.log_prefix + 'Storing the arbiters...')
-        progress: DatabaseLoaderProgress = DatabaseLoaderProgress(
-            log_prefix=self.log_prefix,
-            total_count=len(ffe_arbiter_titles_by_ffe_licence_number),
-        )
-        with SQLiteDatabase(tmp_file, True) as database:
-            database.execute('ALTER TABLE `player` ADD `ffe_arbiter_title` TEXT')
-            database.commit()
-            query = """UPDATE `player` SET `ffe_arbiter_title` = :ffe_arbiter_title WHERE ffe_licence_number = :ffe_licence_number"""
-            arbiter_count: int = 0
-            to_write: list[dict[str, Any]] = []
-            for (
-                ffe_licence_number,
-                ffe_arbiter_title,
-            ) in ffe_arbiter_titles_by_ffe_licence_number.items():
-                to_write.append(
-                    {
-                        'ffe_licence_number': ffe_licence_number,
-                        'ffe_arbiter_title': ffe_arbiter_title,
-                    }
-                )
-                arbiter_count += 1
-                if arbiter_count % 100 == 0:
-                    database.executemany(query, to_write)
-                    to_write.clear()
-                    if self.stop_event.is_set():
-                        return False
-                    progress.log(arbiter_count)
-                    database.commit()
-            if to_write:
-                database.executemany(query, to_write)
-                database.commit()
-                progress.log(arbiter_count)
+        logger.info(self.log_prefix + 'Copying downloaded database to temp file...')
+        shutil.copy(source_file_path, tmp_file)
+        logger.info(self.log_prefix + 'Copy done.')
         return True
 
     @classmethod
