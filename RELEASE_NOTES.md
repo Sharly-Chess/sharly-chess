@@ -17,7 +17,7 @@
 - Fixed the number of titled players on norm reports (3.6.1)
 - Fixed CSV import with one column (3.6.2)
 - Fixed slowness on player search (3.6.4)
-- Minimize federation flags (3.6.4)
+- Minimize federation flags (3.6.5)
 
 ## Pairings
 
