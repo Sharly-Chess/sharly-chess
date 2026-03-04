@@ -18,6 +18,7 @@ _Sharly Chess_ contributors are people who have contributed some of the code or 
 - Timothy ARMES ([timothyarmes](https://github.com/timothyarmes))
 - Youri AUBRY ([molrn](https://github.com/molrn))
 - Adrien AVENIA ([adrienave](https://github.com/adrienave))
+- Arunprabhu KANDASAMY ([arun1587](https://github.com/arun1587))
 - Gilles HORN ([GillesHorn](https://github.com/GillesHorn))
 
 See also:
