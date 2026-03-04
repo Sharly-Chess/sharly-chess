@@ -73,6 +73,8 @@ export = ["PyInstaller ~= 6.15.0", "pip-licenses"]
 
 tests = ["pytest", "pytest-playwright", "pytest-asyncio", "pytest-base-url"]
 
+scripts = ["scour ~= 0.38.2"]
+
 [tool.ruff.format]
 quote-style = "single"
 
