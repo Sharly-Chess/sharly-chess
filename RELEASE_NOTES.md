@@ -4,6 +4,7 @@
 
 - Import events from SCE files (3.6.0)
 - Push forward SCE export (3.6.0)
+- Convert database timestamp fields to ISO strings (3.6.4)
 
 ## Tournaments
 
