@@ -1,13 +1,4 @@
 <div id="round-controls" class="d-flex row-gap-2 column-gap-3 ms-auto align-items-center flex-wrap justify-content-end">
-    <span {{ macros.tooltip_attributes('info', _('Search for player'), 'bottom') }} style="z-index: 1;">
-        {{ admin_macros.text_input(
-            name='search_player',
-            input_type='search',
-            label='',
-            placeholder=_('Player'),
-        ) }}
-    </span>
-
     <div class="d-inline-flex gap-1">
         <span {{ macros.tooltip_attributes('info', _('First round'), 'bottom') }}>
             <button

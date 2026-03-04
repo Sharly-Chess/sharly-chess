@@ -109,6 +109,7 @@ from plugins.utils import (
     Plugin,
     PluginUtils,
     PluginData,
+    AccountPluginData,
 )
 from utils.enum import (
     PlayerRatingType,
@@ -872,7 +873,7 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def get_account_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+    def get_account_plugin_data_class(self) -> tuple[str, type[AccountPluginData]]:
         return self.id, FfeAccountPluginData
 
     @hookimpl
@@ -910,10 +911,6 @@ class FfePlugin(Plugin):
                 errors[field] = _(
                     'Invalid FFE licence number [{ffe_licence_number}].'
                 ).format(ffe_licence_number=data[field])
-
-    @hookimpl
-    def get_account_search_result_js_template(self) -> str:
-        return '/ffe_account_search_result.js'
 
     @hookimpl
     def get_account_card_title_suffix(self, account: Account) -> str | None:

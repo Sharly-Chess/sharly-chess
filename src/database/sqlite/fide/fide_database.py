@@ -203,19 +203,18 @@ class FideDatabase(LocalSourcePlayerDatabase):
         )
         return True
 
-    def _create_indexes(self):
-        self.write = True
-        with self:
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player` (`first_name` COLLATE NOCASE)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player` (`last_name` COLLATE NOCASE)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player` (`fide_id`)'
-            )
-            self.commit()
+    @classmethod
+    def _create_indexes(cls, database: SQLiteDatabase):
+        database.execute(
+            'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player` (`first_name` COLLATE NOCASE)'
+        )
+        database.execute(
+            'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player` (`last_name` COLLATE NOCASE)'
+        )
+        database.execute(
+            'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player` (`fide_id`)'
+        )
+        database.commit()
 
     def read_federation_ids(self) -> Iterator[str]:
         self.execute(
