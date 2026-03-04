@@ -37,6 +37,7 @@
         <ul
             id="search-results"
             class="dropdown-menu position-absolute me-3 end-0 search-results-dropdown"
+            hx-on::after-settle="handleInitialQuery(event);"
         >
         </ul>
     </div>
@@ -61,5 +62,7 @@
             );
         });
         $('#data-source-select').trigger('change');
+
+        {% include 'js/searchPlayerNavigation.js' %}
     </script>
 </div>
