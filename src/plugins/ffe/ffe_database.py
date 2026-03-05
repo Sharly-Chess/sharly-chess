@@ -1,3 +1,4 @@
+import os
 import re
 import shutil
 from contextlib import suppress
@@ -5,6 +6,8 @@ from datetime import datetime, date
 from logging import Logger
 from pathlib import Path
 from typing import Any, override
+
+import zipfile
 
 from packaging.version import Version
 from requests import Response, get
@@ -31,7 +34,7 @@ from utils.enum import (
     PlayerTitle,
 )
 
-FFE_SQLITE_URL = 'https://github.com/Sharly-Chess/databases/releases/download/latest/ffe_players_v1.db'
+FFE_ZIP_URL = 'https://github.com/Sharly-Chess/databases/releases/download/latest/ffe_players_v1.zip'
 
 logger: Logger = get_logger()
 
@@ -79,23 +82,23 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         )
 
     def _download_source_file(self, source_file_dir: Path) -> bool:
-        target: Path = source_file_dir / self._source_file_name
-        logger.info(self.log_prefix + 'Downloading [%s]...', FFE_SQLITE_URL)
+        zip_target: Path = source_file_dir / 'ffe_players_v1.zip'
+        logger.info(self.log_prefix + 'Downloading [%s]...', FFE_ZIP_URL)
         try:
             response: Response = get(
-                FFE_SQLITE_URL, allow_redirects=True, timeout=60, stream=True
+                FFE_ZIP_URL, allow_redirects=True, timeout=60, stream=True
             )
             if response.status_code != 200:
                 logger.error(
                     self.log_prefix + 'Could not download [%s], error code [%d].',
-                    FFE_SQLITE_URL,
+                    FFE_ZIP_URL,
                     response.status_code,
                 )
                 return False
             total = int(response.headers.get('content-length', 0))
             logger.info(self.log_prefix + 'Receiving %.1f MB...', total / 1_048_576)
             received = 0
-            with open(target, 'wb') as f:
+            with open(zip_target, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=1024 * 1024):
                     f.write(chunk)
                     received += len(chunk)
@@ -105,13 +108,29 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         except ConnectionError as ex:
             logger.error(
                 self.log_prefix + 'Could not download [%s]: %s.',
-                FFE_SQLITE_URL,
+                FFE_ZIP_URL,
                 ex,
             )
             return False
         logger.info(
             self.log_prefix + 'Download complete (%.1f MB).', received / 1_048_576
         )
+        password = os.getenv('FFE_DB_PASSWORD')
+        if not password:
+            logger.error(
+                self.log_prefix + 'FFE_DB_PASSWORD environment variable is not set.'
+            )
+            return False
+        logger.info(self.log_prefix + 'Extracting zip archive...')
+        try:
+            with zipfile.ZipFile(zip_target, 'r') as zf:
+                zf.extractall(source_file_dir, pwd=password.encode())
+        except Exception as ex:
+            logger.error(self.log_prefix + 'Could not extract zip archive: %s.', ex)
+            return False
+        finally:
+            zip_target.unlink(missing_ok=True)
+        logger.info(self.log_prefix + 'Extraction complete.')
         return True
 
     def _use_external_generator(self):
