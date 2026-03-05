@@ -1326,9 +1326,6 @@ msgstr ""
 msgid "Connection to the server failed."
 msgstr ""
 
-msgid "Connections"
-msgstr ""
-
 msgid "Consider all paired games for the final round as draws."
 msgstr ""
 
@@ -1596,6 +1593,9 @@ msgid "Data source: %(data_source)s"
 msgstr ""
 
 msgid "Data sources"
+msgstr ""
+
+msgid "Data transfer"
 msgstr ""
 
 msgid "Database"

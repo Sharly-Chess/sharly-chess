@@ -28,7 +28,7 @@ from plugins.chess_results.utils import (
 )
 from plugins.hookspec import hookimpl
 from plugins.utils import (
-    NavUploadItem,
+    NavDataTransferItem,
     Plugin,
     PluginData,
 )
@@ -228,7 +228,9 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def get_nav_connection_items(self, event: 'Event') -> Iterable[NavUploadItem]:
+    def get_nav_data_transfer_items(
+        self, event: 'Event'
+    ) -> Iterable[NavDataTransferItem]:
         has_upload_error = False
         statuses = ChessResultsBackgroundUploader.upload_status_messages
         tournaments = event.tournaments
@@ -242,7 +244,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
                 break
 
         return [
-            NavUploadItem(
+            NavDataTransferItem(
                 key='chess_results_upload',
                 title=_('Chess-Results.com'),
                 icon_path='/images/chess-results.png',

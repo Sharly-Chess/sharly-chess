@@ -8,7 +8,7 @@ from common import APP_NAME
 
 from plugins.utils import (
     ExtraStatisticsSection,
-    NavUploadItem,
+    NavDataTransferItem,
     PluginData,
     AccountPluginData,
 )
@@ -312,8 +312,10 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def get_nav_connection_items(self, event: 'Event') -> Iterable['NavUploadItem']:
-        """Provide items for the connection menu."""
+    def get_nav_data_transfer_items(
+        self, event: 'Event'
+    ) -> Iterable['NavDataTransferItem']:
+        """Provide items for the data transfer menu."""
 
     # ---------------------------------------------------------------------------------
     # Screens

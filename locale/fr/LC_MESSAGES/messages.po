@@ -1326,9 +1326,6 @@ msgstr "La connexion au serveur a échoué (délai expiré)."
 msgid "Connection to the server failed."
 msgstr "La connexion au serveur a échoué."
 
-msgid "Connections"
-msgstr "Connexions"
-
 msgid "Consider all paired games for the final round as draws."
 msgstr "Considérer toutes les parties appariées pour la dernière ronde comme nulles."
 
@@ -1597,6 +1594,9 @@ msgstr "Source de données : %(data_source)s"
 
 msgid "Data sources"
 msgstr "Sources de données"
+
+msgid "Data transfer"
+msgstr "Transfert de données"
 
 msgid "Database"
 msgstr "Base de données"

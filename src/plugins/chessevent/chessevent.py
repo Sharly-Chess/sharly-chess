@@ -25,7 +25,7 @@ from plugins.chessevent.utils import (
 from plugins.ffe.ffe import FfePlugin
 from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
-from plugins.utils import Plugin, PluginData, NavUploadItem
+from plugins.utils import Plugin, PluginData, NavDataTransferItem
 from web.controllers.base_controller import WebContext, BaseController
 
 if TYPE_CHECKING:
@@ -178,11 +178,13 @@ class ChessEventPlugin(Plugin):
         return '/chessevent_tournament_card_connexion.html'
 
     @hookimpl(trylast=True)
-    def get_nav_connection_items(self, event: 'Event') -> Iterable[NavUploadItem]:
+    def get_nav_data_transfer_items(
+        self, event: 'Event'
+    ) -> Iterable[NavDataTransferItem]:
         if all(tournament.started for tournament in event.tournaments):
             return []
         return [
-            NavUploadItem(
+            NavDataTransferItem(
                 key='chess_results_upload',
                 title=_('ChessEvent'),
                 icon_path='/images/chessevent.png',

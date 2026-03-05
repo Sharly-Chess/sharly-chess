@@ -95,7 +95,7 @@
         {# Expanding menu for expanded mode #}
         {% with active=(admin_event_tab == nav_id) %}
             <button
-                class="expanded-only btn-toggle nav-link text-start {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %}"
+                class="expanded-only btn-toggle nav-link text-start pe-1 {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %}"
                 id="nav-{{ nav_id }}-tab"
                 data-testid="nav-{{ nav_id }}-tab"
                 data-bs-toggle="collapse"
@@ -105,7 +105,7 @@
                     {% if nav_tab.icon_class %}
                         <i class="{{ nav_tab.icon_class }}"></i>
                     {% endif %}
-                    <span class="expanded-only">{{ nav_tab.title }}</span>
+                    <span class="expanded-only flex-grow-1">{{ nav_tab.title }}</span>
                     {% if nav_tab.has_error %}
                         <span
                             class="nav-icon-badge rounded-circle bg-danger ms-2 mb-1"
