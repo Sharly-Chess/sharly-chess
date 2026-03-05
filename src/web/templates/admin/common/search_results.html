@@ -22,7 +22,7 @@
         {% for player in search_results %}
             <li class="dropdown-item text-nowrap btn"
                 hx-post="{{ url_for(
-                    'admin-player-modal-from-search',
+                    'player-modal-from-search' if usage == 'player' else 'account-modal-from-search',
                     event_uniq_id=admin_event.uniq_id,
                     data_source_id=data_source.id,
                     player_source_id=data_source.get_player_source_id(player.stored_player),
@@ -42,6 +42,7 @@
                         'admin-search-player',
                         event_uniq_id=admin_event.uniq_id,
                         page=page + 1,
+                        usage=usage,
                     )}}"
                     hx-vals='{"data_source_id": "{{ data_source.id }}", "search": "{{ search }}"}'
                     hx-target="this"

@@ -25,6 +25,7 @@ from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.databases import DatabaseLoaderProgress
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
+from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_session import FFEArbitersLoader
@@ -131,7 +132,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             logger.error(self.log_prefix + 'Papi-converter failed: %s', e)
             return False
 
-    def _post_generation(self) -> bool:
+    def _post_generation(self, tmp_file: Path) -> bool:
         logger.debug(self.log_prefix + 'Scrapping FFE arbiters from the FFE website...')
         ffe_arbiter_titles_by_ffe_licence_number: dict[str, FFEArbiterTitle] = (
             FFEArbitersLoader().load_ffe_arbiter_titles_by_ffe_licence_number()
@@ -145,10 +146,9 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             log_prefix=self.log_prefix,
             total_count=len(ffe_arbiter_titles_by_ffe_licence_number),
         )
-        self.write = True
-        with self:
-            self.execute('ALTER TABLE `player` ADD `ffe_arbiter_title` TEXT')
-            self.commit()
+        with SQLiteDatabase(tmp_file, True) as database:
+            database.execute('ALTER TABLE `player` ADD `ffe_arbiter_title` TEXT')
+            database.commit()
             query = """UPDATE `player` SET `ffe_arbiter_title` = :ffe_arbiter_title WHERE ffe_licence_number = :ffe_licence_number"""
             arbiter_count: int = 0
             to_write: list[dict[str, Any]] = []
@@ -164,34 +164,33 @@ class FfeDatabase(LocalSourcePlayerDatabase):
                 )
                 arbiter_count += 1
                 if arbiter_count % 100 == 0:
-                    self.executemany(query, to_write)
+                    database.executemany(query, to_write)
                     to_write.clear()
                     if self.stop_event.is_set():
                         return False
                     progress.log(arbiter_count)
-                    self.commit()
+                    database.commit()
             if to_write:
-                self.executemany(query, to_write)
-                self.commit()
+                database.executemany(query, to_write)
+                database.commit()
                 progress.log(arbiter_count)
         return True
 
-    def _create_indexes(self):
-        self.write = True
-        with self:
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player`(`fide_id`)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
-            )
-            self.commit()
+    @classmethod
+    def _create_indexes(cls, database: SQLiteDatabase):
+        database.execute(
+            'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
+        )
+        database.execute(
+            'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
+        )
+        database.execute(
+            'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player`(`fide_id`)'
+        )
+        database.execute(
+            'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
+        )
+        database.commit()
 
     @staticmethod
     def get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:

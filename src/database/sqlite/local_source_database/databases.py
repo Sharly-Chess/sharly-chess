@@ -168,13 +168,14 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
             'Subclass must implement _populate_from_source_file if _use_external_generator returns False'
         )
 
-    def _post_generation(self) -> bool:
+    def _post_generation(self, tmp_file: Path) -> bool:
         """Perform post operations after the database has been populated."""
         # Default implementation - subclasses should override this if needed
         return True
 
+    @classmethod
     @abstractmethod
-    def _create_indexes(self):
+    def _create_indexes(cls, database: SQLiteDatabase):
         """Create the indexes for the databases."""
 
     @property
@@ -374,21 +375,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 return self.stop_update(False)
 
             try:
-                # Copy the new database to its proper location
-                self.file.unlink(missing_ok=True)
-                shutil.copy(tmp_file, self.file)
-                logger.debug(self.log_prefix + f'file copied to [{self.file}].')
-            except OSError as e:
-                logger.error(
-                    self.log_prefix
-                    + 'Could not copy generated database file to [%s]: %s.',
-                    self.file,
-                    e,
-                )
-                return self.stop_update(False)
-
-            try:
-                if not self._post_generation():
+                if not self._post_generation(tmp_file):
                     return self.stop_update(False)
             except (DatabaseError, SharlyChessException) as e:
                 logger.error(
@@ -399,10 +386,25 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
 
             try:
                 logger.debug(self.log_prefix + 'Creating indices…')
-                self._create_indexes()
+                with SQLiteDatabase(tmp_file, True) as database:
+                    self._create_indexes(database)
             except DatabaseError as e:
                 logger.error(
                     self.log_prefix + 'Could not create database indices: %s.',
+                    e,
+                )
+                return self.stop_update(False)
+
+            try:
+                # Copy the new database to its proper location
+                self.file.unlink(missing_ok=True)
+                shutil.copy(tmp_file, self.file)
+                logger.debug(self.log_prefix + f'file copied to [{self.file}].')
+            except OSError as e:
+                logger.error(
+                    self.log_prefix
+                    + 'Could not copy generated database file to [%s]: %s.',
+                    self.file,
                     e,
                 )
                 return self.stop_update(False)

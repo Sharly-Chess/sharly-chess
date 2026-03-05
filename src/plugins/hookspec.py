@@ -10,6 +10,7 @@ from plugins.utils import (
     ExtraStatisticsSection,
     NavUploadItem,
     PluginData,
+    AccountPluginData,
 )
 from utils.enum import (
     Result,
@@ -423,7 +424,7 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def get_account_plugin_data_class(self) -> tuple[str, type[PluginData]]:
+    def get_account_plugin_data_class(self) -> tuple[str, type[AccountPluginData]]:
         """Get the data class to use to store plugin account values.
         Also provide the ID of the plugin."""
 
@@ -438,10 +439,6 @@ class AppHookSpecs:
         errors: dict[str, str],
     ):
         """Validate the additional account form fields"""
-
-    @hookspec
-    def get_account_search_result_js_template(self) -> tuple[str, dict[str, Any]]:
-        """Provide a path to the template containing additional JS code run when players are selected on the account modal search."""
 
     @hookspec
     def get_account_card_title_suffix(self, account: 'Account') -> str | None:
