@@ -105,7 +105,7 @@ from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
 from plugins.utils import (
     ExtraStatisticsSection,
-    NavUploadItem,
+    NavDataTransferItem,
     Plugin,
     PluginUtils,
     PluginData,
@@ -705,7 +705,9 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def get_nav_upload_items(self, event: 'Event') -> Iterable[NavUploadItem]:
+    def get_nav_data_transfer_items(
+        self, event: 'Event'
+    ) -> Iterable[NavDataTransferItem]:
         has_upload_error = False
         statuses = FfeBackgroundUploader.upload_status_messages
         tournaments = event.tournaments
@@ -719,7 +721,7 @@ class FfePlugin(Plugin):
                 break
 
         return [
-            NavUploadItem(
+            NavDataTransferItem(
                 key='ffe_upload',
                 title=_('FFE'),
                 icon_path='/images/ffe.png',

@@ -1595,6 +1595,9 @@ msgstr "Source de données : %(data_source)s"
 msgid "Data sources"
 msgstr "Sources de données"
 
+msgid "Data transfer"
+msgstr "Transfert de données"
+
 msgid "Database"
 msgstr "Base de données"
 
@@ -6153,9 +6156,6 @@ msgstr "Modifier les tournois"
 
 msgid "Updating"
 msgstr "Mise à jour"
-
-msgid "Upload"
-msgstr "Mettre en ligne"
 
 msgid "Uruguay"
 msgstr "Uruguay"

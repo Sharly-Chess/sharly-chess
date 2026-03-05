@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from types import ModuleType
 from typing import Any, TYPE_CHECKING
 
@@ -24,7 +25,7 @@ from plugins.chessevent.utils import (
 from plugins.ffe.ffe import FfePlugin
 from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
-from plugins.utils import Plugin, PluginData
+from plugins.utils import Plugin, PluginData, NavDataTransferItem
 from web.controllers.base_controller import WebContext, BaseController
 
 if TYPE_CHECKING:
@@ -176,6 +177,18 @@ class ChessEventPlugin(Plugin):
             return None
         return '/chessevent_tournament_card_connexion.html'
 
-    @hookimpl
-    def get_tournament_tab_action_menu_items_template(self) -> str:
-        return '/chessevent_tournament_tab_action_menu_items.html'
+    @hookimpl(trylast=True)
+    def get_nav_data_transfer_items(
+        self, event: 'Event'
+    ) -> Iterable[NavDataTransferItem]:
+        if all(tournament.started for tournament in event.tournaments):
+            return []
+        return [
+            NavDataTransferItem(
+                key='chess_results_upload',
+                title=_('ChessEvent'),
+                icon_path='/images/chessevent.png',
+                modal_route_name='chessevent-sync-modal',
+                has_upload_error=False,
+            )
+        ]

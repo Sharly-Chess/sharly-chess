@@ -131,17 +131,11 @@ msgstr "Synchronisation échouée pour le tournoi [{tournament}]."
 msgid "Synchronize all tournaments"
 msgstr "Synchroniser tous les tournois"
 
-msgid "Synchronize the tournaments with the ChessEvent platform."
-msgstr "Synchroniser les tournois avec la plateforme ChessEvent."
-
 msgid "Synchronize this tournament from its ChessEvent tournament."
 msgstr "Synchroniser ce tournoi à partir de son tournoi ChessEvent."
 
 msgid "Synchronize tournaments with ChessEvent"
 msgstr "Synchroniser les tournois avec ChessEvent"
-
-msgid "Synchronize with ChessEvent"
-msgstr "Synchroniser avec ChessEvent"
 
 msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
 msgstr "L'évènement [{event_id}] n'est pas accessible via l'identifiant [{user_id}]."
@@ -172,9 +166,6 @@ msgstr "Erreur inattendue"
 
 msgid "Warning: synchronizing a tournament overwrites all of its player data."
 msgstr "Attention : synchroniser un tournoi écrase toutes les données de ses joueur·euses."
-
-msgid "You are not allowed to update players."
-msgstr "Vous n'êtes pas autorisé·e à modifier les joueur·euses."
 
 msgid "You have to acknowledge the warning first."
 msgstr "Vous devez prendre connaissance de l'avertissement."

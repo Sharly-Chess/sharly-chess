@@ -1595,6 +1595,9 @@ msgstr ""
 msgid "Data sources"
 msgstr ""
 
+msgid "Data transfer"
+msgstr ""
+
 msgid "Database"
 msgstr ""
 
@@ -6150,9 +6153,6 @@ msgid "Update tournaments"
 msgstr ""
 
 msgid "Updating"
-msgstr ""
-
-msgid "Upload"
 msgstr ""
 
 msgid "Uruguay"
