@@ -31,9 +31,7 @@ from utils.enum import (
     PlayerTitle,
 )
 
-FFE_SQLITE_URL = (
-    'https://github.com/Sharly-Chess/ffe-db/releases/download/latest/ffe_players_v1.db'
-)
+FFE_SQLITE_URL = 'https://github.com/Sharly-Chess/databases/releases/download/latest/ffe_players_v1.db'
 
 logger: Logger = get_logger()
 
