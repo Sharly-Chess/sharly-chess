@@ -634,7 +634,8 @@ class ProjectBuilder(ABC):
 
         files += [
             plugins.chess_results.PLUGIN_DIR / '.credentials',
-            plugins.ffe.PLUGIN_DIR / '.credentials',
+            plugins.ffe.PLUGIN_DIR / '.sql-server-credentials',
+            plugins.ffe.PLUGIN_DIR / '.database-zip-credentials',
         ]
 
         # Add GUI resources
