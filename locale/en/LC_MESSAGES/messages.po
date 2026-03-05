@@ -1326,6 +1326,9 @@ msgstr ""
 msgid "Connection to the server failed."
 msgstr ""
 
+msgid "Connections"
+msgstr ""
+
 msgid "Consider all paired games for the final round as draws."
 msgstr ""
 
@@ -6150,9 +6153,6 @@ msgid "Update tournaments"
 msgstr ""
 
 msgid "Updating"
-msgstr ""
-
-msgid "Upload"
 msgstr ""
 
 msgid "Uruguay"

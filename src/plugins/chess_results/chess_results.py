@@ -228,7 +228,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def get_nav_upload_items(self, event: 'Event') -> Iterable[NavUploadItem]:
+    def get_nav_connection_items(self, event: 'Event') -> Iterable[NavUploadItem]:
         has_upload_error = False
         statuses = ChessResultsBackgroundUploader.upload_status_messages
         tournaments = event.tournaments

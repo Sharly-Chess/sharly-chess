@@ -312,8 +312,8 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
-    def get_nav_upload_items(self, event: 'Event') -> Iterable['NavUploadItem']:
-        """Provide upload items for the menu"""
+    def get_nav_connection_items(self, event: 'Event') -> Iterable['NavUploadItem']:
+        """Provide items for the connection menu."""
 
     # ---------------------------------------------------------------------------------
     # Screens

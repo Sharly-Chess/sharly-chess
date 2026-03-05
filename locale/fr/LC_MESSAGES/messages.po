@@ -1326,6 +1326,9 @@ msgstr "La connexion au serveur a échoué (délai expiré)."
 msgid "Connection to the server failed."
 msgstr "La connexion au serveur a échoué."
 
+msgid "Connections"
+msgstr "Connexions"
+
 msgid "Consider all paired games for the final round as draws."
 msgstr "Considérer toutes les parties appariées pour la dernière ronde comme nulles."
 
@@ -6153,9 +6156,6 @@ msgstr "Modifier les tournois"
 
 msgid "Updating"
 msgstr "Mise à jour"
-
-msgid "Upload"
-msgstr "Mettre en ligne"
 
 msgid "Uruguay"
 msgstr "Uruguay"

@@ -292,19 +292,19 @@ class BaseEventAdminWebContext(AdminWebContext):
             }
         if self.client.can_publish_results:
             event = self.get_admin_event()
-            per_plugin_upload_items = plugin_manager.hook_for_event(
-                event, 'get_nav_upload_items'
+            per_plugin_connection_items = plugin_manager.hook_for_event(
+                event, 'get_nav_connection_items'
             )(event=event)
-            upload_items: list[NavUploadItem] = [
-                item for items in per_plugin_upload_items for item in items
+            connection_items: list[NavUploadItem] = [
+                item for items in per_plugin_connection_items for item in items
             ]
-            has_error = any(item.has_upload_error for item in upload_items)
+            has_error = any(item.has_upload_error for item in connection_items)
 
-            if upload_items:
+            if connection_items:
                 nav_tabs |= {
                     'admin-upload': {
-                        'title': _('Upload'),
-                        'icon_class': 'bi-cloud-arrow-up-fill',
+                        'title': _('Connections'),
+                        'icon_class': 'bi-link-45deg',
                         'has_error': has_error,
                         'refresh_trigger_event': 'ws:upload-event from:body',
                         'refresh_url': admin_upload_item_url(
@@ -318,7 +318,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                                 'action': 'upload',
                                 'has_error': item.has_upload_error,
                             }
-                            for item in upload_items
+                            for item in connection_items
                         },
                     }
                 }
