@@ -21,7 +21,7 @@ from pathlib import Path
 
 import requests
 
-PAPI_CONVERTER_VERSION = '1.3.0'
+PAPI_CONVERTER_VERSION = '1.4.0'
 FFE_DATABASE_URL = 'https://www.echecs.asso.fr/Papi/PapiData.zip'
 FFE_PUBLIC_URL = 'http://echecs.asso.fr'
 MDB_FILENAME = 'Data.mdb'
