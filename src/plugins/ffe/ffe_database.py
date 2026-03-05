@@ -127,19 +127,8 @@ class FfeDatabase(LocalSourcePlayerDatabase):
 
     @classmethod
     def _create_indexes(cls, database: SQLiteDatabase):
-        database.execute(
-            'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player`(`last_name` COLLATE NOCASE)'
-        )
-        database.execute(
-            'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player`(`first_name` COLLATE NOCASE)'
-        )
-        database.execute(
-            'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player`(`fide_id`)'
-        )
-        database.execute(
-            'CREATE INDEX IF NOT EXISTS `player_ffe_licence` ON `player`(`ffe_licence_number` COLLATE NOCASE)'
-        )
-        database.commit()
+        # Indices are created by Papi-converter.
+        pass
 
     @staticmethod
     def get_stored_player_from_row(row: dict[str, Any]) -> StoredPlayer:

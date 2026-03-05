@@ -51,6 +51,8 @@
 - Fixed invalid type on account FFE arbiter title (3.6.1)
 - Added missing fields to the arbiter compensation form (3.6.3)
 - Fixed error when accessing database before fully generated (3.6.4)
+- Download the player database from GitHub (3.6.5)
+- Upgraded to Papi-converter 1.4 (3.6.5)
 
 ## _FRA Schools_
 
