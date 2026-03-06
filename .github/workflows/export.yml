@@ -58,7 +58,7 @@ jobs:
       - name: Generate FFE SQL server credentials
         shell: powershell
         env:
-          FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOSTNAME }}
+          FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOST }}
           FFE_SQL_SERVER_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
           FFE_SQL_SERVER_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
           FFE_SQL_SERVER_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
@@ -247,7 +247,7 @@ jobs:
       - name: Generate FFE SQL server credentials
         shell: bash
         env:
-          FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOSTNAME }}
+          FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOST }}
           FFE_SQL_SERVER_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
           FFE_SQL_SERVER_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
           FFE_SQL_SERVER_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
@@ -319,7 +319,7 @@ jobs:
       - name: Generate FFE SQL server credentials
         shell: bash
         env:
-          FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOSTNAME }}
+          FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOST }}
           FFE_SQL_SERVER_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
           FFE_SQL_SERVER_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
           FFE_SQL_SERVER_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
