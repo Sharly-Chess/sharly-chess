@@ -25,7 +25,7 @@ The `src/plugins/ffe/.sql-server-credentials` file, used to connect to the feder
 It must be generated in each developer’s environment (ask other developers for the login credentials):
 
 ```
-python scripts/ffe/generate_ffe_sql_server_credentials.py
+python scripts/ffe/generate_ffe_sql_server_credentials.py --host=xxx --user=xxx --password=xxx --database=xxx
 ```
 
 ## Configuring _FFE_ local database unzipping
@@ -35,7 +35,7 @@ The `src/plugins/ffe/.database-zip-credentials` file, used to unzip the _FFE_ lo
 It must be generated in each developer’s environment (ask other developers for the credentials):
 
 ```
-python scripts/ffe/generate_ffe_database_zip_credentials.py
+python scripts/ffe/generate_ffe_database_zip_credentials.py --password=xxx
 ```
 
 ## Creating the Windows Executable
