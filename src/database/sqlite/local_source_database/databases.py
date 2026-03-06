@@ -1,4 +1,6 @@
 import atexit
+import base64
+import json
 import shutil
 import tempfile
 from time import time
@@ -12,7 +14,7 @@ from typing import override
 
 from packaging.version import Version
 
-from common import TEMPFILE_DIR, TMP_DIR, SharlyChessException
+from common import TMP_DIR, SharlyChessException, DEVEL_ENV, TEMPFILE_DIR
 from common.i18n import _, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -33,6 +35,43 @@ from database.sqlite.sqlite_database import SQLiteDatabase
 from web.channels import channels_plugin
 
 logger = get_logger()
+
+
+class ZipCredentials:
+    def __init__(
+        self,
+        file: Path,
+    ):
+        """Reads credentials from the given file, raises SharlyChessException on error."""
+        self.password: str
+        try:
+            with open(file, 'r') as f:
+                (self.password,) = json.loads(
+                    base64.b64decode(f.read().encode('ascii')).decode('ascii')
+                )
+        except FileNotFoundError as e:
+            if DEVEL_ENV:
+                raise SharlyChessException(
+                    f'Could not read ZIP credentials ({e}), '
+                    'please run generate_xxx_zip_credentials.py.'
+                ) from e
+            else:
+                raise SharlyChessException('Could not read ZIP credentials.') from None
+
+    @staticmethod
+    def dump(
+        credentials_file: Path,
+        password: str,
+    ):
+        """Dumps credentials to the given file.
+        The credentials can be read by `creds = ZipCredentials(file)`."""
+        credentials_file.parent.mkdir(exist_ok=True, parents=True)
+        with open(credentials_file, 'w') as f:
+            f.write(
+                base64.b64encode(json.dumps((password,)).encode('ascii')).decode(
+                    'ascii'
+                )
+            )
 
 
 class DatabaseLoaderProgress:

@@ -1,4 +1,3 @@
-import os
 import re
 import shutil
 from contextlib import suppress
@@ -22,9 +21,10 @@ from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
+from database.sqlite.local_source_database.databases import ZipCredentials
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
 from database.sqlite.sqlite_database import SQLiteDatabase
-from plugins import ffe
+from plugins import PLUGINS_DIR, ffe
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
 from utils.enum import (
@@ -50,6 +50,18 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         for player in ffe_database.search_player('my name'):
             ...
     """
+
+    CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.database-zip-credentials'
+
+    @classmethod
+    def dump_credentials(
+        cls,
+        password: str,
+    ):
+        ZipCredentials.dump(
+            cls.CREDENTIALS_FILE,
+            password,
+        )
 
     @staticmethod
     def static_id() -> str:
@@ -115,16 +127,11 @@ class FfeDatabase(LocalSourcePlayerDatabase):
         logger.info(
             self.log_prefix + 'Download complete (%.1f MB).', received / 1_048_576
         )
-        password = os.getenv('FFE_DB_PASSWORD')
-        if not password:
-            logger.error(
-                self.log_prefix + 'FFE_DB_PASSWORD environment variable is not set.'
-            )
-            return False
+        credentials: ZipCredentials = ZipCredentials(self.CREDENTIALS_FILE)
         logger.info(self.log_prefix + 'Extracting zip archive...')
         try:
             with zipfile.ZipFile(zip_target, 'r') as zf:
-                zf.extractall(source_file_dir, pwd=password.encode())
+                zf.extractall(source_file_dir, pwd=credentials.password.encode())
         except Exception as ex:
             logger.error(self.log_prefix + 'Could not extract zip archive: %s.', ex)
             return False
