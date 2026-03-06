@@ -69,7 +69,7 @@ jobs:
         env:
           FFE_DATABASE_ZIP_PASSWORD: ${{ secrets.FFE_DATABASE_ZIP_PASSWORD }}
         run: |
-          python scripts/ffe/generate_ffe_database_credentials.py --github --password="$env:FFE_DATABASE_ZIP_PASSWORD"
+          python scripts/ffe/generate_ffe_database_zip_credentials.py --github --password="$env:FFE_DATABASE_ZIP_PASSWORD"
       - name: Set version variable
         id: version
         shell: bash
@@ -258,7 +258,7 @@ jobs:
         env:
           FFE_DATABASE_ZIP_PASSWORD: ${{ secrets.FFE_DATABASE_ZIP_PASSWORD }}
         run: |
-          python scripts/ffe/generate_ffe_database_credentials.py --github --password="$FFE_DATABASE_ZIP_PASSWORD"
+          python scripts/ffe/generate_ffe_database_zip_credentials.py --github --password="$FFE_DATABASE_ZIP_PASSWORD"
       - name: Set version variable
         id: version
         shell: bash
@@ -330,7 +330,7 @@ jobs:
         env:
           FFE_DATABASE_ZIP_PASSWORD: ${{ secrets.FFE_DATABASE_ZIP_PASSWORD }}
         run: |
-          python scripts/ffe/generate_ffe_database_credentials.py --github --password="$FFE_DATABASE_ZIP_PASSWORD"
+          python scripts/ffe/generate_ffe_database_zip_credentials.py --github --password="$FFE_DATABASE_ZIP_PASSWORD"
       - name: Set version variable
         id: version
         shell: bash
