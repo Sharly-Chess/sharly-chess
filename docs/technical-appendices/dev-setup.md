@@ -28,12 +28,22 @@ python src/sharly_chess.py --chessevent
 
 ## Configuring Authentication with the FFE Server
 
-The `src/plugins/ffe/.credentials` file, used to connect to the federation's website, is not stored in the _GitHub_ repository.
+The `src/plugins/ffe/.sql-server-credentials` file, used to connect to the federation's website, is not stored in the _GitHub_ repository.
 
 It must be generated in each developer’s environment (ask other developers for the login credentials):
 
 ```
-python scripts/ffe/generate_ffe_sql_server_credentials.py
+python scripts/ffe/generate_ffe_sql_server_credentials.py --host=xxx --user=xxx --password=xxx --database=xxx
+```
+
+## Configuring _FFE_ local database unzipping
+
+The `src/plugins/ffe/.database-zip-credentials` file, used to unzip the _FFE_ local database, is not stored in the _GitHub_ repository.
+
+It must be generated in each developer’s environment (ask other developers for the credentials):
+
+```
+python scripts/ffe/generate_ffe_database_zip_credentials.py --password=xxx
 ```
 
 ## Creating the Windows Executable
