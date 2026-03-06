@@ -47,8 +47,9 @@ __pycache__/
 *.log
 /mprofile_*.dat
 
-# database credentials
+# credentials
 .credentials
+.*-credentials
 
 # Environment variables (contains secrets)
 .env
