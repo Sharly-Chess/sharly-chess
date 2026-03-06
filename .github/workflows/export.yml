@@ -58,16 +58,16 @@ jobs:
       - name: Generate FFE SQL server credentials
         shell: powershell
         env:
-          FFE_HOST: ${{ secrets.FFE_SQL_SERVER_HOSTNAME }}
-          FFE_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
-          FFE_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
-          FFE_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
+          FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOSTNAME }}
+          FFE_SQL_SERVER_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
+          FFE_SQL_SERVER_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
+          FFE_SQL_SERVER_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
         run: |
           python scripts/ffe/generate_ffe_sql_server_credentials.py --github --host="$env:FFE_SQL_SERVER_HOST" --user="$env:FFE_SQL_SERVER_USER" --password="$env:FFE_SQL_SERVER_PASSWORD" --database="$env:FFE_SQL_SERVER_DATABASE"
       - name: Generate FFE database credentials
         shell: powershell
         env:
-          FFE_DATABASE_PASSWORD: ${{ secrets.FFE_DATABASE_ZIP_PASSWORD }}
+          FFE_DATABASE_ZIP_PASSWORD: ${{ secrets.FFE_DATABASE_ZIP_PASSWORD }}
         run: |
           python scripts/ffe/generate_ffe_database_credentials.py --github --password="$env:FFE_DATABASE_ZIP_PASSWORD"
       - name: Set version variable
@@ -247,18 +247,18 @@ jobs:
       - name: Generate FFE SQL server credentials
         shell: bash
         env:
-          FFE_HOST: ${{ secrets.FFE_SQL_SERVER_HOSTNAME }}
-          FFE_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
-          FFE_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
-          FFE_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
+          FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOSTNAME }}
+          FFE_SQL_SERVER_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
+          FFE_SQL_SERVER_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
+          FFE_SQL_SERVER_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
         run: |
-          python scripts/ffe/generate_ffe_sql_server_credentials.py --github --host="$env:FFE_SQL_SERVER_HOST" --user="$env:FFE_SQL_SERVER_USER" --password="$env:FFE_SQL_SERVER_PASSWORD" --database="$env:FFE_SQL_SERVER_DATABASE"
+          python scripts/ffe/generate_ffe_sql_server_credentials.py --github --host="$FFE_SQL_SERVER_HOST" --user="$FFE_SQL_SERVER_USER" --password="$FFE_SQL_SERVER_PASSWORD" --database="$FFE_SQL_SERVER_DATABASE"
       - name: Generate FFE database credentials
         shell: bash
         env:
-          FFE_DATABASE_PASSWORD: ${{ secrets.FFE_DATABASE_ZIP_PASSWORD }}
+          FFE_DATABASE_ZIP_PASSWORD: ${{ secrets.FFE_DATABASE_ZIP_PASSWORD }}
         run: |
-          python scripts/ffe/generate_ffe_database_credentials.py --github --password="$env:FFE_DATABASE_ZIP_PASSWORD"
+          python scripts/ffe/generate_ffe_database_credentials.py --github --password="$FFE_DATABASE_ZIP_PASSWORD"
       - name: Set version variable
         id: version
         shell: bash
@@ -319,18 +319,18 @@ jobs:
       - name: Generate FFE SQL server credentials
         shell: bash
         env:
-          FFE_HOST: ${{ secrets.FFE_SQL_SERVER_HOSTNAME }}
-          FFE_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
-          FFE_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
-          FFE_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
+          FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOSTNAME }}
+          FFE_SQL_SERVER_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
+          FFE_SQL_SERVER_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
+          FFE_SQL_SERVER_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
         run: |
-          python scripts/ffe/generate_ffe_sql_server_credentials.py --github --host="$env:FFE_SQL_SERVER_HOST" --user="$env:FFE_SQL_SERVER_USER" --password="$env:FFE_SQL_SERVER_PASSWORD" --database="$env:FFE_SQL_SERVER_DATABASE"
+          python scripts/ffe/generate_ffe_sql_server_credentials.py --github --host="$FFE_SQL_SERVER_HOST" --user="$FFE_SQL_SERVER_USER" --password="$FFE_SQL_SERVER_PASSWORD" --database="$FFE_SQL_SERVER_DATABASE"
       - name: Generate FFE database credentials
         shell: bash
         env:
-          FFE_DATABASE_PASSWORD: ${{ secrets.FFE_DATABASE_ZIP_PASSWORD }}
+          FFE_DATABASE_ZIP_PASSWORD: ${{ secrets.FFE_DATABASE_ZIP_PASSWORD }}
         run: |
-          python scripts/ffe/generate_ffe_database_credentials.py --github --password="$env:FFE_DATABASE_ZIP_PASSWORD"
+          python scripts/ffe/generate_ffe_database_credentials.py --github --password="$FFE_DATABASE_ZIP_PASSWORD"
       - name: Set version variable
         id: version
         shell: bash
