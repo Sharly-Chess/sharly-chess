@@ -9,6 +9,7 @@ from litestar.params import Body
 from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
+from litestar_htmx import HTMXTemplate
 
 from common import is_valid_email
 from common.i18n import _
@@ -24,11 +25,13 @@ from database.sqlite.event.event_store import (
     StoredRole,
 )
 from plugins.manager import plugin_manager
+from plugins.utils import AccountPluginData
 from utils.enum import FormAction, RoleType, FideArbiterTitle
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
 )
+from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.controllers.base_controller import WebContext
 from web.guards import EventGuard, ActionGuard, ManageAccountGuard
 from web.messages import Message
@@ -193,6 +196,62 @@ class AccountAdminController(BaseEventAdminController):
             | plugin_form_data
         )
 
+    @post(
+        path=[
+            '/account-modal/from-search/{event_uniq_id:str}/'
+            '{data_source_id:str}/{player_source_id:str}',
+        ],
+        name='account-modal-from-search',
+    )
+    async def htmx_account_modal_from_search(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        data_source_id: str,
+        player_source_id: str,
+    ) -> Template:
+        web_context = AccountAdminWebContext(request)
+        try:
+            data_source = DataSourceManager().get_object(data_source_id)
+        except KeyError:
+            raise NotFoundException(f'Unknown data source [{data_source_id}].')
+
+        stored_player, errors = await PlayerAdminController.get_search_stored_player(
+            data_source, player_source_id
+        )
+        if stored_player:
+            stored_account = StoredAccount(
+                id=0,
+                active=True,
+                first_name=stored_player.first_name,
+                last_name=stored_player.last_name,
+                fide_id=stored_player.fide_id,
+                fide_arbiter_title=stored_player.transient_arbiter_titles.get(
+                    'fide', ''
+                ),
+                mail=WebContext.form_data_to_str(data, 'mail'),
+                phone=WebContext.form_data_to_str(data, 'phone'),
+                plugin_data={
+                    plugin_id: plugin_data_class.from_stored_player(
+                        stored_player
+                    ).to_stored_value()
+                    for plugin_id, plugin_data_class in Account.plugin_data_class_by_plugin_id().items()
+                },
+            )
+            data = self._account_form_data_from_account(Account(stored_account))
+        template_context = self._account_form_modal_context(
+            web_context, FormAction.CREATE, data, errors
+        )
+        return HTMXTemplate(
+            template_name='/admin/accounts/account_information_form_section.html',
+            context=web_context.template_context | template_context,
+            re_target='#information-section',
+            re_swap='outerHTML',
+        )
+
     @get(
         path='/account-modal/create/{event_uniq_id:str}',
         name='admin-account-create-modal',
@@ -351,7 +410,7 @@ class AccountAdminController(BaseEventAdminController):
             plugin_id,
             plugin_data_class,
         ) in Account.plugin_data_class_by_plugin_id().items():
-            previous_object = None
+            previous_object: AccountPluginData | None = None
             if account is not None:
                 previous_object = account.plugin_data.get(plugin_id)
 

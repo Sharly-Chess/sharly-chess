@@ -22,12 +22,37 @@ from litestar.types import Message, ScopeSession
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.empty import Empty
 
+from common.logger import get_logger
+
+
+logger = get_logger()
 _SESSION_HASH_KEY = '_sharly_session_hash'
 
 
 class SkipUnchangedSessionBackend(ServerSideSessionBackend):
     """A session backend that avoids writing to the store when the session
     data did not change during the request lifecycle."""
+
+    def get_session_id(self, connection: ASGIConnection) -> str:
+        session_id = connection.cookies.get(self.config.key)
+        if not session_id or session_id == 'null':
+            session_id = connection.get_session_id()
+            if not session_id:
+                session_id = self.generate_session_id()
+                src: str = (
+                    f'{connection.client.host}:{connection.client.port}'
+                    if connection.client
+                    else 'unknown'
+                )
+                dst: str = f'{connection.headers.get("host")}{connection.url.path}'
+                logger.debug(
+                    'New session for %s to %s (agent: %s): %s',
+                    src,
+                    dst,
+                    connection.headers.get('user-agent'),
+                    session_id,
+                )
+        return session_id
 
     async def load_from_connection(self, connection: ASGIConnection) -> dict[str, Any]:
         """Load session data and store a hash of the original state in the connection scope."""

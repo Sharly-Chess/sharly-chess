@@ -12,7 +12,7 @@ from data.pairings.managers import plugin_manager
 from data.rotator import Rotator
 from data.screen import Screen
 from data.tournament import Tournament
-from plugins.utils import NavUploadItem
+from plugins.utils import NavDataTransferItem
 from utils.enum import (
     FormAction,
     ScreenType,
@@ -27,7 +27,7 @@ from web.controllers.admin.base_admin_controller import (
 from web.guards import EventGuard
 from web.messages import Message
 from web.session import SessionPrintLastTournaments
-from web.urls import admin_upload_item_url
+from web.urls import data_transfer_item_url
 
 
 class BaseEventAdminWebContext(AdminWebContext):
@@ -292,22 +292,22 @@ class BaseEventAdminWebContext(AdminWebContext):
             }
         if self.client.can_publish_results:
             event = self.get_admin_event()
-            per_plugin_upload_items = plugin_manager.hook_for_event(
-                event, 'get_nav_upload_items'
+            per_plugin_data_transfer_items = plugin_manager.hook_for_event(
+                event, 'get_nav_data_transfer_items'
             )(event=event)
-            upload_items: list[NavUploadItem] = [
-                item for items in per_plugin_upload_items for item in items
+            data_transfer_items: list[NavDataTransferItem] = [
+                item for items in per_plugin_data_transfer_items for item in items
             ]
-            has_error = any(item.has_upload_error for item in upload_items)
+            has_error = any(item.has_upload_error for item in data_transfer_items)
 
-            if upload_items:
+            if data_transfer_items:
                 nav_tabs |= {
-                    'admin-upload': {
-                        'title': _('Upload'),
-                        'icon_class': 'bi-cloud-arrow-up-fill',
+                    'admin-data-transfer-item': {
+                        'title': _('Data transfer'),
+                        'icon_class': 'bi-share-fill',
                         'has_error': has_error,
                         'refresh_trigger_event': 'ws:upload-event from:body',
-                        'refresh_url': admin_upload_item_url(
+                        'refresh_url': data_transfer_item_url(
                             self.request, self.get_admin_event().uniq_id
                         ),
                         'submenu': {
@@ -318,7 +318,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                                 'action': 'upload',
                                 'has_error': item.has_upload_error,
                             }
-                            for item in upload_items
+                            for item in data_transfer_items
                         },
                     }
                 }
