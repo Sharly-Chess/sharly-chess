@@ -1636,18 +1636,14 @@ class Tournament:
             f'Check-in already open for tournament [{self.name}].'
         )
         self.stored_tournament.check_in_open = True
-        present_player_ids: list[int] = []
+        player_ids: list[int] = []
         for tournament_player in self.tournament_players:
-            pairing = tournament_player.pairings_by_round.get(
-                self.current_round + 1, None
-            )
-            if not pairing or not pairing.result.is_bye:
-                present_player_ids.append(tournament_player.id)
-                tournament_player.stored_player.check_in = False
+            player_ids.append(tournament_player.id)
+            tournament_player.stored_player.check_in = False
 
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_check_in(self.id, True)
-            database.set_players_check_in(present_player_ids, False)
+            database.set_players_check_in(player_ids, False)
 
     def close_check_in(
         self, zpbs_next_round: bool, zpbs_last_rounds: bool, delete: bool
