@@ -1,9 +1,8 @@
-from typing import Iterable, Any
+from typing import Iterable, Any, TYPE_CHECKING
 
 from packaging.version import Version
 
 from common.i18n import _
-from data.event import Event
 from database.sqlite.event.event_store import StoredEvent, StoredTournament
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_controller import (
@@ -11,8 +10,12 @@ from plugins.custom_upload.custom_upload_controller import (
 )
 from plugins.custom_upload.utils import CustomUploadTournamentPluginData
 from plugins.hookspec import hookimpl
-from plugins.utils import Plugin, NavUploadItem, PluginData
+from plugins.utils import Plugin, NavDataTransferItem, PluginData
 from web.controllers.base_controller import BaseController
+
+if TYPE_CHECKING:
+    from data.event import Event
+    from data.tournament import Tournament
 
 
 class CustomUploadPlugin(Plugin):
@@ -69,11 +72,13 @@ class CustomUploadPlugin(Plugin):
     # ---------------------------------------------------------------------------------
 
     @hookimpl
-    def get_nav_upload_items(self, event: 'Event') -> Iterable[NavUploadItem]:
+    def get_nav_data_transfer_items(
+        self, event: 'Event'
+    ) -> Iterable[NavDataTransferItem]:
         has_upload_error = False
 
         return [
-            NavUploadItem(
+            NavDataTransferItem(
                 key='custom_upload',
                 title=_('Custom location'),
                 icon_path='/images/web.png',
