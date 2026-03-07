@@ -1931,9 +1931,6 @@ msgstr "Dupliquer avec les joueur·euses"
 msgid "Duplicate without players"
 msgstr "Dupliquer sans les joueur·euses"
 
-msgid "Duplicated rows"
-msgstr "Lignes dupliquées"
-
 msgid "Duration (min):"
 msgstr "Durée (min) :"
 
@@ -2262,6 +2259,9 @@ msgstr "Exempte"
 
 msgid "Exempt *** MALE"
 msgstr "Exempt"
+
+msgid "Existing players"
+msgstr "Joueur·euses existant·es"
 
 msgid "Exit button:"
 msgstr "Bouton de sortie :"
@@ -5064,6 +5064,9 @@ msgstr "Montrer les logs"
 
 msgid "Show logging level"
 msgstr "Afficher le niveau de log"
+
+msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
+msgstr "Afficher les lignes des joueur·euses existant déjà dans le tournoi et les lignes dupliquées."
 
 msgid "Show unmodified players"
 msgstr "Afficher les joueur·euses non modifié·es"

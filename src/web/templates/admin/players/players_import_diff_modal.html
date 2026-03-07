@@ -61,7 +61,14 @@
                         onclick="$('.duplicated-row').toggle(this.checked)"
                         checked
                     />
-                    <label class="form-check-label"> {{ _('Duplicated rows') }}</label>
+                    <label class="form-check-label"> {{ _('Existing players') }}</label>
+                    <i
+                        class="bi-info-circle-fill ps-1"
+                        {{ macros.tooltip_attributes('', _(
+                            'Show the rows of players already existing in '
+                            'the tournament and the duplicated rows. '
+                        )) }}
+                    ></i>
                 </div>
             </div>
 

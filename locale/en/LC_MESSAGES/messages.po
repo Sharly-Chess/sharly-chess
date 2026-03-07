@@ -1931,9 +1931,6 @@ msgstr ""
 msgid "Duplicate without players"
 msgstr ""
 
-msgid "Duplicated rows"
-msgstr ""
-
 msgid "Duration (min):"
 msgstr ""
 
@@ -2262,6 +2259,9 @@ msgstr "Exempt"
 
 msgid "Exempt *** MALE"
 msgstr "Exempt"
+
+msgid "Existing players"
+msgstr ""
 
 msgid "Exit button:"
 msgstr ""
@@ -5061,6 +5061,9 @@ msgid "Show Log"
 msgstr ""
 
 msgid "Show logging level"
+msgstr ""
+
+msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
 msgstr ""
 
 msgid "Show unmodified players"
