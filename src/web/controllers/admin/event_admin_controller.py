@@ -130,16 +130,16 @@ class EventAdminController(BaseEventAdminController):
         return self._admin_base_event_render(web_context.template_context)
 
     @get(
-        path='/event/{event_uniq_id:str}/upload-item',
-        name='admin-event-upload-item',
+        path='/event/{event_uniq_id:str}/data-transfer-item',
+        name='event-data-transfer-item',
     )
-    async def htmx_admin_event_upload_item(
-        self,
-        request: HTMXRequest,
-        event_uniq_id: str,
+    async def htmx_event_data_transfer_item(
+        self, request: HTMXRequest
     ) -> HTMXTemplate | Response:
         web_context = BaseEventAdminWebContext(request)
-        upload_item = web_context.template_context['nav_tabs'].get('admin-upload')
+        upload_item = web_context.template_context['nav_tabs'].get(
+            'admin-data-transfer-item'
+        )
         if not upload_item:
             return Response(status_code=HTTP_204_NO_CONTENT, content=None)
 
@@ -148,7 +148,7 @@ class EventAdminController(BaseEventAdminController):
             context=web_context.template_context
             | {
                 'swap_oob': True,
-                'nav_id': 'admin-upload',
+                'nav_id': 'admin-data-transfer-item',
                 'nav_tab': upload_item,
             },
         )
