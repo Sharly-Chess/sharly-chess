@@ -1958,9 +1958,11 @@ class PlayerAdminController(BaseEventAdminController):
         used_columns = [
             column for column in columns if column.id in content_by_column_id
         ]
-        stored_players_by_index, __, __ = await self._get_imported_stored_players(
-            web_context, used_columns, content_by_column_id, overwrite_players
-        )
+        stored_players_by_index = (
+            await self._get_imported_stored_players(
+                web_context, used_columns, content_by_column_id, overwrite_players
+            )
+        )[0]
         stored_players = [
             stored_player
             for index, stored_player in stored_players_by_index.items()
