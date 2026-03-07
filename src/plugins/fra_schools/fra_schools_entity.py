@@ -84,11 +84,12 @@ class FraSchoolCodeDatasheetColumn(DatasheetColumn):
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         pass
 
-    def augment_stored_player_with_event(
-        self, event: Event, stored_player: StoredPlayer, value: str
+    def augment_stored_player_with_tournament(
+        self, tournament: Tournament, stored_player: StoredPlayer, value: str
     ):
         if not value:
             return
+        event = tournament.event
         school_code = FRASchoolsUtils.extract_school_code(value)
         if not school_code:
             raise SharlyChessException(
