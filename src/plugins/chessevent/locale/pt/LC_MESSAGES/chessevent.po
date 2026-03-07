@@ -173,20 +173,12 @@ msgid "Synchronize all tournaments"
 msgstr "Sincronizar todos os torneios"
 
 #, ai_translation
-msgid "Synchronize the tournaments with the ChessEvent platform."
-msgstr "Sincronize os torneios com a plataforma ChessEvent."
-
-#, ai_translation
 msgid "Synchronize this tournament from its ChessEvent tournament."
 msgstr "Sincronize este torneio de seu torneio ChessEvent."
 
 #, ai_translation
 msgid "Synchronize tournaments with ChessEvent"
 msgstr "Sincronize torneios com ChessEvent"
-
-#, ai_translation
-msgid "Synchronize with ChessEvent"
-msgstr "Sincronizar com ChessEvent"
 
 #, ai_translation
 msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
@@ -227,10 +219,6 @@ msgstr "Erro inesperado"
 #, ai_translation
 msgid "Warning: synchronizing a tournament overwrites all of its player data."
 msgstr "Aviso: Sincronizar um torneio substitui todos os dados do jogador."
-
-#, ai_translation
-msgid "You are not allowed to update players."
-msgstr "Você não tem permissão para atualizar os jogadores."
 
 #, ai_translation
 msgid "You have to acknowledge the warning first."

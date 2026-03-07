@@ -667,6 +667,10 @@ msgid "All Events"
 msgstr "Todos os Eventos"
 
 #, ai_translation
+msgid "All hours have been cleared."
+msgstr "Todas as horas foram limpas."
+
+#, ai_translation
 msgid "All players are paired."
 msgstr "Todos os jogadores estão emparelhados."
 
@@ -897,6 +901,10 @@ msgstr "Áustria"
 #, ai_translation
 msgid "Auto-update"
 msgstr "Auto-atualização"
+
+#, ai_translation
+msgid "Automatically create timer hours matching the round schedule of a specific tournament."
+msgstr "Crie automaticamente horas de timer que correspondam ao cronograma de um torneio específico."
 
 #, ai_translation
 msgid "Average"
@@ -1467,6 +1475,14 @@ msgid "Clear Log"
 msgstr "Limpar Log"
 
 #, ai_translation
+msgid "Clear all"
+msgstr "Limpar tudo"
+
+#, ai_translation
+msgid "Clear all hours"
+msgstr "Limpar todas as horas"
+
+#, ai_translation
 msgid "Clear all the filters."
 msgstr "Limpar todos os filtros."
 
@@ -1621,10 +1637,6 @@ msgstr "Configure os conjuntos de categorias, que estão disponíveis para todos
 #, ai_translation
 msgid "Configure the tie-breaks of the tournament."
 msgstr "Configure os tie-breaks do torneio."
-
-#, ai_translation
-msgid "Congo"
-msgstr "Congo"
 
 #, ai_translation
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
@@ -1819,6 +1831,10 @@ msgid "Create hour"
 msgstr "Criar hora"
 
 #, ai_translation
+msgid "Create hours from tournament"
+msgstr "Criar horas do torneio"
+
+#, ai_translation
 msgid "Create manually"
 msgstr "Criar manualmente"
 
@@ -2007,6 +2023,10 @@ msgid "Data sources"
 msgstr "Fontes de dados"
 
 #, ai_translation
+msgid "Data transfer"
+msgstr "Transferência de dados"
+
+#, ai_translation
 msgid "Database"
 msgstr "Banco de dados"
 
@@ -2113,6 +2133,10 @@ msgstr "Apagar b>{value}/b>"
 #, ai_translation
 msgid "Delete account"
 msgstr "Apagar conta"
+
+#, ai_translation
+msgid "Delete all hours for this timer and start fresh."
+msgstr "Apague todas as horas para este temporizador e comece de novo."
 
 #, ai_translation
 msgid "Delete display controller"
@@ -3344,6 +3368,10 @@ msgid "Guernsey"
 msgstr "Guernsey"
 
 #, ai_translation
+msgid "Guinea"
+msgstr "Guiné Guiné"
+
+#, ai_translation
 msgid "Guyana"
 msgstr "Guiana"
 
@@ -3808,6 +3836,10 @@ msgid "Keyboard shortcuts:"
 msgstr "Atalhos de teclado:"
 
 #, ai_translation
+msgid "Kiribati"
+msgstr "Kiribati"
+
+#, ai_translation
 msgid "Kosovo"
 msgstr "Kosovo"
 
@@ -4076,6 +4108,10 @@ msgstr "Março"
 #, ai_translation
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marque esta rodada como mais e defina a próxima como a rodada atual."
+
+#, ai_translation
+msgid "Marshall Islands"
+msgstr "Ilhas Marshall"
 
 #, ai_translation
 msgid "Mauritania"
@@ -4502,6 +4538,10 @@ msgstr "Nenhum prêmio monetário atribuído aos jogadores para este torneio."
 #, ai_translation
 msgid "No network detected, use the Refresh button when connected."
 msgstr "Nenhuma rede detectada, use o botão Atualizar quando conectado."
+
+#, ai_translation
+msgid "No new hours to create from tournament [{name}] (all rounds are already covered)."
+msgstr "Não há novas horas para criar a partir do torneio [{name}] (todas as rodadas já estão cobertas)."
 
 #, ai_translation
 msgid "No organiser"
@@ -6083,6 +6123,14 @@ msgstr "A rodada n° %(round)d está terminada."
 msgid "Round #%(round)d is running."
 msgstr "A ronda n° %(round)d está a correr."
 
+#, ai_translation, python-format
+msgid "Round #%(round)d must be scheduled after round #%(prev)d."
+msgstr "A rodada n° %(round)d deve ser agendada após a rodada n° %(prev)d."
+
+#, ai_translation, python-format
+msgid "Round #%(round)d:"
+msgstr "Rodada #%(round)d:"
+
 #, ai_translation
 msgid "Round #0 is forbidden."
 msgstr "A Rodada n° 0 é proibida."
@@ -6210,6 +6258,10 @@ msgstr "Gravar"
 #, ai_translation
 msgid "Save the set or cancel."
 msgstr "Salve o set ou cancele."
+
+#, ai_translation
+msgid "Schedule"
+msgstr "Horário"
 
 #, ai_translation
 msgid "Scope"
@@ -7578,6 +7630,10 @@ msgid "Tournament name"
 msgstr "Nome do torneio"
 
 #, ai_translation
+msgid "Tournament not found or has no schedule."
+msgstr "Torneio não encontrado ou não tem horário."
+
+#, ai_translation
 msgid "Tournament performance rating"
 msgstr "Classificação de desempenho do torneio"
 
@@ -7926,10 +7982,6 @@ msgid "Updating"
 msgstr "Actualização"
 
 #, ai_translation
-msgid "Upload"
-msgstr "Upload"
-
-#, ai_translation
 msgid "Uruguay"
 msgstr "Uruguai"
 
@@ -8132,6 +8184,10 @@ msgstr "WIM"
 #, ai_translation
 msgid "Wales"
 msgstr "País de Gales"
+
+#, ai_translation
+msgid "Warning: all hours for this timer will be permanently deleted!"
+msgstr "Aviso: todas as horas para este cronômetro serão excluídas permanentemente!"
 
 #, ai_translation
 msgid "Warning: closing this window will stop Sharly Chess."
@@ -8752,6 +8808,11 @@ msgid "{count} hour could not be moved (time conflict)."
 msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] "Não foi possível alterar {count} hora (conflito de horário)."
 msgstr[1] "{count} horas não puderam ser alteradas (conflito de fuso horário)."
+
+msgid "{count} hour created."
+msgid_plural "{count} hours created."
+msgstr[0] "{count} hora criada."
+msgstr[1] "{count} horas criadas."
 
 #, ai_translation
 msgid "{count} player deleted."
