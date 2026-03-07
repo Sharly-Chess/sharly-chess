@@ -1931,6 +1931,9 @@ msgstr ""
 msgid "Duplicate without players"
 msgstr ""
 
+msgid "Duplicated rows"
+msgstr ""
+
 msgid "Duration (min):"
 msgstr ""
 
@@ -2898,6 +2901,9 @@ msgid "Invalid password."
 msgstr ""
 
 msgid "Invalid period:"
+msgstr ""
+
+msgid "Invalid rows"
 msgstr ""
 
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
@@ -5054,16 +5060,10 @@ msgstr ""
 msgid "Show Log"
 msgstr ""
 
-msgid "Show invalid rows"
-msgstr ""
-
 msgid "Show logging level"
 msgstr ""
 
 msgid "Show unmodified players"
-msgstr ""
-
-msgid "Show valid rows"
 msgstr ""
 
 msgid "Show warnings"
@@ -6214,6 +6214,9 @@ msgstr ""
 
 msgid "U{age_limit} *** YOUTH AGE CATEGORY"
 msgstr "U{age_limit}"
+
+msgid "Valid rows"
+msgstr ""
 
 msgid "Validate"
 msgstr ""

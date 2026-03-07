@@ -40,16 +40,28 @@
                         onclick="$('.valid-row').toggle(this.checked)"
                         checked
                     />
-                    <label class="form-check-label"> {{ _('Show valid rows') }}</label>
+                    <label class="form-check-label"> {{ _('Valid rows') }}</label>
                 </div>
                 <div class="form-check form-switch d-inline-block pe-3">
                     <input
                         class="form-check-input"
                         type="checkbox"
-                        onclick="$('.invalid-row').toggle(this.checked)"
+                        onclick="$('.invalid-row').toggle(this.checked);
+                            $('#duplicated-switch').prop('checked', this.checked);
+                            $('#duplicated-switch').attr('disabled', !this.checked);"
                         checked
                     />
-                    <label class="form-check-label"> {{ _('Show invalid rows') }}</label>
+                    <label class="form-check-label"> {{ _('Invalid rows') }}</label>
+                </div>
+                <div class="form-check form-switch d-inline-block pe-3">
+                    <input
+                        id="duplicated-switch"
+                        class="form-check-input"
+                        type="checkbox"
+                        onclick="$('.duplicated-row').toggle(this.checked)"
+                        checked
+                    />
+                    <label class="form-check-label"> {{ _('Duplicated rows') }}</label>
                 </div>
             </div>
 
@@ -100,8 +112,9 @@
                     <tbody>
                         {% for index in range(row_count) %}
                             {% set has_error = index in import_errors_by_index %}
+                            {% set is_duplicated = index in duplicated_indexes %}
                             {% set data_source_player = data_source_players_by_index[index] %}
-                            <tr class="{% if has_error %}invalid-row{% else %}valid-row{% endif %}">
+                            <tr class="{% if has_error %}invalid-row{% else %}valid-row{% endif %}{% if is_duplicated %} duplicated-row{% endif %}">
                                 <td>
                                     <span class="d-flex">
                                         {% if has_error %}
