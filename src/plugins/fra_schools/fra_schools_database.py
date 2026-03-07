@@ -237,24 +237,23 @@ class FRASchoolsDatabase(LocalSourceDatabase):
         )
         return True
 
-    def _create_indexes(self):
-        self.write = True
-        with self:
-            self.execute(
-                """
-                INSERT INTO school_fts(rowid, search_text)
-                SELECT s.id,
-                    lower(
-                        s.code || ' ' ||
-                        s.name || ' ' ||
-                        s.city || ' ' ||
-                        s.type || ' ' ||
-                        s.postal_code
-                    )
-                FROM school s;
+    @classmethod
+    def _create_indexes(cls, database: SQLiteDatabase):
+        database.execute(
             """
-            )
-            self.commit()
+            INSERT INTO school_fts(rowid, search_text)
+            SELECT s.id,
+                lower(
+                    s.code || ' ' ||
+                    s.name || ' ' ||
+                    s.city || ' ' ||
+                    s.type || ' ' ||
+                    s.postal_code
+                )
+            FROM school s;
+        """
+        )
+        database.commit()
 
     def search_school(
         self, search: str, page: int = 0, limit: int = 25

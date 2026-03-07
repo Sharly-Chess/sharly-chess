@@ -282,7 +282,7 @@ class RotatorAdminController(BaseEventAdminController):
         stored_rotator = StoredRotator(
             id=None,
             name=name,
-            public=WebContext.form_data_to_bool(data, 'is_public'),
+            public=WebContext.form_data_to_bool(data, 'public'),
             delay=delay,
             message_default=WebContext.form_data_to_bool(data, 'message_text_checkbox'),
             message_text=WebContext.form_data_to_str(data, 'message_text'),

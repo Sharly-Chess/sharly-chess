@@ -32,7 +32,7 @@ logger: Logger = get_logger()
 
 class FFESqlServer(SqlServer):
     TIMEOUT = 10
-    CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.credentials'
+    CREDENTIALS_FILE: Path = PLUGINS_DIR / 'ffe' / '.sql-server-credentials'
 
     def __init__(self):
         super().__init__(self.CREDENTIALS_FILE, timeout=self.TIMEOUT)
