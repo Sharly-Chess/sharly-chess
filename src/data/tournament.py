@@ -1669,7 +1669,7 @@ class Tournament:
                             pairing = tournament_player.pairings_by_round.get(
                                 round_, None
                             )
-                            if pairing:
+                            if pairing and pairing.result != Result.NO_RESULT:
                                 continue
                             tournament_player.pairings_by_round[round_].update_result(
                                 database, Result.ZERO_POINT_BYE
