@@ -1647,7 +1647,7 @@ class Tournament:
 
         with EventDatabase(self.event.uniq_id, write=True) as database:
             if delete:
-                assert self.has_pairings, f'Tournament [{self.name}] has pairings.'
+                assert not self.has_pairings, f'Tournament [{self.name}] has pairings.'
                 for tournament_player in self.tournament_players_by_check_in_status[
                     False
                 ]:
