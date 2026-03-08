@@ -1654,11 +1654,11 @@ class Tournament:
                         self.id, tournament_player.id
                     )
             else:
-                zpb_rounds: list[int] = []
+                zpb_rounds: tuple = ()
                 if zpbs_last_rounds:
-                    zpb_rounds = list(range(self.current_round + 1, self.rounds + 1))
+                    zpb_rounds = tuple(range(self.current_round + 1, self.rounds + 1))
                 elif zpbs_next_round:
-                    zpb_rounds = [self.current_round + 1]
+                    zpb_rounds = (self.current_round + 1,)
 
                 if zpb_rounds:
                     for tournament_player in self.tournament_players_by_check_in_status[
