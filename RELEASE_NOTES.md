@@ -24,6 +24,7 @@
 - Upgrade bbpPairings engine to v6.0.0 (3.6.0)
 - Display player history on crosstable document (3.6.0)
 - Fixed search removed after manual result input (3.6.4)
+- Fixed board numbering when changing ratings after round #4 (3.6.6)
 
 ## Prizes
 

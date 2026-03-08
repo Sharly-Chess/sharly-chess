@@ -1182,7 +1182,11 @@ class TournamentPlayer(Player):
 
     @property
     def board_number_sort_key(self) -> tuple:
-        return -(self.vpoints or 0.0), self.pairing_number or 0
+        return (
+            -(self.vpoints or 0.0),
+            -self.rating,
+            -self.title.sort_index,
+        ) + self.name_sort_key
 
     @property
     def before_manual_rank_key(self) -> tuple:
