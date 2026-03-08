@@ -1657,7 +1657,7 @@ class PlayerAdminController(BaseEventAdminController):
         used_columns: list[DatasheetColumn],
         content_by_column_id: dict[str, list[str]],
         overwrite_players: bool,
-    ) -> tuple[dict[int, StoredPlayer], dict[int, dict[str, str]]]:
+    ) -> tuple[dict[int, StoredPlayer], dict[int, dict[str, str]], set[int]]:
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
         data_source = web_context.admin_data_source
@@ -1678,6 +1678,7 @@ class PlayerAdminController(BaseEventAdminController):
             ]
         stored_players_by_index: dict[int, StoredPlayer] = {}
         import_errors_by_index: dict[int, dict[str, str]] = defaultdict(dict)
+        duplicated_indexes: set[int] = set()
         row_count = len(content_by_column_id[used_columns[0].id])
         for index in range(row_count):
             stored_player = StoredPlayer(id=None, federation=event.federation)
@@ -1692,6 +1693,7 @@ class PlayerAdminController(BaseEventAdminController):
                         and value
                         and value in unique_values_by_column_id[column.id]
                     ):
+                        duplicated_indexes.add(index)
                         raise SharlyChessException(
                             _(
                                 'A player with this value already exists in the tournament.'
@@ -1706,6 +1708,7 @@ class PlayerAdminController(BaseEventAdminController):
             )
             if stored_player.date_of_birth:
                 if name_key in name_keys:
+                    duplicated_indexes.add(index)
                     import_errors_by_index[index]['last_name'] = _(
                         'Player [{player}] already exists in the tournament.'
                     ).format(
@@ -1757,7 +1760,7 @@ class PlayerAdminController(BaseEventAdminController):
                     column.augment_stored_player_with_event(event, stored_player, value)
                 stored_players_by_index[index] = stored_player
 
-        return stored_players_by_index, import_errors_by_index
+        return stored_players_by_index, import_errors_by_index, duplicated_indexes
 
     @classmethod
     async def _render_players_import_diff_modal(
@@ -1776,6 +1779,7 @@ class PlayerAdminController(BaseEventAdminController):
         (
             stored_players_by_index,
             import_errors_by_index,
+            duplicated_indexes,
         ) = await cls._get_imported_stored_players(
             web_context, used_columns, content_by_column_id, overwrite_players
         )
@@ -1799,6 +1803,7 @@ class PlayerAdminController(BaseEventAdminController):
             'build_list_tooltip': cls._build_list_tooltip,
             'import_errors_by_index': import_errors_by_index,
             'data_source_players_by_index': data_source_players_by_index,
+            'duplicated_indexes': duplicated_indexes,
             'row_count': len(content_by_column_id[used_column_ids[0]]),
             'content_by_column_id': content_by_column_id,
             'file_path': WebContext.value_to_form_data(file_path),
@@ -1953,9 +1958,11 @@ class PlayerAdminController(BaseEventAdminController):
         used_columns = [
             column for column in columns if column.id in content_by_column_id
         ]
-        stored_players_by_index, __ = await self._get_imported_stored_players(
-            web_context, used_columns, content_by_column_id, overwrite_players
-        )
+        stored_players_by_index = (
+            await self._get_imported_stored_players(
+                web_context, used_columns, content_by_column_id, overwrite_players
+            )
+        )[0]
         stored_players = [
             stored_player
             for index, stored_player in stored_players_by_index.items()
