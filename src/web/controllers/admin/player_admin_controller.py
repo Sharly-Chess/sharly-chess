@@ -1658,6 +1658,8 @@ class PlayerAdminController(BaseEventAdminController):
         content_by_column_id: dict[str, list[str]],
         overwrite_players: bool,
     ) -> tuple[dict[int, StoredPlayer], dict[int, dict[str, str]], set[int]]:
+        for column in used_columns:
+            column.update_from_used_columns(used_columns)
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
         data_source = web_context.admin_data_source
@@ -1687,7 +1689,9 @@ class PlayerAdminController(BaseEventAdminController):
                     continue
                 value = content_by_column_id[column.id][index]
                 try:
-                    column.augment_stored_player_with_event(event, stored_player, value)
+                    column.augment_stored_player_with_tournament(
+                        tournament, stored_player, value
+                    )
                     if (
                         column.is_unique
                         and value
@@ -1757,7 +1761,9 @@ class PlayerAdminController(BaseEventAdminController):
                     if column.is_informative:
                         continue
                     value = content_by_column_id[column.id][index]
-                    column.augment_stored_player_with_event(event, stored_player, value)
+                    column.augment_stored_player_with_tournament(
+                        tournament, stored_player, value
+                    )
                 stored_players_by_index[index] = stored_player
 
         return stored_players_by_index, import_errors_by_index, duplicated_indexes
