@@ -7,7 +7,7 @@ from collections.abc import Collection
 from functools import cached_property
 from logging import Logger
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Sequence
 from _weakref import ReferenceType
 
 from trf import Tournament as TrfTournament
@@ -1654,9 +1654,9 @@ class Tournament:
                         self.id, tournament_player.id
                     )
             else:
-                zpb_rounds: tuple = ()
+                zpb_rounds: Sequence[int] = ()
                 if zpbs_last_rounds:
-                    zpb_rounds = tuple(range(self.current_round + 1, self.rounds + 1))
+                    zpb_rounds = range(self.current_round + 1, self.rounds + 1)
                 elif zpbs_next_round:
                     zpb_rounds = (self.current_round + 1,)
 
@@ -1673,7 +1673,7 @@ class Tournament:
                             pairing = tournament_player.pairings_by_round.get(
                                 round_, None
                             )
-                            if pairing and pairing.result.is_bye:
+                            if pairing:
                                 continue
                             tournament_player.pairings_by_round[round_].update_result(
                                 database, Result.ZERO_POINT_BYE
