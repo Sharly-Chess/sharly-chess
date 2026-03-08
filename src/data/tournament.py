@@ -1647,6 +1647,7 @@ class Tournament:
 
         with EventDatabase(self.event.uniq_id, write=True) as database:
             if delete:
+                assert self.has_pairings, f'Tournament [{self.name}] has pairings.'
                 for tournament_player in self.tournament_players_by_check_in_status[
                     False
                 ]:
@@ -1664,11 +1665,6 @@ class Tournament:
                     for tournament_player in self.tournament_players_by_check_in_status[
                         False
                     ]:
-                        pairing = tournament_player.pairings_by_round.get(
-                            self.current_round + 1, None
-                        )
-                        if pairing and pairing.result.is_bye:
-                            continue
                         for round_ in zpb_rounds:
                             pairing = tournament_player.pairings_by_round.get(
                                 round_, None
