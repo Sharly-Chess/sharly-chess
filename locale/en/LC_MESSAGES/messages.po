@@ -2748,6 +2748,9 @@ msgstr ""
 msgid "Import a tournament to the event from an external source."
 msgstr ""
 
+msgid "Import from SCE.com"
+msgstr ""
+
 msgid "Import players from a CSV file."
 msgstr ""
 

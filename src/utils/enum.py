@@ -471,6 +471,18 @@ class TournamentRating(IntEnum):
     RAPID = 2
     BLITZ = 3
 
+    @classmethod
+    def from_key(cls, key: str) -> Self:
+        match key.lower():
+            case 'standard':
+                return cls.STANDARD
+            case 'rapid':
+                return cls.RAPID
+            case 'blitz':
+                return cls.BLITZ
+            case _:
+                raise ValueError(f'Unknown value: {key}')
+
     @property
     def form_key(self) -> str:
         match self:
@@ -542,10 +554,10 @@ class PlayerGender(StrEnum):
 
     @classmethod
     def from_fide_value(cls, value: str) -> 'PlayerGender':
-        match value:
-            case 'F' | 'f':
+        match value.upper():
+            case 'F':
                 return cls.FEMALE
-            case 'M' | 'm':
+            case 'M':
                 return cls.MALE
             case _:
                 raise ValueError(f'Unknown value: {value}')

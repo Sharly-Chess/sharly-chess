@@ -34,6 +34,16 @@
         >
             {{ _('Import a SCE file') }}
         </button>
+        <button
+            hx-get="{{ url_for('sce-oauth-event-import') }}"
+            class="dropdown-item {{ item_class }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            {{ _('Import from SCE.com') }}
+        </button>
     </div>
 </div>
 <form

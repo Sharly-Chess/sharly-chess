@@ -781,12 +781,12 @@ class TournamentAdminController(BaseEventAdminController):
                                 )
                             )
 
-                stored_tournament = database.update_stored_tournament(stored_tournament)
+                database.update_stored_tournament(stored_tournament)
                 success_message = _(
                     'Tournament [{tournament}] has been updated.'
                 ).format(tournament=stored_tournament.name)
             else:
-                stored_tournament = database.add_stored_tournament(stored_tournament)
+                stored_tournament.id = database.add_stored_tournament(stored_tournament)
                 tournament = Tournament(event, stored_tournament)
                 if action == FormAction.CLONE:
                     base_tournament = web_context.get_admin_tournament()

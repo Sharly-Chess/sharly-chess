@@ -207,6 +207,11 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         return False
 
     @property
+    def is_hidden(self) -> bool:
+        """Defines if the plugin should be hidden in the plugin lists."""
+        return False
+
+    @property
     def federation(self) -> str | None:
         """The federation for which the plugin can be enabled, or None for all"""
         return None
@@ -336,6 +341,20 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         default: Any = None,
     ) -> Any:
         return PluginUtils.get_plugin_data(self.id, plugin_data, field, default)
+
+
+class HiddenPlugin[PD: PluginData](Plugin, ABC):
+    @property
+    def is_hidden(self) -> bool:
+        return True
+
+    @property
+    def default_is_enabled(self) -> bool:
+        return True
+
+    @property
+    def description(self) -> str:
+        return ''
 
 
 class ExtraStatisticsSection(NamedTuple):

@@ -151,6 +151,7 @@ class IndexAdminController(BaseAdminController):
                 plugin
                 for plugin in plugin_manager.all_plugins
                 if WebContext.form_data_to_bool(data, plugin.form_key)
+                or plugin.is_hidden
             ]
         )
         for plugin in plugin_manager.all_plugins:
@@ -288,14 +289,8 @@ class IndexAdminController(BaseAdminController):
         )
 
         if 'modal' in context:
-            return HTMXTemplate(
-                template_name='admin/modals.html',
-                context=context,
-                re_target='#modal-wrapper',
-                trigger_event='modal_opened'
-                if not keep_modal_open
-                else 'static_modal_opened',
-                after='settle',
+            return cls._render_modal(
+                'admin/modals.html', context, bool(keep_modal_open)
             )
         return HTMXTemplate(template_name='admin/index.html', context=context)
 
@@ -537,6 +532,14 @@ class IndexAdminController(BaseAdminController):
                 plugin
                 for plugin in plugin_manager.enabled_plugins
                 if WebContext.form_data_to_bool(data, plugin.form_key)
+                or (
+                    plugin.is_hidden
+                    and (
+                        plugin.default_event_is_enabled
+                        if not admin_event
+                        else plugin in admin_event.enabled_plugins
+                    )
+                )
             ]
         )
 
@@ -622,7 +625,11 @@ class IndexAdminController(BaseAdminController):
             'months_options': self._months_options(),
             'modal': 'event',
             'event_uniq_ids': list(EventLoader().event_uniq_ids),
-            'plugins': plugin_manager.enabled_plugins,
+            'plugins': [
+                plugin
+                for plugin in plugin_manager.enabled_plugins
+                if not plugin.is_hidden
+            ],
             'federation_plugin_used': federation_plugin_used,
             'player_rating_type_options': {
                 str(PlayerRatingType.FIDE.value): _('FIDE'),
@@ -1215,6 +1222,8 @@ class IndexAdminController(BaseAdminController):
         plugins_by_federation: dict[str | None, list[Plugin]] = defaultdict(list)
 
         for plugin in plugin_manager.all_plugins:
+            if plugin.is_hidden:
+                continue
             federation = plugin.federation
             if federation:
                 plugins_by_federation[federation].append(plugin)

@@ -1,0 +1,18 @@
+msgid "An error occurred, consult the logs for more details."
+msgstr ""
+
+msgid "Authorization expired, please try again."
+msgstr ""
+
+msgid "Authorization failed, consult the logs for more details."
+msgstr ""
+
+msgid "Authorization failed, possible CSRF attack!"
+msgstr ""
+
+msgid "Event [{event}] successfully imported!"
+msgstr ""
+
+msgid "SCE.com"
+msgstr ""
+
