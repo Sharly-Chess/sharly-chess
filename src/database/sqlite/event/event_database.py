@@ -304,10 +304,10 @@ class EventDatabase(MigrationDatabase):
             location=row['location'],
             background_color=row['background_color'],
             timer_colors=self.set_dict_int_keys(
-                self.load_json_from_database_field(row['timer_colors'])
+                self.load_json_from_database_field(row['timer_colors'], {})
             ),
             timer_delays=self.set_dict_int_keys(
-                self.load_json_from_database_field(row['timer_delays'])
+                self.load_json_from_database_field(row['timer_delays'], {})
             ),
             message_text=row['message_text'],
             message_color=row['message_color'],
