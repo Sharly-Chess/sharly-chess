@@ -732,27 +732,16 @@ class Tournament:
         return rank_by_player_id
 
     @cached_property
-    def tournament_players_by_check_in_status(
-        self,
-    ) -> dict[bool | None, list[TournamentPlayer]]:
+    def not_checked_in_players(self) -> list[TournamentPlayer]:
+        """Returns the players that are present for the coming round but not checked-in yet."""
         if self.finished or self.playing or not self.check_in_open:
-            return {
-                None: list(self.tournament_players),
-                True: [],
-                False: [],
-            }
+            return []
         else:
-            result: dict[bool | None, list[TournamentPlayer]] = {
-                None: [],
-                True: [],
-                False: [],
-            }
-            for tournament_player in self.tournament_players:
-                if not tournament_player.can_check_in_out:
-                    result[None].append(tournament_player)
-                else:
-                    result[tournament_player.check_in].append(tournament_player)
-            return result
+            return [
+                tournament_player
+                for tournament_player in self.tournament_players
+                if tournament_player.can_check_in_out and not tournament_player.check_in
+            ]
 
     @property
     def min_player_rating(self) -> int | None:
@@ -1648,9 +1637,7 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as database:
             if delete:
                 assert not self.has_pairings, f'Tournament [{self.name}] has pairings.'
-                for tournament_player in self.tournament_players_by_check_in_status[
-                    False
-                ]:
+                for tournament_player in self.not_checked_in_players:
                     database.delete_stored_tournament_player(
                         self.id, tournament_player.id
                     )
@@ -1662,9 +1649,7 @@ class Tournament:
                     zpb_rounds = (self.current_round + 1,)
 
                 if zpb_rounds:
-                    for tournament_player in self.tournament_players_by_check_in_status[
-                        False
-                    ]:
+                    for tournament_player in self.not_checked_in_players:
                         for round_ in zpb_rounds:
                             pairing = tournament_player.pairings_by_round.get(
                                 round_, None
