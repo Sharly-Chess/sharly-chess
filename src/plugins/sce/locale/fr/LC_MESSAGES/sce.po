@@ -13,6 +13,4 @@ msgstr "Autorisation échouée, possible attaque CSRF !"
 msgid "Event [{event}] successfully imported!"
 msgstr "L'évènement [{event}] a été importé avec succès !"
 
-msgid "SCE.com"
-msgstr "SCE.com"
 

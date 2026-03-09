@@ -2748,8 +2748,8 @@ msgstr "Importer un tournoi"
 msgid "Import a tournament to the event from an external source."
 msgstr "Importer un tournoi à l'évènement depuis une source externe."
 
-msgid "Import from SCE.com"
-msgstr "Importer depuis SCE.com"
+msgid "Import from Sharly-Chess.com"
+msgstr "Importer depuis Sharly-Chess.com"
 
 msgid "Import players from a CSV file."
 msgstr "Importer des joueur·euses depuis un fichier CSV."

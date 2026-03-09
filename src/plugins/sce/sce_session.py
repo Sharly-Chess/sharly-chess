@@ -54,7 +54,7 @@ REQUIRED_SCOPES = [
 
 
 class SCESession(Session):
-    """A requests session specialized for communication with SCE.com."""
+    """A requests session specialized for communication with Sharly-Chess.com."""
 
     def __init__(self, event: Event):
         super().__init__()

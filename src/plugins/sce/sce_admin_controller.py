@@ -55,7 +55,7 @@ class SCEAdminController(BaseAdminController):
             code_challenge=PKCEUtils.generate_code_challenge(code_verifier),
             state=state,
         )
-        logger.info('SCE.com OAuth ongoing at %s', oauth_url)
+        logger.info('Sharly-Chess.com OAuth ongoing at %s', oauth_url)
         return ClientRedirect(oauth_url)
 
     @classmethod
@@ -113,7 +113,7 @@ class SCEAdminController(BaseAdminController):
         if not tokens:
             Message.error(request, error_message or '')
         else:
-            logger.info('SCE.com OAuth successful')
+            logger.info('Sharly-Chess.com OAuth successful')
             match action:
                 case 'import-event':
                     try:

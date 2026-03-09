@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING
 
 from packaging.version import Version
 
-from common.i18n import _
 from plugins.hookspec import hookimpl
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_admin_controller import SCEAdminController
@@ -28,7 +27,7 @@ class SCEPlugin(HiddenPlugin):
 
     @staticmethod
     def static_name() -> str:
-        return _('SCE.com')
+        return 'Sharly-Chess.com'
 
     @property
     def version(self) -> Version:

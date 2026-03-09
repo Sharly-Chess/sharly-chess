@@ -13,6 +13,4 @@ msgstr ""
 msgid "Event [{event}] successfully imported!"
 msgstr ""
 
-msgid "SCE.com"
-msgstr ""
 
