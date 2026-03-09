@@ -17,6 +17,7 @@ from common.logger import get_logger
 from data.account import Account
 from data.board import Board
 from data.family import Family
+from data.pairing import Pairing
 from data.player import Player, Federation, Club, TournamentPlayer
 from data.player_categories import PlayerCategory
 from data.prize.assigned_prize import AssignedPrize
@@ -55,6 +56,7 @@ from utils.enum import (
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
+from utils.types import BigTournamentNormException
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -1140,6 +1142,129 @@ class Tournament:
 
     def is_round_in_tournament(self, round_: int) -> bool:
         return 1 <= round_ <= self.rounds
+
+    @cached_property
+    def big_tournament_exception(self) -> BigTournamentNormException:
+        # 1.4.3d exception
+        #
+        # Swiss System tournaments in which participants include in every round at least
+        # - 20 FIDE rated players
+        # - not from the host federation
+        # - from at least 3 different federations,
+        #  -at least 10 of whom hold GM, IM, WGM or WIM titles.
+        # For this purpose, players will be counted only if they miss at most one round (excluding pairing allocated byes)
+        eligible_players: list[TournamentPlayer] = []
+        for p in self.tournament_players_by_id.values():
+            if p.rating_type != PlayerRatingType.FIDE:
+                continue
+            if p.federation in (Federation('NON'), self.event.federation):
+                continue
+            missed_rounds: int = 0
+            for pairing in p.pairings_by_round.values():
+                if pairing.unplayed and pairing.result not in (
+                    Result.FORFEIT_WIN,
+                    Result.PAIRING_ALLOCATED_BYE,
+                    Result.REST_GAME,
+                ):
+                    missed_rounds += 1
+            if missed_rounds > 1:
+                continue
+            eligible_players.append(p)
+
+        # Per-round counts
+        worst_players = float('inf')
+        worst_federations = float('inf')
+        worst_titled = float('inf')
+
+        for rnd in range(1, self.rounds + 1):
+            present: list[TournamentPlayer] = []
+            for p in eligible_players:
+                pairing: Pairing | None = p.pairings_by_round[rnd]
+                if pairing and (
+                    pairing.played
+                    or pairing.result
+                    in (
+                        Result.PAIRING_ALLOCATED_BYE,
+                        Result.REST_GAME,
+                    )
+                ):
+                    present.append(p)
+
+            n_players = len(present)
+            n_titled = sum(
+                p.title
+                in (
+                    PlayerTitle.GRANDMASTER,
+                    PlayerTitle.INTERNATIONAL_MASTER,
+                    PlayerTitle.WOMAN_GRANDMASTER,
+                    PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+                )
+                for p in present
+            )
+
+            present_not_fid = [p for p in present if p.federation != Federation('FID')]
+            n_feds = len({p.federation for p in present_not_fid})
+
+            worst_players = min(worst_players, n_players)
+            worst_federations = min(worst_federations, n_feds)
+            worst_titled = min(worst_titled, n_titled)
+
+        if worst_players is float('inf'):
+            worst_players = 0
+            worst_federations = 0
+            worst_titled = 0
+
+        return BigTournamentNormException(
+            worst_federations, worst_players, worst_titled
+        )
+
+    @cached_property
+    def high_level_tournament(self) -> bool:
+        """Returns True if the tournament is eligible for FIDE Handbook B.01.1.5.6a"""
+        # 1.5.6a
+        #
+        # Check if the average rating of the top 40 eligible players is at least 2000 in every round
+        eligible_players: list[TournamentPlayer] = []
+
+        for p in self.tournament_players_by_id.values():
+            if p.rating_type != PlayerRatingType.FIDE:
+                continue
+            if p.federation == Federation('NON'):
+                continue
+
+            missed_rounds: int = 0
+            for pairing in p.pairings_by_round.values():
+                if (
+                    pairing
+                    and pairing.unplayed
+                    and pairing.result
+                    not in (
+                        Result.FORFEIT_WIN,
+                        Result.PAIRING_ALLOCATED_BYE,
+                        Result.REST_GAME,
+                    )
+                ):
+                    missed_rounds += 1
+            if missed_rounds > 1:
+                continue
+            eligible_players.append(p)
+
+        for rnd in range(1, self.rounds + 1):
+            present: list[TournamentPlayer] = []
+            for p in eligible_players:
+                pairing: Pairing | None = p.pairings_by_round[rnd]
+                if pairing and (
+                    pairing.played
+                    or pairing.result
+                    in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
+                ):
+                    present.append(p)
+            top_rated = sorted([p.rating for p in present], reverse=True)[:40]
+            if len(top_rated) < 40:
+                return False
+            if sum(top_rated) / len(top_rated) < 2000:
+                return False
+        return True
 
     def to_trf(
         self,

@@ -3,7 +3,7 @@ import weakref
 from collections import Counter
 from dataclasses import dataclass, field
 from functools import total_ordering, cached_property
-from typing import Optional, Self, SupportsFloat, TYPE_CHECKING
+from typing import Optional, Self, SupportsFloat, TYPE_CHECKING, NamedTuple
 
 from utils import Utils
 from utils.enum import (
@@ -139,6 +139,12 @@ class PlayerRatingAndType:
         return f'{self.value} {self.type.short_name}' if self.value else '-'
 
 
+class BigTournamentNormException(NamedTuple):
+    federations: int
+    foreigners: int
+    titled_foreigners: int
+
+
 @dataclass
 class NormCheckResult:
     title_norm: TitleNorm
@@ -159,7 +165,8 @@ class NormCheckResult:
     adjusted_player_rating: Optional[int] = None
     performance: float = 0
     performance_diff: float | None = None
-    ignored_opponents_ids: set[int] = field(default_factory=set)
+    ignored_rounds: set[int] = field(default_factory=set)
+    last_game_forfeit_win: bool = False
 
     all_federations_count: int = 0
     eligible_players_count: int = 0

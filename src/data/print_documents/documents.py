@@ -1216,6 +1216,7 @@ class NormReportPrintDocument(PrintDocument):
             'norms': norms,
             'tournament_player': tournament_player,
             'PlayerTitle': PlayerTitle,
+            'forfeit_win': Result.FORFEIT_WIN,
         }
 
 

@@ -923,12 +923,21 @@ class TitleNorm(Enum):
         return ceil(rounds / 2)
 
     @staticmethod
-    def minimum_required_titles(tournament: 'Tournament') -> int:
-        from data.pairings.variations import DoubleBergerRoundRobinVariation
+    def minimum_required_titles(
+        tournament: 'Tournament', rounds: int | None = None
+    ) -> int:
+        from data.pairings.variations import (
+            DoubleBergerRoundRobinVariation,
+            BergerRoundRobinVariation,
+        )
 
         if tournament.pairing_variation == DoubleBergerRoundRobinVariation():
             return ceil(tournament.rounds / 2)  # 1.4.5.f
-        return max(ceil(tournament.rounds / 3), 3)
+        elif tournament.pairing_variation == BergerRoundRobinVariation():
+            return max(ceil(tournament.rounds / 3), 3)
+        if rounds is None:
+            rounds = tournament.rounds
+        return max(ceil(rounds / 3), 3)
 
     @staticmethod
     def maximum_of_own_federation(rounds: int) -> int:

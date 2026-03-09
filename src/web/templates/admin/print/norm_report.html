@@ -410,32 +410,32 @@
                     </thead>
                     <tbody>
                     {% for rnd, pairing in tournament_player.pairings_by_round.items() %}
+                        {% set ignored = norm.ignored_rounds and rnd in norm.ignored_rounds %}
                         {% set opp = pairing.opponent %}
-                        {% set adjusted_opp_rating = opp.rating if opp.rating_type == 3 else 1400 %}
-                        {% if opp.id == norm.adjusted_player.id %}
+                        {% set adjusted_opp_rating = opp.rating if opp and opp.rating_type == 3 else 1400 %}
+                        {% if opp and opp.id == norm.adjusted_player.id %}
                             {% set adjusted_opp_rating = norm.adjusted_player_rating %}
                         {% endif %}
-                        {% if not norm.is_143d_met and norm.too_many_own_federation and opp.federation == tournament_player.federation %}
+                        {% if not norm.is_143d_met and norm.too_many_own_federation and opp and opp.federation == tournament_player.federation %}
                             {% set too_many_own = true %}
                             {% set err = norm.too_many_own_federation %}
-                        {% elif not norm.is_143d_met and norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
+                        {% elif not norm.is_143d_met and norm.too_many_one_federation and opp and opp.federation == norm.too_many_one_federation[0] %}
                             {% set too_many_one = true %}
                             {% set err = norm.too_many_one_federation[1] %}
                         {% endif %}
-                        {% set ignored = norm.ignored_opponents_ids and opp.id in norm.ignored_opponents_ids %}
                         <tr class="{{ 'ignored' if ignored }}">
                             <td>{{ rnd }}</td>
-                            <td><input class="name-cell" value="{{ opp.full_name }}" /></td>
-                            <td><input class="center"size="12" value="{{ opp.fide_id }}"  /></td>
+                            <td><input class="name-cell" value="{{ opp.full_name if opp else ''}}" /></td>
+                            <td><input class="center"size="12" value="{{ opp.fide_id if opp else ''}}"  /></td>
                             <td>
                                 <div class="{{ 'error' if too_many_own or too_many_one }}">
                                     <div class="error-info">
                                         {{ err | safe }}
                                     </div>
-                                    <input size="4" value="{{ opp.federation }}"  />
+                                    <input size="4" value="{{ opp.federation if opp else ''}}"  />
                                 </div>
                             </td>
-                            <td><input class="center" size="5" value="{{ opp.rating }}"  /></td>
+                            <td><input class="center" size="5" value="{{ opp.rating if opp else ''}}"  /></td>
                             <td><input class="center" size="5" value="{{ adjusted_opp_rating if opp is not none}}" /></td>
                             <td><input class="center" size="4" value="{% if opp is not none %}{{ opp.title.value if opp.title in [
                                 PlayerTitle.GRANDMASTER,
@@ -445,7 +445,7 @@
                                 PlayerTitle.FIDE_MASTER,
                                 PlayerTitle.WOMAN_FIDE_MASTER,
                             ] else '-' }}{% endif %}" /></td>
-                            <td><input class="center" size="4" value="{{ pairing.result.to_norm_report }}" /></td>
+                            <td><input class="center" size="4" value="{% if rnd != tournament.rounds or not norm.last_result_forfeit_win %}{{ pairing.result.to_norm_report }}{% else %}{{ forfeit_win.to_norm_report }}{% endif %}" /></td>
                         </tr>
                     {% endfor %}
                     </tbody>
