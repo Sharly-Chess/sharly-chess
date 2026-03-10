@@ -1,4 +1,3 @@
-from operator import attrgetter
 import weakref
 from collections import Counter
 from datetime import date
@@ -918,9 +917,14 @@ class TournamentPlayer(Player):
                 and played_games == min_rounds - 1
                 and forfeits_or_byes == 1
             ):
-                res.played_games = min_rounds
+                # 1.4.1c: if the player has a norm in 8 games because of a PAB or forfeit win
+                # then this norm counts as 9 games but follows the requirements of a 8-game norm
+                res.played_games = min_rounds - 1
             elif played_games == min_rounds - 1 and last_game_forfeit_win:
                 res.played_games = min_rounds
+                # NOTE: 1.4.2c: if the players must play to get the required number of games,
+                # they can count a forfeit win in the last round as a played game if and only
+                # if they can afford to lose the game
                 results_list[-1] = Result.LOSS
 
             # Federation criterion
@@ -1000,18 +1004,15 @@ class TournamentPlayer(Player):
 
         for tn, res in results.items():
             adjusted_floor = tn.minimum_rating
-            rating_list = sorted(
-                (
-                    PlayerRatingAndType(
-                        opponent.rating
-                        if opponent.rating_type == PlayerRatingType.FIDE
-                        else 1400,
-                        opponent.rating_type,
-                    )
-                    for opponent in opponents
-                ),
-                key=attrgetter('value'),
-            )
+            rating_list = [
+                PlayerRatingAndType(
+                    opponent.rating
+                    if opponent.rating_type == PlayerRatingType.FIDE
+                    else 1400,
+                    opponent.rating_type,
+                )
+                for opponent in opponents
+            ]
             avg, adjusted = self.opponent_average_rating(rating_list, adjusted_floor)
 
             if adjusted:
