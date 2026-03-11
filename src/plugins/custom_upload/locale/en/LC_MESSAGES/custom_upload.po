@@ -1,3 +1,6 @@
+msgid "Cancel"
+msgstr "Annuler"
+
 msgid "Connection Custom Upload"
 msgstr ""
 
@@ -5,6 +8,12 @@ msgid "Custom location"
 msgstr ""
 
 msgid "Custom Upload"
+msgstr ""
+
+msgid "Document URL:"
+msgstr ""
+
+msgid "Documents"
 msgstr ""
 
 msgid "E.g.: ftp.example.com"
@@ -39,6 +48,12 @@ msgstr ""
 
 msgid "Path in the server:"
 msgstr ""
+
+msgid "Replace document"
+msgstr ""
+
+msgid "Save"
+msgstr "Enregistrer"
 
 msgid "Site"
 msgstr ""

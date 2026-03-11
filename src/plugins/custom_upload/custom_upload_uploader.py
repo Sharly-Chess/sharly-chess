@@ -116,7 +116,7 @@ class CustomUploadUploader:
     def custom_last_upload(
         cls, tournament: Tournament | StoredTournament
     ) -> datetime | None:
-        plugin_date: CustomUploadTournamentPluginData
+        plugin_data: CustomUploadTournamentPluginData
         if isinstance(tournament, Tournament):
             plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
         else:

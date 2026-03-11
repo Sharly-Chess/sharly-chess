@@ -15,6 +15,24 @@
             <td>
                 <!-- TODO: show results -->
             </td>
+            <td>
+                <!-- TODO: handle properly rendering of list of documents -->
+                <ul>
+                    <li>{{ document and _(document.static_name()) }}</li>
+                </ul>
+                <!-- TODO: check how to add "Please wait" message -->
+                <button
+                    type="button"
+                    class="btn btn-outline-primary btn-sm text-nowrap"
+                    hx-get="{{ url_for('change-tournament-documents-modal', action='update', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    class="text-nowrap white btn btn-secondary"
+                >
+                    <i class="bi bi-pencil-fill pe-1"></i>
+                    {{ _('Replace document') }}
+                </button>
+            </td>
             <td class="text-center text-nowrap" style="width: 0;">
                 <!-- TODO: show last update date -->
             </td>

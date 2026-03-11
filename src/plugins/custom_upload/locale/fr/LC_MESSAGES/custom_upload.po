@@ -1,3 +1,6 @@
+msgid "Cancel"
+msgstr "Annuler"
+
 msgid "Connection Custom Upload"
 msgstr "Connexion au site personnel"
 
@@ -6,6 +9,12 @@ msgstr "Site personnel"
 
 msgid "Custom Upload"
 msgstr "Mise en ligne personnalisée"
+
+msgid "Document URL:"
+msgstr "URL du document :"
+
+msgid "Documents"
+msgstr "Documents"
 
 msgid "E.g.: ftp.example.com"
 msgstr "Exemple : ftp.exemple.com"
@@ -39,6 +48,12 @@ msgstr "Mode"
 
 msgid "Path in the server:"
 msgstr "Chemin sur le serveur :"
+
+msgid "Replace document"
+msgstr "Changer de document"
+
+msgid "Save"
+msgstr "Enregistrer"
 
 msgid "Site"
 msgstr "Site"
