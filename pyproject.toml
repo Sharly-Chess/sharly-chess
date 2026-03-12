@@ -42,7 +42,6 @@ dependencies = [
   "psutil ~= 7.0.0",
   "pycountry ~= 24.6.1",
   "pyexcel-ods3 ~= 0.6.1",
-  "python-dateutil ~= 2.9.0",
   "python-tds ~= 1.16.0",
   "python-dotenv ~= 1.1.1",
   "qrcode[pil] ~= 7.4.2",

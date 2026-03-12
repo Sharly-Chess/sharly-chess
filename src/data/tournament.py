@@ -4,7 +4,6 @@ from babel.lists import format_list
 from common.i18n import get_locale
 from collections import Counter
 from collections.abc import Collection
-from dateutil.relativedelta import relativedelta
 from functools import cached_property
 from logging import Logger
 from operator import attrgetter
@@ -172,8 +171,7 @@ class Tournament:
     @property
     def multiple_fide_periods(self) -> bool:
         """Returns True if the tournament lasts more than one month, False otherwise."""
-        r: relativedelta = relativedelta(self.stop_date, self.start_date)
-        return r.months + (12 * r.years) > 0
+        return (self.stop_date - self.start_date).days > 30
 
     @property
     def location(self) -> str | None:
