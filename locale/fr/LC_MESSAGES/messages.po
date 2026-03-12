@@ -3607,9 +3607,6 @@ msgstr "Aucun évènement à venir."
 msgid "No updates found."
 msgstr "Aucun changement détecté."
 
-msgid "No, pair now"
-msgstr "Non, apparier maintenant"
-
 msgid "No. *** NB COLUMN HEADER"
 msgstr "N°"
 
@@ -4569,6 +4566,12 @@ msgstr "La nouvelle version {version} a été installée dans [{folder}]."
 
 msgid "Reload the page"
 msgstr "Recharger la page"
+
+msgid "Reminder: the tournament is played on multiple FIDE periods, you might have to update the players' ratings before pairing."
+msgstr "Rappel : le tournoi est joué sur plusieurs périodes FIDE, vous devez peut-être mettre à ajour les classements des joueur·euses avant d'apparier ."
+
+msgid "Reminder: you might have to update the players' ratings before pairing."
+msgstr "Rappel : vous devez peut-être mettre à ajour les classements des joueur·euses avant d'apparier ."
 
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
@@ -6293,9 +6296,6 @@ msgstr "Pays de Galles"
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
 
-msgid "Warning: did you update the players' ratings before pairing?"
-msgstr "Avertissement : avez-vous mis à jour les classements des joueur·euses avant d'apparier ?"
-
 msgid "Warning: experimental features are enabled!"
 msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 
@@ -6315,9 +6315,6 @@ msgstr "Attention : les %(player_count)d joueur·euses du tournoi seront suppri
 
 msgid "Warning: the deletion is permanent!"
 msgstr "Attention : la suppression est définitive !"
-
-msgid "Warning: the tournament is played on multiple FIDE periods, you may have to update the players' ratings before pairing."
-msgstr "Avertissement : le tournoi est joué sur plusieurs périodes FIDE, il est possible que vous deviez mettre à jour les classement des joueur·euses avant d'apparier."
 
 msgid "Warning: too few players selected."
 msgstr "Attention : trop peu de joueur·euses sélectionné·es."
@@ -6408,9 +6405,6 @@ msgstr "AAAA/MM/JJ"
 
 msgid "Yemen"
 msgstr "Yémen"
-
-msgid "Yes, update the ratings first"
-msgstr "Oui, mettre à jour les classements"
 
 msgid "Yesterday"
 msgstr "Hier"

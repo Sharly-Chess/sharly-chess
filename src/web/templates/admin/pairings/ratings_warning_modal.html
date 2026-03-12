@@ -8,11 +8,11 @@
             </div>
         </div>
         <div class="modal-body">
-            <h5 class="text-danger">
-                {% if admin_round != 1 %}
-                    {{ _('Warning: the tournament is played on multiple FIDE periods, you may have to update the players\' ratings before pairing.') }}
+            <h5 class="text-warning">
+                {% if admin_round == 1 %}
+                    {{ _('Reminder: you might have to update the players\' ratings before pairing.') }}
                 {% else %}
-                    {{ _('Warning: did you update the players\' ratings before pairing?') }}
+                    {{ _('Reminder: the tournament is played on multiple FIDE periods, you might have to update the players\' ratings before pairing.') }}
                 {% endif %}
             </h5>
         </div>
@@ -30,7 +30,7 @@
                 data-bs-target="#modal-wrapper"
             >
                 <i class="bi-x-circle-fill"></i>
-                {{ _('Yes, update the ratings first') }}
+                {{ _('Pair') }}
             </button>
             <button
                 type="submit"
@@ -54,7 +54,7 @@
                 {% endif %}
             >
                 <i class="bi-shuffle pe-1"></i>
-                {{ _('No, pair now') }}
+                {{ _('Close') }}
             </button>
         </div>
     </div>
