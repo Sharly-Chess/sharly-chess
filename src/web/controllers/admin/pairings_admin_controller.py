@@ -8,6 +8,7 @@ from collections import defaultdict
 from typing import Annotated, Any, Optional
 
 from data.access_levels.actions import AuthAction
+from data.input_output import DataSourceManager
 from data.pairings.engines import BbpPairings
 from data.pairings.bbp_history import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
@@ -1134,6 +1135,7 @@ class PairingsAdminController(BaseEventAdminController):
             web_context,
             {
                 'modal': 'pairing-ratings-warning',
+                'data_sources': DataSourceManager().objects(),
             },
         )
 

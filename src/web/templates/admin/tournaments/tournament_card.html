@@ -323,7 +323,9 @@
                         </button>
                     </span>
                     <ul class="dropdown-menu">
-                        {% include '/admin/players/players_diff.html' %}
+                        {% with from_modal=false %}
+                            {% include '/admin/players/players_diff.html' %}
+                        {% endwith %}
                     </ul>
                 </li>
             {% endif %}

@@ -20,18 +20,27 @@
             <button
                 type="button"
                 class="btn btn-secondary text-nowrap"
-                hx-get="{{ url_for(
-                    'admin-event-players-tab',
-                    event_uniq_id=admin_event.uniq_id
-                ) }}"
-                hx-target="body"
-                hx-indicator="#please-wait"
                 data-bs-dismiss="modal"
-                data-bs-target="#modal-wrapper"
             >
                 <i class="bi-x-circle-fill"></i>
-                {{ _('Pair') }}
+                {{ _('Close') }}
             </button>
+            <div class="dropup d-inline">
+                <button
+                    class="btn btn-outline-primary dropdown-toggle mx-auto"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    <i class="bi-arrow-repeat pe-1"></i>
+                    {{ _('Update') }}
+                </button>
+                <ul class="dropdown-menu">
+                    {% with from_modal=true, tournament=admin_tournament %}
+                        {% include '../players/players_diff.html' %}
+                    {% endwith %}
+                </ul>
+            </div>
             <button
                 type="submit"
                 class="text-nowrap white btn btn-primary"
@@ -54,8 +63,12 @@
                 {% endif %}
             >
                 <i class="bi-shuffle pe-1"></i>
-                {{ _('Close') }}
+                {{ _('Pair') }}
             </button>
         </div>
     </div>
 </div>
+
+<script>
+    requestRefresh();
+</script>
