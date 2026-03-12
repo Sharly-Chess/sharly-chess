@@ -3607,6 +3607,9 @@ msgstr "Aucun évènement à venir."
 msgid "No updates found."
 msgstr "Aucun changement détecté."
 
+msgid "No, pair now"
+msgstr "Non, apparier maintenant"
+
 msgid "No. *** NB COLUMN HEADER"
 msgstr "N°"
 
@@ -4538,6 +4541,9 @@ msgstr "Classement :"
 
 msgid "Ratings"
 msgstr "Classements"
+
+msgid "Ratings update"
+msgstr "Mise à jour des classements"
 
 #, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
@@ -6287,6 +6293,9 @@ msgstr "Pays de Galles"
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
 
+msgid "Warning: did you update the players' ratings before pairing?"
+msgstr "Avertissement : avez-vous mis à jour les classements des joueur·euses avant d'apparier ?"
+
 msgid "Warning: experimental features are enabled!"
 msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 
@@ -6306,6 +6315,9 @@ msgstr "Attention : les %(player_count)d joueur·euses du tournoi seront suppri
 
 msgid "Warning: the deletion is permanent!"
 msgstr "Attention : la suppression est définitive !"
+
+msgid "Warning: the tournament is played on multiple FIDE periods, you may have to update the players' ratings before pairing."
+msgstr "Avertissement : le tournoi est joué sur plusieurs périodes FIDE, il est possible que vous deviez mettre à jour les classement des joueur·euses avant d'apparier."
 
 msgid "Warning: too few players selected."
 msgstr "Attention : trop peu de joueur·euses sélectionné·es."
@@ -6396,6 +6408,9 @@ msgstr "AAAA/MM/JJ"
 
 msgid "Yemen"
 msgstr "Yémen"
+
+msgid "Yes, update the ratings first"
+msgstr "Oui, mettre à jour les classements"
 
 msgid "Yesterday"
 msgstr "Hier"

@@ -1119,6 +1119,25 @@ class PairingsAdminController(BaseEventAdminController):
         return self._admin_event_pairings_render(web_context)
 
     @get(
+        path='/pairings/ratings-warning-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-ratings-warning-modal',
+    )
+    async def admin_pairings_ratings_warning_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'pairing-ratings-warning',
+            },
+        )
+
+    @get(
         path='/pairings/settings-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
         name='admin-pairings-settings-modal',
     )

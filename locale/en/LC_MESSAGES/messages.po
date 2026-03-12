@@ -3607,6 +3607,9 @@ msgstr ""
 msgid "No updates found."
 msgstr ""
 
+msgid "No, pair now"
+msgstr ""
+
 msgid "No. *** NB COLUMN HEADER"
 msgstr "No."
 
@@ -4535,6 +4538,9 @@ msgid "Rating:"
 msgstr ""
 
 msgid "Ratings"
+msgstr ""
+
+msgid "Ratings update"
 msgstr ""
 
 #, python-format
@@ -6285,6 +6291,9 @@ msgstr ""
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr ""
 
+msgid "Warning: did you update the players' ratings before pairing?"
+msgstr ""
+
 msgid "Warning: experimental features are enabled!"
 msgstr ""
 
@@ -6303,6 +6312,9 @@ msgid "Warning: the %(player_count)d players in the tournament will be deleted."
 msgstr ""
 
 msgid "Warning: the deletion is permanent!"
+msgstr ""
+
+msgid "Warning: the tournament is played on multiple FIDE periods, you may have to update the players' ratings before pairing."
 msgstr ""
 
 msgid "Warning: too few players selected."
@@ -6393,6 +6405,9 @@ msgid "YYYY/MM/DD"
 msgstr ""
 
 msgid "Yemen"
+msgstr ""
+
+msgid "Yes, update the ratings first"
 msgstr ""
 
 msgid "Yesterday"

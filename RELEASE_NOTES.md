@@ -24,6 +24,7 @@
 - Upgrade bbpPairings engine to v6.0.0 (3.6.0)
 - Display player history on crosstable document (3.6.0)
 - Fixed search removed after manual result input (3.6.4)
+- Added a reminder to update the players' ratings before pairings on round #1 and for tournaments lasting on multiple FIDE periods (3.6.6)
 
 ## Prizes
 
