@@ -64,23 +64,13 @@
                         hx-trigger="click"
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
-                    {% elif admin_round != 1 %}
+                    {% else %}
                         hx-post="{{ url_for(
                             'admin-generate-round-pairings',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round
                         ) }}"
-                    {% else %}
-                        hx-get="{{ url_for(
-                            'admin-pairings-settings-modal',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            round=admin_round
-                        ) }}"
-                        hx-trigger="click"
-                        data-bs-toggle="modal"
-                        data-bs-target="#modal-wrapper"
                     {% endif %}
                     hx-target="body"
                     hx-indicator="#please-wait"
