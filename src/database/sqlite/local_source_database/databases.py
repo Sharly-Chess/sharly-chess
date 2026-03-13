@@ -14,11 +14,7 @@ from typing import override
 
 from packaging.version import Version
 
-<<<<<<< improve/pairings-tab-display
-from common import TMP_DIR, SharlyChessException, DEVEL_ENV
-=======
 from common import TMP_DIR, SharlyChessException, DEVEL_ENV, TEMPFILE_DIR
->>>>>>> dev
 from common.i18n import _, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
