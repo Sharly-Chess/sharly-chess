@@ -126,10 +126,11 @@ class ChessResultsBackgroundUploader:
     def chess_results_upload_needed(
         cls, tournament: Tournament | StoredTournament
     ) -> bool:
-        return (cls.chess_results_last_upload(tournament) or datetime.min) < max(
-            tournament.last_update or datetime.min,
-            tournament.last_player_update or datetime.min,
-            tournament.last_pairing_update or datetime.min,
+        last_upload = cls.chess_results_last_upload(tournament)
+        return not last_upload or last_upload < max(
+            tournament.last_update,
+            tournament.last_player_update,
+            tournament.last_pairing_update,
         )
 
     @classmethod

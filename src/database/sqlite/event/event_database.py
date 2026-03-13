@@ -610,9 +610,7 @@ class EventDatabase(MigrationDatabase):
             check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             rounds=row['rounds'],
             rating=row['rating'],
-            last_update=cls.load_optional_timestamp_from_database_field(
-                row['last_update']
-            ),
+            last_update=cls.load_datetime_from_database_field(row['last_update']),
             last_player_update=cls.load_optional_timestamp_from_database_field(
                 row['last_player_update']
             ),
@@ -1367,9 +1365,7 @@ class EventDatabase(MigrationDatabase):
             number=row['number'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
-            last_update=cls.load_optional_timestamp_from_database_field(
-                row['last_update']
-            ),
+            last_update=cls.load_datetime_from_database_field(row['last_update']),
         )
 
     def get_stored_family(self, family_id: int) -> StoredFamily | None:
@@ -1532,9 +1528,7 @@ class EventDatabase(MigrationDatabase):
             background_color=row['background_color'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
-            last_update=cls.load_optional_timestamp_from_database_field(
-                row['last_update']
-            ),
+            last_update=cls.load_datetime_from_database_field(row['last_update']),
         )
 
     def get_stored_screen(self, screen_id: int) -> StoredScreen | None:

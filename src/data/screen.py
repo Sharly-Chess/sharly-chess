@@ -642,7 +642,7 @@ class Screen:
             for board in tournament.get_round_boards(tournament.current_round):
                 if board.last_result_update and board.last_result_update >= oldest:
                     boards.append(board)
-        boards.sort(key=lambda b: b.last_result_update or datetime.min, reverse=True)
+        boards.sort(key=lambda b: b.last_result_update, reverse=True)
         return boards
 
     def _clear_results_cache(self):
@@ -709,7 +709,7 @@ class Screen:
                 raise ValueError(f'type=[{self.type}]')
 
     @property
-    def last_update(self) -> datetime | None:
+    def last_update(self) -> datetime:
         if self.stored_screen:
             return self.stored_screen.last_update
         if self.family is None:

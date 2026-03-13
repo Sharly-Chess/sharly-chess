@@ -35,8 +35,8 @@ class ScreenUserController(BaseScreenUserController):
         tournament: Tournament = screen_set.tournament
         if (
             max(
-                tournament.last_update or datetime.min,
-                tournament.last_player_update or datetime.min,
+                tournament.last_update,
+                tournament.last_player_update,
             )
             > date
         ):
@@ -99,8 +99,8 @@ class ScreenUserController(BaseScreenUserController):
                             )
                             if (
                                 max(
-                                    tournament.last_update or datetime.min,
-                                    tournament.last_pairing_update or datetime.min,
+                                    tournament.last_update,
+                                    tournament.last_pairing_update,
                                 )
                                 > date_dt
                             ):
@@ -113,7 +113,7 @@ class ScreenUserController(BaseScreenUserController):
             if (
                 max(
                     web_context.family.event.last_update,
-                    web_context.family.last_update or datetime.min,
+                    web_context.family.last_update,
                 )
                 > date_dt
             ):
