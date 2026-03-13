@@ -642,7 +642,7 @@ class Screen:
             for board in tournament.get_round_boards(tournament.current_round):
                 if board.last_result_update and board.last_result_update >= oldest:
                     boards.append(board)
-        boards.sort(key=lambda b: b.last_result_update, reverse=True)
+        boards.sort(key=lambda b: b.last_result_update or datetime.min, reverse=True)
         return boards
 
     def _clear_results_cache(self):

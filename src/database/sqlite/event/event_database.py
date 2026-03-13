@@ -1695,9 +1695,7 @@ class EventDatabase(MigrationDatabase):
             fixed_boards_str=row['fixed_boards_str'],
             first=row['first'],
             last=row['last'],
-            last_update=cls.load_optional_timestamp_from_database_field(
-                row['last_update']
-            ),
+            last_update=cls.load_datetime_from_database_field(row['last_update']),
         )
 
     def get_stored_screen_set(self, screen_set_id: int) -> StoredScreenSet | None:

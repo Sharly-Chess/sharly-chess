@@ -127,10 +127,8 @@ class ChessResultsBackgroundUploader:
         cls, tournament: Tournament | StoredTournament
     ) -> bool:
         last_upload = cls.chess_results_last_upload(tournament)
-        return not last_upload or last_upload < max(
-            tournament.last_update,
-            tournament.last_player_update,
-            tournament.last_pairing_update,
+        return not last_upload or PluginUtils.tournament_results_modified_since(
+            tournament, last_upload
         )
 
     @classmethod

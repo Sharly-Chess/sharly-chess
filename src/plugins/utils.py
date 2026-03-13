@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Callable
+from datetime import datetime
 from functools import cached_property
 from pathlib import Path
 from types import ModuleType
@@ -15,6 +16,7 @@ from plugins import PLUGINS_DIR
 if TYPE_CHECKING:
     from data.event import Event
     from data.event_metadata import EventMetadata
+    from data.tournament import Tournament
     from database.sqlite.event.event_database import EventDatabase
     from database.sqlite.event.event_store import (
         StoredEvent,
@@ -113,6 +115,17 @@ class PluginUtils:
     ):
         cls._replace_on_condition(
             source_list, element, lambda elem: isinstance(elem, match_type)
+        )
+
+    @staticmethod
+    def tournament_results_modified_since(
+        tournament: 'Tournament | StoredTournament',
+        ref_datetime: datetime,
+    ) -> bool:
+        return ref_datetime < max(
+            tournament.last_update,
+            tournament.last_player_update or datetime.min,
+            tournament.last_pairing_update or datetime.min,
         )
 
 

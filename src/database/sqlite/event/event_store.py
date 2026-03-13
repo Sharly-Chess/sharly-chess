@@ -214,7 +214,7 @@ class StoredScreenSet:
     fixed_boards_str: str | None
     first: int | None
     last: int | None
-    last_update: datetime | None = None
+    last_update: datetime = field(default_factory=datetime.now)
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
