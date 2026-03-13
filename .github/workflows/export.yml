@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
 
@@ -95,27 +96,29 @@ jobs:
             export/sharly-chess-${{ steps.version.outputs.version }}.zip
 
   export-sharly-chess-linux:
-    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        arch: [x86_64, arm64]
+        include:
+          - arch: x86_64
+            flatpak_arch: x86_64
+            runner: ubuntu-latest
+          - arch: arm64
+            flatpak_arch: aarch64
+            runner: ubuntu-24.04-arm
+    env:
+      FLATPAK_USER_DIR: ${{ github.workspace }}/.flatpak
+      XDG_RUNTIME_DIR: /tmp/flatpak-runtime
     steps:
-      # Get the current date to set the title of the release
-      - name: Get current date
-        id: date
-        uses: Kaven-Universe/github-action-current-date-time@v1
-        with:
-          format: "YYYY_MM_DD HH_mm_ss_SSS"
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
-      - name: Setup Python
-        uses: actions/setup-python@v5.5.0
         with:
-          python-version: 3.13
+          fetch-depth: 0
       - name: Install system dependencies
         shell: bash
         run: |
           sudo apt-get update
+<<<<<<< improve/pairings-tab-display
           sudo apt-get install -y \
             libgtk-3-dev \
             libgirepository1.0-dev \
@@ -259,6 +262,16 @@ jobs:
           FFE_DATABASE_ZIP_PASSWORD: ${{ secrets.FFE_DATABASE_ZIP_PASSWORD }}
         run: |
           python scripts/ffe/generate_ffe_database_zip_credentials.py --password="$FFE_DATABASE_ZIP_PASSWORD"
+=======
+          sudo apt-get install -y flatpak flatpak-builder ostree appstream-util jq
+      - name: Install GNOME runtimes
+        shell: bash
+        run: |
+          mkdir -p "$FLATPAK_USER_DIR" "$XDG_RUNTIME_DIR"
+          flatpak --user remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak --user install -y --noninteractive flathub org.gnome.Platform//49
+          flatpak --user install -y --noninteractive flathub org.gnome.Sdk//49
+>>>>>>> dev
       - name: Set version variable
         id: version
         shell: bash
@@ -269,21 +282,222 @@ jobs:
             VERSION="${{ github.ref_name }}"
           fi
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "BUILD_VERSION=${VERSION}" >> $GITHUB_ENV
           echo "Using version: ${VERSION}"
-      - name: Build Linux AppImage
+      - name: Sync desktop version
+        shell: bash
+        run: python3 scripts/export/linux/flatpak/scripts/sync_desktop_version.py --version "$BUILD_VERSION"
+      - name: Sync AppData releases from git tags
+        shell: bash
+        run: |
+          python3 scripts/export/linux/flatpak/scripts/sync_appdata_releases.py
+          echo "--- Generated <releases> section ---"
+          python3 -c "
+          import re, pathlib
+          content = pathlib.Path('scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.appdata.xml').read_text()
+          m = re.search(r'  <releases>.*?</releases>', content, re.DOTALL)
+          print(m.group(0) if m else 'NOT FOUND')
+          "
+      - name: Inject secrets into manifest
         shell: bash
         env:
-          # Set BUILD_ARCH to match the runner architecture
-          # This ensures tool installers download the correct architecture-specific binaries
-          BUILD_ARCH: ${{ matrix.arch }}
+          FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOST }}
+          FFE_SQL_SERVER_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
+          FFE_SQL_SERVER_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
+          FFE_SQL_SERVER_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
+          FFE_DATABASE_ZIP_PASSWORD: ${{ secrets.FFE_DATABASE_ZIP_PASSWORD }}
+          CHESS_RESULTS_KEY: ${{ secrets.CHESS_RESULTS_AES_KEY }}
+          CHESS_RESULTS_IV: ${{ secrets.CHESS_RESULTS_AES_IV }}
         run: |
-          python scripts/export/export.py --github="${{ steps.version.outputs.version }}"
-      - name: Upload artifacts
+          MANIFEST="scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.json"
+          jq '(.modules |= map(if .name == "sharly-chess" then .["build-options"] += {
+            "env": {
+              "FFE_SQL_SERVER_HOST": env.FFE_SQL_SERVER_HOST,
+              "FFE_SQL_SERVER_USER": env.FFE_SQL_SERVER_USER,
+              "FFE_SQL_SERVER_PASSWORD": env.FFE_SQL_SERVER_PASSWORD,
+              "FFE_SQL_SERVER_DATABASE": env.FFE_SQL_SERVER_DATABASE,
+              "FFE_DATABASE_ZIP_PASSWORD": env.FFE_DATABASE_ZIP_PASSWORD,
+              "CHESS_RESULTS_KEY": env.CHESS_RESULTS_KEY,
+              "CHESS_RESULTS_IV": env.CHESS_RESULTS_IV
+            }
+          } else . end))' "$MANIFEST" > manifest.tmp
+          mv manifest.tmp "$MANIFEST"
+      - name: Build Flatpak
+        shell: bash
+        run: |
+          flatpak-builder \
+            --arch=${{ matrix.flatpak_arch }} \
+            --repo=repo-staging \
+            --force-clean \
+            --verbose \
+            --subject="Version ${BUILD_VERSION}" \
+            build-flatpak \
+            scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.json
+      - name: Create .flatpak bundle
+        shell: bash
+        run: |
+          flatpak build-bundle repo-staging \
+            sharly-chess-${BUILD_VERSION}-linux-${{ matrix.arch }}.flatpak \
+            com.sharlychess.SharlyChess \
+            --arch=${{ matrix.flatpak_arch }}
+      - name: Upload .flatpak bundle artifact
         uses: actions/upload-artifact@v4
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-linux-${{ matrix.arch }}
-          path: |
-            export/sharly-chess-${{ steps.version.outputs.version }}-${{ matrix.arch }}.zip
+          path: sharly-chess-${{ steps.version.outputs.version }}-linux-${{ matrix.arch }}.flatpak
+          retention-days: 7
+      - name: Archive OSTree repo
+        shell: bash
+        run: tar -czf repo-${{ matrix.arch }}.tar.gz repo-staging
+      - name: Upload OSTree artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ostree-${{ matrix.arch }}
+          path: repo-${{ matrix.arch }}.tar.gz
+          retention-days: 1
+
+  publish-linux-flatpak:
+    name: Publish Linux Flatpak to GitHub Pages
+    needs: [export-sharly-chess-linux]
+    runs-on: ubuntu-latest
+    concurrency:
+      group: gh-pages-publish
+      cancel-in-progress: false
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4.2.2
+        with:
+          ref: gh-pages
+          path: flatpak-repo-publish
+      - name: Download x86_64 OSTree
+        uses: actions/download-artifact@v4
+        with:
+          name: ostree-x86_64
+      - name: Download arm64 OSTree
+        uses: actions/download-artifact@v4
+        with:
+          name: ostree-arm64
+      - name: Install OSTree tools
+        run: sudo apt-get update && sudo apt-get install -y flatpak flatpak-builder ostree
+      - name: Set version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${{ github.ref_name }}"
+          fi
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+      - name: Import GPG key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: gpg --batch --import <(echo "$GPG_PRIVATE_KEY")
+      - name: Merge OSTree repositories and sign
+        shell: bash
+        run: |
+          # Initialize the target repo if it doesn't exist
+          if [ ! -d "flatpak-repo-publish/repo" ]; then
+            ostree init --mode=archive-z2 --repo=flatpak-repo-publish/repo
+          else
+            mkdir -p flatpak-repo-publish/repo/refs/remotes
+            mkdir -p flatpak-repo-publish/repo/refs/heads
+          fi
+
+          merge_repo() {
+            local SOURCE_REPO=$1
+            local ARCH=$2
+            local REF="app/com.sharlychess.SharlyChess/${ARCH}/master"
+            echo "Merging $ARCH..."
+            flatpak build-commit-from --force \
+              --src-repo=$SOURCE_REPO \
+              --src-ref=$REF \
+              --subject="Version ${VERSION} ($ARCH)" \
+              --body="Automated build from GitHub Actions" \
+              flatpak-repo-publish/repo $REF
+          }
+
+          mkdir repo-x86 && tar -xzf repo-x86_64.tar.gz -C repo-x86
+          merge_repo repo-x86/repo-staging x86_64
+
+          mkdir repo-arm && tar -xzf repo-arm64.tar.gz -C repo-arm
+          merge_repo repo-arm/repo-staging aarch64
+
+          # Get GPG key ID
+          GPG_KEY_ID=$(gpg --list-secret-keys --with-colons | grep "^sec" | cut -d: -f5 | head -n 1)
+          if [ -z "$GPG_KEY_ID" ]; then echo "Error: GPG key not found"; exit 1; fi
+          echo "GPG_KEY_ID=$GPG_KEY_ID" >> $GITHUB_ENV
+
+          # Sign application commits
+          flatpak build-sign flatpak-repo-publish/repo com.sharlychess.SharlyChess \
+            --gpg-sign="$GPG_KEY_ID" --gpg-homedir="$HOME/.gnupg"
+
+          # Update repo summary with static deltas and sign
+          flatpak build-update-repo \
+            --generate-static-deltas \
+            --prune \
+            --prune-depth=5 \
+            --gpg-sign="$GPG_KEY_ID" \
+            --gpg-homedir="$HOME/.gnupg" \
+            flatpak-repo-publish/repo
+
+          # Generate from-empty deltas for faster first install
+          for ARCH in x86_64 aarch64; do
+            REF="app/com.sharlychess.SharlyChess/${ARCH}/master"
+            if ostree rev-parse --repo=flatpak-repo-publish/repo $REF 2>/dev/null; then
+              echo "Generating from-empty delta for $ARCH..."
+              ostree static-delta generate --repo=flatpak-repo-publish/repo --empty $REF
+            fi
+          done
+
+          # Re-sign after adding from-empty deltas
+          flatpak build-update-repo \
+            --gpg-sign="$GPG_KEY_ID" \
+            --gpg-homedir="$HOME/.gnupg" \
+            flatpak-repo-publish/repo
+      - name: Generate .flatpakrepo files
+        shell: bash
+        run: |
+          touch flatpak-repo-publish/.nojekyll
+          gpg --export --export-options export-minimal "$GPG_KEY_ID" > public.gpg
+          if [ ! -s public.gpg ]; then echo "Error: empty public key"; exit 1; fi
+          GPG_BASE64=$(base64 -w 0 public.gpg)
+          rm public.gpg
+
+          cat > flatpak-repo-publish/sharly-chess.flatpakrepo <<EOF
+          [Flatpak Repo]
+          Title=Sharly Chess
+          Url=https://flatpak.sharly-chess.com/repo/
+          Homepage=https://github.com/Sharly-Chess/sharly-chess
+          Comment=Official repository for Sharly Chess
+          Description=Play chess and manage tournaments with Sharly Chess
+          GPGKey=$GPG_BASE64
+          EOF
+
+      - name: Push to GitHub Pages
+        working-directory: flatpak-repo-publish
+        shell: bash
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          COMMIT_MSG="Publish Version ${VERSION}"
+          git commit -m "$COMMIT_MSG"
+
+          MAX_RETRIES=3
+          for i in $(seq 1 $MAX_RETRIES); do
+            if git push origin gh-pages; then
+              echo "Push succeeded on attempt $i"
+              exit 0
+            fi
+            echo "Push failed (attempt $i/$MAX_RETRIES), rebasing..."
+            git rebase --abort 2>/dev/null || true
+            git fetch origin gh-pages
+            git reset --soft origin/gh-pages
+            git add .
+            git commit -m "$COMMIT_MSG" || echo "Nothing new to commit"
+          done
+          echo "ERROR: Push failed after $MAX_RETRIES attempts"
+          exit 1
 
   export-sharly-chess-macos:
     runs-on: macos-latest
@@ -377,7 +591,7 @@ jobs:
             export/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
 
   create-release:
-    needs: [tests, export-sharly-chess-windows, export-sharly-chess-macos, export-sharly-chess-linux]
+    needs: [tests, export-sharly-chess-windows, export-sharly-chess-macos, export-sharly-chess-linux, publish-linux-flatpak]
     runs-on: ubuntu-latest
     steps:
       - name: Get current date
@@ -408,22 +622,22 @@ jobs:
         with:
           name: sharly-chess-${{ steps.version.outputs.version }}-macos
           path: export-macos/
-      - name: Download Linux artifacts
+      - name: Download Linux Flatpak artifacts
         uses: actions/download-artifact@v4
         with:
           pattern: sharly-chess-${{ steps.version.outputs.version }}-linux-*
           path: export-linux/
-      - name: Rename artifacts with platform suffix
+      - name: Collect release files
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           mkdir -p release-files
-          # Windows files
+          # Windows
           cp export-windows/sharly-chess-${VERSION}.zip release-files/sharly-chess-${VERSION}-windows.zip
-          # macOS files - only sharly-chess
+          # macOS
           cp export-macos/sharly-chess-${VERSION}-macos.dmg release-files/sharly-chess-${VERSION}-macos.dmg
-          # Linux files - both architectures
-          cp export-linux/sharly-chess-${VERSION}-linux-x86_64/sharly-chess-${VERSION}-x86_64.zip release-files/sharly-chess-${VERSION}-linux-x86_64.zip
-          cp export-linux/sharly-chess-${VERSION}-linux-arm64/sharly-chess-${VERSION}-arm64.zip release-files/sharly-chess-${VERSION}-linux-arm64.zip
+          # Linux Flatpak bundles
+          cp export-linux/sharly-chess-${VERSION}-linux-x86_64/sharly-chess-${VERSION}-linux-x86_64.flatpak release-files/
+          cp export-linux/sharly-chess-${VERSION}-linux-arm64/sharly-chess-${VERSION}-linux-arm64.flatpak release-files/
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
@@ -434,6 +648,6 @@ jobs:
           files: |
             release-files/sharly-chess-${{ steps.version.outputs.version }}-windows.zip
             release-files/sharly-chess-${{ steps.version.outputs.version }}-macos.dmg
-            release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-x86_64.zip
-            release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-arm64.zip
+            release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-x86_64.flatpak
+            release-files/sharly-chess-${{ steps.version.outputs.version }}-linux-arm64.flatpak
           body_path: RELEASE_NOTES.md

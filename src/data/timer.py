@@ -256,6 +256,13 @@ class Timer:
         if timer_hour_id in self.timer_hours_by_id:
             del self.timer_hours_by_id[timer_hour_id]
 
+    def delete_all_timer_hours(self):
+        """Delete every timer hour for this timer in one pass."""
+        with EventDatabase(self.event.uniq_id, True) as database:
+            for timer_hour_id in list(self.timer_hours_by_id):
+                database.delete_stored_timer_hour(timer_hour_id)
+        self.timer_hours_by_id.clear()
+
     def update_timer_hours_date(self, previous_date: date, new_date: date):
         hours_by_date_str = self.timer_hours_by_date_str
         new_date_hours_triggered_at = [

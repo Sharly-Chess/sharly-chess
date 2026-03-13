@@ -345,7 +345,7 @@ class ExtraStatisticsSection(NamedTuple):
     subtitle: str | None
 
 
-class NavUploadItem(NamedTuple):
+class NavDataTransferItem(NamedTuple):
     """Class representing an upload item in the navigation bar."""
 
     key: str

@@ -131,16 +131,10 @@ msgstr ""
 msgid "Synchronize all tournaments"
 msgstr ""
 
-msgid "Synchronize the tournaments with the ChessEvent platform."
-msgstr ""
-
 msgid "Synchronize this tournament from its ChessEvent tournament."
 msgstr ""
 
 msgid "Synchronize tournaments with ChessEvent"
-msgstr ""
-
-msgid "Synchronize with ChessEvent"
 msgstr ""
 
 msgid "The event [{event_id}] is not accessible to the user [{user_id}]."
@@ -171,9 +165,6 @@ msgid "Unexpected error"
 msgstr ""
 
 msgid "Warning: synchronizing a tournament overwrites all of its player data."
-msgstr ""
-
-msgid "You are not allowed to update players."
 msgstr ""
 
 msgid "You have to acknowledge the warning first."

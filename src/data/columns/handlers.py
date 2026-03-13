@@ -342,10 +342,10 @@ class PlayerDatasheetColumnHandler:
     ) -> list[DatasheetColumn]:
         if rating_types is None:
             rating_types = [rating for rating in PlayerRatingType]
-        columns: list[DatasheetColumn] = []
+        columns: list[DatasheetColumn] = [pds.RatingColumn(), pds.RatingTypeColumn()]
         for tournament_type in TournamentRating:
             for rating_type in rating_types:
-                columns.append(pds.RatingColumn(tournament_type, rating_type))
+                columns.append(pds.TypedRatingColumn(tournament_type, rating_type))
         return columns
 
     @property

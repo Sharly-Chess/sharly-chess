@@ -1,7 +1,8 @@
 # _Sharly Chess_ release notes
 
-## Events
+## General
 
+<<<<<<< improve/pairings-tab-display
 - Import events from SCE files (3.6.0)
 - Push forward SCE export (3.6.0)
 - Convert database timestamp fields to ISO strings (3.6.4)
@@ -27,10 +28,15 @@
 - Display absent players on top of unpaired players on the Pairings tab (3.6.6)
 
 ## Prizes
+=======
+- Rename _Upload_ menu to _Data Transfer_ (3.7.0)
 
-- Added criteria type _Comment_ (3.6.0)
-- Improved the prizes documents (3.6.0)
+## Player
+>>>>>>> dev
 
+- Add _rating_ and _rating_type_ CSV columns (3.7.0)
+
+<<<<<<< improve/pairings-tab-display
 ## Screens
 
 - Added missing link on the family screens card (3.6.0)
@@ -53,7 +59,12 @@
 - Added missing fields to the arbiter compensation form (3.6.3)
 - Fixed error when accessing database before fully generated (3.6.4)
 - Speed up the update of the player database (3.6.5)
+=======
+## Tournaments
+>>>>>>> dev
 
-## _FRA Schools_
+- Add round schedule to tournaments (3.7.0)
 
-- Only take into account the players with games played for the ranking by school (3.6.1)
+## Plugins
+### ChessEvent
+- Synchronize button moved to the _Data Transfer_ menu (3.7.0)
