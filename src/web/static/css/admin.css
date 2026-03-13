@@ -65,9 +65,11 @@
 
 .mw-15em {
     max-width: 15em;
+    overflow: hidden;
 }
 .mw-25em {
     max-width: 25em;
+    overflow: hidden;
 }
 
 .pairing-modal .result-button {

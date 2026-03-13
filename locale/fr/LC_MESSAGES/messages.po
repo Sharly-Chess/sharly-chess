@@ -549,6 +549,9 @@ msgstr "Tous"
 msgid "All Events"
 msgstr "Évènements"
 
+msgid "All hours have been cleared."
+msgstr "Tous les horaires ont été supprimés."
+
 msgid "All players are paired."
 msgstr "Tou·tes les joueur·euses sont apparié·es."
 
@@ -725,6 +728,9 @@ msgstr "Autriche"
 
 msgid "Auto-update"
 msgstr "Mise à jour"
+
+msgid "Automatically create timer hours matching the round schedule of a specific tournament."
+msgstr "Créer automatiquement les horaires à partir des horaires des rondes d'un tournoi."
 
 msgid "Average"
 msgstr "Moyenne"
@@ -1167,6 +1173,12 @@ msgstr "Veuillez choisir votre langue"
 msgid "Clear Log"
 msgstr "Effacer le journal"
 
+msgid "Clear all"
+msgstr "Tout supprimer"
+
+msgid "Clear all hours"
+msgstr "Supprimer tous les horaires"
+
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
 
@@ -1431,6 +1443,9 @@ msgstr "Créer un évènement"
 msgid "Create hour"
 msgstr "Créer un horaire"
 
+msgid "Create hours from tournament"
+msgstr "Créer les horaires depuis un tournoi"
+
 msgid "Create manually"
 msgstr "Créer manuellement"
 
@@ -1577,6 +1592,9 @@ msgstr "Source de données : %(data_source)s"
 msgid "Data sources"
 msgstr "Sources de données"
 
+msgid "Data transfer"
+msgstr "Transfert de données"
+
 msgid "Database"
 msgstr "Base de données"
 
@@ -1658,6 +1676,9 @@ msgstr "Supprimer <b>{value}</b>"
 
 msgid "Delete account"
 msgstr "Supprimer le compte"
+
+msgid "Delete all hours for this timer and start fresh."
+msgstr "Supprimer tous les horaires de ce chronomètre et recommencer."
 
 msgid "Delete display controller"
 msgstr "Supprimer le pilote d'afficheurs"
@@ -2238,6 +2259,9 @@ msgstr "Exempte"
 
 msgid "Exempt *** MALE"
 msgstr "Exempt"
+
+msgid "Existing players"
+msgstr "Joueur·euses existant·es"
 
 msgid "Exit button:"
 msgstr "Bouton de sortie :"
@@ -2879,6 +2903,9 @@ msgstr "Mot de passe invalide."
 msgid "Invalid period:"
 msgstr "Période invalide :"
 
+msgid "Invalid rows"
+msgstr "Lignes invalides"
+
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
 msgstr "Type invalide [{type}] pour le champ [{field}] (attendu : {expected})."
 
@@ -3495,6 +3522,9 @@ msgstr "Aucun prix monétaire assigné à une·e joueur·euse pour ce tournoi."
 
 msgid "No network detected, use the Refresh button when connected."
 msgstr "Aucun réseau détecté, utilisez le bouton Actualiser après connexion."
+
+msgid "No new hours to create from tournament [{name}] (all rounds are already covered)."
+msgstr "Aucun nouvel horaire à créer depuis le tournoi [{name}] (toutes les rondes sont déjà couvertes)."
 
 msgid "No organiser"
 msgstr "Aucun organisateur·ice"
@@ -4726,6 +4756,14 @@ msgstr "La ronde %(round)d est terminée."
 msgid "Round #%(round)d is running."
 msgstr "La ronde %(round)d est en cours."
 
+#, python-format
+msgid "Round #%(round)d must be scheduled after round #%(prev)d."
+msgstr "La ronde n°%(round)d doit être programmée après la ronde n°%(prev)d."
+
+#, python-format
+msgid "Round #%(round)d:"
+msgstr "Ronde n°%(round)d :"
+
 msgid "Round #0 is forbidden."
 msgstr "La ronde n°0 est interdite."
 
@@ -4824,6 +4862,9 @@ msgstr "Enregistrer"
 
 msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
+
+msgid "Schedule"
+msgstr "Horaires"
 
 msgid "Scope"
 msgstr "Périmètre"
@@ -5030,17 +5071,14 @@ msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été
 msgid "Show Log"
 msgstr "Montrer les logs"
 
-msgid "Show invalid rows"
-msgstr "Afficher les lignes invalides"
-
 msgid "Show logging level"
 msgstr "Afficher le niveau de log"
 
+msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
+msgstr "Afficher les lignes des joueur·euses existant déjà dans le tournoi et les lignes dupliquées."
+
 msgid "Show unmodified players"
 msgstr "Afficher les joueur·euses non modifié·es"
-
-msgid "Show valid rows"
-msgstr "Afficher les lignes valides"
 
 msgid "Show warnings"
 msgstr "Afficher les avertissements"
@@ -5865,6 +5903,9 @@ msgstr "Export de tournoi"
 msgid "Tournament name"
 msgstr "Nom du tournoi"
 
+msgid "Tournament not found or has no schedule."
+msgstr "Tournoi introuvable ou sans horaire."
+
 msgid "Tournament performance rating"
 msgstr "Performance"
 
@@ -6134,9 +6175,6 @@ msgstr "Modifier les tournois"
 msgid "Updating"
 msgstr "Mise à jour"
 
-msgid "Upload"
-msgstr "Mettre en ligne"
-
 msgid "Uruguay"
 msgstr "Uruguay"
 
@@ -6190,6 +6228,9 @@ msgstr "Ouzbékistan"
 
 msgid "U{age_limit} *** YOUTH AGE CATEGORY"
 msgstr "U{age_limit}"
+
+msgid "Valid rows"
+msgstr "Lignes valides"
 
 msgid "Validate"
 msgstr "Valider"
@@ -6292,6 +6333,9 @@ msgstr "MIF"
 
 msgid "Wales"
 msgstr "Pays de Galles"
+
+msgid "Warning: all hours for this timer will be permanently deleted!"
+msgstr "Attention : tous les horaires de ce chronomètre seront définitivement supprimés !"
 
 msgid "Warning: closing this window will stop Sharly Chess."
 msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
@@ -6763,6 +6807,11 @@ msgid "{count} hour could not be moved (time conflict)."
 msgid_plural "{count} hours could not be moved (time conflict)."
 msgstr[0] "{count} horaire n'a pas pu être déplacé (conflit d'heures)."
 msgstr[1] "{count} horaires n'ont pas pu être déplacés (conflit d'heures)."
+
+msgid "{count} hour created."
+msgid_plural "{count} hours created."
+msgstr[0] "{count} horaire créé."
+msgstr[1] "{count} horaires créés."
 
 msgid "{count} player deleted."
 msgid_plural "{count} players deleted."
