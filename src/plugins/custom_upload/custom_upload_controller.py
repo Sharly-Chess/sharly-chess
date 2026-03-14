@@ -44,6 +44,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             ).document_url
         document_type = None
         if document_url is not None:
+            # TODO: refactor logic to be cleaner
             document_id = document_url.split('/')[-1].split('?')[0]
             document_type = PrintDocumentManager(
                 web_context.get_admin_event()

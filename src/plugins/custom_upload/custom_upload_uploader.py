@@ -1,4 +1,5 @@
 import io
+import urllib
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
@@ -202,19 +203,23 @@ class CustomUploadUploader:
             host = plugin_data.ftp_host
             username = plugin_data.ftp_username
             password = plugin_data.ftp_password
+            document_url = plugin_data.document_url
+            document_url_resource_part = document_url.split('/')[-1]
 
-            # TODO: replace sample document by document(s) picked by user
+            document_id, document_options = document_url_resource_part.split('?')
+            decoded_document_options = document_options.replace('options=', '')
+            decoded_document_options = urllib.parse.unquote(decoded_document_options)
             document_htmx_template = EventDocumentsController.document_view(
                 event=event,
-                document='player-list',
-                options='tournaments%3D1%7Cplayer-split%3Dclub',
+                document=document_id,
+                options=decoded_document_options,
             )
             html_content = parse_jinja_template(
                 document_htmx_template.template_name, document_htmx_template.context
             )
             temporary_document_file = io.BytesIO(html_content.encode())
 
-            file_name = 'player-list.html'
+            file_name = f'{"_".join(event.name.split())}_{document_id}_{decoded_document_options}.html'
             upload_location = Path(plugin_data.server_path) / file_name
             try:
                 client.connect(host, username=username, password=password)
