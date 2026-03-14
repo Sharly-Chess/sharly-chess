@@ -6,7 +6,12 @@ from logging import Logger
 from typing import Any, Callable
 
 import requests
-from litestar.status_codes import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
+from litestar.status_codes import (
+    HTTP_401_UNAUTHORIZED,
+    HTTP_403_FORBIDDEN,
+    HTTP_200_OK,
+    HTTP_404_NOT_FOUND,
+)
 from requests import Session, HTTPError, Response
 
 from common import SharlyChessException
@@ -26,11 +31,17 @@ from plugins import ffe
 from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
 from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME
+from plugins.sce.sce_event_status import (
+    NotFoundSCEEventStatus,
+    UnexpectedHttpSCEEventStatus,
+    NotReachableSCEEventStatus,
+)
 from plugins.sce.utils import (
     SCETokens,
     SCEUtils,
     SCETournamentPluginData,
     SCEPlayerPluginData,
+    SCEEventPluginData,
 )
 from plugins.utils import Plugin
 from utils import Utils
@@ -41,6 +52,8 @@ from web.urls import build_get_url
 logger: Logger = get_logger()
 
 SCE_BASE_URL = os.getenv('SCE_BASE_URL') or 'http://localhost:3001'
+SCE_SYNC_DELAY = 3
+SCE_UPLOAD_DELAY = 3
 CLIENT_ID = 'sharlychess'
 
 # Only one token is handled at a time per event
@@ -48,6 +61,7 @@ CLIENT_ID = 'sharlychess'
 REQUIRED_SCOPES = [
     'event:read',
     'tournaments:read',
+    'tournaments:write',
     'registrations:read',
     'registrations:write',
 ]
@@ -86,11 +100,7 @@ class SCESession(Session):
     def _update_event_tokens(self, tokens: SCETokens | None):
         plugin_data = SCEUtils.get_event_plugin_data(self.event)
         plugin_data.tokens = tokens
-        self.event.plugin_data[PLUGIN_NAME] = plugin_data
-        stored_event = self.event.stored_event
-        stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
-        with EventDatabase(self.event.uniq_id, True) as database:
-            database.update_stored_event(stored_event)
+        SCEUtils.update_event_plugin_data(self.event, plugin_data)
 
     @classmethod
     def build_oauth_url(
@@ -123,6 +133,7 @@ class SCESession(Session):
             response.raise_for_status()
             logger.debug(request_log)
         except HTTPError as e:
+            logger.error(request_log)
             try:
                 logger.error(response.json())
             except JSONDecodeError:
@@ -165,6 +176,7 @@ class SCESession(Session):
         if response.status_code in [HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN]:
             # Refresh token no longer valid, needs to be regenerated via OAuth
             self._update_event_tokens(None)
+
         self.validate_api_response(response)
         data = response.json()
         tokens = SCETokens(
@@ -180,14 +192,24 @@ class SCESession(Session):
         skip_validation: bool = False,
     ) -> Response:
         """Wrapper on a request function which regenerates the token if they are outdated."""
-        if self.tokens.expires_at < datetime.now():
-            self.refresh_tokens()
-        response = request_function()
-        if response.status_code in [HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN]:
-            self.refresh_tokens()
+        if not SCEUtils.get_event_plugin_data(self.event).tokens:
+            raise SharlyChessException(
+                f'Event [{self.event.uniq_id}] - Sharly-Chess.com tokens not set'
+            )
+        try:
+            if self.tokens.expires_at < datetime.now():
+                self.refresh_tokens()
             response = request_function()
-        if not skip_validation:
-            self.validate_api_response(response)
+            if response.status_code in [HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN]:
+                self.refresh_tokens()
+                response = request_function()
+            if not skip_validation:
+                self.validate_api_response(response)
+        except requests.ConnectionError as e:
+            plugin_data = SCEUtils.get_event_plugin_data(self.event)
+            plugin_data.status = NotReachableSCEEventStatus().id
+            SCEUtils.update_event_plugin_data(self.event, plugin_data)
+            raise SharlyChessException(str(e))
         return response
 
     def _get_event_request(self) -> Response:
@@ -214,7 +236,7 @@ class SCESession(Session):
             stop_date=None if defaut_dates else stop_date,
             plugin_data={
                 PLUGIN_NAME: SCETournamentPluginData(
-                    sce_tournament_id
+                    id=sce_tournament_id
                 ).to_stored_value()
             },
         )
@@ -273,10 +295,24 @@ class SCESession(Session):
         from plugins.ffe.ffe import FfePlugin
         from plugins.sce.sce import SCEPlugin
 
-        response = self._run_with_token_validation(self._get_event_request)
+        stored_event = self.event.stored_event
+        plugin_data = SCEEventPluginData.from_stored_value(
+            stored_event.plugin_data.get(PLUGIN_NAME, {})
+        )
+        response = self._run_with_token_validation(
+            self._get_event_request, skip_validation=True
+        )
+        if response.status_code != HTTP_200_OK:
+            plugin_data.status = (
+                NotFoundSCEEventStatus.static_id()
+                if response.status_code == HTTP_404_NOT_FOUND
+                else UnexpectedHttpSCEEventStatus.static_id()
+            )
+            SCEUtils.update_event_plugin_data(self.event, plugin_data)
+            self.validate_api_response(response)
+
         data = response.json()['data']
 
-        stored_event = self.event.stored_event
         if is_create:
             stored_event.name = EventLoader().get_unused_event_name(data['name'])
             stored_event.federation = (
@@ -289,12 +325,30 @@ class SCESession(Session):
                 plugin.id
                 for plugin in plugin_manager.get_plugins_with_dependencies(plugins)
             ]
+            stored_event.organiser_name = data['organizer']['name']
+            stored_event.prize_currency = data['currency']
+            stored_event.location = data['city']
             stored_event.timer_delays = SharlyChessConfig.default_timer_delays  # type: ignore
             stored_event.timer_colors = SharlyChessConfig.default_timer_colors  # type: ignore
 
+        plugin_data.slug = data['slug']
+        plugin_data.organiser_slug = data['organizer']['slug']
+        plugin_data.status = data['status']
+        plugin_data.tournament_names_by_id = {
+            tournament_data['id']: tournament_data['name']
+            for tournament_data in data['tournaments']
+        }
+        SCEUtils.update_event_plugin_data(self.event, plugin_data, write=False)
+
+        if (
+            not stored_event.organiser_home_page
+            or not stored_event.organiser_home_page.startswith(SCE_BASE_URL)
+        ):
+            stored_event.organiser_home_page = build_get_url(
+                SCE_BASE_URL, f'/o/{plugin_data.organiser_slug}'
+            )
         stored_event.start_date = datetime.fromisoformat(data['start_date']).date()
         stored_event.stop_date = datetime.fromisoformat(data['end_date']).date()
-        stored_event.location = data['city']
         age_categories = [
             PlayerCategory.from_id(
                 f'O{sce_category[:-1]}' if sce_category.endswith('+') else sce_category
@@ -310,12 +364,13 @@ class SCESession(Session):
             else None
         )
         stored_event.age_category_change_month = data['age_category_change_month']
-        stored_event.prize_currency = data['currency']
         with EventDatabase(stored_event.uniq_id, True) as database:
             database.update_stored_event(stored_event)
             if is_create:
                 for tournament_data in data['tournaments']:
                     self._create_tournament(tournament_data, database)
-        new_uniq_id = EventLoader().get_unused_event_uniq_id(data['slug'])
-        EventDatabase(self.event.uniq_id).rename(new_uniq_id)
-        stored_event.uniq_id = new_uniq_id
+
+        if is_create:
+            new_uniq_id = EventLoader().get_unused_event_uniq_id(data['slug'])
+            EventDatabase(self.event.uniq_id).rename(new_uniq_id)
+            stored_event.uniq_id = new_uniq_id

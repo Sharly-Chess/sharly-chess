@@ -1,0 +1,295 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{% set event_plugin_data = admin_event.plugin_data.sce %}
+
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 800px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <span class="pe-1">
+                    {{ _('Sharly-Chess.com') }}
+                </span>
+                <a href="{{ sce_utils.event_url(admin_event) }}" target="_blank" style="font-size: 70%">
+                    <i class="bi bi-box-arrow-up-right" ></i>
+                </a>
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if sce_event_status.alert_message %}
+                {% include '/sce_event_status_alert.html' %}
+            {% endif %}
+            {% if success_message %}
+                {% with type='success', message=success_message %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            <h4 class="{% if sce_event_status.alert_message %}mt-3{% endif %}">
+                {{ _('Data synchronisation') }}
+            </h4>
+            <div class="row px-4">
+                <div class="col-12 col-md-6 d-flex flex-column gap-2 text-center mb-2">
+                    <button
+                        class="btn btn-outline-primary"
+                        hx-post="{{ url_for('sce-sync-players', event_uniq_id=admin_event.uniq_id) }}"
+                        {% if sce_event_status.actions_disabled %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi-arrow-repeat pe-1"></i>
+                        {{ _('Synchronize players') }}
+                    </button>
+                    <span class="mt-1">
+                        {% if event_plugin_data.last_sync_at %}
+                            {{ _(
+                                '%(string)s: %(value)s',
+                                string=_('Last synchronization'),
+                                value=format_datetime(event_plugin_data.last_sync_at),
+                            ) }}
+                        {% else %}
+                            <span class="fst-italic">{{ _('Never synchronized') }}</span>
+                        {% endif %}
+                    </span>
+                    <span class="align-items-center">
+                        <div class="form-check form-switch d-inline-block">
+                            <input
+                                name="auto_player_sync"
+                                class="form-check-input blue-checkbox"
+                                type="checkbox"
+                                hx-patch="{{ url_for(
+                                    'sce-update-event-auto-player-sync',
+                                    event_uniq_id=admin_event.uniq_id
+                                ) }}"
+                                value="on"
+                                {% if event_plugin_data.auto_player_sync %}
+                                    checked
+                                {% endif %}
+                                {% if sce_event_status.actions_disabled %}
+                                    disabled
+                                {% endif %}
+                            />
+                            {{ _('Auto-synchronization') }}
+                            <i
+                                class="bi-info-circle-fill ps-1"
+                                {{ macros.tooltip_attributes('', _(
+                                    'Synchronize automatically every %(delay)d minutes.',
+                                    delay=SCE_SYNC_DELAY,
+                                )) }}
+                            ></i>
+                        </div>
+                    </span>
+                </div>
+                <div class="col-12 col-md-6 d-flex flex-column gap-2 mb-2">
+                    <span
+                        style="display: block"
+                        {% if not new_sce_tournament_options and not sce_event_status.actions_disabled %}
+                            {{ macros.tooltip_attributes('', _(
+                                'All the tournaments of the Sharly-Chess.com event are already imported.'
+                            )) }}
+                        {% endif %}
+                    >
+                        <button
+                            class="btn btn-outline-primary dropdown-toggle text-nowrap w-100"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            data-bs-auto-close="outside"
+                            {% if sce_event_status.actions_disabled or not new_sce_tournament_options %}
+                                disabled
+                            {% endif %}
+                        >
+                            <span
+                                {{ macros.tooltip_attributes('', _(
+                                    'Import Sharly-Chess.com tournaments that do not exist locally.'
+                                )) }}
+                            >
+                                <i class="bi-box-arrow-in-right pe-1"></i>
+                                {{ _('Import new tournaments') }}
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end table-dropdown-menu p-0">
+                            <li class="dropdown-item title text-nowrap">
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input blue-checkbox"
+                                    {% if enabled_columns|length == visible_columns|length %}checked{% endif %}
+                                    onclick="$('.new-sce-tournament').prop('checked', this.checked)"
+
+                                />
+                                <button
+                                    class="btn w-100 text-end py-0"
+                                    hx-post="{{ url_for(
+                                        'sce-import-tournaments',
+                                        event_uniq_id=admin_event.uniq_id
+                                    ) }}"
+                                    hx-indicator="#please-wait"
+                                    hx-vals="js:{sce_tournament_ids: $('.new-sce-tournament:checked').map((_, el) => $(el).val()).get()}"
+                                >
+                                    <i class="bi-check-lg pe-1"></i>
+                                    {{ _('OK') }}
+                                </button>
+                            </li>
+                            <li class="dropdown-divider m-0"></li>
+                            {% for tournament_id, tournament_name in new_sce_tournament_options.items() %}
+                                <li class="dropdown-item text-nowrap d-inline-flex align-items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id="new-sce-tournament-{{ tournament_id }}"
+                                        value="{{ tournament_id }}"
+                                        class="new-sce-tournament form-check-input blue-checkbox mb-1"
+                                        checked
+                                    />
+                                    <label for="new-sce-tournament-{{ tournament_id }}" class="form-label w-100 my-0">
+                                        {{ tournament_name }}
+                                    </label>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </span>
+                    <span
+                        style="display: block"
+                        {% if not new_local_tournament_options and not sce_event_status.actions_disabled %}
+                            {{ macros.tooltip_attributes('', _(
+                                'All the tournaments are connected to a Sharly-Chess.com tournament.'
+                            )) }}
+                        {% endif %}
+                    >
+                        <button
+                            class="btn btn-outline-primary dropdown-toggle text-nowrap w-100"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                            data-bs-auto-close="outside"
+                            {% if sce_event_status.actions_disabled or not new_local_tournament_options %}
+                                disabled
+                            {% endif %}
+                        >
+                            <span
+                                {{ macros.tooltip_attributes('', _(
+                                    'Upload tournaments that only exist locally to Sharly-Chess.com.'
+                                )) }}
+                            >
+                                <i class="bi-box-arrow-right pe-1"></i>
+                                {{ _('Upload local tournaments') }}
+                            </span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end table-dropdown-menu p-0">
+                            <li class="dropdown-item title text-nowrap">
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input blue-checkbox"
+                                    {% if enabled_columns|length == visible_columns|length %}checked{% endif %}
+                                    onclick="$('.new-local-tournament').prop('checked', this.checked)"
+
+                                />
+                                <button
+                                    class="btn w-100 text-end py-0"
+                                    hx-post="{{ url_for(
+                                        'sce-upload-local-tournaments',
+                                        event_uniq_id=admin_event.uniq_id
+                                    ) }}"
+                                    hx-indicator="#please-wait"
+                                    hx-vals="js:{tournament_ids: $('.new-local-tournament:checked').map((_, el) => $(el).val()).get()}"
+                                >
+                                    <i class="bi-check-lg pe-1"></i>
+                                    {{ _('OK') }}
+                                </button>
+                            </li>
+                            <li class="dropdown-divider m-0"></li>
+                            {% for tournament_id, tournament_name in new_local_tournament_options.items() %}
+                                <li class="dropdown-item text-nowrap d-inline-flex align-items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        id="new-local-tournament-{{ tournament_id }}"
+                                        value="{{ tournament_id }}"
+                                        class="new-local-tournament form-check-input blue-checkbox mb-1"
+                                        checked
+                                    />
+                                    <label for="new-local-tournament-{{ tournament_id }}" class="form-label w-100 my-0">
+                                        {{ tournament_name }}
+                                    </label>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </span>
+                </div>
+            </div>
+            <h4 class="mt-2">
+                {{ _('Results upload') }}
+            </h4>
+            <table class="table prominent table-sm w-100 bg-light mx-auto justify-content-center">
+                <thead>
+                    <tr>
+                        <th>
+                            <div
+                                class="form-check blue-checkbox form-switch d-inline-block"
+                                {{ macros.tooltip_attributes('', _(
+                                    'Upload automatically every %(delay)d minutes.',
+                                    delay=SCE_UPLOAD_DELAY,
+                                )) }}
+                            >
+                                <input
+                                    name="auto_upload"
+                                    class="form-check-input blue-checkbox"
+                                    type="checkbox"
+                                    hx-patch="{{ url_for(
+                                        'sce-update-event-auto-upload',
+                                        event_uniq_id=admin_event.uniq_id
+                                    ) }}"
+                                    value="on"
+                                    {% if event_plugin_data.auto_upload %}
+                                        checked
+                                    {% endif %}
+                                    {% if sce_event_status.actions_disabled %}
+                                        disabled
+                                    {% endif %}
+                                />
+                                <i class="bi-arrow-repeat"></i>
+                            </div>
+                        </th>
+                        <th>
+                            {{ _('Tournament') }}
+                        </th>
+                        <th class="text-center">
+                            {{ _('Statuses') }}
+                        </th>
+                        <th class="text-center text-nowrap">
+                            {{ _('Last upload') }}
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                {% include '/sce_upload_table.html' %}
+            </table>
+            <div class="text-center mt-3 mb-1">
+                <button
+                    type="button"
+                    hx-post="{{ url_for('sce-upload-all-tournament-results', event_uniq_id=admin_event.uniq_id) }}"
+                    class="text-nowrap white btn btn-outline-primary"
+                    {% if sce_event_status.actions_disabled %}
+                        disabled
+                    {% endif %}
+                >
+                    <i class="bi-cloud-arrow-up-fill pe-1"></i>
+                    {{ _('Upload all tournament results') }}
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

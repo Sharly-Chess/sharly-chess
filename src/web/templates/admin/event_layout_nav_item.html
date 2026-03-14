@@ -69,13 +69,19 @@
                                         <i class="{{ sub_nav_tab.icon_class }} pe-1"></i>
                                     {% endif %}
                                     {% if sub_nav_tab.icon_path %}
-                                        <img
-                                            src="{{ url_for('static', file_path=sub_nav_tab.icon_path) }}?version={{ sharly_chess_config.version }}"
-                                            style="height: 1.2em"
-                                            class="pe-1"
-                                        />
+                                        <span style="width:18%" class="pe-2">
+                                            <img
+                                                src="{{ url_for('static', file_path=sub_nav_tab.icon_path) }}?version={{ sharly_chess_config.version }}"
+                                                style="height: 1.2em"
+                                            />
+                                        </span>
+                                        <span class="mt-1">
+                                            {{ sub_nav_tab.title }}
+                                        </span>
+                                    {% else %}
+                                        {{ sub_nav_tab.title }}
                                     {% endif %}
-                                    {{ sub_nav_tab.title }}
+
                                     {% if sub_nav_tab.has_error %}
                                         <span
                                             class="nav-icon-badge rounded-circle bg-danger ms-2 mb-1"
@@ -147,13 +153,18 @@
                             <i class="indented {{ sub_nav.icon_class }}"></i>
                         {% endif %}
                         {% if sub_nav.icon_path %}
-                            <img
-                                src="{{ url_for('static', file_path=sub_nav.icon_path) }}?version={{ sharly_chess_config.version }}"
-                                style="height: 1.2em"
-                                class="pe-1"
-                            />
+                            <span style="width:15%" class="pe-2">
+                                <img
+                                    src="{{ url_for('static', file_path=sub_nav.icon_path) }}?version={{ sharly_chess_config.version }}"
+                                    style="height: 1.2em"
+                                />
+                            </span>
+                            <span class="mt-1">
+                                {{ sub_nav.title }}
+                            </span>
+                        {% else %}
+                            {{ sub_nav.title }}
                         {% endif %}
-                        {{ sub_nav.title }}
                         {% if sub_nav.has_error %}
                             <span
                                 class="nav-icon-badge rounded-circle bg-danger ms-2 mb-1"

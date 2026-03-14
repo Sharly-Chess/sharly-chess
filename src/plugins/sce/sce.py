@@ -1,7 +1,8 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable
 
 from packaging.version import Version
 
+from data.event import Event
 from plugins.hookspec import hookimpl
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_admin_controller import SCEAdminController
@@ -9,10 +10,12 @@ from plugins.sce.utils import (
     SCETournamentPluginData,
     SCEEventPluginData,
     SCEPlayerPluginData,
+    SCEUtils,
 )
 from plugins.utils import (
     PluginData,
     HiddenPlugin,
+    NavDataTransferItem,
 )
 from web.controllers.base_controller import BaseController
 
@@ -77,3 +80,31 @@ class SCEPlugin(HiddenPlugin):
     @hookimpl
     def get_player_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, SCEPlayerPluginData
+
+    @hookimpl(tryfirst=True)
+    def get_nav_data_transfer_items(
+        self, event: 'Event'
+    ) -> Iterable[NavDataTransferItem]:
+        status = SCEUtils.resolve_event_status(event)
+        has_error = False
+        if status.alert_message:
+            has_error = True
+        else:
+            for tournament in event.tournaments:
+                if any(
+                    status.notify_error_status
+                    for status in SCEUtils.resolve_tournament_upload_statuses(
+                        tournament
+                    )
+                ):
+                    has_error = True
+                    break
+        return [
+            NavDataTransferItem(
+                key='sce_data_transfer',
+                title='Sharly-Chess.com',
+                icon_path='/images/sharly-chess-events.ico',
+                modal_route_name='sce-sync-modal',
+                has_upload_error=has_error,
+            )
+        ]
