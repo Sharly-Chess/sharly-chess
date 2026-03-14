@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime, timedelta
 from functools import partial
@@ -374,3 +375,28 @@ class SCESession(Session):
             new_uniq_id = EventLoader().get_unused_event_uniq_id(data['slug'])
             EventDatabase(self.event.uniq_id).rename(new_uniq_id)
             stored_event.uniq_id = new_uniq_id
+
+    def _upload_tournament_results_request(
+        self, sce_tournament_id: str, payload: dict
+    ) -> Response:
+        return requests.put(
+            self.base_event_url + f'/tournaments/{sce_tournament_id}/results',
+            headers=self.api_headers,
+            data=json.dumps(payload),
+        )
+
+    def upload_tournament_results(
+        self, sce_tournament_id: str, payload: dict
+    ) -> tuple[int, dict]:
+        """Upload tournament results to SCE. Returns (status_code, response_body)."""
+        response = self._run_with_token_validation(
+            partial(
+                self._upload_tournament_results_request, sce_tournament_id, payload
+            ),
+            skip_validation=True,
+        )
+        try:
+            body = response.json()
+        except Exception:
+            body = {}
+        return response.status_code, body

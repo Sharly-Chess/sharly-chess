@@ -1,0 +1,283 @@
+"""Builds the tournament results payload for the SCE platform API."""
+
+from typing import Any
+
+from data.tie_breaks.cutters import CutTieBreakCutter, MedianTieBreakCutter
+from data.tie_breaks.options import (
+    CutterTieBreakOption,
+    CutterWithMedianTieBreakOption,
+    ForeModifierTieBreakOption,
+    KoyaLimitTieBreakOption,
+    PlayedModifierTieBreakOption,
+)
+from data.tie_breaks.tie_breaks import TieBreak
+from data.tournament import Tournament
+from plugins.ffe.ffe_tie_breaks import BasePapiTieBreak
+from plugins.sce.sce_mappers import (
+    SCEPairingSystem,
+    SCEPlayerGender,
+    SCEPlayerRatingType,
+)
+from plugins.sce.utils import SCEUtils
+from utils.enum import Result
+
+# Tiebreak base codes known to the SCE frontend (FIDE + other supported bases)
+_KNOWN_BASES: frozenset[str] = frozenset(
+    {
+        'DE',
+        'WIN',
+        'WON',
+        'BPG',
+        'BWG',
+        'REP',
+        'PS',
+        'BH',
+        'AOB',
+        'FB',
+        'SB',
+        'KS',
+        'ARO',
+        'APRO',
+        'APPO',
+        'TPR',
+        'PTP',
+        'MPvGP',
+        'ESB',
+        'EDE',
+        'BC',
+        'TBR',
+        'BBE',
+        'SSSC',
+        'KA',
+        'SOB',
+        'MAN',
+    }
+)
+
+
+def _tiebreak_to_dict(tie_break: TieBreak) -> dict[str, Any]:
+    # FFE Papi variants: report as their FIDE equivalent base
+    if isinstance(tie_break, BasePapiTieBreak):
+        return {'base': tie_break.base_tie_break.base_acronym}
+
+    available = set(tie_break.available_options())
+    base = tie_break.base_acronym
+    result: dict[str, Any] = {'base': base}
+
+    # Cut / Median — CutterWithMedian takes precedence over plain Cutter
+    for option_type in (CutterWithMedianTieBreakOption, CutterTieBreakOption):
+        if option_type in available:
+            cutter = tie_break._get_option(option_type).cutter  # noqa: SLF001
+            if isinstance(cutter, CutTieBreakCutter):
+                result['cut'] = cutter.cut_value()
+            elif isinstance(cutter, MedianTieBreakCutter):
+                result['median'] = cutter.cut_value()
+            break
+
+    # Played modifier
+    if PlayedModifierTieBreakOption in available:
+        if tie_break._get_option(PlayedModifierTieBreakOption).value:  # noqa: SLF001
+            result['played'] = True
+
+    # Fore modifier (e.g. AOB/F — Average of Opponents' Buchholz with Fore)
+    if ForeModifierTieBreakOption in available:
+        if tie_break._get_option(ForeModifierTieBreakOption).value:  # noqa: SLF001
+            result['fore'] = True
+
+    # Koya limit (half-points above/below the 50% threshold)
+    if KoyaLimitTieBreakOption in available:
+        limit = tie_break._get_option(KoyaLimitTieBreakOption).value  # noqa: SLF001
+        if limit:
+            result['limit'] = limit
+
+    # Unknown bases need an explicit name for the frontend to display
+    if base not in _KNOWN_BASES:
+        result['name'] = tie_break.full_name
+
+    return result
+
+
+def _default_display_config(tournament: Tournament) -> dict[str, Any]:
+    ranking_columns: list[dict[str, Any]] = [
+        {'key': 'rank'},
+        {'key': 'name'},
+        {'key': 'rating'},
+        {'key': 'points'},
+    ]
+    for i in range(len(tournament.tie_breaks)):
+        ranking_columns.append({'key': f'tb:{i}'})
+
+    return {
+        'playerColumns': [
+            {'key': 'pairingNumber'},
+            {'key': 'name'},
+            {'key': 'rating'},
+            {'key': 'federation'},
+            {'key': 'club'},
+        ],
+        'rankingColumns': ranking_columns,
+        'pairings': [
+            {'type': 'column', 'key': 'board'},
+            {
+                'type': 'white',
+                'columns': [
+                    {'key': 'points'},
+                    {'key': 'name'},
+                    {'key': 'rating'},
+                ],
+            },
+            {'type': 'column', 'key': 'result'},
+            {
+                'type': 'black',
+                'columns': [
+                    {'key': 'name'},
+                    {'key': 'rating'},
+                    {'key': 'points'},
+                ],
+            },
+        ],
+    }
+
+
+def _scoring_system(tournament: Tournament) -> dict[str, float] | None:
+    win = tournament.win_points
+    draw = tournament.draw_points
+    loss = tournament.loss_points
+    pab = Result.PAIRING_ALLOCATED_BYE.points(tournament.point_values)
+
+    if win == 1.0 and draw == 0.5 and loss == 0.0 and pab == 1.0:
+        return None
+
+    scoring: dict[str, float] = {}
+    if win != 1.0:
+        scoring['win'] = win
+    if draw != 0.5:
+        scoring['draw'] = draw
+    if loss != 0.0:
+        scoring['loss'] = loss
+    if pab != win:
+        scoring['pairingAllocatedBye'] = pab
+    return scoring or None
+
+
+def _build_players(tournament: Tournament) -> list[dict[str, Any]]:
+    players = []
+    for player in tournament.tournament_players_by_pairing_number.values():
+        p: dict[str, Any] = {
+            'pairingNumber': player.pairing_number,
+            'lastName': player.last_name,
+        }
+        if player.first_name:
+            p['firstName'] = player.first_name
+        if player.title.value:
+            p['title'] = player.title.value
+        if player.rating:
+            p['rating'] = player.rating
+            rating_type_str = SCEPlayerRatingType.get_outer_value(player.rating_type)
+            if rating_type_str:
+                p['ratingType'] = rating_type_str
+        if player.fide_id:
+            p['fideId'] = str(player.fide_id)
+        if player.federation and player.federation.name:
+            p['federation'] = player.federation.name
+        if player.club and player.club.name:
+            p['club'] = player.club.name
+        if player.year_of_birth:
+            p['yearOfBirth'] = player.year_of_birth
+        sex = SCEPlayerGender.get_outer_value(player.gender)
+        if sex:
+            p['sex'] = sex
+
+        try:
+            sce_player_data = SCEUtils.get_player_plugin_data(player)
+            if sce_player_data.id:
+                p['registrationId'] = sce_player_data.id
+        except (KeyError, AssertionError):
+            pass
+
+        players.append(p)
+    return players
+
+
+def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
+    pairings = []
+    for round_ in range(1, tournament.current_round + 1):
+        for board in tournament.get_round_boards(round_):
+            black = board.black_tournament_player
+            board_number = board.standard_number
+            fixed_number = board.fixed_number
+
+            entry: dict[str, Any] = {
+                'round': round_,
+                'board': board_number,
+                'whitePairingNumber': board.white_tournament_player.pairing_number,
+                'blackPairingNumber': black.pairing_number if black else -1,
+                'whiteResult': board.white_pairing.result.value,
+                'blackResult': (
+                    board.black_pairing.result.value
+                    if black
+                    else Result.NO_RESULT.value
+                ),
+            }
+            if fixed_number and fixed_number != board_number:
+                entry['table'] = fixed_number
+
+            pairings.append(entry)
+    return pairings
+
+
+def _build_rankings(tournament: Tournament) -> list[dict[str, Any]]:
+    ranking_round = tournament.max_ranking_round
+    standings = []
+    if ranking_round > 0:
+        tournament.compute_tournament_player_ranks(after_round=ranking_round)
+        for rank, player in tournament.tournament_players_by_rank.items():
+            standings.append(
+                {
+                    'rank': rank,
+                    'pairingNumber': player.pairing_number,
+                    'points': player.points,
+                    'tiebreaks': [
+                        str(tv) if tv.rank_progress is not None else float(tv.value)
+                        for tv in player.tie_break_values
+                    ],
+                }
+            )
+
+    return [{'round': ranking_round, 'standings': standings}]
+
+
+def build_tournament_results(
+    tournament: Tournament,
+    sce_event_id: str,
+    sce_tournament_id: str,
+) -> dict[str, Any]:
+    """Build the full tournament results payload for the SCE API."""
+    tournament.set_tournament_players_pairing_numbers()
+
+    tiebreaks = [_tiebreak_to_dict(tb) for tb in tournament.tie_breaks]
+    display_config = _default_display_config(tournament)
+
+    tournament_meta: dict[str, Any] = {
+        'name': tournament.name,
+        'type': SCEPairingSystem.get_outer_value(tournament.pairing_system),
+        'rounds': tournament.rounds,
+        'currentRound': tournament.current_round,
+        'tiebreaks': tiebreaks,
+        'displayConfig': display_config,
+    }
+    if tournament.time_control_trf25:
+        tournament_meta['timeControl'] = tournament.time_control_trf25
+    scoring = _scoring_system(tournament)
+    if scoring:
+        tournament_meta['scoringSystem'] = scoring
+
+    return {
+        'version': 1,
+        'eventId': sce_event_id,
+        'tournamentId': sce_tournament_id,
+        'tournament': tournament_meta,
+        'players': _build_players(tournament),
+        'pairings': _build_pairings(tournament),
+        'rankings': _build_rankings(tournament),
+    }

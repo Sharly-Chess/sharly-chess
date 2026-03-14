@@ -25,6 +25,10 @@ from plugins.sce.sce_session import (
     SCE_SYNC_DELAY,
     SCE_UPLOAD_DELAY,
 )
+from plugins.sce.sce_background_uploader import (
+    schedule_upload,
+    upload_event_tournaments,
+)
 from plugins.sce.utils import SCETokens, SCEEventPluginData, SCEUtils
 from utils.date_time import format_datetime
 from web.controllers.admin.base_admin_controller import (
@@ -412,7 +416,8 @@ class SCEAdminController(BaseAdminController):
         tournament_id: int,
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, tournament_id)
-        # TODO (Molrn) Implement tournament results upload
+        tournament = web_context.get_tournament()
+        schedule_upload(tournament)
         return self._render_upload_table(web_context)
 
     @post(
@@ -423,8 +428,8 @@ class SCEAdminController(BaseAdminController):
         self, request: HTMXRequest
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
-        # TODO (Molrn) Implement all tournaments upload
-        message = _('All results successfully uploaded.')
+        upload_event_tournaments(web_context.sce_allowed_tournaments)
+        message = _('Upload started for all tournaments.')
         return self._render_sync_modal(web_context, message)
 
     @post(

@@ -282,16 +282,24 @@ class SCEUtils:
     def resolve_tournament_upload_statuses(
         cls, tournament: Tournament
     ) -> list[SCETournamentStatus]:
+        from datetime import datetime
+        from plugins.sce.sce_background_uploader import is_upload_ongoing
+
         event_plugin_data = cls.get_event_plugin_data(tournament.event)
         plugin_data = cls.get_tournament_plugin_data(tournament)
         statuses: list[SCETournamentStatus] = []
-        is_ongoing = False  # TODO (Molrn) add ongoing logic
-        is_modified = True  # TODO (Molrn) add modified logic
+        is_ongoing = is_upload_ongoing(tournament)
+        last_upload = plugin_data.last_upload_at
+        is_modified = last_upload is None or last_upload < max(
+            tournament.last_update or datetime.min,
+            tournament.last_player_update or datetime.min,
+            tournament.last_pairing_update or datetime.min,
+        )
         if plugin_data.upload_status:
             statuses.append(
                 _SCETournamentStatusManager().get_object(plugin_data.upload_status)
             )
-            if is_modified:
+            if is_modified and not is_ongoing:
                 statuses.append(ModifiedSCETournamentStatus())
         else:
             statuses.append(NeverUploadedSCETournamentStatus())
