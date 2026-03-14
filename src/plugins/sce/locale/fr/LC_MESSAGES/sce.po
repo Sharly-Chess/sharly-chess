@@ -13,4 +13,6 @@ msgstr "Autorisation échouée, possible attaque CSRF !"
 msgid "Event [{event}] successfully imported!"
 msgstr "L'évènement [{event}] a été importé avec succès !"
 
+msgid "Sharly-Chess.com authorization canceled."
+msgstr "Authorisation Sharly-Chess.com annulée."
 

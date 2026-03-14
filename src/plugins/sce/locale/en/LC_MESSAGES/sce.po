@@ -13,4 +13,6 @@ msgstr ""
 msgid "Event [{event}] successfully imported!"
 msgstr ""
 
+msgid "Sharly-Chess.com authorization canceled."
+msgstr ""
 
