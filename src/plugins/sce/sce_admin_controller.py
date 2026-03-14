@@ -82,22 +82,24 @@ class SCEAdminController(BaseAdminController):
         request: HTMXRequest,
         action: str,
         state_param: Annotated[str, Parameter(query='state')],
-        sce_event_id: Annotated[str, Parameter(query='event_id')],
+        sce_event_id: Annotated[str, Parameter(query='event_id')] = '',
         code: str = '',
         error: str = '',
         event_uniq_id: str | None = None,
     ) -> Redirect:
         error_message: str | None = None
         tokens: SCETokens | None = None
-        if error:
+        if not sce_event_id:
+            error_message = _('Sharly-Chess.com authorization canceled.')
+        elif error:
             logger.error(error)
             error_message = _(
                 'Authorization failed, consult the logs for more details.'
             )
         elif state_param not in self.OAUTH_CODE_VERIFIER_BY_STATE:
             error_message = _('Authorization failed, possible CSRF attack!')
-        elif not code or not sce_event_id:
-            raise ClientException('Missing parameters.')
+        elif not code:
+            raise ClientException('Missing parameter: code')
         else:
             code_verifier, expires_at = self.OAUTH_CODE_VERIFIER_BY_STATE[state_param]
             if expires_at < datetime.now():
