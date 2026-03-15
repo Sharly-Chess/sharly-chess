@@ -112,6 +112,7 @@ def _default_display_config(tournament: Tournament) -> dict[str, Any]:
             {'key': 'pairingNumber'},
             {'key': 'name'},
             {'key': 'rating'},
+            {'key': 'ageCategory'},
             {'key': 'federation'},
             {'key': 'club'},
         ],
@@ -178,6 +179,8 @@ def _build_players(tournament: Tournament) -> list[dict[str, Any]]:
                 p['ratingType'] = rating_type_str
         if player.fide_id:
             p['fideId'] = str(player.fide_id)
+        if player.category:
+            p['ageCategory'] = player.category.name
         if player.federation and player.federation.name:
             p['federation'] = player.federation.name
         if player.club and player.club.name:
