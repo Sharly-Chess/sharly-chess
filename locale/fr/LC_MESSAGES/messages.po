@@ -3916,6 +3916,9 @@ msgstr "Chevalets d'appariement"
 msgid "Pairing information for round %(round)d"
 msgstr "Informations d’appariement pour la ronde %(round)d"
 
+msgid "Pairing is not possible."
+msgstr "L'appariement est impossible."
+
 msgid "Pairing not found."
 msgstr "Appariement non-trouvé."
 
