@@ -117,7 +117,7 @@ def _default_display_config(tournament: Tournament) -> dict[str, Any]:
         ],
         'rankingColumns': ranking_columns,
         'pairings': [
-            {'type': 'column', 'key': 'board'},
+            {'type': 'column', 'key': 'table'},
             {
                 'type': 'white',
                 'columns': [
@@ -204,12 +204,11 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
     for round_ in range(1, tournament.current_round + 1):
         for board in tournament.get_round_boards(round_):
             black = board.black_tournament_player
-            board_number = board.standard_number
-            fixed_number = board.fixed_number
 
             entry: dict[str, Any] = {
                 'round': round_,
-                'board': board_number,
+                'table': board.standard_number,
+                'board': board.id,
                 'whitePairingNumber': board.white_tournament_player.pairing_number,
                 'blackPairingNumber': black.pairing_number if black else -1,
                 'whiteResult': board.white_pairing.result.value,
@@ -219,8 +218,8 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
                     else Result.NO_RESULT.value
                 ),
             }
-            if fixed_number and fixed_number != board_number:
-                entry['table'] = fixed_number
+            if board.fixed_number:
+                entry['fixedTable'] = board.fixed_number
 
             pairings.append(entry)
     return pairings
