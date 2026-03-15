@@ -18,12 +18,14 @@
 - Fixed CSV import with one column (3.6.2)
 - Fixed slowness on player search (3.6.4)
 - Minimize federation flags (3.6.5)
+- Fixed player check-in on already started tournaments (3.6.6)
 
 ## Pairings
 
 - Upgrade bbpPairings engine to v6.0.0 (3.6.0)
 - Display player history on crosstable document (3.6.0)
 - Fixed search removed after manual result input (3.6.4)
+- Fixed manual tie-break on the Rankings page (3.6.6)
 - Fixed error message when pairing is impossible (3.6.6)
 
 ## Prizes

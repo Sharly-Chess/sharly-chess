@@ -7,7 +7,7 @@ from collections.abc import Collection
 from functools import cached_property
 from logging import Logger
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Sequence
 from _weakref import ReferenceType
 
 from trf import Tournament as TrfTournament
@@ -731,36 +731,17 @@ class Tournament:
             rank_by_player_id[player.id] = previous_rank
         return rank_by_player_id
 
-    @property
-    def not_checked_in_players(self) -> list[TournamentPlayer]:
-        return [
-            tournament_player
-            for tournament_player in self.tournament_players
-            if not tournament_player.check_in
-        ]
-
     @cached_property
-    def tournament_players_by_check_in_status(
-        self,
-    ) -> dict[bool | None, list[TournamentPlayer]]:
+    def not_checked_in_players(self) -> list[TournamentPlayer]:
+        """Returns the players that are present for the coming round but not checked-in yet."""
         if self.finished or self.playing or not self.check_in_open:
-            return {
-                None: list(self.tournament_players),
-                True: [],
-                False: [],
-            }
+            return []
         else:
-            result: dict[bool | None, list[TournamentPlayer]] = {
-                None: [],
-                True: [],
-                False: [],
-            }
-            for tournament_player in self.tournament_players:
-                if not tournament_player.can_check_in_out:
-                    result[None].append(tournament_player)
-                else:
-                    result[tournament_player.check_in].append(tournament_player)
-            return result
+            return [
+                tournament_player
+                for tournament_player in self.tournament_players
+                if tournament_player.can_check_in_out and not tournament_player.check_in
+            ]
 
     @property
     def min_player_rating(self) -> int | None:
@@ -1628,26 +1609,21 @@ class Tournament:
                 board.white_pairing.update(database)
 
     def open_check_in(self):
-        """Opens the check-in for the tournament and sets all the present players
-        as not checked-in for the next round."""
+        """Opens the check-in for the tournament and sets all the players as not checked-in for the next round."""
         assert not self.finished, f'Tournament [{self.name}] is finished.'
         assert not self.playing, f'Games are played for tournament [{self.name}].'
         assert not self.check_in_open, (
             f'Check-in already open for tournament [{self.name}].'
         )
         self.stored_tournament.check_in_open = True
-        present_player_ids: list[int] = []
+        player_ids: list[int] = []
         for tournament_player in self.tournament_players:
-            pairing = tournament_player.pairings_by_round.get(
-                self.current_round + 1, None
-            )
-            if not pairing or not pairing.result.is_bye:
-                present_player_ids.append(tournament_player.id)
-                tournament_player.stored_player.check_in = False
+            player_ids.append(tournament_player.id)
+            tournament_player.stored_player.check_in = False
 
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_tournament_check_in(self.id, True)
-            database.set_players_check_in(present_player_ids, False)
+            database.set_players_check_in(player_ids, False)
 
     def close_check_in(
         self, zpbs_next_round: bool, zpbs_last_rounds: bool, delete: bool
@@ -1657,32 +1633,34 @@ class Tournament:
         assert self.check_in_open, (
             f'Check-in already closed for tournament [{self.name}].'
         )
-        self.stored_tournament.check_in_open = False
-
-        zpb_rounds: list[int] = []
-        if zpbs_last_rounds:
-            zpb_rounds = list(range(self.current_round + 1, self.rounds + 1))
-        elif zpbs_next_round:
-            zpb_rounds = [self.current_round + 1]
 
         with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_tournament_check_in(self.id, False)
             if delete:
+                assert not self.has_pairings, f'Tournament [{self.name}] has pairings.'
                 for tournament_player in self.not_checked_in_players:
                     database.delete_stored_tournament_player(
                         self.id, tournament_player.id
                     )
-            if zpb_rounds:
-                for tournament_player in self.not_checked_in_players:
-                    pairing = tournament_player.pairings_by_round.get(
-                        self.current_round + 1, None
-                    )
-                    if pairing and pairing.result.is_bye:
-                        continue
-                    for round_ in zpb_rounds:
-                        tournament_player.pairings_by_round[round_].update_result(
-                            database, Result.ZERO_POINT_BYE
-                        )
+            else:
+                zpb_rounds: Sequence[int] = ()
+                if zpbs_last_rounds:
+                    zpb_rounds = range(self.current_round + 1, self.rounds + 1)
+                elif zpbs_next_round:
+                    zpb_rounds = (self.current_round + 1,)
+
+                if zpb_rounds:
+                    for tournament_player in self.not_checked_in_players:
+                        for round_ in zpb_rounds:
+                            pairing = tournament_player.pairings_by_round.get(
+                                round_, None
+                            )
+                            if pairing and pairing.result != Result.NO_RESULT:
+                                continue
+                            tournament_player.pairings_by_round[round_].update_result(
+                                database, Result.ZERO_POINT_BYE
+                            )
+            database.set_tournament_check_in(self.id, False)
+        self.stored_tournament.check_in_open = False
 
     def set_player_byes(
         self, tournament_player: TournamentPlayer, byes: dict[int, Result]
