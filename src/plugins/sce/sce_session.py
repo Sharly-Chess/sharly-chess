@@ -4,7 +4,9 @@ from datetime import datetime, timedelta
 from functools import partial
 from json import JSONDecodeError
 from logging import Logger
+from threading import Lock
 from typing import Any, Callable
+from weakref import WeakValueDictionary
 
 import requests
 from litestar.status_codes import (
@@ -56,6 +58,20 @@ SCE_BASE_URL = os.getenv('SCE_BASE_URL') or 'http://localhost:3001'
 SCE_SYNC_DELAY = 3
 SCE_UPLOAD_DELAY = 3
 CLIENT_ID = 'sharlychess'
+
+# Per-event lock to serialise token refreshes and avoid rotation race conditions
+_refresh_locks: WeakValueDictionary[str, Lock] = WeakValueDictionary()
+_refresh_locks_mutex = Lock()
+
+
+def _get_refresh_lock(event_uniq_id: str) -> Lock:
+    with _refresh_locks_mutex:
+        lock = _refresh_locks.get(event_uniq_id)
+        if lock is None:
+            lock = Lock()
+            _refresh_locks[event_uniq_id] = lock
+        return lock
+
 
 # Only one token is handled at a time per event
 # These scopes should therefore provide for all the app's features
@@ -164,28 +180,59 @@ class SCESession(Session):
             expires_at=datetime.now() + timedelta(seconds=data['expires_in']),
         )
 
-    def refresh_tokens(self):
-        response = requests.post(
-            SCE_BASE_URL + '/api/oauth/token',
-            headers={'Content-Type': 'application/x-www-form-urlencoded'},
-            data={
-                'grant_type': 'refresh_token',
-                'refresh_token': self.tokens.refresh_token,
-                'client_id': CLIENT_ID,
-            },
-        )
-        if response.status_code in [HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN]:
-            # Refresh token no longer valid, needs to be regenerated via OAuth
-            self._update_event_tokens(None)
+    def refresh_tokens(self, force: bool = False):
+        lock = _get_refresh_lock(self.event.uniq_id)
+        with lock:
+            # Re-read from DB: another thread may have already refreshed while we waited.
+            # Skip only on proactive expiry refresh (not force) — if the API returned 401,
+            # the token may have been externally revoked despite a future expires_at.
+            fresh_event = EventLoader().load_event(self.event.uniq_id)
+            fresh_tokens = SCEUtils.get_event_plugin_data(fresh_event).tokens
+            if not force and fresh_tokens and fresh_tokens.expires_at > datetime.now():
+                logger.debug(
+                    'SCE token refresh skipped for [%s] — already refreshed by another thread.',
+                    self.event.uniq_id,
+                )
+                # Already refreshed by another thread — adopt the new tokens
+                self._update_event_tokens(fresh_tokens)
+                return
 
-        self.validate_api_response(response)
-        data = response.json()
-        tokens = SCETokens(
-            access_token=data['access_token'],
-            refresh_token=data['refresh_token'],
-            expires_at=datetime.now() + timedelta(seconds=data['expires_in']),
-        )
-        self._update_event_tokens(tokens)
+            logger.debug(
+                'SCE refreshing access token for [%s] (expired at %s).',
+                self.event.uniq_id,
+                self.tokens.expires_at,
+            )
+            response = requests.post(
+                SCE_BASE_URL + '/api/oauth/token',
+                headers={'Content-Type': 'application/x-www-form-urlencoded'},
+                data={
+                    'grant_type': 'refresh_token',
+                    'refresh_token': self.tokens.refresh_token,
+                    'client_id': CLIENT_ID,
+                },
+            )
+            if response.status_code in [HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN]:
+                logger.warning(
+                    'SCE refresh token revoked for [%s] — re-auth required.',
+                    self.event.uniq_id,
+                )
+                # Refresh token no longer valid, needs to be regenerated via OAuth
+                self._update_event_tokens(None)
+                return
+
+            self.validate_api_response(response)
+            data = response.json()
+            tokens = SCETokens(
+                access_token=data['access_token'],
+                refresh_token=data['refresh_token'],
+                expires_at=datetime.now() + timedelta(seconds=data['expires_in']),
+            )
+            logger.debug(
+                'SCE access token refreshed for [%s], new expiry %s.',
+                self.event.uniq_id,
+                tokens.expires_at,
+            )
+            self._update_event_tokens(tokens)
 
     def _run_with_token_validation(
         self,
@@ -199,10 +246,23 @@ class SCESession(Session):
             )
         try:
             if self.tokens.expires_at < datetime.now():
+                logger.debug(
+                    'SCE access token expired for [%s] (expired at %s) — refreshing.',
+                    self.event.uniq_id,
+                    self.tokens.expires_at,
+                )
                 self.refresh_tokens()
+            if not SCEUtils.get_event_plugin_data(self.event).tokens:
+                raise SharlyChessException(
+                    f'Event [{self.event.uniq_id}] - refresh token revoked, re-auth required'
+                )
             response = request_function()
             if response.status_code in [HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN]:
-                self.refresh_tokens()
+                self.refresh_tokens(force=True)
+                if not SCEUtils.get_event_plugin_data(self.event).tokens:
+                    raise SharlyChessException(
+                        f'Event [{self.event.uniq_id}] - refresh token revoked, re-auth required'
+                    )
                 response = request_function()
             if not skip_validation:
                 self.validate_api_response(response)

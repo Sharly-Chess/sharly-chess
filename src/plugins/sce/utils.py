@@ -36,6 +36,7 @@ from plugins.sce.sce_tournament_status import (
     NetworkFailureSCETournamentStatus,
     UnexpectedHTTPFailureSCETournamentStatus,
     NotFoundFailureSCETournamentStatus,
+    AuthFailureSCETournamentStatus,
 )
 from plugins.utils import PluginData, PluginUtils
 from utils.entity import EntityManager
@@ -230,6 +231,7 @@ class _SCETournamentStatusManager(EntityManager[SCETournamentStatus]):
             NetworkFailureSCETournamentStatus,
             NotFoundFailureSCETournamentStatus,
             UnexpectedHTTPFailureSCETournamentStatus,
+            AuthFailureSCETournamentStatus,
         ]
 
 

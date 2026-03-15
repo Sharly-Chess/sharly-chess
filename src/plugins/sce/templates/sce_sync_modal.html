@@ -19,9 +19,7 @@
             </h2>
         </div>
         <div class="modal-body">
-            {% if sce_event_status.alert_message %}
-                {% include '/sce_event_status_alert.html' %}
-            {% endif %}
+            {% include '/sce_event_status_section.html' %}
             {% if success_message %}
                 {% with type='success', message=success_message %}
                     {% include '/common/alert.html' %}

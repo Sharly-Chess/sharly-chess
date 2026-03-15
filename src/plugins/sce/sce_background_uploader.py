@@ -12,6 +12,7 @@ from data.tournament import Tournament
 from plugins.sce.sce_session import SCESession
 from plugins.sce.sce_tournament_results_builder import build_tournament_results
 from plugins.sce.sce_tournament_status import (
+    AuthFailureSCETournamentStatus,
     NetworkFailureSCETournamentStatus,
     NotFoundFailureSCETournamentStatus,
     SuccessSCETournamentStatus,
@@ -64,6 +65,8 @@ def upload_tournament(
     _ONGOING_TOURNAMENT_IDS.add(key)
     _publish_upload_event()
 
+    event = None
+    tournament = None
     try:
         loader = EventLoader()
         if event_uniq_id not in loader.event_uniq_ids:
@@ -128,22 +131,26 @@ def upload_tournament(
                 body,
             )
     except Exception:
+        if event is not None and not SCEUtils.get_event_plugin_data(event).tokens:
+            logger.warning(
+                'SCE upload skipped for [%s/%s] — refresh token revoked, re-auth required.',
+                event_uniq_id,
+                tournament_id,
+            )
+            if tournament is not None:
+                _set_upload_status(
+                    tournament, AuthFailureSCETournamentStatus.static_id()
+                )
+            return
+        if tournament is not None:
+            _set_upload_status(
+                tournament, UnexpectedHTTPFailureSCETournamentStatus.static_id()
+            )
         logger.exception(
             'Unexpected error uploading tournament [%s/%s] to SCE.',
             event_uniq_id,
             tournament_id,
         )
-        # Re-fetch to set error status if possible
-        try:
-            loader = EventLoader()
-            event = loader.load_event(event_uniq_id)
-            tournament = event.tournaments_by_id.get(tournament_id)
-            if tournament:
-                _set_upload_status(
-                    tournament, UnexpectedHTTPFailureSCETournamentStatus.static_id()
-                )
-        except Exception:
-            pass
     finally:
         _ONGOING_TOURNAMENT_IDS.discard(key)
         _publish_upload_event()

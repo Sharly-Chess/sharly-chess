@@ -197,3 +197,13 @@ class UnexpectedHTTPFailureSCETournamentStatus(FailureSCETournamentStatus):
     @property
     def consult_logs_message(self) -> bool:
         return True
+
+
+class AuthFailureSCETournamentStatus(FailureSCETournamentStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'AUTH_FAILURE'
+
+    @property
+    def reason(self) -> str | None:
+        return _('re-authorisation required')
