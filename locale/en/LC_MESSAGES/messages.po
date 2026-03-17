@@ -1299,9 +1299,6 @@ msgstr ""
 msgid "Configure the tie-breaks of the tournament."
 msgstr ""
 
-msgid "Congo"
-msgstr ""
-
 msgid "Connect to the Sharly Chess network via {type},<br />then scan to access the Sharly Chess server."
 msgstr ""
 
@@ -1593,6 +1590,9 @@ msgid "Data source: %(data_source)s"
 msgstr ""
 
 msgid "Data sources"
+msgstr ""
+
+msgid "Data transfer"
 msgstr ""
 
 msgid "Database"
@@ -2260,6 +2260,9 @@ msgstr "Exempt"
 msgid "Exempt *** MALE"
 msgstr "Exempt"
 
+msgid "Existing players"
+msgstr ""
+
 msgid "Exit button:"
 msgstr ""
 
@@ -2621,6 +2624,9 @@ msgstr ""
 msgid "Guernsey"
 msgstr ""
 
+msgid "Guinea"
+msgstr ""
+
 msgid "Guyana"
 msgstr ""
 
@@ -2897,6 +2903,9 @@ msgstr ""
 msgid "Invalid period:"
 msgstr ""
 
+msgid "Invalid rows"
+msgstr ""
+
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
 msgstr ""
 
@@ -2970,6 +2979,9 @@ msgid "Kenya"
 msgstr ""
 
 msgid "Keyboard shortcuts:"
+msgstr ""
+
+msgid "Kiribati"
 msgstr ""
 
 msgid "Kosovo"
@@ -3174,6 +3186,9 @@ msgid "March"
 msgstr ""
 
 msgid "Mark this round as over and define the next one as the current round."
+msgstr ""
+
+msgid "Marshall Islands"
 msgstr ""
 
 msgid "Mauritania"
@@ -5045,16 +5060,13 @@ msgstr ""
 msgid "Show Log"
 msgstr ""
 
-msgid "Show invalid rows"
-msgstr ""
-
 msgid "Show logging level"
 msgstr ""
 
-msgid "Show unmodified players"
+msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
 msgstr ""
 
-msgid "Show valid rows"
+msgid "Show unmodified players"
 msgstr ""
 
 msgid "Show warnings"
@@ -6152,9 +6164,6 @@ msgstr ""
 msgid "Updating"
 msgstr ""
 
-msgid "Upload"
-msgstr ""
-
 msgid "Uruguay"
 msgstr ""
 
@@ -6208,6 +6217,9 @@ msgstr ""
 
 msgid "U{age_limit} *** YOUTH AGE CATEGORY"
 msgstr "U{age_limit}"
+
+msgid "Valid rows"
+msgstr ""
 
 msgid "Validate"
 msgstr ""

@@ -59,70 +59,7 @@
                     </div>
                 </div>
 
-                <h4>
-                    {{ _('Staff information') }}
-                </h4>
-
-                {% with
-                    results_template='admin/accounts/account_search_results.html',
-                    result_js_template_hook_name='get_account_search_result_js_template',
-                    with_arbiter_title=true
-                %}
-                    {% include '/admin/common/player_search.html' %}
-                {% endwith %}
-
-                <div class="row gy-2 gx-3">
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.text_input(
-                            name='last_name',
-                            label=_('Last name:'),
-                            placeholder=_('E.g.: DOE'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.text_input(
-                            name='first_name',
-                            label=_('First name:'),
-                            placeholder=_('E.g.: John'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.text_input(
-                            name='mail',
-                            label=_('Email:'),
-                            placeholder=_('E.g.: john.doe@chess.com'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.text_input(
-                            name='phone',
-                            label=_('Phone number:'),
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.number_input(
-                            name='fide_id',
-                            label=_('FIDE ID:'),
-                            min=1,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='fide_arbiter_title',
-                            label=_('%(string)s:', string=_('FIDE arbiter title')),
-                            select_options=fide_arbiter_title_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
-                    {% for form_fields_template in plugin_form_fields_templates %}
-                        {% include form_fields_template %}
-                    {% endfor %}
-                </div>
+                {% include 'account_information_form_section.html' %}
 
                 <h4>
                     {{ _('Staff member roles') }}

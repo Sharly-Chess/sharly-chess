@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_store import (
         StoredEvent,
         StoredTournament,
+        StoredPlayer,
     )
     from plugins.migration import PluginMigrationManager
     from web.controllers.base_controller import BaseController
@@ -159,6 +160,13 @@ class PluginData(ABC):
     @abstractmethod
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         """The values to use in a form."""
+
+
+class AccountPluginData(PluginData, ABC):
+    @classmethod
+    @abstractmethod
+    def from_stored_player(cls, stored_player: 'StoredPlayer') -> Self:
+        """Initialize from a stored player (used for player search)."""
 
 
 class Plugin[PD: PluginData](IdentifiableEntity, ABC):
@@ -337,7 +345,7 @@ class ExtraStatisticsSection(NamedTuple):
     subtitle: str | None
 
 
-class NavUploadItem(NamedTuple):
+class NavDataTransferItem(NamedTuple):
     """Class representing an upload item in the navigation bar."""
 
     key: str

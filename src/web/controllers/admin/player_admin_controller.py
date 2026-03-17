@@ -855,16 +855,39 @@ class PlayerAdminController(BaseEventAdminController):
             PlayerAdminWebContext(request), FormAction.CREATE
         )
 
+    @staticmethod
+    async def get_search_stored_player(
+        data_source: DataSource, player_source_id: str
+    ) -> tuple[StoredPlayer | None, dict[str, str]]:
+        errors: dict[str, str] = {}
+        stored_player: StoredPlayer | None = None
+        if not data_source.is_available:
+            raise ClientException(f'Data source [{data_source.id}] is not available.')
+        try:
+            stored_player = await data_source.fetch_player(
+                player_source_id=player_source_id,
+                with_arbiter_title=False,
+            )
+            if not stored_player:
+                raise NotFoundException(
+                    f'Player [{player_source_id}] unexpectedly '
+                    f'not found in data source [{data_source.id}]'
+                )
+        except SharlyChessException:
+            errors[data_source.search_element_name] = _(
+                'Connection to the data source [{data_source}] failed. '
+                'Consult the logs for more details.'
+            ).format(data_source=data_source.id)
+        return stored_player, errors
+
     @post(
         path=[
             '/player-modal/from-search/{event_uniq_id:str}/'
             '{data_source_id:str}/{player_source_id:str}',
-            '/player-modal/create-from-search/{event_uniq_id:str}/'
-            '/{data_source_id:str}/{player_source_id:str}',
         ],
-        name='admin-player-modal-from-search',
+        name='player-modal-from-search',
     )
-    async def htmx_admin_player_modal_create_from_search(
+    async def htmx_player_modal_from_search(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -878,26 +901,9 @@ class PlayerAdminController(BaseEventAdminController):
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
         )
-        data_source = web_context.get_admin_data_source()
-        errors: dict[str, str] = {}
-        stored_player: StoredPlayer | None = None
-        if not data_source.is_available:
-            raise ClientException(f'Data source [{data_source_id}] is not available.')
-        try:
-            stored_player = await data_source.fetch_player(
-                player_source_id=player_source_id,
-                with_arbiter_title=False,
-            )
-            if not stored_player:
-                raise NotFoundException(
-                    f'Player [{player_source_id}] unexpectedly '
-                    f'not found in data source [{data_source_id}]'
-                )
-        except SharlyChessException:
-            errors[data_source.search_element_name] = _(
-                'Connection to the data source [{data_source}] failed. '
-                'Consult the logs for more details.'
-            ).format(data_source=data_source_id)
+        stored_player, errors = await self.get_search_stored_player(
+            web_context.get_admin_data_source(), player_source_id
+        )
         return self._render_players_form_modal(
             web_context,
             action=FormAction.REPLACE if player_id else FormAction.CREATE,
@@ -1651,7 +1657,9 @@ class PlayerAdminController(BaseEventAdminController):
         used_columns: list[DatasheetColumn],
         content_by_column_id: dict[str, list[str]],
         overwrite_players: bool,
-    ) -> tuple[dict[int, StoredPlayer], dict[int, dict[str, str]]]:
+    ) -> tuple[dict[int, StoredPlayer], dict[int, dict[str, str]], set[int]]:
+        for column in used_columns:
+            column.update_from_used_columns(used_columns)
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
         data_source = web_context.admin_data_source
@@ -1672,6 +1680,7 @@ class PlayerAdminController(BaseEventAdminController):
             ]
         stored_players_by_index: dict[int, StoredPlayer] = {}
         import_errors_by_index: dict[int, dict[str, str]] = defaultdict(dict)
+        duplicated_indexes: set[int] = set()
         row_count = len(content_by_column_id[used_columns[0].id])
         for index in range(row_count):
             stored_player = StoredPlayer(id=None, federation=event.federation)
@@ -1680,12 +1689,15 @@ class PlayerAdminController(BaseEventAdminController):
                     continue
                 value = content_by_column_id[column.id][index]
                 try:
-                    column.augment_stored_player_with_event(event, stored_player, value)
+                    column.augment_stored_player_with_tournament(
+                        tournament, stored_player, value
+                    )
                     if (
                         column.is_unique
                         and value
                         and value in unique_values_by_column_id[column.id]
                     ):
+                        duplicated_indexes.add(index)
                         raise SharlyChessException(
                             _(
                                 'A player with this value already exists in the tournament.'
@@ -1700,6 +1712,7 @@ class PlayerAdminController(BaseEventAdminController):
             )
             if stored_player.date_of_birth:
                 if name_key in name_keys:
+                    duplicated_indexes.add(index)
                     import_errors_by_index[index]['last_name'] = _(
                         'Player [{player}] already exists in the tournament.'
                     ).format(
@@ -1748,10 +1761,12 @@ class PlayerAdminController(BaseEventAdminController):
                     if column.is_informative:
                         continue
                     value = content_by_column_id[column.id][index]
-                    column.augment_stored_player_with_event(event, stored_player, value)
+                    column.augment_stored_player_with_tournament(
+                        tournament, stored_player, value
+                    )
                 stored_players_by_index[index] = stored_player
 
-        return stored_players_by_index, import_errors_by_index
+        return stored_players_by_index, import_errors_by_index, duplicated_indexes
 
     @classmethod
     async def _render_players_import_diff_modal(
@@ -1770,6 +1785,7 @@ class PlayerAdminController(BaseEventAdminController):
         (
             stored_players_by_index,
             import_errors_by_index,
+            duplicated_indexes,
         ) = await cls._get_imported_stored_players(
             web_context, used_columns, content_by_column_id, overwrite_players
         )
@@ -1793,6 +1809,7 @@ class PlayerAdminController(BaseEventAdminController):
             'build_list_tooltip': cls._build_list_tooltip,
             'import_errors_by_index': import_errors_by_index,
             'data_source_players_by_index': data_source_players_by_index,
+            'duplicated_indexes': duplicated_indexes,
             'row_count': len(content_by_column_id[used_column_ids[0]]),
             'content_by_column_id': content_by_column_id,
             'file_path': WebContext.value_to_form_data(file_path),
@@ -1947,9 +1964,11 @@ class PlayerAdminController(BaseEventAdminController):
         used_columns = [
             column for column in columns if column.id in content_by_column_id
         ]
-        stored_players_by_index, __ = await self._get_imported_stored_players(
-            web_context, used_columns, content_by_column_id, overwrite_players
-        )
+        stored_players_by_index = (
+            await self._get_imported_stored_players(
+                web_context, used_columns, content_by_column_id, overwrite_players
+            )
+        )[0]
         stored_players = [
             stored_player
             for index, stored_player in stored_players_by_index.items()
@@ -2217,9 +2236,7 @@ class PlayerAdminController(BaseEventAdminController):
         player_id: int | None,
         search: str,
         page: int = 0,
-        results_template: str | None = None,
-        result_js_template_hook_name: str | None = None,
-        with_arbiter_title: bool = False,
+        usage: str = 'player',
     ) -> Template:
         web_context = PlayerAdminWebContext(
             request, player_id, data_source_id=data_source_id
@@ -2237,39 +2254,18 @@ class PlayerAdminController(BaseEventAdminController):
                     DataSource.SEARCH_LIMIT,
                 )
                 for stored_player in stored_players:
-                    player_source_id = data_source.get_player_source_id(stored_player)
-                    fetched_player: (
-                        StoredPlayer | None
-                    ) = await data_source.fetch_player(
-                        player_source_id=player_source_id,
-                        with_arbiter_title=with_arbiter_title,
-                    )
-                    if not fetched_player:
-                        raise NotFoundException(
-                            f'Player [{player_source_id}] unexpectedly '
-                            f'not found in data source [{data_source_id}]'
-                        )
-                    fetched_player.id = 0
-                    players.append(
-                        Player(web_context.get_admin_event(), fetched_player)
-                    )
+                    stored_player.id = 0
+                    players.append(Player(web_context.get_admin_event(), stored_player))
             except SharlyChessException as e:
                 connection_error = str(e)
             SessionPlayersActiveDataSource(request).set(data_source.id)
-        result_js_templates: list[str] = (
-            plugin_manager.hook_for_event(
-                web_context.get_admin_event(), result_js_template_hook_name
-            )()
-            if result_js_template_hook_name
-            else []
-        )
         return HTMXTemplate(
-            template_name=results_template or 'admin/players/search_results.html',
+            template_name='admin/common/search_results.html',
             context=web_context.template_context
             | {
+                'usage': usage,
                 'search': search,
                 'search_results': players,
-                'result_js_templates': result_js_templates,
                 'has_more_results': len(players) == DataSource.SEARCH_LIMIT,
                 'page': page,
                 'data_source': data_source,

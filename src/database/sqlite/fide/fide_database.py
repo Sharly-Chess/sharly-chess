@@ -12,6 +12,7 @@ from packaging.version import Version
 from requests import Response, get
 from requests.exceptions import ConnectionError
 
+from common import TEMPFILE_DIR
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
@@ -80,7 +81,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
         fide_database_url: str = (
             'https://ratings.fide.com/download/players_list_xml_legacy.zip'
         )
-        with tempfile.TemporaryDirectory() as tmpdir:
+        with tempfile.TemporaryDirectory(dir=TEMPFILE_DIR) as tmpdir:
             tmp_dir: Path = Path(tmpdir)
             local_zip_file: Path = tmp_dir / os.path.basename(fide_database_url)
             try:
@@ -202,19 +203,18 @@ class FideDatabase(LocalSourcePlayerDatabase):
         )
         return True
 
-    def _create_indexes(self):
-        self.write = True
-        with self:
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player` (`first_name` COLLATE NOCASE)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player` (`last_name` COLLATE NOCASE)'
-            )
-            self.execute(
-                'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player` (`fide_id`)'
-            )
-            self.commit()
+    @classmethod
+    def _create_indexes(cls, database: SQLiteDatabase):
+        database.execute(
+            'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player` (`first_name` COLLATE NOCASE)'
+        )
+        database.execute(
+            'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player` (`last_name` COLLATE NOCASE)'
+        )
+        database.execute(
+            'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player` (`fide_id`)'
+        )
+        database.commit()
 
     def read_federation_ids(self) -> Iterator[str]:
         self.execute(
