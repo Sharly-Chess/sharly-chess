@@ -11,6 +11,7 @@
         <div class="modal-body">
             <form
                 id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                 hx-post="{{ url_for('admin-distribute-players', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals="js:{groups_by_id: JSON.stringify(groupsById)}"
                 hx-target="body"

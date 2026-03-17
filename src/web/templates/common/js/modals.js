@@ -1,4 +1,5 @@
 let ignoreNextModalClose = false;
+var modalForm;
 
 function closeModal() {
     ignoreNextModalClose = false;
@@ -50,9 +51,26 @@ function handleModalOpened(static) {
         modal.show();
     }
 
-    var fields = modal._element.getElementsByClassName("form-control");
-    if (fields.length > 0) {
-        fields[0].select(); // If the modal contains a form, set focus on the first field
+    
+    modalForm = modal._element.querySelector("#modal-form");
+    if (modalForm) {
+        let fields = modalForm.getElementsByClassName("form-control");
+        if (fields.length > 0) {
+            fields[0].select(); // If the modal contains a form, set focus on the first field
+        }
+
+        let eventListeners = $._data(modal._element, "events")
+        if (!eventListeners || !eventListeners.keydown) { // avoid duplicate eventListeners
+            $(modal._element).on("keydown", function(event) {
+                if (event.key == "Enter") {
+                    console.log(event);
+                    if (event.target.getAttribute("type") === "search") {
+                        return;
+                    }
+                    modalForm.dispatchEvent(new CustomEvent("enterKeypressFromModal"));
+                }
+            })
+        }
     }
 
     closeTooltips();

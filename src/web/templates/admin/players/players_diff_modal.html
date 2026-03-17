@@ -28,6 +28,7 @@
             {% endwith %}
             <form
                 id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                 hx-patch="{{ url_for('admin-event-players-update', event_uniq_id=admin_event.uniq_id, data_source_id=data_source.id) }}"
                 {% if admin_tournament %}
                     hx-vals='{"tournament_id": "{{ admin_tournament.id }}"}'

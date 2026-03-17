@@ -45,6 +45,7 @@
         </div>
         <form
             id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
             hx-patch="{{ url_for('admin-tournament-close-check-in', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"

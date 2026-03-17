@@ -15,6 +15,7 @@
         <div class="modal-body">
             <form
                 id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                 hx-patch="{{ url_for('admin-config-update') }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
