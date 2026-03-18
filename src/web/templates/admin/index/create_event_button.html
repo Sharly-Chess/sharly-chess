@@ -1,6 +1,7 @@
 <div class="btn-group dropdown">
     <button
         class="btn btn-primary text-nowrap {% if is_large %}btn-lg{% endif %}"
+        hx-trigger="click, SC_Plus from:body"
         hx-get="{{ url_for('admin-event-modal', admin_tab=admin_tab, action='create') }}"
         hx-target="body"
         hx-indicator="#please-wait"

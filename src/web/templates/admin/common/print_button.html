@@ -10,6 +10,7 @@
         hx-get="{{ url_for('documents-modal', event_uniq_id=admin_event.uniq_id) }}"
         hx-target="body"
         hx-indicator="#please-wait"
+        hx-trigger="click, SC_D from:body"
         data-bs-toggle="modal"
         data-bs-target="#modal-wrapper"
     >

@@ -105,6 +105,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'modal': 'admin-event-modal',
                     'action': FormAction.UPDATE,
                     'icon_class': 'bi-gear-fill',
+                    'shortcut': 'SC_C from:body',
                 },
             }
         if self.client.can_view_tournaments_tab:
@@ -118,6 +119,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     ),
                     'template': 'tournaments/tab.html',
                     'icon_class': 'bi-diagram-3-fill',
+                    'shortcut': 'SC_T from:body',
                 },
             }
         if self.client.can_view_players_tab:
@@ -128,6 +130,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     ),
                     'template': 'players/tab.html',
                     'icon_class': 'bi-people-fill',
+                    'shortcut': 'SC_Alt_P from:body, SC_J from:body',
                 },
             }
         if self.client.can_view_pairings_tab:
@@ -136,6 +139,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'title': _('Pairings'),
                     'template': 'pairings/tab.html',
                     'icon_class': 'bi-arrow-left-right',
+                    'shortcut': 'SC_Shift_P from:body, SC_A from:body',
                 },
             }
         if self.client.can_view_prizes_tab:
@@ -144,6 +148,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'title': _('Prizes'),
                     'template': 'prizes/tab.html',
                     'icon_class': 'bi-trophy-fill',
+                    'shortcut': 'SC_P from:body',
                 },
             }
         if self.client.can_manage_screens:
@@ -157,24 +162,28 @@ class BaseEventAdminWebContext(AdminWebContext):
                                 num=len(event.basic_screens_by_id) or '-'
                             ),
                             'template': 'screens/tab.html',
+                            'shortcut': 'SC_S from:body',
                         },
                         'admin-event-families-tab': {
                             'title': _('Families ({num})').format(
                                 num=len(event.families_by_id) or '-'
                             ),
                             'template': 'families/tab.html',
+                            'shortcut': 'SC_F from:body',
                         },
                         'admin-event-rotators-tab': {
                             'title': _('Rotators ({num})').format(
                                 num=len(event.rotators_by_id) or '-'
                             ),
                             'template': 'rotators/tab.html',
+                            'shortcut': 'SC_R from:body',
                         },
                         'admin-event-timers-tab': {
                             'title': _('Timers ({num})').format(
                                 num=len(event.timers_by_id) or '-'
                             ),
                             'template': 'timers/tab.html',
+                            'shortcut': 'SC_Shift_T from:body, SC_Shift_C from:body',
                         },
                         'admin-event-display-controllers-tab': {
                             'title': _('Display controllers ({num})').format(
