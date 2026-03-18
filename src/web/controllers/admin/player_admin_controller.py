@@ -2147,8 +2147,12 @@ class PlayerAdminController(BaseEventAdminController):
                 if count
                 else _('No players updated.'),
             )
-        web_context = PlayerAdminWebContext(request, reload_event=True)
-        return self._render_players_tab(web_context)
+        return HTMXTemplate(
+            template_name='common/empty.html',
+            re_swap='none',
+            trigger_event='request_refresh',
+            after='receive',
+        )
 
     @get(
         path='/event-players-diff-modal/{event_uniq_id:str}/{data_source_id:str}',
