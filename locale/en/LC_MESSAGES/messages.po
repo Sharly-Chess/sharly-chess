@@ -2260,6 +2260,9 @@ msgstr "Exempt"
 msgid "Exempt *** MALE"
 msgstr "Exempt"
 
+msgid "Existing players"
+msgstr ""
+
 msgid "Exit button:"
 msgstr ""
 
@@ -2898,6 +2901,9 @@ msgid "Invalid password."
 msgstr ""
 
 msgid "Invalid period:"
+msgstr ""
+
+msgid "Invalid rows"
 msgstr ""
 
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
@@ -5054,16 +5060,13 @@ msgstr ""
 msgid "Show Log"
 msgstr ""
 
-msgid "Show invalid rows"
-msgstr ""
-
 msgid "Show logging level"
 msgstr ""
 
-msgid "Show unmodified players"
+msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
 msgstr ""
 
-msgid "Show valid rows"
+msgid "Show unmodified players"
 msgstr ""
 
 msgid "Show warnings"
@@ -6214,6 +6217,9 @@ msgstr ""
 
 msgid "U{age_limit} *** YOUTH AGE CATEGORY"
 msgstr "U{age_limit}"
+
+msgid "Valid rows"
+msgstr ""
 
 msgid "Validate"
 msgstr ""

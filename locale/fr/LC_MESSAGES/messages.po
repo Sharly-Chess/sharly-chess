@@ -2260,6 +2260,9 @@ msgstr "Exempte"
 msgid "Exempt *** MALE"
 msgstr "Exempt"
 
+msgid "Existing players"
+msgstr "Joueur·euses existant·es"
+
 msgid "Exit button:"
 msgstr "Bouton de sortie :"
 
@@ -2899,6 +2902,9 @@ msgstr "Mot de passe invalide."
 
 msgid "Invalid period:"
 msgstr "Période invalide :"
+
+msgid "Invalid rows"
+msgstr "Lignes invalides"
 
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
 msgstr "Type invalide [{type}] pour le champ [{field}] (attendu : {expected})."
@@ -5056,17 +5062,14 @@ msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été
 msgid "Show Log"
 msgstr "Montrer les logs"
 
-msgid "Show invalid rows"
-msgstr "Afficher les lignes invalides"
-
 msgid "Show logging level"
 msgstr "Afficher le niveau de log"
 
+msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
+msgstr "Afficher les lignes des joueur·euses existant déjà dans le tournoi et les lignes dupliquées."
+
 msgid "Show unmodified players"
 msgstr "Afficher les joueur·euses non modifié·es"
-
-msgid "Show valid rows"
-msgstr "Afficher les lignes valides"
 
 msgid "Show warnings"
 msgstr "Afficher les avertissements"
@@ -6216,6 +6219,9 @@ msgstr "Ouzbékistan"
 
 msgid "U{age_limit} *** YOUTH AGE CATEGORY"
 msgstr "U{age_limit}"
+
+msgid "Valid rows"
+msgstr "Lignes valides"
 
 msgid "Validate"
 msgstr "Valider"
