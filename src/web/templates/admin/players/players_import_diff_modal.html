@@ -40,17 +40,38 @@
                         onclick="$('.valid-row').toggle(this.checked)"
                         checked
                     />
-                    <label class="form-check-label"> {{ _('Show valid rows') }}</label>
+                    <label class="form-check-label"> {{ _('Valid rows') }}</label>
                 </div>
                 <div class="form-check form-switch d-inline-block pe-3">
                     <input
                         class="form-check-input"
                         type="checkbox"
-                        onclick="$('.invalid-row').toggle(this.checked)"
+                        onclick="$('.invalid-row').toggle(this.checked);
+                            $('#duplicated-switch').prop('checked', this.checked);
+                            $('#duplicated-switch').attr('disabled', !this.checked);"
                         checked
                     />
-                    <label class="form-check-label"> {{ _('Show invalid rows') }}</label>
+                    <label class="form-check-label"> {{ _('Invalid rows') }}</label>
                 </div>
+                {% if not overwrite_players and admin_tournament.tournament_players %}
+                    <div class="form-check form-switch d-inline-block pe-3">
+                        <input
+                            id="duplicated-switch"
+                            class="form-check-input"
+                            type="checkbox"
+                            onclick="$('.duplicated-row').toggle(this.checked)"
+                            checked
+                        />
+                        <label class="form-check-label"> {{ _('Existing players') }}</label>
+                        <i
+                            class="bi-info-circle-fill ps-1"
+                            {{ macros.tooltip_attributes('', _(
+                                'Show the rows of players already existing in '
+                                'the tournament and the duplicated rows. '
+                            )) }}
+                        ></i>
+                    </div>
+                {% endif %}
             </div>
 
             <form
@@ -100,8 +121,9 @@
                     <tbody>
                         {% for index in range(row_count) %}
                             {% set has_error = index in import_errors_by_index %}
+                            {% set is_duplicated = index in duplicated_indexes %}
                             {% set data_source_player = data_source_players_by_index[index] %}
-                            <tr class="{% if has_error %}invalid-row{% else %}valid-row{% endif %}">
+                            <tr class="{% if has_error %}invalid-row{% else %}valid-row{% endif %}{% if is_duplicated %} duplicated-row{% endif %}">
                                 <td>
                                     <span class="d-flex">
                                         {% if has_error %}
@@ -153,7 +175,7 @@
                                         else ''
                                     ) %}
                                     <td
-                                        class="text-nowrap text-start mw-15em
+                                        class="text-nowrap text-start text-ellipsis mw-15em
                                             {% if column.is_informative %}informative-cell{% endif %}
                                             {% if has_error or column.is_informative %}text-secondary{% endif %}
                                             {% if error_message %}error-cell{% endif %}
