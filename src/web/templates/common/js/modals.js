@@ -63,7 +63,6 @@ function handleModalOpened(static) {
         if (!eventListeners || !eventListeners.keydown) { // avoid duplicate eventListeners
             $(modal._element).on("keydown", function(event) {
                 if (event.key == "Enter") {
-                    console.log(event);
                     if (event.target.getAttribute("type") === "search") {
                         return;
                     }
