@@ -1,4 +1,23 @@
+#, python-format
+msgid "%(string)s: %(value)s"
+msgstr ""
+
+msgid "All the tournaments are connected to a Sharly-Chess.com tournament."
+msgstr ""
+
+msgid "All the tournaments of the Sharly-Chess.com event are already imported."
+msgstr ""
+
 msgid "An error occurred, consult the logs for more details."
+msgstr ""
+
+msgid "An unexpected error occurred while trying to reach Sharly-Chess.com. Consult the logs for more details."
+msgstr ""
+
+msgid "Authorisation"
+msgstr ""
+
+msgid "Authorisation failed or expired."
 msgstr ""
 
 msgid "Authorization expired, please try again."
@@ -10,9 +29,146 @@ msgstr ""
 msgid "Authorization failed, possible CSRF attack!"
 msgstr ""
 
+msgid "Auto-synchronization"
+msgstr ""
+
+msgid "Auto-upload of the tournament has been planned."
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Consult the logs for more details."
+msgstr ""
+
+msgid "Data synchronisation"
+msgstr ""
+
+msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
+msgstr ""
+
 msgid "Event [{event}] successfully imported!"
 msgstr ""
 
+msgid "Event has been archived on Sharly-Chess.com, it no longer can be modified."
+msgstr ""
+
+msgid "Event is not connected to a Sharly-Chess.com event."
+msgstr ""
+
+msgid "Failure"
+msgstr ""
+
+msgid "Import Sharly-Chess.com tournaments that do not exist locally."
+msgstr ""
+
+msgid "Import new tournaments"
+msgstr ""
+
+msgid "Last synchronization"
+msgstr ""
+
+msgid "Last upload"
+msgstr ""
+
+msgid "Last upload ran successfully."
+msgstr ""
+
+msgid "Modified"
+msgstr ""
+
+msgid "Never synchronized"
+msgstr ""
+
+msgid "Never uploaded"
+msgstr ""
+
+msgid "No internet connection."
+msgstr ""
+
+msgid "Not started"
+msgstr ""
+
+msgid "OK"
+msgstr ""
+
+msgid "Ongoing"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Results upload"
+msgstr ""
+
+msgid "Retry"
+msgstr ""
+
 msgid "Sharly-Chess.com authorization canceled."
+msgstr ""
+
+msgid "Sharly-Chess.com event not found, it most likely has been deleted."
+msgstr ""
+
+msgid "Sharly-Chess.com is not reachable at the moment."
+msgstr ""
+
+msgid "Statuses"
+msgstr ""
+
+msgid "Success"
+msgstr ""
+
+#, python-format
+msgid "Synchronize automatically every %(delay)d minutes."
+msgstr ""
+
+msgid "Synchronize players"
+msgstr ""
+
+msgid "Tournament"
+msgstr ""
+
+msgid "Tournament has been modified since the last upload."
+msgstr ""
+
+msgid "Tournament has not started yet."
+msgstr ""
+
+msgid "Tournament is currently being uploaded."
+msgstr ""
+
+msgid "Upload"
+msgstr ""
+
+msgid "Upload all tournament results"
+msgstr ""
+
+#, python-format
+msgid "Upload automatically every %(delay)d minutes."
+msgstr ""
+
+msgid "Upload failed (reason: {reason})."
+msgstr ""
+
+msgid "Upload failed unexpectedly."
+msgstr ""
+
+msgid "Upload local tournaments"
+msgstr ""
+
+msgid "Upload started for all tournaments."
+msgstr ""
+
+msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
+msgstr ""
+
+msgid "no internet connection"
+msgstr ""
+
+msgid "re-authorisation required"
+msgstr ""
+
+msgid "tournament not found, most likely deleted"
 msgstr ""
 
