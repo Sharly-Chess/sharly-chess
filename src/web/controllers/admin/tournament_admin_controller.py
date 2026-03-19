@@ -12,7 +12,7 @@ from litestar.enums import RequestEncodingType
 from litestar.exceptions import NotFoundException, ClientException, ValidationException
 from litestar.params import Body
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
-from litestar.response import Template, File
+from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
 
 from common.exception import SharlyChessException, OptionError, ImporterError, FormError
@@ -238,6 +238,7 @@ class TournamentAdminController(BaseEventAdminController):
         web_context: TournamentAdminWebContext,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
+        redirect_to: str | None = None,
     ):
         admin_event = web_context.get_admin_event()
         pairing_systems = PairingSystemManager(admin_event).objects()
@@ -349,6 +350,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
                     'date_range': date_range,
                     'date_range_checkbox': date_range_default,
+                    'redirect_to': redirect_to,
                 }
                 | {field: variation for field, variation in pairing_variations.items()}
                 | plugin_form_data
@@ -641,9 +643,12 @@ class TournamentAdminController(BaseEventAdminController):
         request: HTMXRequest,
         action: FormAction,
         tournament_id: int,
+        redirect_to: str | None = None,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
-        template_context = self._prepare_tournament_modal_data(action, web_context)
+        template_context = self._prepare_tournament_modal_data(
+            action, web_context, redirect_to=redirect_to
+        )
 
         return self._admin_event_tournaments_render(
             web_context=web_context,
@@ -736,7 +741,7 @@ class TournamentAdminController(BaseEventAdminController):
         ],
         action: FormAction,
         tournament_id: int | None,
-    ) -> Template:
+    ) -> Template | Redirect:
         web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
         event = web_context.get_admin_event()
         stored_tournament, errors = self._admin_get_validated_tournament_data(
@@ -884,6 +889,9 @@ class TournamentAdminController(BaseEventAdminController):
 
                 tournament_id = tournament.id
 
+        redirect_to = WebContext.form_data_to_str(data, 'redirect_to')
+        if redirect_to:
+            return Redirect(redirect_to, status_code=303)
         web_context = TournamentAdminWebContext(
             request, tournament_id, reload_event=True
         )
@@ -910,7 +918,7 @@ class TournamentAdminController(BaseEventAdminController):
             dict[str, str],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._admin_tournament_update(
             request,
             action=FormAction.CREATE,
@@ -931,7 +939,7 @@ class TournamentAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         tournament_id: int,
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._admin_tournament_update(
             request,
             action=FormAction.CLONE,
@@ -952,7 +960,7 @@ class TournamentAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         tournament_id: int,
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._admin_tournament_update(
             request,
             action=FormAction.UPDATE,

@@ -1,0 +1,29 @@
+<div class="col-12 col-md-4 text-center my-2">
+    <div class="form-fields-container my-0">
+        <h5 style="font-size: 1.15em">
+            <span>{{ metadata.title }}</span>
+            <i
+                class="bi-info-circle-fill"
+                style="font-size: 80%"
+                {{ macros.tooltip_attributes('', metadata.tooltip) }}
+            ></i>
+        </h5>
+        {% for field, label in diff_fields.items() %}
+            {% include '/sce_conflict_diff_field.html' %}
+        {% endfor %}
+        <button
+            class="btn btn-outline-primary mt-2 mb-1"
+            hx-post="{{ url_for(
+                'sce-resolve-tournament-conflict',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=conflict_tournament.id,
+                choice=metadata.choice,
+            ) }}"
+            {% if sce_event_status.actions_disabled %}
+                disabled
+            {% endif %}
+        >
+            {{ _('Choose') }}
+        </button>
+    </div>
+</div>

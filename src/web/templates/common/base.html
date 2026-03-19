@@ -71,19 +71,16 @@
         {% else %}
             <div id="main-wrapper" class="{% block wrapper_class %}{% endblock wrapper_class %}" {% block ws %}{% endblock ws %}>
                 <div class="w-50 position-fixed bottom-0 end-0 me-3" style="z-index: 100">
-                        <div
-                            id="messages"
-                            {% if not request.headers.get('HX-Swap-Mode') == 'none' %}
-                                {# hx-preserve shouldn't be included in responses with an hx-swap of 'none', or they'll be removed.
-                                To prevent this the client should also set the HX-Swap-Mode header to 'none' so that the server
-                                knows not to include this in the response. #}
-                                hx-preserve
-                            {% endif %}
-                        >
+                    {% if not request.headers.get('HX-Swap-Mode') == 'none' %}
+                        {# hx-preserve shouldn't be included in responses with an hx-swap of 'none', or they'll be removed.
+                        To prevent this the client should also set the HX-Swap-Mode header to 'none' so that the server
+                        knows not to include this in the response. #}
+                        <div id="messages" hx-preserve>
                             {% if messages %}
                                 {% include '/common/messages.html' %}
                             {% endif %}
                         </div>
+                    {% endif %}
 
                     <div id="refresh-message"></div>
                 </div>
@@ -202,5 +199,10 @@
                 bootstrap.Tooltip.Default.allowList = allowList;
             }
         </script>
+    {% endif %}
+    {% if messages %}
+        <div id="messages" hx-swap-oob="beforeend">
+            {% include '/common/messages.html' %}
+        </div>
     {% endif %}
 </html>

@@ -11,13 +11,15 @@ from litestar.response import Redirect
 from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 
 from common import SharlyChessException
-from common.i18n import _
+from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.event import Event
 from data.loader import EventLoader
+from data.player import TournamentPlayer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
+from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_session import (
     SCESession,
@@ -25,7 +27,13 @@ from plugins.sce.sce_session import (
     SCE_SYNC_DELAY,
     SCE_UPLOAD_DELAY,
 )
-from plugins.sce.utils import SCETokens, SCEEventPluginData, SCEUtils
+from plugins.sce.utils import (
+    SCETokens,
+    SCEEventPluginData,
+    SCEUtils,
+    SCETournamentSyncData,
+    SCEPlayerSyncData,
+)
 from utils.date_time import format_datetime
 from web.controllers.admin.base_admin_controller import (
     BaseAdminController,
@@ -47,6 +55,7 @@ class SCEWebContext(AdminWebContext):
         self,
         request: HTMXRequest,
         tournament_id: int | None = None,
+        player_id: int | None = None,
         reload_event: bool = False,
     ):
         super().__init__(request, reload_event=reload_event)
@@ -57,10 +66,20 @@ class SCEWebContext(AdminWebContext):
                 self.tournament = event.tournaments_by_id[tournament_id]
             except KeyError:
                 raise NotFoundException(f'Tournament [{tournament_id}] not found.')
+        self.player: TournamentPlayer | None = None
+        if player_id:
+            try:
+                self.player = event.players_by_id[player_id].single_tournament_player
+            except KeyError:
+                raise NotFoundException(f'Player [{player_id}] not found.')
 
     def get_tournament(self) -> Tournament:
         assert self.tournament is not None
         return self.tournament
+
+    def get_player(self) -> TournamentPlayer:
+        assert self.player is not None
+        return self.player
 
     @property
     def sync_modal_context(self) -> dict[str, Any]:
@@ -79,6 +98,8 @@ class SCEWebContext(AdminWebContext):
         return self.table_context | {
             'new_sce_tournament_options': new_sce_tournament_options,
             'new_local_tournament_options': new_local_tournament_options,
+            'tournament_conflict_count': len(self.sce_tournaments_with_conflicts),
+            'player_conflict_count': len(self.sce_players_with_conflicts),
         }
 
     @property
@@ -91,6 +112,7 @@ class SCEWebContext(AdminWebContext):
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
+            'sce_event_status': SCEUtils.resolve_event_status(self.get_admin_event()),
             'tournament': self.tournament,
             'SCE_BASE_URL': SCE_BASE_URL,
             'SCE_SYNC_DELAY': SCE_SYNC_DELAY,
@@ -103,7 +125,7 @@ class SCEWebContext(AdminWebContext):
     def sce_tournaments(self) -> list[Tournament]:
         return [
             tournament
-            for tournament in self.get_admin_event().tournaments
+            for tournament in self.get_admin_event().sorted_tournaments
             if SCEUtils.get_tournament_plugin_data(tournament).id
         ]
 
@@ -119,9 +141,76 @@ class SCEWebContext(AdminWebContext):
             if tournament in self.allowed_tournaments
         ]
 
+    @property
+    def sce_tournaments_with_conflicts(self) -> list[Tournament]:
+        return [
+            tournament
+            for tournament in self.sce_tournaments
+            if SCEUtils.get_tournament_plugin_data(tournament).conflict_sync_data
+        ]
+
+    @property
+    def sce_players_with_conflicts(self) -> list[TournamentPlayer]:
+        players: list[TournamentPlayer] = []
+        for tournament in self.sce_tournaments:
+            for player in tournament.tournament_players:
+                plugin_data = SCEUtils.get_player_plugin_data(player)
+                if plugin_data.id and plugin_data.conflict_sync_data:
+                    players.append(player)
+        return players
+
 
 class SCEAdminController(BaseAdminController):
     OAUTH_CODE_VERIFIER_BY_STATE: dict[str, tuple[str, datetime]] = {}
+
+    @staticmethod
+    def _clean_outdated_tournament_conflicts(web_context: SCEWebContext):
+        """Clean all the outdated tournament conflicts.
+        Returns True if all the conflicts have been cleared."""
+        cleaned = 0
+        conflict_tournaments = web_context.sce_tournaments_with_conflicts
+        for tournament in conflict_tournaments:
+            plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+            if not plugin_data.conflict_sync_data or not plugin_data.last_sync_data:
+                continue
+            try:
+                plugin_data.conflict_sync_data.merge_with_other_sync_data(
+                    SCETournamentSyncData.from_tournament(tournament),
+                    plugin_data.last_sync_data,
+                )
+                plugin_data.conflict_sync_data = None
+                SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+                cleaned += 1
+            except SharlyChessException:
+                pass
+        if cleaned and cleaned == len(conflict_tournaments):
+            # TODO (Molrn) Resume event player sync
+            return True
+        return False
+
+    @staticmethod
+    def _clean_outdated_player_conflicts(web_context: SCEWebContext):
+        """Clean all the outdated player conflicts.
+        Returns True if all the conflicts have been cleared."""
+        cleaned = 0
+        conflict_players = web_context.sce_players_with_conflicts
+        for player in conflict_players:
+            plugin_data = SCEUtils.get_player_plugin_data(player)
+            if not plugin_data.conflict_sync_data or not plugin_data.last_sync_data:
+                continue
+            try:
+                plugin_data.conflict_sync_data.merge_with_other_sync_data(
+                    SCEPlayerSyncData.from_player(player),
+                    plugin_data.last_sync_data,
+                )
+                plugin_data.conflict_sync_data = None
+                SCEUtils.update_player_plugin_data(player, plugin_data)
+                cleaned += 1
+            except SharlyChessException:
+                pass
+        if cleaned and cleaned == len(conflict_players):
+            return True
+        return False
 
     @classmethod
     def trigger_oauth(
@@ -291,12 +380,18 @@ class SCEAdminController(BaseAdminController):
 
     @classmethod
     def _render_sync_modal(
-        cls, web_context: SCEWebContext, succes_message: str | None = None
+        cls,
+        web_context: SCEWebContext,
+        message: str | None = None,
+        is_error_message: bool = False,
     ) -> HTMXTemplate:
         return cls._render_modal(
             template_name='/sce_sync_modal.html',
             template_context=web_context.sync_modal_context
-            | {'success_message': succes_message},
+            | {
+                'message': message,
+                'message_type': 'error' if is_error_message else 'success',
+            },
         )
 
     @get(
@@ -309,12 +404,21 @@ class SCEAdminController(BaseAdminController):
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
         event = web_context.get_admin_event()
+        has_player_conflicts = bool(web_context.sce_players_with_conflicts)
         try:
             # Update the event status / ensure all links will work in case slugs have changed
-            SCESession(event).update_event_from_sce_event()
+            SCESession(event).update_event_from_sce_event(
+                update_tournament_conflicts=True,
+                update_player_conflicts=has_player_conflicts,
+            )
         except SharlyChessException as e:
             logger.error(str(e))
-        return self._render_sync_modal(web_context)
+        message: str | None = None
+        if self._clean_outdated_tournament_conflicts(web_context):
+            message = _('All tournament conflicts resolved, synchronisation resumed.')
+        if has_player_conflicts and self._clean_outdated_player_conflicts(web_context):
+            message = _('All player conflicts resolved.')
+        return self._render_sync_modal(web_context, message)
 
     @staticmethod
     def _render_upload_table(web_context: SCEWebContext) -> HTMXTemplate:
@@ -433,9 +537,224 @@ class SCEAdminController(BaseAdminController):
     )
     async def htmx_sce_sync_players(self, request: HTMXRequest) -> HTMXTemplate:
         web_context = SCEWebContext(request)
-        # TODO (Molrn) Implement player sync
-        message = 'Players synchronized.'
-        return self._render_sync_modal(web_context, message)
+        event = web_context.get_admin_event()
+        try:
+            if not SCESession(event).sync_event():
+                message = _(
+                    'Synchronization interrupted, resolve the conflicts to continue.'
+                )
+                is_error_message = True
+            else:
+                message = _('Players successfully synchronized.')
+                is_error_message = False
+        except SharlyChessException as e:
+            logger.error(e)
+            message = _('Synchronization failed, consult the logs for more details.')
+            is_error_message = True
+        return self._render_sync_modal(web_context, message, is_error_message)
+
+    @classmethod
+    def _render_tournament_conflict_modal(
+        cls, web_context: SCEWebContext, error_message: str | None = None
+    ) -> HTMXTemplate:
+        event = web_context.get_admin_event()
+        try:
+            SCESession(event).update_event_from_sce_event(
+                update_tournament_conflicts=True,
+            )
+        except SharlyChessException as e:
+            logger.error(str(e))
+        cls._clean_outdated_tournament_conflicts(web_context)
+        conflict_tournaments = web_context.sce_tournaments_with_conflicts
+        if not conflict_tournaments:
+            # TODO (Molrn) Resume player sync
+            return cls._render_sync_modal(
+                web_context, _('All tournament conflicts resolved.')
+            )
+        tournament = conflict_tournaments[0]
+        plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+        return cls._render_modal(
+            template_name='/sce_tournament_conflict_modal.html',
+            template_context=web_context.template_context
+            | {
+                'conflict_tournament': tournament,
+                'local_sync_data': SCETournamentSyncData.from_tournament(tournament),
+                'sce_sync_data': plugin_data.conflict_sync_data,
+                'last_sync_data': plugin_data.last_sync_data,
+                'event_plugin_data': SCEUtils.get_event_plugin_data(event),
+                'remaining_conflicts': len(conflict_tournaments),
+                'error_message': error_message,
+                'diff_fields': {
+                    'name': _('Name'),
+                    'type_str': _('Type'),
+                    'date_range_str': _('Dates'),
+                },
+            },
+        )
+
+    @get(
+        path='/sce/tournament-conflict-modal/{event_uniq_id:str}',
+        name='sce-tournament-conflict-modal',
+    )
+    async def htmx_sce_tournament_conflict_modal(
+        self, request: HTMXRequest
+    ) -> HTMXTemplate:
+        web_context = SCEWebContext(request)
+        return self._render_tournament_conflict_modal(web_context)
+
+    @post(
+        path='/sce/resolve-tournament-conflict/{event_uniq_id:str}/{tournament_id:int}/{choice:str}',
+        name='sce-resolve-tournament-conflict',
+    )
+    async def htmx_sce_resolve_tournament_conflict(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        choice: str,
+    ) -> HTMXTemplate:
+        web_context = SCEWebContext(request, tournament_id)
+        event = web_context.get_admin_event()
+        tournament = web_context.get_tournament()
+        plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+        if (
+            not plugin_data.id
+            or not plugin_data.last_sync_data
+            or not plugin_data.conflict_sync_data
+        ):
+            raise ClientException('Tournament is not a SC.com conflict tournament')
+
+        if choice == 'local':
+            resolve_sync_data = SCETournamentSyncData.from_tournament(tournament)
+        elif choice == 'sce':
+            resolve_sync_data = plugin_data.conflict_sync_data
+        elif choice == 'last-sync':
+            resolve_sync_data = plugin_data.last_sync_data
+        else:
+            raise ClientException(f'Unknown choice: {choice}')
+        error_message: str | None = None
+        try:
+            SCESession(event).update_sce_tournament(resolve_sync_data, plugin_data.id)
+            resolve_sync_data.augment_stored_tournament(
+                tournament.stored_tournament, event
+            )
+            plugin_data.last_sync_data = resolve_sync_data
+
+            plugin_data.conflict_sync_data = None
+            SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+        except SharlyChessException as e:
+            logger.error(e)
+            error_message = _('An error occurred, consult the logs for more details.')
+
+        return self._render_tournament_conflict_modal(web_context, error_message)
+
+    @classmethod
+    def _render_player_conflict_modal(
+        cls, web_context: SCEWebContext, error_message: str | None = None
+    ) -> HTMXTemplate:
+        event = web_context.get_admin_event()
+        try:
+            SCESession(event).update_event_from_sce_event(
+                update_player_conflicts=True,
+            )
+        except SharlyChessException as e:
+            logger.error(str(e))
+        cls._clean_outdated_player_conflicts(web_context)
+        conflict_players = web_context.sce_players_with_conflicts
+        if not conflict_players:
+            return cls._render_sync_modal(
+                web_context, _('All player conflicts resolved.')
+            )
+        player = conflict_players[0]
+        plugin_data = SCEUtils.get_player_plugin_data(player)
+        diff_fields = {
+            'last_name': _('Last name'),
+            'first_name': _('First name'),
+            'fide_id': _('FIDE ID'),
+            'national_id': '',
+            'year_of_birth': _('Year of birth'),
+            'title_str': _('Title'),
+            'club': _('Club'),
+            'rating_str': _('Rating'),
+        }
+        national_id_label = plugin_manager.hook_for_event(
+            event, 'get_sce_national_id_player_field_label'
+        )()
+        if national_id_label:
+            diff_fields['national_id'] = national_id_label
+        else:
+            del diff_fields['national_id']
+        return cls._render_modal(
+            template_name='/sce_player_conflict_modal.html',
+            template_context=web_context.template_context
+            | {
+                'conflict_player': player,
+                'local_sync_data': SCEPlayerSyncData.from_player(player),
+                'sce_sync_data': plugin_data.conflict_sync_data,
+                'last_sync_data': plugin_data.last_sync_data,
+                'event_plugin_data': SCEUtils.get_event_plugin_data(event),
+                'remaining_conflicts': len(conflict_players),
+                'error_message': error_message,
+                'diff_fields': diff_fields,
+            },
+        )
+
+    @get(
+        path='/sce/player-conflict-modal/{event_uniq_id:str}',
+        name='sce-player-conflict-modal',
+    )
+    async def htmx_sce_player_conflict_modal(
+        self, request: HTMXRequest
+    ) -> HTMXTemplate:
+        web_context = SCEWebContext(request)
+        return self._render_player_conflict_modal(web_context)
+
+    @post(
+        path='/sce/resolve-player-conflict/{event_uniq_id:str}/{player_id:int}/{choice:str}',
+        name='sce-resolve-player-conflict',
+    )
+    async def htmx_sce_resolve_player_conflict(
+        self,
+        request: HTMXRequest,
+        player_id: int,
+        choice: str,
+    ) -> HTMXTemplate:
+        web_context = SCEWebContext(request, player_id=player_id)
+        event = web_context.get_admin_event()
+        player = web_context.get_player()
+        plugin_data = SCEUtils.get_player_plugin_data(player)
+        if (
+            not plugin_data.id
+            or not plugin_data.last_sync_data
+            or not plugin_data.conflict_sync_data
+        ):
+            raise ClientException('Player is not a SC.com conflict player')
+
+        if choice == 'local':
+            resolve_sync_data = SCEPlayerSyncData.from_player(player)
+        elif choice == 'sce':
+            resolve_sync_data = plugin_data.conflict_sync_data
+        elif choice == 'last-sync':
+            resolve_sync_data = plugin_data.last_sync_data
+        else:
+            raise ClientException(f'Unknown choice: {choice}')
+        error_message: str | None = None
+        try:
+            session = SCESession(event)
+            session.update_sce_player(
+                resolve_sync_data,
+                plugin_data.conflict_sync_data.tournament_id,
+                plugin_data.id,
+            )
+            session.update_local_player(player, resolve_sync_data)
+            plugin_data.last_sync_data = resolve_sync_data
+
+            plugin_data.conflict_sync_data = None
+            SCEUtils.update_player_plugin_data(player, plugin_data)
+        except SharlyChessException as e:
+            logger.error(e)
+            error_message = _('An error occurred, consult the logs for more details.')
+
+        return self._render_player_conflict_modal(web_context, error_message)
 
     @post(
         path='/sce/import-tournaments/{event_uniq_id:str}',
@@ -450,13 +769,29 @@ class SCEAdminController(BaseAdminController):
         ],
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
+        event = web_context.get_admin_event()
         flat_data = WebContext.flatten_list_data(data)
         sce_tournament_ids = WebContext.form_data_to_list_str(
             flat_data, 'sce_tournament_ids'
         )
-        # TODO (Molrn) Implement tournaments import
-        message = f'Tournaments [{", ".join(sce_tournament_ids)}] imported.'
-        return self._render_sync_modal(web_context, message)
+        message: str | None = None
+        is_error_message = False
+        if sce_tournament_ids:
+            try:
+                SCESession(event).import_tournaments(sce_tournament_ids)
+                message = ngettext(
+                    '{count} tournament successfully imported.',
+                    '{count} tournaments successfully imported.',
+                    len(sce_tournament_ids),
+                ).format(count=len(sce_tournament_ids))
+                web_context = SCEWebContext(request, reload_event=True)
+            except SharlyChessException as e:
+                logger.error(e)
+                message = _(
+                    'Tournament import failed, consult the logs for more details.'
+                )
+                is_error_message = True
+        return self._render_sync_modal(web_context, message, is_error_message)
 
     @post(
         path='/sce/upload-local-tournaments/{event_uniq_id:str}',
