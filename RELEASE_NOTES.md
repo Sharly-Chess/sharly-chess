@@ -11,6 +11,7 @@
 ## Pairings
 
 - Display absent players on top of unpaired players on the Pairings tab (3.7.0)
+- Added a reminder to update the players' ratings before pairings on round #1 and for tournaments lasting on multiple FIDE periods (3.7.0)
 
 ## Tournaments
 

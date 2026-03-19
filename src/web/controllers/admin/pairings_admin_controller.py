@@ -8,6 +8,7 @@ from collections import defaultdict
 from typing import Annotated, Any, Optional
 
 from data.access_levels.actions import AuthAction
+from data.input_output import DataSourceManager
 from data.pairings.engines import BbpPairings
 from data.pairings.bbp_history import TournamentHistoryPlayer
 from litestar import delete, get, patch, put, post
@@ -1131,6 +1132,26 @@ class PairingsAdminController(BaseEventAdminController):
         tournament.check_in_player(tournament_player, bool(check_in))
         PlayerAdminController.publish_new_checkin(channels, tournament)
         return self._admin_event_pairings_render(web_context)
+
+    @get(
+        path='/pairings/ratings-warning-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='admin-pairings-ratings-warning-modal',
+    )
+    async def admin_pairings_ratings_warning_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'pairing-ratings-warning',
+                'data_sources': DataSourceManager().objects(),
+            },
+        )
 
     @get(
         path='/pairings/settings-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',

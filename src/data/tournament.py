@@ -221,6 +221,11 @@ class Tournament:
         return ''.join(lines)
 
     @property
+    def multiple_fide_periods(self) -> bool:
+        """Returns True if the tournament lasts more than one month, False otherwise."""
+        return (self.stop_date - self.start_date).days > 30
+
+    @property
     def location(self) -> str | None:
         return self.stored_tournament.location or self.event.location
 
