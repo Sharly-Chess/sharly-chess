@@ -257,15 +257,11 @@ class SCESession(Session):
         data: SCEPlayerSyncData,
         sce_tournament_id: str,
         sce_player_id: str,
-        set_canceled_status: bool = False,
     ):
-        payload = data.to_sce_data()
-        if set_canceled_status:
-            payload['status'] = 'cancelled'
         return requests.patch(
             self.registration_url(sce_tournament_id, sce_player_id),
             headers=self.api_headers,
-            json=payload,
+            json=data.to_sce_data(),
         )
 
     def update_sce_player(
@@ -273,7 +269,6 @@ class SCESession(Session):
         data: SCEPlayerSyncData,
         sce_tournament_id: str,
         sce_player_id: str,
-        set_canceled_status: bool = False,
     ):
         self._run_with_token_validation(
             partial(
@@ -281,7 +276,6 @@ class SCESession(Session):
                 data=data,
                 sce_tournament_id=sce_tournament_id,
                 sce_player_id=sce_player_id,
-                set_canceled_status=set_canceled_status,
             )
         )
 
@@ -401,8 +395,6 @@ class SCESession(Session):
                 f'Tournament forced to [{local_sync_data.tournament_id}] (SC.com)'
             )
 
-        # reset has_order to not take it into account in data comparison
-        sce_sync_data.has_order = None
         if local_sync_data == sce_sync_data:
             # Already synced
             plugin_data.last_sync_data = local_sync_data
@@ -720,9 +712,7 @@ class SCESession(Session):
                 for registration_data in tournament_data['registrations']:
                     sce_player_sync_data_by_id[registration_data['id']] = (
                         SCEPlayerSyncData.from_sce_data(
-                            registration_data,
-                            sce_tournament_id,
-                            with_order_status=True,
+                            registration_data, sce_tournament_id
                         )
                     )
 
@@ -801,9 +791,7 @@ class SCESession(Session):
                 continue
             for registration_data in tournament_data['registrations']:
                 sce_player_sync_data_by_id[registration_data['id']] = (
-                    SCEPlayerSyncData.from_sce_data(
-                        registration_data, sce_id, with_order_status=True
-                    )
+                    SCEPlayerSyncData.from_sce_data(registration_data, sce_id)
                 )
 
         local_sce_player_ids: list[str] = []
@@ -822,20 +810,10 @@ class SCESession(Session):
             if sce_player_id in local_sce_player_ids:
                 continue
             if sce_player_id in event_plugin_data.deleted_player_ids:
+                # Delete locally --> delete on SC.com
                 sce_tournament_id = sce_sync_data.tournament_id
-                if sce_sync_data.has_order:
-                    self.update_sce_player(
-                        sce_sync_data,
-                        sce_tournament_id,
-                        sce_player_id,
-                        set_canceled_status=True,
-                    )
-                    self._log_player_data_operation(
-                        sce_sync_data, 'Soft-deletion (SC.com)'
-                    )
-                else:
-                    self.delete_sce_player(sce_tournament_id, sce_player_id)
-                    self._log_player_data_operation(sce_sync_data, 'Deletion (SC.com)')
+                self.delete_sce_player(sce_tournament_id, sce_player_id)
+                self._log_player_data_operation(sce_sync_data, 'Deletion (SC.com)')
             else:
                 # New player --> create locally
                 tournament = SCEUtils.get_tournament_by_sce_id(

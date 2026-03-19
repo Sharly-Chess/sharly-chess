@@ -159,9 +159,6 @@ class SCEPlayerSyncData:
     rating_type: PlayerRatingType = PlayerRatingType.ESTIMATED
     national_id: str | None = None
 
-    # Not stored
-    has_order: bool | None = None
-
     @property
     def title_str(self) -> str:
         return self.title.short_name or '-'
@@ -175,7 +172,6 @@ class SCEPlayerSyncData:
         cls,
         data: dict[str, Any],
         tournament_id: str,
-        with_order_status: bool = False,
     ) -> Self:
         return cls(
             tournament_id=tournament_id,
@@ -190,7 +186,6 @@ class SCEPlayerSyncData:
             rating_type=PlayerRatingType.from_key(
                 data['rating_type'] or PlayerRatingType.ESTIMATED.key
             ),
-            has_order=bool(data['order_id']) if with_order_status else None,
         )
 
     @classmethod
@@ -300,7 +295,6 @@ class SCEEventPluginData(PluginData):
     auto_player_sync: bool = False
     tournament_names_by_id: dict[str, str] = field(default_factory=dict)
     last_sync_at: datetime | None = None
-    # TODO (Molrn) add ids to the list on player delete
     deleted_player_ids: list[str] = field(default_factory=list)
     tokens: SCETokens | None = None
 
