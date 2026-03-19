@@ -20,6 +20,7 @@ from plugins.chess_results.utils import (
     ChessResultsUtils,
 )
 from plugins.utils import PluginUtils
+from utils import Utils
 from web.channels import channels_plugin
 
 logger = get_logger()
@@ -127,7 +128,7 @@ class ChessResultsBackgroundUploader:
         cls, tournament: Tournament | StoredTournament
     ) -> bool:
         last_upload = cls.chess_results_last_upload(tournament)
-        return not last_upload or PluginUtils.tournament_results_modified_since(
+        return not last_upload or Utils.tournament_results_modified_since(
             tournament, last_upload
         )
 

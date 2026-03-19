@@ -17,6 +17,7 @@ from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.utils import FFEUtils, FfeEventPluginData, FfeTournamentPluginData
 from plugins.utils import PluginUtils
+from utils import Utils
 from web.channels import channels_plugin
 
 logger = get_logger()
@@ -134,7 +135,7 @@ class FfeBackgroundUploader:
     @classmethod
     def ffe_upload_needed(cls, tournament: Tournament | StoredTournament) -> bool:
         last_upload = cls.ffe_last_upload(tournament)
-        return not last_upload or PluginUtils.tournament_results_modified_since(
+        return not last_upload or Utils.tournament_results_modified_since(
             tournament, last_upload
         )
 
