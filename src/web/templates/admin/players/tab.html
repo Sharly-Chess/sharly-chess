@@ -41,7 +41,7 @@
                             {{ _('Update') }}
                         </button>
                         <ul class="dropdown-menu">
-                            {% with from_modal=false %}
+                            {% with from_modal=false, tab='players' %}
                                 {% include 'players_diff.html' %}
                             {% endwith %}
                         </ul>

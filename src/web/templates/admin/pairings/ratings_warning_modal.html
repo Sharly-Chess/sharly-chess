@@ -36,7 +36,7 @@
                     {{ _('Update') }}
                 </button>
                 <ul class="dropdown-menu">
-                    {% with from_modal=true, tournament=admin_tournament %}
+                    {% with from_modal=true, tournament=admin_tournament, tab='pairings' %}
                         {% include '../players/players_diff.html' %}
                     {% endwith %}
                 </ul>

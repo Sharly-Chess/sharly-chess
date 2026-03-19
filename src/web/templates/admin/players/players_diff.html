@@ -5,7 +5,8 @@
             hx-get="{{ url_for(
                 'admin-event-players-diff-modal',
                 event_uniq_id=admin_event.uniq_id,
-                data_source_id=data_source.id
+                data_source_id=data_source.id,
+                tab=tab,
             ) }}"
             {% if tournament %}
                 hx-vals='{"tournament_id": "{{ tournament.id }}"}'
