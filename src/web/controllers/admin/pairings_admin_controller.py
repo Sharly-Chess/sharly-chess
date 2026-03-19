@@ -835,8 +835,10 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         tournament.set_valid_pairing_settings()
         round_ = web_context.admin_round
-        tournament.pairing_variation.engine.generate_pairings(tournament, round_)
-        Message.success(request, _('Pairings successfully generated.'))
+        if tournament.pairing_variation.engine.generate_pairings(tournament, round_):
+            Message.success(request, _('Pairings successfully generated.'))
+        else:
+            Message.error(request, _('Pairing is not possible.'))
 
         web_context = PairingsAdminWebContext(
             request,
@@ -866,39 +868,43 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         tournament.set_valid_pairing_settings()
         round_ = web_context.admin_round
-        tournament.pairing_variation.engine.generate_pairings(tournament, round_, True)
-        unpaired_count = sum(
-            player.pairings[round_].needs_pairing
-            for player in tournament.tournament_players
-        )
-        if unpaired_count:
-            if unpaired_count == 1:
-                reason = (
-                    _('PAB is already assigned')
-                    if tournament.round_has_pab(round_)
-                    else _('player already received a PAB in a previous round')
+        if tournament.pairing_variation.engine.generate_pairings(
+            tournament, round_, True
+        ):
+            unpaired_count = sum(
+                player.pairings[round_].needs_pairing
+                for player in tournament.tournament_players
+            )
+            if unpaired_count:
+                if unpaired_count == 1:
+                    reason = (
+                        _('PAB is already assigned')
+                        if tournament.round_has_pab(round_)
+                        else _('player already received a PAB in a previous round')
+                    )
+                else:
+                    reason = _('some already played each other')
+                Message.warning(
+                    request,
+                    ' '.join(
+                        [
+                            _('Complementary pairings generated.'),
+                            ngettext(
+                                '{players} player remain unpaired',
+                                '{players} players remain unpaired',
+                                unpaired_count,
+                            ).format(players=unpaired_count),
+                            f'({reason}).',
+                        ]
+                    ),
                 )
             else:
-                reason = _('some already played each other')
-            Message.warning(
-                request,
-                ' '.join(
-                    [
-                        _('Complementary pairings generated.'),
-                        ngettext(
-                            '{players} player remain unpaired',
-                            '{players} players remain unpaired',
-                            unpaired_count,
-                        ).format(players=unpaired_count),
-                        f'({reason}).',
-                    ]
-                ),
-            )
+                Message.success(
+                    request,
+                    _('Complementary pairings successfully generated!'),
+                )
         else:
-            Message.success(
-                request,
-                _('Complementary pairings successfully generated!'),
-            )
+            Message.error(request, _('Pairing is not possible.'))
 
         web_context = PairingsAdminWebContext(
             request,
@@ -930,15 +936,23 @@ class PairingsAdminController(BaseEventAdminController):
             return self._admin_event_pairings_render(web_context, error_context)
 
         self._save_pairing_settings_data(tournament, data)
+        error: bool = False
         for round_ in range(1, tournament.rounds + 1):
-            tournament.pairing_variation.engine.generate_pairings(tournament, round_)
+            if not tournament.pairing_variation.engine.generate_pairings(
+                tournament, round_
+            ):
+                error = True
+                break
         tournament.set_current_round(1)
-        Message.success(
-            request,
-            _('Pairings generated for all rounds of tournament [{tournament}].').format(
-                tournament=tournament.name
-            ),
-        )
+        if error:
+            Message.error(request, _('Pairing is not possible.'))
+        else:
+            Message.success(
+                request,
+                _(
+                    'Pairings generated for all rounds of tournament [{tournament}].'
+                ).format(tournament=tournament.name),
+            )
 
         web_context = PairingsAdminWebContext(
             request, tournament_id=tournament_id, reload_event=True
@@ -1194,10 +1208,12 @@ class PairingsAdminController(BaseEventAdminController):
             return self._admin_event_pairings_render(web_context, error_context)
 
         self._save_pairing_settings_data(tournament, data)
-        tournament.pairing_variation.engine.generate_pairings(
+        if tournament.pairing_variation.engine.generate_pairings(
             tournament, web_context.admin_round
-        )
-        Message.success(request, _('Pairings successfully generated.'))
+        ):
+            Message.success(request, _('Pairings successfully generated.'))
+        else:
+            Message.error(request, _('Pairing is not possible.'))
 
         web_context = PairingsAdminWebContext(
             request,

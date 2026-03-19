@@ -3944,6 +3944,9 @@ msgstr ""
 msgid "Pairing information for round %(round)d"
 msgstr ""
 
+msgid "Pairing is not possible."
+msgstr ""
+
 msgid "Pairing not found."
 msgstr ""
 
