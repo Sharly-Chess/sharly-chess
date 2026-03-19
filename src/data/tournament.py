@@ -271,16 +271,16 @@ class Tournament:
             return self.stored_tournament.last_rounds_no_byes
 
     @property
-    def last_update(self) -> datetime | None:
+    def last_update(self) -> datetime:
         return self.stored_tournament.last_update
 
     @property
-    def last_player_update(self) -> datetime | None:
-        return self.stored_tournament.last_player_update
+    def last_player_update(self) -> datetime:
+        return self.stored_tournament.last_player_update or self.last_update
 
     @property
-    def last_pairing_update(self) -> datetime | None:
-        return self.stored_tournament.last_pairing_update
+    def last_pairing_update(self) -> datetime:
+        return self.stored_tournament.last_pairing_update or self.last_update
 
     @property
     def rounds(self) -> int:

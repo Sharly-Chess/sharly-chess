@@ -4,9 +4,13 @@
 
 - Rename _Upload_ menu to _Data Transfer_ (3.7.0)
 
-## Player
+## Players
 
 - Add _rating_ and _rating_type_ CSV columns (3.7.0)
+
+## Pairings
+
+- Display absent players on top of unpaired players on the Pairings tab (3.7.0)
 
 ## Tournaments
 
