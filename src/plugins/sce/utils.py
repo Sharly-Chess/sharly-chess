@@ -39,6 +39,7 @@ from plugins.sce.sce_tournament_status import (
     AuthFailureSCETournamentStatus,
 )
 from plugins.utils import PluginData, PluginUtils
+from utils import Utils
 from utils.entity import EntityManager
 from web.urls import build_get_url
 
@@ -284,7 +285,6 @@ class SCEUtils:
     def resolve_tournament_upload_statuses(
         cls, tournament: Tournament
     ) -> list[SCETournamentStatus]:
-        from datetime import datetime
         from plugins.sce.sce_background_uploader import is_upload_ongoing
 
         event_plugin_data = cls.get_event_plugin_data(tournament.event)
@@ -292,10 +292,8 @@ class SCEUtils:
         statuses: list[SCETournamentStatus] = []
         is_ongoing = is_upload_ongoing(tournament)
         last_upload = plugin_data.last_upload_at
-        is_modified = last_upload is None or last_upload < max(
-            tournament.last_update or datetime.min,
-            tournament.last_player_update or datetime.min,
-            tournament.last_pairing_update or datetime.min,
+        is_modified = last_upload is None or Utils.tournament_results_modified_since(
+            tournament, last_upload
         )
         if plugin_data.upload_status:
             statuses.append(
@@ -305,7 +303,6 @@ class SCEUtils:
                 statuses.append(ModifiedSCETournamentStatus())
         else:
             statuses.append(NeverUploadedSCETournamentStatus())
-            is_modified = True
         if is_ongoing:
             statuses.append(OngoingSCETournamentStatus())
         elif event_plugin_data.auto_upload and plugin_data.auto_upload and is_modified:

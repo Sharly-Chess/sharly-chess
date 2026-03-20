@@ -69,7 +69,7 @@ msgid "Last synchronization"
 msgstr "Dernière synchronisation"
 
 msgid "Last upload"
-msgstr "Dernier téléversement"
+msgstr "Dernière mise en ligne"
 
 msgid "Last upload ran successfully."
 msgstr "La dernière mise en ligne a réussi."

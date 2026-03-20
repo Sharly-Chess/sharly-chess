@@ -17,6 +17,7 @@ from plugins.sce.sce_tournament_status import (
     NotFoundFailureSCETournamentStatus,
     SuccessSCETournamentStatus,
     UnexpectedHTTPFailureSCETournamentStatus,
+    SCETournamentStatus,
 )
 from plugins.sce.utils import SCEUtils, SCETournamentPluginData
 from web.channels import channels_plugin
@@ -28,19 +29,6 @@ _ONGOING_TOURNAMENT_IDS: set[str] = set()
 
 def _result_key(event_uniq_id: str, tournament_id: int) -> str:
     return f'{event_uniq_id}:{tournament_id}'
-
-
-def upload_needs_needed(tournament: Tournament) -> bool:
-    """Return True if the tournament has changed since the last upload."""
-    plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
-    last_upload = plugin_data.last_upload_at
-    if last_upload is None:
-        return True
-    return last_upload < max(
-        tournament.last_update or datetime.min,
-        tournament.last_player_update or datetime.min,
-        tournament.last_pairing_update or datetime.min,
-    )
 
 
 def is_upload_ongoing(tournament: Tournament) -> bool:
@@ -86,9 +74,7 @@ def upload_tournament(
             return
 
         if not NetworkMonitor.connected():
-            _set_upload_status(
-                tournament, NetworkFailureSCETournamentStatus.static_id()
-            )
+            _set_upload_status(tournament, NetworkFailureSCETournamentStatus())
             return
 
         event_plugin_data = SCEUtils.get_event_plugin_data(event)
@@ -111,26 +97,23 @@ def upload_tournament(
         if status_code == 200:
             _set_upload_status(
                 tournament,
-                SuccessSCETournamentStatus.static_id(),
+                SuccessSCETournamentStatus(),
                 last_upload_at=datetime.now(),
             )
             logger.info('%sSCE upload successful.', tournament.log_prefix)
         elif status_code == 404:
-            _set_upload_status(
-                tournament, NotFoundFailureSCETournamentStatus.static_id()
-            )
+            _set_upload_status(tournament, NotFoundFailureSCETournamentStatus())
             logger.error('%sSCE tournament not found (404).', tournament.log_prefix)
         else:
-            _set_upload_status(
-                tournament, UnexpectedHTTPFailureSCETournamentStatus.static_id()
-            )
+            _set_upload_status(tournament, UnexpectedHTTPFailureSCETournamentStatus())
             logger.error(
                 '%sSCE upload failed with HTTP %s: %s',
                 tournament.log_prefix,
                 status_code,
                 body,
             )
-    except Exception:
+    except Exception as e:
+        raise e
         if event is not None and not SCEUtils.get_event_plugin_data(event).tokens:
             logger.warning(
                 'SCE upload skipped for [%s/%s] — refresh token revoked, re-auth required.',
@@ -138,14 +121,10 @@ def upload_tournament(
                 tournament_id,
             )
             if tournament is not None:
-                _set_upload_status(
-                    tournament, AuthFailureSCETournamentStatus.static_id()
-                )
+                _set_upload_status(tournament, AuthFailureSCETournamentStatus())
             return
         if tournament is not None:
-            _set_upload_status(
-                tournament, UnexpectedHTTPFailureSCETournamentStatus.static_id()
-            )
+            _set_upload_status(tournament, UnexpectedHTTPFailureSCETournamentStatus())
         logger.exception(
             'Unexpected error uploading tournament [%s/%s] to SCE.',
             event_uniq_id,
@@ -158,13 +137,13 @@ def upload_tournament(
 
 def _set_upload_status(
     tournament: Tournament,
-    status_id: str,
+    status: SCETournamentStatus,
     last_upload_at: datetime | None = None,
 ) -> None:
     plugin_data: SCETournamentPluginData = SCEUtils.get_tournament_plugin_data(
         tournament
     )
-    plugin_data.upload_status = status_id
+    plugin_data.upload_status = status.id
     if last_upload_at is not None:
         plugin_data.last_upload_at = last_upload_at
     SCEUtils.update_tournament_plugin_data(tournament, plugin_data)

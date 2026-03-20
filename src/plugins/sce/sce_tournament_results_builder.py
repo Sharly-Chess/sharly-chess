@@ -1,5 +1,6 @@
 """Builds the tournament results payload for the SCE platform API."""
 
+from dataclasses import dataclass
 from typing import Any
 
 from data.tie_breaks.cutters import CutTieBreakCutter, MedianTieBreakCutter
@@ -13,6 +14,7 @@ from data.tie_breaks.options import (
 from data.tie_breaks.tie_breaks import TieBreak
 from data.tournament import Tournament
 from plugins.ffe.ffe_tie_breaks import BasePapiTieBreak
+from plugins.manager import plugin_manager
 from plugins.sce.sce_mappers import (
     SCEPairingSystem,
     SCEPlayerGender,
@@ -97,44 +99,77 @@ def _tiebreak_to_dict(tie_break: TieBreak) -> dict[str, Any]:
     return result
 
 
-def _default_display_config(tournament: Tournament) -> dict[str, Any]:
-    ranking_columns: list[dict[str, Any]] = [
-        {'key': 'rank'},
-        {'key': 'name'},
-        {'key': 'rating'},
-        {'key': 'points'},
+@dataclass
+class SCEUploadColumn:
+    id: str
+    label: str | None = None
+    is_custom: bool = False
+
+    def __post_init__(self):
+        if self.is_custom and self.label is None:
+            raise ValueError('Custom columns require a label')
+
+    def to_dict(self) -> dict[str, Any]:
+        data = {'key': f'custom:{self.id}' if self.is_custom else self.id}
+        if self.label is not None:
+            data['label'] = self.label
+        return data
+
+
+def _build_display_config(tournament: Tournament) -> dict[str, Any]:
+    event = tournament.event
+    player_columns: list[SCEUploadColumn] = [
+        SCEUploadColumn('pairingNumber'),
+        SCEUploadColumn('name'),
+        SCEUploadColumn('rating'),
+        SCEUploadColumn('ageCategory'),
+        SCEUploadColumn('federation'),
+        SCEUploadColumn('club'),
+    ]
+
+    plugin_manager.hook_for_event(event, 'alter_sce_upload_player_columns')(
+        columns=player_columns
+    )
+
+    ranking_columns: list[SCEUploadColumn] = [
+        SCEUploadColumn('rank'),
+        SCEUploadColumn('name'),
+        SCEUploadColumn('rating'),
+        SCEUploadColumn('ageCategory'),
+        SCEUploadColumn('federation'),
+        SCEUploadColumn('club'),
+        SCEUploadColumn('points'),
     ]
     for i in range(len(tournament.tie_breaks)):
-        ranking_columns.append({'key': f'tb:{i}'})
+        ranking_columns.append(SCEUploadColumn(f'tb:{i}'))
+    plugin_manager.hook_for_event(event, 'alter_sce_upload_ranking_columns')(
+        columns=ranking_columns
+    )
+
+    white_pairing_columns: list[SCEUploadColumn] = [
+        SCEUploadColumn('points'),
+        SCEUploadColumn('name'),
+        SCEUploadColumn('rating'),
+    ]
+    black_pairing_columns: list[SCEUploadColumn] = [
+        SCEUploadColumn('name'),
+        SCEUploadColumn('rating'),
+        SCEUploadColumn('points'),
+    ]
 
     return {
-        'playerColumns': [
-            {'key': 'pairingNumber'},
-            {'key': 'name'},
-            {'key': 'rating'},
-            {'key': 'ageCategory'},
-            {'key': 'federation'},
-            {'key': 'club'},
-        ],
-        'rankingColumns': ranking_columns,
+        'playerColumns': [column.to_dict() for column in player_columns],
+        'rankingColumns': [column.to_dict() for column in ranking_columns],
         'pairings': [
             {'type': 'column', 'key': 'table'},
             {
                 'type': 'white',
-                'columns': [
-                    {'key': 'points'},
-                    {'key': 'name'},
-                    {'key': 'rating'},
-                ],
+                'columns': [column.to_dict() for column in white_pairing_columns],
             },
             {'type': 'column', 'key': 'result'},
             {
                 'type': 'black',
-                'columns': [
-                    {'key': 'name'},
-                    {'key': 'rating'},
-                    {'key': 'points'},
-                ],
+                'columns': [column.to_dict() for column in black_pairing_columns],
             },
         ],
     }
@@ -179,24 +214,28 @@ def _build_players(tournament: Tournament) -> list[dict[str, Any]]:
                 p['ratingType'] = rating_type_str
         if player.fide_id:
             p['fideId'] = str(player.fide_id)
-        if player.category:
+        if player.category.name:
             p['ageCategory'] = player.category.name
-        if player.federation and player.federation.name:
+        if player.federation.name:
             p['federation'] = player.federation.name
-        if player.club and player.club.name:
+        if player.club.name:
             p['club'] = player.club.name
         if player.year_of_birth:
             p['yearOfBirth'] = player.year_of_birth
-        sex = SCEPlayerGender.get_outer_value(player.gender)
-        if sex:
-            p['sex'] = sex
+        gender = SCEPlayerGender.get_outer_value(player.gender)
+        if gender:
+            p['gender'] = gender
 
-        try:
-            sce_player_data = SCEUtils.get_player_plugin_data(player)
-            if sce_player_data.id:
-                p['registrationId'] = sce_player_data.id
-        except (KeyError, AssertionError):
-            pass
+        sce_player_data = SCEUtils.get_player_plugin_data(player)
+        if sce_player_data.id:
+            p['registrationId'] = sce_player_data.id
+
+        custom_fields: dict[str, Any] = {}
+        plugin_manager.hook_for_event(
+            player.event, 'add_sce_upload_player_custom_fields'
+        )(player=player, custom_fields=custom_fields)
+        if custom_fields:
+            p['custom'] = custom_fields
 
         players.append(p)
     return players
@@ -224,6 +263,7 @@ def _build_pairings(tournament: Tournament) -> list[dict[str, Any]]:
             if board.fixed_number:
                 entry['fixedTable'] = board.fixed_number
 
+            # TODO (Molrn) Add pairing custom fields to support Handicap games
             pairings.append(entry)
     return pairings
 
@@ -258,7 +298,7 @@ def build_tournament_results(
     tournament.set_tournament_players_pairing_numbers()
 
     tiebreaks = [_tiebreak_to_dict(tb) for tb in tournament.tie_breaks]
-    display_config = _default_display_config(tournament)
+    display_config = _build_display_config(tournament)
 
     tournament_meta: dict[str, Any] = {
         'name': tournament.name,
