@@ -291,7 +291,7 @@ class Player:
         return (
             _('Unpaired *** WOMAN')
             if self.gender == PlayerGender.WOMAN
-            else _('Unpaired *** MALE')
+            else _('Unpaired *** MAN')
         )
 
     @property
@@ -299,7 +299,7 @@ class Player:
         return (
             _('Exempt *** WOMAN')
             if self.gender == PlayerGender.WOMAN
-            else _('Exempt *** MALE')
+            else _('Exempt *** MAN')
         )
 
 
