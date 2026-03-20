@@ -7,6 +7,7 @@
 ## Players
 
 - Add _rating_ and _rating_type_ CSV columns (3.7.0)
+- Clarify gender naming (3.7.0)
 
 ## Pairings
 
