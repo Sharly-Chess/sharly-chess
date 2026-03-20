@@ -462,7 +462,7 @@ class FRASchoolsPlugin(Plugin):
 
     @staticmethod
     def _replace_sce_upload_origin_columns(columns: list[SCEUploadColumn]):
-        school = SCEUploadColumn('fra_school', _('French School'), is_custom=True)
+        school = SCEUploadColumn('fra_school', _('French school'), is_custom=True)
         PluginUtils.insert_on_attr_equals(columns, school, 'id', 'federation')
         new_columns = [
             column
