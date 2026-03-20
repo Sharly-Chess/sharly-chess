@@ -176,6 +176,13 @@ def should_schedule_auto_upload(
     return True
 
 
+def remove_scheduled_upload(tournament: Tournament):
+    key = _tournament_result_key(tournament)
+    thread = _TIMEOUT_THREADS.get(key)
+    if thread and thread.is_alive():
+        thread.cancel()
+
+
 def schedule_upload(tournament: Tournament, force: bool = False):
     """Launch a background thread to upload this tournament's results."""
     key = _tournament_result_key(tournament)

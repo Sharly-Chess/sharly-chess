@@ -30,6 +30,7 @@ from plugins.sce.sce_session import (
 from plugins.sce.sce_background_uploader import (
     schedule_upload,
     upload_event_tournaments,
+    remove_scheduled_upload,
 )
 from plugins.sce.utils import (
     SCETokens,
@@ -493,6 +494,13 @@ class SCEAdminController(BaseAdminController):
         plugin_data = SCEUtils.get_event_plugin_data(event)
         plugin_data.auto_upload = WebContext.form_data_to_bool(data, 'auto_upload')
         SCEUtils.update_event_plugin_data(event, plugin_data)
+        for tournament in web_context.sce_tournaments:
+            if not SCEUtils.get_tournament_plugin_data(tournament).auto_upload:
+                continue
+            if plugin_data.auto_upload:
+                schedule_upload(tournament)
+            else:
+                remove_scheduled_upload(tournament)
         return self._render_upload_table(web_context)
 
     @patch(
@@ -516,6 +524,10 @@ class SCEAdminController(BaseAdminController):
             data, f'tournament_auto_upload_{tournament.id}'
         )
         SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+        if plugin_data.auto_upload:
+            schedule_upload(tournament)
+        else:
+            remove_scheduled_upload(tournament)
         return HTMXTemplate(
             template_name='/sce_tournament_statuses.html',
             context=web_context.table_context,
