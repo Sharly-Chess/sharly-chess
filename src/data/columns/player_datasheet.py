@@ -216,12 +216,12 @@ class GenderColumn(DatasheetColumn):
         return 'gender'
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.gender.value
+        return player.gender.key
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         try:
-            PlayerGender(value)
-            stored_player.gender = value
+            gender = PlayerGender.from_key(value)
+            stored_player.gender = gender.value
         except ValueError:
             raise SharlyChessException(
                 _('Unknown value (expected: {expected}).').format(
