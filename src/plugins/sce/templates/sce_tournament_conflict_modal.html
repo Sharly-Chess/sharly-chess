@@ -54,8 +54,7 @@
                 {% with display_data=last_sync_data, compare_data=last_sync_data, metadata={
                     'title': _('Last synchronisation'),
                     'tooltip': _(
-                        'Data as it was when the tournament '
-                        'was last synchronized (%(last_sync_str)s).',
+                        'Data as it was when it was last synchronized (%(last_sync_str)s).',
                         last_sync_str=event_plugin_data.last_sync_str,
                     ),
                     'choice': 'last-sync',
@@ -63,7 +62,7 @@
                     {% include 'sce_tournament_conflict_diff.html' %}
                 {% endwith %}
                 {% with display_data=sce_sync_data, compare_data=local_sync_data, metadata={
-                    'title': _('Sharly-Chess.com'),
+                    'title': 'Sharly-Chess.com',
                     'tooltip': _('Data as it currently is on Sharly-Chess.com.'),
                     'choice': 'sce',
                 } %}
@@ -84,7 +83,7 @@
                     ) }}"
                 >
                     <i class="bi-pencil-fill pe-1"></i>
-                    {{ _('Update the tournament') }}
+                    {{ _('Edit the tournament') }}
                 </button>
             </div>
         </div>

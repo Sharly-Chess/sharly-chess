@@ -1,12 +1,22 @@
 #, python-format
+msgid "%(string)s:"
+msgstr "%(string)s :"
+
+#, python-format
 msgid "%(string)s: %(value)s"
 msgstr "%(string)s : %(value)s"
 
-msgid "All the tournaments are connected to a Sharly-Chess.com tournament."
-msgstr "Tous les tournois sont connectés à un tournoi Sharly-Chess.com."
+msgid "All player conflicts resolved."
+msgstr "Tous les conflits de joueur·euses sont résolus."
+
+msgid "All the local tournaments are connected to a Sharly-Chess.com tournament."
+msgstr "Tous les tournois locaux sont connectés à un tournoi Sharly-Chess.com."
 
 msgid "All the tournaments of the Sharly-Chess.com event are already imported."
 msgstr "Tous les tournois de l'évènement Sharly-Chess.com ont déjà été importés."
+
+msgid "All tournament conflicts resolved, synchronisation resumed."
+msgstr "Tous les conflits de tournois sont résolus, reprise de la synchronisation."
 
 msgid "An error occurred, consult the logs for more details."
 msgstr "Une erreur s'est produite, consultez les logs pour plus de détails."
@@ -29,20 +39,48 @@ msgstr "Autorisation échouée, consultez les logs pour plus de détails."
 msgid "Authorization failed, possible CSRF attack!"
 msgstr "Autorisation échouée, possible attaque CSRF !"
 
-msgid "Auto-synchronization"
+msgid "Auto-synchronisation"
 msgstr "Synchronisation automatique"
 
 msgid "Auto-upload of the tournament has been planned."
 msgstr "La mise en ligne automatique du tournoi a été planifiée."
 
+msgid "Choose"
+msgstr "Choisir"
+
 msgid "Close"
 msgstr "Fermer"
+
+msgid "Club"
+msgstr "Club"
+
+msgid "Conflict"
+msgstr "Conflit"
 
 msgid "Consult the logs for more details."
 msgstr "Consultez les logs pour plus de détails."
 
+msgid "Data as it currently is on Sharly-Chess.com."
+msgstr "Les données actuelles sur Sharly-Chess.com."
+
+msgid "Data as it currently is on the local Sharly Chess application."
+msgstr "Les données actuelles sur l'application Sharly Chess locale."
+
+#, python-format
+msgid "Data as it was when it was last synchronized (%(last_sync_str)s)."
+msgstr "Les données telles qu'elle étaient lors de la dernière synchronisation (%(last_sync_str)s)."
+
 msgid "Data synchronisation"
 msgstr "Synchronisation des données"
+
+msgid "Dates"
+msgstr "Dates"
+
+msgid "Edit the player"
+msgstr "Modifier le·la joueur·euse"
+
+msgid "Edit the tournament"
+msgstr "Modifier le tournoi"
 
 msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
 msgstr "L'évènement [{event}] a été connecté avec succès à Sharly-Chess.com !"
@@ -56,8 +94,14 @@ msgstr "L'évènement a été archivé sur Sharly-Chess.com, il ne peut plus êt
 msgid "Event is not connected to a Sharly-Chess.com event."
 msgstr "L'évènement n'est pas connecté à une évènement Sharly-chess.com."
 
+msgid "FIDE ID"
+msgstr "Identifiant FIDE"
+
 msgid "Failure"
 msgstr "Erreur"
+
+msgid "First name"
+msgstr "Prénom"
 
 msgid "Import Sharly-Chess.com tournaments that do not exist locally."
 msgstr "Importer les tournois Sharly-Chess qui n'existent pas localement."
@@ -65,7 +109,10 @@ msgstr "Importer les tournois Sharly-Chess qui n'existent pas localement."
 msgid "Import new tournaments"
 msgstr "Importer de nouveaux tournois"
 
-msgid "Last synchronization"
+msgid "Last name"
+msgstr "Nom"
+
+msgid "Last synchronisation"
 msgstr "Dernière synchronisation"
 
 msgid "Last upload"
@@ -74,8 +121,14 @@ msgstr "Dernière mise en ligne"
 msgid "Last upload ran successfully."
 msgstr "La dernière mise en ligne a réussi."
 
+msgid "Local"
+msgstr "Local"
+
 msgid "Modified"
 msgstr "Modifié"
+
+msgid "Name"
+msgstr "Nom"
 
 msgid "Never synchronized"
 msgstr "Jamais synchronisé"
@@ -98,6 +151,23 @@ msgstr "En cours"
 msgid "Pending"
 msgstr "En attente"
 
+msgid "Players successfully synchronized."
+msgstr "Joueur·euses synchronisé·es avec succès."
+
+msgid "Rating"
+msgstr "Classement"
+
+msgid "Remaining conflicts"
+msgstr "Conflits restants"
+
+#, python-format
+msgid "Resolve player conflicts (%(count)d)"
+msgstr "Résoudre les conflits de joueur·euses (%(count)d)"
+
+#, python-format
+msgid "Resolve tournament conflicts (%(count)d)"
+msgstr "Résoudre les conflits de tournois (%(count)d)"
+
 msgid "Results upload"
 msgstr "Mise en ligne des résultats"
 
@@ -113,11 +183,29 @@ msgstr "L'évènement Sharly-Chess.com a été supprimé, il a probablement ét�
 msgid "Sharly-Chess.com is not reachable at the moment."
 msgstr "Sharly-Chess.com n'est pas accessible à cet instant."
 
+msgid "Sharly-Chess.com player conflicts"
+msgstr "Conflits de joueur·euses Sharly-Chess.com"
+
+msgid "Sharly-Chess.com tournament conflicts"
+msgstr "Conflits de tournois Sharly-Chess.com"
+
 msgid "Statuses"
 msgstr "Statuts"
 
 msgid "Success"
 msgstr "Succès"
+
+msgid "Synchronisation conflicts happen when the same data has been modified in both the local application and Sharly-Chess.com. To resolve them, you must either update the data to a non-conflictual state, or choose one version of the data to apply everywhere."
+msgstr "Les conflits de synchronisation se produisent lorsque les mêmes données ont été modifiées à la fois dans l'application locale et dans Sharly-Chess.com. Pour les résoudre, vous devez soit mettre à jour les données manuellement, soit choisir une version des données à appliquer partout."
+
+msgid "Synchronisation failed, consult the logs for more details."
+msgstr "Synchronisation échouée, consultez les logs pour plus de détails."
+
+msgid "Synchronisation interrupted, resolve the conflicts to continue."
+msgstr "Synchronisation interrompue, résolvez les conflits pour continuer."
+
+msgid "Synchronisation is unavailable while there are conflicts."
+msgstr "La synchronisation n'est pas disponible lorsqu'il y a des conflits."
 
 #, python-format
 msgid "Synchronize automatically every %(delay)d minutes."
@@ -125,6 +213,9 @@ msgstr "Synchroniser automatiquement toutes les %(delay)d minutes."
 
 msgid "Synchronize players"
 msgstr "Synchroniser les joueur·euses"
+
+msgid "Title"
+msgstr "Titre"
 
 msgid "Tournament"
 msgstr "Tournoi"
@@ -135,8 +226,14 @@ msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
 msgid "Tournament has not started yet, no results to upload."
 msgstr "Le tournoi n'a pas encore démarré, aucun résultat à mettre en ligne."
 
+msgid "Tournament import failed, consult the logs for more details."
+msgstr "L'import de tournoi a échoué, consultez les logs pour plus de détails."
+
 msgid "Tournament is currently being uploaded."
 msgstr "Le tournoi est en cours de mise en ligne."
+
+msgid "Type"
+msgstr "Type"
 
 msgid "Upload"
 msgstr "Mettre en ligne"
@@ -163,6 +260,9 @@ msgstr "Mise en ligne démarrée pour tous les tournois."
 msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
 msgstr "Mettre en ligne sur Sharly-Chess.com les tournois qui n'existent que localement."
 
+msgid "Year of birth"
+msgstr "Année de naissance"
+
 msgid "no internet connection"
 msgstr "aucune connection à internet"
 
@@ -171,4 +271,9 @@ msgstr "ré-autorisation requise"
 
 msgid "tournament not found, most likely deleted"
 msgstr "tournoi non trouvé, probablement supprimé"
+
+msgid "{count} tournament successfully imported."
+msgid_plural "{count} tournaments successfully imported."
+msgstr[0] "{count} tournoi importé avec succès."
+msgstr[1] "{count} tournois importés avec succès."
 

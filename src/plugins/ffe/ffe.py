@@ -953,7 +953,7 @@ class FfePlugin(Plugin):
 
     @hookimpl
     def get_sce_national_id_player_field_label(self) -> str | None:
-        return _('FFE licence number')
+        return _('FFE Licence no. *** LICENCE NUMBER')
 
     @hookimpl
     def add_sce_upload_player_custom_fields(

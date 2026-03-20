@@ -559,7 +559,7 @@ class SCEAdminController(BaseAdminController):
         try:
             if not SCESession(event).sync_event():
                 message = _(
-                    'Synchronization interrupted, resolve the conflicts to continue.'
+                    'Synchronisation interrupted, resolve the conflicts to continue.'
                 )
                 is_error_message = True
             else:
@@ -567,7 +567,7 @@ class SCEAdminController(BaseAdminController):
                 is_error_message = False
         except SharlyChessException as e:
             logger.error(e)
-            message = _('Synchronization failed, consult the logs for more details.')
+            message = _('Synchronisation failed, consult the logs for more details.')
             is_error_message = True
         return self._render_sync_modal(web_context, message, is_error_message)
 
@@ -587,7 +587,8 @@ class SCEAdminController(BaseAdminController):
         if not conflict_tournaments:
             # TODO (Molrn) Resume player sync
             return cls._render_sync_modal(
-                web_context, _('All tournament conflicts resolved.')
+                web_context,
+                _('All tournament conflicts resolved, synchronisation resumed.'),
             )
         tournament = conflict_tournaments[0]
         plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
