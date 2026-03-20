@@ -11,7 +11,7 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 <span class="pe-1">
-                    {{ _('Sharly-Chess.com') }}
+                    Sharly-Chess.com
                 </span>
                 <a href="{{ sce_utils.event_url(admin_event) }}" target="_blank" style="font-size: 70%">
                     <i class="bi bi-box-arrow-up-right" ></i>
@@ -19,15 +19,13 @@
             </h2>
         </div>
         <div class="modal-body">
-            {% if sce_event_status.alert_message %}
-                {% include '/sce_event_status_alert.html' %}
-            {% endif %}
+            {% include '/sce_event_status_section.html' %}
             {% if success_message %}
                 {% with type='success', message=success_message %}
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
-            <h4 class="{% if sce_event_status.alert_message %}mt-3{% endif %}">
+            <h4 class="mt-0">
                 {{ _('Data synchronisation') }}
             </h4>
             <div class="row px-4">

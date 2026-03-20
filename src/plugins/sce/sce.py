@@ -1,11 +1,17 @@
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING, Iterable, Any
 
 from packaging.version import Version
 
 from data.event import Event
-from plugins.hookspec import hookimpl
+from data.loader import EventLoader
+from plugins.hookspec import hookimpl, hookspec
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_admin_controller import SCEAdminController
+from plugins.sce.sce_background_uploader import (
+    should_schedule_auto_upload,
+    schedule_upload,
+)
+from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.sce.utils import (
     SCETournamentPluginData,
     SCEEventPluginData,
@@ -20,7 +26,24 @@ from plugins.utils import (
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
+    from data.player import TournamentPlayer
     from database.sqlite.event.event_store import StoredEvent, StoredTournament
+
+
+class SCEPluginHooks:
+    @hookspec
+    def add_sce_upload_player_custom_fields(
+        self, custom_fields: dict[str, Any], player: 'TournamentPlayer'
+    ):
+        """Add custom fields to the SCE uploaded players."""
+
+    @hookspec
+    def alter_sce_upload_player_columns(self, columns: list[SCEUploadColumn]):
+        """Alter the player columns of the SCE results upload."""
+
+    @hookspec
+    def alter_sce_upload_ranking_columns(self, columns: list[SCEUploadColumn]):
+        """Alter the ranking columns of the SCE results upload."""
 
 
 class SCEPlugin(HiddenPlugin):
@@ -52,6 +75,10 @@ class SCEPlugin(HiddenPlugin):
     def controllers(self) -> list[type[BaseController]]:
         return [SCEAdminController]
 
+    @property
+    def hookspecs(self) -> type | None:
+        return SCEPluginHooks
+
     def used_by_stored_tournament(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ) -> bool:
@@ -72,6 +99,19 @@ class SCEPlugin(HiddenPlugin):
     @hookimpl
     def get_tournament_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, SCETournamentPluginData
+
+    @hookimpl
+    def on_tournament_data_updated(
+        self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
+    ):
+        # This hook being called for most database writes, it needs to be optimized
+        if not should_schedule_auto_upload(stored_event, stored_tournament):
+            return
+        event = EventLoader().load_event(stored_event.uniq_id)
+        tournament_id = stored_tournament.id
+        assert tournament_id is not None
+        tournament = event.tournaments_by_id[tournament_id]
+        schedule_upload(tournament)
 
     # ---------------------------------------------------------------------------------
     # Player

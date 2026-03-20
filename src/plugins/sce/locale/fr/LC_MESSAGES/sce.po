@@ -1,5 +1,24 @@
+#, python-format
+msgid "%(string)s: %(value)s"
+msgstr "%(string)s : %(value)s"
+
+msgid "All the tournaments are connected to a Sharly-Chess.com tournament."
+msgstr "Tous les tournois sont connectés à un tournoi Sharly-Chess.com."
+
+msgid "All the tournaments of the Sharly-Chess.com event are already imported."
+msgstr "Tous les tournois de l'évènement Sharly-Chess.com ont déjà été importés."
+
 msgid "An error occurred, consult the logs for more details."
 msgstr "Une erreur s'est produite, consultez les logs pour plus de détails."
+
+msgid "An unexpected error occurred while trying to reach Sharly-Chess.com. Consult the logs for more details."
+msgstr "Une erreur inattendue s'est produite en essayant de contacter Sharly-Chess.com, consultez les logs pour plus d'informations."
+
+msgid "Authorisation"
+msgstr "Autorisation"
+
+msgid "Authorisation failed or expired."
+msgstr "L'autorisation a échoué ou expiré."
 
 msgid "Authorization expired, please try again."
 msgstr "Autorisation expirée, merci de réessayer."
@@ -10,9 +29,146 @@ msgstr "Autorisation échouée, consultez les logs pour plus de détails."
 msgid "Authorization failed, possible CSRF attack!"
 msgstr "Autorisation échouée, possible attaque CSRF !"
 
+msgid "Auto-synchronization"
+msgstr "Synchronisation automatique"
+
+msgid "Auto-upload of the tournament has been planned."
+msgstr "La mise en ligne automatique du tournoi a été planifiée."
+
+msgid "Close"
+msgstr "Fermer"
+
+msgid "Consult the logs for more details."
+msgstr "Consultez les logs pour plus de détails."
+
+msgid "Data synchronisation"
+msgstr "Synchronisation des données"
+
+msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
+msgstr "L'évènement [{event}] a été connecté avec succès à Sharly-Chess.com !"
+
 msgid "Event [{event}] successfully imported!"
 msgstr "L'évènement [{event}] a été importé avec succès !"
 
+msgid "Event has been archived on Sharly-Chess.com, it no longer can be modified."
+msgstr "L'évènement a été archivé sur Sharly-Chess.com, il ne peut plus être modifié."
+
+msgid "Event is not connected to a Sharly-Chess.com event."
+msgstr "L'évènement n'est pas connecté à une évènement Sharly-chess.com."
+
+msgid "Failure"
+msgstr "Erreur"
+
+msgid "Import Sharly-Chess.com tournaments that do not exist locally."
+msgstr "Importer les tournois Sharly-Chess qui n'existent pas localement."
+
+msgid "Import new tournaments"
+msgstr "Importer de nouveaux tournois"
+
+msgid "Last synchronization"
+msgstr "Dernière synchronisation"
+
+msgid "Last upload"
+msgstr "Dernière mise en ligne"
+
+msgid "Last upload ran successfully."
+msgstr "La dernière mise en ligne a réussi."
+
+msgid "Modified"
+msgstr "Modifié"
+
+msgid "Never synchronized"
+msgstr "Jamais synchronisé"
+
+msgid "Never uploaded"
+msgstr "Jamais mis en ligne"
+
+msgid "No internet connection."
+msgstr "Pas de connection à internet."
+
+msgid "Not started"
+msgstr "Non démarré"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Ongoing"
+msgstr "En cours"
+
+msgid "Pending"
+msgstr "En attente"
+
+msgid "Results upload"
+msgstr "Mise en ligne des résultats"
+
+msgid "Retry"
+msgstr "Ré-essayer"
+
 msgid "Sharly-Chess.com authorization canceled."
 msgstr "Authorisation Sharly-Chess.com annulée."
+
+msgid "Sharly-Chess.com event not found, it most likely has been deleted."
+msgstr "L'évènement Sharly-Chess.com a été supprimé, il a probablement été supprimé."
+
+msgid "Sharly-Chess.com is not reachable at the moment."
+msgstr "Sharly-Chess.com n'est pas accessible à cet instant."
+
+msgid "Statuses"
+msgstr "Statuts"
+
+msgid "Success"
+msgstr "Succès"
+
+#, python-format
+msgid "Synchronize automatically every %(delay)d minutes."
+msgstr "Synchroniser automatiquement toutes les %(delay)d minutes."
+
+msgid "Synchronize players"
+msgstr "Synchroniser les joueur·euses"
+
+msgid "Tournament"
+msgstr "Tournoi"
+
+msgid "Tournament has been modified since the last upload."
+msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
+
+msgid "Tournament has not started yet, no results to upload."
+msgstr "Le tournoi n'a pas encore démarré, aucun résultat à mettre en ligne."
+
+msgid "Tournament is currently being uploaded."
+msgstr "Le tournoi est en cours de mise en ligne."
+
+msgid "Upload"
+msgstr "Mettre en ligne"
+
+msgid "Upload all tournament results"
+msgstr "Mettre en ligne tous les résultats"
+
+#, python-format
+msgid "Upload automatically every %(delay)d minutes."
+msgstr "Mettre en ligne automatiquement toutes les %(delay)d minutes."
+
+msgid "Upload failed (reason: {reason})."
+msgstr "La mise en ligne a échoué (raison : {reason})."
+
+msgid "Upload failed unexpectedly."
+msgstr "La mise en ligne a échoué de manière inattendue."
+
+msgid "Upload local tournaments"
+msgstr "Mettre en ligne les tournois locaux"
+
+msgid "Upload started for all tournaments."
+msgstr "Mise en ligne démarrée pour tous les tournois."
+
+msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
+msgstr "Mettre en ligne sur Sharly-Chess.com les tournois qui n'existent que localement."
+
+msgid "no internet connection"
+msgstr "aucune connection à internet"
+
+msgid "re-authorisation required"
+msgstr "ré-autorisation requise"
+
+msgid "tournament not found, most likely deleted"
+msgstr "tournoi non trouvé, probablement supprimé"
 
