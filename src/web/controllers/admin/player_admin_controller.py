@@ -18,7 +18,7 @@ from litestar import get, patch, delete, post, Response
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, File
+from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
@@ -2091,7 +2091,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/players-update/{event_uniq_id:str}/{data_source_id:str}',
+        path='/players-update/{event_uniq_id:str}/{data_source_id:str}/{tab:str}',
         name='admin-event-players-update',
         guards=[ActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
@@ -2103,7 +2103,8 @@ class PlayerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         data_source_id: str,
-    ) -> Template:
+        tab: str,
+    ) -> Template | Redirect:
         web_context = PlayerAdminWebContext(request, data_source_id=data_source_id)
         event = web_context.get_admin_event()
         data_source = web_context.get_admin_data_source()
@@ -2147,11 +2148,13 @@ class PlayerAdminController(BaseEventAdminController):
                 if count
                 else _('No players updated.'),
             )
-        web_context = PlayerAdminWebContext(request, reload_event=True)
-        return self._render_players_tab(web_context)
+        redirect_url = request.app.route_reverse(
+            f'admin-event-{tab}-tab', event_uniq_id=event.uniq_id
+        )
+        return Redirect(redirect_url, status_code=303)
 
     @get(
-        path='/event-players-diff-modal/{event_uniq_id:str}/{data_source_id:str}',
+        path='/event-players-diff-modal/{event_uniq_id:str}/{data_source_id:str}/{tab:str}',
         name='admin-event-players-diff-modal',
         guards=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
@@ -2159,6 +2162,7 @@ class PlayerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data_source_id: str,
+        tab: str,
         tournament_id: int | None = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(
@@ -2195,6 +2199,7 @@ class PlayerAdminController(BaseEventAdminController):
             'updated_field_ids': updated_field_ids,
             'player_comparators': player_comparators,
             'update_enabled': bool(updated_field_ids),
+            'tab': tab,
         }
         return self._admin_base_event_render(template_context)
 
