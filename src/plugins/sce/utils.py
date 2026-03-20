@@ -1,3 +1,4 @@
+import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from functools import partial
@@ -11,6 +12,7 @@ from data.event import Event
 from data.player import Player
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredTournament
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_event_status import (
@@ -260,26 +262,41 @@ class SCEUtils:
         event: Event,
         plugin_data: SCEEventPluginData,
         write: bool = True,
+        write_stored_object: bool = False,
     ):
         event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         event.plugin_data[PLUGIN_NAME] = plugin_data
         if write:
             with EventDatabase(event.uniq_id, True) as database:
-                database.update_stored_event(event.stored_event)
+                if write_stored_object:
+                    database.update_stored_event(event.stored_event)
+                else:
+                    database.execute(
+                        "UPDATE info SET plugin_data = json_set(plugin_data,'$.sce', json(?))",
+                        (json.dumps(plugin_data.to_stored_value()),),
+                    )
 
     @staticmethod
     def update_tournament_plugin_data(
         tournament: Tournament,
         plugin_data: SCETournamentPluginData,
         write: bool = True,
+        write_stored_object: bool = False,
     ):
         tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
             plugin_data.to_stored_value()
         )
         tournament.plugin_data[PLUGIN_NAME] = plugin_data
         if write:
-            with EventDatabase(tournament.event.uniq_id, True) as database:
-                database.update_stored_tournament(tournament.stored_tournament)
+            with EventDatabase(tournament.event.uniq_id, write=True) as database:
+                if write_stored_object:
+                    database.update_stored_tournament(tournament.stored_tournament)
+                else:
+                    database.execute(
+                        'UPDATE tournament SET plugin_data = '
+                        "json_set(plugin_data,'$.sce', json(?)) WHERE id = ?",
+                        (json.dumps(plugin_data.to_stored_value()), tournament.id),
+                    )
 
     @classmethod
     def resolve_tournament_upload_statuses(
@@ -287,25 +304,26 @@ class SCEUtils:
     ) -> list[SCETournamentStatus]:
         from plugins.sce.sce_background_uploader import is_upload_ongoing
 
+        is_ongoing = is_upload_ongoing(tournament)
+        if not tournament.started:
+            return [NotStartedSCETournamentStatus()]
+        if is_ongoing:
+            return [OngoingSCETournamentStatus()]
+
         event_plugin_data = cls.get_event_plugin_data(tournament.event)
         plugin_data = cls.get_tournament_plugin_data(tournament)
         statuses: list[SCETournamentStatus] = []
-        is_ongoing = is_upload_ongoing(tournament)
         last_upload = plugin_data.last_upload_at
-        is_modified = last_upload is None or Utils.tournament_results_modified_since(
-            tournament, last_upload
-        )
+        is_modified = cls.tournament_modified_since_last_upload(tournament)
         if plugin_data.upload_status:
             statuses.append(
                 _SCETournamentStatusManager().get_object(plugin_data.upload_status)
             )
-            if is_modified and not is_ongoing:
-                statuses.append(ModifiedSCETournamentStatus())
-        else:
+        if not last_upload:
             statuses.append(NeverUploadedSCETournamentStatus())
-        if is_ongoing:
-            statuses.append(OngoingSCETournamentStatus())
-        elif event_plugin_data.auto_upload and plugin_data.auto_upload and is_modified:
+        elif is_modified:
+            statuses.append(ModifiedSCETournamentStatus())
+        if event_plugin_data.auto_upload and plugin_data.auto_upload and is_modified:
             statuses.append(PendingSCETournamentStatus())
         return statuses
 
@@ -320,6 +338,27 @@ class SCEUtils:
             return InvalidRefreshTokenSCEEventStatus()
 
         return _SCEEventStatusManager().get_object(plugin_data.status)
+
+    @classmethod
+    def tournament_modified_since_last_upload(
+        cls, tournament: Tournament | StoredTournament
+    ) -> bool:
+        last_upload = cls.get_tournament_last_upload(tournament)
+        return not last_upload or Utils.tournament_results_modified_since(
+            tournament, last_upload
+        )
+
+    @classmethod
+    def get_tournament_last_upload(
+        cls, tournament: Tournament | StoredTournament
+    ) -> datetime | None:
+        if isinstance(tournament, Tournament):
+            plugin_data = cls.get_tournament_plugin_data(tournament)
+        else:
+            plugin_data = SCETournamentPluginData.from_stored_value(
+                tournament.plugin_data.get(PLUGIN_NAME, {})
+            )
+        return plugin_data.last_upload_at
 
     @classmethod
     def event_url(cls, event: Event) -> str:

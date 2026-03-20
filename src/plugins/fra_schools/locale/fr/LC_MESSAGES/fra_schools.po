@@ -48,6 +48,9 @@ msgstr "Metre à jour l'établissement scolaire sélectionné."
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
 
+msgid "French School"
+msgstr ""
+
 msgid "French School Competitions"
 msgstr "Compétitions scolaires françaises"
 

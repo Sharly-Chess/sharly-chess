@@ -227,12 +227,12 @@ class SCESession(Session):
                 refresh_token=data['refresh_token'],
                 expires_at=datetime.now() + timedelta(seconds=data['expires_in']),
             )
+            self._update_event_tokens(tokens)
             logger.debug(
                 'SCE access token refreshed for [%s], new expiry %s.',
                 self.event.uniq_id,
                 tokens.expires_at,
             )
-            self._update_event_tokens(tokens)
 
     def _run_with_token_validation(
         self,
@@ -356,12 +356,12 @@ class SCESession(Session):
         from plugins.ffe.ffe import FfePlugin
         from plugins.sce.sce import SCEPlugin
 
+        response = self._run_with_token_validation(
+            self._get_event_request, skip_validation=True
+        )
         stored_event = self.event.stored_event
         plugin_data = SCEEventPluginData.from_stored_value(
             stored_event.plugin_data.get(PLUGIN_NAME, {})
-        )
-        response = self._run_with_token_validation(
-            self._get_event_request, skip_validation=True
         )
         if response.status_code != HTTP_200_OK:
             plugin_data.status = (

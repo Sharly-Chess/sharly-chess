@@ -132,7 +132,7 @@ msgstr ""
 msgid "Tournament has been modified since the last upload."
 msgstr ""
 
-msgid "Tournament has not started yet."
+msgid "Tournament has not started yet, no results to upload."
 msgstr ""
 
 msgid "Tournament is currently being uploaded."

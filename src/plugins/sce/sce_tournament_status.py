@@ -56,7 +56,7 @@ class NotStartedSCETournamentStatus(SCETournamentStatus):
 
     @property
     def tooltip(self) -> str | None:
-        return _('Tournament has not started yet.')
+        return _('Tournament has not started yet, no results to upload.')
 
     @property
     def css_classes(self) -> str:

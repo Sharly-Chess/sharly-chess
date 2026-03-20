@@ -430,7 +430,7 @@ class SCEAdminController(BaseAdminController):
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
-        schedule_upload(tournament)
+        schedule_upload(tournament, True)
         return self._render_upload_table(web_context)
 
     @post(

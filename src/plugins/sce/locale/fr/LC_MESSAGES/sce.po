@@ -132,8 +132,8 @@ msgstr "Tournoi"
 msgid "Tournament has been modified since the last upload."
 msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
 
-msgid "Tournament has not started yet."
-msgstr "Le tournoi n'est pas encore démarré."
+msgid "Tournament has not started yet, no results to upload."
+msgstr "Le tournoi n'a pas encore démarré, aucun résultat à mettre en ligne."
 
 msgid "Tournament is currently being uploaded."
 msgstr "Le tournoi est en cours de mise en ligne."
@@ -142,7 +142,7 @@ msgid "Upload"
 msgstr "Mettre en ligne"
 
 msgid "Upload all tournament results"
-msgstr "Mettre tous les résultats"
+msgstr "Mettre en ligne tous les résultats"
 
 #, python-format
 msgid "Upload automatically every %(delay)d minutes."
@@ -158,7 +158,7 @@ msgid "Upload local tournaments"
 msgstr "Mettre en ligne les tournois locaux"
 
 msgid "Upload started for all tournaments."
-msgstr "Mise ne ligne démarrée pour tous les tournois."
+msgstr "Mise en ligne démarrée pour tous les tournois."
 
 msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
 msgstr "Mettre en ligne sur Sharly-Chess.com les tournois qui n'existent que localement."

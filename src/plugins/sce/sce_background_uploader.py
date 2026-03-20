@@ -1,7 +1,8 @@
 """Background uploader for SCE tournament results."""
 
-from datetime import datetime
-from threading import Thread
+from datetime import datetime, timedelta
+from functools import partial
+from threading import Thread, Timer
 
 from common.i18n import set_locale
 from common.logger import get_logger
@@ -9,7 +10,9 @@ from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.loader import EventLoader
 from data.tournament import Tournament
-from plugins.sce.sce_session import SCESession
+from database.sqlite.event.event_store import StoredEvent, StoredTournament
+from plugins.sce import PLUGIN_NAME
+from plugins.sce.sce_session import SCESession, SCE_UPLOAD_DELAY
 from plugins.sce.sce_tournament_results_builder import build_tournament_results
 from plugins.sce.sce_tournament_status import (
     AuthFailureSCETournamentStatus,
@@ -20,24 +23,32 @@ from plugins.sce.sce_tournament_status import (
     SCETournamentStatus,
 )
 from plugins.sce.utils import SCEUtils, SCETournamentPluginData
+from plugins.utils import PluginUtils
 from web.channels import channels_plugin
 
 logger = get_logger()
+get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
+
 
 _ONGOING_TOURNAMENT_IDS: set[str] = set()
+_TIMEOUT_THREADS: dict[str, Timer] = {}
 
 
 def _result_key(event_uniq_id: str, tournament_id: int) -> str:
     return f'{event_uniq_id}:{tournament_id}'
 
 
+def _tournament_result_key(tournament: Tournament) -> str:
+    return f'{tournament.event.uniq_id}:{tournament.id}'
+
+
 def is_upload_ongoing(tournament: Tournament) -> bool:
     """Return True if a background upload is currently running for this tournament."""
-    key = _result_key(tournament.event.uniq_id, tournament.id)
+    key = _tournament_result_key(tournament)
     return key in _ONGOING_TOURNAMENT_IDS
 
 
-def _publish_upload_event() -> None:
+def _publish_upload_event():
     if channels_plugin:
         channels_plugin.publish({'event': 'upload-event', 'data': ''}, ['ws'])
 
@@ -45,7 +56,7 @@ def _publish_upload_event() -> None:
 def upload_tournament(
     event_uniq_id: str,
     tournament_id: int,
-) -> None:
+):
     """Upload a tournament's results to the SCE platform. Runs in a background thread."""
     set_locale(SharlyChessConfig().locale)
 
@@ -114,11 +125,6 @@ def upload_tournament(
             )
     except Exception:
         if event is not None and not SCEUtils.get_event_plugin_data(event).tokens:
-            logger.warning(
-                'SCE upload skipped for [%s/%s] — refresh token revoked, re-auth required.',
-                event_uniq_id,
-                tournament_id,
-            )
             if tournament is not None:
                 _set_upload_status(tournament, AuthFailureSCETournamentStatus())
             return
@@ -148,17 +154,52 @@ def _set_upload_status(
     SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
 
 
-def schedule_upload(tournament: Tournament) -> None:
+def should_schedule_auto_upload(
+    stored_event: StoredEvent,
+    stored_tournament: StoredTournament,
+) -> bool:
+    # Check if the auto upload is enabled
+    if not get_data(stored_event.plugin_data, 'auto_upload'):
+        return False
+    if not get_data(stored_tournament.plugin_data, 'auto_upload'):
+        return False
+
+    assert stored_tournament.id is not None
+    key = _result_key(stored_event.uniq_id, stored_tournament.id)
+    thread = _TIMEOUT_THREADS.get(key)
+    if thread and thread.is_alive():
+        # There's already a thread running for this tournament
+        return False
+    if not SCEUtils.tournament_modified_since_last_upload(stored_tournament):
+        # Latest version already uploaded
+        return False
+    return True
+
+
+def schedule_upload(tournament: Tournament, force: bool = False):
     """Launch a background thread to upload this tournament's results."""
-    key = _result_key(tournament.event.uniq_id, tournament.id)
+    key = _tournament_result_key(tournament)
     if key in _ONGOING_TOURNAMENT_IDS:
         return
-    thread = Thread(
-        target=upload_tournament,
+
+    last_upload_at = SCEUtils.get_tournament_last_upload(tournament)
+    wait_time = 0.1
+    if (
+        not force
+        and last_upload_at
+        and datetime.now() < last_upload_at + timedelta(minutes=SCE_UPLOAD_DELAY)
+    ):
+        elapsed = (datetime.now() - last_upload_at).total_seconds()
+        wait_time = max(SCE_UPLOAD_DELAY * 60 - elapsed, 0.1)
+
+    timer = Timer(
+        wait_time,
+        upload_tournament,
         args=(tournament.event.uniq_id, tournament.id),
-        daemon=True,
     )
-    thread.start()
+    key = _tournament_result_key(tournament)
+    _TIMEOUT_THREADS[key] = timer
+    timer.start()
 
 
 def upload_event_tournaments(tournaments: list[Tournament]) -> None:
@@ -167,7 +208,8 @@ def upload_event_tournaments(tournaments: list[Tournament]) -> None:
         t
         for t in tournaments
         if SCEUtils.get_tournament_plugin_data(t).id
-        and _result_key(t.event.uniq_id, t.id) not in _ONGOING_TOURNAMENT_IDS
+        and t.started
+        and _tournament_result_key(t) not in _ONGOING_TOURNAMENT_IDS
     ]
     if not eligible:
         return

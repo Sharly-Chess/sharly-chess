@@ -48,6 +48,9 @@ msgstr ""
 msgid "Exclude: {values}"
 msgstr ""
 
+msgid "French School"
+msgstr ""
+
 msgid "French School Competitions"
 msgstr ""
 
