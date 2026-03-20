@@ -112,8 +112,7 @@ def upload_tournament(
                 status_code,
                 body,
             )
-    except Exception as e:
-        raise e
+    except Exception:
         if event is not None and not SCEUtils.get_event_plugin_data(event).tokens:
             logger.warning(
                 'SCE upload skipped for [%s/%s] — refresh token revoked, re-auth required.',
