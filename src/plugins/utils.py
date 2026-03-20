@@ -80,6 +80,24 @@ class PluginUtils:
             source_list, element, lambda elem: isinstance(elem, match_type), after
         )
 
+    @classmethod
+    def insert_on_attr_equals[T](
+        cls,
+        source_list: list[T],
+        element: T,
+        attr_name: str,
+        attr_value: Any,
+        after: bool = True,
+    ):
+        """Wrapper on insert_on_condition where the condition
+        is an element being an attribute of the element matching a value."""
+        cls._insert_on_condition(
+            source_list,
+            element,
+            lambda elem: getattr(elem, attr_name) == attr_value,
+            after,
+        )
+
     @staticmethod
     def _replace_on_condition[T](
         source_list: list[T],

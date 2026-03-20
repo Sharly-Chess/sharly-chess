@@ -27,6 +27,10 @@ from plugins.sce.sce_session import (
     SCE_SYNC_DELAY,
     SCE_UPLOAD_DELAY,
 )
+from plugins.sce.sce_background_uploader import (
+    schedule_upload,
+    upload_event_tournaments,
+)
 from plugins.sce.utils import (
     SCETokens,
     SCEEventPluginData,
@@ -438,6 +442,19 @@ class SCEAdminController(BaseAdminController):
     ) -> HTMXTemplate:
         return self._render_upload_table(SCEWebContext(request))
 
+    @get(
+        path='/sce/event-status-section/{event_uniq_id:str}',
+        name='sce-event-status-section',
+    )
+    async def htmx_sce_event_status_section(self, request: HTMXRequest) -> HTMXTemplate:
+        web_context = SCEWebContext(request)
+        return HTMXTemplate(
+            template_name='/sce_event_status_section.html',
+            context=web_context.table_context,
+            re_target='#sce-event-status-section',
+            re_swap='outerHTML',
+        )
+
     @patch(
         path='/sce/update-event-auto-player-sync/{event_uniq_id:str}',
         name='sce-update-event-auto-player-sync',
@@ -516,7 +533,8 @@ class SCEAdminController(BaseAdminController):
         tournament_id: int,
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, tournament_id)
-        # TODO (Molrn) Implement tournament results upload
+        tournament = web_context.get_tournament()
+        schedule_upload(tournament, True)
         return self._render_upload_table(web_context)
 
     @post(
@@ -527,8 +545,8 @@ class SCEAdminController(BaseAdminController):
         self, request: HTMXRequest
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
-        # TODO (Molrn) Implement all tournaments upload
-        message = _('All results successfully uploaded.')
+        upload_event_tournaments(web_context.sce_allowed_tournaments)
+        message = _('Upload started for all tournaments.')
         return self._render_sync_modal(web_context, message)
 
     @post(

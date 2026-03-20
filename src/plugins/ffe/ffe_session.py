@@ -485,18 +485,16 @@ class FFESession(Session):
         with EventDatabase(
             event_uniq_id, write=True, check_dirty_tournaments=False
         ) as event_database:
+            # NOTE (Molrn) Bypass standard DB write to avoid updating
+            # the last_update flag which would re-trigger an upload
             now = SQLiteDatabase.now_as_database_timestamp()
             event_database.execute(
                 """
-                UPDATE tournament
-                SET plugin_data = json_set(
-                        plugin_data,
-                        '$.ffe.last_upload', ?
-                    ),
-                    last_update = ?
-                WHERE id = ?
+                UPDATE tournament SET plugin_data = json_set(
+                    plugin_data,'$.ffe.last_upload', ?
+                ) WHERE id = ?
                 """,
-                (now, now, self.tournament.id),
+                (now, self.tournament.id),
             )
 
         if not set_visible:

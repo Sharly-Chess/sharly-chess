@@ -56,7 +56,7 @@ class NotStartedSCETournamentStatus(SCETournamentStatus):
 
     @property
     def tooltip(self) -> str | None:
-        return _('Tournament has not started yet.')
+        return _('Tournament has not started yet, no results to upload.')
 
     @property
     def css_classes(self) -> str:
@@ -197,3 +197,13 @@ class UnexpectedHTTPFailureSCETournamentStatus(FailureSCETournamentStatus):
     @property
     def consult_logs_message(self) -> bool:
         return True
+
+
+class AuthFailureSCETournamentStatus(FailureSCETournamentStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'AUTH_FAILURE'
+
+    @property
+    def reason(self) -> str | None:
+        return _('re-authorisation required')

@@ -65,7 +65,10 @@
                             tournament_id=tournament.id
                         ) }}"
                         hx-indicator="#please-wait"
-                        {% if sce_event_status.actions_disabled %}
+                        {% if (
+                            sce_event_status.actions_disabled
+                            or not tournament.started
+                        ) %}
                             disabled
                         {% endif %}
                     >

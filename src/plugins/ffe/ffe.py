@@ -103,6 +103,7 @@ from plugins.ffe.utils import (
 from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
+from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.sce.utils import SCEPlayerSyncData
 from plugins.utils import (
     ExtraStatisticsSection,
@@ -953,3 +954,21 @@ class FfePlugin(Plugin):
     @hookimpl
     def get_sce_national_id_player_field_label(self) -> str | None:
         return _('FFE licence number')
+
+    @hookimpl
+    def add_sce_upload_player_custom_fields(
+        self, custom_fields: dict[str, Any], player: TournamentPlayer
+    ):
+        plugin_data = FFEUtils.get_player_plugin_data(player)
+        if plugin_data.league:
+            custom_fields['ffe_league'] = plugin_data.league
+
+    @hookimpl
+    def alter_sce_upload_player_columns(self, columns: list[SCEUploadColumn]):
+        league = SCEUploadColumn('ffe_league', _('League'), is_custom=True)
+        PluginUtils.insert_on_attr_equals(columns, league, 'id', 'federation')
+
+    @hookimpl
+    def alter_sce_upload_ranking_columns(self, columns: list[SCEUploadColumn]):
+        league = SCEUploadColumn('ffe_league', _('League'), is_custom=True)
+        PluginUtils.insert_on_attr_equals(columns, league, 'id', 'federation')
