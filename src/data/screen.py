@@ -709,7 +709,7 @@ class Screen:
                 raise ValueError(f'type=[{self.type}]')
 
     @property
-    def last_update(self) -> datetime:
+    def last_update(self) -> datetime | None:
         if self.stored_screen:
             return self.stored_screen.last_update
         if self.family is None:

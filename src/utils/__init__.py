@@ -7,16 +7,12 @@ from decimal import Decimal
 from functools import lru_cache, cache
 from math import floor
 from subprocess import CompletedProcess
-from typing import Callable, Iterable, Protocol, Hashable, Collection, TYPE_CHECKING
+from typing import Callable, Iterable, Protocol, Hashable, Collection
 
 import iso4217parse
 import pycountry
 from babel.numbers import format_currency, format_decimal, get_decimal_symbol
 from text_unidecode import unidecode
-
-if TYPE_CHECKING:
-    from data.tournament import Tournament
-    from database.sqlite.event.event_store import StoredTournament
 
 
 class Utils:
@@ -320,17 +316,6 @@ class Utils:
         for property_name in property_names:
             if property_name in obj.__dict__:
                 del obj.__dict__[property_name]
-
-    @staticmethod
-    def tournament_results_modified_since(
-        tournament: 'Tournament | StoredTournament',
-        ref_datetime: datetime,
-    ) -> bool:
-        return ref_datetime < max(
-            tournament.last_update,
-            tournament.last_player_update or datetime.min,
-            tournament.last_pairing_update or datetime.min,
-        )
 
 
 class SupportsEquals(Protocol):

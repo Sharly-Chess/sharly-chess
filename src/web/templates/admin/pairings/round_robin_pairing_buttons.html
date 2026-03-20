@@ -24,7 +24,7 @@
                 %}
                     disabled
                 {% else %}
-                    hx-get="{{ url_for('admin-pairings-ratings-warning-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-get="{{ url_for('admin-pairings-settings-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                     hx-trigger="click"
                     data-bs-toggle="modal"
                     data-bs-target="#modal-wrapper"

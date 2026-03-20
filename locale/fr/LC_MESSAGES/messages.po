@@ -3949,9 +3949,6 @@ msgstr "Chevalets d'appariement"
 msgid "Pairing information for round %(round)d"
 msgstr "Informations d’appariement pour la ronde %(round)d"
 
-msgid "Pairing is not possible."
-msgstr "L'appariement est impossible."
-
 msgid "Pairing not found."
 msgstr "Appariement non-trouvé."
 
@@ -4575,9 +4572,6 @@ msgstr "Classement :"
 msgid "Ratings"
 msgstr "Classements"
 
-msgid "Ratings update"
-msgstr "Mise à jour des classements"
-
 #, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
@@ -4602,12 +4596,6 @@ msgstr "La nouvelle version {version} a été installée dans [{folder}]."
 
 msgid "Reload the page"
 msgstr "Recharger la page"
-
-msgid "Reminder: the tournament is played on multiple FIDE periods, you might have to update the players' ratings before pairing."
-msgstr "Rappel : le tournoi est joué sur plusieurs périodes FIDE, vous devez peut-être mettre à jour les classements des joueur·euses avant d'apparier."
-
-msgid "Reminder: you might have to update the players' ratings before pairing."
-msgstr "Rappel : vous devez peut-être mettre à jour les classements des joueur·euses avant d'apparier."
 
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."

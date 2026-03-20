@@ -5,18 +5,15 @@
             hx-get="{{ url_for(
                 'admin-event-players-diff-modal',
                 event_uniq_id=admin_event.uniq_id,
-                data_source_id=data_source.id,
-                tab=tab,
+                data_source_id=data_source.id
             ) }}"
             {% if tournament %}
                 hx-vals='{"tournament_id": "{{ tournament.id }}"}'
             {% endif %}
             hx-target="body"
             hx-indicator="#please-wait"
-            {% if not from_modal %}
-                data-bs-toggle="modal"
-                data-bs-target="#modal-wrapper"
-            {% endif %}
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
         {% else %}
             class="dropdown-item text-start text-secondary"
             {{ macros.tooltip_attributes(

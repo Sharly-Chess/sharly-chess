@@ -1107,10 +1107,10 @@ class TournamentPlayer(Player):
     def check_in_status(self) -> CheckInStatus:
         if not self.tournament.check_in_open:
             return CheckInStatus.CHECK_IN_CLOSED
-        if self.pairings[self.tournament.current_round + 1].next_round_bye:
-            return CheckInStatus.NEXT_ROUND_BYE
         if self.check_in:
             return CheckInStatus.CHECKED_IN
+        if self.pairings[self.tournament.current_round + 1].next_round_bye:
+            return CheckInStatus.NEXT_ROUND_BYE
         return CheckInStatus.NOT_CHECKED_IN
 
     @cached_property

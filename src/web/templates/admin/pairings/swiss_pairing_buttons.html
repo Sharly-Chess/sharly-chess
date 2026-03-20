@@ -54,9 +54,16 @@
                 %}
                     disabled
                 {% else %}
-                    {% if admin_round == 1 or admin_tournament.multiple_fide_periods %}
+                    {% if admin_round != 1 %}
+                        hx-post="{{ url_for(
+                            'admin-generate-round-pairings',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round
+                        ) }}"
+                    {% else %}
                         hx-get="{{ url_for(
-                            'admin-pairings-ratings-warning-modal',
+                            'admin-pairings-settings-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round
@@ -64,13 +71,6 @@
                         hx-trigger="click"
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
-                    {% else %}
-                        hx-post="{{ url_for(
-                            'admin-generate-round-pairings',
-                            event_uniq_id=admin_event.uniq_id,
-                            tournament_id=admin_tournament.id,
-                            round=admin_round
-                        ) }}"
                     {% endif %}
                     hx-target="body"
                     hx-indicator="#please-wait"
