@@ -28,7 +28,12 @@
             {% endwith %}
             <form
                 id="modal-form"
-                hx-patch="{{ url_for('admin-event-players-update', event_uniq_id=admin_event.uniq_id, data_source_id=data_source.id) }}"
+                hx-patch="{{ url_for(
+                    'admin-event-players-update',
+                    event_uniq_id=admin_event.uniq_id,
+                    data_source_id=data_source.id,
+                    tab=tab,
+                ) }}"
                 {% if admin_tournament %}
                     hx-vals='{"tournament_id": "{{ admin_tournament.id }}"}'
                 {% endif %}

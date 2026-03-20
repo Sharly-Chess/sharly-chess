@@ -3947,6 +3947,9 @@ msgstr ""
 msgid "Pairing information for round %(round)d"
 msgstr ""
 
+msgid "Pairing is not possible."
+msgstr ""
+
 msgid "Pairing not found."
 msgstr ""
 
@@ -4570,6 +4573,9 @@ msgstr ""
 msgid "Ratings"
 msgstr ""
 
+msgid "Ratings update"
+msgstr ""
+
 #, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr ""
@@ -4593,6 +4599,12 @@ msgid "Release {version} has been installed in [{folder}]."
 msgstr ""
 
 msgid "Reload the page"
+msgstr ""
+
+msgid "Reminder: the tournament is played on multiple FIDE periods, you might have to update the players' ratings before pairing."
+msgstr ""
+
+msgid "Reminder: you might have to update the players' ratings before pairing."
 msgstr ""
 
 msgid "Remove the player from the event."
