@@ -40,7 +40,8 @@ class PairingEngine(ABC):
         """Generate a list of boards matching all the pairings of tournament
         *tournament* at round *at_round*.
         Bye players should not be taken into account.
-        If the pairing generation fails, raise a SharlyChessException."""
+        If the pairing generation fails, raise a SharlyChessException.
+        If pairing is impossible, return an empty list"""
 
     @abstractmethod
     def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
@@ -59,7 +60,7 @@ class PairingEngine(ABC):
         tournament: 'Tournament',
         round_: int,
         partial_pairings: bool = False,
-    ):
+    ) -> bool:
         """Generate the pairings of the round *round_* for tournament *tournament*."""
         if self.pairings_generation_disabled_message(tournament, round_):
             raise ValueError(
@@ -69,6 +70,8 @@ class PairingEngine(ABC):
         stored_boards = self._generate_stored_boards(
             tournament, round_, partial_pairings
         )
+        if len(stored_boards) == 0:
+            return False
         if self.reorder_boards:
             boards = [
                 Board(tournament, round_, stored_board)
@@ -78,6 +81,7 @@ class PairingEngine(ABC):
             for board in sorted(boards, reverse=True):
                 board.stored_board.index = available_indexes.pop(0)
         tournament.create_boards(stored_boards, round_, self.pab_result)
+        return True
 
     def pairings_generation_disabled_message(
         self, tournament: 'Tournament', at_round: int
