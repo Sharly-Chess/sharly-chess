@@ -379,21 +379,21 @@
 
 ### `player` table (FIDE players)
 
-| Field                | Type      | Constraint                                 | Description                              |
-|----------------------|-----------|--------------------------------------------|------------------------------------------|
-| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID                 |
-| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's _FFE_ ID                    |
-| `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                   |
-| `first_name`         | `TEXT`    |                                            | The player's first name                  |
-| `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code             |
-| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Female, 2: Male) |
-| `title`              | `TEXT`    | NOT NULL                                   | The player's _FIDE_ title                |
-| `arbiter_title`      | `TEXT`    | NOT NULL                                   | The player's _FIDE_ arbiter title        |
-| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating             |
-| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating                |
-| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating                |
-| `year_of_birth`      | `INTEGER` | NOT NULL                                   | The player's year of birth               |
-| `fide_arbiter_title` | `TEXT`    | NOT NULL                                   | The player's _FIDE_ arbiter title        |
+| Field                | Type      | Constraint                                 | Description                            |
+|----------------------|-----------|--------------------------------------------|----------------------------------------|
+| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID               |
+| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's _FFE_ ID                  |
+| `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                 |
+| `first_name`         | `TEXT`    |                                            | The player's first name                |
+| `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code           |
+| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Woman, 2: Man) |
+| `title`              | `TEXT`    | NOT NULL                                   | The player's _FIDE_ title              |
+| `arbiter_title`      | `TEXT`    | NOT NULL                                   | The player's _FIDE_ arbiter title      |
+| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating           |
+| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating              |
+| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating              |
+| `year_of_birth`      | `INTEGER` | NOT NULL                                   | The player's year of birth             |
+| `fide_arbiter_title` | `TEXT`    | NOT NULL                                   | The player's _FIDE_ arbiter title      |
 
 ## _FFE_ Local Database (`tmp/ffe/ffe.db`)
 
@@ -402,26 +402,26 @@
 
 ### `player` table (_FFE_ players)
 
-| Field                | Type      | Constraint                                 | Description                                        |
-|----------------------|-----------|--------------------------------------------|----------------------------------------------------|
-| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID                           |
-| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's _FFE_ ID                              |
-| `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                             |
-| `first_name`         | `TEXT`    |                                            | The player's first name                            |
-| `date_of_birth`      | `TEXT`    |                                            | The player's date of birth in YYYY-MM-DD format    |
-| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Male, 2: Female, 9: Other) |
-| `ffe_licence_number` | `TEXT`    |                                            | The player's licence number (Xnnnnn)               |
-| `ffe_licence`        | `INTEGER` | NOT NULL                                   | The player's licence type (1: None, 2: A, 3: B)    |
-| `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code                       |
-| `league`             | `TEXT`    |                                            | The player's _FFE_ league (3-letter) code          |
-| `city`               | `TEXT`    |                                            | The city of the player's club                      |
-| `club`               | `TEXT`    |                                            | The player's club name                             |
-| `fide_id`            | `INTEGER` |                                            | The player's _FIDE_ ID (if any)                    |
-| `fide_title`         | `TEXT`    | NOT NULL                                   | The player's _FIDE_ title                          |
-| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating                       |
-| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating                          |
-| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating                          |
-| `ffe_arbiter_title`  | `TEXT`    | NOT NULL                                   | The player's _FFE_ arbiter title                   |
+| Field                | Type      | Constraint                                 | Description                                      |
+|----------------------|-----------|--------------------------------------------|--------------------------------------------------|
+| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID                         |
+| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's _FFE_ ID                            |
+| `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                           |
+| `first_name`         | `TEXT`    |                                            | The player's first name                          |
+| `date_of_birth`      | `TEXT`    |                                            | The player's date of birth in YYYY-MM-DD format  |
+| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Man, 2: Woman, 9: Other) |
+| `ffe_licence_number` | `TEXT`    |                                            | The player's licence number (Xnnnnn)             |
+| `ffe_licence`        | `INTEGER` | NOT NULL                                   | The player's licence type (1: None, 2: A, 3: B)  |
+| `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code                     |
+| `league`             | `TEXT`    |                                            | The player's _FFE_ league (3-letter) code        |
+| `city`               | `TEXT`    |                                            | The city of the player's club                    |
+| `club`               | `TEXT`    |                                            | The player's club name                           |
+| `fide_id`            | `INTEGER` |                                            | The player's _FIDE_ ID (if any)                  |
+| `fide_title`         | `TEXT`    | NOT NULL                                   | The player's _FIDE_ title                        |
+| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating                     |
+| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating                        |
+| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating                        |
+| `ffe_arbiter_title`  | `TEXT`    | NOT NULL                                   | The player's _FFE_ arbiter title                 |
 
 ## FRA Schools Local Database (`tmp/fra_schools/fra_schools.db`)
 
