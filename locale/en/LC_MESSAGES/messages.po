@@ -2046,7 +2046,7 @@ msgstr ""
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr ""
 
-msgid "Each bracket should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr ""
 
 msgid "Each player can only be awarded one prize per bracket."
