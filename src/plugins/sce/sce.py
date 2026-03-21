@@ -17,6 +17,7 @@ from plugins.sce.utils import (
     SCEEventPluginData,
     SCEPlayerPluginData,
     SCEUtils,
+    SCEPlayerSyncData,
 )
 from plugins.utils import (
     PluginData,
@@ -26,11 +27,35 @@ from plugins.utils import (
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
-    from data.player import TournamentPlayer
-    from database.sqlite.event.event_store import StoredEvent, StoredTournament
+    from data.player import TournamentPlayer, Player
+    from database.sqlite.event.event_store import (
+        StoredEvent,
+        StoredTournament,
+        StoredPlayer,
+    )
 
 
 class SCEPluginHooks:
+    @hookspec
+    def augment_sce_player_sync_data_from_player(
+        self,
+        player: 'TournamentPlayer',
+        sync_data: SCEPlayerSyncData,
+    ):
+        """Augment SCE player shared data from a player."""
+
+    @hookspec
+    def augment_stored_player_from_player_sync_data(
+        self,
+        stored_player: 'StoredPlayer',
+        sync_data: SCEPlayerSyncData,
+    ):
+        """Augment a stored player from SCE player shared data."""
+
+    @hookspec(firstresult=True)
+    def get_sce_national_id_player_field_label(self) -> str | None:
+        """Label used for the 'national_id' player field in the conflict modal."""
+
     @hookspec
     def add_sce_upload_player_custom_fields(
         self, custom_fields: dict[str, Any], player: 'TournamentPlayer'
@@ -60,6 +85,10 @@ class SCEPlugin(HiddenPlugin):
         return Version('1.0.0')
 
     @property
+    def hookspecs(self) -> type | None:
+        return SCEPluginHooks
+
+    @property
     def default_is_enabled(self) -> bool:
         return True
 
@@ -74,10 +103,6 @@ class SCEPlugin(HiddenPlugin):
     @property
     def controllers(self) -> list[type[BaseController]]:
         return [SCEAdminController]
-
-    @property
-    def hookspecs(self) -> type | None:
-        return SCEPluginHooks
 
     def used_by_stored_tournament(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
@@ -121,30 +146,43 @@ class SCEPlugin(HiddenPlugin):
     def get_player_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, SCEPlayerPluginData
 
+    @hookimpl
+    def on_player_deleted(self, player: 'Player'):
+        sce_player_id = SCEUtils.get_player_plugin_data(player).id
+        if not sce_player_id:
+            return
+        event = player.event
+        plugin_data = SCEUtils.get_event_plugin_data(event)
+        plugin_data.deleted_player_ids.append(sce_player_id)
+        SCEUtils.update_event_plugin_data(event, plugin_data)
+
+    # ---------------------------------------------------------------------------------
+    # Nav
+    # ---------------------------------------------------------------------------------
+
+    @staticmethod
+    def _event_has_sce_error_badge(event: Event) -> bool:
+        if SCEUtils.resolve_event_status(event).notify_error_status:
+            return True
+        if SCEUtils.resolve_last_sync_status(event).notify_error_status:
+            return True
+        for tournament in event.tournaments:
+            upload_statuses = SCEUtils.resolve_tournament_upload_statuses(tournament)
+            for status in upload_statuses:
+                if status.notify_error_status:
+                    return True
+        return False
+
     @hookimpl(tryfirst=True)
     def get_nav_data_transfer_items(
         self, event: 'Event'
     ) -> Iterable[NavDataTransferItem]:
-        status = SCEUtils.resolve_event_status(event)
-        has_error = False
-        if status.alert_message:
-            has_error = True
-        else:
-            for tournament in event.tournaments:
-                if any(
-                    status.notify_error_status
-                    for status in SCEUtils.resolve_tournament_upload_statuses(
-                        tournament
-                    )
-                ):
-                    has_error = True
-                    break
         return [
             NavDataTransferItem(
                 key='sce_data_transfer',
                 title='Sharly-Chess.com',
                 icon_path='/images/sharly-chess-events.ico',
                 modal_route_name='sce-sync-modal',
-                has_upload_error=has_error,
+                has_upload_error=self._event_has_sce_error_badge(event),
             )
         ]

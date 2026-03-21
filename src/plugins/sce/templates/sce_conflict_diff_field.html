@@ -1,0 +1,16 @@
+<div class="text-start">
+    {{ _('%(string)s:', string=label) }}
+    <span
+        {% if display_data[field] == last_sync_data[field] %}
+            class="text-secondary"
+        {% elif compare_data[field] == last_sync_data[field] %}
+            class="text-warning fw-bold"
+            {{ macros.tooltip_attributes('info', _('Modified')) }}
+        {% else %}
+            class="text-danger fw-bold"
+            {{ macros.tooltip_attributes('warning', _('Conflict')) }}
+        {% endif %}
+    >
+        {{ display_data[field] }}
+    </span>
+</div>

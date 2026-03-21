@@ -1,0 +1,49 @@
+<div class="col-12 col-md-4 text-center my-2">
+    <div class="form-fields-container my-0">
+        <h5 style="font-size: 1.15em">
+            <span>{{ metadata.title }}</span>
+            <i
+                class="bi-info-circle-fill"
+                style="font-size: 80%"
+                {{ macros.tooltip_attributes('', metadata.tooltip) }}
+            ></i>
+        </h5>
+        <div class="text-start">
+            {% set display_value = sce_utils.get_tournament_by_sce_id(admin_event, display_data['tournament_id']).name %}
+            {% set compare_value = sce_utils.get_tournament_by_sce_id(admin_event, compare_data['tournament_id']).name %}
+            {% set last_sync_value = sce_utils.get_tournament_by_sce_id(admin_event, last_sync_data['tournament_id']).name %}
+            {{ _('%(string)s:', string=_('Tournament')) }}
+            <span
+                {% if display_value == last_sync_value %}
+                    class="text-secondary"
+                {% elif compare_value == last_sync_value %}
+                    class="text-warning fw-bold"
+                    {{ macros.tooltip_attributes('info', _('Modified')) }}
+                {% else %}
+                    class="text-danger fw-bold"
+                    {{ macros.tooltip_attributes('warning', _('Conflict')) }}
+                {% endif %}
+            >
+                {{ display_value }}
+            </span>
+        </div>
+
+        {% for field, label in diff_fields.items() %}
+            {% include '/sce_conflict_diff_field.html' %}
+        {% endfor %}
+        <button
+            class="btn btn-outline-primary mt-2 mb-1"
+            hx-post="{{ url_for(
+                'sce-resolve-player-conflict',
+                event_uniq_id=admin_event.uniq_id,
+                player_id=conflict_player.id,
+                choice=metadata.choice,
+            ) }}"
+            {% if sce_event_status.actions_disabled %}
+                disabled
+            {% endif %}
+        >
+            {{ _('Choose') }}
+        </button>
+    </div>
+</div>

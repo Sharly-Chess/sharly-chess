@@ -110,6 +110,10 @@ class AppHookSpecs:
     # ---------------------------------------------------------------------------------
 
     @hookspec
+    def on_player_deleted(self, player: 'Player'):
+        """Called when a player is deleted."""
+
+    @hookspec
     def get_player_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         """Get the data class to use to store plugin player values.
         Also provide the ID of the plugin."""
@@ -133,12 +137,6 @@ class AppHookSpecs:
         organised by the section at which to add the fields."""
 
     @hookspec
-    def get_player_form_data(
-        self, plugin_data: dict[str, dict[str, Any]]
-    ) -> dict[str, Any]:
-        """Provide form data for the additional player form fields"""
-
-    @hookspec
     def validate_player_form_fields(
         self,
         action: 'FormAction',
@@ -148,10 +146,6 @@ class AppHookSpecs:
         errors: dict[str, str],
     ):
         """Validate the additional player form fields. Add the errors to the *errors* dict."""
-
-    @hookspec
-    def get_player_form_fields(self, data: dict[str, str]) -> dict[str, dict[str, Any]]:
-        """Get the fields from the player form data."""
 
     @hookspec
     async def augment_player_after_search(

@@ -104,6 +104,7 @@ from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
 from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
+from plugins.sce.utils import SCEPlayerSyncData
 from plugins.utils import (
     ExtraStatisticsSection,
     NavDataTransferItem,
@@ -925,6 +926,34 @@ class FfePlugin(Plugin):
     # ---------------------------------------------------------------------------------
     # Plugin hooks
     # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def augment_sce_player_sync_data_from_player(
+        self,
+        player: TournamentPlayer,
+        sync_data: SCEPlayerSyncData,
+    ):
+        sync_data.national_id = FFEUtils.get_player_plugin_data(
+            player
+        ).ffe_licence_number
+
+    @hookimpl
+    def augment_stored_player_from_player_sync_data(
+        self,
+        stored_player: StoredPlayer,
+        sync_data: SCEPlayerSyncData,
+    ):
+        plugin_data = FfePlayerPluginData.from_stored_value(
+            stored_player.plugin_data.get(PLUGIN_NAME, {})
+        )
+        plugin_data.ffe_licence_number = sync_data.national_id
+        if plugin_data.ffe_licence == PlayerFFELicence.NONE and sync_data.national_id:
+            plugin_data.ffe_licence = PlayerFFELicence.N
+        stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+
+    @hookimpl
+    def get_sce_national_id_player_field_label(self) -> str | None:
+        return _('FFE Licence no. *** LICENCE NUMBER')
 
     @hookimpl
     def add_sce_upload_player_custom_fields(

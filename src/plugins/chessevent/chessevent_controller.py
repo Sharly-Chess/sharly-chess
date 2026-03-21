@@ -122,7 +122,7 @@ class ChessEventController(BaseEventAdminController):
         if result:
             message = _('Tournament [{tournament}] successfully synchronized.')
         else:
-            message = _('Synchronization failed for tournament [{tournament}].')
+            message = _('Synchronisation failed for tournament [{tournament}].')
 
         web_context = TournamentAdminWebContext(
             request, tournament_id, reload_event=True

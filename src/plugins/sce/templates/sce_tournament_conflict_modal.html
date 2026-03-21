@@ -1,0 +1,105 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{% set event_plugin_data = admin_event.plugin_data.sce %}
+
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 900px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Sharly-Chess.com tournament conflicts') }}
+                <i
+                    class="bi-info-circle-fill text-body ps-1"
+                    style="font-size: 75%"
+                    {{ macros.tooltip_attributes('', _(
+                        'Synchronisation conflicts happen when the same data '
+                        'has been modified in both the local application and '
+                        'Sharly-Chess.com. To resolve them, you must either '
+                        'update the data to a non-conflictual state, or choose '
+                        'one version of the data to apply everywhere.'
+                    )) }}
+                ></i>
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if sce_event_status.alert_message %}
+                {% include '/sce_event_status_alert.html' %}
+            {% endif %}
+            {% if error_message %}
+                {% with message=error_message, type='error' %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            <h4>
+                {{ _(
+                    '%(string)s: %(value)s',
+                    string=_('Remaining conflicts'),
+                    value=remaining_conflicts
+                ) }}
+            </h4>
+            <div class="row">
+                {% with display_data=local_sync_data, compare_data=sce_sync_data, metadata={
+                    'title': _('Local'),
+                    'tooltip': _(
+                        'Data as it currently is '
+                        'on the local Sharly Chess application.'
+                    ),
+                    'choice': 'local',
+                } %}
+                    {% include 'sce_tournament_conflict_diff.html' %}
+                {% endwith %}
+                {% with display_data=last_sync_data, compare_data=last_sync_data, metadata={
+                    'title': _('Last synchronisation'),
+                    'tooltip': _(
+                        'Data as it was when it was last synchronized (%(last_sync_str)s).',
+                        last_sync_str=event_plugin_data.last_sync_str,
+                    ),
+                    'choice': 'last-sync',
+                } %}
+                    {% include 'sce_tournament_conflict_diff.html' %}
+                {% endwith %}
+                {% with display_data=sce_sync_data, compare_data=local_sync_data, metadata={
+                    'title': 'Sharly-Chess.com',
+                    'tooltip': _('Data as it currently is on Sharly-Chess.com.'),
+                    'choice': 'sce',
+                } %}
+                    {% include 'sce_tournament_conflict_diff.html' %}
+                {% endwith %}
+            </div>
+            <div class="text-center">
+                <button
+                    class="btn btn-outline-primary mt-2"
+                    hx-get="{{ url_for(
+                        'admin-tournament-modal',
+                        action='update',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=conflict_tournament.id,
+                    ) }}?redirect_to={{ url_for(
+                        'sce-tournament-conflict-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                    ) }}"
+                >
+                    <i class="bi-pencil-fill pe-1"></i>
+                    {{ _('Edit the tournament') }}
+                </button>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

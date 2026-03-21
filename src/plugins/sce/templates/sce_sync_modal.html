@@ -4,8 +4,14 @@
 {% set event_plugin_data = admin_event.plugin_data.sce %}
 
 <div
+    id="sce-sync-modal"
     class="modal-dialog modal-dialog-scrollable"
     style="--bs-modal-width: min(90vw, 800px);"
+    hx-get="{{ url_for(
+        'sce-sync-modal', event_uniq_id=admin_event.uniq_id
+    ) }}?no_refresh=True"
+    hx-trigger="ws:upload-event from:body"
+    hx-swap="outerHTML"
 >
     <div class="modal-content">
         <div class="modal-header">
@@ -19,9 +25,11 @@
             </h2>
         </div>
         <div class="modal-body">
-            {% include '/sce_event_status_section.html' %}
-            {% if success_message %}
-                {% with type='success', message=success_message %}
+            {% if sce_event_status.alert_message %}
+                {% include '/sce_event_status_alert.html' %}
+            {% endif %}
+            {% if message %}
+                {% with type=message_type %}
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
@@ -29,47 +37,108 @@
                 {{ _('Data synchronisation') }}
             </h4>
             <div class="row px-4">
+                {% set has_conflicts = tournament_conflict_count or player_conflict_count %}
                 <div class="col-12 col-md-6 d-flex flex-column gap-2 text-center mb-2">
-                    <button
-                        class="btn btn-outline-primary"
-                        hx-post="{{ url_for('sce-sync-players', event_uniq_id=admin_event.uniq_id) }}"
-                        {% if sce_event_status.actions_disabled %}
-                            disabled
+                    {% if tournament_conflict_count %}
+                        <button
+                            class="btn btn-outline-danger"
+                            hx-get="{{ url_for('sce-tournament-conflict-modal', event_uniq_id=admin_event.uniq_id) }}"
+                            {% if sce_event_status.actions_disabled %}
+                                disabled
+                            {% endif %}
+                        >
+                            <i class="bi-sign-merge-left-fill pe-1"></i>
+                            {{ _('Resolve tournament conflicts (%(count)d)', count=tournament_conflict_count) }}
+                        </button>
+                    {% elif player_conflict_count %}
+                        <button
+                            class="btn btn-outline-danger"
+                            hx-get="{{ url_for('sce-player-conflict-modal', event_uniq_id=admin_event.uniq_id) }}"
+                            {% if sce_event_status.actions_disabled %}
+                                disabled
+                            {% endif %}
+                        >
+                            <i class="bi-sign-merge-left-fill pe-1"></i>
+                            {{ _('Resolve player conflicts (%(count)d)', count=player_conflict_count) }}
+                        </button>
+                    {% endif %}
+                    <span
+                       style="display: block"
+                        {% if has_conflicts %}
+                            {{ macros.tooltip_attributes('warning', _(
+                                'Synchronisation is unavailable while there are conflicts.'
+                            )) }}
                         {% endif %}
                     >
-                        <i class="bi-arrow-repeat pe-1"></i>
-                        {{ _('Synchronize players') }}
-                    </button>
+                        <button
+                            class="btn btn-outline-primary w-100"
+                            hx-post="{{ url_for('sce-sync-players', event_uniq_id=admin_event.uniq_id) }}"
+                            {% if sce_event_status.actions_disabled or has_conflicts or is_sync_ongoing %}
+                                disabled
+                            {% endif %}
+                        >
+                            {% if is_sync_ongoing %}
+                                 <i
+                                    class="bi-arrow-repeat mb-1 lh-1"
+                                    style="
+                                        display: inline-block;
+                                        animation: spin 1s infinite;
+                                        animation-timing-function: linear;"
+                                ></i>
+                                {{ _('Synchronisation ongoing') }}
+                            {% else %}
+                                <i class="bi-arrow-repeat pe-1"></i>
+                                {{ _('Synchronize players') }}
+                            {% endif %}
+                        </button>
+                    </span>
                     <span class="mt-1">
                         {% if event_plugin_data.last_sync_at %}
                             {{ _(
                                 '%(string)s: %(value)s',
-                                string=_('Last synchronization'),
+                                string=_('Last synchronisation'),
                                 value=format_datetime(event_plugin_data.last_sync_at),
                             ) }}
+                            {% set last_attempt_at = event_plugin_data.last_sync_attempt_at %}
+                            {% if last_attempt_at %}
+                                <i
+                                    class="{{ sce_last_sync_status.icon_classes }}"
+                                    {{ macros.tooltip_attributes(
+                                        '', sce_last_sync_status.tooltip_message(last_attempt_at)
+                                    ) }}
+                                ></i>
+                            {% endif %}
                         {% else %}
                             <span class="fst-italic">{{ _('Never synchronized') }}</span>
                         {% endif %}
                     </span>
                     <span class="align-items-center">
                         <div class="form-check form-switch d-inline-block">
-                            <input
-                                name="auto_player_sync"
-                                class="form-check-input blue-checkbox"
-                                type="checkbox"
-                                hx-patch="{{ url_for(
-                                    'sce-update-event-auto-player-sync',
-                                    event_uniq_id=admin_event.uniq_id
-                                ) }}"
-                                value="on"
-                                {% if event_plugin_data.auto_player_sync %}
-                                    checked
+                            <span
+                                {% if has_conflicts %}
+                                    {{ macros.tooltip_attributes('warning', _(
+                                        'Synchronisation is unavailable while there are conflicts.'
+                                    )) }}
                                 {% endif %}
-                                {% if sce_event_status.actions_disabled %}
-                                    disabled
-                                {% endif %}
-                            />
-                            {{ _('Auto-synchronization') }}
+                            >
+                                <input
+                                    name="auto_player_sync"
+                                    class="form-check-input blue-checkbox"
+                                    type="checkbox"
+                                    hx-patch="{{ url_for(
+                                        'sce-update-event-auto-player-sync',
+                                        event_uniq_id=admin_event.uniq_id
+                                    ) }}"
+                                    value="on"
+                                    {% if event_plugin_data.auto_player_sync %}
+                                        checked
+                                    {% endif %}
+                                    {% if sce_event_status.actions_disabled or has_conflicts %}
+                                        disabled
+                                    {% endif %}
+                                />
+                                {{ _('Auto-synchronisation') }}
+                            </span>
                             <i
                                 class="bi-info-circle-fill ps-1"
                                 {{ macros.tooltip_attributes('', _(
@@ -151,7 +220,7 @@
                         style="display: block"
                         {% if not new_local_tournament_options and not sce_event_status.actions_disabled %}
                             {{ macros.tooltip_attributes('', _(
-                                'All the tournaments are connected to a Sharly-Chess.com tournament.'
+                                'All the local tournaments are connected to a Sharly-Chess.com tournament.'
                             )) }}
                         {% endif %}
                     >
