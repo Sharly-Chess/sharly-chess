@@ -3445,6 +3445,9 @@ msgstr ""
 msgid "No archived events."
 msgstr ""
 
+msgid "No club"
+msgstr ""
+
 msgid "No criteria defined."
 msgstr ""
 

@@ -3445,6 +3445,9 @@ msgstr "Pas de message d'alerte"
 msgid "No archived events."
 msgstr "Aucun évènement archivé."
 
+msgid "No club"
+msgstr "Pas de club"
+
 msgid "No criteria defined."
 msgstr "Aucun critère défini."
 

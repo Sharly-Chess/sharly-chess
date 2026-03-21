@@ -47,6 +47,7 @@
 - Restrict document options to the ones that can be generated (3.6.3)
 - Fixed slowness after document generation (3.6.3)
 - Fixed norm report document access (3.6.4)
+- Fixed players list document when players have no club (3.6.7)
 
 ## _FFE_
 
