@@ -34,13 +34,6 @@
                     </tr>
                     {% set __ = row_count.append(1) %}
                 {% endfor %}
-                <tr class="player-footer">
-                    {% for column in player_columns %}
-                        <td class="footer {{ column.get_footer_classes(tournament_players) }}">
-                            {{ macros.column_footer(column, tournament_players) }}
-                        </td>
-                    {% endfor %}
-                </tr>
             </tbody>
         </table>
     {% endfor %}

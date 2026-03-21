@@ -23,14 +23,7 @@ class CheckinColumn(TournamentPlayerTableColumn):
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return '☑' if tournament_player.check_in else '☐'
 
-    def get_footer_content(self, tournament_players: list[TournamentPlayer]) -> Any:
-        return '☐' if tournament_players else ''
-
-    def get_footer_classes(self, tournament_players: list[TournamentPlayer]) -> Any:
-        return f'{self.shared_classes} opacity-0'
-
-    @property
-    def shared_classes(self) -> str:
+    def get_cell_classes(self, tournament_player: TournamentPlayer) -> str:
         return 'checkin'
 
 
@@ -282,19 +275,11 @@ class PaidColumn(TournamentPlayerTableColumn):
         return _('Paid *** PAID COLUMN HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return Utils.currency_value_str(
-            tournament_player.paid, tournament_player.tournament.event.prize_currency
-        )
-
-    def get_footer_content(self, tournament_players: list[TournamentPlayer]) -> Any:
-        return Utils.currency_value_str(
-            sum(tournament_player.paid for tournament_player in tournament_players),
-            tournament_players[0].tournament.event.prize_currency,
-        )
+        return str(tournament_player.paid)
 
     @property
     def shared_classes(self) -> str:
-        return 'text-end'
+        return 'text-center'
 
 
 class OwedColumn(TournamentPlayerTableColumn):
@@ -303,19 +288,11 @@ class OwedColumn(TournamentPlayerTableColumn):
         return _('Owed *** OWED COLUMN HEADER')
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
-        return Utils.currency_value_str(
-            tournament_player.owed, tournament_player.tournament.event.prize_currency
-        )
-
-    def get_footer_content(self, tournament_players: list[TournamentPlayer]) -> Any:
-        return Utils.currency_value_str(
-            sum(tournament_player.owed for tournament_player in tournament_players),
-            tournament_players[0].tournament.event.prize_currency,
-        )
+        return str(tournament_player.owed)
 
     @property
     def shared_classes(self) -> str:
-        return 'text-end'
+        return 'text-center'
 
 
 class CommentsColumn(TournamentPlayerTableColumn):
