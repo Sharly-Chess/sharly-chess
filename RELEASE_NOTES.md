@@ -18,6 +18,10 @@
 
 - Add round schedule to tournaments (3.7.0)
 
+# Documents
+
+- Add owed/paid totals to the check-in list (3.7.0)
+
 ## Plugins
 ### ChessEvent
 - Synchronize button moved to the _Data Transfer_ menu (3.7.0)
