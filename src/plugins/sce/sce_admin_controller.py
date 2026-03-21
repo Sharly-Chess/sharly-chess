@@ -21,6 +21,11 @@ from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME
+from plugins.sce.sce_background_synchronizer import (
+    schedule_sync,
+    remove_scheduled_sync,
+    is_sync_ongoing,
+)
 from plugins.sce.sce_session import (
     SCESession,
     SCE_BASE_URL,
@@ -105,6 +110,8 @@ class SCEWebContext(AdminWebContext):
             'new_local_tournament_options': new_local_tournament_options,
             'tournament_conflict_count': len(self.sce_tournaments_with_conflicts),
             'player_conflict_count': len(self.sce_players_with_conflicts),
+            'sce_last_sync_status': SCEUtils.resolve_last_sync_status(event),
+            'is_sync_ongoing': is_sync_ongoing(event.uniq_id),
         }
 
     @property
@@ -172,6 +179,7 @@ class SCEAdminController(BaseAdminController):
     def _clean_outdated_tournament_conflicts(web_context: SCEWebContext):
         """Clean all the outdated tournament conflicts.
         Returns True if all the conflicts have been cleared."""
+        event = web_context.get_admin_event()
         cleaned = 0
         conflict_tournaments = web_context.sce_tournaments_with_conflicts
         for tournament in conflict_tournaments:
@@ -189,7 +197,7 @@ class SCEAdminController(BaseAdminController):
             except SharlyChessException:
                 pass
         if cleaned and cleaned == len(conflict_tournaments):
-            # TODO (Molrn) Resume event player sync
+            schedule_sync(event, force=True)
             return True
         return False
 
@@ -406,23 +414,29 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_sync_modal(
         self,
         request: HTMXRequest,
+        no_refresh: bool = False,
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
-        event = web_context.get_admin_event()
-        has_player_conflicts = bool(web_context.sce_players_with_conflicts)
-        try:
-            # Update the event status / ensure all links will work in case slugs have changed
-            SCESession(event).update_event_from_sce_event(
-                update_tournament_conflicts=True,
-                update_player_conflicts=has_player_conflicts,
-            )
-        except SharlyChessException as e:
-            logger.error(str(e))
         message: str | None = None
-        if self._clean_outdated_tournament_conflicts(web_context):
-            message = _('All tournament conflicts resolved, synchronisation resumed.')
-        if has_player_conflicts and self._clean_outdated_player_conflicts(web_context):
-            message = _('All player conflicts resolved.')
+        if not no_refresh:
+            event = web_context.get_admin_event()
+            has_player_conflicts = bool(web_context.sce_players_with_conflicts)
+            try:
+                # Update the event status / ensure all links will work in case slugs have changed
+                SCESession(event).update_event_from_sce_event(
+                    update_tournament_conflicts=True,
+                    update_player_conflicts=has_player_conflicts,
+                )
+            except SharlyChessException as e:
+                logger.error(str(e))
+            if self._clean_outdated_tournament_conflicts(web_context):
+                message = _(
+                    'All tournament conflicts resolved, synchronisation resumed.'
+                )
+            if has_player_conflicts and self._clean_outdated_player_conflicts(
+                web_context
+            ):
+                message = _('All player conflicts resolved.')
         return self._render_sync_modal(web_context, message)
 
     @staticmethod
@@ -433,15 +447,6 @@ class SCEAdminController(BaseAdminController):
             re_target='#sce-upload-table',
             re_swap='outerHTML',
         )
-
-    @get(
-        path='/sce/sync-modal/upload-table/{event_uniq_id:str}',
-        name='sce-sync-modal-upload-table',
-    )
-    async def htmx_sce_sync_modal_upload_table(
-        self, request: HTMXRequest
-    ) -> HTMXTemplate:
-        return self._render_upload_table(SCEWebContext(request))
 
     @get(
         path='/sce/event-status-section/{event_uniq_id:str}',
@@ -471,11 +476,15 @@ class SCEAdminController(BaseAdminController):
         web_context = SCEWebContext(request)
         event = web_context.get_admin_event()
         plugin_data = SCEUtils.get_event_plugin_data(event)
-        plugin_data.auto_player_sync = WebContext.form_data_to_bool(
-            data, 'auto_player_sync'
-        )
+        auto_sync = WebContext.form_data_to_bool(data, 'auto_player_sync')
+        plugin_data.auto_player_sync = auto_sync
+        if auto_sync:
+            schedule_sync(event)
+        else:
+            remove_scheduled_sync(event.uniq_id)
         SCEUtils.update_event_plugin_data(event, plugin_data)
-        return HTMXTemplate(template_name='/common/empty.html')
+
+        return HTMXTemplate(template_name='/common/empty.html', re_swap='none')
 
     @patch(
         path='/sce/update-event-auto-upload/{event_uniq_id:str}',
@@ -498,7 +507,8 @@ class SCEAdminController(BaseAdminController):
             if not SCEUtils.get_tournament_plugin_data(tournament).auto_upload:
                 continue
             if plugin_data.auto_upload:
-                schedule_upload(tournament)
+                if SCEUtils.tournament_modified_since_last_upload(tournament):
+                    schedule_upload(tournament)
             else:
                 remove_scheduled_upload(tournament)
         return self._render_upload_table(web_context)
@@ -525,7 +535,8 @@ class SCEAdminController(BaseAdminController):
         )
         SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
         if plugin_data.auto_upload:
-            schedule_upload(tournament)
+            if SCEUtils.tournament_modified_since_last_upload(tournament):
+                schedule_upload(tournament)
         else:
             remove_scheduled_upload(tournament)
         return HTMXTemplate(
@@ -547,7 +558,7 @@ class SCEAdminController(BaseAdminController):
         web_context = SCEWebContext(request, tournament_id)
         tournament = web_context.get_tournament()
         schedule_upload(tournament, True)
-        return self._render_upload_table(web_context)
+        return HTMXTemplate(template_name='/common/empty.html', re_swap='none')
 
     @post(
         path='/sce/upload-all-tournament-results/{event_uniq_id:str}',
@@ -558,8 +569,7 @@ class SCEAdminController(BaseAdminController):
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
         upload_event_tournaments(web_context.sce_allowed_tournaments)
-        message = _('Upload started for all tournaments.')
-        return self._render_sync_modal(web_context, message)
+        return HTMXTemplate(template_name='/common/empty.html', re_swap='none')
 
     @post(
         path='/sce/sync-players/{event_uniq_id:str}',
@@ -568,20 +578,8 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_sync_players(self, request: HTMXRequest) -> HTMXTemplate:
         web_context = SCEWebContext(request)
         event = web_context.get_admin_event()
-        try:
-            if not SCESession(event).sync_event():
-                message = _(
-                    'Synchronisation interrupted, resolve the conflicts to continue.'
-                )
-                is_error_message = True
-            else:
-                message = _('Players successfully synchronized.')
-                is_error_message = False
-        except SharlyChessException as e:
-            logger.error(e)
-            message = _('Synchronisation failed, consult the logs for more details.')
-            is_error_message = True
-        return self._render_sync_modal(web_context, message, is_error_message)
+        schedule_sync(event, force=True)
+        return HTMXTemplate(template_name='/common/empty.html', re_swap='none')
 
     @classmethod
     def _render_tournament_conflict_modal(
@@ -597,7 +595,7 @@ class SCEAdminController(BaseAdminController):
         cls._clean_outdated_tournament_conflicts(web_context)
         conflict_tournaments = web_context.sce_tournaments_with_conflicts
         if not conflict_tournaments:
-            # TODO (Molrn) Resume player sync
+            schedule_sync(event, force=True)
             return cls._render_sync_modal(
                 web_context,
                 _('All tournament conflicts resolved, synchronisation resumed.'),
@@ -780,7 +778,9 @@ class SCEAdminController(BaseAdminController):
             plugin_data.last_sync_data = resolve_sync_data
 
             plugin_data.conflict_sync_data = None
-            SCEUtils.update_player_plugin_data(player, plugin_data)
+            SCEUtils.update_player_plugin_data(
+                player, plugin_data, write_stored_object=True
+            )
         except SharlyChessException as e:
             logger.error(e)
             error_message = _('An error occurred, consult the logs for more details.')

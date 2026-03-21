@@ -156,38 +156,33 @@ class SCEPlugin(HiddenPlugin):
         plugin_data.deleted_player_ids.append(sce_player_id)
         SCEUtils.update_event_plugin_data(event, plugin_data)
 
+    # ---------------------------------------------------------------------------------
+    # Nav
+    # ---------------------------------------------------------------------------------
+
+    @staticmethod
+    def _event_has_sce_error_badge(event: Event) -> bool:
+        if SCEUtils.resolve_event_status(event).notify_error_status:
+            return True
+        if SCEUtils.resolve_last_sync_status(event).notify_error_status:
+            return True
+        for tournament in event.tournaments:
+            upload_statuses = SCEUtils.resolve_tournament_upload_statuses(tournament)
+            for status in upload_statuses:
+                if status.notify_error_status:
+                    return True
+        return False
+
     @hookimpl(tryfirst=True)
     def get_nav_data_transfer_items(
         self, event: 'Event'
     ) -> Iterable[NavDataTransferItem]:
-        status = SCEUtils.resolve_event_status(event)
-        has_error = False
-        if status.alert_message:
-            has_error = True
-        else:
-            for tournament in event.tournaments:
-                plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
-                if not plugin_data.id:
-                    continue
-                if plugin_data.conflict_sync_data or any(
-                    status.notify_error_status
-                    for status in SCEUtils.resolve_tournament_upload_statuses(
-                        tournament
-                    )
-                ):
-                    has_error = True
-                    break
-                for player in tournament.tournament_players:
-                    player_plugin_data = SCEUtils.get_player_plugin_data(player)
-                    if player_plugin_data.id and player_plugin_data.conflict_sync_data:
-                        has_error = True
-                        break
         return [
             NavDataTransferItem(
                 key='sce_data_transfer',
                 title='Sharly-Chess.com',
                 icon_path='/images/sharly-chess-events.ico',
                 modal_route_name='sce-sync-modal',
-                has_upload_error=has_error,
+                has_upload_error=self._event_has_sce_error_badge(event),
             )
         ]

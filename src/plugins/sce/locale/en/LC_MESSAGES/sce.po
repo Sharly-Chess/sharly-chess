@@ -115,10 +115,13 @@ msgstr ""
 msgid "Last synchronisation"
 msgstr ""
 
-msgid "Last upload"
+msgid "Last synchronisation attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr ""
 
-msgid "Last upload ran successfully."
+msgid "Last synchronisation attempt ran successfully."
+msgstr ""
+
+msgid "Last upload"
 msgstr ""
 
 msgid "Local"
@@ -136,6 +139,9 @@ msgstr ""
 msgid "Never uploaded"
 msgstr ""
 
+msgid "No changes detected since the last upload."
+msgstr ""
+
 msgid "No internet connection."
 msgstr ""
 
@@ -151,7 +157,7 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-msgid "Players successfully synchronized."
+msgid "Player conflicts detected during the last synchronisation attempt."
 msgstr ""
 
 msgid "Rating"
@@ -192,19 +198,16 @@ msgstr ""
 msgid "Statuses"
 msgstr ""
 
-msgid "Success"
-msgstr ""
-
 msgid "Synchronisation conflicts happen when the same data has been modified in both the local application and Sharly-Chess.com. To resolve them, you must either update the data to a non-conflictual state, or choose one version of the data to apply everywhere."
 msgstr ""
 
-msgid "Synchronisation failed, consult the logs for more details."
-msgstr ""
-
-msgid "Synchronisation interrupted, resolve the conflicts to continue."
+msgid "Synchronisation interrupted on {last_attempt_date} at {last_attempt_time}, tournament conflicts detected."
 msgstr ""
 
 msgid "Synchronisation is unavailable while there are conflicts."
+msgstr ""
+
+msgid "Synchronisation ongoing"
 msgstr ""
 
 #, python-format
@@ -235,6 +238,9 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
+msgid "Up to date"
+msgstr ""
+
 msgid "Upload"
 msgstr ""
 
@@ -254,13 +260,13 @@ msgstr ""
 msgid "Upload local tournaments"
 msgstr ""
 
-msgid "Upload started for all tournaments."
-msgstr ""
-
 msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
 msgstr ""
 
 msgid "Year of birth"
+msgstr ""
+
+msgid "consult the logs"
 msgstr ""
 
 msgid "no internet connection"
@@ -271,4 +277,9 @@ msgstr ""
 
 msgid "tournament not found, most likely deleted"
 msgstr ""
+
+msgid "{count} tournament successfully imported."
+msgid_plural "{count} tournaments successfully imported."
+msgstr[0] ""
+msgstr[1] ""
 

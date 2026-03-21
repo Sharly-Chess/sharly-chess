@@ -26,6 +26,29 @@ class SCETournamentStatus(IdentifiableEntity, ABC):
         an error badge on the data transfer button."""
         return False
 
+    @property
+    def is_silent(self) -> bool:
+        """Defines if a status is displayed or not."""
+        return False
+
+
+class SilentSCETournamentStatus(SCETournamentStatus, ABC):
+    @staticmethod
+    def static_name() -> str:
+        return ''
+
+    @property
+    def tooltip(self) -> str | None:
+        return None
+
+    @property
+    def css_classes(self) -> str:
+        return ''
+
+    @property
+    def is_silent(self) -> bool:
+        return True
+
 
 class NeverUploadedSCETournamentStatus(SCETournamentStatus):
     @staticmethod
@@ -63,18 +86,24 @@ class NotStartedSCETournamentStatus(SCETournamentStatus):
         return 'bg-secondary'
 
 
-class SuccessSCETournamentStatus(SCETournamentStatus):
+class SuccessSCETournamentStatus(SilentSCETournamentStatus):
     @staticmethod
     def static_id() -> str:
         return 'SUCCESS'
 
+
+class UpToDateSCETournamentStatus(SCETournamentStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'UP_TO_DATE'
+
     @staticmethod
     def static_name() -> str:
-        return _('Success')
+        return _('Up to date')
 
     @property
     def tooltip(self) -> str | None:
-        return _('Last upload ran successfully.')
+        return _('No changes detected since the last upload.')
 
     @property
     def css_classes(self) -> str:

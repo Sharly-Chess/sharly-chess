@@ -4,8 +4,14 @@
 {% set event_plugin_data = admin_event.plugin_data.sce %}
 
 <div
+    id="sce-sync-modal"
     class="modal-dialog modal-dialog-scrollable"
     style="--bs-modal-width: min(90vw, 800px);"
+    hx-get="{{ url_for(
+        'sce-sync-modal', event_uniq_id=admin_event.uniq_id
+    ) }}?no_refresh=True"
+    hx-trigger="ws:upload-event from:body"
+    hx-swap="outerHTML"
 >
     <div class="modal-content">
         <div class="modal-header">
@@ -19,7 +25,9 @@
             </h2>
         </div>
         <div class="modal-body">
-            {% include '/sce_event_status_section.html' %}
+            {% if sce_event_status.alert_message %}
+                {% include '/sce_event_status_alert.html' %}
+            {% endif %}
             {% if message %}
                 {% with type=message_type %}
                     {% include '/common/alert.html' %}
@@ -62,15 +70,26 @@
                             )) }}
                         {% endif %}
                     >
-                         <button
+                        <button
                             class="btn btn-outline-primary w-100"
                             hx-post="{{ url_for('sce-sync-players', event_uniq_id=admin_event.uniq_id) }}"
-                            {% if sce_event_status.actions_disabled or has_conflicts %}
+                            {% if sce_event_status.actions_disabled or has_conflicts or is_sync_ongoing %}
                                 disabled
                             {% endif %}
                         >
-                            <i class="bi-arrow-repeat pe-1"></i>
-                            {{ _('Synchronize players') }}
+                            {% if is_sync_ongoing %}
+                                 <i
+                                    class="bi-arrow-repeat mb-1 lh-1"
+                                    style="
+                                        display: inline-block;
+                                        animation: spin 1s infinite;
+                                        animation-timing-function: linear;"
+                                ></i>
+                                {{ _('Synchronisation ongoing') }}
+                            {% else %}
+                                <i class="bi-arrow-repeat pe-1"></i>
+                                {{ _('Synchronize players') }}
+                            {% endif %}
                         </button>
                     </span>
                     <span class="mt-1">
@@ -80,6 +99,15 @@
                                 string=_('Last synchronisation'),
                                 value=format_datetime(event_plugin_data.last_sync_at),
                             ) }}
+                            {% set last_attempt_at = event_plugin_data.last_sync_attempt_at %}
+                            {% if last_attempt_at %}
+                                <i
+                                    class="{{ sce_last_sync_status.icon_classes }}"
+                                    {{ macros.tooltip_attributes(
+                                        '', sce_last_sync_status.tooltip_message(last_attempt_at)
+                                    ) }}
+                                ></i>
+                            {% endif %}
                         {% else %}
                             <span class="fst-italic">{{ _('Never synchronized') }}</span>
                         {% endif %}

@@ -115,11 +115,14 @@ msgstr "Nom"
 msgid "Last synchronisation"
 msgstr "Dernière synchronisation"
 
+msgid "Last synchronisation attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
+msgstr "La dernière tentative de synchronisation a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
+
+msgid "Last synchronisation attempt ran successfully."
+msgstr "La dernière tentative de synchronisation s'est exécutée avec succès."
+
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
-
-msgid "Last upload ran successfully."
-msgstr "La dernière mise en ligne a réussi."
 
 msgid "Local"
 msgstr "Local"
@@ -136,6 +139,9 @@ msgstr "Jamais synchronisé"
 msgid "Never uploaded"
 msgstr "Jamais mis en ligne"
 
+msgid "No changes detected since the last upload."
+msgstr "Aucune modification détectée depuis la dernière mise en ligne."
+
 msgid "No internet connection."
 msgstr "Pas de connection à internet."
 
@@ -151,8 +157,8 @@ msgstr "En cours"
 msgid "Pending"
 msgstr "En attente"
 
-msgid "Players successfully synchronized."
-msgstr "Joueur·euses synchronisé·es avec succès."
+msgid "Player conflicts detected during the last synchronisation attempt."
+msgstr "Des conflits de joueur·euses ont été détectés lors de la dernière synchronisation."
 
 msgid "Rating"
 msgstr "Classement"
@@ -192,20 +198,17 @@ msgstr "Conflits de tournois Sharly-Chess.com"
 msgid "Statuses"
 msgstr "Statuts"
 
-msgid "Success"
-msgstr "Succès"
-
 msgid "Synchronisation conflicts happen when the same data has been modified in both the local application and Sharly-Chess.com. To resolve them, you must either update the data to a non-conflictual state, or choose one version of the data to apply everywhere."
 msgstr "Les conflits de synchronisation se produisent lorsque les mêmes données ont été modifiées à la fois dans l'application locale et dans Sharly-Chess.com. Pour les résoudre, vous devez soit mettre à jour les données manuellement, soit choisir une version des données à appliquer partout."
 
-msgid "Synchronisation failed, consult the logs for more details."
-msgstr "Synchronisation échouée, consultez les logs pour plus de détails."
-
-msgid "Synchronisation interrupted, resolve the conflicts to continue."
-msgstr "Synchronisation interrompue, résolvez les conflits pour continuer."
+msgid "Synchronisation interrupted on {last_attempt_date} at {last_attempt_time}, tournament conflicts detected."
+msgstr "Synchronisation interrompue le {last_attempt_date} à {last_attempt_time}, conflits de tournois détectés."
 
 msgid "Synchronisation is unavailable while there are conflicts."
 msgstr "La synchronisation n'est pas disponible lorsqu'il y a des conflits."
+
+msgid "Synchronisation ongoing"
+msgstr "Synchronisation en cours"
 
 #, python-format
 msgid "Synchronize automatically every %(delay)d minutes."
@@ -235,6 +238,9 @@ msgstr "Le tournoi est en cours de mise en ligne."
 msgid "Type"
 msgstr "Type"
 
+msgid "Up to date"
+msgstr "À jour"
+
 msgid "Upload"
 msgstr "Mettre en ligne"
 
@@ -254,14 +260,14 @@ msgstr "La mise en ligne a échoué de manière inattendue."
 msgid "Upload local tournaments"
 msgstr "Mettre en ligne les tournois locaux"
 
-msgid "Upload started for all tournaments."
-msgstr "Mise en ligne démarrée pour tous les tournois."
-
 msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
 msgstr "Mettre en ligne sur Sharly-Chess.com les tournois qui n'existent que localement."
 
 msgid "Year of birth"
 msgstr "Année de naissance"
+
+msgid "consult the logs"
+msgstr "consulter les logs"
 
 msgid "no internet connection"
 msgstr "aucune connection à internet"

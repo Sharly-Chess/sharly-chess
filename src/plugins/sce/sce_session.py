@@ -38,6 +38,12 @@ from plugins.sce.sce_event_status import (
     UnexpectedHttpSCEEventStatus,
     NotReachableSCEEventStatus,
 )
+from plugins.sce.sce_sync_status import (
+    SCESyncStatus,
+    TournamentConflictsSCESyncStatus,
+    PlayerConflictsSCESyncStatus,
+    SuccessSCESyncStatus,
+)
 from plugins.sce.utils import (
     SCETokens,
     SCEUtils,
@@ -455,10 +461,13 @@ class SCESession(Session):
             log_operation(
                 f'Tournament forced to [{local_sync_data.tournament_id}] (SC.com)'
             )
-
+        needs_saving = True
         if local_sync_data == sce_sync_data:
             # Already synced
-            plugin_data.last_sync_data = local_sync_data
+            if local_sync_data == plugin_data.last_sync_data:
+                needs_saving = False
+            else:
+                plugin_data.last_sync_data = local_sync_data
         elif sce_sync_data == plugin_data.last_sync_data:
             # Modified locally --> update SC.com value
             self.update_sce_player(local_sync_data, sce_sync_data.tournament_id, sce_id)
@@ -490,7 +499,10 @@ class SCESession(Session):
                 log_operation(
                     f'Not mergeable dual changes, conflict created (details: {e})'
                 )
-        SCEUtils.update_player_plugin_data(player, plugin_data)
+        if needs_saving:
+            SCEUtils.update_player_plugin_data(
+                player, plugin_data, write_stored_object=True
+            )
         return not has_conflict
 
     # -------------------------------------------------------------------------
@@ -818,9 +830,8 @@ class SCESession(Session):
             log_name += f' {data.first_name}'
         self._log_sync_operation(f'Player [{log_name}] - {message}')
 
-    def sync_event(self) -> bool:
+    def sync_event(self) -> SCESyncStatus:
         """Synchronize the event with its SC.com equivalent.
-        Returns False if there are conflicts to resolve.
         Raises a SharlyChessException if it fails."""
         self._log_sync_operation('Sync started', is_info=True)
         data = self._get_event_data(with_active_registrations=True)
@@ -838,7 +849,7 @@ class SCESession(Session):
                 f'{conflict_count} tournament(s) have conflicts, player sync aborted',
                 is_info=True,
             )
-            return False
+            return TournamentConflictsSCESyncStatus()
 
         sce_tournaments = SCEUtils.get_event_sce_tournaments(self.event)
         sce_tournament_ids = [
@@ -891,7 +902,9 @@ class SCESession(Session):
                 plugin_data = SCEUtils.get_player_plugin_data(player)
                 plugin_data.id = plugin_data.deleted_id
                 plugin_data.deleted_id = None
-                SCEUtils.update_player_plugin_data(player, plugin_data)
+                SCEUtils.update_player_plugin_data(
+                    player, plugin_data, write_stored_object=True
+                )
                 self._log_player_data_operation(
                     sce_sync_data, 'Restored after soft-deletion (local)'
                 )
@@ -912,7 +925,9 @@ class SCESession(Session):
             f'{conflict_count} player conflicts' if conflict_count else 'no conflicts'
         )
         self._log_sync_operation('Sync completed, ' + log_suffix, is_info=True)
-        return not bool(conflict_count)
+        if conflict_count:
+            return PlayerConflictsSCESyncStatus()
+        return SuccessSCESyncStatus()
 
     def _upload_tournament_results_request(
         self, sce_tournament_id: str, payload: dict

@@ -3,15 +3,7 @@
 
 {% set event_plugin_data = admin_event.plugin_data.sce %}
 
-<tbody
-    id="sce-upload-table"
-    hx-get="{{ url_for(
-        'sce-sync-modal-upload-table',
-        event_uniq_id=admin_event.uniq_id
-    ) }}"
-    hx-trigger="ws:upload-event from:body"
-    hx-swap="outerHTML"
->
+<tbody id="sce-upload-table">
     {% for tournament in sce_allowed_tournaments %}
         {% set plugin_data = tournament.plugin_data.sce %}
         <tr id="sce-tournament-row-{{ tournament.id }}">

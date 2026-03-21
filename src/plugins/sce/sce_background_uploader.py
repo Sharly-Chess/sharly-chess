@@ -1,5 +1,6 @@
 """Background uploader for SCE tournament results."""
 
+import time
 from datetime import datetime, timedelta
 from functools import partial
 from threading import Thread, Timer
@@ -32,6 +33,7 @@ get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 _ONGOING_TOURNAMENT_IDS: set[str] = set()
 _TIMEOUT_THREADS: dict[str, Timer] = {}
+_GROUP_UPLOAD_WAIT_QUEUE: set[str] = set()
 
 
 def _result_key(event_uniq_id: str, tournament_id: int) -> str:
@@ -48,6 +50,17 @@ def is_upload_ongoing(tournament: Tournament) -> bool:
     return key in _ONGOING_TOURNAMENT_IDS
 
 
+def is_upload_scheduled(tournament: Tournament) -> bool:
+    key = _tournament_result_key(tournament)
+    thread = _TIMEOUT_THREADS.get(key)
+    return bool(thread and thread.is_alive())
+
+
+def is_upload_queued(tournament: Tournament) -> bool:
+    key = _tournament_result_key(tournament)
+    return key in _GROUP_UPLOAD_WAIT_QUEUE
+
+
 def _publish_upload_event():
     if channels_plugin:
         channels_plugin.publish({'event': 'upload-event', 'data': ''}, ['ws'])
@@ -62,7 +75,13 @@ def upload_tournament(
 
     key = _result_key(event_uniq_id, tournament_id)
     _ONGOING_TOURNAMENT_IDS.add(key)
+    _GROUP_UPLOAD_WAIT_QUEUE.discard(key)
     _publish_upload_event()
+
+    # NOTE (Molrn) Ensures a minimum time for the thread
+    # This prevents flashing and situations where both requests
+    # triggered by the `upload-event` web socket are treated as one
+    time.sleep(0.5)
 
     event = None
     tournament = None
@@ -135,9 +154,8 @@ def upload_tournament(
             event_uniq_id,
             tournament_id,
         )
-    finally:
-        _ONGOING_TOURNAMENT_IDS.discard(key)
-        _publish_upload_event()
+    _ONGOING_TOURNAMENT_IDS.discard(key)
+    _publish_upload_event()
 
 
 def _set_upload_status(
@@ -185,6 +203,8 @@ def remove_scheduled_upload(tournament: Tournament):
 
 def schedule_upload(tournament: Tournament, force: bool = False):
     """Launch a background thread to upload this tournament's results."""
+    if not tournament.started:
+        return
     key = _tournament_result_key(tournament)
     if key in _ONGOING_TOURNAMENT_IDS:
         return
@@ -204,7 +224,6 @@ def schedule_upload(tournament: Tournament, force: bool = False):
         upload_tournament,
         args=(tournament.event.uniq_id, tournament.id),
     )
-    key = _tournament_result_key(tournament)
     _TIMEOUT_THREADS[key] = timer
     timer.start()
 
@@ -212,18 +231,22 @@ def schedule_upload(tournament: Tournament, force: bool = False):
 def upload_event_tournaments(tournaments: list[Tournament]) -> None:
     """Upload all eligible SCE tournaments for an event in a background thread."""
     eligible = [
-        t
-        for t in tournaments
-        if SCEUtils.get_tournament_plugin_data(t).id
-        and t.started
-        and _tournament_result_key(t) not in _ONGOING_TOURNAMENT_IDS
+        tournament
+        for tournament in tournaments
+        if SCEUtils.get_tournament_plugin_data(tournament).id
+        and tournament.started
+        and _tournament_result_key(tournament) not in _ONGOING_TOURNAMENT_IDS
     ]
     if not eligible:
         return
 
+    event_uniq_id = tournaments[0].event.uniq_id
+    for tournament in eligible:
+        _GROUP_UPLOAD_WAIT_QUEUE.add(_tournament_result_key(tournament))
+
     def _run() -> None:
         set_locale(SharlyChessConfig().locale)
-        for t in eligible:
-            upload_tournament(t.event.uniq_id, t.id)
+        for tournament in eligible:
+            upload_tournament(event_uniq_id, tournament.id)
 
     Thread(target=_run, daemon=True).start()

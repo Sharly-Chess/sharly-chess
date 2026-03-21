@@ -34,6 +34,12 @@ class SCEEventStatus(IdentifiableEntity, ABC):
         """Type of the alert displayed."""
         return 'error'
 
+    @property
+    def notify_error_status(self) -> bool:
+        """Defines if the status is notified to the user via
+        an error badge on the data transfer button."""
+        return False
+
 
 class PublishedSCEEventStatus(SCEEventStatus):
     @staticmethod
@@ -65,6 +71,10 @@ class ArchivedSCEEventStatus(SCEEventStatus):
     @property
     def alert_type(self) -> str:
         return 'warning'
+
+    @property
+    def notify_error_status(self) -> bool:
+        return True
 
 
 class NoInternetSCEEventStatus(SCEEventStatus):
@@ -102,6 +112,10 @@ class InvalidRefreshTokenSCEEventStatus(SCEEventStatus):
     def oauth_button(self) -> bool:
         return True
 
+    @property
+    def notify_error_status(self) -> bool:
+        return True
+
 
 class NotFoundSCEEventStatus(SCEEventStatus):
     @staticmethod
@@ -120,6 +134,10 @@ class NotFoundSCEEventStatus(SCEEventStatus):
     def retry_button(self) -> bool:
         return True
 
+    @property
+    def notify_error_status(self) -> bool:
+        return True
+
 
 class NotReachableSCEEventStatus(SCEEventStatus):
     @staticmethod
@@ -136,6 +154,10 @@ class NotReachableSCEEventStatus(SCEEventStatus):
 
     @property
     def retry_button(self) -> bool:
+        return True
+
+    @property
+    def notify_error_status(self) -> bool:
         return True
 
 
@@ -157,6 +179,10 @@ class UnexpectedHttpSCEEventStatus(SCEEventStatus):
 
     @property
     def retry_button(self) -> bool:
+        return True
+
+    @property
+    def notify_error_status(self) -> bool:
         return True
 
 

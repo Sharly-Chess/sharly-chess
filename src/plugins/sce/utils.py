@@ -18,33 +18,28 @@ from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_event_status import (
     SCEEventStatus,
-    PublishedSCEEventStatus,
-    DraftSCEEventStatus,
-    ArchivedSCEEventStatus,
     NoInternetSCEEventStatus,
     InvalidRefreshTokenSCEEventStatus,
-    NotFoundSCEEventStatus,
     NotConnectedSCEEventStatus,
-    UnexpectedHttpSCEEventStatus,
-    NotReachableSCEEventStatus,
 )
+from plugins.sce.sce_managers import (
+    SCETournamentStatusManager,
+    SCEEventStatusManager,
+    SCESyncStatusManager,
+)
+from plugins.sce.sce_sync_status import SCESyncStatus, NeverSyncedSCESyncStatus
 from plugins.sce.sce_tournament_status import (
-    SuccessSCETournamentStatus,
     SCETournamentStatus,
     ModifiedSCETournamentStatus,
     PendingSCETournamentStatus,
     NotStartedSCETournamentStatus,
     NeverUploadedSCETournamentStatus,
     OngoingSCETournamentStatus,
-    NetworkFailureSCETournamentStatus,
-    UnexpectedHTTPFailureSCETournamentStatus,
-    NotFoundFailureSCETournamentStatus,
-    AuthFailureSCETournamentStatus,
+    UpToDateSCETournamentStatus,
 )
 from plugins.utils import PluginData, PluginUtils
 from utils import Utils
 from utils.date_time import format_date_range, format_datetime
-from utils.entity import EntityManager
 from utils.enum import PlayerTitle, PlayerRatingType, TournamentRating
 from utils.types import PlayerRating, PlayerRatingAndType
 from web.urls import build_get_url
@@ -298,6 +293,8 @@ class SCEEventPluginData(PluginData):
     auto_player_sync: bool = False
     tournament_names_by_id: dict[str, str] = field(default_factory=dict)
     last_sync_at: datetime | None = None
+    last_sync_attempt_at: datetime | None = None
+    last_sync_attempt_status: str | None = None
     deleted_player_ids: list[str] = field(default_factory=list)
     tokens: SCETokens | None = None
 
@@ -330,6 +327,10 @@ class SCEEventPluginData(PluginData):
             last_sync_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_sync_at'),
             ),
+            last_sync_attempt_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_sync_attempt_at'),
+            ),
+            last_sync_attempt_status=stored_value.get('last_sync_attempt_status'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -345,6 +346,10 @@ class SCEEventPluginData(PluginData):
             'last_sync_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
                 self.last_sync_at
             ),
+            'last_sync_attempt_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_sync_attempt_at
+            ),
+            'last_sync_attempt_status': self.last_sync_attempt_status,
         }
         if self.tokens:
             stored_value['tokens'] = {
@@ -493,37 +498,6 @@ class SCEPlayerPluginData(PluginData):
         return {}
 
 
-class _SCEEventStatusManager(EntityManager[SCEEventStatus]):
-    def entity_types(self) -> list[type[SCEEventStatus]]:
-        return [
-            PublishedSCEEventStatus,
-            DraftSCEEventStatus,
-            ArchivedSCEEventStatus,
-            NoInternetSCEEventStatus,
-            InvalidRefreshTokenSCEEventStatus,
-            NotFoundSCEEventStatus,
-            UnexpectedHttpSCEEventStatus,
-            NotConnectedSCEEventStatus,
-            NotReachableSCEEventStatus,
-        ]
-
-
-class _SCETournamentStatusManager(EntityManager[SCETournamentStatus]):
-    def entity_types(self) -> list[type[SCETournamentStatus]]:
-        return [
-            NeverUploadedSCETournamentStatus,
-            NotStartedSCETournamentStatus,
-            SuccessSCETournamentStatus,
-            ModifiedSCETournamentStatus,
-            PendingSCETournamentStatus,
-            OngoingSCETournamentStatus,
-            NetworkFailureSCETournamentStatus,
-            NotFoundFailureSCETournamentStatus,
-            UnexpectedHTTPFailureSCETournamentStatus,
-            AuthFailureSCETournamentStatus,
-        ]
-
-
 class SCEUtils:
     @staticmethod
     def get_event_plugin_data(event: Event) -> SCEEventPluginData:
@@ -589,12 +563,20 @@ class SCEUtils:
         player: Player,
         plugin_data: SCEPlayerPluginData,
         write: bool = True,
+        write_stored_object: bool = False,
     ):
         player.stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         player.plugin_data[PLUGIN_NAME] = plugin_data
         if write:
-            with EventDatabase(player.event.uniq_id, True) as database:
-                database.update_stored_player(player.stored_player)
+            with EventDatabase(player.event.uniq_id, write=True) as database:
+                if write_stored_object:
+                    database.update_stored_player(player.stored_player)
+                else:
+                    database.execute(
+                        'UPDATE player SET plugin_data = '
+                        "json_set(plugin_data,'$.sce', json(?)) WHERE id = ?",
+                        (json.dumps(plugin_data.to_stored_value()), player.id),
+                    )
 
     @classmethod
     def get_event_sce_tournaments(cls, event: Event) -> list[Tournament]:
@@ -641,28 +623,42 @@ class SCEUtils:
     def resolve_tournament_upload_statuses(
         cls, tournament: Tournament
     ) -> list[SCETournamentStatus]:
-        from plugins.sce.sce_background_uploader import is_upload_ongoing
+        from plugins.sce.sce_background_uploader import (
+            is_upload_ongoing,
+            is_upload_queued,
+            is_upload_scheduled,
+        )
 
-        is_ongoing = is_upload_ongoing(tournament)
+        plugin_data = cls.get_tournament_plugin_data(tournament)
         if not tournament.started:
             return [NotStartedSCETournamentStatus()]
-        if is_ongoing:
-            return [OngoingSCETournamentStatus()]
 
-        event_plugin_data = cls.get_event_plugin_data(tournament.event)
-        plugin_data = cls.get_tournament_plugin_data(tournament)
         statuses: list[SCETournamentStatus] = []
-        last_upload = plugin_data.last_upload_at
-        is_modified = cls.tournament_modified_since_last_upload(tournament)
-        if plugin_data.upload_status:
-            statuses.append(
-                _SCETournamentStatusManager().get_object(plugin_data.upload_status)
+
+        # Last upload status
+        try:
+            status = SCETournamentStatusManager().get_object(
+                plugin_data.upload_status or ''
             )
-        if not last_upload:
+            statuses.append(status)
+        except KeyError:
+            pass
+
+        is_modified = cls.tournament_modified_since_last_upload(tournament)
+        # Current data status
+        if not plugin_data.last_upload_at:
             statuses.append(NeverUploadedSCETournamentStatus())
         elif is_modified:
             statuses.append(ModifiedSCETournamentStatus())
-        if event_plugin_data.auto_upload and plugin_data.auto_upload and is_modified:
+        else:
+            statuses.append(UpToDateSCETournamentStatus())
+
+        # Next upload status
+        if is_upload_ongoing(tournament):
+            statuses.append(OngoingSCETournamentStatus())
+        elif is_upload_queued(tournament) or (
+            is_upload_scheduled(tournament) and is_modified
+        ):
             statuses.append(PendingSCETournamentStatus())
         return statuses
 
@@ -676,7 +672,17 @@ class SCEUtils:
         if not plugin_data.tokens:
             return InvalidRefreshTokenSCEEventStatus()
 
-        return _SCEEventStatusManager().get_object(plugin_data.status)
+        return SCEEventStatusManager().get_object(plugin_data.status)
+
+    @classmethod
+    def resolve_last_sync_status(cls, event: Event) -> SCESyncStatus:
+        plugin_data = cls.get_event_plugin_data(event)
+        try:
+            return SCESyncStatusManager().get_object(
+                plugin_data.last_sync_attempt_status or ''
+            )
+        except KeyError:
+            return NeverSyncedSCESyncStatus()
 
     @classmethod
     def tournament_modified_since_last_upload(
