@@ -19,6 +19,7 @@
 - Fixed slowness on player search (3.6.4)
 - Minimize federation flags (3.6.5)
 - Fixed player check-in on already started tournaments (3.6.6)
+- Fixed player ODS export (3.6.7)
 
 ## Pairings
 
