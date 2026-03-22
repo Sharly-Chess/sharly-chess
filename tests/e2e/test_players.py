@@ -34,7 +34,7 @@ class TestPlayersFunctionality:
         modal.get_by_test_id('first-name').fill('john')
         modal.get_by_test_id('date-of-birth').fill('2000-10-30')
         modal.get_by_test_id('gender').select_option(
-            str(PlayerGender.MALE.value), force=True
+            str(PlayerGender.MAN.value), force=True
         )
         modal.get_by_test_id('club').fill('SC Club')
         modal.get_by_test_id('federation').select_option('FRA', force=True)
@@ -65,7 +65,7 @@ class TestPlayersFunctionality:
             assert player.last_name == 'DOE'
             assert player.first_name == 'John'
             assert player.date_of_birth == date(2000, 10, 30)
-            assert player.gender == PlayerGender.MALE
+            assert player.gender == PlayerGender.MAN
             assert player.club.name == 'SC Club'
             assert player.fixed == 100
             assert player.ratings == {
