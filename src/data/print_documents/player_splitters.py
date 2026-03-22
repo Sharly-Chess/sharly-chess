@@ -6,6 +6,7 @@ from common.i18n import _
 from common.i18n.utils import normalized_key
 from data.event import Event
 from data.player import TournamentPlayer
+from data.player_categories import NoCategory
 from utils.entity import IdentifiableEntity
 
 
@@ -19,7 +20,7 @@ class PlayerSplitter(IdentifiableEntity, ABC):
     @staticmethod
     def get_empty_key_default() -> str:
         """Return the string to use for eventual empty split key."""
-        return ''
+        return '???'
 
     @staticmethod
     def sorted_split_keys(event: Event, split_keys: Iterable[str]) -> list[str]:
@@ -65,7 +66,15 @@ class CategoryPlayerSplitter(PlayerSplitter):
 
     @staticmethod
     def get_split_key(tournament_player: TournamentPlayer) -> str:
-        return tournament_player.category.name
+        return (
+            ''
+            if isinstance(tournament_player.category, NoCategory)
+            else tournament_player.category.name
+        )
+
+    @staticmethod
+    def get_empty_key_default() -> str:
+        return _('Category not specified')
 
     @staticmethod
     def sorted_split_keys(event: Event, split_keys: Iterable[str]) -> list[str]:
@@ -88,7 +97,7 @@ class ClubPlayerSplitter(PlayerSplitter):
 
     @staticmethod
     def get_empty_key_default() -> str:
-        return _('No club')
+        return _('Club not specified')
 
 
 class FederationPlayerSplitter(PlayerSplitter):
