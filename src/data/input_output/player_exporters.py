@@ -136,7 +136,7 @@ class CsvPlayerExporter(PlayerTabularExporter):
 
     def _get_tabular_file_path(self, header: list[str], data: list[list[Any]]) -> Path:
         temp_file = NamedTemporaryFile(
-            delete=False, mode='w', suffix='.csv', newline=''
+            delete=False, mode='w', suffix='.csv', newline='', encoding='utf-8'
         )
         writer = csv.writer(temp_file)
         writer.writerow(header)
