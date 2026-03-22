@@ -18,5 +18,9 @@
 - Add round schedule to tournaments (3.7.0)
 
 ## Plugins
+
+- New plugin Sharly-Chess.com
+
 ### ChessEvent
+
 - Synchronize button moved to the _Data Transfer_ menu (3.7.0)

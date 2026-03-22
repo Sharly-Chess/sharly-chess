@@ -20,18 +20,13 @@ from data.player import TournamentPlayer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.manager import plugin_manager
-from plugins.sce import PLUGIN_NAME
+from plugins.sce import PLUGIN_NAME, SCE_BASE_URL, SCE_SYNC_DELAY, SCE_UPLOAD_DELAY
 from plugins.sce.sce_background_synchronizer import (
     schedule_sync,
     remove_scheduled_sync,
     is_sync_ongoing,
 )
-from plugins.sce.sce_session import (
-    SCESession,
-    SCE_BASE_URL,
-    SCE_SYNC_DELAY,
-    SCE_UPLOAD_DELAY,
-)
+from plugins.sce.sce_session import SCESession
 from plugins.sce.sce_background_uploader import (
     schedule_upload,
     upload_event_tournaments,
@@ -837,8 +832,29 @@ class SCEAdminController(BaseAdminController):
         ],
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
+        event = web_context.get_admin_event()
         flat_data = WebContext.flatten_list_data(data)
         tournament_ids = WebContext.form_data_to_list_int(flat_data, 'tournament_ids')
-        # TODO (Molrn) Implement local tournaments upload
-        message = f'Tournaments {tournament_ids} uploaded.'
-        return self._render_sync_modal(web_context, message)
+        session = SCESession(event)
+        message: str | None = None
+        is_error_message = False
+        for tournament_id in tournament_ids:
+            tournament = event.tournaments_by_id.get(tournament_id)
+            if not tournament:
+                raise ClientException(f'Tournament [{tournament_id}] not found')
+            try:
+                session.create_sce_tournament(tournament)
+            except SharlyChessException as e:
+                logger.error(e)
+                is_error_message = True
+                message = _(
+                    'Error while uploading tournament [{tournament}], '
+                    'consult the logs for more details.'
+                ).format(tournament=tournament.name)
+        if not message and tournament_ids:
+            message = ngettext(
+                '{count} tournament successfully uploaded.',
+                '{count} tournaments successfully uploaded.',
+                len(tournament_ids),
+            ).format(count=len(tournament_ids))
+        return self._render_sync_modal(web_context, message, is_error_message)

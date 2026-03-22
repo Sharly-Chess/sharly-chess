@@ -151,7 +151,6 @@ class IndexAdminController(BaseAdminController):
                 plugin
                 for plugin in plugin_manager.all_plugins
                 if WebContext.form_data_to_bool(data, plugin.form_key)
-                or plugin.is_hidden
             ]
         )
         for plugin in plugin_manager.all_plugins:
@@ -273,17 +272,19 @@ class IndexAdminController(BaseAdminController):
         svg_logo = (BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg').read_text(
             encoding='utf-8'
         )
-
         request = web_context.request
         context = (
             web_context.template_context
             | {
-                'messages': Message.messages(web_context.request),
+                'messages': Message.messages(request),
                 'format_date_range': format_date_range,
                 'format_date': format_date,
                 'nav_tabs': nav_tabs,
                 'svg_logo': svg_logo,
                 'show_details': SessionEventsShowDetails(request).get(),
+                'plugin_event_create_button_templates': (
+                    plugin_manager.hook.create_event_button_template()
+                ),
             }
             | (template_context or {})
         )
@@ -532,14 +533,6 @@ class IndexAdminController(BaseAdminController):
                 plugin
                 for plugin in plugin_manager.enabled_plugins
                 if WebContext.form_data_to_bool(data, plugin.form_key)
-                or (
-                    plugin.is_hidden
-                    and (
-                        plugin.default_event_is_enabled
-                        if not admin_event
-                        else plugin in admin_event.enabled_plugins
-                    )
-                )
             ]
         )
 
@@ -625,11 +618,7 @@ class IndexAdminController(BaseAdminController):
             'months_options': self._months_options(),
             'modal': 'event',
             'event_uniq_ids': list(EventLoader().event_uniq_ids),
-            'plugins': [
-                plugin
-                for plugin in plugin_manager.enabled_plugins
-                if not plugin.is_hidden
-            ],
+            'plugins': plugin_manager.enabled_plugins,
             'federation_plugin_used': federation_plugin_used,
             'player_rating_type_options': {
                 str(PlayerRatingType.FIDE.value): _('FIDE'),
@@ -1222,8 +1211,6 @@ class IndexAdminController(BaseAdminController):
         plugins_by_federation: dict[str | None, list[Plugin]] = defaultdict(list)
 
         for plugin in plugin_manager.all_plugins:
-            if plugin.is_hidden:
-                continue
             federation = plugin.federation
             if federation:
                 plugins_by_federation[federation].append(plugin)

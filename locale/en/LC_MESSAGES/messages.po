@@ -2748,9 +2748,6 @@ msgstr ""
 msgid "Import a tournament to the event from an external source."
 msgstr ""
 
-msgid "Import from Sharly-Chess.com"
-msgstr ""
-
 msgid "Import players from a CSV file."
 msgstr ""
 

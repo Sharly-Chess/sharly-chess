@@ -204,6 +204,10 @@ class AppHookSpecs:
         Also provide the ID of the plugin."""
 
     @hookspec
+    def create_event_button_template(self) -> str:
+        """Template of a button added to the `Create event` dropdown."""
+
+    @hookspec
     def validate_event_form_fields(
         self,
         action: str,

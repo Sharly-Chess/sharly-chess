@@ -12,8 +12,8 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.loader import EventLoader
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredEvent, StoredTournament
-from plugins.sce import PLUGIN_NAME
-from plugins.sce.sce_session import SCESession, SCE_UPLOAD_DELAY
+from plugins.sce import PLUGIN_NAME, SCE_UPLOAD_DELAY
+from plugins.sce.sce_session import SCESession
 from plugins.sce.sce_tournament_results_builder import build_tournament_results
 from plugins.sce.sce_tournament_status import (
     AuthFailureSCETournamentStatus,

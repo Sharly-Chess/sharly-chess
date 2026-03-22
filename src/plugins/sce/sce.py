@@ -2,6 +2,7 @@ from typing import TYPE_CHECKING, Iterable, Any
 
 from packaging.version import Version
 
+from common.i18n import _
 from data.event import Event
 from data.loader import EventLoader
 from plugins.hookspec import hookimpl, hookspec
@@ -21,13 +22,14 @@ from plugins.sce.utils import (
 )
 from plugins.utils import (
     PluginData,
-    HiddenPlugin,
     NavDataTransferItem,
+    Plugin,
 )
 from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
     from data.player import TournamentPlayer, Player
+    from data.tournament import Tournament
     from database.sqlite.event.event_store import (
         StoredEvent,
         StoredTournament,
@@ -71,7 +73,7 @@ class SCEPluginHooks:
         """Alter the ranking columns of the SCE results upload."""
 
 
-class SCEPlugin(HiddenPlugin):
+class SCEPlugin(Plugin):
     @staticmethod
     def static_id() -> str:
         return PLUGIN_NAME
@@ -85,6 +87,13 @@ class SCEPlugin(HiddenPlugin):
         return Version('1.0.0')
 
     @property
+    def description(self) -> str:
+        return _(
+            'Integration with the Sharly-Chess.com platform '
+            '(online check-in, results upload, etc...).'
+        )
+
+    @property
     def hookspecs(self) -> type | None:
         return SCEPluginHooks
 
@@ -95,10 +104,6 @@ class SCEPlugin(HiddenPlugin):
     @property
     def default_event_is_enabled(self) -> bool:
         return False
-
-    @property
-    def is_hidden(self) -> bool:
-        return True
 
     @property
     def controllers(self) -> list[type[BaseController]]:
@@ -117,6 +122,10 @@ class SCEPlugin(HiddenPlugin):
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, SCEEventPluginData
 
+    @hookimpl
+    def create_event_button_template(self) -> str:
+        return '/sce_event_create_button.html'
+
     # ---------------------------------------------------------------------------------
     # Tournaments
     # ---------------------------------------------------------------------------------
@@ -124,6 +133,18 @@ class SCEPlugin(HiddenPlugin):
     @hookimpl
     def get_tournament_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, SCETournamentPluginData
+
+    @hookimpl
+    def get_tournament_page_template_context(self) -> dict[str, Any]:
+        return {'sce_utils': SCEUtils}
+
+    @hookimpl
+    def get_tournament_card_connexion_template(
+        self, tournament: 'Tournament'
+    ) -> str | None:
+        if not SCEUtils.get_tournament_plugin_data(tournament).id:
+            return None
+        return '/sce_tournament_card_connexion.html'
 
     @hookimpl
     def on_tournament_data_updated(

@@ -44,9 +44,16 @@
             </td>
             <td class="d-flex gap-2 align-items-center">
                 <div class="flex-grow-1"></div>
-                <a href="{{ sce_utils.tournament_url(tournament) }}" target="_blank" class="mt-1">
-                    <i class="bi bi-box-arrow-up-right"></i>
-                </a>
+                <a
+                    href="{{ sce_utils.tournament_public_url(tournament) }}"
+                    target="_blank"
+                    {{ macros.tooltip_attributes('', _('Public page of the tournament.')) }}
+                ><i class="bi bi-box-arrow-up-right"></i></a>
+                <a
+                    href="{{ sce_utils.tournament_private_url(tournament) }}"
+                    target="_blank"
+                    {{ macros.tooltip_attributes('', _('Configuration page of the tournament.')) }}
+                ><i class="bi bi-gear-fill"></i></a>
                 <span {{ macros.tooltip_attributes('', _('Upload')) }}>
                     <button
                         type="button"

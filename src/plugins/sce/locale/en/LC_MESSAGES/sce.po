@@ -42,6 +42,12 @@ msgstr ""
 msgid "Auto-synchronisation"
 msgstr ""
 
+msgid "Auto-upload disabled"
+msgstr ""
+
+msgid "Auto-upload enabled"
+msgstr ""
+
 msgid "Auto-upload of the tournament has been planned."
 msgstr ""
 
@@ -52,6 +58,12 @@ msgid "Close"
 msgstr ""
 
 msgid "Club"
+msgstr ""
+
+msgid "Configuration page of the event."
+msgstr ""
+
+msgid "Configuration page of the tournament."
 msgstr ""
 
 msgid "Conflict"
@@ -82,6 +94,9 @@ msgstr ""
 msgid "Edit the tournament"
 msgstr ""
 
+msgid "Error while uploading tournament [{tournament}], consult the logs for more details."
+msgstr ""
+
 msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
 msgstr ""
 
@@ -106,7 +121,13 @@ msgstr ""
 msgid "Import Sharly-Chess.com tournaments that do not exist locally."
 msgstr ""
 
+msgid "Import from Sharly-Chess.com"
+msgstr ""
+
 msgid "Import new tournaments"
+msgstr ""
+
+msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc...)."
 msgstr ""
 
 msgid "Last name"
@@ -145,6 +166,9 @@ msgstr ""
 msgid "No internet connection."
 msgstr ""
 
+msgid "No player to synchronize yet, import or upload tournaments first."
+msgstr ""
+
 msgid "Not started"
 msgstr ""
 
@@ -158,6 +182,12 @@ msgid "Pending"
 msgstr ""
 
 msgid "Player conflicts detected during the last synchronisation attempt."
+msgstr ""
+
+msgid "Public page of the event."
+msgstr ""
+
+msgid "Public page of the tournament."
 msgstr ""
 
 msgid "Rating"
@@ -180,6 +210,9 @@ msgstr ""
 msgid "Retry"
 msgstr ""
 
+msgid "Sharly-Chess.com"
+msgstr ""
+
 msgid "Sharly-Chess.com authorization canceled."
 msgstr ""
 
@@ -190,6 +223,9 @@ msgid "Sharly-Chess.com is not reachable at the moment."
 msgstr ""
 
 msgid "Sharly-Chess.com player conflicts"
+msgstr ""
+
+msgid "Sharly-Chess.com tournament"
 msgstr ""
 
 msgid "Sharly-Chess.com tournament conflicts"
@@ -280,6 +316,11 @@ msgstr ""
 
 msgid "{count} tournament successfully imported."
 msgid_plural "{count} tournaments successfully imported."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{count} tournament successfully uploaded."
+msgid_plural "{count} tournaments successfully uploaded."
 msgstr[0] ""
 msgstr[1] ""
 

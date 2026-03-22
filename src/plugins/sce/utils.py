@@ -15,7 +15,7 @@ from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer, StoredTournament
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.manager import plugin_manager
-from plugins.sce import PLUGIN_NAME
+from plugins.sce import PLUGIN_NAME, SCE_BASE_URL
 from plugins.sce.sce_event_status import (
     SCEEventStatus,
     NoInternetSCEEventStatus,
@@ -685,6 +685,12 @@ class SCEUtils:
             return NeverSyncedSCESyncStatus()
 
     @classmethod
+    def resolve_tournament_auto_upload(cls, tournament: Tournament) -> bool:
+        if not cls.get_event_plugin_data(tournament.event).auto_upload:
+            return False
+        return cls.get_tournament_plugin_data(tournament).auto_upload
+
+    @classmethod
     def tournament_modified_since_last_upload(
         cls, tournament: Tournament | StoredTournament
     ) -> bool:
@@ -706,18 +712,27 @@ class SCEUtils:
         return plugin_data.last_upload_at
 
     @classmethod
-    def event_url(cls, event: Event) -> str:
-        from plugins.sce.sce_session import SCE_BASE_URL
+    def event_public_url(cls, event: Event) -> str:
+        slug = cls.get_event_plugin_data(event).slug
+        return build_get_url(SCE_BASE_URL, f'/events/{slug}')
 
+    @classmethod
+    def event_private_url(cls, event: Event) -> str:
         pd = cls.get_event_plugin_data(event)
         return build_get_url(
             SCE_BASE_URL, f'/organizer/{pd.organiser_slug}/events/{pd.id}'
         )
 
     @classmethod
-    def tournament_url(cls, tournament: Tournament) -> str:
-        from plugins.sce.sce_session import SCE_BASE_URL
+    def tournament_public_url(cls, tournament: Tournament) -> str:
+        slug = cls.get_event_plugin_data(tournament.event).slug
+        tournament_id = cls.get_tournament_plugin_data(tournament).id
+        return build_get_url(
+            SCE_BASE_URL, f'/events/{slug}/tournaments/{tournament_id}'
+        )
 
+    @classmethod
+    def tournament_private_url(cls, tournament: Tournament) -> str:
         pd = cls.get_event_plugin_data(tournament.event)
         tournament_id = cls.get_tournament_plugin_data(tournament).id
         return build_get_url(

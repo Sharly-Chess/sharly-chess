@@ -19,9 +19,20 @@
                 <span class="pe-1">
                     Sharly-Chess.com
                 </span>
-                <a href="{{ sce_utils.event_url(admin_event) }}" target="_blank" style="font-size: 70%">
-                    <i class="bi bi-box-arrow-up-right" ></i>
-                </a>
+                {% if event_plugin_data.id %}
+                    <a
+                        href="{{ sce_utils.event_public_url(admin_event) }}"
+                        target="_blank"
+                        style="font-size: 70%"
+                        {{ macros.tooltip_attributes('', _('Public page of the event.')) }}
+                    ><i class="bi bi-box-arrow-up-right"></i></a>
+                    <a
+                        href="{{ sce_utils.event_private_url(admin_event) }}"
+                        target="_blank"
+                        style="font-size: 70%"
+                        {{ macros.tooltip_attributes('', _('Configuration page of the event.')) }}
+                    ><i class="bi bi-gear-fill"></i></a>
+                {% endif %}
             </h2>
         </div>
         <div class="modal-body">
@@ -68,12 +79,21 @@
                             {{ macros.tooltip_attributes('warning', _(
                                 'Synchronisation is unavailable while there are conflicts.'
                             )) }}
+                        {% elif not sce_allowed_tournaments %}
+                            {{ macros.tooltip_attributes('', _(
+                                'No player to synchronize yet, import or upload tournaments first.'
+                            )) }}
                         {% endif %}
                     >
                         <button
                             class="btn btn-outline-primary w-100"
                             hx-post="{{ url_for('sce-sync-players', event_uniq_id=admin_event.uniq_id) }}"
-                            {% if sce_event_status.actions_disabled or has_conflicts or is_sync_ongoing %}
+                            {% if (
+                                sce_event_status.actions_disabled or
+                                has_conflicts or
+                                is_sync_ongoing or
+                                not sce_allowed_tournaments
+                            ) %}
                                 disabled
                             {% endif %}
                         >
@@ -284,66 +304,68 @@
                     </span>
                 </div>
             </div>
-            <h4 class="mt-2">
-                {{ _('Results upload') }}
-            </h4>
-            <table class="table prominent table-sm w-100 bg-light mx-auto justify-content-center">
-                <thead>
-                    <tr>
-                        <th>
-                            <div
-                                class="form-check blue-checkbox form-switch d-inline-block"
-                                {{ macros.tooltip_attributes('', _(
-                                    'Upload automatically every %(delay)d minutes.',
-                                    delay=SCE_UPLOAD_DELAY,
-                                )) }}
-                            >
-                                <input
-                                    name="auto_upload"
-                                    class="form-check-input blue-checkbox"
-                                    type="checkbox"
-                                    hx-patch="{{ url_for(
-                                        'sce-update-event-auto-upload',
-                                        event_uniq_id=admin_event.uniq_id
-                                    ) }}"
-                                    value="on"
-                                    {% if event_plugin_data.auto_upload %}
-                                        checked
-                                    {% endif %}
-                                    {% if sce_event_status.actions_disabled %}
-                                        disabled
-                                    {% endif %}
-                                />
-                                <i class="bi-arrow-repeat"></i>
-                            </div>
-                        </th>
-                        <th>
-                            {{ _('Tournament') }}
-                        </th>
-                        <th class="text-center">
-                            {{ _('Statuses') }}
-                        </th>
-                        <th class="text-center text-nowrap">
-                            {{ _('Last upload') }}
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                {% include '/sce_upload_table.html' %}
-            </table>
-            <div class="text-center mt-3 mb-1">
-                <button
-                    type="button"
-                    hx-post="{{ url_for('sce-upload-all-tournament-results', event_uniq_id=admin_event.uniq_id) }}"
-                    class="text-nowrap white btn btn-outline-primary"
-                    {% if sce_event_status.actions_disabled %}
-                        disabled
-                    {% endif %}
-                >
-                    <i class="bi-cloud-arrow-up-fill pe-1"></i>
-                    {{ _('Upload all tournament results') }}
-                </button>
-            </div>
+            {% if sce_allowed_tournaments %}
+                <h4 class="mt-2">
+                    {{ _('Results upload') }}
+                </h4>
+                <table class="table prominent table-sm w-100 bg-light mx-auto justify-content-center">
+                    <thead>
+                        <tr>
+                            <th>
+                                <div
+                                    class="form-check blue-checkbox form-switch d-inline-block"
+                                    {{ macros.tooltip_attributes('', _(
+                                        'Upload automatically every %(delay)d minutes.',
+                                        delay=SCE_UPLOAD_DELAY,
+                                    )) }}
+                                >
+                                    <input
+                                        name="auto_upload"
+                                        class="form-check-input blue-checkbox"
+                                        type="checkbox"
+                                        hx-patch="{{ url_for(
+                                            'sce-update-event-auto-upload',
+                                            event_uniq_id=admin_event.uniq_id
+                                        ) }}"
+                                        value="on"
+                                        {% if event_plugin_data.auto_upload %}
+                                            checked
+                                        {% endif %}
+                                        {% if sce_event_status.actions_disabled %}
+                                            disabled
+                                        {% endif %}
+                                    />
+                                    <i class="bi-arrow-repeat"></i>
+                                </div>
+                            </th>
+                            <th>
+                                {{ _('Tournament') }}
+                            </th>
+                            <th class="text-center">
+                                {{ _('Statuses') }}
+                            </th>
+                            <th class="text-center text-nowrap">
+                                {{ _('Last upload') }}
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    {% include '/sce_upload_table.html' %}
+                </table>
+                <div class="text-center mt-3 mb-1">
+                    <button
+                        type="button"
+                        hx-post="{{ url_for('sce-upload-all-tournament-results', event_uniq_id=admin_event.uniq_id) }}"
+                        class="text-nowrap white btn btn-outline-primary"
+                        {% if sce_event_status.actions_disabled %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi-cloud-arrow-up-fill pe-1"></i>
+                        {{ _('Upload all tournament results') }}
+                    </button>
+                </div>
+            {% endif %}
         </div>
 
         <div class="modal-footer">

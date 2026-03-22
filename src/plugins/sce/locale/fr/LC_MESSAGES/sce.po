@@ -42,6 +42,12 @@ msgstr "Autorisation échouée, possible attaque CSRF !"
 msgid "Auto-synchronisation"
 msgstr "Synchronisation automatique"
 
+msgid "Auto-upload disabled"
+msgstr "Mise en ligne automatique désactivée"
+
+msgid "Auto-upload enabled"
+msgstr "Mise en ligne automatique activée"
+
 msgid "Auto-upload of the tournament has been planned."
 msgstr "La mise en ligne automatique du tournoi a été planifiée."
 
@@ -53,6 +59,12 @@ msgstr "Fermer"
 
 msgid "Club"
 msgstr "Club"
+
+msgid "Configuration page of the event."
+msgstr "Page de configuration de l'évènement."
+
+msgid "Configuration page of the tournament."
+msgstr "Page de configuration du tournoi."
 
 msgid "Conflict"
 msgstr "Conflit"
@@ -82,6 +94,9 @@ msgstr "Modifier le·la joueur·euse"
 msgid "Edit the tournament"
 msgstr "Modifier le tournoi"
 
+msgid "Error while uploading tournament [{tournament}], consult the logs for more details."
+msgstr "Erreur lors de la mise en ligne du tournoi [{tournament}], consultez les logs pour plus de détails."
+
 msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
 msgstr "L'évènement [{event}] a été connecté avec succès à Sharly-Chess.com !"
 
@@ -104,10 +119,16 @@ msgid "First name"
 msgstr "Prénom"
 
 msgid "Import Sharly-Chess.com tournaments that do not exist locally."
-msgstr "Importer les tournois Sharly-Chess qui n'existent pas localement."
+msgstr "Importer les tournois Sharly-Chess.com qui n'existent pas localement."
+
+msgid "Import from Sharly-Chess.com"
+msgstr "Imported depuis Sharly-Chess.com"
 
 msgid "Import new tournaments"
 msgstr "Importer de nouveaux tournois"
+
+msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc...)."
+msgstr "Intégration de la plateforme Sharly-Chess.com (pointage en ligne, mise en ligne de résultats, etc...)."
 
 msgid "Last name"
 msgstr "Nom"
@@ -145,6 +166,9 @@ msgstr "Aucune modification détectée depuis la dernière mise en ligne."
 msgid "No internet connection."
 msgstr "Pas de connection à internet."
 
+msgid "No player to synchronize yet, import or upload tournaments first."
+msgstr "Aucun·e joueur·euse à synchroniser pour le moment, vous devez d'abord importer ou mettre en ligne un tournoi."
+
 msgid "Not started"
 msgstr "Non démarré"
 
@@ -159,6 +183,12 @@ msgstr "En attente"
 
 msgid "Player conflicts detected during the last synchronisation attempt."
 msgstr "Des conflits de joueur·euses ont été détectés lors de la dernière synchronisation."
+
+msgid "Public page of the event."
+msgstr "Page publique de l'évènement."
+
+msgid "Public page of the tournament."
+msgstr "Page publique du tournoi."
 
 msgid "Rating"
 msgstr "Classement"
@@ -187,10 +217,13 @@ msgid "Sharly-Chess.com event not found, it most likely has been deleted."
 msgstr "L'évènement Sharly-Chess.com a été supprimé, il a probablement été supprimé."
 
 msgid "Sharly-Chess.com is not reachable at the moment."
-msgstr "Sharly-Chess.com n'est pas accessible à cet instant."
+msgstr "Sharly-Chess.com n'est pas accessible pour le moment."
 
 msgid "Sharly-Chess.com player conflicts"
 msgstr "Conflits de joueur·euses Sharly-Chess.com"
+
+msgid "Sharly-Chess.com tournament"
+msgstr "Tournoi Sharly-Chess.com"
 
 msgid "Sharly-Chess.com tournament conflicts"
 msgstr "Conflits de tournois Sharly-Chess.com"
@@ -282,4 +315,9 @@ msgid "{count} tournament successfully imported."
 msgid_plural "{count} tournaments successfully imported."
 msgstr[0] "{count} tournoi importé avec succès."
 msgstr[1] "{count} tournois importés avec succès."
+
+msgid "{count} tournament successfully uploaded."
+msgid_plural "{count} tournaments successfully uploaded."
+msgstr[0] "{count} tournoi mis en ligne avec succès."
+msgstr[1] "{count} tournois mis en ligne avec succès."
 

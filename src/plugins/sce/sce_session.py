@@ -1,5 +1,4 @@
 import json
-import os
 from datetime import datetime, timedelta
 from functools import partial
 from json import JSONDecodeError
@@ -32,7 +31,7 @@ from database.sqlite.event.event_store import (
     StoredTournamentPlayer,
 )
 from plugins.manager import plugin_manager
-from plugins.sce import PLUGIN_NAME
+from plugins.sce import PLUGIN_NAME, SCE_BASE_URL, SCE_CLIENT_ID
 from plugins.sce.sce_event_status import (
     NotFoundSCEEventStatus,
     UnexpectedHttpSCEEventStatus,
@@ -59,11 +58,6 @@ from utils.enum import Result
 from web.urls import build_get_url
 
 logger: Logger = get_logger()
-
-SCE_BASE_URL = os.getenv('SCE_BASE_URL') or 'http://localhost:3001'
-SCE_SYNC_DELAY = 3
-SCE_UPLOAD_DELAY = 3
-CLIENT_ID = 'sharlychess'
 
 # Per-event lock to serialise token refreshes and avoid rotation race conditions
 _refresh_locks: WeakValueDictionary[str, Lock] = WeakValueDictionary()
@@ -155,7 +149,7 @@ class SCESession(Session):
         event_id: str | None = None,
     ) -> str:
         params: dict[str, Any] = {
-            'client_id': CLIENT_ID,
+            'client_id': SCE_CLIENT_ID,
             'redirect_uri': redirect_uri,
             'scope': ' '.join(REQUIRED_SCOPES),
             'state': state,
@@ -193,7 +187,7 @@ class SCESession(Session):
                 'grant_type': 'authorization_code',
                 'code': code,
                 'code_verifier': code_verifier,
-                'client_id': CLIENT_ID,
+                'client_id': SCE_CLIENT_ID,
                 'redirect_uri': redirect_uri,
             },
         )
@@ -233,7 +227,7 @@ class SCESession(Session):
                 data={
                     'grant_type': 'refresh_token',
                     'refresh_token': self.tokens.refresh_token,
-                    'client_id': CLIENT_ID,
+                    'client_id': SCE_CLIENT_ID,
                 },
             )
             if response.status_code in [HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN]:
@@ -543,6 +537,32 @@ class SCESession(Session):
                 tournament,
                 database,
             )
+
+    def _create_tournament_request(self, data: SCETournamentSyncData):
+        return requests.post(
+            self.base_event_url + '/tournaments',
+            headers=self.api_headers,
+            json=data.to_sce_data(),
+        )
+
+    def create_sce_tournament(self, tournament: Tournament):
+        sync_data = SCETournamentSyncData.from_tournament(tournament)
+        response = self._run_with_token_validation(
+            partial(self._create_tournament_request, data=sync_data)
+        )
+        plugin_data = SCETournamentPluginData(
+            id=response.json()['data']['id'],
+            last_sync_data=sync_data,
+        )
+        SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+        for player in tournament.tournament_players:
+            player_sync_data = SCEPlayerSyncData.from_player(player)
+            player_id = self.create_sce_player(player_sync_data)
+            player_plugin_data = SCEPlayerPluginData(
+                id=player_id,
+                last_sync_data=player_sync_data,
+            )
+            SCEUtils.update_player_plugin_data(player, player_plugin_data)
 
     def _update_tournament_request(
         self, data: SCETournamentSyncData, sce_tournament_id: str

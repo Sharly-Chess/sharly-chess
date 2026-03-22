@@ -8,7 +8,8 @@ from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
-from plugins.sce.sce_session import SCESession, SCE_SYNC_DELAY
+from plugins.sce import SCE_SYNC_DELAY
+from plugins.sce.sce_session import SCESession
 from plugins.sce.sce_sync_status import (
     SCESyncStatus,
     NetworkFailureSCESyncStatus,
