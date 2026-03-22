@@ -29,6 +29,11 @@ def is_sync_ongoing(event_uniq_id: str) -> bool:
     return event_uniq_id in _ONGOING_EVENTS_UNIQ_IDS
 
 
+def is_sync_scheduled(event_uniq_id: str) -> bool:
+    thread = _TIMEOUT_THREADS.get(event_uniq_id)
+    return bool(thread and thread.is_alive())
+
+
 def remove_scheduled_sync(event_uniq_id: str):
     thread = _TIMEOUT_THREADS.get(event_uniq_id)
     if thread and thread.is_alive():

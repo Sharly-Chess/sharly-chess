@@ -25,6 +25,7 @@ from plugins.sce.sce_background_synchronizer import (
     schedule_sync,
     remove_scheduled_sync,
     is_sync_ongoing,
+    is_sync_scheduled,
 )
 from plugins.sce.sce_session import SCESession
 from plugins.sce.sce_background_uploader import (
@@ -424,6 +425,10 @@ class SCEAdminController(BaseAdminController):
                 )
             except SharlyChessException as e:
                 logger.error(str(e))
+            plugin_data = SCEUtils.get_event_plugin_data(event)
+            if plugin_data.auto_player_sync and not is_sync_scheduled(event.uniq_id):
+                schedule_sync(event)
+
             if self._clean_outdated_tournament_conflicts(web_context):
                 message = _(
                     'All tournament conflicts resolved, synchronisation resumed.'
