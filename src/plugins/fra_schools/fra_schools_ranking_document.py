@@ -91,8 +91,8 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
         Build one team (up to 8 contributors) from a school's pool using the 2G/2B/4ANY rule.
         Returns (selected_players, meta).
         """
-        girls = [p for p in pool_in_order if p.gender == PlayerGender.FEMALE]
-        boys = [p for p in pool_in_order if p.gender == PlayerGender.MALE]
+        girls = [p for p in pool_in_order if p.gender == PlayerGender.WOMAN]
+        boys = [p for p in pool_in_order if p.gender == PlayerGender.MAN]
 
         selected: list[TournamentPlayer] = []
 
@@ -172,11 +172,9 @@ class FraSchoolsRankingPrintDocument(PrintDocument):
 
                 total_points = sum(p.points_after(self.ranking_round) for p in selected)
                 girls_selected = sum(
-                    1 for p in selected if p.gender == PlayerGender.FEMALE
+                    1 for p in selected if p.gender == PlayerGender.WOMAN
                 )
-                boys_selected = sum(
-                    1 for p in selected if p.gender == PlayerGender.MALE
-                )
+                boys_selected = sum(1 for p in selected if p.gender == PlayerGender.MAN)
                 is_complete = (
                     len(selected) == 8 and girls_selected >= 2 and boys_selected >= 2
                 )

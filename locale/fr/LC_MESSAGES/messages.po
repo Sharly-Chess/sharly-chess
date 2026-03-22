@@ -2046,7 +2046,7 @@ msgstr "EXEMPT·E"
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr "EXEMPT·E (déjà reçu à la ronde n°%(round)d)"
 
-msgid "Each bracket should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple : U12, Meilleure Féminine) avec des critères et des places (1er, 2e, etc.). Les prix sont attribués selon leur valeur (et l’ordre des catégories en cas d’égalité)."
 
 msgid "Each player can only be awarded one prize per bracket."
@@ -2254,11 +2254,11 @@ msgstr "Exclure les joueur·euses correspondant au critère au lieu de les inclu
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
 
-msgid "Exempt *** FEMALE"
-msgstr "Exempte"
-
-msgid "Exempt *** MALE"
+msgid "Exempt *** MAN"
 msgstr "Exempt"
+
+msgid "Exempt *** WOMAN"
+msgstr "Exempte"
 
 msgid "Existing players"
 msgstr "Joueur·euses existant·es"
@@ -2303,9 +2303,6 @@ msgstr "Exporter le tournoi au format TRF16."
 
 msgid "Export tournament"
 msgstr "Exporter le tournoi"
-
-msgid "F *** SHORT NAME FOR GENDER FEMALE"
-msgstr "F"
 
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
@@ -2396,9 +2393,6 @@ msgstr "Fédération :"
 
 msgid "Federations"
 msgstr "Fédérations"
-
-msgid "Female *** NAME FOR GENDER FEMALE"
-msgstr "Femme"
 
 msgid "Fetch from a data source"
 msgstr "Récupérer depuis une source de données"
@@ -3110,8 +3104,8 @@ msgstr "Défaite"
 msgid "Luxembourg"
 msgstr "Luxembourg"
 
-msgid "M *** SHORT NAME FOR GENDER MALE"
-msgstr "M"
+msgid "M *** SHORT NAME FOR GENDER MAN"
+msgstr "H"
 
 msgid "MM/DD/YYYY"
 msgstr "MM/JJ/AAAA"
@@ -3137,14 +3131,14 @@ msgstr "Malaisie"
 msgid "Maldives"
 msgstr "Maldives"
 
-msgid "Male *** NAME FOR GENDER MALE"
-msgstr "Homme"
-
 msgid "Mali"
 msgstr "Mali"
 
 msgid "Malta"
 msgstr "Malte"
+
+msgid "Man *** NAME FOR GENDER MAN"
+msgstr "Homme"
 
 msgid "Manage accounts"
 msgstr "Gestion des comptes"
@@ -3946,6 +3940,9 @@ msgstr "Chevalets d'appariement"
 msgid "Pairing information for round %(round)d"
 msgstr "Informations d’appariement pour la ronde %(round)d"
 
+msgid "Pairing is not possible."
+msgstr "L'appariement est impossible."
+
 msgid "Pairing not found."
 msgstr "Appariement non-trouvé."
 
@@ -4569,6 +4566,9 @@ msgstr "Classement :"
 msgid "Ratings"
 msgstr "Classements"
 
+msgid "Ratings update"
+msgstr "Mise à jour des classements"
+
 #, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
@@ -4593,6 +4593,12 @@ msgstr "La nouvelle version {version} a été installée dans [{folder}]."
 
 msgid "Reload the page"
 msgstr "Recharger la page"
+
+msgid "Reminder: the tournament is played on multiple FIDE periods, you might have to update the players' ratings before pairing."
+msgstr "Rappel : le tournoi est joué sur plusieurs périodes FIDE, vous devez peut-être mettre à jour les classements des joueur·euses avant d'apparier."
+
+msgid "Reminder: you might have to update the players' ratings before pairing."
+msgstr "Rappel : vous devez peut-être mettre à jour les classements des joueur·euses avant d'apparier."
 
 msgid "Remove the player from the event."
 msgstr "Supprimer le·la joueur·euse de l'évènement."
@@ -6097,11 +6103,11 @@ msgstr "Désapparier le tournoi"
 msgid "Unpaired (%(unpaired)d)"
 msgstr "Non-apparié·es (%(unpaired)d)"
 
-msgid "Unpaired *** FEMALE"
-msgstr "Non appariée"
-
-msgid "Unpaired *** MALE"
+msgid "Unpaired *** MAN"
 msgstr "Non apparié"
+
+msgid "Unpaired *** WOMAN"
+msgstr "Non appariée"
 
 msgid "Unpaired: displayed"
 msgstr "Non apparié·es : affiché·es"
@@ -6298,6 +6304,9 @@ msgstr "Voir l'onglet Tournois"
 msgid "Visibility:"
 msgstr "Visibilité :"
 
+msgid "W *** SHORT NAME FOR GENDER WOMAN"
+msgstr "F"
+
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
 msgstr "B"
 
@@ -6407,6 +6416,9 @@ msgstr "Avec moins de joueur·euses que de prix, certains prix ne vont pas être
 
 msgid "Withdraw from tournament"
 msgstr "Forfait définitif"
+
+msgid "Woman *** NAME FOR GENDER WOMAN"
+msgstr "Femme"
 
 msgid "Woman Candidate Master"
 msgstr "Candidat Maître Femme"
