@@ -137,7 +137,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
             'fideid': ('fide_id', lambda s: int(s.strip())),
             'name': ('name', None),
             'country': ('federation', lambda s: s.upper()),
-            'sex': ('gender', PlayerGender.from_fide_value),
+            'sex': ('gender', PlayerGender.from_key),
             'title': ('fide_title', PlayerTitle.from_fide_value),
             'o_title': ('fide_arbiter_title', FideArbiterTitle.from_fide_value),
             'rating': ('standard_rating', int),

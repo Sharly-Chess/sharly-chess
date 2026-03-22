@@ -289,17 +289,17 @@ class Player:
     @property
     def not_paired_str(self) -> str:
         return (
-            _('Unpaired *** FEMALE')
-            if self.gender == PlayerGender.FEMALE
-            else _('Unpaired *** MALE')
+            _('Unpaired *** WOMAN')
+            if self.gender == PlayerGender.WOMAN
+            else _('Unpaired *** MAN')
         )
 
     @property
     def exempt_str(self) -> str:
         return (
-            _('Exempt *** FEMALE')
-            if self.gender == PlayerGender.FEMALE
-            else _('Exempt *** MALE')
+            _('Exempt *** WOMAN')
+            if self.gender == PlayerGender.WOMAN
+            else _('Exempt *** MAN')
         )
 
 

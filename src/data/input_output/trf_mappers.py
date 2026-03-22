@@ -8,8 +8,8 @@ class TrfPlayerGender(CoreMapper[str, PlayerGender]):
         return {
             '': PlayerGender.NONE,
             ' ': PlayerGender.NONE,
-            'm': PlayerGender.MALE,
-            'w': PlayerGender.FEMALE,
+            'm': PlayerGender.MAN,
+            'w': PlayerGender.WOMAN,
         }
 
 
