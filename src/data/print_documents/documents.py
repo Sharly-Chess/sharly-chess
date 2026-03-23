@@ -29,7 +29,8 @@ from data.print_documents.options import (
     QRCodeNetworkPrintOption,
     QRCodePrintOption,
     RoundPrintOption,
-    PlayerSortPrintOption,
+    GridPlayerSortPrintOption,
+    ListPlayerSortPrintOption,
     ShowWarningsPrintOption,
     NonMonetaryPrintOption,
     ClubThresholdPrintOption,
@@ -236,14 +237,22 @@ class PlayerListPrintDocument(PlayerPrintDocument):
     def title(self) -> str:
         return _('List of players')
 
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return PlayerPrintDocument.available_options() + [ListPlayerSortPrintOption]
+
     @property
     def ordered_tournament_players(self) -> list[TournamentPlayer]:
         tournament_ids = [tournament.id for tournament in self.tournaments]
-        return [
+        tournament_players: list[TournamentPlayer] = [
             player.single_tournament_player
-            for player in self.get_event().sorted_players
+            for player in self.get_event().tournament_players
             if player.single_tournament.id in tournament_ids
         ]
+        list_player_sorter = self._get_option(
+            ListPlayerSortPrintOption
+        ).list_player_sorter
+        return list_player_sorter.sort_tournament_players(tournament_players)
 
     @property
     def player_columns(self) -> list[TournamentPlayerTableColumn]:
@@ -664,7 +673,7 @@ class BergerGridPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, PlayerSortPrintOption]
+        return [TournamentPrintOption, GridPlayerSortPrintOption]
 
     @property
     def title(self) -> str:
@@ -701,11 +710,13 @@ class BergerGridPrintDocument(PrintDocument):
 
     @cached_property
     def grid_id_by_player_id(self) -> dict[int, int]:
-        player_sorter = self._get_option(PlayerSortPrintOption).player_sorter
+        grid_player_sorter = self._get_option(
+            GridPlayerSortPrintOption
+        ).grid_player_sorter
         return {
             tournament_player.id: index + 1
             for index, tournament_player in enumerate(
-                player_sorter.sorted_tournament_players(self.tournament)
+                grid_player_sorter.sorted_tournament_players(self.tournament)
             )
         }
 
