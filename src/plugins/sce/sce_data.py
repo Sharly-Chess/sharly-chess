@@ -67,7 +67,7 @@ class SCETournamentSyncData:
             type=tournament.rating,
             start_date=tournament.start_date,
             stop_date=tournament.stop_date,
-            time_control=tournament.time_control_trf25,
+            time_control=tournament.time_control_trf25 or None,
         )
 
     @classmethod

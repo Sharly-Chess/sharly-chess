@@ -660,9 +660,14 @@ class SCESession(Session):
             tournament_data_by_id[sce_tournament_id]
         )
         local_sync_data = SCETournamentSyncData.from_tournament(tournament)
+        needs_saving = True
+        stored_object_modified = False
         if local_sync_data == sce_sync_data:
             # Already synced
-            plugin_data.last_sync_data = local_sync_data
+            if local_sync_data == plugin_data.last_sync_data:
+                needs_saving = False
+            else:
+                plugin_data.last_sync_data = local_sync_data
         elif sce_sync_data == plugin_data.last_sync_data:
             # Modified locally --> update SC.com value
             self.update_sce_tournament(local_sync_data, sce_tournament_id)
@@ -674,6 +679,7 @@ class SCESession(Session):
             sce_sync_data.augment_stored_tournament(
                 tournament.stored_tournament, self.event
             )
+            stored_object_modified = True
             log_operation('SC.com changes imported (local)')
         else:
             # Modified on both ends
@@ -688,6 +694,7 @@ class SCESession(Session):
                     tournament.stored_tournament, self.event
                 )
                 plugin_data.last_sync_data = merged_sync_data
+                stored_object_modified = True
                 log_operation('Dual changes merged (SC.com + local)')
             except SharlyChessException as e:
                 # Not mergeable --> Create a conflict
@@ -697,7 +704,10 @@ class SCESession(Session):
                 log_operation(
                     f'Not mergeable dual changes, conflict created (details: {e})'
                 )
-        SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+        if needs_saving:
+            SCEUtils.update_tournament_plugin_data(
+                tournament, plugin_data, write_stored_object=stored_object_modified
+            )
         return not has_conflicts
 
     # -------------------------------------------------------------------------
