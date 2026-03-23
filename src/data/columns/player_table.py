@@ -304,13 +304,13 @@ class OwedColumn(TournamentPlayerTableColumn):
 
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return Utils.currency_value_str(
-            tournament_player.owed, tournament_player.tournament.event.prize_currency
+            tournament_player.owed, tournament_player.event.prize_currency
         )
 
     def get_footer_content(self, tournament_players: list[TournamentPlayer]) -> Any:
         return Utils.currency_value_str(
             sum(tournament_player.owed for tournament_player in tournament_players),
-            tournament_players[0].tournament.event.prize_currency,
+            tournament_players[0].event.prize_currency,
         )
 
     @property
