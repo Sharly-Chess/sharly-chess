@@ -3,11 +3,12 @@ from datetime import datetime, timedelta
 from functools import cached_property
 from typing import Annotated, Any
 
-from litestar import get, post, patch
+from litestar import get, post, patch, delete
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ClientException, NotFoundException
 from litestar.params import Parameter, Body
 from litestar.response import Redirect
+from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 
 from common import SharlyChessException
@@ -100,6 +101,11 @@ class SCEWebContext(AdminWebContext):
                 del new_sce_tournament_options[sce_id]
             elif tournament in self.allowed_tournaments:
                 new_local_tournament_options[tournament.id] = tournament.name
+        player_duplicate_count = 0
+        for tournament in self.sce_allowed_tournaments:
+            for player in tournament.tournament_players:
+                if SCEUtils.get_player_plugin_data(player).is_duplicated:
+                    player_duplicate_count += 1
 
         return self.table_context | {
             'new_sce_tournament_options': new_sce_tournament_options,
@@ -108,13 +114,13 @@ class SCEWebContext(AdminWebContext):
             'player_conflict_count': len(self.sce_players_with_conflicts),
             'sce_last_sync_status': SCEUtils.resolve_last_sync_status(event),
             'is_sync_ongoing': is_sync_ongoing(event.uniq_id),
+            'player_duplicate_count': player_duplicate_count,
         }
 
     @property
     def table_context(self) -> dict[str, Any]:
         return self.template_context | {
             'sce_allowed_tournaments': self.sce_allowed_tournaments,
-            'sce_event_status': SCEUtils.resolve_event_status(self.get_admin_event()),
         }
 
     @property
@@ -399,7 +405,7 @@ class SCEAdminController(BaseAdminController):
             template_context=web_context.sync_modal_context
             | {
                 'message': message,
-                'message_type': message_type or 'success',
+                'message_type': message_type,
             },
         )
 
@@ -694,12 +700,14 @@ class SCEAdminController(BaseAdminController):
         diff_fields = {
             'last_name': _('Last name'),
             'first_name': _('First name'),
+            'gender_str': _('Gender'),
             'fide_id': _('FIDE ID'),
             'national_id': '',
             'year_of_birth': _('Year of birth'),
             'title_str': _('Title'),
             'club': _('Club'),
             'rating_str': _('Rating'),
+            'phone': _('Phone'),
         }
         national_id_label = plugin_manager.hook_for_event(
             event, 'get_sce_national_id_player_field_label'
@@ -847,3 +855,64 @@ class SCEAdminController(BaseAdminController):
                 'consult the logs for more details.'
             ).format(tournament=tournament.name)
         return self._render_sync_modal(web_context, message, message_type)
+
+    @classmethod
+    def _render_player_duplicate_modal(
+        cls,
+        web_context: SCEWebContext,
+        message: str | None = None,
+        message_type: str | None = None,
+    ) -> HTMXTemplate:
+        local_tournaments_with_duplicates = [
+            tournament
+            for tournament in web_context.sce_allowed_tournaments
+            if any(
+                SCEUtils.get_player_plugin_data(player).is_duplicated
+                for player in tournament.tournament_players
+            )
+        ]
+        if not local_tournaments_with_duplicates:
+            return cls._render_sync_modal(
+                web_context, _('All player duplicates resolved.')
+            )
+
+        template_context = web_context.template_context
+        template_context |= {
+            'message': message,
+            'message_type': message_type,
+            'local_tournaments_with_duplicates': local_tournaments_with_duplicates,
+        }
+        return cls._render_modal(
+            '/sce_player_duplicate_modal.html',
+            template_context=template_context,
+        )
+
+    @get(
+        path='/sce/player-duplicate-modal/{event_uniq_id:str}',
+        name='sce-player-duplicate-modal',
+    )
+    async def htmx_sce_player_duplicate_modal(
+        self, request: HTMXRequest
+    ) -> HTMXTemplate:
+        return self._render_player_duplicate_modal(SCEWebContext(request))
+
+    @delete(
+        path='/sce/delete-local-player/{event_uniq_id:str}/{player_id:int}',
+        name='sce-delete-local-player',
+        status_code=HTTP_200_OK,
+    )
+    async def htmx_sce_delete_local_player(
+        self,
+        request: HTMXRequest,
+        player_id: int,
+    ) -> HTMXTemplate:
+        web_context = SCEWebContext(request, player_id=player_id)
+        event = web_context.get_admin_event()
+        player = web_context.get_player()
+        if player.has_real_pairings:
+            raise ClientException(f'Player [{player.full_name}] is not deletable')
+        event.delete_player(player.id)
+        web_context = SCEWebContext(request, reload_event=True)
+        return self._render_player_duplicate_modal(
+            web_context, _('Player [{player}] deleted.').format(player=player.full_name)
+        )

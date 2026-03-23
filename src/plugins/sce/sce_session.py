@@ -1,5 +1,6 @@
 import json
 from datetime import datetime, timedelta
+from enum import Enum, auto
 from functools import partial
 from json import JSONDecodeError
 from logging import Logger
@@ -43,6 +44,8 @@ from plugins.sce.sce_sync_status import (
     TournamentConflictsSCESyncStatus,
     PlayerConflictsSCESyncStatus,
     SuccessSCESyncStatus,
+    PlayerDuplicatesAndConflictsSCESyncStatus,
+    PlayerDuplicatesSCESyncStatus,
 )
 from plugins.sce.sce_data import (
     SCETokens,
@@ -83,6 +86,12 @@ REQUIRED_SCOPES = [
     'registrations:read',
     'registrations:write',
 ]
+
+
+class PlayerStatus(Enum):
+    SUCCESS = auto()
+    CONFLICT = auto()
+    DUPLICATE = auto()
 
 
 class SCESession(Session):
@@ -381,13 +390,16 @@ class SCESession(Session):
         sync_data: SCEPlayerSyncData,
         tournament: Tournament,
         database: EventDatabase,
-    ):
+    ) -> bool:
+        """Create a local player from SC.com data.
+        Return False if it already exists, True if it succeeds."""
         # TODO (Molrn) Check and flag duplicate players
         sce_tournament_id = SCEUtils.get_tournament_plugin_data(tournament).id
         assert sce_tournament_id is not None
         stored_player = StoredPlayer(
             id=None,
             federation=self.event.federation,
+            mail=sync_data.mail,
             plugin_data={
                 PLUGIN_NAME: SCEPlayerPluginData(id=sce_id).to_stored_value(),
             },
@@ -400,6 +412,7 @@ class SCESession(Session):
                 tournament_id=tournament.id,
             )
         )
+        return True
 
     def update_local_player(self, player: TournamentPlayer, data: SCEPlayerSyncData):
         data.augment_stored_player(
@@ -418,7 +431,7 @@ class SCESession(Session):
 
     def _sync_player(
         self, player: TournamentPlayer, sce_sync_data: SCEPlayerSyncData | None
-    ) -> bool:
+    ) -> PlayerStatus:
         def log_operation(message: str):
             log_name = player.last_name
             if player.first_name:
@@ -433,7 +446,8 @@ class SCESession(Session):
                     log_operation('Creation (SC.com)')
                 else:
                     log_operation('SC.com creation failed, already exists in SC.com')
-            return True
+                    return PlayerStatus.DUPLICATE
+            return PlayerStatus.SUCCESS
         tournament = player.tournament
         if not sce_sync_data:
             if player.has_real_pairings:
@@ -455,7 +469,7 @@ class SCESession(Session):
                 with EventDatabase(self.event.uniq_id, True) as database:
                     database.delete_stored_player(player.id)
                     log_operation('Deletion (local)')
-            return True
+            return PlayerStatus.SUCCESS
 
         has_conflict = False
 
@@ -513,7 +527,7 @@ class SCESession(Session):
             SCEUtils.update_player_plugin_data(
                 player, plugin_data, write_stored_object=True
             )
-        return not has_conflict
+        return PlayerStatus.CONFLICT if has_conflict else PlayerStatus.SUCCESS
 
     # -------------------------------------------------------------------------
     # Tournament
@@ -549,7 +563,9 @@ class SCESession(Session):
         for registration_data in raw_data['registrations']:
             self._create_local_player(
                 registration_data['id'],
-                SCEPlayerSyncData.from_sce_data(registration_data, sce_id),
+                SCEPlayerSyncData.from_sce_data(
+                    registration_data, sce_id, with_mail=True
+                ),
                 tournament,
                 database,
             )
@@ -904,11 +920,14 @@ class SCESession(Session):
                 continue
             for registration_data in tournament_data['registrations']:
                 sce_player_sync_data_by_id[registration_data['id']] = (
-                    SCEPlayerSyncData.from_sce_data(registration_data, sce_id)
+                    SCEPlayerSyncData.from_sce_data(
+                        registration_data, sce_id, with_mail=True
+                    )
                 )
 
         local_sce_player_ids: list[str] = []
         soft_deleted_players_by_id: dict[str, TournamentPlayer] = {}
+        duplicate_count = 0
 
         for tournament in sce_tournaments:
             for player in tournament.tournament_players:
@@ -922,21 +941,29 @@ class SCESession(Session):
         for sce_player_id, sce_sync_data in sce_player_sync_data_by_id.items():
             if sce_player_id in local_sce_player_ids:
                 continue
+            message = ''
             if sce_player_id in event_plugin_data.deleted_player_ids:
                 # Delete locally --> delete on SC.com
                 sce_tournament_id = sce_sync_data.tournament_id
                 self.delete_sce_player(sce_tournament_id, sce_player_id)
-                self._log_player_data_operation(sce_sync_data, 'Deletion (SC.com)')
+                message = 'Deletion (SC.com)'
             else:
                 # New player --> create locally
                 tournament = SCEUtils.get_tournament_by_sce_id(
                     self.event, sce_sync_data.tournament_id
                 )
                 with EventDatabase(self.event.uniq_id, True) as database:
-                    self._create_local_player(
-                        sce_player_id, sce_sync_data, tournament, database
-                    )
-                self._log_player_data_operation(sce_sync_data, 'Creation (local)')
+                    if self._create_local_player(
+                        sce_player_id,
+                        sce_sync_data,
+                        tournament,
+                        database,
+                    ):
+                        message = 'Creation (local)'
+                    else:
+                        duplicate_count += 1
+                        message = 'Local creation failed, already exists locally'
+            self._log_player_data_operation(sce_sync_data, message)
 
             if sce_player_id in soft_deleted_players_by_id:
                 player = soft_deleted_players_by_id[sce_player_id]
@@ -950,24 +977,37 @@ class SCESession(Session):
                     sce_sync_data, 'Restored after soft-deletion (local)'
                 )
 
+        for sce_sync_data in sce_player_sync_data_by_id.values():
+            # Reset to allow object comparison
+            sce_sync_data.mail = None
+
         for tournament in sce_tournaments:
             players = tournament.tournament_players
             for player in players:
                 player_sce_id = SCEUtils.get_player_plugin_data(player).id
-                if not self._sync_player(
+                status = self._sync_player(
                     player, sce_player_sync_data_by_id.get(player_sce_id or '')
-                ):
+                )
+                if status == PlayerStatus.CONFLICT:
                     conflict_count += 1
+                elif status == PlayerStatus.DUPLICATE:
+                    duplicate_count += 1
 
         event_plugin_data.deleted_player_ids = []
         event_plugin_data.last_sync_at = datetime.now()
         SCEUtils.update_event_plugin_data(self.event, event_plugin_data)
-        log_suffix = (
-            f'{conflict_count} player conflicts' if conflict_count else 'no conflicts'
-        )
-        self._log_sync_operation('Sync completed, ' + log_suffix, is_info=True)
+        message = 'Sync completed'
         if conflict_count:
+            message += f', {conflict_count} player conflicts'
+        if duplicate_count:
+            message += f', {duplicate_count} duplicated players'
+        self._log_sync_operation(message, is_info=True)
+        if conflict_count and duplicate_count:
+            return PlayerDuplicatesAndConflictsSCESyncStatus()
+        elif conflict_count:
             return PlayerConflictsSCESyncStatus()
+        elif duplicate_count:
+            return PlayerDuplicatesSCESyncStatus()
         return SuccessSCESyncStatus()
 
     def _upload_tournament_results_request(

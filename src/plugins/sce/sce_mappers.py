@@ -8,8 +8,8 @@ class SCEPlayerGender(CoreMapper[str, PlayerGender]):
     @classmethod
     def _core_object_by_outer_value(cls) -> dict[str, PlayerGender]:
         return {
-            'm': PlayerGender.MAN,
-            'w': PlayerGender.WOMAN,
+            'M': PlayerGender.MAN,
+            'W': PlayerGender.WOMAN,
         }
 
 

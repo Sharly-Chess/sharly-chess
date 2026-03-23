@@ -8,7 +8,7 @@ from common import SharlyChessException
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from data.event import Event
-from data.player import Player
+from data.player import Player, TournamentPlayer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament
@@ -290,3 +290,13 @@ class SCEUtils:
             f'/organizer/{pd.organiser_slug}/events/'
             f'{pd.id}/tournaments/{tournament_id}',
         )
+
+    @classmethod
+    def get_local_player_duplicates(
+        cls, tournament: Tournament
+    ) -> list[TournamentPlayer]:
+        return [
+            player
+            for player in tournament.tournament_players
+            if SCEUtils.get_player_plugin_data(player).is_duplicated
+        ]

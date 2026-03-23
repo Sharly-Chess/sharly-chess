@@ -9,9 +9,10 @@ from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME
+from plugins.sce.sce_mappers import SCEPlayerGender
 from plugins.utils import PluginData
 from utils.date_time import format_date, format_datetime
-from utils.enum import TournamentRating, PlayerTitle, PlayerRatingType
+from utils.enum import TournamentRating, PlayerTitle, PlayerRatingType, PlayerGender
 from utils.time_control import trf25_to_human_readable
 from utils.types import PlayerRatingAndType, PlayerRating
 
@@ -140,22 +141,36 @@ class SCEPlayerSyncData:
     title: PlayerTitle = PlayerTitle.NONE
     club: str = ''
     rating: int | None = None
-    rating_type: PlayerRatingType = PlayerRatingType.ESTIMATED
+    rating_type: PlayerRatingType | None = None
     national_id: str | None = None
+    phone: str | None = None
+    gender: PlayerGender = PlayerGender.NONE
+
+    # Not stored
+    mail: str | None = None
 
     @property
     def title_str(self) -> str:
-        return self.title.short_name or '-'
+        return self.title.short_name
 
     @property
     def rating_str(self) -> str:
-        return str(PlayerRatingAndType(self.rating or 0, self.rating_type))
+        if self.rating and self.rating_type:
+            return str(PlayerRatingAndType(self.rating, self.rating_type))
+        return ''
+
+    @property
+    def gender_str(self) -> str:
+        if self.gender == PlayerGender.NONE:
+            return ''
+        return self.gender.name
 
     @classmethod
     def from_sce_data(
         cls,
         data: dict[str, Any],
         tournament_id: str,
+        with_mail: bool = False,
     ) -> Self:
         return cls(
             tournament_id=tournament_id,
@@ -167,9 +182,16 @@ class SCEPlayerSyncData:
             title=PlayerTitle(data['title'] or PlayerTitle.NONE),
             club=data['club'] or '',
             rating=data['rating'],
-            rating_type=PlayerRatingType.from_key(
-                data['rating_type'] or PlayerRatingType.ESTIMATED.key
+            rating_type=PlayerRatingType.from_key(data['rating_type'])
+            if data['rating_type']
+            else None,
+            phone=data['phone_number'],
+            gender=(
+                SCEPlayerGender.get_core_object(data['gender'])
+                if data['gender']
+                else PlayerGender.NONE
             ),
+            mail=data.get('user_email') if with_mail else None,
         )
 
     @classmethod
@@ -187,7 +209,9 @@ class SCEPlayerSyncData:
             title=player.title,
             club=player.club.name,
             rating=player.rating,
-            rating_type=player.rating_type,
+            rating_type=player.rating_type if player.rating else None,
+            phone=player.phone,
+            gender=player.gender,
         )
         plugin_manager.hook_for_event(
             player.event, 'augment_sce_player_sync_data_from_player'
@@ -196,6 +220,7 @@ class SCEPlayerSyncData:
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
+        stored_rating_type = stored_value.get('rating_type')
         return cls(
             tournament_id=stored_value['tournament_id'],
             last_name=stored_value['last_name'],
@@ -206,9 +231,11 @@ class SCEPlayerSyncData:
             title=PlayerTitle(stored_value.get('title', PlayerTitle.NONE)),
             club=stored_value.get('club', ''),
             rating=stored_value.get('rating'),
-            rating_type=PlayerRatingType(
-                stored_value.get('rating_type', PlayerRatingType.ESTIMATED)
-            ),
+            rating_type=PlayerRatingType(stored_rating_type)
+            if stored_rating_type
+            else None,
+            phone=stored_value.get('phone'),
+            gender=PlayerGender(stored_value.get('gender', PlayerGender.NONE)),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -221,14 +248,18 @@ class SCEPlayerSyncData:
             'national_id': self.national_id,
             'title': self.title.value,
             'club': self.club,
-            'rating': self.rating,
-            'rating_type': self.rating_type.value,
+            'rating': self.rating or None,
+            'rating_type': self.rating_type.value if self.rating_type else None,
+            'phone': self.phone,
+            'gender': self.gender.value,
         }
 
     def to_sce_data(self) -> dict[str, Any]:
         return self.to_stored_value() | {
             'year_of_birth': min(max(self.year_of_birth or 0, 1900), date.today().year),
-            'rating_type': self.rating_type.key.upper(),
+            'rating_type': self.rating_type.key.upper() if self.rating_type else None,
+            'phone_number': self.phone,
+            'gender': SCEPlayerGender.get_outer_value(self.gender),
         }
 
     def merge_with_other_sync_data(self, other_data: Self, ref_data: Self) -> Self:
@@ -259,9 +290,11 @@ class SCEPlayerSyncData:
         stored_player.fide_id = self.fide_id
         stored_player.title = self.title.value
         stored_player.club = self.club
+        stored_player.phone = self.phone
+        stored_player.gender = self.gender.value
         if current_rating != self.rating or current_rating_type != self.rating_type:
             stored_player.ratings[tournament.rating.value] = PlayerRating.from_type(
-                self.rating, self.rating_type
+                self.rating, self.rating_type or PlayerRatingType.ESTIMATED
             ).stored_value
         plugin_data = SCEPlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
@@ -362,7 +395,7 @@ class SCEEventPluginData(PluginData):
     ) -> Self:
         if previous_object:
             return previous_object
-        return cls(id='')
+        return cls()
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return {}

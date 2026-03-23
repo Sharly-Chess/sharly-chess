@@ -18,6 +18,8 @@ from plugins.sce.sce_sync_status import (
     PlayerConflictsSCESyncStatus,
     NetworkFailureSCESyncStatus,
     UnexpectedFailureSCETournamentStatus,
+    PlayerDuplicatesSCESyncStatus,
+    PlayerDuplicatesAndConflictsSCESyncStatus,
 )
 from plugins.sce.sce_tournament_status import (
     SCETournamentStatus,
@@ -73,6 +75,8 @@ class SCESyncStatusManager(EntityManager[SCESyncStatus]):
             SuccessSCESyncStatus,
             TournamentConflictsSCESyncStatus,
             PlayerConflictsSCESyncStatus,
+            PlayerDuplicatesSCESyncStatus,
+            PlayerDuplicatesAndConflictsSCESyncStatus,
             NetworkFailureSCESyncStatus,
             UnexpectedFailureSCETournamentStatus,
         ]

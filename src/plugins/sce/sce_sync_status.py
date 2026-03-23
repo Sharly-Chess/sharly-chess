@@ -100,6 +100,35 @@ class PlayerConflictsSCESyncStatus(WarningSCESyncStatus):
         return True
 
 
+class PlayerDuplicatesSCESyncStatus(WarningSCESyncStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'PLAYER_DUPLICATES'
+
+    def tooltip_message(self, last_attempt_at: datetime) -> str:
+        return _('Player duplicates detected during the last synchronisation attempt.')
+
+    @property
+    def update_last_sync_at(self) -> bool:
+        return True
+
+
+class PlayerDuplicatesAndConflictsSCESyncStatus(WarningSCESyncStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'PLAYER_DUPLICATES_AND_CONFLICTS'
+
+    def tooltip_message(self, last_attempt_at: datetime) -> str:
+        return _(
+            'Player duplicates and conflicts detected '
+            'during the last synchronisation attempt.'
+        )
+
+    @property
+    def update_last_sync_at(self) -> bool:
+        return True
+
+
 class FailureSCESyncStatus(SCESyncStatus, ABC):
     @property
     def notify_error_status(self) -> bool:

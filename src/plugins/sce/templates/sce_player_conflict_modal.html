@@ -88,14 +88,14 @@
         </div>
 
         <div class="modal-footer">
-
             <button
-                type="button"
                 class="btn btn-secondary text-nowrap"
-                data-bs-dismiss="modal"
+                hx-get="{{ url_for(
+                    'sce-sync-modal', event_uniq_id=admin_event.uniq_id
+                ) }}"
             >
-                <i class="bi-x-circle-fill pe-1"></i>
-                {{ _('Close') }}
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
             </button>
         </div>
     </div>

@@ -47,7 +47,7 @@
                             {% endif %}
                             <li>
                                 <button
-                                    class="dropdown-item d-flex align-items-center {% if sub_nav_id == admin_event_tab %}active{% endif %}"
+                                    class="dropdown-item d-flex align-items-center px-2 {% if sub_nav_id == admin_event_tab %}active{% endif %}"
                                     {% if 'modal' in sub_nav_tab %}
                                         hx-get="{{ url_for(sub_nav_tab.modal, action=nav_tab.action, event_uniq_id=admin_event.uniq_id) }}"
                                         hx-target="body"
@@ -75,7 +75,7 @@
                                                 style="height: 1.2em"
                                             />
                                         </span>
-                                        <span class="mt-1">
+                                        <span class="mt-1 flex-grow-1">
                                             {{ sub_nav_tab.title }}
                                         </span>
                                     {% else %}
@@ -84,7 +84,7 @@
 
                                     {% if sub_nav_tab.has_error %}
                                         <span
-                                            class="nav-icon-badge rounded-circle bg-danger ms-2 mb-1"
+                                            class="nav-icon-badge rounded-circle bg-danger ms-2"
                                             style="font-size: 15px;"
                                         >
                                             <i class="bi bi-exclamation"></i>
@@ -101,7 +101,7 @@
         {# Expanding menu for expanded mode #}
         {% with active=(admin_event_tab == nav_id) %}
             <button
-                class="expanded-only btn-toggle nav-link text-start pe-1 {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %}"
+                class="expanded-only btn-toggle nav-link text-start pe-0 {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %}"
                 id="nav-{{ nav_id }}-tab"
                 data-testid="nav-{{ nav_id }}-tab"
                 data-bs-toggle="collapse"
@@ -114,13 +114,14 @@
                     <span class="expanded-only flex-grow-1">{{ nav_tab.title }}</span>
                     {% if nav_tab.has_error %}
                         <span
-                            class="nav-icon-badge rounded-circle bg-danger ms-2 mb-1"
+                            class="nav-icon-badge rounded-circle bg-danger mx-2"
                             style="font-size: 15px;"
                         >
                             <i class="bi bi-exclamation"></i>
                         </span>
+                    {% else %}
+                        <i class="dropdown-arrow bi bi-chevron-right"></i>
                     {% endif %}
-                    <i class="dropdown-arrow bi bi-chevron-right"></i>
                 </div>
             </button>
             <div class="collapse w-100 expanded-only" id="{{ nav_id }}-collapse">
@@ -129,7 +130,7 @@
                         <div class="sidebar-divider"></div>
                     {% endif %}
                     <button
-                        class="nav-link text-start d-flex align-items-center {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
+                        class="nav-link text-start d-flex align-items-center pe-2 {{ nav_tab.class }} {% if nav_tab.disabled %}link-secondary{% endif %} {%if active %}active{% endif %}"
                         id="nav-{{ sub_nav_id }}-tab"
                         data-testid="nav-{{ sub_nav_id }}-tab"
                         {% if 'modal' in sub_nav %}
@@ -159,7 +160,7 @@
                                     style="height: 1.2em"
                                 />
                             </span>
-                            <span class="mt-1">
+                            <span class="mt-1 flex-grow-1">
                                 {{ sub_nav.title }}
                             </span>
                         {% else %}
@@ -167,7 +168,7 @@
                         {% endif %}
                         {% if sub_nav.has_error %}
                             <span
-                                class="nav-icon-badge rounded-circle bg-danger ms-2 mb-1"
+                                class="nav-icon-badge rounded-circle bg-danger ms-1"
                                 style="font-size: 15px;"
                             >
                                 <i class="bi bi-exclamation"></i>
