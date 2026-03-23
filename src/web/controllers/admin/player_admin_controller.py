@@ -1364,6 +1364,11 @@ class PlayerAdminController(BaseEventAdminController):
 
         # If there aren't any pairings, then the round for the bye is the first round
         round_for_participation = tournament.current_round or 1
+        if result == Result.NO_RESULT and tournament.round_has_pairings(
+            round_for_participation
+        ):
+            # If returning to tournament and pairings for this round, then start setting removing ZPBs from the next round only
+            round_for_participation += 1
         new_byes = {
             round_: result
             for round_ in range(
