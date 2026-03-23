@@ -4,6 +4,7 @@
     {% if not tournament_status.is_silent %}
         <span
             class="badge rounded-pill {{ tournament_status.css_classes }}"
+            style="height: 20px"
             {% if tournament_status.tooltip %}
                 {{ macros.tooltip_attributes('', tournament_status.tooltip, 'top') }}
             {% endif %}

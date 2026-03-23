@@ -9,13 +9,13 @@ msgstr ""
 msgid "All player conflicts resolved."
 msgstr ""
 
+msgid "All player duplicates resolved."
+msgstr ""
+
 msgid "All the local tournaments are connected to a Sharly-Chess.com tournament."
 msgstr ""
 
 msgid "All the tournaments of the Sharly-Chess.com event are already imported."
-msgstr ""
-
-msgid "All tournament conflicts resolved, synchronisation resumed."
 msgstr ""
 
 msgid "An error occurred, consult the logs for more details."
@@ -49,6 +49,9 @@ msgid "Auto-upload enabled"
 msgstr ""
 
 msgid "Auto-upload of the tournament has been planned."
+msgstr ""
+
+msgid "Back"
 msgstr ""
 
 msgid "Choose"
@@ -85,13 +88,19 @@ msgstr ""
 msgid "Data synchronisation"
 msgstr ""
 
-msgid "Dates"
+msgid "Delete"
+msgstr ""
+
+msgid "Edit"
 msgstr ""
 
 msgid "Edit the player"
 msgstr ""
 
 msgid "Edit the tournament"
+msgstr ""
+
+msgid "End"
 msgstr ""
 
 msgid "Error while uploading tournament [{tournament}], consult the logs for more details."
@@ -118,13 +127,16 @@ msgstr ""
 msgid "First name"
 msgstr ""
 
+msgid "Gender"
+msgstr ""
+
 msgid "Import Sharly-Chess.com tournaments that do not exist locally."
 msgstr ""
 
-msgid "Import from Sharly-Chess.com"
+msgid "Import a Sharly-Chess.com tournament"
 msgstr ""
 
-msgid "Import new tournaments"
+msgid "Import from Sharly-Chess.com"
 msgstr ""
 
 msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc...)."
@@ -146,6 +158,9 @@ msgid "Last upload"
 msgstr ""
 
 msgid "Local"
+msgstr ""
+
+msgid "Local players"
 msgstr ""
 
 msgid "Modified"
@@ -172,16 +187,31 @@ msgstr ""
 msgid "Not started"
 msgstr ""
 
-msgid "OK"
-msgstr ""
-
 msgid "Ongoing"
 msgstr ""
 
 msgid "Pending"
 msgstr ""
 
+msgid "Phone"
+msgstr ""
+
+msgid "Player [{player}] deleted."
+msgstr ""
+
 msgid "Player conflicts detected during the last synchronisation attempt."
+msgstr ""
+
+msgid "Player duplicates and conflicts detected during the last synchronisation attempt."
+msgstr ""
+
+msgid "Player duplicates detected during the last synchronisation attempt."
+msgstr ""
+
+msgid "Player has already been paired in the tournament, it no longer can be deleted."
+msgstr ""
+
+msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
 msgstr ""
 
 msgid "Public page of the event."
@@ -194,6 +224,10 @@ msgid "Rating"
 msgstr ""
 
 msgid "Remaining conflicts"
+msgstr ""
+
+#, python-format
+msgid "Resolve duplicated players (%(count)d)"
 msgstr ""
 
 #, python-format
@@ -210,10 +244,10 @@ msgstr ""
 msgid "Retry"
 msgstr ""
 
-msgid "Sharly-Chess.com"
+msgid "Sharly-Chess.com authorization canceled."
 msgstr ""
 
-msgid "Sharly-Chess.com authorization canceled."
+msgid "Sharly-Chess.com duplicates"
 msgstr ""
 
 msgid "Sharly-Chess.com event not found, it most likely has been deleted."
@@ -229,6 +263,9 @@ msgid "Sharly-Chess.com tournament"
 msgstr ""
 
 msgid "Sharly-Chess.com tournament conflicts"
+msgstr ""
+
+msgid "Start"
 msgstr ""
 
 msgid "Statuses"
@@ -253,10 +290,16 @@ msgstr ""
 msgid "Synchronize players"
 msgstr ""
 
+msgid "Time control"
+msgstr ""
+
 msgid "Title"
 msgstr ""
 
 msgid "Tournament"
+msgstr ""
+
+msgid "Tournament [{tournament}] successfully uploaded."
 msgstr ""
 
 msgid "Tournament has been modified since the last upload."
@@ -271,13 +314,22 @@ msgstr ""
 msgid "Tournament is currently being uploaded."
 msgstr ""
 
+msgid "Tournament successfully imported."
+msgstr ""
+
 msgid "Type"
+msgstr ""
+
+msgid "Undefined"
 msgstr ""
 
 msgid "Up to date"
 msgstr ""
 
 msgid "Upload"
+msgstr ""
+
+msgid "Upload a local tournament"
 msgstr ""
 
 msgid "Upload all tournament results"
@@ -291,9 +343,6 @@ msgid "Upload failed (reason: {reason})."
 msgstr ""
 
 msgid "Upload failed unexpectedly."
-msgstr ""
-
-msgid "Upload local tournaments"
 msgstr ""
 
 msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
@@ -314,13 +363,8 @@ msgstr ""
 msgid "tournament not found, most likely deleted"
 msgstr ""
 
-msgid "{count} tournament successfully imported."
-msgid_plural "{count} tournaments successfully imported."
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "{count} tournament successfully uploaded."
-msgid_plural "{count} tournaments successfully uploaded."
+msgid "{count} duplicated player detected."
+msgid_plural "{count} duplicated players detected."
 msgstr[0] ""
 msgstr[1] ""
 

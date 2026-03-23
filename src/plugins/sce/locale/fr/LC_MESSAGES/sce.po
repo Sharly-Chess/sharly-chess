@@ -9,14 +9,14 @@ msgstr "%(string)s : %(value)s"
 msgid "All player conflicts resolved."
 msgstr "Tous les conflits de joueur·euses sont résolus."
 
+msgid "All player duplicates resolved."
+msgstr "Tous les doublons de joueur·euses sont résolus."
+
 msgid "All the local tournaments are connected to a Sharly-Chess.com tournament."
 msgstr "Tous les tournois locaux sont connectés à un tournoi Sharly-Chess.com."
 
 msgid "All the tournaments of the Sharly-Chess.com event are already imported."
 msgstr "Tous les tournois de l'évènement Sharly-Chess.com ont déjà été importés."
-
-msgid "All tournament conflicts resolved, synchronisation resumed."
-msgstr "Tous les conflits de tournois sont résolus, reprise de la synchronisation."
 
 msgid "An error occurred, consult the logs for more details."
 msgstr "Une erreur s'est produite, consultez les logs pour plus de détails."
@@ -50,6 +50,9 @@ msgstr "Mise en ligne automatique activée"
 
 msgid "Auto-upload of the tournament has been planned."
 msgstr "La mise en ligne automatique du tournoi a été planifiée."
+
+msgid "Back"
+msgstr "Retour"
 
 msgid "Choose"
 msgstr "Choisir"
@@ -85,14 +88,20 @@ msgstr "Les données telles qu'elle étaient lors de la dernière synchronisatio
 msgid "Data synchronisation"
 msgstr "Synchronisation des données"
 
-msgid "Dates"
-msgstr "Dates"
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Edit"
+msgstr "Modifier"
 
 msgid "Edit the player"
 msgstr "Modifier le·la joueur·euse"
 
 msgid "Edit the tournament"
 msgstr "Modifier le tournoi"
+
+msgid "End"
+msgstr "Fin"
 
 msgid "Error while uploading tournament [{tournament}], consult the logs for more details."
 msgstr "Erreur lors de la mise en ligne du tournoi [{tournament}], consultez les logs pour plus de détails."
@@ -118,14 +127,17 @@ msgstr "Erreur"
 msgid "First name"
 msgstr "Prénom"
 
+msgid "Gender"
+msgstr "Genre"
+
 msgid "Import Sharly-Chess.com tournaments that do not exist locally."
 msgstr "Importer les tournois Sharly-Chess.com qui n'existent pas localement."
 
-msgid "Import from Sharly-Chess.com"
-msgstr "Imported depuis Sharly-Chess.com"
+msgid "Import a Sharly-Chess.com tournament"
+msgstr "Importer un tournoi Sharly-Chess.com"
 
-msgid "Import new tournaments"
-msgstr "Importer de nouveaux tournois"
+msgid "Import from Sharly-Chess.com"
+msgstr "Importer depuis Sharly-Chess.com"
 
 msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc...)."
 msgstr "Intégration de la plateforme Sharly-Chess.com (pointage en ligne, mise en ligne de résultats, etc...)."
@@ -147,6 +159,9 @@ msgstr "Dernière mise en ligne"
 
 msgid "Local"
 msgstr "Local"
+
+msgid "Local players"
+msgstr "Joueur·euses locaux"
 
 msgid "Modified"
 msgstr "Modifié"
@@ -172,17 +187,32 @@ msgstr "Aucun·e joueur·euse à synchroniser pour le moment, vous devez d'abord
 msgid "Not started"
 msgstr "Non démarré"
 
-msgid "OK"
-msgstr "OK"
-
 msgid "Ongoing"
 msgstr "En cours"
 
 msgid "Pending"
 msgstr "En attente"
 
+msgid "Phone"
+msgstr "Téléphone"
+
+msgid "Player [{player}] deleted."
+msgstr "Joueur·euse [{player}] supprimé·e."
+
 msgid "Player conflicts detected during the last synchronisation attempt."
-msgstr "Des conflits de joueur·euses ont été détectés lors de la dernière synchronisation."
+msgstr "Conflits de joueur·euses détectés lors de la dernière synchronisation."
+
+msgid "Player duplicates and conflicts detected during the last synchronisation attempt."
+msgstr "Doublons et conflits de joueur·euses détectés lors de la dernière synchronisation."
+
+msgid "Player duplicates detected during the last synchronisation attempt."
+msgstr "Doublons de joueur·euses détectés lors de la dernière synchronisation."
+
+msgid "Player has already been paired in the tournament, it no longer can be deleted."
+msgstr "Le·la joueur·euse can't be deleted as it already has been paired in the tournament."
+
+msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
+msgstr "Les joueur·euses de l'application Sharly Chess locale qui ne peuvent être créés dans Sharly-Chess.com car ils existent déjà."
 
 msgid "Public page of the event."
 msgstr "Page publique de l'évènement."
@@ -195,6 +225,10 @@ msgstr "Classement"
 
 msgid "Remaining conflicts"
 msgstr "Conflits restants"
+
+#, python-format
+msgid "Resolve duplicated players (%(count)d)"
+msgstr "Résoudre les doublons de joueur·euses (%(count)d)"
 
 #, python-format
 msgid "Resolve player conflicts (%(count)d)"
@@ -213,6 +247,9 @@ msgstr "Ré-essayer"
 msgid "Sharly-Chess.com authorization canceled."
 msgstr "Authorisation Sharly-Chess.com annulée."
 
+msgid "Sharly-Chess.com duplicates"
+msgstr "Doublons Sharly-Chess.com"
+
 msgid "Sharly-Chess.com event not found, it most likely has been deleted."
 msgstr "L'évènement Sharly-Chess.com a été supprimé, il a probablement été supprimé."
 
@@ -227,6 +264,9 @@ msgstr "Tournoi Sharly-Chess.com"
 
 msgid "Sharly-Chess.com tournament conflicts"
 msgstr "Conflits de tournois Sharly-Chess.com"
+
+msgid "Start"
+msgstr "Début"
 
 msgid "Statuses"
 msgstr "Statuts"
@@ -250,11 +290,17 @@ msgstr "Synchroniser automatiquement toutes les %(delay)d minutes."
 msgid "Synchronize players"
 msgstr "Synchroniser les joueur·euses"
 
+msgid "Time control"
+msgstr "Cadence"
+
 msgid "Title"
 msgstr "Titre"
 
 msgid "Tournament"
 msgstr "Tournoi"
+
+msgid "Tournament [{tournament}] successfully uploaded."
+msgstr "Le tournoi [{tournament}] a été mis en ligne avec succès."
 
 msgid "Tournament has been modified since the last upload."
 msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
@@ -268,14 +314,23 @@ msgstr "L'import de tournoi a échoué, consultez les logs pour plus de détails
 msgid "Tournament is currently being uploaded."
 msgstr "Le tournoi est en cours de mise en ligne."
 
+msgid "Tournament successfully imported."
+msgstr "Le tournoi a été importé avec succès."
+
 msgid "Type"
 msgstr "Type"
+
+msgid "Undefined"
+msgstr "Non-défini"
 
 msgid "Up to date"
 msgstr "À jour"
 
 msgid "Upload"
 msgstr "Mettre en ligne"
+
+msgid "Upload a local tournament"
+msgstr "Mettre en ligne un tournoi local"
 
 msgid "Upload all tournament results"
 msgstr "Mettre en ligne tous les résultats"
@@ -289,9 +344,6 @@ msgstr "La mise en ligne a échoué (raison : {reason})."
 
 msgid "Upload failed unexpectedly."
 msgstr "La mise en ligne a échoué de manière inattendue."
-
-msgid "Upload local tournaments"
-msgstr "Mettre en ligne les tournois locaux"
 
 msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
 msgstr "Mettre en ligne sur Sharly-Chess.com les tournois qui n'existent que localement."
@@ -311,13 +363,8 @@ msgstr "ré-autorisation requise"
 msgid "tournament not found, most likely deleted"
 msgstr "tournoi non trouvé, probablement supprimé"
 
-msgid "{count} tournament successfully imported."
-msgid_plural "{count} tournaments successfully imported."
-msgstr[0] "{count} tournoi importé avec succès."
-msgstr[1] "{count} tournois importés avec succès."
-
-msgid "{count} tournament successfully uploaded."
-msgid_plural "{count} tournaments successfully uploaded."
-msgstr[0] "{count} tournoi mis en ligne avec succès."
-msgstr[1] "{count} tournois mis en ligne avec succès."
+msgid "{count} duplicated player detected."
+msgid_plural "{count} duplicated players detected."
+msgstr[0] "{count} doublon de joueur·euses détecté."
+msgstr[1] "{count} doublons de joueur·euses détectés."
 

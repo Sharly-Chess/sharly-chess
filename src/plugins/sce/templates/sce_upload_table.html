@@ -54,7 +54,10 @@
                     target="_blank"
                     {{ macros.tooltip_attributes('', _('Configuration page of the tournament.')) }}
                 ><i class="bi bi-gear-fill"></i></a>
-                <span {{ macros.tooltip_attributes('', _('Upload')) }}>
+                <span {{ macros.tooltip_attributes('',
+                    _('Upload') if tournament.started else
+                    _('Tournament has not started yet, no results to upload.')
+                ) }}>
                     <button
                         type="button"
                         class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
