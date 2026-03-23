@@ -1058,6 +1058,9 @@ msgstr ""
 msgid "Category [%(category)s] successfully created!"
 msgstr ""
 
+msgid "Category not specified"
+msgstr ""
+
 msgid "Category sets"
 msgstr ""
 
@@ -1201,6 +1204,9 @@ msgstr ""
 
 msgid "Club *** CLUB COLUMN HEADER"
 msgstr "Club"
+
+msgid "Club not specified"
+msgstr ""
 
 msgid "Club threshold"
 msgstr ""
