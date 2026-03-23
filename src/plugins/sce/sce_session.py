@@ -13,6 +13,7 @@ from litestar.status_codes import (
     HTTP_403_FORBIDDEN,
     HTTP_200_OK,
     HTTP_404_NOT_FOUND,
+    HTTP_409_CONFLICT,
 )
 from requests import Session, HTTPError, Response
 
@@ -43,15 +44,15 @@ from plugins.sce.sce_sync_status import (
     PlayerConflictsSCESyncStatus,
     SuccessSCESyncStatus,
 )
-from plugins.sce.utils import (
+from plugins.sce.sce_data import (
     SCETokens,
-    SCEUtils,
     SCETournamentPluginData,
     SCEPlayerPluginData,
     SCEEventPluginData,
     SCEPlayerSyncData,
     SCETournamentSyncData,
 )
+from plugins.sce.utils import SCEUtils
 from plugins.utils import Plugin
 from utils import Utils
 from utils.enum import Result
@@ -307,11 +308,26 @@ class SCESession(Session):
             json=payload,
         )
 
-    def create_sce_player(self, data: SCEPlayerSyncData) -> str:
+    def create_sce_player(self, player: TournamentPlayer) -> bool:
+        """Create a player on SC.com, returns False if it already exists, True if it succeeds."""
+        plugin_data = SCEUtils.get_player_plugin_data(player)
+        sync_data = SCEPlayerSyncData.from_player(player)
         response = self._run_with_token_validation(
-            partial(self._create_registration_request, data=data)
+            partial(self._create_registration_request, data=sync_data),
+            skip_validation=True,
         )
-        return response.json()['data']['id']
+        try:
+            self.validate_api_response(response)
+        except SharlyChessException as e:
+            if response.status_code != HTTP_409_CONFLICT:
+                raise e
+            plugin_data.is_duplicated = True
+            SCEUtils.update_player_plugin_data(player, plugin_data)
+            return False
+        plugin_data.id = response.json()['data']['id']
+        plugin_data.last_sync_data = sync_data
+        SCEUtils.update_player_plugin_data(player, plugin_data)
+        return True
 
     def _update_registration_request(
         self,
@@ -366,6 +382,7 @@ class SCESession(Session):
         tournament: Tournament,
         database: EventDatabase,
     ):
+        # TODO (Molrn) Check and flag duplicate players
         sce_tournament_id = SCEUtils.get_tournament_plugin_data(tournament).id
         assert sce_tournament_id is not None
         stored_player = StoredPlayer(
@@ -412,11 +429,10 @@ class SCESession(Session):
         sce_id = plugin_data.id
         if not sce_id:
             if not plugin_data.deleted_id:
-                sync_data = SCEPlayerSyncData.from_player(player)
-                plugin_data.id = self.create_sce_player(sync_data)
-                plugin_data.last_sync_data = sync_data
-                SCEUtils.update_player_plugin_data(player, plugin_data)
-                log_operation('Creation (SC.com)')
+                if self.create_sce_player(player):
+                    log_operation('Creation (SC.com)')
+                else:
+                    log_operation('SC.com creation failed, already exists in SC.com')
             return True
         tournament = player.tournament
         if not sce_sync_data:
@@ -545,24 +561,29 @@ class SCESession(Session):
             json=data.to_sce_data(),
         )
 
-    def create_sce_tournament(self, tournament: Tournament):
+    def create_sce_tournament(self, tournament: Tournament) -> int:
+        log_prefix = f'Sharly-Chess.com - Tournament [{tournament.name}] creation - '
         sync_data = SCETournamentSyncData.from_tournament(tournament)
         response = self._run_with_token_validation(
             partial(self._create_tournament_request, data=sync_data)
         )
+        logger.debug(log_prefix + 'Empty tournament created')
         plugin_data = SCETournamentPluginData(
             id=response.json()['data']['id'],
             last_sync_data=sync_data,
         )
         SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+        duplicate_count = 0
         for player in tournament.tournament_players:
-            player_sync_data = SCEPlayerSyncData.from_player(player)
-            player_id = self.create_sce_player(player_sync_data)
-            player_plugin_data = SCEPlayerPluginData(
-                id=player_id,
-                last_sync_data=player_sync_data,
-            )
-            SCEUtils.update_player_plugin_data(player, player_plugin_data)
+            if self.create_sce_player(player):
+                logger.debug(log_prefix + 'Player [%s] created', player.full_name)
+            else:
+                duplicate_count += 1
+                logger.error(
+                    log_prefix + 'Player [%s] already exists, skipped',
+                    player.full_name,
+                )
+        return duplicate_count
 
     def _update_tournament_request(
         self, data: SCETournamentSyncData, sce_tournament_id: str

@@ -5,7 +5,7 @@
 
 <div
     id="sce-sync-modal"
-    class="modal-dialog modal-dialog-scrollable"
+    class="modal-dialog {% if sce_allowed_tournaments %}modal-dialog-scrollable{% endif %}"
     style="--bs-modal-width: min(90vw, 800px);"
     hx-get="{{ url_for(
         'sce-sync-modal', event_uniq_id=admin_event.uniq_id
@@ -194,44 +194,21 @@
                                 )) }}
                             >
                                 <i class="bi-box-arrow-in-right pe-1"></i>
-                                {{ _('Import new tournaments') }}
+                                {{ _('Import a Sharly-Chess.com tournament') }}
                             </span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end table-dropdown-menu p-0">
-                            <li class="dropdown-item title text-nowrap">
-                                <input
-                                    type="checkbox"
-                                    class="form-check-input blue-checkbox"
-                                    {% if enabled_columns|length == visible_columns|length %}checked{% endif %}
-                                    onclick="$('.new-sce-tournament').prop('checked', this.checked)"
-
-                                />
-                                <button
-                                    class="btn w-100 text-end py-0"
+                            {% for tournament_id, tournament_name in new_sce_tournament_options.items() %}
+                                <li
+                                    class="dropdown-item text-start cursor-pointer"
                                     hx-post="{{ url_for(
-                                        'sce-import-tournaments',
-                                        event_uniq_id=admin_event.uniq_id
+                                        'sce-import-tournament',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        sce_tournament_id=tournament_id,
                                     ) }}"
                                     hx-indicator="#please-wait"
-                                    hx-vals="js:{sce_tournament_ids: $('.new-sce-tournament:checked').map((_, el) => $(el).val()).get()}"
                                 >
-                                    <i class="bi-check-lg pe-1"></i>
-                                    {{ _('OK') }}
-                                </button>
-                            </li>
-                            <li class="dropdown-divider m-0"></li>
-                            {% for tournament_id, tournament_name in new_sce_tournament_options.items() %}
-                                <li class="dropdown-item text-nowrap d-inline-flex align-items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        id="new-sce-tournament-{{ tournament_id }}"
-                                        value="{{ tournament_id }}"
-                                        class="new-sce-tournament form-check-input blue-checkbox mb-1"
-                                        checked
-                                    />
-                                    <label for="new-sce-tournament-{{ tournament_id }}" class="form-label w-100 my-0">
-                                        {{ tournament_name }}
-                                    </label>
+                                    {{ tournament_name }}
                                 </li>
                             {% endfor %}
                         </ul>
@@ -260,44 +237,21 @@
                                 )) }}
                             >
                                 <i class="bi-box-arrow-right pe-1"></i>
-                                {{ _('Upload local tournaments') }}
+                                {{ _('Upload a local tournament') }}
                             </span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end table-dropdown-menu p-0">
-                            <li class="dropdown-item title text-nowrap">
-                                <input
-                                    type="checkbox"
-                                    class="form-check-input blue-checkbox"
-                                    {% if enabled_columns|length == visible_columns|length %}checked{% endif %}
-                                    onclick="$('.new-local-tournament').prop('checked', this.checked)"
-
-                                />
-                                <button
-                                    class="btn w-100 text-end py-0"
+                            {% for tournament_id, tournament_name in new_local_tournament_options.items() %}
+                                <li
+                                    class="dropdown-item text-start cursor-pointer"
                                     hx-post="{{ url_for(
-                                        'sce-upload-local-tournaments',
-                                        event_uniq_id=admin_event.uniq_id
+                                        'sce-upload-local-tournament',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=tournament_id,
                                     ) }}"
                                     hx-indicator="#please-wait"
-                                    hx-vals="js:{tournament_ids: $('.new-local-tournament:checked').map((_, el) => $(el).val()).get()}"
                                 >
-                                    <i class="bi-check-lg pe-1"></i>
-                                    {{ _('OK') }}
-                                </button>
-                            </li>
-                            <li class="dropdown-divider m-0"></li>
-                            {% for tournament_id, tournament_name in new_local_tournament_options.items() %}
-                                <li class="dropdown-item text-nowrap d-inline-flex align-items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        id="new-local-tournament-{{ tournament_id }}"
-                                        value="{{ tournament_id }}"
-                                        class="new-local-tournament form-check-input blue-checkbox mb-1"
-                                        checked
-                                    />
-                                    <label for="new-local-tournament-{{ tournament_id }}" class="form-label w-100 my-0">
-                                        {{ tournament_name }}
-                                    </label>
+                                    {{ tournament_name }}
                                 </li>
                             {% endfor %}
                         </ul>

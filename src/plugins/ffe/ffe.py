@@ -104,7 +104,7 @@ from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
 from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
-from plugins.sce.utils import SCEPlayerSyncData
+from plugins.sce.sce_data import SCEPlayerSyncData
 from plugins.utils import (
     ExtraStatisticsSection,
     NavDataTransferItem,

@@ -13,13 +13,13 @@ from plugins.sce.sce_background_uploader import (
     schedule_upload,
 )
 from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
-from plugins.sce.utils import (
+from plugins.sce.sce_data import (
     SCETournamentPluginData,
     SCEEventPluginData,
     SCEPlayerPluginData,
-    SCEUtils,
     SCEPlayerSyncData,
 )
+from plugins.sce.utils import SCEUtils
 from plugins.utils import (
     PluginData,
     NavDataTransferItem,

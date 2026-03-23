@@ -33,13 +33,13 @@ from plugins.sce.sce_background_uploader import (
     upload_event_tournaments,
     remove_scheduled_upload,
 )
-from plugins.sce.utils import (
+from plugins.sce.sce_data import (
     SCETokens,
     SCEEventPluginData,
-    SCEUtils,
     SCETournamentSyncData,
     SCEPlayerSyncData,
 )
+from plugins.sce.utils import SCEUtils
 from utils.date_time import format_datetime
 from web.controllers.admin.base_admin_controller import (
     BaseAdminController,
@@ -93,13 +93,13 @@ class SCEWebContext(AdminWebContext):
 
         plugin_data = SCEUtils.get_event_plugin_data(event)
         new_sce_tournament_options = copy.copy(plugin_data.tournament_names_by_id)
-        new_local_tournament_options: dict[str, str] = {}
+        new_local_tournament_options: dict[int, str] = {}
         for tournament in event.tournaments:
             sce_id = SCEUtils.get_tournament_plugin_data(tournament).id
             if sce_id and sce_id in new_sce_tournament_options:
                 del new_sce_tournament_options[sce_id]
             elif tournament in self.allowed_tournaments:
-                new_local_tournament_options[str(tournament.id)] = tournament.name
+                new_local_tournament_options[tournament.id] = tournament.name
 
         return self.table_context | {
             'new_sce_tournament_options': new_sce_tournament_options,
@@ -392,14 +392,14 @@ class SCEAdminController(BaseAdminController):
         cls,
         web_context: SCEWebContext,
         message: str | None = None,
-        is_error_message: bool = False,
+        message_type: str | None = None,
     ) -> HTMXTemplate:
         return cls._render_modal(
             template_name='/sce_sync_modal.html',
             template_context=web_context.sync_modal_context
             | {
                 'message': message,
-                'message_type': 'error' if is_error_message else 'success',
+                'message_type': message_type or 'success',
             },
         )
 
@@ -429,10 +429,7 @@ class SCEAdminController(BaseAdminController):
             if plugin_data.auto_player_sync and not is_sync_scheduled(event.uniq_id):
                 schedule_sync(event)
 
-            if self._clean_outdated_tournament_conflicts(web_context):
-                message = _(
-                    'All tournament conflicts resolved, synchronisation resumed.'
-                )
+            self._clean_outdated_tournament_conflicts(web_context)
             if has_player_conflicts and self._clean_outdated_player_conflicts(
                 web_context
             ):
@@ -596,10 +593,7 @@ class SCEAdminController(BaseAdminController):
         conflict_tournaments = web_context.sce_tournaments_with_conflicts
         if not conflict_tournaments:
             schedule_sync(event, force=True)
-            return cls._render_sync_modal(
-                web_context,
-                _('All tournament conflicts resolved, synchronisation resumed.'),
-            )
+            return cls._render_sync_modal(web_context)
         tournament = conflict_tournaments[0]
         plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
         return cls._render_modal(
@@ -616,7 +610,9 @@ class SCEAdminController(BaseAdminController):
                 'diff_fields': {
                     'name': _('Name'),
                     'type_str': _('Type'),
-                    'date_range_str': _('Dates'),
+                    'start_date_str': _('Start'),
+                    'stop_date_str': _('End'),
+                    'human_readable_time_control': _('Time control'),
                 },
             },
         )
@@ -788,78 +784,66 @@ class SCEAdminController(BaseAdminController):
         return self._render_player_conflict_modal(web_context, error_message)
 
     @post(
-        path='/sce/import-tournaments/{event_uniq_id:str}',
-        name='sce-import-tournaments',
+        path='/sce/import-tournament/{event_uniq_id:str}/{sce_tournament_id:str}',
+        name='sce-import-tournament',
     )
-    async def htmx_sce_import_tournaments(
+    async def htmx_sce_import_tournament(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str | list[str]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
+        sce_tournament_id: str,
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request)
         event = web_context.get_admin_event()
-        flat_data = WebContext.flatten_list_data(data)
-        sce_tournament_ids = WebContext.form_data_to_list_str(
-            flat_data, 'sce_tournament_ids'
-        )
-        message: str | None = None
-        is_error_message = False
-        if sce_tournament_ids:
-            try:
-                SCESession(event).import_tournaments(sce_tournament_ids)
-                message = ngettext(
-                    '{count} tournament successfully imported.',
-                    '{count} tournaments successfully imported.',
-                    len(sce_tournament_ids),
-                ).format(count=len(sce_tournament_ids))
-                web_context = SCEWebContext(request, reload_event=True)
-            except SharlyChessException as e:
-                logger.error(e)
-                message = _(
-                    'Tournament import failed, consult the logs for more details.'
-                )
-                is_error_message = True
-        return self._render_sync_modal(web_context, message, is_error_message)
+        message_type: str | None = None
+        try:
+            SCESession(event).import_tournaments([sce_tournament_id])
+            message = _('Tournament successfully imported.')
+            plugin_data = SCEUtils.get_event_plugin_data(event)
+            if not plugin_data.last_sync_at:
+                plugin_data.last_sync_at = datetime.now()
+                SCEUtils.update_event_plugin_data(event, plugin_data)
+            web_context = SCEWebContext(request, reload_event=True)
+        except SharlyChessException as e:
+            logger.error(e)
+            message = _('Tournament import failed, consult the logs for more details.')
+            message_type = 'error'
+        return self._render_sync_modal(web_context, message, message_type)
 
     @post(
-        path='/sce/upload-local-tournaments/{event_uniq_id:str}',
-        name='sce-upload-local-tournaments',
+        path='/sce/upload-local-tournament/{event_uniq_id:str}/{tournament_id:int}',
+        name='sce-upload-local-tournament',
     )
-    async def htmx_sce_upload_local_tournaments(
+    async def htmx_sce_upload_local_tournament(
         self,
         request: HTMXRequest,
-        data: Annotated[
-            dict[str, str | list[str]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
+        tournament_id: int,
     ) -> HTMXTemplate:
-        web_context = SCEWebContext(request)
+        web_context = SCEWebContext(request, tournament_id)
         event = web_context.get_admin_event()
-        flat_data = WebContext.flatten_list_data(data)
-        tournament_ids = WebContext.form_data_to_list_int(flat_data, 'tournament_ids')
+        tournament = web_context.get_tournament()
         session = SCESession(event)
-        message: str | None = None
-        is_error_message = False
-        for tournament_id in tournament_ids:
-            tournament = event.tournaments_by_id.get(tournament_id)
-            if not tournament:
-                raise ClientException(f'Tournament [{tournament_id}] not found')
-            try:
-                session.create_sce_tournament(tournament)
-            except SharlyChessException as e:
-                logger.error(e)
-                is_error_message = True
-                message = _(
-                    'Error while uploading tournament [{tournament}], '
-                    'consult the logs for more details.'
-                ).format(tournament=tournament.name)
-        if not message and tournament_ids:
-            message = ngettext(
-                '{count} tournament successfully uploaded.',
-                '{count} tournaments successfully uploaded.',
-                len(tournament_ids),
-            ).format(count=len(tournament_ids))
-        return self._render_sync_modal(web_context, message, is_error_message)
+        message_type: str | None = None
+        try:
+            duplicate_count = session.create_sce_tournament(tournament)
+            message = _('Tournament [{tournament}] successfully uploaded.').format(
+                tournament=tournament.name
+            )
+            if duplicate_count:
+                message += ' ' + ngettext(
+                    '{count} duplicated player detected.',
+                    '{count} duplicated players detected.',
+                    duplicate_count,
+                )
+                message_type = 'warning'
+            plugin_data = SCEUtils.get_event_plugin_data(event)
+            if not plugin_data.last_sync_at:
+                plugin_data.last_sync_at = datetime.now()
+                SCEUtils.update_event_plugin_data(event, plugin_data)
+        except SharlyChessException as e:
+            logger.error(e)
+            message_type = 'error'
+            message = _(
+                'Error while uploading tournament [{tournament}], '
+                'consult the logs for more details.'
+            ).format(tournament=tournament.name)
+        return self._render_sync_modal(web_context, message, message_type)
