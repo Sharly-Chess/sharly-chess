@@ -18,8 +18,8 @@
 
 - Add round schedule to tournaments (3.7.0)
 
-## Documents
-
+# Documents
+- Add owed/paid totals to the check-in list (3.7.0)
 - Add a sort option to the players list document
 
 ## Plugins
