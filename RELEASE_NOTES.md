@@ -30,6 +30,7 @@
 - Fixed manual tie-break on the Rankings page (3.6.6)
 - Fixed error message when pairing is impossible (3.6.6)
 - Return to tournament at the first round with no pairings (3.6.7)
+- Fixed DE tie-break calculation of double round-robin tournaments (3.6.8)
 
 ## Prizes
 

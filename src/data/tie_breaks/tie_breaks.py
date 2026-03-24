@@ -104,7 +104,12 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         return True
 
     def compute_all_player_values(
-        self, tournament: 'Tournament', tie_break_index: int, *, after_round: int
+        self,
+        tournament: 'Tournament',
+        tie_break_index: int,
+        *,
+        after_round: int,
+        double_round_robin: bool,
     ) -> dict[int, int]:
         """Computes the values of all the players in a dict[player_id, value] format."""
         raise NotImplementedError(
@@ -1594,7 +1599,12 @@ class DirectEncounterTieBreak(TieBreak):
         return False
 
     def compute_all_player_values(
-        self, tournament: 'Tournament', tie_break_index: int, *, after_round: int
+        self,
+        tournament: 'Tournament',
+        tie_break_index: int,
+        *,
+        after_round: int,
+        double_round_robin: bool,
     ) -> dict[int, int]:
         """Form groups of tied players. Amongst each group,
         attribute (if possible) an integer value from 0 to len(group).
@@ -1626,6 +1636,7 @@ class DirectEncounterTieBreak(TieBreak):
                 values_by_player_id,
                 after_round,
                 point_values,
+                double_round_robin,
             )
         return values_by_player_id
 
@@ -1636,6 +1647,7 @@ class DirectEncounterTieBreak(TieBreak):
         values_by_player_id: dict[int, int],
         after_round: int,
         point_values: dict[Result, float] | None,
+        double_round_robin: bool,
     ):
         """Recursively explore the group to assign values from *min_value*.
         Try to isolate different subgroups, and explore the subgroups with a narrower value range.
@@ -1650,6 +1662,7 @@ class DirectEncounterTieBreak(TieBreak):
                 tournament_player_group,
                 after_round,
                 point_values,
+                double_round_robin,
             )
             for tournament_player in tournament_player_group
         }
@@ -1674,6 +1687,7 @@ class DirectEncounterTieBreak(TieBreak):
                 values_by_player_id,
                 after_round,
                 point_values,
+                double_round_robin,
             )
             min_value += len(subgroup.player_ids)
 
@@ -1709,6 +1723,7 @@ class DirectEncounterTieBreak(TieBreak):
         player_group: list[TournamentPlayer],
         after_round: int,
         point_values: dict[Result, float] | None,
+        double_round_robin: bool,
     ) -> tuple[float, float]:
         """Compute the min and max possible points a tournament_player
         can achieve against other players of the group."""
@@ -1720,7 +1735,10 @@ class DirectEncounterTieBreak(TieBreak):
             for round_, pairing in player.pairings_by_round.items()
             if round_ <= after_round and pairing.opponent_id in group_player_ids
         ]
-        not_played = len(player_group) - len(group_pairings) - 1
+        max_played = len(player_group) - 1
+        if double_round_robin:
+            max_played *= 2
+        not_played = max_played - len(group_pairings)
         group_points = sum(
             pairing.result.points(point_values) for pairing in group_pairings
         )

@@ -20,6 +20,7 @@ from data.account import Account
 from data.board import Board
 from data.criteria.managers import PlayerFilter
 from data.family import Family
+from data.pairings.variations import DoubleBergerRoundRobinVariation
 from data.player import Player, Federation, Club, TournamentPlayer
 from data.player_categories import PlayerCategory
 from data.prize.assigned_prize import AssignedPrize
@@ -1275,7 +1276,12 @@ class Tournament:
             if tie_break.is_computed_per_player:
                 continue
             value_by_player_id = tie_break.compute_all_player_values(
-                self, tie_break_index=index, after_round=after_round
+                self,
+                tie_break_index=index,
+                after_round=after_round,
+                double_round_robin=isinstance(
+                    self.pairing_variation, DoubleBergerRoundRobinVariation
+                ),
             )
             for player_id, tie_break_value in value_by_player_id.items():
                 player = self.tournament_players_by_id[player_id]
