@@ -6724,9 +6724,6 @@ msgstr ""
 msgid "round_{round}"
 msgstr ""
 
-msgid "sec *** SECONDS"
-msgstr "sec"
-
 msgid "screens of {number} boards"
 msgstr ""
 
@@ -6750,6 +6747,9 @@ msgstr ""
 
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
+
+msgid "sec *** SECONDS"
+msgstr "sec"
 
 msgid "some already played each other"
 msgstr ""
