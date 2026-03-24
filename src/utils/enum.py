@@ -537,28 +537,46 @@ class TournamentRating(IntEnum):
 
 class PlayerGender(StrEnum):
     NONE = ''
-    FEMALE = 'F'
-    MALE = 'M'
+    WOMAN = 'F'  # Kept as 'F' for compatibility reasons
+    MAN = 'M'
 
     @classmethod
     def from_fide_value(cls, value: str) -> 'PlayerGender':
-        match value:
-            case 'F' | 'f':
-                return cls.FEMALE
-            case 'M' | 'm':
-                return cls.MALE
+        match value.upper():
+            case 'F' | 'W':
+                return cls.WOMAN
+            case 'M':
+                return cls.MAN
             case _:
                 raise ValueError(f'Unknown value: {value}')
+
+    @property
+    def key(self) -> str:
+        if self == self.WOMAN:
+            return 'W'
+        return self.value
+
+    @classmethod
+    def from_key(cls, key: str) -> Self:
+        match key.upper():
+            case 'F' | 'W':
+                return cls.WOMAN
+            case 'M':
+                return cls.MAN
+            case '' | ' ':
+                return cls.NONE
+            case _:
+                raise ValueError(f'Unknown value: {key}')
 
     @property
     def name(self) -> str:
         match self:
             case PlayerGender.NONE:
                 return _('- *** NAME FOR GENDER NONE')
-            case PlayerGender.FEMALE:
-                return _('Female *** NAME FOR GENDER FEMALE')
-            case PlayerGender.MALE:
-                return _('Male *** NAME FOR GENDER MALE')
+            case PlayerGender.WOMAN:
+                return _('Woman *** NAME FOR GENDER WOMAN')
+            case PlayerGender.MAN:
+                return _('Man *** NAME FOR GENDER MAN')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -567,10 +585,10 @@ class PlayerGender(StrEnum):
         match self:
             case PlayerGender.NONE:
                 return _('- *** SHORT NAME FOR GENDER NONE')
-            case PlayerGender.FEMALE:
-                return _('F *** SHORT NAME FOR GENDER FEMALE')
-            case PlayerGender.MALE:
-                return _('M *** SHORT NAME FOR GENDER MALE')
+            case PlayerGender.WOMAN:
+                return _('W *** SHORT NAME FOR GENDER WOMAN')
+            case PlayerGender.MAN:
+                return _('M *** SHORT NAME FOR GENDER MAN')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 
@@ -830,7 +848,7 @@ class TitleNorm(Enum):
     def satisfies_gender_requirement(self, gender: PlayerGender) -> bool:
         match self:
             case TitleNorm.WIM | TitleNorm.WGM:
-                return gender == PlayerGender.FEMALE
+                return gender == PlayerGender.WOMAN
             case _:
                 return True
 

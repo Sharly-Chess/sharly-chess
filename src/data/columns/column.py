@@ -62,9 +62,31 @@ class Column[T](ABC):
         """CSS classes to use for the cells."""
         return self.shared_classes
 
+    def get_footer_content(self, objects_: list[T]) -> str:
+        """The content of the footer as a string.
+        A template can be used for more complex headers."""
+        return ''
+
+    @property
+    def is_footer_content_safe(self) -> bool:
+        """Defines if the footer content is safe to be displayed in Jinja.
+        User-input strings should not be declared as safe.
+        Useful to add light html formatting (ex: <b>last_name</b> first_name)"""
+        return False
+
+    @property
+    def footer_template(self) -> str | None:
+        """The template to use for the footer of the column.
+        If None, the footer content is used."""
+        return None
+
+    def get_footer_classes(self, objects_: list[T]) -> str:
+        """CSS classes to use for the footer."""
+        return self.shared_classes
+
     @property
     def shared_classes(self) -> str:
-        """Classes shared between the cells and the header."""
+        """Classes shared between the header, the cells and the footer."""
         return ''
 
 
