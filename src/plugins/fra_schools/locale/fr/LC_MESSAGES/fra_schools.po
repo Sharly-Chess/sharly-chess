@@ -120,6 +120,9 @@ msgstr "Établissement"
 msgid "School *** SCHOOL COLUMN HEADER"
 msgstr "Établissement"
 
+msgid "School not specified"
+msgstr "Établissement scolaire non renseigné"
+
 msgid "Schools"
 msgstr "Établissements"
 

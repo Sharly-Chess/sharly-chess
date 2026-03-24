@@ -274,6 +274,9 @@ msgstr "Ligue"
 msgid "League *** LEAGUE COLUMN HEADER"
 msgstr "Ligue"
 
+msgid "League not specified"
+msgstr "Ligue non spécifiée"
+
 msgid "League:"
 msgstr "Ligue :"
 
