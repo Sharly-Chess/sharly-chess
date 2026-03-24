@@ -2,7 +2,7 @@
 
 ## General
 
-- Renamde _Upload_ menu to _Data Transfer_ (3.7.0)
+- Renamed _Upload_ menu to _Data Transfer_ (3.7.0)
 
 ## Players
 
