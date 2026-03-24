@@ -7,9 +7,8 @@ from dataclasses import dataclass
 from decimal import Decimal
 from functools import cached_property
 from math import isclose
+from statistics import fmean
 from typing import TYPE_CHECKING, SupportsFloat, Any
-
-from numpy.ma.extras import average
 
 from common.i18n import _, ngettext
 from data.pairing import Pairing
@@ -1738,9 +1737,7 @@ class DirectEncounterTieBreak(TieBreak):
         not_played: int = 0
         for opponent_id in group_player_ids:
             if group_pairings_by_opponent_id[opponent_id]:
-                group_points += float(
-                    average(group_pairings_by_opponent_id[opponent_id])
-                )
+                group_points += float(fmean(group_pairings_by_opponent_id[opponent_id]))
             else:
                 not_played += 1
         return (
