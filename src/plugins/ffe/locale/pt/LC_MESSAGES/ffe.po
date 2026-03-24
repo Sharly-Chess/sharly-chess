@@ -359,6 +359,10 @@ msgid "League *** LEAGUE COLUMN HEADER"
 msgstr "Liga"
 
 #, ai_translation
+msgid "League not specified"
+msgstr "Liga não especificada"
+
+#, ai_translation
 msgid "League:"
 msgstr "Liga:"
 

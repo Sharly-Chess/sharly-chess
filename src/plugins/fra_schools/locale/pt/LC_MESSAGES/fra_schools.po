@@ -154,6 +154,10 @@ msgid "School *** SCHOOL COLUMN HEADER"
 msgstr "Escola"
 
 #, ai_translation
+msgid "School not specified"
+msgstr "Escola não especificada"
+
+#, ai_translation
 msgid "Schools"
 msgstr "Escolas"
 

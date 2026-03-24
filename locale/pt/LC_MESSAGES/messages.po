@@ -1331,6 +1331,10 @@ msgid "Category [%(category)s] successfully created!"
 msgstr "Categoria [%(category)s] criada com sucesso!"
 
 #, ai_translation
+msgid "Category not specified"
+msgstr "Categoria não especificada"
+
+#, ai_translation
 msgid "Category sets"
 msgstr "Conjuntos de categorias"
 
@@ -1525,6 +1529,10 @@ msgstr "Clube"
 #, fuzzy
 msgid "Club *** CLUB COLUMN HEADER"
 msgstr "Clube"
+
+#, ai_translation
+msgid "Club not specified"
+msgstr "Clube não especificado"
 
 #, ai_translation
 msgid "Club threshold"
@@ -2611,7 +2619,7 @@ msgid "EXEMPT (already received at round #%(round)d)"
 msgstr "EXEMPT (já recebido na rodada n° %(round)d)"
 
 #, ai_translation
-msgid "Each bracket should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr "Cada parêntese deve conter uma ou mais categorias (por exemplo, U12, Melhor Mulher) com critérios e lugares (1o, 2o, etc.). Os prêmios são concedidos com base no valor (e na ordem da categoria se os valores forem iguais)."
 
 #, ai_translation
@@ -2884,13 +2892,15 @@ msgstr "Exclua os jogadores que correspondem ao critério em vez de incluí-los.
 msgid "Exclude: {values}"
 msgstr "Exclui: {values}"
 
-#, ai_translation
-msgid "Exempt *** FEMALE"
+msgid "Exempt *** MAN"
+msgstr "Isentar"
+
+msgid "Exempt *** WOMAN"
 msgstr "Isentar"
 
 #, ai_translation
-msgid "Exempt *** MALE"
-msgstr "Isentar"
+msgid "Existing players"
+msgstr "Jogadores existentes"
 
 #, ai_translation
 msgid "Exit button:"
@@ -2943,10 +2953,6 @@ msgstr "Exporte o torneio para o formato TRF16."
 #, ai_translation
 msgid "Export tournament"
 msgstr "Torneio de exportação"
-
-#, ai_translation
-msgid "F *** SHORT NAME FOR GENDER FEMALE"
-msgstr "F"
 
 #, ai_translation
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
@@ -3066,10 +3072,6 @@ msgstr "Federação:"
 #, ai_translation
 msgid "Federations"
 msgstr "Federações"
-
-#, fuzzy
-msgid "Female *** NAME FOR GENDER FEMALE"
-msgstr "Female"
 
 #, ai_translation
 msgid "Fetch from a data source"
@@ -3736,6 +3738,10 @@ msgid "Invalid period:"
 msgstr "Período inválido:"
 
 #, ai_translation
+msgid "Invalid rows"
+msgstr "Linhas inválidas"
+
+#, ai_translation
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
 msgstr "Tipo inválido [{type}] para o campo [{field}] (esperado: {expected})."
 
@@ -4005,9 +4011,8 @@ msgstr "Perda"
 msgid "Luxembourg"
 msgstr "Luxemburgo"
 
-#, fuzzy
-msgid "M *** SHORT NAME FOR GENDER MALE"
-msgstr "M"
+msgid "M *** SHORT NAME FOR GENDER MAN"
+msgstr "H"
 
 #, ai_translation
 msgid "MM/DD/YYYY"
@@ -4041,10 +4046,6 @@ msgstr "Malásia"
 msgid "Maldives"
 msgstr "Maldivas"
 
-#, fuzzy
-msgid "Male *** NAME FOR GENDER MALE"
-msgstr "Macho"
-
 #, ai_translation
 msgid "Mali"
 msgstr "Mali"
@@ -4052,6 +4053,9 @@ msgstr "Mali"
 #, ai_translation
 msgid "Malta"
 msgstr "Malta"
+
+msgid "Man *** NAME FOR GENDER MAN"
+msgstr "H"
 
 #, ai_translation
 msgid "Manage accounts"
@@ -5092,6 +5096,10 @@ msgid "Pairing information for round %(round)d"
 msgstr "Informação de emparelhamento para a ronda %(round)d"
 
 #, ai_translation
+msgid "Pairing is not possible."
+msgstr "O emparelhamento não é possível."
+
+#, ai_translation
 msgid "Pairing not found."
 msgstr "Emparelhamento não encontrado."
 
@@ -5899,6 +5907,10 @@ msgstr "Classificação:"
 msgid "Ratings"
 msgstr "Classificações"
 
+#, ai_translation
+msgid "Ratings update"
+msgstr "Actualização das classificações"
+
 #, ai_translation, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr "Tie-breaks recomendados para um torneio [%(pairing_system)s]:"
@@ -5930,6 +5942,14 @@ msgstr "Release {version} foi instalado em [{folder}]."
 #, ai_translation
 msgid "Reload the page"
 msgstr "Recarregar a página"
+
+#, ai_translation
+msgid "Reminder: the tournament is played on multiple FIDE periods, you might have to update the players' ratings before pairing."
+msgstr "Lembrete: o torneio é jogado em vários períodos da FIDE, você pode ter que atualizar as classificações dos jogadores antes do emparelhamento."
+
+#, ai_translation
+msgid "Reminder: you might have to update the players' ratings before pairing."
+msgstr "Lembrete: você pode ter que atualizar as classificações dos jogadores antes de emparelhar."
 
 #, ai_translation
 msgid "Remove the player from the event."
@@ -6532,20 +6552,16 @@ msgid "Show Log"
 msgstr "Mostrar registo"
 
 #, ai_translation
-msgid "Show invalid rows"
-msgstr "Mostrar linhas inválidas"
-
-#, ai_translation
 msgid "Show logging level"
 msgstr "Mostrar nível de registo"
 
 #, ai_translation
-msgid "Show unmodified players"
-msgstr "Mostrar jogadores não modificados"
+msgid "Show the rows of players already existing in the tournament and the duplicated rows. "
+msgstr "Mostre as linhas de jogadores já existentes no torneio e as linhas duplicadas."
 
 #, ai_translation
-msgid "Show valid rows"
-msgstr "Mostrar linhas válidas"
+msgid "Show unmodified players"
+msgstr "Mostrar jogadores não modificados"
 
 #, ai_translation
 msgid "Show warnings"
@@ -7889,13 +7905,11 @@ msgstr "torneio Unpair"
 msgid "Unpaired (%(unpaired)d)"
 msgstr "Sem pares (%(unpaired)d)"
 
-#, fuzzy
-msgid "Unpaired *** FEMALE"
-msgstr "Unpaired"
+msgid "Unpaired *** MAN"
+msgstr "H"
 
-#, fuzzy
-msgid "Unpaired *** MALE"
-msgstr "Unpaired"
+msgid "Unpaired *** WOMAN"
+msgstr "M"
 
 #, ai_translation
 msgid "Unpaired: displayed"
@@ -8050,6 +8064,10 @@ msgid "U{age_limit} *** YOUTH AGE CATEGORY"
 msgstr "U{age_limit}"
 
 #, ai_translation
+msgid "Valid rows"
+msgstr "Linhas válidas"
+
+#, ai_translation
 msgid "Validate"
 msgstr "Validar"
 
@@ -8148,6 +8166,9 @@ msgstr "Ver a guia Torneios"
 #, ai_translation
 msgid "Visibility:"
 msgstr "Visibilidade:"
+
+msgid "W *** SHORT NAME FOR GENDER WOMAN"
+msgstr "M"
 
 #, fuzzy
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
@@ -8292,6 +8313,9 @@ msgstr "Com menos jogadores do que prêmios, alguns prêmios não serão atribu�
 #, ai_translation
 msgid "Withdraw from tournament"
 msgstr "Retirar do torneio"
+
+msgid "Woman *** NAME FOR GENDER WOMAN"
+msgstr "Mulheres"
 
 #, ai_translation
 msgid "Woman Candidate Master"
