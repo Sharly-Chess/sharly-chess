@@ -6724,8 +6724,8 @@ msgstr ""
 msgid "round_{round}"
 msgstr ""
 
-msgid "s *** SECONDS"
-msgstr "s"
+msgid "sec *** SECONDS"
+msgstr "sec"
 
 msgid "screens of {number} boards"
 msgstr ""

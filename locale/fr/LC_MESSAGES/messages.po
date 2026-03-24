@@ -6673,7 +6673,7 @@ msgid "last"
 msgstr "dernier"
 
 msgid "min *** MINUTES"
-msgstr "min"
+msgstr "min."
 
 msgid "minimum: {value}"
 msgstr "minimum : {value}"
@@ -6726,8 +6726,8 @@ msgstr "classement du début à {last}"
 msgid "round_{round}"
 msgstr "ronde_{round}"
 
-msgid "s *** SECONDS"
-msgstr "s"
+msgid "sec *** SECONDS"
+msgstr "sec."
 
 msgid "screens of {number} boards"
 msgstr "écrans de {number} échiquiers"
