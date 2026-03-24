@@ -19,14 +19,16 @@
 - Added round schedule to tournaments (3.7.0)
 
 # Documents
--
+
 - Added owed/paid totals to the check-in list (3.7.0)
 - Added a sort option to the players list document
 
 ## Plugins
 
 ### _ChessEvent_
+
 - Synchronize button moved to the _Data Transfer_ menu (3.7.0)
 
 ## Handicap Games
+
 - Added time control handicap info to tournament cards (3.7.0)
