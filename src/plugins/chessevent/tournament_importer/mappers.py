@@ -91,8 +91,8 @@ class ChessEventGender(CoreMapper[int, PlayerGender]):
     def _core_object_by_outer_value() -> dict[int, PlayerGender]:
         return {
             0: PlayerGender.NONE,
-            1: PlayerGender.FEMALE,
-            2: PlayerGender.MALE,
+            1: PlayerGender.WOMAN,
+            2: PlayerGender.MAN,
         }
 
 

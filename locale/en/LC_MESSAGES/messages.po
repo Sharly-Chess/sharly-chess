@@ -1064,6 +1064,9 @@ msgstr ""
 msgid "Category [%(category)s] successfully created!"
 msgstr ""
 
+msgid "Category not specified"
+msgstr ""
+
 msgid "Category sets"
 msgstr ""
 
@@ -1213,6 +1216,9 @@ msgstr ""
 
 msgid "Club *** CLUB COLUMN HEADER"
 msgstr "Club"
+
+msgid "Club not specified"
+msgstr ""
 
 msgid "Club threshold"
 msgstr ""
@@ -2046,7 +2052,7 @@ msgstr ""
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr ""
 
-msgid "Each bracket should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr ""
 
 msgid "Each player can only be awarded one prize per bracket."
@@ -2254,10 +2260,10 @@ msgstr ""
 msgid "Exclude: {values}"
 msgstr ""
 
-msgid "Exempt *** FEMALE"
+msgid "Exempt *** MAN"
 msgstr "Exempt"
 
-msgid "Exempt *** MALE"
+msgid "Exempt *** WOMAN"
 msgstr "Exempt"
 
 msgid "Existing players"
@@ -2303,9 +2309,6 @@ msgstr ""
 
 msgid "Export tournament"
 msgstr ""
-
-msgid "F *** SHORT NAME FOR GENDER FEMALE"
-msgstr "F"
 
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
@@ -2396,9 +2399,6 @@ msgstr ""
 
 msgid "Federations"
 msgstr ""
-
-msgid "Female *** NAME FOR GENDER FEMALE"
-msgstr "Female"
 
 msgid "Fetch from a data source"
 msgstr ""
@@ -3110,7 +3110,7 @@ msgstr ""
 msgid "Luxembourg"
 msgstr ""
 
-msgid "M *** SHORT NAME FOR GENDER MALE"
+msgid "M *** SHORT NAME FOR GENDER MAN"
 msgstr "M"
 
 msgid "MM/DD/YYYY"
@@ -3137,14 +3137,14 @@ msgstr ""
 msgid "Maldives"
 msgstr ""
 
-msgid "Male *** NAME FOR GENDER MALE"
-msgstr "Male"
-
 msgid "Mali"
 msgstr ""
 
 msgid "Malta"
 msgstr ""
+
+msgid "Man *** NAME FOR GENDER MAN"
+msgstr "Man"
 
 msgid "Manage accounts"
 msgstr ""
@@ -3944,6 +3944,9 @@ msgstr ""
 msgid "Pairing information for round %(round)d"
 msgstr ""
 
+msgid "Pairing is not possible."
+msgstr ""
+
 msgid "Pairing not found."
 msgstr ""
 
@@ -4567,6 +4570,9 @@ msgstr ""
 msgid "Ratings"
 msgstr ""
 
+msgid "Ratings update"
+msgstr ""
+
 #, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr ""
@@ -4590,6 +4596,12 @@ msgid "Release {version} has been installed in [{folder}]."
 msgstr ""
 
 msgid "Reload the page"
+msgstr ""
+
+msgid "Reminder: the tournament is played on multiple FIDE periods, you might have to update the players' ratings before pairing."
+msgstr ""
+
+msgid "Reminder: you might have to update the players' ratings before pairing."
 msgstr ""
 
 msgid "Remove the player from the event."
@@ -6095,10 +6107,10 @@ msgstr ""
 msgid "Unpaired (%(unpaired)d)"
 msgstr ""
 
-msgid "Unpaired *** FEMALE"
+msgid "Unpaired *** MAN"
 msgstr "Unpaired"
 
-msgid "Unpaired *** MALE"
+msgid "Unpaired *** WOMAN"
 msgstr "Unpaired"
 
 msgid "Unpaired: displayed"
@@ -6296,6 +6308,9 @@ msgstr ""
 msgid "Visibility:"
 msgstr ""
 
+msgid "W *** SHORT NAME FOR GENDER WOMAN"
+msgstr "W"
+
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
 msgstr "W"
 
@@ -6405,6 +6420,9 @@ msgstr ""
 
 msgid "Withdraw from tournament"
 msgstr ""
+
+msgid "Woman *** NAME FOR GENDER WOMAN"
+msgstr "Woman"
 
 msgid "Woman Candidate Master"
 msgstr ""
