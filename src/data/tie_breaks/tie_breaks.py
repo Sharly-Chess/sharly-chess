@@ -12,6 +12,7 @@ from common.i18n import _, ngettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
+from data.pairings.variations import DoubleBergerRoundRobinVariation
 from data.player import TournamentPlayer
 from data.tie_breaks.categories import (
     TieBreakCategory,
@@ -109,7 +110,6 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         tie_break_index: int,
         *,
         after_round: int,
-        double_round_robin: bool,
     ) -> dict[int, int]:
         """Computes the values of all the players in a dict[player_id, value] format."""
         raise NotImplementedError(
@@ -1604,7 +1604,6 @@ class DirectEncounterTieBreak(TieBreak):
         tie_break_index: int,
         *,
         after_round: int,
-        double_round_robin: bool,
     ) -> dict[int, int]:
         """Form groups of tied players. Amongst each group,
         attribute (if possible) an integer value from 0 to len(group).
@@ -1629,6 +1628,9 @@ class DirectEncounterTieBreak(TieBreak):
                 Result.DOUBLE_FORFEIT: 0,
                 Result.FORFEIT_LOSS: 0,
             }
+        double_round_robin: bool = isinstance(
+            tournament.pairing_variation, DoubleBergerRoundRobinVariation
+        )
         for tournament_player_group in players_by_rank_group.values():
             self._set_tournament_player_group_values(
                 tournament_player_group,
