@@ -8,11 +8,13 @@ from decimal import Decimal
 from functools import cached_property
 from math import isclose
 from typing import TYPE_CHECKING, SupportsFloat, Any
+
+from numpy.ma.extras import average
+
 from common.i18n import _, ngettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
-from data.pairings.variations import DoubleBergerRoundRobinVariation
 from data.player import TournamentPlayer
 from data.tie_breaks.categories import (
     TieBreakCategory,
@@ -1628,9 +1630,6 @@ class DirectEncounterTieBreak(TieBreak):
                 Result.DOUBLE_FORFEIT: 0,
                 Result.FORFEIT_LOSS: 0,
             }
-        double_round_robin: bool = isinstance(
-            tournament.pairing_variation, DoubleBergerRoundRobinVariation
-        )
         for tournament_player_group in players_by_rank_group.values():
             self._set_tournament_player_group_values(
                 tournament_player_group,
@@ -1638,7 +1637,6 @@ class DirectEncounterTieBreak(TieBreak):
                 values_by_player_id,
                 after_round,
                 point_values,
-                double_round_robin,
             )
         return values_by_player_id
 
@@ -1649,7 +1647,6 @@ class DirectEncounterTieBreak(TieBreak):
         values_by_player_id: dict[int, int],
         after_round: int,
         point_values: dict[Result, float] | None,
-        double_round_robin: bool,
     ):
         """Recursively explore the group to assign values from *min_value*.
         Try to isolate different subgroups, and explore the subgroups with a narrower value range.
@@ -1664,7 +1661,6 @@ class DirectEncounterTieBreak(TieBreak):
                 tournament_player_group,
                 after_round,
                 point_values,
-                double_round_robin,
             )
             for tournament_player in tournament_player_group
         }
@@ -1689,7 +1685,6 @@ class DirectEncounterTieBreak(TieBreak):
                 values_by_player_id,
                 after_round,
                 point_values,
-                double_round_robin,
             )
             min_value += len(subgroup.player_ids)
 
@@ -1725,25 +1720,29 @@ class DirectEncounterTieBreak(TieBreak):
         player_group: list[TournamentPlayer],
         after_round: int,
         point_values: dict[Result, float] | None,
-        double_round_robin: bool,
     ) -> tuple[float, float]:
         """Compute the min and max possible points a tournament_player
         can achieve against other players of the group."""
         group_player_ids = tuple(
-            tournament_player.id for tournament_player in player_group
+            tournament_player.id
+            for tournament_player in player_group
+            if tournament_player.id != player.id
         )
-        group_pairings = [
-            pairing
-            for round_, pairing in player.pairings_by_round.items()
-            if round_ <= after_round and pairing.opponent_id in group_player_ids
-        ]
-        max_played = len(player_group) - 1
-        if double_round_robin:
-            max_played *= 2
-        not_played = max_played - len(group_pairings)
-        group_points = sum(
-            pairing.result.points(point_values) for pairing in group_pairings
-        )
+        group_pairings_by_opponent_id: dict[int, list[float]] = defaultdict(list)
+        for round_, pairing in player.pairings_by_round.items():
+            if round_ <= after_round and pairing.opponent_id in group_player_ids:
+                group_pairings_by_opponent_id[pairing.opponent_id].append(
+                    pairing.result.points(point_values)
+                )
+        group_points: float = 0.0
+        not_played: int = 0
+        for opponent_id in group_player_ids:
+            if group_pairings_by_opponent_id[opponent_id]:
+                group_points += float(
+                    average(group_pairings_by_opponent_id[opponent_id])
+                )
+            else:
+                not_played += 1
         return (
             group_points + Result.LOSS.points(point_values) * not_played,
             group_points + Result.WIN.points(point_values) * not_played,
