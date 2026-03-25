@@ -662,6 +662,14 @@ class SCESession(Session):
         local_sync_data = SCETournamentSyncData.from_tournament(tournament)
         needs_saving = True
         stored_object_modified = False
+        if sce_sync_data.rounds < tournament.last_paired_round:
+            sce_sync_data.rounds = tournament.rounds
+            self.update_sce_tournament(sce_sync_data, sce_tournament_id)
+            log_operation(
+                'Number of round inferior to the last paired round, '
+                f'forced to {tournament.rounds} (SC.com)'
+            )
+
         if local_sync_data == sce_sync_data:
             # Already synced
             if local_sync_data == plugin_data.last_sync_data:
