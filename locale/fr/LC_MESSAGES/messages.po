@@ -6645,6 +6645,9 @@ msgstr "échiquiers {board_numbers}"
 msgid "clear filters"
 msgstr "effacer les filtres"
 
+msgid "default"
+msgstr "défaut"
+
 msgid "either the duration or the increment must be greater than 0."
 msgstr "la durée ou l’incrément doit être supérieur à 0."
 

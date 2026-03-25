@@ -6643,6 +6643,9 @@ msgstr ""
 msgid "clear filters"
 msgstr ""
 
+msgid "default"
+msgstr ""
+
 msgid "either the duration or the increment must be greater than 0."
 msgstr ""
 
