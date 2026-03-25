@@ -296,6 +296,11 @@ class Plugin[PD: PluginData](IdentifiableEntity, ABC):
         return None
 
     @property
+    def event_form_script_template(self) -> str | None:
+        """Template for a script to add to the configuration form."""
+        return None
+
+    @property
     def templates_path(self) -> Path:
         return PLUGINS_DIR / self.id / 'templates'
 

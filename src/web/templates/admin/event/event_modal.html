@@ -213,6 +213,7 @@
                     <div class="d-flex flex-column gap-3">
                         {% for plugin in plugins %}
                             <div
+                                id="{{ plugin.form_key }}-plugin-container"
                                 class="plugin-container
                                     {% if plugin.federation %}
                                         federation-plugin federation-plugin-{{ plugin.federation }}
@@ -242,7 +243,11 @@
                                         });
                                     </script>
                                 {% endif %}
-
+                                {% if plugin.event_form_script_file %}
+                                    <script>
+                                        {% include plugin.event_form_script_file %}
+                                    </script>
+                                {% endif %}
                             </div>
                         {% endfor %}
                     </div>

@@ -106,6 +106,10 @@ class SCEPlugin(Plugin):
         return False
 
     @property
+    def event_form_script_file(self) -> str:
+        return '/sce_event_form_script.js'
+
+    @property
     def controllers(self) -> list[type[BaseController]]:
         return [SCEAdminController]
 
