@@ -2,7 +2,6 @@
 
 import re
 import time
-from datetime import date, datetime
 from pathlib import Path
 from typing import Callable, Dict, Optional, Any
 from urllib import parse
@@ -156,14 +155,10 @@ class TestUtils:
         }
         if via_api_request_context:
             defaults |= {
-                'date_range': datetime.now().strftime('%Y-%m-%d'),
                 'plugin_ffe': 'on',
             }
         else:
-            today = date.today()
             defaults |= {
-                'start_date': today,
-                'stop_date': today,
                 'enabled_plugins': ['ffe', 'pairing_acceleration'],
             }
 
