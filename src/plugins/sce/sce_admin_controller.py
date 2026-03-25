@@ -20,7 +20,6 @@ from data.loader import EventLoader
 from data.player import TournamentPlayer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME, SCE_BASE_URL, SCE_SYNC_DELAY, SCE_UPLOAD_DELAY
 from plugins.sce.sce_background_synchronizer import (
     schedule_sync,
@@ -613,13 +612,7 @@ class SCEAdminController(BaseAdminController):
                 'event_plugin_data': SCEUtils.get_event_plugin_data(event),
                 'remaining_conflicts': len(conflict_tournaments),
                 'error_message': error_message,
-                'diff_fields': {
-                    'name': _('Name'),
-                    'type_str': _('Type'),
-                    'start_date_str': _('Start'),
-                    'stop_date_str': _('End'),
-                    'human_readable_time_control': _('Time control'),
-                },
+                'diff_fields': SCETournamentSyncData.diff_fields_by_property_name(),
             },
         )
 
@@ -697,25 +690,6 @@ class SCEAdminController(BaseAdminController):
             )
         player = conflict_players[0]
         plugin_data = SCEUtils.get_player_plugin_data(player)
-        diff_fields = {
-            'last_name': _('Last name'),
-            'first_name': _('First name'),
-            'gender_str': _('Gender'),
-            'fide_id': _('FIDE ID'),
-            'national_id': '',
-            'year_of_birth': _('Year of birth'),
-            'title_str': _('Title'),
-            'club': _('Club'),
-            'rating_str': _('Rating'),
-            'phone': _('Phone'),
-        }
-        national_id_label = plugin_manager.hook_for_event(
-            event, 'get_sce_national_id_player_field_label'
-        )()
-        if national_id_label:
-            diff_fields['national_id'] = national_id_label
-        else:
-            del diff_fields['national_id']
         return cls._render_modal(
             template_name='/sce_player_conflict_modal.html',
             template_context=web_context.template_context
@@ -727,7 +701,7 @@ class SCEAdminController(BaseAdminController):
                 'event_plugin_data': SCEUtils.get_event_plugin_data(event),
                 'remaining_conflicts': len(conflict_players),
                 'error_message': error_message,
-                'diff_fields': diff_fields,
+                'diff_fields': SCEPlayerSyncData.diff_fields_by_property_name(event),
             },
         )
 

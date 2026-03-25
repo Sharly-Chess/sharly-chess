@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, date
 from typing import Any, Self
 
+from common.i18n import _
 from data.event import Event
 from data.player import TournamentPlayer
 from data.tournament import Tournament
@@ -28,6 +29,7 @@ class SCETokens:
 class SCETournamentSyncData:
     name: str
     type: TournamentRating
+    rounds: int
     start_date: date
     stop_date: date
     time_control: str | None = None
@@ -47,7 +49,7 @@ class SCETournamentSyncData:
     @property
     def human_readable_time_control(self) -> str:
         if not self.time_control:
-            return '-'
+            return ''
         return trf25_to_human_readable(self.time_control)
 
     @classmethod
@@ -55,6 +57,7 @@ class SCETournamentSyncData:
         return cls(
             name=data['name'],
             type=TournamentRating.from_key(data['type']),
+            rounds=data['number_of_rounds'],
             start_date=datetime.fromisoformat(data['start_date']).date(),
             stop_date=datetime.fromisoformat(data['end_date']).date(),
             time_control=data['time_control_trf26'],
@@ -65,6 +68,7 @@ class SCETournamentSyncData:
         return cls(
             name=tournament.name,
             type=tournament.rating,
+            rounds=tournament.rounds,
             start_date=tournament.start_date,
             stop_date=tournament.stop_date,
             time_control=tournament.time_control_trf25 or None,
@@ -81,7 +85,10 @@ class SCETournamentSyncData:
             stop_date=SQLiteDatabase.load_date_from_database_field(
                 stored_value['stop_date']
             ),
+            # NOTE (Molrn) All fields added after the first usage
+            # should be considered optional to not fail on previous data
             time_control=stored_value.get('time_control'),
+            rounds=stored_value.get('rounds', 1),
         )
 
     def merge_with_other_sync_data(self, other_data: Self, ref_data: Self) -> Self:
@@ -98,6 +105,7 @@ class SCETournamentSyncData:
         return {
             'name': self.name,
             'type': self.type.value,
+            'rounds': self.rounds,
             'start_date': SQLiteDatabase.dump_date_to_database_field(self.start_date),
             'stop_date': SQLiteDatabase.dump_date_to_database_field(self.stop_date),
             'time_control': self.time_control,
@@ -107,6 +115,7 @@ class SCETournamentSyncData:
         return {
             'name': self.name,
             'type': self.type.form_key,
+            'number_of_rounds': self.rounds,
             'start_date': SQLiteDatabase.dump_date_to_database_field(self.start_date),
             'end_date': SQLiteDatabase.dump_date_to_database_field(self.stop_date),
             'time_control_trf26': self.time_control,
@@ -117,6 +126,7 @@ class SCETournamentSyncData:
     ) -> None:
         stored_tournament.name = self.name
         stored_tournament.rating = self.type.value
+        stored_tournament.rounds = self.rounds
         if (event.start_date, event.stop_date) == (self.start_date, self.stop_date):
             stored_tournament.start_date = None
             stored_tournament.stop_date = None
@@ -129,6 +139,18 @@ class SCETournamentSyncData:
         )
         plugin_data.last_sync_data = self
         stored_tournament.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+
+    @staticmethod
+    def diff_fields_by_property_name() -> dict[str, str]:
+        """Fields used to generate the values of the conflict modal."""
+        return {
+            'name': _('Name'),
+            'type_str': _('Type'),
+            'rounds': _('Rounds'),
+            'start_date_str': _('Start'),
+            'stop_date_str': _('End'),
+            'human_readable_time_control': _('Time control'),
+        }
 
 
 @dataclass
@@ -304,6 +326,30 @@ class SCEPlayerSyncData:
         plugin_manager.hook_for_event(
             tournament.event, 'augment_stored_player_from_player_sync_data'
         )(stored_player=stored_player, sync_data=self)
+
+    @staticmethod
+    def diff_fields_by_property_name(event: Event) -> dict[str, str]:
+        """Fields used to generate the values of the conflict modal."""
+        diff_fields = {
+            'last_name': _('Last name'),
+            'first_name': _('First name'),
+            'gender_str': _('Gender'),
+            'fide_id': _('FIDE ID'),
+            'national_id': '',
+            'year_of_birth': _('Year of birth'),
+            'title_str': _('Title'),
+            'club': _('Club'),
+            'rating_str': _('Rating'),
+            'phone': _('Phone'),
+        }
+        national_id_label = plugin_manager.hook_for_event(
+            event, 'get_sce_national_id_player_field_label'
+        )()
+        if national_id_label:
+            diff_fields['national_id'] = national_id_label
+        else:
+            del diff_fields['national_id']
+        return diff_fields
 
 
 @dataclass
