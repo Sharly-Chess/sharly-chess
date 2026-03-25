@@ -356,6 +356,7 @@ class TournamentAdminController(BaseEventAdminController):
         schedule_min_date = admin_event.start_date
         schedule_max_date = admin_event.stop_date
         try:
+            assert data is not None
             date_range = WebContext.form_data_to_date_range(data, 'date_range')
             if date_range:
                 schedule_min_date, schedule_max_date = date_range
