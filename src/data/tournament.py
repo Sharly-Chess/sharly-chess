@@ -1329,7 +1329,9 @@ class Tournament:
             if tie_break.is_computed_per_player:
                 continue
             value_by_player_id = tie_break.compute_all_player_values(
-                self, tie_break_index=index, after_round=after_round
+                self,
+                tie_break_index=index,
+                after_round=after_round,
             )
             for player_id, tie_break_value in value_by_player_id.items():
                 player = self.tournament_players_by_id[player_id]
