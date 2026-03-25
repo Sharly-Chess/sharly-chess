@@ -1,7 +1,22 @@
 {% import '/common/macros.j2' as macros with context %}
 {% import '/admin/common/macros.j2' as admin_macros with context %}
 
-<div id="schedule-section">
+<div
+    id="schedule-section"
+    hx-trigger="schedule-params-updated"
+    hx-swap="outerHTML"
+    hx-get="{{ url_for(
+        'admin-tournament-schedule-section',
+        event_uniq_id=admin_event.uniq_id,
+    ) ~ (
+        '?tournament_id=' ~ admin_tournament.id
+        if action != 'create'
+        else ''
+    ) }}"
+    hx-include='[name="rounds"],[name^="round_"][name$="_datetime"],[name="date_range"]'
+    hx-vals='js:{schedule_collapsed: document.getElementById("schedule-collapse") ? !document.getElementById("schedule-collapse").classList.contains("show") : true}',
+    hx-indicator="#please-wait"
+>
     <button
         type="button"
         class="collapse-button {% if not force_schedule_open %}collapsed{% endif %} mt-3"
@@ -21,8 +36,8 @@
                     {{ admin_macros.datetime_input(
                         name='round_' ~ round_num ~ '_datetime',
                         label=_('Round #%(round)d:', round=round_num),
-                        min_date=admin_event.start_date_str,
-                        max_date=admin_event.stop_date_str,
+                        min_date=schedule_min_date,
+                        max_date=schedule_max_date,
                         position='top center',
                         data=data, errors=errors
                     ) }}

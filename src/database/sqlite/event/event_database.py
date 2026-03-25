@@ -298,8 +298,6 @@ class EventDatabase(MigrationDatabase):
             name=row['name'],
             federation=row.get('federation', ''),
             player_rating_type=row.get('player_rating_type', 3),
-            start_date=self.load_date_from_database_field(row['start_date']),
-            stop_date=self.load_date_from_database_field(row['stop_date']),
             public=self.load_bool_from_database_field(row['public']),
             location=row['location'],
             background_color=row['background_color'],
@@ -353,6 +351,14 @@ class EventDatabase(MigrationDatabase):
             self.fetchone(), EventMetadata
         )
         metadata.tournament_count = self._get_table_count('tournament')
+        if metadata.tournament_count:
+            self.execute(
+                'SELECT MIN(start_date) AS start_date, '
+                'MAX(stop_date) AS stop_date FROM `tournament`'
+            )
+            row = self.fetchone()
+            metadata.start_date = self.load_date_from_database_field(row['start_date'])
+            metadata.stop_date = self.load_date_from_database_field(row['stop_date'])
         metadata.player_count = self._get_table_count('player')
         metadata.timer_count = self._get_table_count('timer')
         metadata.screen_count = self._get_table_count('screen')
@@ -385,8 +391,6 @@ class EventDatabase(MigrationDatabase):
                 'organiser_director',
             ],
         ) | {
-            'start_date': self.dump_date_to_database_field(stored_event.start_date),
-            'stop_date': self.dump_date_to_database_field(stored_event.stop_date),
             'age_category_base_date': self.dump_date_to_database_field(
                 stored_event.age_category_base_date
             ),
@@ -617,8 +621,8 @@ class EventDatabase(MigrationDatabase):
             last_pairing_update=cls.load_optional_timestamp_from_database_field(
                 row['last_pairing_update']
             ),
-            start_date=cls.load_optional_date_from_database_field(row['start_date']),
-            stop_date=cls.load_optional_date_from_database_field(row['stop_date']),
+            start_date=cls.load_date_from_database_field(row['start_date']),
+            stop_date=cls.load_date_from_database_field(row['stop_date']),
             location=row['location'],
             player_rating_type=row['player_rating_type'],
             three_points_for_a_win=cls.load_bool_from_database_field(

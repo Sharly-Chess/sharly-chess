@@ -247,7 +247,7 @@ msgstr "Identifiant FFE ou mot de passe invalide."
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Numéro de licence FFE [{ffe_licence_number}] non valide."
 
-msgid "Invalid date format [{date}] (expected: {format})"
+msgid "Invalid date format [{date}] (expected: {format})."
 msgstr "Format de date invalide [{date}] (attendu : {format})"
 
 msgid "Invalid display link text [{text}]"

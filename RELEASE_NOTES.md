@@ -4,6 +4,10 @@
 
 - Rename _Upload_ menu to _Data Transfer_ (3.7.0)
 
+## Event
+
+- Replace event dates by computed dates from tournaments (3.7.0)
+
 ## Players
 
 - Add _rating_ and _rating_type_ CSV columns (3.7.0)
