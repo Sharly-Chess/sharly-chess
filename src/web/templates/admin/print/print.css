@@ -5,6 +5,8 @@
     color: #000000;
     background-color: #FFFFFF;
 }
+{# ========== DISPLAY ========== #}
+.opacity-0, .opacity-0 * { opacity: 0; }
 sup {
     vertical-align: baseline;
     position: relative;

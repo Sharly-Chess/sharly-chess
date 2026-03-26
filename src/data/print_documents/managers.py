@@ -23,7 +23,7 @@ from data.print_documents.place_cards.types import (
     BoardCardType,
     PairingCardType,
 )
-from data.print_documents.player_sorters import PlayerSorter
+from data.print_documents.player_sorters import GridPlayerSorter, ListPlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
 from plugins.manager import plugin_manager
@@ -71,7 +71,8 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.PairingStylePrintOption,
             options.RoundPrintOption,
             options.PlayerSplitPrintOption,
-            options.PlayerSortPrintOption,
+            options.GridPlayerSortPrintOption,
+            options.ListPlayerSortPrintOption,
             options.ShowWarningsPrintOption,
             options.NonMonetaryPrintOption,
             options.ClubThresholdPrintOption,
@@ -106,14 +107,23 @@ class PrintPlayerSplitterManager(EventBoundEntityManager[PlayerSplitter]):
         return splitters
 
 
-class PrintPlayerSorterManager(EventBoundEntityManager[PlayerSorter]):
+class PrintGridPlayerSorterManager(EventBoundEntityManager[GridPlayerSorter]):
     @override
-    def entity_types(self) -> list[type[PlayerSorter]]:
+    def entity_types(self) -> list[type[GridPlayerSorter]]:
         return [
-            player_sorters.NamePlayerSorter,
-            player_sorters.RankPlayerSorter,
-            player_sorters.StartingRankPlayerSorter,
-            player_sorters.PairingNumberPlayerSorter,
+            player_sorters.NameGridPlayerSorter,
+            player_sorters.RankGridPlayerSorter,
+            player_sorters.StartingRankGridPlayerSorter,
+            player_sorters.PairingNumberGridPlayerSorter,
+        ]
+
+
+class PrintListPlayerSorterManager(EventBoundEntityManager[ListPlayerSorter]):
+    @override
+    def entity_types(self) -> list[type[ListPlayerSorter]]:
+        return [
+            player_sorters.NameListPlayerSorter,
+            player_sorters.StartingRankListPlayerSorter,
         ]
 
 

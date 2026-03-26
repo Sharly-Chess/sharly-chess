@@ -130,7 +130,10 @@ class I18nTranslator:
                         100 * i / len(domain_message_ids_to_translate[domain.name])
                     )
                     if not self.translate_message(
-                        catalog._messages[message_id], percent
+                        catalog._messages[
+                            message_id if isinstance(message_id, str) else message_id[0]
+                        ],
+                        percent,
                     ):
                         error = True
                 with open(po_file, 'wb') as f:

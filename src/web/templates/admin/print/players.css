@@ -10,7 +10,8 @@
     .player-row * { font-size: 10px; }
 }
 {# ========== FONT WEIGHT ========== #}
-.player-header * { font-weight: bold; }
+.player-header *,
+.player-footer * { font-weight: bold; }
 @media not print {
     .player-row .name,
     .player-row .points { font-weight: bold; }
