@@ -29,20 +29,37 @@
             {{ _('Schedule') }}
         </h4>
     </button>
-    <div id="schedule-collapse" class="collapse{% if force_schedule_open %} show{% endif %}">
-        <div class="row gy-2 gx-3">
-            {% for round_num in range(1, schedule_rounds + 1) %}
-                <div class="col-12 col-md-6">
-                    {{ admin_macros.datetime_input(
-                        name='round_' ~ round_num ~ '_datetime',
-                        label=_('Round #%(round)d:', round=round_num),
-                        min_date=schedule_min_date,
-                        max_date=schedule_max_date,
-                        position='top center',
-                        data=data, errors=errors
-                    ) }}
-                </div>
-            {% endfor %}
+    <div id="schedule-collapse" class="{% if not force_schedule_open %}collapse{% endif %}">
+        <div class="row">
+            {% set split_col = (schedule_rounds / 2)|round(method='ceil')|int %}
+            <div class="col-12 col-md-6">
+                {% for round_num in range(1, split_col + 1) %}
+                    <div class="my-2 mx-3">
+                        {{ admin_macros.datetime_input(
+                            name='round_' ~ round_num ~ '_datetime',
+                            label=_('Round #%(round)d:', round=round_num),
+                            min_date=schedule_min_date,
+                            max_date=schedule_max_date,
+                            position='top center',
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="col-12 col-md-6">
+                {% for round_num in range(split_col + 1, schedule_rounds + 1) %}
+                    <div class="my-2 mx-3">
+                        {{ admin_macros.datetime_input(
+                            name='round_' ~ round_num ~ '_datetime',
+                            label=_('Round #%(round)d:', round=round_num),
+                            min_date=schedule_min_date,
+                            max_date=schedule_max_date,
+                            position='top center',
+                            data=data, errors=errors
+                        ) }}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>

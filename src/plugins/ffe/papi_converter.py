@@ -368,13 +368,11 @@ class PapiConverter:
             stored_tournament = StoredTournament(
                 id=None,
                 name=variables.name,
+                start_date=datetime.strptime(
+                    variables.startDate, PAPI_DATE_FORMAT
+                ).date(),
+                stop_date=datetime.strptime(variables.endDate, PAPI_DATE_FORMAT).date(),
             )
-        stored_tournament.start_date = datetime.strptime(
-            variables.startDate, PAPI_DATE_FORMAT
-        ).date()
-        stored_tournament.stop_date = datetime.strptime(
-            variables.endDate, PAPI_DATE_FORMAT
-        ).date()
 
         rounds = 7
         if variables.rounds:
