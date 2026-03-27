@@ -48,9 +48,6 @@ msgstr "Mise en ligne automatique désactivée"
 msgid "Auto-upload enabled"
 msgstr "Mise en ligne automatique activée"
 
-msgid "Auto-upload of the tournament has been planned."
-msgstr "La mise en ligne automatique du tournoi a été planifiée."
-
 msgid "Back"
 msgstr "Retour"
 
@@ -71,9 +68,6 @@ msgstr "Page de configuration du tournoi."
 
 msgid "Conflict"
 msgstr "Conflit"
-
-msgid "Consult the logs for more details."
-msgstr "Consultez les logs pour plus de détails."
 
 msgid "Data as it currently is on Sharly-Chess.com."
 msgstr "Les données actuelles sur Sharly-Chess.com."
@@ -156,6 +150,9 @@ msgstr "La dernière tentative de synchronisation s'est exécutée avec succès.
 
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
+
+msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
+msgstr "La dernière tentative de mise en ligne a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
 
 msgid "Local"
 msgstr "Local"
@@ -327,6 +324,9 @@ msgstr "Le tournoi est en cours de mise en ligne."
 msgid "Tournament successfully imported."
 msgstr "Le tournoi a été importé avec succès."
 
+msgid "Tournament upload has been planned."
+msgstr "La mise en ligne du tournoi a été planifiée."
+
 msgid "Type"
 msgstr "Type"
 
@@ -348,12 +348,6 @@ msgstr "Mettre en ligne tous les résultats"
 #, python-format
 msgid "Upload automatically every %(delay)d minutes."
 msgstr "Mettre en ligne automatiquement toutes les %(delay)d minutes."
-
-msgid "Upload failed (reason: {reason})."
-msgstr "La mise en ligne a échoué (raison : {reason})."
-
-msgid "Upload failed unexpectedly."
-msgstr "La mise en ligne a échoué de manière inattendue."
 
 msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
 msgstr "Mettre en ligne sur Sharly-Chess.com les tournois qui n'existent que localement."

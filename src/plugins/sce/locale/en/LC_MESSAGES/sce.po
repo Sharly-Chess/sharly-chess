@@ -48,9 +48,6 @@ msgstr ""
 msgid "Auto-upload enabled"
 msgstr ""
 
-msgid "Auto-upload of the tournament has been planned."
-msgstr ""
-
 msgid "Back"
 msgstr ""
 
@@ -70,9 +67,6 @@ msgid "Configuration page of the tournament."
 msgstr ""
 
 msgid "Conflict"
-msgstr ""
-
-msgid "Consult the logs for more details."
 msgstr ""
 
 msgid "Data as it currently is on Sharly-Chess.com."
@@ -155,6 +149,9 @@ msgid "Last synchronisation attempt ran successfully."
 msgstr ""
 
 msgid "Last upload"
+msgstr ""
+
+msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr ""
 
 msgid "Local"
@@ -327,6 +324,9 @@ msgstr ""
 msgid "Tournament successfully imported."
 msgstr ""
 
+msgid "Tournament upload has been planned."
+msgstr ""
+
 msgid "Type"
 msgstr ""
 
@@ -347,12 +347,6 @@ msgstr ""
 
 #, python-format
 msgid "Upload automatically every %(delay)d minutes."
-msgstr ""
-
-msgid "Upload failed (reason: {reason})."
-msgstr ""
-
-msgid "Upload failed unexpectedly."
 msgstr ""
 
 msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
