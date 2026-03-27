@@ -342,6 +342,9 @@ msgstr ""
 msgid "A file is expected."
 msgstr ""
 
+msgid "A player with this value already exists in the event."
+msgstr ""
+
 msgid "A player with this value already exists in the tournament."
 msgstr ""
 
@@ -582,7 +585,13 @@ msgstr ""
 msgid "Allocate players to the first tournament for which the criteria are met."
 msgstr ""
 
+msgid "Allow a player to take part in multiple tournaments."
+msgstr ""
+
 msgid "Allow links to this screen"
+msgstr ""
+
+msgid "Allow multi-tournament players"
 msgstr ""
 
 msgid "Allows access to Screens marked as public"
@@ -4127,9 +4136,6 @@ msgstr ""
 msgid "Player [{player}] already exists in the tournament."
 msgstr ""
 
-msgid "Player [{player}] already plays tournament [{tournament}]."
-msgstr ""
-
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
 msgstr ""
 
@@ -4174,9 +4180,6 @@ msgstr ""
 
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
-msgstr ""
-
-msgid "Player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
 msgstr ""
 
 msgid "Player with FIDE ID [{fide_id}] is duplicated."
@@ -5389,6 +5392,9 @@ msgstr ""
 msgid "The director is the person in charge of the event."
 msgstr ""
 
+msgid "The event already has multi-tournament players."
+msgstr ""
+
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."
 msgstr[0] ""
@@ -5698,6 +5704,12 @@ msgid "This label will be used for the link to other screens to this screen. If 
 msgstr ""
 
 msgid "This name is already used."
+msgstr ""
+
+msgid "This player already exists in the event."
+msgstr ""
+
+msgid "This player already exists in tournament [{tournament}]."
 msgstr ""
 
 msgid "This rotator is private (not visible by the spectators)."

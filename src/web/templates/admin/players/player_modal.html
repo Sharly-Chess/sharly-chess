@@ -26,6 +26,11 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {% if 'alert' in errors %}
+                    {% with type='error', message=errors['alert'] %}
+                        {% include '/common/alert.html' %}
+                    {% endwith %}
+                {% endif %}
                 {% if action in ['create', 'replace'] %}
                     {% if previous_player %}
                         {% if warning_message %}

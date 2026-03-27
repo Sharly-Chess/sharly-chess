@@ -116,6 +116,10 @@ class Event:
     def player_rating_type(self) -> PlayerRatingType:
         return PlayerRatingType(self.stored_event.player_rating_type)
 
+    @property
+    def allow_multi_tournament_players(self) -> bool:
+        return self.stored_event.allow_multi_tournament_players
+
     @cached_property
     def prize_currency(self) -> str:
         if stored := self.stored_event.prize_currency:
@@ -447,6 +451,49 @@ class Event:
         with EventDatabase(self.uniq_id, True) as database:
             for player in players:
                 database.update_stored_player(player.stored_player)
+
+    def _are_player_duplicates(self, stored_player: StoredPlayer, player: Player):
+        if player.id == stored_player.id:
+            return False
+        if stored_player.date_of_birth and (
+            stored_player.last_name,
+            stored_player.first_name,
+            stored_player.date_of_birth,
+        ) == (player.last_name, player.last_name, player.date_of_birth):
+            return True
+        if stored_player.fide_id and stored_player.fide_id == player.fide_id:
+            return True
+        if any(
+            plugin_manager.hook_for_event(self, 'are_players_duplicates')(
+                stored_player=stored_player, player=player
+            )
+        ):
+            return True
+        return False
+
+    def check_player_unicity(
+        self,
+        stored_player: StoredPlayer,
+        tournament: Tournament,
+    ) -> bool:
+        players = (
+            tournament.tournament_players
+            if self.allow_multi_tournament_players
+            else self.players
+        )
+        return all(
+            not self._are_player_duplicates(stored_player, player) for player in players
+        )
+
+    @cached_property
+    def has_multi_tournament_players(self) -> bool:
+        for ref_player in self.players:
+            if any(
+                self._are_player_duplicates(ref_player.stored_player, player)
+                for player in self.players
+            ):
+                return True
+        return False
 
     @property
     def player_count(self) -> int:

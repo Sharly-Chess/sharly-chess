@@ -945,6 +945,30 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @classmethod
+    def _read_player_form_data(
+        cls,
+        web_context: PlayerAdminWebContext,
+        action: FormAction,
+        data: dict[str, str],
+    ) -> tuple[StoredPlayer | None, dict[str, str]]:
+        event = web_context.get_admin_event()
+        errors = cls._validate_player_form_data(web_context, action, data)
+        if errors:
+            return None, errors
+        stored_player = cls._stored_player_from_data(data)
+        tournament = event.tournaments_by_id[int(data['tournament_id'])]
+        if not event.check_player_unicity(stored_player, tournament):
+            errors['alert'] = (
+                _('This player already exists in tournament [{tournament}].').format(
+                    tournament=tournament.name
+                )
+                if event.allow_multi_tournament_players
+                else _('This player already exists in the event.')
+            )
+            return None, errors
+        return stored_player, errors
+
+    @classmethod
     def _validate_player_form_data(
         cls,
         web_context: PlayerAdminWebContext,
@@ -962,7 +986,6 @@ class PlayerAdminController(BaseEventAdminController):
             tournament = event.tournaments_by_id[tournament_id]
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
-        player: Player | None = None
         if action != FormAction.CREATE and tournament is not None:
             player = web_context.get_admin_player()
             if tournament.id != player.single_tournament.id:
@@ -979,10 +1002,8 @@ class PlayerAdminController(BaseEventAdminController):
         last_name = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
             errors[field] = _('This field is required.')
-        first_name = WebContext.form_data_to_str(data, 'first_name')
-        date_of_birth: date | None = None
         try:
-            date_of_birth = WebContext.form_data_to_date(data, field := 'date_of_birth')
+            WebContext.form_data_to_date(data, field := 'date_of_birth')
         except FormError:
             year_str = data.get(field, '')
             if year_str:
@@ -1013,9 +1034,8 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
-        fide_id: int | None = None
         try:
-            fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
+            WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
         except ValueError:
             errors[field] = _('Invalid FIDE ID [{fide_id}].').format(
                 fide_id=data[field]
@@ -1038,33 +1058,8 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Invalid fixed board number [{fixed_board}].').format(
                 fixed_board=data[field]
             )
-        if tournament and (fide_id or date_of_birth):
-            for tournament_player in tournament.tournament_players:
-                if player and tournament_player.id == player.id:
-                    continue
-                if fide_id and tournament_player.fide_id == fide_id:
-                    errors['fide_id'] = _(
-                        'Player with FIDE ID [{fide_id}] '
-                        'already plays tournament [{tournament}].'
-                    ).format(fide_id=fide_id, tournament=tournament.name)
-                if (
-                    date_of_birth
-                    and tournament_player.last_name == last_name
-                    and tournament_player.first_name == first_name
-                    and tournament_player.date_of_birth == date_of_birth
-                ):
-                    errors['last_name'] = _(
-                        'Player [{player}] already plays tournament [{tournament}].'
-                    ).format(
-                        player=f'{tournament_player.full_name} {format_date(date_of_birth)}',
-                        tournament=tournament.name,
-                    )
         plugin_manager.hook_for_event(event, 'validate_player_form_fields')(
-            action=action,
-            tournament=tournament,
-            player=player,
-            data=data,
-            errors=errors,
+            data=data, errors=errors
         )
         return errors
 
@@ -1135,12 +1130,11 @@ class PlayerAdminController(BaseEventAdminController):
         add_other = 'add_other' in data
         SessionPlayersAddOtherActive(request).set(add_other)
 
-        errors = self._validate_player_form_data(web_context, action, data)
-        if errors:
+        stored_player, errors = self._read_player_form_data(web_context, action, data)
+        if not stored_player:
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
             )
-        stored_player = self._stored_player_from_data(data)
         tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
         tournament = event.tournaments_by_id[tournament_id]
         player_id = event.add_player(stored_player, [tournament])
@@ -1188,12 +1182,11 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> Template:
         request = web_context.request
         event = web_context.get_admin_event()
-        errors = self._validate_player_form_data(web_context, action, data)
-        if errors:
+        stored_player, errors = self._read_player_form_data(web_context, action, data)
+        if not stored_player:
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
             )
-        stored_player = self._stored_player_from_data(data)
         tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
         tournament = event.tournaments_by_id[tournament_id]
         player = web_context.get_admin_player()
@@ -1669,20 +1662,27 @@ class PlayerAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         data_source = web_context.admin_data_source
         unique_values_by_column_id: dict[str, list[str]] = defaultdict(list)
-        name_keys: list[tuple[str, str, date | None]] = []
-        if not overwrite_players:
-            for column in used_columns:
-                if column.is_informative or not column.is_unique:
+        check_duplicate_players: list[TournamentPlayer] = []
+        for player in event.tournament_players:
+            if player.tournament.id == tournament.id:
+                if overwrite_players:
                     continue
-                for player in tournament.tournament_players:
-                    unique_values_by_column_id[column.id].append(
-                        str(column.get_cell_content(player) or '')
-                    )
-            name_keys = [
-                (player.last_name, player.first_name, player.date_of_birth)
-                for player in tournament.tournament_players
-                if player.date_of_birth
-            ]
+            elif event.allow_multi_tournament_players:
+                continue
+            check_duplicate_players.append(player)
+        name_keys: list[tuple] = [
+            (player.last_name, player.first_name, player.date_of_birth)
+            for player in check_duplicate_players
+            if player.date_of_birth
+        ]
+        for column in used_columns:
+            if column.is_informative or not column.is_unique:
+                continue
+            for player in check_duplicate_players:
+                unique_values_by_column_id[column.id].append(
+                    str(column.get_cell_content(player) or '')
+                )
+
         stored_players_by_index: dict[int, StoredPlayer] = {}
         import_errors_by_index: dict[int, dict[str, str]] = defaultdict(dict)
         duplicated_indexes: set[int] = set()
@@ -1703,11 +1703,16 @@ class PlayerAdminController(BaseEventAdminController):
                         and value in unique_values_by_column_id[column.id]
                     ):
                         duplicated_indexes.add(index)
-                        raise SharlyChessException(
+                        message = (
                             _(
                                 'A player with this value already exists in the tournament.'
                             )
+                            if event.allow_multi_tournament_players
+                            else _(
+                                'A player with this value already exists in the event.'
+                            )
                         )
+                        raise SharlyChessException(message)
                 except SharlyChessException as error:
                     import_errors_by_index[index][column.id] = str(error)
             name_key = (
