@@ -2,7 +2,7 @@
 
 ## Global
 
-- Fixed time pickers on firefox-based tournaments (3.6.8)
+- Fixed time pickers on Firefox-based browsers (3.6.8)
 
 ## Events
 
