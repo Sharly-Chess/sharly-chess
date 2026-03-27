@@ -2,11 +2,13 @@
 
 ## General
 
+- Use Flatpak for Linux build (3.7.0)
 - Rename _Upload_ menu to _Data Transfer_ (3.7.0)
 
 ## Event
 
 - Replace event dates by computed dates from tournaments (3.7.0)
+- Added an option to allow players in multiple tournaments (3.7.0)
 
 ## Players
 
