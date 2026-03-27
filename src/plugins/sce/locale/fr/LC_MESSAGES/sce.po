@@ -244,6 +244,16 @@ msgstr "Mise en ligne des résultats"
 msgid "Retry"
 msgstr "Ré-essayer"
 
+#, python-format
+msgid "Round #%(round)d"
+msgstr "Ronde n°%(round)d"
+
+msgid "Rounds"
+msgstr "Rondes"
+
+msgid "Schedule"
+msgstr "Horaires"
+
 msgid "Sharly-Chess.com authorization canceled."
 msgstr "Authorisation Sharly-Chess.com annulée."
 

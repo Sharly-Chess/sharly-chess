@@ -244,6 +244,16 @@ msgstr ""
 msgid "Retry"
 msgstr ""
 
+#, python-format
+msgid "Round #%(round)d"
+msgstr ""
+
+msgid "Rounds"
+msgstr ""
+
+msgid "Schedule"
+msgstr ""
+
 msgid "Sharly-Chess.com authorization canceled."
 msgstr ""
 

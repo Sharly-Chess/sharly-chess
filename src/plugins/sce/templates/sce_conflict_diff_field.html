@@ -1,21 +1,3 @@
-{% set display_value = display_data[field] %}
-{% set compare_value = compare_data[field] %}
-{% set last_value = last_sync_data[field] %}
-<div class="text-start">
-    {{ _('%(string)s:', string=label) }}
-    <span
-        {% if display_value == last_value %}
-            class="text-secondary"
-        {% elif compare_value == last_value %}
-            class="text-warning fw-bold"
-            {{ macros.tooltip_attributes('info', _('Modified')) }}
-        {% else %}
-            class="text-danger fw-bold"
-            {{ macros.tooltip_attributes('warning', _('Conflict')) }}
-        {% endif %}
-    >
-        <span class="{% if not display_value %}fst-italic{% endif %}">
-            {{ display_value or _('Undefined') }}
-        </span>
-    </span>
-</div>
+{% with display_value = display_data[field], compare_value = compare_data[field], last_value = last_sync_data[field] %}
+    {% include '/sce_conflict_diff_raw_field.html' %}
+{% endwith %}

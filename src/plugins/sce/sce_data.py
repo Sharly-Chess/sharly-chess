@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import datetime, date
+from functools import cached_property
 from typing import Any, Self
 
 from common.i18n import _
@@ -32,6 +33,7 @@ class SCETournamentSyncData:
     rounds: int
     start_date: date
     stop_date: date
+    round_schedule: dict[int, datetime]
     time_control: str | None = None
 
     @property
@@ -45,6 +47,13 @@ class SCETournamentSyncData:
     @property
     def type_str(self) -> str:
         return self.type.short_name
+
+    @cached_property
+    def round_schedule_str(self) -> dict[int, str]:
+        return {
+            round_: format_datetime(datetime_)
+            for round_, datetime_ in self.round_schedule.items()
+        }
 
     @property
     def human_readable_time_control(self) -> str:
@@ -61,6 +70,12 @@ class SCETournamentSyncData:
             start_date=datetime.fromisoformat(data['start_date']).date(),
             stop_date=datetime.fromisoformat(data['end_date']).date(),
             time_control=data['time_control_trf26'],
+            round_schedule={
+                schedule['round']: datetime.fromisoformat(
+                    f'{schedule["date"]} {schedule["time"]}'
+                )
+                for schedule in data['round_schedule']
+            },
         )
 
     @classmethod
@@ -72,6 +87,11 @@ class SCETournamentSyncData:
             start_date=tournament.start_date,
             stop_date=tournament.stop_date,
             time_control=tournament.time_control_trf25 or None,
+            round_schedule={
+                round_: datetime_
+                for round_, datetime_ in tournament.round_datetimes.items()
+                if datetime_
+            },
         )
 
     @classmethod
@@ -89,7 +109,17 @@ class SCETournamentSyncData:
             # should be considered optional to not fail on previous data
             time_control=stored_value.get('time_control'),
             rounds=stored_value.get('rounds', 1),
+            round_schedule={
+                int(round_): SQLiteDatabase.load_datetime_from_database_field(datetime_)
+                for round_, datetime_ in stored_value.get('round_schedule', {}).items()
+            },
         )
+
+    def round_restricted_schedule(self, max_round: int) -> dict[str, datetime | None]:
+        return {
+            str(round_): self.round_schedule.get(round_)
+            for round_ in range(1, max_round + 1)
+        }
 
     def merge_with_other_sync_data(self, other_data: Self, ref_data: Self) -> Self:
         from plugins.sce.utils import SCEUtils
@@ -98,8 +128,21 @@ class SCETournamentSyncData:
             self.to_stored_value(),
             other_data.to_stored_value(),
             ref_data.to_stored_value(),
+            ['round_schedule'],
         )
-        return self.from_stored_value(merged_stored_value)
+        merged_data = self.from_stored_value(merged_stored_value)
+        max_round = merged_data.rounds
+        merged_schedule = SCEUtils.merge_dicts(
+            self.round_restricted_schedule(max_round),
+            other_data.round_restricted_schedule(max_round),
+            ref_data.round_restricted_schedule(max_round),
+        )
+        merged_data.round_schedule = {
+            int(round_): datetime_
+            for round_, datetime_ in merged_schedule.items()
+            if datetime_
+        }
+        return merged_data
 
     def to_stored_value(self) -> dict[str, Any]:
         return {
@@ -109,6 +152,10 @@ class SCETournamentSyncData:
             'start_date': SQLiteDatabase.dump_date_to_database_field(self.start_date),
             'stop_date': SQLiteDatabase.dump_date_to_database_field(self.stop_date),
             'time_control': self.time_control,
+            'round_schedule': {
+                str(round_): SQLiteDatabase.dump_datetime_to_database_field(datetime_)
+                for round_, datetime_ in self.round_schedule.items()
+            },
         }
 
     def to_sce_data(self) -> dict[str, Any]:
@@ -119,6 +166,16 @@ class SCETournamentSyncData:
             'start_date': SQLiteDatabase.dump_date_to_database_field(self.start_date),
             'end_date': SQLiteDatabase.dump_date_to_database_field(self.stop_date),
             'time_control_trf26': self.time_control,
+            'round_schedule': [
+                {
+                    'round': round_,
+                    'date': SQLiteDatabase.dump_date_to_database_field(
+                        datetime_.date()
+                    ),
+                    'time': datetime_.strftime('%H:%M'),
+                }
+                for round_, datetime_ in self.round_schedule.items()
+            ],
         }
 
     def augment_stored_tournament(
@@ -134,6 +191,10 @@ class SCETournamentSyncData:
             stored_tournament.start_date = self.start_date
             stored_tournament.stop_date = self.stop_date
         stored_tournament.time_control_trf25 = self.time_control
+        stored_tournament.round_datetimes = {
+            round_: self.round_schedule.get(round_)
+            for round_ in range(1, self.rounds + 1)
+        }
         plugin_data = SCETournamentPluginData.from_stored_value(
             stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         )

@@ -8,25 +8,12 @@
                 {{ macros.tooltip_attributes('', metadata.tooltip) }}
             ></i>
         </h5>
-        <div class="text-start">
-            {% set display_value = sce_utils.get_tournament_by_sce_id(admin_event, display_data['tournament_id']).name %}
-            {% set compare_value = sce_utils.get_tournament_by_sce_id(admin_event, compare_data['tournament_id']).name %}
-            {% set last_sync_value = sce_utils.get_tournament_by_sce_id(admin_event, last_sync_data['tournament_id']).name %}
-            {{ _('%(string)s:', string=_('Tournament')) }}
-            <span
-                {% if display_value == last_sync_value %}
-                    class="text-secondary"
-                {% elif compare_value == last_sync_value %}
-                    class="text-warning fw-bold"
-                    {{ macros.tooltip_attributes('info', _('Modified')) }}
-                {% else %}
-                    class="text-danger fw-bold"
-                    {{ macros.tooltip_attributes('warning', _('Conflict')) }}
-                {% endif %}
-            >
-                {{ display_value }}
-            </span>
-        </div>
+        {% set display_value = sce_utils.get_tournament_by_sce_id(admin_event, display_data['tournament_id']).name %}
+        {% set compare_value = sce_utils.get_tournament_by_sce_id(admin_event, compare_data['tournament_id']).name %}
+        {% set last_value = sce_utils.get_tournament_by_sce_id(admin_event, last_sync_data['tournament_id']).name %}
+        {% with label = _('Tournament') %}
+            {% include '/sce_conflict_diff_raw_field.html' %}
+        {% endwith %}
 
         {% for field, label in diff_fields.items() %}
             {% include '/sce_conflict_diff_field.html' %}

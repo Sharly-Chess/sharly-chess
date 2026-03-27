@@ -148,12 +148,17 @@ class SCEUtils:
         dict1: dict[str, Any],
         dict2: dict[str, Any],
         ref_dict: dict[str, Any],
+        avoid_keys: list[str] | None = None,
     ) -> dict[str, Any]:
         """Merge 2 dicts with the same keys into one, according to the values of a ref dict.
         In case of inequality between 2 fields, choose the one that is different from the ref.
         If both are different from the ref, raise a SharlyChessException as the dicts can't be merged."""
+        if not avoid_keys:
+            avoid_keys = []
         merged_dict: dict[str, Any] = {}
         for key, ref_value in ref_dict.items():
+            if key in avoid_keys:
+                continue
             value1 = dict1[key]
             value2 = dict2[key]
             if value1 == value2:
