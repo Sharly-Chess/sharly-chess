@@ -17,22 +17,16 @@ from plugins.sce.sce_sync_status import (
     TournamentConflictsSCESyncStatus,
     PlayerConflictsSCESyncStatus,
     NetworkFailureSCESyncStatus,
-    UnexpectedFailureSCETournamentStatus,
+    UnexpectedFailureSCESyncStatus,
     PlayerDuplicatesSCESyncStatus,
     PlayerDuplicatesAndConflictsSCESyncStatus,
 )
 from plugins.sce.sce_tournament_status import (
-    SCETournamentStatus,
-    NeverUploadedSCETournamentStatus,
-    NotStartedSCETournamentStatus,
-    SuccessSCETournamentStatus,
-    ModifiedSCETournamentStatus,
-    PendingSCETournamentStatus,
-    OngoingSCETournamentStatus,
     NetworkFailureSCETournamentStatus,
     NotFoundFailureSCETournamentStatus,
-    UnexpectedHTTPFailureSCETournamentStatus,
+    UnexpectedFailureSCETournamentStatus,
     AuthFailureSCETournamentStatus,
+    FailureSCETournamentStatus,
 )
 from utils.entity import EntityManager
 
@@ -52,18 +46,12 @@ class SCEEventStatusManager(EntityManager[SCEEventStatus]):
         ]
 
 
-class SCETournamentStatusManager(EntityManager[SCETournamentStatus]):
-    def entity_types(self) -> list[type[SCETournamentStatus]]:
+class SCETournamentFailureStatusManager(EntityManager[FailureSCETournamentStatus]):
+    def entity_types(self) -> list[type[FailureSCETournamentStatus]]:
         return [
-            NeverUploadedSCETournamentStatus,
-            NotStartedSCETournamentStatus,
-            SuccessSCETournamentStatus,
-            ModifiedSCETournamentStatus,
-            PendingSCETournamentStatus,
-            OngoingSCETournamentStatus,
             NetworkFailureSCETournamentStatus,
             NotFoundFailureSCETournamentStatus,
-            UnexpectedHTTPFailureSCETournamentStatus,
+            UnexpectedFailureSCETournamentStatus,
             AuthFailureSCETournamentStatus,
         ]
 
@@ -78,5 +66,5 @@ class SCESyncStatusManager(EntityManager[SCESyncStatus]):
             PlayerDuplicatesSCESyncStatus,
             PlayerDuplicatesAndConflictsSCESyncStatus,
             NetworkFailureSCESyncStatus,
-            UnexpectedFailureSCETournamentStatus,
+            UnexpectedFailureSCESyncStatus,
         ]

@@ -169,7 +169,7 @@ class NetworkFailureSCESyncStatus(FailureSCESyncStatus):
         return _('no internet connection')
 
 
-class UnexpectedFailureSCETournamentStatus(FailureSCESyncStatus):
+class UnexpectedFailureSCESyncStatus(FailureSCESyncStatus):
     @staticmethod
     def static_id() -> str:
         return 'UNEXPECTED_FAILURE'

@@ -192,10 +192,8 @@ class SCEPlugin(Plugin):
         if SCEUtils.resolve_last_sync_status(event).notify_error_status:
             return True
         for tournament in event.tournaments:
-            upload_statuses = SCEUtils.resolve_tournament_upload_statuses(tournament)
-            for status in upload_statuses:
-                if status.notify_error_status:
-                    return True
+            if SCEUtils.get_tournament_plugin_data(tournament).upload_failure_id:
+                return True
         return False
 
     @hookimpl(tryfirst=True)

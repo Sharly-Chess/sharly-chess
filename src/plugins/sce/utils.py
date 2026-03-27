@@ -25,9 +25,9 @@ from plugins.sce.sce_event_status import (
     NotConnectedSCEEventStatus,
 )
 from plugins.sce.sce_managers import (
-    SCETournamentStatusManager,
     SCEEventStatusManager,
     SCESyncStatusManager,
+    SCETournamentFailureStatusManager,
 )
 from plugins.sce.sce_sync_status import SCESyncStatus, NeverSyncedSCESyncStatus
 from plugins.sce.sce_tournament_status import (
@@ -190,14 +190,12 @@ class SCEUtils:
 
         statuses: list[SCETournamentStatus] = []
 
-        # Last upload status
-        try:
-            status = SCETournamentStatusManager().get_object(
-                plugin_data.upload_status or ''
+        # Last upload failure
+        if plugin_data.upload_failure_id:
+            status = SCETournamentFailureStatusManager().get_object(
+                plugin_data.upload_failure_id
             )
             statuses.append(status)
-        except KeyError:
-            pass
 
         is_modified = cls.tournament_modified_since_last_upload(tournament)
         # Current data status

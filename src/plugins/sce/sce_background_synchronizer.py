@@ -13,7 +13,7 @@ from plugins.sce.sce_session import SCESession
 from plugins.sce.sce_sync_status import (
     SCESyncStatus,
     NetworkFailureSCESyncStatus,
-    UnexpectedFailureSCETournamentStatus,
+    UnexpectedFailureSCESyncStatus,
 )
 from plugins.sce.utils import SCEUtils
 from web.channels import channels_plugin
@@ -80,13 +80,14 @@ def sync_event(event_uniq_id: str):
     except Exception as e:
         logger.error(e)
         if event:
-            _exit_with_status(event, UnexpectedFailureSCETournamentStatus())
-    _ONGOING_EVENTS_UNIQ_IDS.discard(event_uniq_id)
-    if event:
-        plugin_data = SCEUtils.get_event_plugin_data(event)
-        if plugin_data.auto_player_sync:
-            schedule_sync(event)
-    _publish_upload_event()
+            _exit_with_status(event, UnexpectedFailureSCESyncStatus())
+    finally:
+        _ONGOING_EVENTS_UNIQ_IDS.discard(event_uniq_id)
+        if event:
+            plugin_data = SCEUtils.get_event_plugin_data(event)
+            if plugin_data.auto_player_sync:
+                schedule_sync(event)
+        _publish_upload_event()
 
 
 def schedule_sync(event: Event, force: bool = False):

@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod
 
 from common.i18n import _
+from data.tournament import Tournament
+from utils.date_time import format_date, format_time
 from utils.entity import IdentifiableEntity
 
 
 class SCETournamentStatus(IdentifiableEntity, ABC):
-    @property
     @abstractmethod
-    def tooltip(self) -> str | None:
+    def tooltip_message(self, tournament: Tournament) -> str | None:
         """Tooltip explaining the status of the tournament."""
 
     @property
@@ -19,35 +20,6 @@ class SCETournamentStatus(IdentifiableEntity, ABC):
     @abstractmethod
     def css_classes(self) -> str:
         """CSS classes to apply to the status."""
-
-    @property
-    def notify_error_status(self) -> bool:
-        """Defines if the status is notified to the user via
-        an error badge on the data transfer button."""
-        return False
-
-    @property
-    def is_silent(self) -> bool:
-        """Defines if a status is displayed or not."""
-        return False
-
-
-class SilentSCETournamentStatus(SCETournamentStatus, ABC):
-    @staticmethod
-    def static_name() -> str:
-        return ''
-
-    @property
-    def tooltip(self) -> str | None:
-        return None
-
-    @property
-    def css_classes(self) -> str:
-        return ''
-
-    @property
-    def is_silent(self) -> bool:
-        return True
 
 
 class NeverUploadedSCETournamentStatus(SCETournamentStatus):
@@ -63,8 +35,7 @@ class NeverUploadedSCETournamentStatus(SCETournamentStatus):
     def css_classes(self) -> str:
         return 'bg-secondary'
 
-    @property
-    def tooltip(self) -> str | None:
+    def tooltip_message(self, tournament: Tournament) -> str | None:
         return None
 
 
@@ -77,19 +48,12 @@ class NotStartedSCETournamentStatus(SCETournamentStatus):
     def static_name() -> str:
         return _('Not started')
 
-    @property
-    def tooltip(self) -> str | None:
+    def tooltip_message(self, tournament: Tournament) -> str | None:
         return _('Tournament has not started yet, no results to upload.')
 
     @property
     def css_classes(self) -> str:
         return 'bg-secondary'
-
-
-class SuccessSCETournamentStatus(SilentSCETournamentStatus):
-    @staticmethod
-    def static_id() -> str:
-        return 'SUCCESS'
 
 
 class UpToDateSCETournamentStatus(SCETournamentStatus):
@@ -101,8 +65,7 @@ class UpToDateSCETournamentStatus(SCETournamentStatus):
     def static_name() -> str:
         return _('Up to date')
 
-    @property
-    def tooltip(self) -> str | None:
+    def tooltip_message(self, tournament: Tournament) -> str | None:
         return _('No changes detected since the last upload.')
 
     @property
@@ -119,8 +82,7 @@ class ModifiedSCETournamentStatus(SCETournamentStatus):
     def static_name() -> str:
         return _('Modified')
 
-    @property
-    def tooltip(self) -> str | None:
+    def tooltip_message(self, tournament: Tournament) -> str | None:
         return _('Tournament has been modified since the last upload.')
 
     @property
@@ -137,9 +99,8 @@ class PendingSCETournamentStatus(SCETournamentStatus):
     def static_name() -> str:
         return _('Pending')
 
-    @property
-    def tooltip(self) -> str | None:
-        return _('Auto-upload of the tournament has been planned.')
+    def tooltip_message(self, tournament: Tournament) -> str | None:
+        return _('Tournament upload has been planned.')
 
     @property
     def css_classes(self) -> str:
@@ -155,8 +116,7 @@ class OngoingSCETournamentStatus(SCETournamentStatus):
     def static_name() -> str:
         return _('Ongoing')
 
-    @property
-    def tooltip(self) -> str | None:
+    def tooltip_message(self, tournament: Tournament) -> str | None:
         return _('Tournament is currently being uploaded.')
 
     @property
@@ -174,28 +134,25 @@ class FailureSCETournamentStatus(SCETournamentStatus, ABC):
         return 'message-error'
 
     @property
-    def notify_error_status(self) -> bool:
-        return True
-
-    @property
-    def reason(self) -> str | None:
+    @abstractmethod
+    def details(self) -> str:
         """Reason why the upload failed, displayed in the tooltip."""
-        return None
 
-    @property
-    def tooltip(self) -> str | None:
-        if reason := self.reason:
-            tooltip = _('Upload failed (reason: {reason}).').format(reason=reason)
-        else:
-            tooltip = _('Upload failed unexpectedly.')
-        if self.consult_logs_message:
-            tooltip += ' ' + _('Consult the logs for more details.')
-        return tooltip
+    def tooltip_message(self, tournament: Tournament) -> str | None:
+        from plugins.sce.utils import SCEUtils
 
-    @property
-    def consult_logs_message(self) -> bool:
-        """Defines if the tooltip contains a message sending to the logs."""
-        return False
+        last_attempt_at = SCEUtils.get_tournament_plugin_data(
+            tournament
+        ).last_upload_attempt_at
+        assert last_attempt_at is not None
+        return _(
+            'Last upload attempt failed on {last_attempt_date} '
+            'at {last_attempt_time} (details: {details}).'
+        ).format(
+            last_attempt_date=format_date(last_attempt_at.date()),
+            last_attempt_time=format_time(last_attempt_at),
+            details=self.details,
+        )
 
 
 class NetworkFailureSCETournamentStatus(FailureSCETournamentStatus):
@@ -204,7 +161,7 @@ class NetworkFailureSCETournamentStatus(FailureSCETournamentStatus):
         return 'NETWORK_FAILURE'
 
     @property
-    def reason(self) -> str | None:
+    def details(self) -> str:
         return _('no internet connection')
 
 
@@ -214,18 +171,18 @@ class NotFoundFailureSCETournamentStatus(FailureSCETournamentStatus):
         return 'NOT_FOUND_FAILURE'
 
     @property
-    def reason(self) -> str | None:
+    def details(self) -> str:
         return _('tournament not found, most likely deleted')
 
 
-class UnexpectedHTTPFailureSCETournamentStatus(FailureSCETournamentStatus):
+class UnexpectedFailureSCETournamentStatus(FailureSCETournamentStatus):
     @staticmethod
     def static_id() -> str:
-        return 'UNEXPECTED_HTTP_FAILURE'
+        return 'UNEXPECTED_FAILURE'
 
     @property
-    def consult_logs_message(self) -> bool:
-        return True
+    def details(self) -> str:
+        return _('consult the logs')
 
 
 class AuthFailureSCETournamentStatus(FailureSCETournamentStatus):
@@ -234,5 +191,5 @@ class AuthFailureSCETournamentStatus(FailureSCETournamentStatus):
         return 'AUTH_FAILURE'
 
     @property
-    def reason(self) -> str | None:
+    def details(self) -> str:
         return _('re-authorisation required')

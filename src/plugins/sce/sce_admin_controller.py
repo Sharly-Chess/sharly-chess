@@ -39,6 +39,7 @@ from plugins.sce.sce_data import (
     SCETournamentSyncData,
     SCEPlayerSyncData,
 )
+from plugins.sce.sce_sync_status import SuccessSCESyncStatus
 from plugins.sce.utils import SCEUtils
 from utils.date_time import format_datetime
 from web.controllers.admin.base_admin_controller import (
@@ -290,7 +291,10 @@ class SCEAdminController(BaseAdminController):
         try:
             event = EventLoader().load_event(uniq_id)
             plugin_data = SCEEventPluginData(
-                id=sce_event_id, tokens=tokens, last_sync_at=datetime.now()
+                id=sce_event_id,
+                tokens=tokens,
+                last_sync_at=datetime.now(),
+                last_sync_attempt_status=SuccessSCESyncStatus().id,
             )
             event.plugin_data[PLUGIN_NAME] = plugin_data
             event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()

@@ -513,7 +513,8 @@ class SCETournamentPluginData(PluginData):
     id: str | None = None
     auto_upload: bool = True
     last_upload_at: datetime | None = None
-    upload_status: str | None = None
+    last_upload_attempt_at: datetime | None = None
+    upload_failure_id: str | None = None
     last_sync_data: SCETournamentSyncData | None = None
     conflict_sync_data: SCETournamentSyncData | None = None
 
@@ -527,7 +528,10 @@ class SCETournamentPluginData(PluginData):
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload_at'),
             ),
-            upload_status=stored_value.get('upload_status'),
+            last_upload_attempt_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_upload_attempt_at'),
+            ),
+            upload_failure_id=stored_value.get('upload_failure_id'),
             last_sync_data=(
                 SCETournamentSyncData.from_stored_value(stored_last_sync_data)
                 if stored_last_sync_data
@@ -547,7 +551,10 @@ class SCETournamentPluginData(PluginData):
             'last_upload_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
                 self.last_upload_at
             ),
-            'upload_status': self.upload_status,
+            'last_upload_attempt_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_upload_attempt_at
+            ),
+            'upload_failure_id': self.upload_failure_id,
             'last_sync_data': (
                 self.last_sync_data.to_stored_value() if self.last_sync_data else None
             ),
