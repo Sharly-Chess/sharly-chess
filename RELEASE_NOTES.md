@@ -1,5 +1,9 @@
 # _Sharly Chess_ release notes
 
+## Global
+
+- Fixed time pickers on Firefox-based browsers (3.6.8)
+
 ## Events
 
 - Import events from SCE files (3.6.0)
