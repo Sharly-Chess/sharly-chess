@@ -2,6 +2,7 @@
 
 ## Global
 
+- Fixed time pickers on Firefox-based browsers (3.6.8)
 - Fixed white flashes on refresh for Firefox-based browsers (3.6.8)
 
 ## Events

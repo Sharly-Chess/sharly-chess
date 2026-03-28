@@ -360,6 +360,7 @@
     now_button=false,
     disabled_dates=[]
 ) %}
+    <span id="{{ id }}-datepicker-container"></span>
     {% set formatter = sharly_chess_config.date_formatter %}
     <script>
         datePickers['{{ id }}'] = new AirDatepicker('#{{ id }}', {
@@ -367,6 +368,7 @@
             dateFormat: `{{ formatter.air_date_picker_format }}`,
             timeFormat: 'HH:mm',
             firstDay: 1,
+            container: document.getElementById('{{ id }}-datepicker-container'),
             keyboardNav: false,
             {% if min_date %}
                 minDate: ({{ formatter.value_to_date_js_function|safe }})(`{{ min_date }} 00:00`),
