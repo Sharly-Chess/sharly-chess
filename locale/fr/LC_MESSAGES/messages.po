@@ -2870,8 +2870,8 @@ msgstr "Couleur non valide [{color}] ([#RRGGBB] attendu)."
 msgid "Invalid date format (expected: {format})."
 msgstr "Format de date invalide (attendu : {format})."
 
-msgid "Invalid date format [{date}] (expected: {format})"
-msgstr "Format de date invalide [{date}] (attendu : {format})"
+msgid "Invalid date format [{date}] (expected: {format})."
+msgstr "Format de date invalide [{date}] (attendu : {format})."
 
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr "Délai non valide [{delay}] (entier positif attendu)."
@@ -5370,12 +5370,6 @@ msgstr "La moyenne du score [{tie_break}] des adversaires joué·es sur l'échiq
 msgid "The average of the ratings of the opponents played over the board."
 msgstr "La moyenne des classements des adversaires joué·es sur l'échiquier."
 
-msgid "The base date has to be at most one year after the end of the event."
-msgstr "La date de référence doit être au plus un an après la fin de l'évènement."
-
-msgid "The base date has to be at most one year prior to the start of the event."
-msgstr "La date de référence doit être au plus un an avant le début de l'évènement."
-
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "Le numéro de l'échiquier qui sera assigné au·à la joueur·euse (à utiliser pour les personnes handicapées)."
 
@@ -5792,6 +5786,9 @@ msgstr "Cadence :"
 
 msgid "Time outside of event time range ({range})."
 msgstr "Horaire en dehors des horaires de l'évènement ({range})."
+
+msgid "Time outside of tournament time range ({range})."
+msgstr "Horaire en dehors des horaires du tournoi ({range})."
 
 msgid "Timer"
 msgstr "Chronomètre"
@@ -6647,6 +6644,9 @@ msgstr "échiquiers {board_numbers}"
 
 msgid "clear filters"
 msgstr "effacer les filtres"
+
+msgid "default"
+msgstr "défaut"
 
 msgid "either the duration or the increment must be greater than 0."
 msgstr "la durée ou l’incrément doit être supérieur à 0."

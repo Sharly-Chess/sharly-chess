@@ -411,6 +411,9 @@ class FileTournamentImporter(TournamentImporter, ABC):
                 pass
 
 
+TRF_DATE_FORMAT = '%Y/%m/%d'
+
+
 class TrfTournamentImporter(FileTournamentImporter):
     @staticmethod
     def static_id() -> str:
@@ -444,7 +447,9 @@ class TrfTournamentImporter(FileTournamentImporter):
                 trf_tournament = trf.load(file)
         except TrfException as exception:
             raise SharlyChessException(str(exception))
-        stored_tournament = self._read_trf_tournament(trf_tournament, stored_tournament)
+        stored_tournament = self._read_trf_tournament(
+            event, trf_tournament, stored_tournament
+        )
         stored_tournament.rating = tournament_rating
         next_board_id = 1
         board_id_by_player_id_by_round: dict[int, dict[int, int]] = defaultdict(dict)
@@ -533,7 +538,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             except ValueError:
                 if not re.match(r'^\d{4}/00/00$', trf_player.birthdate):
                     raise ImporterError(
-                        _('Invalid date format [{date}] (expected: {format})').format(
+                        _('Invalid date format [{date}] (expected: {format}).').format(
                             date=trf_player.birthdate, format=_('YYYY/MM/DD')
                         )
                     )
@@ -582,11 +587,39 @@ class TrfTournamentImporter(FileTournamentImporter):
 
     @staticmethod
     def _read_trf_tournament(
+        event: Event,
         trf_tournament: TrfTournament,
         stored_tournament: StoredTournament | None = None,
     ) -> StoredTournament:
         if not stored_tournament:
-            stored_tournament = StoredTournament(id=None, name=trf_tournament.name)
+            stored_tournament = StoredTournament(
+                id=None,
+                name=trf_tournament.name,
+                start_date=event.start_date,
+                stop_date=event.stop_date,
+            )
+        if trf_tournament.startdate:
+            try:
+                stored_tournament.start_date = datetime.strptime(
+                    trf_tournament.startdate, TRF_DATE_FORMAT
+                ).date()
+            except ValueError:
+                raise ImporterError(
+                    _('Invalid date format [{date}] (expected: {format}).').format(
+                        date=trf_tournament.startdate, format=_('YYYY/MM/DD')
+                    )
+                )
+        if trf_tournament.enddate:
+            try:
+                stored_tournament.stop_date = datetime.strptime(
+                    trf_tournament.enddate, TRF_DATE_FORMAT
+                ).date()
+            except ValueError:
+                raise ImporterError(
+                    _('Invalid date format [{date}] (expected: {format}).').format(
+                        date=trf_tournament.enddate, format=_('YYYY/MM/DD')
+                    )
+                )
         stored_tournament.pairing = StandardSwissVariation.static_id()
         stored_tournament.location = trf_tournament.city
         return stored_tournament

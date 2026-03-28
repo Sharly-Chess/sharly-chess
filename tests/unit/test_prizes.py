@@ -71,13 +71,7 @@ class PrizesTestCase(TestCase):
         self.stored_prize_group = StoredPrizeGroup(id=1, tournament_id=1, name='test')
         self.tournament: Tournament | None = None
 
-        TestUtils.create_event(
-            'test-prizes-event',
-            overrides={
-                'start_date': date(2025, 1, 1),
-                'stop_date': date(2025, 1, 1),
-            },
-        )
+        TestUtils.create_event('test-prizes-event')
         self.event = EventLoader().load_event('test-prizes-event')
 
     def tearDown(self):
@@ -122,6 +116,8 @@ class PrizesTestCase(TestCase):
                     rounds=ROUNDS,
                     stored_prize_groups=[self.stored_prize_group],
                     stored_tournament_players=stored_tournament_players,
+                    stop_date=date(2025, 1, 1),
+                    start_date=date(2025, 1, 1),
                 ),
             )
             return self.tournament.prize_groups_by_id[1].assign_prizes()

@@ -163,8 +163,8 @@ class StoredTournament:
     max_byes: int | None = None
     last_rounds_no_byes: int | None = None
     location: str | None = None
-    start_date: date | None = None
-    stop_date: date | None = None
+    start_date: date = field(default_factory=date.today)
+    stop_date: date = field(default_factory=date.today)
     pairing: str = SharlyChessConfig.default_pairing_variation_id
     pairing_settings: dict[str, Any] = field(default_factory=dict[str, Any])
     current_round: int | None = None
@@ -362,8 +362,6 @@ class BaseStoredEvent:
     name: str
     federation: str
     player_rating_type: int
-    start_date: date
-    stop_date: date
     public: bool = False
     location: str | None = None
     background_color: str | None = None

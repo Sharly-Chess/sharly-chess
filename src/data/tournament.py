@@ -140,21 +140,11 @@ class Tournament:
 
     @property
     def start_date(self) -> date:
-        if not self.stored_tournament.start_date:
-            return self.event.start_date
-        return min(
-            max(self.stored_tournament.start_date, self.event.start_date),
-            self.event.stop_date,
-        )
+        return self.stored_tournament.start_date
 
     @property
     def stop_date(self) -> date:
-        if not self.stored_tournament.stop_date:
-            return self.event.stop_date
-        return max(
-            min(self.stored_tournament.stop_date, self.event.stop_date),
-            self.event.start_date,
-        )
+        return self.stored_tournament.stop_date
 
     @property
     def date_range_str(self) -> str:
@@ -1191,14 +1181,16 @@ class Tournament:
         after_round: int | None = None,
         next_round_pairings_as_zpb: bool = False,
     ) -> TrfTournament:
+        from data.input_output.tournament_importers import TRF_DATE_FORMAT
+
         if after_round is None:
             after_round = self.rounds
         self.compute_tournament_player_ranks(after_round=after_round)
         return TrfTournament(
             name=self.name,
             city=self.location,
-            startdate=self.start_date.strftime('%Y/%m/%d'),
-            enddate=self.stop_date.strftime('%Y/%m/%d'),
+            startdate=self.start_date.strftime(TRF_DATE_FORMAT),
+            enddate=self.stop_date.strftime(TRF_DATE_FORMAT),
             numplayers=len(self.tournament_players_by_id),
             chiefarbiter=getattr(self.chief_arbiter, 'fide_arbiter_str', ''),
             players=[
@@ -1210,7 +1202,7 @@ class Tournament:
                 for player in self.tournament_players_by_pairing_number.values()
             ],
             rounddates=[
-                dt.strftime('%y/%m/%d') if dt else '  /  /  '
+                dt.strftime('%y/%m/%d') if dt else '        '
                 for idx in range(1, after_round + 1)
                 for dt in [self.round_datetimes.get(idx)]
             ],

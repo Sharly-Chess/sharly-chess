@@ -2870,7 +2870,7 @@ msgstr ""
 msgid "Invalid date format (expected: {format})."
 msgstr ""
 
-msgid "Invalid date format [{date}] (expected: {format})"
+msgid "Invalid date format [{date}] (expected: {format})."
 msgstr ""
 
 msgid "Invalid delay [{delay}] (positive integer expected)."
@@ -5368,12 +5368,6 @@ msgstr ""
 msgid "The average of the ratings of the opponents played over the board."
 msgstr ""
 
-msgid "The base date has to be at most one year after the end of the event."
-msgstr ""
-
-msgid "The base date has to be at most one year prior to the start of the event."
-msgstr ""
-
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr ""
 
@@ -5789,6 +5783,9 @@ msgid "Time control:"
 msgstr ""
 
 msgid "Time outside of event time range ({range})."
+msgstr ""
+
+msgid "Time outside of tournament time range ({range})."
 msgstr ""
 
 msgid "Timer"
@@ -6644,6 +6641,9 @@ msgid "boards {board_numbers}"
 msgstr ""
 
 msgid "clear filters"
+msgstr ""
+
+msgid "default"
 msgstr ""
 
 msgid "either the duration or the increment must be greater than 0."

@@ -247,7 +247,7 @@ msgstr ""
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr ""
 
-msgid "Invalid date format [{date}] (expected: {format})"
+msgid "Invalid date format [{date}] (expected: {format})."
 msgstr ""
 
 msgid "Invalid display link text [{text}]"

@@ -72,13 +72,17 @@ class Event:
     def name(self) -> str:
         return self.stored_event.name
 
-    @property
+    @cached_property
     def start_date(self) -> date:
-        return self.stored_event.start_date
+        if not self.tournaments:
+            return date.today()
+        return min(tournament.start_date for tournament in self.tournaments)
 
-    @property
+    @cached_property
     def stop_date(self) -> date:
-        return self.stored_event.stop_date
+        if not self.tournaments:
+            return date.today()
+        return max(tournament.stop_date for tournament in self.tournaments)
 
     @property
     def start_date_str(self) -> str:

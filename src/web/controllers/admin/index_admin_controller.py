@@ -361,7 +361,6 @@ class IndexAdminController(BaseAdminController):
             name = EventLoader.get(request).get_unused_event_name(_('New event'))
             uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
             public = False
-            date_range = ''
             config = SharlyChessConfig()
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
@@ -389,9 +388,6 @@ class IndexAdminController(BaseAdminController):
                 loader = EventLoader()
                 name = loader.get_unused_event_name(stored_event.name)
                 uniq_id = loader.get_unused_event_uniq_id(stored_event.uniq_id)
-            date_range = WebContext.value_to_date_range_form_data(
-                admin_event.start_date, admin_event.stop_date
-            )
             public = stored_event.public
             federation = stored_event.federation
             location = stored_event.location
@@ -434,7 +430,6 @@ class IndexAdminController(BaseAdminController):
                     'organiser_home_page': organiser_home_page,
                     'organiser_email': organiser_email,
                     'organiser_director': organiser_director,
-                    'date_range': date_range,
                     'age_category_base_date': age_category_base_date,
                     'age_category_change_month': age_category_change_month,
                     'age_categories': age_categories,
@@ -456,8 +451,6 @@ class IndexAdminController(BaseAdminController):
         uniq_id: str | None
         errors: dict[str, str] = {}
         config = SharlyChessConfig()
-        start_date: date | None = None
-        stop_date: date | None = None
 
         name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
@@ -475,15 +468,6 @@ class IndexAdminController(BaseAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
-
-        try:
-            date_range = WebContext.form_data_to_date_range(data, field := 'date_range')
-            if not date_range:
-                start_date, stop_date = [date.today()] * 2
-            else:
-                start_date, stop_date = date_range
-        except FormError as e:
-            errors[field] = str(e)
 
         public = WebContext.form_data_to_bool(data, 'public')
         location = WebContext.form_data_to_str(data, 'location')
@@ -513,21 +497,6 @@ class IndexAdminController(BaseAdminController):
             )
         except FormError as e:
             errors[field] = str(e)
-        if age_category_base_date:
-            if start_date and age_category_base_date < date(
-                start_date.year - 1, start_date.month, start_date.day
-            ):
-                errors[field] = _(
-                    'The base date has to be at most one year '
-                    'prior to the start of the event.'
-                )
-            elif stop_date and age_category_base_date > date(
-                stop_date.year + 1, stop_date.month, stop_date.day
-            ):
-                errors[field] = _(
-                    'The base date has to be at most one year '
-                    'after the end of the event.'
-                )
         age_category_change_month = (
             WebContext.form_data_to_int(data, 'age_category_change_month') or 1
         )
@@ -560,15 +529,10 @@ class IndexAdminController(BaseAdminController):
         if errors:
             return None, errors
 
-        assert start_date is not None
-        assert stop_date is not None
-
         stored_event = StoredEvent(
             uniq_id=uniq_id,
             name=name,
             federation=federation,
-            start_date=start_date,
-            stop_date=stop_date,
             public=bool(public),
             location=location,
             organiser_name=organiser_name,

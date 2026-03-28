@@ -210,6 +210,8 @@ class ChessEventTournamentImporter(TournamentImporter):
     ) -> StoredTournament:
         if not stored_tournament:
             stored_tournament = StoredTournament(id=None, name=tournament.name)
+        stored_tournament.start_date = datetime.fromtimestamp(tournament.start).date()
+        stored_tournament.stop_date = datetime.fromtimestamp(tournament.end).date()
         stored_tournament.rounds = tournament.rounds
         try:
             stored_tournament.pairing = ChessEventPairingVariation.get_core_object(
