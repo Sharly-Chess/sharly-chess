@@ -116,7 +116,7 @@ msgid "FIDE ID"
 msgstr "Identifiant FIDE"
 
 msgid "Failure"
-msgstr "Erreur"
+msgstr "Échec"
 
 msgid "First name"
 msgstr "Prénom"
