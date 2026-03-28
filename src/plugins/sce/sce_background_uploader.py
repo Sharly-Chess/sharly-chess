@@ -9,6 +9,7 @@ from common.i18n import set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
+from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredEvent, StoredTournament
@@ -22,7 +23,7 @@ from plugins.sce.sce_tournament_status import (
     UnexpectedFailureSCETournamentStatus,
     FailureSCETournamentStatus,
 )
-from plugins.sce.utils import SCEUtils, SCETournamentPluginData
+from plugins.sce.utils import SCEUtils
 from plugins.utils import PluginUtils
 from web.channels import channels_plugin
 
@@ -82,8 +83,9 @@ def upload_tournament(
     # triggered by the `upload-event` web socket are treated as one
     time.sleep(0.5)
 
-    event = None
-    tournament = None
+    event: Event | None = None
+    tournament: Tournament | None = None
+    failure_status: FailureSCETournamentStatus | None = None
     try:
         loader = EventLoader()
         if event_uniq_id not in loader.event_uniq_ids:
@@ -102,7 +104,7 @@ def upload_tournament(
             )
             return
         if not NetworkMonitor.connected():
-            _exit_upload(tournament, NetworkFailureSCETournamentStatus())
+            failure_status = NetworkFailureSCETournamentStatus()
             return
 
         event_plugin_data = SCEUtils.get_event_plugin_data(event)
@@ -121,7 +123,6 @@ def upload_tournament(
         status_code, body = session.upload_tournament_results(
             sce_tournament_id, payload
         )
-        failure_status: FailureSCETournamentStatus | None = None
         if status_code == 200:
             logger.info('%sSCE upload successful.', tournament.log_prefix)
         elif status_code == 404:
@@ -135,38 +136,29 @@ def upload_tournament(
                 status_code,
                 body,
             )
-        _exit_upload(tournament, failure_status)
-    except Exception:
-        if event is not None and not SCEUtils.get_event_plugin_data(event).tokens:
-            if tournament is not None:
-                _exit_upload(tournament, AuthFailureSCETournamentStatus())
-        if tournament is not None:
-            _exit_upload(tournament, UnexpectedFailureSCETournamentStatus())
+    except Exception as e:
+        failure_status = UnexpectedFailureSCETournamentStatus()
+        if event and not SCEUtils.get_event_plugin_data(event).tokens:
+            if tournament:
+                failure_status = AuthFailureSCETournamentStatus()
         logger.exception(
-            'Unexpected error uploading tournament [%s/%s] to SCE.',
-            event_uniq_id,
-            tournament_id,
+            'Unexpected error uploading tournament [%s] to SC.com: %s',
+            key,
+            e,
         )
     finally:
+        if tournament:
+            plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+            now = datetime.now()
+            if failure_status:
+                plugin_data.upload_failure_id = failure_status.id
+            else:
+                plugin_data.upload_failure_id = None
+                plugin_data.last_upload_at = now
+            plugin_data.last_upload_attempt_at = now
+            SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
         _ONGOING_TOURNAMENT_IDS.discard(key)
         _publish_upload_event()
-
-
-def _exit_upload(
-    tournament: Tournament,
-    failure_status: FailureSCETournamentStatus | None,
-) -> None:
-    plugin_data: SCETournamentPluginData = SCEUtils.get_tournament_plugin_data(
-        tournament
-    )
-    now = datetime.now()
-    if failure_status:
-        plugin_data.upload_failure_id = failure_status.id
-    else:
-        plugin_data.upload_failure_id = None
-        plugin_data.last_upload_at = now
-    plugin_data.last_upload_attempt_at = now
-    SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
 
 
 def should_schedule_auto_upload(
