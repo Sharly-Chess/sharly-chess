@@ -192,6 +192,10 @@ class TournamentAdminController(BaseEventAdminController):
                 'get_tournament_card_connexion_templates': partial(
                     cls._get_tournament_card_connexion_templates, event=event
                 ),
+                'tournament_card_time_control_template': plugin_manager.hook_for_event(
+                    event, 'get_tournament_card_time_control_template'
+                )()
+                or 'tournament_card_time_control.html',
                 'plugin_card_fields_templates': plugin_card_fields_templates,
                 'tournament_importers': tournament_importers,
                 'tournament_exporters': tournament_exporters,

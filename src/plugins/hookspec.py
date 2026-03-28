@@ -273,6 +273,10 @@ class AppHookSpecs:
     def get_tournament_card_fields_template(self) -> str:
         """Provide a path to the template of fields to be added to tournament cards."""
 
+    @hookspec(firstresult=True)
+    def get_tournament_card_time_control_template(self) -> str:
+        """Provide a path to the time control template to be used for tournament cards."""
+
     @hookspec
     def get_tournament_card_action_menu_items_template(self) -> str:
         """Path to the template to be added to the 'Actions' menu of the tournament card"""
