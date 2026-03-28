@@ -362,6 +362,7 @@ class IndexAdminController(BaseAdminController):
             uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
             public = False
             config = SharlyChessConfig()
+            allow_multi_tournament_players = True
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
             location: str | None = None
@@ -389,6 +390,10 @@ class IndexAdminController(BaseAdminController):
                 name = loader.get_unused_event_name(stored_event.name)
                 uniq_id = loader.get_unused_event_uniq_id(stored_event.uniq_id)
             public = stored_event.public
+            allow_multi_tournament_players = (
+                stored_event.allow_multi_tournament_players
+                or admin_event.has_multi_tournament_players
+            )
             federation = stored_event.federation
             location = stored_event.location
             age_category_base_date = stored_event.age_category_base_date
@@ -423,6 +428,7 @@ class IndexAdminController(BaseAdminController):
                     'uniq_id': uniq_id,
                     'name': name,
                     'public': public,
+                    'allow_multi_tournament_players': allow_multi_tournament_players,
                     'federation': federation,
                     'player_rating_type': player_rating_type,
                     'location': location,
@@ -500,6 +506,9 @@ class IndexAdminController(BaseAdminController):
         age_category_change_month = (
             WebContext.form_data_to_int(data, 'age_category_change_month') or 1
         )
+        allow_multi_tournament_players = WebContext.form_data_to_bool(
+            data, 'allow_multi_tournament_players'
+        )
 
         enabled_plugins = plugin_manager.get_plugins_with_dependencies(
             [
@@ -534,6 +543,7 @@ class IndexAdminController(BaseAdminController):
             name=name,
             federation=federation,
             public=bool(public),
+            allow_multi_tournament_players=allow_multi_tournament_players,
             location=location,
             organiser_name=organiser_name,
             organiser_home_page=organiser_home_page,
@@ -571,9 +581,10 @@ class IndexAdminController(BaseAdminController):
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
+        event = web_context.admin_event
         federation_plugin_used = False
         if action == FormAction.UPDATE:
-            event = web_context.get_admin_event()
+            assert event is not None
             for plugin in event.enabled_plugins:
                 if not plugin.federation:
                     continue
@@ -594,6 +605,8 @@ class IndexAdminController(BaseAdminController):
                     'National *** NAME FOR RATING TYPE NATIONAL'
                 ),
             },
+            'has_multi_tournament_players': event
+            and event.has_multi_tournament_players,
             'force_organiser_open': any(
                 field in errors
                 for field in [

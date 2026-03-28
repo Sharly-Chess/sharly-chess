@@ -378,6 +378,7 @@ class BaseStoredEvent:
     organiser_home_page: str | None = None
     organiser_email: str | None = None
     organiser_director: str | None = None
+    allow_multi_tournament_players: bool = True
 
     # Plugins can add their own event data
     plugin_data: dict[str, dict[str, Any]] = field(

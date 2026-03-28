@@ -349,9 +349,6 @@ msgstr "PAPI"
 msgid "Papi file"
 msgstr "Fichier Papi"
 
-msgid "Player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
-msgstr "Le·la joueur·euse avec la licence FFE [{ffe_licence_number}] joue déjà le tournoi [{tournament}]."
-
 msgid "Players:"
 msgstr "Joueur·euses :"
 

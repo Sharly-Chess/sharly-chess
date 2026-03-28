@@ -320,6 +320,9 @@ class EventDatabase(MigrationDatabase):
             organiser_home_page=row['organiser_home_page'],
             organiser_email=row['organiser_email'],
             organiser_director=row['organiser_director'],
+            allow_multi_tournament_players=self.load_bool_from_database_field(
+                row['allow_multi_tournament_players']
+            ),
             plugin_data=self.load_json_from_database_field(row['plugin_data'], {}),
             enabled_plugins=self.load_json_from_database_field(
                 row['enabled_plugins'], []
@@ -389,6 +392,7 @@ class EventDatabase(MigrationDatabase):
                 'organiser_home_page',
                 'organiser_email',
                 'organiser_director',
+                'allow_multi_tournament_players',
             ],
         ) | {
             'age_category_base_date': self.dump_date_to_database_field(

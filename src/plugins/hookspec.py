@@ -15,7 +15,6 @@ from plugins.utils import (
 from utils.enum import (
     Result,
     TournamentRating,
-    FormAction,
     PlayersScreenPlayerFormat,
     PlayersScreenBoardFormat,
     PlayersScreenOpponentFormat,
@@ -141,13 +140,16 @@ class AppHookSpecs:
     @hookspec
     def validate_player_form_fields(
         self,
-        action: 'FormAction',
-        tournament: Optional['Tournament'],
-        player: Optional['Player'],
         data: dict[str, str],
         errors: dict[str, str],
     ):
         """Validate the additional player form fields. Add the errors to the *errors* dict."""
+
+    @hookspec
+    def are_players_duplicates(
+        self, stored_player: 'StoredPlayer', player: 'Player'
+    ) -> bool:
+        """Check if the stored player is a duplicate of the other."""
 
     @hookspec
     def get_player_form_fields(self, data: dict[str, str]) -> dict[str, dict[str, Any]]:
