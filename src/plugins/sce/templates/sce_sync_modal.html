@@ -129,7 +129,7 @@
                             {{ _(
                                 '%(string)s: %(value)s',
                                 string=_('Last synchronisation'),
-                                value=format_datetime(event_plugin_data.last_sync_at),
+                                value=event_plugin_data.last_sync_str,
                             ) }}
                             {% set last_attempt_at = event_plugin_data.last_sync_attempt_at %}
                             {% if last_attempt_at %}

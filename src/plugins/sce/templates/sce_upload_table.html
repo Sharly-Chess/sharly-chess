@@ -36,11 +36,7 @@
                 {% include '/sce_tournament_statuses.html' %}
             </td>
             <td class="text-center text-nowrap">
-                {% if plugin_data.last_upload_at %}
-                    {{ format_datetime(plugin_data.last_upload_at) }}
-                {% else %}
-                    -
-                {% endif %}
+                {{ plugin_data.last_upload_at_str }}
             </td>
             <td class="d-flex gap-2 align-items-center">
                 <div class="flex-grow-1"></div>

@@ -518,6 +518,12 @@ class SCETournamentPluginData(PluginData):
     last_sync_data: SCETournamentSyncData | None = None
     conflict_sync_data: SCETournamentSyncData | None = None
 
+    @property
+    def last_upload_at_str(self) -> str:
+        if not self.last_upload_at:
+            return '-'
+        return format_datetime(self.last_upload_at)
+
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         stored_last_sync_data = stored_value.get('last_sync_data')

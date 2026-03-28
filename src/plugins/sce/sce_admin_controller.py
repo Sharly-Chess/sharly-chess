@@ -41,7 +41,6 @@ from plugins.sce.sce_data import (
 )
 from plugins.sce.sce_sync_status import SuccessSCESyncStatus
 from plugins.sce.utils import SCEUtils
-from utils.date_time import format_datetime
 from web.controllers.admin.base_admin_controller import (
     BaseAdminController,
     AdminWebContext,
@@ -132,7 +131,6 @@ class SCEWebContext(AdminWebContext):
             'SCE_SYNC_DELAY': SCE_SYNC_DELAY,
             'SCE_UPLOAD_DELAY': SCE_UPLOAD_DELAY,
             'sce_utils': SCEUtils,
-            'format_datetime': format_datetime,
         }
 
     @cached_property
