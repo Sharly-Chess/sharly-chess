@@ -15,15 +15,27 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                <div class="row gy-2 gx-3">
-                    <div>
-                        {{ admin_macros.text_input(
-                            name='document_url',
-                            label=_('Document URL:'),
-                            data=data, errors=errors
-                        ) }}
+                {% for index, document_url in enumerate(data["document_urls"].split(';')) %}
+                    {% set document_name = 'document_url_' ~ index %}
+                    <div class="row gy-2 gx-3">
+                        <div>
+                            {{ admin_macros.text_input(
+                                name=document_name,
+                                label=_('Document URL:'),
+                                data={document_name: document_url}, errors=errors
+                            ) }}
+                        </div>
                     </div>
-                </div>
+                {% endfor %}
+                <button
+                        type="button"
+                        class="btn btn-outline-primary text-nowrap mt-3"
+                        hx-post="{{ url_for('add-document', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                        hx-target="body"
+                >
+                    <i class="bi-plus-circle pe-1"></i>
+                    {{ _('Add another document') }}
+                </button>
             </form>
         </div>
         <div class="modal-footer">

@@ -34,7 +34,7 @@ class CustomUploadTournamentPluginData(PluginData):
     ftp_username: str | None = None
     ftp_password: str | None = None
     last_upload: datetime | None = None
-    document_url: str | None = None
+    document_urls: list[str] | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -46,7 +46,7 @@ class CustomUploadTournamentPluginData(PluginData):
             last_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload')
             ),
-            document_url=stored_value.get('document_url', None),
+            document_urls=stored_value.get('document_urls', None),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -55,7 +55,7 @@ class CustomUploadTournamentPluginData(PluginData):
             'server_path': self.server_path,
             'ftp_username': self.ftp_username,
             'ftp_password': self.ftp_password,
-            'document_url': self.document_url,
+            'document_urls': self.document_urls,
         }
 
     @classmethod
@@ -74,7 +74,7 @@ class CustomUploadTournamentPluginData(PluginData):
             last_upload=last_upload,
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
-            document_url=WebContext.form_data_to_str(data, 'document_url'),
+            document_urls=WebContext.form_data_to_str(data, 'document_urls'),
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
@@ -84,6 +84,6 @@ class CustomUploadTournamentPluginData(PluginData):
                 'server_path': self.server_path,
                 'ftp_username': self.ftp_username,
                 'ftp_password': self.ftp_password,
-                'document_url': self.document_url,
+                'document_urls': self.document_urls,
             }
         )

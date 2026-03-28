@@ -203,7 +203,8 @@ class CustomUploadUploader:
             host = plugin_data.ftp_host
             username = plugin_data.ftp_username
             password = plugin_data.ftp_password
-            document_url = plugin_data.document_url
+            # TODO: parse all configured document URLs instead of only the first one
+            document_url = plugin_data.document_urls[0]
             document_url_resource_part = document_url.split('/')[-1]
 
             document_id, document_options = document_url_resource_part.split('?')
