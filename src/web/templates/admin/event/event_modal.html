@@ -49,6 +49,7 @@
                             disabled=not client.can_update_event,
                             data=data, errors=errors
                         ) }}
+                        {{ admin_macros.hidden_disabled_input(data, 'player_rating_type') }}
                     </div>
                 </div>
                 <div class="row gy-2 gx-3">
@@ -94,6 +95,7 @@
                             select_options=player_rating_type_options,
                             data=data, errors=errors
                         ) }}
+                        {{ admin_macros.hidden_disabled_input(data, 'player_rating_type') }}
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
@@ -134,6 +136,7 @@
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors
                             ) }}
+                            {{ admin_macros.hidden_disabled_input(data, 'age_category_base_date') }}
                         </div>
                         <div class="col-12 col-md-6">
                             {{ admin_macros.select_input(
@@ -147,6 +150,7 @@
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors
                             ) }}
+                            {{ admin_macros.hidden_disabled_input(data, 'age_category_change_month') }}
                         </div>
                     </div>
                 </div>

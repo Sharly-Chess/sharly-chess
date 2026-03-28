@@ -1824,3 +1824,13 @@ with_indicator: display a loading indicator, optional
         </script>
     </div>
 {% endmacro %}
+
+{% macro hidden_disabled_input(data, name) %}
+    <input
+        id="{{ name|replace('_', '-') }}-hidden"
+        type="hidden"
+        name="{{ name }}"
+        value="{{ data[name] }}"
+        disabled
+    >
+{% endmacro %}
