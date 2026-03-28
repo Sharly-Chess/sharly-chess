@@ -4133,7 +4133,10 @@ msgstr ""
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
-msgid "Player [{player}] already exists in the tournament."
+msgid "Player [{player}] already exists in the event."
+msgstr ""
+
+msgid "Player [{player}] already exists in tournament [{tournament}]."
 msgstr ""
 
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"

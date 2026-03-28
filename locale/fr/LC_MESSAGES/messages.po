@@ -4135,8 +4135,11 @@ msgstr "Joueur·euse [{player_id}] - ronde {round} : "
 msgid "Player [{player_id}]: {error}"
 msgstr "Joueur·euse [{player_id}] : {error}"
 
-msgid "Player [{player}] already exists in the tournament."
-msgstr "Le·le joueur·euse [{player}] existe déjà dans le tournoi."
+msgid "Player [{player}] already exists in the event."
+msgstr "Le·la joueur·euse [{player}] existe déjà dans l'évènement."
+
+msgid "Player [{player}] already exists in tournament [{tournament}]."
+msgstr "Le·la joueur·euse [{player}] existe déjà dans le tournoi [{tournament}]."
 
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse [{player}] a été créé·e. Cependant, il·elle ne correspond pas aux critères du tournoi : {names}"

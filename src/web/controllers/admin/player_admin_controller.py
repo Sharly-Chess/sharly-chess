@@ -1705,21 +1705,21 @@ class PlayerAdminController(BaseEventAdminController):
                         duplicated_indexes.add(index)
                         message = (
                             _(
-                                'A player with {column}=[{value}] already exists in tournament [{tournament}].'
-                            ).format(
-                                column=column.id,
-                                value=value,
-                                tournament=tournament.name,
+                                'A player with {column}=[{value}] already '
+                                'exists in tournament [{tournament}].'
                             )
                             if event.allow_multi_tournament_players
                             else _(
                                 'A player with {column}=[{value}] already exists in the event.'
-                            ).format(
-                                column=column.id,
-                                value=value,
                             )
                         )
-                        raise SharlyChessException(message)
+                        raise SharlyChessException(
+                            message.format(
+                                column=column.id,
+                                value=value,
+                                tournament=tournament.name,
+                            )
+                        )
                 except SharlyChessException as error:
                     import_errors_by_index[index][column.id] = str(error)
             name_key = (
@@ -1730,16 +1730,22 @@ class PlayerAdminController(BaseEventAdminController):
             if stored_player.date_of_birth:
                 if name_key in name_keys:
                     duplicated_indexes.add(index)
-                    import_errors_by_index[index]['last_name'] = _(
-                        'Player [{player}] already exists in the tournament.'
-                    ).format(
+                    message = (
+                        _(
+                            'Player [{player}] already exists in tournament [{tournament}].'
+                        )
+                        if event.allow_multi_tournament_players
+                        else _('Player [{player}] already exists in the event.')
+                    )
+                    import_errors_by_index[index]['last_name'] = message.format(
                         player=' '.join(
                             [
                                 stored_player.last_name,
                                 stored_player.first_name or '',
                                 format_date(stored_player.date_of_birth),
                             ]
-                        )
+                        ),
+                        tournament=tournament.name,
                     )
             if index in import_errors_by_index:
                 continue
