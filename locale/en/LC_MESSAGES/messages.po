@@ -342,10 +342,10 @@ msgstr ""
 msgid "A file is expected."
 msgstr ""
 
-msgid "A player with this value already exists in the event."
+msgid "A player with {column}=[{value}] already exists in the event."
 msgstr ""
 
-msgid "A player with this value already exists in the tournament."
+msgid "A player with {column}=[{value}] already exists in tournament [{tournament}]."
 msgstr ""
 
 msgid "A plugin specific to this federation is used, it can no longer be modified."

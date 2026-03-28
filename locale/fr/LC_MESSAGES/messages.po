@@ -342,11 +342,11 @@ msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF."
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
 
-msgid "A player with this value already exists in the event."
-msgstr "Un·e joueur·euse avec cette valeur existe déjà dans l'évènement."
+msgid "A player with {column}=[{value}] already exists in the event."
+msgstr "Un·e joueur·euse avec {column}=[{value}] existe déjà dans l'évènement."
 
-msgid "A player with this value already exists in the tournament."
-msgstr "Un·e joueur·euse avec cette valeur existe déjà dans le tournoi."
+msgid "A player with {column}=[{value}] already exists in tournament [{tournament}]."
+msgstr "Un·e joueur·euse avec {column}=[{value}] existe déjà dans le tournoi [{tournament}]."
 
 msgid "A plugin specific to this federation is used, it can no longer be modified."
 msgstr "Un plug-in spécifique à cette fédération est utilisé, elle ne peut plus être modifiée."

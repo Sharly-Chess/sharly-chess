@@ -1705,11 +1705,18 @@ class PlayerAdminController(BaseEventAdminController):
                         duplicated_indexes.add(index)
                         message = (
                             _(
-                                'A player with this value already exists in the tournament.'
+                                'A player with {column}=[{value}] already exists in tournament [{tournament}].'
+                            ).format(
+                                column=column.id,
+                                value=value,
+                                tournament=tournament.name,
                             )
                             if event.allow_multi_tournament_players
                             else _(
-                                'A player with this value already exists in the event.'
+                                'A player with {column}=[{value}] already exists in the event.'
+                            ).format(
+                                column=column.id,
+                                value=value,
                             )
                         )
                         raise SharlyChessException(message)
