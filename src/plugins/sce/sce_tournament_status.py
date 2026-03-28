@@ -12,11 +12,6 @@ class SCETournamentStatus(IdentifiableEntity, ABC):
         """Tooltip explaining the status of the tournament."""
 
     @property
-    def sync_disabled_message(self) -> str | None:
-        """Message indicating why the sync is disabled. If None, the sync is enabled."""
-        return None
-
-    @property
     @abstractmethod
     def css_classes(self) -> str:
         """CSS classes to apply to the status."""
@@ -53,7 +48,7 @@ class NotStartedSCETournamentStatus(SCETournamentStatus):
 
     @property
     def css_classes(self) -> str:
-        return 'bg-secondary'
+        return 'message-warning'
 
 
 class UpToDateSCETournamentStatus(SCETournamentStatus):
