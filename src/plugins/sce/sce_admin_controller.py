@@ -454,19 +454,6 @@ class SCEAdminController(BaseAdminController):
             re_swap='outerHTML',
         )
 
-    @get(
-        path='/sce/event-status-section/{event_uniq_id:str}',
-        name='sce-event-status-section',
-    )
-    async def htmx_sce_event_status_section(self, request: HTMXRequest) -> HTMXTemplate:
-        web_context = SCEWebContext(request)
-        return HTMXTemplate(
-            template_name='/sce_event_status_section.html',
-            context=web_context.table_context,
-            re_target='#sce-event-status-section',
-            re_swap='outerHTML',
-        )
-
     @patch(
         path='/sce/update-event-auto-player-sync/{event_uniq_id:str}',
         name='sce-update-event-auto-player-sync',
