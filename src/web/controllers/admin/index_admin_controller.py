@@ -357,8 +357,8 @@ class IndexAdminController(BaseAdminController):
             name = EventLoader.get(request).get_unused_event_name(_('New event'))
             uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
             public = False
-            date_range = ''
             config = SharlyChessConfig()
+            allow_multi_tournament_players = True
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
             location: str | None = None
@@ -385,10 +385,11 @@ class IndexAdminController(BaseAdminController):
                 loader = EventLoader()
                 name = loader.get_unused_event_name(stored_event.name)
                 uniq_id = loader.get_unused_event_uniq_id(stored_event.uniq_id)
-            date_range = WebContext.value_to_date_range_form_data(
-                admin_event.start_date, admin_event.stop_date
-            )
             public = stored_event.public
+            allow_multi_tournament_players = (
+                stored_event.allow_multi_tournament_players
+                or admin_event.has_multi_tournament_players
+            )
             federation = stored_event.federation
             location = stored_event.location
             age_category_base_date = stored_event.age_category_base_date
@@ -423,6 +424,7 @@ class IndexAdminController(BaseAdminController):
                     'uniq_id': uniq_id,
                     'name': name,
                     'public': public,
+                    'allow_multi_tournament_players': allow_multi_tournament_players,
                     'federation': federation,
                     'player_rating_type': player_rating_type,
                     'location': location,
@@ -430,7 +432,6 @@ class IndexAdminController(BaseAdminController):
                     'organiser_home_page': organiser_home_page,
                     'organiser_email': organiser_email,
                     'organiser_director': organiser_director,
-                    'date_range': date_range,
                     'age_category_base_date': age_category_base_date,
                     'age_category_change_month': age_category_change_month,
                     'age_categories': age_categories,
@@ -452,8 +453,6 @@ class IndexAdminController(BaseAdminController):
         uniq_id: str | None
         errors: dict[str, str] = {}
         config = SharlyChessConfig()
-        start_date: date | None = None
-        stop_date: date | None = None
 
         name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
@@ -471,15 +470,6 @@ class IndexAdminController(BaseAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
-
-        try:
-            date_range = WebContext.form_data_to_date_range(data, field := 'date_range')
-            if not date_range:
-                start_date, stop_date = [date.today()] * 2
-            else:
-                start_date, stop_date = date_range
-        except FormError as e:
-            errors[field] = str(e)
 
         public = WebContext.form_data_to_bool(data, 'public')
         location = WebContext.form_data_to_str(data, 'location')
@@ -509,23 +499,11 @@ class IndexAdminController(BaseAdminController):
             )
         except FormError as e:
             errors[field] = str(e)
-        if age_category_base_date:
-            if start_date and age_category_base_date < date(
-                start_date.year - 1, start_date.month, start_date.day
-            ):
-                errors[field] = _(
-                    'The base date has to be at most one year '
-                    'prior to the start of the event.'
-                )
-            elif stop_date and age_category_base_date > date(
-                stop_date.year + 1, stop_date.month, stop_date.day
-            ):
-                errors[field] = _(
-                    'The base date has to be at most one year '
-                    'after the end of the event.'
-                )
         age_category_change_month = (
             WebContext.form_data_to_int(data, 'age_category_change_month') or 1
+        )
+        allow_multi_tournament_players = WebContext.form_data_to_bool(
+            data, 'allow_multi_tournament_players'
         )
 
         enabled_plugins = plugin_manager.get_plugins_with_dependencies(
@@ -556,16 +534,12 @@ class IndexAdminController(BaseAdminController):
         if errors:
             return None, errors
 
-        assert start_date is not None
-        assert stop_date is not None
-
         stored_event = StoredEvent(
             uniq_id=uniq_id,
             name=name,
             federation=federation,
-            start_date=start_date,
-            stop_date=stop_date,
             public=bool(public),
+            allow_multi_tournament_players=allow_multi_tournament_players,
             location=location,
             organiser_name=organiser_name,
             organiser_home_page=organiser_home_page,
@@ -603,9 +577,10 @@ class IndexAdminController(BaseAdminController):
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
+        event = web_context.admin_event
         federation_plugin_used = False
         if action == FormAction.UPDATE:
-            event = web_context.get_admin_event()
+            assert event is not None
             for plugin in event.enabled_plugins:
                 if not plugin.federation:
                     continue
@@ -626,6 +601,8 @@ class IndexAdminController(BaseAdminController):
                     'National *** NAME FOR RATING TYPE NATIONAL'
                 ),
             },
+            'has_multi_tournament_players': event
+            and event.has_multi_tournament_players,
             'force_organiser_open': any(
                 field in errors
                 for field in [

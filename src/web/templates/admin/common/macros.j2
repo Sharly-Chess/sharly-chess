@@ -357,6 +357,7 @@
     input_type='date',
     min_date='',
     max_date='',
+    on_hide='',
     now_button=false,
     disabled_dates=[],
     position=''
@@ -391,6 +392,13 @@
                         new Date(new Date().setHours(0, 0, 0, 0))
                     {% endif %}
                 ),
+                {# Prevent an odd behavior when selecting first using the time picker #}
+                onBeforeSelect: ({date, datepicker}) => {
+                    if (datepicker.selectedDates.length === 0) {
+                        return date.getHours() === 0 && date.getMinutes() === 0;
+                    }
+                    return true;
+                },
             {% endif %}
             {% if now_button %}
                 buttons: [
@@ -409,6 +417,13 @@
                     ];
                     if (disabledDates.includes(formatISODate(date))) {
                         return {disabled: true};
+                    }
+                },
+            {% endif %}
+            {% if on_hide %}
+                onHide: (isFinished) => {
+                    if (isFinished) {
+                        {{ on_hide|safe }}
                     }
                 },
             {% endif %}
@@ -541,6 +556,7 @@ with_indicator: display a loading indicator, optional
     file_accept='',
     min_date='',
     max_date='',
+    on_date_picker_hide='',
     date_now_button=false,
     date_position='',
     number_min='',
@@ -799,6 +815,7 @@ with_indicator: display a loading indicator, optional
                             input_type=input_type,
                             min_date=min_date,
                             max_date=max_date,
+                            on_hide=on_date_picker_hide,
                             now_button=date_now_button,
                             position=date_position,
                         ) }}
@@ -1272,6 +1289,7 @@ with_indicator: display a loading indicator, optional
     placeholder='',
     min_date='',
     max_date='',
+    on_date_picker_hide='',
     default_checkbox=false,
     data={},
     errors={},
@@ -1288,6 +1306,7 @@ with_indicator: display a loading indicator, optional
         data=data,
         min_date=min_date,
         max_date=max_date,
+        on_date_picker_hide=on_date_picker_hide,
         default_checkbox=default_checkbox,
         errors=errors,
         error=error,

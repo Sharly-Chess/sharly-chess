@@ -2,7 +2,7 @@ import copy
 import json
 import random
 from collections import defaultdict
-from datetime import date, datetime
+from datetime import datetime
 from functools import partial
 from tempfile import NamedTemporaryFile
 from typing import Annotated, Any
@@ -49,6 +49,7 @@ from database.sqlite.event.event_store import (
 )
 from plugins.manager import plugin_manager
 from utils import Utils
+from utils.date_time import format_date, format_date_range
 from utils.enum import FormAction, Result, TournamentRating
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -191,6 +192,10 @@ class TournamentAdminController(BaseEventAdminController):
                 'get_tournament_card_connexion_templates': partial(
                     cls._get_tournament_card_connexion_templates, event=event
                 ),
+                'tournament_card_time_control_template': plugin_manager.hook_for_event(
+                    event, 'get_tournament_card_time_control_template'
+                )()
+                or 'tournament_card_time_control.html',
                 'plugin_card_fields_templates': plugin_card_fields_templates,
                 'tournament_importers': tournament_importers,
                 'tournament_exporters': tournament_exporters,
@@ -264,8 +269,6 @@ class TournamentAdminController(BaseEventAdminController):
             last_rounds_no_byes: int | None = None
             location: str | None = None
             player_rating_type: int | None = None
-            date_range_default = True
-            date_range: str | None = None
             pairing_variations: dict[str, str | None] = {
                 system.variation_field_id: None for system in pairing_systems
             }
@@ -276,6 +279,8 @@ class TournamentAdminController(BaseEventAdminController):
             if action == 'create':
                 rounds = 7
                 rating = TournamentRating.STANDARD.value
+                start_date = admin_event.start_date
+                stop_date = admin_event.stop_date
             else:
                 admin_tournament = web_context.get_admin_tournament()
                 stored_tournament = admin_tournament.stored_tournament
@@ -288,13 +293,8 @@ class TournamentAdminController(BaseEventAdminController):
                 last_rounds_no_byes = stored_tournament.last_rounds_no_byes
                 location = stored_tournament.location
                 player_rating_type = stored_tournament.player_rating_type
-                date_range_default = (
-                    not stored_tournament.start_date and not stored_tournament.stop_date
-                )
-                if not date_range_default:
-                    date_range = WebContext.value_to_date_range_form_data(
-                        admin_tournament.start_date, admin_tournament.stop_date
-                    )
+                start_date = admin_tournament.start_date
+                stop_date = admin_tournament.stop_date
                 rating = admin_tournament.rating.value
                 rounds = admin_tournament.rounds or 1
                 pairing_system = admin_tournament.pairing_system
@@ -319,10 +319,8 @@ class TournamentAdminController(BaseEventAdminController):
 
             round_datetimes: dict[int, datetime | None] = {}
             if action in ('update', 'clone'):
-                # admin_tournament shouldn't be none here in update or clone scenario
-                assert admin_tournament is not None
-                round_datetimes = admin_tournament.round_datetimes
-            # schedule_form_data {'round_1_datetime': '2026-03-01 10:00', 'round_2_datetime': '2026-03-02 10:00'}
+                tournament = web_context.get_admin_tournament()
+                round_datetimes = tournament.round_datetimes
             schedule_form_data: dict[str, str] = {}
             for round_num in range(1, rounds + 1):
                 dt = round_datetimes.get(round_num)
@@ -348,8 +346,9 @@ class TournamentAdminController(BaseEventAdminController):
                     'three_points_for_a_win': three_points_for_a_win,
                     'pab_value': pab_value,
                     'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
-                    'date_range': date_range,
-                    'date_range_checkbox': date_range_default,
+                    'date_range': WebContext.value_to_date_range_form_data(
+                        start_date, stop_date
+                    ),
                     'redirect_to': redirect_to,
                 }
                 | {field: variation for field, variation in pairing_variations.items()}
@@ -360,6 +359,15 @@ class TournamentAdminController(BaseEventAdminController):
                 action, web_context, data
             )
 
+        schedule_min_date = admin_event.start_date
+        schedule_max_date = admin_event.stop_date
+        try:
+            assert data is not None
+            date_range = WebContext.form_data_to_date_range(data, 'date_range')
+            if date_range:
+                schedule_min_date, schedule_max_date = date_range
+        except FormError:
+            pass
         plugin_results = plugin_manager.hook_for_event(
             admin_event, 'get_tournament_form_fields_template_and_data'
         )(event=admin_event, tournament=web_context.admin_tournament)
@@ -413,6 +421,8 @@ class TournamentAdminController(BaseEventAdminController):
                 f'round_{n}_datetime' in errors for n in range(1, rounds + 1)
             )
             or any(data.get(f'round_{n}_datetime') for n in range(1, rounds + 1)),
+            'schedule_min_date': format_date(schedule_min_date),
+            'schedule_max_date': format_date(schedule_max_date),
         } | form_fields_templates_data
 
         return template_context
@@ -424,22 +434,21 @@ class TournamentAdminController(BaseEventAdminController):
         web_context: TournamentAdminWebContext,
         data: dict[str, str] | None = None,
     ) -> tuple[StoredTournament, dict[str, str]]:
-        assert web_context.admin_event is not None
+        event = web_context.get_admin_event()
         errors: dict[str, str] = {}
         if data is None:
             data = {}
         check_in_open: bool = False
-        start_date: date | None = None
-        stop_date: date | None = None
+        start_date = event.start_date
+        stop_date = event.stop_date
         rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
         tournament: Tournament | None = None
 
-        index = len(web_context.admin_event.tournaments)
+        index = len(event.tournaments)
         if rounds < 1:
             errors[field] = _('A positive integer is expected.')
         elif action == 'update':
-            tournament = web_context.admin_tournament
-            assert tournament is not None
+            tournament = web_context.get_admin_tournament()
             index = tournament.index
             if rounds < tournament.last_paired_round:
                 errors['rounds'] = _(
@@ -454,20 +463,14 @@ class TournamentAdminController(BaseEventAdminController):
             TournamentRating(rating)
         except ValueError:
             errors[field] = f'Unknown rating [{rating}]'
-        event = web_context.admin_event
         try:
             date_range = WebContext.form_data_to_date_range(data, field := 'date_range')
             if date_range:
-                for date_ in date_range:
-                    if not event.start_date <= date_ <= event.stop_date:
-                        errors[field] = _(
-                            'Time outside of event time range ({range}).'
-                        ).format(range=event.date_range_str)
                 start_date, stop_date = date_range
         except FormError as e:
             errors[field] = str(e)
 
-        pairing_system = PairingSystemManager(web_context.admin_event).get_object(
+        pairing_system = PairingSystemManager(event).get_object(
             WebContext.form_data_to_str(data, 'pairing_system')
             or SwissPairingSystem.static_id()
         )
@@ -476,8 +479,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
         if action == 'update':
-            tournament = web_context.admin_tournament
-            assert tournament is not None
+            tournament = web_context.get_admin_tournament()
             if tournament.started:
                 not_updatable_values: dict[str, str] = {
                     'rating': str(tournament.rating.value),
@@ -528,10 +530,10 @@ class TournamentAdminController(BaseEventAdminController):
                 dt = WebContext.form_data_to_datetime(data, field)
                 if dt is not None:
                     # validate for date range and sequential ordering
-                    if not event.start_date <= dt.date() <= event.stop_date:
+                    if not start_date <= dt.date() <= stop_date:
                         errors[field] = _(
-                            'Time outside of event time range ({range}).'
-                        ).format(range=event.date_range_str)
+                            'Time outside of tournament time range ({range}).'
+                        ).format(range=format_date_range(start_date, stop_date))
                     elif prev_dt is not None and dt <= prev_dt:
                         errors[field] = _(
                             'Round #%(round)d must be scheduled after round #%(prev)d.'
@@ -542,23 +544,6 @@ class TournamentAdminController(BaseEventAdminController):
             except FormError as e:
                 errors[field] = str(e)
                 round_datetimes[round_num] = None
-
-        # if the date_range_checkbox is checked ("by default") and the schedule
-        # provides at least one valid datetime, derive start_date / stop_date from it.
-        date_range_is_default = WebContext.form_data_to_bool(
-            data, 'date_range_checkbox'
-        )
-        schedule_has_errors = any(
-            f'round_{n}_datetime' in errors for n in range(1, rounds + 1)
-        )
-        if date_range_is_default and round_datetimes and not schedule_has_errors:
-            defined_datetimes = [v for v in round_datetimes.values() if v is not None]
-            if defined_datetimes:
-                start_date = min(dt.date() for dt in defined_datetimes)
-                stop_date = max(dt.date() for dt in defined_datetimes)
-                # clamp to event bounds
-                start_date = max(start_date, event.start_date)
-                stop_date = min(stop_date, event.stop_date)
 
         plugin_manager.hook_for_event(
             web_context.get_admin_event(), 'validate_tournament_form_fields'
@@ -662,9 +647,9 @@ class TournamentAdminController(BaseEventAdminController):
     async def htmx_admin_tournament_schedule_section(
         self,
         request: HTMXRequest,
-        action: str | None = None,
         tournament_id: int | None = None,
         rounds: int | None = None,
+        date_range: str | None = None,
     ) -> Template:
         """Return just the schedule section for an outerHTML swap.
 
@@ -672,20 +657,33 @@ class TournamentAdminController(BaseEventAdminController):
         update live without a full modal re-render.
         """
         web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
+        tournament = web_context.admin_tournament
         event = web_context.get_admin_event()
 
         if rounds is None or rounds < 1:
-            if tournament_id and (t := event.tournaments_by_id.get(tournament_id)):
-                rounds = t.rounds
+            if tournament:
+                rounds = tournament.rounds
             else:
                 rounds = 1
+
+        min_date = event.start_date
+        max_date = event.stop_date
+        if date_range:
+            try:
+                form_date_range = WebContext.form_data_to_date_range(
+                    {'range': date_range}, 'range'
+                )
+                if form_date_range:
+                    min_date, max_date = form_date_range
+            except FormError:
+                pass
 
         # preserve datetimes when the user changes the number of rounds.
         # prefer values submitted from the form i.e user-typed, not yet saved
         # over values from the database.
         existing_datetimes: dict[int, datetime | None] = {}
-        if tournament_id and (t := event.tournaments_by_id.get(tournament_id)):
-            existing_datetimes = t.round_datetimes
+        if tournament:
+            existing_datetimes = tournament.round_datetimes
 
         # extract form-submitted round datetime values (sent via hx-include)
         form_datetimes: dict[str, str] = {}
@@ -722,6 +720,8 @@ class TournamentAdminController(BaseEventAdminController):
             'data': schedule_form_data,
             'errors': {},
             'force_schedule_open': force_schedule_open,
+            'schedule_min_date': format_date(min_date),
+            'schedule_max_date': format_date(max_date),
         }
 
         return HTMXTemplate(

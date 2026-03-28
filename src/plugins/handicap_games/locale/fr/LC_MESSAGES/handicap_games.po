@@ -23,6 +23,10 @@ msgstr "Les pénalités nécessitent une cadence avec une seule période."
 msgid "Penalty (secs):"
 msgstr "Pénalité (sec.) :"
 
+#, python-format
+msgid "Penalty: %(value)d sec/%(step)d Elo (min. %(min)d sec)"
+msgstr "Pénalité : %(value)d sec./%(step)d Elo (min. %(min)d sec.)"
+
 msgid "The minimum time, whatever the ranking difference between the two players."
 msgstr "La temps minimal, quelle que soit la différence de classement entre les deux joueur·euses."
 
@@ -34,4 +38,7 @@ msgstr "Le temps retranché au·à la joueur·euse le·la mieux classé·e, en s
 
 msgid "Time control"
 msgstr "Temps"
+
+msgid "Time control:"
+msgstr "Temps :"
 

@@ -117,7 +117,6 @@ from utils.enum import (
     PlayerRatingType,
     Result,
     TournamentRating,
-    FormAction,
 )
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -296,9 +295,6 @@ class FfePlugin(Plugin):
     @hookimpl
     def validate_player_form_fields(
         self,
-        action: FormAction,
-        tournament: Optional['Tournament'],
-        player: Optional['Player'],
         data: dict[str, str],
         errors: dict[str, str],
     ):
@@ -313,28 +309,24 @@ class FfePlugin(Plugin):
         except ValueError:
             errors[field] = f'Invalid FFE licence [{data[field]}].'
 
-        ffe_licence_number: str | None = WebContext.form_data_to_str(
+        ffe_licence_number = WebContext.form_data_to_str(
             data, field := 'ffe_licence_number'
         )
-        if ffe_licence_number:
-            if not PlayerFFELicence.validate(ffe_licence_number):
-                errors[field] = _(
-                    'Invalid FFE licence number [{ffe_licence_number}].'
-                ).format(ffe_licence_number=data[field])
-            elif tournament:
-                for tournament_player in tournament.tournament_players:
-                    if player and tournament_player.id == player.id:
-                        continue
-                    plugin_data = FFEUtils.get_player_plugin_data(tournament_player)
-                    if ffe_licence_number == plugin_data.ffe_licence_number:
-                        errors[field] = _(
-                            'Player with FFE licence number '
-                            '[{ffe_licence_number}] already plays '
-                            'tournament [{tournament}].'
-                        ).format(
-                            ffe_licence_number=ffe_licence_number,
-                            tournament=tournament.name,
-                        )
+        if ffe_licence_number and not PlayerFFELicence.validate(ffe_licence_number):
+            errors[field] = _(
+                'Invalid FFE licence number [{ffe_licence_number}].'
+            ).format(ffe_licence_number=ffe_licence_number)
+
+    @hookimpl
+    def are_players_duplicates(
+        self, stored_player: StoredPlayer, player: Player
+    ) -> bool:
+        licence_number = self.get_data(stored_player.plugin_data, 'ffe_licence_number')
+        return (
+            licence_number
+            and FFEUtils.get_player_plugin_data(player).ffe_licence_number
+            == licence_number
+        )
 
     @hookimpl
     async def augment_player_after_search(

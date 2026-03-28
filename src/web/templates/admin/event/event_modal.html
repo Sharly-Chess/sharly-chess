@@ -42,11 +42,15 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6">
-                        {{ admin_macros.date_range_input(
-                            name='date_range',
-                            label=_('%(string)s:', string=_('Dates')),
-                            placeholder=format_date(),
-                            disabled=not client.can_update_event,
+                        {{ admin_macros.switch_input(
+                            name='allow_multi_tournament_players',
+                            label='',
+                            placeholder=_('Allow multi-tournament players'),
+                            tooltip_text=_('Allow a player to take part in multiple tournaments.'),
+                            input_tooltip=_(
+                                'The event already has multi-tournament players.'
+                            ) if has_multi_tournament_players else '',
+                            disabled=not client.can_update_event or has_multi_tournament_players,
                             data=data, errors=errors
                         ) }}
                         {{ admin_macros.hidden_disabled_input(data, 'player_rating_type') }}

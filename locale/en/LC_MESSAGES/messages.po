@@ -342,7 +342,10 @@ msgstr ""
 msgid "A file is expected."
 msgstr ""
 
-msgid "A player with this value already exists in the tournament."
+msgid "A player with {column}=[{value}] already exists in the event."
+msgstr ""
+
+msgid "A player with {column}=[{value}] already exists in tournament [{tournament}]."
 msgstr ""
 
 msgid "A plugin specific to this federation is used, it can no longer be modified."
@@ -582,7 +585,13 @@ msgstr ""
 msgid "Allocate players to the first tournament for which the criteria are met."
 msgstr ""
 
+msgid "Allow a player to take part in multiple tournaments."
+msgstr ""
+
 msgid "Allow links to this screen"
+msgstr ""
+
+msgid "Allow multi-tournament players"
 msgstr ""
 
 msgid "Allows access to Screens marked as public"
@@ -2870,7 +2879,7 @@ msgstr ""
 msgid "Invalid date format (expected: {format})."
 msgstr ""
 
-msgid "Invalid date format [{date}] (expected: {format})"
+msgid "Invalid date format [{date}] (expected: {format})."
 msgstr ""
 
 msgid "Invalid delay [{delay}] (positive integer expected)."
@@ -4124,10 +4133,10 @@ msgstr ""
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
-msgid "Player [{player}] already exists in the tournament."
+msgid "Player [{player}] already exists in the event."
 msgstr ""
 
-msgid "Player [{player}] already plays tournament [{tournament}]."
+msgid "Player [{player}] already exists in tournament [{tournament}]."
 msgstr ""
 
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
@@ -4174,9 +4183,6 @@ msgstr ""
 
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
-msgstr ""
-
-msgid "Player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
 msgstr ""
 
 msgid "Player with FIDE ID [{fide_id}] is duplicated."
@@ -5368,12 +5374,6 @@ msgstr ""
 msgid "The average of the ratings of the opponents played over the board."
 msgstr ""
 
-msgid "The base date has to be at most one year after the end of the event."
-msgstr ""
-
-msgid "The base date has to be at most one year prior to the start of the event."
-msgstr ""
-
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr ""
 
@@ -5393,6 +5393,9 @@ msgid "The default federation for your events."
 msgstr ""
 
 msgid "The director is the person in charge of the event."
+msgstr ""
+
+msgid "The event already has multi-tournament players."
 msgstr ""
 
 msgid "The first round is ignored."
@@ -5706,6 +5709,12 @@ msgstr ""
 msgid "This name is already used."
 msgstr ""
 
+msgid "This player already exists in the event."
+msgstr ""
+
+msgid "This player already exists in tournament [{tournament}]."
+msgstr ""
+
 msgid "This rotator is private (not visible by the spectators)."
 msgstr ""
 
@@ -5789,6 +5798,9 @@ msgid "Time control:"
 msgstr ""
 
 msgid "Time outside of event time range ({range})."
+msgstr ""
+
+msgid "Time outside of tournament time range ({range})."
 msgstr ""
 
 msgid "Timer"
@@ -6646,6 +6658,9 @@ msgstr ""
 msgid "clear filters"
 msgstr ""
 
+msgid "default"
+msgstr ""
+
 msgid "either the duration or the increment must be greater than 0."
 msgstr ""
 
@@ -6724,9 +6739,6 @@ msgstr ""
 msgid "round_{round}"
 msgstr ""
 
-msgid "s *** SECONDS"
-msgstr "s"
-
 msgid "screens of {number} boards"
 msgstr ""
 
@@ -6750,6 +6762,9 @@ msgstr ""
 
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
+
+msgid "sec *** SECONDS"
+msgstr "sec"
 
 msgid "some already played each other"
 msgstr ""
