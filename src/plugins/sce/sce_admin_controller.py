@@ -653,7 +653,9 @@ class SCEAdminController(BaseAdminController):
             plugin_data.last_sync_data = resolve_sync_data
 
             plugin_data.conflict_sync_data = None
-            SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+            SCEUtils.update_tournament_plugin_data(
+                tournament, plugin_data, write_stored_object=True
+            )
         except SharlyChessException as e:
             logger.error(e)
             error_message = _('An error occurred, consult the logs for more details.')
