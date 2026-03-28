@@ -110,7 +110,7 @@ msgid "Event has been archived on Sharly-Chess.com, it no longer can be modified
 msgstr "L'évènement a été archivé sur Sharly-Chess.com, il ne peut plus être modifié."
 
 msgid "Event is not connected to a Sharly-Chess.com event."
-msgstr "L'évènement n'est pas connecté à une évènement Sharly-chess.com."
+msgstr "L'évènement n'est pas connecté à un évènement Sharly-Chess.com."
 
 msgid "FIDE ID"
 msgstr "Identifiant FIDE"
@@ -133,8 +133,8 @@ msgstr "Importer un tournoi Sharly-Chess.com"
 msgid "Import from Sharly-Chess.com"
 msgstr "Importer depuis Sharly-Chess.com"
 
-msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc...)."
-msgstr "Intégration de la plateforme Sharly-Chess.com (pointage en ligne, mise en ligne de résultats, etc...)."
+msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc.)."
+msgstr "Intégration de la plateforme Sharly-Chess.com (pointage en ligne, mise en ligne de résultats, etc.)."
 
 msgid "Last name"
 msgstr "Nom"
@@ -206,10 +206,10 @@ msgid "Player duplicates detected during the last synchronisation attempt."
 msgstr "Doublons de joueur·euses détectés lors de la dernière synchronisation."
 
 msgid "Player has already been paired in the tournament, it no longer can be deleted."
-msgstr "Le·la joueur·euse can't be deleted as it already has been paired in the tournament."
+msgstr "Le·la joueur·euse ne peut être supprimé·e car déjà apparié·e dans le tournoi."
 
 msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
-msgstr "Les joueur·euses de l'application Sharly Chess locale qui ne peuvent être créés dans Sharly-Chess.com car ils existent déjà."
+msgstr "Les joueur·euses de l'application Sharly Chess locale qui ne peuvent être créé·es dans Sharly-Chess.com car déjà existant·es."
 
 msgid "Public page of the event."
 msgstr "Page publique de l'évènement."
@@ -258,7 +258,7 @@ msgid "Sharly-Chess.com duplicates"
 msgstr "Doublons Sharly-Chess.com"
 
 msgid "Sharly-Chess.com event not found, it most likely has been deleted."
-msgstr "L'évènement Sharly-Chess.com a été supprimé, il a probablement été supprimé."
+msgstr "L'évènement Sharly-Chess.com est introuvable, il a probablement été supprimé."
 
 msgid "Sharly-Chess.com is not reachable at the moment."
 msgstr "Sharly-Chess.com n'est pas accessible pour le moment."
@@ -331,7 +331,7 @@ msgid "Type"
 msgstr "Type"
 
 msgid "Undefined"
-msgstr "Non-défini"
+msgstr "Non défini"
 
 msgid "Up to date"
 msgstr "À jour"

@@ -121,7 +121,7 @@ msgid "Support for the ChessEvent platform used for organising tournaments in Fr
 msgstr "Support pour la plateforme ChessEvent utilisée pour l'organisation de tournois en France."
 
 msgid "Synchronisation failed for tournament [{tournament}]."
-msgstr "Synchronisation échouée pour le tournoi [{tournament}]."
+msgstr "La synchronisation a échouée pour le tournoi [{tournament}]."
 
 msgid "Synchronisation failed for {count} tournament"
 msgid_plural "Synchronisation failed for {count} tournaments"

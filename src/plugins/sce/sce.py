@@ -90,7 +90,7 @@ class SCEPlugin(Plugin):
     def description(self) -> str:
         return _(
             'Integration with the Sharly-Chess.com platform '
-            '(online check-in, results upload, etc...).'
+            '(online check-in, results upload, etc.).'
         )
 
     @property

@@ -133,7 +133,7 @@ msgstr ""
 msgid "Import from Sharly-Chess.com"
 msgstr ""
 
-msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc...)."
+msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc.)."
 msgstr ""
 
 msgid "Last name"
