@@ -668,6 +668,7 @@ class PlayerAdminController(BaseEventAdminController):
         carry_over_data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
         warning_message: str | None = None,
+        redirect_to: str | None = None,
     ) -> Template:
         request = web_context.request
         event = web_context.get_admin_event()
@@ -767,6 +768,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'paid': paid,
                     'fixed': fixed or None,
                     'date_of_birth': date_of_birth,
+                    'redirect_to': redirect_to,
                 }
                 | rating_data
                 | plugin_form_data
@@ -925,9 +927,12 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         action: str,
         player_id: int,
+        redirect_to: str | None = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
-        return self._render_players_form_modal(web_context, FormAction(action))
+        return self._render_players_form_modal(
+            web_context, FormAction(action), redirect_to=redirect_to
+        )
 
     @get(
         path='/player-delete-modal/{event_uniq_id:str}/{player_id:int}',
@@ -1064,7 +1069,11 @@ class PlayerAdminController(BaseEventAdminController):
         return errors
 
     @classmethod
-    def _stored_player_from_data(cls, data: dict[str, str]) -> StoredPlayer:
+    def _stored_player_from_data(
+        cls,
+        data: dict[str, str],
+        player: Player | None = None,
+    ) -> StoredPlayer:
         date_of_birth: date | None = None
         year_of_birth: int | None = None
         field = 'date_of_birth'
@@ -1072,6 +1081,19 @@ class PlayerAdminController(BaseEventAdminController):
             date_of_birth = WebContext.form_data_to_date(data, field)
         except FormError:
             year_of_birth = WebContext.form_data_to_int(data, field)
+
+        plugin_data: dict[str, dict[str, Any]] = {}
+        for (
+            plugin_id,
+            plugin_data_class,
+        ) in Player.plugin_data_class_by_plugin_id().items():
+            previous_object = None
+            if player:
+                previous_object = player.plugin_data.get(plugin_id)
+            plugin_data[plugin_id] = plugin_data_class.from_form_data(
+                data, previous_object=previous_object
+            ).to_stored_value()
+
         return StoredPlayer(
             id=None,
             first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
@@ -1105,10 +1127,7 @@ class PlayerAdminController(BaseEventAdminController):
             federation=WebContext.form_data_to_str(data, 'federation') or '',
             club=WebContext.form_data_to_str(data, 'club') or '',
             fixed=WebContext.form_data_to_int(data, 'fixed'),
-            plugin_data={
-                plugin_id: plugin_data_class.from_form_data(data).to_stored_value()
-                for plugin_id, plugin_data_class in Player.plugin_data_class_by_plugin_id().items()
-            },
+            plugin_data=plugin_data,
         )
 
     @post(
@@ -1179,21 +1198,27 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext,
         data: dict[str, str],
         action: FormAction,
-    ) -> Template:
+    ) -> Template | Redirect:
         request = web_context.request
         event = web_context.get_admin_event()
+        player = web_context.get_admin_player()
         stored_player, errors = self._read_player_form_data(web_context, action, data)
         if not stored_player:
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
             )
+        stored_player = self._stored_player_from_data(data, player)
         tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
         tournament = event.tournaments_by_id[tournament_id]
-        player = web_context.get_admin_player()
         event.update_player(player, stored_player)
         previous_tournament = player.single_tournament
         if tournament.id != previous_tournament.id:
             event.move_player_to_tournament(player, tournament)
+
+        redirect_to = WebContext.form_data_to_str(data, 'redirect_to')
+        if redirect_to:
+            return Redirect(redirect_to, status_code=303)
+
         web_context = PlayerAdminWebContext(request, player.id, reload_event=True)
         return self._render_player_table_row(web_context)
 
@@ -1213,7 +1238,7 @@ class PlayerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         player_id: int,
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._update_player(
             PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
         )
@@ -1234,7 +1259,7 @@ class PlayerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         player_id: int,
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._update_player(
             PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
         )
@@ -1266,6 +1291,7 @@ class PlayerAdminController(BaseEventAdminController):
         else:
             event.delete_player(player.id)
             deleted_player_id = player.id
+            plugin_manager.hook_for_event(event, 'on_player_deleted')(player=player)
         return self._render_player_table_row(
             web_context, deleted_player_id=deleted_player_id
         )

@@ -1766,10 +1766,7 @@ with_indicator: display a loading indicator, optional
     default_state=false
 ) %}
     <div class="input-block position-relative">
-        <div
-            class="pw-input-group form-check form-switch d-inline-block pe-3"
-
-        >
+        <div class="pw-input-group form-check form-switch d-inline-block pe-3">
             <span {% if used_message %}{{ macros.tooltip_attributes('info', used_message, 'top') }}{% endif %}>
                 <input
                     id="{{ plugin.form_key }}"
@@ -1845,4 +1842,14 @@ with_indicator: display a loading indicator, optional
             });
         </script>
     </div>
+{% endmacro %}
+
+{% macro hidden_disabled_input(data, name) %}
+    <input
+        id="{{ name|replace('_', '-') }}-hidden"
+        type="hidden"
+        name="{{ name }}"
+        value="{{ data[name] }}"
+        disabled
+    >
 {% endmacro %}

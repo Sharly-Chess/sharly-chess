@@ -53,6 +53,7 @@
                             disabled=not client.can_update_event or has_multi_tournament_players,
                             data=data, errors=errors
                         ) }}
+                        {{ admin_macros.hidden_disabled_input(data, 'player_rating_type') }}
                     </div>
                 </div>
                 <div class="row gy-2 gx-3">
@@ -98,6 +99,7 @@
                             select_options=player_rating_type_options,
                             data=data, errors=errors
                         ) }}
+                        {{ admin_macros.hidden_disabled_input(data, 'player_rating_type') }}
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
@@ -138,6 +140,7 @@
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors
                             ) }}
+                            {{ admin_macros.hidden_disabled_input(data, 'age_category_base_date') }}
                         </div>
                         <div class="col-12 col-md-6">
                             {{ admin_macros.select_input(
@@ -151,6 +154,7 @@
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors
                             ) }}
+                            {{ admin_macros.hidden_disabled_input(data, 'age_category_change_month') }}
                         </div>
                     </div>
                 </div>
@@ -217,6 +221,7 @@
                     <div class="d-flex flex-column gap-3">
                         {% for plugin in plugins %}
                             <div
+                                id="{{ plugin.form_key }}-plugin-container"
                                 class="plugin-container
                                     {% if plugin.federation %}
                                         federation-plugin federation-plugin-{{ plugin.federation }}
@@ -246,7 +251,11 @@
                                         });
                                     </script>
                                 {% endif %}
-
+                                {% if plugin.event_form_script_file %}
+                                    <script>
+                                        {% include plugin.event_form_script_file %}
+                                    </script>
+                                {% endif %}
                             </div>
                         {% endfor %}
                     </div>

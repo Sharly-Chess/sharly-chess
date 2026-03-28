@@ -35,6 +35,8 @@
 
 ## Plugins
 
+- New plugin Sharly-Chess.com (4.0.0)
+
 ### _ChessEvent_
 
 - Synchronize button moved to the _Data Transfer_ menu (4.0.0)

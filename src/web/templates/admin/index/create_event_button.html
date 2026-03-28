@@ -34,6 +34,9 @@
         >
             {{ _('Import a SCE file') }}
         </button>
+        {% for template in plugin_event_create_button_templates %}
+            {% include template %}
+        {% endfor %}
     </div>
 </div>
 <form

@@ -302,10 +302,10 @@ class EventDatabase(MigrationDatabase):
             location=row['location'],
             background_color=row['background_color'],
             timer_colors=self.set_dict_int_keys(
-                self.load_json_from_database_field(row['timer_colors'])
+                self.load_json_from_database_field(row['timer_colors'], {})
             ),
             timer_delays=self.set_dict_int_keys(
-                self.load_json_from_database_field(row['timer_delays'])
+                self.load_json_from_database_field(row['timer_delays'], {})
             ),
             message_text=row['message_text'],
             message_color=row['message_color'],
@@ -679,11 +679,11 @@ class EventDatabase(MigrationDatabase):
             stored_tournaments.append(stored_tournament)
         return stored_tournaments
 
-    def _write_stored_tournament(
-        self,
-        stored_tournament: StoredTournament,
-    ) -> StoredTournament:
-        fields = self._get_fields_dict(
+    @classmethod
+    def _get_tournament_fields_dict(
+        cls, stored_tournament: StoredTournament
+    ) -> dict[str, Any]:
+        return cls._get_fields_dict(
             stored_tournament,
             [
                 'name',
@@ -705,55 +705,38 @@ class EventDatabase(MigrationDatabase):
                 'pab_value',
             ],
         ) | {
-            'start_date': self.dump_date_to_database_field(
-                stored_tournament.start_date
-            ),
-            'stop_date': self.dump_date_to_database_field(stored_tournament.stop_date),
-            'last_update': self.now_as_database_timestamp(),
-            'plugin_data': self.dump_to_json_database_field(
+            'start_date': cls.dump_date_to_database_field(stored_tournament.start_date),
+            'stop_date': cls.dump_date_to_database_field(stored_tournament.stop_date),
+            'last_update': cls.now_as_database_timestamp(),
+            'plugin_data': cls.dump_to_json_database_field(
                 stored_tournament.plugin_data, {}
             ),
-            'round_datetimes': self._dump_round_datetimes_to_database_field(
+            'round_datetimes': cls._dump_round_datetimes_to_database_field(
                 stored_tournament.round_datetimes
             ),
         }
 
-        if stored_tournament.id is None:
-            fields_str = ', '.join(f'`{f}`' for f in fields)
-            values_str = ', '.join(['?'] * len(fields))
-            self.execute(
-                f'INSERT INTO `tournament`({fields_str}) VALUES ({values_str})',
-                tuple(fields.values()),
-            )
-            tournament_id: int | None = self._last_inserted_id()
-            if tournament_id is None:
-                raise RuntimeError('Tournament insertion failed')
-            fetched_stored_tournament = self.get_stored_tournament(tournament_id)
-        else:
-            field_sets = ', '.join(f'`{f}` = ?' for f in fields)
-            self.execute(
-                f'UPDATE `tournament` SET {field_sets} WHERE `id` = ?',
-                tuple(fields.values()) + (stored_tournament.id,),
-            )
-            fetched_stored_tournament = self.get_stored_tournament(stored_tournament.id)
-        if fetched_stored_tournament is None:
-            raise RuntimeError('Tournament write failed')
+    def add_stored_tournament(self, stored_tournament: StoredTournament) -> int:
+        fields = self._get_tournament_fields_dict(stored_tournament)
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `tournament`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        tournament_id: int | None = self._last_inserted_id()
+        if tournament_id is None:
+            raise RuntimeError('Tournament insertion failed')
+        return tournament_id
 
-        return fetched_stored_tournament
-
-    def add_stored_tournament(
-        self,
-        stored_tournament: StoredTournament,
-    ) -> StoredTournament:
-        assert stored_tournament.id is None, f'{stored_tournament.id=}'
-        return self._write_stored_tournament(stored_tournament)
-
-    def update_stored_tournament(
-        self,
-        stored_tournament: StoredTournament,
-    ) -> StoredTournament:
+    def update_stored_tournament(self, stored_tournament: StoredTournament):
+        fields = self._get_tournament_fields_dict(stored_tournament)
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_tournament.id is not None
-        return self._write_stored_tournament(stored_tournament)
+        self.execute(
+            f'UPDATE `tournament` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_tournament.id,),
+        )
 
     def delete_stored_tournament(self, tournament_id: int):
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))

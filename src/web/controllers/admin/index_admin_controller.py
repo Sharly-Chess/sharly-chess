@@ -272,30 +272,26 @@ class IndexAdminController(BaseAdminController):
         svg_logo = (BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg').read_text(
             encoding='utf-8'
         )
-
         request = web_context.request
         context = (
             web_context.template_context
             | {
-                'messages': Message.messages(web_context.request),
+                'messages': Message.messages(request),
                 'format_date_range': format_date_range,
                 'format_date': format_date,
                 'nav_tabs': nav_tabs,
                 'svg_logo': svg_logo,
                 'show_details': SessionEventsShowDetails(request).get(),
+                'plugin_event_create_button_templates': (
+                    plugin_manager.hook.create_event_button_template()
+                ),
             }
             | (template_context or {})
         )
 
         if 'modal' in context:
-            return HTMXTemplate(
-                template_name='admin/modals.html',
-                context=context,
-                re_target='#modal-wrapper',
-                trigger_event='modal_opened'
-                if not keep_modal_open
-                else 'static_modal_opened',
-                after='settle',
+            return cls._render_modal(
+                'admin/modals.html', context, bool(keep_modal_open)
             )
         return HTMXTemplate(template_name='admin/index.html', context=context)
 

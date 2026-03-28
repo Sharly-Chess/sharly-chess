@@ -152,7 +152,7 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         if stored_tournament.id:
             database.update_stored_tournament(stored_tournament)
         else:
-            stored_tournament.id = database.add_stored_tournament(stored_tournament).id
+            stored_tournament.id = database.add_stored_tournament(stored_tournament)
         tournament_id = stored_tournament.id
         assert tournament_id is not None
         if stored_tournament.pairing_settings:

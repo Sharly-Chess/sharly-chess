@@ -93,7 +93,7 @@ msgstr ""
 msgid "Import from ChessEvent"
 msgstr ""
 
-msgid "Last synchronization"
+msgid "Last synchronisation"
 msgstr ""
 
 msgid "Never synchronized"
@@ -120,13 +120,13 @@ msgstr ""
 msgid "Support for the ChessEvent platform used for organising tournaments in France."
 msgstr ""
 
+msgid "Synchronisation failed for tournament [{tournament}]."
+msgstr ""
+
 msgid "Synchronisation failed for {count} tournament"
 msgid_plural "Synchronisation failed for {count} tournaments"
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "Synchronization failed for tournament [{tournament}]."
-msgstr ""
 
 msgid "Synchronize all tournaments"
 msgstr ""
