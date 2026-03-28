@@ -184,12 +184,8 @@ class SCETournamentSyncData:
         stored_tournament.name = self.name
         stored_tournament.rating = self.type.value
         stored_tournament.rounds = self.rounds
-        if (event.start_date, event.stop_date) == (self.start_date, self.stop_date):
-            stored_tournament.start_date = None
-            stored_tournament.stop_date = None
-        else:
-            stored_tournament.start_date = self.start_date
-            stored_tournament.stop_date = self.stop_date
+        stored_tournament.start_date = self.start_date
+        stored_tournament.stop_date = self.stop_date
         stored_tournament.time_control_trf25 = self.time_control
         stored_tournament.round_datetimes = {
             round_: self.round_schedule.get(round_)

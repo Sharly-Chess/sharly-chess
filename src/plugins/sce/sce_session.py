@@ -805,8 +805,6 @@ class SCESession(Session):
             stored_event.organiser_home_page = build_get_url(
                 SCE_BASE_URL, f'/o/{plugin_data.organiser_slug}'
             )
-        stored_event.start_date = datetime.fromisoformat(data['start_date']).date()
-        stored_event.stop_date = datetime.fromisoformat(data['end_date']).date()
         age_categories = [
             PlayerCategory.from_id(
                 f'O{sce_category[:-1]}' if sce_category.endswith('+') else sce_category

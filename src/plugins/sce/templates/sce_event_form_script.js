@@ -1,5 +1,4 @@
 {% set field_ids = [
-    'date-range',
     'age-category-base-date',
     'age-categories',
     'age-category-change-month'
