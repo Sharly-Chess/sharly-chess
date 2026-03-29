@@ -96,3 +96,10 @@ function preparePrintModal(print_document_id, tournament_id, print_round) {
         last_url = window.location.href;
     }
 }
+
+function triggerModalInitEvent(selector, event='change', params=[]) {
+    // When a modal is swapped, the JS events are triggered on previous elements
+    // Send the event again after the modal's been swapped to ensure triggering it on the correct element
+    $(selector).trigger(event, params);
+    setTimeout(() => $(selector).trigger(event, params), 100)
+}

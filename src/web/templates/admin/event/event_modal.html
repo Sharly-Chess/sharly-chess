@@ -247,7 +247,7 @@
                         {% endfor %}
                     </div>
                     <script>
-                        $('.plugin-switch-input').trigger('change', [false]);
+                        triggerModalInitEvent('.plugin-switch-input', 'change', [false]);
                         $('#federation').change(function () {
                             const federation = $(this).val();
                             const pluginsToHide = $('.federation-plugin:not(.federation-plugin-' + federation + ')');
@@ -266,7 +266,7 @@
                             $('#plugins-container').show();
                             $('#plugins-container').toggle($('.plugin-container:visible').length > 0);
                         });
-                        $('#federation').trigger('change');
+                        triggerModalInitEvent('#federation');
                     </script>
                 </span>
             </form>
@@ -306,4 +306,6 @@
     </div>
 </div>
 
-<script>requestRefresh()</script>
+{% if action == 'update' %}
+    <script>requestRefresh()</script>
+{% endif %}
