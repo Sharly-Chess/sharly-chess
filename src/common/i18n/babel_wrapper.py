@@ -37,11 +37,6 @@ class BabelDomainWrapper(Domain):
 
     def extract_i18n_strings(self):
         """Updates the POT file from the source files."""
-        # logger.debug('Babel configuration (%s):', self.config_file)
-        # with open(self.config_file, 'r') as f:
-        #    for line in f:
-        #        if stripped_line := line.replace('\n', '').strip():
-        #            logger.debug(stripped_line)
         self.run_babel_command(
             'extract',
             [
