@@ -7,7 +7,7 @@
         {{ macros.tooltip_attributes('info', _('FFE'), 'top') }}
     />
     {{ _('FFE certification number: %(ffe_id)d', ffe_id=tournament_ffe_data.ffe_id) }}
-    <a href="https://echecs.asso.fr/FicheTournoi.aspx?Ref={{ tournament_ffe_data.ffe_id }}" target="_blank">
+    <a href="{{ ffe_utils.tournament_url(tournament_ffe_data.ffe_id) }}" target="_blank">
         <i class="bi bi-box-arrow-up-right"></i>
     </a>
     {% set auto_upload = ffe_utils.resolve_auto_upload(tournament) %}

@@ -1,65 +1,94 @@
+{% import '/common/macros.j2' as macros with context %}
+
+{% set event_plugin_data = admin_event.plugin_data.ffe %}
+
 <tbody
     id="upload-results"
     hx-get="{{ url_for('ffe-upload-results', event_uniq_id=admin_event.uniq_id) }}"
-    hx-trigger="ws:upload-event from:body"
+    hx-trigger="ws:upload-event from:body,ws:upload-event-start from:body"
     hx-swap="outerHTML"
 >
     {% for tournament in allowed_tournaments %}
+        {% set actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
+        {% set plugin_data = tournament.plugin_data.ffe %}
         {% set ffe_actions_unavailable_message = ffe_utils.ffe_actions_unavailable_message(tournament) %}
         <tr>
+            <td class="text-nowrap text-center">
+                <div class="form-check form-switch d-inline-block pe-3">
+                    <input
+                        name="tournament_auto_upload_{{ tournament.id }}"
+                        class="form-check-input blue-checkbox mt-2"
+                        type="checkbox"
+                        hx-patch="{{ url_for(
+                            'ffe-update-tournament-auto-upload',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=tournament.id,
+                        ) }}"
+                        value="on"
+                        {% if not event_plugin_data.auto_upload %}
+                            disabled
+                        {% endif %}
+                        {% if plugin_data.auto_upload %}
+                            checked
+                        {% endif %}
+                    />
+                </div>
+            </td>
             <td style="width: 0;" class="text-nowrap">
                 {{ tournament.name }}
             </td>
-            <td style="width: 0;" class="text-nowrap">
-                {% if ffe_utils.resolve_auto_upload(tournament) %}
-                    {{ _("Automatic") }}
-                {% else %}
-                    {{ _('Manual') }}
-                {% endif %}
+            <td id="tournament-upload-statuses-{{ tournament.id }}" class="text-center">
+                {% include '/ffe_tournament_statuses.html' %}
             </td>
-            <td>
-                {% if ffe_actions_unavailable_message %}
-                    <span id="t_{{tournament.id}}" class="status text-danger">
-                        {{ ffe_actions_unavailable_message }}
+            <td class="text-center text-nowrap">
+                {{ plugin_data.last_upload_at_str }}
+            </td>
+            <td class="d-flex gap-2 align-items-center">
+                <div class="flex-grow-1"></div>
+                {% if plugin_data.ffe_id %}
+                    <a
+                        href="{{ ffe_utils.tournament_url(tournament) }}"
+                        target="_blank"
+                        {{ macros.tooltip_attributes('', _('Page of the tournament on the FFE website.')) }}
+                    ><i class="bi bi-box-arrow-up-right"></i></a>
+                {% endif %}
+                {% if not (plugin_data.ffe_id and plugin_data.password) %}
+                    <span {{ macros.tooltip_attributes('', _('Edit the properties of the tournament.')) }}>
+                        <button
+                            class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                            hx-get="{{ url_for(
+                                'admin-tournament-modal',
+                                action='update',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=tournament.id
+                            ) }}?redirect_to={{ url_for(
+                                'ffe-upload-modal', event_uniq_id=admin_event.uniq_id
+                            ) }}"
+                        >
+                            <i class="bi-pencil-fill lh-1"></i>
+                        </button>
                     </span>
-                {% else %}
-                    {% set result=upload_status_messages[result_id(admin_event.uniq_id, tournament.id)] if result_id(admin_event.uniq_id, tournament.id) in upload_status_messages else None %}
-                    {% if result %}
-                        <span id="t_{{tournament.id}}" class="status {% if result.status == 5 %}text-success{% elif result.status >= 7 %}text-danger{% endif %}">
-                            {{ result.message }}
-                        </span>
-                    {% endif %}
                 {% endif %}
-            </td>
-            <td class="text-center text-nowrap" style="width: 0;">
-                {% if tournament.plugin_data.ffe.last_upload %}
-                    {{ format_datetime(tournament.plugin_data.ffe.last_upload) }}
-                {% else %}
-                    -
-                {% endif %}
-            </td>
-            <td style="width: 0;">
-                {% if not ffe_actions_unavailable_message %}
+
+                <span {{ macros.tooltip_attributes('', actions_unavailable_message or _('Upload')) }}>
                     <button
                         type="button"
-                        class="btn btn-outline-primary btn-sm text-nowrap"
-                        hx-post="{{ url_for('ffe-upload-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                        hx-post="{{ url_for(
+                            'ffe-upload-tournament',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=tournament.id
+                        ) }}"
                         hx-target="#upload-results"
                         hx-swap="outerHTML"
-                        class="text-nowrap white btn btn-secondary"
-                        hx-on::before-request="$('#t_{{tournament.id}}.status').addClass('invisible')"
+                        hx-indicator="#please-wait"
+                        {% if actions_unavailable_message %}
+                            disabled
+                        {% endif %}
                     >
-                        <i class="bi bi-cloud-arrow-up-fill"></i>
-                        {{ _('Upload') }}
+                        <i class="bi-cloud-arrow-up-fill lh-1"></i>
                     </button>
-                {% endif %}
-            </td>
-            <td class="text-center" style="width: 0;">
-                {% if tournament.plugin_data.ffe.ffe_id %}
-                    <a href="https://echecs.asso.fr/FicheTournoi.aspx?Ref={{ tournament.plugin_data.ffe.ffe_id }}" target="_blank">
-                        <i class="bi bi-box-arrow-up-right"></i>
-                    </a>
-                {% endif %}
+                </span>
             </td>
         </tr>
     {% endfor %}

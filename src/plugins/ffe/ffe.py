@@ -40,7 +40,6 @@ from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.ffe_background_uploader import (
     EventLoader,
     FfeBackgroundUploader,
-    FfeUploadStatus,
 )
 from plugins.ffe.ffe_data_sources import FfeLocalDataSource, FfeOnlineDataSource
 from plugins.ffe.ffe_database import FfeDatabase
@@ -62,15 +61,15 @@ from plugins.ffe.ffe_entity import (
     FfeLicencePlayersTabColumn,
 )
 from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
-from plugins.ffe.ffe_event_controller import (
-    FfeAdminEventController,
+from plugins.ffe.ffe_upload_controller import (
+    FfeUploadController,
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
     BasePapiTieBreak,
     PapiBuchholzTypeOption,
 )
-from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
+from plugins.ffe.ffe_tournament_controller import FfeTournamentController
 from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
 from plugins.ffe.ffe_tournament_importers import (
     PapiJsonTournamentImporter,
@@ -94,8 +93,6 @@ from plugins.ffe.utils import (
     FFE_LEAGUES,
 )
 from plugins.ffe.utils import (
-    FFE_DEFAULT_UPLOAD_DELAY,
-    FFE_MIN_UPLOAD_DELAY,
     FfeEventPluginData,
     FfePlayerPluginData,
     FfeTournamentPluginData,
@@ -192,8 +189,8 @@ class FfePlugin(Plugin):
         return migrations
 
     @property
-    def event_form_fields_template(self) -> str:
-        return '/ffe_event_form_fields.html'
+    def event_form_script_template(self) -> str:
+        return '/ffe_event_form_script.js'
 
     def used_by_stored_tournament(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
@@ -224,15 +221,15 @@ class FfePlugin(Plugin):
     @property
     def controllers(self) -> list[type[BaseController]]:
         return [
-            FfeAdminEventController,
-            FfeAdminTournamentController,
+            FfeUploadController,
+            FfeTournamentController,
         ]
 
     @hookimpl
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
             'ffe_auth_valid': '',
-            'FFE_DEFAULT_UPLOAD_DELAY': FFE_DEFAULT_UPLOAD_DELAY,
+            'ffe_utils': FFEUtils,
         }
 
     # ---------------------------------------------------------------------------------
@@ -554,27 +551,6 @@ class FfePlugin(Plugin):
         return self.id, FfeEventPluginData
 
     @hookimpl
-    def validate_event_form_fields(
-        self,
-        action: str,
-        event: 'Event | None',
-        data: dict[str, str],
-        errors: dict[str, str],
-    ):
-        federation = WebContext.form_data_to_str(data, field := 'federation')
-        if federation != 'FRA':
-            # We only validate FFE fields for the FRA federation
-            return
-
-        ffe_auto_upload_delay = WebContext.form_data_to_int(
-            data, field := 'ffe_auto_upload_delay'
-        )
-        if ffe_auto_upload_delay and ffe_auto_upload_delay < FFE_MIN_UPLOAD_DELAY:
-            errors[field] = _(
-                'The delay must be at least {min_delay} minutes to avoid overloading the FFE server.'
-            ).format(min_delay=FFE_MIN_UPLOAD_DELAY)
-
-    @hookimpl
     def get_default_prize_currency(self) -> str:
         return 'EUR'
 
@@ -702,25 +678,16 @@ class FfePlugin(Plugin):
     def get_nav_data_transfer_items(
         self, event: 'Event'
     ) -> Iterable[NavDataTransferItem]:
-        has_upload_error = False
-        statuses = FfeBackgroundUploader.upload_status_messages
-        tournaments = event.tournaments
-        for tournament in tournaments:
-            result = statuses.get(
-                FfeBackgroundUploader.result_id(event.uniq_id, tournament.id),
-                None,
-            )
-            if result and result.status == FfeUploadStatus.ERROR:
-                has_upload_error = True
-                break
-
         return [
             NavDataTransferItem(
                 key='ffe_upload',
                 title=_('FFE'),
                 icon_path='/images/ffe.png',
                 modal_route_name='ffe-upload-modal',
-                has_upload_error=has_upload_error,
+                has_upload_error=any(
+                    FFEUtils.get_tournament_plugin_data(tournament).upload_failure_id
+                    for tournament in event.tournaments
+                ),
             )
         ]
 

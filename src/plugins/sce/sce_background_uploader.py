@@ -61,9 +61,11 @@ def is_upload_queued(tournament: Tournament) -> bool:
     return key in _GROUP_UPLOAD_WAIT_QUEUE
 
 
-def _publish_upload_event():
+def _publish_upload_event(start: bool = False):
     if channels_plugin:
-        channels_plugin.publish({'event': 'upload-event', 'data': ''}, ['ws'])
+        channels_plugin.publish(
+            {'event': f'upload-event{"-start" if start else ""}', 'data': ''}, ['ws']
+        )
 
 
 def upload_tournament(
@@ -76,7 +78,7 @@ def upload_tournament(
     key = _result_key(event_uniq_id, tournament_id)
     _ONGOING_TOURNAMENT_IDS.add(key)
     _GROUP_UPLOAD_WAIT_QUEUE.discard(key)
-    _publish_upload_event()
+    _publish_upload_event(start=True)
 
     # NOTE (Molrn) Ensures a minimum time for the thread
     # This prevents flashing and situations where both requests
