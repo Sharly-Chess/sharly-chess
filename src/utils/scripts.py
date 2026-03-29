@@ -3,6 +3,8 @@ import os
 from pathlib import Path
 import sys
 
+from dotenv import load_dotenv
+
 if sys.stdout is None:
     sys.stdout = open(os.devnull, 'w')
 if sys.stderr is None:
@@ -84,5 +86,6 @@ def init_script() -> list[str]:
     path_parser.add_argument('--path', '-p', default=str(default_workdir()))
     args, remaining_args = path_parser.parse_known_args()
     os.chdir(args.path)
+    load_dotenv()
 
     return remaining_args

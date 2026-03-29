@@ -471,6 +471,18 @@ class TournamentRating(IntEnum):
     RAPID = 2
     BLITZ = 3
 
+    @classmethod
+    def from_key(cls, key: str) -> Self:
+        match key.lower():
+            case 'standard':
+                return cls.STANDARD
+            case 'rapid':
+                return cls.RAPID
+            case 'blitz':
+                return cls.BLITZ
+            case _:
+                raise ValueError(f'Unknown value: {key}')
+
     @property
     def form_key(self) -> str:
         match self:

@@ -18,6 +18,7 @@
                 disabled=not client.can_update_event,
                 data=data, errors=errors
             ) }}
+            {{ admin_macros.hidden_disabled_input(data, 'age_categories') }}
         </div>
         {% if client.can_manage_events %}
             <div

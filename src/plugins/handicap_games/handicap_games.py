@@ -127,6 +127,10 @@ class HandicapGamesPlugin(Plugin):
         return {'handicap_game_utils': HandicapGameUtils}
 
     @hookimpl
+    def get_tournament_card_time_control_template(self) -> str:
+        return '/handicap_games_tournament_card_time_control.html'
+
+    @hookimpl
     def set_for_round(self, tournament: 'Tournament', round_: int):
         plugin_data = HandicapGameUtils.get_tournament_plugin_data(tournament)
         if not plugin_data.penalty_value:

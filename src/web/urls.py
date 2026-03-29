@@ -1,4 +1,37 @@
+from typing import Any
+from urllib.parse import urlencode
+
 from litestar.plugins.htmx import HTMXRequest
+
+
+def build_get_url(
+    base_url: str,
+    endpoint_path: str,
+    params: dict[str, Any] | None = None,
+) -> str:
+    url = base_url[:-1] if base_url.endswith('/') else base_url
+    url += endpoint_path
+    if params:
+        url += '?' + urlencode(params)
+    return url
+
+
+def build_internal_get_url(
+    request: HTMXRequest,
+    route_name: str,
+    route_params: dict[str, Any] | None = None,
+    query_params: dict[str, Any] | None = None,
+) -> str:
+    return build_get_url(
+        get_base_url(request),
+        request.app.route_reverse(route_name, **(route_params or {})),
+        query_params,
+    )
+
+
+def get_base_url(request: HTMXRequest) -> str:
+    port = '' if request.url.port in (80, 443, None) else f':{request.url.port}'
+    return f'{request.url.scheme}://{request.url.hostname}{port}'
 
 
 def index_url(request: HTMXRequest) -> str:

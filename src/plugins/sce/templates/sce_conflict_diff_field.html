@@ -1,0 +1,3 @@
+{% with display_value = display_data[field], compare_value = compare_data[field], last_value = last_sync_data[field] %}
+    {% include '/sce_conflict_diff_raw_field.html' %}
+{% endwith %}
