@@ -1,48 +1,44 @@
-#, ai_translation
 msgid "/move"
-msgstr "/move"
+msgstr "/coup"
 
-#, ai_translation
 msgid "Adds features for handicap tournaments where weaker players are given a time advantage."
-msgstr "Adiciona recursos para torneios de handicap onde jogadores mais fracos recebem uma vantagem de tempo."
+msgstr "Ajoute des fonctionnalités pour les tournois avec handicap, où les joueur·euses les moins fort·es bénéficient d’un avantage de temps."
 
-#, ai_translation, python-format
+#, python-format
 msgid "E.g.: %(val)d"
-msgstr "p. ex.: %(val)d"
+msgstr "E.g. : %(val)d"
 
-#, ai_translation
 msgid "Elo step:"
-msgstr "Passo Elo:"
+msgstr "Tranche Elo :"
 
-#, ai_translation
 msgid "Handicap games"
-msgstr "Handicap jogos"
+msgstr "Parties à handicap"
 
-#, ai_translation
 msgid "Minimum time (secs):"
-msgstr "Tempo mínimo (segs):"
+msgstr "Temps minimal (sec.) :"
 
-#, ai_translation
 msgid "Penalties require a time control with a single period."
-msgstr "As penalidades exigem um controle de tempo com um único período."
+msgstr "Les pénalités nécessitent une cadence avec une seule période."
 
-#, ai_translation
 msgid "Penalty (secs):"
-msgstr "Penalidade (segs):"
+msgstr "Pénalité (sec.) :"
 
-#, ai_translation
+#, python-format
+msgid "Penalty: %(value)d sec/%(step)d Elo (min. %(min)d sec)"
+msgstr "Pénalité : %(value)d sec./%(step)d Elo (min. %(min)d sec.)"
+
 msgid "The minimum time, whatever the ranking difference between the two players."
-msgstr "O tempo mínimo, qualquer que seja a diferença de classificação entre os dois jogadores."
+msgstr "La temps minimal, quelle que soit la différence de classement entre les deux joueur·euses."
 
-#, ai_translation
 msgid "The number of points difference between the ranking of the players used to calculate the number of penalties applied to the highest ranked player."
-msgstr "O número de pontos diferença entre o ranking dos jogadores utilizados para calcular o número de penalidades aplicadas ao jogador mais bem classificado."
+msgstr "Le nombre de points de différence entre le classement des joueur·euses utilisé pour calculer le nombre de pénalités appliqué au·à la joueur·euse le·la mieux classé·e."
 
-#, ai_translation
 msgid "The time subtracted from the highest ranked player, in seconds (this time is multiplied by the number of difference steps between the two players)."
-msgstr "O tempo subtraído do jogador mais bem classificado, em segundos (desta vez é multiplicado pelo número de passos de diferença entre os dois jogadores)."
+msgstr "Le temps retranché au·à la joueur·euse le·la mieux classé·e, en secondes (ce temps est multiplié par le nombre de tranches de différence entre les deux joueur·euses)."
 
-#, ai_translation
 msgid "Time control"
-msgstr "Controle do tempo"
+msgstr "Temps"
+
+msgid "Time control:"
+msgstr "Temps :"
 

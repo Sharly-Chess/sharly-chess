@@ -1,0 +1,486 @@
+#, ai_translation, python-format
+msgid "%(string)s:"
+msgstr "%(string)s:"
+
+#, ai_translation, python-format
+msgid "%(string)s: %(value)s"
+msgstr "%(string)s (0): %(value)s"
+
+#, ai_translation
+msgid "All player conflicts resolved."
+msgstr "Todos os conflitos de jogadores resolvidos."
+
+#, ai_translation
+msgid "All player duplicates resolved."
+msgstr "Todas as duplicatas do jogador foram resolvidas."
+
+#, ai_translation
+msgid "All the local tournaments are connected to a Sharly-Chess.com tournament."
+msgstr "Todos os torneios locais estão ligados a um torneio Sharly-Chess.com."
+
+#, ai_translation
+msgid "All the tournaments of the Sharly-Chess.com event are already imported."
+msgstr "Todos os torneios do evento Sharly-Chess.com já estão importados."
+
+#, ai_translation
+msgid "An error occurred, consult the logs for more details."
+msgstr "Ocorreu um erro, consulte os registros para mais detalhes."
+
+#, ai_translation
+msgid "An unexpected error occurred while trying to reach Sharly-Chess.com. Consult the logs for more details."
+msgstr "Ocorreu um erro inesperado ao tentar chegar a Sharly-Chess.com. Consulte os registros para obter mais detalhes."
+
+#, ai_translation
+msgid "Authorisation"
+msgstr "Autorização"
+
+#, ai_translation
+msgid "Authorisation failed or expired."
+msgstr "A autorização falhou ou expirou."
+
+#, ai_translation
+msgid "Authorization expired, please try again."
+msgstr "Autorização expirada, por favor tente novamente."
+
+#, ai_translation
+msgid "Authorization failed, consult the logs for more details."
+msgstr "A autorização falhou, consulte os registros para mais detalhes."
+
+#, ai_translation
+msgid "Authorization failed, possible CSRF attack!"
+msgstr "A autorização falhou, possível ataque CSRF!"
+
+#, ai_translation
+msgid "Auto-synchronisation"
+msgstr "Auto-sincronização"
+
+#, ai_translation
+msgid "Auto-upload disabled"
+msgstr "Auto-upload desativado"
+
+#, ai_translation
+msgid "Auto-upload enabled"
+msgstr "Auto-upload habilitado"
+
+#, ai_translation
+msgid "Back"
+msgstr "Voltar"
+
+#, ai_translation
+msgid "Choose"
+msgstr "Escolha"
+
+#, ai_translation
+msgid "Close"
+msgstr "Fechar"
+
+#, ai_translation
+msgid "Club"
+msgstr "Clube"
+
+#, ai_translation
+msgid "Configuration page of the event."
+msgstr "Página de configuração do evento."
+
+#, ai_translation
+msgid "Configuration page of the tournament."
+msgstr "Página de configuração do torneio."
+
+#, ai_translation
+msgid "Conflict"
+msgstr "Conflito"
+
+#, ai_translation
+msgid "Data as it currently is on Sharly-Chess.com."
+msgstr "Dados como está atualmente em Sharly-Chess.com."
+
+#, ai_translation
+msgid "Data as it currently is on the local Sharly Chess application."
+msgstr "Dados como está atualmente no aplicativo Sharly Chess local."
+
+#, ai_translation, python-format
+msgid "Data as it was when it was last synchronized (%(last_sync_str)s)."
+msgstr "Dados como era quando foi sincronizado pela última vez (%(last_sync_str)s)."
+
+#, ai_translation
+msgid "Data synchronisation"
+msgstr "Sincronização de dados"
+
+#, ai_translation
+msgid "Delete"
+msgstr "Apagar"
+
+#, ai_translation
+msgid "Edit"
+msgstr "Editar Editar"
+
+#, ai_translation
+msgid "Edit the player"
+msgstr "Editar o jogador"
+
+#, ai_translation
+msgid "Edit the tournament"
+msgstr "Editar o torneio"
+
+#, ai_translation
+msgid "End"
+msgstr "Fim"
+
+#, ai_translation
+msgid "Error while uploading tournament [{tournament}], consult the logs for more details."
+msgstr "Erro ao carregar o torneio [{tournament}], consulte os logs para mais detalhes."
+
+#, ai_translation
+msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
+msgstr "Evento [{event}] conectado com sucesso a Sharly-Chess.com!"
+
+#, ai_translation
+msgid "Event [{event}] successfully imported!"
+msgstr "Evento [{event}] importado com sucesso!"
+
+#, ai_translation
+msgid "Event has been archived on Sharly-Chess.com, it no longer can be modified."
+msgstr "O evento foi arquivado em Sharly-Chess.com, não pode mais ser modificado."
+
+#, ai_translation
+msgid "Event is not connected to a Sharly-Chess.com event."
+msgstr "O evento Sharly-Chess.com não está conectado a um evento Sharly-Chess.com."
+
+#, ai_translation
+msgid "FIDE ID"
+msgstr "ID da FIDE"
+
+#, ai_translation
+msgid "Failure"
+msgstr "Falha"
+
+#, ai_translation
+msgid "First name"
+msgstr "Nome próprio"
+
+#, ai_translation
+msgid "Gender"
+msgstr "Gênero"
+
+#, ai_translation
+msgid "Import Sharly-Chess.com tournaments that do not exist locally."
+msgstr "Importação Sharly-Chess.com torneios que não existem localmente."
+
+#, ai_translation
+msgid "Import a Sharly-Chess.com tournament"
+msgstr "Importe um torneio Sharly-Chess.com"
+
+#, ai_translation
+msgid "Import from Sharly-Chess.com"
+msgstr "Importação de Sharly-Chess.com"
+
+#, ai_translation
+msgid "Integration with the Sharly-Chess.com platform (online check-in, results upload, etc.)."
+msgstr "Integração com a plataforma Sharly-Chess.com (check-in online, upload de resultados, etc.)."
+
+#, ai_translation
+msgid "Last name"
+msgstr "Sobrenome"
+
+#, ai_translation
+msgid "Last synchronisation"
+msgstr "ltima sincronização"
+
+#, ai_translation
+msgid "Last synchronisation attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
+msgstr "A última tentativa de sincronização falhou em {last_attempt_date} em {last_attempt_time} (detalhes: {details})."
+
+#, ai_translation
+msgid "Last synchronisation attempt ran successfully."
+msgstr "A última tentativa de sincronização correu com sucesso."
+
+#, ai_translation
+msgid "Last upload"
+msgstr "ltimo upload"
+
+#, ai_translation
+msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
+msgstr "ltima tentativa de upload falhou em {last_attempt_date} em {last_attempt_time} (detalhes: {details})."
+
+#, ai_translation
+msgid "Local"
+msgstr "Local"
+
+#, ai_translation
+msgid "Local players"
+msgstr "Jogadores locais"
+
+#, ai_translation
+msgid "Modified"
+msgstr "Modificado"
+
+#, ai_translation
+msgid "Name"
+msgstr "Nome"
+
+#, ai_translation
+msgid "Never synchronized"
+msgstr "Nunca sincronizado"
+
+#, ai_translation
+msgid "Never uploaded"
+msgstr "Nunca enviado"
+
+#, ai_translation
+msgid "No changes detected since the last upload."
+msgstr "Nenhuma alteração foi detectada desde o último upload."
+
+#, ai_translation
+msgid "No internet connection."
+msgstr "Nenhuma conexão com a internet."
+
+#, ai_translation
+msgid "No player to synchronize yet, import or upload tournaments first."
+msgstr "Nenhum jogador para sincronizar ainda, importar ou fazer upload de torneios primeiro."
+
+#, ai_translation
+msgid "Not started"
+msgstr "Não iniciado"
+
+#, ai_translation
+msgid "Ongoing"
+msgstr "Em curso"
+
+#, ai_translation
+msgid "Pending"
+msgstr "Pendente"
+
+#, ai_translation
+msgid "Phone"
+msgstr "Telefone"
+
+#, ai_translation
+msgid "Player [{player}] deleted."
+msgstr "Jogador [{player}] excluído."
+
+#, ai_translation
+msgid "Player conflicts detected during the last synchronisation attempt."
+msgstr "Conflitos de jogadores detectados durante a última tentativa de sincronização."
+
+#, ai_translation
+msgid "Player duplicates and conflicts detected during the last synchronisation attempt."
+msgstr "Duplicações e conflitos de jogadores detectados durante a última tentativa de sincronização."
+
+#, ai_translation
+msgid "Player duplicates detected during the last synchronisation attempt."
+msgstr "Duplicações do jogador detectadas durante a última tentativa de sincronização."
+
+#, ai_translation
+msgid "Player has already been paired in the tournament, it no longer can be deleted."
+msgstr "O jogador já foi emparelhado no torneio, ele não pode mais ser excluído."
+
+#, ai_translation
+msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
+msgstr "Os jogadores no aplicativo Sharly Chess local que não pode ser criado em Sharly-Chess.com porque eles já existem."
+
+#, ai_translation
+msgid "Public page of the event."
+msgstr "Página pública do evento."
+
+#, ai_translation
+msgid "Public page of the tournament."
+msgstr "Página pública do torneio."
+
+#, ai_translation
+msgid "Rating"
+msgstr "Classificação"
+
+#, ai_translation
+msgid "Remaining conflicts"
+msgstr "Conflitos restantes"
+
+#, ai_translation, python-format
+msgid "Resolve duplicated players (%(count)d)"
+msgstr "Resolver jogadores duplicados (%(count)d)"
+
+#, ai_translation, python-format
+msgid "Resolve player conflicts (%(count)d)"
+msgstr "Resolver conflitos de jogadores (%(count)d)"
+
+#, ai_translation, python-format
+msgid "Resolve tournament conflicts (%(count)d)"
+msgstr "Resolver conflitos em torneios (%(count)d)"
+
+#, ai_translation
+msgid "Results upload"
+msgstr "Resultados upload"
+
+#, ai_translation
+msgid "Retry"
+msgstr "Tentar novamente"
+
+#, ai_translation, python-format
+msgid "Round #%(round)d"
+msgstr "Rodada #%(round)d"
+
+#, ai_translation
+msgid "Rounds"
+msgstr "Rodadas"
+
+#, ai_translation
+msgid "Schedule"
+msgstr "Horário"
+
+#, ai_translation
+msgid "Sharly-Chess.com authorization canceled."
+msgstr "Autorização de Sharly-Chess.com cancelada."
+
+#, ai_translation
+msgid "Sharly-Chess.com duplicates"
+msgstr "Sharly-Chess.com duplicatas"
+
+#, ai_translation
+msgid "Sharly-Chess.com event not found, it most likely has been deleted."
+msgstr "O evento Sharly-Chess.com não foi encontrado, provavelmente foi excluído."
+
+#, ai_translation
+msgid "Sharly-Chess.com is not reachable at the moment."
+msgstr "Sharly-Chess.com não está acessível no momento."
+
+#, ai_translation
+msgid "Sharly-Chess.com player conflicts"
+msgstr "Conflitos entre jogadores de Sharly-Chess.com"
+
+#, ai_translation
+msgid "Sharly-Chess.com tournament"
+msgstr "Sharly-Chess.com torneio"
+
+#, ai_translation
+msgid "Sharly-Chess.com tournament conflicts"
+msgstr "Conflitos no torneio Sharly-Chess.com"
+
+#, ai_translation
+msgid "Start"
+msgstr "Iniciar"
+
+#, ai_translation
+msgid "Statuses"
+msgstr "Status"
+
+#, ai_translation
+msgid "Synchronisation conflicts happen when the same data has been modified in both the local application and Sharly-Chess.com. To resolve them, you must either update the data to a non-conflictual state, or choose one version of the data to apply everywhere."
+msgstr "Os conflitos de sincronização ocorrem quando os mesmos dados foram modificados tanto no aplicativo local quanto no Sharly-Chess.com. Para resolvê-los, você deve atualizar os dados para um estado não conflitual ou escolher uma versão dos dados para aplicar em todos os lugares."
+
+#, ai_translation
+msgid "Synchronisation interrupted on {last_attempt_date} at {last_attempt_time}, tournament conflicts detected."
+msgstr "Sincronização interrompida em {last_attempt_date} em {last_attempt_time}, conflitos de torneio detectados."
+
+#, ai_translation
+msgid "Synchronisation is unavailable while there are conflicts."
+msgstr "A sincronização não está disponível enquanto houver conflitos."
+
+#, ai_translation
+msgid "Synchronisation ongoing"
+msgstr "Sincronização em curso"
+
+#, ai_translation, python-format
+msgid "Synchronize automatically every %(delay)d minutes."
+msgstr "Sincronize automaticamente a cada %(delay)d minutos."
+
+#, ai_translation
+msgid "Synchronize players"
+msgstr "Sincronizar jogadores"
+
+#, ai_translation
+msgid "Time control"
+msgstr "Controle do tempo"
+
+#, ai_translation
+msgid "Title"
+msgstr "Título"
+
+#, ai_translation
+msgid "Tournament"
+msgstr "Torneio Torneio"
+
+#, ai_translation
+msgid "Tournament [{tournament}] successfully uploaded."
+msgstr "[{tournament}] [0) [0] [0] [0] [0] [0] [0] [0] [0] [0] [0]"
+
+#, ai_translation
+msgid "Tournament has been modified since the last upload."
+msgstr "O torneio foi modificado desde o último upload."
+
+#, ai_translation
+msgid "Tournament has not started yet, no results to upload."
+msgstr "Ainda não começou, não há resultados para carregar."
+
+#, ai_translation
+msgid "Tournament import failed, consult the logs for more details."
+msgstr "A importação do torneio falhou, consulte os registros para mais detalhes."
+
+#, ai_translation
+msgid "Tournament is currently being uploaded."
+msgstr "Atualmente, o torneio está sendo carregado."
+
+#, ai_translation
+msgid "Tournament successfully imported."
+msgstr "Torneio importado com sucesso."
+
+#, ai_translation
+msgid "Tournament upload has been planned."
+msgstr "O upload do torneio foi planejado."
+
+#, ai_translation
+msgid "Type"
+msgstr "Tipo"
+
+#, ai_translation
+msgid "Undefined"
+msgstr "Indefinido"
+
+#, ai_translation
+msgid "Up to date"
+msgstr "Até à data"
+
+#, ai_translation
+msgid "Upload"
+msgstr "Upload"
+
+#, ai_translation
+msgid "Upload a local tournament"
+msgstr "Carregar um torneio local"
+
+#, ai_translation
+msgid "Upload all tournament results"
+msgstr "Carregar todos os resultados do torneio"
+
+#, ai_translation, python-format
+msgid "Upload automatically every %(delay)d minutes."
+msgstr "Faça o upload automaticamente a cada %(delay)d minutos."
+
+#, ai_translation
+msgid "Upload tournaments that only exist locally to Sharly-Chess.com."
+msgstr "Upload de torneios que só existem localmente para Sharly-Chess.com."
+
+#, ai_translation
+msgid "Year of birth"
+msgstr "Ano de nascimento"
+
+#, ai_translation
+msgid "consult the logs"
+msgstr "Consultar os logs"
+
+#, ai_translation
+msgid "no internet connection"
+msgstr "sem conexão à internet"
+
+#, ai_translation
+msgid "re-authorisation required"
+msgstr "reautorização necessária"
+
+#, ai_translation
+msgid "tournament not found, most likely deleted"
+msgstr "não encontrado, provavelmente excluído"
+
+#, ai_translation
+msgid "{count} duplicated player detected."
+msgid_plural "{count} duplicated players detected."
+msgstr[0] "{count} jogador duplicado detectado."
+msgstr[1] "{count} jogadores duplicados detectados."
+

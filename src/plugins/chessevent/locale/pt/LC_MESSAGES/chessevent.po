@@ -123,7 +123,7 @@ msgid "Import from ChessEvent"
 msgstr "Importação do ChessEvent"
 
 #, ai_translation
-msgid "Last synchronization"
+msgid "Last synchronisation"
 msgstr "ltima sincronização"
 
 #, ai_translation
@@ -159,14 +159,14 @@ msgid "Support for the ChessEvent platform used for organising tournaments in Fr
 msgstr "Suporte para a plataforma ChessEvent usada para organizar torneios na França."
 
 #, ai_translation
+msgid "Synchronisation failed for tournament [{tournament}]."
+msgstr "A sincronização falhou para o torneio [{tournament}]."
+
+#, ai_translation
 msgid "Synchronisation failed for {count} tournament"
 msgid_plural "Synchronisation failed for {count} tournaments"
 msgstr[0] "Falha na sincronização do torneio {count}"
 msgstr[1] "Falha na sincronização para torneios de {count}"
-
-#, ai_translation
-msgid "Synchronization failed for tournament [{tournament}]."
-msgstr "A sincronização falhou para o torneio [{tournament}]."
 
 #, ai_translation
 msgid "Synchronize all tournaments"

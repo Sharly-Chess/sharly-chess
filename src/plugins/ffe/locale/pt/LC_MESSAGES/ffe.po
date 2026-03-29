@@ -323,8 +323,8 @@ msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr "Número de licença FFE inválido [{ffe_licence_number}]."
 
 #, ai_translation
-msgid "Invalid date format [{date}] (expected: {format})"
-msgstr "Formato de data inválido [{date}] (esperado: {format})"
+msgid "Invalid date format [{date}] (expected: {format})."
+msgstr "Formato de data inválido [{date}] (esperado: {format})."
 
 #, ai_translation
 msgid "Invalid display link text [{text}]"
@@ -457,10 +457,6 @@ msgstr "PAPI"
 #, ai_translation
 msgid "Papi file"
 msgstr "Ficheiro Papi"
-
-#, ai_translation
-msgid "Player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
-msgstr "Jogador com número de licença FFE [{ffe_licence_number}] já joga torneio [{tournament}]."
 
 #, ai_translation
 msgid "Players:"

@@ -13,7 +13,7 @@ from huggingface_hub import hf_hub_url
 
 from common.i18n.babel_wrapper import BabelDomainWrapper
 
-from common.i18n import DEFAULT_LOCALE, Domain
+from common.i18n import DEFAULT_LOCALE, Domain, BASE_DIR
 from common.logger import (
     print_interactive_info,
     print_interactive_error,
@@ -53,6 +53,20 @@ class I18nTranslator:
         domain_message_ids_to_translate: dict[str, Any] = {}
         for domain in Domain.get_domains():
             pot_file: Path = domain.pot_file
+            if not pot_file.is_file():
+                BabelDomainWrapper.run_babel_command(
+                    'extract',
+                    [
+                        f'--mapping-file={domain.config_file}',
+                        f'--output-file={pot_file}',
+                        '--sort-output',
+                        '--add-location=never',
+                        '--no-wrap',
+                        '--omit-header',
+                        '--ignore-dirs="**/static"',
+                        f'{BASE_DIR}',
+                    ],
+                )
             po_file: Path = domain.locale_po_file(self.target_locale)
             if not po_file.is_file():
                 print_interactive_info(f'Creating [{po_file}] from [{pot_file}]...')

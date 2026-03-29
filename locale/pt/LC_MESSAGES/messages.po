@@ -391,8 +391,12 @@ msgid "A file is expected."
 msgstr "Um arquivo é esperado."
 
 #, ai_translation
-msgid "A player with this value already exists in the tournament."
-msgstr "Um jogador com esse valor já existe no torneio."
+msgid "A player with {column}=[{value}] already exists in the event."
+msgstr "Um jogador com {column}[{value}] já existe no evento."
+
+#, ai_translation
+msgid "A player with {column}=[{value}] already exists in tournament [{tournament}]."
+msgstr "Um jogador com {column}[{value}] já existe no torneio [{tournament}]."
 
 #, ai_translation
 msgid "A plugin specific to this federation is used, it can no longer be modified."
@@ -711,8 +715,16 @@ msgid "Allocate players to the first tournament for which the criteria are met."
 msgstr "Alocar os jogadores ao primeiro torneio para o qual os critérios são atendidos."
 
 #, ai_translation
+msgid "Allow a player to take part in multiple tournaments."
+msgstr "Permita que um jogador participe de vários torneios."
+
+#, ai_translation
 msgid "Allow links to this screen"
 msgstr "Permitir links para esta tela"
+
+#, ai_translation
+msgid "Allow multi-tournament players"
+msgstr "Permitir jogadores multi-torneamento"
 
 #, ai_translation
 msgid "Allows access to Screens marked as public"
@@ -3694,8 +3706,8 @@ msgid "Invalid date format (expected: {format})."
 msgstr "Formato de data inválido (esperado: {format})."
 
 #, ai_translation
-msgid "Invalid date format [{date}] (expected: {format})"
-msgstr "Formato de data inválido [{date}] (esperado: {format})"
+msgid "Invalid date format [{date}] (expected: {format})."
+msgstr "Formato de data inválido [{date}] (esperado: {format})."
 
 #, ai_translation
 msgid "Invalid delay [{delay}] (positive integer expected)."
@@ -5332,12 +5344,12 @@ msgid "Player [{player_id}]: {error}"
 msgstr "Jogador [{player_id}]: {error}"
 
 #, ai_translation
-msgid "Player [{player}] already exists in the tournament."
-msgstr "O jogador [{player}] já existe no torneio."
+msgid "Player [{player}] already exists in the event."
+msgstr "O jogador [{player}] já existe no evento."
 
 #, ai_translation
-msgid "Player [{player}] already plays tournament [{tournament}]."
-msgstr "Jogador [{player}] já joga torneio [{tournament}]."
+msgid "Player [{player}] already exists in tournament [{tournament}]."
+msgstr "O jogador [{player}] já existe no torneio [{tournament}]."
 
 #, ai_translation
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
@@ -5398,10 +5410,6 @@ msgstr "Seleção de jogadores (por classificação)"
 #, ai_translation, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Conjuntos de ecrã do jogador [%(screen_uniq_id)s]"
-
-#, ai_translation
-msgid "Player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
-msgstr "Jogador com FIDE ID [{fide_id}] já joga torneio [{tournament}]."
 
 #, ai_translation
 msgid "Player with FIDE ID [{fide_id}] is duplicated."
@@ -6944,14 +6952,6 @@ msgid "The average of the ratings of the opponents played over the board."
 msgstr "A média das classificações dos adversários jogou sobre o tabuleiro."
 
 #, ai_translation
-msgid "The base date has to be at most one year after the end of the event."
-msgstr "A data base deve ser no máximo um ano após o final do evento."
-
-#, ai_translation
-msgid "The base date has to be at most one year prior to the start of the event."
-msgstr "A data base deve ser no máximo um ano antes do início do evento."
-
-#, ai_translation
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "O número do tabuleiro ao qual o jogador será sempre atribuído (use-o para pessoas com deficiência)."
 
@@ -6978,6 +6978,10 @@ msgstr "A federação padrão para seus eventos."
 #, ai_translation
 msgid "The director is the person in charge of the event."
 msgstr "O diretor é o responsável pelo evento."
+
+#, ai_translation
+msgid "The event already has multi-tournament players."
+msgstr "O evento já tem jogadores multi-torneio."
 
 #, ai_translation
 msgid "The first round is ignored."
@@ -7390,6 +7394,14 @@ msgid "This name is already used."
 msgstr "Este nome já foi usado."
 
 #, ai_translation
+msgid "This player already exists in the event."
+msgstr "Este jogador já existe no evento."
+
+#, ai_translation
+msgid "This player already exists in tournament [{tournament}]."
+msgstr "Este jogador já existe no torneio [{tournament}]."
+
+#, ai_translation
 msgid "This rotator is private (not visible by the spectators)."
 msgstr "Este rotador é privado (não visível pelos espectadores)."
 
@@ -7500,6 +7512,10 @@ msgstr "Controle do tempo:"
 #, ai_translation
 msgid "Time outside of event time range ({range})."
 msgstr "Tempo fora do intervalo de tempo do evento ({range})."
+
+#, ai_translation
+msgid "Time outside of tournament time range ({range})."
+msgstr "Tempo fora do intervalo de tempo do torneio ({range})."
 
 #, ai_translation
 msgid "Timer"
@@ -8614,6 +8630,10 @@ msgid "clear filters"
 msgstr "filtros claros"
 
 #, ai_translation
+msgid "default"
+msgstr "padrão"
+
+#, ai_translation
 msgid "either the duration or the increment must be greater than 0."
 msgstr "A duração ou o incremento devem ser maiores que 0."
 
@@ -8717,10 +8737,6 @@ msgstr "Classificação do início ao n° {last}"
 msgid "round_{round}"
 msgstr "round_{round}"
 
-#, fuzzy
-msgid "s *** SECONDS"
-msgstr "s"
-
 #, ai_translation
 msgid "screens of {number} boards"
 msgstr "telas de {number} placas"
@@ -8752,6 +8768,10 @@ msgstr "telas de {number} jogadores de n° {first} ao fim"
 #, ai_translation
 msgid "screens of {number} players from start to #{last}"
 msgstr "telas de {number} jogadores do início ao n° {last}"
+
+#, fuzzy
+msgid "sec *** SECONDS"
+msgstr "sec"
 
 #, ai_translation
 msgid "some already played each other"
