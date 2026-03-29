@@ -104,7 +104,7 @@
                                 $('#estimated-ratings').hide();
                             }
                         });
-                        $('#rating').trigger('change');
+                        triggerModalInitEvent('#rating');
                     </script>
                 </div>
 
@@ -182,7 +182,7 @@
                                 }
                             {% endfor %}
                         });
-                        $('#pairing-system').trigger('change');
+                        triggerModalInitEvent('#pairing-system');
                     </script>
                 </div>
                 <div class="row gy-2 gx-3">
