@@ -342,8 +342,11 @@ msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF."
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
 
-msgid "A player with this value already exists in the tournament."
-msgstr "Un·e joueur·euse avec cette valeur existe déjà dans le tournoi."
+msgid "A player with {column}=[{value}] already exists in the event."
+msgstr "Un·e joueur·euse avec {column}=[{value}] existe déjà dans l'évènement."
+
+msgid "A player with {column}=[{value}] already exists in tournament [{tournament}]."
+msgstr "Un·e joueur·euse avec {column}=[{value}] existe déjà dans le tournoi [{tournament}]."
 
 msgid "A plugin specific to this federation is used, it can no longer be modified."
 msgstr "Un plug-in spécifique à cette fédération est utilisé, elle ne peut plus être modifiée."
@@ -582,8 +585,14 @@ msgstr "Toutes les valeurs peuvent être modifiées par l’arbitre si nécessai
 msgid "Allocate players to the first tournament for which the criteria are met."
 msgstr "Attribuer les joueur·euses au premier tournoi pour lequel les critères sont vérifiés."
 
+msgid "Allow a player to take part in multiple tournaments."
+msgstr "Autoriser un·joueur·euse à participer à plusieurs tournois."
+
 msgid "Allow links to this screen"
 msgstr "Autoriser les liens vers cet écran"
+
+msgid "Allow multi-tournament players"
+msgstr "Autoriser les joueur·eures multi-tournois"
 
 msgid "Allows access to Screens marked as public"
 msgstr "Autorise l'accès aux écrans publics"
@@ -2870,8 +2879,8 @@ msgstr "Couleur non valide [{color}] ([#RRGGBB] attendu)."
 msgid "Invalid date format (expected: {format})."
 msgstr "Format de date invalide (attendu : {format})."
 
-msgid "Invalid date format [{date}] (expected: {format})"
-msgstr "Format de date invalide [{date}] (attendu : {format})"
+msgid "Invalid date format [{date}] (expected: {format})."
+msgstr "Format de date invalide [{date}] (attendu : {format})."
 
 msgid "Invalid delay [{delay}] (positive integer expected)."
 msgstr "Délai non valide [{delay}] (entier positif attendu)."
@@ -4126,11 +4135,11 @@ msgstr "Joueur·euse [{player_id}] - ronde {round} : "
 msgid "Player [{player_id}]: {error}"
 msgstr "Joueur·euse [{player_id}] : {error}"
 
-msgid "Player [{player}] already exists in the tournament."
-msgstr "Le·le joueur·euse [{player}] existe déjà dans le tournoi."
+msgid "Player [{player}] already exists in the event."
+msgstr "Le·la joueur·euse [{player}] existe déjà dans l'évènement."
 
-msgid "Player [{player}] already plays tournament [{tournament}]."
-msgstr "Le·la joueur·euse [{player}] joue déjà le tournoi [{tournament}]."
+msgid "Player [{player}] already exists in tournament [{tournament}]."
+msgstr "Le·la joueur·euse [{player}] existe déjà dans le tournoi [{tournament}]."
 
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse [{player}] a été créé·e. Cependant, il·elle ne correspond pas aux critères du tournoi : {names}"
@@ -4177,9 +4186,6 @@ msgstr "Sélection des joueur·euses (par classement)"
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
 msgstr "Ensembles de joueur·euses de l'écran [%(screen_uniq_id)s]"
-
-msgid "Player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
-msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] joue déjà le tournoi [{tournament}]."
 
 msgid "Player with FIDE ID [{fide_id}] is duplicated."
 msgstr "Le·la joueur·euse avec l'identifiant FIDE [{fide_id}] est dupliqué·e."
@@ -5370,12 +5376,6 @@ msgstr "La moyenne du score [{tie_break}] des adversaires joué·es sur l'échiq
 msgid "The average of the ratings of the opponents played over the board."
 msgstr "La moyenne des classements des adversaires joué·es sur l'échiquier."
 
-msgid "The base date has to be at most one year after the end of the event."
-msgstr "La date de référence doit être au plus un an après la fin de l'évènement."
-
-msgid "The base date has to be at most one year prior to the start of the event."
-msgstr "La date de référence doit être au plus un an avant le début de l'évènement."
-
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr "Le numéro de l'échiquier qui sera assigné au·à la joueur·euse (à utiliser pour les personnes handicapées)."
 
@@ -5396,6 +5396,9 @@ msgstr "La fédération par défaut pour vos évènements."
 
 msgid "The director is the person in charge of the event."
 msgstr "Le·la directeur·ice est la personne responsable de l’événement."
+
+msgid "The event already has multi-tournament players."
+msgstr "Cet évènement a déjà des joueur·euses multi-tournois."
 
 msgid "The first round is ignored."
 msgid_plural "The first {rounds} rounds are ignored."
@@ -5708,6 +5711,12 @@ msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran 
 msgid "This name is already used."
 msgstr "Ce nom est déjà utilisé."
 
+msgid "This player already exists in the event."
+msgstr "Ce·tte joueur·euse existe déjà dans l'évènement."
+
+msgid "This player already exists in tournament [{tournament}]."
+msgstr "Ce·tte joueur·euse existe déjà dans le tournoi [{tournament}]."
+
 msgid "This rotator is private (not visible by the spectators)."
 msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."
 
@@ -5792,6 +5801,9 @@ msgstr "Cadence :"
 
 msgid "Time outside of event time range ({range})."
 msgstr "Horaire en dehors des horaires de l'évènement ({range})."
+
+msgid "Time outside of tournament time range ({range})."
+msgstr "Horaire en dehors des horaires du tournoi ({range})."
 
 msgid "Timer"
 msgstr "Chronomètre"
@@ -6648,6 +6660,9 @@ msgstr "échiquiers {board_numbers}"
 msgid "clear filters"
 msgstr "effacer les filtres"
 
+msgid "default"
+msgstr "défaut"
+
 msgid "either the duration or the increment must be greater than 0."
 msgstr "la durée ou l’incrément doit être supérieur à 0."
 
@@ -6673,7 +6688,7 @@ msgid "last"
 msgstr "dernier"
 
 msgid "min *** MINUTES"
-msgstr "min"
+msgstr "min."
 
 msgid "minimum: {value}"
 msgstr "minimum : {value}"
@@ -6726,9 +6741,6 @@ msgstr "classement du début à {last}"
 msgid "round_{round}"
 msgstr "ronde_{round}"
 
-msgid "s *** SECONDS"
-msgstr "s"
-
 msgid "screens of {number} boards"
 msgstr "écrans de {number} échiquiers"
 
@@ -6752,6 +6764,9 @@ msgstr "écrans de {number} joueur·euses du n°{first} à la fin"
 
 msgid "screens of {number} players from start to #{last}"
 msgstr "écrans de {number} joueur·euses du début au n°{last}"
+
+msgid "sec *** SECONDS"
+msgstr "sec."
 
 msgid "some already played each other"
 msgstr "certain·es se sont déjà rencontré·es"

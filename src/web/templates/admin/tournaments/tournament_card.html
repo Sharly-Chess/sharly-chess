@@ -94,10 +94,7 @@
                 </div>
             {% endif %}
             {% if tournament.time_control_trf25 %}
-                <div class="text-start">
-                    {{ _('Time control:') }}
-                    <span class="tc-human" data-trf="{{ tournament.time_control_trf25|e }}"></span>
-                </div>
+                {% include tournament_card_time_control_template %}
             {% endif %}
             {% if tournament.has_schedule or tournament.date_range_str != admin_event.date_range_str %}
                 <div class="text-start d-flex align-items-center gap-1">
@@ -106,7 +103,7 @@
                     {% if tournament.has_schedule %}
                         <i
                             class="bi-info-circle-fill ps-1"
-                            {{ macros.tooltip_attributes('', tournament.round_schedule_tooltip_str, 'top') }}
+                            {{ macros.tooltip_attributes('', tournament.round_schedule_tooltip_str, 'right') }}
                         ></i>
                     {% endif %}
                 </div>

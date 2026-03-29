@@ -32,12 +32,14 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {% set reload_schedule_script = "htmx.trigger(document.getElementById('schedule-section'), 'schedule-params-updated')" %}
                 <h4>
                     {{ _('Properties') }}
                 </h4>
                 {# These inputs are a trick to avoid autocomplete #}
                 <input type="text" style="display:none">
                 <input type="password" style="display:none">
+                <input type="hidden" name="redirect_to" value="{{ data['redirect_to'] }}">
                 <div class="row gy-2 gx-3">
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
@@ -53,22 +55,10 @@
                             name='rounds',
                             label=_('%(string)s:', string=_('Rounds')),
                             data=data, errors=errors,
-                            hx_get=url_for(
-                                'admin-tournament-schedule-section',
-                                event_uniq_id=admin_event.uniq_id,
-                            ) ~ '?action=' ~ action
-                            ~ (
-                                '&tournament_id=' ~ admin_tournament.id
-                                if action != 'create'
-                                else ''
-                            ),
-                            hx_trigger='change delay:0.3s',
-                            hx_target='#schedule-section',
-                            hx_swap='outerHTML',
-                            hx_include='[name="rounds"],[name^="round_"][name$="_datetime"]',
-                            hx_vals='js:{schedule_collapsed: document.getElementById("schedule-collapse") ? !document.getElementById("schedule-collapse").classList.contains("show") : true}',
-                            hx_indicator='#please-wait',
                         ) }}
+                        <script>
+                            $('#rounds').on('change delay:0.3s', () => {{ reload_schedule_script|safe }});
+                        </script>
                     </div>
                 </div>
                 <div class="row gy-2 gx-3">
@@ -124,9 +114,7 @@
                             name='date_range',
                             label=_('%(string)s:', string=_('Dates')),
                             placeholder=admin_event.date_range_str,
-                            min_date=admin_event.start_date_str,
-                            max_date=admin_event.stop_date_str,
-                            default_checkbox=true,
+                            on_date_picker_hide=reload_schedule_script,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -358,8 +346,6 @@
 </div>
 
 <script>
-    requestRefresh();
-
     function ensureWhite(tc)  {
         return { white: (tc.white && tc.white.length ? tc.white : [{ seconds: 0 }]), black: tc.black };
     }
