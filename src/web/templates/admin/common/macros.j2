@@ -362,6 +362,7 @@
     disabled_dates=[],
     position=''
 ) %}
+    <span id="{{ id }}-datepicker-container"></span>
     {% set formatter = sharly_chess_config.date_formatter %}
     <script>
         datePickers['{{ id }}'] = new AirDatepicker('#{{ id }}', {
@@ -369,6 +370,7 @@
             dateFormat: `{{ formatter.air_date_picker_format }}`,
             timeFormat: 'HH:mm',
             firstDay: 1,
+            container: document.getElementById('{{ id }}-datepicker-container'),
             keyboardNav: false,
             {% if position %}
                 position: '{{ position }}',
