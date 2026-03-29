@@ -33,8 +33,10 @@ class AppPluginManager(PluginManager):
             HandicapGamesPlugin,
         )
         from plugins.fra_schools.fra_schools import FRASchoolsPlugin
+        from plugins.sce.sce import SCEPlugin
 
         plugins = [
+            SCEPlugin(),
             PairingAccelerationPlugin(),
             ChessResultsPlugin(),
             FfePlugin(),

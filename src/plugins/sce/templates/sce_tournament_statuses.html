@@ -1,0 +1,14 @@
+{% import '/common/macros.j2' as macros with context %}
+
+{% for tournament_status in sce_utils.resolve_tournament_upload_statuses(tournament) %}
+    {% set tooltip_message = tournament_status.tooltip_message(tournament) %}
+    <span
+        class="badge rounded-pill {{ tournament_status.css_classes }}"
+        style="height: 20px"
+        {% if tooltip_message %}
+            {{ macros.tooltip_attributes('', tooltip_message) }}
+        {% endif %}
+    >
+        {{ tournament_status.name }}
+    </span>
+{% endfor %}

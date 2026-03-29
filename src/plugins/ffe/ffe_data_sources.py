@@ -6,6 +6,7 @@ from text_unidecode import unidecode
 from common import SharlyChessException
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
+from common.logger import get_logger
 from data.columns.handlers import PlayerDatasheetColumnHandler
 import data.columns.player_datasheet as pds
 from data.columns.player_datasheet import DatasheetColumn
@@ -37,6 +38,9 @@ from plugins.ffe.ffe_entity import (
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.utils import FFEUtils, FfePlayerPluginData, get_data
+
+
+logger = get_logger()
 
 
 class FfePlayerUpdaterField(PlayerUpdaterField, ABC):
@@ -365,7 +369,8 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
         try:
             async with FFESqlServer():
                 return True
-        except SharlyChessException:
+        except SharlyChessException as e:
+            logger.error(e)
             return False
 
     @property

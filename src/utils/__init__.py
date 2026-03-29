@@ -207,6 +207,17 @@ class Utils:
             return None
         return currencies[0].alpha3
 
+    @staticmethod
+    def get_federation_from_alpha_2_country_code(
+        alpha_2_country_code: str,
+    ) -> str | None:
+        from common.sharly_chess_config import SharlyChessConfig
+
+        country = pycountry.countries.get(alpha_2=alpha_2_country_code)
+        if country and country.alpha_3 in SharlyChessConfig().federations:
+            return country.alpha_3
+        return None
+
     @classmethod
     def ordinal_integer(cls, value: int) -> str:
         from common.i18n import get_locale, _
