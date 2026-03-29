@@ -144,7 +144,7 @@ class FFEUtils:
             )
 
     @classmethod
-    def tournament_url(cls, ffe_id: str) -> str:
+    def tournament_url(cls, ffe_id: int) -> str:
         return f'https://echecs.asso.fr/FicheTournoi.aspx?Ref={ffe_id}'
 
     @classmethod
