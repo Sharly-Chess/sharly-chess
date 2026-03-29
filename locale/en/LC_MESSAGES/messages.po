@@ -1461,9 +1461,6 @@ msgstr ""
 msgid "Create hours from tournament"
 msgstr ""
 
-msgid "Create manually"
-msgstr ""
-
 msgid "Create permission"
 msgstr ""
 
