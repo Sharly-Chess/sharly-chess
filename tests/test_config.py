@@ -214,7 +214,6 @@ class TestUtils:
             'name': name,
             'time_control_trf25': None,
             'record_illegal_moves': None,
-            'rules': None,
             'first_board_number': None,
             'paired_bye_result': None,
             'max_byes': None,
