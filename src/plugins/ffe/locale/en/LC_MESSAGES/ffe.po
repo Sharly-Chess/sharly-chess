@@ -81,6 +81,9 @@ msgstr ""
 msgid "Connection French Chess Federation"
 msgstr ""
 
+msgid "Consult the logs for more details."
+msgstr ""
+
 msgid "Cut *** TIE BREAK VARIATION"
 msgstr "Cut"
 
@@ -241,6 +244,9 @@ msgstr ""
 msgid "Invalid date format [{date}] (expected: {format})."
 msgstr ""
 
+msgid "Invalid file format [{format}] (expected: {expected})."
+msgstr ""
+
 msgid "Invalid format (expected: {format})."
 msgstr ""
 
@@ -313,10 +319,16 @@ msgstr ""
 msgid "No internet connection"
 msgstr ""
 
+msgid "No tournament configured for FFE upload."
+msgstr ""
+
 msgid "None *** FFE licence"
 msgstr "None"
 
 msgid "Not configured"
+msgstr ""
+
+msgid "OK"
 msgstr ""
 
 msgid "Ongoing"
@@ -346,10 +358,15 @@ msgstr ""
 msgid "Replace the player to update this field."
 msgstr ""
 
-msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
+msgid "Rules successfully uploaded."
 msgstr ""
 
-msgid "Rules uploaded"
+msgid "Rules upload failed for tournament [{tournaments}]."
+msgid_plural "Rules upload failed for tournaments [{tournaments}]."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr ""
 
 msgid "Scan to access the tournament on the FFE site."
@@ -454,6 +471,9 @@ msgstr ""
 msgid "Tournament visibility could not be set, consult the FFE modal for more details."
 msgstr ""
 
+msgid "Tournament visibility could not be set."
+msgstr ""
+
 msgid "Trainee Arbiter"
 msgstr ""
 
@@ -492,9 +512,6 @@ msgid "Upload rules"
 msgstr ""
 
 msgid "Upload to the FFE site"
-msgstr ""
-
-msgid "Uploading the PDF rules file allows the players to read the rules online."
 msgstr ""
 
 msgid "Variation"

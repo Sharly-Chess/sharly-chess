@@ -27,6 +27,11 @@
             </h2>
         </div>
         <div class="modal-body">
+            {% if message %}
+                {% with type=message_type or 'success' %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
             <table
                 class="table prominent table-sm w-100 bg-light mx-auto justify-content-center"
             >
@@ -68,18 +73,123 @@
                 </thead>
                 {% include 'ffe_upload_results.html' %}
             </table>
-
-            <div class="text-center mt-3 mb-1">
-                <button
-                    type="button"
-                    hx-post="{{ url_for('ffe-upload', event_uniq_id=admin_event.uniq_id) }}"
-                    hx-target="#upload-results"
-                    hx-swap="outerHTML"
-                    class="text-nowrap white btn btn-outline-primary"
+                        <div class="d-flex justify-content-center gap-2 mt-3 mb-1">
+                <span
+                    {% if not ffe_configured_tournaments %}
+                        {{ macros.tooltip_attributes('', _(
+                            'No tournament configured for FFE upload.'
+                        )) }}
+                    {% endif %}
                 >
-                    <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
-                    {{ _('Upload all tournaments') }}
-                </button>
+                    <button
+                        type="button"
+                        hx-post="{{ url_for('ffe-upload', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-target="#upload-results"
+                        hx-swap="outerHTML"
+                        class="text-nowrap white btn btn-outline-primary"
+                        {% if not ffe_configured_tournaments %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
+                        {{ _('Upload all tournaments') }}
+                    </button>
+                </span>
+                <div
+                    class="dropup"
+                    {% if not client.can_publish_rules %}
+                        {{ macros.tooltip_attributes('', _('You are not allowed to publish rules.')) }}
+                    {% elif not ffe_configured_tournaments %}
+                        {{ macros.tooltip_attributes('', _('No tournament configured for FFE upload.')) }}
+                    {% endif %}
+                >
+                    <button
+                        class="btn btn-outline-primary dropdown-toggle text-nowrap"
+                        type="button"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        data-bs-auto-close="outside"
+                        {% if not client.can_publish_rules or not ffe_configured_tournaments %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi bi-file-earmark-text-fill pe-1"></i>
+                        {{ _('Upload rules') }}
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end p-0">
+                        <li class="dropdown-item title text-nowrap">
+                            <input
+                                type="checkbox"
+                                class="form-check-input blue-checkbox"
+                                {% if enabled_columns|length == visible_columns|length %}checked{% endif %}
+                                onclick="$('.rules-tournament').prop('checked', this.checked).trigger('change')"
+                            />
+                            <button
+                                id="rules-tournaments-validate-button"
+                                class="btn w-100 text-end py-0"
+                                hx-indicator="#please-wait"
+                            >
+                                <i class="bi-check-lg pe-1"></i>
+                                {{ _('OK') }}
+                            </button>
+                        </li>
+                        <li class="dropdown-divider m-0"></li>
+                        {% for tournament in ffe_configured_tournaments %}
+                            {% set plugin_data = tournament.plugin_data.ffe %}
+                            {% set is_configured = plugin_data.ffe_id and plugin_data.password %}
+                            <li
+                                class="dropdown-item text-nowrap d-inline-flex align-items-center gap-2"
+                            >
+                                <input
+                                    type="checkbox"
+                                    id="rules-tournament-{{ tournament.id }}"
+                                    value="{{ tournament.id }}"
+                                    class="rules-tournament form-check-input blue-checkbox mb-1"
+                                    {% if is_configured %}
+                                        checked
+                                    {% else %}
+                                        disabled
+                                    {% endif %}
+                                />
+                                <label for="rules-tournament-{{ tournament.id }}" class="form-label w-100 my-0">
+                                    {{ tournament.name }}
+                                </label>
+                            </li>
+                        {% endfor %}
+                        <script>
+                            $('.rules-tournament').change(function () {
+                                $('#rules-tournaments-validate-button').prop(
+                                    'disabled', $('.rules-tournament:checked').length === 0
+                                );
+                            });
+                        </script>
+                    </ul>
+                    <form
+                        style="display: none"
+                        hx-post="{{ url_for('ffe-modal-upload-rules', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-vals="js:{tournament_ids: $('.rules-tournament:checked').map((_, el) => $(el).val()).get()}"
+                        enctype="multipart/form-data"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        <input
+                            id="rules-file-input"
+                            type="file"
+                            name="rules_file"
+                            accept="application/pdf"
+                        />
+                        <button id="rules-form-submit-button" type="submit"></button>
+                        <script>
+                            $('#rules-tournaments-validate-button').click(function () {
+                                $('#rules-file-input').click();
+                            });
+                            $('#rules-file-input').on('input', function () {
+                                $('#rules-form-submit-button').click();
+                            });
+                        </script>
+                    </form>
+
+                </div>
             </div>
         </div>
 

@@ -369,9 +369,6 @@ msgstr "<smart_count> seconde |||| <smart_count> secondes"
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr "<smart_count> semaine |||| <smart_count> semaines"
 
-msgid "A URL, or the path to the rules file on the server, in PDF format."
-msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF."
-
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
 
@@ -2081,9 +2078,6 @@ msgstr "Ex. : Début du pointage dans %%s"
 msgid "E.g.: World championship"
 msgstr "Ex.: Championnat du monde"
 
-msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
-msgstr "Ex. : c:\\echecs\\tournois\\principal\\reglement.pdf"
-
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Ex. : https://mon.club.fr/affiche.jpg"
 
@@ -2459,9 +2453,6 @@ msgstr "Fidji"
 
 msgid "File"
 msgstr "Fichier"
-
-msgid "File [{file}] not found."
-msgstr "Fichier [{file}] non trouvé."
 
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
 msgstr "L'extension du fichier [{suffix}] est invalide (attendu : {expected})."
@@ -2842,9 +2833,6 @@ msgstr "Inclut tous les autres rôles et donne un accès complet à l'applicatio
 
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
-
-msgid "Incorrect path [{path}]."
-msgstr "Chemin incorrect [{path}]."
 
 msgid "Increment (sec):"
 msgstr "Incrément (sec) :"
@@ -3645,9 +3633,6 @@ msgstr "Aucun rôle défini."
 
 msgid "No rotators"
 msgstr "Aucun écran rotatif"
-
-msgid "No rules file set"
-msgstr "Règlement non défini"
 
 msgid "No screen families"
 msgstr "Aucune famille d'écrans"
@@ -4871,12 +4856,6 @@ msgstr "Rpd"
 
 msgid "Rules"
 msgstr "Règles"
-
-msgid "Rules file location:"
-msgstr "Emplacement du règlement :"
-
-msgid "Rules file set"
-msgstr "Règlement défini"
 
 msgid "Russia"
 msgstr "Russie"
@@ -6497,9 +6476,6 @@ msgstr "Grand Maître Internationale Femme"
 
 msgid "Woman International Master"
 msgstr "Maître Internationale Femme"
-
-msgid "Wrong file extension [{ext}] ([pdf] expected)."
-msgstr "Mauvaise extension de fichier [{ext}] ([pdf] attendu)."
 
 msgid "XLSX format"
 msgstr "Format XLSX"
