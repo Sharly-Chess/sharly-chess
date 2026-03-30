@@ -230,10 +230,6 @@ class Tournament:
         return SharlyChessConfig.default_record_illegal_moves
 
     @property
-    def rules(self) -> str | None:
-        return self.stored_tournament.rules
-
-    @property
     def check_in_open(self) -> bool:
         return self.stored_tournament.check_in_open
 

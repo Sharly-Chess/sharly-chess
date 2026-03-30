@@ -77,29 +77,6 @@
             </li>
             <li>
                 <span
-                    {% if not client.can_publish_rules %}
-                        {{ macros.tooltip_attributes('warning', _('You are not allowed to publish rules.'), 'right') }}
-                    {% else %}
-                        {{ macros.tooltip_attributes('info', _('Uploading the PDF rules file allows the players to read the rules online.'), 'right') }}
-                    {% endif %}
-                >
-                    <button
-                        class="dropdown-item text-nowrap"
-                        {% if client.can_publish_rules %}
-                            hx-post="{{ url_for('ffe-upload-rules', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        {% else %}
-                            disabled
-                        {% endif %}
-                    >
-                        <i class="bi bi-file-earmark-arrow-up-fill pe-1"></i>
-                        {{ _('Upload rules') }}
-                    </button>
-                </span>
-            </li>
-            <li>
-                <span
                     {% if not client.can_download_fees %}
                         {{ macros.tooltip_attributes('warning', _('You are not allowed to download fees.'), 'right') }}
                     {% else %}

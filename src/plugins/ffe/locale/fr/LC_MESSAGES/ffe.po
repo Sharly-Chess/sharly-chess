@@ -81,6 +81,9 @@ msgstr "Arbitre Fédéral Club"
 msgid "Connection French Chess Federation"
 msgstr "Connexion à la Fédération Française des Échecs"
 
+msgid "Consult the logs for more details."
+msgstr "Consultez les logs pour plus d'informations."
+
 msgid "Cut *** TIE BREAK VARIATION"
 msgstr "Tronqué"
 
@@ -247,6 +250,9 @@ msgstr "Numéro de licence FFE [{ffe_licence_number}] non valide."
 msgid "Invalid date format [{date}] (expected: {format})."
 msgstr "Format de date invalide [{date}] (attendu : {format})"
 
+msgid "Invalid file format [{format}] (expected: {expected})."
+msgstr "Format de fichier [{format}] invalide (attendu : {expected})."
+
 msgid "Invalid format (expected: {format})."
 msgstr "Format invalide (attendu : {format})."
 
@@ -319,11 +325,17 @@ msgstr "Aucun changement détecté depuis la dernière mise en ligne."
 msgid "No internet connection"
 msgstr "Aucune connexion à internet"
 
+msgid "No tournament configured for FFE upload."
+msgstr "Aucun tournoi configuré pour la mise en ligne FFE."
+
 msgid "None *** FFE licence"
 msgstr "Aucune"
 
 msgid "Not configured"
 msgstr "Non configuré"
+
+msgid "OK"
+msgstr "OK"
 
 msgid "Ongoing"
 msgstr "En cours"
@@ -352,11 +364,16 @@ msgstr "Joueur·euses :"
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
 
+msgid "Rules successfully uploaded."
+msgstr "Le règlement a été mise en ligne avec succès."
+
+msgid "Rules upload failed for tournament [{tournaments}]."
+msgid_plural "Rules upload failed for tournaments [{tournaments}]."
+msgstr[0] "Mise en ligne du règlement échouée pour le tournoi [{tournaments}]."
+msgstr[1] "Mise en ligne du règlement échouée pour les tournois [{tournaments}]."
+
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."
-
-msgid "Rules uploaded"
-msgstr "Règlement mis en ligne"
 
 msgid "Scan to access the tournament on the FFE site."
 msgstr "Scannez pour accéder au tournoi sur le site de la FFE."
@@ -460,6 +477,9 @@ msgstr "La mise en ligne du tournoi a été planifiée."
 msgid "Tournament visibility could not be set, consult the FFE modal for more details."
 msgstr "La visibilité du tournoi n'a pas pu être modifiée, consultez la modale FFE pour plus d'informations."
 
+msgid "Tournament visibility could not be set."
+msgstr "La visibilité du tournoi n'a pas pu être configurée."
+
 msgid "Trainee Arbiter"
 msgstr "Arbitre stagiaire"
 
@@ -499,9 +519,6 @@ msgstr "Mettre en ligne le règlement"
 
 msgid "Upload to the FFE site"
 msgstr "Mettre en ligne sur le site de la FFE"
-
-msgid "Uploading the PDF rules file allows the players to read the rules online."
-msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueur·euses de lire les règles en ligne."
 
 msgid "Use default - {option}"
 msgstr "Par défaut – {option}"

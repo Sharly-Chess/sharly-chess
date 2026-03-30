@@ -262,7 +262,6 @@ class TournamentAdminController(BaseEventAdminController):
                     raise ValueError(f'action=[{action}]')
             time_control_trf25: str | None = None
             record_illegal_moves: int | None = None
-            rules: str | None = None
             first_board_number: int | None = None
             paired_bye_result: float | None = None
             max_byes: int | None = None
@@ -286,7 +285,6 @@ class TournamentAdminController(BaseEventAdminController):
                 stored_tournament = admin_tournament.stored_tournament
                 time_control_trf25 = stored_tournament.time_control_trf25
                 record_illegal_moves = stored_tournament.record_illegal_moves
-                rules = stored_tournament.rules
                 first_board_number = stored_tournament.first_board_number
                 paired_bye_result = stored_tournament.paired_bye_result
                 max_byes = stored_tournament.max_byes
@@ -333,7 +331,6 @@ class TournamentAdminController(BaseEventAdminController):
                     'name': name,
                     'time_control_trf25': time_control_trf25,
                     'record_illegal_moves': record_illegal_moves,
-                    'rules': rules,
                     'first_board_number': first_board_number,
                     'paired_bye_result': paired_bye_result,
                     'max_byes': max_byes,
@@ -506,7 +503,6 @@ class TournamentAdminController(BaseEventAdminController):
         record_illegal_moves = cls._admin_validate_record_illegal_moves_update_data(
             data, errors
         )
-        rules = cls._admin_validate_rules_update_data(data, errors)
         first_board_number = WebContext.form_data_to_int(data, 'first_board_number')
         paired_bye_result = WebContext.form_data_to_int(data, 'paired_bye_result')
         max_byes = WebContext.form_data_to_int(data, 'max_byes')
@@ -575,7 +571,6 @@ class TournamentAdminController(BaseEventAdminController):
             index=index,
             time_control_trf25=time_control_trf25,
             record_illegal_moves=record_illegal_moves,
-            rules=rules,
             first_board_number=first_board_number,
             paired_bye_result=paired_bye_result,
             max_byes=max_byes,

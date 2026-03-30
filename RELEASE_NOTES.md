@@ -8,10 +8,6 @@
 ## Event
 
 - Automatically calculate event dates from tournament dates (4.0.0)
-
-## Event
-
-- Replace event dates by computed dates from tournaments (4.0.0)
 - Added an option to allow players in multiple tournaments (4.0.0)
 
 ## Players
@@ -40,6 +36,7 @@
 ## _FFE_
 
 - Improved the upload modal (4.0.0)
+- Relocate the rules upload to a group button on the FFE modal (4.0.0)
 
 ### _ChessEvent_
 
