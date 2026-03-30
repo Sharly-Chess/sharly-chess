@@ -47,7 +47,7 @@
                 <div class="flex-grow-1"></div>
                 {% if plugin_data.ffe_id %}
                     <a
-                        href="{{ ffe_utils.tournament_url(tournament) }}"
+                        href="{{ ffe_utils.tournament_url(plugin_data.ffe_id) }}"
                         target="_blank"
                         {{ macros.tooltip_attributes('', _('Page of the tournament on the FFE website.')) }}
                     ><i class="bi bi-box-arrow-up-right"></i></a>
