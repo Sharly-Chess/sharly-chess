@@ -4428,7 +4428,7 @@ msgid "Prizes"
 msgstr "Prix"
 
 msgid "Prizes *** WITH_SHORTCUT_INDICATION"
-msgstr "<u>P</u>rix"
+msgstr "Pri<u>x</u>"
 
 msgid "Prizes can only be shared for the main category."
 msgstr "Les prix ne peuvent être partagés que pour la catégorie générale."

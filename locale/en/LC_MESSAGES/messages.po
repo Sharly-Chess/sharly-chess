@@ -3992,7 +3992,7 @@ msgstr "P<u>a</u>irings"
 msgid "Pairings by board"
 msgstr ""
 
-msgid "Pairings by board ({num})"
+msgid "Pairings by board ({num})"   
 msgstr ""
 
 msgid "Pairings by board ({tournament_name})"
@@ -4216,7 +4216,7 @@ msgid "Players ({num})"
 msgstr ""
 
 msgid "Players ({num}) *** WITH_SHORTCUT_INDICATION"
-msgstr "P<u>l</u>ayers ({num})"
+msgstr "<u>P</u>layers ({num})"
 
 msgid "Players can't be overwritten once the tournament has started."
 msgstr ""
@@ -6943,10 +6943,10 @@ msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
 msgstr "SC_T"
 
 msgid "*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB"
-msgstr "SC_L"
+msgstr "SC_P"
 
 msgid "*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB"
-msgstr "SC_P"
+msgstr "SC_A"
 
 msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
 msgstr "SC_Z"
