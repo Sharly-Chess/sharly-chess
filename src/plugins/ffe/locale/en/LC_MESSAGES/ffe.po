@@ -244,7 +244,7 @@ msgstr ""
 msgid "Invalid date format [{date}] (expected: {format})."
 msgstr ""
 
-msgid "Invalid file format [{format}] (expected: {expected})."
+msgid "Invalid file extension [{extension}] (expected: {expected})."
 msgstr ""
 
 msgid "Invalid format (expected: {format})."

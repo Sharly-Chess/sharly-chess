@@ -184,9 +184,9 @@ class FfeUploadController(BaseEventAdminController):
         if not rules_file or rules_file.suffix != '.pdf':
             if rules_file:
                 message = _(
-                    'Invalid file format [{format}] (expected: {expected}).'
+                    'Invalid file extension [{extension}] (expected: {expected}).'
                 ).format(
-                    format=rules_file.suffix,
+                    extension=rules_file.suffix,
                     expected='.pdf',
                 )
                 rules_file.unlink(missing_ok=True)
