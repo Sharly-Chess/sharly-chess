@@ -23,12 +23,20 @@ function keyboardShortcutManager(event) {
                 document.body.dispatchEvent(new CustomEvent("SC_Shift_ArrowLeft"));
                 break;
             }
+            if (event.ctrlKey) {
+                document.body.dispatchEvent(new CustomEvent("SC_Ctrl_ArrowLeft"));
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_ArrowLeft"));
             break;
 
         case 'arrowright': 
             if (event.shiftKey) {
                 document.body.dispatchEvent(new CustomEvent("SC_Shift_ArrowRight"));
+                break;
+            }
+            if (event.ctrlKey) {
+                document.body.dispatchEvent(new CustomEvent("SC_Ctrl_ArrowRight"));
                 break;
             }
             document.body.dispatchEvent(new CustomEvent("SC_ArrowRight"));
@@ -43,31 +51,14 @@ function keyboardShortcutManager(event) {
             break;
 
         case 't':
-            if (event.shiftKey) {
-                document.body.dispatchEvent(new CustomEvent("SC_Shift_T"));
-                break;
-            }
             document.body.dispatchEvent(new CustomEvent("SC_T"));
             break;
 
         case 'c':
-            if (event.shiftKey) {
-                document.body.dispatchEvent(new CustomEvent("SC_Shift_C"));
-                break;
-            }
             document.body.dispatchEvent(new CustomEvent("SC_C"));
             break;
 
         case 'p':
-            if (event.shiftKey) {
-                document.body.dispatchEvent(new CustomEvent("SC_Shift_P"));
-                break;
-            }
-            if (event.altKey) {
-                document.body.dispatchEvent(new CustomEvent("SC_Alt_P"));
-                event.preventDefault();
-                break;
-            }
             document.body.dispatchEvent(new CustomEvent("SC_P"));
             break;
 
@@ -94,7 +85,15 @@ function keyboardShortcutManager(event) {
         case 'd':
             document.body.dispatchEvent(new CustomEvent("SC_D"));
             break;
-            
+
+        case 'm':
+            document.body.dispatchEvent(new CustomEvent("SC_M"));
+            break;
+
+        case 'l':
+            document.body.dispatchEvent(new CustomEvent("SC_L"));
+            break;
+
         default:
             break
 

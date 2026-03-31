@@ -3,18 +3,18 @@
     {% if swap_oob %}
         hx-swap-oob="true"
     {% endif %}
-    class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Documents'), 'right') }}
+    class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Documents WITH_SHORTCUT_INDICATION'), 'right') }}
 >
     <button
         class="btn nav-link text-start"
         hx-get="{{ url_for('documents-modal', event_uniq_id=admin_event.uniq_id) }}"
         hx-target="body"
         hx-indicator="#please-wait"
-        hx-trigger="click, SC_D from:body"
+        hx-trigger="click, {{_('*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB')}} from:body"
         data-bs-toggle="modal"
         data-bs-target="#modal-wrapper"
     >
         <i class="bi bi-file-earmark-text-fill"></i>
-        <span class="expanded-only">{{ _('Documents') }}</span>
+        <span class="expanded-only">{{ _('Documents WITH_SHORTCUT_INDICATION')|safe }}</span>
     </button>
 </span>

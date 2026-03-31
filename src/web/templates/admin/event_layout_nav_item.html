@@ -156,7 +156,7 @@
                                 class="pe-1"
                             />
                         {% endif %}
-                        {{ sub_nav.title }}
+                        {{ sub_nav.title|safe }}
                         {% if sub_nav.has_error %}
                             <span
                                 class="nav-icon-badge rounded-circle bg-danger ms-2 mb-1"
@@ -186,7 +186,7 @@
             {% if nav_tab.icon_class %}
                 <i class="{{ nav_tab.icon_class }}"></i>
             {% endif %}
-            <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title }}</span>
+            <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title|safe }}</span>
         </button>
     {% else %}
         {% with active=(admin_event_tab == nav_id) %}
@@ -215,7 +215,7 @@
                     {% if nav_tab.icon_class %}
                         <i class="{{ nav_tab.icon_class }}"></i>
                     {% endif %}
-                    <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title }}</span>
+                    <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title|safe }}</span>
                 </button>
             </span>
         {% endwith %}
