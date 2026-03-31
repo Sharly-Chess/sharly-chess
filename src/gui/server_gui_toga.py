@@ -267,15 +267,15 @@ class SharlyChessServerToga(toga.App):
     def __init__(self, *, debug: bool = False, port: int | None = None):
         SharlyChessServerToga.instance = self
         icon_file_name: str | None = None
-        web_dir = Path(web.__file__).parent
+        web_dir = BASE_DIR / 'src' / 'web'
         match sys.platform:
             case 'win32':
                 icon_file_name = 'sharly-chess.ico'
-                web_dir = BASE_DIR / 'src' / 'web'
             case 'darwin':
                 icon_file_name = 'sharly-chess.icns'
             case 'linux':
                 icon_file_name = 'sharly-chess.png'
+                web_dir = Path(web.__file__).parent
             case _:
                 raise NotImplementedError(f'{sys.platform=}')
 
