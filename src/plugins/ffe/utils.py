@@ -303,12 +303,12 @@ class FFEArbiterTitle(StrEnum):
 
 @dataclass
 class FfeEventPluginData(PluginData):
-    auto_upload: bool = False
+    auto_upload: bool = True
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            auto_upload=bool(stored_value.get('auto_upload') or False),
+            auto_upload=stored_value.get('auto_upload', False),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -335,7 +335,7 @@ class FfeEventPluginData(PluginData):
 class FfeTournamentPluginData(PluginData):
     ffe_id: int | None = None
     password: str | None = None
-    auto_upload: bool = True
+    auto_upload: bool = False
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
     upload_failure_id: str | None = None
@@ -351,7 +351,7 @@ class FfeTournamentPluginData(PluginData):
         return cls(
             ffe_id=stored_value.get('ffe_id', None),
             password=stored_value.get('password', None),
-            auto_upload=stored_value.get('auto_upload', True),
+            auto_upload=stored_value.get('auto_upload', False),
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload')
             ),
