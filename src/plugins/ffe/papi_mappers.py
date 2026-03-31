@@ -108,8 +108,8 @@ class PapiPlayerGender(CoreMapper[str, PlayerGender]):
     def _core_object_by_outer_value(cls) -> dict[str, PlayerGender]:
         return {
             '': PlayerGender.NONE,
-            'M': PlayerGender.MALE,
-            'F': PlayerGender.FEMALE,
+            'M': PlayerGender.MAN,
+            'F': PlayerGender.WOMAN,
         }
 
     @classmethod

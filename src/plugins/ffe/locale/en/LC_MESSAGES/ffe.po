@@ -247,7 +247,7 @@ msgstr ""
 msgid "Invalid FFE licence number [{ffe_licence_number}]."
 msgstr ""
 
-msgid "Invalid date format [{date}] (expected: {format})"
+msgid "Invalid date format [{date}] (expected: {format})."
 msgstr ""
 
 msgid "Invalid display link text [{text}]"
@@ -273,6 +273,9 @@ msgstr ""
 
 msgid "League *** LEAGUE COLUMN HEADER"
 msgstr "League"
+
+msgid "League not specified"
+msgstr "Ligue non spécifiée"
 
 msgid "League:"
 msgstr ""
@@ -344,9 +347,6 @@ msgid "PAPI"
 msgstr ""
 
 msgid "Papi file"
-msgstr ""
-
-msgid "Player with FFE licence number [{ffe_licence_number}] already plays tournament [{tournament}]."
 msgstr ""
 
 msgid "Players:"

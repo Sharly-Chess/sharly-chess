@@ -298,16 +298,14 @@ class EventDatabase(MigrationDatabase):
             name=row['name'],
             federation=row.get('federation', ''),
             player_rating_type=row.get('player_rating_type', 3),
-            start_date=self.load_date_from_database_field(row['start_date']),
-            stop_date=self.load_date_from_database_field(row['stop_date']),
             public=self.load_bool_from_database_field(row['public']),
             location=row['location'],
             background_color=row['background_color'],
             timer_colors=self.set_dict_int_keys(
-                self.load_json_from_database_field(row['timer_colors'])
+                self.load_json_from_database_field(row['timer_colors'], {})
             ),
             timer_delays=self.set_dict_int_keys(
-                self.load_json_from_database_field(row['timer_delays'])
+                self.load_json_from_database_field(row['timer_delays'], {})
             ),
             message_text=row['message_text'],
             message_color=row['message_color'],
@@ -322,6 +320,9 @@ class EventDatabase(MigrationDatabase):
             organiser_home_page=row['organiser_home_page'],
             organiser_email=row['organiser_email'],
             organiser_director=row['organiser_director'],
+            allow_multi_tournament_players=self.load_bool_from_database_field(
+                row['allow_multi_tournament_players']
+            ),
             plugin_data=self.load_json_from_database_field(row['plugin_data'], {}),
             enabled_plugins=self.load_json_from_database_field(
                 row['enabled_plugins'], []
@@ -353,6 +354,14 @@ class EventDatabase(MigrationDatabase):
             self.fetchone(), EventMetadata
         )
         metadata.tournament_count = self._get_table_count('tournament')
+        if metadata.tournament_count:
+            self.execute(
+                'SELECT MIN(start_date) AS start_date, '
+                'MAX(stop_date) AS stop_date FROM `tournament`'
+            )
+            row = self.fetchone()
+            metadata.start_date = self.load_date_from_database_field(row['start_date'])
+            metadata.stop_date = self.load_date_from_database_field(row['stop_date'])
         metadata.player_count = self._get_table_count('player')
         metadata.timer_count = self._get_table_count('timer')
         metadata.screen_count = self._get_table_count('screen')
@@ -383,10 +392,9 @@ class EventDatabase(MigrationDatabase):
                 'organiser_home_page',
                 'organiser_email',
                 'organiser_director',
+                'allow_multi_tournament_players',
             ],
         ) | {
-            'start_date': self.dump_date_to_database_field(stored_event.start_date),
-            'stop_date': self.dump_date_to_database_field(stored_event.stop_date),
             'age_category_base_date': self.dump_date_to_database_field(
                 stored_event.age_category_base_date
             ),
@@ -610,17 +618,15 @@ class EventDatabase(MigrationDatabase):
             check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             rounds=row['rounds'],
             rating=row['rating'],
-            last_update=cls.load_optional_timestamp_from_database_field(
-                row['last_update']
-            ),
+            last_update=cls.load_datetime_from_database_field(row['last_update']),
             last_player_update=cls.load_optional_timestamp_from_database_field(
                 row['last_player_update']
             ),
             last_pairing_update=cls.load_optional_timestamp_from_database_field(
                 row['last_pairing_update']
             ),
-            start_date=cls.load_optional_date_from_database_field(row['start_date']),
-            stop_date=cls.load_optional_date_from_database_field(row['stop_date']),
+            start_date=cls.load_date_from_database_field(row['start_date']),
+            stop_date=cls.load_date_from_database_field(row['stop_date']),
             location=row['location'],
             player_rating_type=row['player_rating_type'],
             three_points_for_a_win=cls.load_bool_from_database_field(
@@ -673,11 +679,11 @@ class EventDatabase(MigrationDatabase):
             stored_tournaments.append(stored_tournament)
         return stored_tournaments
 
-    def _write_stored_tournament(
-        self,
-        stored_tournament: StoredTournament,
-    ) -> StoredTournament:
-        fields = self._get_fields_dict(
+    @classmethod
+    def _get_tournament_fields_dict(
+        cls, stored_tournament: StoredTournament
+    ) -> dict[str, Any]:
+        return cls._get_fields_dict(
             stored_tournament,
             [
                 'name',
@@ -699,55 +705,38 @@ class EventDatabase(MigrationDatabase):
                 'pab_value',
             ],
         ) | {
-            'start_date': self.dump_date_to_database_field(
-                stored_tournament.start_date
-            ),
-            'stop_date': self.dump_date_to_database_field(stored_tournament.stop_date),
-            'last_update': self.now_as_database_timestamp(),
-            'plugin_data': self.dump_to_json_database_field(
+            'start_date': cls.dump_date_to_database_field(stored_tournament.start_date),
+            'stop_date': cls.dump_date_to_database_field(stored_tournament.stop_date),
+            'last_update': cls.now_as_database_timestamp(),
+            'plugin_data': cls.dump_to_json_database_field(
                 stored_tournament.plugin_data, {}
             ),
-            'round_datetimes': self._dump_round_datetimes_to_database_field(
+            'round_datetimes': cls._dump_round_datetimes_to_database_field(
                 stored_tournament.round_datetimes
             ),
         }
 
-        if stored_tournament.id is None:
-            fields_str = ', '.join(f'`{f}`' for f in fields)
-            values_str = ', '.join(['?'] * len(fields))
-            self.execute(
-                f'INSERT INTO `tournament`({fields_str}) VALUES ({values_str})',
-                tuple(fields.values()),
-            )
-            tournament_id: int | None = self._last_inserted_id()
-            if tournament_id is None:
-                raise RuntimeError('Tournament insertion failed')
-            fetched_stored_tournament = self.get_stored_tournament(tournament_id)
-        else:
-            field_sets = ', '.join(f'`{f}` = ?' for f in fields)
-            self.execute(
-                f'UPDATE `tournament` SET {field_sets} WHERE `id` = ?',
-                tuple(fields.values()) + (stored_tournament.id,),
-            )
-            fetched_stored_tournament = self.get_stored_tournament(stored_tournament.id)
-        if fetched_stored_tournament is None:
-            raise RuntimeError('Tournament write failed')
+    def add_stored_tournament(self, stored_tournament: StoredTournament) -> int:
+        fields = self._get_tournament_fields_dict(stored_tournament)
+        fields_str = ', '.join(f'`{f}`' for f in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `tournament`({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        tournament_id: int | None = self._last_inserted_id()
+        if tournament_id is None:
+            raise RuntimeError('Tournament insertion failed')
+        return tournament_id
 
-        return fetched_stored_tournament
-
-    def add_stored_tournament(
-        self,
-        stored_tournament: StoredTournament,
-    ) -> StoredTournament:
-        assert stored_tournament.id is None, f'{stored_tournament.id=}'
-        return self._write_stored_tournament(stored_tournament)
-
-    def update_stored_tournament(
-        self,
-        stored_tournament: StoredTournament,
-    ) -> StoredTournament:
+    def update_stored_tournament(self, stored_tournament: StoredTournament):
+        fields = self._get_tournament_fields_dict(stored_tournament)
+        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_tournament.id is not None
-        return self._write_stored_tournament(stored_tournament)
+        self.execute(
+            f'UPDATE `tournament` SET {field_sets} WHERE `id` = ?',
+            tuple(fields.values()) + (stored_tournament.id,),
+        )
 
     def delete_stored_tournament(self, tournament_id: int):
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
@@ -1367,9 +1356,7 @@ class EventDatabase(MigrationDatabase):
             number=row['number'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
-            last_update=cls.load_optional_timestamp_from_database_field(
-                row['last_update']
-            ),
+            last_update=cls.load_datetime_from_database_field(row['last_update']),
         )
 
     def get_stored_family(self, family_id: int) -> StoredFamily | None:
@@ -1532,9 +1519,7 @@ class EventDatabase(MigrationDatabase):
             background_color=row['background_color'],
             message_default=cls.load_bool_from_database_field(row['message_default']),
             message_text=row['message_text'],
-            last_update=cls.load_optional_timestamp_from_database_field(
-                row['last_update']
-            ),
+            last_update=cls.load_datetime_from_database_field(row['last_update']),
         )
 
     def get_stored_screen(self, screen_id: int) -> StoredScreen | None:
@@ -1701,9 +1686,7 @@ class EventDatabase(MigrationDatabase):
             fixed_boards_str=row['fixed_boards_str'],
             first=row['first'],
             last=row['last'],
-            last_update=cls.load_optional_timestamp_from_database_field(
-                row['last_update']
-            ),
+            last_update=cls.load_datetime_from_database_field(row['last_update']),
         )
 
     def get_stored_screen_set(self, screen_set_id: int) -> StoredScreenSet | None:

@@ -17,8 +17,10 @@ from data.print_documents.place_cards.types import (
     PlaceCardType,
 )
 from data.print_documents.player_sorters import (
-    PlayerSorter,
-    NamePlayerSorter,
+    GridPlayerSorter,
+    NameGridPlayerSorter,
+    ListPlayerSorter,
+    NameListPlayerSorter,
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
@@ -216,10 +218,10 @@ class PlayerSplitPrintOption(PrintOption):
             raise OptionError(f'Unknown player splitter: {self.value}', self)
 
 
-class PlayerSortPrintOption(PrintOption):
+class GridPlayerSortPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
-        return 'player-sort'
+        return 'grid-player-sort'
 
     @property
     def type(self) -> type | UnionType:
@@ -227,28 +229,63 @@ class PlayerSortPrintOption(PrintOption):
 
     @property
     def default_value(self) -> Any:
-        return NamePlayerSorter.static_id()
+        return NameGridPlayerSorter.static_id()
 
     @property
-    def player_sorter_options(self) -> dict[str, str]:
-        from data.print_documents import PrintPlayerSorterManager
+    def grid_player_sorter_options(self) -> dict[str, str]:
+        from data.print_documents import PrintGridPlayerSorterManager
 
-        return PrintPlayerSorterManager(self.event).options()
+        return PrintGridPlayerSorterManager(self.event).options()
 
     @cached_property
-    def player_sorter(self) -> PlayerSorter:
-        from data.print_documents import PrintPlayerSorterManager
+    def grid_player_sorter(self) -> GridPlayerSorter:
+        from data.print_documents import PrintGridPlayerSorterManager
 
-        return PrintPlayerSorterManager(self.event).get_object(self.value)
+        return PrintGridPlayerSorterManager(self.event).get_object(self.value)
 
     @override
     def validate(self):
         super().validate()
         try:
-            _sorter = self.player_sorter
+            _sorter = self.grid_player_sorter
         except KeyError:
             # Untranslated, should not happen
-            raise OptionError(f'Unknown player sorter: {self.value}', self)
+            raise OptionError(f'Unknown grid player sorter: {self.value}', self)
+
+
+class ListPlayerSortPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'list-player-sort'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return NameListPlayerSorter.static_id()
+
+    @property
+    def list_player_sorter_options(self) -> dict[str, str]:
+        from data.print_documents import PrintListPlayerSorterManager
+
+        return PrintListPlayerSorterManager(self.event).options()
+
+    @cached_property
+    def list_player_sorter(self) -> ListPlayerSorter:
+        from data.print_documents import PrintListPlayerSorterManager
+
+        return PrintListPlayerSorterManager(self.event).get_object(self.value)
+
+    @override
+    def validate(self):
+        super().validate()
+        try:
+            _sorter = self.list_player_sorter
+        except KeyError:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown list player sorter: {self.value}', self)
 
 
 class PairingStylePrintOption(PrintOption):

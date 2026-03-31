@@ -53,6 +53,9 @@ class I18nTranslator:
         domain_message_ids_to_translate: dict[str, Any] = {}
         for domain in Domain.get_domains():
             pot_file: Path = domain.pot_file
+            if not pot_file.is_file():
+                print_interactive_info(f'Creating [{pot_file}] from the sources...')
+                BabelDomainWrapper(domain.id).extract_i18n_strings()
             po_file: Path = domain.locale_po_file(self.target_locale)
             if not po_file.is_file():
                 print_interactive_info(f'Creating [{po_file}] from [{pot_file}]...')
@@ -130,7 +133,10 @@ class I18nTranslator:
                         100 * i / len(domain_message_ids_to_translate[domain.name])
                     )
                     if not self.translate_message(
-                        catalog._messages[message_id], percent
+                        catalog._messages[
+                            message_id if isinstance(message_id, str) else message_id[0]
+                        ],
+                        percent,
                     ):
                         error = True
                 with open(po_file, 'wb') as f:

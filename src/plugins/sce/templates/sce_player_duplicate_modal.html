@@ -1,0 +1,109 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{% set event_plugin_data = admin_event.plugin_data.sce %}
+
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Sharly-Chess.com duplicates') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if sce_event_status.alert_message %}
+                {% include '/sce_event_status_alert.html' %}
+            {% endif %}
+            {% if message %}
+                {% with type=message_type or 'success' %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            {% if local_tournaments_with_duplicates %}
+                <h4>
+                    {{ _('Local players') }}
+                    <i
+                        class="bi-info-circle-fill text-body ps-1"
+                        style="font-size: 85%"
+                        {{ macros.tooltip_attributes('', _(
+                            'Players in the local Sharly Chess application that can\'t be '
+                            'created in Sharly-Chess.com because they already exist.'
+                        )) }}
+                    ></i>
+                </h4>
+                <div class="d-flex flex-column gap-2">
+                    {% for tournament in local_tournaments_with_duplicates %}
+                        {% set duplicate_players = sce_utils.get_local_player_duplicates(tournament) %}
+                        <h6 class="mt-2">
+                            {{ tournament.name }} ({{ duplicate_players | length }})
+                        </h6>
+                        {% for player in duplicate_players %}
+                            <div class="border border-secondary bg-body-tertiary">
+                                <div class="d-flex align-items-center gap-2 p-2">
+                                    <div class="flex-grow-1">
+                                        {{ player.full_name }}
+                                    </div>
+                                    <button
+                                        class="btn btn-outline-primary"
+                                        hx-get="{{ url_for(
+                                            'admin-player-modal',
+                                            action='update',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            player_id=player.id,
+                                        ) }}?redirect_to={{ url_for(
+                                            'sce-player-duplicate-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                        ) }}"
+                                        {{ macros.tooltip_attributes('', _('Edit')) }}
+                                    >
+                                        <i class="bi-pencil-fill"></i>
+                                    </button>
+                                    <span
+                                        {{ macros.tooltip_attributes(
+                                            '', _(
+                                                'Player has already been paired in the '
+                                                'tournament, it no longer can be deleted.'
+                                            ) if player.has_real_pairings else _('Delete')
+                                        ) }}
+                                    >
+                                        <button
+                                            class="btn btn-outline-danger"
+                                            hx-delete="{{ url_for(
+                                                'sce-delete-local-player',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                player_id=player.id,
+                                            ) }}"
+                                            {% if player.has_real_pairings %}
+                                                disabled
+                                            {% endif %}
+                                        >
+                                            <i class="bi-trash-fill"></i>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+        </div>
+
+        <div class="modal-footer">
+            <button
+                class="btn btn-secondary text-nowrap"
+                hx-get="{{ url_for(
+                    'sce-sync-modal', event_uniq_id=admin_event.uniq_id
+                ) }}"
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

@@ -48,10 +48,8 @@
             {{ svg_logo | safe }}
         </div>
         {% if client.can_manage_events %}
-            {% with is_large = true %}
-                <div class="text-center my-3">
-                    {% include 'create_event_button.html' %}
-                </div>
+            {% with is_dropdown = false %}
+                {% include 'create_event_button.html' %}
             {% endwith %}
         {% endif %}
     </div>

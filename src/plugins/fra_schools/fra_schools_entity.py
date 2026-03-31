@@ -48,6 +48,10 @@ class FraSchoolPlayerSplitter(PlayerSplitter):
             '',
         )
 
+    @staticmethod
+    def get_empty_key_default() -> str:
+        return _('School not specified')
+
 
 class FraSchoolTableColumn(TournamentPlayerTableColumn):
     @property

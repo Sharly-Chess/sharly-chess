@@ -342,7 +342,10 @@ msgstr ""
 msgid "A file is expected."
 msgstr ""
 
-msgid "A player with this value already exists in the tournament."
+msgid "A player with {column}=[{value}] already exists in the event."
+msgstr ""
+
+msgid "A player with {column}=[{value}] already exists in tournament [{tournament}]."
 msgstr ""
 
 msgid "A plugin specific to this federation is used, it can no longer be modified."
@@ -582,7 +585,13 @@ msgstr ""
 msgid "Allocate players to the first tournament for which the criteria are met."
 msgstr ""
 
+msgid "Allow a player to take part in multiple tournaments."
+msgstr ""
+
 msgid "Allow links to this screen"
+msgstr ""
+
+msgid "Allow multi-tournament players"
 msgstr ""
 
 msgid "Allows access to Screens marked as public"
@@ -1064,6 +1073,9 @@ msgstr ""
 msgid "Category [%(category)s] successfully created!"
 msgstr ""
 
+msgid "Category not specified"
+msgstr ""
+
 msgid "Category sets"
 msgstr ""
 
@@ -1213,6 +1225,9 @@ msgstr ""
 
 msgid "Club *** CLUB COLUMN HEADER"
 msgstr "Club"
+
+msgid "Club not specified"
+msgstr ""
 
 msgid "Club threshold"
 msgstr ""
@@ -1447,9 +1462,6 @@ msgid "Create hour"
 msgstr ""
 
 msgid "Create hours from tournament"
-msgstr ""
-
-msgid "Create manually"
 msgstr ""
 
 msgid "Create permission"
@@ -2052,7 +2064,7 @@ msgstr ""
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr ""
 
-msgid "Each bracket should contain one or more categories (e.g. U12, Best Female) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
+msgid "Each bracket should contain one or more categories (e.g. U12, Best Woman) with criteria and places (1st, 2nd, etc.). Prizes are awarded based on value (and category order if values are equal)."
 msgstr ""
 
 msgid "Each player can only be awarded one prize per bracket."
@@ -2260,10 +2272,10 @@ msgstr ""
 msgid "Exclude: {values}"
 msgstr ""
 
-msgid "Exempt *** FEMALE"
+msgid "Exempt *** MAN"
 msgstr "Exempt"
 
-msgid "Exempt *** MALE"
+msgid "Exempt *** WOMAN"
 msgstr "Exempt"
 
 msgid "Existing players"
@@ -2309,9 +2321,6 @@ msgstr ""
 
 msgid "Export tournament"
 msgstr ""
-
-msgid "F *** SHORT NAME FOR GENDER FEMALE"
-msgstr "F"
 
 msgid "F *** SHORT NAME FOR RATING TYPE FIDE"
 msgstr "F"
@@ -2405,9 +2414,6 @@ msgstr ""
 
 msgid "Federations"
 msgstr ""
-
-msgid "Female *** NAME FOR GENDER FEMALE"
-msgstr "Female"
 
 msgid "Fetch from a data source"
 msgstr ""
@@ -2879,7 +2885,7 @@ msgstr ""
 msgid "Invalid date format (expected: {format})."
 msgstr ""
 
-msgid "Invalid date format [{date}] (expected: {format})"
+msgid "Invalid date format [{date}] (expected: {format})."
 msgstr ""
 
 msgid "Invalid delay [{delay}] (positive integer expected)."
@@ -3119,7 +3125,7 @@ msgstr ""
 msgid "Luxembourg"
 msgstr ""
 
-msgid "M *** SHORT NAME FOR GENDER MALE"
+msgid "M *** SHORT NAME FOR GENDER MAN"
 msgstr "M"
 
 msgid "MM/DD/YYYY"
@@ -3146,14 +3152,14 @@ msgstr ""
 msgid "Maldives"
 msgstr ""
 
-msgid "Male *** NAME FOR GENDER MALE"
-msgstr "Male"
-
 msgid "Mali"
 msgstr ""
 
 msgid "Malta"
 msgstr ""
+
+msgid "Man *** NAME FOR GENDER MAN"
+msgstr "Man"
 
 msgid "Manage accounts"
 msgstr ""
@@ -3953,6 +3959,9 @@ msgstr ""
 msgid "Pairing information for round %(round)d"
 msgstr ""
 
+msgid "Pairing is not possible."
+msgstr ""
+
 msgid "Pairing not found."
 msgstr ""
 
@@ -4133,10 +4142,10 @@ msgstr ""
 msgid "Player [{player_id}]: {error}"
 msgstr ""
 
-msgid "Player [{player}] already exists in the tournament."
+msgid "Player [{player}] already exists in the event."
 msgstr ""
 
-msgid "Player [{player}] already plays tournament [{tournament}]."
+msgid "Player [{player}] already exists in tournament [{tournament}]."
 msgstr ""
 
 msgid "Player [{player}] has been created, but does not match tournament criteria: {names}"
@@ -4183,9 +4192,6 @@ msgstr ""
 
 #, python-format
 msgid "Player sets of screen [%(screen_uniq_id)s]"
-msgstr ""
-
-msgid "Player with FIDE ID [{fide_id}] already plays tournament [{tournament}]."
 msgstr ""
 
 msgid "Player with FIDE ID [{fide_id}] is duplicated."
@@ -4585,6 +4591,9 @@ msgstr ""
 msgid "Ratings"
 msgstr ""
 
+msgid "Ratings update"
+msgstr ""
+
 #, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr ""
@@ -4608,6 +4617,12 @@ msgid "Release {version} has been installed in [{folder}]."
 msgstr ""
 
 msgid "Reload the page"
+msgstr ""
+
+msgid "Reminder: the tournament is played on multiple FIDE periods, you might have to update the players' ratings before pairing."
+msgstr ""
+
+msgid "Reminder: you might have to update the players' ratings before pairing."
 msgstr ""
 
 msgid "Remove the player from the event."
@@ -5380,12 +5395,6 @@ msgstr ""
 msgid "The average of the ratings of the opponents played over the board."
 msgstr ""
 
-msgid "The base date has to be at most one year after the end of the event."
-msgstr ""
-
-msgid "The base date has to be at most one year prior to the start of the event."
-msgstr ""
-
 msgid "The board number the player will always be assigned to (use it for disabled people)."
 msgstr ""
 
@@ -5405,6 +5414,9 @@ msgid "The default federation for your events."
 msgstr ""
 
 msgid "The director is the person in charge of the event."
+msgstr ""
+
+msgid "The event already has multi-tournament players."
 msgstr ""
 
 msgid "The first round is ignored."
@@ -5718,6 +5730,12 @@ msgstr ""
 msgid "This name is already used."
 msgstr ""
 
+msgid "This player already exists in the event."
+msgstr ""
+
+msgid "This player already exists in tournament [{tournament}]."
+msgstr ""
+
 msgid "This rotator is private (not visible by the spectators)."
 msgstr ""
 
@@ -5801,6 +5819,9 @@ msgid "Time control:"
 msgstr ""
 
 msgid "Time outside of event time range ({range})."
+msgstr ""
+
+msgid "Time outside of tournament time range ({range})."
 msgstr ""
 
 msgid "Timer"
@@ -6125,10 +6146,10 @@ msgstr ""
 msgid "Unpaired (%(unpaired)d)"
 msgstr ""
 
-msgid "Unpaired *** FEMALE"
+msgid "Unpaired *** MAN"
 msgstr "Unpaired"
 
-msgid "Unpaired *** MALE"
+msgid "Unpaired *** WOMAN"
 msgstr "Unpaired"
 
 msgid "Unpaired: displayed"
@@ -6326,6 +6347,9 @@ msgstr ""
 msgid "Visibility:"
 msgstr ""
 
+msgid "W *** SHORT NAME FOR GENDER WOMAN"
+msgstr "W"
+
 msgid "W *** WHITE COLOR FOR CROSSTABLE"
 msgstr "W"
 
@@ -6435,6 +6459,9 @@ msgstr ""
 
 msgid "Withdraw from tournament"
 msgstr ""
+
+msgid "Woman *** NAME FOR GENDER WOMAN"
+msgstr "Woman"
 
 msgid "Woman Candidate Master"
 msgstr ""
@@ -6658,6 +6685,9 @@ msgstr ""
 msgid "clear filters"
 msgstr ""
 
+msgid "default"
+msgstr ""
+
 msgid "either the duration or the increment must be greater than 0."
 msgstr ""
 
@@ -6736,9 +6766,6 @@ msgstr ""
 msgid "round_{round}"
 msgstr ""
 
-msgid "s *** SECONDS"
-msgstr "s"
-
 msgid "screens of {number} boards"
 msgstr ""
 
@@ -6762,6 +6789,9 @@ msgstr ""
 
 msgid "screens of {number} players from start to #{last}"
 msgstr ""
+
+msgid "sec *** SECONDS"
+msgstr "sec"
 
 msgid "some already played each other"
 msgstr ""

@@ -7,7 +7,7 @@ from typing import Any
 import xlsxwriter
 from litestar import Response
 from litestar.response import File
-from pyexcel_ods3 import save_data
+import pyexcel_ods3
 
 from common.i18n import _
 from data.columns.handlers import PlayerDatasheetColumnHandler
@@ -136,7 +136,7 @@ class CsvPlayerExporter(PlayerTabularExporter):
 
     def _get_tabular_file_path(self, header: list[str], data: list[list[Any]]) -> Path:
         temp_file = NamedTemporaryFile(
-            delete=False, mode='w', suffix='.csv', newline=''
+            delete=False, mode='w', suffix='.csv', newline='', encoding='utf-8'
         )
         writer = csv.writer(temp_file)
         writer.writerow(header)
@@ -155,5 +155,12 @@ class OdsPlayerExporter(PlayerTabularExporter):
 
     def _get_tabular_file_path(self, header: list[str], data: list[list[Any]]) -> Path:
         temp_file = NamedTemporaryFile(delete=False, mode='w+b', suffix='.ods')
-        save_data(temp_file, [header] + data)
+        # None values raise errors, replaced by ''
+        for row_index in range(len(data)):
+            row = data[row_index]
+            for cell_index in range(len(row)):
+                if row[cell_index] is None:
+                    row[cell_index] = ''
+
+        pyexcel_ods3.save_data(temp_file, [header] + data)
         return Path(temp_file.name)

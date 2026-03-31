@@ -71,13 +71,7 @@ class PrizesTestCase(TestCase):
         self.stored_prize_group = StoredPrizeGroup(id=1, tournament_id=1, name='test')
         self.tournament: Tournament | None = None
 
-        TestUtils.create_event(
-            'test-prizes-event',
-            overrides={
-                'start_date': date(2025, 1, 1),
-                'stop_date': date(2025, 1, 1),
-            },
-        )
+        TestUtils.create_event('test-prizes-event')
         self.event = EventLoader().load_event('test-prizes-event')
 
     def tearDown(self):
@@ -122,6 +116,8 @@ class PrizesTestCase(TestCase):
                     rounds=ROUNDS,
                     stored_prize_groups=[self.stored_prize_group],
                     stored_tournament_players=stored_tournament_players,
+                    stop_date=date(2025, 1, 1),
+                    start_date=date(2025, 1, 1),
                 ),
             )
             return self.tournament.prize_groups_by_id[1].assign_prizes()
@@ -427,16 +423,16 @@ class PrizesTestCase(TestCase):
             ],
             stored_prize_criteria=[
                 self.stored_criterion(
-                    GenderPlayerFilter([GenderOption(PlayerGender.FEMALE.value)])
+                    GenderPlayerFilter([GenderOption(PlayerGender.WOMAN.value)])
                 )
             ],
         )
 
-        p1 = self.player(1000, 6, PlayerGender.MALE)
-        p2 = self.player(1000, 5, PlayerGender.FEMALE)
-        p3 = self.player(1000, 4, PlayerGender.MALE)
-        p4 = self.player(1000, 3, PlayerGender.MALE)
-        p5 = self.player(1000, 2, PlayerGender.FEMALE)
+        p1 = self.player(1000, 6, PlayerGender.MAN)
+        p2 = self.player(1000, 5, PlayerGender.WOMAN)
+        p3 = self.player(1000, 4, PlayerGender.MAN)
+        p4 = self.player(1000, 3, PlayerGender.MAN)
+        p5 = self.player(1000, 2, PlayerGender.WOMAN)
         players = [p1, p2, p3, p4, p5]
 
         prizes = self.assign_prizes([main_category, top_women_category], players)
@@ -481,17 +477,17 @@ class PrizesTestCase(TestCase):
             ],
             stored_prize_criteria=[
                 self.stored_criterion(
-                    GenderPlayerFilter([GenderOption(PlayerGender.FEMALE.value)])
+                    GenderPlayerFilter([GenderOption(PlayerGender.WOMAN.value)])
                 )
             ],
         )
 
-        p1 = self.player(1000, 6, PlayerGender.MALE)
-        p2 = self.player(1001, 5, PlayerGender.FEMALE)
-        p3 = self.player(1002, 4, PlayerGender.MALE)
-        p4 = self.player(1003, 3, PlayerGender.MALE)
-        p5 = self.player(1004, 3, PlayerGender.MALE)
-        p6 = self.player(1005, 2, PlayerGender.FEMALE)
+        p1 = self.player(1000, 6, PlayerGender.MAN)
+        p2 = self.player(1001, 5, PlayerGender.WOMAN)
+        p3 = self.player(1002, 4, PlayerGender.MAN)
+        p4 = self.player(1003, 3, PlayerGender.MAN)
+        p5 = self.player(1004, 3, PlayerGender.MAN)
+        p6 = self.player(1005, 2, PlayerGender.WOMAN)
         players = [p1, p2, p3, p4, p5, p6]
 
         prizes = self.assign_prizes([main_category, top_women_category], players)
@@ -536,18 +532,18 @@ class PrizesTestCase(TestCase):
             ],
             stored_prize_criteria=[
                 self.stored_criterion(
-                    GenderPlayerFilter([GenderOption(PlayerGender.FEMALE.value)])
+                    GenderPlayerFilter([GenderOption(PlayerGender.WOMAN.value)])
                 )
             ],
         )
 
-        p1 = self.player(1000, 6, PlayerGender.MALE)
-        p2 = self.player(1000, 5, PlayerGender.FEMALE)
-        p3 = self.player(1000, 4, PlayerGender.MALE)
-        p4 = self.player(1000, 3, PlayerGender.FEMALE)
-        p5 = self.player(1000, 3, PlayerGender.MALE)
-        p6 = self.player(1000, 3, PlayerGender.MALE)
-        p7 = self.player(1000, 2, PlayerGender.FEMALE)
+        p1 = self.player(1000, 6, PlayerGender.MAN)
+        p2 = self.player(1000, 5, PlayerGender.WOMAN)
+        p3 = self.player(1000, 4, PlayerGender.MAN)
+        p4 = self.player(1000, 3, PlayerGender.WOMAN)
+        p5 = self.player(1000, 3, PlayerGender.MAN)
+        p6 = self.player(1000, 3, PlayerGender.MAN)
+        p7 = self.player(1000, 2, PlayerGender.WOMAN)
         players = [p1, p2, p3, p4, p5, p6, p7]
 
         prizes = self.assign_prizes([main_category, top_women_category], players)
@@ -592,18 +588,18 @@ class PrizesTestCase(TestCase):
             stored_prizes=[first_woman, second_woman],
             stored_prize_criteria=[
                 self.stored_criterion(
-                    GenderPlayerFilter([GenderOption(PlayerGender.FEMALE.value)])
+                    GenderPlayerFilter([GenderOption(PlayerGender.WOMAN.value)])
                 )
             ],
         )
 
-        p1 = self.player(1000, 6, PlayerGender.MALE)
-        p2 = self.player(1001, 5, PlayerGender.FEMALE)
-        p3 = self.player(1002, 3, PlayerGender.MALE)
-        p4 = self.player(1003, 3, PlayerGender.FEMALE)
-        p5 = self.player(1004, 3, PlayerGender.MALE)
-        p6 = self.player(1005, 3, PlayerGender.MALE)
-        p7 = self.player(1006, 3, PlayerGender.FEMALE)
+        p1 = self.player(1000, 6, PlayerGender.MAN)
+        p2 = self.player(1001, 5, PlayerGender.WOMAN)
+        p3 = self.player(1002, 3, PlayerGender.MAN)
+        p4 = self.player(1003, 3, PlayerGender.WOMAN)
+        p5 = self.player(1004, 3, PlayerGender.MAN)
+        p6 = self.player(1005, 3, PlayerGender.MAN)
+        p7 = self.player(1006, 3, PlayerGender.WOMAN)
         players = [p1, p2, p3, p4, p5, p6, p7]
 
         prizes = self.assign_prizes([main_category, top_women_category], players)
@@ -654,16 +650,16 @@ class PrizesTestCase(TestCase):
             stored_prizes=[first_woman],
             stored_prize_criteria=[
                 self.stored_criterion(
-                    GenderPlayerFilter([GenderOption(PlayerGender.FEMALE.value)])
+                    GenderPlayerFilter([GenderOption(PlayerGender.WOMAN.value)])
                 )
             ],
         )
 
-        p1 = self.player(2000, 6, PlayerGender.MALE)
-        p2 = self.player(1900, 5, PlayerGender.MALE)
-        p3 = self.player(1800, 3, PlayerGender.FEMALE)
-        p4 = self.player(1600, 3, PlayerGender.MALE)
-        p5 = self.player(1004, 2, PlayerGender.MALE)
+        p1 = self.player(2000, 6, PlayerGender.MAN)
+        p2 = self.player(1900, 5, PlayerGender.MAN)
+        p3 = self.player(1800, 3, PlayerGender.WOMAN)
+        p4 = self.player(1600, 3, PlayerGender.MAN)
+        p5 = self.player(1004, 2, PlayerGender.MAN)
 
         players = [p1, p2, p3, p4, p5]
 
@@ -703,14 +699,14 @@ class PrizesTestCase(TestCase):
             stored_prizes=[first_woman],
             stored_prize_criteria=[
                 self.stored_criterion(
-                    GenderPlayerFilter([GenderOption(PlayerGender.FEMALE.value)])
+                    GenderPlayerFilter([GenderOption(PlayerGender.WOMAN.value)])
                 )
             ],
         )
 
-        p1 = self.player(1550, 6, PlayerGender.FEMALE)
-        p2 = self.player(1550, 3, PlayerGender.MALE)
-        p3 = self.player(1004, 2, PlayerGender.MALE)
+        p1 = self.player(1550, 6, PlayerGender.WOMAN)
+        p2 = self.player(1550, 3, PlayerGender.MAN)
+        p3 = self.player(1004, 2, PlayerGender.MAN)
 
         players = [p1, p2, p3]
 
@@ -746,14 +742,14 @@ class PrizesTestCase(TestCase):
             stored_prizes=[first_woman],
             stored_prize_criteria=[
                 self.stored_criterion(
-                    GenderPlayerFilter([GenderOption(PlayerGender.FEMALE.value)])
+                    GenderPlayerFilter([GenderOption(PlayerGender.WOMAN.value)])
                 )
             ],
         )
 
-        p1 = self.player(1000, 6, PlayerGender.MALE)
-        p2 = self.player(2000, 5, PlayerGender.FEMALE)
-        p3 = self.player(1000, 5, PlayerGender.MALE)
+        p1 = self.player(1000, 6, PlayerGender.MAN)
+        p2 = self.player(2000, 5, PlayerGender.WOMAN)
+        p3 = self.player(1000, 5, PlayerGender.MAN)
 
         players = [p1, p2, p3]
 
@@ -773,16 +769,16 @@ class PrizesTestCase(TestCase):
             self.stored_prize(100),
         ]
         criterion = self.stored_criterion(
-            GenderPlayerFilter([GenderOption(PlayerGender.FEMALE.value)])
+            GenderPlayerFilter([GenderOption(PlayerGender.WOMAN.value)])
         )
         category = self.stored_category(
             stored_prizes=prizes, stored_prize_criteria=[criterion]
         )
 
-        p1 = self.player(1000, 3, PlayerGender.FEMALE)
-        p2 = self.player(1000, 5, PlayerGender.FEMALE)
-        p3 = self.player(1000, 6, PlayerGender.MALE)
-        p4 = self.player(1000, 4, PlayerGender.MALE)
+        p1 = self.player(1000, 3, PlayerGender.WOMAN)
+        p2 = self.player(1000, 5, PlayerGender.WOMAN)
+        p3 = self.player(1000, 6, PlayerGender.MAN)
+        p4 = self.player(1000, 4, PlayerGender.MAN)
         players = [p1, p2, p3, p4]
 
         prizes = self.assign_prizes([category], players)

@@ -414,6 +414,23 @@ class BaseController(Controller):
     """
 
     @staticmethod
+    def _render_modal(
+        template_name: str,
+        template_context: dict[str, Any],
+        keep_modal_opened: bool = False,
+    ) -> HTMXTemplate:
+        return HTMXTemplate(
+            template_name=template_name,
+            context=template_context,
+            re_target='#modal-wrapper',
+            re_swap='innerHTML',
+            trigger_event=(
+                'static_modal_opened' if keep_modal_opened else 'modal_opened'
+            ),
+            after='settle',
+        )
+
+    @staticmethod
     def render_messages(
         request: HTMXRequest,
     ) -> Template:

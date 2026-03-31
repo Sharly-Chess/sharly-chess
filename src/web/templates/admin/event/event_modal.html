@@ -43,13 +43,18 @@
                         ) }}
                     </div>
                     <div class="col-12 col-md-6">
-                        {{ admin_macros.date_range_input(
-                            name='date_range',
-                            label=_('%(string)s:', string=_('Dates')),
-                            placeholder=format_date(),
-                            disabled=not client.can_update_event,
+                        {{ admin_macros.switch_input(
+                            name='allow_multi_tournament_players',
+                            label='',
+                            placeholder=_('Allow multi-tournament players'),
+                            tooltip_text=_('Allow a player to take part in multiple tournaments.'),
+                            input_tooltip=_(
+                                'The event already has multi-tournament players.'
+                            ) if has_multi_tournament_players else '',
+                            disabled=not client.can_update_event or has_multi_tournament_players,
                             data=data, errors=errors
                         ) }}
+                        {{ admin_macros.hidden_disabled_input(data, 'player_rating_type') }}
                     </div>
                 </div>
                 <div class="row gy-2 gx-3">
@@ -95,6 +100,7 @@
                             select_options=player_rating_type_options,
                             data=data, errors=errors
                         ) }}
+                        {{ admin_macros.hidden_disabled_input(data, 'player_rating_type') }}
                     </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.text_input(
@@ -135,6 +141,7 @@
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors
                             ) }}
+                            {{ admin_macros.hidden_disabled_input(data, 'age_category_base_date') }}
                         </div>
                         <div class="col-12 col-md-6">
                             {{ admin_macros.select_input(
@@ -148,6 +155,7 @@
                                 disabled=not client.can_update_event,
                                 data=data, errors=errors
                             ) }}
+                            {{ admin_macros.hidden_disabled_input(data, 'age_category_change_month') }}
                         </div>
                     </div>
                 </div>
@@ -214,6 +222,7 @@
                     <div class="d-flex flex-column gap-3">
                         {% for plugin in plugins %}
                             <div
+                                id="{{ plugin.form_key }}-plugin-container"
                                 class="plugin-container
                                     {% if plugin.federation %}
                                         federation-plugin federation-plugin-{{ plugin.federation }}
@@ -243,12 +252,16 @@
                                         });
                                     </script>
                                 {% endif %}
-
+                                {% if plugin.event_form_script_file %}
+                                    <script>
+                                        {% include plugin.event_form_script_file %}
+                                    </script>
+                                {% endif %}
                             </div>
                         {% endfor %}
                     </div>
                     <script>
-                        $('.plugin-switch-input').trigger('change', [false]);
+                        triggerModalInitEvent('.plugin-switch-input', 'change', [false]);
                         $('#federation').change(function () {
                             const federation = $(this).val();
                             const pluginsToHide = $('.federation-plugin:not(.federation-plugin-' + federation + ')');
@@ -267,7 +280,7 @@
                             $('#plugins-container').show();
                             $('#plugins-container').toggle($('.plugin-container:visible').length > 0);
                         });
-                        $('#federation').trigger('change');
+                        triggerModalInitEvent('#federation');
                     </script>
                 </span>
             </form>
@@ -307,4 +320,6 @@
     </div>
 </div>
 
-<script>requestRefresh()</script>
+{% if action == 'update' %}
+    <script>requestRefresh()</script>
+{% endif %}

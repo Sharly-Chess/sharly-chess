@@ -7,12 +7,16 @@ from decimal import Decimal
 from functools import lru_cache, cache
 from math import floor
 from subprocess import CompletedProcess
-from typing import Callable, Iterable, Protocol, Hashable, Collection
+from typing import Callable, Iterable, Protocol, Hashable, Collection, TYPE_CHECKING
 
 import iso4217parse
 import pycountry
 from babel.numbers import format_currency, format_decimal, get_decimal_symbol
 from text_unidecode import unidecode
+
+if TYPE_CHECKING:
+    from data.tournament import Tournament
+    from database.sqlite.event.event_store import StoredTournament
 
 
 class Utils:
@@ -203,6 +207,17 @@ class Utils:
             return None
         return currencies[0].alpha3
 
+    @staticmethod
+    def get_federation_from_alpha_2_country_code(
+        alpha_2_country_code: str,
+    ) -> str | None:
+        from common.sharly_chess_config import SharlyChessConfig
+
+        country = pycountry.countries.get(alpha_2=alpha_2_country_code)
+        if country and country.alpha_3 in SharlyChessConfig().federations:
+            return country.alpha_3
+        return None
+
     @classmethod
     def ordinal_integer(cls, value: int) -> str:
         from common.i18n import get_locale, _
@@ -305,6 +320,17 @@ class Utils:
         for property_name in property_names:
             if property_name in obj.__dict__:
                 del obj.__dict__[property_name]
+
+    @staticmethod
+    def tournament_results_modified_since(
+        tournament: 'Tournament | StoredTournament',
+        ref_datetime: datetime,
+    ) -> bool:
+        return ref_datetime < max(
+            tournament.last_update,
+            tournament.last_player_update or datetime.min,
+            tournament.last_pairing_update or datetime.min,
+        )
 
 
 class SupportsEquals(Protocol):

@@ -46,7 +46,6 @@
     <body
         hx-ext="multi-swap,morphdom-swap,remove-me"
         hx-swap="transition:true"
-        class="d-none"
     >
         {% set redirect_url = '' %}
         {% if sharly_chess_config.force_edit %}
@@ -75,10 +74,14 @@
                     {% if not request.headers.get('HX-Swap-Mode') == 'none' %}
                         {# hx-preserve shouldn't be included in responses with an hx-swap of 'none', or they'll be removed.
                         To prevent this the client should also set the HX-Swap-Mode header to 'none' so that the server
-                        knows not to include this in the response.
-                        #}
-                        <div id="messages" hx-preserve></div>
+                        knows not to include this in the response. #}
+                        <div id="messages" hx-preserve>
+                            {% if messages %}
+                                {% include '/common/messages.html' %}
+                            {% endif %}
+                        </div>
                     {% endif %}
+
                     <div id="refresh-message"></div>
                 </div>
                 {% block header %}

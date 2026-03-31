@@ -185,7 +185,7 @@ class ChessEventPlugin(Plugin):
             return []
         return [
             NavDataTransferItem(
-                key='chess_results_upload',
+                key='chess_event_upload',
                 title=_('ChessEvent'),
                 icon_path='/images/chessevent.png',
                 modal_route_name='chessevent-sync-modal',

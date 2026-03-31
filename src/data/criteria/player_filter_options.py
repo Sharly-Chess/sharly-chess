@@ -136,7 +136,7 @@ class GenderOption(SelectPlayerFilterOption[PlayerGender]):
 
     @property
     def default_value(self) -> Any:
-        return PlayerGender.FEMALE.value
+        return PlayerGender.WOMAN.value
 
     @property
     def template_file_name(self) -> str:

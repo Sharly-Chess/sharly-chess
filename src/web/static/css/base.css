@@ -18,6 +18,12 @@ body {
 	overflow: auto !important;
 }
 
+a:focus, a:active {
+  outline: none;
+  box-shadow: 0 0 0 2px;
+  border-radius: 4px;
+}
+
 #main-wrapper {
     display: flex;
     flex-direction: row;

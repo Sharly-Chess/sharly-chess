@@ -1,0 +1,44 @@
+<div class="col-12 col-md-4 text-center my-2">
+    <div class="form-fields-container my-0">
+        <h5 style="font-size: 1.15em">
+            <span>{{ metadata.title }}</span>
+            <i
+                class="bi-info-circle-fill"
+                style="font-size: 80%"
+                {{ macros.tooltip_attributes('', metadata.tooltip) }}
+            ></i>
+        </h5>
+        {% for field, label in diff_fields.items() %}
+            {% include '/sce_conflict_diff_field.html' %}
+        {% endfor %}
+        {% if not display_data.round_schedule and not compare_data.round_schedule and not last_sync_data.round_schedule %}
+            {% with field = 'round_schedule', label = _('Schedule') %}
+                {% include '/sce_conflict_diff_field.html' %}
+            {% endwith %}
+        {% else %}
+            {% for round in range(1, display_data.rounds + 1) %}
+                {% set display_value = display_data.round_schedule_str.get(round) %}
+                {% set compare_value = compare_data.round_schedule_str.get(round) %}
+                {% set last_value = last_sync_data.round_schedule_str.get(round) %}
+                {% with label = _('Round #%(round)d', round=round) %}
+                    {% include '/sce_conflict_diff_raw_field.html' %}
+                {% endwith %}
+            {% endfor %}
+        {% endif %}
+        <div class="flex-grow-1"></div>
+        <button
+            class="btn btn-outline-primary mt-2 mb-1"
+            hx-post="{{ url_for(
+                'sce-resolve-tournament-conflict',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=conflict_tournament.id,
+                choice=metadata.choice,
+            ) }}"
+            {% if sce_event_status.actions_disabled %}
+                disabled
+            {% endif %}
+        >
+            {{ _('Choose') }}
+        </button>
+    </div>
+</div>

@@ -394,17 +394,6 @@ class BaseEventAdminController(BaseAdminController):
         )
 
     @staticmethod
-    def _render_modal(template_name: str, template_context: dict[str, Any]):
-        return HTMXTemplate(
-            template_name=template_name,
-            context=template_context,
-            re_target='#modal-wrapper',
-            re_swap='innerHTML',
-            trigger_event='modal_opened',
-            after='settle',
-        )
-
-    @staticmethod
     def get_default_players_screen_player_format(
         event: Event,
     ) -> PlayersScreenPlayerFormat:
