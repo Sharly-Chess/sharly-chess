@@ -70,11 +70,9 @@ FFE_LEAGUES: dict[str, str] = {
 class FFEUtils:
     @classmethod
     def resolve_auto_upload(cls, tournament: Tournament) -> bool:
-        tournament_plugin_data = cls.get_tournament_plugin_data(tournament)
-        if tournament_plugin_data.auto_upload is not None:
-            return tournament_plugin_data.auto_upload
-        event_plugin_data = cls.get_event_plugin_data(tournament.event)
-        return event_plugin_data.auto_upload
+        if not cls.get_event_plugin_data(tournament.event).auto_upload:
+            return False
+        return cls.get_tournament_plugin_data(tournament).auto_upload
 
     @staticmethod
     def get_event_plugin_data(event: Event) -> 'FfeEventPluginData':
