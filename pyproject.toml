@@ -63,7 +63,7 @@ lint = [
   "ruff ~= 0.15.0",
   "validate-pyproject",
   "pipdeptree",
-  "mypy",
+  "mypy ~= 1.19.0",
   "pre-commit",
 ]
 
