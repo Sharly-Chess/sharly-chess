@@ -250,8 +250,8 @@ msgstr "Numéro de licence FFE [{ffe_licence_number}] non valide."
 msgid "Invalid date format [{date}] (expected: {format})."
 msgstr "Format de date invalide [{date}] (attendu : {format})"
 
-msgid "Invalid file format [{format}] (expected: {expected})."
-msgstr "Format de fichier [{format}] invalide (attendu : {expected})."
+msgid "Invalid file extension [{extension}] (expected: {expected})."
+msgstr "Extension de fichier [{extension}] invalide (attendue : {expected})."
 
 msgid "Invalid format (expected: {format})."
 msgstr "Format invalide (attendu : {format})."
@@ -365,12 +365,12 @@ msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
 
 msgid "Rules successfully uploaded."
-msgstr "Le règlement a été mise en ligne avec succès."
+msgstr "Le règlement a été mis en ligne avec succès."
 
 msgid "Rules upload failed for tournament [{tournaments}]."
 msgid_plural "Rules upload failed for tournaments [{tournaments}]."
-msgstr[0] "Mise en ligne du règlement échouée pour le tournoi [{tournaments}]."
-msgstr[1] "Mise en ligne du règlement échouée pour les tournois [{tournaments}]."
+msgstr[0] "La mise en ligne du règlement a échoué pour le tournoi [{tournaments}]."
+msgstr[1] "La mise en ligne du règlement a échoué pour les tournois [{tournaments}]."
 
 msgid "Rules upload link not found, check that the tournament is not marked as finished on the FFE website."
 msgstr "Lien de mise en ligne du règlement non trouvé, vérifier que le tournoi n'est pas terminé sur le site web FFE."

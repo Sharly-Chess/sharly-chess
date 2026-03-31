@@ -6884,27 +6884,3 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-#~ msgid "A URL, or the path to the rules file on the server, in PDF format."
-#~ msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF."
-
-#~ msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
-#~ msgstr "Ex. : c:\\echecs\\tournois\\principal\\reglement.pdf"
-
-#~ msgid "File [{file}] not found."
-#~ msgstr "Fichier [{file}] non trouvé."
-
-#~ msgid "Incorrect path [{path}]."
-#~ msgstr "Chemin incorrect [{path}]."
-
-#~ msgid "No rules file set"
-#~ msgstr "Règlement non défini"
-
-#~ msgid "Rules file location:"
-#~ msgstr "Emplacement du règlement :"
-
-#~ msgid "Rules file set"
-#~ msgstr "Règlement défini"
-
-#~ msgid "Wrong file extension [{ext}] ([pdf] expected)."
-#~ msgstr "Mauvaise extension de fichier [{ext}] ([pdf] attendu)."
-
