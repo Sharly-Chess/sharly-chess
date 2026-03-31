@@ -94,6 +94,14 @@ function keyboardShortcutManager(event) {
             document.body.dispatchEvent(new CustomEvent("SC_L"));
             break;
 
+        case 'x':
+            document.body.dispatchEvent(new CustomEvent("SC_X"));
+            break;
+
+        case 'z':
+            document.body.dispatchEvent(new CustomEvent("SC_Z"));
+            break;
+
         default:
             break
 

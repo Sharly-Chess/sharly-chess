@@ -3,7 +3,7 @@
     {% if swap_oob %}
         hx-swap-oob="true"
     {% endif %}
-    class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Documents WITH_SHORTCUT_INDICATION'), 'right') }}
+    class="sidebar-tooltip" {{ macros.tooltip_attributes('info', _('Documents *** WITH_SHORTCUT_INDICATION'), 'right') }}
 >
     <button
         class="btn nav-link text-start"
@@ -15,6 +15,6 @@
         data-bs-target="#modal-wrapper"
     >
         <i class="bi bi-file-earmark-text-fill"></i>
-        <span class="expanded-only">{{ _('Documents WITH_SHORTCUT_INDICATION')|safe }}</span>
+        <span class="expanded-only">{{ _('Documents *** WITH_SHORTCUT_INDICATION')|safe }}</span>
     </button>
 </span>
