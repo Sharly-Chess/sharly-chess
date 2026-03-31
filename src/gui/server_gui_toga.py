@@ -29,7 +29,7 @@ from toga.style.pack import COLUMN, ROW
 import qrcode
 
 import web
-from common import SHARLY_CHESS_VERSION
+from common import SHARLY_CHESS_VERSION, BASE_DIR
 from common.i18n import _
 from database.sqlite.config.config_database import ConfigDatabase
 from gui.gui_logger import GUILogHandler
@@ -267,9 +267,11 @@ class SharlyChessServerToga(toga.App):
     def __init__(self, *, debug: bool = False, port: int | None = None):
         SharlyChessServerToga.instance = self
         icon_file_name: str | None = None
+        web_dir = Path(web.__file__).parent
         match sys.platform:
             case 'win32':
                 icon_file_name = 'sharly-chess.ico'
+                web_dir = BASE_DIR / 'src' / 'web'
             case 'darwin':
                 icon_file_name = 'sharly-chess.icns'
             case 'linux':
@@ -278,7 +280,7 @@ class SharlyChessServerToga(toga.App):
                 raise NotImplementedError(f'{sys.platform=}')
 
         # Resolve icon path dynamically to support both dev and installed environments
-        icon_path = Path(web.__file__).parent / 'static' / 'images' / icon_file_name
+        icon_path = web_dir / 'static' / 'images' / icon_file_name
 
         # Use FLATPAK_ID if available to match the sandbox ID
         app_id = os.environ.get('FLATPAK_ID', 'com.sharlychess.app')
