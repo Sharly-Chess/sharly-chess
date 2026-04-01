@@ -17,6 +17,7 @@ from plugins.ffe.ffe_session import FFESession
 from plugins.ffe.ffe_upload_status import (
     FailureFFEUploadStatus,
     NetworkFailureFFEUploadStatus,
+    UnexpectedFailureFFEUploadStatus,
 )
 from plugins.ffe.utils import (
     FFEUtils,
@@ -149,6 +150,7 @@ class FfeBackgroundUploader:
             failure_status = FFESession(tournament).upload(set_visible)
         except Exception as e:
             logger.error('Error uploading tournament [%s]: [%s]', result_id, e)
+            failure_status = UnexpectedFailureFFEUploadStatus()
         finally:
             cls.ongoing_result_ids.discard(result_id)
             if tournament:
