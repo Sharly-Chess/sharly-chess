@@ -10,7 +10,7 @@
     hx-get="{{ url_for(
         'sce-sync-modal', event_uniq_id=admin_event.uniq_id
     ) }}?no_refresh=True"
-    hx-trigger="ws:upload-event from:body"
+    hx-trigger="ws:upload-event from:body,ws:upload-event-start from:body"
     hx-swap="outerHTML"
 >
     <div class="modal-content">
