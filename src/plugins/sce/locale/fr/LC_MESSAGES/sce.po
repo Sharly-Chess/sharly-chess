@@ -116,7 +116,7 @@ msgid "Event is not connected to a Sharly-Chess.com event."
 msgstr "L'évènement n'est pas connecté à un évènement Sharly-Chess.com."
 
 msgid "Event on Sharly-Chess.com"
-msgstr "Évènement Sharly-Chess.com"
+msgstr "Évènement sur Sharly-Chess.com"
 
 msgid "FIDE ID"
 msgstr "Identifiant FIDE"
@@ -319,7 +319,7 @@ msgid "Tournament"
 msgstr "Tournoi"
 
 msgid "Tournament [{tournament}] is not connected to a Sharly-Chess.com tournament."
-msgstr "Le tournoi [{tournament}] n'est pas connecté à un "
+msgstr "Le tournoi [{tournament}] n'est pas connecté à un tournoi Sharly-Chess.com."
 
 msgid "Tournament [{tournament}] successfully uploaded."
 msgstr "Le tournoi [{tournament}] a été mis en ligne avec succès."
