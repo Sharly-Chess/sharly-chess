@@ -1560,6 +1560,9 @@ msgstr ""
 msgid "Crosstable before the first round"
 msgstr ""
 
+msgid "Ctrl *** KEYBOARD MODIFIER"
+msgstr "Ctrl"
+
 msgid "Cuba"
 msgstr ""
 
@@ -2491,6 +2494,9 @@ msgstr ""
 msgid "First round"
 msgstr ""
 
+msgid "First round *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "First round"
+
 msgid "Fixed board"
 msgstr ""
 
@@ -3056,6 +3062,9 @@ msgstr ""
 msgid "Last results ({num})"
 msgstr ""
 
+msgid "Last round *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Last round"
+
 msgid "Last update"
 msgstr ""
 
@@ -3410,9 +3419,6 @@ msgstr ""
 msgid "Nauru"
 msgstr ""
 
-msgid "Navigation"
-msgstr ""
-
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
@@ -3475,14 +3481,23 @@ msgstr ""
 msgid "New tournament"
 msgstr ""
 
+msgid "Next board *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Next board"
+
 msgid "Next round"
 msgstr ""
+
+msgid "Next round *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Next round"
 
 msgid "Next round bye"
 msgstr ""
 
 msgid "Next tournament"
 msgstr ""
+
+msgid "Next tournament *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Next tourn."
 
 msgid "Nicaragua"
 msgstr ""
@@ -4389,11 +4404,20 @@ msgstr ""
 msgid "Present"
 msgstr ""
 
+msgid "Previous board *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Prev. board"
+
 msgid "Previous round"
 msgstr ""
 
+msgid "Previous round *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Prev. round"
+
 msgid "Previous tournament"
 msgstr ""
+
+msgid "Previous tournament *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Prev. tourn."
 
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prize"
@@ -5098,6 +5122,9 @@ msgstr ""
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr ""
+
+msgid "Shift *** KEYBOARD MODIFIER"
+msgstr "Shift"
 
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr ""

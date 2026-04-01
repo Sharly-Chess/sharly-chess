@@ -1560,6 +1560,9 @@ msgstr "Grille américaine après la ronde {round}"
 msgid "Crosstable before the first round"
 msgstr "Grille américaine avant la première ronde"
 
+msgid "Ctrl *** KEYBOARD MODIFIER"
+msgstr "Ctrl"
+
 msgid "Cuba"
 msgstr "Cuba"
 
@@ -2491,6 +2494,9 @@ msgstr "Premier·e joueur·euse :"
 msgid "First round"
 msgstr "Première ronde"
 
+msgid "First round *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Prem. ronde"
+
 msgid "Fixed board"
 msgstr "Échiquier fixe"
 
@@ -3056,6 +3062,9 @@ msgstr "Derniers résultats"
 msgid "Last results ({num})"
 msgstr "Derniers résultats ({num})"
 
+msgid "Last round *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Dern. ronde"
+
 msgid "Last update"
 msgstr "Dernière mise à jour"
 
@@ -3410,9 +3419,6 @@ msgstr "Arbitre National"
 msgid "Nauru"
 msgstr "Nauru"
 
-msgid "Navigation"
-msgstr "Navigation"
-
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
@@ -3475,14 +3481,23 @@ msgstr "Nouveau chronomètre"
 msgid "New tournament"
 msgstr "Nouveau tournoi"
 
+msgid "Next board *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Échiq. suiv."
+
 msgid "Next round"
 msgstr "Ronde suivante"
+
+msgid "Next round *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Ronde suiv."
 
 msgid "Next round bye"
 msgstr "Absent·e à la prochaine ronde"
 
 msgid "Next tournament"
 msgstr "Tournoi suivant"
+
+msgid "Next tournament *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Tournoi suiv."
 
 msgid "Nicaragua"
 msgstr "Nicaragua"
@@ -4391,11 +4406,20 @@ msgstr "Préf."
 msgid "Present"
 msgstr "Présent·e"
 
+msgid "Previous board *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Échiq. préc."
+
 msgid "Previous round"
 msgstr "Ronde précédente"
 
+msgid "Previous round *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Ronde préc."
+
 msgid "Previous tournament"
 msgstr "Tournoi précédent"
+
+msgid "Previous tournament *** KEYBOARD SHORTCUT TOOLTIP"
+msgstr "Tournoi préc."
 
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prix"
@@ -5100,6 +5124,9 @@ msgstr "La configuration de Sharly Chess a été mise à jour."
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela implique que quiconque connecté au même réseau peut facilement récupérer l'accès à un compte sans saisir de mot de passe."
+
+msgid "Shift *** KEYBOARD MODIFIER"
+msgstr "Maj."
 
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été ajouté·e par erreur."
