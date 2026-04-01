@@ -555,12 +555,3 @@ msgid_plural "{count} leagues represented"
 msgstr[0] ""
 msgstr[1] ""
 
-#~ msgid "Disabled"
-#~ msgstr ""
-
-#~ msgid "Enabled"
-#~ msgstr ""
-
-#~ msgid "Use default - {option}"
-#~ msgstr ""
-
