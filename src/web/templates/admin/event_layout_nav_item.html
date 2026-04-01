@@ -76,10 +76,10 @@
                                             />
                                         </span>
                                         <span class="mt-1 flex-grow-1">
-                                            {{ sub_nav_tab.title }}
+                                            {{ sub_nav_tab.title|safe }}
                                         </span>
                                     {% else %}
-                                        {{ sub_nav_tab.title }}
+                                        {{ sub_nav_tab.title|safe }}
                                     {% endif %}
 
                                     {% if sub_nav_tab.has_error %}
@@ -111,7 +111,7 @@
                     {% if nav_tab.icon_class %}
                         <i class="{{ nav_tab.icon_class }}"></i>
                     {% endif %}
-                    <span class="expanded-only flex-grow-1">{{ nav_tab.title }}</span>
+                    <span class="expanded-only flex-grow-1">{{ nav_tab.title|safe }}</span>
                     {% if nav_tab.has_error %}
                         <span
                             class="nav-icon-badge rounded-circle bg-danger mx-2"

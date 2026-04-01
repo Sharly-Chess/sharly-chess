@@ -186,6 +186,7 @@
             >
                 <form
                     {% if admin_tournament and client.can_manage_prizes %}
+                        hx-trigger="click, SC_Plus from:body"
                         hx-post="{{ url_for(
                             'admin-prize-group-create',
                             event_uniq_id=admin_event.uniq_id,
