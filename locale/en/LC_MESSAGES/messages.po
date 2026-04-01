@@ -231,6 +231,9 @@ msgstr "https://sharly-chess.com/getting-started/"
 msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
 msgstr "SC_C"
 
+msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
+msgstr "SC_I"
+
 msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
 msgstr "SC_D"
 
@@ -6954,14 +6957,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
-msgstr "SC_R"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE TIMERS TAB"
-msgstr "SC_M"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
-msgstr "SC_D"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
-msgstr "SC_I"
