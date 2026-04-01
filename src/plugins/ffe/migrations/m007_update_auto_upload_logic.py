@@ -1,3 +1,5 @@
+import json
+
 from database.sqlite.migration import BaseMigration
 
 
@@ -8,9 +10,12 @@ class Migration(BaseMigration):
         )
         event_auto_upload = bool(self.database.fetchone()['auto_upload'])
         self.database.execute(
-            "UPDATE `tournament` SET plugin_data = JSON_SET(plugin_data, '$.ffe.auto_upload', ?) "
+            "UPDATE `info` SET plugin_data = JSON_SET(plugin_data, '$.ffe.auto_upload', JSON('true'))",
+        )
+        self.database.execute(
+            "UPDATE `tournament` SET plugin_data = JSON_SET(plugin_data, '$.ffe.auto_upload', JSON(?)) "
             "WHERE JSON_EXTRACT(plugin_data, '$.ffe.auto_upload') IS NULL",
-            (event_auto_upload,),
+            (json.dumps(event_auto_upload),),
         )
 
     def backward(self):
