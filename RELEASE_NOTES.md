@@ -37,6 +37,10 @@
 
 - New plugin Sharly-Chess.com (4.0.0)
 
+### Chess-Results.com
+
+- Moved the auto-upload options to the upload modal (4.0.0)
+
 ## _FFE_
 
 - Improved the upload modal (4.0.0)

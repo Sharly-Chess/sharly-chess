@@ -4,97 +4,73 @@ msgstr ""
 msgid "Auto-upload enabled"
 msgstr ""
 
-msgid "Auto-upload results"
-msgstr ""
-
-msgid "Auto-upload:"
-msgstr ""
-
-msgid "Automatic"
-msgstr ""
-
 msgid "Chess-Results.com"
 msgstr ""
 
 msgid "Chess-Results.com only displays {max} tie-breaks. However, the rankings remain the same as in Sharly Chess."
 msgstr ""
 
+msgid "Chess-Results.com upload"
+msgstr ""
+
 msgid "Close"
 msgstr ""
 
-msgid "Disabled"
+msgid "Configuration page of the tournament."
 msgstr ""
 
 msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
 msgstr ""
 
-msgid "Enabled"
-msgstr ""
-
-msgid "Error uploading tournament"
+msgid "Failure"
 msgstr ""
 
 msgid "Last upload"
 msgstr ""
 
-msgid "Manage"
+msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr ""
 
-msgid "Manual"
+msgid "Modified"
 msgstr ""
 
-msgid "Minimum delay between uploads (minutes):"
-msgstr ""
-
-msgid "Mode"
-msgstr ""
-
-msgid "Modified since last upload"
-msgstr ""
-
-msgid "Modified, but no internet connection"
+msgid "Never uploaded"
 msgstr ""
 
 msgid "No Chess-Results ID defined for tournament [{tournament}]."
 msgstr ""
 
-msgid "No internet connection"
+msgid "No changes detected since the last upload."
+msgstr ""
+
+msgid "Ongoing"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Public page of the tournament."
 msgstr ""
 
 msgid "Remark:"
 msgstr ""
 
-msgid "Results upload OK"
-msgstr ""
-
 msgid "Scan to access the tournament on Chess-Results.com."
-msgstr ""
-
-msgid "Site"
 msgstr ""
 
 msgid "State:"
 msgstr ""
 
-msgid "Status"
-msgstr ""
-
-msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
+msgid "Statuses"
 msgstr ""
 
 msgid "Tournament"
 msgstr ""
 
-msgid "Tournament finished, upload no longer possible."
+msgid "Tournament has been modified since the last upload."
 msgstr ""
 
-msgid "Tournament modified, awaiting auto-upload"
-msgstr ""
-
-msgid "Tournament not modified since last upload"
-msgstr ""
-
-msgid "Tournament not yet uploaded."
+msgid "Tournament is currently being uploaded."
 msgstr ""
 
 #, python-format
@@ -104,36 +80,43 @@ msgstr ""
 msgid "Tournament on Chess-results.com"
 msgstr ""
 
-msgid "Tournament previously uploaded."
+msgid "Tournament successfully uploaded."
 msgstr ""
 
-msgid "Unable to upload tournament."
+msgid "Tournament upload failed, consult the Chess-Results.com modal for more details."
 msgstr ""
 
-msgid "Unknown error when uploading results."
+msgid "Tournament upload has been planned."
+msgstr ""
+
+msgid "Up to date"
 msgstr ""
 
 msgid "Upload"
 msgstr ""
 
+msgid "Upload all tournaments"
+msgstr ""
+
+#, python-format
+msgid "Upload automatically every %(delay)d minutes."
+msgstr ""
+
 msgid "Upload to Chess-Results.com"
-msgstr ""
-
-msgid "Upload tournaments now"
-msgstr ""
-
-msgid "Upload tournaments to Chess-Results.com"
 msgstr ""
 
 msgid "Uploading of tournaments to Chess-Results.com."
 msgstr ""
 
-msgid "Uploading tournament…"
-msgstr ""
-
-msgid "Use default - {option}"
-msgstr ""
-
 msgid "You are not allowed to publish results."
+msgstr ""
+
+msgid "consult the logs"
+msgstr ""
+
+msgid "no internet connection"
+msgstr ""
+
+msgid "tournament finished, upload no longer possible"
 msgstr ""
 
