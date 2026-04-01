@@ -820,6 +820,9 @@ class SCESession(Session):
             else None
         )
         stored_event.age_category_change_month = data['age_category_change_month']
+        stored_event.allow_multi_tournament_players = data[
+            'allow_multiple_tournament_registrations'
+        ]
         with EventDatabase(stored_event.uniq_id, True) as database:
             database.update_stored_event(stored_event)
             if is_create:
