@@ -77,7 +77,7 @@ msgstr "Le tournoi est en cours de mise en ligne."
 msgid "Tournament number: %(tnr)s"
 msgstr "Numéro de tournoi : %(tnr)s"
 
-msgid "Tournament on Chess-results.com"
+msgid "Tournament on Chess-Results.com"
 msgstr "Tournoi sur le site Chess-Results.com"
 
 msgid "Tournament successfully uploaded."

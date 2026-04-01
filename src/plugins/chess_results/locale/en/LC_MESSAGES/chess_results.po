@@ -77,7 +77,7 @@ msgstr ""
 msgid "Tournament number: %(tnr)s"
 msgstr ""
 
-msgid "Tournament on Chess-results.com"
+msgid "Tournament on Chess-Results.com"
 msgstr ""
 
 msgid "Tournament successfully uploaded."
