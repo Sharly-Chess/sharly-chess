@@ -9,7 +9,7 @@ from data.display_controller import DisplayController
 from data.rotator import Rotator
 from data.screen import Screen
 from data.tournament import Tournament
-from plugins.ffe.ffe_event_controller import HTMXTemplate
+from plugins.ffe.ffe_upload_controller import HTMXTemplate
 from utils.enum import ScreenType
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,

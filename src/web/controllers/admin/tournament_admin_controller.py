@@ -547,12 +547,7 @@ class TournamentAdminController(BaseEventAdminController):
 
         plugin_manager.hook_for_event(
             web_context.get_admin_event(), 'validate_tournament_form_fields'
-        )(
-            action=action,
-            tournament=web_context.admin_tournament,
-            data=data,
-            errors=errors,
-        )
+        )(data=data, errors=errors)
 
         plugin_data: dict[str, dict[str, Any]] = {}
         for (

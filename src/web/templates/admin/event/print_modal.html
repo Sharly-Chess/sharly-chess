@@ -11,6 +11,7 @@
         <div class="modal-body">
             <form
                 id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                 hx-target="body"
                 hx-post="{{ url_for('event-generate-document', event_uniq_id=admin_event.uniq_id) }}"
                 hx-indicator="#please-wait"

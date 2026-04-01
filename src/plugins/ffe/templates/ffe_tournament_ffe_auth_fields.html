@@ -1,12 +1,16 @@
 {% import '/admin/common/macros.j2' as admin_macros %}
 
 <div class="auth-fields row gy-2 gx-3">
+    {% set auth_url = url_for(
+        'ffe-test-auth',
+        event_uniq_id=admin_event.uniq_id if admin_event else event_uniq_id,
+    ) %}
     <div class="col-12 col-md-6">
         {{ admin_macros.number_input(
             name='ffe_id',
             label=_('FFE certification number:'),
             placeholder=_('E.g.: %(num)d', num=68991),
-            hx_post=url_for('ffe-test-auth'),
+            hx_post=auth_url,
             hx_trigger='input changed delay:500ms',
             hx_target="closest .auth-fields",
             hx_swap="morphdom",
@@ -25,7 +29,7 @@
             placeholder=_('E.g.: %(string)s', string='KYNPRTZMHX'),
             valid=ffe_auth_valid,
             password_visible=ffe_password_visible,
-            hx_post=url_for('ffe-test-auth'),
+            hx_post=auth_url,
             hx_trigger='input changed delay:500ms',
             hx_target="closest .auth-fields",
             hx_swap="morphdom",

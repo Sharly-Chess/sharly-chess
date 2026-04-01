@@ -3,6 +3,7 @@
         <span {{ macros.tooltip_attributes('info', _('First round'), 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
+                hx-trigger="click, SC_PageUp from:body"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=1) }}"
                 hx-target="body"
                 hx-replace-url="true"
@@ -19,6 +20,7 @@
             <button
                 class="btn btn-outline-primary text-nowrap"
                 style="transform: scaleX(-1);"
+                hx-trigger="click, SC_Ctrl_ArrowLeft from:body"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round - 1 if not display_rankings else admin_round) }}"
                 hx-target="body"
                 hx-replace-url="true"
@@ -58,6 +60,7 @@
         <span {{ macros.tooltip_attributes('info', _('Next round'), 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
+                hx-trigger="click, SC_Ctrl_ArrowRight from:body"
                 {% if admin_tournament.pairing_system.show_unfinished_round_modal and not admin_tournament.is_round_finished(admin_round) %}
                     hx-get="{{ url_for('admin-pairings-unfinished-round-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                     data-bs-toggle="modal"
@@ -82,6 +85,7 @@
         <span {{ macros.tooltip_attributes('info', _('Current round'), 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
+                hx-trigger="click, SC_PageDown from:body"
                 {% if not admin_tournament.finished %}
                     hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_tournament.current_round) }}"
                 {% else %}
@@ -104,8 +108,9 @@
         <span {{ macros.tooltip_attributes('info', _('Previous tournament'), 'top') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
+                hx-trigger="click, SC_Shift_ArrowLeft from:body"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
-                hx-vals='{"tournament_id": "{{ prev_tournament_id }}"}'
+                hx-vals='{"tournament_id": "{{ prev_tournament_id or admin_tournament_id }}"}'
                 hx-target="body"
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
@@ -140,8 +145,9 @@
         <span {{ macros.tooltip_attributes('info', _('Next tournament'), 'top') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
+                hx-trigger="click, SC_Shift_ArrowRight from:body"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
-                hx-vals='{"tournament_id": "{{ next_tournament_id }}"}'
+                hx-vals='{"tournament_id": "{{ next_tournament_id or admin_tournament_id }}"}'
                 hx-target="body"
                 hx-replace-url="true"
                 hx-indicator="#please-wait"

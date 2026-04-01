@@ -16,6 +16,7 @@
         <div class="modal-body">
             <form
                 id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                 {% if action == 'create' %}
                     hx-post="{{ url_for('admin-tab-create-event', admin_tab=admin_tab) }}"
                     hx-push-url="true"

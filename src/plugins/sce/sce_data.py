@@ -415,7 +415,7 @@ class SCEEventPluginData(PluginData):
     slug: str | None = None
     organiser_slug: str | None = None
     status: str | None = None
-    auto_upload: bool = False
+    auto_upload: bool = True
     auto_player_sync: bool = False
     tournament_names_by_id: dict[str, str] = field(default_factory=dict)
     last_sync_at: datetime | None = None
@@ -445,7 +445,7 @@ class SCEEventPluginData(PluginData):
             slug=stored_value.get('slug', ''),
             organiser_slug=stored_value.get('organiser_slug', ''),
             status=stored_value.get('status'),
-            auto_upload=stored_value.get('auto_upload', False),
+            auto_upload=stored_value.get('auto_upload', True),
             auto_player_sync=stored_value.get('auto_player_sync', False),
             tournament_names_by_id=stored_value.get('tournament_names_by_id', {}),
             deleted_player_ids=stored_value.get('deleted_player_ids', []),
@@ -507,7 +507,7 @@ class SCEEventPluginData(PluginData):
 @dataclass
 class SCETournamentPluginData(PluginData):
     id: str | None = None
-    auto_upload: bool = True
+    auto_upload: bool = False
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
     upload_failure_id: str | None = None
@@ -526,7 +526,7 @@ class SCETournamentPluginData(PluginData):
         stored_conflict_sync_data = stored_value.get('conflict_sync_data')
         return cls(
             id=stored_value.get('id'),
-            auto_upload=stored_value.get('auto_upload', True),
+            auto_upload=stored_value.get('auto_upload', False),
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload_at'),
             ),

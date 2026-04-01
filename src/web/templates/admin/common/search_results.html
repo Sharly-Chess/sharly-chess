@@ -46,9 +46,10 @@
                     )}}"
                     hx-vals='{"data_source_id": "{{ data_source.id }}", "search": "{{ search }}"}'
                     hx-target="this"
-                    hx-swap="outerHTML"
+                    hx-swap="afterend"
                     hx-trigger="intersect once"
                     hx-indicator="#player-search-indicator"
+                    hx-on::after-request="handleListExtension(event);"
                 >
                     <span class="fst-italic">{{ _('Loading more results…') }}</span>
                 </li>
@@ -62,4 +63,13 @@
     <script>
         $('#{{ data_source.id }}-search-results').show();
     </script>
+    <style>
+        #search-results>li {
+            transition: background-color 400ms ease-out;
+        }
+        #search-results>li.selected-result {
+            background-color: #d7c9aa8a;
+            transition: background-color 100ms linear;
+        }
+    </style>
 {% endif %}

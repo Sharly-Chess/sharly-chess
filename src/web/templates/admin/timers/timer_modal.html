@@ -12,6 +12,7 @@
         <div class="modal-body">
             <form
                 id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                 {% if action == 'create' %}
                     hx-post="{{ url_for(
                         'admin-timer-create', event_uniq_id=admin_event.uniq_id
