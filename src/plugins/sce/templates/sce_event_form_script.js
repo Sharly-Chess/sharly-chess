@@ -1,4 +1,5 @@
 {% set field_ids = [
+    'allow-multi-tournament-players',
     'age-category-base-date',
     'age-categories',
     'age-category-change-month'

@@ -374,8 +374,6 @@ class Event:
 
     @cached_property
     def sorted_not_finished_tournaments(self) -> list[Tournament]:
-        """Returns the playing tournaments where the Papi file exists
-        (useful not to create players when there is no Papi file)."""
         return [
             tournament
             for tournament in self.sorted_tournaments
