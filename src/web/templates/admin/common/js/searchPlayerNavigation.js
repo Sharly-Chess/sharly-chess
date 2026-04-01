@@ -33,7 +33,7 @@ function handleListExtension(event) {
     event.target.remove();
 
     resultList = $('#search-results>li.btn');
-    
+
     let element = resultList[selectedIndex];
     let parent = element.parentElement;
 
@@ -50,7 +50,9 @@ function handleListExtension(event) {
 function refreshStyle(resultList, selectedIndex) {
     resultList.removeClass("selected-result");
     if (resultList[selectedIndex]) {
-        resultList[selectedIndex].scrollIntoView({"block": "center"});
+        resultList[selectedIndex].scrollIntoView(
+            {"block": "center", "behavior": "smooth"}
+        );
         $(resultList[selectedIndex]).addClass("selected-result");
     }
 }
