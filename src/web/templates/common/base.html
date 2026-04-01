@@ -46,6 +46,11 @@
     <body
         hx-ext="multi-swap,morphdom-swap,remove-me"
         hx-swap="transition:true"
+        {% if 'Firefox' not in user_agent %}
+            {#  Causes a white flash on refresh on Firefox. On other browsers,
+                prevents a flash where the page is first loaded with the Bootstrap CSS #}
+            class="d-none"
+        {% endif %}
     >
         {% set redirect_url = '' %}
         {% if sharly_chess_config.force_edit %}
