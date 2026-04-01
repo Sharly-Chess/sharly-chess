@@ -1,4 +1,5 @@
 let ignoreNextModalClose = false;
+var modalForm;
 
 function closeModal() {
     ignoreNextModalClose = false;
@@ -48,6 +49,27 @@ function handleModalOpened(static) {
         // The modal is usually opened at this point, following a user action,
         // but this allows us to force open a modal from the server.
         modal.show();
+    }
+
+    
+    modalForm = modal._element.querySelector("#modal-form");
+    if (modalForm) {
+        let fields = modalForm.getElementsByClassName("form-control");
+        if (fields.length > 0) {
+            fields[0].select(); // If the modal contains a form, set focus on the first field
+        }
+
+        let eventListeners = $._data(modal._element, "events")
+        if (!eventListeners || !eventListeners.keydown) { // avoid duplicate eventListeners
+            $(modal._element).on("keydown", function(event) {
+                if (event.key == "Enter") {
+                    if (event.target.getAttribute("type") === "search") {
+                        return;
+                    }
+                    modalForm.dispatchEvent(new CustomEvent("enterKeypressFromModal"));
+                }
+            })
+        }
     }
 
     closeTooltips();

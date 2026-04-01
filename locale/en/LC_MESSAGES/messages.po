@@ -1308,6 +1308,9 @@ msgstr ""
 msgid "Configuration"
 msgstr ""
 
+msgid "Configuration *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>C</u>onfiguration"
+
 msgid "Configure the category sets, which are available for all events."
 msgstr ""
 
@@ -1889,6 +1892,9 @@ msgstr ""
 msgid "Documents"
 msgstr ""
 
+msgid "Documents *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>D</u>ocuments"
+
 msgid "Dominica"
 msgstr ""
 
@@ -2366,6 +2372,9 @@ msgstr ""
 
 msgid "Families ({num})"
 msgstr ""
+
+msgid "Families ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>F</u>amilies ({num})"
 
 msgid "Families are used to split a large amount of information across multiple screens."
 msgstr ""
@@ -3977,10 +3986,13 @@ msgstr ""
 msgid "Pairings"
 msgstr ""
 
+msgid "Pairings *** WITH_SHORTCUT_INDICATION"
+msgstr "P<u>a</u>irings"
+
 msgid "Pairings by board"
 msgstr ""
 
-msgid "Pairings by board ({num})"
+msgid "Pairings by board ({num})"   
 msgstr ""
 
 msgid "Pairings by board ({tournament_name})"
@@ -4203,6 +4215,9 @@ msgstr ""
 msgid "Players ({num})"
 msgstr ""
 
+msgid "Players ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>P</u>layers ({num})"
+
 msgid "Players can't be overwritten once the tournament has started."
 msgstr ""
 
@@ -4409,6 +4424,9 @@ msgstr ""
 
 msgid "Prizes"
 msgstr ""
+
+msgid "Prizes *** WITH_SHORTCUT_INDICATION"
+msgstr "Pri<u>z</u>es"
 
 msgid "Prizes can only be shared for the main category."
 msgstr ""
@@ -4737,6 +4755,9 @@ msgstr ""
 
 msgid "Rotators ({num})"
 msgstr ""
+
+msgid "Rotators ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>R</u>otators ({num})"
 
 msgid "Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event."
 msgstr ""
@@ -5107,6 +5128,9 @@ msgstr ""
 
 msgid "Single Screens ({num})"
 msgstr ""
+
+msgid "Single Screens ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>S</u>ingle Screens ({num})"
 
 msgid "Size ({unit}): {width}x{height}"
 msgstr ""
@@ -5834,6 +5858,9 @@ msgstr ""
 msgid "Timers ({num})"
 msgstr ""
 
+msgid "Timers ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "Ti<u>m</u>ers ({num})"
+
 msgid "Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event."
 msgstr ""
 
@@ -5944,6 +5971,9 @@ msgstr ""
 
 msgid "Tournaments ({num})"
 msgstr ""
+
+msgid "Tournaments ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>T</u>ournaments ({num})"
 
 msgid "Tournaments are finished, you can not add players any longer."
 msgstr ""
@@ -6906,3 +6936,32 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
+msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
+msgstr "SC_C"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
+msgstr "SC_T"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB"
+msgstr "SC_P"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB"
+msgstr "SC_A"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
+msgstr "SC_Z"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
+msgstr "SC_S"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB"
+msgstr "SC_F"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
+msgstr "SC_R"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TIMERS TAB"
+msgstr "SC_M"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
+msgstr "SC_D"
