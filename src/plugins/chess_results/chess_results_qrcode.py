@@ -31,14 +31,11 @@ class ChessResultsQRCodeType(QRCodeType):
     @staticmethod
     def url(doc: QRCodePrintDocument) -> tuple[bool, str]:
         tournament = doc.tournament
-        tnr = CRUtils.get_tournament_plugin_data(tournament).tnr
-
-        if not tnr:
+        if not CRUtils.get_tournament_plugin_data(tournament).tnr:
             return False, _(
                 'No Chess-Results ID defined for tournament [{tournament}].'
             ).format(tournament=tournament.name)
-        url = f'https://chess-results.com/tnr{tnr}.aspx'
-        return True, url
+        return True, CRUtils.tournament_public_url(tournament)
 
     @staticmethod
     def get_qr_code(url) -> str:
