@@ -105,7 +105,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'modal': 'admin-event-modal',
                     'action': FormAction.UPDATE,
                     'icon_class': 'bi-gear-fill',
-                    'shortcut': f"{_('*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB')} from:body",
+                    'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB")} from:body',
                 },
             }
         if self.client.can_view_tournaments_tab:
@@ -114,12 +114,12 @@ class BaseEventAdminWebContext(AdminWebContext):
             )
             nav_tabs |= {
                 'admin-event-tournaments-tab': {
-                    'title': _('Tournaments ({num}) *** WITH_SHORTCUT_INDICATION').format(
-                        num=len(tournaments) or '-'
-                    ),
+                    'title': _(
+                        'Tournaments ({num}) *** WITH_SHORTCUT_INDICATION'
+                    ).format(num=len(tournaments) or '-'),
                     'template': 'tournaments/tab.html',
                     'icon_class': 'bi-diagram-3-fill',
-                    'shortcut': f"{_('*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB')} from:body",
+                    'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB")} from:body',
                 },
             }
         if self.client.can_view_players_tab:
@@ -130,7 +130,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     ),
                     'template': 'players/tab.html',
                     'icon_class': 'bi-people-fill',
-                    'shortcut': f"{_('*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB')} from:body",
+                    'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB")} from:body',
                 },
             }
         if self.client.can_view_pairings_tab:
@@ -139,7 +139,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'title': _('Pairings *** WITH_SHORTCUT_INDICATION'),
                     'template': 'pairings/tab.html',
                     'icon_class': 'bi-arrow-left-right',
-                    'shortcut': f"{_('*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB')} from:body",
+                    'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB")} from:body',
                 },
             }
         if self.client.can_view_prizes_tab:
@@ -148,7 +148,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'title': _('Prizes *** WITH_SHORTCUT_INDICATION'),
                     'template': 'prizes/tab.html',
                     'icon_class': 'bi-trophy-fill',
-                    'shortcut': f"{_('*** KEYBOARD SHORTCUT FOR THE PRIZES TAB')} from:body",
+                    'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PRIZES TAB")} from:body',
                 },
             }
         if self.client.can_manage_screens:
@@ -158,32 +158,32 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'icon_class': 'bi-display-fill',
                     'submenu': {
                         'admin-event-screens-tab': {
-                            'title': _('Single Screens ({num}) *** WITH_SHORTCUT_INDICATION').format(
-                                num=len(event.basic_screens_by_id) or '-'
-                            ),
+                            'title': _(
+                                'Single Screens ({num}) *** WITH_SHORTCUT_INDICATION'
+                            ).format(num=len(event.basic_screens_by_id) or '-'),
                             'template': 'screens/tab.html',
-                            'shortcut': f"{_('*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB')} from:body",
+                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB")} from:body',
                         },
                         'admin-event-families-tab': {
-                            'title': _('Families ({num}) *** WITH_SHORTCUT_INDICATION').format(
-                                num=len(event.families_by_id) or '-'
-                            ),
+                            'title': _(
+                                'Families ({num}) *** WITH_SHORTCUT_INDICATION'
+                            ).format(num=len(event.families_by_id) or '-'),
                             'template': 'families/tab.html',
-                            'shortcut': f"{_('*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB')} from:body",
+                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB")} from:body',
                         },
                         'admin-event-rotators-tab': {
-                            'title': _('Rotators ({num}) *** WITH_SHORTCUT_INDICATION').format(
-                                num=len(event.rotators_by_id) or '-'
-                            ),
+                            'title': _(
+                                'Rotators ({num}) *** WITH_SHORTCUT_INDICATION'
+                            ).format(num=len(event.rotators_by_id) or '-'),
                             'template': 'rotators/tab.html',
-                            'shortcut': f"{_('*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB')} from:body",
+                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB")} from:body',
                         },
                         'admin-event-timers-tab': {
-                            'title': _('Timers ({num}) *** WITH_SHORTCUT_INDICATION').format(
-                                num=len(event.timers_by_id) or '-'
-                            ),
+                            'title': _(
+                                'Timers ({num}) *** WITH_SHORTCUT_INDICATION'
+                            ).format(num=len(event.timers_by_id) or '-'),
                             'template': 'timers/tab.html',
-                            'shortcut': f"{_('*** KEYBOARD SHORTCUT FOR THE TIMERS TAB')} from:body",
+                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE TIMERS TAB")} from:body',
                         },
                         'admin-event-display-controllers-tab': {
                             'title': _('Display controllers ({num})').format(
