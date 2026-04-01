@@ -3,7 +3,7 @@
         <span {{ macros.tooltip_attributes('info', _('First round'), 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
-                hx-trigger="click, SC_PageDown from:body"
+                hx-trigger="click, SC_PageUp from:body"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=1) }}"
                 hx-target="body"
                 hx-replace-url="true"
@@ -85,7 +85,7 @@
         <span {{ macros.tooltip_attributes('info', _('Current round'), 'bottom') }}>
             <button
                 class="btn btn-outline-primary text-nowrap"
-                hx-trigger="click, SC_PageUp from:body"
+                hx-trigger="click, SC_PageDown from:body"
                 {% if not admin_tournament.finished %}
                     hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_tournament.current_round) }}"
                 {% else %}

@@ -14,11 +14,11 @@ function keyboardShortcutManager(event) {
     if (isTargetInput(event.target)) {return;}
 
     switch(event.key.toLowerCase()) {
-        case '+': 
+        case '+':
             document.body.dispatchEvent(new CustomEvent("SC_Plus"));
             break;
 
-        case 'arrowleft': 
+        case 'arrowleft':
             if (event.shiftKey) {
                 document.body.dispatchEvent(new CustomEvent("SC_Shift_ArrowLeft"));
                 break;
@@ -30,7 +30,7 @@ function keyboardShortcutManager(event) {
             document.body.dispatchEvent(new CustomEvent("SC_ArrowLeft"));
             break;
 
-        case 'arrowright': 
+        case 'arrowright':
             if (event.shiftKey) {
                 document.body.dispatchEvent(new CustomEvent("SC_Shift_ArrowRight"));
                 break;
@@ -42,11 +42,11 @@ function keyboardShortcutManager(event) {
             document.body.dispatchEvent(new CustomEvent("SC_ArrowRight"));
             break;
 
-        case 'pageup': 
+        case 'pageup':
             document.body.dispatchEvent(new CustomEvent("SC_PageUp"));
             break;
 
-        case 'pagedown': 
+        case 'pagedown':
             document.body.dispatchEvent(new CustomEvent("SC_PageDown"));
             break;
 
@@ -100,6 +100,10 @@ function keyboardShortcutManager(event) {
 
         case 'z':
             document.body.dispatchEvent(new CustomEvent("SC_Z"));
+            break;
+
+        case 'i':
+            document.body.dispatchEvent(new CustomEvent("SC_I"));
             break;
 
         default:
