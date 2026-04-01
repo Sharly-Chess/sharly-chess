@@ -186,10 +186,11 @@ class BaseEventAdminWebContext(AdminWebContext):
                             'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE TIMERS TAB")} from:body',
                         },
                         'admin-event-display-controllers-tab': {
-                            'title': _('Display controllers ({num})').format(
-                                num=len(event.display_controllers_by_id) or '-'
-                            ),
+                            'title': _(
+                                'Display controllers ({num}) *** WITH_SHORTCUT_INDICATION'
+                            ).format(num=len(event.display_controllers_by_id) or '-'),
                             'template': 'display_controllers/tab.html',
+                            'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB")} from:body',
                         },
                     },
                 },

@@ -1821,6 +1821,9 @@ msgstr "Pilotes d'afficheurs"
 msgid "Display controllers ({num})"
 msgstr "Pilotes d'afficheurs ({num})"
 
+msgid "Display controllers ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "P<u>i</u>lotes d'afficheurs ({num})"
+
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé)."
 
@@ -6967,3 +6970,6 @@ msgstr "SC_M"
 
 msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
 msgstr "SC_D"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
+msgstr "SC_I"

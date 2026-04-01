@@ -1821,6 +1821,9 @@ msgstr ""
 msgid "Display controllers ({num})"
 msgstr ""
 
+msgid "Display controllers ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "D<u>i</u>splay controllers ({num})"
+
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr ""
 
@@ -3992,7 +3995,7 @@ msgstr "P<u>a</u>irings"
 msgid "Pairings by board"
 msgstr ""
 
-msgid "Pairings by board ({num})"   
+msgid "Pairings by board ({num})"
 msgstr ""
 
 msgid "Pairings by board ({tournament_name})"
@@ -6965,3 +6968,6 @@ msgstr "SC_M"
 
 msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
 msgstr "SC_D"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
+msgstr "SC_I"
