@@ -3,7 +3,7 @@ from data.print_documents import QRCodeType
 from data.print_documents.documents import QRCodePrintDocument
 from data.print_documents.options import TournamentPrintOption, PrintOption
 from plugins.chess_results import PLUGIN_NAME, PLUGIN_DIR
-from plugins.chess_results.utils import ChessResultsUtils
+from plugins.chess_results.utils import CRUtils
 
 
 class ChessResultsQRCodeType(QRCodeType):
@@ -31,7 +31,7 @@ class ChessResultsQRCodeType(QRCodeType):
     @staticmethod
     def url(doc: QRCodePrintDocument) -> tuple[bool, str]:
         tournament = doc.tournament
-        tnr = ChessResultsUtils.get_tournament_plugin_data(tournament).tnr
+        tnr = CRUtils.get_tournament_plugin_data(tournament).tnr
 
         if not tnr:
             return False, _(
