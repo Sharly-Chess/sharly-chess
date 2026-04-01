@@ -157,7 +157,6 @@ class StoredTournament:
     index: int = 0
     time_control_trf25: str | None = None
     record_illegal_moves: int | None = None
-    rules: str | None = None
     first_board_number: int | None = None
     paired_bye_result: int | None = None
     max_byes: int | None = None

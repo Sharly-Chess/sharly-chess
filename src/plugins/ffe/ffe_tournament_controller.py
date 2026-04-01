@@ -138,25 +138,6 @@ class FfeTournamentController(BaseEventAdminController):
 
         return self.render_messages(request)
 
-    @post(
-        path='/ffe/upload-rules/{event_uniq_id:str}/{tournament_id:int}',
-        name='ffe-upload-rules',
-        guards=[TournamentActionGuard(AuthAction.PUBLISH_RULES)],
-    )
-    async def htmx_ffe_upload_rules(
-        self,
-        request: HTMXRequest,
-        tournament_id: int,
-    ) -> Template:
-        web_context = TournamentAdminWebContext(request, tournament_id)
-        tournament = web_context.get_admin_tournament()
-        try:
-            FFESession(tournament).upload_rules()
-            Message.success(request, _('Rules uploaded'))
-        except SharlyChessException as e:
-            Message.error(request, str(e))
-        return self.render_messages(request)
-
     @staticmethod
     def tournament_fees_file(tournament: Tournament) -> Path:
         return (

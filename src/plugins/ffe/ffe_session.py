@@ -523,17 +523,16 @@ class FFESession(Session):
         logger.info('Tournament visibility successfully set')
         return None
 
-    def upload_rules(self):
+    def upload_rules(self, rules_file: Path):
         """Upload the rules of the tournament to the FFE admin website.
         Raises a localised SharlyChessException if it fails"""
 
         assert self.tournament is not None
-        assert self.tournament.rules is not None
 
         logger.info(
             'Sending the rules of tournament [%s] (%s) to the FFE website...',
             self.tournament.name,
-            self.tournament.rules,
+            rules_file,
         )
         self._validate_admin_access()
         logger.debug(
@@ -562,7 +561,7 @@ class FFESession(Session):
             url=url,
             data=post,
             files={
-                UPLOAD_RULES_FILE_ID: Path(self.tournament.rules),
+                UPLOAD_RULES_FILE_ID: rules_file,
             },
         )
         if not html:

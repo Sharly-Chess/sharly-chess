@@ -369,9 +369,6 @@ msgstr ""
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr ""
 
-msgid "A URL, or the path to the rules file on the server, in PDF format."
-msgstr ""
-
 msgid "A file is expected."
 msgstr ""
 
@@ -2081,9 +2078,6 @@ msgstr ""
 msgid "E.g.: World championship"
 msgstr ""
 
-msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
-msgstr ""
-
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr ""
 
@@ -2458,9 +2452,6 @@ msgid "Fiji"
 msgstr ""
 
 msgid "File"
-msgstr ""
-
-msgid "File [{file}] not found."
 msgstr ""
 
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
@@ -2841,9 +2832,6 @@ msgid "Includes all other access levels and grants full access to the applicatio
 msgstr ""
 
 msgid "Incorrect installation, exiting."
-msgstr ""
-
-msgid "Incorrect path [{path}]."
 msgstr ""
 
 msgid "Increment (sec):"
@@ -3644,9 +3632,6 @@ msgid "No roles defined."
 msgstr ""
 
 msgid "No rotators"
-msgstr ""
-
-msgid "No rules file set"
 msgstr ""
 
 msgid "No screen families"
@@ -4868,12 +4853,6 @@ msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
 
 msgid "Rules"
-msgstr ""
-
-msgid "Rules file location:"
-msgstr ""
-
-msgid "Rules file set"
 msgstr ""
 
 msgid "Russia"
@@ -6494,9 +6473,6 @@ msgid "Woman Grand Master"
 msgstr ""
 
 msgid "Woman International Master"
-msgstr ""
-
-msgid "Wrong file extension [{ext}] ([pdf] expected)."
 msgstr ""
 
 msgid "XLSX format"
