@@ -5,6 +5,7 @@ from packaging.version import Version
 from common.i18n import _
 from data.event import Event
 from data.loader import EventLoader
+from data.print_documents import QRCodeType
 from plugins.hookspec import hookimpl, hookspec
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_admin_controller import SCEAdminController
@@ -12,6 +13,7 @@ from plugins.sce.sce_background_uploader import (
     should_schedule_auto_upload,
     schedule_upload,
 )
+from plugins.sce.sce_qr_codes import SCETournamentQRCodeType, SCEEventQRCodeType
 from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.sce.sce_data import (
     SCETournamentPluginData,
@@ -204,8 +206,17 @@ class SCEPlugin(Plugin):
             NavDataTransferItem(
                 key='sce_data_transfer',
                 title='Sharly-Chess.com',
-                icon_path='/images/sharly-chess-events.ico',
+                icon_path='/images/sce.ico',
                 modal_route_name='sce-sync-modal',
                 has_upload_error=self._event_has_sce_error_badge(event),
             )
         ]
+
+    # ---------------------------------------------------------------------------------
+    # Documents
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl(trylast=True)
+    def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
+        qrcode_types.insert(1, SCETournamentQRCodeType)
+        qrcode_types.insert(1, SCEEventQRCodeType)

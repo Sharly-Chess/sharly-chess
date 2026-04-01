@@ -87,9 +87,6 @@ msgstr "Tronqué"
 msgid "DD/MM/YYYY"
 msgstr "JJ/MM/AAAA"
 
-msgid "Disabled"
-msgstr "Désactivé"
-
 msgid "Download fees"
 msgstr "Télécharger les droits d'homologation"
 
@@ -112,9 +109,6 @@ msgstr "Arbitre Élite 1"
 
 msgid "Elite Arbiter (level 2)"
 msgstr "Arbitre Élite 2"
-
-msgid "Enabled"
-msgstr "Activé"
 
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
@@ -502,9 +496,6 @@ msgstr "Mettre en ligne sur le site de la FFE"
 
 msgid "Uploading the PDF rules file allows the players to read the rules online."
 msgstr "Envoyer le fichier PDF des règles sur le site de la FFE permet aux joueur·euses de lire les règles en ligne."
-
-msgid "Use default - {option}"
-msgstr "Par défaut – {option}"
 
 msgid "Variation"
 msgstr "Variante"

@@ -228,6 +228,39 @@ msgstr "(remplace [%(object_uniq_id)s])"
 msgid "*** Doc Link"
 msgstr "https://sharly-chess.com/fr/bien-demarrer/"
 
+msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
+msgstr "SC_C"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
+msgstr "SC_I"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
+msgstr "SC_D"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB"
+msgstr "SC_F"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB"
+msgstr "SC_A"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB"
+msgstr "SC_J"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
+msgstr "SC_X"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
+msgstr "SC_R"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
+msgstr "SC_S"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TIMERS TAB"
+msgstr "SC_M"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
+msgstr "SC_T"
+
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -1305,9 +1338,6 @@ msgstr "Appariements complémentaires générés avec succès !"
 msgid "Complementary prize"
 msgstr "Prix complémentaire"
 
-msgid "Configuration"
-msgstr "Configuration"
-
 msgid "Configuration *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>C</u>onfiguration"
 
@@ -2372,9 +2402,6 @@ msgstr "Échec de la lecture de [{download_url}] : [{ex}]."
 
 msgid "Families"
 msgstr "Familles"
-
-msgid "Families ({num})"
-msgstr "Familles ({num})"
 
 msgid "Families ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>F</u>amilles ({num})"
@@ -5131,9 +5158,6 @@ msgstr "Singapour"
 msgid "Single Screens"
 msgstr "Écrans simples"
 
-msgid "Single Screens ({num})"
-msgstr "Écrans simples ({num})"
-
 msgid "Single Screens ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "Écrans&nbsp<u>S</u>imples ({num})"
 
@@ -5860,9 +5884,6 @@ msgstr "Chronomètre : aucun"
 msgid "Timers"
 msgstr "Chronomètres"
 
-msgid "Timers ({num})"
-msgstr "Chronomètres ({num})"
-
 msgid "Timers ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "Chrono<u>m</u>ètres ({num})"
 
@@ -5973,9 +5994,6 @@ msgstr "Tournoi : non défini"
 
 msgid "Tournaments"
 msgstr "Tournois"
-
-msgid "Tournaments ({num})"
-msgstr "Tournois ({num})"
 
 msgid "Tournaments ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>T</u>ournaments ({num})"
@@ -6941,35 +6959,3 @@ msgstr "½ - 0 (NC)"
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
 
-msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
-msgstr "SC_C"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
-msgstr "SC_T"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB"
-msgstr "SC_J"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB"
-msgstr "SC_A"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
-msgstr "SC_X"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
-msgstr "SC_S"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB"
-msgstr "SC_F"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
-msgstr "SC_R"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE TIMERS TAB"
-msgstr "SC_M"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
-msgstr "SC_D"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
-msgstr "SC_I"

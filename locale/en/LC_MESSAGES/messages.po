@@ -228,6 +228,39 @@ msgstr ""
 msgid "*** Doc Link"
 msgstr "https://sharly-chess.com/getting-started/"
 
+msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
+msgstr "SC_C"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
+msgstr "SC_I"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
+msgstr "SC_D"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB"
+msgstr "SC_F"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB"
+msgstr "SC_A"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB"
+msgstr "SC_P"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
+msgstr "SC_Z"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
+msgstr "SC_R"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
+msgstr "SC_S"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TIMERS TAB"
+msgstr "SC_M"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
+msgstr "SC_T"
+
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -1305,9 +1338,6 @@ msgstr ""
 msgid "Complementary prize"
 msgstr ""
 
-msgid "Configuration"
-msgstr ""
-
 msgid "Configuration *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>C</u>onfiguration"
 
@@ -2371,9 +2401,6 @@ msgid "Failed to read [{download_url}]: [{ex}]."
 msgstr ""
 
 msgid "Families"
-msgstr ""
-
-msgid "Families ({num})"
 msgstr ""
 
 msgid "Families ({num}) *** WITH_SHORTCUT_INDICATION"
@@ -5129,9 +5156,6 @@ msgstr ""
 msgid "Single Screens"
 msgstr ""
 
-msgid "Single Screens ({num})"
-msgstr ""
-
 msgid "Single Screens ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>S</u>ingle Screens ({num})"
 
@@ -5858,9 +5882,6 @@ msgstr ""
 msgid "Timers"
 msgstr ""
 
-msgid "Timers ({num})"
-msgstr ""
-
 msgid "Timers ({num}) *** WITH_SHORTCUT_INDICATION"
 msgstr "Ti<u>m</u>ers ({num})"
 
@@ -5970,9 +5991,6 @@ msgid "Tournament: not set"
 msgstr ""
 
 msgid "Tournaments"
-msgstr ""
-
-msgid "Tournaments ({num})"
 msgstr ""
 
 msgid "Tournaments ({num}) *** WITH_SHORTCUT_INDICATION"
@@ -6939,35 +6957,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
-msgstr "SC_C"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
-msgstr "SC_T"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB"
-msgstr "SC_P"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB"
-msgstr "SC_A"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
-msgstr "SC_Z"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
-msgstr "SC_S"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB"
-msgstr "SC_F"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
-msgstr "SC_R"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE TIMERS TAB"
-msgstr "SC_M"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
-msgstr "SC_D"
-
-msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
-msgstr "SC_I"

@@ -13,7 +13,7 @@ class ChessResultsQRCodeType(QRCodeType):
 
     @staticmethod
     def static_name() -> str:
-        return _('Tournament on Chess-results.com')
+        return _('Tournament on Chess-Results.com')
 
     @staticmethod
     def get_valid_option_types() -> list[type[PrintOption]]:
