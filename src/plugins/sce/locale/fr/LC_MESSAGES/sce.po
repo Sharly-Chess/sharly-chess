@@ -100,6 +100,9 @@ msgstr "Fin"
 msgid "Error while uploading tournament [{tournament}], consult the logs for more details."
 msgstr "Erreur lors de la mise en ligne du tournoi [{tournament}], consultez les logs pour plus de détails."
 
+msgid "Event [{event}] is not connected to a Sharly-Chess.com event."
+msgstr "L'évènement [{event}] n'est pas connecté à un évènement Sharly-Chess.com."
+
 msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
 msgstr "L'évènement [{event}] a été connecté avec succès à Sharly-Chess.com !"
 
@@ -111,6 +114,9 @@ msgstr "L'évènement a été archivé sur Sharly-Chess.com, il ne peut plus êt
 
 msgid "Event is not connected to a Sharly-Chess.com event."
 msgstr "L'évènement n'est pas connecté à un évènement Sharly-Chess.com."
+
+msgid "Event on Sharly-Chess.com"
+msgstr "Évènement Sharly-Chess.com"
 
 msgid "FIDE ID"
 msgstr "Identifiant FIDE"
@@ -248,6 +254,12 @@ msgstr "Ronde n°%(round)d"
 msgid "Rounds"
 msgstr "Rondes"
 
+msgid "Scan to access the event on Sharly-Chess.com."
+msgstr "Scannez pour accéder à l'évènement sur le site Sharly-Chess.com."
+
+msgid "Scan to access the tournament on Sharly-Chess.com."
+msgstr "Scannez pour accéder au tournoi sur le site Sharly-Chess.com."
+
 msgid "Schedule"
 msgstr "Horaires"
 
@@ -306,6 +318,9 @@ msgstr "Titre"
 msgid "Tournament"
 msgstr "Tournoi"
 
+msgid "Tournament [{tournament}] is not connected to a Sharly-Chess.com tournament."
+msgstr "Le tournoi [{tournament}] n'est pas connecté à un "
+
 msgid "Tournament [{tournament}] successfully uploaded."
 msgstr "Le tournoi [{tournament}] a été mis en ligne avec succès."
 
@@ -320,6 +335,9 @@ msgstr "L'import de tournoi a échoué, consultez les logs pour plus de détails
 
 msgid "Tournament is currently being uploaded."
 msgstr "Le tournoi est en cours de mise en ligne."
+
+msgid "Tournament on Sharly-Chess.com"
+msgstr "Tournoi sur Sharly-Chess.com"
 
 msgid "Tournament successfully imported."
 msgstr "Le tournoi a été importé avec succès."

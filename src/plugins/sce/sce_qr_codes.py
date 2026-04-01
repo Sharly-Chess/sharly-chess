@@ -66,7 +66,7 @@ class SCETournamentQRCodeType(QRCodeType):
 
     @staticmethod
     def info(doc: QRCodePrintDocument) -> str:
-        return _('Scan to access the event on Sharly-Chess.com.')
+        return _('Scan to access the tournament on Sharly-Chess.com.')
 
     @staticmethod
     def url(doc: QRCodePrintDocument) -> tuple[bool, str]:
