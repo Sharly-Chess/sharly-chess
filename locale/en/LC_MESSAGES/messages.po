@@ -1560,9 +1560,6 @@ msgstr ""
 msgid "Crosstable before the first round"
 msgstr ""
 
-msgid "Ctrl *** KEYBOARD MODIFIER"
-msgstr "Ctrl"
-
 msgid "Cuba"
 msgstr ""
 
@@ -2494,9 +2491,6 @@ msgstr ""
 msgid "First round"
 msgstr ""
 
-msgid "First round *** KEYBOARD SHORTCUT TOOLTIP"
-msgstr "First round"
-
 msgid "Fixed board"
 msgstr ""
 
@@ -3062,9 +3056,6 @@ msgstr ""
 msgid "Last results ({num})"
 msgstr ""
 
-msgid "Last round *** KEYBOARD SHORTCUT TOOLTIP"
-msgstr "Last round"
-
 msgid "Last update"
 msgstr ""
 
@@ -3481,23 +3472,11 @@ msgstr ""
 msgid "New tournament"
 msgstr ""
 
-msgid "Next board *** KEYBOARD SHORTCUT TOOLTIP"
-msgstr "Next board"
-
 msgid "Next round"
 msgstr ""
 
-msgid "Next round *** KEYBOARD SHORTCUT TOOLTIP"
-msgstr "Next round"
-
 msgid "Next round bye"
 msgstr ""
-
-msgid "Next tournament"
-msgstr ""
-
-msgid "Next tournament *** KEYBOARD SHORTCUT TOOLTIP"
-msgstr "Next tourn."
 
 msgid "Nicaragua"
 msgstr ""
@@ -4404,20 +4383,8 @@ msgstr ""
 msgid "Present"
 msgstr ""
 
-msgid "Previous board *** KEYBOARD SHORTCUT TOOLTIP"
-msgstr "Prev. board"
-
 msgid "Previous round"
 msgstr ""
-
-msgid "Previous round *** KEYBOARD SHORTCUT TOOLTIP"
-msgstr "Prev. round"
-
-msgid "Previous tournament"
-msgstr ""
-
-msgid "Previous tournament *** KEYBOARD SHORTCUT TOOLTIP"
-msgstr "Prev. tourn."
 
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prize"
@@ -6959,4 +6926,37 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Ctrl *** KEYBOARD MODIFIER"
+#~ msgstr "Ctrl"
+
+#~ msgid "First round *** KEYBOARD SHORTCUT TOOLTIP"
+#~ msgstr "First round"
+
+#~ msgid "Last round *** KEYBOARD SHORTCUT TOOLTIP"
+#~ msgstr "Last round"
+
+#~ msgid "Next board *** KEYBOARD SHORTCUT TOOLTIP"
+#~ msgstr "Next board"
+
+#~ msgid "Next round *** KEYBOARD SHORTCUT TOOLTIP"
+#~ msgstr "Next round"
+
+#~ msgid "Next tournament"
+#~ msgstr ""
+
+#~ msgid "Next tournament *** KEYBOARD SHORTCUT TOOLTIP"
+#~ msgstr "Next tourn."
+
+#~ msgid "Previous board *** KEYBOARD SHORTCUT TOOLTIP"
+#~ msgstr "Prev. board"
+
+#~ msgid "Previous round *** KEYBOARD SHORTCUT TOOLTIP"
+#~ msgstr "Prev. round"
+
+#~ msgid "Previous tournament"
+#~ msgstr ""
+
+#~ msgid "Previous tournament *** KEYBOARD SHORTCUT TOOLTIP"
+#~ msgstr "Prev. tourn."
 
