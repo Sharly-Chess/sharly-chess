@@ -2,6 +2,8 @@
 
 ## General
 
+- _Sharly-Chess.com_ integration (4.0.0)
+- Improved the navigation with keyboard shortcuts (4.0.0)
 - Use Flatpak for Linux build (4.0.0)
 - Rename _Upload_ menu to _Data Transfer_ (4.0.0)
 
@@ -27,11 +29,9 @@
 # Documents
 
 - Added owed/paid totals to the check-in list (4.0.0)
-- Added a sort option to the players list document
+- Added a sort option to the players list document (4.0.0)
 
 ## Plugins
-
-- New plugin Sharly-Chess.com (4.0.0)
 
 ### Chess-Results.com
 
