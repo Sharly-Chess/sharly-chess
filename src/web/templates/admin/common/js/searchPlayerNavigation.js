@@ -21,7 +21,7 @@ function handleInitialQuery(event) {
                 if (resultList[selectedIndex]) {
                     resultList[selectedIndex].click();
                 }
-                event.stopPropagation();
+                return false;
             }
         });
     }
