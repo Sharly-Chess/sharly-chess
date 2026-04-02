@@ -6927,36 +6927,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Ctrl *** KEYBOARD MODIFIER"
-#~ msgstr "Ctrl"
-
-#~ msgid "First round *** KEYBOARD SHORTCUT TOOLTIP"
-#~ msgstr "First round"
-
-#~ msgid "Last round *** KEYBOARD SHORTCUT TOOLTIP"
-#~ msgstr "Last round"
-
-#~ msgid "Next board *** KEYBOARD SHORTCUT TOOLTIP"
-#~ msgstr "Next board"
-
-#~ msgid "Next round *** KEYBOARD SHORTCUT TOOLTIP"
-#~ msgstr "Next round"
-
-#~ msgid "Next tournament"
-#~ msgstr ""
-
-#~ msgid "Next tournament *** KEYBOARD SHORTCUT TOOLTIP"
-#~ msgstr "Next tourn."
-
-#~ msgid "Previous board *** KEYBOARD SHORTCUT TOOLTIP"
-#~ msgstr "Prev. board"
-
-#~ msgid "Previous round *** KEYBOARD SHORTCUT TOOLTIP"
-#~ msgstr "Prev. round"
-
-#~ msgid "Previous tournament"
-#~ msgstr ""
-
-#~ msgid "Previous tournament *** KEYBOARD SHORTCUT TOOLTIP"
-#~ msgstr "Prev. tourn."
-
