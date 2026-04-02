@@ -20,11 +20,11 @@ function keyboardShortcutManager(event) {
 
         case 'arrowleft':
             if (event.shiftKey) {
+                if (event.ctrlKey) {
+                    document.body.dispatchEvent(new CustomEvent("SC_Ctrl_Shift_ArrowLeft"));
+                    break;
+                }
                 document.body.dispatchEvent(new CustomEvent("SC_Shift_ArrowLeft"));
-                break;
-            }
-            if (event.ctrlKey) {
-                document.body.dispatchEvent(new CustomEvent("SC_Ctrl_ArrowLeft"));
                 break;
             }
             document.body.dispatchEvent(new CustomEvent("SC_ArrowLeft"));
@@ -32,22 +32,30 @@ function keyboardShortcutManager(event) {
 
         case 'arrowright':
             if (event.shiftKey) {
+                if (event.ctrlKey) {
+                    document.body.dispatchEvent(new CustomEvent("SC_Ctrl_Shift_ArrowRight"));
+                    break;
+                }
                 document.body.dispatchEvent(new CustomEvent("SC_Shift_ArrowRight"));
-                break;
-            }
-            if (event.ctrlKey) {
-                document.body.dispatchEvent(new CustomEvent("SC_Ctrl_ArrowRight"));
                 break;
             }
             document.body.dispatchEvent(new CustomEvent("SC_ArrowRight"));
             break;
 
-        case 'pageup':
-            document.body.dispatchEvent(new CustomEvent("SC_PageUp"));
+        case 'arrowup':
+            if (event.shiftKey) {
+                document.body.dispatchEvent(new CustomEvent("SC_Shift_ArrowUp"));
+                break;
+            }
+            document.body.dispatchEvent(new CustomEvent("SC_ArrowUp"));
             break;
 
-        case 'pagedown':
-            document.body.dispatchEvent(new CustomEvent("SC_PageDown"));
+        case 'arrowdown':
+            if (event.shiftKey) {
+                document.body.dispatchEvent(new CustomEvent("SC_Shift_ArrowDown"));
+                break;
+            }
+            document.body.dispatchEvent(new CustomEvent("SC_ArrowDown"));
             break;
 
         case 't':

@@ -3410,9 +3410,6 @@ msgstr ""
 msgid "Nauru"
 msgstr ""
 
-msgid "Navigation"
-msgstr ""
-
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
@@ -3479,9 +3476,6 @@ msgid "Next round"
 msgstr ""
 
 msgid "Next round bye"
-msgstr ""
-
-msgid "Next tournament"
 msgstr ""
 
 msgid "Nicaragua"
@@ -4392,9 +4386,6 @@ msgstr ""
 msgid "Previous round"
 msgstr ""
 
-msgid "Previous tournament"
-msgstr ""
-
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prize"
 
@@ -5098,6 +5089,9 @@ msgstr ""
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr ""
+
+msgid "Shift *** KEYBOARD MODIFIER"
+msgstr "Shift"
 
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr ""
