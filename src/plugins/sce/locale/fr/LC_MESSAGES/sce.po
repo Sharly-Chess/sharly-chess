@@ -199,6 +199,9 @@ msgstr "En attente"
 msgid "Phone"
 msgstr "Téléphone"
 
+msgid "Player [{player}] could not be deleted from Sharly-Chess.com."
+msgstr "Le·la joueur·euse [{player}] n'a pas pu être supprimé·e de Sharly-Chess.com."
+
 msgid "Player [{player}] deleted."
 msgstr "Joueur·euse [{player}] supprimé·e."
 
@@ -213,6 +216,9 @@ msgstr "Doublons de joueur·euses détectés lors de la dernière synchronisatio
 
 msgid "Player has already been paired in the tournament, it no longer can be deleted."
 msgstr "Le·la joueur·euse ne peut être supprimé·e car déjà apparié·e dans le tournoi."
+
+msgid "Players in Sharly-Chess.com that can't be created in the local Sharly Chess application because they already exist."
+msgstr "Les joueur·euses de Sharly-Chess.com qui ne peuvent être créé·es dans l'application Sharly Chess locale car déjà existant·es."
 
 msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
 msgstr "Les joueur·euses de l'application Sharly Chess locale qui ne peuvent être créé·es dans Sharly-Chess.com car déjà existant·es."
@@ -277,6 +283,9 @@ msgstr "Sharly-Chess.com n'est pas accessible pour le moment."
 
 msgid "Sharly-Chess.com player conflicts"
 msgstr "Conflits de joueur·euses Sharly-Chess.com"
+
+msgid "Sharly-Chess.com players"
+msgstr "Joueur·euses Sharly-Chess.com"
 
 msgid "Sharly-Chess.com tournament"
 msgstr "Tournoi Sharly-Chess.com"

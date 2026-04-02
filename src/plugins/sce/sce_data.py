@@ -1,11 +1,11 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from datetime import datetime, date
 from functools import cached_property
 from typing import Any, Self
 
 from common.i18n import _
 from data.event import Event
-from data.player import TournamentPlayer
+from data.player import TournamentPlayer, Player
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -24,6 +24,26 @@ class SCETokens:
     access_token: str
     refresh_token: str
     expires_at: datetime
+
+
+@dataclass
+class SCEDuplicatedPlayer:
+    last_name: str
+    first_name: str | None
+
+    @property
+    def full_name(self) -> str:
+        return Player.player_full_name(self.first_name, self.last_name)
+
+    @classmethod
+    def from_stored_value(cls, value: dict[str, Any]) -> Self:
+        return cls(
+            last_name=value['last_name'],
+            first_name=value['first_name'],
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
+        return asdict(self)
 
 
 @dataclass
@@ -513,6 +533,9 @@ class SCETournamentPluginData(PluginData):
     upload_failure_id: str | None = None
     last_sync_data: SCETournamentSyncData | None = None
     conflict_sync_data: SCETournamentSyncData | None = None
+    duplicated_players_by_id: dict[str, SCEDuplicatedPlayer] = field(
+        default_factory=dict
+    )
 
     @property
     def last_upload_at_str(self) -> str:
@@ -544,6 +567,12 @@ class SCETournamentPluginData(PluginData):
                 if stored_conflict_sync_data
                 else None
             ),
+            duplicated_players_by_id={
+                id_: SCEDuplicatedPlayer.from_stored_value(stored_dup_player)
+                for id_, stored_dup_player in stored_value.get(
+                    'duplicated_players_by_id', {}
+                ).items()
+            },
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -565,6 +594,10 @@ class SCETournamentPluginData(PluginData):
                 if self.conflict_sync_data
                 else None
             ),
+            'duplicated_players_by_id': {
+                id_: dup_player.to_stored_value()
+                for id_, dup_player in self.duplicated_players_by_id.items()
+            },
         }
 
     @classmethod
