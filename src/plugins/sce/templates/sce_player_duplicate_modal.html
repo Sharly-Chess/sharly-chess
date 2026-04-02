@@ -89,7 +89,47 @@
                     {% endfor %}
                 </div>
             {% endif %}
-
+            {% if sce_tournaments_with_duplicates %}
+                <h4>
+                    {{ _('Sharly-Chess.com players') }}
+                    <i
+                        class="bi-info-circle-fill text-body ps-1"
+                        style="font-size: 85%"
+                        {{ macros.tooltip_attributes('', _(
+                            'Players in Sharly-Chess.com that can\'t be created in the '
+                            'local Sharly Chess application because they already exist.'
+                        )) }}
+                    ></i>
+                </h4>
+                <div class="d-flex flex-column gap-2">
+                    {% for tournament in sce_tournaments_with_duplicates %}
+                        {% set duplicated_players_by_id = tournament.plugin_data.sce.duplicated_players_by_id %}
+                        <h6 class="mt-2">
+                            {{ tournament.name }} ({{ duplicated_players_by_id | length }})
+                        </h6>
+                        {% for sce_id, player in duplicated_players_by_id.items() %}
+                            <div class="border border-secondary bg-body-tertiary">
+                                <div class="d-flex align-items-center gap-2 p-2">
+                                    <div class="flex-grow-1">
+                                        {{ player.full_name }}
+                                    </div>
+                                    <button
+                                        class="btn btn-outline-danger"
+                                        hx-delete="{{ url_for(
+                                            'sce-delete-sce-player',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                            sce_player_id=sce_id,
+                                        ) }}"
+                                    >
+                                        <i class="bi-trash-fill"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
 
         <div class="modal-footer">
