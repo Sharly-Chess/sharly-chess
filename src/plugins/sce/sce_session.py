@@ -54,6 +54,7 @@ from plugins.sce.sce_data import (
     SCEEventPluginData,
     SCEPlayerSyncData,
     SCETournamentSyncData,
+    SCEDuplicatedPlayer,
 )
 from plugins.sce.utils import SCEUtils
 from plugins.utils import Plugin
@@ -393,7 +394,7 @@ class SCESession(Session):
     ) -> bool:
         """Create a local player from SC.com data.
         Return False if it already exists, True if it succeeds."""
-        # TODO (Molrn) Check and flag duplicate players
+
         sce_tournament_id = SCEUtils.get_tournament_plugin_data(tournament).id
         assert sce_tournament_id is not None
         stored_player = StoredPlayer(
@@ -405,6 +406,18 @@ class SCESession(Session):
             },
         )
         sync_data.augment_stored_player(stored_player, tournament)
+        if not self.event.check_player_unicity(stored_player, tournament):
+            plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+            plugin_data.duplicated_players_by_id[sce_id] = SCEDuplicatedPlayer(
+                last_name=stored_player.last_name,
+                first_name=stored_player.first_name,
+            )
+            database.execute(
+                'UPDATE tournament SET plugin_data = '
+                "json_set(plugin_data,'$.sce', json(?)) WHERE id = ?",
+                (json.dumps(plugin_data.to_stored_value()), tournament.id),
+            )
+            return False
         stored_player.id = database.add_stored_player(stored_player)
         database.add_stored_tournament_player(
             StoredTournamentPlayer(
@@ -949,6 +962,10 @@ class SCESession(Session):
         duplicate_count = 0
 
         for tournament in sce_tournaments:
+            t_plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+            if t_plugin_data.duplicated_players_by_id:
+                t_plugin_data.duplicated_players_by_id = {}
+                SCEUtils.update_tournament_plugin_data(tournament, t_plugin_data)
             for player in tournament.tournament_players:
                 plugin_data = SCEUtils.get_player_plugin_data(player)
                 if plugin_data.id:

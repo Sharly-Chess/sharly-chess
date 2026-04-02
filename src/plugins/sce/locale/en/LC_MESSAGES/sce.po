@@ -199,6 +199,9 @@ msgstr ""
 msgid "Phone"
 msgstr ""
 
+msgid "Player [{player}] could not be deleted from Sharly-Chess.com."
+msgstr ""
+
 msgid "Player [{player}] deleted."
 msgstr ""
 
@@ -212,6 +215,9 @@ msgid "Player duplicates detected during the last synchronisation attempt."
 msgstr ""
 
 msgid "Player has already been paired in the tournament, it no longer can be deleted."
+msgstr ""
+
+msgid "Players in Sharly-Chess.com that can't be created in the local Sharly Chess application because they already exist."
 msgstr ""
 
 msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
@@ -276,6 +282,9 @@ msgid "Sharly-Chess.com is not reachable at the moment."
 msgstr ""
 
 msgid "Sharly-Chess.com player conflicts"
+msgstr ""
+
+msgid "Sharly-Chess.com players"
 msgstr ""
 
 msgid "Sharly-Chess.com tournament"
