@@ -20,8 +20,8 @@ function handleInitialQuery(event) {
             } else if (event.key === "Enter") {
                 if (resultList[selectedIndex]) {
                     resultList[selectedIndex].click();
+                    return false;
                 }
-                return false;
             }
         });
     }
