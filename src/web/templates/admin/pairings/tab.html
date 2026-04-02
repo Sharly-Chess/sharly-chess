@@ -328,6 +328,10 @@
             }
 
             if ((e.key === "ArrowUp" || e.key === "ArrowDown")) {
+                if (e.shiftKey) {
+                    // Tournament navigation
+                    return;
+                }
                 e.preventDefault();
                 if (pairing_board_id) {
                     var $row = $('tr[data-board-id="' + pairing_board_id + '"]');
