@@ -20,6 +20,10 @@ function keyboardShortcutManager(event) {
 
         case 'arrowleft':
             if (event.shiftKey) {
+                if (event.ctrlKey) {
+                    document.body.dispatchEvent(new CustomEvent("SC_Ctrl_Shift_ArrowLeft"));
+                    break;
+                }
                 document.body.dispatchEvent(new CustomEvent("SC_Shift_ArrowLeft"));
                 break;
             }
@@ -28,6 +32,10 @@ function keyboardShortcutManager(event) {
 
         case 'arrowright':
             if (event.shiftKey) {
+                if (event.ctrlKey) {
+                    document.body.dispatchEvent(new CustomEvent("SC_Ctrl_Shift_ArrowRight"));
+                    break;
+                }
                 document.body.dispatchEvent(new CustomEvent("SC_Shift_ArrowRight"));
                 break;
             }
