@@ -17,6 +17,7 @@
 - Added _rating_ and _rating_type_ CSV columns (4.0.0)
 - Clarify gender naming (4.0.0)
 - Fixed player update (4.0.1)
+- Fixed player search keyboard selection (4.0.1)
 
 ## Pairings
 
