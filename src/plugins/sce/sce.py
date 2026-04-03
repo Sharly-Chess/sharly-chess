@@ -108,7 +108,7 @@ class SCEPlugin(Plugin):
         return False
 
     @property
-    def event_form_script_file(self) -> str:
+    def event_form_script_template(self) -> str:
         return '/sce_event_form_script.js'
 
     @property
