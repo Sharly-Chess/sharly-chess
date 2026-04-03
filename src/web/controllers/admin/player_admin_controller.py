@@ -957,12 +957,15 @@ class PlayerAdminController(BaseEventAdminController):
         data: dict[str, str],
     ) -> tuple[StoredPlayer | None, dict[str, str]]:
         event = web_context.get_admin_event()
+        player = web_context.admin_player
         errors = cls._validate_player_form_data(web_context, action, data)
         if errors:
             return None, errors
         stored_player = cls._stored_player_from_data(data)
         tournament = event.tournaments_by_id[int(data['tournament_id'])]
-        if not event.check_player_unicity(stored_player, tournament):
+        if not event.check_player_unicity(
+            stored_player, tournament, player.id if player else None
+        ):
             errors['alert'] = (
                 _('This player already exists in tournament [{tournament}].').format(
                     tournament=tournament.name
