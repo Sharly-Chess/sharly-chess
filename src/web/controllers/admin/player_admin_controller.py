@@ -962,7 +962,9 @@ class PlayerAdminController(BaseEventAdminController):
             return None, errors
         stored_player = cls._stored_player_from_data(data)
         tournament = event.tournaments_by_id[int(data['tournament_id'])]
-        if not event.check_player_unicity(stored_player, tournament):
+        if action != FormAction.UPDATE and not event.check_player_unicity(
+            stored_player, tournament
+        ):
             errors['alert'] = (
                 _('This player already exists in tournament [{tournament}].').format(
                     tournament=tournament.name
