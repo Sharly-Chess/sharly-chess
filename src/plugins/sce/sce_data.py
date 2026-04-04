@@ -5,7 +5,7 @@ from typing import Any, Self
 
 from common.i18n import _
 from data.event import Event
-from data.player import TournamentPlayer, Player
+from data.player import TournamentPlayer, Player, MIN_YOB
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -279,11 +279,14 @@ class SCEPlayerSyncData:
         tournament_id: str,
         with_mail: bool = False,
     ) -> Self:
+        yob = data['year_of_birth']
         return cls(
             tournament_id=tournament_id,
             last_name=data['last_name'].upper(),
             first_name=data['first_name'],
-            year_of_birth=data['year_of_birth'],
+            # As SC.com YOB are mandatory, consider 1900 as an
+            # empty field to avoid setting it in the THP
+            year_of_birth=yob if yob > MIN_YOB else None,
             fide_id=data['fide_id'],
             national_id=data['national_id'],
             title=PlayerTitle(data['title'] or PlayerTitle.NONE),
@@ -307,11 +310,12 @@ class SCEPlayerSyncData:
 
         tournament_id = SCEUtils.get_tournament_plugin_data(player.tournament).id
         assert tournament_id is not None
+        yob = player.year_of_birth
         sync_data = cls(
             tournament_id=tournament_id,
             last_name=player.last_name,
             first_name=player.first_name,
-            year_of_birth=player.year_of_birth,
+            year_of_birth=yob if yob > MIN_YOB else None,
             fide_id=player.fide_id,
             title=player.title,
             club=player.club.name,
@@ -363,7 +367,7 @@ class SCEPlayerSyncData:
 
     def to_sce_data(self) -> dict[str, Any]:
         return self.to_stored_value() | {
-            'year_of_birth': min(max(self.year_of_birth or 0, 1900), date.today().year),
+            'year_of_birth': self.year_of_birth or MIN_YOB,
             'rating_type': self.rating_type.key.upper() if self.rating_type else None,
             'phone_number': self.phone,
             'gender': SCEPlayerGender.get_outer_value(self.gender),

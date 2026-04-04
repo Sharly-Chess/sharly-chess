@@ -8,7 +8,7 @@ from text_unidecode import unidecode
 from common import SharlyChessException
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from data.player import Player
+from data.player import Player, MIN_YOB, MAX_YOB
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from utils import Utils
@@ -148,9 +148,14 @@ class DateOfBirthColumn(DatasheetColumn):
             return
         formatter = SharlyChessConfig().date_formatter
         try:
-            stored_player.date_of_birth = datetime.strptime(
-                value, formatter.python_format
-            ).date()
+            dob = datetime.strptime(value, formatter.python_format).date()
+            if not (MIN_YOB <= dob.year <= MAX_YOB):
+                raise SharlyChessException(
+                    _('Invalid year of birth (expected: {min} - {max}).').format(
+                        min=MIN_YOB, max=MAX_YOB
+                    )
+                )
+            stored_player.date_of_birth = dob
         except ValueError:
             raise SharlyChessException(
                 _('Invalid format (expected: {format}).').format(
@@ -170,11 +175,15 @@ class YearOfBirthColumn(DatasheetColumn):
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         if not value:
             return
-        if not value.isdigit() or int(value) == 0:
-            raise SharlyChessException(_('A positive integer is expected.'))
         if stored_player.date_of_birth:
             raise SharlyChessException(
                 _('This field is only valid without date of birth.')
+            )
+        if not value.isdigit() or not (MIN_YOB <= int(value) <= MAX_YOB):
+            raise SharlyChessException(
+                _('Invalid year of birth (expected: {min} - {max}).').format(
+                    min=MIN_YOB, max=MAX_YOB
+                )
             )
         stored_player.year_of_birth = int(value)
 
