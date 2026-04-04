@@ -170,15 +170,11 @@ class YearOfBirthColumn(DatasheetColumn):
         return 'year_of_birth'
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.stored_player.year_of_birth
+        return player.year_of_birth or None
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
-        if not value:
+        if not value or stored_player.date_of_birth:
             return
-        if stored_player.date_of_birth:
-            raise SharlyChessException(
-                _('This field is only valid without date of birth.')
-            )
         if not value.isdigit() or not (MIN_YOB <= int(value) <= MAX_YOB):
             raise SharlyChessException(
                 _('Invalid year of birth (expected: {min} - {max}).').format(
