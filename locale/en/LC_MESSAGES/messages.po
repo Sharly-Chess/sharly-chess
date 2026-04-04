@@ -2951,6 +2951,9 @@ msgstr ""
 msgid "Invalid value [{value}]."
 msgstr ""
 
+msgid "Invalid year of birth (expected: {min} - {max})."
+msgstr ""
+
 msgid "Iran"
 msgstr ""
 

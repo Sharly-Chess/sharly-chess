@@ -2951,6 +2951,9 @@ msgstr "Valeur invalide [{value}] pour le champ [{field}] (attendu : l’une de
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
 
+msgid "Invalid year of birth (expected: {min} - {max})."
+msgstr "Date de naissance invalide (attendu : {min} - {max})"
+
 msgid "Iran"
 msgstr "Iran"
 
