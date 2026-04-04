@@ -38,6 +38,10 @@
 - Added owed/paid totals to the check-in list (4.0.0)
 - Added a sort option to the players list document (4.0.0)
 
+## Sharly-Chess.com
+
+- Fixed unique constraint violation on tournament names (4.0.2)
+
 ## Plugins
 
 ### Chess-Results.com

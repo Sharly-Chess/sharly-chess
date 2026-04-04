@@ -13,6 +13,7 @@ from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_mappers import SCEPlayerGender
 from plugins.utils import PluginData
+from utils import Utils
 from utils.date_time import format_date, format_datetime
 from utils.enum import TournamentRating, PlayerTitle, PlayerRatingType, PlayerGender
 from utils.time_control import trf25_to_human_readable
@@ -201,7 +202,14 @@ class SCETournamentSyncData:
     def augment_stored_tournament(
         self, stored_tournament: StoredTournament, event: Event
     ) -> None:
-        stored_tournament.name = self.name
+        used_tournament_names = [
+            tournament.name
+            for tournament in event.tournaments
+            if tournament.id != stored_tournament.id
+        ]
+        stored_tournament.name = Utils.get_unused_item_name(
+            self.name, used_tournament_names
+        )
         stored_tournament.rating = self.type.value
         stored_tournament.rounds = self.rounds
         stored_tournament.start_date = self.start_date
