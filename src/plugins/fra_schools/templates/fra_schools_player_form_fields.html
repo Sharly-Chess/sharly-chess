@@ -231,7 +231,7 @@
         });
         $('.fra-school-button').click(function () {
             const submitContainer = document.getElementById('submit-button-container');
-            fraSchoolTooltip = new bootstrap.Tooltip(submitContainer, {
+            new bootstrap.Tooltip(submitContainer, {
                 title: `{{ _('Please validate the French school to continue.') }}`,
                 placement: 'top',
             });
