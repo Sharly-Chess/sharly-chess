@@ -5969,7 +5969,7 @@ msgid "Tournaments"
 msgstr "Tournois"
 
 msgid "Tournaments ({num}) *** WITH_SHORTCUT_INDICATION"
-msgstr "<u>T</u>ournaments ({num})"
+msgstr "<u>T</u>ournois ({num})"
 
 msgid "Tournaments are finished, you can not add players any longer."
 msgstr "Les tournois sont terminés, on ne peut plus ajouter de joueur·euses."
