@@ -42,18 +42,19 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             document_urls = CustomUploadUtils.get_tournament_plugin_data(
                 tournament
             ).document_urls
-        document_type = None
+        document_types = []
         if document_urls is not None and len(document_urls) > 0:
             # TODO: refactor logic to be cleaner
-            # TODO: display all document URLs instead of only the first one
-            document_id = document_urls[0].split('/')[-1].split('?')[0]
-            document_type = PrintDocumentManager(
-                web_context.get_admin_event()
-            ).get_type(document_id)
+            for document_url in document_urls:
+                document_id = document_url.split('/')[-1].split('?')[0]
+                document_type = PrintDocumentManager(
+                    web_context.get_admin_event()
+                ).get_type(document_id)
+                document_types.append(document_type)
         return web_context.template_context | {
             'format_datetime': format_datetime,
             'allowed_tournaments': cls._allowed_tournaments(web_context),
-            'document': document_type,
+            'documents': document_types,
         }
 
     @get(

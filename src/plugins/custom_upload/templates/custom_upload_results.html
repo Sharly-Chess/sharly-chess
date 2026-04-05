@@ -18,7 +18,9 @@
             <td>
                 <!-- TODO: handle properly rendering of list of documents -->
                 <ul>
-                    <li>{{ document and _(document.static_name()) }}</li>
+                    {% for document in documents %}
+                        <li>{{ document and _(document.static_name()) }}</li>
+                    {% endfor %}
                 </ul>
                 <!-- TODO: check how to add "Please wait" message -->
                 <button
