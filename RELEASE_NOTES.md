@@ -40,6 +40,7 @@
 
 ## Sharly-Chess.com
 
+- Fixed tournament still uploadable after manual upload (4.0.2)
 - Fixed unique constraint violation on tournament names (4.0.2)
 
 ## Plugins
