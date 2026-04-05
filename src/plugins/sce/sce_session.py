@@ -573,6 +573,7 @@ class SCESession(Session):
         sync_data.augment_stored_tournament(stored_tournament, self.event)
         stored_tournament.id = database.add_stored_tournament(stored_tournament)
         tournament = Tournament(self.event, stored_tournament)
+        self.event.tournaments_by_id[tournament.id] = tournament
         for registration_data in raw_data['registrations']:
             self._create_local_player(
                 registration_data['id'],
