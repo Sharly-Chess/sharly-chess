@@ -2918,6 +2918,9 @@ msgstr ""
 msgid "Invalid federation [{federation}]."
 msgstr ""
 
+msgid "Invalid file extension [{extension}] (expected: {expected})."
+msgstr ""
+
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr ""
 
@@ -5715,6 +5718,9 @@ msgstr ""
 msgid "This field is required."
 msgstr ""
 
+msgid "This file is incorrectly formatted, the extension has most likely been renamed."
+msgstr ""
+
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr ""
 
@@ -6920,4 +6926,10 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Shift *** KEYBOARD MODIFIER"
+#~ msgstr "Shift"
+
+#~ msgid "This file has an invalid format, the extension has most likely been renamed."
+#~ msgstr ""
 

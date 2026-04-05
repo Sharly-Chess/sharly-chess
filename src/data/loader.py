@@ -68,6 +68,10 @@ class EventLoader:
     def check_event_database(cls, event_uniq_id: str):
         """Check the validity of an event database, raises a SharlyChessError if it is not."""
         database = EventDatabase(event_uniq_id)
+        if not database.is_sqlite_file():
+            raise SharlyChessException(
+                f'File {database.file} is not a SQLite database.'
+            )
         if not database.check_status():
             database.upgrade()
         with EventDatabase(event_uniq_id) as database:
@@ -87,9 +91,9 @@ class EventLoader:
         try:
             EventLoader.check_event_database(uniq_id)
             return uniq_id
-        except SharlyChessException as exception:
-            new_path.unlink()
-            raise exception
+        except Exception as e:
+            new_path.unlink(missing_ok=True)
+            raise e
 
     @staticmethod
     def event_file_path(uniq_id: str) -> Path:
