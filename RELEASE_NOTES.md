@@ -19,6 +19,8 @@
 - Clarify gender naming (4.0.0)
 - Fixed player update (4.0.1)
 - Fixed player search keyboard selection (4.0.1)
+- Invalidate year of birth < 1900 (4.0.2)
+- Always export the year of birth in CSV export (4.0.2)
 
 ## Pairings
 
