@@ -992,7 +992,7 @@ class IndexAdminController(BaseAdminController):
         elif not SQLiteDatabase(file_path).is_sqlite_file():
             error_message = _(
                 'This file is incorrectly formatted, '
-                'the extension has most likely been renamed.'
+                'the extension has most likely been changed.'
             )
         else:
             try:

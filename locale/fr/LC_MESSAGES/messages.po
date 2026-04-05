@@ -2455,7 +2455,7 @@ msgid "File"
 msgstr "Fichier"
 
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
-msgstr "L'extension du fichier [{suffix}] est invalide (attendu : {expected})."
+msgstr "L'extension du fichier [{suffix}] est invalide (attendue : {expected})."
 
 msgid "Filter out players with a greater rating."
 msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
@@ -2919,7 +2919,7 @@ msgid "Invalid federation [{federation}]."
 msgstr "Fédération [{federation}] non valide."
 
 msgid "Invalid file extension [{extension}] (expected: {expected})."
-msgstr "Extension de fichier [{extension}] invalide (attendu : {expected})."
+msgstr "Extension de fichier [{extension}] invalide (attendue : {expected})."
 
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr "Numéro d'échiquier [{fixed_board}] non valide."
@@ -2952,7 +2952,7 @@ msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
 
 msgid "Invalid year of birth (expected: {min} - {max})."
-msgstr "Date de naissance invalide (attendu : {min} - {max})"
+msgstr "Date de naissance invalide (attendue : {min} - {max})"
 
 msgid "Iran"
 msgstr "Iran"
@@ -5723,8 +5723,8 @@ msgstr "Ce champ est obligatoire (excepté pour les rondes)."
 msgid "This field is required."
 msgstr "Ce champ est obligatoire."
 
-msgid "This file is incorrectly formatted, the extension has most likely been renamed."
-msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été renommée."
+msgid "This file is incorrectly formatted, the extension has most likely been changed."
+msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
