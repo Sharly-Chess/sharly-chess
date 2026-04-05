@@ -29,7 +29,11 @@
 
 - Added round schedule to tournaments (4.0.0)
 
-# Documents
+## Prizes
+
+- Fixed prize assignment on multiple main category override (4.0.2)
+
+## Documents
 
 - Added owed/paid totals to the check-in list (4.0.0)
 - Added a sort option to the players list document (4.0.0)
