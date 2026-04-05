@@ -4310,9 +4310,6 @@ msgstr "Veuillez choisir le modèle."
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
 
-msgid "Please close the time control editor before saving."
-msgstr "Veuillez fermer l'éditeur de cadence avant d'enregistrer."
-
 msgid "Please enter the image URL."
 msgstr "Veuillez entrer l'URL de l'image."
 
@@ -4339,6 +4336,9 @@ msgstr "Veuillez fournir une adresse email valide."
 
 msgid "Please validate the global configuration of the application."
 msgstr "Veuillez valider la configuration globale de l'application."
+
+msgid "Please validate the time control to continue."
+msgstr "Merci de valider la cadence avant de continuer."
 
 msgid "Please wait until the application settings have been set on the server…"
 msgstr "La configuration est en cours sur le serveur, veuillez patienter…"
@@ -4845,9 +4845,6 @@ msgstr "Lignes par écran :"
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
 
-msgid "Rules"
-msgstr "Règles"
-
 msgid "Russia"
 msgstr "Russie"
 
@@ -5091,9 +5088,6 @@ msgstr "La configuration de Sharly Chess a été mise à jour."
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela implique que quiconque connecté au même réseau peut facilement récupérer l'accès à un compte sans saisir de mot de passe."
-
-msgid "Shift *** KEYBOARD MODIFIER"
-msgstr "Maj."
 
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été ajouté·e par erreur."

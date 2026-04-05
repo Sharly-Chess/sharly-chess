@@ -4308,9 +4308,6 @@ msgstr ""
 msgid "Please choose the tournament."
 msgstr ""
 
-msgid "Please close the time control editor before saving."
-msgstr ""
-
 msgid "Please enter the image URL."
 msgstr ""
 
@@ -4336,6 +4333,9 @@ msgid "Please supply a valid email address."
 msgstr ""
 
 msgid "Please validate the global configuration of the application."
+msgstr ""
+
+msgid "Please validate the time control to continue."
 msgstr ""
 
 msgid "Please wait until the application settings have been set on the server…"
@@ -4843,9 +4843,6 @@ msgstr ""
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
 
-msgid "Rules"
-msgstr ""
-
 msgid "Russia"
 msgstr ""
 
@@ -5089,9 +5086,6 @@ msgstr ""
 
 msgid "Sharly Chess using the local network, all the traffic is public. This means anyone connected to the same network could easily gain access to an account without needing to type in the password."
 msgstr ""
-
-msgid "Shift *** KEYBOARD MODIFIER"
-msgstr "Shift"
 
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr ""
