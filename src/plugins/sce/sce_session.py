@@ -598,11 +598,16 @@ class SCESession(Session):
             partial(self._create_tournament_request, data=sync_data)
         )
         logger.debug(log_prefix + 'Empty tournament created')
+        sce_id = response.json()['data']['id']
         plugin_data = SCETournamentPluginData(
-            id=response.json()['data']['id'],
+            id=sce_id,
             last_sync_data=sync_data,
         )
         SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+        event = tournament.event
+        event_plugin_data = SCEUtils.get_event_plugin_data(event)
+        event_plugin_data.tournament_names_by_id[sce_id] = tournament.name
+        SCEUtils.update_event_plugin_data(event, event_plugin_data)
         duplicate_count = 0
         for player in tournament.tournament_players:
             if self.create_sce_player(player):
