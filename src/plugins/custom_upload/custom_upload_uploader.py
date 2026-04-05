@@ -1,9 +1,9 @@
-import io
 import urllib
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from functools import partial
+from io import BytesIO
 from pathlib import Path
 from threading import Thread
 
@@ -14,6 +14,7 @@ from common.i18n.utils import parse_jinja_template
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
+from data.event import Event
 from data.loader import EventLoader
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament
@@ -195,39 +196,36 @@ class CustomUploadUploader:
 
         logger.info('Uploading tournament [%s]...', tournament.name)
 
+        tournament_plugin_data = CustomUploadUtils.get_tournament_plugin_data(
+            tournament
+        )
+
+        temporary_files_with_destination = cls._generate_documents_in_memory(
+            event, tournament_plugin_data
+        )
+
         with paramiko.SSHClient() as client:
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-            plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
-
-            host = plugin_data.ftp_host
-            username = plugin_data.ftp_username
-            password = plugin_data.ftp_password
-            # TODO: parse all configured document URLs instead of only the first one
-            document_url = plugin_data.document_urls[0]
-            document_url_resource_part = document_url.split('/')[-1]
-
-            document_id, document_options = document_url_resource_part.split('?')
-            decoded_document_options = document_options.replace('options=', '')
-            decoded_document_options = urllib.parse.unquote(decoded_document_options)
-            document_htmx_template = EventDocumentsController.document_view(
-                event=event,
-                document=document_id,
-                options=decoded_document_options,
-            )
-            html_content = parse_jinja_template(
-                document_htmx_template.template_name, document_htmx_template.context
-            )
-            temporary_document_file = io.BytesIO(html_content.encode())
-
-            file_name = f'{"_".join(event.name.split())}_{document_id}_{decoded_document_options}.html'
-            upload_location = Path(plugin_data.server_path) / file_name
+            host = tournament_plugin_data.ftp_host
+            username = tournament_plugin_data.ftp_username
+            password = tournament_plugin_data.ftp_password
             try:
                 client.connect(host, username=username, password=password)
                 sftp_client = client.open_sftp()
-                sftp_client.putfo(temporary_document_file, upload_location.as_posix())
+                for (
+                    temporary_document_file,
+                    file_name,
+                ) in temporary_files_with_destination:
+                    sftp_client.putfo(
+                        temporary_document_file,
+                        (
+                            Path(tournament_plugin_data.server_path) / file_name
+                        ).as_posix(),
+                    )
+                    logger.info('Uploaded document file [%s]', file_name)
+                    temporary_document_file.close()
                 sftp_client.close()
-                temporary_document_file.close()
             except Exception as e:
                 logger.error(
                     'Error uploading tournament [%s]: [%s]', tournament.name, e
@@ -240,6 +238,29 @@ class CustomUploadUploader:
                 cls.publish_upload_event()
 
         return cls.upload_status_messages[result_id]
+
+    @classmethod
+    def _generate_documents_in_memory(
+        cls, event: Event, tournament_plugin_data: CustomUploadTournamentPluginData
+    ) -> list[tuple[BytesIO, str]]:
+        temporary_files_with_name: list[tuple[BytesIO, str]] = []
+        for document_url in tournament_plugin_data.document_urls:
+            document_url_resource_part = document_url.split('/')[-1]
+            document_id, document_options = document_url_resource_part.split('?')
+            decoded_document_options = document_options.replace('options=', '')
+            decoded_document_options = urllib.parse.unquote(decoded_document_options)
+            document_htmx_template = EventDocumentsController.document_view(
+                event=event,
+                document=document_id,
+                options=decoded_document_options,
+            )
+            html_content = parse_jinja_template(
+                document_htmx_template.template_name, document_htmx_template.context
+            )
+            temporary_document_file = BytesIO(html_content.encode())
+            file_name = f'{"_".join(event.name.split())}_{document_id}_{decoded_document_options}.html'
+            temporary_files_with_name.append((temporary_document_file, file_name))
+        return temporary_files_with_name
 
     @classmethod
     def upload_event_tournaments(cls, tournaments: list[Tournament]):
