@@ -16,17 +16,15 @@
                 hx-indicator="#please-wait"
             >
                 {% for document_name, document_url in data.items() %}
-                    {% if document_name.startswith('document_url') %}
-                        <div class="row gy-2 gx-3">
-                            <div>
-                                {{ admin_macros.text_input(
-                                    name=document_name,
-                                    label=_('Document URL:'),
-                                    data={document_name: document_url}, errors=errors
-                                ) }}
-                            </div>
+                    <div class="row gy-2 gx-3">
+                        <div>
+                            {{ admin_macros.text_input(
+                                name=document_name,
+                                label=_('Document URL:'),
+                                data={document_name: document_url}, errors=errors
+                            ) }}
                         </div>
-                    {% endif %}
+                    </div>
                 {% endfor %}
                 <button
                         type="button"

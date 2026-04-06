@@ -108,7 +108,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             template_name='change_tournament_documents_modal.html',
             context=web_context.template_context
             | {
-                'data': custom_upload_data.to_form_data(),
+                'data': custom_upload_data.to_form_data('edit_documents'),
                 'errors': {},
             },
             re_target='#modal-wrapper',
@@ -138,7 +138,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             template_name='change_tournament_documents_modal.html',
             context=web_context.template_context
             | {
-                'data': custom_upload_data.to_form_data(),
+                'data': custom_upload_data.to_form_data('edit_documents'),
                 'errors': {},
             },
             re_target='#modal-wrapper',

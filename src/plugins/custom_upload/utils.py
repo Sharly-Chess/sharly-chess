@@ -78,12 +78,16 @@ class CustomUploadTournamentPluginData(PluginData):
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
-        form_data = {
-            'ftp_host': self.ftp_host,
-            'server_path': self.server_path,
-            'ftp_username': self.ftp_username,
-            'ftp_password': self.ftp_password,
-        }
+        form_data = {}
+        if action != 'edit_documents':
+            form_data.update(
+                {
+                    'ftp_host': self.ftp_host,
+                    'server_path': self.server_path,
+                    'ftp_username': self.ftp_username,
+                    'ftp_password': self.ftp_password,
+                }
+            )
         for index, document_url in enumerate(self.document_urls):
             form_data[f'document_url_{index}'] = document_url
 
