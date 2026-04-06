@@ -63,17 +63,16 @@ class PairingEngine(ABC):
     ) -> str:
         """Generate the pairings of the round *round_* for tournament *tournament*, returns an error message or an empty string on success."""
         if self.pairings_generation_disabled_message(tournament, round_):
-            return _(
-                'Pairing is not allowed for round {round} of tournament [{tournament}].'
-            ).format(
-                round=round_,
-                tournament_name=tournament.name,
+            raise ValueError(
+                f'Pairings generation not allowed for round {round_} '
+                f'of tournament [{tournament.name}].'
             )
         try:
             stored_boards = self._generate_stored_boards(
                 tournament, round_, partial_pairings
             )
         except Exception as e:
+            logger.exception(e)
             return str(e)
         if len(stored_boards) == 0:
             return _('Pairing is not possible.')
