@@ -566,7 +566,7 @@ class PlayerAdminController(BaseEventAdminController):
                 column.get_filter_value_from_key(filter_key, event)
                 filter_keys.append(filter_key)
             except ValueError:
-                logger.error(
+                logger.exception(
                     f'Invalid filter key [{filter_key}] for column [{column.id}].'
                 )
         SessionPlayersFilters(request, event).set_column_filters(column_id, filter_keys)
@@ -1906,7 +1906,7 @@ class PlayerAdminController(BaseEventAdminController):
                         'An unexpected error occurred while reading '
                         'the CSV file. Consult the logs for more details.'
                     )
-                    logger.error(error)
+                    logger.exception(error)
                 errors['alert'] = message
         use_data_source = WebContext.form_data_to_bool(
             normalized_data, 'use_data_source'

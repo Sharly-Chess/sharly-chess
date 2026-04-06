@@ -63,12 +63,11 @@ class SQLiteDatabase:
 
             return self
         except Exception as e:
-            logger.error(
+            logger.exception(
                 'Failed to open database %s (write=%s): %s',
                 self.file,
                 self.write,
                 e,
-                exc_info=True,
             )
             raise
 

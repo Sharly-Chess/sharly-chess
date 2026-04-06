@@ -96,7 +96,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
                     )
                     return False
             except ConnectionError as ex:
-                logger.error(
+                logger.exception(
                     self.log_prefix + 'Could not download [%s]: %s.',
                     fide_database_url,
                     ex,

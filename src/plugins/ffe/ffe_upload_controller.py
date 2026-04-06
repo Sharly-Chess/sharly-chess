@@ -201,7 +201,7 @@ class FfeUploadController(BaseEventAdminController):
             try:
                 FFESession(tournament).upload_rules(rules_file)
             except SharlyChessException as error:
-                logger.error(
+                logger.exception(
                     '%sError when uploading rules to the FFE website: %s',
                     tournament.log_prefix,
                     error,

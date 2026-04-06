@@ -1075,7 +1075,7 @@ class TournamentAdminController(BaseEventAdminController):
             )
         except Exception as exception:
             temp_file.close()
-            logger.error(
+            logger.exception(
                 'Error when exporting tournament [%s] using exporter [%s]:\n%s',
                 tournament.name,
                 exporter.id,
@@ -1184,7 +1184,7 @@ class TournamentAdminController(BaseEventAdminController):
         except ImporterError as error:
             errors['alert'] = str(error)
         except SharlyChessException as error:
-            logger.error(f'Tournament importer [{importer.id}] error: {error}')
+            logger.exception(f'Tournament importer [{importer.id}] error: {error}')
             errors['alert'] = _('An error occurred. Consult the logs for more details.')
         finally:
             importer.on_import_finished()

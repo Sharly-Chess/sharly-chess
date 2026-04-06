@@ -695,15 +695,15 @@ class Engine:
                     new_version_dir.resolve(),
                 )
             except RequestException as ex:
-                logger.error('Failed to read [%s]: [%s].', download_url, ex)
+                logger.exception('Failed to read [%s]: [%s].', download_url, ex)
                 return _('Failed to read [{download_url}]: [{ex}].').format(
                     download_url=download_url, ex=ex
                 )
             except subprocess.CalledProcessError as ex:
-                logger.error('Failed to process DMG file: [%s].', ex)
+                logger.exception('Failed to process DMG file: [%s].', ex)
                 return _('Failed to process DMG file: [{ex}].').format(ex=ex)
             except Exception as ex:
-                logger.error('Unexpected error during installation: [%s].', ex)
+                logger.exception('Unexpected error during installation: [%s].', ex)
                 return _('Unexpected error during installation: [{ex}].').format(ex=ex)
 
         if print_interactive_message(

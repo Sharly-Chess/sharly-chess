@@ -74,7 +74,7 @@ class Migration(BaseMigration):
                 papi_file_path,
             )
         except SharlyChessException as error:
-            logger.error(
+            logger.exception(
                 tournament.log_prefix
                 + 'Import of papi file [%s] failed.'
                 + '\n'

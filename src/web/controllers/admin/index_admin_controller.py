@@ -992,7 +992,7 @@ class IndexAdminController(BaseAdminController):
             )
             return ClientRedirect(admin_event_url(request, event_uniq_id))
         except Exception as error:
-            logger.error(error)
+            logger.exception(error)
             if isinstance(error, SharlyChessException):
                 message = _(
                     "This event can't be used by the current version of Sharly Chess."
@@ -1070,7 +1070,7 @@ class IndexAdminController(BaseAdminController):
                 filename=database.file.resolve().name,
             )
         except Exception as exception:
-            logger.error(
+            logger.exception(
                 'Error when exporting event [%s]:\n%s',
                 event.name,
                 exception,

@@ -113,18 +113,18 @@ class FFESession(Session):
                     response = self.post(url, data=data, files=handlers)
             return response.content.decode()
         except ConnectionError as ex:
-            logger.error('Failed to read [%s] (connection error): [%s].', url, ex)
+            logger.exception('Failed to read [%s] (connection error): [%s].', url, ex)
         except Timeout as ex:
-            logger.error('Failed to read [%s] (timeout): [%s].', url, ex)
+            logger.exception('Failed to read [%s] (timeout): [%s].', url, ex)
         except HTTPError as ex:
-            logger.error(
+            logger.exception(
                 'Failed to read [%s] (error code [%d]): [%s].',
                 url,
                 ex.errno,
                 ex.strerror,
             )
         except RequestException as ex:
-            logger.error('Failed to read [%s]: [%s].', url, ex)
+            logger.exception('Failed to read [%s]: [%s].', url, ex)
         finally:
             for handler in handlers.values():
                 handler.close()
@@ -458,7 +458,7 @@ class FFESession(Session):
                     is_ffe_upload=True,
                 )
             except Exception as e:
-                logger.error(
+                logger.exception(
                     self.tournament.log_prefix
                     + f'Error during conversion to Papi format: {e}'
                 )

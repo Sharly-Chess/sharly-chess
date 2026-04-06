@@ -61,7 +61,7 @@ class EventLoader:
                 cls.check_event_database(event_id)
                 cls._valid_event_ids.add(event_id)
             except SharlyChessException as e:
-                logger.error(e)
+                logger.exception(e)
                 cls._invalid_uniq_ids.add(event_id)
 
     @classmethod
@@ -222,7 +222,7 @@ class Archive:
             self.file.unlink()
             return event_uniq_id
         except SharlyChessException as exception:
-            logger.error(exception)
+            logger.exception(exception)
             new_path.unlink()
             return None
 

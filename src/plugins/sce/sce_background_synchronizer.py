@@ -80,7 +80,7 @@ def sync_event(event_uniq_id: str):
         status = SCESession(event).sync_event()
         _exit_with_status(event, status)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         if event:
             _exit_with_status(event, UnexpectedFailureSCESyncStatus())
     finally:
