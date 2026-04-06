@@ -142,7 +142,7 @@ class CRBackgroundUploader:
 
             failure_status = ChessResultsSession(tournament).upload()
         except Exception as e:
-            logger.error('Error uploading tournament [%s]: [%s]', result_id, e)
+            logger.exception('Error uploading tournament [%s]: [%s]', result_id, e)
             failure_status = UnexpectedFailureCRUploadStatus()
         finally:
             cls.ongoing_result_ids.discard(result_id)

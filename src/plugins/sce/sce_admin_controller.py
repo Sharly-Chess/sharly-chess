@@ -363,7 +363,7 @@ class SCEAdminController(BaseAdminController):
                         )
                         event_uniq_id = event.uniq_id
                     except SharlyChessException as e:
-                        logger.error(str(e))
+                        logger.exception(e)
                         Message.error(
                             request,
                             _('An error occurred, consult the logs for more details.'),
@@ -384,7 +384,7 @@ class SCEAdminController(BaseAdminController):
                             ).format(event=event.name),
                         )
                     except SharlyChessException as e:
-                        logger.error(str(e))
+                        logger.exception(e)
                         Message.error(
                             request,
                             _('An error occurred, consult the logs for more details.'),
@@ -434,7 +434,7 @@ class SCEAdminController(BaseAdminController):
                     update_player_conflicts=has_player_conflicts,
                 )
             except SharlyChessException as e:
-                logger.error(str(e))
+                logger.exception(e)
             plugin_data = SCEUtils.get_event_plugin_data(event)
             if plugin_data.auto_player_sync and not is_sync_scheduled(event.uniq_id):
                 schedule_sync(event)
@@ -585,7 +585,7 @@ class SCEAdminController(BaseAdminController):
                 update_tournament_conflicts=True,
             )
         except SharlyChessException as e:
-            logger.error(str(e))
+            logger.exception(e)
         cls._clean_outdated_tournament_conflicts(web_context)
         conflict_tournaments = web_context.sce_tournaments_with_conflicts
         if not conflict_tournaments:
@@ -660,7 +660,7 @@ class SCEAdminController(BaseAdminController):
                 tournament, plugin_data, write_stored_object=True
             )
         except SharlyChessException as e:
-            logger.error(e)
+            logger.exception(e)
             error_message = _('An error occurred, consult the logs for more details.')
 
         return self._render_tournament_conflict_modal(web_context, error_message)
@@ -675,7 +675,7 @@ class SCEAdminController(BaseAdminController):
                 update_player_conflicts=True,
             )
         except SharlyChessException as e:
-            logger.error(str(e))
+            logger.exception(e)
         cls._clean_outdated_player_conflicts(web_context)
         conflict_players = web_context.sce_players_with_conflicts
         if not conflict_players:
@@ -754,7 +754,7 @@ class SCEAdminController(BaseAdminController):
                 player, plugin_data, write_stored_object=True
             )
         except SharlyChessException as e:
-            logger.error(e)
+            logger.exception(e)
             error_message = _('An error occurred, consult the logs for more details.')
 
         return self._render_player_conflict_modal(web_context, error_message)
@@ -780,7 +780,7 @@ class SCEAdminController(BaseAdminController):
                 SCEUtils.update_event_plugin_data(event, plugin_data)
             web_context = SCEWebContext(request, reload_event=True)
         except SharlyChessException as e:
-            logger.error(e)
+            logger.exception(e)
             message = _('Tournament import failed, consult the logs for more details.')
             message_type = 'error'
         return self._render_sync_modal(web_context, message, message_type)
@@ -816,7 +816,7 @@ class SCEAdminController(BaseAdminController):
                 plugin_data.last_sync_at = datetime.now()
                 SCEUtils.update_event_plugin_data(event, plugin_data)
         except SharlyChessException as e:
-            logger.error(e)
+            logger.exception(e)
             message_type = 'error'
             message = _(
                 'Error while uploading tournament [{tournament}], '
@@ -920,7 +920,7 @@ class SCEAdminController(BaseAdminController):
                 SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
                 message = _('Player [{player}] deleted.')
             except SharlyChessException as e:
-                logger.error(e)
+                logger.exception(e)
                 message_type = 'error'
                 message = _(
                     'Player [{player}] could not be deleted from Sharly-Chess.com.'

@@ -427,7 +427,7 @@ class PrizeAdminController(BaseEventAdminController):
             except KeyError:
                 message = f'Unknown prize sharing ID [{prize_sharing_id}]'
                 errors[field] = message
-                logger.error(message)
+                logger.exception(message)
             field = 'sharing_threshold'
             threshold = WebContext.form_data_to_float(data, field)
             if threshold is not None:

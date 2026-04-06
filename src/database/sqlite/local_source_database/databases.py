@@ -393,7 +393,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 if not success:
                     return self.stop_update(False)
             except (DatabaseError, SharlyChessException) as ex:
-                logger.error(
+                logger.exception(
                     self.log_prefix + 'Error while creating the database: %s.', ex
                 )
                 return self.stop_update(False)
@@ -405,7 +405,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 test_conn.execute('SELECT 1')  # Simple test query
                 test_conn.close()
             except DatabaseError as e:
-                logger.error(
+                logger.exception(
                     self.log_prefix
                     + 'Generated database file is not a valid SQLite database: %s.',
                     e,
@@ -417,7 +417,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 if not self._post_generation(tmp_file):
                     return self.stop_update(False)
             except (DatabaseError, SharlyChessException) as e:
-                logger.error(
+                logger.exception(
                     self.log_prefix + 'Could not perform post operations: %s.',
                     e,
                 )
@@ -428,7 +428,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 with SQLiteDatabase(tmp_file, True) as database:
                     self._create_indexes(database)
             except DatabaseError as e:
-                logger.error(
+                logger.exception(
                     self.log_prefix + 'Could not create database indices: %s.',
                     e,
                 )
@@ -440,7 +440,7 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
                 shutil.copy(tmp_file, self.file)
                 logger.debug(self.log_prefix + f'file copied to [{self.file}].')
             except OSError as e:
-                logger.error(
+                logger.exception(
                     self.log_prefix
                     + 'Could not copy generated database file to [%s]: %s.',
                     self.file,

@@ -370,7 +370,7 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
             async with FFESqlServer():
                 return True
         except SharlyChessException as e:
-            logger.error(e)
+            logger.exception(e)
             return False
 
     @property

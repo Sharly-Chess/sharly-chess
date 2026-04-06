@@ -219,7 +219,7 @@ class BbpPairings(PairingEngine):
                     bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-output.txt',
                 )
             except PermissionError as e:
-                logger.error(
+                logger.exception(
                     'Error logging the BbpPairings input / output files: %s', e
                 )
             with open(pairings_file_path, encoding='utf-8') as pairing_file:
@@ -316,7 +316,7 @@ class BbpPairings(PairingEngine):
                     bbp_tmp_dir / f'{tournament.sanitized_name}-checklist-output.txt',
                 )
             except PermissionError as e:
-                logger.error(
+                logger.exception(
                     'Error logging the BbpPairings input / output files: %s', e
                 )
             with open(checklist_file_path, 'r', encoding='utf-8') as file:

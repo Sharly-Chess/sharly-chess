@@ -180,9 +180,9 @@ class SCESession(Session):
             response.raise_for_status()
             logger.debug(request_log)
         except HTTPError as e:
-            logger.error(request_log)
+            logger.exception(request_log)
             try:
-                logger.error(response.json())
+                logger.exception(response.json())
             except JSONDecodeError:
                 pass
             raise SharlyChessException(str(e))
