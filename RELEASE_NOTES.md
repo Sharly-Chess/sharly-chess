@@ -40,6 +40,7 @@
 
 - Added owed/paid totals to the check-in list (4.0.0)
 - Added a sort option to the players list document (4.0.0)
+- Set rank as the default sort option for Berger grids (4.0.3)
 
 ## Sharly-Chess.com
 
