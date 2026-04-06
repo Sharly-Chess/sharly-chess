@@ -78,12 +78,13 @@ class CustomUploadTournamentPluginData(PluginData):
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
-        return WebContext.values_dict_to_form_data(
-            {
-                'ftp_host': self.ftp_host,
-                'server_path': self.server_path,
-                'ftp_username': self.ftp_username,
-                'ftp_password': self.ftp_password,
-                'document_urls': self.document_urls,
-            }
-        )
+        form_data = {
+            'ftp_host': self.ftp_host,
+            'server_path': self.server_path,
+            'ftp_username': self.ftp_username,
+            'ftp_password': self.ftp_password,
+        }
+        for index, document_url in enumerate(self.document_urls):
+            form_data[f'document_url_{index}'] = document_url
+
+        return WebContext.values_dict_to_form_data(form_data)

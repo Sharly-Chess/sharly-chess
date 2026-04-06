@@ -108,7 +108,6 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             template_name='change_tournament_documents_modal.html',
             context=web_context.template_context
             | {
-                'enumerate': enumerate,
                 'data': custom_upload_data.to_form_data(),
                 'errors': {},
             },
@@ -139,7 +138,6 @@ class CustomUploadAdminEventController(BaseEventAdminController):
             template_name='change_tournament_documents_modal.html',
             context=web_context.template_context
             | {
-                'enumerate': enumerate,
                 'data': custom_upload_data.to_form_data(),
                 'errors': {},
             },
@@ -177,13 +175,11 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 updated_document_urls.append(value)
 
         if len(errors) > 0:
-            document_urls = ';'.join(data.values())
             return HTMXTemplate(
                 template_name='change_tournament_documents_modal.html',
                 context=web_context.template_context
                 | {
-                    'enumerate': enumerate,
-                    'data': {'document_urls': document_urls},
+                    'data': data,
                     'errors': errors,
                 },
                 re_target='#modal-wrapper',
