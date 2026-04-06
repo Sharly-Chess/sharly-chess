@@ -36,7 +36,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         cls, web_context: BaseEventAdminWebContext
     ) -> dict[str, Any]:
         tournaments = web_context.get_admin_event().tournaments
-        # TODO: load document URL for *each* tournament instead of an arbitrary one
+        # TODO: load document URLs for *each* tournament instead of an arbitrary one
         document_urls = None
         for tournament in tournaments:
             document_urls = CustomUploadUtils.get_tournament_plugin_data(
@@ -157,14 +157,42 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
 
-        custom_upload_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
-        custom_upload_data.document_urls = []
+        updated_document_urls = []
+        errors = {}
+        document_manager = PrintDocumentManager(web_context.get_admin_event())
 
-        # TODO: handle error validation
         for name, value in data.items():
             if name.startswith('document_url'):
-                custom_upload_data.document_urls.append(value)
+                if value.count('?') > 1:
+                    errors[name] = (
+                        "There should be no more than one unescaped '?' character"
+                    )
+                    continue
+                document_id = value.split('/')[-1].split('?')[0]
+                try:
+                    document_manager.get_type(document_id)
+                except KeyError:
+                    errors[name] = 'No document type is matching input'
+                    continue
+                updated_document_urls.append(value)
 
+        if len(errors) > 0:
+            document_urls = ';'.join(data.values())
+            return HTMXTemplate(
+                template_name='change_tournament_documents_modal.html',
+                context=web_context.template_context
+                | {
+                    'enumerate': enumerate,
+                    'data': {'document_urls': document_urls},
+                    'errors': errors,
+                },
+                re_target='#modal-wrapper',
+                re_swap='innerHTML',
+                after='settle',
+            )
+
+        custom_upload_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
+        custom_upload_data.document_urls = updated_document_urls
         tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
             custom_upload_data.to_stored_value()
         )
