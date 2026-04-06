@@ -73,7 +73,7 @@ class PairingEngine(ABC):
             )
         except Exception as e:
             logger.exception(e)
-            return str(e)
+            return _('An error occurred. Consult the logs for more details.')
         if len(stored_boards) == 0:
             return _('Pairing is not possible.')
         if self.reorder_boards:
