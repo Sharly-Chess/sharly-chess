@@ -1,6 +1,9 @@
 msgid "Cancel"
 msgstr "Annuler"
 
+msgid "Change documents"
+msgstr ""
+
 msgid "Connection Custom Upload"
 msgstr ""
 
@@ -47,9 +50,6 @@ msgid "Mode"
 msgstr ""
 
 msgid "Path in the server:"
-msgstr ""
-
-msgid "Replace document"
 msgstr ""
 
 msgid "Save"
