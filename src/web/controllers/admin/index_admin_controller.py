@@ -27,6 +27,7 @@ from data.player_categories import (
     SELECTABLE_SENIOR_CATEGORIES,
     PlayerCategory,
 )
+from database.sqlite.sqlite_database import SQLiteDatabase
 from utils.date_time import (
     format_date_range,
     format_date,
@@ -983,26 +984,37 @@ class IndexAdminController(BaseAdminController):
         normalized_data = await WebContext.normalize_multipart_data(data)
         file_path = WebContext.form_data_to_path(normalized_data, 'file')
         assert file_path is not None
-        try:
-            event_uniq_id = EventLoader().import_event(file_path)
-            self._enable_missing_plugins(request, event_uniq_id)
-            Message.success(
-                request,
-                _('Event [{event}] has been imported.').format(event=event_uniq_id),
+        suffix = '.' + SharlyChessConfig.event_database_ext
+        if file_path.suffix != suffix:
+            error_message = _(
+                'Invalid file extension [{extension}] (expected: {expected}).'
+            ).format(extension=file_path.suffix, expected=suffix)
+        elif not SQLiteDatabase(file_path).is_sqlite_file():
+            error_message = _(
+                'This file is incorrectly formatted, '
+                'the extension has most likely been changed.'
             )
-            return ClientRedirect(admin_event_url(request, event_uniq_id))
-        except Exception as error:
-            logger.exception(error)
-            if isinstance(error, SharlyChessException):
-                message = _(
-                    "This event can't be used by the current version of Sharly Chess."
+        else:
+            try:
+                event_uniq_id = EventLoader().import_event(file_path)
+                self._enable_missing_plugins(request, event_uniq_id)
+                Message.success(
+                    request,
+                    _('Event [{event}] has been imported.').format(event=event_uniq_id),
                 )
-            else:
-                message = _('An unexpected error occurred.')
-            Message.error(
-                request, message + ' ' + _('Consult the logs for more details.')
-            )
-            return self._admin_render(web_context)
+                return ClientRedirect(admin_event_url(request, event_uniq_id))
+            except Exception as error:
+                logger.exception(error)
+                if isinstance(error, SharlyChessException):
+                    message = _(
+                        "This event can't be used by the current version of Sharly Chess."
+                    )
+                else:
+                    message = _('An unexpected error occurred.')
+                error_message = message + ' ' + _('Consult the logs for more details.')
+        Message.error(request, error_message)
+        file_path.unlink(missing_ok=True)
+        return self._admin_render(web_context)
 
     @get(
         path='/event-export-modal/{event_uniq_id:str}',
