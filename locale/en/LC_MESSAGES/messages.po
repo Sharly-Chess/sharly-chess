@@ -2918,6 +2918,9 @@ msgstr ""
 msgid "Invalid federation [{federation}]."
 msgstr ""
 
+msgid "Invalid file extension [{extension}] (expected: {expected})."
+msgstr ""
+
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr ""
 
@@ -2946,6 +2949,9 @@ msgid "Invalid value [{value}] for field [{field}] (expected one of [{expected_v
 msgstr ""
 
 msgid "Invalid value [{value}]."
+msgstr ""
+
+msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr ""
 
 msgid "Iran"
@@ -5706,13 +5712,13 @@ msgstr ""
 msgid "This field can't be updated once the tournament has started."
 msgstr ""
 
-msgid "This field is only valid without date of birth."
-msgstr ""
-
 msgid "This field is required (except for rounds)."
 msgstr ""
 
 msgid "This field is required."
+msgstr ""
+
+msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr ""
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."

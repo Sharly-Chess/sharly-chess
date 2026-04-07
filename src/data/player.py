@@ -46,6 +46,10 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
+MIN_YOB = 1900
+MAX_YOB = date.today().year
+
+
 class Player:
     def __init__(
         self,

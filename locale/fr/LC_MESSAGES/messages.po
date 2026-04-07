@@ -2455,7 +2455,7 @@ msgid "File"
 msgstr "Fichier"
 
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
-msgstr "L'extension du fichier [{suffix}] est invalide (attendu : {expected})."
+msgstr "L'extension du fichier [{suffix}] est invalide (attendue : {expected})."
 
 msgid "Filter out players with a greater rating."
 msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
@@ -2918,6 +2918,9 @@ msgstr "Expression non valide [{expression}]"
 msgid "Invalid federation [{federation}]."
 msgstr "Fédération [{federation}] non valide."
 
+msgid "Invalid file extension [{extension}] (expected: {expected})."
+msgstr "Extension de fichier [{extension}] invalide (attendue : {expected})."
+
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr "Numéro d'échiquier [{fixed_board}] non valide."
 
@@ -2947,6 +2950,9 @@ msgstr "Valeur invalide [{value}] pour le champ [{field}] (attendu : l’une de
 
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
+
+msgid "Invalid year of birth (expected: {min} - {max})."
+msgstr "Date de naissance invalide (attendue : {min} - {max})"
 
 msgid "Iran"
 msgstr "Iran"
@@ -5708,14 +5714,14 @@ msgstr "Ce champ ne peut être modifié une fois le tournoi commencé."
 msgid "This field can't be updated once the tournament has started."
 msgstr "Ce champ ne peut être mis à jour après le début du tournoi."
 
-msgid "This field is only valid without date of birth."
-msgstr "Ce champ n'est valide que sans date de naissance."
-
 msgid "This field is required (except for rounds)."
 msgstr "Ce champ est obligatoire (excepté pour les rondes)."
 
 msgid "This field is required."
 msgstr "Ce champ est obligatoire."
+
+msgid "This file is incorrectly formatted, the extension has most likely been changed."
+msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
@@ -5963,7 +5969,7 @@ msgid "Tournaments"
 msgstr "Tournois"
 
 msgid "Tournaments ({num}) *** WITH_SHORTCUT_INDICATION"
-msgstr "<u>T</u>ournaments ({num})"
+msgstr "<u>T</u>ournois ({num})"
 
 msgid "Tournaments are finished, you can not add players any longer."
 msgstr "Les tournois sont terminés, on ne peut plus ajouter de joueur·euses."

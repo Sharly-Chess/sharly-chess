@@ -35,7 +35,7 @@ from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
 from data.input_output.data_source import DataSource
 from data.input_output.managers import DataSourceManager, PlayerExporterManager
-from data.player import Player, PlayerRating, TournamentPlayer
+from data.player import Player, PlayerRating, TournamentPlayer, MIN_YOB, MAX_YOB
 from data.print_documents.documents import (
     PlayerListPrintDocument,
     PlayerCheckinListPrintDocument,
@@ -1010,8 +1010,11 @@ class PlayerAdminController(BaseEventAdminController):
         last_name = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
             errors[field] = _('This field is required.')
+        yob: int | None = None
         try:
-            WebContext.form_data_to_date(data, field := 'date_of_birth')
+            date_of_birth = WebContext.form_data_to_date(data, field := 'date_of_birth')
+            if date_of_birth:
+                yob = date_of_birth.year
         except FormError:
             year_str = data.get(field, '')
             if year_str:
@@ -1023,6 +1026,13 @@ class PlayerAdminController(BaseEventAdminController):
                             date_format=SharlyChessConfig().date_formatter.name
                         ),
                     )
+                else:
+                    yob = int(year_str)
+        if yob is not None and not (MIN_YOB <= yob <= MAX_YOB):
+            errors[field] = _(
+                'Invalid year of birth (expected: {min} - {max}).'
+            ).format(min=MIN_YOB, max=MAX_YOB)
+
         try:
             if value := WebContext.form_data_to_str(data, field := 'gender'):
                 PlayerGender(value)
