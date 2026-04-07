@@ -221,6 +221,14 @@
     background-color: var(--bs-secondary-bg) !important;
     opacity: 1;
 }
+.select2-border-radius-0-left .select2-selection {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+}
+.select2-border-radius-0-right .select2-selection {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
 /* this ugly piece of style here allows us to hide the search bar (empty row) if we have no focus on the select, but still allow tab on it, while preserving the placeholder if no choices are selected */
 /* NOTE (Molrn) the width / height = 0 prevents options from being deselected when the select is not focused
 [data-bs-theme=dark] .select2-container--bootstrap-5:not(.select2-container--focus) .select2-selection--multiple .select2-selection__rendered:has(.select2-selection__choice) .select2-search {

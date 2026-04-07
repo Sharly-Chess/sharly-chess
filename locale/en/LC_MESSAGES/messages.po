@@ -1691,9 +1691,6 @@ msgstr ""
 msgid "Define the criteria for players to belong to this category."
 msgstr ""
 
-msgid "Define the criteria for players to participate in this tournament."
-msgstr ""
-
 msgid "Define the prizes of the category."
 msgstr ""
 
@@ -3319,10 +3316,22 @@ msgstr ""
 msgid "Mexico"
 msgstr ""
 
+msgid "Minimum and maximum age categories (included)."
+msgstr ""
+
+msgid "Minimum and maximum ratings (included)."
+msgstr ""
+
+msgid "Minimum category is expected to be lower or equal to the maximum category."
+msgstr ""
+
 msgid "Minimum number of points (included):"
 msgstr ""
 
 msgid "Minimum rating"
+msgstr ""
+
+msgid "Minimum rating is expected to be lower than the maximum rating."
 msgstr ""
 
 msgid "Missing required column [{column}]."
@@ -4391,6 +4400,9 @@ msgid "Port: {port}"
 msgstr ""
 
 msgid "Portugal"
+msgstr ""
+
+msgid "Positive values are expected."
 msgstr ""
 
 msgid "Pref."

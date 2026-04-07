@@ -116,9 +116,6 @@ msgstr "Arbitre Élite 2"
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
 
-msgid "Expired *** FFE licence"
-msgstr "Expirée"
-
 msgid "Expired FFE licence"
 msgstr "Licence FFE expirée"
 
@@ -298,8 +295,14 @@ msgstr "Médian"
 msgid "Median Buchholz"
 msgstr "Buchholz médian"
 
+msgid "Minimum FFE licence required. Only applies to players of the FRA federation."
+msgstr "Licence FFE minimale requise. Ne s'applique que aux joueur·euses de la fédération FRA."
+
 msgid "Modified"
 msgstr "Modifié"
+
+msgid "N - Expired *** FFE licence"
+msgstr "N - Expirée"
 
 msgid "Name"
 msgstr "Nom"
