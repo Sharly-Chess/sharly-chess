@@ -465,6 +465,11 @@ class IndexAdminController(BaseAdminController):
             uniq_id = EventLoader().get_unused_event_uniq_id(
                 Utils.name_to_uniq_id(name)
             )
+        if action == FormAction.CLONE:
+            try:
+                WebContext.form_data_to_date(data, field := 'clone_start_date')
+            except FormError as e:
+                errors[field] = str(e)
 
         federation = WebContext.form_data_to_str(data, field := 'federation', '') or ''
         if federation not in SharlyChessConfig().federations:
@@ -750,16 +755,37 @@ class IndexAdminController(BaseAdminController):
                 web_context=web_context,
                 template_context=template_context,
             )
-
+        clone_players = WebContext.form_data_to_bool(flat_data, 'clone_players')
+        clone_pairings = WebContext.form_data_to_bool(flat_data, 'clone_pairings')
+        start_date = WebContext.form_data_to_date(flat_data, 'clone_start_date')
         uniq_id: str = stored_event.uniq_id
         EventDatabase(event.uniq_id).clone(new_uniq_id=uniq_id)
         with EventDatabase(uniq_id, write=True) as database:
             database.update_stored_event(stored_event)
-            if 'with_players' not in data:
+            if not clone_players:
                 database.delete_all_stored_players()
+            elif not clone_pairings:
+                database.delete_all_stored_pairings()
+
+            if not (clone_pairings and clone_players):
                 for tournament in event.tournaments:
                     database.set_tournament_pairing_settings(tournament.id, {})
                     database.set_tournament_current_round(tournament.id, None)
+            stored_event = database.load_stored_event()
+            if start_date:
+                day_diff = start_date - event.start_date
+                for stored_timer in stored_event.stored_timers:
+                    for stored_timer_hour in stored_timer.stored_timer_hours:
+                        stored_timer_hour.triggered_at += day_diff
+                        database.update_stored_timer_hour(stored_timer_hour)
+                for stored_tournament in stored_event.stored_tournaments:
+                    stored_tournament.start_date += day_diff
+                    stored_tournament.stop_date += day_diff
+                    stored_tournament.round_datetimes = {
+                        round_: datetime_ + day_diff if datetime_ else None
+                        for round_, datetime_ in stored_tournament.round_datetimes.items()
+                    }
+                    database.update_stored_tournament(stored_tournament)
             plugin_manager.hook.on_event_duplicated(event_database=database)
 
         Message.success(
