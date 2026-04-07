@@ -186,6 +186,7 @@
     multiple_select_all=false,
     error=false,
     tooltip_select=false,
+    search_disabled=false,
     search_placeholder='',
     onchange=''
 ) %}
@@ -241,7 +242,7 @@
                     return `{{ _('No results.') }}`;
                 },
             },
-            minimumResultsForSearch: {% if search_placeholder %}5{% else %}10{% endif %},
+            minimumResultsForSearch: {% if search_disabled %}1000{% elif search_placeholder %}5{% else %}10{% endif %},
             dropdownParent: $('#modal-wrapper'),
             closeOnSelect: {% if keep_open_on_select %}false{% else %}true{% endif %},
             templateResult: function (data) {
@@ -626,7 +627,7 @@ with_indicator: display a loading indicator, optional
                 {% endif %}
                 class="
                     pw-input-group
-                    {% if input_type in ['password', 'search', 'integer-range'] %}input-group{% endif %}
+                    {% if input_type in ['password', 'search', 'integer-range', 'select-range'] %}input-group{% endif %}
                     {% if default_checkbox %}input-group{% endif %}
                     {% if input_type == 'switch' %}form-check form-switch d-inline-block pe-3{% endif %}
                     {% if input_type == 'checkbox' %}form-check d-inline-block pe-3{% endif %}
@@ -637,7 +638,7 @@ with_indicator: display a loading indicator, optional
                         id=id,
                         name=name,
                         options=select_options,
-                        selected=data[name].split(';') if multiple_select else [data[name]],
+                        selected=data.get(name, '').split(';') if multiple_select else [data[name]],
                         disabled=disabled,
                         multiple=multiple_select,
                         multiple_placeholder=placeholder,
@@ -724,6 +725,33 @@ with_indicator: display a loading indicator, optional
                             disabled
                         {% endif %}
                     />
+                {% elif input_type == 'select-range' %}
+                    <div class="form-control p-0 border-0 select2-border-radius-0-right">
+                        {{ select_content(
+                            id=id ~ '-min',
+                            name=name ~ '_min',
+                            options=select_options,
+                            selected=[data[name ~ '_min']],
+                            disabled=disabled,
+                            search_disabled=true,
+                            error=error or (name in errors),
+                            tooltip_select=tooltip_select,
+                            onchange=onchange,
+                        ) }}
+                    </div>
+                    <div class="form-control p-0 border-0 select2-border-radius-0-left">
+                    {{ select_content(
+                        id=id ~ '-max',
+                        name=name ~ '_max',
+                        options=select_options,
+                        selected=[data[name ~ '_max']],
+                        disabled=disabled,
+                        search_disabled=true,
+                        error=error or (name in errors),
+                        tooltip_select=tooltip_select,
+                        onchange=onchange,
+                    ) }}
+                    </div>
                 {% else %}
                     {% set use_date_picker = input_type in ['datetime', 'date', 'date-range'] %}
                     {% if disabled %}
@@ -1431,6 +1459,31 @@ with_indicator: display a loading indicator, optional
         number_max=number_max,
         min_disabled=min_disabled,
         max_disabled=max_disabled,
+        input_tooltip=input_tooltip,
+        data=data,
+        errors=errors,
+        disabled=disabled,
+    ) }}
+{% endmacro %}
+
+{% macro select_range_input(
+    name,
+    label='NO LABEL',
+    help_text='',
+    tooltip_text='',
+    select_options={},
+    input_tooltip='',
+    data={},
+    errors={},
+    disabled=false
+) %}
+    {{ _generic_input(
+        name=name,
+        input_type='select-range',
+        label=label,
+        tooltip_text=tooltip_text,
+        help_text=help_text,
+        select_options=select_options,
         input_tooltip=input_tooltip,
         data=data,
         errors=errors,

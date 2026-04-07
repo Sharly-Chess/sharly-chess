@@ -1,4 +1,3 @@
-import copy
 import json
 import random
 from collections import defaultdict
@@ -20,11 +19,7 @@ from common.i18n import _, ngettext
 from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.board import Board, PlayerRatingType
-from data.criteria.managers import (
-    PlayerFilter,
-    TournamentPlayerFilterManager,
-    PlayerFilterOptionManager,
-)
+from data.criteria.managers import TournamentCriterionManager
 from data.event import Event
 from data.input_output import (
     DataSourceManager,
@@ -39,12 +34,10 @@ from data.pairings.systems import SwissPairingSystem
 from data.player import TournamentPlayer
 from data.tie_breaks import TieBreakManager, TieBreak, TieBreakOptionManager
 from data.tournament import Tournament
-from data.tournament_criterion import TournamentCriterion
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredTournament,
     StoredScreen,
-    StoredTournamentCriterion,
     StoredPairing,
 )
 from plugins.manager import plugin_manager
@@ -60,7 +53,6 @@ from web.guards import EventGuard, ActionGuard, TournamentActionGuard
 from web.messages import Message
 from web.session import (
     SessionTournamentsShowDetails,
-    SessionTournamentCriteriaAddOtherActive,
     SessionTieBreakAddOtherActive,
     SessionDistributeType,
     SessionDistributeUseBalanceGroups,
@@ -78,7 +70,6 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
         self,
         request: HTMXRequest,
         tournament_id: int | None = None,
-        criterion_id: int | None = None,
         tie_break_id: int | None = None,
         exporter_id: str | None = None,
         reload_event: bool = False,
@@ -95,16 +86,6 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
             except KeyError:
                 raise NotFoundException(f'Tournament [{tournament_id}] not found.')
 
-        self.admin_tournament_criterion: TournamentCriterion | None = None
-        if criterion_id:
-            assert self.admin_tournament is not None
-            if criterion_id not in self.admin_tournament.criteria_by_id:
-                raise NotFoundException(
-                    f'Unknown criterion ID [{criterion_id}] for tournament [{self.admin_tournament.name}].'
-                )
-            self.admin_tournament_criterion = self.admin_tournament.criteria_by_id[
-                criterion_id
-            ]
         self.admin_tie_break_id = tie_break_id
         if tie_break_id:
             assert self.admin_tournament is not None
@@ -126,10 +107,6 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
         assert self.admin_tournament is not None
         return self.admin_tournament
 
-    def get_admin_tournament_criterion(self) -> TournamentCriterion:
-        assert self.admin_tournament_criterion is not None
-        return self.admin_tournament_criterion
-
     def get_admin_tie_break(self) -> TieBreak:
         assert self.admin_tie_break_id is not None
         return self.get_admin_tournament().tie_breaks_by_id[self.admin_tie_break_id]
@@ -142,7 +119,6 @@ class TournamentAdminWebContext(BaseEventAdminWebContext):
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'admin_tournament': self.admin_tournament,
-            'admin_tournament_criterion': self.admin_tournament_criterion,
             'admin_tie_break_id': self.admin_tie_break_id,
             'admin_exporter': self.admin_exporter,
             'allowed_tournaments': self.client.allowed_tournaments_for_action(
@@ -248,6 +224,7 @@ class TournamentAdminController(BaseEventAdminController):
         admin_event = web_context.get_admin_event()
         pairing_systems = PairingSystemManager(admin_event).objects()
         pairing_system: PairingSystem = SwissPairingSystem()
+        tournament_criteria = TournamentCriterionManager(admin_event).objects()
         if data is None:
             match action:
                 case 'update':
@@ -304,6 +281,12 @@ class TournamentAdminController(BaseEventAdminController):
                 override_unrated_rapid_blitz = (
                     stored_tournament.override_unrated_rapid_blitz
                 )
+                for criterion in tournament_criteria:
+                    if criterion.id in stored_tournament.criteria:
+                        value = criterion.value_from_stored_value(
+                            stored_tournament.criteria[criterion.id]
+                        )
+                        criterion.set_value(value)
                 stored_plugin_data = stored_tournament.plugin_data
 
             plugin_form_data: dict[str, str] = {}
@@ -314,6 +297,10 @@ class TournamentAdminController(BaseEventAdminController):
                 plugin_form_data |= plugin_data_class.from_stored_value(
                     stored_plugin_data.get(plugin_id, {})
                 ).to_form_data(action=action)
+
+            criteria_form_data: dict[str, str] = {}
+            for criterion in tournament_criteria:
+                criterion.add_to_form_data(criteria_form_data)
 
             round_datetimes: dict[int, datetime | None] = {}
             if action in ('update', 'clone'):
@@ -351,6 +338,7 @@ class TournamentAdminController(BaseEventAdminController):
                 | {field: variation for field, variation in pairing_variations.items()}
                 | plugin_form_data
                 | schedule_form_data
+                | criteria_form_data
             )
             stored_tournament, errors = cls._admin_get_validated_tournament_data(
                 action, web_context, data
@@ -412,12 +400,16 @@ class TournamentAdminController(BaseEventAdminController):
             'action': action,
             'data': data,
             'errors': errors,
+            'tournament_criteria': tournament_criteria,
+            'force_criteria_open': any(
+                criterion.is_used_in_form_data(data)
+                for criterion in tournament_criteria
+            ),
             # The current rounds count is needed to render the schedule inputs
             'schedule_rounds': rounds,
             'force_schedule_open': any(
-                f'round_{n}_datetime' in errors for n in range(1, rounds + 1)
-            )
-            or any(data.get(f'round_{n}_datetime') for n in range(1, rounds + 1)),
+                data.get(f'round_{n}_datetime') for n in range(1, rounds + 1)
+            ),
             'schedule_min_date': format_date(schedule_min_date),
             'schedule_max_date': format_date(schedule_max_date),
         } | form_fields_templates_data
@@ -516,6 +508,13 @@ class TournamentAdminController(BaseEventAdminController):
             data, 'override_unrated_rapid_blitz'
         )
         pab_value = WebContext.form_data_to_int(data, 'pab_value')
+        stored_criteria: dict[str, Any] = {}
+        for criterion in TournamentCriterionManager(event).objects():
+            value = criterion.value_from_form_data(data, errors)
+            if value is None:
+                continue
+            criterion.set_value(value)
+            stored_criteria[criterion.id] = criterion.stored_value
 
         # validation of rounds within the range of the event and sequentially ordered
         round_datetimes: dict[int, datetime | None] = {}
@@ -588,6 +587,7 @@ class TournamentAdminController(BaseEventAdminController):
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
             plugin_data=plugin_data,
             round_datetimes=round_datetimes,
+            criteria=stored_criteria,
         )
         return stored_tournament, errors
 
@@ -789,12 +789,6 @@ class TournamentAdminController(BaseEventAdminController):
                         stored_tie_break = tie_break.to_stored_value()
                         stored_tie_break.tournament_id = tournament.id
                         database.add_stored_tie_break(stored_tie_break)
-                    for criterion in base_tournament.criteria:
-                        stored_criterion = copy.copy(
-                            criterion.stored_tournament_criterion
-                        )
-                        stored_criterion.tournament_id = tournament.id
-                        database.add_stored_tournament_criterion(stored_criterion)
                 if 'add_screens' in data:
                     timer_id: int | None = None
                     if len(event.timers_by_id) == 1:
@@ -1523,252 +1517,6 @@ class TournamentAdminController(BaseEventAdminController):
         return self._admin_base_event_render(
             web_context.template_context
             | self._tie_break_form_modal_context(web_context, data, FormAction.UPDATE)
-        )
-
-    # -------------------------------------------------------------------------
-    # Tournament criteria
-    # -------------------------------------------------------------------------
-
-    @classmethod
-    def _validate_tournament_criterion_form_data(
-        cls, event: Event, data: dict[str, str]
-    ) -> dict[str, str]:
-        errors: dict[str, str] = {}
-        field = 'type'
-        player_filter_id = data.get(field, '')
-        try:
-            TournamentPlayerFilterManager(event).get_type(player_filter_id)
-        except KeyError:
-            errors[field] = _('Please select a type of criterion.')
-            return errors
-        player_filter = cls.player_filter_from_data(event, data)
-        try:
-            player_filter.validate_options()
-        except OptionError as error:
-            errors[error.option.id] = str(error)
-        return errors
-
-    @staticmethod
-    def player_filter_from_data(event: Event, data: dict[str, str]) -> PlayerFilter:
-        player_filter_type = TournamentPlayerFilterManager(event).get_type(data['type'])
-        options = []
-        for option in player_filter_type().default_options():
-            value = WebContext.form_data_to_value(data, option.id, option.type)
-            options.append(type(option)(value))
-        return player_filter_type(options)
-
-    @staticmethod
-    def _tournament_criterion_form_modal_context(
-        request: HTMXRequest,
-        event: Event,
-        data: dict[str, str],
-        action: FormAction,
-        errors: dict[str, str] | None = None,
-    ) -> dict[str, Any]:
-        default_data = {
-            option.id: WebContext.value_to_form_data(option.default_value)
-            for option in PlayerFilterOptionManager(event).objects()
-        } | {'type': ''}
-        return {
-            'modal': 'tournament_criterion_form',
-            'action': action,
-            'player_filter_select_options': {'': '-'}
-            | TournamentPlayerFilterManager(event).options(),
-            'player_filter_options': PlayerFilterOptionManager(event).objects(),
-            'containers_by_type': {
-                player_filter.id: [
-                    option.container_id for option in player_filter.default_options()
-                ]
-                for player_filter in TournamentPlayerFilterManager(event).objects()
-            }
-            | {'': []},
-            'add_other_active': SessionTournamentCriteriaAddOtherActive(request).get(),
-            'data': default_data | data,
-            'errors': errors or {},
-        }
-
-    @post(
-        path=(
-            '/tournaments/tournament-criterion/create/{event_uniq_id:str}/{tournament_id:int}'
-        ),
-        name='admin-tournament-criterion-create',
-        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
-    )
-    async def htmx_admin_tournament_criterion_create(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str | list[str]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        tournament_id: int,
-    ) -> Template:
-        web_context = TournamentAdminWebContext(request, tournament_id)
-        event = web_context.get_admin_event()
-        add_other = 'add_other' in data
-        SessionTournamentCriteriaAddOtherActive(request).set(add_other)
-        flat_data = WebContext.flatten_list_data(data)
-        if errors := self._validate_tournament_criterion_form_data(event, flat_data):
-            return self._admin_base_event_render(
-                web_context.template_context
-                | self._tournament_criterion_form_modal_context(
-                    request, event, flat_data, FormAction.CREATE, errors
-                )
-            )
-
-        player_filter = self.player_filter_from_data(event, flat_data)
-        criterion = web_context.get_admin_tournament().add_criterion(
-            StoredTournamentCriterion(
-                id=None,
-                tournament_id=tournament_id,
-                type=player_filter.id,
-                options={option.id: option.value for option in player_filter.options},
-            )
-        )
-        if add_other:
-            template_context = self._tournament_criterion_form_modal_context(
-                request, event, {}, FormAction.CREATE, errors
-            ) | {'previous_criterion': criterion}
-        else:
-            template_context = {'modal': 'tournament_criteria'}
-        return self._admin_base_event_render(
-            web_context.template_context | template_context
-        )
-
-    @patch(
-        path=(
-            '/tournaments/tournament-criterion/update/{event_uniq_id:str}'
-            '/{tournament_id:int}/{tournament_criterion_id:int}'
-        ),
-        name='admin-tournament-criterion-update',
-        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
-    )
-    async def htmx_admin_tournament_criterion_update(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str | list[str]],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        tournament_id: int,
-        tournament_criterion_id: int,
-    ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request,
-            tournament_id,
-            tournament_criterion_id,
-        )
-        event = web_context.get_admin_event()
-
-        flat_data = WebContext.flatten_list_data(data)
-        if errors := self._validate_tournament_criterion_form_data(event, flat_data):
-            self._admin_base_event_render(
-                web_context.template_context
-                | self._tournament_criterion_form_modal_context(
-                    request, event, flat_data, FormAction.UPDATE, errors
-                )
-            )
-        player_filter = self.player_filter_from_data(event, flat_data)
-        tournament_criterion = web_context.get_admin_tournament_criterion()
-        stored_tournament_criterion = tournament_criterion.stored_tournament_criterion
-        stored_tournament_criterion.type = player_filter.id
-        stored_tournament_criterion.options = {
-            option.id: option.value for option in player_filter.options
-        }
-        tournament_criterion.update()
-        return self._admin_base_event_render(
-            web_context.template_context | {'modal': 'tournament_criteria'}
-        )
-
-    @delete(
-        path=(
-            '/tournaments/tournament-criterion/delete/{event_uniq_id:str}/{tournament_id:int}'
-            '/{tournament_criterion_id:int}'
-        ),
-        name='admin-tournament-criterion-delete',
-        guards=[TournamentActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
-        status_code=HTTP_200_OK,
-    )
-    async def htmx_admin_tournament_criterion_delete(
-        self,
-        request: HTMXRequest,
-        tournament_id: int,
-        tournament_criterion_id: int,
-    ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request,
-            tournament_id,
-            tournament_criterion_id,
-        )
-        web_context.get_admin_tournament().delete_criterion(tournament_criterion_id)
-        return self._admin_base_event_render(
-            web_context.template_context | {'modal': 'tournament_criteria'}
-        )
-
-    @get(
-        path=(
-            '/tournaments/tournament-criteria-modal/{event_uniq_id:str}/{tournament_id:int}'
-        ),
-        name='admin-tournament-criteria-modal',
-    )
-    async def htmx_admin_tournament_criteria_modal(
-        self,
-        request: HTMXRequest,
-        tournament_id: int,
-    ) -> Template:
-        web_context = TournamentAdminWebContext(request, tournament_id)
-        return self._admin_base_event_render(
-            web_context.template_context | {'modal': 'tournament_criteria'}
-        )
-
-    @get(
-        path=(
-            '/tournaments/criterion-modal/create/{event_uniq_id:str}/{tournament_id:int}'
-        ),
-        name='admin-tournament-criterion-create-modal',
-    )
-    async def htmx_admin_tournament_criterion_create_modal(
-        self,
-        request: HTMXRequest,
-        tournament_id: int,
-    ) -> Template:
-        web_context = TournamentAdminWebContext(request, tournament_id)
-        event = web_context.get_admin_event()
-        return self._admin_base_event_render(
-            web_context.template_context
-            | self._tournament_criterion_form_modal_context(
-                request, event, {}, FormAction.CREATE
-            )
-        )
-
-    @get(
-        path=(
-            '/tournaments/criterion-modal/update/{event_uniq_id:str}'
-            '/{tournament_id:int}/{tournament_criterion_id:int}'
-        ),
-        name='admin-tournament-criterion-update-modal',
-    )
-    async def htmx_admin_tournament_criterion_update_modal(
-        self,
-        request: HTMXRequest,
-        tournament_id: int,
-        tournament_criterion_id: int,
-    ) -> Template:
-        web_context = TournamentAdminWebContext(
-            request, tournament_id, tournament_criterion_id
-        )
-        event = web_context.get_admin_event()
-
-        tournament_criterion = web_context.get_admin_tournament_criterion()
-        data = {'type': tournament_criterion.player_filter.id} | {
-            option.id: WebContext.value_to_form_data(option.value)
-            for option in tournament_criterion.player_filter.options
-        }
-        return self._admin_base_event_render(
-            web_context.template_context
-            | self._tournament_criterion_form_modal_context(
-                request, event, data, FormAction.UPDATE
-            )
         )
 
     # -------------------------------------------------------------------------

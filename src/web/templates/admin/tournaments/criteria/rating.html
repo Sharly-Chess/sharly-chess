@@ -1,0 +1,9 @@
+<div class="col-12 col-md-4 mb-2">
+    {{ admin_macros.integer_range_input(
+        name=criterion.form_key,
+        label=_('%(string)s:', string=_('Rating')),
+        tooltip_text=_('Minimum and maximum ratings (included).'),
+        number_min=0,
+        data=data, errors=errors,
+    ) }}
+</div>

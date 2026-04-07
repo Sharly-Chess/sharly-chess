@@ -1,12 +1,13 @@
-from abc import ABC
 from typing import override
 from data.criteria.player_filter_options import PlayerFilterOption
 from data.criteria.player_filters import PlayerFilter
+from data.criteria import tournament_criteria as crit
+from data.criteria.tournament_criteria import TournamentCriterion
 from plugins.manager import plugin_manager
 from utils.entity import EventBoundEntityManager
 
 
-class PlayerFilterManager(EventBoundEntityManager[PlayerFilter], ABC):
+class PrizePlayerFilterManager(EventBoundEntityManager[PlayerFilter]):
     def entity_types(self) -> list[type[PlayerFilter]]:
         from data.criteria import player_filters as filters
 
@@ -18,25 +19,12 @@ class PlayerFilterManager(EventBoundEntityManager[PlayerFilter], ABC):
             filters.ClubPlayerFilter,
             filters.FederationPlayerFilter,
             filters.CommentPlayerFilter,
+            filters.PlayerIdPlayerFilter,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_player_filter_types')(
             player_filter_types=player_filters
         )
         return player_filters
-
-
-class TournamentPlayerFilterManager(PlayerFilterManager):
-    """Player filters used for tournament criteria."""
-
-
-class PrizePlayerFilterManager(PlayerFilterManager):
-    """Player filters used for prize criteria."""
-
-    @override
-    def entity_types(self) -> list[type[PlayerFilter]]:
-        from data.criteria import player_filters as filters
-
-        return super().entity_types() + [filters.PlayerIdPlayerFilter]
 
 
 class PlayerFilterOptionManager(EventBoundEntityManager[PlayerFilterOption]):
@@ -62,3 +50,18 @@ class PlayerFilterOptionManager(EventBoundEntityManager[PlayerFilterOption]):
             player_filter_option_types=filter_options
         )
         return filter_options
+
+
+class TournamentCriterionManager(EventBoundEntityManager[TournamentCriterion]):
+    def entity_types(self) -> list[type[TournamentCriterion]]:
+        criteria: list[type[TournamentCriterion]] = [
+            crit.RatingTournamentCriterion,
+            crit.AgeCategoryTournamentCriterion,
+            crit.GenderTournamentCriterion,
+            crit.ClubTournamentCriterion,
+            crit.FederationTournamentCriterion,
+        ]
+        plugin_manager.hook_for_event(self.event, 'insert_tournament_criteria_types')(
+            criteria_types=criteria
+        )
+        return criteria

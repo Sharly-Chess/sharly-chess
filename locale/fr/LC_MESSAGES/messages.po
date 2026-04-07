@@ -1691,9 +1691,6 @@ msgstr "Définir des groupes équilibrés"
 msgid "Define the criteria for players to belong to this category."
 msgstr "Définir les critères selon lesquels les joueur·euses appartiennent à cette catégorie."
 
-msgid "Define the criteria for players to participate in this tournament."
-msgstr "Définissez les critères permettant aux joueur·euses de participer à ce tournoi."
-
 msgid "Define the prizes of the category."
 msgstr "Définir les prix de la catégorie."
 
@@ -3328,11 +3325,23 @@ msgstr "Menus"
 msgid "Mexico"
 msgstr "Mexique"
 
+msgid "Minimum and maximum age categories (included)."
+msgstr "Catégories d'age minimale et maximale (incluses)."
+
+msgid "Minimum and maximum ratings (included)."
+msgstr "Classement minimal et maximal (inclus)."
+
+msgid "Minimum category is expected to be lower or equal to the maximum category."
+msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
+
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
 
 msgid "Minimum rating"
 msgstr "Elo minimum"
+
+msgid "Minimum rating is expected to be lower than the maximum rating."
+msgstr "Le classement minimal doit être inférieur au classement maximal."
 
 msgid "Missing required column [{column}]."
 msgstr "Colonne obligatoire [{column}] manquante."
@@ -4409,6 +4418,9 @@ msgstr "Port : {port}"
 
 msgid "Portugal"
 msgstr "Portugal"
+
+msgid "Positive values are expected."
+msgstr "Des valeurs positives sont attendues."
 
 msgid "Pref."
 msgstr "Préf."
