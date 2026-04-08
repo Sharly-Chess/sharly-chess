@@ -6,6 +6,7 @@ from common.i18n import _
 from data.event import Event
 from data.loader import EventLoader
 from data.print_documents import QRCodeType
+from database.sqlite.event.event_database import EventDatabase
 from plugins.hookspec import hookimpl, hookspec
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_admin_controller import SCEAdminController
@@ -131,6 +132,21 @@ class SCEPlugin(Plugin):
     @hookimpl
     def create_event_button_template(self) -> str:
         return '/sce_event_create_button.html'
+
+    @hookimpl
+    def on_event_duplicated(self, event_database: EventDatabase):
+        # Erase all SCE plugin data
+        stored_event = event_database.load_stored_event()
+        if PLUGIN_NAME not in stored_event.enabled_plugins:
+            return
+        stored_event.plugin_data[PLUGIN_NAME] = {}
+        event_database.update_stored_event(stored_event)
+        for stored_tournament in stored_event.stored_tournaments:
+            stored_tournament.plugin_data[PLUGIN_NAME] = {}
+            event_database.update_stored_tournament(stored_tournament)
+        for stored_player in stored_event.stored_players:
+            stored_player.plugin_data[PLUGIN_NAME] = {}
+            event_database.update_stored_player(stored_player)
 
     # ---------------------------------------------------------------------------------
     # Tournaments
