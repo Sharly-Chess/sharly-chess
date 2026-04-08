@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Self
 
@@ -6,6 +6,7 @@ from data.tournament import Tournament
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.utils import PluginData
+from utils.enum import FormAction
 from web.controllers.base_controller import WebContext
 
 
@@ -34,7 +35,7 @@ class CustomUploadTournamentPluginData(PluginData):
     ftp_username: str | None = None
     ftp_password: str | None = None
     last_upload: datetime | None = None
-    document_urls: list[str] | None = None
+    document_urls: list[str] = field(default_factory=list)
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -46,7 +47,7 @@ class CustomUploadTournamentPluginData(PluginData):
             last_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload')
             ),
-            document_urls=stored_value.get('document_urls', None),
+            document_urls=stored_value.get('document_urls', []),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -66,15 +67,23 @@ class CustomUploadTournamentPluginData(PluginData):
         action: str | None = None,
     ) -> Self:
         last_upload: datetime | None = None
-        if previous_object and action != 'clone':
+        document_urls: list[str] | None = WebContext.form_data_to_str(
+            data, 'document_urls'
+        )
+        if previous_object and action != FormAction.CLONE:
             last_upload = previous_object.last_upload
+
+        # If action is UPDATE, it means form is for updating FTP configuration only
+        # Document URLs should then stay as they are
+        if action == FormAction.UPDATE:
+            document_urls = previous_object.document_urls
         return cls(
             ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
             server_path=WebContext.form_data_to_str(data, 'server_path'),
             last_upload=last_upload,
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
-            document_urls=WebContext.form_data_to_str(data, 'document_urls'),
+            document_urls=document_urls or [],
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
