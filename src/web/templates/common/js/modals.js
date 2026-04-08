@@ -51,14 +51,8 @@ function handleModalOpened(static) {
         modal.show();
     }
 
-    
     modalForm = modal._element.querySelector("#modal-form");
     if (modalForm) {
-        let fields = modalForm.getElementsByClassName("form-control");
-        if (fields.length > 0) {
-            fields[0].select(); // If the modal contains a form, set focus on the first field
-        }
-
         let eventListeners = $._data(modal._element, "events")
         if (!eventListeners || !eventListeners.keydown) { // avoid duplicate eventListeners
             $(modal._element).on("keydown", function(event) {
@@ -74,7 +68,12 @@ function handleModalOpened(static) {
 
     closeTooltips();
     activateTooltips();
-    scrollToFirstError();
+    if (!scrollToFirstError() && modalForm) {
+        let fields = modalForm.getElementsByClassName("form-control");
+        if (fields.length > 0) {
+            fields[0].select(); // If the modal contains a form, set focus on the first field
+        }
+    }
 }
 
 window.addEventListener("modal_opened", function(event) {
