@@ -1073,7 +1073,7 @@ class KoyaTieBreak(OpponentRecordTieBreak):
     ) -> float:
         tournament: 'Tournament' = tournament_player.tournament
         win_points = Result.WIN.points(tournament.point_values)
-        score_limit = 0.5 * win_points * (after_round - 1)
+        score_limit = 0.5 * win_points * after_round
         if self.limit:
             draw_points = Result.DRAW.points(tournament.point_values)
             score_limit += draw_points * self.limit
@@ -1087,7 +1087,7 @@ class KoyaTieBreak(OpponentRecordTieBreak):
             if pairing.opponent_id is None:
                 continue
             opponent = tournament.tournament_players_by_id[pairing.opponent_id]
-            opponent_score = opponent.points_before(after_round)
+            opponent_score = opponent.points_after(after_round)
             if opponent_score >= score_limit:
                 score += pairing.result.points(tournament.point_values)
         return score

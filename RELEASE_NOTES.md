@@ -28,6 +28,7 @@
 - Display absent players on top of unpaired players on the Pairings tab (4.0.0)
 - Added a reminder to update the players' ratings before pairings on round #1 and for tournaments lasting on multiple FIDE periods (4.0.0)
 - Clean display of pairing exceptions (4.0.2)
+- Fixed Koya tie-break calculation (4.0.3)
 
 ## Tournaments
 
