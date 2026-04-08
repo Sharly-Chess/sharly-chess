@@ -39,6 +39,7 @@
 ## Prizes
 
 - Fixed prize assignment on multiple main category override (4.0.2)
+- Prevent duplicating prize criteria (4.0.3)
 
 ## Documents
 
