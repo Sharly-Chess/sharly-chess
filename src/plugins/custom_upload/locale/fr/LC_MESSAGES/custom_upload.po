@@ -49,6 +49,9 @@ msgstr "Manuel"
 msgid "Mode"
 msgstr "Mode"
 
+msgid "No document type is matching input"
+msgstr "Aucun document ne correspond à cette entrée"
+
 msgid "Path in the server:"
 msgstr "Chemin sur le serveur :"
 
@@ -60,6 +63,9 @@ msgstr "Site"
 
 msgid "Status"
 msgstr "Status"
+
+msgid "There should be no more than one unescaped '?' character"
+msgstr "Il ne doit pas y avoir plus d'un caractère '?' non échappé"
 
 msgid "Tournament"
 msgstr "Tournoi"

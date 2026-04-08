@@ -6,6 +6,7 @@ from litestar.params import Body
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
 
+from common.i18n import _
 from data.access_levels.actions import AuthAction
 from data.print_documents import PrintDocumentManager
 from data.tournament import Tournament
@@ -162,7 +163,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         for name, value in data.items():
             if name.startswith('document_url'):
                 if value.count('?') > 1:
-                    errors[name] = (
+                    errors[name] = _(
                         "There should be no more than one unescaped '?' character"
                     )
                     continue
@@ -170,7 +171,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 try:
                     document_manager.get_type(document_id)
                 except KeyError:
-                    errors[name] = 'No document type is matching input'
+                    errors[name] = _('No document type is matching input')
                     continue
                 updated_document_urls.append(value)
 
