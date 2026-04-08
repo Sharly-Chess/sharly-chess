@@ -67,9 +67,7 @@ class CustomUploadTournamentPluginData(PluginData):
         action: str | None = None,
     ) -> Self:
         last_upload: datetime | None = None
-        document_urls: list[str] | None = WebContext.form_data_to_str(
-            data, 'document_urls'
-        )
+        document_urls: list[str] | None = []
         if previous_object and action != FormAction.CLONE:
             last_upload = previous_object.last_upload
 
@@ -77,13 +75,19 @@ class CustomUploadTournamentPluginData(PluginData):
         # Document URLs should then stay as they are
         if action == FormAction.UPDATE:
             document_urls = previous_object.document_urls
+        if action == 'edit_documents':
+            document_urls = [
+                value.strip()
+                for key, value in data.items()
+                if key.startswith('document_url_')
+            ]
         return cls(
             ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
             server_path=WebContext.form_data_to_str(data, 'server_path'),
             last_upload=last_upload,
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
-            document_urls=document_urls or [],
+            document_urls=document_urls,
         )
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:

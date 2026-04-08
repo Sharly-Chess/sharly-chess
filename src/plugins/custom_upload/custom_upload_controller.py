@@ -13,7 +13,10 @@ from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
-from plugins.custom_upload.utils import CustomUploadUtils
+from plugins.custom_upload.utils import (
+    CustomUploadUtils,
+    CustomUploadTournamentPluginData,
+)
 from utils.date_time import format_datetime
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
@@ -132,8 +135,9 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
-        tournament = web_context.get_admin_tournament()
-        custom_upload_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
+        custom_upload_data = CustomUploadTournamentPluginData.from_form_data(
+            data, None, 'edit_documents'
+        )
         custom_upload_data.document_urls.append('')
         return HTMXTemplate(
             template_name='change_tournament_documents_modal.html',
