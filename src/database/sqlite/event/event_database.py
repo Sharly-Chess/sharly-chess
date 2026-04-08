@@ -1227,6 +1227,9 @@ class EventDatabase(MigrationDatabase):
             (tournament_id, round_),
         )
 
+    def delete_all_stored_pairings(self):
+        self.execute('DELETE FROM `pairing`')
+
     # ---------------------------------------------------------------------------------
     # StoredBoard
     # ---------------------------------------------------------------------------------

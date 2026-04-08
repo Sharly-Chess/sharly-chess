@@ -1952,6 +1952,13 @@ msgstr ""
 msgid "Draw"
 msgstr ""
 
+msgid "Duplicate"
+msgstr ""
+
+#, python-format
+msgid "Duplicate event [%(event)s]"
+msgstr ""
+
 msgid "Duplicate the account."
 msgstr ""
 
@@ -1973,10 +1980,7 @@ msgstr ""
 msgid "Duplicate the tournament."
 msgstr ""
 
-msgid "Duplicate with players"
-msgstr ""
-
-msgid "Duplicate without players"
+msgid "Duplication settings"
 msgstr ""
 
 msgid "Duration (min):"
@@ -2744,6 +2748,9 @@ msgstr ""
 msgid "Identity"
 msgstr ""
 
+msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
+msgstr ""
+
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr ""
 
@@ -2820,6 +2827,9 @@ msgid "Include lower categories"
 msgstr ""
 
 msgid "Include non-monetary prizes"
+msgstr ""
+
+msgid "Include pairings"
 msgstr ""
 
 msgid "Include players"
@@ -5260,6 +5270,9 @@ msgid "Standard swiss system"
 msgstr ""
 
 msgid "Standard:"
+msgstr ""
+
+msgid "Start date"
 msgstr ""
 
 #, python-format
