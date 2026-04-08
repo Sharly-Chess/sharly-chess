@@ -12,6 +12,7 @@
 - Automatically calculate event dates from tournament dates (4.0.0)
 - Added an option to allow players in multiple tournaments (4.0.0)
 - Fixed disabled fields behavior in event modal (4.0.1)
+- Added duplication options to include pairings and define a start date (4.0.3)
 
 ## Players
 

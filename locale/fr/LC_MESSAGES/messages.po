@@ -1952,6 +1952,13 @@ msgstr "Faites glisser les ensembles pour les ordonner."
 msgid "Draw"
 msgstr "Nulle"
 
+msgid "Duplicate"
+msgstr "Dupliquer"
+
+#, python-format
+msgid "Duplicate event [%(event)s]"
+msgstr "Dupliquer l'évènement [%(event)s]"
+
 msgid "Duplicate the account."
 msgstr "Dupliquer le compte."
 
@@ -1973,11 +1980,8 @@ msgstr "Dupliquer le chronomètre."
 msgid "Duplicate the tournament."
 msgstr "Dupliquer le tournoi"
 
-msgid "Duplicate with players"
-msgstr "Dupliquer avec les joueur·euses"
-
-msgid "Duplicate without players"
-msgstr "Dupliquer sans les joueur·euses"
+msgid "Duplication settings"
+msgstr "Paramètres de duplication"
 
 msgid "Duration (min):"
 msgstr "Durée (min) :"
@@ -2744,6 +2748,9 @@ msgstr "Espagne"
 msgid "Identity"
 msgstr "Identité"
 
+msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
+msgstr "Si définie, toutes les dates des tournois et des chronomètres seront mises à jour relativement à cette date."
+
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr "Si vous ne pouvez pas contrôler qui a accès au réseau auquel vous êtes connecté, il est fortement recommandé de ne pas créer de compte."
 
@@ -2821,6 +2828,9 @@ msgstr "Inclure les catégories inférieures"
 
 msgid "Include non-monetary prizes"
 msgstr "Inclure les prix non-monétaires"
+
+msgid "Include pairings"
+msgstr "Inclure les appariements"
 
 msgid "Include players"
 msgstr "Inclure les joueur·euses"
@@ -5266,6 +5276,9 @@ msgstr "Système suisse standard"
 
 msgid "Standard:"
 msgstr "Standard :"
+
+msgid "Start date"
+msgstr "Date de début"
 
 #, python-format
 msgid "Start of round {} in %%s"

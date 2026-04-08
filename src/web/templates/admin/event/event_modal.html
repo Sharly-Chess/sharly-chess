@@ -7,8 +7,11 @@
                 <h2 class="modal-title">
                     {% if not client.can_update_event %}
                         {{ admin_event.name }}
+                    {% elif action == 'clone' %}
+                        {{ _('Duplicate event [%(event)s]', event=admin_event.name) }}
                     {% else %}
-                        {{ _('Create event') }}<span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
+                        {{ _('Create event') }}
+                        <span style="font-size: 70%">{{ macros.doc_icon('events-create', 'ms-2') }}</span>
                     {% endif %}
                 </h2>
             {% endif %}
@@ -28,6 +31,48 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
+                {% if action == 'clone' %}
+                    <h4>
+                        {{ _('Duplication settings') }}
+                    </h4>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="mb-2">
+                                {{ admin_macros.switch_input(
+                                    name='clone_players',
+                                    placeholder=_('Include players'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="mb-2">
+                                {{ admin_macros.switch_input(
+                                    name='clone_pairings',
+                                    placeholder=_('Include pairings'),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <script>
+                                $('#clone-players').change(function () {
+                                    $('#clone-pairings').prop('disabled', !this.checked);
+                                    $('#clone-pairings').prop('checked', this.checked);
+                                });
+                                triggerModalInitEvent('#clone-players');
+                            </script>
+                            <div>
+                                {{ admin_macros.date_input(
+                                    name='clone_start_date',
+                                    label=_('%(string)s:', string=_('Start date')),
+                                    placeholder=admin_event.start_date_str,
+                                    tooltip_text=_(
+                                        'If defined, all the dates of the tournaments '
+                                        'and timers will be updated relatively to this date.'
+                                    ),
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
                 <h4>
                     {{ _('Properties') }}
                 </h4>
@@ -296,25 +341,20 @@
                 {{ _('Cancel') if client.can_update_event else _('Close') }}
             </button>
             {% if client.can_update_event %}
-                {% if action == 'clone' %}
-                    {{ admin_macros.split_submit_buttons(
-                        options={
-                            'duplicate': _('Duplicate without players'),
-                            'with_players': _('Duplicate with players'),
-                        },
-                        active_option='duplicate'
-                    ) }}
-                {% else %}
-                    <button
-                        type="submit"
-                        data-testid="event-form-submit-button"
-                        form="modal-form"
-                        class="text-nowrap white btn btn-primary"
-                    >
+                <button
+                    type="submit"
+                    data-testid="event-form-submit-button"
+                    form="modal-form"
+                    class="text-nowrap white btn btn-primary"
+                >
+                    {% if action == 'clone' %}
+                        <i class="bi-copy pe-1"></i>
+                        {{ _('Duplicate') }}
+                    {% else %}
                         <i class="bi-floppy-fill pe-1"></i>
                         {{ _('Save') if action == 'update' else _('Create') }}
-                    </button>
-                {% endif %}
+                    {% endif %}
+                </button>
             {% endif %}
         </div>
     </div>
