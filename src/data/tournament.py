@@ -17,7 +17,7 @@ from common.logger import get_logger
 from data.account import Account
 from data.board import Board
 from data.family import Family
-from data.player import Player, Federation, Club, TournamentPlayer
+from data.player import Player, TournamentPlayer
 from data.player_categories import PlayerCategory
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
@@ -784,32 +784,31 @@ class Tournament:
     def gender_counts(self) -> Counter[PlayerGender]:
         """Returns the number of players by gender."""
         counter: Counter[PlayerGender] = Counter[PlayerGender]()
-        for tournament_player in self.tournament_players:
-            counter[tournament_player.gender] += 1
+        for player in self.tournament_players:
+            counter[player.gender] += 1
         return counter
 
     @cached_property
-    def federation_counts(self) -> Counter[Federation]:
+    def federation_counts(self) -> Counter[str]:
         """Returns the number of players by federation."""
-        counter: Counter[Federation] = Counter[Federation]()
-        for tournament_player in self.tournament_players:
-            counter[tournament_player.federation] += 1
+        counter: Counter[str] = Counter[str]()
+        for player in self.tournament_players:
+            counter[player.federation.name] += 1
         return counter
 
     @cached_property
-    def club_counts(self) -> Counter[Club]:
+    def club_counts(self) -> Counter[str]:
         """Returns the number of players by club."""
-        counter: Counter[Club] = Counter[Club]()
-        for tournament_player in self.tournament_players:
-            if tournament_player.club is not None:
-                counter[tournament_player.club] += 1
+        counter: Counter[str] = Counter[str]()
+        for player in self.tournament_players:
+            counter[player.club.name] += 1
         return counter
 
     @cached_property
     def category_counts(self) -> Counter[PlayerCategory]:
         counter = Counter[PlayerCategory]()
-        for tournament_player in self.tournament_players:
-            counter[tournament_player.category] += 1
+        for player in self.tournament_players:
+            counter[player.category] += 1
         return counter
 
     @cached_property
@@ -821,16 +820,11 @@ class Tournament:
 
     @cached_property
     def unrated_count(self) -> int:
-        return sum(
-            tournament_player.rating == 0
-            for tournament_player in self.tournament_players
-        )
+        return sum(player.rating == 0 for player in self.tournament_players)
 
     @cached_property
     def estimated_count(self) -> int:
-        return sum(
-            tournament_player.estimated for tournament_player in self.tournament_players
-        )
+        return sum(player.estimated for player in self.tournament_players)
 
     # -------------------------------------------------------------------------
     # Misc
