@@ -40,8 +40,6 @@ class Message:
     def _message(
         request: Request, errors: str | list[str] | Exception, level: int
     ) -> None:
-        if '_messages' not in request.session:
-            request.session['_messages'] = []
         texts: list[str]
         if isinstance(errors, list):
             texts = errors
@@ -57,8 +55,7 @@ class Message:
             raise ValueError(
                 f'unexpected type [{type(errors)}] for argument [{errors}]'
             )
-        for text in texts:
-            request.session['_messages'].append(Message(text, level))
+        request.session['_messages'] = [Message(text, level) for text in texts]
 
     @staticmethod
     def info(request: Request, string_or_list: str | list[str] | Exception) -> None:

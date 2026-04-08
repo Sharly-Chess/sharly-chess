@@ -266,7 +266,7 @@ try:
                     gtk_version = '3.0'
                     logger.debug('GTK3 available (required for WebView support)')
                 except (ImportError, ValueError) as e:
-                    logger.error(
+                    logger.exception(
                         'GTK3 is required for WebView support but is not available. '
                         'Please install GTK3 development libraries (e.g., libgtk-3-dev on Ubuntu/Debian).'
                     )
@@ -364,10 +364,9 @@ try:
                     raise
             except Exception as e:
                 # Log any other GUI initialization errors for debugging
-                logger.error(
+                logger.exception(
                     'GUI initialization failed with unexpected error: %s',
                     e,
-                    exc_info=True,
                 )
                 raise
 
@@ -386,7 +385,7 @@ except Exception:
         from common.logger import get_logger
 
         logger = get_logger()
-        logger.error(message)
+        logger.exception(message)
     except Exception:
         pass
 

@@ -1,10 +1,14 @@
 from functools import partial
 from pathlib import Path
+from typing import Annotated, Any
 
 from litestar import post, get
+from litestar.enums import RequestEncodingType
+from litestar.params import Body
 from litestar.response import Template, File
-from litestar_htmx import HTMXRequest, ClientRedirect
+from litestar_htmx import HTMXRequest, ClientRedirect, HTMXTemplate
 
+from common import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from common.network import NetworkMonitor
@@ -12,17 +16,15 @@ from data.access_levels.actions import AuthAction
 from data.tournament import Tournament
 from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
-from plugins.ffe.ffe_background_uploader import (
-    FfeBackgroundUploader,
-    FfeUploadResult,
-    FfeUploadStatus,
-)
+from plugins.ffe.ffe_background_uploader import FfeBackgroundUploader
 from plugins.ffe.ffe_session import FFESession
+from plugins.ffe.utils import FFEUtils
 from plugins.utils import PluginUtils
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
 )
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
+from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard, EventGuard, TournamentActionGuard
 from web.messages import Message
 
@@ -30,11 +32,60 @@ logger = get_logger()
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
 
-class FfeAdminTournamentController(BaseEventAdminController):
+class FfeTournamentController(BaseEventAdminController):
+    """Controller for all the FFE endpoints used on the tournaments page."""
+
     guards = [
         EventGuard(),
         ActionGuard(AuthAction.VIEW_TOURNAMENTS_TAB),
     ]
+
+    @post(
+        path='/ffe/test-auth/{event_uniq_id:str}',
+        name='ffe-test-auth',
+    )
+    async def htmx_ffe_test_auth(
+        self,
+        event_uniq_id: str,
+        data: Annotated[
+            dict[str, Any],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        ffe_auth_valid: bool | None = None
+
+        if NetworkMonitor.connected():
+            ffe_id: int = 0
+            try:
+                ffe_id = WebContext.form_data_to_int(data, 'ffe_id') or 0
+            except ValueError:
+                pass
+            ffe_password: str = WebContext.form_data_to_str(data, 'ffe_password') or ''
+
+            if ffe_id and ffe_password:
+                ffe_auth_valid = FFESession(tournament=None).test_auth(
+                    ffe_id=ffe_id, ffe_password=ffe_password
+                )
+
+        errors = {}
+        # Compare to False, None means 'unable to check'
+        if ffe_auth_valid is False:
+            errors['ffe_id'] = _('Invalid FFE certification number or password.')
+            errors['ffe_password'] = _('Invalid FFE certification number or password.')
+
+        return HTMXTemplate(
+            template_name='ffe_tournament_ffe_auth_fields.html',
+            context={
+                'data': {
+                    'ffe_id': data['ffe_id'],
+                    'ffe_password': data['ffe_password'],
+                },
+                'ffe_auth_valid': ffe_auth_valid is True,
+                'ffe_password_visible': data['ffe_password_visible'] == 'true',
+                'event_uniq_id': event_uniq_id,
+                'errors': errors,
+            },
+        )
 
     @post(
         path='/ffe/make-visible/{event_uniq_id:str}/{tournament_id:int}',
@@ -48,50 +99,19 @@ class FfeAdminTournamentController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-
-        result: FfeUploadResult | None = (
-            FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
+        FfeBackgroundUploader.upload_tournament(
+            tournament.event.uniq_id, tournament.id, set_visible=True
         )
-
-        if not NetworkMonitor.connected():
-            result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
-
-        def report(status: FfeUploadStatus, message: str) -> None:
-            nonlocal result
-            result = FfeUploadResult(status, message)
-
-        if not result or (
-            result.status != FfeUploadStatus.SETTINGS_ERROR
-            and result.status != FfeUploadStatus.ERROR
-        ):
-            try:
-                FFESession(
-                    tournament,
-                    report_error=partial(report, FfeUploadStatus.ERROR),
-                    report_info=partial(report, FfeUploadStatus.INFO),
-                    report_success=partial(report, FfeUploadStatus.SUCCESS),
-                ).upload(set_visible=True)
-            except Exception:
-                logger.exception(
-                    'Error while setting tournament visibility: %s', tournament_id
-                )
-                result = FfeUploadResult(
-                    FfeUploadStatus.ERROR, _('Unable to set tournament visibility.')
-                )
-
-        if result:
-            match result.status:
-                case FfeUploadStatus.ERROR:
-                    Message.error(request, result.message)
-                case FfeUploadStatus.INFO:
-                    Message.info(request, result.message)
-                case FfeUploadStatus.SUCCESS | FfeUploadStatus.SETTINGS_ERROR:
-                    Message.success(request, result.message)
-        else:
+        if FFEUtils.get_tournament_plugin_data(tournament).upload_failure_id:
             Message.error(
                 request,
-                _('Unable to set tournament visibility.'),
+                _(
+                    'Tournament visibility could not be set, '
+                    'consult the FFE modal for more details.'
+                ),
             )
+        else:
+            Message.success(request, _('Tournament is now visible on the FFE website.'))
 
         return self.render_messages(request)
 
@@ -107,93 +127,14 @@ class FfeAdminTournamentController(BaseEventAdminController):
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
-
-        result: FfeUploadResult | None = (
-            FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
-        )
-
-        if not NetworkMonitor.connected():
-            result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
-
-        if not result or (
-            result.status != FfeUploadStatus.SETTINGS_ERROR
-            and result.status != FfeUploadStatus.ERROR
-        ):
-            result = FfeBackgroundUploader.upload_tournament(
-                tournament.event.uniq_id, tournament.id, force=True
+        FfeBackgroundUploader.upload_tournament(tournament.event.uniq_id, tournament.id)
+        if FFEUtils.get_tournament_plugin_data(tournament).upload_failure_id:
+            Message.error(
+                request,
+                _('Tournament upload failed, consult the FFE modal for more details.'),
             )
-
-        if result:
-            match result.status:
-                case FfeUploadStatus.ERROR:
-                    Message.error(request, result.message)
-                case FfeUploadStatus.INFO:
-                    Message.info(request, result.message)
-                case FfeUploadStatus.SUCCESS | FfeUploadStatus.SETTINGS_ERROR:
-                    Message.success(request, result.message)
         else:
-            Message.error(request, _('Unable to upload tournament.'))
-
-        return self.render_messages(request)
-
-    @post(
-        path='/ffe/upload-rules/{event_uniq_id:str}/{tournament_id:int}',
-        name='ffe-upload-rules',
-        guards=[TournamentActionGuard(AuthAction.PUBLISH_RULES)],
-    )
-    async def htmx_ffe_upload_rules(
-        self,
-        request: HTMXRequest,
-        tournament_id: int,
-    ) -> Template:
-        web_context = TournamentAdminWebContext(request, tournament_id)
-        tournament = web_context.get_admin_tournament()
-
-        result: FfeUploadResult | None = (
-            FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
-        )
-
-        if not NetworkMonitor.connected():
-            result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
-
-        if not tournament.rules:
-            result = FfeUploadResult(
-                FfeUploadStatus.ERROR, _('Tournament rules are not set')
-            )
-
-        def report(status: FfeUploadStatus, message: str) -> None:
-            nonlocal result
-            result = FfeUploadResult(status, message)
-
-        if not result or (
-            result.status != FfeUploadStatus.SETTINGS_ERROR
-            and result.status != FfeUploadStatus.ERROR
-        ):
-            try:
-                FFESession(
-                    tournament,
-                    report_error=partial(report, FfeUploadStatus.ERROR),
-                    report_info=partial(report, FfeUploadStatus.INFO),
-                    report_success=partial(report, FfeUploadStatus.SUCCESS),
-                ).upload_rules()
-            except Exception:
-                logger.exception(
-                    'Error while uploading tournament rules: %s', tournament_id
-                )
-                result = FfeUploadResult(
-                    FfeUploadStatus.ERROR, _('Unable to upload tournament rules.')
-                )
-
-        if result:
-            match result.status:
-                case FfeUploadStatus.ERROR:
-                    Message.error(request, result.message)
-                case FfeUploadStatus.INFO:
-                    Message.info(request, result.message)
-                case FfeUploadStatus.SUCCESS | FfeUploadStatus.SETTINGS_ERROR:
-                    Message.success(request, result.message)
-        else:
-            Message.error(request, _('Unable to upload tournament rules.'))
+            Message.success(request, _('Tournament successfully uploaded.'))
 
         return self.render_messages(request)
 
@@ -215,66 +156,31 @@ class FfeAdminTournamentController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template | ClientRedirect:
         web_context = TournamentAdminWebContext(request, tournament_id)
-
         tournament = web_context.get_admin_tournament()
-
-        result: FfeUploadResult | None = (
-            FfeBackgroundUploader.get_updated_tournament_upload_result(tournament)
-        )
-
-        if not NetworkMonitor.connected():
-            result = FfeUploadResult(FfeUploadStatus.ERROR, _('No internet connection'))
-
-        def report(status: FfeUploadStatus, message: str) -> None:
-            nonlocal result
-            result = FfeUploadResult(status, message)
-
-        if not result or (
-            result.status != FfeUploadStatus.SETTINGS_ERROR
-            and result.status != FfeUploadStatus.ERROR
-        ):
-            try:
-                if html := FFESession(
-                    tournament,
-                    report_error=partial(report, FfeUploadStatus.ERROR),
-                    report_info=partial(report, FfeUploadStatus.INFO),
-                    report_success=partial(report, FfeUploadStatus.SUCCESS),
-                ).get_fees():
-                    fees_file = self.tournament_fees_file(tournament)
-                    fees_file.parent.mkdir(parents=True, exist_ok=True)
-                    with open(fees_file, 'w') as f:
-                        f.write(html)
-                    url: str = request.app.route_reverse(
-                        'ffe-download-fees',
-                        event_uniq_id=event_uniq_id,
-                        tournament_id=tournament_id,
-                    )
-                    logger.debug(
-                        'Fees written to [%s], redirecting to [%s].',
-                        fees_file,
-                        url,
-                    )
-                    response: ClientRedirect = ClientRedirect(redirect_to=url)
-                    # cf https://github.com/bigskysoftware/htmx/issues/3189
-                    response.set_header('HX-Trigger', 'download_ready')
-                    return response
-            except Exception:
-                logger.exception('Error while downloading fees: %s', tournament_id)
-                result = FfeUploadResult(
-                    FfeUploadStatus.ERROR, _('Unable to download tournament fees.')
+        try:
+            if html := FFESession(tournament).get_fees():
+                fees_file = self.tournament_fees_file(tournament)
+                fees_file.parent.mkdir(parents=True, exist_ok=True)
+                with open(fees_file, 'w') as f:
+                    f.write(html)
+                url: str = request.app.route_reverse(
+                    'ffe-download-fees',
+                    event_uniq_id=event_uniq_id,
+                    tournament_id=tournament_id,
                 )
-
-        if result:
-            match result.status:
-                case FfeUploadStatus.ERROR:
-                    Message.error(request, result.message)
-                case FfeUploadStatus.INFO:
-                    Message.info(request, result.message)
-                case FfeUploadStatus.SUCCESS | FfeUploadStatus.SETTINGS_ERROR:
-                    Message.success(request, result.message)
-        else:
-            Message.error(request, _('Unable to download tournament fees.'))
-
+                logger.debug(
+                    'Fees written to [%s], redirecting to [%s].',
+                    fees_file,
+                    url,
+                )
+                response: ClientRedirect = ClientRedirect(redirect_to=url)
+                # cf https://github.com/bigskysoftware/htmx/issues/3189
+                response.set_header('HX-Trigger', 'download_ready')
+                return response
+            else:
+                Message.info(request, _('Tournament exempt from registration fees.'))
+        except SharlyChessException as e:
+            Message.error(request, str(e))
         return self.render_messages(request)
 
     @get(

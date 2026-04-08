@@ -55,7 +55,7 @@ class ChessEventSession(Session):
                 logger.debug('Redirection to  %s...', redirect_url)
                 response = self.post(redirect_url, data=post, allow_redirects=False)
         except RequestException as ex:
-            logger.error('Failed to read [%s]: %s.', self.DOWNLOAD_URL, ex)
+            logger.exception('Failed to read [%s]: %s.', self.DOWNLOAD_URL, ex)
             raise ChessEventStatusError(
                 _('Connection to the ChessEvent server failed.'),
                 ConnectionErrorChessEventStatus(),

@@ -4,7 +4,7 @@ var polyglot = new Polyglot({
         // Units
         'tc.moves':   '{{ _("<smart_count> move |||| <smart_count> moves") }}',
         'tc.min_abbr': '{{ _("min *** MINUTES") }}',
-        'tc.sec_abbr': '{{ _("s *** SECONDS") }}',
+        'tc.sec_abbr': '{{ _("sec *** SECONDS") }}',
         'tc.per_move': '{{ _("/move") }}',          // used like “+30 s/move”
         'tc.for_moves': '{{ _("/<moves>") }}',      // used like “90 min/40 moves”
 

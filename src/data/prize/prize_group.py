@@ -5,6 +5,7 @@ from collections.abc import Collection
 from functools import cached_property
 from typing import TYPE_CHECKING
 
+from common import SharlyChessException
 from common.i18n import _
 from data.player import TournamentPlayer
 from data.prize.assigned_prize import AssignedPrize
@@ -229,17 +230,23 @@ class PrizeGroup:
                     # Remove the player from the main group
                     removed_from_main_set.add(tournament_player.id)
                     iterate = True
+                    max_iteration_fail_safe = 1000
 
                     new_top_players: list[TournamentPlayer] = []
                     new_top_prizes: list[AssignedPrize] = []
 
                     while iterate:
+                        max_iteration_fail_safe -= 1
+                        if max_iteration_fail_safe <= 0:
+                            raise SharlyChessException(
+                                'Max iteration reached, prize assignment stopped.'
+                            )
                         new_top_prizes = calculate_main_category_prizes(
                             sorted_tournament_players
                         )
                         new_top_players = [
                             assigned_prize.assigned_to
-                            for assigned_prize in top_prizes
+                            for assigned_prize in new_top_prizes
                             if assigned_prize.assigned_to
                         ]
 
@@ -294,7 +301,7 @@ class PrizeGroup:
                                 else:
                                     # Otherwise if the current prize is higher than the new one, we remove the player
                                     # from the main group and continue to add new players to the group if needed
-                                    removed_from_main_set.add(tournament_player.id)
+                                    removed_from_main_set.add(player_id)
                                     iterate = True
 
                     top_tournament_players = new_top_players

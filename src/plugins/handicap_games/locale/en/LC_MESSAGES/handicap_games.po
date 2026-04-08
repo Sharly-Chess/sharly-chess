@@ -23,6 +23,10 @@ msgstr ""
 msgid "Penalty (secs):"
 msgstr ""
 
+#, python-format
+msgid "Penalty: %(value)d sec/%(step)d Elo (min. %(min)d sec)"
+msgstr ""
+
 msgid "The minimum time, whatever the ranking difference between the two players."
 msgstr ""
 
@@ -33,5 +37,8 @@ msgid "The time subtracted from the highest ranked player, in seconds (this time
 msgstr ""
 
 msgid "Time control"
+msgstr ""
+
+msgid "Time control:"
 msgstr ""
 

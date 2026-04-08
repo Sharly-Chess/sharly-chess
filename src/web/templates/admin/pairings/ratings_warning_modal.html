@@ -1,0 +1,70 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div style="--bs-modal-width: min(90vw, 500px);" class="modal-dialog modal-dialog-scrollable pairing-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ _('Ratings update') }}
+            </div>
+        </div>
+        <div class="modal-body">
+            <h5 class="text-warning">
+                {% if admin_round == 1 %}
+                    {{ _('Reminder: you might have to update the players\' ratings before pairing.') }}
+                {% else %}
+                    {{ _('Reminder: the tournament is played on multiple FIDE periods, you might have to update the players\' ratings before pairing.') }}
+                {% endif %}
+            </h5>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Close') }}
+            </button>
+            <div class="dropup d-inline">
+                <button
+                    class="btn btn-outline-primary dropdown-toggle mx-auto"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    <i class="bi-arrow-repeat pe-1"></i>
+                    {{ _('Update') }}
+                </button>
+                <ul class="dropdown-menu">
+                    {% with from_modal=true, tournament=admin_tournament, tab='pairings' %}
+                        {% include '../players/players_diff.html' %}
+                    {% endwith %}
+                </ul>
+            </div>
+            <button
+                type="submit"
+                class="text-nowrap white btn btn-primary"
+                {% if admin_round != 1 %}
+                    hx-post="{{ url_for(
+                        'admin-generate-round-pairings',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round
+                    ) }}"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                {% else %}
+                    hx-get="{{ url_for(
+                        'admin-pairings-settings-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round
+                    ) }}"
+                {% endif %}
+            >
+                <i class="bi-shuffle pe-1"></i>
+                {{ _('Pair') }}
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+<div class="text-start">
+    {{ _('%(string)s:', string=label) }}
+    <span
+        {% if display_value == last_value %}
+            class="text-secondary"
+        {% elif compare_value == last_value %}
+            class="text-warning fw-bold"
+            {{ macros.tooltip_attributes('info', _('Modified')) }}
+        {% else %}
+            class="text-danger fw-bold"
+            {{ macros.tooltip_attributes('warning', _('Conflict')) }}
+        {% endif %}
+    >
+        <span class="{% if not display_value %}fst-italic{% endif %}">
+            {{ display_value or _('Undefined') }}
+        </span>
+    </span>
+</div>

@@ -18,7 +18,7 @@ from litestar import get, patch, delete, post, Response
 from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
-from litestar.response import Template, File
+from litestar.response import Template, File, Redirect
 from litestar.status_codes import HTTP_200_OK
 from litestar_htmx import HTMXTemplate
 from litestar.channels import ChannelsPlugin
@@ -35,7 +35,7 @@ from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
 from data.input_output.data_source import DataSource
 from data.input_output.managers import DataSourceManager, PlayerExporterManager
-from data.player import Player, PlayerRating, TournamentPlayer
+from data.player import Player, PlayerRating, TournamentPlayer, MIN_YOB, MAX_YOB
 from data.print_documents.documents import (
     PlayerListPrintDocument,
     PlayerCheckinListPrintDocument,
@@ -566,7 +566,7 @@ class PlayerAdminController(BaseEventAdminController):
                 column.get_filter_value_from_key(filter_key, event)
                 filter_keys.append(filter_key)
             except ValueError:
-                logger.error(
+                logger.exception(
                     f'Invalid filter key [{filter_key}] for column [{column.id}].'
                 )
         SessionPlayersFilters(request, event).set_column_filters(column_id, filter_keys)
@@ -668,6 +668,7 @@ class PlayerAdminController(BaseEventAdminController):
         carry_over_data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
         warning_message: str | None = None,
+        redirect_to: str | None = None,
     ) -> Template:
         request = web_context.request
         event = web_context.get_admin_event()
@@ -767,6 +768,7 @@ class PlayerAdminController(BaseEventAdminController):
                     'paid': paid,
                     'fixed': fixed or None,
                     'date_of_birth': date_of_birth,
+                    'redirect_to': redirect_to,
                 }
                 | rating_data
                 | plugin_form_data
@@ -925,9 +927,12 @@ class PlayerAdminController(BaseEventAdminController):
         request: HTMXRequest,
         action: str,
         player_id: int,
+        redirect_to: str | None = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
-        return self._render_players_form_modal(web_context, FormAction(action))
+        return self._render_players_form_modal(
+            web_context, FormAction(action), redirect_to=redirect_to
+        )
 
     @get(
         path='/player-delete-modal/{event_uniq_id:str}/{player_id:int}',
@@ -943,6 +948,33 @@ class PlayerAdminController(BaseEventAdminController):
         return self._admin_base_event_render(
             web_context.template_context | {'modal': 'player-delete'}
         )
+
+    @classmethod
+    def _read_player_form_data(
+        cls,
+        web_context: PlayerAdminWebContext,
+        action: FormAction,
+        data: dict[str, str],
+    ) -> tuple[StoredPlayer | None, dict[str, str]]:
+        event = web_context.get_admin_event()
+        player = web_context.admin_player
+        errors = cls._validate_player_form_data(web_context, action, data)
+        if errors:
+            return None, errors
+        stored_player = cls._stored_player_from_data(data)
+        tournament = event.tournaments_by_id[int(data['tournament_id'])]
+        if not event.check_player_unicity(
+            stored_player, tournament, player.id if player else None
+        ):
+            errors['alert'] = (
+                _('This player already exists in tournament [{tournament}].').format(
+                    tournament=tournament.name
+                )
+                if event.allow_multi_tournament_players
+                else _('This player already exists in the event.')
+            )
+            return None, errors
+        return stored_player, errors
 
     @classmethod
     def _validate_player_form_data(
@@ -962,7 +994,6 @@ class PlayerAdminController(BaseEventAdminController):
             tournament = event.tournaments_by_id[tournament_id]
         except (ValueError, KeyError):
             errors[field] = _('Please choose the tournament.')
-        player: Player | None = None
         if action != FormAction.CREATE and tournament is not None:
             player = web_context.get_admin_player()
             if tournament.id != player.single_tournament.id:
@@ -979,10 +1010,11 @@ class PlayerAdminController(BaseEventAdminController):
         last_name = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
             errors[field] = _('This field is required.')
-        first_name = WebContext.form_data_to_str(data, 'first_name')
-        date_of_birth: date | None = None
+        yob: int | None = None
         try:
             date_of_birth = WebContext.form_data_to_date(data, field := 'date_of_birth')
+            if date_of_birth:
+                yob = date_of_birth.year
         except FormError:
             year_str = data.get(field, '')
             if year_str:
@@ -994,6 +1026,13 @@ class PlayerAdminController(BaseEventAdminController):
                             date_format=SharlyChessConfig().date_formatter.name
                         ),
                     )
+                else:
+                    yob = int(year_str)
+        if yob is not None and not (MIN_YOB <= yob <= MAX_YOB):
+            errors[field] = _(
+                'Invalid year of birth (expected: {min} - {max}).'
+            ).format(min=MIN_YOB, max=MAX_YOB)
+
         try:
             if value := WebContext.form_data_to_str(data, field := 'gender'):
                 PlayerGender(value)
@@ -1013,9 +1052,8 @@ class PlayerAdminController(BaseEventAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
-        fide_id: int | None = None
         try:
-            fide_id = WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
+            WebContext.form_data_to_int(data, field := 'fide_id', minimum=1)
         except ValueError:
             errors[field] = _('Invalid FIDE ID [{fide_id}].').format(
                 fide_id=data[field]
@@ -1038,38 +1076,17 @@ class PlayerAdminController(BaseEventAdminController):
             errors[field] = _('Invalid fixed board number [{fixed_board}].').format(
                 fixed_board=data[field]
             )
-        if tournament and (fide_id or date_of_birth):
-            for tournament_player in tournament.tournament_players:
-                if player and tournament_player.id == player.id:
-                    continue
-                if fide_id and tournament_player.fide_id == fide_id:
-                    errors['fide_id'] = _(
-                        'Player with FIDE ID [{fide_id}] '
-                        'already plays tournament [{tournament}].'
-                    ).format(fide_id=fide_id, tournament=tournament.name)
-                if (
-                    date_of_birth
-                    and tournament_player.last_name == last_name
-                    and tournament_player.first_name == first_name
-                    and tournament_player.date_of_birth == date_of_birth
-                ):
-                    errors['last_name'] = _(
-                        'Player [{player}] already plays tournament [{tournament}].'
-                    ).format(
-                        player=f'{tournament_player.full_name} {format_date(date_of_birth)}',
-                        tournament=tournament.name,
-                    )
         plugin_manager.hook_for_event(event, 'validate_player_form_fields')(
-            action=action,
-            tournament=tournament,
-            player=player,
-            data=data,
-            errors=errors,
+            data=data, errors=errors
         )
         return errors
 
     @classmethod
-    def _stored_player_from_data(cls, data: dict[str, str]) -> StoredPlayer:
+    def _stored_player_from_data(
+        cls,
+        data: dict[str, str],
+        player: Player | None = None,
+    ) -> StoredPlayer:
         date_of_birth: date | None = None
         year_of_birth: int | None = None
         field = 'date_of_birth'
@@ -1077,6 +1094,19 @@ class PlayerAdminController(BaseEventAdminController):
             date_of_birth = WebContext.form_data_to_date(data, field)
         except FormError:
             year_of_birth = WebContext.form_data_to_int(data, field)
+
+        plugin_data: dict[str, dict[str, Any]] = {}
+        for (
+            plugin_id,
+            plugin_data_class,
+        ) in Player.plugin_data_class_by_plugin_id().items():
+            previous_object = None
+            if player:
+                previous_object = player.plugin_data.get(plugin_id)
+            plugin_data[plugin_id] = plugin_data_class.from_form_data(
+                data, previous_object=previous_object
+            ).to_stored_value()
+
         return StoredPlayer(
             id=None,
             first_name=(WebContext.form_data_to_str(data, 'first_name') or '').title(),
@@ -1110,10 +1140,7 @@ class PlayerAdminController(BaseEventAdminController):
             federation=WebContext.form_data_to_str(data, 'federation') or '',
             club=WebContext.form_data_to_str(data, 'club') or '',
             fixed=WebContext.form_data_to_int(data, 'fixed'),
-            plugin_data={
-                plugin_id: plugin_data_class.from_form_data(data).to_stored_value()
-                for plugin_id, plugin_data_class in Player.plugin_data_class_by_plugin_id().items()
-            },
+            plugin_data=plugin_data,
         )
 
     @post(
@@ -1135,12 +1162,11 @@ class PlayerAdminController(BaseEventAdminController):
         add_other = 'add_other' in data
         SessionPlayersAddOtherActive(request).set(add_other)
 
-        errors = self._validate_player_form_data(web_context, action, data)
-        if errors:
+        stored_player, errors = self._read_player_form_data(web_context, action, data)
+        if not stored_player:
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
             )
-        stored_player = self._stored_player_from_data(data)
         tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
         tournament = event.tournaments_by_id[tournament_id]
         player_id = event.add_player(stored_player, [tournament])
@@ -1185,22 +1211,27 @@ class PlayerAdminController(BaseEventAdminController):
         web_context: PlayerAdminWebContext,
         data: dict[str, str],
         action: FormAction,
-    ) -> Template:
+    ) -> Template | Redirect:
         request = web_context.request
         event = web_context.get_admin_event()
-        errors = self._validate_player_form_data(web_context, action, data)
-        if errors:
+        player = web_context.get_admin_player()
+        stored_player, errors = self._read_player_form_data(web_context, action, data)
+        if not stored_player:
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
             )
-        stored_player = self._stored_player_from_data(data)
+        stored_player = self._stored_player_from_data(data, player)
         tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
         tournament = event.tournaments_by_id[tournament_id]
-        player = web_context.get_admin_player()
         event.update_player(player, stored_player)
         previous_tournament = player.single_tournament
         if tournament.id != previous_tournament.id:
             event.move_player_to_tournament(player, tournament)
+
+        redirect_to = WebContext.form_data_to_str(data, 'redirect_to')
+        if redirect_to:
+            return Redirect(redirect_to, status_code=303)
+
         web_context = PlayerAdminWebContext(request, player.id, reload_event=True)
         return self._render_player_table_row(web_context)
 
@@ -1220,7 +1251,7 @@ class PlayerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         player_id: int,
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._update_player(
             PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
         )
@@ -1241,7 +1272,7 @@ class PlayerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         player_id: int,
-    ) -> Template:
+    ) -> Template | Redirect:
         return self._update_player(
             PlayerAdminWebContext(request, player_id), data, FormAction.UPDATE
         )
@@ -1273,6 +1304,7 @@ class PlayerAdminController(BaseEventAdminController):
         else:
             event.delete_player(player.id)
             deleted_player_id = player.id
+            plugin_manager.hook_for_event(event, 'on_player_deleted')(player=player)
         return self._render_player_table_row(
             web_context, deleted_player_id=deleted_player_id
         )
@@ -1364,6 +1396,11 @@ class PlayerAdminController(BaseEventAdminController):
 
         # If there aren't any pairings, then the round for the bye is the first round
         round_for_participation = tournament.current_round or 1
+        if result == Result.NO_RESULT and tournament.round_has_pairings(
+            round_for_participation
+        ):
+            # If returning to tournament and pairings for this round, then start setting removing ZPBs from the next round only
+            round_for_participation += 1
         new_byes = {
             round_: result
             for round_ in range(
@@ -1657,27 +1694,37 @@ class PlayerAdminController(BaseEventAdminController):
         used_columns: list[DatasheetColumn],
         content_by_column_id: dict[str, list[str]],
         overwrite_players: bool,
-    ) -> tuple[dict[int, StoredPlayer], dict[int, dict[str, str]]]:
+    ) -> tuple[dict[int, StoredPlayer], dict[int, dict[str, str]], set[int]]:
+        for column in used_columns:
+            column.update_from_used_columns(used_columns)
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
         data_source = web_context.admin_data_source
         unique_values_by_column_id: dict[str, list[str]] = defaultdict(list)
-        name_keys: list[tuple[str, str, date | None]] = []
-        if not overwrite_players:
-            for column in used_columns:
-                if column.is_informative or not column.is_unique:
+        check_duplicate_players: list[TournamentPlayer] = []
+        for player in event.tournament_players:
+            if player.tournament.id == tournament.id:
+                if overwrite_players:
                     continue
-                for player in tournament.tournament_players:
-                    unique_values_by_column_id[column.id].append(
-                        str(column.get_cell_content(player) or '')
-                    )
-            name_keys = [
-                (player.last_name, player.first_name, player.date_of_birth)
-                for player in tournament.tournament_players
-                if player.date_of_birth
-            ]
+            elif event.allow_multi_tournament_players:
+                continue
+            check_duplicate_players.append(player)
+        name_keys: list[tuple] = [
+            (player.last_name, player.first_name, player.date_of_birth)
+            for player in check_duplicate_players
+            if player.date_of_birth
+        ]
+        for column in used_columns:
+            if column.is_informative or not column.is_unique:
+                continue
+            for player in check_duplicate_players:
+                unique_values_by_column_id[column.id].append(
+                    str(column.get_cell_content(player) or '')
+                )
+
         stored_players_by_index: dict[int, StoredPlayer] = {}
         import_errors_by_index: dict[int, dict[str, str]] = defaultdict(dict)
+        duplicated_indexes: set[int] = set()
         row_count = len(content_by_column_id[used_columns[0].id])
         for index in range(row_count):
             stored_player = StoredPlayer(id=None, federation=event.federation)
@@ -1686,15 +1733,30 @@ class PlayerAdminController(BaseEventAdminController):
                     continue
                 value = content_by_column_id[column.id][index]
                 try:
-                    column.augment_stored_player_with_event(event, stored_player, value)
+                    column.augment_stored_player_with_tournament(
+                        tournament, stored_player, value
+                    )
                     if (
                         column.is_unique
                         and value
                         and value in unique_values_by_column_id[column.id]
                     ):
-                        raise SharlyChessException(
+                        duplicated_indexes.add(index)
+                        message = (
                             _(
-                                'A player with this value already exists in the tournament.'
+                                'A player with {column}=[{value}] already '
+                                'exists in tournament [{tournament}].'
+                            )
+                            if event.allow_multi_tournament_players
+                            else _(
+                                'A player with {column}=[{value}] already exists in the event.'
+                            )
+                        )
+                        raise SharlyChessException(
+                            message.format(
+                                column=column.id,
+                                value=value,
+                                tournament=tournament.name,
                             )
                         )
                 except SharlyChessException as error:
@@ -1706,16 +1768,23 @@ class PlayerAdminController(BaseEventAdminController):
             )
             if stored_player.date_of_birth:
                 if name_key in name_keys:
-                    import_errors_by_index[index]['last_name'] = _(
-                        'Player [{player}] already exists in the tournament.'
-                    ).format(
+                    duplicated_indexes.add(index)
+                    message = (
+                        _(
+                            'Player [{player}] already exists in tournament [{tournament}].'
+                        )
+                        if event.allow_multi_tournament_players
+                        else _('Player [{player}] already exists in the event.')
+                    )
+                    import_errors_by_index[index]['last_name'] = message.format(
                         player=' '.join(
                             [
                                 stored_player.last_name,
                                 stored_player.first_name or '',
                                 format_date(stored_player.date_of_birth),
                             ]
-                        )
+                        ),
+                        tournament=tournament.name,
                     )
             if index in import_errors_by_index:
                 continue
@@ -1754,10 +1823,12 @@ class PlayerAdminController(BaseEventAdminController):
                     if column.is_informative:
                         continue
                     value = content_by_column_id[column.id][index]
-                    column.augment_stored_player_with_event(event, stored_player, value)
+                    column.augment_stored_player_with_tournament(
+                        tournament, stored_player, value
+                    )
                 stored_players_by_index[index] = stored_player
 
-        return stored_players_by_index, import_errors_by_index
+        return stored_players_by_index, import_errors_by_index, duplicated_indexes
 
     @classmethod
     async def _render_players_import_diff_modal(
@@ -1776,6 +1847,7 @@ class PlayerAdminController(BaseEventAdminController):
         (
             stored_players_by_index,
             import_errors_by_index,
+            duplicated_indexes,
         ) = await cls._get_imported_stored_players(
             web_context, used_columns, content_by_column_id, overwrite_players
         )
@@ -1799,6 +1871,7 @@ class PlayerAdminController(BaseEventAdminController):
             'build_list_tooltip': cls._build_list_tooltip,
             'import_errors_by_index': import_errors_by_index,
             'data_source_players_by_index': data_source_players_by_index,
+            'duplicated_indexes': duplicated_indexes,
             'row_count': len(content_by_column_id[used_column_ids[0]]),
             'content_by_column_id': content_by_column_id,
             'file_path': WebContext.value_to_form_data(file_path),
@@ -1843,7 +1916,7 @@ class PlayerAdminController(BaseEventAdminController):
                         'An unexpected error occurred while reading '
                         'the CSV file. Consult the logs for more details.'
                     )
-                    logger.error(error)
+                    logger.exception(error)
                 errors['alert'] = message
         use_data_source = WebContext.form_data_to_bool(
             normalized_data, 'use_data_source'
@@ -1953,9 +2026,11 @@ class PlayerAdminController(BaseEventAdminController):
         used_columns = [
             column for column in columns if column.id in content_by_column_id
         ]
-        stored_players_by_index, __ = await self._get_imported_stored_players(
-            web_context, used_columns, content_by_column_id, overwrite_players
-        )
+        stored_players_by_index = (
+            await self._get_imported_stored_players(
+                web_context, used_columns, content_by_column_id, overwrite_players
+            )
+        )[0]
         stored_players = [
             stored_player
             for index, stored_player in stored_players_by_index.items()
@@ -2078,7 +2153,7 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/players-update/{event_uniq_id:str}/{data_source_id:str}',
+        path='/players-update/{event_uniq_id:str}/{data_source_id:str}/{tab:str}',
         name='admin-event-players-update',
         guards=[ActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
@@ -2090,7 +2165,8 @@ class PlayerAdminController(BaseEventAdminController):
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
         data_source_id: str,
-    ) -> Template:
+        tab: str,
+    ) -> Template | Redirect:
         web_context = PlayerAdminWebContext(request, data_source_id=data_source_id)
         event = web_context.get_admin_event()
         data_source = web_context.get_admin_data_source()
@@ -2134,11 +2210,13 @@ class PlayerAdminController(BaseEventAdminController):
                 if count
                 else _('No players updated.'),
             )
-        web_context = PlayerAdminWebContext(request, reload_event=True)
-        return self._render_players_tab(web_context)
+        redirect_url = request.app.route_reverse(
+            f'admin-event-{tab}-tab', event_uniq_id=event.uniq_id
+        )
+        return Redirect(redirect_url, status_code=303)
 
     @get(
-        path='/event-players-diff-modal/{event_uniq_id:str}/{data_source_id:str}',
+        path='/event-players-diff-modal/{event_uniq_id:str}/{data_source_id:str}/{tab:str}',
         name='admin-event-players-diff-modal',
         guards=[TournamentActionGuard(AuthAction.UPDATE_PLAYERS)],
     )
@@ -2146,6 +2224,7 @@ class PlayerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data_source_id: str,
+        tab: str,
         tournament_id: int | None = None,
     ) -> Template:
         web_context = PlayerAdminWebContext(
@@ -2182,6 +2261,7 @@ class PlayerAdminController(BaseEventAdminController):
             'updated_field_ids': updated_field_ids,
             'player_comparators': player_comparators,
             'update_enabled': bool(updated_field_ids),
+            'tab': tab,
         }
         return self._admin_base_event_render(template_context)
 

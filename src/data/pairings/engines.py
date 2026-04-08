@@ -40,7 +40,8 @@ class PairingEngine(ABC):
         """Generate a list of boards matching all the pairings of tournament
         *tournament* at round *at_round*.
         Bye players should not be taken into account.
-        If the pairing generation fails, raise a SharlyChessException."""
+        If the pairing generation fails, raise a SharlyChessException.
+        If pairing is impossible, return an empty list"""
 
     @abstractmethod
     def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
@@ -59,16 +60,22 @@ class PairingEngine(ABC):
         tournament: 'Tournament',
         round_: int,
         partial_pairings: bool = False,
-    ):
-        """Generate the pairings of the round *round_* for tournament *tournament*."""
+    ) -> str:
+        """Generate the pairings of the round *round_* for tournament *tournament*, returns an error message or an empty string on success."""
         if self.pairings_generation_disabled_message(tournament, round_):
             raise ValueError(
                 f'Pairings generation not allowed for round {round_} '
                 f'of tournament [{tournament.name}].'
             )
-        stored_boards = self._generate_stored_boards(
-            tournament, round_, partial_pairings
-        )
+        try:
+            stored_boards = self._generate_stored_boards(
+                tournament, round_, partial_pairings
+            )
+        except Exception as e:
+            logger.exception(e)
+            return _('An error occurred. Consult the logs for more details.')
+        if len(stored_boards) == 0:
+            return _('Pairing is not possible.')
         if self.reorder_boards:
             boards = [
                 Board(tournament, round_, stored_board)
@@ -78,6 +85,7 @@ class PairingEngine(ABC):
             for board in sorted(boards, reverse=True):
                 board.stored_board.index = available_indexes.pop(0)
         tournament.create_boards(stored_boards, round_, self.pab_result)
+        return ''
 
     def pairings_generation_disabled_message(
         self, tournament: 'Tournament', at_round: int
@@ -215,7 +223,7 @@ class BbpPairings(PairingEngine):
                     bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-output.txt',
                 )
             except PermissionError as e:
-                logger.error(
+                logger.exception(
                     'Error logging the BbpPairings input / output files: %s', e
                 )
             with open(pairings_file_path, encoding='utf-8') as pairing_file:
@@ -312,7 +320,7 @@ class BbpPairings(PairingEngine):
                     bbp_tmp_dir / f'{tournament.sanitized_name}-checklist-output.txt',
                 )
             except PermissionError as e:
-                logger.error(
+                logger.exception(
                     'Error logging the BbpPairings input / output files: %s', e
                 )
             with open(checklist_file_path, 'r', encoding='utf-8') as file:

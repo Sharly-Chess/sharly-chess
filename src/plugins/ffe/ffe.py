@@ -40,7 +40,6 @@ from plugins.ffe import migrations, PLUGIN_NAME, ffe_tie_breaks
 from plugins.ffe.ffe_background_uploader import (
     EventLoader,
     FfeBackgroundUploader,
-    FfeUploadStatus,
 )
 from plugins.ffe.ffe_data_sources import FfeLocalDataSource, FfeOnlineDataSource
 from plugins.ffe.ffe_database import FfeDatabase
@@ -62,15 +61,15 @@ from plugins.ffe.ffe_entity import (
     FfeLicencePlayersTabColumn,
 )
 from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
-from plugins.ffe.ffe_event_controller import (
-    FfeAdminEventController,
+from plugins.ffe.ffe_upload_controller import (
+    FfeUploadController,
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
     BasePapiTieBreak,
     PapiBuchholzTypeOption,
 )
-from plugins.ffe.ffe_tournament_controller import FfeAdminTournamentController
+from plugins.ffe.ffe_tournament_controller import FfeTournamentController
 from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
 from plugins.ffe.ffe_tournament_importers import (
     PapiJsonTournamentImporter,
@@ -94,8 +93,6 @@ from plugins.ffe.utils import (
     FFE_LEAGUES,
 )
 from plugins.ffe.utils import (
-    FFE_DEFAULT_UPLOAD_DELAY,
-    FFE_MIN_UPLOAD_DELAY,
     FfeEventPluginData,
     FfePlayerPluginData,
     FfeTournamentPluginData,
@@ -103,6 +100,8 @@ from plugins.ffe.utils import (
 from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
+from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
+from plugins.sce.sce_data import SCEPlayerSyncData
 from plugins.utils import (
     ExtraStatisticsSection,
     NavDataTransferItem,
@@ -115,7 +114,6 @@ from utils.enum import (
     PlayerRatingType,
     Result,
     TournamentRating,
-    FormAction,
 )
 from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
 from web.controllers.base_controller import BaseController, WebContext
@@ -191,8 +189,8 @@ class FfePlugin(Plugin):
         return migrations
 
     @property
-    def event_form_fields_template(self) -> str:
-        return '/ffe_event_form_fields.html'
+    def event_form_script_template(self) -> str:
+        return '/ffe_event_form_script.js'
 
     def used_by_stored_tournament(
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
@@ -223,15 +221,15 @@ class FfePlugin(Plugin):
     @property
     def controllers(self) -> list[type[BaseController]]:
         return [
-            FfeAdminEventController,
-            FfeAdminTournamentController,
+            FfeUploadController,
+            FfeTournamentController,
         ]
 
     @hookimpl
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
             'ffe_auth_valid': '',
-            'FFE_DEFAULT_UPLOAD_DELAY': FFE_DEFAULT_UPLOAD_DELAY,
+            'ffe_utils': FFEUtils,
         }
 
     # ---------------------------------------------------------------------------------
@@ -294,9 +292,6 @@ class FfePlugin(Plugin):
     @hookimpl
     def validate_player_form_fields(
         self,
-        action: FormAction,
-        tournament: Optional['Tournament'],
-        player: Optional['Player'],
         data: dict[str, str],
         errors: dict[str, str],
     ):
@@ -311,28 +306,24 @@ class FfePlugin(Plugin):
         except ValueError:
             errors[field] = f'Invalid FFE licence [{data[field]}].'
 
-        ffe_licence_number: str | None = WebContext.form_data_to_str(
+        ffe_licence_number = WebContext.form_data_to_str(
             data, field := 'ffe_licence_number'
         )
-        if ffe_licence_number:
-            if not PlayerFFELicence.validate(ffe_licence_number):
-                errors[field] = _(
-                    'Invalid FFE licence number [{ffe_licence_number}].'
-                ).format(ffe_licence_number=data[field])
-            elif tournament:
-                for tournament_player in tournament.tournament_players:
-                    if player and tournament_player.id == player.id:
-                        continue
-                    plugin_data = FFEUtils.get_player_plugin_data(tournament_player)
-                    if ffe_licence_number == plugin_data.ffe_licence_number:
-                        errors[field] = _(
-                            'Player with FFE licence number '
-                            '[{ffe_licence_number}] already plays '
-                            'tournament [{tournament}].'
-                        ).format(
-                            ffe_licence_number=ffe_licence_number,
-                            tournament=tournament.name,
-                        )
+        if ffe_licence_number and not PlayerFFELicence.validate(ffe_licence_number):
+            errors[field] = _(
+                'Invalid FFE licence number [{ffe_licence_number}].'
+            ).format(ffe_licence_number=ffe_licence_number)
+
+    @hookimpl
+    def are_players_duplicates(
+        self, stored_player: StoredPlayer, player: Player
+    ) -> bool:
+        licence_number = self.get_data(stored_player.plugin_data, 'ffe_licence_number')
+        return (
+            licence_number
+            and FFEUtils.get_player_plugin_data(player).ffe_licence_number
+            == licence_number
+        )
 
     @hookimpl
     async def augment_player_after_search(
@@ -560,27 +551,6 @@ class FfePlugin(Plugin):
         return self.id, FfeEventPluginData
 
     @hookimpl
-    def validate_event_form_fields(
-        self,
-        action: str,
-        event: 'Event | None',
-        data: dict[str, str],
-        errors: dict[str, str],
-    ):
-        federation = WebContext.form_data_to_str(data, field := 'federation')
-        if federation != 'FRA':
-            # We only validate FFE fields for the FRA federation
-            return
-
-        ffe_auto_upload_delay = WebContext.form_data_to_int(
-            data, field := 'ffe_auto_upload_delay'
-        )
-        if ffe_auto_upload_delay and ffe_auto_upload_delay < FFE_MIN_UPLOAD_DELAY:
-            errors[field] = _(
-                'The delay must be at least {min_delay} minutes to avoid overloading the FFE server.'
-            ).format(min_delay=FFE_MIN_UPLOAD_DELAY)
-
-    @hookimpl
     def get_default_prize_currency(self) -> str:
         return 'EUR'
 
@@ -611,33 +581,11 @@ class FfePlugin(Plugin):
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
     ) -> tuple[str, dict[str, Any]]:
-        ffe_auto_upload_options: dict[str, str] = {
-            '': '',
-            WebContext.value_to_form_data(False): _('Disabled'),
-        } | {
-            WebContext.value_to_form_data(True): _('Enabled'),
-        }
-        event_auto_upload = FFEUtils.get_event_plugin_data(event).auto_upload
-        ffe_auto_upload_options[''] = _('Use default - {option}').format(
-            option=ffe_auto_upload_options[
-                WebContext.value_to_form_data(event_auto_upload)
-            ]
-        )
-
-        return (
-            '/ffe_tournament_form_fields.html',
-            {
-                'ffe_auto_upload_options': ffe_auto_upload_options,
-            },
-        )
+        return '/ffe_tournament_form_fields.html', {}
 
     @hookimpl
     def validate_tournament_form_fields(
-        self,
-        action: str,
-        tournament: 'Tournament | None',
-        data: dict[str, str],
-        errors: dict[str, str],
+        self, data: dict[str, str], errors: dict[str, str]
     ):
         try:
             WebContext.form_data_to_int(data, 'ffe_id')
@@ -708,25 +656,16 @@ class FfePlugin(Plugin):
     def get_nav_data_transfer_items(
         self, event: 'Event'
     ) -> Iterable[NavDataTransferItem]:
-        has_upload_error = False
-        statuses = FfeBackgroundUploader.upload_status_messages
-        tournaments = event.tournaments
-        for tournament in tournaments:
-            result = statuses.get(
-                FfeBackgroundUploader.result_id(event.uniq_id, tournament.id),
-                None,
-            )
-            if result and result.status == FfeUploadStatus.ERROR:
-                has_upload_error = True
-                break
-
         return [
             NavDataTransferItem(
                 key='ffe_upload',
                 title=_('FFE'),
                 icon_path='/images/ffe.png',
                 modal_route_name='ffe-upload-modal',
-                has_upload_error=has_upload_error,
+                has_upload_error=any(
+                    FFEUtils.get_tournament_plugin_data(tournament).upload_failure_id
+                    for tournament in event.tournaments
+                ),
             )
         ]
 
@@ -920,3 +859,53 @@ class FfePlugin(Plugin):
         if title != FFEArbiterTitle.NONE:
             return title.short_name
         return None
+
+    # ---------------------------------------------------------------------------------
+    # Plugin hooks
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def augment_sce_player_sync_data_from_player(
+        self,
+        player: TournamentPlayer,
+        sync_data: SCEPlayerSyncData,
+    ):
+        sync_data.national_id = FFEUtils.get_player_plugin_data(
+            player
+        ).ffe_licence_number
+
+    @hookimpl
+    def augment_stored_player_from_player_sync_data(
+        self,
+        stored_player: StoredPlayer,
+        sync_data: SCEPlayerSyncData,
+    ):
+        plugin_data = FfePlayerPluginData.from_stored_value(
+            stored_player.plugin_data.get(PLUGIN_NAME, {})
+        )
+        plugin_data.ffe_licence_number = sync_data.national_id
+        if plugin_data.ffe_licence == PlayerFFELicence.NONE and sync_data.national_id:
+            plugin_data.ffe_licence = PlayerFFELicence.N
+        stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+
+    @hookimpl
+    def get_sce_national_id_player_field_label(self) -> str | None:
+        return _('FFE Licence no. *** LICENCE NUMBER')
+
+    @hookimpl
+    def add_sce_upload_player_custom_fields(
+        self, custom_fields: dict[str, Any], player: TournamentPlayer
+    ):
+        plugin_data = FFEUtils.get_player_plugin_data(player)
+        if plugin_data.league:
+            custom_fields['ffe_league'] = plugin_data.league
+
+    @hookimpl
+    def alter_sce_upload_player_columns(self, columns: list[SCEUploadColumn]):
+        league = SCEUploadColumn('ffe_league', _('League'), is_custom=True)
+        PluginUtils.insert_on_attr_equals(columns, league, 'id', 'federation')
+
+    @hookimpl
+    def alter_sce_upload_ranking_columns(self, columns: list[SCEUploadColumn]):
+        league = SCEUploadColumn('ffe_league', _('League'), is_custom=True)
+        PluginUtils.insert_on_attr_equals(columns, league, 'id', 'federation')

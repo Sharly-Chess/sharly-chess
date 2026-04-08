@@ -27,7 +27,9 @@
     {% endif %}
     {% if client.can_manage_events %}
         <div class="d-flex gap-2 ms-auto align-items-center">
-            {% include 'create_event_button.html' %}
+            {% with is_dropdown = true %}
+                {% include 'create_event_button.html' %}
+            {% endwith %}
         </div>
         <script>
             preparePrintModal()

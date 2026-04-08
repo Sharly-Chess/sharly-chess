@@ -118,7 +118,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
                         self.log_prefix + 'Downloaded %d / %d bytes.', received, total
                     )
         except ConnectionError as ex:
-            logger.error(
+            logger.exception(
                 self.log_prefix + 'Could not download [%s]: %s.',
                 FFE_ZIP_URL,
                 ex,
@@ -133,7 +133,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
             with zipfile.ZipFile(zip_target, 'r') as zf:
                 zf.extractall(source_file_dir, pwd=credentials.password.encode())
         except Exception as ex:
-            logger.error(self.log_prefix + 'Could not extract zip archive: %s.', ex)
+            logger.exception(self.log_prefix + 'Could not extract zip archive: %s.', ex)
             return False
         finally:
             zip_target.unlink(missing_ok=True)

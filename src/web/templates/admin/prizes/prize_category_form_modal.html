@@ -23,6 +23,7 @@
             {% endif %}
             <form
                 id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                 {% if action == 'update' %}
                     hx-patch="{{ url_for(
                         'admin-prize-category-update',

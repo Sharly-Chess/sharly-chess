@@ -1,0 +1,37 @@
+{% extends '/common/alert.html' %}
+
+{% block type %}{{ sce_event_status.alert_type }}{% endblock %}
+
+{% block alert_content %}
+    <div class="align-self-center"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <div class="flex-grow-1 align-self-center">
+        {{ sce_event_status.alert_message }}
+    </div>
+    {% if sce_event_status.retry_button or sce_event_status.oauth_button %}
+        <div class="align-self-center">
+            <button
+                type="button"
+                class="btn btn-sm btn-outline-dark"
+                hx-get="{{ url_for(
+                    'sce-sync-modal'
+                    if sce_event_status.retry_button else
+                    'sce-oauth-event-connect',
+                    event_uniq_id=admin_event.uniq_id
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% if sce_event_status.retry_button %}
+                    <i class="bi-arrow-clockwise pe-1"></i>
+                    {{ _('Retry') }}
+                {% else %}
+                    <i class="bi-lock-fill pe-1"></i>
+                    {{ _('Authorisation') }}
+                {% endif %}
+            </button>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block remove_button %}
+{% endblock %}

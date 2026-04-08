@@ -208,7 +208,7 @@
             $('body').attr('data-bs-theme', new_theme);
         }
     </script>
-    <!-- end background_script() -->
+    <!-- end theme_script() -->
 {% endmacro %}
 
 {% macro copyright_script(show) %}
@@ -263,5 +263,18 @@
         {{ content|safe }}
     {% else %}
         {{ content }}
+    {% endif %}
+{% endmacro %}
+
+{% macro column_footer(column, objects) %}
+    {% if column.footer_template %}
+        {% include column.footer_template %}
+    {% else %}
+        {% set content = column.get_footer_content(objects) %}
+        {% if column.is_footer_content_safe %}
+            {{ content|safe }}
+        {% else %}
+            {{ content }}
+        {% endif %}
     {% endif %}
 {% endmacro %}

@@ -1,8 +1,16 @@
-<div class="modal-dialog modal-dialog-scrollable admin-event-edit-modal">
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{% set event_plugin_data = admin_event.plugin_data.chess_results %}
+
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 800px);"
+>
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('Upload tournaments to Chess-Results.com') }}
+                {{ _('Chess-Results.com upload') }}
             </h2>
         </div>
         <div class="modal-body">
@@ -11,36 +19,53 @@
             >
                 <thead>
                     <th>
+                        <div
+                            class="form-check blue-checkbox form-switch d-inline-block"
+                            {{ macros.tooltip_attributes('', _(
+                                'Upload automatically every %(delay)d minutes.',
+                                delay=CHESS_RESULTS_UPLOAD_DELAY,
+                            )) }}
+                        >
+                            <input
+                                name="auto_upload"
+                                class="form-check-input blue-checkbox"
+                                type="checkbox"
+                                hx-patch="{{ url_for(
+                                    'chess-results-update-event-auto-upload',
+                                    event_uniq_id=admin_event.uniq_id
+                                ) }}"
+                                value="on"
+                                {% if event_plugin_data.auto_upload %}
+                                    checked
+                                {% endif %}
+                            />
+                            <i class="bi-arrow-repeat"></i>
+                        </div>
+                    </th>
+                    <th>
                         {{ _('Tournament') }}
                     </th>
-                    <th>
-                        {{ _('Mode') }}
-                    </th>
-                    <th>
-                        {{ _('Status') }}
+                    <th class="text-center">
+                        {{ _('Statuses') }}
                     </th>
                     <th class="text-center text-nowrap">
                         {{ _('Last upload') }}
                     </th>
                     <th></th>
-                    <th class="text-center">
-                        {{ _('Site') }}
-                    </th>
                 </thead>
                 {% include 'chess_results_upload_results.html' %}
             </table>
 
-            <div class="text-center mt-4 mb-1">
+            <div class="text-center mt-3 mb-1">
                 <button
                     type="button"
                     hx-post="{{ url_for('chess-results-upload', event_uniq_id=admin_event.uniq_id) }}"
                     hx-target="#upload-results"
                     hx-swap="outerHTML"
                     class="text-nowrap white btn btn-outline-primary"
-                    hx-on::before-request="$('#upload-results .status').addClass('invisible')"
                 >
                     <i class="bi bi-cloud-arrow-up-fill pe-1"></i>
-                    {{ _('Upload tournaments now') }}
+                    {{ _('Upload all tournaments') }}
                 </button>
             </div>
         </div>

@@ -61,6 +61,7 @@ from plugins.fra_schools.utils import (
 )
 from plugins.hookspec import ExtraStatisticsSection, hookimpl
 from plugins.manager import Path
+from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.utils import (
     Plugin,
     PluginData,
@@ -446,3 +447,35 @@ class FRASchoolsPlugin(Plugin):
         stored_player.plugin_data[PLUGIN_NAME] = FRASchoolsPlayerPluginData(
             school_id
         ).to_stored_value()
+
+    # ---------------------------------------------------------------------------------
+    # Plugin hooks
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl
+    def add_sce_upload_player_custom_fields(
+        self, custom_fields: dict[str, Any], player: TournamentPlayer
+    ):
+        school = FRASchoolsUtils.get_player_school(player)
+        if school:
+            custom_fields['fra_school'] = school.full_name_without_code
+
+    @staticmethod
+    def _replace_sce_upload_origin_columns(columns: list[SCEUploadColumn]):
+        school = SCEUploadColumn('fra_school', _('French school'), is_custom=True)
+        PluginUtils.insert_on_attr_equals(columns, school, 'id', 'federation')
+        new_columns = [
+            column
+            for column in columns
+            if column.id not in ('federation', 'ffe_league', 'club')
+        ]
+        columns.clear()
+        columns.extend(new_columns)
+
+    @hookimpl(trylast=True)
+    def alter_sce_upload_player_columns(self, columns: list[SCEUploadColumn]):
+        self._replace_sce_upload_origin_columns(columns)
+
+    @hookimpl(trylast=True)
+    def alter_sce_upload_ranking_columns(self, columns: list[SCEUploadColumn]):
+        self._replace_sce_upload_origin_columns(columns)

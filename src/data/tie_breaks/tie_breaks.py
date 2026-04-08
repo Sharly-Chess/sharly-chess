@@ -7,7 +7,9 @@ from dataclasses import dataclass
 from decimal import Decimal
 from functools import cached_property
 from math import isclose
+from statistics import fmean
 from typing import TYPE_CHECKING, SupportsFloat, Any
+
 from common.i18n import _, ngettext
 from data.pairing import Pairing
 from data.pairings import PairingSystem
@@ -104,7 +106,11 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         return True
 
     def compute_all_player_values(
-        self, tournament: 'Tournament', tie_break_index: int, *, after_round: int
+        self,
+        tournament: 'Tournament',
+        tie_break_index: int,
+        *,
+        after_round: int,
     ) -> dict[int, int]:
         """Computes the values of all the players in a dict[player_id, value] format."""
         raise NotImplementedError(
@@ -1594,7 +1600,11 @@ class DirectEncounterTieBreak(TieBreak):
         return False
 
     def compute_all_player_values(
-        self, tournament: 'Tournament', tie_break_index: int, *, after_round: int
+        self,
+        tournament: 'Tournament',
+        tie_break_index: int,
+        *,
+        after_round: int,
     ) -> dict[int, int]:
         """Form groups of tied players. Amongst each group,
         attribute (if possible) an integer value from 0 to len(group).
@@ -1713,17 +1723,23 @@ class DirectEncounterTieBreak(TieBreak):
         """Compute the min and max possible points a tournament_player
         can achieve against other players of the group."""
         group_player_ids = tuple(
-            tournament_player.id for tournament_player in player_group
+            tournament_player.id
+            for tournament_player in player_group
+            if tournament_player.id != player.id
         )
-        group_pairings = [
-            pairing
-            for round_, pairing in player.pairings_by_round.items()
-            if round_ <= after_round and pairing.opponent_id in group_player_ids
-        ]
-        not_played = len(player_group) - len(group_pairings) - 1
-        group_points = sum(
-            pairing.result.points(point_values) for pairing in group_pairings
-        )
+        group_pairings_by_opponent_id: dict[int, list[float]] = defaultdict(list)
+        for round_, pairing in player.pairings_by_round.items():
+            if round_ <= after_round and pairing.opponent_id in group_player_ids:
+                group_pairings_by_opponent_id[pairing.opponent_id].append(
+                    pairing.result.points(point_values)
+                )
+        group_points: float = 0.0
+        not_played: int = 0
+        for opponent_id in group_player_ids:
+            if group_pairings_by_opponent_id[opponent_id]:
+                group_points += float(fmean(group_pairings_by_opponent_id[opponent_id]))
+            else:
+                not_played += 1
         return (
             group_points + Result.LOSS.points(point_values) * not_played,
             group_points + Result.WIN.points(point_values) * not_played,

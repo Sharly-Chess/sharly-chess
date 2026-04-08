@@ -35,18 +35,15 @@ class ScreenUserController(BaseScreenUserController):
         tournament: Tournament = screen_set.tournament
         if (
             max(
-                tournament.last_update or datetime.min,
-                tournament.last_player_update or datetime.min,
+                tournament.last_update,
+                tournament.last_player_update,
             )
             > date
         ):
             return True
         match screen_set.type:
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
-                if (
-                    tournament.last_pairing_update
-                    and tournament.last_pairing_update > date
-                ):
+                if tournament.last_pairing_update > date:
                     return True
             case ScreenType.PLAYERS:
                 pass
@@ -62,16 +59,14 @@ class ScreenUserController(BaseScreenUserController):
         date: float,
     ) -> bool:
         date_dt = datetime.fromtimestamp(date)
-        if web_context.screen:
-            assert web_context.screen.event is not None
-            if web_context.screen.event.last_update > date_dt:
+        screen = web_context.screen
+        if screen:
+            event = screen.event
+            if event.last_update > date_dt:
                 return True
-            if (
-                web_context.screen.last_update
-                and web_context.screen.last_update > date_dt
-            ):
+            if screen.last_update > date_dt:
                 return True
-            match web_context.screen.type:
+            match screen.type:
                 case ScreenType.IMAGE:
                     pass
                 case (
@@ -80,40 +75,35 @@ class ScreenUserController(BaseScreenUserController):
                     | ScreenType.PLAYERS
                     | ScreenType.RANKING
                 ):
-                    for screen_set in web_context.screen.screen_sets:
+                    for screen_set in screen.screen_sets:
                         if cls._user_screen_set_refresh_needed(screen_set, date_dt):
                             return True
                 case ScreenType.RESULTS:
-                    assert web_context.screen.event is not None
                     results_tournament_ids: list[int] = (
-                        web_context.screen.results_tournament_ids
-                        if web_context.screen.results_tournament_ids
-                        else list(web_context.screen.event.tournaments_by_id.keys())
+                        screen.results_tournament_ids
+                        if screen.results_tournament_ids
+                        else list(event.tournaments_by_id.keys())
                     )
                     for tournament_id in results_tournament_ids:
                         with suppress(KeyError):
-                            tournament: Tournament = (
-                                web_context.screen.event.tournaments_by_id[
-                                    tournament_id
-                                ]
-                            )
+                            tournament = event.tournaments_by_id[tournament_id]
                             if (
                                 max(
-                                    tournament.last_update or datetime.min,
-                                    tournament.last_pairing_update or datetime.min,
+                                    tournament.last_update,
+                                    tournament.last_pairing_update,
                                 )
                                 > date_dt
                             ):
                                 return True
                 case _:
-                    raise ValueError(f'type={web_context.screen.type}')
+                    raise ValueError(f'type={screen.type}')
         elif isinstance(web_context, BasicScreenOrFamilyUserWebContext):
-            assert web_context.family is not None
-            assert web_context.family.event is not None
+            family = web_context.family
+            assert family is not None
             if (
                 max(
-                    web_context.family.event.last_update,
-                    web_context.family.last_update or datetime.min,
+                    family.event.last_update,
+                    family.last_update,
                 )
                 > date_dt
             ):

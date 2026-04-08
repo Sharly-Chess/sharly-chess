@@ -21,7 +21,11 @@
                 <button
                     class="dropdown-item text-nowrap"
                     {% if client.can_publish_results %}
-                        hx-post="{{ url_for('chess-results-upload-single-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                        hx-post="{{ url_for(
+                            'chess-results-upload-tournament-from-card',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=tournament.id
+                        ) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                     {% else %}

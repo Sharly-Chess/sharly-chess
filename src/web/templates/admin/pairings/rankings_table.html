@@ -61,7 +61,7 @@
         {# ---- Create a tbody for each point group for nice sortable behaviour ---- #}
         {% set ns = namespace(current_key=None) %}
         {% for tournament_player in admin_tournament.tournament_players_by_rank.values() %}
-        {% set group_key = tournament_player %}
+        {% set group_key = tournament_player.before_manual_rank_key %}
         {% set no_played_games_class = '' if tournament_player.has_played_games else 'text-warning' %}
         {% set row_class='even' if loop.index is even else 'odd' %}
 

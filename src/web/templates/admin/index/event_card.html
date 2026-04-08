@@ -8,9 +8,16 @@
     {% if not hide_public_status %}
         {{ macros.event_visibility_icon(event, 'pe-1') }}
     {% endif %}
-    <span class="fw-bold">
-        {{ format_date_range(event.start_date, event.stop_date) }}
-    </span>
+    {% if event.tournament_count %}
+        <span class="fw-bold">
+            {{ format_date_range(event.start_date, event.stop_date) }}
+        </span>
+    {% else %}
+        <span class="fst-italic text-secondary">
+            {{ format_date_range(event.start_date, event.stop_date) }}
+            ({{ _('default') }})
+        </span>
+    {% endif %}
     {% if not event.are_all_plugins_enabled %}
         <i
             class="bi-exclamation-triangle-fill text-danger ps-1"

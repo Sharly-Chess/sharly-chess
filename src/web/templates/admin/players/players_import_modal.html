@@ -11,6 +11,7 @@
         <div class="modal-body">
             <form
                 id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                 hx-post="{{ url_for(
                     'players-import-diff-modal',
                     event_uniq_id=admin_event.uniq_id,

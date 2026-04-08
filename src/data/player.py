@@ -46,6 +46,10 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
+MIN_YOB = 1900
+MAX_YOB = date.today().year
+
+
 class Player:
     def __init__(
         self,
@@ -289,17 +293,17 @@ class Player:
     @property
     def not_paired_str(self) -> str:
         return (
-            _('Unpaired *** FEMALE')
-            if self.gender == PlayerGender.FEMALE
-            else _('Unpaired *** MALE')
+            _('Unpaired *** WOMAN')
+            if self.gender == PlayerGender.WOMAN
+            else _('Unpaired *** MAN')
         )
 
     @property
     def exempt_str(self) -> str:
         return (
-            _('Exempt *** FEMALE')
-            if self.gender == PlayerGender.FEMALE
-            else _('Exempt *** MALE')
+            _('Exempt *** WOMAN')
+            if self.gender == PlayerGender.WOMAN
+            else _('Exempt *** MAN')
         )
 
 
@@ -1107,10 +1111,10 @@ class TournamentPlayer(Player):
     def check_in_status(self) -> CheckInStatus:
         if not self.tournament.check_in_open:
             return CheckInStatus.CHECK_IN_CLOSED
-        if self.check_in:
-            return CheckInStatus.CHECKED_IN
         if self.pairings[self.tournament.current_round + 1].next_round_bye:
             return CheckInStatus.NEXT_ROUND_BYE
+        if self.check_in:
+            return CheckInStatus.CHECKED_IN
         return CheckInStatus.NOT_CHECKED_IN
 
     @cached_property

@@ -10,6 +10,8 @@
                 hx-on::after-request="window.scrollTo(0, 0)"
                 {% if admin_round <= 1 %}
                     disabled
+                {% else %}
+                    hx-trigger="click, SC_Ctrl_Shift_ArrowLeft from:body"
                 {% endif %}
             >
                 <i class="bi bi-skip-backward-fill position-relative" style="top: 2px;"></i>
@@ -26,6 +28,8 @@
                 hx-on::after-request="window.scrollTo(0, 0)"
                 {% if admin_round <= 1 %}
                     disabled
+                {% else %}
+                    hx-trigger="click, SC_Shift_ArrowLeft from:body"
                 {% endif %}
             >
                 <i class="bi bi-play-fill position-relative" style="top: 2px;"></i>
@@ -74,6 +78,8 @@
                 hx-on::after-request="window.scrollTo(0, 0)"
                 {% if display_rankings or (admin_round >= admin_tournament.rounds and not admin_tournament.finished) %}
                     disabled
+                {% else %}
+                    hx-trigger="click, SC_Shift_ArrowRight from:body"
                 {% endif %}
             >
                 <i class="bi-play-fill position-relative" style="top: 2px;"></i>
@@ -93,6 +99,8 @@
                 hx-on::after-request="window.scrollTo(0, 0)"
                 {% if display_rankings or (admin_round >= admin_tournament.current_round and not admin_tournament.finished) %}
                     disabled
+                {% else %}
+                    hx-trigger="click, SC_Ctrl_Shift_ArrowRight from:body"
                 {% endif %}
             >
                 <i class="bi bi-fast-forward-fill position-relative" style="top: 2px;"></i>
@@ -101,22 +109,19 @@
     </div>
 
     <div class="d-inline-flex gap-1 {{ 'd-none' if tournament_options|length <= 1 else '' }}">
-        <span {{ macros.tooltip_attributes('info', _('Previous tournament'), 'top') }}>
+        {% if prev_tournament_id %}
             <button
-                class="btn btn-outline-primary text-nowrap"
+                class="d-none"
+                hx-trigger="SC_Shift_ArrowUp from:body"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals='{"tournament_id": "{{ prev_tournament_id }}"}'
                 hx-target="body"
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
                 hx-on::after-request="window.scrollTo(0, 0)"
-                {% if admin_tournament_id == tournament_options.keys()|list|first %}
-                    disabled
-                {% endif %}
             >
-                <i class="bi bi-caret-left-fill position-relative" style="top: 2px;"></i>
             </button>
-        </span>
+        {% endif %}
         <select
             name="tournament_id"
             class="form-select"
@@ -137,22 +142,19 @@
                 </option>
             {% endfor %}
         </select>
-        <span {{ macros.tooltip_attributes('info', _('Next tournament'), 'top') }}>
+        {% if next_tournament_id %}
             <button
-                class="btn btn-outline-primary text-nowrap"
+                class="d-none"
+                hx-trigger="SC_Shift_ArrowDown from:body"
                 hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id) }}"
                 hx-vals='{"tournament_id": "{{ next_tournament_id }}"}'
                 hx-target="body"
                 hx-replace-url="true"
                 hx-indicator="#please-wait"
                 hx-on::after-request="window.scrollTo(0, 0)"
-                {% if admin_tournament_id == tournament_options.keys()|list|last %}
-                    disabled
-                {% endif %}
             >
-                <i class="bi bi-caret-right-fill position-relative" style="top: 2px;"></i>
             </button>
-        </span>
+        {% endif %}
     </div>
 </div>
 <script>

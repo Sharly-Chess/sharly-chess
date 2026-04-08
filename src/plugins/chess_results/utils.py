@@ -18,9 +18,24 @@ from common import DEVEL_ENV, SharlyChessException
 from common.logger import get_logger
 from data.event import Event
 from data.tournament import Tournament
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.chess_results import PLUGIN_NAME, PLUGIN_DIR
+from plugins.chess_results.chess_results_upload_status import (
+    CRUploadStatus,
+    FailureCRUploadStatus,
+    NetworkFailureCRUploadStatus,
+    UnexpectedFailureCRUploadStatus,
+    NeverUploadedCRUploadStatus,
+    ModifiedCRUploadStatus,
+    UpToDateCRUploadStatus,
+    OngoingCRUploadStatus,
+    PendingCRUploadStatus,
+    FinishedFailureCRUploadStatus,
+)
 from plugins.utils import PluginData, PluginUtils
+from utils.date_time import format_datetime
+from utils.entity import EntityManager
 from web.controllers.base_controller import WebContext
 
 
@@ -28,8 +43,7 @@ logger: Logger = get_logger()
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
-CHESS_RESULTS_MIN_UPLOAD_DELAY = 3
-CHESS_RESULTS_DEFAULT_UPLOAD_DELAY = 3
+CHESS_RESULTS_UPLOAD_DELAY = 3
 CHESS_RESULTS_EPOCH = datetime(2000, 1, 1)
 
 
@@ -88,21 +102,12 @@ class ChessResultsCredentials:
             )
 
 
-class ChessResultsUtils:
+class CRUtils:
     @classmethod
     def resolve_auto_upload(cls, tournament: Tournament) -> bool:
-        tournament_plugin_data = cls.get_tournament_plugin_data(tournament)
-        if tournament_plugin_data.auto_upload is not None:
-            return tournament_plugin_data.auto_upload
-        event_plugin_data = cls.get_event_plugin_data(tournament.event)
-        return event_plugin_data.auto_upload
-
-    @classmethod
-    def resolve_auto_upload_delay(cls, event: Event) -> int:
-        plugin_data = cls.get_event_plugin_data(event)
-        if plugin_data.auto_upload_delay is not None:
-            return plugin_data.auto_upload_delay
-        return CHESS_RESULTS_DEFAULT_UPLOAD_DELAY
+        if not cls.get_event_plugin_data(tournament.event).auto_upload:
+            return False
+        return cls.get_tournament_plugin_data(tournament).auto_upload
 
     @classmethod
     def resolve_remark(cls, tournament: Tournament) -> str | None:
@@ -151,18 +156,6 @@ class ChessResultsUtils:
         encrypted_bytes = encryptor.update(padded_data) + encryptor.finalize()
         return encrypted_bytes.hex().upper()
 
-    @classmethod
-    def get_connection_parameters(cls, tournament: Tournament) -> dict[str, str]:
-        """Gets the parameters needed to manage a tournament on Chess-Results.com."""
-
-        plugin_data = cls.get_tournament_plugin_data(tournament)
-        tnr = plugin_data.tnr
-        creator_id = plugin_data.creator_id or ''
-        return {
-            'tnr_sec': cls.encrypt(str(tnr)),
-            'creator_id_sec': cls.encrypt(creator_id),
-        }
-
     CREDENTIALS_FILE: Path = PLUGIN_DIR / '.credentials'
 
     @classmethod
@@ -186,8 +179,99 @@ class ChessResultsUtils:
                 )
             )
 
+    @classmethod
+    def tournament_public_url(cls, tournament: Tournament) -> str:
+        tnr = cls.get_tournament_plugin_data(tournament).tnr
+        return f'https://chess-results.com/tnr{tnr}.aspx'
 
-ChessResultsUtils.load_credentials()
+    @classmethod
+    def tournament_private_url(cls, tournament: Tournament) -> str:
+        plugin_data = cls.get_tournament_plugin_data(tournament)
+        tnr = plugin_data.tnr
+        tnr_sec = cls.encrypt(str(tnr))
+        creator_id_sec = cls.encrypt(plugin_data.creator_id or '')
+        return (
+            f'https://chess-results.com/Stammdaten.aspx?&art=1&lan=1&tabkey=26&'
+            f'key1={tnr}&luser_sec={creator_id_sec}&tnr_sec={tnr_sec}'
+        )
+
+    @staticmethod
+    def update_tournament_plugin_data(
+        tournament: Tournament,
+        plugin_data: 'ChessResultsTournamentPluginData',
+    ):
+        tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
+            plugin_data.to_stored_value()
+        )
+        tournament.plugin_data[PLUGIN_NAME] = plugin_data
+        with EventDatabase(tournament.event.uniq_id, write=True) as database:
+            database.execute(
+                'UPDATE tournament SET plugin_data = '
+                f"json_set(plugin_data,'$.{PLUGIN_NAME}', json(?)) WHERE id = ?",
+                (json.dumps(plugin_data.to_stored_value()), tournament.id),
+            )
+
+    @staticmethod
+    def update_event_plugin_data(
+        event: Event,
+        plugin_data: 'ChessResultsEventPluginData',
+    ):
+        event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+        event.plugin_data[PLUGIN_NAME] = plugin_data
+        with EventDatabase(event.uniq_id, True) as database:
+            database.execute(
+                'UPDATE info SET plugin_data = '
+                f"json_set(plugin_data,'$.{PLUGIN_NAME}', json(?))",
+                (json.dumps(plugin_data.to_stored_value()),),
+            )
+
+    @classmethod
+    def resolve_tournament_upload_statuses(
+        cls, tournament: Tournament
+    ) -> list[CRUploadStatus]:
+        from plugins.chess_results.chess_results_background_uploader import (
+            CRBackgroundUploader,
+        )
+
+        plugin_data = cls.get_tournament_plugin_data(tournament)
+        statuses: list[CRUploadStatus] = []
+
+        # Last upload failure
+        if plugin_data.upload_failure_id:
+            status = CRUploadFailureStatusManager().get_object(
+                plugin_data.upload_failure_id
+            )
+            statuses.append(status)
+
+        is_modified = CRBackgroundUploader.chess_results_upload_needed(tournament)
+        # Current data status
+        if not plugin_data.last_upload_at:
+            statuses.append(NeverUploadedCRUploadStatus())
+        elif is_modified:
+            statuses.append(ModifiedCRUploadStatus())
+        else:
+            statuses.append(UpToDateCRUploadStatus())
+
+        # Next upload status
+        if CRBackgroundUploader.is_upload_ongoing(tournament):
+            statuses.append(OngoingCRUploadStatus())
+        elif CRBackgroundUploader.is_upload_queued(tournament) or (
+            CRBackgroundUploader.is_upload_scheduled(tournament) and is_modified
+        ):
+            statuses.append(PendingCRUploadStatus())
+        return statuses
+
+
+CRUtils.load_credentials()
+
+
+class CRUploadFailureStatusManager(EntityManager[FailureCRUploadStatus]):
+    def entity_types(self) -> list[type[FailureCRUploadStatus]]:
+        return [
+            NetworkFailureCRUploadStatus,
+            UnexpectedFailureCRUploadStatus,
+            FinishedFailureCRUploadStatus,
+        ]
 
 
 @dataclass
@@ -226,18 +310,14 @@ class ChessResultsConfigPluginData(PluginData):
 
 @dataclass
 class ChessResultsEventPluginData(PluginData):
-    auto_upload: bool
-    auto_upload_delay: int
+    auto_upload: bool = True
     remark: str | None = None
     state: int | None = None
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
-            auto_upload=stored_value.get('auto_upload') or False,
-            auto_upload_delay=stored_value.get(
-                'auto_upload_delay', CHESS_RESULTS_DEFAULT_UPLOAD_DELAY
-            ),
+            auto_upload=stored_value.get('auto_upload', True),
             remark=stored_value.get('remark'),
             state=stored_value.get('state'),
         )
@@ -245,7 +325,6 @@ class ChessResultsEventPluginData(PluginData):
     def to_stored_value(self) -> dict[str, Any]:
         return {
             'auto_upload': self.auto_upload,
-            'auto_upload_delay': self.auto_upload_delay,
             'remark': self.remark,
             'state': self.state,
         }
@@ -257,21 +336,17 @@ class ChessResultsEventPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        return cls(
-            auto_upload=WebContext.form_data_to_bool(data, 'chess_results_auto_upload'),
-            auto_upload_delay=WebContext.form_data_to_int(
-                data, 'chess_results_auto_upload_delay'
-            )
-            or CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
+        plugin_data = cls(
             remark=WebContext.form_data_to_str(data, 'chess_results_remark'),
             state=WebContext.form_data_to_int(data, 'chess_results_state'),
         )
+        if previous_object:
+            plugin_data.auto_upload = previous_object.auto_upload
+        return plugin_data
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
             {
-                'chess_results_auto_upload': self.auto_upload,
-                'chess_results_auto_upload_delay': self.auto_upload_delay,
                 'chess_results_remark': self.remark,
                 'chess_results_state': self.state,
             }
@@ -280,24 +355,36 @@ class ChessResultsEventPluginData(PluginData):
 
 @dataclass
 class ChessResultsTournamentPluginData(PluginData):
-    auto_upload: bool | None = None
+    auto_upload: bool = False
     tnr: str | None = None
     creator_id: str | None = None
-    last_upload: datetime | None = None
+    last_upload_at: datetime | None = None
+    last_upload_attempt_at: datetime | None = None
+    upload_failure_id: str | None = None
     remark: str | None = None
     remark_default: bool = True
+
+    @property
+    def last_upload_at_str(self) -> str:
+        if not self.last_upload_at:
+            return '-'
+        return format_datetime(self.last_upload_at)
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
         return cls(
             tnr=stored_value.get('tnr', None),
             creator_id=stored_value.get('creator_id', None),
-            auto_upload=stored_value.get('auto_upload', None),
+            auto_upload=stored_value.get('auto_upload', False),
             remark=stored_value.get('remark'),
             remark_default=stored_value.get('remark_default', True),
-            last_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
+            last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload')
             ),
+            last_upload_attempt_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_upload_attempt_at')
+            ),
+            upload_failure_id=stored_value.get('upload_failure_id'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -308,8 +395,12 @@ class ChessResultsTournamentPluginData(PluginData):
             'remark': self.remark,
             'remark_default': self.remark_default,
             'last_upload': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
-                self.last_upload
+                self.last_upload_at
             ),
+            'last_upload_attempt_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_upload_attempt_at
+            ),
+            'upload_failure_id': self.upload_failure_id,
         }
 
     @classmethod
@@ -319,31 +410,27 @@ class ChessResultsTournamentPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        tnr: str | None = None
-        creator_id: str | None = None
-        last_upload: datetime | None = None
-        if previous_object and action != 'clone':
-            tnr = previous_object.tnr
-            creator_id = previous_object.creator_id
-            last_upload = previous_object.last_upload
-
-        return cls(
-            tnr=tnr,
-            creator_id=creator_id,
-            last_upload=last_upload,
+        plugin_data = cls(
             remark=WebContext.form_data_to_str(data, 'chess_results_remark'),
             remark_default=WebContext.form_data_to_bool(
                 data, 'chess_results_remark_checkbox'
             ),
-            auto_upload=WebContext.form_data_to_bool_or_none(
-                data, 'chess_results_auto_upload'
-            ),
         )
+        if previous_object:
+            if action != 'clone':
+                plugin_data.tnr = previous_object.tnr
+                plugin_data.creator_id = previous_object.creator_id
+                plugin_data.last_upload_at = previous_object.last_upload_at
+                plugin_data.last_upload_attempt_at = (
+                    previous_object.last_upload_attempt_at
+                )
+                plugin_data.upload_failure_id = previous_object.upload_failure_id
+            plugin_data.auto_upload = plugin_data.auto_upload
+        return plugin_data
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return WebContext.values_dict_to_form_data(
             {
-                'chess_results_auto_upload': self.auto_upload,
                 'chess_results_remark': self.remark,
                 'chess_results_remark_checkbox': self.remark_default,
             }

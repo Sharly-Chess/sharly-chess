@@ -73,7 +73,7 @@ class ConfigDatabase(MigrationDatabase):
                 if not status:
                     database.upgrade()
             except SharlyChessException as e:
-                logger.error(e)
+                logger.exception(e)
                 database.file.unlink(missing_ok=True)
                 database.create()
 

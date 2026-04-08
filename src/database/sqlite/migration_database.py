@@ -26,7 +26,7 @@ class MigrationDatabase(SQLiteDatabase, ABC):
     def get_migration_instance(
         self, write: bool = False, enable_foreign_keys: bool = True
     ) -> Self:
-        kwargs = self.migration_instance_kwargs | {
+        kwargs: dict[str, Any] = self.migration_instance_kwargs | {
             'write': write,
             'enable_foreign_keys': enable_foreign_keys,
         }

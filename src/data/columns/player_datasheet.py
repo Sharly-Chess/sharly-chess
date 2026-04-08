@@ -8,8 +8,8 @@ from text_unidecode import unidecode
 from common import SharlyChessException
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
-from data.event import Event
-from data.player import Player
+from data.player import Player, MIN_YOB, MAX_YOB
+from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredPlayer
 from utils import Utils
 from utils.date_time import format_date
@@ -29,6 +29,9 @@ class DatasheetColumn(ABC):
     def id(self) -> str:
         """Identifier of the column."""
 
+    def update_from_used_columns(self, used_columns: list['DatasheetColumn']):
+        """Update the column from the other used columns."""
+
     @abstractmethod
     def get_cell_content(self, player: Player) -> Any:
         """Get the content of a cell of the datasheet from a player."""
@@ -44,8 +47,8 @@ class DatasheetColumn(ABC):
         Null values are ignored."""
         return False
 
-    def augment_stored_player_with_event(
-        self, event: Event, stored_player: StoredPlayer, value: str
+    def augment_stored_player_with_tournament(
+        self, tournament: Tournament, stored_player: StoredPlayer, value: str
     ):
         """Save the data of the cell value."""
         if self.is_required and not value:
@@ -145,9 +148,14 @@ class DateOfBirthColumn(DatasheetColumn):
             return
         formatter = SharlyChessConfig().date_formatter
         try:
-            stored_player.date_of_birth = datetime.strptime(
-                value, formatter.python_format
-            ).date()
+            dob = datetime.strptime(value, formatter.python_format).date()
+            if not (MIN_YOB <= dob.year <= MAX_YOB):
+                raise SharlyChessException(
+                    _('Invalid year of birth (expected: {min} - {max}).').format(
+                        min=MIN_YOB, max=MAX_YOB
+                    )
+                )
+            stored_player.date_of_birth = dob
         except ValueError:
             raise SharlyChessException(
                 _('Invalid format (expected: {format}).').format(
@@ -162,16 +170,16 @@ class YearOfBirthColumn(DatasheetColumn):
         return 'year_of_birth'
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.stored_player.year_of_birth
+        return player.year_of_birth or None
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
-        if not value:
+        if not value or stored_player.date_of_birth:
             return
-        if not value.isdigit() or int(value) == 0:
-            raise SharlyChessException(_('A positive integer is expected.'))
-        if stored_player.date_of_birth:
+        if not value.isdigit() or not (MIN_YOB <= int(value) <= MAX_YOB):
             raise SharlyChessException(
-                _('This field is only valid without date of birth.')
+                _('Invalid year of birth (expected: {min} - {max}).').format(
+                    min=MIN_YOB, max=MAX_YOB
+                )
             )
         stored_player.year_of_birth = int(value)
 
@@ -213,12 +221,12 @@ class GenderColumn(DatasheetColumn):
         return 'gender'
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.gender.value
+        return player.gender.key
 
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         try:
-            PlayerGender(value)
-            stored_player.gender = value
+            gender = PlayerGender.from_key(value)
+            stored_player.gender = gender.value
         except ValueError:
             raise SharlyChessException(
                 _('Unknown value (expected: {expected}).').format(
@@ -358,6 +366,73 @@ class CommentColumn(DatasheetColumn):
 
 
 class RatingColumn(DatasheetColumn):
+    @property
+    def id(self) -> str:
+        return 'rating'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.single_tournament_player.rating
+
+    def update_from_used_columns(self, used_columns: list['DatasheetColumn']):
+        for column in used_columns:
+            if isinstance(column, TypedRatingColumn):
+                self.is_informative = True
+                return
+
+    def augment_stored_player_with_tournament(
+        self, tournament: Tournament, stored_player: StoredPlayer, value: str
+    ):
+        if not value:
+            return
+        if not value.isdigit() or (int_value := int(value)) == 0:
+            raise SharlyChessException(_('A positive integer is expected.'))
+        rating = PlayerRating(int_value, int_value, int_value)
+        stored_player.ratings[tournament.rating.value] = rating.stored_value
+
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+        pass
+
+    def check_data_source_value_match(self, value: str, player: Player) -> bool:
+        return True
+
+
+class RatingTypeColumn(DatasheetColumn):
+    @property
+    def id(self) -> str:
+        return 'rating_type'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return player.single_tournament_player.rating_type.key.upper()
+
+    def update_from_used_columns(self, used_columns: list['DatasheetColumn']):
+        for column in used_columns:
+            if isinstance(column, TypedRatingColumn):
+                self.is_informative = True
+                return
+
+    def augment_stored_player_with_tournament(
+        self, tournament: Tournament, stored_player: StoredPlayer, value: str
+    ):
+        try:
+            rating_type = PlayerRatingType.from_key(value)
+        except ValueError:
+            rating_type = PlayerRatingType.ESTIMATED
+        rating = PlayerRating.from_stored_value(
+            stored_player.ratings.get(tournament.rating.value, {})
+        )
+        for type_ in PlayerRatingType:
+            if type_ != rating_type:
+                rating.set_value_from_type(None, rating_type)
+        stored_player.ratings[tournament.rating.value] = rating.stored_value
+
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+        pass
+
+    def check_data_source_value_match(self, value: str, player: Player) -> bool:
+        return True
+
+
+class TypedRatingColumn(DatasheetColumn):
     def __init__(
         self, tournament_type: TournamentRating, rating_type: PlayerRatingType
     ):

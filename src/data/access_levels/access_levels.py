@@ -345,6 +345,7 @@ class PairingAccessLevel(AccessLevel):
         return [
             AuthAction.UPDATE_PLAYERS_HISTORY,
             AuthAction.VIEW_PLAYERS_TAB,
+            AuthAction.UPDATE_PLAYERS,
             AuthAction.VIEW_PAIRINGS_TAB,
             AuthAction.USE_PAIRING_ENGINE,
             AuthAction.MANUALLY_PAIR_PLAYERS,
@@ -401,7 +402,6 @@ class DeputyChiefArbitrationAccessLevel(AccessLevel):
             AuthAction.PUBLISH_RULES,
             AuthAction.DOWNLOAD_FEES,
             AuthAction.ADD_PLAYERS,
-            AuthAction.UPDATE_PLAYERS,
             AuthAction.DELETE_PLAYERS,
             AuthAction.SET_FPB,
             AuthAction.SET_SPECIAL_RESULTS,

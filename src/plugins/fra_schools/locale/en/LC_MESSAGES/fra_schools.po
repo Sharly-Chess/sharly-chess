@@ -120,6 +120,9 @@ msgstr ""
 msgid "School *** SCHOOL COLUMN HEADER"
 msgstr "School"
 
+msgid "School not specified"
+msgstr ""
+
 msgid "Schools"
 msgstr ""
 

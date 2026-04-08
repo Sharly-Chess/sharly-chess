@@ -1,4 +1,3 @@
-from datetime import date
 from unittest import TestCase
 
 from data.board import Board
@@ -21,13 +20,7 @@ class PairingTestCase(TestCase):
 
     def setUp(self):
         super().setUp()
-        TestUtils.create_event(
-            EVENT_ID,
-            overrides={
-                'start_date': date(2025, 1, 1),
-                'stop_date': date(2025, 1, 1),
-            },
-        )
+        TestUtils.create_event(EVENT_ID)
         self.event = EventLoader().load_event(EVENT_ID)
 
     def tearDown(self):

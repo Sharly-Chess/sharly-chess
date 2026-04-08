@@ -84,8 +84,8 @@ class PapiVariables:
     tiebreak3: str | None = None
     pointSystem: str | None = None
     venue: str | None = None
-    startDate: str | None = None
-    endDate: str | None = None
+    startDate: str = ''
+    endDate: str = ''
     arbiter: str | None = None
     homologation: str | None = None
 
@@ -368,6 +368,10 @@ class PapiConverter:
             stored_tournament = StoredTournament(
                 id=None,
                 name=variables.name,
+                start_date=datetime.strptime(
+                    variables.startDate, PAPI_DATE_FORMAT
+                ).date(),
+                stop_date=datetime.strptime(variables.endDate, PAPI_DATE_FORMAT).date(),
             )
 
         rounds = 7
@@ -458,7 +462,7 @@ class PapiConverter:
             except ValueError:
                 raise_exception(
                     'birthDate',
-                    _('Invalid date format [{date}] (expected: {format})').format(
+                    _('Invalid date format [{date}] (expected: {format}).').format(
                         date=papi_player.birthDate, format=_('DD/MM/YYYY')
                     ),
                 )

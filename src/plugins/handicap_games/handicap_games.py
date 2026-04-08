@@ -105,11 +105,7 @@ class HandicapGamesPlugin(Plugin):
 
     @hookimpl
     def validate_tournament_form_fields(
-        self,
-        action: str,
-        tournament: 'Tournament | None',
-        data: dict[str, str],
-        errors: dict[str, str],
+        self, data: dict[str, str], errors: dict[str, str]
     ):
         time_control_trf25 = WebContext.form_data_to_str(data, 'time_control_trf25')
         time_control_handicap_penalty_value = WebContext.form_data_to_int(
@@ -125,6 +121,10 @@ class HandicapGamesPlugin(Plugin):
     @hookimpl
     def get_tournament_page_template_context(self) -> dict[str, Any]:
         return {'handicap_game_utils': HandicapGameUtils}
+
+    @hookimpl
+    def get_tournament_card_time_control_template(self) -> str:
+        return '/handicap_games_tournament_card_time_control.html'
 
     @hookimpl
     def set_for_round(self, tournament: 'Tournament', round_: int):

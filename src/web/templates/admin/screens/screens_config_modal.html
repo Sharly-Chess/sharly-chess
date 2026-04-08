@@ -8,6 +8,7 @@
         <div class="modal-body">
             <form
                 id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                 hx-patch="{{ url_for('admin-screen-update-config', event_uniq_id=admin_event.uniq_id or '') }}"
                 hx-target="body"
                 hx-indicator="#please-wait"

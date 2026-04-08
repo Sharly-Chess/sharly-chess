@@ -157,14 +157,13 @@ class StoredTournament:
     index: int = 0
     time_control_trf25: str | None = None
     record_illegal_moves: int | None = None
-    rules: str | None = None
     first_board_number: int | None = None
     paired_bye_result: int | None = None
     max_byes: int | None = None
     last_rounds_no_byes: int | None = None
     location: str | None = None
-    start_date: date | None = None
-    stop_date: date | None = None
+    start_date: date = field(default_factory=date.today)
+    stop_date: date = field(default_factory=date.today)
     pairing: str = SharlyChessConfig.default_pairing_variation_id
     pairing_settings: dict[str, Any] = field(default_factory=dict[str, Any])
     current_round: int | None = None
@@ -172,7 +171,7 @@ class StoredTournament:
     rounds: int = 1
     rating: int = 1
     player_rating_type: int | None = None
-    last_update: datetime | None = None
+    last_update: datetime = field(default_factory=datetime.now)
     last_player_update: datetime | None = None
     last_pairing_update: datetime | None = None
     three_points_for_a_win: bool = False
@@ -214,7 +213,7 @@ class StoredScreenSet:
     fixed_boards_str: str | None
     first: int | None
     last: int | None
-    last_update: datetime | None = None
+    last_update: datetime = field(default_factory=datetime.now)
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
@@ -247,7 +246,7 @@ class StoredScreen:
     stored_screen_sets: list[StoredScreenSet] = field(
         default_factory=list[StoredScreenSet]
     )
-    last_update: datetime | None = None
+    last_update: datetime = field(default_factory=datetime.now)
     public: bool = True
     message_default: bool = True
     message_text: str | None = None
@@ -284,7 +283,7 @@ class StoredFamily:
     public: bool = True
     message_default: bool = True
     message_text: str | None = None
-    last_update: datetime | None = None
+    last_update: datetime = field(default_factory=datetime.now)
     errors: dict[str, str] = field(default_factory=dict[str, str])
 
 
@@ -362,8 +361,6 @@ class BaseStoredEvent:
     name: str
     federation: str
     player_rating_type: int
-    start_date: date
-    stop_date: date
     public: bool = False
     location: str | None = None
     background_color: str | None = None
@@ -380,6 +377,7 @@ class BaseStoredEvent:
     organiser_home_page: str | None = None
     organiser_email: str | None = None
     organiser_director: str | None = None
+    allow_multi_tournament_players: bool = True
 
     # Plugins can add their own event data
     plugin_data: dict[str, dict[str, Any]] = field(

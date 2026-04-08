@@ -191,7 +191,7 @@ class ServerEngine(Engine):
             else:
                 return
             http = cast(HTTPScope, scope)
-            logger.error(
+            logger.exception(
                 '%s: %s %s\n%s',
                 prefix,
                 http.get('method', '?'),

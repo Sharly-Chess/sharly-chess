@@ -14,6 +14,7 @@
         <div class="modal-body">
             <form
                 id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                 {% if action == 'update' %}
                     hx-patch="{{ url_for('admin-account-update', event_uniq_id=admin_event.uniq_id, account_id=admin_account.id) }}"
                 {% elif action == 'clone' %}

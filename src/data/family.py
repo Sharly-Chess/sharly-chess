@@ -250,7 +250,7 @@ class Family:
         )
 
     @property
-    def last_update(self) -> datetime | None:
+    def last_update(self) -> datetime:
         return self.stored_family.last_update
 
     def _calculate_screens(self) -> bool:

@@ -27,6 +27,7 @@ from data.player_categories import (
     SELECTABLE_SENIOR_CATEGORIES,
     PlayerCategory,
 )
+from database.sqlite.sqlite_database import SQLiteDatabase
 from utils.date_time import (
     format_date_range,
     format_date,
@@ -272,30 +273,26 @@ class IndexAdminController(BaseAdminController):
         svg_logo = (BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg').read_text(
             encoding='utf-8'
         )
-
         request = web_context.request
         context = (
             web_context.template_context
             | {
-                'messages': Message.messages(web_context.request),
+                'messages': Message.messages(request),
                 'format_date_range': format_date_range,
                 'format_date': format_date,
                 'nav_tabs': nav_tabs,
                 'svg_logo': svg_logo,
                 'show_details': SessionEventsShowDetails(request).get(),
+                'plugin_event_create_button_templates': (
+                    plugin_manager.hook.create_event_button_template()
+                ),
             }
             | (template_context or {})
         )
 
         if 'modal' in context:
-            return HTMXTemplate(
-                template_name='admin/modals.html',
-                context=context,
-                re_target='#modal-wrapper',
-                trigger_event='modal_opened'
-                if not keep_modal_open
-                else 'static_modal_opened',
-                after='settle',
+            return cls._render_modal(
+                'admin/modals.html', context, bool(keep_modal_open)
             )
         return HTMXTemplate(template_name='admin/index.html', context=context)
 
@@ -361,8 +358,8 @@ class IndexAdminController(BaseAdminController):
             name = EventLoader.get(request).get_unused_event_name(_('New event'))
             uniq_id = EventLoader.get(request).get_unused_event_uniq_id(_('event'))
             public = False
-            date_range = ''
             config = SharlyChessConfig()
+            allow_multi_tournament_players = True
             federation = config.federation.name if config.federation else ''
             player_rating_type = PlayerRatingType.FIDE.value
             location: str | None = None
@@ -389,10 +386,11 @@ class IndexAdminController(BaseAdminController):
                 loader = EventLoader()
                 name = loader.get_unused_event_name(stored_event.name)
                 uniq_id = loader.get_unused_event_uniq_id(stored_event.uniq_id)
-            date_range = WebContext.value_to_date_range_form_data(
-                admin_event.start_date, admin_event.stop_date
-            )
             public = stored_event.public
+            allow_multi_tournament_players = (
+                stored_event.allow_multi_tournament_players
+                or admin_event.has_multi_tournament_players
+            )
             federation = stored_event.federation
             location = stored_event.location
             age_category_base_date = stored_event.age_category_base_date
@@ -427,6 +425,7 @@ class IndexAdminController(BaseAdminController):
                     'uniq_id': uniq_id,
                     'name': name,
                     'public': public,
+                    'allow_multi_tournament_players': allow_multi_tournament_players,
                     'federation': federation,
                     'player_rating_type': player_rating_type,
                     'location': location,
@@ -434,7 +433,6 @@ class IndexAdminController(BaseAdminController):
                     'organiser_home_page': organiser_home_page,
                     'organiser_email': organiser_email,
                     'organiser_director': organiser_director,
-                    'date_range': date_range,
                     'age_category_base_date': age_category_base_date,
                     'age_category_change_month': age_category_change_month,
                     'age_categories': age_categories,
@@ -456,8 +454,6 @@ class IndexAdminController(BaseAdminController):
         uniq_id: str | None
         errors: dict[str, str] = {}
         config = SharlyChessConfig()
-        start_date: date | None = None
-        stop_date: date | None = None
 
         name = WebContext.form_data_to_str(data, field := 'name') or ''
         if not name:
@@ -475,15 +471,6 @@ class IndexAdminController(BaseAdminController):
             # should never happen, not translated.
             errors[field] = f'Invalid federation value [{data[field]}].'
             data[field] = ''
-
-        try:
-            date_range = WebContext.form_data_to_date_range(data, field := 'date_range')
-            if not date_range:
-                start_date, stop_date = [date.today()] * 2
-            else:
-                start_date, stop_date = date_range
-        except FormError as e:
-            errors[field] = str(e)
 
         public = WebContext.form_data_to_bool(data, 'public')
         location = WebContext.form_data_to_str(data, 'location')
@@ -513,23 +500,11 @@ class IndexAdminController(BaseAdminController):
             )
         except FormError as e:
             errors[field] = str(e)
-        if age_category_base_date:
-            if start_date and age_category_base_date < date(
-                start_date.year - 1, start_date.month, start_date.day
-            ):
-                errors[field] = _(
-                    'The base date has to be at most one year '
-                    'prior to the start of the event.'
-                )
-            elif stop_date and age_category_base_date > date(
-                stop_date.year + 1, stop_date.month, stop_date.day
-            ):
-                errors[field] = _(
-                    'The base date has to be at most one year '
-                    'after the end of the event.'
-                )
         age_category_change_month = (
             WebContext.form_data_to_int(data, 'age_category_change_month') or 1
+        )
+        allow_multi_tournament_players = WebContext.form_data_to_bool(
+            data, 'allow_multi_tournament_players'
         )
 
         enabled_plugins = plugin_manager.get_plugins_with_dependencies(
@@ -560,16 +535,12 @@ class IndexAdminController(BaseAdminController):
         if errors:
             return None, errors
 
-        assert start_date is not None
-        assert stop_date is not None
-
         stored_event = StoredEvent(
             uniq_id=uniq_id,
             name=name,
             federation=federation,
-            start_date=start_date,
-            stop_date=stop_date,
             public=bool(public),
+            allow_multi_tournament_players=allow_multi_tournament_players,
             location=location,
             organiser_name=organiser_name,
             organiser_home_page=organiser_home_page,
@@ -607,9 +578,10 @@ class IndexAdminController(BaseAdminController):
         data: dict[str, str],
         errors: dict[str, str] | None = None,
     ) -> dict[str, Any]:
+        event = web_context.admin_event
         federation_plugin_used = False
         if action == FormAction.UPDATE:
-            event = web_context.get_admin_event()
+            assert event is not None
             for plugin in event.enabled_plugins:
                 if not plugin.federation:
                     continue
@@ -630,6 +602,8 @@ class IndexAdminController(BaseAdminController):
                     'National *** NAME FOR RATING TYPE NATIONAL'
                 ),
             },
+            'has_multi_tournament_players': event
+            and event.has_multi_tournament_players,
             'force_organiser_open': any(
                 field in errors
                 for field in [
@@ -1010,26 +984,37 @@ class IndexAdminController(BaseAdminController):
         normalized_data = await WebContext.normalize_multipart_data(data)
         file_path = WebContext.form_data_to_path(normalized_data, 'file')
         assert file_path is not None
-        try:
-            event_uniq_id = EventLoader().import_event(file_path)
-            self._enable_missing_plugins(request, event_uniq_id)
-            Message.success(
-                request,
-                _('Event [{event}] has been imported.').format(event=event_uniq_id),
+        suffix = '.' + SharlyChessConfig.event_database_ext
+        if file_path.suffix != suffix:
+            error_message = _(
+                'Invalid file extension [{extension}] (expected: {expected}).'
+            ).format(extension=file_path.suffix, expected=suffix)
+        elif not SQLiteDatabase(file_path).is_sqlite_file():
+            error_message = _(
+                'This file is incorrectly formatted, '
+                'the extension has most likely been changed.'
             )
-            return ClientRedirect(admin_event_url(request, event_uniq_id))
-        except Exception as error:
-            logger.error(error)
-            if isinstance(error, SharlyChessException):
-                message = _(
-                    "This event can't be used by the current version of Sharly Chess."
+        else:
+            try:
+                event_uniq_id = EventLoader().import_event(file_path)
+                self._enable_missing_plugins(request, event_uniq_id)
+                Message.success(
+                    request,
+                    _('Event [{event}] has been imported.').format(event=event_uniq_id),
                 )
-            else:
-                message = _('An unexpected error occurred.')
-            Message.error(
-                request, message + ' ' + _('Consult the logs for more details.')
-            )
-            return self._admin_render(web_context)
+                return ClientRedirect(admin_event_url(request, event_uniq_id))
+            except Exception as error:
+                logger.exception(error)
+                if isinstance(error, SharlyChessException):
+                    message = _(
+                        "This event can't be used by the current version of Sharly Chess."
+                    )
+                else:
+                    message = _('An unexpected error occurred.')
+                error_message = message + ' ' + _('Consult the logs for more details.')
+        Message.error(request, error_message)
+        file_path.unlink(missing_ok=True)
+        return self._admin_render(web_context)
 
     @get(
         path='/event-export-modal/{event_uniq_id:str}',
@@ -1097,7 +1082,7 @@ class IndexAdminController(BaseAdminController):
                 filename=database.file.resolve().name,
             )
         except Exception as exception:
-            logger.error(
+            logger.exception(
                 'Error when exporting event [%s]:\n%s',
                 event.name,
                 exception,

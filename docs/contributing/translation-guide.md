@@ -65,7 +65,7 @@ msgstr[1] "{locales_number} langues sont actuellement disponibles."
 Some strings require special attention : they are mandatory. They contain the sub-string ``***`` and all the text from the three asterisks must be deleted from the translations:
 
 ```
-msgid "Unpaired *** FEMALE"
+msgid "Unpaired *** WOMAN"
 msgstr "Non appariée"
 ```
 

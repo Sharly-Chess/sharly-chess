@@ -99,7 +99,7 @@ class ChessEventController(BaseEventAdminController):
         except ImporterError:
             """Already said in the status."""
         except SharlyChessException as error:
-            logger.error(
+            logger.exception(
                 'An error occurred while synchronizing '
                 'the tournament [%s] with ChessEvent:\n%s',
                 tournament.name,
@@ -122,7 +122,7 @@ class ChessEventController(BaseEventAdminController):
         if result:
             message = _('Tournament [{tournament}] successfully synchronized.')
         else:
-            message = _('Synchronization failed for tournament [{tournament}].')
+            message = _('Synchronisation failed for tournament [{tournament}].')
 
         web_context = TournamentAdminWebContext(
             request, tournament_id, reload_event=True

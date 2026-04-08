@@ -61,6 +61,7 @@
                 </h4>
                 <form
                     id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                     hx-post="{{ url_for('profile-login', event_uniq_id=admin_event.uniq_id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
@@ -99,6 +100,7 @@
                 </h4>
                 <form
                     id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                     hx-post="{{ url_for('profile-logout', event_uniq_id=admin_event.uniq_id) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"

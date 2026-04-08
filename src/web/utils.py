@@ -1,3 +1,6 @@
+import base64
+import hashlib
+import secrets
 from dataclasses import dataclass
 from typing import Any
 
@@ -310,3 +313,22 @@ class SelectOption:
     disabled: bool = False
     classes: str = ''
     search: str | None = None
+
+
+class PKCEUtils:
+    @staticmethod
+    def generate_code_verifier() -> str:
+        return (
+            base64.urlsafe_b64encode(secrets.token_bytes(32))
+            .rstrip(b'=')
+            .decode('ascii')
+        )
+
+    @staticmethod
+    def generate_code_challenge(verifier: str) -> str:
+        sha256 = hashlib.sha256(verifier.encode('ascii')).digest()
+        return base64.urlsafe_b64encode(sha256).rstrip(b'=').decode('ascii')
+
+    @staticmethod
+    def generate_state() -> str:
+        return secrets.token_hex(16)

@@ -255,7 +255,7 @@ class DataSource(IdentifiableEntity, ABC):
     @property
     @abstractmethod
     def imported_datasheet_columns(self) -> list[DatasheetColumn]:
-        """IDs of the datasheet columns that the datasource is importing.
+        """datasheet columns that the datasource is importing.
         These columns won't be available on import."""
 
     def get_all_datasheet_columns(self, event: Event) -> Collection[DatasheetColumn]:

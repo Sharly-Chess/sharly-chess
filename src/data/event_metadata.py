@@ -1,4 +1,5 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import date
 from functools import cached_property
 
 from common.i18n import _
@@ -12,6 +13,8 @@ class EventMetadata(BaseStoredEvent):
     """Class containing the metadata of an event required
     for display on the event selection pages."""
 
+    start_date: date = field(default_factory=date.today)
+    stop_date: date = field(default_factory=date.today)
     tournament_count: int = 0
     player_count: int = 0
     timer_count: int = 0

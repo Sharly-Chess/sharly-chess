@@ -459,7 +459,7 @@ class ScreenSet:
         return self.last_item
 
     @property
-    def last_update(self) -> datetime | None:
+    def last_update(self) -> datetime:
         if self.stored_screen_set:
             return self.stored_screen_set.last_update
         else:

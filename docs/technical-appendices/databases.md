@@ -124,13 +124,13 @@
 | `location`                                | `TEXT`    |                                            | The location of the tournament (by default the location of the event)                                                                                      |
 | `start`                                   | `FLOAT`   |                                            | The start date of the tournament (timestamp, by default the start date of the event)                                                                       |
 | `stop`                                    | `FLOAT`   |                                            | The stop date of the tournament (timestamp, by default the stop date of the event)                                                                         |
-| `time_control_trf25`                      | `INTEGER` |                                            | The time control in TRF25 format                                                                                                                           |
+| `time_control_trf25`                      | `TEXT`    |                                            | The time control in TRF25 format                                                                                                                           |
 | `record_illegal_moves`                    | `INTEGER` |                                            | The maximum number of illegal moves that can be recorded for a player per round If this number is not specified, the event's default configuration is used |
 | `rules`                                   | `TEXT`    |                                            | The URL or server path to the tournament rules, in PDF format (by default, the event rules)                                                                |
 | `check_in_open`                           | `INTEGER` |                                            | Boolean:<br/>- `1`: Checking is open<br/>- `0`: Checking is closed                                                                                         |
-| `last_update`                             | `FLOAT`   | NOT NULL                                   | The last date the tournament was modified                                                                                                                  |
-| `last_player_update`.                     | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | The last date a player associated with this tournament was modified                                                                                        |
-| `last_pairing_update`                     | `FLOAT`   | NOT NULL<br/>DEFAULT 0.0                   | The last date a pairing associated with this tournament score was modified                                                                                 |
+| `last_update`                             | `TEXT`    | NOT NULL                                   | The last date the tournament was modified                                                                                                                  |
+| `last_player_update`.                     | `TEXT`    | NOT NULL<br/>DEFAULT 0.0                   | The last date a player associated with this tournament was modified                                                                                        |
+| `last_pairing_update`                     | `TEXT`    | NOT NULL<br/>DEFAULT 0.0                   | The last date a pairing associated with this tournament score was modified                                                                                 |
 | `first_board_number`                      | `INTEGER` |                                            | The first board number                                                                                                                                     |
 | `paired_bye_result`                       | `INTEGER` |                                            | Result awarded to bye players                                                                                                                              |
 | `max_byes`                                | `INTEGER` |                                            | The maximum number of byes a player can claim                                                                                                              |
@@ -197,7 +197,7 @@
 | `white_player_id`    | `INTEGER` | NOT NULL<br/>REFERENCES `player`(`id`)                        | The white player ID                           |
 | `black_player_id`    | `INTEGER` | REFERENCES `player`(`id`)                                     | The black player ID (can be NULL for byes)    |
 | `index`              | `INTEGER` | NOT NULL                                                      | The board number/index                        |
-| `last_result_update` | `FLOAT`   |                                                               | Timestamp of the last result update for board |
+| `last_result_update` | `TEXT`    |                                                               | Timestamp of the last result update for board |
 
 ### `pairing` table (tournament pairings and results)
 
@@ -242,7 +242,7 @@
 | `font_size`                      | `INTEGER` |                                            | The font size in percentage (default 100%)                                                                                                                                                                                                               |
 | `message_default`                | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | Boolean:<br/>- `1`: The event alert message (or the rotating screen, if applicable) is used;<br/>- `0`: The screen alert message is used instead of the event alert message                                                                              |
 | `message_text`                   | `TEXT`    |                                            | The text of the screen's alert message (by default, no alert message is displayed)                                                                                                                                                                       |
-| `last_update`                    | `FLOAT`   | NOT NULL                                   | The date the screen was last modified                                                                                                                                                                                                                    |
+| `last_update`                    | `TEXT`    | NOT NULL                                   | The date the screen was last modified                                                                                                                                                                                                                    |
 
 ### `screen_set` table (screen sets)
 
@@ -256,7 +256,7 @@
 | `first`            | `INTEGER` |                                            | The number of the first element (board or player) to consider |
 | `last`             | `INTEGER` |                                            | The number of the last element (board or player) to consider  |
 | `fixed_boards_str` | `TEXT`    |                                            | Board numbers separated by commas                             |
-| `last_update`      | `FLOAT`   | NOT NULL                                   | The date the set was last modified                            |
+| `last_update`      | `TEXT`    | NOT NULL                                   | The date the set was last modified                            |
 
 ### `family` table (screen families)
 
@@ -285,7 +285,7 @@
 | `number`                         | `INTEGER` |                                            | The number of elements (boards or players) per screen (the number of screens is calculated automatically)                                                                                                                                                |
 | `message_default`                | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | Boolean:<br/>- `1`: The event alert message (or the rotating screen, if applicable) is used for the screens in the family;<br/>- `0`: The alert message for the screens in the family is used instead of the event alert message                         |
 | `message_text`                   | `TEXT`    |                                            | The text of the screen's alert message (by default, no alert message is displayed)                                                                                                                                                                       |
-| `last_update`                    | `FLOAT`   | NOT NULL                                   | The last date the screen was modified                                                                                                                                                                                                                    |
+| `last_update`                    | `TEXT`    | NOT NULL                                   | The last date the screen was modified                                                                                                                                                                                                                    |
 
 ### `rotator` table (rotators)
 
@@ -320,7 +320,7 @@
 | `public`      | `INTEGER` |                                            | Boolean:<br/>- `1`: the controller is public (visible to users on the public interface);<br/>- `0`: the controller is for referees |
 | `screen_id`   | `INTEGER` | REFERENCES `screen`(`id`)                  | The screen ID to display                                                                                                           |
 | `rotator_id`  | `INTEGER` | REFERENCES `rotator`(`id`)                 | The rotator ID to display                                                                                                          |
-| `last_update` | `FLOAT`   |                                            | The date the controller was last updated                                                                                           |
+| `last_update` | `TEXT`    |                                            | The date the controller was last updated                                                                                           |
 
 ### `prize_group` table (prize groups)
 
@@ -379,21 +379,21 @@
 
 ### `player` table (FIDE players)
 
-| Field                | Type      | Constraint                                 | Description                              |
-|----------------------|-----------|--------------------------------------------|------------------------------------------|
-| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID                 |
-| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's _FFE_ ID                    |
-| `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                   |
-| `first_name`         | `TEXT`    |                                            | The player's first name                  |
-| `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code             |
-| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Female, 2: Male) |
-| `title`              | `TEXT`    | NOT NULL                                   | The player's _FIDE_ title                |
-| `arbiter_title`      | `TEXT`    | NOT NULL                                   | The player's _FIDE_ arbiter title        |
-| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating             |
-| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating                |
-| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating                |
-| `year_of_birth`      | `INTEGER` | NOT NULL                                   | The player's year of birth               |
-| `fide_arbiter_title` | `TEXT`    | NOT NULL                                   | The player's _FIDE_ arbiter title        |
+| Field                | Type      | Constraint                                 | Description                            |
+|----------------------|-----------|--------------------------------------------|----------------------------------------|
+| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID               |
+| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's _FFE_ ID                  |
+| `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                 |
+| `first_name`         | `TEXT`    |                                            | The player's first name                |
+| `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code           |
+| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Woman, 2: Man) |
+| `title`              | `TEXT`    | NOT NULL                                   | The player's _FIDE_ title              |
+| `arbiter_title`      | `TEXT`    | NOT NULL                                   | The player's _FIDE_ arbiter title      |
+| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating           |
+| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating              |
+| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating              |
+| `year_of_birth`      | `INTEGER` | NOT NULL                                   | The player's year of birth             |
+| `fide_arbiter_title` | `TEXT`    | NOT NULL                                   | The player's _FIDE_ arbiter title      |
 
 ## _FFE_ Local Database (`tmp/ffe/ffe.db`)
 
@@ -402,26 +402,26 @@
 
 ### `player` table (_FFE_ players)
 
-| Field                | Type      | Constraint                                 | Description                                        |
-|----------------------|-----------|--------------------------------------------|----------------------------------------------------|
-| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID                           |
-| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's _FFE_ ID                              |
-| `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                             |
-| `first_name`         | `TEXT`    |                                            | The player's first name                            |
-| `date_of_birth`      | `TEXT`    |                                            | The player's date of birth in YYYY-MM-DD format    |
-| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Male, 2: Female, 9: Other) |
-| `ffe_licence_number` | `TEXT`    |                                            | The player's licence number (Xnnnnn)               |
-| `ffe_licence`        | `INTEGER` | NOT NULL                                   | The player's licence type (1: None, 2: A, 3: B)    |
-| `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code                       |
-| `league`             | `TEXT`    |                                            | The player's _FFE_ league (3-letter) code          |
-| `city`               | `TEXT`    |                                            | The city of the player's club                      |
-| `club`               | `TEXT`    |                                            | The player's club name                             |
-| `fide_id`            | `INTEGER` |                                            | The player's _FIDE_ ID (if any)                    |
-| `fide_title`         | `TEXT`    | NOT NULL                                   | The player's _FIDE_ title                          |
-| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating                       |
-| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating                          |
-| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating                          |
-| `ffe_arbiter_title`  | `TEXT`    | NOT NULL                                   | The player's _FFE_ arbiter title                   |
+| Field                | Type      | Constraint                                 | Description                                      |
+|----------------------|-----------|--------------------------------------------|--------------------------------------------------|
+| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The player's internal ID                         |
+| `fide_id`            | `INTEGER` | NOT NULL                                   | The player's _FFE_ ID                            |
+| `last_name`          | `TEXT`    | NOT NULL                                   | The player's last name                           |
+| `first_name`         | `TEXT`    |                                            | The player's first name                          |
+| `date_of_birth`      | `TEXT`    |                                            | The player's date of birth in YYYY-MM-DD format  |
+| `gender`             | `INTEGER` | NOT NULL                                   | The player's gender (1: Man, 2: Woman, 9: Other) |
+| `ffe_licence_number` | `TEXT`    |                                            | The player's licence number (Xnnnnn)             |
+| `ffe_licence`        | `INTEGER` | NOT NULL                                   | The player's licence type (1: None, 2: A, 3: B)  |
+| `federation`         | `TEXT`    | NOT NULL                                   | The player's federation code                     |
+| `league`             | `TEXT`    |                                            | The player's _FFE_ league (3-letter) code        |
+| `city`               | `TEXT`    |                                            | The city of the player's club                    |
+| `club`               | `TEXT`    |                                            | The player's club name                           |
+| `fide_id`            | `INTEGER` |                                            | The player's _FIDE_ ID (if any)                  |
+| `fide_title`         | `TEXT`    | NOT NULL                                   | The player's _FIDE_ title                        |
+| `standard_rating`    | `INTEGER` | NOT NULL                                   | The player's standard rating                     |
+| `rapid_rating`       | `INTEGER` | NOT NULL                                   | The player's rapid rating                        |
+| `blitz_rating`       | `INTEGER` | NOT NULL                                   | The player's blitz rating                        |
+| `ffe_arbiter_title`  | `TEXT`    | NOT NULL                                   | The player's _FFE_ arbiter title                 |
 
 ## FRA Schools Local Database (`tmp/fra_schools/fra_schools.db`)
 
