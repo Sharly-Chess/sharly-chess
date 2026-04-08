@@ -33,6 +33,7 @@
 ## Tournaments
 
 - Added round schedule to tournaments (4.0.0)
+- Fixed schedule dates not selected by default (4.0.3)
 
 ## Prizes
 
