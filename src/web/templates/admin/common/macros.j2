@@ -394,13 +394,14 @@
                         new Date(new Date().setHours(0, 0, 0, 0))
                     {% endif %}
                 ),
-                {# Prevent an odd behavior when selecting first using the time picker #}
-                onBeforeSelect: ({date, datepicker}) => {
-                    if (datepicker.selectedDates.length === 0) {
-                        return date.getHours() === 0 && date.getMinutes() === 0;
-                    }
-                    return true;
-                },
+                {% if min_date and max_date %}
+                    {# Selecting first using the time picker uses the current date, prevent selection if it's outside the time range #}
+                    onBeforeSelect: ({date, datepicker}) => {
+                        const minDate = ({{ formatter.value_to_date_js_function|safe }})(`{{ min_date }} 00:00`);
+                        const maxDate = ({{ formatter.value_to_date_js_function|safe }})(`{{ max_date }} 23:59`);
+                        return date >= minDate && date <= maxDate;
+                    },
+                {% endif %}
             {% endif %}
             {% if now_button %}
                 buttons: [
