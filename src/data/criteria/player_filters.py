@@ -323,7 +323,9 @@ class PlayerIdPlayerFilter(PlayerFilter):
     def full_name(self, tournament: 'Tournament') -> str:
         player_ids, exclude = self.get_option_values()
         player_names = [
-            player.full_name for player in tournament.players if player.id in player_ids
+            player.full_name
+            for player in tournament.tournament_players
+            if player.id in player_ids
         ]
         option_str = ', '.join(sorted(player_names, key=normalized_key))
         if exclude:
