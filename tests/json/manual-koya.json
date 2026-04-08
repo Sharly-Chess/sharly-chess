@@ -1,0 +1,502 @@
+{
+  "variables" : {
+    "arbiter" : "",
+    "timeControl" : "5400+30",
+    "ratingClass" : "Elo",
+    "startDate" : "04/04/2026",
+    "endDate" : "06/04/2026",
+    "pointSystem" : "NON",
+    "tiebreak1" : "Sonnenborn-Berger",
+    "tiebreak2" : "Koya",
+    "tiebreak3" : "Manuel",
+    "ratingThreshold1" : "0",
+    "ratingThreshold2" : "0",
+    "type" : "ToutesRondes",
+    "homologation" : "70657",
+    "venue" : "Grande Synthe",
+    "rounds" : "7",
+    "name" : "14e Festival de Tournois Toutes Rondes OGS - 14e F",
+    "pairing" : "Berger"
+  },
+  "players" : [ {
+    "federation" : "FRA",
+    "lastName" : "MAUGENEST",
+    "nrFFE" : "F00536",
+    "fixedBoard" : 1001,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "league" : "HDF",
+    "elo" : 1830,
+    "fideCode" : "36029505",
+    "birthDate" : "27/07/1975",
+    "firstName" : "Thibaut",
+    "owed" : 0,
+    "refFFE" : 7109,
+    "licenceType" : "A",
+    "club" : "Dunkerque Echecs",
+    "paid" : 0,
+    "rapidElo" : 1717,
+    "category" : "Sep",
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "2" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "3" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "4" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "5" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "6" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "7" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 7
+      }
+    },
+    "blitzElo" : 1830
+  }, {
+    "federation" : "FRA",
+    "lastName" : "BLOT",
+    "nrFFE" : "R09201",
+    "fixedBoard" : 1008,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "league" : "IDF",
+    "elo" : 1966,
+    "fideCode" : "644633",
+    "birthDate" : "14/06/1979",
+    "firstName" : "David",
+    "owed" : 0,
+    "refFFE" : 92158,
+    "licenceType" : "A",
+    "club" : "Echiquier de Franconville",
+    "paid" : 0,
+    "rapidElo" : 1967,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "2" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "3" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "4" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "5" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "6" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "7" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 5
+      }
+    },
+    "blitzElo" : 1967
+  }, {
+    "federation" : "FRA",
+    "lastName" : "ANTOINE",
+    "nrFFE" : "X50134",
+    "fixedBoard" : 1002,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "league" : "IDF",
+    "elo" : 1833,
+    "fideCode" : "80451080",
+    "birthDate" : "21/03/2013",
+    "firstName" : "Vladimir",
+    "owed" : 0,
+    "refFFE" : 1191759,
+    "licenceType" : "A",
+    "club" : "Nomad' Echecs",
+    "paid" : 0,
+    "rapidElo" : 1854,
+    "category" : "Ben",
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "2" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "3" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 5
+      },
+      "4" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "5" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "6" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "7" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 4
+      }
+    },
+    "blitzElo" : 1636
+  }, {
+    "federation" : "FRA",
+    "lastName" : "LUCIDARME",
+    "nrFFE" : "K77974",
+    "fixedBoard" : 1006,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "league" : "HDF",
+    "elo" : 1907,
+    "fideCode" : "36051918",
+    "birthDate" : "22/04/1964",
+    "firstName" : "Damien",
+    "owed" : 0,
+    "refFFE" : 701267,
+    "licenceType" : "A",
+    "club" : "Saint André - Echec et Mat",
+    "paid" : 0,
+    "rapidElo" : 1988,
+    "category" : "Sep",
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "2" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "3" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 7
+      },
+      "4" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "5" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 5
+      },
+      "6" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "7" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 6
+      }
+    },
+    "blitzElo" : 1907
+  }, {
+    "federation" : "FRA",
+    "lastName" : "BERNARD",
+    "nrFFE" : "K06206",
+    "fixedBoard" : 1003,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "league" : "HDF",
+    "elo" : 1851,
+    "fideCode" : "646172",
+    "birthDate" : "13/12/1974",
+    "firstName" : "Michael",
+    "owed" : 0,
+    "refFFE" : 25478,
+    "licenceType" : "A",
+    "club" : "Le Coin de L'echiquier Grande Synthe",
+    "paid" : 0,
+    "rapidElo" : 1781,
+    "category" : "Sep",
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "2" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "3" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "4" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "5" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "6" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "7" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 2
+      }
+    },
+    "blitzElo" : 1842
+  }, {
+    "federation" : "FRA",
+    "lastName" : "CHABE",
+    "nrFFE" : "S66234",
+    "fixedBoard" : 1004,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "league" : "HDF",
+    "elo" : 1852,
+    "fideCode" : "651004470",
+    "birthDate" : "13/03/2000",
+    "firstName" : "Axel",
+    "owed" : 0,
+    "refFFE" : 995309,
+    "licenceType" : "A",
+    "club" : "Club d'Echecs d'Isbergues - La Tour Infernale",
+    "paid" : 0,
+    "rapidElo" : 1762,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "2" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "3" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "4" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "5" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "6" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "7" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 1
+      }
+    },
+    "blitzElo" : 1702
+  }, {
+    "federation" : "FRA",
+    "lastName" : "GANDREUIL",
+    "nrFFE" : "L55554",
+    "fixedBoard" : 1007,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "league" : "HDF",
+    "elo" : 1955,
+    "fideCode" : "36078425",
+    "birthDate" : "05/01/2005",
+    "firstName" : "Brice",
+    "owed" : 0,
+    "refFFE" : 711235,
+    "licenceType" : "A",
+    "club" : "L'Echiquier Cappellois",
+    "paid" : 0,
+    "rapidElo" : 2031,
+    "category" : "Sen",
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "2" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "3" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "4" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "5" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 7
+      },
+      "6" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "7" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 3
+      }
+    },
+    "blitzElo" : 1991
+  }, {
+    "federation" : "FRA",
+    "lastName" : "CUSTOZA",
+    "nrFFE" : "S50153",
+    "fixedBoard" : 1005,
+    "gender" : "M",
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "league" : "HDF",
+    "elo" : 1865,
+    "fideCode" : "651018144",
+    "birthDate" : "06/03/2013",
+    "firstName" : "Georges-Emmanuel",
+    "owed" : 0,
+    "refFFE" : 968425,
+    "licenceType" : "A",
+    "club" : "Lille Université Club Echiquier du Nord",
+    "paid" : 0,
+    "rapidElo" : 1790,
+    "category" : "Ben",
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 5
+      },
+      "2" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "3" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "4" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "5" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "6" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "7" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 0
+      }
+    },
+    "blitzElo" : 1949
+  } ]
+}
