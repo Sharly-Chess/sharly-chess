@@ -8,12 +8,17 @@
 - Rename _Upload_ menu to _Data Transfer_ (4.0.0)
 - Fixed scrolling the first error into view on long forms (4.0.3)
 
-## Event
+## Events
 
 - Automatically calculate event dates from tournament dates (4.0.0)
 - Added an option to allow players in multiple tournaments (4.0.0)
 - Fixed disabled fields behavior in event modal (4.0.1)
 - Added duplication options to include pairings and define a start date (4.0.3)
+
+## Tournaments
+
+- Added round schedule to tournaments (4.0.0)
+- Fixed schedule dates not selected by default (4.0.3)
 
 ## Players
 
@@ -30,11 +35,6 @@
 - Added a reminder to update the players' ratings before pairings on round #1 and for tournaments lasting on multiple FIDE periods (4.0.0)
 - Clean display of pairing exceptions (4.0.2)
 - Fixed Koya tie-break calculation (4.0.3)
-
-## Tournaments
-
-- Added round schedule to tournaments (4.0.0)
-- Fixed schedule dates not selected by default (4.0.3)
 
 ## Prizes
 
