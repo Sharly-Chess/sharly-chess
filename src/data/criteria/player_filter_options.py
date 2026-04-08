@@ -83,7 +83,7 @@ class SelectPlayerFilterOption[T](PlayerFilterOption):
         to the existing options if they don't already exist."""
         from web.utils import SelectOption
 
-        tournament_player_counter = self.get_player_counter(tournament)
+        tournament_player_counter = self.get_tournament_player_counter(tournament)
         all_values = self.get_all_known_values(tournament)
         if split_tournament_others:
             ordered_counters = sorted(
