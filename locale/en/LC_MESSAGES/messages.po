@@ -3331,12 +3331,6 @@ msgstr ""
 msgid "Min *** MINIMUM"
 msgstr "Min"
 
-msgid "Minimum and maximum age categories (included)."
-msgstr ""
-
-msgid "Minimum and maximum ratings (included)."
-msgstr ""
-
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr ""
 

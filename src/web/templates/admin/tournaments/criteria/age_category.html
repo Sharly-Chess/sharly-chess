@@ -2,7 +2,6 @@
     {{ admin_macros.select_range_input(
         name=criterion.form_key,
         label=_('%(string)s:', string=criterion.name),
-        tooltip_text=_('Minimum and maximum age categories (included).'),
         select_options=criterion.get_select_options(admin_event),
         min_placeholder=_('Min *** MINIMUM'),
         max_placeholder=_('Max *** MAXIMUM'),
