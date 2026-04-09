@@ -3252,6 +3252,9 @@ msgstr "Mauritanie"
 msgid "Mauritius"
 msgstr "Maurice"
 
+msgid "Max *** MAXIMUM"
+msgstr "Max"
+
 #, python-format
 msgid "Max age: %(num)d minute"
 msgid_plural "Max age: %(num)d minutes"
@@ -3324,6 +3327,9 @@ msgstr "Menus"
 
 msgid "Mexico"
 msgstr "Mexique"
+
+msgid "Min *** MINIMUM"
+msgstr "Min"
 
 msgid "Minimum and maximum age categories (included)."
 msgstr "Catégories d'age minimale et maximale (incluses)."

@@ -182,7 +182,7 @@
     selected=[],
     disabled=false,
     multiple=false,
-    multiple_placeholder='NO PLACEHOLDER',
+    placeholder='',
     multiple_select_all=false,
     error=false,
     tooltip_select=false,
@@ -201,8 +201,8 @@
         {% endif %}
         {% if multiple %}
             multiple
-            {% if multiple_placeholder %}
-                data-placeholder='{{ multiple_placeholder }}'
+            {% if placeholder %}
+                data-placeholder='{{ placeholder }}'
             {% endif %}
         {% endif %}
         style="display:none"
@@ -210,6 +210,15 @@
             onchange="{{ onchange }}"
         {% endif %}
     >
+        {% if placeholder and not multiple %}
+            <option
+                value="__placeholder__"
+                class="opacity-75"
+                data-class="opacity-75"
+            >
+                {{ placeholder }}
+            </option>
+        {% endif %}
         {% if multiple_select_all %}
             <option value="__all__">
                 {{ _('Select All') }}
@@ -257,6 +266,12 @@
                 if (optionClass) $result.addClass(optionClass);
                 const search = $(data.element).data('search');
                 if (search) $result.attr('data-search', search);
+                return $result;
+            },
+            templateSelection: function (data) {
+                const $result = $('<span>' + data.text + '</span>');
+                const optionClass = $(data.element).data('class');
+                if (optionClass) $result.addClass(optionClass);
                 return $result;
             },
             matcher: function(params, data) {
@@ -567,6 +582,7 @@ with_indicator: display a loading indicator, optional
     number_max='',
     min_disabled=false,
     max_disabled=false,
+    max_placeholder='',
     input_tooltip='',
     number_step='',
     radio_value='',
@@ -641,7 +657,7 @@ with_indicator: display a loading indicator, optional
                         selected=data.get(name, '').split(';') if multiple_select else [data[name]],
                         disabled=disabled,
                         multiple=multiple_select,
-                        multiple_placeholder=placeholder,
+                        placeholder=placeholder,
                         multiple_select_all=select_all,
                         search_placeholder=select_search_placeholder,
                         error=error or (name in errors),
@@ -708,6 +724,7 @@ with_indicator: display a loading indicator, optional
                         step="1"
                         min="{{ number_min }}"
                         value="{{ data[name ~ '_min'] }}"
+                        placeholder="{{ placeholder }}"
                         aria-describedby="{{ id }}-help {{ id }}-error"
                         {% if input_tooltip or min_disabled %}
                             disabled
@@ -721,6 +738,7 @@ with_indicator: display a loading indicator, optional
                         step="1"
                         max="{{ number_max }}"
                         value="{{ data[name ~ '_max'] }}"
+                        placeholder="{{ max_placeholder }}"
                         {% if input_tooltip or max_disabled %}
                             disabled
                         {% endif %}
@@ -734,6 +752,7 @@ with_indicator: display a loading indicator, optional
                             selected=[data[name ~ '_min']],
                             disabled=disabled,
                             search_disabled=true,
+                            placeholder=placeholder,
                             error=error or (name in errors),
                             tooltip_select=tooltip_select,
                             onchange=onchange,
@@ -747,6 +766,7 @@ with_indicator: display a loading indicator, optional
                         selected=[data[name ~ '_max']],
                         disabled=disabled,
                         search_disabled=true,
+                        placeholder=max_placeholder,
                         error=error or (name in errors),
                         tooltip_select=tooltip_select,
                         onchange=onchange,
@@ -1444,6 +1464,8 @@ with_indicator: display a loading indicator, optional
     number_max='',
     min_disabled=false,
     max_disabled=false,
+    min_placeholder='',
+    max_placeholder='',
     input_tooltip='',
     data={},
     errors={},
@@ -1459,6 +1481,8 @@ with_indicator: display a loading indicator, optional
         number_max=number_max,
         min_disabled=min_disabled,
         max_disabled=max_disabled,
+        placeholder=min_placeholder,
+        max_placeholder=max_placeholder,
         input_tooltip=input_tooltip,
         data=data,
         errors=errors,
@@ -1473,6 +1497,8 @@ with_indicator: display a loading indicator, optional
     tooltip_text='',
     select_options={},
     input_tooltip='',
+    min_placeholder='',
+    max_placeholder='',
     data={},
     errors={},
     disabled=false
@@ -1485,6 +1511,8 @@ with_indicator: display a loading indicator, optional
         help_text=help_text,
         select_options=select_options,
         input_tooltip=input_tooltip,
+        placeholder=min_placeholder,
+        max_placeholder=max_placeholder,
         data=data,
         errors=errors,
         disabled=disabled,
@@ -1614,7 +1642,7 @@ with_indicator: display a loading indicator, optional
             options=options,
             selected=selected,
             multiple=true,
-            multiple_placeholder=placeholder,
+            placeholder=placeholder,
         ) }}
         <script>
             $('#{{ id }}-select').on('select2:selecting', function(e) {
