@@ -36,9 +36,6 @@ msgstr "Indemnités d'arbitrage"
 msgid "At least one league is expected."
 msgstr "Au moins une ligue est attendue."
 
-msgid "At least one licence type is expected."
-msgstr "Au moins un type de licence est attendu."
-
 msgid "Auto-upload disabled"
 msgstr "Mise en ligne automatique désactivée"
 
@@ -557,4 +554,7 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] "{count} ligue représentée"
 msgstr[1] "{count} ligues représentées"
+
+#~ msgid "At least one licence type is expected."
+#~ msgstr "Au moins un type de licence est attendu."
 

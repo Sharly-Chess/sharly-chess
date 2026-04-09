@@ -267,7 +267,7 @@ class AgeCategoryTournamentCriterion(TournamentCriterion[dict[str, str | None]])
         )
 
     def get_select_options(self, event: 'Event') -> dict[str, str]:
-        return {'': '-'} | {
+        return {
             category.id: category.name
             for category in event.player_categories
             if category != NoCategory()
