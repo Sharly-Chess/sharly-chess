@@ -36,9 +36,6 @@ msgstr ""
 msgid "At least one league is expected."
 msgstr ""
 
-msgid "At least one licence type is expected."
-msgstr ""
-
 msgid "Auto-upload disabled"
 msgstr ""
 

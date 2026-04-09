@@ -3322,12 +3322,6 @@ msgstr "Mexique"
 msgid "Min *** MINIMUM"
 msgstr "Min"
 
-msgid "Minimum and maximum age categories (included)."
-msgstr "Catégories d'age minimale et maximale (incluses)."
-
-msgid "Minimum and maximum ratings (included)."
-msgstr "Classement minimal et maximal (inclus)."
-
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
 
