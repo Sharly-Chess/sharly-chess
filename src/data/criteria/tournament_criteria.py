@@ -213,10 +213,12 @@ class AgeCategoryTournamentCriterion(TournamentCriterion[dict[str, str | None]])
         field = self.form_key
         min_category: PlayerCategory | None = None
         max_category: PlayerCategory | None = None
+        min_id = WebContext.form_data_to_str(data, field + '_min')
+        max_id = WebContext.form_data_to_str(data, field + '_max')
         try:
-            if min_id := WebContext.form_data_to_str(data, field + '_min'):
+            if min_id and min_id != '__placeholder__':
                 min_category = PlayerCategory.from_id(min_id)
-            if max_id := WebContext.form_data_to_str(data, field + '_max'):
+            if max_id and max_id != '__placeholder__':
                 max_category = PlayerCategory.from_id(max_id)
         except ValueError:
             errors[field] = 'Unknown category ID.'
