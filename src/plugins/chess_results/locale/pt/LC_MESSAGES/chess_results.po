@@ -7,18 +7,6 @@ msgid "Auto-upload enabled"
 msgstr "Auto-upload habilitado"
 
 #, ai_translation
-msgid "Auto-upload results"
-msgstr "Resultados de auto-upload"
-
-#, ai_translation
-msgid "Auto-upload:"
-msgstr "Auto-upload:"
-
-#, ai_translation
-msgid "Automatic"
-msgstr "Automático"
-
-#, ai_translation
 msgid "Chess-Results.com"
 msgstr "Chess-Results.com"
 
@@ -27,158 +15,233 @@ msgid "Chess-Results.com only displays {max} tie-breaks. However, the rankings r
 msgstr "Chess-Results.com exibe apenas {max} tie-breaks. No entanto, os rankings permanecem os mesmos que no Sharly Chess."
 
 #, ai_translation
+msgid "Chess-Results.com upload"
+msgstr "Chess-Results.com upload"
+
+#, ai_translation
 msgid "Close"
 msgstr "Fechar"
 
 #, ai_translation
-msgid "Disabled"
-msgstr "Deficientes"
+msgid "Configuration page of the tournament."
+msgstr "Página de configuração do torneio."
 
 #, ai_translation
 msgid "E.g.: €1000 in prizes, FIDE rated, 2 byes 1/2 possible."
 msgstr "Por exemplo: 1000 em prêmios, FIDE avaliado, 2 byes 1/2 possível."
 
 #, ai_translation
-msgid "Enabled"
-msgstr "Ativado"
-
-#, ai_translation
-msgid "Error uploading tournament"
-msgstr "Erro ao carregar o torneio"
+msgid "Failure"
+msgstr "Falha"
 
 #, ai_translation
 msgid "Last upload"
 msgstr "ltimo upload"
 
 #, ai_translation
-msgid "Manage"
-msgstr "Gerir"
+msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
+msgstr "ltima tentativa de upload falhou em {last_attempt_date} em {last_attempt_time} (detalhes: {details})."
 
 #, ai_translation
-msgid "Manual"
-msgstr "Manual"
+msgid "Modified"
+msgstr "Modificado"
 
 #, ai_translation
-msgid "Minimum delay between uploads (minutes):"
-msgstr "Atraso mínimo entre uploads (minutos):"
-
-#, ai_translation
-msgid "Mode"
-msgstr "Modo"
-
-#, ai_translation
-msgid "Modified since last upload"
-msgstr "Modificado desde o último upload"
-
-#, ai_translation
-msgid "Modified, but no internet connection"
-msgstr "Modificado, mas sem conexão com a internet"
+msgid "Never uploaded"
+msgstr "Nunca enviado"
 
 #, ai_translation
 msgid "No Chess-Results ID defined for tournament [{tournament}]."
 msgstr "No Chess-Results ID definido para o torneio [{tournament}]."
 
 #, ai_translation
-msgid "No internet connection"
-msgstr "Sem conexão à internet"
+msgid "No changes detected since the last upload."
+msgstr "Nenhuma alteração foi detectada desde o último upload."
+
+#, ai_translation
+msgid "Ongoing"
+msgstr "Em curso"
+
+#, ai_translation
+msgid "Pending"
+msgstr "Pendente"
+
+#, ai_translation
+msgid "Public page of the tournament."
+msgstr "Página pública do torneio."
 
 #, ai_translation
 msgid "Remark:"
 msgstr "Observação:"
 
 #, ai_translation
-msgid "Results upload OK"
-msgstr "Resultados upload OK"
-
-#, ai_translation
 msgid "Scan to access the tournament on Chess-Results.com."
 msgstr "Scan para acessar o torneio em Chess-Results.com."
-
-#, ai_translation
-msgid "Site"
-msgstr "Site"
 
 #, ai_translation
 msgid "State:"
 msgstr "Estado:"
 
 #, ai_translation
-msgid "Status"
-msgstr "Estado"
-
-#, ai_translation
-msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
-msgstr "O atraso deve ser de pelo menos {min_delay} minutos para evitar sobrecarregar o servidor de Resultados de Xadrez."
+msgid "Statuses"
+msgstr "Status"
 
 #, ai_translation
 msgid "Tournament"
 msgstr "Torneio Torneio"
 
 #, ai_translation
-msgid "Tournament finished, upload no longer possible."
-msgstr "Terminado o torneio, o upload não é mais possível."
+msgid "Tournament has been modified since the last upload."
+msgstr "O torneio foi modificado desde o último upload."
 
 #, ai_translation
-msgid "Tournament modified, awaiting auto-upload"
-msgstr "Modificado, aguardando auto-upload Torneio"
-
-#, ai_translation
-msgid "Tournament not modified since last upload"
-msgstr "Torneio não modificado desde o último upload"
-
-#, ai_translation
-msgid "Tournament not yet uploaded."
-msgstr "Torneio ainda não carregado."
+msgid "Tournament is currently being uploaded."
+msgstr "Atualmente, o torneio está sendo carregado."
 
 #, ai_translation, python-format
 msgid "Tournament number: %(tnr)s"
 msgstr "Número do torneio: %(tnr)s"
 
 #, ai_translation
-msgid "Tournament on Chess-results.com"
-msgstr "Torneio de Resultados de Xads em Chess-results.com"
+msgid "Tournament on Chess-Results.com"
+msgstr "Torneio Chess-Results.com em Chess-Results.com"
 
 #, ai_translation
-msgid "Tournament previously uploaded."
-msgstr "Torneio previamente carregado."
+msgid "Tournament successfully uploaded."
+msgstr "Torneio carregado com sucesso."
 
 #, ai_translation
-msgid "Unable to upload tournament."
-msgstr "Não foi possível carregar o torneio."
+msgid "Tournament upload failed, consult the Chess-Results.com modal for more details."
+msgstr "O upload do torneio falhou, consulte o modal Chess-Results.com para mais detalhes."
 
 #, ai_translation
-msgid "Unknown error when uploading results."
-msgstr "Erro desconhecido ao fazer upload de resultados."
+msgid "Tournament upload has been planned."
+msgstr "O upload do torneio foi planejado."
+
+#, ai_translation
+msgid "Up to date"
+msgstr "Até à data"
 
 #, ai_translation
 msgid "Upload"
 msgstr "Upload"
 
 #, ai_translation
+msgid "Upload all tournaments"
+msgstr "Fazer upload de todos os torneios"
+
+#, ai_translation, python-format
+msgid "Upload automatically every %(delay)d minutes."
+msgstr "Faça o upload automaticamente a cada %(delay)d minutos."
+
+#, ai_translation
 msgid "Upload to Chess-Results.com"
 msgstr "Enviar para Chess-Results.com"
-
-#, ai_translation
-msgid "Upload tournaments now"
-msgstr "Upload de torneios agora"
-
-#, ai_translation
-msgid "Upload tournaments to Chess-Results.com"
-msgstr "Upload de torneios para Chess-Results.com"
 
 #, ai_translation
 msgid "Uploading of tournaments to Chess-Results.com."
 msgstr "Upload de torneios para Chess-Results.com."
 
 #, ai_translation
-msgid "Uploading tournament…"
-msgstr "Carregando torneio..."
-
-#, ai_translation
-msgid "Use default - {option}"
-msgstr "Padrão de uso - {option}"
-
-#, ai_translation
 msgid "You are not allowed to publish results."
 msgstr "Você não tem permissão para publicar resultados."
+
+#, ai_translation
+msgid "consult the logs"
+msgstr "Consultar os logs"
+
+#, ai_translation
+msgid "no internet connection"
+msgstr "sem conexão à internet"
+
+#, ai_translation
+msgid "tournament finished, upload no longer possible"
+msgstr "Terminado o torneio, o upload não é mais possível"
+
+#~ msgid "Auto-upload results"
+#~ msgstr "Resultados de auto-upload"
+
+#~ msgid "Auto-upload:"
+#~ msgstr "Auto-upload:"
+
+#~ msgid "Automatic"
+#~ msgstr "Automático"
+
+#~ msgid "Disabled"
+#~ msgstr "Deficientes"
+
+#~ msgid "Enabled"
+#~ msgstr "Ativado"
+
+#~ msgid "Error uploading tournament"
+#~ msgstr "Erro ao carregar o torneio"
+
+#~ msgid "Manage"
+#~ msgstr "Gerir"
+
+#~ msgid "Manual"
+#~ msgstr "Manual"
+
+#~ msgid "Minimum delay between uploads (minutes):"
+#~ msgstr "Atraso mínimo entre uploads (minutos):"
+
+#~ msgid "Mode"
+#~ msgstr "Modo"
+
+#~ msgid "Modified since last upload"
+#~ msgstr "Modificado desde o último upload"
+
+#~ msgid "Modified, but no internet connection"
+#~ msgstr "Modificado, mas sem conexão com a internet"
+
+#~ msgid "No internet connection"
+#~ msgstr "Sem conexão à internet"
+
+#~ msgid "Results upload OK"
+#~ msgstr "Resultados upload OK"
+
+#~ msgid "Site"
+#~ msgstr "Site"
+
+#~ msgid "Status"
+#~ msgstr "Estado"
+
+#~ msgid "The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server."
+#~ msgstr "O atraso deve ser de pelo menos {min_delay} minutos para evitar sobrecarregar o servidor de Resultados de Xadrez."
+
+#~ msgid "Tournament finished, upload no longer possible."
+#~ msgstr "Terminado o torneio, o upload não é mais possível."
+
+#~ msgid "Tournament modified, awaiting auto-upload"
+#~ msgstr "Modificado, aguardando auto-upload Torneio"
+
+#~ msgid "Tournament not modified since last upload"
+#~ msgstr "Torneio não modificado desde o último upload"
+
+#~ msgid "Tournament not yet uploaded."
+#~ msgstr "Torneio ainda não carregado."
+
+#~ msgid "Tournament on Chess-results.com"
+#~ msgstr "Torneio de Resultados de Xads em Chess-results.com"
+
+#~ msgid "Tournament previously uploaded."
+#~ msgstr "Torneio previamente carregado."
+
+#~ msgid "Unable to upload tournament."
+#~ msgstr "Não foi possível carregar o torneio."
+
+#~ msgid "Unknown error when uploading results."
+#~ msgstr "Erro desconhecido ao fazer upload de resultados."
+
+#~ msgid "Upload tournaments now"
+#~ msgstr "Upload de torneios agora"
+
+#~ msgid "Upload tournaments to Chess-Results.com"
+#~ msgstr "Upload de torneios para Chess-Results.com"
+
+#~ msgid "Uploading tournament…"
+#~ msgstr "Carregando torneio..."
+
+#~ msgid "Use default - {option}"
+#~ msgstr "Padrão de uso - {option}"
 

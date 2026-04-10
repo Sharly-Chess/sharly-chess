@@ -131,6 +131,10 @@ msgid "Error while uploading tournament [{tournament}], consult the logs for mor
 msgstr "Erro ao carregar o torneio [{tournament}], consulte os logs para mais detalhes."
 
 #, ai_translation
+msgid "Event [{event}] is not connected to a Sharly-Chess.com event."
+msgstr "O evento [{event}] não está ligado a um evento do Sharly-Chess.com."
+
+#, ai_translation
 msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
 msgstr "Evento [{event}] conectado com sucesso a Sharly-Chess.com!"
 
@@ -145,6 +149,10 @@ msgstr "O evento foi arquivado em Sharly-Chess.com, não pode mais ser modificad
 #, ai_translation
 msgid "Event is not connected to a Sharly-Chess.com event."
 msgstr "O evento Sharly-Chess.com não está conectado a um evento Sharly-Chess.com."
+
+#, ai_translation
+msgid "Event on Sharly-Chess.com"
+msgstr "Evento em Sharly-Chess.com"
 
 #, ai_translation
 msgid "FIDE ID"
@@ -255,6 +263,10 @@ msgid "Phone"
 msgstr "Telefone"
 
 #, ai_translation
+msgid "Player [{player}] could not be deleted from Sharly-Chess.com."
+msgstr "O jogador [{player}] não pôde ser eliminado de Sharly-Chess.com."
+
+#, ai_translation
 msgid "Player [{player}] deleted."
 msgstr "Jogador [{player}] excluído."
 
@@ -273,6 +285,10 @@ msgstr "Duplicações do jogador detectadas durante a última tentativa de sincr
 #, ai_translation
 msgid "Player has already been paired in the tournament, it no longer can be deleted."
 msgstr "O jogador já foi emparelhado no torneio, ele não pode mais ser excluído."
+
+#, ai_translation
+msgid "Players in Sharly-Chess.com that can't be created in the local Sharly Chess application because they already exist."
+msgstr "Jogadores em Sharly-Chess.com que não podem ser criados no aplicativo local Sharly Chess porque eles já existem."
 
 #, ai_translation
 msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
@@ -323,6 +339,14 @@ msgid "Rounds"
 msgstr "Rodadas"
 
 #, ai_translation
+msgid "Scan to access the event on Sharly-Chess.com."
+msgstr "Scan para acessar o evento em Sharly-Chess.com."
+
+#, ai_translation
+msgid "Scan to access the tournament on Sharly-Chess.com."
+msgstr "Scan para acessar o torneio em Sharly-Chess.com."
+
+#, ai_translation
 msgid "Schedule"
 msgstr "Horário"
 
@@ -345,6 +369,10 @@ msgstr "Sharly-Chess.com não está acessível no momento."
 #, ai_translation
 msgid "Sharly-Chess.com player conflicts"
 msgstr "Conflitos entre jogadores de Sharly-Chess.com"
+
+#, ai_translation
+msgid "Sharly-Chess.com players"
+msgstr "Sharly-Chess.com jogadores"
 
 #, ai_translation
 msgid "Sharly-Chess.com tournament"
@@ -399,8 +427,12 @@ msgid "Tournament"
 msgstr "Torneio Torneio"
 
 #, ai_translation
+msgid "Tournament [{tournament}] is not connected to a Sharly-Chess.com tournament."
+msgstr "O torneio [{tournament}] não está ligado a um torneio Sharly-Chess.com."
+
+#, ai_translation
 msgid "Tournament [{tournament}] successfully uploaded."
-msgstr "[{tournament}] [0) [0] [0] [0] [0] [0] [0] [0] [0] [0] [0]"
+msgstr "Torneio [{tournament}] carregado com sucesso."
 
 #, ai_translation
 msgid "Tournament has been modified since the last upload."
@@ -417,6 +449,10 @@ msgstr "A importação do torneio falhou, consulte os registros para mais detalh
 #, ai_translation
 msgid "Tournament is currently being uploaded."
 msgstr "Atualmente, o torneio está sendo carregado."
+
+#, ai_translation
+msgid "Tournament on Sharly-Chess.com"
+msgstr "Torneio de Sharly-Chess.com em Sharly-Chess.com"
 
 #, ai_translation
 msgid "Tournament successfully imported."

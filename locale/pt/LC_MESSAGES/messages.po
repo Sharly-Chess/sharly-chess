@@ -244,6 +244,39 @@ msgstr "(substitua [%(object_uniq_id)s])"
 msgid "*** Doc Link"
 msgstr "*** Doc Link"
 
+msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
+msgstr "SC_C"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
+msgstr "SC_I"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
+msgstr "SC_D"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB"
+msgstr "SC_F"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB"
+msgstr "SC_P"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB"
+msgstr "SC_J"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
+msgstr "SC_M"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
+msgstr "SC_R"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
+msgstr "SC_L"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TIMERS TAB"
+msgstr "SC_E"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
+msgstr "SC_T"
+
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -381,10 +414,6 @@ msgstr "<smart_count> segundo |||| <smart_count> segundos"
 #, ai_translation
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr "<smart_count> semana |||| <smart_count> semanas"
-
-#, ai_translation
-msgid "A URL, or the path to the rules file on the server, in PDF format."
-msgstr "Uma URL, ou o caminho para o arquivo de regras no servidor, em formato PDF."
 
 #, ai_translation
 msgid "A file is expected."
@@ -1646,9 +1675,8 @@ msgstr "Emparelhamentos complementares gerados com sucesso!"
 msgid "Complementary prize"
 msgstr "Prémio complementar"
 
-#, ai_translation
-msgid "Configuration"
-msgstr "Configuração"
+msgid "Configuration *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>C</u>onfiguração"
 
 #, ai_translation
 msgid "Configure the category sets, which are available for all events."
@@ -1853,10 +1881,6 @@ msgstr "Criar hora"
 #, ai_translation
 msgid "Create hours from tournament"
 msgstr "Criar horas do torneio"
-
-#, ai_translation
-msgid "Create manually"
-msgstr "Criar manualmente"
 
 #, ai_translation
 msgid "Create permission"
@@ -2326,6 +2350,9 @@ msgstr "Controladores de exibição"
 msgid "Display controllers ({num})"
 msgstr "Controladores de exibição ({num})"
 
+msgid "Display controllers ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "Controlador da expos<u>i</u>ção ({num})"
+
 #, ai_translation
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr "Os controladores de exibição permitem que você controle telas em seu evento a partir do seu servidor (ou qualquer dispositivo permitido)."
@@ -2418,6 +2445,9 @@ msgstr "Documento:"
 msgid "Documents"
 msgstr "Documentos"
 
+msgid "Documents *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>D</u>ocumentos"
+
 #, ai_translation
 msgid "Dominica"
 msgstr "Dominica"
@@ -2455,6 +2485,14 @@ msgid "Draw"
 msgstr "Desenhar"
 
 #, ai_translation
+msgid "Duplicate"
+msgstr "Duplicado"
+
+#, ai_translation, python-format
+msgid "Duplicate event [%(event)s]"
+msgstr "Evento duplicado [%(event)s]"
+
+#, ai_translation
 msgid "Duplicate the account."
 msgstr "Duplicar a conta."
 
@@ -2483,12 +2521,8 @@ msgid "Duplicate the tournament."
 msgstr "Duplicar o torneio."
 
 #, ai_translation
-msgid "Duplicate with players"
-msgstr "Duplicar com jogadores"
-
-#, ai_translation
-msgid "Duplicate without players"
-msgstr "Duplicar sem jogadores"
+msgid "Duplication settings"
+msgstr "Configurações de duplicação"
 
 #, ai_translation
 msgid "Duration (min):"
@@ -2609,10 +2643,6 @@ msgstr "Por exemplo: Início do check-in em %%s"
 #, ai_translation
 msgid "E.g.: World championship"
 msgstr "Por exemplo: Campeonato Mundial"
-
-#, ai_translation
-msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
-msgstr "Por exemplo: c:chesstournamentsmainrules.pdf"
 
 #, ai_translation
 msgid "E.g.: https://my.club.us/tournament.jpg"
@@ -3030,9 +3060,8 @@ msgstr "Não foi possível ler [{download_url}]: [{ex}]."
 msgid "Families"
 msgstr "Famílias"
 
-#, ai_translation
-msgid "Families ({num})"
-msgstr "Famílias ({num})"
+msgid "Families ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>F</u>amílias ({num})"
 
 #, ai_translation
 msgid "Families are used to split a large amount of information across multiple screens."
@@ -3104,10 +3133,6 @@ msgstr "Fiji"
 #, ai_translation
 msgid "File"
 msgstr "Ficheiro"
-
-#, ai_translation
-msgid "File [{file}] not found."
-msgstr "Arquivo [{file}] não encontrado."
 
 #, ai_translation
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
@@ -3494,6 +3519,10 @@ msgid "Identity"
 msgstr "Identidade"
 
 #, ai_translation
+msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
+msgstr "Se definido, todas as datas dos torneios e timers serão atualizadas relativamente a esta data."
+
+#, ai_translation
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr "Se você não pode controlar quem tem acesso à rede à qual está conectado, é altamente recomendável não criar nenhuma conta."
 
@@ -3594,6 +3623,10 @@ msgid "Include non-monetary prizes"
 msgstr "Prêmios não monetários"
 
 #, ai_translation
+msgid "Include pairings"
+msgstr "Incluir pares"
+
+#, ai_translation
 msgid "Include players"
 msgstr "Incluir jogadores"
 
@@ -3608,10 +3641,6 @@ msgstr "Inclui todos os outros níveis de acesso e concede acesso total ao aplic
 #, ai_translation
 msgid "Incorrect installation, exiting."
 msgstr "Instalação incorreta, saída."
-
-#, ai_translation
-msgid "Incorrect path [{path}]."
-msgstr "Caminho incorreto [{path}]."
 
 #, ai_translation
 msgid "Increment (sec):"
@@ -3726,6 +3755,10 @@ msgid "Invalid federation [{federation}]."
 msgstr "Federação inválida [{federation}]."
 
 #, ai_translation
+msgid "Invalid file extension [{extension}] (expected: {expected})."
+msgstr "Extensão do ficheiro inválido [{extension}] (esperado: {expected})."
+
+#, ai_translation
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr "Número de cartão fixo inválido [{fixed_board}]."
 
@@ -3764,6 +3797,10 @@ msgstr "Valor inválido [{value}] para o campo [{field}] (esperado um de [{expec
 #, ai_translation
 msgid "Invalid value [{value}]."
 msgstr "Valor inválido [{value}]."
+
+#, ai_translation
+msgid "Invalid year of birth (expected: {min} - {max})."
+msgstr "Ano de nascimento inválido (esperado: {min} - {max})."
 
 #, ai_translation
 msgid "Iran"
@@ -4364,10 +4401,6 @@ msgid "Nauru"
 msgstr "Nauru"
 
 #, ai_translation
-msgid "Navigation"
-msgstr "Navegação"
-
-#, ai_translation
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Nem tela nem rotator atualmente atribuído"
 
@@ -4454,10 +4487,6 @@ msgstr "Próxima ronda"
 #, ai_translation
 msgid "Next round bye"
 msgstr "Próxima rodada bye"
-
-#, ai_translation
-msgid "Next tournament"
-msgstr "Próximo torneio"
 
 #, ai_translation
 msgid "Nicaragua"
@@ -4658,10 +4687,6 @@ msgstr "Não há papéis definidos."
 #, ai_translation
 msgid "No rotators"
 msgstr "Não há rotadores"
-
-#, ai_translation
-msgid "No rules file set"
-msgstr "Sem regras conjunto de arquivos"
 
 #, ai_translation
 msgid "No screen families"
@@ -5143,6 +5168,9 @@ msgstr "Emparelhamento-Atribuído Bye atribuído ao jogador [{player}]."
 msgid "Pairings"
 msgstr "Pares"
 
+msgid "Pairings *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>P</u>ares"
+
 #, ai_translation
 msgid "Pairings by board"
 msgstr "Emparelhamentos por tabuleiro"
@@ -5439,6 +5467,9 @@ msgstr "Jogadores (nenhuma agora)"
 msgid "Players ({num})"
 msgstr "Jogadores ({num})"
 
+msgid "Players ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>J</u>ogadores ({num})"
+
 #, ai_translation
 msgid "Players can't be overwritten once the tournament has started."
 msgstr "Os jogadores não podem ser substituídos assim que o torneio começar."
@@ -5540,10 +5571,6 @@ msgid "Please choose the tournament."
 msgstr "Por favor, escolha o torneio."
 
 #, ai_translation
-msgid "Please close the time control editor before saving."
-msgstr "Por favor, feche o editor de controle de tempo antes de salvar."
-
-#, ai_translation
 msgid "Please enter the image URL."
 msgstr "Por favor, insira a URL da imagem."
 
@@ -5578,6 +5605,10 @@ msgstr "Por favor, forneça um endereço de e-mail válido."
 #, ai_translation
 msgid "Please validate the global configuration of the application."
 msgstr "Por favor, valide a configuração global do aplicativo."
+
+#, ai_translation
+msgid "Please validate the time control to continue."
+msgstr "Por favor, valide o controle de tempo para continuar."
 
 #, ai_translation
 msgid "Please wait until the application settings have been set on the server…"
@@ -5639,10 +5670,6 @@ msgstr "Presente"
 msgid "Previous round"
 msgstr "Rodada anterior"
 
-#, ai_translation
-msgid "Previous tournament"
-msgstr "Torneio Anterior"
-
 #, fuzzy
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prize"
@@ -5702,6 +5729,9 @@ msgstr "Partilha de prémios"
 #, ai_translation
 msgid "Prizes"
 msgstr "Prémios"
+
+msgid "Prizes *** WITH_SHORTCUT_INDICATION"
+msgstr "Pré<u>m</u>ios"
 
 #, ai_translation
 msgid "Prizes can only be shared for the main category."
@@ -6127,6 +6157,9 @@ msgstr "Rotadores"
 msgid "Rotators ({num})"
 msgstr "Rotadores ({num})"
 
+msgid "Rotators ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>R</u>otadores ({num})"
+
 #, ai_translation
 msgid "Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event."
 msgstr "Os rotadores permitem que você gire através de várias telas, ou famílias de telas, para exibir muitas informações em seu evento."
@@ -6218,18 +6251,6 @@ msgstr "Linhas por tela:"
 #, fuzzy
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
-
-#, ai_translation
-msgid "Rules"
-msgstr "Regras"
-
-#, ai_translation
-msgid "Rules file location:"
-msgstr "Localização do arquivo de regras:"
-
-#, ai_translation
-msgid "Rules file set"
-msgstr "conjunto de arquivos de regras"
 
 #, ai_translation
 msgid "Russia"
@@ -6599,9 +6620,8 @@ msgstr "Singapura"
 msgid "Single Screens"
 msgstr "Telas nicas"
 
-#, ai_translation
-msgid "Single Screens ({num})"
-msgstr "Telas nicas ({num})"
+msgid "Single Screens ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "Te<u>l</u>as nicas ({num})"
 
 #, ai_translation
 msgid "Size ({unit}): {width}x{height}"
@@ -6774,6 +6794,10 @@ msgstr "Sistema suíço padrão"
 #, ai_translation
 msgid "Standard:"
 msgstr "Padrão:"
+
+#, ai_translation
+msgid "Start date"
+msgstr "Data de início"
 
 #, ai_translation, python-format
 msgid "Start of round {} in %%s"
@@ -7370,16 +7394,16 @@ msgid "This field can't be updated once the tournament has started."
 msgstr "Este campo não pode ser atualizado assim que o torneio começar."
 
 #, ai_translation
-msgid "This field is only valid without date of birth."
-msgstr "Este campo só é válido sem data de nascimento."
-
-#, ai_translation
 msgid "This field is required (except for rounds)."
 msgstr "Este campo é necessário (exceto para rodadas)."
 
 #, ai_translation
 msgid "This field is required."
 msgstr "Este campo é necessário."
+
+#, ai_translation
+msgid "This file is incorrectly formatted, the extension has most likely been changed."
+msgstr "Este arquivo está formatado incorretamente, a extensão provavelmente foi alterada."
 
 #, ai_translation
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
@@ -7557,9 +7581,8 @@ msgstr "Temporizador: nenhum"
 msgid "Timers"
 msgstr "timers"
 
-#, ai_translation
-msgid "Timers ({num})"
-msgstr "Temporizadores ({num})"
+msgid "Timers ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "T<u>e</u>mporizadores ({num})"
 
 #, ai_translation
 msgid "Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event."
@@ -7697,9 +7720,8 @@ msgstr "Torneio: não definido"
 msgid "Tournaments"
 msgstr "Torneios"
 
-#, ai_translation
-msgid "Tournaments ({num})"
-msgstr "Torneios ({num})"
+msgid "Tournaments ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>T</u>orneios ({num})"
 
 #, ai_translation
 msgid "Tournaments are finished, you can not add players any longer."
@@ -8350,10 +8372,6 @@ msgid "Woman International Master"
 msgstr "Mestre Internacional Mulher"
 
 #, ai_translation
-msgid "Wrong file extension [{ext}] ([pdf] expected)."
-msgstr "Extensão errada do ficheiro [{ext}] ([pdf] esperado)."
-
-#, ai_translation
 msgid "XLSX format"
 msgstr "Formato XLSX"
 
@@ -8953,4 +8971,70 @@ msgstr "½ - 0 (U)"
 #, ai_translation
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (U)"
+
+#~ msgid "A URL, or the path to the rules file on the server, in PDF format."
+#~ msgstr "Uma URL, ou o caminho para o arquivo de regras no servidor, em formato PDF."
+
+#~ msgid "Configuration"
+#~ msgstr "Configuração"
+
+#~ msgid "Create manually"
+#~ msgstr "Criar manualmente"
+
+#~ msgid "Duplicate with players"
+#~ msgstr "Duplicar com jogadores"
+
+#~ msgid "Duplicate without players"
+#~ msgstr "Duplicar sem jogadores"
+
+#~ msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
+#~ msgstr "Por exemplo: c:chesstournamentsmainrules.pdf"
+
+#~ msgid "Families ({num})"
+#~ msgstr "Famílias ({num})"
+
+#~ msgid "File [{file}] not found."
+#~ msgstr "Arquivo [{file}] não encontrado."
+
+#~ msgid "Incorrect path [{path}]."
+#~ msgstr "Caminho incorreto [{path}]."
+
+#~ msgid "Navigation"
+#~ msgstr "Navegação"
+
+#~ msgid "Next tournament"
+#~ msgstr "Próximo torneio"
+
+#~ msgid "No rules file set"
+#~ msgstr "Sem regras conjunto de arquivos"
+
+#~ msgid "Please close the time control editor before saving."
+#~ msgstr "Por favor, feche o editor de controle de tempo antes de salvar."
+
+#~ msgid "Previous tournament"
+#~ msgstr "Torneio Anterior"
+
+#~ msgid "Rules"
+#~ msgstr "Regras"
+
+#~ msgid "Rules file location:"
+#~ msgstr "Localização do arquivo de regras:"
+
+#~ msgid "Rules file set"
+#~ msgstr "conjunto de arquivos de regras"
+
+#~ msgid "Single Screens ({num})"
+#~ msgstr "Telas nicas ({num})"
+
+#~ msgid "This field is only valid without date of birth."
+#~ msgstr "Este campo só é válido sem data de nascimento."
+
+#~ msgid "Timers ({num})"
+#~ msgstr "Temporizadores ({num})"
+
+#~ msgid "Tournaments ({num})"
+#~ msgstr "Torneios ({num})"
+
+#~ msgid "Wrong file extension [{ext}] ([pdf] expected)."
+#~ msgstr "Extensão errada do ficheiro [{ext}] ([pdf] esperado)."
 
