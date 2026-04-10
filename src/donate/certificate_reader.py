@@ -53,8 +53,7 @@ class DonationCertificateReader:
                 donation_data: DonationCertificate = DonationCertificate.from_dict(
                     json.load(f)
                 )
-        except FileNotFoundError as e:
-            logger.exception(e)
+        except FileNotFoundError:
             return None
         if not donation_data.signature:
             logger.exception(
