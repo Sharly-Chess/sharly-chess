@@ -18,9 +18,9 @@ from data.print_documents.place_cards.types import (
 )
 from data.print_documents.player_sorters import (
     GridPlayerSorter,
-    NameGridPlayerSorter,
     ListPlayerSorter,
     NameListPlayerSorter,
+    RankGridPlayerSorter,
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
@@ -229,7 +229,7 @@ class GridPlayerSortPrintOption(PrintOption):
 
     @property
     def default_value(self) -> Any:
-        return NameGridPlayerSorter.static_id()
+        return RankGridPlayerSorter.static_id()
 
     @property
     def grid_player_sorter_options(self) -> dict[str, str]:

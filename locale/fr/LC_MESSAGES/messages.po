@@ -228,6 +228,39 @@ msgstr "(remplace [%(object_uniq_id)s])"
 msgid "*** Doc Link"
 msgstr "https://sharly-chess.com/fr/bien-demarrer/"
 
+msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
+msgstr "SC_C"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
+msgstr "SC_I"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
+msgstr "SC_D"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB"
+msgstr "SC_F"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB"
+msgstr "SC_A"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB"
+msgstr "SC_J"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
+msgstr "SC_X"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
+msgstr "SC_R"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
+msgstr "SC_S"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TIMERS TAB"
+msgstr "SC_M"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
+msgstr "SC_T"
+
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -335,9 +368,6 @@ msgstr "<smart_count> seconde |||| <smart_count> secondes"
 
 msgid "<smart_count> week |||| <smart_count> weeks"
 msgstr "<smart_count> semaine |||| <smart_count> semaines"
-
-msgid "A URL, or the path to the rules file on the server, in PDF format."
-msgstr "Une URL, ou l'emplacement du règlement sur le serveur, au format PDF."
 
 msgid "A file is expected."
 msgstr "Un fichier est attendu."
@@ -1305,8 +1335,8 @@ msgstr "Appariements complémentaires générés avec succès !"
 msgid "Complementary prize"
 msgstr "Prix complémentaire"
 
-msgid "Configuration"
-msgstr "Configuration"
+msgid "Configuration *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>C</u>onfiguration"
 
 msgid "Configure the category sets, which are available for all events."
 msgstr "Configurer les ensembles de catégories, qui sont disponibles pour tous les évènements."
@@ -1460,9 +1490,6 @@ msgstr "Créer un horaire"
 
 msgid "Create hours from tournament"
 msgstr "Créer les horaires depuis un tournoi"
-
-msgid "Create manually"
-msgstr "Créer manuellement"
 
 msgid "Create permission"
 msgstr "Créer une permission"
@@ -1821,6 +1848,9 @@ msgstr "Pilotes d'afficheurs"
 msgid "Display controllers ({num})"
 msgstr "Pilotes d'afficheurs ({num})"
 
+msgid "Display controllers ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "P<u>i</u>lotes d'afficheurs ({num})"
+
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr "Les pilotes d'afficheurs vous permettent de contrôler les afficheurs de votre évènement depuis le serveur (ou n'importe quel appareil autorisé)."
 
@@ -1892,6 +1922,9 @@ msgstr "Document :"
 msgid "Documents"
 msgstr "Documents"
 
+msgid "Documents *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>D</u>ocuments"
+
 msgid "Dominica"
 msgstr "Dominique"
 
@@ -1919,6 +1952,13 @@ msgstr "Faites glisser les ensembles pour les ordonner."
 msgid "Draw"
 msgstr "Nulle"
 
+msgid "Duplicate"
+msgstr "Dupliquer"
+
+#, python-format
+msgid "Duplicate event [%(event)s]"
+msgstr "Dupliquer l'évènement [%(event)s]"
+
 msgid "Duplicate the account."
 msgstr "Dupliquer le compte."
 
@@ -1940,11 +1980,8 @@ msgstr "Dupliquer le chronomètre."
 msgid "Duplicate the tournament."
 msgstr "Dupliquer le tournoi"
 
-msgid "Duplicate with players"
-msgstr "Dupliquer avec les joueur·euses"
-
-msgid "Duplicate without players"
-msgstr "Dupliquer sans les joueur·euses"
+msgid "Duplication settings"
+msgstr "Paramètres de duplication"
 
 msgid "Duration (min):"
 msgstr "Durée (min) :"
@@ -2044,9 +2081,6 @@ msgstr "Ex. : Début du pointage dans %%s"
 
 msgid "E.g.: World championship"
 msgstr "Ex.: Championnat du monde"
-
-msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
-msgstr "Ex. : c:\\echecs\\tournois\\principal\\reglement.pdf"
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
 msgstr "Ex. : https://mon.club.fr/affiche.jpg"
@@ -2367,8 +2401,8 @@ msgstr "Échec de la lecture de [{download_url}] : [{ex}]."
 msgid "Families"
 msgstr "Familles"
 
-msgid "Families ({num})"
-msgstr "Familles ({num})"
+msgid "Families ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>F</u>amilles ({num})"
 
 msgid "Families are used to split a large amount of information across multiple screens."
 msgstr "Les familles d’écrans sont utilisées pour répartir une grande quantité d’informations sur plusieurs écrans."
@@ -2424,11 +2458,8 @@ msgstr "Fidji"
 msgid "File"
 msgstr "Fichier"
 
-msgid "File [{file}] not found."
-msgstr "Fichier [{file}] non trouvé."
-
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
-msgstr "L'extension du fichier [{suffix}] est invalide (attendu : {expected})."
+msgstr "L'extension du fichier [{suffix}] est invalide (attendue : {expected})."
 
 msgid "Filter out players with a greater rating."
 msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
@@ -2717,6 +2748,9 @@ msgstr "Espagne"
 msgid "Identity"
 msgstr "Identité"
 
+msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
+msgstr "Si définie, toutes les dates des tournois et des chronomètres seront mises à jour relativement à cette date."
+
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr "Si vous ne pouvez pas contrôler qui a accès au réseau auquel vous êtes connecté, il est fortement recommandé de ne pas créer de compte."
 
@@ -2795,6 +2829,9 @@ msgstr "Inclure les catégories inférieures"
 msgid "Include non-monetary prizes"
 msgstr "Inclure les prix non-monétaires"
 
+msgid "Include pairings"
+msgstr "Inclure les appariements"
+
 msgid "Include players"
 msgstr "Inclure les joueur·euses"
 
@@ -2806,9 +2843,6 @@ msgstr "Inclut tous les autres rôles et donne un accès complet à l'applicatio
 
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
-
-msgid "Incorrect path [{path}]."
-msgstr "Chemin incorrect [{path}]."
 
 msgid "Increment (sec):"
 msgstr "Incrément (sec) :"
@@ -2894,6 +2928,9 @@ msgstr "Expression non valide [{expression}]"
 msgid "Invalid federation [{federation}]."
 msgstr "Fédération [{federation}] non valide."
 
+msgid "Invalid file extension [{extension}] (expected: {expected})."
+msgstr "Extension de fichier [{extension}] invalide (attendue : {expected})."
+
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr "Numéro d'échiquier [{fixed_board}] non valide."
 
@@ -2923,6 +2960,9 @@ msgstr "Valeur invalide [{value}] pour le champ [{field}] (attendu : l’une de
 
 msgid "Invalid value [{value}]."
 msgstr "Valeur [{value}] non valide."
+
+msgid "Invalid year of birth (expected: {min} - {max})."
+msgstr "Date de naissance invalide (attendue : {min} - {max})"
 
 msgid "Iran"
 msgstr "Iran"
@@ -3386,9 +3426,6 @@ msgstr "Arbitre National"
 msgid "Nauru"
 msgstr "Nauru"
 
-msgid "Navigation"
-msgstr "Navigation"
-
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
@@ -3456,9 +3493,6 @@ msgstr "Ronde suivante"
 
 msgid "Next round bye"
 msgstr "Absent·e à la prochaine ronde"
-
-msgid "Next tournament"
-msgstr "Tournoi suivant"
 
 msgid "Nicaragua"
 msgstr "Nicaragua"
@@ -3609,9 +3643,6 @@ msgstr "Aucun rôle défini."
 
 msgid "No rotators"
 msgstr "Aucun écran rotatif"
-
-msgid "No rules file set"
-msgstr "Règlement non défini"
 
 msgid "No screen families"
 msgstr "Aucune famille d'écrans"
@@ -3982,6 +4013,9 @@ msgstr "Le·la joueur·euse [{player}] a été désigné·e exempt·e."
 msgid "Pairings"
 msgstr "Appariements"
 
+msgid "Pairings *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>A</u>ppariements"
+
 msgid "Pairings by board"
 msgstr "Appariements par échiquier"
 
@@ -4208,6 +4242,9 @@ msgstr "Joueur·euses (aucun·e actuellement)"
 msgid "Players ({num})"
 msgstr "Joueur·euses ({num})"
 
+msgid "Players ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>J</u>oueur·euses ({num})"
+
 msgid "Players can't be overwritten once the tournament has started."
 msgstr "Les joueur·euses ne peuvent être écrasé·es une fois le tournoi démarré."
 
@@ -4289,9 +4326,6 @@ msgstr "Veuillez choisir le modèle."
 msgid "Please choose the tournament."
 msgstr "Veuillez choisir le tournoi."
 
-msgid "Please close the time control editor before saving."
-msgstr "Veuillez fermer l'éditeur de cadence avant d'enregistrer."
-
 msgid "Please enter the image URL."
 msgstr "Veuillez entrer l'URL de l'image."
 
@@ -4318,6 +4352,9 @@ msgstr "Veuillez fournir une adresse email valide."
 
 msgid "Please validate the global configuration of the application."
 msgstr "Veuillez valider la configuration globale de l'application."
+
+msgid "Please validate the time control to continue."
+msgstr "Merci de valider la cadence avant de continuer."
 
 msgid "Please wait until the application settings have been set on the server…"
 msgstr "La configuration est en cours sur le serveur, veuillez patienter…"
@@ -4367,9 +4404,6 @@ msgstr "Présent·e"
 msgid "Previous round"
 msgstr "Ronde précédente"
 
-msgid "Previous tournament"
-msgstr "Tournoi précédent"
-
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prix"
 
@@ -4414,6 +4448,9 @@ msgstr "Partage des prix"
 
 msgid "Prizes"
 msgstr "Prix"
+
+msgid "Prizes *** WITH_SHORTCUT_INDICATION"
+msgstr "Pri<u>x</u>"
 
 msgid "Prizes can only be shared for the main category."
 msgstr "Les prix ne peuvent être partagés que pour la catégorie générale."
@@ -4743,6 +4780,9 @@ msgstr "Écrans rotatifs"
 msgid "Rotators ({num})"
 msgstr "Écrans rotatifs ({num})"
 
+msgid "Rotators ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "Écrans&nbsp<u>R</u>otatifs ({num})"
+
 msgid "Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event."
 msgstr "Les écrans rotatifs permettent d’alterner entre plusieurs écrans, ou familles d’écrans, afin d’afficher une grande quantité d’informations lors de votre événement."
 
@@ -4820,15 +4860,6 @@ msgstr "Lignes par écran :"
 
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
-
-msgid "Rules"
-msgstr "Règles"
-
-msgid "Rules file location:"
-msgstr "Emplacement du règlement :"
-
-msgid "Rules file set"
-msgstr "Règlement défini"
 
 msgid "Russia"
 msgstr "Russie"
@@ -5110,8 +5141,8 @@ msgstr "Singapour"
 msgid "Single Screens"
 msgstr "Écrans simples"
 
-msgid "Single Screens ({num})"
-msgstr "Écrans simples ({num})"
+msgid "Single Screens ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "Écrans&nbsp<u>S</u>imples ({num})"
 
 msgid "Size ({unit}): {width}x{height}"
 msgstr "Dimension ({unit}) : {width}x{height}"
@@ -5242,6 +5273,9 @@ msgstr "Système suisse standard"
 
 msgid "Standard:"
 msgstr "Standard :"
+
+msgid "Start date"
+msgstr "Date de début"
 
 #, python-format
 msgid "Start of round {} in %%s"
@@ -5693,14 +5727,14 @@ msgstr "Ce champ ne peut être modifié une fois le tournoi commencé."
 msgid "This field can't be updated once the tournament has started."
 msgstr "Ce champ ne peut être mis à jour après le début du tournoi."
 
-msgid "This field is only valid without date of birth."
-msgstr "Ce champ n'est valide que sans date de naissance."
-
 msgid "This field is required (except for rounds)."
 msgstr "Ce champ est obligatoire (excepté pour les rondes)."
 
 msgid "This field is required."
 msgstr "Ce champ est obligatoire."
+
+msgid "This file is incorrectly formatted, the extension has most likely been changed."
+msgstr "Ce fichier n'est pas formaté correctement, son extension a probablement été modifiée."
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
@@ -5836,8 +5870,8 @@ msgstr "Chronomètre : aucun"
 msgid "Timers"
 msgstr "Chronomètres"
 
-msgid "Timers ({num})"
-msgstr "Chronomètres ({num})"
+msgid "Timers ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "Chrono<u>m</u>ètres ({num})"
 
 msgid "Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event."
 msgstr "Les chronomètres peuvent être placés sur n’importe quel écran, famille d’écrans ou écran rotatif pour afficher un compte à rebours jusqu’à la prochaine ronde ou un autre événement important."
@@ -5947,8 +5981,8 @@ msgstr "Tournoi : non défini"
 msgid "Tournaments"
 msgstr "Tournois"
 
-msgid "Tournaments ({num})"
-msgstr "Tournois ({num})"
+msgid "Tournaments ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>T</u>ournois ({num})"
 
 msgid "Tournaments are finished, you can not add players any longer."
 msgstr "Les tournois sont terminés, on ne peut plus ajouter de joueur·euses."
@@ -6449,9 +6483,6 @@ msgstr "Grand Maître Internationale Femme"
 
 msgid "Woman International Master"
 msgstr "Maître Internationale Femme"
-
-msgid "Wrong file extension [{ext}] ([pdf] expected)."
-msgstr "Mauvaise extension de fichier [{ext}] ([pdf] attendu)."
 
 msgid "XLSX format"
 msgstr "Format XLSX"

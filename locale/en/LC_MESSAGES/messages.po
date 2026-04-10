@@ -228,6 +228,39 @@ msgstr ""
 msgid "*** Doc Link"
 msgstr "https://sharly-chess.com/getting-started/"
 
+msgid "*** KEYBOARD SHORTCUT FOR THE CONFIGURATION TAB"
+msgstr "SC_C"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DISPLAY CONTROLLERS TAB"
+msgstr "SC_I"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE DOCUMENTS TAB"
+msgstr "SC_D"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE FAMILIES TAB"
+msgstr "SC_F"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB"
+msgstr "SC_A"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PLAYERS TAB"
+msgstr "SC_P"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE PRIZES TAB"
+msgstr "SC_Z"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE ROTATORS TAB"
+msgstr "SC_R"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE SINGLE SCREENS TAB"
+msgstr "SC_S"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TIMERS TAB"
+msgstr "SC_M"
+
+msgid "*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB"
+msgstr "SC_T"
+
 msgid "- *** NAME FOR GENDER NONE"
 msgstr "-"
 
@@ -334,9 +367,6 @@ msgid "<smart_count> second |||| <smart_count> seconds"
 msgstr ""
 
 msgid "<smart_count> week |||| <smart_count> weeks"
-msgstr ""
-
-msgid "A URL, or the path to the rules file on the server, in PDF format."
 msgstr ""
 
 msgid "A file is expected."
@@ -1305,8 +1335,8 @@ msgstr ""
 msgid "Complementary prize"
 msgstr ""
 
-msgid "Configuration"
-msgstr ""
+msgid "Configuration *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>C</u>onfiguration"
 
 msgid "Configure the category sets, which are available for all events."
 msgstr ""
@@ -1459,9 +1489,6 @@ msgid "Create hour"
 msgstr ""
 
 msgid "Create hours from tournament"
-msgstr ""
-
-msgid "Create manually"
 msgstr ""
 
 msgid "Create permission"
@@ -1821,6 +1848,9 @@ msgstr ""
 msgid "Display controllers ({num})"
 msgstr ""
 
+msgid "Display controllers ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "D<u>i</u>splay controllers ({num})"
+
 msgid "Display controllers allow you to control screens at your event from your server (or any allowed device)."
 msgstr ""
 
@@ -1892,6 +1922,9 @@ msgstr ""
 msgid "Documents"
 msgstr ""
 
+msgid "Documents *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>D</u>ocuments"
+
 msgid "Dominica"
 msgstr ""
 
@@ -1919,6 +1952,13 @@ msgstr ""
 msgid "Draw"
 msgstr ""
 
+msgid "Duplicate"
+msgstr ""
+
+#, python-format
+msgid "Duplicate event [%(event)s]"
+msgstr ""
+
 msgid "Duplicate the account."
 msgstr ""
 
@@ -1940,10 +1980,7 @@ msgstr ""
 msgid "Duplicate the tournament."
 msgstr ""
 
-msgid "Duplicate with players"
-msgstr ""
-
-msgid "Duplicate without players"
+msgid "Duplication settings"
 msgstr ""
 
 msgid "Duration (min):"
@@ -2043,9 +2080,6 @@ msgid "E.g.: Start of check-in in %%s"
 msgstr ""
 
 msgid "E.g.: World championship"
-msgstr ""
-
-msgid "E.g.: c:\\chess\\tournaments\\main\\rules.pdf"
 msgstr ""
 
 msgid "E.g.: https://my.club.us/tournament.jpg"
@@ -2367,8 +2401,8 @@ msgstr ""
 msgid "Families"
 msgstr ""
 
-msgid "Families ({num})"
-msgstr ""
+msgid "Families ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>F</u>amilies ({num})"
 
 msgid "Families are used to split a large amount of information across multiple screens."
 msgstr ""
@@ -2422,9 +2456,6 @@ msgid "Fiji"
 msgstr ""
 
 msgid "File"
-msgstr ""
-
-msgid "File [{file}] not found."
 msgstr ""
 
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
@@ -2717,6 +2748,9 @@ msgstr ""
 msgid "Identity"
 msgstr ""
 
+msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
+msgstr ""
+
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr ""
 
@@ -2795,6 +2829,9 @@ msgstr ""
 msgid "Include non-monetary prizes"
 msgstr ""
 
+msgid "Include pairings"
+msgstr ""
+
 msgid "Include players"
 msgstr ""
 
@@ -2805,9 +2842,6 @@ msgid "Includes all other access levels and grants full access to the applicatio
 msgstr ""
 
 msgid "Incorrect installation, exiting."
-msgstr ""
-
-msgid "Incorrect path [{path}]."
 msgstr ""
 
 msgid "Increment (sec):"
@@ -2894,6 +2928,9 @@ msgstr ""
 msgid "Invalid federation [{federation}]."
 msgstr ""
 
+msgid "Invalid file extension [{extension}] (expected: {expected})."
+msgstr ""
+
 msgid "Invalid fixed board number [{fixed_board}]."
 msgstr ""
 
@@ -2922,6 +2959,9 @@ msgid "Invalid value [{value}] for field [{field}] (expected one of [{expected_v
 msgstr ""
 
 msgid "Invalid value [{value}]."
+msgstr ""
+
+msgid "Invalid year of birth (expected: {min} - {max})."
 msgstr ""
 
 msgid "Iran"
@@ -3386,9 +3426,6 @@ msgstr ""
 msgid "Nauru"
 msgstr ""
 
-msgid "Navigation"
-msgstr ""
-
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
@@ -3455,9 +3492,6 @@ msgid "Next round"
 msgstr ""
 
 msgid "Next round bye"
-msgstr ""
-
-msgid "Next tournament"
 msgstr ""
 
 msgid "Nicaragua"
@@ -3608,9 +3642,6 @@ msgid "No roles defined."
 msgstr ""
 
 msgid "No rotators"
-msgstr ""
-
-msgid "No rules file set"
 msgstr ""
 
 msgid "No screen families"
@@ -3980,6 +4011,9 @@ msgstr ""
 msgid "Pairings"
 msgstr ""
 
+msgid "Pairings *** WITH_SHORTCUT_INDICATION"
+msgstr "P<u>a</u>irings"
+
 msgid "Pairings by board"
 msgstr ""
 
@@ -4206,6 +4240,9 @@ msgstr ""
 msgid "Players ({num})"
 msgstr ""
 
+msgid "Players ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>P</u>layers ({num})"
+
 msgid "Players can't be overwritten once the tournament has started."
 msgstr ""
 
@@ -4287,9 +4324,6 @@ msgstr ""
 msgid "Please choose the tournament."
 msgstr ""
 
-msgid "Please close the time control editor before saving."
-msgstr ""
-
 msgid "Please enter the image URL."
 msgstr ""
 
@@ -4315,6 +4349,9 @@ msgid "Please supply a valid email address."
 msgstr ""
 
 msgid "Please validate the global configuration of the application."
+msgstr ""
+
+msgid "Please validate the time control to continue."
 msgstr ""
 
 msgid "Please wait until the application settings have been set on the server…"
@@ -4365,9 +4402,6 @@ msgstr ""
 msgid "Previous round"
 msgstr ""
 
-msgid "Previous tournament"
-msgstr ""
-
 msgid "Prize *** PRIZE COLUMN HEADER"
 msgstr "Prize"
 
@@ -4412,6 +4446,9 @@ msgstr ""
 
 msgid "Prizes"
 msgstr ""
+
+msgid "Prizes *** WITH_SHORTCUT_INDICATION"
+msgstr "Pri<u>z</u>es"
 
 msgid "Prizes can only be shared for the main category."
 msgstr ""
@@ -4741,6 +4778,9 @@ msgstr ""
 msgid "Rotators ({num})"
 msgstr ""
 
+msgid "Rotators ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>R</u>otators ({num})"
+
 msgid "Rotators allow you to rotate through multiple screens, or families of screens, to display plenty of information at your event."
 msgstr ""
 
@@ -4818,15 +4858,6 @@ msgstr ""
 
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
-
-msgid "Rules"
-msgstr ""
-
-msgid "Rules file location:"
-msgstr ""
-
-msgid "Rules file set"
-msgstr ""
 
 msgid "Russia"
 msgstr ""
@@ -5108,8 +5139,8 @@ msgstr ""
 msgid "Single Screens"
 msgstr ""
 
-msgid "Single Screens ({num})"
-msgstr ""
+msgid "Single Screens ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>S</u>ingle Screens ({num})"
 
 msgid "Size ({unit}): {width}x{height}"
 msgstr ""
@@ -5239,6 +5270,9 @@ msgid "Standard swiss system"
 msgstr ""
 
 msgid "Standard:"
+msgstr ""
+
+msgid "Start date"
 msgstr ""
 
 #, python-format
@@ -5691,13 +5725,13 @@ msgstr ""
 msgid "This field can't be updated once the tournament has started."
 msgstr ""
 
-msgid "This field is only valid without date of birth."
-msgstr ""
-
 msgid "This field is required (except for rounds)."
 msgstr ""
 
 msgid "This field is required."
+msgstr ""
+
+msgid "This file is incorrectly formatted, the extension has most likely been changed."
 msgstr ""
 
 msgid "This label will be used for the link to other screens to the screens of the family. If left empty, a default label will be used."
@@ -5834,8 +5868,8 @@ msgstr ""
 msgid "Timers"
 msgstr ""
 
-msgid "Timers ({num})"
-msgstr ""
+msgid "Timers ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "Ti<u>m</u>ers ({num})"
 
 msgid "Timers can be placed on any screen, family or rotator to display a count down to the next round or other important event."
 msgstr ""
@@ -5945,8 +5979,8 @@ msgstr ""
 msgid "Tournaments"
 msgstr ""
 
-msgid "Tournaments ({num})"
-msgstr ""
+msgid "Tournaments ({num}) *** WITH_SHORTCUT_INDICATION"
+msgstr "<u>T</u>ournaments ({num})"
 
 msgid "Tournaments are finished, you can not add players any longer."
 msgstr ""
@@ -6446,9 +6480,6 @@ msgid "Woman Grand Master"
 msgstr ""
 
 msgid "Woman International Master"
-msgstr ""
-
-msgid "Wrong file extension [{ext}] ([pdf] expected)."
 msgstr ""
 
 msgid "XLSX format"

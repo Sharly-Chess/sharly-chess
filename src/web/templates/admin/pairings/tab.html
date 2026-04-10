@@ -109,11 +109,13 @@
                                         {{ macros.tooltip_attributes(
                                             '',
                                             '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
-                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('No result') ~ '</div>' ~
-                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('White wins') ~ '</div>' ~
-                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Black wins') ~ '</div>' ~
-                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Draw') ~ '</div>' ~
-                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Navigation') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('No result') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('White wins') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('Black wins') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('Draw') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Boards') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-shift pe-1\"></i>+ <i class=\"bi bi-arrow-left-square pe-1\"></i><i class=\"bi bi-arrow-right-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Rounds') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-shift pe-1\"></i>+ <i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Tournaments') ~ '</div>' ~
                                             '</div>',
                                             'top',
                                         ) }}
@@ -324,21 +326,28 @@
                 return;
             }
 
-            if ((e.key === "ArrowUp" || e.key === "ArrowDown") && pairing_board_id) {
-                e.preventDefault();
-
-                var $row = $('tr[data-board-id="' + pairing_board_id + '"]');
-                if (!$row.length) {
+            if ((e.key === "ArrowUp" || e.key === "ArrowDown")) {
+                if (e.shiftKey) {
+                    // Tournament navigation
                     return;
                 }
-                var $next_row = $row.next();
-                var $prev_row = $row.prev();
+                e.preventDefault();
+                if (pairing_board_id) {
+                    var $row = $('tr[data-board-id="' + pairing_board_id + '"]');
+                    if (!$row.length) {
+                        return;
+                    }
+                    var $next_row = $row.next();
+                    var $prev_row = $row.prev();
 
-                // Highlight the next/previous row
-                if (e.key === "ArrowUp" && $prev_row.length) {
-                    highlightBoard($prev_row.data("board-id"), false);
-                } else if (e.key === "ArrowDown" && $next_row.length) {
-                    highlightBoard($next_row.data("board-id"), false);
+                    // Highlight the next/previous row
+                    if (e.key === "ArrowUp" && $prev_row.length) {
+                        highlightBoard($prev_row.data("board-id"), false);
+                    } else if (e.key === "ArrowDown" && $next_row.length) {
+                        highlightBoard($next_row.data("board-id"), false);
+                    }
+                } else {
+                    highlightBoard($('.pairing-row').first().data("board-id"), false);
                 }
             }
 

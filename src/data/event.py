@@ -374,8 +374,6 @@ class Event:
 
     @cached_property
     def sorted_not_finished_tournaments(self) -> list[Tournament]:
-        """Returns the playing tournaments where the Papi file exists
-        (useful not to create players when there is no Papi file)."""
         return [
             tournament
             for tournament in self.sorted_tournaments
@@ -475,6 +473,7 @@ class Event:
         self,
         stored_player: StoredPlayer,
         tournament: Tournament,
+        player_id: int | None = None,
     ) -> bool:
         players = (
             tournament.tournament_players
@@ -482,7 +481,9 @@ class Event:
             else self.players
         )
         return all(
-            not self._are_player_duplicates(stored_player, player) for player in players
+            not self._are_player_duplicates(stored_player, player)
+            for player in players
+            if player.id != player_id
         )
 
     @cached_property

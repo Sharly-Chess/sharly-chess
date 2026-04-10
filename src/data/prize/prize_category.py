@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from common.logger import get_logger
 from common.i18n import _
+from data.criteria.managers import PrizePlayerFilterManager
 from data.player import TournamentPlayer
 from data.prize.managers import PrizeSharingManager
 from data.prize.prize_criterion import PrizeCriterion
@@ -35,22 +36,22 @@ class PrizeCategory:
 
     @cached_property
     def criteria_by_id(self) -> dict[int, PrizeCriterion]:
-        criteria_by_id = {}
+        criteria: list[PrizeCriterion] = []
+        player_filter_ids = PrizePlayerFilterManager(
+            self.prize_group.tournament.event
+        ).ids()
         for stored_criterion in self.stored_prize_category.stored_prize_criteria:
-            assert stored_criterion.id is not None
-            try:
-                criteria_by_id[stored_criterion.id] = PrizeCriterion(
-                    self, stored_criterion
-                )
-            except KeyError as e:
-                # This can happen when the plugin that defined the criteria is not enabled
-                logger.warning(
-                    'Criterion [%s] not found for category [%s]: %s',
-                    stored_criterion.id,
-                    self.name,
-                    e,
-                )
-        return criteria_by_id
+            if stored_criterion.type not in player_filter_ids:
+                logger.warning('Player filter [%s] not found.', stored_criterion.type)
+                continue
+            criteria.append(PrizeCriterion(self, stored_criterion))
+        return {
+            criterion.id: criterion
+            for criterion in sorted(
+                criteria,
+                key=lambda c: player_filter_ids.index(c.stored_prize_criterion.type),
+            )
+        }
 
     @cached_property
     def prizes_by_id(self) -> dict[int, Prize]:
@@ -96,10 +97,6 @@ class PrizeCategory:
     @property
     def criteria(self) -> Collection[PrizeCriterion]:
         return self.criteria_by_id.values()
-
-    @property
-    def sorted_criteria(self) -> list[PrizeCriterion]:
-        return sorted(self.criteria, key=lambda criteria: criteria.id)
 
     @property
     def prizes(self) -> Collection[Prize]:

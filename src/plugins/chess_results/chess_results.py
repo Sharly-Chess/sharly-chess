@@ -7,24 +7,19 @@ from data.print_documents import QRCodeType
 from database.sqlite.event.event_database import EventDatabase
 from plugins.chess_results import MAX_TIE_BREAKS, PLUGIN_NAME
 from plugins.chess_results.chess_results_background_uploader import (
-    ChessResultsUploadStatus,
     EventLoader,
-    ChessResultsBackgroundUploader,
+    CRBackgroundUploader,
 )
-from plugins.chess_results.chess_results_event_controller import (
-    ChessResultsAdminEventController,
+from plugins.chess_results.chess_results_controller import (
+    ChessResultsController,
 )
 from plugins.chess_results.chess_results_qrcode import ChessResultsQRCodeType
-from plugins.chess_results.chess_results_tournament_controller import (
-    ChessResultsAdminTournamentController,
-)
 from plugins.chess_results.utils import (
-    CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
-    CHESS_RESULTS_MIN_UPLOAD_DELAY,
+    CHESS_RESULTS_UPLOAD_DELAY,
     ChessResultsConfigPluginData,
     ChessResultsEventPluginData,
     ChessResultsTournamentPluginData,
-    ChessResultsUtils,
+    CRUtils,
 )
 from plugins.hookspec import hookimpl
 from plugins.utils import (
@@ -32,7 +27,7 @@ from plugins.utils import (
     Plugin,
     PluginData,
 )
-from web.controllers.base_controller import BaseController, WebContext
+from web.controllers.base_controller import BaseController
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -76,15 +71,12 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
 
     @property
     def controllers(self) -> list[type[BaseController]]:
-        return [
-            ChessResultsAdminEventController,
-            ChessResultsAdminTournamentController,
-        ]
+        return [ChessResultsController]
 
     @hookimpl
     def get_base_admin_template_context(self) -> dict[str, Any]:
         return {
-            'CHESS_RESULTS_DEFAULT_UPLOAD_DELAY': CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
+            'CHESS_RESULTS_UPLOAD_DELAY': CHESS_RESULTS_UPLOAD_DELAY,
         }
 
     # ---------------------------------------------------------------------------------
@@ -115,39 +107,6 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     def get_event_plugin_data_class(self) -> tuple[str, type[PluginData]]:
         return self.id, ChessResultsEventPluginData
 
-    @hookimpl
-    def augment_event_after_db_fetch(
-        self, stored_event: 'StoredEvent', row: dict[str, Any]
-    ):
-        stored_event.plugin_data[self.id] = {
-            'auto_upload': row.get('chess_results_auto_upload', False),
-            'auto_upload_delay': row.get('chess_results_auto_upload_delay', None),
-        }
-
-    @hookimpl
-    def event_data_for_db_write(self, stored_event: 'StoredEvent') -> dict[str, Any]:
-        td = stored_event.plugin_data
-        return {
-            'chess_results_auto_upload': int(self.get_data(td, 'auto_upload') or False),
-            'chess_results_auto_upload_delay': self.get_data(td, 'auto_upload_delay'),
-        }
-
-    @hookimpl
-    def validate_event_form_fields(
-        self,
-        action: str,
-        event: 'Event | None',
-        data: dict[str, str],
-        errors: dict[str, str],
-    ):
-        auto_upload_delay = WebContext.form_data_to_int(
-            data, field := 'auto_upload_delay'
-        )
-        if auto_upload_delay and auto_upload_delay < CHESS_RESULTS_MIN_UPLOAD_DELAY:
-            errors[field] = _(
-                'The delay must be at least {min_delay} minutes to avoid overloading the Chess-Results server.'
-            ).format(min_delay=CHESS_RESULTS_MIN_UPLOAD_DELAY)
-
     # ---------------------------------------------------------------------------------
     # Tournaments
     # ---------------------------------------------------------------------------------
@@ -161,7 +120,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
         self, stored_event: 'StoredEvent', stored_tournament: 'StoredTournament'
     ):
         # This hook being called for most database writes, it needs to be optimized
-        if not ChessResultsBackgroundUploader.should_schedule_tournament_upload(
+        if not CRBackgroundUploader.should_schedule_tournament_upload(
             stored_event, stored_tournament
         ):
             return
@@ -169,39 +128,23 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
         tournament_id = stored_tournament.id
         assert tournament_id is not None
         tournament = event.tournaments_by_id[tournament_id]
-        ChessResultsBackgroundUploader.schedule_upload(tournament)
+        CRBackgroundUploader.schedule_upload(tournament)
 
     @hookimpl
     def get_tournament_form_fields_template_and_data(
         self, event: 'Event', tournament: 'Tournament | None'
     ) -> tuple[str, dict[str, Any]]:
-        auto_upload_options: dict[str, str] = {
-            '': '',
-            WebContext.value_to_form_data(False): _('Disabled'),
-        } | {
-            WebContext.value_to_form_data(True): _('Enabled'),
-        }
-        event_auto_upload = ChessResultsUtils.get_event_plugin_data(event).auto_upload
-        auto_upload_options[''] = _('Use default - {option}').format(
-            option=auto_upload_options[WebContext.value_to_form_data(event_auto_upload)]
-        )
-
-        return (
-            '/chess_results_tournament_form_fields.html',
-            {
-                'auto_upload_options': auto_upload_options,
-            },
-        )
+        return '/chess_results_tournament_form_fields.html', {}
 
     @hookimpl
     def get_tournament_page_template_context(self) -> dict[str, Any]:
-        return {'chess_results_utils': ChessResultsUtils}
+        return {'cr_utils': CRUtils}
 
     @hookimpl
     def get_tournament_card_connexion_template(
         self, tournament: 'Tournament'
     ) -> str | None:
-        if not ChessResultsUtils.get_tournament_plugin_data(tournament).tnr:
+        if not CRUtils.get_tournament_plugin_data(tournament).tnr:
             return None
         return '/chess_results_tournament_card_connexion.html'
 
@@ -214,7 +157,7 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
         self, tournament: 'Tournament'
     ) -> str | None:
         if (
-            ChessResultsUtils.get_tournament_plugin_data(tournament).tnr
+            CRUtils.get_tournament_plugin_data(tournament).tnr
             and len(tournament.tie_breaks) > MAX_TIE_BREAKS
         ):
             return _(
@@ -231,25 +174,16 @@ class ChessResultsPlugin(Plugin[ChessResultsConfigPluginData]):
     def get_nav_data_transfer_items(
         self, event: 'Event'
     ) -> Iterable[NavDataTransferItem]:
-        has_upload_error = False
-        statuses = ChessResultsBackgroundUploader.upload_status_messages
-        tournaments = event.tournaments
-        for tournament in tournaments:
-            result = statuses.get(
-                ChessResultsBackgroundUploader.result_id(event.uniq_id, tournament.id),
-                None,
-            )
-            if result and result.status == ChessResultsUploadStatus.ERROR:
-                has_upload_error = True
-                break
-
         return [
             NavDataTransferItem(
                 key='chess_results_upload',
                 title=_('Chess-Results.com'),
                 icon_path='/images/chess-results.png',
                 modal_route_name='chess-results-upload-modal',
-                has_upload_error=has_upload_error,
+                has_upload_error=any(
+                    CRUtils.get_tournament_plugin_data(tournament).upload_failure_id
+                    for tournament in event.tournaments
+                ),
             )
         ]
 

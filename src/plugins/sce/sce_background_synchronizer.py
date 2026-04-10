@@ -40,9 +40,11 @@ def remove_scheduled_sync(event_uniq_id: str):
         thread.cancel()
 
 
-def _publish_upload_event():
+def _publish_upload_event(start: bool = False):
     if channels_plugin:
-        channels_plugin.publish({'event': 'upload-event', 'data': ''}, ['ws'])
+        channels_plugin.publish(
+            {'event': f'upload-event{"-start" if start else ""}', 'data': ''}, ['ws']
+        )
 
 
 def _exit_with_status(event: Event, status: SCESyncStatus):
@@ -60,7 +62,7 @@ def sync_event(event_uniq_id: str):
     set_locale(SharlyChessConfig().locale)
 
     _ONGOING_EVENTS_UNIQ_IDS.add(event_uniq_id)
-    _publish_upload_event()
+    _publish_upload_event(start=True)
     # NOTE (Molrn) Ensures a minimum time for the thread
     # This prevents flashing and situations where both requests
     # triggered by the `upload-event` web socket are treated as one
@@ -78,7 +80,7 @@ def sync_event(event_uniq_id: str):
         status = SCESession(event).sync_event()
         _exit_with_status(event, status)
     except Exception as e:
-        logger.error(e)
+        logger.exception(e)
         if event:
             _exit_with_status(event, UnexpectedFailureSCESyncStatus())
     finally:

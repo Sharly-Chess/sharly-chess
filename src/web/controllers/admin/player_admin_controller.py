@@ -35,7 +35,7 @@ from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
 from data.input_output.data_source import DataSource
 from data.input_output.managers import DataSourceManager, PlayerExporterManager
-from data.player import Player, PlayerRating, TournamentPlayer
+from data.player import Player, PlayerRating, TournamentPlayer, MIN_YOB, MAX_YOB
 from data.print_documents.documents import (
     PlayerListPrintDocument,
     PlayerCheckinListPrintDocument,
@@ -566,7 +566,7 @@ class PlayerAdminController(BaseEventAdminController):
                 column.get_filter_value_from_key(filter_key, event)
                 filter_keys.append(filter_key)
             except ValueError:
-                logger.error(
+                logger.exception(
                     f'Invalid filter key [{filter_key}] for column [{column.id}].'
                 )
         SessionPlayersFilters(request, event).set_column_filters(column_id, filter_keys)
@@ -957,12 +957,15 @@ class PlayerAdminController(BaseEventAdminController):
         data: dict[str, str],
     ) -> tuple[StoredPlayer | None, dict[str, str]]:
         event = web_context.get_admin_event()
+        player = web_context.admin_player
         errors = cls._validate_player_form_data(web_context, action, data)
         if errors:
             return None, errors
         stored_player = cls._stored_player_from_data(data)
         tournament = event.tournaments_by_id[int(data['tournament_id'])]
-        if not event.check_player_unicity(stored_player, tournament):
+        if not event.check_player_unicity(
+            stored_player, tournament, player.id if player else None
+        ):
             errors['alert'] = (
                 _('This player already exists in tournament [{tournament}].').format(
                     tournament=tournament.name
@@ -1007,8 +1010,11 @@ class PlayerAdminController(BaseEventAdminController):
         last_name = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
             errors[field] = _('This field is required.')
+        yob: int | None = None
         try:
-            WebContext.form_data_to_date(data, field := 'date_of_birth')
+            date_of_birth = WebContext.form_data_to_date(data, field := 'date_of_birth')
+            if date_of_birth:
+                yob = date_of_birth.year
         except FormError:
             year_str = data.get(field, '')
             if year_str:
@@ -1020,6 +1026,13 @@ class PlayerAdminController(BaseEventAdminController):
                             date_format=SharlyChessConfig().date_formatter.name
                         ),
                     )
+                else:
+                    yob = int(year_str)
+        if yob is not None and not (MIN_YOB <= yob <= MAX_YOB):
+            errors[field] = _(
+                'Invalid year of birth (expected: {min} - {max}).'
+            ).format(min=MIN_YOB, max=MAX_YOB)
+
         try:
             if value := WebContext.form_data_to_str(data, field := 'gender'):
                 PlayerGender(value)
@@ -1903,7 +1916,7 @@ class PlayerAdminController(BaseEventAdminController):
                         'An unexpected error occurred while reading '
                         'the CSV file. Consult the logs for more details.'
                     )
-                    logger.error(error)
+                    logger.exception(error)
                 errors['alert'] = message
         use_data_source = WebContext.form_data_to_bool(
             normalized_data, 'use_data_source'
