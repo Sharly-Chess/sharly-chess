@@ -2,7 +2,7 @@
     'age-category-base-date',
     'age-categories',
     'age-category-change-month'
-] %}
+] + ([] if has_multi_tournament_players else ['allow-multi-tournament-players']) %}
 
 var sceTooltipByFieldId = {};
 $('#{{ plugin.form_key }}').change(function () {

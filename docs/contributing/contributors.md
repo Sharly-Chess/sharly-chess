@@ -20,6 +20,7 @@ _Sharly Chess_ contributors are people who have contributed some of the code or 
 - Adrien AVENIA ([adrienave](https://github.com/adrienave))
 - Arunprabhu KANDASAMY ([arun1587](https://github.com/arun1587))
 - Gilles HORN ([GillesHorn](https://github.com/GillesHorn))
+- Lucas LEFEBVRE ([lefebvrele](https://github.com/lefebvrele))
 
 See also:
 - [Contributing guide](contributing-guide.md)

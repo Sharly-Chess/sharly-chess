@@ -7,7 +7,9 @@
         </div>
         <div class="flex-grow-1"></div>
         <div class="d-flex gap-2 ms-auto align-items-center">
-            {% include 'create_event_button.html' %}
+            {% with is_dropdown = true %}
+                {% include 'create_event_button.html' %}
+            {% endwith %}
         </div>
     </div>
 </div>

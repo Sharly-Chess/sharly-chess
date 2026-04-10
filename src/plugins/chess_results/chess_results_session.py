@@ -6,12 +6,9 @@ from logging import Logger
 import requests
 from requests import Session
 
-from common.i18n import _
 from common.logger import get_logger
 from data.tournament import Tournament
 from database.sqlite.config.config_database import ConfigDatabase
-from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.chess_results import PLUGIN_NAME, MAX_TIE_BREAKS
 from plugins.chess_results.chess_results_mappers import (
     ChessResultTournamentRating,
@@ -19,7 +16,12 @@ from plugins.chess_results.chess_results_mappers import (
     ChessResultsTieBreak,
     ChessResultPairingSystem,
 )
-from plugins.chess_results.utils import ChessResultsUtils
+from plugins.chess_results.chess_results_upload_status import (
+    FailureCRUploadStatus,
+    FinishedFailureCRUploadStatus,
+    UnexpectedFailureCRUploadStatus,
+)
+from plugins.chess_results.utils import CRUtils
 from plugins.manager import plugin_manager
 from plugins.utils import PluginUtils
 from utils.enum import Result
@@ -35,18 +37,9 @@ CHESS_RESULTS_SOURCE = 13
 class ChessResultsSession(Session):
     """A requests session specialized for communication with Chess-Results.com."""
 
-    def __init__(
-        self,
-        tournament: Tournament | None,
-        report_info=logger.info,
-        report_success=logger.info,
-        report_error=logger.error,
-    ):
+    def __init__(self, tournament: Tournament):
         super().__init__()
-        self.tournament: Tournament | None = tournament
-        self.report_info = report_info
-        self.report_success = report_success
-        self.report_error = report_error
+        self.tournament = tournament
 
     def _chess_results_init(self) -> str:
         """Initializes a session on Chess-Results.com
@@ -72,7 +65,7 @@ class ChessResultsSession(Session):
             <chessresults>
                 <getkey
                     source="{source}"
-                    sid="{ChessResultsUtils.encrypt(sid)}"
+                    sid="{CRUtils.encrypt(sid)}"
                     creatorID="{creator_id}"
                     federation="{tournament.event.federation}"
                     tournament="{tournament.full_name}" />
@@ -131,7 +124,7 @@ class ChessResultsSession(Session):
                 or '',
                 'name': tournament.full_name[:160],
                 'fideeventid': '',
-                'remark': f'#{ChessResultsUtils.resolve_remark(tournament)}'[:599],
+                'remark': f'#{CRUtils.resolve_remark(tournament)}'[:599],
                 'director': (event.organiser_director or '')[:80],
                 'organiser': (event.organiser_name or '')[:80],
                 'location': tournament.location or '',
@@ -199,7 +192,7 @@ class ChessResultsSession(Session):
         # --- Player list ---
         pdata = ET.SubElement(root, 'players')
         prev_tb_values: list[str] | None = None
-
+        tournament.compute_tournament_player_ranks()
         for p in tournament.tournament_players_by_pairing_number.values():
             # Get up to `MAX_TIE_BREAKS` tiebreak keys (pad with zeros if fewer)
             tb_values: list[str] = []
@@ -320,9 +313,9 @@ class ChessResultsSession(Session):
             'securitydata',
             {
                 'source': str(CHESS_RESULTS_SOURCE),
-                'sid': ChessResultsUtils.encrypt(sid),
-                'creator_sid': ChessResultsUtils.encrypt(creator_id),
-                'tnr_sid': ChessResultsUtils.encrypt(str(tnr)),
+                'sid': CRUtils.encrypt(sid),
+                'creator_sid': CRUtils.encrypt(creator_id),
+                'tnr_sid': CRUtils.encrypt(str(tnr)),
             },
         )
 
@@ -330,22 +323,17 @@ class ChessResultsSession(Session):
         xml_bytes = ET.tostring(root, encoding='utf-8', xml_declaration=True)
         return xml_bytes.decode('utf-8')
 
-    def upload(self):
+    def upload(self) -> FailureCRUploadStatus | None:
         """Upload the tournament to Chess-Results.com."""
 
-        assert self.tournament is not None
         logger.info(
             'Sending tournament (%s) to Chess-Results.com...',
             self.tournament.name,
         )
 
         sid = self._chess_results_init()
-        tournament_plugin_data = ChessResultsUtils.get_tournament_plugin_data(
-            self.tournament
-        )
-        event_plugin_data = ChessResultsUtils.get_event_plugin_data(
-            self.tournament.event
-        )
+        tournament_plugin_data = CRUtils.get_tournament_plugin_data(self.tournament)
+        event_plugin_data = CRUtils.get_event_plugin_data(self.tournament.event)
         tnr = tournament_plugin_data.tnr
         creator_id = tournament_plugin_data.creator_id
 
@@ -367,25 +355,11 @@ class ChessResultsSession(Session):
             # First upload, create the tournament on the site
             tnr = self.get_new_tournament_key(13, sid, creator_id, self.tournament)
 
-            with EventDatabase(
-                self.tournament.event.uniq_id, write=True, check_dirty_tournaments=False
-            ) as event_database:
-                event_database.execute(
-                    """
-                    UPDATE tournament
-                    SET plugin_data = json_set(
-                            plugin_data,
-                            '$.chess_results.tnr', ?,
-                            '$.chess_results.creator_id', ?
-                        )
-                    WHERE id = ?
-                    """,
-                    (
-                        tnr,
-                        creator_id,
-                        self.tournament.id,
-                    ),
-                )
+            tournament_plugin_data.tnr = tnr
+            tournament_plugin_data.creator_id = creator_id
+            CRUtils.update_tournament_plugin_data(
+                self.tournament, tournament_plugin_data
+            )
 
         assert creator_id is not None
         xml_data = self.build_tournament_xml(
@@ -402,31 +376,14 @@ class ChessResultsSession(Session):
         result = root.find('result')
         logger.debug(response.text)
         if result is not None and result.attrib.get('status') == 'OK':
-            with EventDatabase(
-                self.tournament.event.uniq_id, write=True, check_dirty_tournaments=False
-            ) as event_database:
-                # NOTE (Molrn) Bypass standard DB write to avoid updating
-                # the last_update flag which would re-trigger an upload
-                now = SQLiteDatabase.now_as_database_timestamp()
-                event_database.execute(
-                    """
-                    UPDATE tournament SET plugin_data = json_set(
-                        plugin_data, '$.chess_results.last_upload', ?
-                    ) WHERE id = ?
-                    """,
-                    (now, self.tournament.id),
-                )
-
-            self.report_success(_('Results upload OK'))
-            return
+            return None
 
         msg = root.find('.//message')
 
         if msg is not None:
             error_text = msg.attrib.get('Text', '')
             if 'MsgNo:28' in error_text:
-                self.report_error(_('Tournament finished, upload no longer possible.'))
-                return
+                return FinishedFailureCRUploadStatus()
 
             # Retry logic: Invalid Source-ID or tournament number
             # This can happen if the user deletes the tournament and then tries to upload again
@@ -434,37 +391,17 @@ class ChessResultsSession(Session):
                 logger.warning(
                     'Invalid Source-ID detected, retrying without tnr/creator_id...'
                 )
-
                 # Remove the invalid keys
-                with EventDatabase(
-                    self.tournament.event.uniq_id,
-                    write=True,
-                    check_dirty_tournaments=False,
-                ) as event_database:
-                    event_database.execute(
-                        """
-                        UPDATE tournament
-                        SET plugin_data = json_remove(
-                                plugin_data,
-                                '$.chess_results.tnr',
-                                '$.chess_results.creator_id'
-                            )
-                        WHERE id = ?
-                        """,
-                        (self.tournament.id,),
-                    )
-
-                # Clear in-memory values too
                 tournament_plugin_data.tnr = None
                 tournament_plugin_data.creator_id = None
-                self.tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
-                    tournament_plugin_data.to_stored_value()
+                CRUtils.update_tournament_plugin_data(
+                    self.tournament, tournament_plugin_data
                 )
 
                 # Retry the upload once (fresh creation)
-                self.upload()
-                return
+                return self.upload()
 
-            self.report_error(error_text)
+            logger.error(error_text)
         else:
-            self.report_error(_('Unknown error when uploading results.'))
+            logger.error('No message received from Chess-Results.com.')
+        return UnexpectedFailureCRUploadStatus()

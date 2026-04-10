@@ -85,8 +85,7 @@ class FFESiteQRCodeType(QRCodeType):
             return False, _('No FFE ID defined for tournament [{tournament}].').format(
                 tournament=tournament.name
             )
-        url = f'https://echecs.asso.fr/FicheTournoi.aspx?Ref={ffe_id}'
-        return True, url
+        return True, FFEUtils.tournament_url(ffe_id)
 
     @staticmethod
     def get_qr_code(url) -> str:

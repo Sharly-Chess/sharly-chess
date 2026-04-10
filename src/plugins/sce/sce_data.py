@@ -1,11 +1,11 @@
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from datetime import datetime, date
 from functools import cached_property
 from typing import Any, Self
 
 from common.i18n import _
 from data.event import Event
-from data.player import TournamentPlayer
+from data.player import TournamentPlayer, Player, MIN_YOB
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
@@ -13,6 +13,7 @@ from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_mappers import SCEPlayerGender
 from plugins.utils import PluginData
+from utils import Utils
 from utils.date_time import format_date, format_datetime
 from utils.enum import TournamentRating, PlayerTitle, PlayerRatingType, PlayerGender
 from utils.time_control import trf25_to_human_readable
@@ -24,6 +25,26 @@ class SCETokens:
     access_token: str
     refresh_token: str
     expires_at: datetime
+
+
+@dataclass
+class SCEDuplicatedPlayer:
+    last_name: str
+    first_name: str | None
+
+    @property
+    def full_name(self) -> str:
+        return Player.player_full_name(self.first_name, self.last_name)
+
+    @classmethod
+    def from_stored_value(cls, value: dict[str, Any]) -> Self:
+        return cls(
+            last_name=value['last_name'],
+            first_name=value['first_name'],
+        )
+
+    def to_stored_value(self) -> dict[str, Any]:
+        return asdict(self)
 
 
 @dataclass
@@ -181,7 +202,14 @@ class SCETournamentSyncData:
     def augment_stored_tournament(
         self, stored_tournament: StoredTournament, event: Event
     ) -> None:
-        stored_tournament.name = self.name
+        used_tournament_names = [
+            tournament.name
+            for tournament in event.tournaments
+            if tournament.id != stored_tournament.id
+        ]
+        stored_tournament.name = Utils.get_unused_item_name(
+            self.name, used_tournament_names
+        )
         stored_tournament.rating = self.type.value
         stored_tournament.rounds = self.rounds
         stored_tournament.start_date = self.start_date
@@ -251,11 +279,14 @@ class SCEPlayerSyncData:
         tournament_id: str,
         with_mail: bool = False,
     ) -> Self:
+        yob = data['year_of_birth']
         return cls(
             tournament_id=tournament_id,
             last_name=data['last_name'].upper(),
             first_name=data['first_name'],
-            year_of_birth=data['year_of_birth'],
+            # As SC.com YOB are mandatory, consider 1900 as an
+            # empty field to avoid setting it in the THP
+            year_of_birth=yob if yob > MIN_YOB else None,
             fide_id=data['fide_id'],
             national_id=data['national_id'],
             title=PlayerTitle(data['title'] or PlayerTitle.NONE),
@@ -279,11 +310,12 @@ class SCEPlayerSyncData:
 
         tournament_id = SCEUtils.get_tournament_plugin_data(player.tournament).id
         assert tournament_id is not None
+        yob = player.year_of_birth
         sync_data = cls(
             tournament_id=tournament_id,
             last_name=player.last_name,
             first_name=player.first_name,
-            year_of_birth=player.year_of_birth,
+            year_of_birth=yob if yob > MIN_YOB else None,
             fide_id=player.fide_id,
             title=player.title,
             club=player.club.name,
@@ -335,7 +367,7 @@ class SCEPlayerSyncData:
 
     def to_sce_data(self) -> dict[str, Any]:
         return self.to_stored_value() | {
-            'year_of_birth': min(max(self.year_of_birth or 0, 1900), date.today().year),
+            'year_of_birth': self.year_of_birth or MIN_YOB,
             'rating_type': self.rating_type.key.upper() if self.rating_type else None,
             'phone_number': self.phone,
             'gender': SCEPlayerGender.get_outer_value(self.gender),
@@ -415,7 +447,7 @@ class SCEEventPluginData(PluginData):
     slug: str | None = None
     organiser_slug: str | None = None
     status: str | None = None
-    auto_upload: bool = False
+    auto_upload: bool = True
     auto_player_sync: bool = False
     tournament_names_by_id: dict[str, str] = field(default_factory=dict)
     last_sync_at: datetime | None = None
@@ -445,7 +477,7 @@ class SCEEventPluginData(PluginData):
             slug=stored_value.get('slug', ''),
             organiser_slug=stored_value.get('organiser_slug', ''),
             status=stored_value.get('status'),
-            auto_upload=stored_value.get('auto_upload', False),
+            auto_upload=stored_value.get('auto_upload', True),
             auto_player_sync=stored_value.get('auto_player_sync', False),
             tournament_names_by_id=stored_value.get('tournament_names_by_id', {}),
             deleted_player_ids=stored_value.get('deleted_player_ids', []),
@@ -507,12 +539,15 @@ class SCEEventPluginData(PluginData):
 @dataclass
 class SCETournamentPluginData(PluginData):
     id: str | None = None
-    auto_upload: bool = True
+    auto_upload: bool = False
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
     upload_failure_id: str | None = None
     last_sync_data: SCETournamentSyncData | None = None
     conflict_sync_data: SCETournamentSyncData | None = None
+    duplicated_players_by_id: dict[str, SCEDuplicatedPlayer] = field(
+        default_factory=dict
+    )
 
     @property
     def last_upload_at_str(self) -> str:
@@ -526,7 +561,7 @@ class SCETournamentPluginData(PluginData):
         stored_conflict_sync_data = stored_value.get('conflict_sync_data')
         return cls(
             id=stored_value.get('id'),
-            auto_upload=stored_value.get('auto_upload', True),
+            auto_upload=stored_value.get('auto_upload', False),
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload_at'),
             ),
@@ -544,6 +579,12 @@ class SCETournamentPluginData(PluginData):
                 if stored_conflict_sync_data
                 else None
             ),
+            duplicated_players_by_id={
+                id_: SCEDuplicatedPlayer.from_stored_value(stored_dup_player)
+                for id_, stored_dup_player in stored_value.get(
+                    'duplicated_players_by_id', {}
+                ).items()
+            },
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -565,6 +606,10 @@ class SCETournamentPluginData(PluginData):
                 if self.conflict_sync_data
                 else None
             ),
+            'duplicated_players_by_id': {
+                id_: dup_player.to_stored_value()
+                for id_, dup_player in self.duplicated_players_by_id.items()
+            },
         }
 
     @classmethod

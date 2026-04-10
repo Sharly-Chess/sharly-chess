@@ -882,3 +882,27 @@ class RoundRobinTieBreakTestCase(TieBreakTestCase):
             4: 0,
         }
         self.assertEqual(results, expected)
+
+
+class KoyaTieBreakTestCase(TieBreakTestCase):
+    """Test on a stricter koya, the TEC exercise is too laxist
+    (0 on last round + no opponent score matching the limit)"""
+
+    @property
+    def json_file(self) -> str:
+        return 'manual-koya'
+
+    def test_koya(self):
+        tie_break_ = tie_breaks.KoyaTieBreak()
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {
+            1: 0.5,
+            2: 2.0,
+            3: 0.0,
+            4: 2.0,
+            5: 1.5,
+            6: 0.5,
+            7: 2.0,
+            8: 0.0,
+        }
+        self.assertEqual(results, expected)

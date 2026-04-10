@@ -99,7 +99,7 @@ class ChessEventController(BaseEventAdminController):
         except ImporterError:
             """Already said in the status."""
         except SharlyChessException as error:
-            logger.error(
+            logger.exception(
                 'An error occurred while synchronizing '
                 'the tournament [%s] with ChessEvent:\n%s',
                 tournament.name,

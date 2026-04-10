@@ -54,6 +54,7 @@ from plugins.sce.sce_data import (
     SCEEventPluginData,
     SCEPlayerSyncData,
     SCETournamentSyncData,
+    SCEDuplicatedPlayer,
 )
 from plugins.sce.utils import SCEUtils
 from plugins.utils import Plugin
@@ -179,9 +180,9 @@ class SCESession(Session):
             response.raise_for_status()
             logger.debug(request_log)
         except HTTPError as e:
-            logger.error(request_log)
+            logger.exception(request_log)
             try:
-                logger.error(response.json())
+                logger.exception(response.json())
             except JSONDecodeError:
                 pass
             raise SharlyChessException(str(e))
@@ -393,7 +394,7 @@ class SCESession(Session):
     ) -> bool:
         """Create a local player from SC.com data.
         Return False if it already exists, True if it succeeds."""
-        # TODO (Molrn) Check and flag duplicate players
+
         sce_tournament_id = SCEUtils.get_tournament_plugin_data(tournament).id
         assert sce_tournament_id is not None
         stored_player = StoredPlayer(
@@ -405,6 +406,18 @@ class SCESession(Session):
             },
         )
         sync_data.augment_stored_player(stored_player, tournament)
+        if not self.event.check_player_unicity(stored_player, tournament):
+            plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+            plugin_data.duplicated_players_by_id[sce_id] = SCEDuplicatedPlayer(
+                last_name=stored_player.last_name,
+                first_name=stored_player.first_name,
+            )
+            database.execute(
+                'UPDATE tournament SET plugin_data = '
+                "json_set(plugin_data,'$.sce', json(?)) WHERE id = ?",
+                (json.dumps(plugin_data.to_stored_value()), tournament.id),
+            )
+            return False
         stored_player.id = database.add_stored_player(stored_player)
         database.add_stored_tournament_player(
             StoredTournamentPlayer(
@@ -560,6 +573,7 @@ class SCESession(Session):
         sync_data.augment_stored_tournament(stored_tournament, self.event)
         stored_tournament.id = database.add_stored_tournament(stored_tournament)
         tournament = Tournament(self.event, stored_tournament)
+        self.event.tournaments_by_id[tournament.id] = tournament
         for registration_data in raw_data['registrations']:
             self._create_local_player(
                 registration_data['id'],
@@ -584,11 +598,16 @@ class SCESession(Session):
             partial(self._create_tournament_request, data=sync_data)
         )
         logger.debug(log_prefix + 'Empty tournament created')
+        sce_id = response.json()['data']['id']
         plugin_data = SCETournamentPluginData(
-            id=response.json()['data']['id'],
+            id=sce_id,
             last_sync_data=sync_data,
         )
         SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+        event = tournament.event
+        event_plugin_data = SCEUtils.get_event_plugin_data(event)
+        event_plugin_data.tournament_names_by_id[sce_id] = tournament.name
+        SCEUtils.update_event_plugin_data(event, event_plugin_data)
         duplicate_count = 0
         for player in tournament.tournament_players:
             if self.create_sce_player(player):
@@ -820,6 +839,9 @@ class SCESession(Session):
             else None
         )
         stored_event.age_category_change_month = data['age_category_change_month']
+        stored_event.allow_multi_tournament_players = data[
+            'allow_multiple_tournament_registrations'
+        ]
         with EventDatabase(stored_event.uniq_id, True) as database:
             database.update_stored_event(stored_event)
             if is_create:
@@ -946,6 +968,10 @@ class SCESession(Session):
         duplicate_count = 0
 
         for tournament in sce_tournaments:
+            t_plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+            if t_plugin_data.duplicated_players_by_id:
+                t_plugin_data.duplicated_players_by_id = {}
+                SCEUtils.update_tournament_plugin_data(tournament, t_plugin_data)
             for player in tournament.tournament_players:
                 plugin_data = SCEUtils.get_player_plugin_data(player)
                 if plugin_data.id:

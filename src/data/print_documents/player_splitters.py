@@ -18,9 +18,9 @@ class PlayerSplitter(IdentifiableEntity, ABC):
         Players will be grouped by split key."""
 
     @staticmethod
+    @abstractmethod
     def get_empty_key_default() -> str:
         """Return the string to use for eventual empty split key."""
-        return '???'
 
     @staticmethod
     def sorted_split_keys(event: Event, split_keys: Iterable[str]) -> list[str]:
@@ -52,6 +52,10 @@ class NoSplitPlayerSplitter(PlayerSplitter):
 
     @staticmethod
     def get_split_key(tournament_player: TournamentPlayer) -> str:
+        return ''
+
+    @staticmethod
+    def get_empty_key_default() -> str:
         return ''
 
 
@@ -112,3 +116,7 @@ class FederationPlayerSplitter(PlayerSplitter):
     @staticmethod
     def get_split_key(tournament_player: TournamentPlayer) -> str:
         return tournament_player.federation.name
+
+    @staticmethod
+    def get_empty_key_default() -> str:
+        return ''

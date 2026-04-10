@@ -5,6 +5,8 @@ from packaging.version import Version
 from common.i18n import _
 from data.event import Event
 from data.loader import EventLoader
+from data.print_documents import QRCodeType
+from database.sqlite.event.event_database import EventDatabase
 from plugins.hookspec import hookimpl, hookspec
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_admin_controller import SCEAdminController
@@ -12,6 +14,7 @@ from plugins.sce.sce_background_uploader import (
     should_schedule_auto_upload,
     schedule_upload,
 )
+from plugins.sce.sce_qr_codes import SCETournamentQRCodeType, SCEEventQRCodeType
 from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.sce.sce_data import (
     SCETournamentPluginData,
@@ -106,7 +109,7 @@ class SCEPlugin(Plugin):
         return False
 
     @property
-    def event_form_script_file(self) -> str:
+    def event_form_script_template(self) -> str:
         return '/sce_event_form_script.js'
 
     @property
@@ -129,6 +132,21 @@ class SCEPlugin(Plugin):
     @hookimpl
     def create_event_button_template(self) -> str:
         return '/sce_event_create_button.html'
+
+    @hookimpl
+    def on_event_duplicated(self, event_database: EventDatabase):
+        # Erase all SCE plugin data
+        stored_event = event_database.load_stored_event()
+        if PLUGIN_NAME not in stored_event.enabled_plugins:
+            return
+        stored_event.plugin_data[PLUGIN_NAME] = {}
+        event_database.update_stored_event(stored_event)
+        for stored_tournament in stored_event.stored_tournaments:
+            stored_tournament.plugin_data[PLUGIN_NAME] = {}
+            event_database.update_stored_tournament(stored_tournament)
+        for stored_player in stored_event.stored_players:
+            stored_player.plugin_data[PLUGIN_NAME] = {}
+            event_database.update_stored_player(stored_player)
 
     # ---------------------------------------------------------------------------------
     # Tournaments
@@ -204,8 +222,17 @@ class SCEPlugin(Plugin):
             NavDataTransferItem(
                 key='sce_data_transfer',
                 title='Sharly-Chess.com',
-                icon_path='/images/sharly-chess-events.ico',
+                icon_path='/images/sce.ico',
                 modal_route_name='sce-sync-modal',
                 has_upload_error=self._event_has_sce_error_badge(event),
             )
         ]
+
+    # ---------------------------------------------------------------------------------
+    # Documents
+    # ---------------------------------------------------------------------------------
+
+    @hookimpl(trylast=True)
+    def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
+        qrcode_types.insert(1, SCETournamentQRCodeType)
+        qrcode_types.insert(1, SCEEventQRCodeType)
