@@ -1227,8 +1227,8 @@ msgstr "Effacer tous les filtres."
 msgid "Click and drag to select balanced groups."
 msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
 
-msgid "Click here to support to the Sharly Chess project and get your donation certificate!"
-msgstr "Cliquer ici pour soutenir le projet Sharly Chess et obtenir votre certificat de donnation !"
+msgid "Click here to support to the Sharly Chess project and get your supporter certificate!"
+msgstr "Cliquer ici pour soutenir le projet Sharly Chess et obtenir votre certificat de soutien !"
 
 msgid "Click to check-in the player."
 msgstr "Cliquer ici pour pointer le·la joueur·euse."
