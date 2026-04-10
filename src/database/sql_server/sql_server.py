@@ -102,7 +102,7 @@ class SqlServer:
                 message = _('Connection to the server failed (timeout).')
             else:
                 message = _('Connection to the server failed.')
-            logger.error(
+            logger.exception(
                 'Connection to the server [%s] failed: %s',
                 self.__class__.__name__,
                 exception,
@@ -130,7 +130,7 @@ class SqlServer:
             message = _('Request to the database failed (timeout).')
         else:
             message = _('Request to the database failed.')
-        logger.error(
+        logger.exception(
             'Request to the database [%s] failed: %s',
             self.__class__.__name__,
             exception,

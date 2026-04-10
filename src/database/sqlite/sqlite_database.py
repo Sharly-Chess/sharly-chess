@@ -1,4 +1,5 @@
 import json
+import sqlite3
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
@@ -23,6 +24,15 @@ class SQLiteDatabase:
     enable_foreign_keys: bool = field(default=True)
     database: Connection | None = field(init=False, default=None)
     cursor: Cursor | None = field(init=False, default=None)
+
+    def is_sqlite_file(self) -> bool:
+        try:
+            with self:
+                self.execute('SELECT 1 AS is_sqlite')
+                row = self.fetchone()
+                return row.get('is_sqlite') == 1
+        except sqlite3.DatabaseError:
+            return False
 
     def exists(self) -> bool:
         """Checks if the database file exists."""
@@ -63,12 +73,11 @@ class SQLiteDatabase:
 
             return self
         except Exception as e:
-            logger.error(
+            logger.exception(
                 'Failed to open database %s (write=%s): %s',
                 self.file,
                 self.write,
                 e,
-                exc_info=True,
             )
             raise
 

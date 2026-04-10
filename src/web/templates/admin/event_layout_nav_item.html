@@ -69,17 +69,17 @@
                                         <i class="{{ sub_nav_tab.icon_class }} pe-1"></i>
                                     {% endif %}
                                     {% if sub_nav_tab.icon_path %}
-                                        <span style="width:18%" class="pe-2">
+                                        <span style="width:25px" class="pe-2">
                                             <img
                                                 src="{{ url_for('static', file_path=sub_nav_tab.icon_path) }}?version={{ sharly_chess_config.version }}"
                                                 style="height: 1.2em"
                                             />
                                         </span>
                                         <span class="mt-1 flex-grow-1">
-                                            {{ sub_nav_tab.title }}
+                                            {{ sub_nav_tab.title|safe }}
                                         </span>
                                     {% else %}
-                                        {{ sub_nav_tab.title }}
+                                        {{ sub_nav_tab.title|safe }}
                                     {% endif %}
 
                                     {% if sub_nav_tab.has_error %}
@@ -111,7 +111,7 @@
                     {% if nav_tab.icon_class %}
                         <i class="{{ nav_tab.icon_class }}"></i>
                     {% endif %}
-                    <span class="expanded-only flex-grow-1">{{ nav_tab.title }}</span>
+                    <span class="expanded-only flex-grow-1">{{ nav_tab.title|safe }}</span>
                     {% if nav_tab.has_error %}
                         <span
                             class="nav-icon-badge rounded-circle bg-danger mx-2"
@@ -146,6 +146,9 @@
                             type="button"
                             hx-indicator="#please-wait"
                         {% endif %}
+                        {% if sub_nav.shortcut %}
+                            hx-trigger="click, {{ sub_nav.shortcut }}"
+                        {% endif %}
                         {% if sub_nav.disabled %}
                             disabled
                         {% endif %}
@@ -161,10 +164,10 @@
                                 />
                             </span>
                             <span class="mt-1 flex-grow-1">
-                                {{ sub_nav.title }}
+                                {{ sub_nav.title|safe }}
                             </span>
                         {% else %}
-                            {{ sub_nav.title }}
+                            {{ sub_nav.title|safe }}
                         {% endif %}
                         {% if sub_nav.has_error %}
                             <span
@@ -188,11 +191,14 @@
             hx-indicator="#please-wait"
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
+            {% if nav_tab.shortcut %}
+                hx-trigger="click, {{ nav_tab.shortcut }}"
+            {% endif %}
         >
             {% if nav_tab.icon_class %}
                 <i class="{{ nav_tab.icon_class }}"></i>
             {% endif %}
-            <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title }}</span>
+            <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title|safe }}</span>
         </button>
     {% else %}
         {% with active=(admin_event_tab == nav_id) %}
@@ -214,11 +220,14 @@
                     {% if nav_tab.disabled %}
                         disabled
                     {% endif %}
+                    {% if nav_tab.shortcut %}
+                            hx-trigger="click, {{ nav_tab.shortcut }}"
+                    {% endif %}
                 >
                     {% if nav_tab.icon_class %}
                         <i class="{{ nav_tab.icon_class }}"></i>
                     {% endif %}
-                    <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title }}</span>
+                    <span id="nav-{{ nav_id }}-tab-title" class=" expanded-only">{{ nav_tab.title|safe }}</span>
                 </button>
             </span>
         {% endwith %}

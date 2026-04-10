@@ -5,7 +5,7 @@ from asyncio import run
 from pathlib import Path
 
 from common.logger import print_interactive_success
-from plugins.chess_results.utils import ChessResultsUtils
+from plugins.chess_results.utils import CRUtils
 
 sys.path.extend(
     map(
@@ -36,12 +36,12 @@ async def main():
         required=True,
     )
     args: Namespace = parser.parse_args()
-    ChessResultsUtils.dump_credentials(
+    CRUtils.dump_credentials(
         args.key,
         args.iv,
     )
     print_interactive_success(
-        f'The credentials have been written to {ChessResultsUtils.CREDENTIALS_FILE}.'
+        f'The credentials have been written to {CRUtils.CREDENTIALS_FILE}.'
     )
 
 

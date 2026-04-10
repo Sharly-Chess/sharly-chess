@@ -100,6 +100,9 @@ msgstr ""
 msgid "Error while uploading tournament [{tournament}], consult the logs for more details."
 msgstr ""
 
+msgid "Event [{event}] is not connected to a Sharly-Chess.com event."
+msgstr ""
+
 msgid "Event [{event}] successfully connected to Sharly-Chess.com!"
 msgstr ""
 
@@ -110,6 +113,9 @@ msgid "Event has been archived on Sharly-Chess.com, it no longer can be modified
 msgstr ""
 
 msgid "Event is not connected to a Sharly-Chess.com event."
+msgstr ""
+
+msgid "Event on Sharly-Chess.com"
 msgstr ""
 
 msgid "FIDE ID"
@@ -193,6 +199,9 @@ msgstr ""
 msgid "Phone"
 msgstr ""
 
+msgid "Player [{player}] could not be deleted from Sharly-Chess.com."
+msgstr ""
+
 msgid "Player [{player}] deleted."
 msgstr ""
 
@@ -206,6 +215,9 @@ msgid "Player duplicates detected during the last synchronisation attempt."
 msgstr ""
 
 msgid "Player has already been paired in the tournament, it no longer can be deleted."
+msgstr ""
+
+msgid "Players in Sharly-Chess.com that can't be created in the local Sharly Chess application because they already exist."
 msgstr ""
 
 msgid "Players in the local Sharly Chess application that can't be created in Sharly-Chess.com because they already exist."
@@ -248,6 +260,12 @@ msgstr ""
 msgid "Rounds"
 msgstr ""
 
+msgid "Scan to access the event on Sharly-Chess.com."
+msgstr ""
+
+msgid "Scan to access the tournament on Sharly-Chess.com."
+msgstr ""
+
 msgid "Schedule"
 msgstr ""
 
@@ -264,6 +282,9 @@ msgid "Sharly-Chess.com is not reachable at the moment."
 msgstr ""
 
 msgid "Sharly-Chess.com player conflicts"
+msgstr ""
+
+msgid "Sharly-Chess.com players"
 msgstr ""
 
 msgid "Sharly-Chess.com tournament"
@@ -306,6 +327,9 @@ msgstr ""
 msgid "Tournament"
 msgstr ""
 
+msgid "Tournament [{tournament}] is not connected to a Sharly-Chess.com tournament."
+msgstr ""
+
 msgid "Tournament [{tournament}] successfully uploaded."
 msgstr ""
 
@@ -319,6 +343,9 @@ msgid "Tournament import failed, consult the logs for more details."
 msgstr ""
 
 msgid "Tournament is currently being uploaded."
+msgstr ""
+
+msgid "Tournament on Sharly-Chess.com"
 msgstr ""
 
 msgid "Tournament successfully imported."

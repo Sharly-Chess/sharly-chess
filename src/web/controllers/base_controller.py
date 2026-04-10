@@ -404,6 +404,7 @@ class WebContext:
             'locale_options': locale_options,
             'locale': SessionLocale(self.request).get(),
             'client': self.client,
+            'user_agent': self.request.headers.get('User-Agent', ''),
         }
 
 

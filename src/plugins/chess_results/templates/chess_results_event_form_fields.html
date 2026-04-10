@@ -1,23 +1,4 @@
 <div class="row gy-2 gx-3">
-    <div class="col-12 col-md-6">
-        {{ admin_macros.switch_input(
-            name='chess_results_auto_upload',
-            label='',
-            placeholder=_('Auto-upload results'),
-            disabled=not client.can_update_event,
-            data=data, errors=errors
-        ) }}
-    </div>
-    <div class="col-12 col-md-6">
-        {{ admin_macros.number_input(
-            name='chess_results_auto_upload_delay',
-            label=_('Minimum delay between uploads (minutes):'),
-            placeholder=CHESS_RESULTS_DEFAULT_UPLOAD_DELAY,
-            disabled=not client.can_update_event,
-            data=data, errors=errors,
-            min=1
-        ) }}
-    </div>
     <div class="col-12">
         {{ admin_macros.text_input(
             name='chess_results_remark',

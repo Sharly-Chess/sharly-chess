@@ -1,4 +1,5 @@
 let ignoreNextModalClose = false;
+var modalForm;
 
 function closeModal() {
     ignoreNextModalClose = false;
@@ -50,9 +51,29 @@ function handleModalOpened(static) {
         modal.show();
     }
 
+    modalForm = modal._element.querySelector("#modal-form");
+    if (modalForm) {
+        let eventListeners = $._data(modal._element, "events")
+        if (!eventListeners || !eventListeners.keydown) { // avoid duplicate eventListeners
+            $(modal._element).on("keydown", function(event) {
+                if (event.key == "Enter") {
+                    if (event.target.getAttribute("type") === "search") {
+                        return;
+                    }
+                    modalForm.dispatchEvent(new CustomEvent("enterKeypressFromModal"));
+                }
+            })
+        }
+    }
+
     closeTooltips();
     activateTooltips();
-    scrollToFirstError();
+    if (!scrollToFirstError() && modalForm) {
+        let fields = modalForm.getElementsByClassName("form-control");
+        if (fields.length > 0) {
+            fields[0].select(); // If the modal contains a form, set focus on the first field
+        }
+    }
 }
 
 window.addEventListener("modal_opened", function(event) {
@@ -95,4 +116,11 @@ function preparePrintModal(print_document_id, tournament_id, print_round) {
         default_print_round = print_round || '';
         last_url = window.location.href;
     }
+}
+
+function triggerModalInitEvent(selector, event='change', params=[]) {
+    // When a modal is swapped, the JS events are triggered on previous elements
+    // Send the event again after the modal's been swapped to ensure triggering it on the correct element
+    $(selector).trigger(event, params);
+    setTimeout(() => $(selector).trigger(event, params), 100)
 }

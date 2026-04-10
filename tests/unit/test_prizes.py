@@ -508,6 +508,69 @@ class PrizesTestCase(TestCase):
         # Second woman
         self.assert_has_prize(p6, second_woman, prizes)
 
+    def test_recursive_entrants_promotion(self):
+        """Test that player A can be promoted, replaced by player B,
+        and that player B can be promoted too."""
+        main_category = self.stored_category(
+            'all',
+            True,
+            HortSystemPrizeSharing(),
+            [
+                self.stored_prize(125),
+                self.stored_prize(100),
+            ],
+            threshold=30,
+        )
+
+        first_woman = self.stored_prize(50)
+
+        women_category = self.stored_category(
+            'woman',
+            stored_prizes=[
+                first_woman,
+            ],
+            stored_prize_criteria=[
+                self.stored_criterion(
+                    GenderPlayerFilter([GenderOption(PlayerGender.WOMAN.value)])
+                )
+            ],
+        )
+
+        first_youth = self.stored_prize(50)
+
+        youth_category = self.stored_category(
+            'youth',
+            stored_prizes=[
+                first_youth,
+            ],
+            stored_prize_criteria=[
+                self.stored_criterion(
+                    AgePlayerFilter([AgeCategoriesOption([JuniorCategory(14).id])])
+                )
+            ],
+        )
+        p1 = self.player(1009, 4)
+        p2 = self.player(1008, 4)
+        p3 = self.player(1007, 4, PlayerGender.WOMAN)
+        p4 = self.player(1006, 4, year_of_birth=2012)
+        players = [p1, p2, p3, p4]
+
+        prizes = self.assign_prizes(
+            [main_category, youth_category, women_category], players
+        )
+
+        # First place, shared with second
+        self.assert_has_prize_value(p1, 118.75, prizes)
+
+        # Second place, shared with first
+        self.assert_has_prize_value(p2, 106.25, prizes)
+
+        # First woman, promoted from third place
+        self.assert_has_prize(p3, first_woman, prizes)
+
+        # First youth, promoted from third place after the first woman promotion
+        self.assert_has_prize(p4, first_youth, prizes)
+
     def test_promotion_entrant_gets_higher_prize(self):
         """Test that a player entering the main category can still be promoted to a better prize"""
         main_category = self.stored_category(

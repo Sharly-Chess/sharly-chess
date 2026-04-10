@@ -111,9 +111,9 @@ class PrintGridPlayerSorterManager(EventBoundEntityManager[GridPlayerSorter]):
     @override
     def entity_types(self) -> list[type[GridPlayerSorter]]:
         return [
-            player_sorters.NameGridPlayerSorter,
             player_sorters.RankGridPlayerSorter,
             player_sorters.StartingRankGridPlayerSorter,
+            player_sorters.NameGridPlayerSorter,
             player_sorters.PairingNumberGridPlayerSorter,
         ]
 

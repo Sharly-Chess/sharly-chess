@@ -247,11 +247,7 @@ class AppHookSpecs:
 
     @hookspec
     def validate_tournament_form_fields(
-        self,
-        action: str,
-        tournament: 'Tournament',
-        data: dict[str, str],
-        errors: dict[str, str],
+        self, data: dict[str, str], errors: dict[str, str]
     ):
         """Validate the additional tournament form fields"""
 

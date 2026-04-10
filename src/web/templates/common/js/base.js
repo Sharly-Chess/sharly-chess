@@ -57,11 +57,15 @@ function activateTooltips () {
 function scrollToFirstError() {
     var errorElements = document.querySelectorAll('#modal-wrapper .is-invalid');
     if (errorElements.length > 0) {
-        errorElements[0].scrollIntoView({
+        const element = errorElements[0];
+        element.scrollIntoView({
             behavior: "smooth",
             block: "start",
         });
+        element.select();
+        return true;
     }
+    return false;
 }
 
 window.addEventListener("do_print", function(event) {

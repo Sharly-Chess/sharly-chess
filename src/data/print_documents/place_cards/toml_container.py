@@ -24,7 +24,7 @@ class TOMLContainer:
         try:
             self.data = toml.load(self.toml_file)
         except TomlDecodeError as tde:
-            logger.error('[%s]: %s.', self.toml_file.name, tde)
+            logger.exception('[%s]: %s.', self.toml_file.name, tde)
 
     def get_value(
         self,

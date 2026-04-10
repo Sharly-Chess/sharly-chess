@@ -10,13 +10,21 @@ from AdvancedHTMLParser import AdvancedHTMLParser, AdvancedTag
 from requests import Session
 from requests.exceptions import ConnectionError, Timeout, RequestException, HTTPError
 
+from common import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
 from data.event import Event
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe import PLUGIN_NAME
+from plugins.ffe.ffe_upload_status import (
+    FailureFFEUploadStatus,
+    NotReachableFFEUploadStatus,
+    AuthFailureFFEUploadStatus,
+    FinishedFailureFFEUploadStatus,
+    PapiConversionFailureFFEUploadStatus,
+    UnexpectedFailureFFEUploadStatus,
+)
 from plugins.ffe.papi_converter import PapiConverter
 from plugins.ffe.utils import FFEUtils, PlayerFFELicence, FFEArbiterTitle, FFE_LEAGUES
 from plugins.utils import PluginUtils
@@ -52,9 +60,6 @@ class FFESession(Session):
     def __init__(
         self,
         tournament: Tournament | None,
-        report_info=logger.info,
-        report_success=logger.info,
-        report_error=logger.error,
     ):
         super().__init__()
         self.tournament: Tournament | None = tournament
@@ -62,9 +67,6 @@ class FFESession(Session):
         self.auth_state: dict[str, str | None] = {}
         self.tournament_ffe_url: str | None = None
         self.last_url_read: str | None = None
-        self.report_info = report_info
-        self.report_success = report_success
-        self.report_error = report_error
 
     def _read_url(
         self, url: str, data: dict[str, str] | None, files: dict[str, Path] | None
@@ -111,18 +113,18 @@ class FFESession(Session):
                     response = self.post(url, data=data, files=handlers)
             return response.content.decode()
         except ConnectionError as ex:
-            logger.error('Failed to read [%s] (connection error): [%s].', url, ex)
+            logger.exception('Failed to read [%s] (connection error): [%s].', url, ex)
         except Timeout as ex:
-            logger.error('Failed to read [%s] (timeout): [%s].', url, ex)
+            logger.exception('Failed to read [%s] (timeout): [%s].', url, ex)
         except HTTPError as ex:
-            logger.error(
+            logger.exception(
                 'Failed to read [%s] (error code [%d]): [%s].',
                 url,
                 ex.errno,
                 ex.strerror,
             )
         except RequestException as ex:
-            logger.error('Failed to read [%s]: [%s].', url, ex)
+            logger.exception('Failed to read [%s]: [%s].', url, ex)
         finally:
             for handler in handlers.values():
                 handler.close()
@@ -195,19 +197,17 @@ class FFESession(Session):
         url = FFE_ADMIN_URL if admin else FFE_PUBLIC_URL
         logger.debug('Initializing a session to [%s]...', url)
         html: str | None = self._read_url(url=url, data=None, files=None)
-        if not html:
+
+        if not html or (parsed := self._parse_html_content(html))[1]:
             return False
-        parser, error = self._parse_html_content(html)
-        if error:
-            return False
+        parser = parsed[0]
         if result := self.read_ffe_state(parser, url, admin):
             logger.debug('Session initialized.')
         return result
 
-    def _ffe_auth(self, ffe_id: int, ffe_password: str) -> bool | None:
+    def _ffe_auth(self, ffe_id: int, ffe_password: str) -> bool:
         """Authenticates on the FFE admin website.
-        Returns True on success, False if the credentials are incorrect, or
-        None if they couldn't be tested."""
+        Returns True on success, False if the credentials are incorrect."""
 
         assert self.ffe_state
         if ffe_id is None or ffe_password is None:
@@ -253,7 +253,6 @@ class FFESession(Session):
         tag = parser.getElementById(VIEW_LINK_ID)
         if not tag:
             logger.error('Authentication failed.')
-            self.report_error(_('Authentication failed.'))
             return False
         value = getattr(tag, 'attributesDict', {}).get('href', '')
         self.tournament_ffe_url = value
@@ -273,40 +272,51 @@ class FFESession(Session):
             logger.info('FFE authentication succeeded.')
         return auth
 
-    def get_fees(self) -> str | None:
-        """Downloads the fees for the tournament."""
-
-        assert self.tournament is not None
+    def _validate_admin_access(self):
         ffe_id, ffe_password = self.get_id_and_password()
-        if not ffe_id or not ffe_password:
-            return None
 
-        logger.info('Getting fees for tournament [%d]...', ffe_id)
+        if not ffe_id or not ffe_password:
+            raise SharlyChessException('Certification number and password not set.')
 
         if not self._ffe_init(admin=True):
-            return None
+            raise SharlyChessException(_('FFE website could not be reached.'))
         if not self._ffe_auth(ffe_id, ffe_password):
-            return None
+            raise SharlyChessException(
+                'Authentication failed, check the password and certification number.'
+            )
+
+    @staticmethod
+    def _logged_exception() -> SharlyChessException:
+        return SharlyChessException(
+            _('An unexpected error occurred, consult the logs for more details.')
+        )
+
+    def get_fees(self) -> str | None:
+        """Downloads the fees for the tournament.
+        Returns None if the tournament has no fees, the html content if it has.
+        Raises a localized SharlyChessException if it fails."""
+
+        assert self.tournament is not None
+        logger.info('Getting fees for tournament [%s]...', self.tournament.name)
+        self._validate_admin_access()
         assert self.auth_state
         logger.debug(
             '> auth_state[%s]=[%s]', FEES_LINK_ID, self.auth_state[FEES_LINK_ID]
         )
         fees_link_id = self.auth_state[FEES_LINK_ID]
         if fees_link_id is None:
-            self.report_error(
+            raise SharlyChessException(
                 _(
-                    'Fees link not found, check that a tournament has already been sent and that the tournament has not been archived on the FFE website.'
+                    'Fees link not found, check that a tournament has already been '
+                    'sent and that the tournament has not been archived on the FFE website.'
                 )
             )
-            return None
         if fees_link_id.lower() == 'tournoi exempté de droits':
-            self.report_info(_('Tournament exempt from registration fees.'))
+            logger.info('Tournament exempt from registration fees.')
             return None
         if fees_link_id.lower() != 'afficher la facture':
-            self.report_error(
-                _('Invalid fees link text [{text}].').format(text=fees_link_id)
-            )
-            return None
+            logger.error('Invalid fees link text [%s].', fees_link_id)
+            raise self._logged_exception()
         url = FFE_ADMIN_URL + '/MonTournoi.aspx'
         post_data: dict[str, str] = {
             '__EVENTTARGET': FEES_EVENT,
@@ -319,7 +329,8 @@ class FFESession(Session):
         }
         html: str | None = self._read_url(url=url, data=post_data, files=None)
         if not html:
-            return None
+            logger.error('Empty HTML on the fees page.')
+            raise self._logged_exception()
         base: AdvancedTag = AdvancedTag('base')
         base.setAttribute('href', FFE_ADMIN_URL)
         parser, error = self._parse_html_content(html)
@@ -331,8 +342,7 @@ class FFESession(Session):
                 str(post_data),
             )
             logger.debug('Response received:\n%s', html)
-            self.report_error(_('Invalid response from the FFE website.'))
-            return None
+            raise self._logged_exception()
         head: AdvancedTag | None = parser.getElementsByTagName('head')[0]
         if not head:
             logger.error(
@@ -341,8 +351,7 @@ class FFESession(Session):
                 str(post_data),
             )
             logger.debug('Response received:\n%s', html)
-            self.report_error(_('Invalid response from the FFE website.'))
-            return None
+            raise self._logged_exception()
         head.insertBefore(base, head.getChildren()[0])
         html = parser.getHTML()
         logger.info('Getting fees succeeded.')
@@ -365,13 +374,13 @@ class FFESession(Session):
         else:
             return ffe_id, ffe_password
 
-    def upload(self, set_visible: bool):
+    def upload(self, set_visible: bool) -> FailureFFEUploadStatus | None:
         """Upload the tournament to the FFE admin website."""
 
         assert self.tournament is not None
         ffe_id, ffe_password = self.get_id_and_password()
         if not ffe_id or not ffe_password:
-            return
+            return None
 
         logger.info(
             'Sending tournament [%d] (%s) to the FFE website...',
@@ -379,19 +388,14 @@ class FFESession(Session):
             self.tournament.name,
         )
         if not self._ffe_init(admin=True):
-            return
+            return NotReachableFFEUploadStatus()
         if not self._ffe_auth(ffe_id, ffe_password):
-            return
+            return AuthFailureFFEUploadStatus()
         logger.debug(
             '> auth_state[%s]=[%s]', UPLOAD_LINK_ID, self.auth_state[UPLOAD_LINK_ID]
         )
         if self.auth_state[UPLOAD_LINK_ID] is None:
-            self.report_error(
-                _(
-                    'Upload link not found, check that the tournament is not marked as finished on the FFE website.'
-                )
-            )
-            return
+            return FinishedFailureFFEUploadStatus()
         url = FFE_ADMIN_URL + '/MonTournoi.aspx'
         post: dict[str, str] = {
             '__EVENTTARGET': UPLOAD_EVENT,
@@ -413,15 +417,9 @@ class FFESession(Session):
             tmp_sce_file: Path = tmp_path / 'event.sce'
 
             # Copy the event database to the tmp file
-            with EventDatabase(event_uniq_id) as event_database:
-                try:
-                    logger.debug(
-                        'Copying [%s] to [%s]...', event_database.file, tmp_sce_file
-                    )
-                    shutil.copy(event_database.file, tmp_sce_file)
-                except Exception:
-                    self.report_error(_('Copying to tmp .sce file failed.'))
-                    return
+            database = EventDatabase(event_uniq_id)
+            logger.debug('Copying [%s] to [%s]...', database.file, tmp_sce_file)
+            shutil.copy(database.file, tmp_sce_file)
 
             # Prepare for upload
             with EventDatabase(
@@ -460,12 +458,11 @@ class FFESession(Session):
                     is_ffe_upload=True,
                 )
             except Exception as e:
-                logger.error(
+                logger.exception(
                     self.tournament.log_prefix
                     + f'Error during conversion to Papi format: {e}'
                 )
-                self.report_error(_('Conversion to Papi format failed.'))
-                return
+                return PapiConversionFailureFFEUploadStatus()
 
             html: str | None = self._read_url(
                 url=url,
@@ -476,30 +473,14 @@ class FFESession(Session):
             )
 
             if not html:
-                return
+                return UnexpectedFailureFFEUploadStatus()
             __, error = self._parse_html_content(html)
             if error:
-                self.report_error(_('Upload failed'))
-                return
-
-        with EventDatabase(
-            event_uniq_id, write=True, check_dirty_tournaments=False
-        ) as event_database:
-            # NOTE (Molrn) Bypass standard DB write to avoid updating
-            # the last_update flag which would re-trigger an upload
-            now = SQLiteDatabase.now_as_database_timestamp()
-            event_database.execute(
-                """
-                UPDATE tournament SET plugin_data = json_set(
-                    plugin_data,'$.ffe.last_upload', ?
-                ) WHERE id = ?
-                """,
-                (now, self.tournament.id),
-            )
+                self.report_error('Upload failed: %s', error)
+                return UnexpectedFailureFFEUploadStatus()
 
         if not set_visible:
-            self.report_success(_('Results upload OK'))
-            return
+            return None
 
         logger.info('Making the tournament visible on the FFE website...')
         logger.debug(
@@ -511,21 +492,20 @@ class FFESession(Session):
             logger.warning(
                 'Display link not found, check that a Papi file has already been sent.'
             )
-            return
+            return UnexpectedFailureFFEUploadStatus()
         set_visible_link_id = self.auth_state[SET_VISIBLE_LINK_ID]
         if set_visible_link_id is None:
-            return
+            return UnexpectedFailureFFEUploadStatus()
         if set_visible_link_id.lower().startswith('désactiver'):
             logger.info('Data is already displayed on the FFE website.')
-            self.report_info(_('Data is already displayed on the FFE website.'))
-            return
+            return None
         if not set_visible_link_id.lower().startswith('activer'):
-            self.report_error(
-                _('Invalid display link text [{text}]').format(
+            logger.error(
+                'Invalid display link text [{text}]'.format(
                     text=self.auth_state[SET_VISIBLE_LINK_ID]
                 )
             )
-            return
+            return UnexpectedFailureFFEUploadStatus()
         url = FFE_ADMIN_URL + '/MonTournoi.aspx'
         post_data: dict[str, str] = {
             '__EVENTTARGET': SET_VISIBLE_EVENT,
@@ -538,40 +518,35 @@ class FFESession(Session):
         }
         html = self._read_url(url=url, data=post_data, files=None)
         if not html:
-            return
+            logger.error('Visible page could not be loaded.')
+            return UnexpectedFailureFFEUploadStatus()
         logger.info('Tournament visibility successfully set')
-        self.report_success(_('Tournament visibility successfully set'))
+        return None
 
-    def upload_rules(self) -> None:
-        """Upload the rules of the tournament to the FFE admin website."""
+    def upload_rules(self, rules_file: Path):
+        """Upload the rules of the tournament to the FFE admin website.
+        Raises a localised SharlyChessException if it fails"""
 
         assert self.tournament is not None
-        assert self.tournament.rules is not None
-        ffe_id, ffe_password = self.get_id_and_password()
-        if not ffe_id or not ffe_password:
-            return
 
         logger.info(
-            'Sending the rules of tournament [{ffe_id}] ({file}) to the FFE website...',
-            ffe_id,
-            self.tournament.rules,
+            'Sending the rules of tournament [%s] (%s) to the FFE website...',
+            self.tournament.name,
+            rules_file,
         )
-        if not self._ffe_init(admin=True):
-            return
-        if not self._ffe_auth(ffe_id, ffe_password):
-            return
+        self._validate_admin_access()
         logger.debug(
             '> auth_state[%s]=[%s]',
             UPLOAD_RULES_LINK_ID,
             self.auth_state[UPLOAD_RULES_LINK_ID],
         )
         if self.auth_state[UPLOAD_RULES_LINK_ID] is None:
-            self.report_error(
+            raise SharlyChessException(
                 _(
-                    'Rules upload link not found, check that the tournament is not marked as finished on the FFE website.'
+                    'Rules upload link not found, check that the tournament '
+                    'is not marked as finished on the FFE website.'
                 )
             )
-            return
         url = FFE_ADMIN_URL + '/MonTournoi.aspx'
         post: dict[str, str] = {
             '__EVENTTARGET': UPLOAD_RULES_EVENT,
@@ -586,34 +561,17 @@ class FFESession(Session):
             url=url,
             data=post,
             files={
-                UPLOAD_RULES_FILE_ID: Path(self.tournament.rules),
+                UPLOAD_RULES_FILE_ID: rules_file,
             },
         )
         if not html:
-            logger.error('html')
-            return
+            logger.error('Empty HTML on the upload page.')
+            raise self._logged_exception()
         __, error = self._parse_html_content(html)
         if error:
             logger.error(error)
-            return
-        with EventDatabase(
-            self.tournament.event.uniq_id, write=True, check_dirty_tournaments=False
-        ) as event_database:
-            now = SQLiteDatabase.now_as_database_timestamp()
-            event_database.execute(
-                """
-                UPDATE tournament
-                SET plugin_data = json_set(
-                        plugin_data,
-                        '$.ffe.last_rules_upload', ?
-                    ),
-                    last_update = ?
-                WHERE id = ?
-                """,
-                (now, now, self.tournament.id),
-            )
+            raise self._logged_exception()
         logger.info('Rules uploaded')
-        self.report_success(_('Rules uploaded'))
 
 
 class FFEArbitersLoader(FFESession):

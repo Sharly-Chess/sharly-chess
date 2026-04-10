@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "sharly-chess"
 description = "An application to help chess arbiters and organizers manage their tournaments"
 requires-python = ">=3.13.0"
-version = "3.6.7"
+version = "4.0.3"
 
 authors = [
   { name = "Pascal Aubry", email = "support@sharly-chess.com" },
@@ -34,7 +34,7 @@ dependencies = [
   "iso4217parse ~= 0.6.2",
   "Jinja2 ~= 3.1.5",
   "litestar ~= 2.16.0",
-  "packaging ~= 25.0",
+  "packaging ~= 26.0",
   "pathvalidate ~= 3.3.1",
     # downgrading pefile from 2024.8.26 to 2023.2.7, cf https://github.com/pyinstaller/pyinstaller/issues/8762
   "pefile == 2023.2.7",
@@ -63,7 +63,7 @@ lint = [
   "ruff ~= 0.15.0",
   "validate-pyproject",
   "pipdeptree",
-  "mypy",
+  "mypy >= 1.20.0",
   "pre-commit",
 ]
 

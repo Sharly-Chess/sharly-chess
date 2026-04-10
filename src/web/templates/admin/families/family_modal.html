@@ -26,6 +26,7 @@
         <div class="modal-body">
             <form
                 id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
                 {% if action == 'create' %}
                     hx-post="{{ url_for('admin-family-' ~ action, event_uniq_id=admin_event.uniq_id, family_type=family_type.value) }}"
                 {% elif action == 'clone' %}

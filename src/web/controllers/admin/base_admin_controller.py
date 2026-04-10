@@ -1,12 +1,8 @@
-from pathlib import Path
 from typing import Any
 
-import requests
-import validators
 from litestar.exceptions import NotFoundException
 from litestar.plugins.htmx import HTMXRequest
 
-from common import REQUEST_TIMEOUT
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
@@ -169,43 +165,6 @@ class BaseAdminController(BaseController):
                 value=data[field]
             )
         return record_illegal_moves
-
-    @staticmethod
-    def _admin_validate_rules_update_data(
-        data: dict[str, str],
-        errors: dict[str, str],
-    ) -> str | None:
-        field = 'rules'
-        rules: str | None = WebContext.form_data_to_str(data, field)
-        if rules:
-            if validators.url(rules):
-                try:
-                    response = requests.get(rules, timeout=REQUEST_TIMEOUT)
-                    if response.status_code != 200:
-                        errors[field] = _(
-                            'URL [{url}] responded code [{code}].'
-                        ).format(url=rules, code=response.status_code)
-                except requests.ConnectionError as ce:
-                    errors[field] = _(
-                        'URL [{url}] did not respond (error: [{error}]).'
-                    ).format(url=rules, error=str(ce))
-            else:
-                # Remove quotes around the path if they exist
-                # A user who used "Copy as Path" in the Windows File Explorer will have these quotes.
-                rules = rules.strip('"\'')
-
-                if rules.find('..') != -1:
-                    errors[field] = _('Incorrect path [{path}].').format(path=rules)
-                    data[field] = ''
-                else:
-                    file: Path = Path(rules)
-                    if not file.exists() or not file.is_file():
-                        errors[field] = _('File [{file}] not found.').format(file=rules)
-                    elif file.suffix.lower() != '.pdf':
-                        errors[field] = _(
-                            'Wrong file extension [{ext}] ([pdf] expected).'
-                        ).format(ext=file.suffix)
-        return rules
 
     @staticmethod
     def _admin_validate_background_color_update_data(

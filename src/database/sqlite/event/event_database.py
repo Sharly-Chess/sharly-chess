@@ -109,10 +109,9 @@ class EventDatabase(MigrationDatabase):
                         self.execute('UPDATE tournament SET dirty = 0 WHERE dirty = 1;')
                 except Exception as e:
                     # Log but don’t block cleanup
-                    logger.error(
+                    logger.exception(
                         'Error in EventDatabase.__exit__ pre-cleanup: %s',
                         e,
-                        exc_info=True,
                     )
         finally:
             # Always release DB
@@ -605,7 +604,6 @@ class EventDatabase(MigrationDatabase):
             index=row['index'],
             time_control_trf25=row['time_control_trf25'],
             record_illegal_moves=row['record_illegal_moves'],
-            rules=row['rules'],
             first_board_number=row['first_board_number'],
             paired_bye_result=row['paired_bye_result'],
             max_byes=row['max_byes'],
@@ -690,7 +688,6 @@ class EventDatabase(MigrationDatabase):
                 'index',
                 'time_control_trf25',
                 'record_illegal_moves',
-                'rules',
                 'first_board_number',
                 'paired_bye_result',
                 'max_byes',
@@ -1229,6 +1226,9 @@ class EventDatabase(MigrationDatabase):
             'DELETE FROM `pairing` WHERE `tournament_id` = ? and `round` > ?',
             (tournament_id, round_),
         )
+
+    def delete_all_stored_pairings(self):
+        self.execute('DELETE FROM `pairing`')
 
     # ---------------------------------------------------------------------------------
     # StoredBoard
