@@ -57,10 +57,16 @@ class DonationCertificateReader:
             return None
         if not donation_data.signature:
             logger.exception(
-                InvalidSignature(f'No signature in certificate file [{input_file}].')
+                InvalidSignature('No signature in certificate file [%s].', input_file)
             )
             return None
-        signature: bytes = bytes.fromhex(donation_data.signature)
+        try:
+            signature: bytes = bytes.fromhex(donation_data.signature)
+        except ValueError as e:
+            logger.error(
+                'Invalid signature in certificate file [%s]: %s.', input_file, e
+            )
+            return None
         donation_data.signature = None
         try:
             PublicKeyLoader.load().verify(
