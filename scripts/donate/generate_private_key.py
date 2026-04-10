@@ -13,13 +13,13 @@ from common import BASE_DIR
 # USED BY THE MAINTAINERS AND THE SHARLY-CHESS.COM PLATFORM ONLY.
 # ==================================================================
 
-# 1. Generate the private key used to sign the sponsoring certificates.
-# 2. Update the source file of the sponsoring certificate reader
+# 1. Generate the private key used to sign the donation certificates.
+# 2. Update the source file of the donation certificate reader
 # with the public key to verify the signature of the certificate
 
 
-PRIVATE_KEY_FILE: Path = Path(__file__).parent / 'sponsoring.pem'
-READER_SOURCE_FILE: Path = BASE_DIR / 'src' / 'sponsoring' / 'certificate_reader.py'
+PRIVATE_KEY_FILE: Path = Path(__file__).parent / 'donation-private-key.pem'
+READER_SOURCE_FILE: Path = BASE_DIR / 'src' / 'donate' / 'certificate_reader.py'
 
 
 if __name__ == '__main__':

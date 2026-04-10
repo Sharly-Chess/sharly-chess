@@ -855,6 +855,10 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     filter: var(--bs-btn-close-white-filter);
 }
 
+#donation {
+    z-index: 10;
+}
+
 .error-page-container {
     display: flex;
     flex-direction: column;

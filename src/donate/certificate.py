@@ -2,16 +2,22 @@ import datetime
 from dataclasses import dataclass
 from typing import Self
 
+from data.player import Player
+
 
 @dataclass
-class SponsoringCertificate:
-    """A data class used to store the sponsoring certificates."""
+class DonationCertificate:
+    """A data class used to store the donation certificates."""
 
     email: str
     last_name: str
     first_name: str
     date: datetime.date | None = None
     signature: str | None = None
+
+    @property
+    def tooltip(self) -> str:
+        return f'{Player.player_full_name(self.first_name, self.last_name)}<br/>{self.email}<br/>{self.date}'
 
     def to_dict(self) -> dict[str, str]:
         d: dict[str, str] = {

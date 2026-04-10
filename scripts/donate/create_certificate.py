@@ -9,9 +9,9 @@ from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
 from common import BASE_DIR
-from scripts.sponsoring.generate_keys import PRIVATE_KEY_FILE
-from sponsoring.certificate import SponsoringCertificate
-from sponsoring.certificate_reader import SponsoringCertificateReader
+from scripts.donate.generate_private_key import PRIVATE_KEY_FILE
+from donate.certificate import DonationCertificate
+from donate.certificate_reader import DonationCertificateReader, CERTIFICATE_FILE
 
 from utils.scripts import init_script
 
@@ -19,7 +19,7 @@ arguments = init_script()
 
 
 class PrivateKeyLoader:
-    """A utility class to load the private key used to sign the sponsoring certificates."""
+    """A utility class to load the private key used to sign the donation certificates."""
 
     @staticmethod
     def load() -> RSAPrivateKey:
@@ -38,16 +38,16 @@ class PrivateKeyLoader:
         return private_key
 
 
-class SponsoringCertificateCreator:
-    """A utility class to create sponsoring certificates."""
+class DonationCertificateCreator:
+    """A utility class to create donation certificates."""
 
     @staticmethod
     def create(
-        sponsoring_cert: SponsoringCertificate,
+        donation_certificate: DonationCertificate,
         output_file: Path,
     ):
-        sponsoring_cert.date = datetime.now().date()
-        data: dict[str, str] = sponsoring_cert.to_dict()
+        donation_certificate.date = datetime.now().date()
+        data: dict[str, str] = donation_certificate.to_dict()
         signature = PrivateKeyLoader.load().sign(
             json.dumps(data).encode('utf-8'),
             padding=padding.PSS(
@@ -64,7 +64,7 @@ class SponsoringCertificateCreator:
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description='Command creating a sponsoring certificate.')
+    parser = ArgumentParser(description='Command creating a donation certificate.')
     parser.add_argument(
         '-e',
         '--email',
@@ -101,9 +101,9 @@ if __name__ == '__main__':
         output_dir.mkdir(parents=True, exist_ok=True)
     if not output_dir.is_dir(follow_symlinks=True):
         raise OSError(f'[{output_dir}] is not a folder, exiting.')
-    output_file = output_dir / 'sponsoring.cert'
-    SponsoringCertificateCreator.create(
-        SponsoringCertificate(
+    output_file = output_dir / CERTIFICATE_FILE.name
+    DonationCertificateCreator.create(
+        DonationCertificate(
             email=args.email,
             last_name=args.last_name,
             first_name=args.first_name,
@@ -111,7 +111,7 @@ if __name__ == '__main__':
         output_file=output_file,
     )
     print(f'Reading certificate file [{output_file}]...')
-    if sponsoring_data := SponsoringCertificateReader.read(
+    if donation_data := DonationCertificateReader.read(
         input_file=output_file,
     ):
-        print(sponsoring_data)
+        print(donation_data)
