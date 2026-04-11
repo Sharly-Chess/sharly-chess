@@ -19,6 +19,7 @@
 
 - Added round schedule to tournaments (4.0.0)
 - Fixed schedule dates not selected by default (4.0.3)
+- Fixed error when changing the date multiple times on creation (4.0.4)
 
 ## Players
 
