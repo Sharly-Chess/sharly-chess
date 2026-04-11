@@ -638,7 +638,7 @@ class TournamentAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         tournament_id: int | None = None,
-        rounds: int | None = None,
+        rounds: str | None = None,
         date_range: str | None = None,
     ) -> Template:
         """Return just the schedule section for an outerHTML swap.
@@ -649,12 +649,12 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.admin_tournament
         event = web_context.get_admin_event()
-
-        if rounds is None or rounds < 1:
+        rounds_value = int(rounds or 0)
+        if rounds_value < 1:
             if tournament:
-                rounds = tournament.rounds
+                rounds_value = tournament.rounds
             else:
-                rounds = 1
+                rounds_value = 1
 
         min_date = event.start_date
         max_date = event.stop_date
@@ -683,7 +683,7 @@ class TournamentAdminController(BaseEventAdminController):
 
         schedule_form_data: dict[str, str] = {}
         has_any_value = False
-        for round_num in range(1, rounds + 1):
+        for round_num in range(1, rounds_value + 1):
             field = f'round_{round_num}_datetime'
             if field in form_datetimes and form_datetimes[field]:
                 schedule_form_data[field] = form_datetimes[field]
@@ -706,7 +706,7 @@ class TournamentAdminController(BaseEventAdminController):
 
         template_context = web_context.template_context | {
             'admin_event': event,
-            'schedule_rounds': rounds,
+            'schedule_rounds': rounds_value,
             'data': schedule_form_data,
             'errors': {},
             'force_schedule_open': force_schedule_open,
