@@ -6,6 +6,7 @@ from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.player import TournamentPlayer
 from data.player_categories import PlayerCategory, NoCategory
+from utils import Utils
 from utils.entity import IdentifiableEntity
 from utils.enum import PlayerGender
 from web.controllers.base_controller import WebContext
@@ -126,11 +127,7 @@ class RatingTournamentCriterion(TournamentCriterion[dict[str, int | None]]):
     @property
     def full_name(self) -> str:
         min_rating, max_rating = self.rating_limits
-        if not min_rating:
-            return f'{self.name} ≤ {max_rating}'
-        if not max_rating:
-            return f'{self.name} ≥ {min_rating}'
-        return f'{min_rating} ≤ {self.name} ≤ {max_rating}'
+        return Utils.get_rating_range_label(min_rating, max_rating)
 
     def value_from_form_data(
         self, data: dict[str, str], errors: dict[str, str]

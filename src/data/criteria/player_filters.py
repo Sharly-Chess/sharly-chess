@@ -24,6 +24,7 @@ from data.criteria.player_filter_options import (
     CommentsFilterOption,
 )
 from data.player_categories import NoCategory, PlayerCategory
+from utils import Utils
 from utils.enum import PlayerGender, PlayerRatingType
 from utils.option import OptionHandler
 
@@ -93,11 +94,7 @@ class RatingPlayerFilter(PlayerFilter):
 
     def full_name(self, tournament: 'Tournament') -> str:
         min_rating, max_rating = self.get_option_values()
-        if not min_rating:
-            return f'{self.name} ≤ {max_rating}'
-        if not max_rating:
-            return f'{self.name} ≥ {min_rating}'
-        return f'{min_rating} ≤ {self.name} ≤ {max_rating}'
+        return Utils.get_rating_range_label(min_rating, max_rating)
 
     def validate_options(self):
         super().validate_options()
