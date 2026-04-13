@@ -1173,15 +1173,13 @@ class PlayerAdminController(BaseEventAdminController):
         self.set_players_search_results(web_context)
         player = tournament.tournament_players_by_id[player_id]
         warning_message: str | None = None
-        if not tournament.player_matches_criteria(player.single_tournament_player):
+        if not player.matches_tournament_criteria:
             warning_message = _(
                 'Player [{player}] has been created, but '
                 'does not match tournament criteria: {names}'
             ).format(
                 player=player.full_name,
-                names=player.single_tournament.failing_criteria_message(
-                    player.single_tournament_player
-                ),
+                names=player.failing_tournament_criteria_message,
             )
 
         if add_other:

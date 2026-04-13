@@ -1925,6 +1925,9 @@ msgstr ""
 msgid "Documents *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>D</u>ocuments"
 
+msgid "Does not match criteria"
+msgstr ""
+
 msgid "Dominica"
 msgstr ""
 
@@ -3240,6 +3243,9 @@ msgstr ""
 msgid "Marshall Islands"
 msgstr ""
 
+msgid "Matches criteria"
+msgstr ""
+
 msgid "Mauritania"
 msgstr ""
 
@@ -4281,6 +4287,12 @@ msgstr ""
 
 #, python-format
 msgid "Players update for tournament [%(tournament)s]"
+msgstr ""
+
+msgid "Players which do not match the criteria of their tournament."
+msgstr ""
+
+msgid "Players which match the criteria of their tournament."
 msgstr ""
 
 msgid "Players without phone or email won't be included."

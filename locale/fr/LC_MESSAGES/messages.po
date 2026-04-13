@@ -1925,6 +1925,9 @@ msgstr "Documents"
 msgid "Documents *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>D</u>ocuments"
 
+msgid "Does not match criteria"
+msgstr "Non-conforme aux critères"
+
 msgid "Dominica"
 msgstr "Dominique"
 
@@ -3240,6 +3243,9 @@ msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ron
 msgid "Marshall Islands"
 msgstr "Îles Marshall"
 
+msgid "Matches criteria"
+msgstr "Conforme aux critères"
+
 msgid "Mauritania"
 msgstr "Mauritanie"
 
@@ -4284,6 +4290,12 @@ msgstr "Mise à jour des joueur·euses"
 #, python-format
 msgid "Players update for tournament [%(tournament)s]"
 msgstr "Mise à jour des joueur·euses du tournoi [%(tournament)s]"
+
+msgid "Players which do not match the criteria of their tournament."
+msgstr "Les joueur·euses ne correspondant pas aux critères de leur tournoi."
+
+msgid "Players which match the criteria of their tournament."
+msgstr "Les joueur·euses correspondant aux critères de leur tournoi."
 
 msgid "Players without phone or email won't be included."
 msgstr "Les joueur·euses sans numéro de téléphone ni adresse email ne seront pas inclus·es."

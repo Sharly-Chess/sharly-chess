@@ -1883,7 +1883,7 @@ class TournamentAdminController(BaseEventAdminController):
             tournament.id: [
                 player.id
                 for player in tournament_players
-                if tournament.player_matches_criteria(player)
+                if player.matches_tournament_criteria
             ]
             for tournament in event.tournaments
         }
@@ -2081,7 +2081,7 @@ class TournamentAdminController(BaseEventAdminController):
                 for player in tournament_players:
                     if player.id in matched_player_ids:
                         continue
-                    if tournament.player_matches_criteria(player):
+                    if player.matches_tournament_criteria:
                         matched_player_ids.append(player.id)
                         if player.tournament.id != tournament.id:
                             event.move_player_to_tournament(player, tournament)
