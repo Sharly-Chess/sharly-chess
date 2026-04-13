@@ -178,6 +178,7 @@ class EventDocumentsController(BaseEventAdminController):
     ) -> Template:
         flat_data = WebContext.flatten_list_data(data)
         web_context = BaseEventAdminWebContext(request)
+        client = web_context.client
         event = web_context.get_admin_event()
 
         errors: dict[str, str] = {}
@@ -194,11 +195,11 @@ class EventDocumentsController(BaseEventAdminController):
 
         if document_type:
             options: list[PrintOption] = []
-            for option in document_type(web_context.client).default_options():
+            for option in document_type(client).default_options():
                 value = WebContext.form_data_to_value(flat_data, option.id, option.type)
                 options.append(type(option)(event, value))
             try:
-                document = document_type(web_context.client, options)
+                document = document_type(client, options)
                 document.validate_options()
             except OptionError as error:
                 errors[error.option.id] = str(error)
