@@ -183,6 +183,7 @@ class EventDocumentsController(BaseEventAdminController):
         errors: dict[str, str] = {}
 
         document_type: type[PrintDocument] | None = None
+        document: PrintDocument | None = None
         field = 'document'
         try:
             document_type = PrintDocumentManager(event).get_type(
@@ -210,8 +211,7 @@ class EventDocumentsController(BaseEventAdminController):
             return self._render_documents_modal(
                 web_context, data=flat_data, errors=errors
             )
-        assert document_type is not None
-        document = document_type(web_context.client)
+        assert document is not None
         # Clear the modal contents, and send an event
         return HTMXTemplate(
             template_name='common/alert.html',
