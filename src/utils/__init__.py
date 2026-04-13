@@ -14,8 +14,6 @@ import pycountry
 from babel.numbers import format_currency, format_decimal, get_decimal_symbol
 from text_unidecode import unidecode
 
-from common.i18n import _
-
 if TYPE_CHECKING:
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
@@ -336,6 +334,8 @@ class Utils:
 
     @staticmethod
     def get_rating_range_label(min_rating: int | None, max_rating: int | None) -> str:
+        from common.i18n import _
+
         prefix = ''
         suffix = ''
         if max_rating:
