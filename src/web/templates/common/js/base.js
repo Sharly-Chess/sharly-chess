@@ -69,7 +69,6 @@ function scrollToFirstError() {
 }
 
 window.addEventListener("do_print", function(event) {
-    closeModal();
     const form = document.createElement('form');
     form.method = 'get';
     form.action = window.location.origin +

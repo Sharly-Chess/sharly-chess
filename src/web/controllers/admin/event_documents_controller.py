@@ -54,6 +54,7 @@ class EventDocumentsController(BaseEventAdminController):
         _round: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
+        success_message: str | None = None,
     ) -> HTMXTemplate:
         event = web_context.get_admin_event()
         print_options = PrintDocumentOptionManager(event).objects()
@@ -121,6 +122,7 @@ class EventDocumentsController(BaseEventAdminController):
             'print_options': print_options,
             'containers_by_document': containers_by_document,
             'data': data,
+            'success_message': success_message,
             'errors': errors or {},
         }
         return cls._admin_base_event_render(
@@ -209,10 +211,18 @@ class EventDocumentsController(BaseEventAdminController):
                 web_context, data=flat_data, errors=errors
             )
         assert document_type is not None
+        document = document_type(web_context.client)
         # Clear the modal contents, and send an event
         return HTMXTemplate(
-            template_name='common/empty_modal.html',
-            re_target='#modal-wrapper',
+            template_name='common/alert.html',
+            re_target='#document-success-message',
+            re_swap='innerHTML',
+            context={
+                'type': 'success',
+                'message': _(
+                    'Document [{document}] has been generated in another tab.'
+                ).format(document=document.tab_title),
+            },
             trigger_event='do_print',
             after='receive',
             params={
@@ -220,7 +230,7 @@ class EventDocumentsController(BaseEventAdminController):
                 'document': flat_data['document'],
                 'options': {
                     option.id: flat_data[option.id]
-                    for option in document_type(web_context.client).default_options()
+                    for option in document.default_options()
                     if option.id in data
                 },
             },
