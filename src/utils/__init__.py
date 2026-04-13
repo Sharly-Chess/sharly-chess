@@ -14,6 +14,8 @@ import pycountry
 from babel.numbers import format_currency, format_decimal, get_decimal_symbol
 from text_unidecode import unidecode
 
+from common.i18n import _
+
 if TYPE_CHECKING:
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
@@ -331,6 +333,27 @@ class Utils:
             tournament.last_player_update or datetime.min,
             tournament.last_pairing_update or datetime.min,
         )
+
+    @staticmethod
+    def get_rating_range_label(min_rating: int | None, max_rating: int | None) -> str:
+        prefix = ''
+        suffix = ''
+        if max_rating:
+            if max_rating % 10 == 9:
+                suffix = f' < {max_rating + 1}'
+            else:
+                suffix = f' ≤ {max_rating}'
+            if min_rating:
+                if min_rating % 10 == 1:
+                    prefix = f'{min_rating - 1} < '
+                else:
+                    prefix = f'{min_rating} ≤ '
+        elif min_rating:
+            if min_rating % 10 == 1:
+                suffix = f' > {min_rating - 1}'
+            else:
+                suffix = f' ≥ {min_rating}'
+        return f'{prefix}{_("Rating")}{suffix}'
 
 
 class SupportsEquals(Protocol):
