@@ -70,6 +70,11 @@ class TournamentCriterion[T](IdentifiableEntity, ABC):
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
         """Return a function checking if a player is included by the criteria or not."""
 
+    def __eq__(self, other):
+        if not isinstance(other, TournamentCriterion):
+            return NotImplemented
+        return self.id == other.id and self.value == other.value
+
 
 class GenderTournamentCriterion(TournamentCriterion[str]):
     @staticmethod

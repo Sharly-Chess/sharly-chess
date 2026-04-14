@@ -177,7 +177,7 @@
                 </div>
             {% endif %}
             {% if tournament.num_players_not_matching_criteria > 0 %}
-                <span class="card-block-button pt-1">
+                <span class="card-block-button">
                     <i
                         class="bi-exclamation-triangle-fill text-warning"
                         {{ macros.tooltip_attributes('warning', ngettext('%(num)d player does not match criteria.', '%(num)d players do not match criteria.', tournament.num_players_not_matching_criteria), 'top') }}
