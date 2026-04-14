@@ -560,8 +560,7 @@ class Tournament:
     def num_players_not_matching_criteria(self) -> int:
         """Return the number of players matching all criteria of this tournament."""
         return sum(
-            not player.matches_tournament_criteria
-            for player in self.tournament_players
+            not player.matches_tournament_criteria for player in self.tournament_players
         )
 
     @property
