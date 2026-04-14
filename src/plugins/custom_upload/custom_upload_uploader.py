@@ -83,7 +83,9 @@ class CustomUploadUploader:
             cls.upload_status_messages[result_id] = result
 
         if unavailable_message := (
-            CustomUploadUtils.ffe_actions_unavailable_message(tournament)
+            CustomUploadUtils.custom_upload_configuration_verification_message(
+                tournament
+            )
         ):
             result = CustomUploadResult(
                 CustomUploadStatus.SETTINGS_ERROR, unavailable_message

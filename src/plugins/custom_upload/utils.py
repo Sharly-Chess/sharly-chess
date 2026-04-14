@@ -20,12 +20,15 @@ class CustomUploadUtils:
         return plugin_data
 
     @staticmethod
-    def ffe_actions_unavailable_message(tournament: Tournament) -> str | None:
-        from plugins.ffe.papi_converter import PapiConverter
-
+    def custom_upload_configuration_verification_message(
+        tournament: Tournament,
+    ) -> str | None:
         plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
-        # TODO: verify FTP settings are properly configured for given tournament
-        return PapiConverter.papi_export_unavailable_message(tournament)
+        if not plugin_data.ftp_username or not plugin_data.ftp_password:
+            return 'FTP credentials are not defined.'
+        if not plugin_data.ftp_host:
+            return 'FTP host is not defined.'
+        return None
 
 
 @dataclass
