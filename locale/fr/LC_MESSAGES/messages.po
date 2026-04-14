@@ -1916,6 +1916,9 @@ msgstr "Voulez-vous récupérer les données de la version [{version}]"
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
 msgstr "Voulez-vous faire la mise à jour de [{old_version}] à [{new_version}]"
 
+msgid "Document [{document}] has been generated in another tab."
+msgstr "Le document [{document}] a été généré dans un autre onglet."
+
 msgid "Document:"
 msgstr "Document :"
 
