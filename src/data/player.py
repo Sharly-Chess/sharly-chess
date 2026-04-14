@@ -44,7 +44,7 @@ from utils.types import (
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
-    from data.criteria.player_filters import PlayerFilter
+    from data.criteria.tournament_criteria import TournamentCriterion
     from data.event import Event
     from data.tournament import Tournament
 
@@ -678,12 +678,12 @@ class TournamentPlayer(Player):
         return not self.failing_tournament_criteria
 
     @cached_property
-    def failing_tournament_criteria(self) -> list['PlayerFilter']:
+    def failing_tournament_criteria(self) -> list['TournamentCriterion']:
         """Return the list of tournament criteria that the player does not match."""
         return [
-            criterion.player_filter
+            criterion
             for criterion in self.tournament.criteria
-            if not criterion.player_filter.is_player_included_function(self)
+            if not criterion.is_player_included_function(self)
         ]
 
     @property
@@ -691,10 +691,7 @@ class TournamentPlayer(Player):
         """Return a formatted list of the failing tournament criteria."""
         locale = get_locale()
         return format_list(
-            [
-                criteria.full_name(self.tournament)
-                for criteria in self.failing_tournament_criteria
-            ],
+            [criterion.full_name for criterion in self.failing_tournament_criteria],
             locale=locale,
         )
 
