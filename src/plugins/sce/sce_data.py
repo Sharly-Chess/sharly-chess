@@ -104,7 +104,9 @@ class SCETournamentSyncData:
                 )
                 for schedule in data['round_schedule']
             },
-            criteria=SCETournamentCriteria.sce_data_to_core_value(data['criteria']),
+            criteria=SCETournamentCriteria.sce_data_to_core_value(
+                data['criteria'] or {}
+            ),
         )
 
     @classmethod
