@@ -58,6 +58,9 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
     def header_content(self) -> str:
         return self.name
 
+    def set_for_event(self, event: Event):
+        """Set the column according to an event."""
+
     @property
     def is_tournament_column(self) -> bool:
         """Defines if the column only in usable in a single tournament context."""
@@ -113,7 +116,7 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
         return ''
 
     def get_filter_row_content(self, value: Any) -> str:
-        """Get the of a filter row from the value."""
+        """Get the content of a filter row from the value."""
         return value
 
     def get_filter_row_tooltip(self, value: Any) -> str:
@@ -173,7 +176,11 @@ class FilterPlayersTabColumn(PlayersTabColumn, ABC):
     def get_filter_key(self, player: Player) -> str: ...
 
 
-class NamePlayersTabColumn(PlayersTabColumn):
+class NamePlayersTabColumn(FilterPlayersTabColumn):
+    def __init__(self):
+        super().__init__()
+        self._is_filtrable = False
+
     @staticmethod
     def static_id() -> str:
         return 'name'
@@ -195,7 +202,7 @@ class NamePlayersTabColumn(PlayersTabColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'text-nowrap position-sticky px-3 table-sticky-border z-1'
+        return 'text-nowrap position-sticky table-sticky-border z-1 w-15em'
 
     @property
     def cell_template(self) -> str | None:
@@ -207,6 +214,33 @@ class NamePlayersTabColumn(PlayersTabColumn):
 
     def get_search_key(self, player: Player) -> str:
         return f'{player.last_name} {player.first_name}'
+
+    def set_for_event(self, event: Event):
+        self._is_filtrable = any(
+            tournament.criteria for tournament in event.tournaments
+        )
+
+    @property
+    def is_filtrable(self) -> bool:
+        return self._is_filtrable
+
+    def get_filter_key(self, player: Player) -> str:
+        if player.single_tournament_player.matches_tournament_criteria:
+            return 'match'
+        return 'no-match'
+
+    @property
+    def filter_row_template(self) -> str:
+        return 'filter_rows/name.html'
+
+    @property
+    def filter_mandatory_keys(self) -> list[str]:
+        return ['match', 'no-match']
+
+    def get_filter_row_tooltip(self, value: Any) -> str:
+        if value == 'match':
+            return _('Players which match the criteria of their tournament.')
+        return _('Players which do not match the criteria of their tournament.')
 
 
 class CheckInPlayersTabColumn(FilterPlayersTabColumn):
