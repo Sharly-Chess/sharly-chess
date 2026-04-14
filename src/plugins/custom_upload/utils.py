@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Self
 
+from common.i18n import _
 from data.tournament import Tournament
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.custom_upload import PLUGIN_NAME
@@ -24,10 +25,10 @@ class CustomUploadUtils:
         tournament: Tournament,
     ) -> str | None:
         plugin_data = CustomUploadUtils.get_tournament_plugin_data(tournament)
-        if not plugin_data.ftp_username or not plugin_data.ftp_password:
-            return 'FTP credentials are not defined.'
         if not plugin_data.ftp_host:
-            return 'FTP host is not defined.'
+            return _('FTP host is not defined.')
+        if not plugin_data.ftp_username or not plugin_data.ftp_password:
+            return _('FTP credentials are not defined.')
         return None
 
 

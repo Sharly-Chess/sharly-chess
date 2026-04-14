@@ -31,6 +31,12 @@ msgstr ""
 msgid "E.g.: /tournaments/my_tournament/"
 msgstr ""
 
+msgid "FTP credentials are not defined."
+msgstr ""
+
+msgid "FTP host is not defined."
+msgstr ""
+
 msgid "FTP username:"
 msgstr ""
 

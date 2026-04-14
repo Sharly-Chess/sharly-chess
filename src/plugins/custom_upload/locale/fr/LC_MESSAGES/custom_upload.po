@@ -31,6 +31,12 @@ msgstr "Exemple : mon_identifiant"
 msgid "E.g.: /tournaments/my_tournament/"
 msgstr "Exemple : /tournois/mon_tournoi"
 
+msgid "FTP credentials are not defined."
+msgstr "Les identifiants FTP ne sont pas définis"
+
+msgid "FTP host is not defined."
+msgstr "L'hôte FTP n'est pas défini"
+
 msgid "FTP username:"
 msgstr "Identifiant FTP :"
 
