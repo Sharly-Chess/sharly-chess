@@ -8,7 +8,10 @@ from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_controller import (
     CustomUploadAdminEventController,
 )
-from plugins.custom_upload.utils import CustomUploadTournamentPluginData
+from plugins.custom_upload.utils import (
+    CustomUploadTournamentPluginData,
+    CustomUploadUtils,
+)
 from plugins.hookspec import hookimpl
 from plugins.utils import Plugin, NavDataTransferItem, PluginData
 from web.controllers.base_controller import BaseController
@@ -49,6 +52,12 @@ class CustomUploadPlugin(Plugin):
         return [
             CustomUploadAdminEventController,
         ]
+
+    @hookimpl
+    def get_base_admin_template_context(self) -> dict[str, Any]:
+        return {
+            'custom_upload_utils': CustomUploadUtils,
+        }
 
     # ---------------------------------------------------------------------------------
     # Tournaments

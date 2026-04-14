@@ -1,3 +1,5 @@
+{% import '/common/macros.j2' as macros with context %}
+
 <tbody
     id="upload-results"
     hx-get="{{ url_for('custom-upload-results', event_uniq_id=admin_event.uniq_id) }}"
@@ -5,6 +7,7 @@
     hx-swap="outerHTML"
 >
     {% for tournament in allowed_tournaments %}
+        {% set configuration_verification_message = custom_upload_utils.custom_upload_configuration_verification_message(tournament) %}
         <tr>
             <td style="width: 0;" class="text-nowrap">
                 {{ tournament.name }}
@@ -39,18 +42,23 @@
                 <!-- TODO: show last update date -->
             </td>
             <td style="width: 0;">
-                <button
-                    type="button"
-                    class="btn btn-outline-primary btn-sm text-nowrap"
-                    hx-post="{{ url_for('custom-upload-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
-                    hx-target="#upload-results"
-                    hx-swap="outerHTML"
-                    class="text-nowrap white btn btn-secondary"
-                    hx-on--before-request="$('#t_{{tournament.id}}.status').addClass('invisible')"
-                >
-                    <i class="bi bi-cloud-arrow-up-fill"></i>
-                    {{ _('Upload') }}
-                </button>
+                <span {% if configuration_verification_message %} {{ macros.tooltip_attributes('', configuration_verification_message) }} {% endif %}>
+                    <button
+                        type="button"
+                        class="btn btn-outline-primary btn-sm text-nowrap"
+                        hx-post="{{ url_for('custom-upload-tournament', event_uniq_id=admin_event.uniq_id, tournament_id=tournament.id) }}"
+                        hx-target="#upload-results"
+                        hx-swap="outerHTML"
+                        class="text-nowrap white btn btn-secondary"
+                        hx-on--before-request="$('#t_{{tournament.id}}.status').addClass('invisible')"
+                        {% if configuration_verification_message %}
+                            disabled
+                        {% endif %}
+                    >
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                        {{ _('Upload') }}
+                    </button>
+                </span>
             </td>
             <td class="text-center" style="width: 0;">
                 <!-- TODO: link to uploaded location? link to website root? -->
