@@ -124,6 +124,9 @@ msgstr ""
 msgid "Failure"
 msgstr ""
 
+msgid "Federation"
+msgstr ""
+
 msgid "First name"
 msgstr ""
 
