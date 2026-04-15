@@ -578,7 +578,7 @@ class SCESession(Session):
             self._create_local_player(
                 registration_data['id'],
                 SCEPlayerSyncData.from_sce_data(
-                    registration_data, sce_id, with_mail=True
+                    self.event, registration_data, sce_id, with_mail=True
                 ),
                 tournament,
                 database,
@@ -880,7 +880,7 @@ class SCESession(Session):
                 for registration_data in tournament_data['registrations']:
                     sce_player_sync_data_by_id[registration_data['id']] = (
                         SCEPlayerSyncData.from_sce_data(
-                            registration_data, sce_tournament_id
+                            self.event, registration_data, sce_tournament_id
                         )
                     )
 
@@ -959,7 +959,7 @@ class SCESession(Session):
             for registration_data in tournament_data['registrations']:
                 sce_player_sync_data_by_id[registration_data['id']] = (
                     SCEPlayerSyncData.from_sce_data(
-                        registration_data, sce_id, with_mail=True
+                        self.event, registration_data, sce_id, with_mail=True
                     )
                 )
 

@@ -870,9 +870,22 @@ class FfePlugin(Plugin):
         player: TournamentPlayer,
         sync_data: SCEPlayerSyncData,
     ):
-        sync_data.national_id = FFEUtils.get_player_plugin_data(
-            player
-        ).ffe_licence_number
+        plugin_data = FFEUtils.get_player_plugin_data(player)
+        sync_data.national_id = plugin_data.ffe_licence_number
+        sync_data.ffe_licence = plugin_data.ffe_licence
+        sync_data.ffe_league = plugin_data.league
+
+    @hookimpl
+    def augment_sce_player_sync_data_from_sce_data(
+        self,
+        sce_data: dict[str, Any],
+        sync_data: SCEPlayerSyncData,
+    ):
+        sync_data.national_id = sce_data['national_id']
+        sync_data.ffe_licence = PlayerFFELicence(
+            sce_data['ffe_licence_type'] or PlayerFFELicence.NONE
+        )
+        sync_data.ffe_league = sce_data['ffe_league']
 
     @hookimpl
     def augment_stored_player_from_player_sync_data(
@@ -884,13 +897,15 @@ class FfePlugin(Plugin):
             stored_player.plugin_data.get(PLUGIN_NAME, {})
         )
         plugin_data.ffe_licence_number = sync_data.national_id
-        if plugin_data.ffe_licence == PlayerFFELicence.NONE and sync_data.national_id:
-            plugin_data.ffe_licence = PlayerFFELicence.N
+        plugin_data.ffe_licence = sync_data.ffe_licence
+        plugin_data.league = sync_data.ffe_league
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
 
     @hookimpl
-    def get_sce_national_id_player_field_label(self) -> str | None:
-        return _('FFE Licence no. *** LICENCE NUMBER')
+    def update_sce_player_diff_field_labels(self, diff_fields: dict[str, str | None]):
+        diff_fields['national_id'] = _('FFE Licence no. *** LICENCE NUMBER')
+        diff_fields['ffe_licence_str'] = _('FFE Licence')
+        diff_fields['ffe_league'] = _('League')
 
     @hookimpl
     def add_sce_upload_player_custom_fields(

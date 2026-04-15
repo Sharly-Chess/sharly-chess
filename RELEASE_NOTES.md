@@ -54,6 +54,7 @@
 
 - Fixed tournament still uploadable after manual upload (4.0.2)
 - Fixed unique constraint violation on tournament names (4.0.2)
+- Added new player fields to the synchronisation (federation, FFE league, FFE licence) (4.0.4)
 
 ## Plugins
 
