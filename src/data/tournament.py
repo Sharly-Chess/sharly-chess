@@ -957,6 +957,10 @@ class Tournament:
         values[Result.PAIRING_ALLOCATED_BYE] = values[self.pab_value]
         return values
 
+    @property
+    def is_standard_point_system_used(self) -> bool:
+        return self.pab_value == Result.WIN and not self.three_points_for_a_win
+
     @cached_property
     def win_points(self) -> float:
         return Result.WIN.points(self.point_values)
@@ -1032,6 +1036,14 @@ class Tournament:
             tournament_player = TournamentPlayer(self, stored_tournament_player)
             players_by_id[tournament_player.id] = tournament_player
         return players_by_id
+
+    @property
+    def players_by_id(self) -> dict[int, TournamentPlayer]:
+        return self.tournament_players_by_id
+
+    @property
+    def players(self) -> Collection[TournamentPlayer]:
+        return self.tournament_players
 
     @cached_property
     def boards_by_id(self) -> dict[int, Board]:
