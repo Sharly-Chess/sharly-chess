@@ -1865,7 +1865,7 @@ class DirectEncounterTieBreak(TieBreak):
         """Compute the min and max possible points a player
         can achieve against other players of the group."""
         group_player_ids = tuple(
-            player.id for player in player_group if player.id != player.id
+            player_.id for player_ in player_group if player_.id != player.id
         )
         group_pairings_by_opponent_id: dict[int, list[float]] = defaultdict(list)
         for round_, pairing in player.pairings_by_round.items():
