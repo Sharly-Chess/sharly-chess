@@ -3907,6 +3907,9 @@ msgstr ""
 msgid "Opponents"
 msgstr ""
 
+msgid "Opponents' ratings"
+msgstr ""
+
 msgid "Opponents' records"
 msgstr ""
 
@@ -4762,12 +4765,6 @@ msgstr ""
 msgid "Return to tournament"
 msgstr ""
 
-msgid "Reverse order"
-msgstr ""
-
-msgid "Reversed"
-msgstr ""
-
 msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Rk."
 
@@ -5290,9 +5287,6 @@ msgstr ""
 msgid "Standard (no flag)"
 msgstr ""
 
-msgid "Standard points"
-msgstr ""
-
 msgid "Standard rating"
 msgstr ""
 
@@ -5557,9 +5551,6 @@ msgstr ""
 msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
 msgstr ""
 
-msgid "The number of points in the standard 1/0.5/0 point system."
-msgstr ""
-
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr ""
 
@@ -5590,15 +5581,6 @@ msgstr ""
 msgid "The pairing number is already attributed."
 msgstr ""
 
-msgid "The pairing numbers of the tournament in ascending or descending order (ascending by default)."
-msgstr ""
-
-msgid "The pairing numbers of the tournament in ascending order."
-msgstr ""
-
-msgid "The pairing numbers of the tournament in descending order."
-msgstr ""
-
 msgid "The permissions of this account can not be updated."
 msgstr ""
 
@@ -5621,15 +5603,6 @@ msgid "The rating used when the time control is at most 10 minutes."
 msgstr ""
 
 msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
-msgstr ""
-
-msgid "The ratings in ascending or descending order (descending by default)."
-msgstr ""
-
-msgid "The ratings in ascending order."
-msgstr ""
-
-msgid "The ratings in descending order."
 msgstr ""
 
 msgid "The related objects will also be deleted:"
@@ -5851,13 +5824,7 @@ msgstr ""
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
 msgstr ""
 
-msgid "This tie-break is not recommended on tournaments lasting over multiple FIDE periods."
-msgstr ""
-
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
-msgstr ""
-
-msgid "This tie-break is not recommended with tournaments using the standard point system."
 msgstr ""
 
 msgid "This tournament has no titled players."
@@ -6011,9 +5978,6 @@ msgid "Tournament name"
 msgstr ""
 
 msgid "Tournament not found or has no schedule."
-msgstr ""
-
-msgid "Tournament pairing number"
 msgstr ""
 
 msgid "Tournament performance rating"
@@ -7002,7 +6966,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Opponents' ratings"
-#~ msgstr ""
 

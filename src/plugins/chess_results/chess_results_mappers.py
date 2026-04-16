@@ -61,7 +61,7 @@ class ChessResultsTieBreak:
     @classmethod
     def from_tie_break(cls, tournament: Tournament, tie_break: TieBreak) -> Self:
         """Mapping from our tie-breaks to the ones used by the Chess-Results
-        (id + up to 5 parameters, see /docs/technical-appendices/chess-results/Tie-Breaks.xlsx)"""
+        (id + up to 5 parameters, see /docs/chess-results/Tie-Breaks.xlsx)"""
         match type(tie_break):
             case tb.WinsTieBreak:
                 return cls(68)
@@ -145,14 +145,7 @@ class ChessResultsTieBreak:
             case tb.DirectEncounterTieBreak:
                 return cls(81, cls.played_param(tie_break))
             case tb.ManualTieBreak:
-                return cls(5)
-            case (
-                tb.StandardPointsTieBreak
-                | tb.PairingNumberTieBreak
-                | tb.PlayerRatingTieBreak
-            ):
-                # TODO (Molrn) Contact CR admin to add codes for those
-                return cls(5)
+                return cls(6)
 
         raise NotImplementedError(
             f'Chess-Results conversion not implemented for tie-break [{tie_break.id}]'

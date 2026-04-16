@@ -53,7 +53,7 @@
                 </div>
                 {% for option in tie_break_options %}
                     <div
-                        class="row gy-2 gx-3"
+                        class="row gy-3 gx-3"
                         id="{{ option.container_id }}"
                         {% if option.container_id not in containers_by_type[data['type']] %}
                             style="display:none"

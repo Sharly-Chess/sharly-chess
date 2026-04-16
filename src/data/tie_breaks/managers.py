@@ -17,8 +17,6 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
             tie_breaks.GamesWonWithBlackTieBreak,
             tie_breaks.ProgressiveScoresTieBreak,
             tie_breaks.RoundsElectedToPlayTieBreak,
-            tie_breaks.StandardPointsTieBreak,
-            tie_breaks.PairingNumberTieBreak,
             tie_breaks.StandardBuchholzTieBreak,
             tie_breaks.ForeBuchholzTieBreak,
             tie_breaks.SumOfBuchholzTieBreak,
@@ -31,7 +29,6 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
             tie_breaks.AveragePerformanceRatingOpponentsTieBreak,
             tie_breaks.PerfectTournamentPerformanceTieBreak,
             tie_breaks.AveragePerfectPerformanceTieBreak,
-            tie_breaks.PlayerRatingTieBreak,
             tie_breaks.DirectEncounterTieBreak,
             tie_breaks.ManualTieBreak,
         ]
@@ -50,7 +47,6 @@ class TieBreakOptionManager(EventBoundEntityManager[TieBreakOption]):
             options.PlayedModifierTieBreakOption,
             options.ForeModifierTieBreakOption,
             options.KoyaLimitTieBreakOption,
-            options.ReversedTieBreakOption,
             options.EstimatedRatingsTieBreakOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_tie_break_option_types')(
