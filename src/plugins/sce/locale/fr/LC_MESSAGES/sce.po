@@ -60,6 +60,9 @@ msgstr "Fermer"
 msgid "Club"
 msgstr "Club"
 
+msgid "Comment"
+msgstr "Commentaire"
+
 msgid "Configuration page of the event."
 msgstr "Page de configuration de l'évènement."
 
