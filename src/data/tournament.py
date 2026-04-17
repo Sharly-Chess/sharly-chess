@@ -1,7 +1,5 @@
 from datetime import date, datetime
 import weakref
-from babel.lists import format_list
-from common.i18n import get_locale
 from collections import Counter
 from collections.abc import Collection
 from functools import cached_property
@@ -18,7 +16,6 @@ from common.logger import get_logger
 
 from data.account import Account
 from data.board import Board
-from data.criteria.managers import PlayerFilter
 from data.family import Family
 from data.player import Player, TournamentPlayer
 from data.player_categories import PlayerCategory
@@ -568,40 +565,13 @@ class Tournament:
     def criteria(self) -> Collection[TournamentCriterion]:
         return self.criteria_by_id.values()
 
-    def player_matches_criteria(self, tournament_player: TournamentPlayer) -> bool:
-        """Check if the player matches all criteria of this tournament."""
-        return all(
-            criterion.player_filter.is_player_included_function(tournament_player)
-            for criterion in self.criteria
-        )
-
-    def failing_criteria(
-        self, tournament_player: TournamentPlayer
-    ) -> list[PlayerFilter]:
-        """Return the list of criteria that the player does not match."""
-        return [
-            criterion.player_filter
-            for criterion in self.criteria
-            if not criterion.player_filter.is_player_included_function(
-                tournament_player
-            )
-        ]
-
-    def failing_criteria_message(self, tournament_player: TournamentPlayer) -> str:
-        """Return the list of criteria that the player does not match."""
-        locale = get_locale()
-        return format_list(
-            [criteria.name for criteria in self.failing_criteria(tournament_player)],
-            locale=locale,
-        )
-
     @cached_property
     def num_players_not_matching_criteria(self) -> int:
         """Return the number of players matching all criteria of this tournament."""
         return sum(
             1
-            for tournament_player in self.tournament_players_by_id.values()
-            if not self.player_matches_criteria(tournament_player)
+            for player in self.tournament_players
+            if not player.matches_tournament_criteria
         )
 
     @property

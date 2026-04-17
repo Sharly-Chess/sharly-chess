@@ -63,6 +63,10 @@
     border: 2px solid rgba(var(--bs-warning-rgb));
 }
 
+.w-15em {
+    width: 15em;
+}
+
 .mw-15em {
     max-width: 15em;
     overflow: hidden;

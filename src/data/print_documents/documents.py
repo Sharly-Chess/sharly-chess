@@ -156,6 +156,13 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
         """Header of the print document."""
 
     @property
+    def tab_title(self) -> str:
+        title = self.name
+        if TournamentPrintOption in self.available_options():
+            title += f' - {self.tournament.name}'
+        return title
+
+    @property
     @abstractmethod
     def template_name(self) -> str:
         """Name of the template representing the printed document.

@@ -54,6 +54,7 @@ class EventDocumentsController(BaseEventAdminController):
         _round: int | None = None,
         data: dict[str, str] | None = None,
         errors: dict[str, str] | None = None,
+        success_message: str | None = None,
     ) -> HTMXTemplate:
         event = web_context.get_admin_event()
         print_options = PrintDocumentOptionManager(event).objects()
@@ -121,6 +122,7 @@ class EventDocumentsController(BaseEventAdminController):
             'print_options': print_options,
             'containers_by_document': containers_by_document,
             'data': data,
+            'success_message': success_message,
             'errors': errors or {},
         }
         return cls._admin_base_event_render(
@@ -176,11 +178,13 @@ class EventDocumentsController(BaseEventAdminController):
     ) -> Template:
         flat_data = WebContext.flatten_list_data(data)
         web_context = BaseEventAdminWebContext(request)
+        client = web_context.client
         event = web_context.get_admin_event()
 
         errors: dict[str, str] = {}
 
         document_type: type[PrintDocument] | None = None
+        document: PrintDocument | None = None
         field = 'document'
         try:
             document_type = PrintDocumentManager(event).get_type(
@@ -191,11 +195,11 @@ class EventDocumentsController(BaseEventAdminController):
 
         if document_type:
             options: list[PrintOption] = []
-            for option in document_type(web_context.client).default_options():
+            for option in document_type(client).default_options():
                 value = WebContext.form_data_to_value(flat_data, option.id, option.type)
                 options.append(type(option)(event, value))
             try:
-                document = document_type(web_context.client, options)
+                document = document_type(client, options)
                 document.validate_options()
             except OptionError as error:
                 errors[error.option.id] = str(error)
@@ -208,11 +212,18 @@ class EventDocumentsController(BaseEventAdminController):
             return self._render_documents_modal(
                 web_context, data=flat_data, errors=errors
             )
-        assert document_type is not None
+        assert document is not None
         # Clear the modal contents, and send an event
         return HTMXTemplate(
-            template_name='common/empty_modal.html',
-            re_target='#modal-wrapper',
+            template_name='common/alert.html',
+            re_target='#document-success-message',
+            re_swap='innerHTML',
+            context={
+                'type': 'success',
+                'message': _(
+                    'Document [{document}] has been generated in another tab.'
+                ).format(document=document.tab_title),
+            },
             trigger_event='do_print',
             after='receive',
             params={
@@ -220,7 +231,7 @@ class EventDocumentsController(BaseEventAdminController):
                 'document': flat_data['document'],
                 'options': {
                     option.id: flat_data[option.id]
-                    for option in document_type(web_context.client).default_options()
+                    for option in document.default_options()
                     if option.id in data
                 },
             },
