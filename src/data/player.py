@@ -1,8 +1,11 @@
+from collections.abc import Collection
+from contextlib import suppress
+from itertools import combinations
 import weakref
 from collections import Counter
 from datetime import date
 from functools import total_ordering, cached_property
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 from babel.lists import format_list
 from trf import Player as TrfPlayer
@@ -736,6 +739,9 @@ class TournamentPlayer(Player):
     ) -> tuple[bool, int]:
         if num_games is None:
             num_games = self.tournament.rounds
+        opponent_titles = opponent_titles.copy()
+        opponent_titles[PlayerTitle.CANDIDATE_MASTER] = 0
+        opponent_titles[PlayerTitle.WOMAN_CANDIDATE_MASTER] = 0
         num_titles = sum(opponent_titles.values())
         required_title_holders = TitleNorm.minimum_title_holders(num_games)
         return num_titles >= required_title_holders, num_titles
@@ -743,7 +749,7 @@ class TournamentPlayer(Player):
     def title_requirement(
         self,
         opponent_titles: Counter[PlayerTitle],
-        required_titles: Counter[PlayerTitle],
+        required_titles: Collection[PlayerTitle],
         num_games: int | None = None,
     ) -> tuple[bool, int]:
         if num_games is None:
@@ -764,19 +770,23 @@ class TournamentPlayer(Player):
 
     def opponent_average_rating(
         self,
-        opponents_ratings: list[PlayerRatingAndType],
+        opponents_ratings: list[tuple[int, PlayerRatingAndType]],
         adjusted_floor: int,
-    ) -> tuple[float, bool]:
+    ) -> tuple[float, int | None]:
         """Computes the opponents's adjusted average rating and returns a tuple of the
-        average rating and whether the lowest opponent was adjusted.
+        average rating and whether the id of the lowest opponent the was adjusted or None
+        if there was no adjustment.
+        The id is the integer that was passed, whatever it means to the caller.
         PRECONDITION: assumes that the `opponents_ratings` collection is sorted, with
         unrated values set at 1400."""
         adjusted = False
-        if opponents_ratings and opponents_ratings[0].value < adjusted_floor:
-            opponents_ratings[0].value = adjusted_floor
-            opponents_ratings[0].type = PlayerRatingType.FIDE
-            adjusted = True
-        values = [r.value for r in opponents_ratings]
+        if opponents_ratings and opponents_ratings[0][1].value < adjusted_floor:
+            opponents_ratings[0][1].value = adjusted_floor
+            opponents_ratings[0][1].type = PlayerRatingType.FIDE
+            adjusted = opponents_ratings[0][0]
+        else:
+            adjusted = None
+        values = [r[1].value for r in opponents_ratings]
         return (sum(values) / len(values) if values else 0, adjusted)
 
     def opponent_average_requirement(
@@ -807,6 +817,87 @@ class TournamentPlayer(Player):
     ) -> bool:
         return performance >= performance_requirement
 
+    class NormAchieved(NamedTuple):
+        num_feds: bool | None = None
+        own_fed: bool | None = None
+        max_fed: bool | None = None
+        tournament_meets_143d: bool = False
+        title_holders: bool | None = None
+        required_titled: bool | None = None
+        score_achieved: bool | None = None
+        average_achieved: bool | None = None
+        performance_achieved: bool | None = None
+        average_adjusted: bool = False  # Doesn't count in the evaluation, but useful
+
+        def __bool__(self) -> bool:
+            return (
+                (self.num_feds and self.own_fed and self.max_fed)
+                or self.tournament_meets_143d
+                and self.title_holders
+                and self.required_titled
+                and self.score_achieved
+                and self.average_achieved
+                and self.performance_achieved
+                or False  # In case everything is None, which shouldn't happen
+            )
+
+    def achieves_title_norm(
+        self,
+        title_norm: TitleNorm,
+        num_games: int,
+        tournament_meets_143d: bool,
+        opponent_federations: Counter[Federation],
+        opponent_titles: Counter[PlayerTitle],
+        opponent_ratings: list[PlayerRatingAndType],
+        score: float,
+    ) -> NormAchieved:
+        scored_achieved = self.score_requirement(score, num_games)
+        if not scored_achieved and not tournament_meets_143d:
+            return self.NormAchieved(scored_achieved=False)
+        num_feds = self.federation_number_requirement(opponent_federations)[0]
+        if not num_feds and not tournament_meets_143d:
+            return self.NormAchieved(num_feds=False)
+        own_fed = self.own_federation_requirement(opponent_federations, num_games)[0]
+        if not own_fed and not tournament_meets_143d:
+            return self.NormAchieved(own_fed=False)
+        max_fed = self.max_federation_requirement(opponent_federations, num_games)[0]
+        if not max_fed and not tournament_meets_143d:
+            return self.NormAchieved(max_fed=False)
+        title_holders = self.title_holders_requirement(opponent_titles, num_games)[0]
+        if not title_holders:
+            return self.NormAchieved(title_holders=False)
+        required_titled = self.title_requirement(
+            opponent_titles, title_norm.required_titles, num_games
+        )[0]
+        if not required_titled:
+            return self.NormAchieved(required_titled=False)
+        average, adjusted = self.opponent_average_rating(
+            opponent_ratings, title_norm.minimum_rating
+        )
+        average_achieved = self.opponent_average_requirement(
+            average, title_norm.minimum_average
+        )
+        if not average_achieved:
+            return self.NormAchieved(average_achieved=False, adjusted=adjusted)
+        performance_achieved = self.norm_performance_requirement(
+            self.norm_performance(average, score, num_games),
+            title_norm.minimum_performance,
+        )
+        if not performance_achieved:
+            return self.NormAchieved(performance_achieved=False)
+        return self.NormAchieved(
+            num_feds,
+            own_fed,
+            max_fed,
+            tournament_meets_143d,
+            title_holders,
+            required_titled,
+            scored_achieved,
+            average_achieved,
+            performance_achieved,
+            average_adjusted=adjusted,
+        )
+
     def achieves_any_title_norm(self) -> dict[TitleNorm, NormCheckResult]:
         from data.pairings.systems import RoundRobinPairingSystem
 
@@ -820,19 +911,25 @@ class TournamentPlayer(Player):
 
         # Gather data from pairings
         rounds = self.tournament.rounds
+        minimum_rounds = TitleNorm.minimum_rounds()
         played_games = 0
-        federations_counter: Counter[Federation] = Counter()
-        titles_counter: Counter[PlayerTitle] = Counter()
-        results_list: list[Result] = []
+        federations: dict[int, Federation] = {}
+        titles: dict[int, PlayerTitle] = {}
+        game_results: dict[int, Result] = {}
         forfeits_or_byes = 0
-        opponents: list[TournamentPlayer] = []
+        opponents: dict[int, TournamentPlayer] = {}
         ignored_rounds: set[int] = set()
         last_game_forfeit_win: bool = False
+        wins: set[int] = set()
 
         is_round_robin = self.tournament.pairing_system == RoundRobinPairingSystem()
 
         for rnd, pairing in self.pairings_by_round.items():
-            if pairing.result.is_board_bye or pairing.result == Result.FORFEIT_WIN:
+            if (
+                rounds == minimum_rounds
+                and pairing.result.is_board_bye
+                or pairing.result == Result.FORFEIT_WIN
+            ):
                 forfeits_or_byes += 1
 
             if pairing.opponent and (
@@ -870,32 +967,247 @@ class TournamentPlayer(Player):
                     ignored_rounds.add(rnd)
                     continue
                 else:
-                    federations_counter[opponent.federation] += 1
+                    federations[rnd] = opponent.federation
 
                 if opponent.title != PlayerTitle.NONE:
-                    titles_counter[opponent.title] += 1
-                else:
-                    results_list.append(pairing.result)
-                opponents.append(opponent)
+                    titles[rnd] = opponent.title
+                game_results[rnd] = pairing.result
+                opponents[rnd] = opponent
+                if pairing.result.is_win:
+                    wins.add(rnd)
             else:
                 ignored_rounds.add(rnd)
 
-        # NOTE(Amaras): due to the future evolution of the norm computations, it will soon be impossible to
-        # precompute things (we may wish to remove one or several rounds for a better result).
-        # I left this commented as a warning not to reintroduce it in the near future.
-        # # Precompute required titles counts
-        # required_titles = {
-        #     tn: Counter({t: titles_counter.get(t, 0) for t in tn.required_titles})
-        #     for tn in TitleNorm.values()
-        # }
+        opponent_ratings: dict[int, PlayerRatingAndType] = {
+            rnd: PlayerRatingAndType(
+                opponent.rating
+                if opponent.rating_type == PlayerRatingType.FIDE
+                else 1400,
+                opponent.rating_type,
+            )
+            for rnd, opponent in opponents.items()
+        }
 
-        score = sum(r.points() for r in results_list)
+        tournament_143d_requirement = self.tournament.big_tournament_exception
+        tournament_meets_143d = bool(tournament_143d_requirement)
+
+        max_ignores = rounds - minimum_rounds
+
+        num_wins = len(wins)
+
+        max_length = max_ignores - len(ignored_rounds)
+        to_ignore: list[frozenset[int]] = [frozenset()]
+        # can't not ignore games if we already have to ignore unplayed games
+        for i in range(1, max_length + 1):
+            ignores_this_round: dict[frozenset[int], tuple[int, list[int]]] = {}
+
+            if i <= num_wins:
+                for comb in combinations(wins, r=i):
+                    # If there is no need to force the required number of games
+                    if last_game_forfeit_win and i < max_length and rounds not in comb:
+                        continue
+                    # NOTE(Amaras): prioritize removing opponents with the lowest ratings
+                    sort_key = sorted(opponent_ratings[rd] for rd in comb)
+                    ignores_this_round[frozenset(comb)] = sum(sort_key), sort_key
+
+            if not is_round_robin:
+                # NOTE(Amaras): in tournaments without predetermined pairings, a player can ignore games
+                # after they achieved a title result.
+                # e.g. in an 11 rounds tournament, a player achieving a norm in 9 games can ignore
+                # the results from rounds 10 and 11.
+                # prioritize removing the last game(s) over won games by appending to the list first
+                to_ignore.append(frozenset(range(rounds, rounds - i, -1)))
+            to_ignore.extend(
+                sorted(ignores_this_round.keys(), key=lambda k: ignores_this_round[k])
+            )
+
+        norms_achieved = {tn: self.NormAchieved() for tn in results.keys()}
+        best_results: dict[TitleNorm, tuple[frozenset[int], tuple[float, ...]]] = {
+            tn: (frozenset(), ()) for tn in results.keys()
+        }
+        for ignore_this_time in to_ignore:
+            # We found a possible norm for everyone, stop checking
+            if all(norm for norm in norms_achieved.values()):
+                break
+            # already ignored rounds must always be ignored (edge case for the last game if it is won by forfeit)
+            current_ignored: set[int] = ignored_rounds | ignore_this_time
+            current_federations = Counter(
+                fed for rnd, fed in federations.items() if rnd not in current_ignored
+            )
+            current_titles = Counter(
+                title for rnd, title in titles.items() if rnd not in current_ignored
+            )
+            current_results = {
+                rnd: result
+                for rnd, result in game_results.items()
+                if rnd not in current_ignored
+            }
+            # 1.4.2c. Games not decided OTB are ignored. However, in case of a last round game where the opponent
+            # forfeits, the norm shall still count if the player must play in order to have the required
+            # number of games but can afford to lose.
+            if (
+                last_game_forfeit_win
+                and rounds not in current_ignored
+                and len(current_results) == minimum_rounds
+            ):
+                current_results[rounds] = Result.LOSS
+            else:
+                with suppress(KeyError):
+                    # it should be ignored already, but you never know
+                    del current_results[rounds]
+            played_games = len(current_results)
+            current_score = sum(
+                result
+                for rnd, result in game_results.items()
+                if rnd not in current_ignored
+            )
+            current_ratings = sorted(
+                (
+                    (rnd, rating)
+                    for rnd, rating in opponent_ratings.items()
+                    if rnd not in current_ignored
+                ),
+                key=lambda r: r[1].value,
+            )
+
+            max_score = played_games * Result.WIN.points()
+
+            for tn in norms_achieved.keys():
+                if (norm := norms_achieved[tn]) and norm.tournament_meets_143d:
+                    norm_copy = self.NormAchieved(**norm)
+                    norm_copy.tournament_meets_143d = False
+                    # We already found a way to achieve a norm before, no need to check further
+                    if norm_copy:
+                        continue
+                # NOTE(Amaras): we will continue checking
+                if played_games < minimum_rounds or (
+                    rounds == minimum_rounds
+                    and rounds == minimum_rounds - 1
+                    and forfeits_or_byes != 1
+                ):
+                    # Only exception here is a 9-round event where a player can have a
+                    # PAB or a forfeit win, following 1.4.1c.
+                    # NOTE(Amaras): no need to check if the other conditions are relevant, nor
+                    # if the other levels can happen.
+                    break
+                norm_achieved = self.achieves_title_norm(
+                    tn,
+                    played_games,
+                    tournament_meets_143d,
+                    current_federations,
+                    current_titles,
+                    current_ratings,
+                    current_score,
+                )
+                if norm_achieved:
+                    best_results[tn] = (current_ignored, (1,))
+                    norms_achieved[tn] = norm_achieved
+                    res = results[tn]
+                    res.ignored_rounds = current_ignored
+                    res.played_games = played_games
+                    _, res.federations_count = self.federation_number_requirement(
+                        current_federations
+                    )
+                    _, res.from_own_federations_count = self.own_federation_requirement(
+                        current_federations, played_games
+                    )
+                    res.from_host_federations_count = current_federations.get(
+                        Federation(self.event.federation), 0
+                    )
+                    res.title_counts = current_titles
+                    _, res.num_title_holders = self.title_holders_requirement(
+                        current_titles, played_games
+                    )
+                    res.required_titles = list(tn.required_titles)
+                    _, res.required_titles_met = self.title_requirement(
+                        current_titles, res.required_titles, played_games
+                    )
+                    res.all_federations_count = tournament_143d_requirement.federations
+                    res.eligible_players_count = tournament_143d_requirement.foreigners
+                    res.eligible_players_title_count = (
+                        tournament_143d_requirement.titled_foreigners
+                    )
+                    res.score = current_score
+                    res.average_rating, adjusted = self.opponent_average_rating(
+                        current_ratings,
+                        tn.minimum_rating,
+                    )
+                    if adjusted is not None:
+                        res.adjusted_player_rating = opponent_ratings[adjusted]
+                        res.adjusted_player = opponents[adjusted]
+                    draw_points = Result.DRAW.points()
+                    new_score = current_score
+                    # If we went below the score requirement, we wouldn't have a valid title result
+                    # hence, it is not useful to go after this requirement has failed
+                    while self.score_requirement(
+                        new_score, played_games
+                    ) and self.norm_performance_requirement(
+                        self.norm_performance(
+                            res.average_rating,
+                            new_score,
+                            played_games,
+                        ),
+                        tn.minimum_performance,
+                    ):
+                        new_score -= draw_points
+                    res.performance_diff = current_score - new_score - draw_points
+                    results[tn] = res
+                else:
+                    requirement_fraction = (
+                        Utils.clamp01(played_games / minimum_rounds),
+                        Utils.clamp01(current_score / tn.minimum_score(played_games)),
+                        Utils.clamp01(
+                            self.federation_number_requirement(current_federations)[1]
+                            / 2
+                        ),
+                        Utils.clamp01(
+                            tn.maximum_of_own_federation(played_games)
+                            / self.own_federation_requirement(
+                                current_federations, played_games
+                            )[1]
+                        ),
+                        Utils.clamp01(
+                            tn.maximum_of_one_federation(played_games)
+                            / self.max_federation_requirement(
+                                current_federations, played_games
+                            )[1]
+                        ),
+                        Utils.clamp01(
+                            self.title_holders_requirement(
+                                current_titles, played_games
+                            )[1]
+                            / tn.minimum_title_holders(played_games)
+                        ),
+                        Utils.clamp01(
+                            self.title_requirement(
+                                current_titles, tn.required_titles, played_games
+                            )[1]
+                            / tn.minimum_required_titles(self.tournament, played_games)
+                        ),
+                        Utils.clamp01(
+                            (
+                                avg := self.opponent_average_rating(
+                                    current_ratings, tn.minimum_rating
+                                )[0]
+                            )
+                            / tn.minimum_average
+                        ),
+                        # NOTE(Amaras) : don't clamp because we want to maximise it
+                        self.norm_performance(avg, current_score, played_games)
+                        / tn.minimum_performance,
+                    )
+                    if requirement_fraction > best_results[tn][1]:
+                        best_results[tn] = current_ignored, requirement_fraction
+
+        # here, either we have a norm for each possible level, or there is no possible norm.
+
+        score = sum(r.points() for r in game_results.values())
 
         # Process each norm
         for tn, res in results.items():
             res.ignored_rounds = ignored_rounds
             res.last_game_forfeit_win = last_game_forfeit_win
-            min_rounds = tn.minimum_rounds(self.tournament)
+            min_rounds = tn.minimum_rounds()
 
             # Games criterion
             if (
@@ -925,32 +1237,32 @@ class TournamentPlayer(Player):
                 # NOTE: 1.4.2c: if the players must play to get the required number of games,
                 # they can count a forfeit win in the last round as a played game if and only
                 # if they can afford to lose the game
-                results_list[-1] = Result.LOSS
+                results[rnd] = Result.LOSS
 
             # Federation criterion
 
             enough_federations, num_feds = self.federation_number_requirement(
-                federations_counter
+                federations
             )
             if not enough_federations:
                 res.not_enough_federations = _(
                     '<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt.'
                 )
             own_federation_requirement, own_count = self.own_federation_requirement(
-                federations_counter, res.played_games
+                federations, res.played_games
             )
             if not own_federation_requirement:
                 res.too_many_own_federation = _(
                     "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applicant's federation."
                 )
             res.from_own_federations_count = own_count
-            res.from_host_federations_count = federations_counter.get(
+            res.from_host_federations_count = federations.get(
                 Federation(self.event.federation), 0
             )
             res.federations_count = num_feds
 
             too_many_one_fed, top_fed, _count = self.max_federation_requirement(
-                federations_counter, res.played_games
+                federations, res.played_games
             )
             # Too many in one federation
             if too_many_one_fed:
@@ -963,7 +1275,7 @@ class TournamentPlayer(Player):
 
             # Title holders criterion
             title_holders_requirement, met = self.title_holders_requirement(
-                titles_counter, res.played_games
+                titles, res.played_games
             )
             if not title_holders_requirement:
                 res.not_enough_title_holders = _(
@@ -971,12 +1283,12 @@ class TournamentPlayer(Player):
                 ).replace('%%', '%')
 
             res.num_title_holders = met
-            res.title_counts = titles_counter
+            res.title_counts = titles
 
             # Required titles criterion
             res.required_titles = list(tn.required_titles)
             title_requirement, met = self.title_requirement(
-                titles_counter,
+                titles,
                 res.required_titles,
                 res.played_games,
             )

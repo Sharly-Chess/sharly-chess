@@ -907,11 +907,7 @@ class TitleNorm(Enum):
                 raise ValueError(f'Invalid title norm value: {self}')
 
     @staticmethod
-    def minimum_rounds(tournament: 'Tournament') -> int:
-        from data.pairings.variations import DoubleBergerRoundRobinVariation
-
-        if tournament.pairing_variation == DoubleBergerRoundRobinVariation():
-            return 10  # 1.4.5.f -> 6 players -> 10 rounds
+    def minimum_rounds() -> int:
         return 9
 
     @staticmethod

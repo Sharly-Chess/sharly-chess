@@ -322,6 +322,14 @@ class Utils:
                 del obj.__dict__[property_name]
 
     @staticmethod
+    def clamp[T](value: T, min_value: T, max_value: T) -> T:
+        return max(min_value, min(max_value, value))
+
+    @staticmethod
+    def clamp01(value: float):
+        return Utils.clamp(value, 0, 1)
+
+    @staticmethod
     def tournament_results_modified_since(
         tournament: 'Tournament | StoredTournament',
         ref_datetime: datetime,

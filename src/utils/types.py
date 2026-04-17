@@ -144,6 +144,14 @@ class BigTournamentNormException(NamedTuple):
     foreigners: int
     titled_foreigners: int
 
+    def __bool__(self) -> bool:
+        return (
+            # FIXME(Amaras): magic numbers
+            self.federations >= 3
+            and self.foreigners >= 20
+            and self.titled_foreigners >= 10
+        )
+
 
 @dataclass
 class NormCheckResult:
