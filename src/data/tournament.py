@@ -1,7 +1,5 @@
 from datetime import date, datetime
 import weakref
-from babel.lists import format_list
-from common.i18n import get_locale
 from collections import Counter
 from collections.abc import Collection
 from functools import cached_property
@@ -18,9 +16,9 @@ from common.logger import get_logger
 
 from data.account import Account
 from data.board import Board
-from data.criteria.managers import PlayerFilter
+from data.criteria.managers import TournamentCriterionManager
 from data.family import Family
-from data.player import Player, Federation, Club, TournamentPlayer
+from data.player import Player, TournamentPlayer
 from data.player_categories import PlayerCategory
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
@@ -32,11 +30,10 @@ from data.tie_breaks import (
     TieBreakManager,
     TieBreakOptionManager,
 )
-from data.tournament_criterion import TournamentCriterion
+from data.criteria.tournament_criteria import TournamentCriterion
 from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredBoard,
-    StoredTournamentCriterion,
     StoredTournamentPlayer,
     StoredPairing,
     StoredTieBreak,
@@ -545,63 +542,25 @@ class Tournament:
     # -------------------------------------------------------------------------
 
     @cached_property
-    def criteria_by_id(self) -> dict[int, TournamentCriterion]:
-        criteria_by_id = {}
-        for stored_criterion in self.stored_tournament.stored_criteria:
-            assert stored_criterion.id is not None
+    def criteria(self) -> list[TournamentCriterion]:
+        criteria: list[TournamentCriterion] = []
+        for criteria_id, stored_value in self.stored_tournament.criteria.items():
             try:
-                criteria_by_id[stored_criterion.id] = TournamentCriterion(
-                    self, stored_criterion
+                criterion = TournamentCriterionManager(self.event).get_object(
+                    criteria_id
                 )
-            except KeyError as e:
-                # This can happen when the plugin that defined the criteria is not enabled
-                logger.warning(
-                    'Criterion [%s] not found for tournament [%s]: %s',
-                    stored_criterion.id,
-                    self.name,
-                    e,
-                )
-                pass
-        return criteria_by_id
-
-    @property
-    def criteria(self) -> Collection[TournamentCriterion]:
-        return self.criteria_by_id.values()
-
-    def player_matches_criteria(self, tournament_player: TournamentPlayer) -> bool:
-        """Check if the player matches all criteria of this tournament."""
-        return all(
-            criterion.player_filter.is_player_included_function(tournament_player)
-            for criterion in self.criteria
-        )
-
-    def failing_criteria(
-        self, tournament_player: TournamentPlayer
-    ) -> list[PlayerFilter]:
-        """Return the list of criteria that the player does not match."""
-        return [
-            criterion.player_filter
-            for criterion in self.criteria
-            if not criterion.player_filter.is_player_included_function(
-                tournament_player
-            )
-        ]
-
-    def failing_criteria_message(self, tournament_player: TournamentPlayer) -> str:
-        """Return the list of criteria that the player does not match."""
-        locale = get_locale()
-        return format_list(
-            [criteria.name for criteria in self.failing_criteria(tournament_player)],
-            locale=locale,
-        )
+                value = criterion.value_from_stored_value(stored_value)
+                criterion.set_value(value)
+                criteria.append(criterion)
+            except KeyError:
+                logger.exception(f'Unknown criterion [{criteria_id}].')
+        return criteria
 
     @cached_property
     def num_players_not_matching_criteria(self) -> int:
         """Return the number of players matching all criteria of this tournament."""
         return sum(
-            1
-            for tournament_player in self.tournament_players_by_id.values()
-            if not self.player_matches_criteria(tournament_player)
+            not player.matches_tournament_criteria for player in self.tournament_players
         )
 
     @property
@@ -610,23 +569,7 @@ class Tournament:
 
     @property
     def criteria_string(self) -> str:
-        return ', '.join(criterion.name for criterion in self.criteria)
-
-    def add_criterion(
-        self, stored_criterion: StoredTournamentCriterion
-    ) -> TournamentCriterion:
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            object_id = database.add_stored_tournament_criterion(stored_criterion)
-        stored_criterion.id = object_id
-        tournament_criterion = TournamentCriterion(self, stored_criterion)
-        self.criteria_by_id[object_id] = tournament_criterion
-        return tournament_criterion
-
-    def delete_criterion(self, criterion_id: int):
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.delete_stored_tournament_criterion(criterion_id)
-        if criterion_id in self.criteria_by_id:
-            del self.criteria_by_id[criterion_id]
+        return ', '.join(criterion.full_name for criterion in self.criteria)
 
     # -------------------------------------------------------------------------
     # Prize groups
@@ -814,32 +757,31 @@ class Tournament:
     def gender_counts(self) -> Counter[PlayerGender]:
         """Returns the number of players by gender."""
         counter: Counter[PlayerGender] = Counter[PlayerGender]()
-        for tournament_player in self.tournament_players:
-            counter[tournament_player.gender] += 1
+        for player in self.tournament_players:
+            counter[player.gender] += 1
         return counter
 
     @cached_property
-    def federation_counts(self) -> Counter[Federation]:
+    def federation_counts(self) -> Counter[str]:
         """Returns the number of players by federation."""
-        counter: Counter[Federation] = Counter[Federation]()
-        for tournament_player in self.tournament_players:
-            counter[tournament_player.federation] += 1
+        counter: Counter[str] = Counter[str]()
+        for player in self.tournament_players:
+            counter[player.federation.name] += 1
         return counter
 
     @cached_property
-    def club_counts(self) -> Counter[Club]:
+    def club_counts(self) -> Counter[str]:
         """Returns the number of players by club."""
-        counter: Counter[Club] = Counter[Club]()
-        for tournament_player in self.tournament_players:
-            if tournament_player.club is not None:
-                counter[tournament_player.club] += 1
+        counter: Counter[str] = Counter[str]()
+        for player in self.tournament_players:
+            counter[player.club.name] += 1
         return counter
 
     @cached_property
     def category_counts(self) -> Counter[PlayerCategory]:
         counter = Counter[PlayerCategory]()
-        for tournament_player in self.tournament_players:
-            counter[tournament_player.category] += 1
+        for player in self.tournament_players:
+            counter[player.category] += 1
         return counter
 
     @cached_property
@@ -851,16 +793,11 @@ class Tournament:
 
     @cached_property
     def unrated_count(self) -> int:
-        return sum(
-            tournament_player.rating == 0
-            for tournament_player in self.tournament_players
-        )
+        return sum(player.rating == 0 for player in self.tournament_players)
 
     @cached_property
     def estimated_count(self) -> int:
-        return sum(
-            tournament_player.estimated for tournament_player in self.tournament_players
-        )
+        return sum(player.estimated for player in self.tournament_players)
 
     # -------------------------------------------------------------------------
     # Misc
@@ -987,6 +924,10 @@ class Tournament:
         values[Result.PAIRING_ALLOCATED_BYE] = values[self.pab_value]
         return values
 
+    @property
+    def is_standard_point_system_used(self) -> bool:
+        return self.pab_value == Result.WIN and not self.three_points_for_a_win
+
     @cached_property
     def win_points(self) -> float:
         return Result.WIN.points(self.point_values)
@@ -1062,6 +1003,14 @@ class Tournament:
             tournament_player = TournamentPlayer(self, stored_tournament_player)
             players_by_id[tournament_player.id] = tournament_player
         return players_by_id
+
+    @property
+    def players_by_id(self) -> dict[int, TournamentPlayer]:
+        return self.tournament_players_by_id
+
+    @property
+    def players(self) -> Collection[TournamentPlayer]:
+        return self.tournament_players
 
     @cached_property
     def boards_by_id(self) -> dict[int, Board]:

@@ -60,6 +60,9 @@ msgstr "Fermer"
 msgid "Club"
 msgstr "Club"
 
+msgid "Comment"
+msgstr "Commentaire"
+
 msgid "Configuration page of the event."
 msgstr "Page de configuration de l'évènement."
 
@@ -68,6 +71,9 @@ msgstr "Page de configuration du tournoi."
 
 msgid "Conflict"
 msgstr "Conflit"
+
+msgid "Criteria"
+msgstr "Critères"
 
 msgid "Data as it currently is on Sharly-Chess.com."
 msgstr "Les données actuelles sur Sharly-Chess.com."
@@ -123,6 +129,9 @@ msgstr "Identifiant FIDE"
 
 msgid "Failure"
 msgstr "Échec"
+
+msgid "Federation"
+msgstr "Fédération"
 
 msgid "First name"
 msgstr "Prénom"

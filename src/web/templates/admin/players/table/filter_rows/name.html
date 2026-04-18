@@ -1,0 +1,7 @@
+{% if filter_value.key == 'match' %}
+    <i class="bi-person-check-fill text-success pe-1"></i>
+    {{ _('Matches criteria') }}
+{% else %}
+    <i class="bi-exclamation-triangle-fill text-warning pe-1"></i>
+    {{ _('Does not match criteria') }}
+{% endif %}

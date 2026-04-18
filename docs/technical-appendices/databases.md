@@ -116,47 +116,39 @@
 
 ### `tournament` table (tournaments)
 
-| Field                                     | Type      | Constraint                                 | Description                                                                                                                                                |
-|-------------------------------------------|-----------|--------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `id`                                      | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The tournament ID                                                                                                                                          |
-| `uniq_id`                                 | `TEXT`    | NOT NULL                                   | The unique text ID of the tournament                                                                                                                       |
-| `name`                                    | `TEXT`    | NOT NULL                                   | The tournament name                                                                                                                                        |
-| `location`                                | `TEXT`    |                                            | The location of the tournament (by default the location of the event)                                                                                      |
-| `start`                                   | `FLOAT`   |                                            | The start date of the tournament (timestamp, by default the start date of the event)                                                                       |
-| `stop`                                    | `FLOAT`   |                                            | The stop date of the tournament (timestamp, by default the stop date of the event)                                                                         |
-| `time_control_trf25`                      | `TEXT`    |                                            | The time control in TRF25 format                                                                                                                           |
-| `record_illegal_moves`                    | `INTEGER` |                                            | The maximum number of illegal moves that can be recorded for a player per round If this number is not specified, the event's default configuration is used |
-| `rules`                                   | `TEXT`    |                                            | The URL or server path to the tournament rules, in PDF format (by default, the event rules)                                                                |
-| `check_in_open`                           | `INTEGER` |                                            | Boolean:<br/>- `1`: Checking is open<br/>- `0`: Checking is closed                                                                                         |
-| `last_update`                             | `TEXT`    | NOT NULL                                   | The last date the tournament was modified                                                                                                                  |
-| `last_player_update`.                     | `TEXT`    | NOT NULL<br/>DEFAULT 0.0                   | The last date a player associated with this tournament was modified                                                                                        |
-| `last_pairing_update`                     | `TEXT`    | NOT NULL<br/>DEFAULT 0.0                   | The last date a pairing associated with this tournament score was modified                                                                                 |
-| `first_board_number`                      | `INTEGER` |                                            | The first board number                                                                                                                                     |
-| `paired_bye_result`                       | `INTEGER` |                                            | Result awarded to bye players                                                                                                                              |
-| `max_byes`                                | `INTEGER` |                                            | The maximum number of byes a player can claim                                                                                                              |
-| `last_rounds_no_byes`                     | `INTEGER` |                                            | The number of final rounds for which players cannot take byes                                                                                              |
-| `tie_breaks`                              | `TEXT`    |                                            | The tie-breaks used in JSON format (list of dictionaries in the format {'type': str, 'options': dict[str,any]})                                            |
-| `rounds`                                  | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | The tournament's round count                                                                                                                               |
-| `rating`                                  | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | The tournament's rating:<br/>- `1`: Estimated<br/>- `2`: National<br/>- `3`: _FIDE_                                                                        |
-| `pairing`                                 | `TEXT`    |                                            | The tournament's pairing as a string                                                                                                                       |
-| `pairing_settings`                        | `TEXT`    |                                            | The tournament's pairing settings, in JSON format                                                                                                          |
-| `current_round`                           | `INTEGER` |                                            | The tournament's current round                                                                                                                             |
-| `three_points_for_a_win`                  | `INTEGER` | NOT NULL<br/>DEFAULT 0.0                   | Boolean:<br/>- `0`: 1 point for a win<br/>- `1`: 3 points for a win                                                                                        |
-| `deprecated_chessevent_user_id`           | `TEXT`    |                                            | _Deprecated_                                                                                                                                               |
-| `deprecated_chessevent_password`          | `TEXT`    |                                            | _Deprecated_                                                                                                                                               |
-| `deprecated_chessevent_event_id`          | `TEXT`    |                                            | _Deprecated_                                                                                                                                               |
-| `deprecated_chessevent_tournament_name`   | `TEXT`    |                                            | _Deprecated_                                                                                                                                               |
-| `deprecated_last_chessevent_download_md5` | `TEXT`    |                                            | _Deprecated_                                                                                                                                               |
-| `plugin_data`                             | `TEXT`    |                                            | Additional data used by plugins, in JSON format                                                                                                            |
-
-### `tournament_criterion` table (tournament criteria)
-
-| Field               | Type      | Constraint                                                | Description                      |
-|---------------------|-----------|-----------------------------------------------------------|----------------------------------|
-| `id`                | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT<br/>UNIQUE     | The tournament criterion ID      |
-| `tournament_id`     | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`)                | The tournament ID                |
-| `type`              | `TEXT`    | NOT NULL                                                  | The criterion type               |
-| `options`           | `TEXT`    |                                                           | Criterion options in JSON format |
+| Field                                     | Type      | Constraint                                 | Description                                                                                 |
+|-------------------------------------------|-----------|--------------------------------------------|---------------------------------------------------------------------------------------------|
+| `id`                                      | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT | The tournament ID                                                                           |
+| `uniq_id`                                 | `TEXT`    | NOT NULL                                   | The unique text ID of the tournament                                                        |
+| `name`                                    | `TEXT`    | NOT NULL                                   | The tournament name                                                                         |
+| `location`                                | `TEXT`    |                                            | The location of the tournament (by default the location of the event)                       |
+| `start`                                   | `FLOAT`   |                                            | The start date of the tournament (timestamp, by default the start date of the event)        |
+| `stop`                                    | `FLOAT`   |                                            | The stop date of the tournament (timestamp, by default the stop date of the event)          |
+| `time_control_trf25`                      | `TEXT`    |                                            | The time control in TRF25 format                                                            |
+| `record_illegal_moves`                    | `INTEGER` |                                            | The maximum number of illegal moves that can be recorded for a player per round             |
+| `rules`                                   | `TEXT`    |                                            | The URL or server path to the tournament rules, in PDF format (by default, the event rules) |
+| `check_in_open`                           | `INTEGER` |                                            | Boolean:<br/>- `1`: Checking is open<br/>- `0`: Checking is closed                          |
+| `last_update`                             | `TEXT`    | NOT NULL                                   | The last date the tournament was modified                                                   |
+| `last_player_update`.                     | `TEXT`    | NOT NULL<br/>DEFAULT 0.0                   | The last date a player associated with this tournament was modified                         |
+| `last_pairing_update`                     | `TEXT`    | NOT NULL<br/>DEFAULT 0.0                   | The last date a pairing associated with this tournament score was modified                  |
+| `first_board_number`                      | `INTEGER` |                                            | The first board number                                                                      |
+| `paired_bye_result`                       | `INTEGER` |                                            | Result awarded to bye players                                                               |
+| `max_byes`                                | `INTEGER` |                                            | The maximum number of byes a player can claim                                               |
+| `last_rounds_no_byes`                     | `INTEGER` |                                            | The number of final rounds for which players cannot take byes                               |
+| `rounds`                                  | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | The tournament's round count                                                                |
+| `rating`                                  | `INTEGER` | NOT NULL<br/>DEFAULT 1                     | The tournament's rating:<br/>- `1`: Estimated<br/>- `2`: National<br/>- `3`: _FIDE_         |
+| `pairing`                                 | `TEXT`    |                                            | The tournament's pairing as a string                                                        |
+| `pairing_settings`                        | `TEXT`    |                                            | The tournament's pairing settings, in JSON format                                           |
+| `current_round`                           | `INTEGER` |                                            | The tournament's current round                                                              |
+| `three_points_for_a_win`                  | `INTEGER` | NOT NULL<br/>DEFAULT 0.0                   | Boolean:<br/>- `0`: 1 point for a win<br/>- `1`: 3 points for a win                         |
+| `round_datetimes`                         | `TEXT`    | NOT NULL<br/>DEFAULT '{}'                  | The round schedule in JSON format ({int: datetime, None})                                   |
+| `criteria`                                | `TEXT`    | NOT NULL<br/>DEFAULT '{}'                  | The criteria in JSON format ({str: Any})                                                    |
+| `deprecated_chessevent_user_id`           | `TEXT`    |                                            | _Deprecated_                                                                                |
+| `deprecated_chessevent_password`          | `TEXT`    |                                            | _Deprecated_                                                                                |
+| `deprecated_chessevent_event_id`          | `TEXT`    |                                            | _Deprecated_                                                                                |
+| `deprecated_chessevent_tournament_name`   | `TEXT`    |                                            | _Deprecated_                                                                                |
+| `deprecated_last_chessevent_download_md5` | `TEXT`    |                                            | _Deprecated_                                                                                |
+| `plugin_data`                             | `TEXT`    |                                            | Additional data used by plugins, in JSON format                                             |
 
 ### `player` table (players)
 

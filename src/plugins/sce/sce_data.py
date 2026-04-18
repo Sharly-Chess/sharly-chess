@@ -4,14 +4,17 @@ from functools import cached_property
 from typing import Any, Self
 
 from common.i18n import _
+from data.criteria.managers import TournamentCriterionManager
+from data.criteria.tournament_criteria import TournamentCriterion
 from data.event import Event
 from data.player import TournamentPlayer, Player, MIN_YOB
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament, StoredPlayer
 from database.sqlite.sqlite_database import SQLiteDatabase
+from plugins.ffe.utils import PlayerFFELicence
 from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME
-from plugins.sce.sce_mappers import SCEPlayerGender
+from plugins.sce.sce_mappers import SCEPlayerGender, SCETournamentCriteria
 from plugins.utils import PluginData
 from utils import Utils
 from utils.date_time import format_date, format_datetime
@@ -56,6 +59,7 @@ class SCETournamentSyncData:
     stop_date: date
     round_schedule: dict[int, datetime]
     time_control: str | None = None
+    criteria: list[TournamentCriterion] = field(default_factory=list)
 
     @property
     def start_date_str(self) -> str:
@@ -68,6 +72,10 @@ class SCETournamentSyncData:
     @property
     def type_str(self) -> str:
         return self.type.short_name
+
+    @property
+    def criteria_str(self) -> str:
+        return ', '.join(criterion.full_name for criterion in self.criteria)
 
     @cached_property
     def round_schedule_str(self) -> dict[int, str]:
@@ -97,6 +105,9 @@ class SCETournamentSyncData:
                 )
                 for schedule in data['round_schedule']
             },
+            criteria=SCETournamentCriteria.sce_data_to_core_value(
+                data['criteria'] or {}
+            ),
         )
 
     @classmethod
@@ -113,7 +124,20 @@ class SCETournamentSyncData:
                 for round_, datetime_ in tournament.round_datetimes.items()
                 if datetime_
             },
+            criteria=list(tournament.criteria),
         )
+
+    @classmethod
+    def _stored_criteria_to_criteria(
+        cls, stored_criteria: dict[str, Any]
+    ) -> list[TournamentCriterion]:
+        criteria: list[TournamentCriterion] = []
+        for criteria_id, stored_value in stored_criteria.items():
+            criterion = TournamentCriterionManager(None).get_object(criteria_id)
+            value = criterion.value_from_stored_value(stored_value)
+            criterion.set_value(value)
+            criteria.append(criterion)
+        return criteria
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -134,6 +158,7 @@ class SCETournamentSyncData:
                 int(round_): SQLiteDatabase.load_datetime_from_database_field(datetime_)
                 for round_, datetime_ in stored_value.get('round_schedule', {}).items()
             },
+            criteria=cls._stored_criteria_to_criteria(stored_value.get('criteria', {})),
         )
 
     def round_restricted_schedule(self, max_round: int) -> dict[str, datetime | None]:
@@ -177,6 +202,9 @@ class SCETournamentSyncData:
                 str(round_): SQLiteDatabase.dump_datetime_to_database_field(datetime_)
                 for round_, datetime_ in self.round_schedule.items()
             },
+            'criteria': {
+                criterion.id: criterion.stored_value for criterion in self.criteria
+            },
         }
 
     def to_sce_data(self) -> dict[str, Any]:
@@ -197,6 +225,7 @@ class SCETournamentSyncData:
                 }
                 for round_, datetime_ in self.round_schedule.items()
             ],
+            'criteria': SCETournamentCriteria.core_value_to_sce_data(self.criteria),
         }
 
     def augment_stored_tournament(
@@ -219,6 +248,9 @@ class SCETournamentSyncData:
             round_: self.round_schedule.get(round_)
             for round_ in range(1, self.rounds + 1)
         }
+        stored_tournament.criteria = {
+            criterion.id: criterion.stored_value for criterion in self.criteria
+        }
         plugin_data = SCETournamentPluginData.from_stored_value(
             stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         )
@@ -235,6 +267,7 @@ class SCETournamentSyncData:
             'start_date_str': _('Start'),
             'stop_date_str': _('End'),
             'human_readable_time_control': _('Time control'),
+            'criteria_str': _('Criteria'),
         }
 
 
@@ -243,15 +276,21 @@ class SCEPlayerSyncData:
     tournament_id: str
     last_name: str
     first_name: str | None = None
+    federation: str | None = None
     year_of_birth: int | None = None
     fide_id: int | None = None
     title: PlayerTitle = PlayerTitle.NONE
     club: str = ''
     rating: int | None = None
     rating_type: PlayerRatingType | None = None
-    national_id: str | None = None
     phone: str | None = None
     gender: PlayerGender = PlayerGender.NONE
+    comment: str | None = None
+
+    # Plugin fields
+    national_id: str | None = None
+    ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
+    ffe_league: str | None = None
 
     # Not stored
     mail: str | None = None
@@ -272,23 +311,28 @@ class SCEPlayerSyncData:
             return ''
         return self.gender.name
 
+    @property
+    def ffe_licence_str(self) -> str:
+        return self.ffe_licence.short_name
+
     @classmethod
     def from_sce_data(
         cls,
+        event: 'Event',
         data: dict[str, Any],
         tournament_id: str,
         with_mail: bool = False,
     ) -> Self:
         yob = data['year_of_birth']
-        return cls(
+        sync_data = cls(
             tournament_id=tournament_id,
             last_name=data['last_name'].upper(),
             first_name=data['first_name'],
+            federation=data['federation'],
             # As SC.com YOB are mandatory, consider 1900 as an
             # empty field to avoid setting it in the THP
             year_of_birth=yob if yob > MIN_YOB else None,
             fide_id=data['fide_id'],
-            national_id=data['national_id'],
             title=PlayerTitle(data['title'] or PlayerTitle.NONE),
             club=data['club'] or '',
             rating=data['rating'],
@@ -296,6 +340,7 @@ class SCEPlayerSyncData:
             if data['rating_type']
             else None,
             phone=data['phone_number'],
+            comment=data['comment'],
             gender=(
                 SCEPlayerGender.get_core_object(data['gender'])
                 if data['gender']
@@ -303,6 +348,10 @@ class SCEPlayerSyncData:
             ),
             mail=data.get('user_email') if with_mail else None,
         )
+        plugin_manager.hook_for_event(
+            event, 'augment_sce_player_sync_data_from_sce_data'
+        )(sce_data=data, sync_data=sync_data)
+        return sync_data
 
     @classmethod
     def from_player(cls, player: TournamentPlayer) -> Self:
@@ -319,10 +368,12 @@ class SCEPlayerSyncData:
             fide_id=player.fide_id,
             title=player.title,
             club=player.club.name,
+            federation=player.federation.name,
             rating=player.rating,
             rating_type=player.rating_type if player.rating else None,
             phone=player.phone,
             gender=player.gender,
+            comment=player.comment,
         )
         plugin_manager.hook_for_event(
             player.event, 'augment_sce_player_sync_data_from_player'
@@ -340,6 +391,7 @@ class SCEPlayerSyncData:
             fide_id=stored_value.get('fide_id'),
             national_id=stored_value.get('national_id'),
             title=PlayerTitle(stored_value.get('title', PlayerTitle.NONE)),
+            federation=stored_value.get('federation'),
             club=stored_value.get('club', ''),
             rating=stored_value.get('rating'),
             rating_type=PlayerRatingType(stored_rating_type)
@@ -347,6 +399,11 @@ class SCEPlayerSyncData:
             else None,
             phone=stored_value.get('phone'),
             gender=PlayerGender(stored_value.get('gender', PlayerGender.NONE)),
+            ffe_league=stored_value.get('ffe_league'),
+            ffe_licence=PlayerFFELicence(
+                stored_value.get('ffe_licence') or PlayerFFELicence.NONE
+            ),
+            comment=stored_value.get('comment'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -358,19 +415,44 @@ class SCEPlayerSyncData:
             'fide_id': self.fide_id,
             'national_id': self.national_id,
             'title': self.title.value,
+            'federation': self.federation,
             'club': self.club,
             'rating': self.rating or None,
             'rating_type': self.rating_type.value if self.rating_type else None,
             'phone': self.phone,
             'gender': self.gender.value,
+            'ffe_licence': (
+                self.ffe_licence.value
+                if self.ffe_licence != PlayerFFELicence.NONE
+                else None
+            ),
+            'ffe_league': self.ffe_league,
+            'comment': self.comment,
         }
 
     def to_sce_data(self) -> dict[str, Any]:
-        return self.to_stored_value() | {
+        return {
+            'tournament_id': self.tournament_id,
+            'last_name': self.last_name,
+            'first_name': self.first_name,
             'year_of_birth': self.year_of_birth or MIN_YOB,
+            'fide_id': self.fide_id,
+            'national_id': self.national_id,
+            'title': self.title.value,
+            'federation': self.federation,
+            'club': self.club,
+            'rating': self.rating or None,
             'rating_type': self.rating_type.key.upper() if self.rating_type else None,
-            'phone_number': self.phone,
+            'phone': self.phone,
             'gender': SCEPlayerGender.get_outer_value(self.gender),
+            'ffe_licence_type': (
+                self.ffe_licence.value
+                if self.ffe_licence != PlayerFFELicence.NONE
+                else None
+            ),
+            'ffe_league': self.ffe_league,
+            'phone_number': self.phone,
+            'comment': self.comment,
         }
 
     def merge_with_other_sync_data(self, other_data: Self, ref_data: Self) -> Self:
@@ -390,6 +472,7 @@ class SCEPlayerSyncData:
         current_rating: int | None = None,
         current_rating_type: PlayerRatingType | None = None,
     ) -> None:
+        event = tournament.event
         stored_player.first_name = self.first_name
         stored_player.last_name = self.last_name
         if self.year_of_birth and not (
@@ -400,9 +483,11 @@ class SCEPlayerSyncData:
             stored_player.year_of_birth = self.year_of_birth
         stored_player.fide_id = self.fide_id
         stored_player.title = self.title.value
+        stored_player.federation = self.federation or event.federation
         stored_player.club = self.club
         stored_player.phone = self.phone
         stored_player.gender = self.gender.value
+        stored_player.comment = self.comment
         if current_rating != self.rating or current_rating_type != self.rating_type:
             stored_player.ratings[tournament.rating.value] = PlayerRating.from_type(
                 self.rating, self.rating_type or PlayerRatingType.ESTIMATED
@@ -413,7 +498,7 @@ class SCEPlayerSyncData:
         plugin_data.last_sync_data = self
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         plugin_manager.hook_for_event(
-            tournament.event, 'augment_stored_player_from_player_sync_data'
+            event, 'augment_stored_player_from_player_sync_data'
         )(stored_player=stored_player, sync_data=self)
 
     @staticmethod
@@ -422,23 +507,23 @@ class SCEPlayerSyncData:
         diff_fields = {
             'last_name': _('Last name'),
             'first_name': _('First name'),
+            'title_str': _('Title'),
+            'rating_str': _('Rating'),
+            'federation': _('Federation'),
+            'ffe_league': None,
+            'club': _('Club'),
+            'year_of_birth': _('Year of birth'),
             'gender_str': _('Gender'),
             'fide_id': _('FIDE ID'),
-            'national_id': '',
-            'year_of_birth': _('Year of birth'),
-            'title_str': _('Title'),
-            'club': _('Club'),
-            'rating_str': _('Rating'),
+            'national_id': None,
+            'ffe_licence_str': None,
             'phone': _('Phone'),
+            'comment': _('Comment'),
         }
-        national_id_label = plugin_manager.hook_for_event(
-            event, 'get_sce_national_id_player_field_label'
-        )()
-        if national_id_label:
-            diff_fields['national_id'] = national_id_label
-        else:
-            del diff_fields['national_id']
-        return diff_fields
+        plugin_manager.hook_for_event(event, 'update_sce_player_diff_field_labels')(
+            diff_fields=diff_fields
+        )
+        return {key: label for key, label in diff_fields.items() if label is not None}
 
 
 @dataclass

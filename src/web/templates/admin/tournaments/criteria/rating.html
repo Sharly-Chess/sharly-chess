@@ -1,0 +1,10 @@
+<div class="col-12 col-md-4 mb-2">
+    {{ admin_macros.integer_range_input(
+        name=criterion.form_key,
+        label=_('%(string)s:', string=_('Rating')),
+        min_placeholder=_('Min *** MINIMUM'),
+        max_placeholder=_('Max *** MAXIMUM'),
+        number_min=0,
+        data=data, errors=errors,
+    ) }}
+</div>
