@@ -481,7 +481,7 @@ class StandardPointsTieBreak(PlayerRecordTieBreak):
     def get_warning_for_tournament(self, tournament: 'Tournament') -> str | None:
         if tournament.is_standard_point_system_used:
             return _(
-                'This tie-break is not recommended with '
+                'This tie-break has no effect with '
                 'tournaments using the standard point system.'
             )
         return None

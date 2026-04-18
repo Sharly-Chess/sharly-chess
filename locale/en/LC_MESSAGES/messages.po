@@ -5827,6 +5827,9 @@ msgstr ""
 msgid "This tie-break can't be used twice in a row (ignored)."
 msgstr ""
 
+msgid "This tie-break has no effect with tournaments using the standard point system."
+msgstr ""
+
 msgid "This tie-break is already used with the same modifiers."
 msgstr ""
 
@@ -5843,9 +5846,6 @@ msgid "This tie-break is not recommended on tournaments lasting over multiple FI
 msgstr ""
 
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
-msgstr ""
-
-msgid "This tie-break has no effect with tournaments using the standard point system."
 msgstr ""
 
 msgid "This tournament has no titled players."
@@ -6990,5 +6990,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
 
