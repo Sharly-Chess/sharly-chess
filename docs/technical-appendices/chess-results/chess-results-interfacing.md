@@ -219,11 +219,11 @@ The fields are similar to their counterpart in the Player or Team data section, 
 
 This section contains a description of the playing schedule.
 
-| Field | Description | Mandatory (M) / Optional (O) / Forbidden (F) / Unknown (?) |
-|-------|-------------|------------------------------------------------------------|
-| round | The number of the round | M |
-| date | The date of the round, in the form "dd.mm.yyyy" | O |
-| time | The round start time (up to 15 characters) | O |
+| Field | Description                                   | Mandatory (M) / Optional (O) / Forbidden (F) / Unknown (?) |
+|-------|-----------------------------------------------|------------------------------------------------------------|
+| round | The number of the round                       | M |
+| date | The date of the round, in the form "yyyymmdd" | O |
+| time | The round start time (up to 15 characters)    | O |
 
 ### Player pairing data (mandatory)
 
