@@ -79,6 +79,10 @@ msgid "Club"
 msgstr "Clube"
 
 #, ai_translation
+msgid "Comment"
+msgstr "Comentário"
+
+#, ai_translation
 msgid "Configuration page of the event."
 msgstr "Página de configuração do evento."
 
@@ -89,6 +93,10 @@ msgstr "Página de configuração do torneio."
 #, ai_translation
 msgid "Conflict"
 msgstr "Conflito"
+
+#, ai_translation
+msgid "Criteria"
+msgstr "Critérios"
 
 #, ai_translation
 msgid "Data as it currently is on Sharly-Chess.com."
@@ -161,6 +169,10 @@ msgstr "ID da FIDE"
 #, ai_translation
 msgid "Failure"
 msgstr "Falha"
+
+#, ai_translation
+msgid "Federation"
+msgstr "Federação"
 
 #, ai_translation
 msgid "First name"

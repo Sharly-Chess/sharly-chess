@@ -47,10 +47,6 @@ msgid "At least one league is expected."
 msgstr "Pelo menos uma liga é esperada."
 
 #, ai_translation
-msgid "At least one licence type is expected."
-msgstr "Pelo menos um tipo de licença é esperado."
-
-#, ai_translation
 msgid "Auto-upload disabled"
 msgstr "Auto-upload desativado"
 
@@ -149,10 +145,6 @@ msgstr "Árbitro Elite (nível 2)"
 #, ai_translation
 msgid "Exclude: {values}"
 msgstr "Exclui: {values}"
-
-#, fuzzy
-msgid "Expired *** FFE licence"
-msgstr "Expired"
 
 #, ai_translation
 msgid "Expired FFE licence"
@@ -391,8 +383,16 @@ msgid "Median Buchholz"
 msgstr "Median Buchholz"
 
 #, ai_translation
+msgid "Minimum FFE licence required (only applies to players of the FRA federation)."
+msgstr "Licença FFE mínima necessária (apenas se aplica aos jogadores da federação FRA)."
+
+#, ai_translation
 msgid "Modified"
 msgstr "Modificado"
+
+#, fuzzy
+msgid "N - Expired *** FFE licence"
+msgstr "N - Expired"
 
 #, ai_translation
 msgid "Name"
@@ -870,4 +870,10 @@ msgstr[1] "{count} ligas representadas"
 
 #~ msgid "Use default - {option}"
 #~ msgstr "Padrão de uso - {option}"
+
+#~ msgid "At least one licence type is expected."
+#~ msgstr "Pelo menos um tipo de licença é esperado."
+
+#~ msgid "Expired *** FFE licence"
+#~ msgstr "Expired"
 

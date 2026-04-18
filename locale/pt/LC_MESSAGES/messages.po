@@ -2143,10 +2143,6 @@ msgid "Define the criteria for players to belong to this category."
 msgstr "Defina os critérios para os jogadores pertencerem a esta categoria."
 
 #, ai_translation
-msgid "Define the criteria for players to participate in this tournament."
-msgstr "Defina os critérios para os jogadores participarem neste torneio."
-
-#, ai_translation
 msgid "Define the prizes of the category."
 msgstr "Defina os prêmios da categoria."
 
@@ -2438,6 +2434,10 @@ msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
 msgstr "Você quer atualizar de [{old_version}] para [{new_version}]"
 
 #, ai_translation
+msgid "Document [{document}] has been generated in another tab."
+msgstr "Documento [{document}] foi gerado em outra guia."
+
+#, ai_translation
 msgid "Document:"
 msgstr "Documento:"
 
@@ -2447,6 +2447,10 @@ msgstr "Documentos"
 
 msgid "Documents *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>D</u>ocumentos"
+
+#, ai_translation
+msgid "Does not match criteria"
+msgstr "Não corresponde aos critérios"
 
 #, ai_translation
 msgid "Dominica"
@@ -4167,12 +4171,20 @@ msgid "Marshall Islands"
 msgstr "Ilhas Marshall"
 
 #, ai_translation
+msgid "Matches criteria"
+msgstr "Critérios de correspondência"
+
+#, ai_translation
 msgid "Mauritania"
 msgstr "Mauritânia"
 
 #, ai_translation
 msgid "Mauritius"
 msgstr "Ilhas Maurícias"
+
+#, fuzzy
+msgid "Max *** MAXIMUM"
+msgstr "Max"
 
 #, ai_translation, python-format
 msgid "Max age: %(num)d minute"
@@ -4264,6 +4276,14 @@ msgstr "Menus"
 msgid "Mexico"
 msgstr "México"
 
+#, fuzzy
+msgid "Min *** MINIMUM"
+msgstr "Min"
+
+#, ai_translation
+msgid "Minimum category is expected to be lower or equal to the maximum category."
+msgstr "Espera-se que a categoria mínima seja menor ou igual à categoria máxima."
+
 #, ai_translation
 msgid "Minimum number of points (included):"
 msgstr "Número mínimo de pontos (incluído):"
@@ -4271,6 +4291,10 @@ msgstr "Número mínimo de pontos (incluído):"
 #, ai_translation
 msgid "Minimum rating"
 msgstr "Classificação mínima"
+
+#, ai_translation
+msgid "Minimum rating is expected to be lower than the maximum rating."
+msgstr "Espera-se que a classificação mínima seja menor do que a classificação máxima."
 
 #, ai_translation
 msgid "Missing required column [{column}]."
@@ -5009,10 +5033,6 @@ msgid "Opponents"
 msgstr "Opositores"
 
 #, ai_translation
-msgid "Opponents' ratings"
-msgstr "Classificações dos opositores"
-
-#, ai_translation
 msgid "Opponents' records"
 msgstr "Registos dos opositores"
 
@@ -5519,6 +5539,14 @@ msgid "Players update for tournament [%(tournament)s]"
 msgstr "Atualização dos jogadores para o torneio [%(tournament)s]"
 
 #, ai_translation
+msgid "Players which do not match the criteria of their tournament."
+msgstr "Jogadores que não correspondem aos critérios de seu torneio."
+
+#, ai_translation
+msgid "Players which match the criteria of their tournament."
+msgstr "Jogadores que correspondam aos critérios de seu torneio."
+
+#, ai_translation
 msgid "Players without phone or email won't be included."
 msgstr "Jogadores sem telefone ou e-mail não serão incluídos."
 
@@ -5657,6 +5685,10 @@ msgstr "Porto: {port}"
 #, ai_translation
 msgid "Portugal"
 msgstr "Portugal"
+
+#, ai_translation
+msgid "Positive values are expected."
+msgstr "Valores positivos são esperados."
 
 #, ai_translation
 msgid "Pref."
@@ -6104,6 +6136,14 @@ msgstr "Voltar para a página inicial"
 #, ai_translation
 msgid "Return to tournament"
 msgstr "Voltar ao torneio"
+
+#, ai_translation
+msgid "Reverse order"
+msgstr "Ordem inversa"
+
+#, ai_translation
+msgid "Reversed"
+msgstr "Invertido"
 
 #, fuzzy
 msgid "Rk. *** RANK COLUMN HEADER"
@@ -6780,6 +6820,10 @@ msgid "Standard (no flag)"
 msgstr "Padrão (sem bandeira)"
 
 #, ai_translation
+msgid "Standard points"
+msgstr "Pontos padrão"
+
+#, ai_translation
 msgid "Standard rating"
 msgstr "Classificação padrão"
 
@@ -7126,6 +7170,10 @@ msgid "The number of points achieved against all players who have scored at leas
 msgstr "O número de pontos atingidos contra todos os jogadores que marcaram pelo menos L pontos (L = {equation})."
 
 #, ai_translation
+msgid "The number of points in the standard 1/0.5/0 point system."
+msgstr "O número de pontos no sistema de pontos padrão 1/0.5/0."
+
+#, ai_translation
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr "O número de rodadas em que um jogador não recebeu um HPB, um ZPB ou uma perda de perda."
 
@@ -7166,6 +7214,18 @@ msgid "The pairing number is already attributed."
 msgstr "O número do par já foi atribuído."
 
 #, ai_translation
+msgid "The pairing numbers of the tournament in ascending or descending order (ascending by default)."
+msgstr "O número de pares do torneio em ordem ascendente ou decrescente (ascendente por padrão)."
+
+#, ai_translation
+msgid "The pairing numbers of the tournament in ascending order."
+msgstr "Números de emparelhamento do torneio em ordem crescente."
+
+#, ai_translation
+msgid "The pairing numbers of the tournament in descending order."
+msgstr "Os números de emparelhamento do torneio em ordem decrescente."
+
+#, ai_translation
 msgid "The permissions of this account can not be updated."
 msgstr "As permissões desta conta não podem ser atualizadas."
 
@@ -7196,6 +7256,18 @@ msgstr "A classificação usada quando o controle de tempo é no máximo 10 minu
 #, ai_translation
 msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
 msgstr "A classificação usada quando o controle de tempo é mais de 10 minutos e menos de 60 minutos."
+
+#, ai_translation
+msgid "The ratings in ascending or descending order (descending by default)."
+msgstr "As classificações em ordem ascendente ou decrescente (descendo por padrão)."
+
+#, ai_translation
+msgid "The ratings in ascending order."
+msgstr "As classificações em ordem ascendente."
+
+#, ai_translation
+msgid "The ratings in descending order."
+msgstr "As classificações em ordem decrescente."
 
 #, ai_translation
 msgid "The related objects will also be deleted:"
@@ -7474,6 +7546,10 @@ msgid "This tie-break can't be used twice in a row (ignored)."
 msgstr "Este tie-break não pode ser usado duas vezes seguidas (ignorado)."
 
 #, ai_translation
+msgid "This tie-break has no effect with tournaments using the standard point system."
+msgstr "Este tie-break não tem efeito com torneios usando o sistema de pontos padrão."
+
+#, ai_translation
 msgid "This tie-break is already used with the same modifiers."
 msgstr "Este tie-break já é usado com os mesmos modificadores."
 
@@ -7488,6 +7564,10 @@ msgstr "Este tie-break é desativado quando há jogadores não classificados sem
 #, ai_translation
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
 msgstr "Este tie-break não é compatível com o sistema de emparelhamento [{pairing_system}] (ignorado)."
+
+#, ai_translation
+msgid "This tie-break is not recommended on tournaments lasting over multiple FIDE periods."
+msgstr "Este tie-break não é recomendado em torneios com duração de vários períodos FIDE."
 
 #, ai_translation
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
@@ -7687,6 +7767,10 @@ msgstr "Nome do torneio"
 #, ai_translation
 msgid "Tournament not found or has no schedule."
 msgstr "Torneio não encontrado ou não tem horário."
+
+#, ai_translation
+msgid "Tournament pairing number"
+msgstr "número de emparelhamento de torneio"
 
 #, ai_translation
 msgid "Tournament performance rating"
@@ -9037,4 +9121,10 @@ msgstr "½ - ½ (U)"
 
 #~ msgid "Wrong file extension [{ext}] ([pdf] expected)."
 #~ msgstr "Extensão errada do ficheiro [{ext}] ([pdf] esperado)."
+
+#~ msgid "Define the criteria for players to participate in this tournament."
+#~ msgstr "Defina os critérios para os jogadores participarem neste torneio."
+
+#~ msgid "Opponents' ratings"
+#~ msgstr "Classificações dos opositores"
 
