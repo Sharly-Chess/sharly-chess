@@ -90,7 +90,7 @@
                                         {{ _('All') }}
                                     </button>
                                     <button
-                                        class="btn btn-outline-primary {% if wo_results %}active{% endif %}"
+                                        class="text-nowrap btn btn-outline-primary {% if wo_results %}active{% endif %}"
                                         hx-get="{{ url_for('admin-event-pairings-tab', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
                                         hx-vals='{"{{ name }}": true }'
                                         hx-target="body"

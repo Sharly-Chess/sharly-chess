@@ -60,6 +60,9 @@ msgstr ""
 msgid "Club"
 msgstr ""
 
+msgid "Comment"
+msgstr ""
+
 msgid "Configuration page of the event."
 msgstr ""
 
@@ -125,6 +128,9 @@ msgid "FIDE ID"
 msgstr ""
 
 msgid "Failure"
+msgstr ""
+
+msgid "Federation"
 msgstr ""
 
 msgid "First name"
