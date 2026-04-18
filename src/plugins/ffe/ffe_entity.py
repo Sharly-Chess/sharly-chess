@@ -345,26 +345,6 @@ class FfeLeagueTournamentCriterion(TournamentCriterion[str]):
         return _('League')
 
     @property
-    def default_value(self) -> Any:
-        return []
-
-    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
-        return [
-            licence.value
-            for licence in PlayerFFELicence
-            if licence != PlayerFFELicence.NONE
-        ]
-
-    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
-        counter: Counter[str] = Counter[str]()
-        for tournament_player in tournament.tournament_players:
-            if ffe_licence := FFEUtils.get_player_plugin_data(
-                tournament_player
-            ).ffe_licence:
-                counter[ffe_licence] += 1
-        return counter
-
-    @property
     def template_name(self) -> str:
         return '/ffe_tournament_criteria_league.html'
 
