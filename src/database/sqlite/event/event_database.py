@@ -31,7 +31,6 @@ from database.sqlite.event.event_store import (
     StoredPrizeCriterion,
     StoredPrize,
     StoredPlayer,
-    StoredTournamentCriterion,
     StoredTournamentPlayer,
     StoredPairing,
     StoredBoard,
@@ -638,6 +637,7 @@ class EventDatabase(MigrationDatabase):
             round_datetimes=cls._load_round_datetimes_from_database_field(
                 row['round_datetimes']
             ),
+            criteria=cls.load_json_from_database_field(row['criteria'], {}),
         )
 
         return stored_tournament
@@ -661,9 +661,6 @@ class EventDatabase(MigrationDatabase):
             assert id_ is not None
             stored_tournament.stored_tie_breaks = (
                 self.load_tournament_stored_tie_breaks(id_)
-            )
-            stored_tournament.stored_criteria = self.load_stored_tournament_criteria(
-                id_
             )
             stored_tournament.stored_prize_groups = (
                 self.load_tournament_stored_prize_groups(id_)
@@ -711,6 +708,7 @@ class EventDatabase(MigrationDatabase):
             'round_datetimes': cls._dump_round_datetimes_to_database_field(
                 stored_tournament.round_datetimes
             ),
+            'criteria': cls.dump_to_json_database_field(stored_tournament.criteria),
         }
 
     def add_stored_tournament(self, stored_tournament: StoredTournament) -> int:
@@ -840,77 +838,6 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             'DELETE FROM `tie_break` WHERE `tournament_id` = ?;',
             (tournament_id,),
-        )
-
-    # ---------------------------------------------------------------------------------
-    # StoredTournamentCriterion
-    # ---------------------------------------------------------------------------------
-
-    @classmethod
-    def _row_to_stored_tournament_criterion(
-        cls, row: dict[str, Any]
-    ) -> StoredTournamentCriterion:
-        return StoredTournamentCriterion(
-            id=row['id'],
-            tournament_id=row['tournament_id'],
-            type=row['type'],
-            options=cls.load_json_from_database_field(row['options']),
-        )
-
-    def load_stored_tournament_criteria(
-        self, tournament_id: int
-    ) -> list[StoredTournamentCriterion]:
-        self.execute(
-            'SELECT * FROM `tournament_criterion` WHERE `tournament_id` = ?',
-            (tournament_id,),
-        )
-        return [
-            self._row_to_stored_tournament_criterion(row) for row in self.fetchall()
-        ]
-
-    def add_stored_tournament_criterion(
-        self,
-        stored_tournament_criterion: StoredTournamentCriterion,
-    ) -> int:
-        fields = self._get_fields_dict(
-            stored_tournament_criterion, ['tournament_id', 'type']
-        ) | {
-            'options': self.dump_to_json_database_field(
-                stored_tournament_criterion.options
-            )
-        }
-        fields_str = ', '.join(f'`{f}`' for f in fields)
-        values_str = ', '.join(['?'] * len(fields))
-        self.execute(
-            f'INSERT INTO `tournament_criterion`({fields_str}) VALUES ({values_str})',
-            tuple(fields.values()),
-        )
-        if not (tournament_criterion_id := self._last_inserted_id()):
-            raise RuntimeError('Tournament criterion insertion failed')
-        return tournament_criterion_id
-
-    def update_stored_tournament_criterion(
-        self,
-        stored_tournament_criterion: StoredTournamentCriterion,
-    ):
-        fields = self._get_fields_dict(
-            stored_tournament_criterion, ['tournament_id', 'type']
-        ) | {
-            'options': self.dump_to_json_database_field(
-                stored_tournament_criterion.options
-            )
-        }
-        field_sets = ', '.join(f'`{f}` = ?' for f in fields)
-        assert stored_tournament_criterion.id is not None
-        self.execute(
-            f'UPDATE `tournament_criterion` SET {field_sets} WHERE `id` = ?',
-            tuple(fields.values()) + (stored_tournament_criterion.id,),
-        )
-
-    def delete_stored_tournament_criterion(self, tournament_criterion_id: int):
-        self.execute(
-            'DELETE FROM `tournament_criterion` WHERE `id` = ?;',
-            (tournament_criterion_id,),
         )
 
     # ---------------------------------------------------------------------------------

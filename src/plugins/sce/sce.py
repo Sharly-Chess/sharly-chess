@@ -50,6 +50,14 @@ class SCEPluginHooks:
         """Augment SCE player shared data from a player."""
 
     @hookspec
+    def augment_sce_player_sync_data_from_sce_data(
+        self,
+        sce_data: dict[str, Any],
+        sync_data: SCEPlayerSyncData,
+    ):
+        """Augment SCE player shared data from SCE API data."""
+
+    @hookspec
     def augment_stored_player_from_player_sync_data(
         self,
         stored_player: 'StoredPlayer',
@@ -57,9 +65,9 @@ class SCEPluginHooks:
     ):
         """Augment a stored player from SCE player shared data."""
 
-    @hookspec(firstresult=True)
-    def get_sce_national_id_player_field_label(self) -> str | None:
-        """Label used for the 'national_id' player field in the conflict modal."""
+    @hookspec
+    def update_sce_player_diff_field_labels(self, diff_fields: dict[str, str | None]):
+        """Update the labels of the fields used for the conflict modal."""
 
     @hookspec
     def add_sce_upload_player_custom_fields(

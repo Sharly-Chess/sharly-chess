@@ -16,6 +16,7 @@ from data.criteria.player_filter_options import (
     ExcludeFilterOption,
 )
 from data.criteria.player_filters import PlayerFilter
+from data.criteria.tournament_criteria import TournamentCriterion
 from data.event import Event
 from data.player import Player, TournamentPlayer
 from data.print_documents import PlayerSplitter, PrintOption
@@ -32,6 +33,7 @@ from plugins.pairing_acceleration.pairing_variations import (
 )
 from plugins.utils import PluginUtils
 from utils.enum import Result
+from web.controllers.base_controller import WebContext
 
 get_data = partial(PluginUtils.get_plugin_data, PLUGIN_NAME)
 
@@ -286,72 +288,79 @@ class FfeLeaguesFilterOption(SelectPlayerFilterOption[str]):
             raise OptionError(_('At least one league is expected.'), self)
 
 
-class FfeLicencePlayerFilter(PlayerFilter):
+class FfeLicenceTournamentCriterion(TournamentCriterion[str]):
     @staticmethod
     def static_id() -> str:
-        return f'{PLUGIN_NAME}-LICENCE'
+        return f'{PLUGIN_NAME}_licence'
 
     @staticmethod
     def static_name() -> str:
         return _('FFE Licence')
 
-    @staticmethod
-    def available_options() -> list[type[PlayerFilterOption]]:
-        return [FfeLicenceFilterOption]
-
-    @cached_property
-    def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
-        licences = self.get_option_values()[0]
-        return lambda tournament_player: (
-            FFEUtils.get_player_plugin_data(tournament_player).ffe_licence in licences
-        )
-
-    def full_name(self, tournament: 'Tournament') -> str:
-        option_values = self.get_option_values()[0]
-        licence_types = [PlayerFFELicence(value).short_name for value in option_values]
-        return f'{self.name} ({", ".join(licence_types)})'
-
-
-class FfeLicenceFilterOption(SelectPlayerFilterOption[str]):
-    @staticmethod
-    def static_id() -> str:
-        return f'{PLUGIN_NAME}-LICENCES'
+    @property
+    def licence(self) -> PlayerFFELicence:
+        return PlayerFFELicence(self.value)
 
     @property
     def template_name(self) -> str:
-        return '/ffe_licence_player_filter_option.html'
+        return '/ffe_tournament_criteria_licence.html'
+
+    def value_from_form_data(
+        self, data: dict[str, str], errors: dict[str, str]
+    ) -> str | None:
+        value = WebContext.form_data_to_str(data, self.form_key)
+        if value:
+            try:
+                PlayerFFELicence(value)
+                return value
+            except ValueError:
+                errors[self.form_key] = 'Unknown licence value [value]'
+        return None
+
+    @cached_property
+    def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
+        licence_index = self.licence.sort_index
+        return lambda player: (
+            player.federation.name != 'FRA'
+            or FFEUtils.get_player_plugin_data(player).ffe_licence.sort_index
+            >= licence_index
+        )
 
     @property
-    def type(self) -> type | UnionType:
-        return list[str]
+    def select_options(self) -> dict[str, str]:
+        return {'': '-'} | {
+            licence.value: licence.compact_name
+            for licence in PlayerFFELicence
+            if licence != PlayerFFELicence.NONE
+        }
+
+
+class FfeLeagueTournamentCriterion(TournamentCriterion[str]):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}_league'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('League')
 
     @property
-    def default_value(self) -> Any:
-        return []
+    def template_name(self) -> str:
+        return '/ffe_tournament_criteria_league.html'
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
-        return [licence.value for licence in PlayerFFELicence]
+    def value_from_form_data(
+        self, data: dict[str, str], errors: dict[str, str]
+    ) -> str | None:
+        return WebContext.form_data_to_str(data, self.form_key)
 
-    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
-        counter: Counter[str] = Counter[str]()
-        for tournament_player in tournament.tournament_players:
-            if ffe_licence := FFEUtils.get_player_plugin_data(
-                tournament_player
-            ).ffe_licence:
-                counter[ffe_licence] += 1
-        return counter
+    @cached_property
+    def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
+        league = self.value
+        return lambda player: FFEUtils.get_player_plugin_data(player).league == league
 
-    def get_key(self, object_: str) -> str:
-        return object_
-
-    def get_name(self, object_: str) -> str:
-        licence = PlayerFFELicence(object_)
-        return licence.compact_name
-
-    def validate(self):
-        self._validate_list_type(str)
-        if not self.value:
-            raise OptionError(_('At least one licence type is expected.'), self)
+    @property
+    def select_options(self) -> dict[str, str]:
+        return {'': '-'} | {key: f'{key} - {name}' for key, name in FFE_LEAGUES.items()}
 
 
 class FfeLeaguePlayersTabColumn(FilterPlayersTabColumn):

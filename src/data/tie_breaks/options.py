@@ -269,3 +269,37 @@ class EstimatedRatingsTieBreakOption(TieBreakOption):
     @property
     def include_in_equals(self) -> bool:
         return False
+
+
+class ReversedTieBreakOption(TieBreakOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'REVERSED'
+
+    @property
+    def template_file_stem(self) -> str:
+        return 'reversed'
+
+    @property
+    def variation_acronym(self) -> str:
+        return 'R'
+
+    @property
+    def variation_name(self) -> str:
+        return _('Reversed')
+
+    @property
+    def is_variation(self) -> bool:
+        return bool(self.value)
+
+    @property
+    def variation_help_text(self) -> str:
+        return ''
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool | None
+
+    @property
+    def default_value(self) -> Any:
+        return None

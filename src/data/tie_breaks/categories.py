@@ -22,10 +22,10 @@ class OpponentRecordCategory(TieBreakCategory):
         return _("Opponents' records")
 
 
-class OpponentRatingCategory(TieBreakCategory):
+class RatingCategory(TieBreakCategory):
     @property
     def name(self) -> str:
-        return _("Opponents' ratings")
+        return _('Ratings')
 
 
 class OtherCategory(TieBreakCategory):

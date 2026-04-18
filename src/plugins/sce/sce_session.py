@@ -39,6 +39,7 @@ from plugins.sce.sce_event_status import (
     UnexpectedHttpSCEEventStatus,
     NotReachableSCEEventStatus,
 )
+from plugins.sce.sce_mappers import SCEAgeCategory
 from plugins.sce.sce_sync_status import (
     SCESyncStatus,
     TournamentConflictsSCESyncStatus,
@@ -578,7 +579,7 @@ class SCESession(Session):
             self._create_local_player(
                 registration_data['id'],
                 SCEPlayerSyncData.from_sce_data(
-                    registration_data, sce_id, with_mail=True
+                    self.event, registration_data, sce_id, with_mail=True
                 ),
                 tournament,
                 database,
@@ -825,9 +826,7 @@ class SCESession(Session):
                 SCE_BASE_URL, f'/o/{plugin_data.organiser_slug}'
             )
         age_categories = [
-            PlayerCategory.from_id(
-                f'O{sce_category[:-1]}' if sce_category.endswith('+') else sce_category
-            )
+            PlayerCategory.from_id(SCEAgeCategory.core_id_from_sce_id(sce_category))
             for sce_category in data['age_categories']
         ]
         stored_event.age_categories = [
@@ -880,7 +879,7 @@ class SCESession(Session):
                 for registration_data in tournament_data['registrations']:
                     sce_player_sync_data_by_id[registration_data['id']] = (
                         SCEPlayerSyncData.from_sce_data(
-                            registration_data, sce_tournament_id
+                            self.event, registration_data, sce_tournament_id
                         )
                     )
 
@@ -959,7 +958,7 @@ class SCESession(Session):
             for registration_data in tournament_data['registrations']:
                 sce_player_sync_data_by_id[registration_data['id']] = (
                     SCEPlayerSyncData.from_sce_data(
-                        registration_data, sce_id, with_mail=True
+                        self.event, registration_data, sce_id, with_mail=True
                     )
                 )
 

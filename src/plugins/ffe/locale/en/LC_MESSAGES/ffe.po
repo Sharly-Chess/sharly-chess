@@ -36,9 +36,6 @@ msgstr ""
 msgid "At least one league is expected."
 msgstr ""
 
-msgid "At least one licence type is expected."
-msgstr ""
-
 msgid "Auto-upload disabled"
 msgstr ""
 
@@ -115,9 +112,6 @@ msgstr ""
 
 msgid "Exclude: {values}"
 msgstr ""
-
-msgid "Expired *** FFE licence"
-msgstr "Expired"
 
 msgid "Expired FFE licence"
 msgstr ""
@@ -298,8 +292,14 @@ msgstr ""
 msgid "Median Buchholz"
 msgstr ""
 
+msgid "Minimum FFE licence required (only applies to players of the FRA federation)."
+msgstr ""
+
 msgid "Modified"
 msgstr ""
+
+msgid "N - Expired *** FFE licence"
+msgstr "N - Expired"
 
 msgid "Name"
 msgstr ""
