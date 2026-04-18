@@ -364,6 +364,7 @@ class FfeLeagueTournamentCriterion(TournamentCriterion[str]):
                 counter[ffe_licence] += 1
         return counter
 
+    @property
     def template_name(self) -> str:
         return '/ffe_tournament_criteria_league.html'
 
