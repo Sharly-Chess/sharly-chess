@@ -10,6 +10,7 @@ from data.tie_breaks.options import (
     ForeModifierTieBreakOption,
     KoyaLimitTieBreakOption,
     PlayedModifierTieBreakOption,
+    ReversedTieBreakOption,
 )
 from data.tie_breaks.tie_breaks import TieBreak
 from data.tournament import Tournament
@@ -85,6 +86,10 @@ def _tiebreak_to_dict(tie_break: TieBreak) -> dict[str, Any]:
     if ForeModifierTieBreakOption in available:
         if tie_break._get_option(ForeModifierTieBreakOption).value:  # noqa: SLF001
             result['fore'] = True
+
+    # Reversed modifier (TPN/R - RTNG/R)
+    if ReversedTieBreakOption in available:
+        result['reversed'] = True
 
     # Koya limit (half-points above/below the 50% threshold)
     if KoyaLimitTieBreakOption in available:
@@ -279,10 +284,7 @@ def _build_rankings(tournament: Tournament) -> list[dict[str, Any]]:
                     'rank': rank,
                     'pairingNumber': player.pairing_number,
                     'points': player.points,
-                    'tiebreaks': [
-                        str(tv) if tv.rank_progress is not None else float(tv.value)
-                        for tv in player.tie_break_values
-                    ],
+                    'tiebreaks': [tv.display_value for tv in player.tie_break_values],
                 }
             )
 
