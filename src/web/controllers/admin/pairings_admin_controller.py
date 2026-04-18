@@ -1269,8 +1269,9 @@ class PairingsAdminController(BaseEventAdminController):
             tournament_id=tournament_id,
             round_=current_round,
         )
-        web_context.get_admin_tournament().set_current_round(round_=current_round)
-
+        tournament = web_context.get_admin_tournament()
+        tournament.set_current_round(round_=current_round)
+        SessionPairingsSelectedRound(request, tournament).set(current_round)
         return self._admin_event_pairings_render(web_context)
 
     @put(

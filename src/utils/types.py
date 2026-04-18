@@ -1,8 +1,7 @@
-import base64
 import weakref
 from collections import Counter
 from dataclasses import dataclass, field
-from functools import total_ordering, cached_property
+from functools import total_ordering
 from typing import Optional, Self, SupportsFloat, TYPE_CHECKING
 
 from utils import Utils
@@ -23,14 +22,6 @@ if TYPE_CHECKING:
 class Federation:
     name: str = ''
 
-    @cached_property
-    def to_query_param(self) -> str:
-        return base64.b64encode(self.name.encode('utf-8')).decode('utf-8')
-
-    @classmethod
-    def from_query_param(cls, query_param: str) -> Self:
-        return cls(base64.b64decode(query_param).decode('utf-8'))
-
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)
         assert isinstance(other, self.__class__), (
@@ -46,14 +37,6 @@ class Federation:
 @total_ordering
 class Club:
     name: str = ''
-
-    @cached_property
-    def to_query_param(self) -> str:
-        return base64.b64encode(self.name.encode('utf-8')).decode('utf-8')
-
-    @classmethod
-    def from_query_param(cls, query_param: str) -> Self:
-        return cls(base64.b64decode(query_param).decode('utf-8'))
 
     def __le__(self, other: Self):
         # p1 <= p2 calls p1.__le__(p2)
@@ -218,11 +201,25 @@ class TieBreakValue:
             raise RuntimeError('Reference has been garbage collected')
         return tie_break
 
-    def __str__(self) -> str:
+    @property
+    def display_value(self) -> str | float:
         if self.rank_progress is not None:
             if self.rank_progress > 0:
                 return f'▲ {self.rank_progress}'
             if self.rank_progress < 0:
                 return f'▼ {-self.rank_progress}'
             return ''
-        return Utils.points_str(float(self.value))
+        value = float(self.value)
+        if self.tie_break.display_absolute_value:
+            return abs(value)
+        return value
+
+    @property
+    def display_string_value(self) -> str:
+        value = self.display_value
+        if isinstance(value, float):
+            return Utils.points_str(value)
+        return value
+
+    def __str__(self) -> str:
+        return self.display_string_value

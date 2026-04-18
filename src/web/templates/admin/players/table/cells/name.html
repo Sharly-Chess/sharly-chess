@@ -1,14 +1,19 @@
-{% with last_name_first=true %}
-    {% include '/admin/player_link.html' %}
-{% endwith %}
-{% if not tournament.player_matches_criteria(tournament_player) %}
-    <i
-        class="bi-exclamation-triangle-fill text-warning ps-2"
-        {{ macros.tooltip_attributes(
-            '', _(
-                'Player does not match tournament criteria: {names}'
-            ).format(names=tournament.failing_criteria_message(tournament_player)),
-            'top'
-        ) }}
-    ></i>
-{% endif %}
+<span class="d-flex align-items-center w-15em">
+    <span class="text-ellipsis d-inline-block overflow-hidden flex-grow-1" >
+        {% with last_name_first=true %}
+            {% include '/admin/player_link.html' %}
+        {% endwith %}
+    </span>
+
+    {% if not tournament_player.matches_tournament_criteria %}
+        <i
+            class="bi-exclamation-triangle-fill text-warning px-1 flex-shrink-0"
+            {{ macros.tooltip_attributes(
+                '', _(
+                    'Player does not match tournament criteria: {names}'
+                ).format(names=tournament_player.failing_tournament_criteria_message),
+                'top'
+            ) }}
+        ></i>
+    {% endif %}
+</span>

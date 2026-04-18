@@ -33,8 +33,6 @@ from donate.certificate_reader import DonationCertificateReader
 from utils import Utils
 from utils.date_time import format_date, format_date_range, format_datetime
 from web.messages import Message
-from web.session import SessionLocale
-from web.utils import RequestUtils
 
 logger: Logger = get_logger()
 
@@ -46,6 +44,9 @@ class WebContext:
     """
 
     def __init__(self, request: HTMXRequest, reload_client: bool = False):
+        from web.utils import RequestUtils
+        from web.session import SessionLocale
+
         self.request: HTMXRequest = request
         self.client = RequestUtils.get_client(request, reload_client)
         # sets the session locale to the thread
@@ -383,6 +384,8 @@ class WebContext:
         Override this method to pass more parameters to the template engine.
         :return: a dict containing named parameters.
         """
+        from web.session import SessionLocale
+
         sharly_chess_config: SharlyChessConfig = SharlyChessConfig()
         now: float = time.time()
         locale_infos: dict[str, Any] = {}
@@ -486,6 +489,8 @@ class BaseController(Controller):
         if locale:
             # sets the locale to the current thread and stores it to the session
             if set_locale(locale):
+                from web.session import SessionLocale
+
                 SessionLocale(request).set(locale)
 
     @staticmethod

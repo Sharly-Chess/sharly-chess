@@ -332,6 +332,29 @@ class Utils:
             tournament.last_pairing_update or datetime.min,
         )
 
+    @staticmethod
+    def get_rating_range_label(min_rating: int | None, max_rating: int | None) -> str:
+        from common.i18n import _
+
+        prefix = ''
+        suffix = ''
+        if max_rating:
+            if max_rating % 10 == 9:
+                suffix = f' < {max_rating + 1}'
+            else:
+                suffix = f' ≤ {max_rating}'
+            if min_rating:
+                if min_rating % 10 == 1:
+                    prefix = f'{min_rating - 1} < '
+                else:
+                    prefix = f'{min_rating} ≤ '
+        elif min_rating:
+            if min_rating % 10 == 1:
+                suffix = f' > {min_rating - 1}'
+            else:
+                suffix = f' ≥ {min_rating}'
+        return f'{prefix}{_("Rating")}{suffix}'
+
 
 class SupportsEquals(Protocol):
     def __eq__(self, other: object) -> bool: ...

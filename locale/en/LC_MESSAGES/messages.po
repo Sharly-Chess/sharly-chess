@@ -1694,9 +1694,6 @@ msgstr ""
 msgid "Define the criteria for players to belong to this category."
 msgstr ""
 
-msgid "Define the criteria for players to participate in this tournament."
-msgstr ""
-
 msgid "Define the prizes of the category."
 msgstr ""
 
@@ -1919,6 +1916,9 @@ msgstr ""
 msgid "Do you want to upgrade from [{old_version}] to [{new_version}]"
 msgstr ""
 
+msgid "Document [{document}] has been generated in another tab."
+msgstr ""
+
 msgid "Document:"
 msgstr ""
 
@@ -1927,6 +1927,9 @@ msgstr ""
 
 msgid "Documents *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>D</u>ocuments"
+
+msgid "Does not match criteria"
+msgstr ""
 
 msgid "Dominica"
 msgstr ""
@@ -3243,11 +3246,17 @@ msgstr ""
 msgid "Marshall Islands"
 msgstr ""
 
+msgid "Matches criteria"
+msgstr ""
+
 msgid "Mauritania"
 msgstr ""
 
 msgid "Mauritius"
 msgstr ""
+
+msgid "Max *** MAXIMUM"
+msgstr "Max"
 
 #, python-format
 msgid "Max age: %(num)d minute"
@@ -3322,10 +3331,19 @@ msgstr ""
 msgid "Mexico"
 msgstr ""
 
+msgid "Min *** MINIMUM"
+msgstr "Min"
+
+msgid "Minimum category is expected to be lower or equal to the maximum category."
+msgstr ""
+
 msgid "Minimum number of points (included):"
 msgstr ""
 
 msgid "Minimum rating"
+msgstr ""
+
+msgid "Minimum rating is expected to be lower than the maximum rating."
 msgstr ""
 
 msgid "Missing required column [{column}]."
@@ -3892,9 +3910,6 @@ msgstr ""
 msgid "Opponents"
 msgstr ""
 
-msgid "Opponents' ratings"
-msgstr ""
-
 msgid "Opponents' records"
 msgstr ""
 
@@ -4286,6 +4301,12 @@ msgstr ""
 msgid "Players update for tournament [%(tournament)s]"
 msgstr ""
 
+msgid "Players which do not match the criteria of their tournament."
+msgstr ""
+
+msgid "Players which match the criteria of their tournament."
+msgstr ""
+
 msgid "Players without phone or email won't be included."
 msgstr ""
 
@@ -4394,6 +4415,9 @@ msgid "Port: {port}"
 msgstr ""
 
 msgid "Portugal"
+msgstr ""
+
+msgid "Positive values are expected."
 msgstr ""
 
 msgid "Pref."
@@ -4739,6 +4763,12 @@ msgid "Return to the home page"
 msgstr ""
 
 msgid "Return to tournament"
+msgstr ""
+
+msgid "Reverse order"
+msgstr ""
+
+msgid "Reversed"
 msgstr ""
 
 msgid "Rk. *** RANK COLUMN HEADER"
@@ -5263,6 +5293,9 @@ msgstr ""
 msgid "Standard (no flag)"
 msgstr ""
 
+msgid "Standard points"
+msgstr ""
+
 msgid "Standard rating"
 msgstr ""
 
@@ -5527,6 +5560,9 @@ msgstr ""
 msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
 msgstr ""
 
+msgid "The number of points in the standard 1/0.5/0 point system."
+msgstr ""
+
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr ""
 
@@ -5557,6 +5593,15 @@ msgstr ""
 msgid "The pairing number is already attributed."
 msgstr ""
 
+msgid "The pairing numbers of the tournament in ascending or descending order (ascending by default)."
+msgstr ""
+
+msgid "The pairing numbers of the tournament in ascending order."
+msgstr ""
+
+msgid "The pairing numbers of the tournament in descending order."
+msgstr ""
+
 msgid "The permissions of this account can not be updated."
 msgstr ""
 
@@ -5579,6 +5624,15 @@ msgid "The rating used when the time control is at most 10 minutes."
 msgstr ""
 
 msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
+msgstr ""
+
+msgid "The ratings in ascending or descending order (descending by default)."
+msgstr ""
+
+msgid "The ratings in ascending order."
+msgstr ""
+
+msgid "The ratings in descending order."
 msgstr ""
 
 msgid "The related objects will also be deleted:"
@@ -5788,6 +5842,9 @@ msgstr ""
 msgid "This tie-break can't be used twice in a row (ignored)."
 msgstr ""
 
+msgid "This tie-break has no effect with tournaments using the standard point system."
+msgstr ""
+
 msgid "This tie-break is already used with the same modifiers."
 msgstr ""
 
@@ -5798,6 +5855,9 @@ msgid "This tie-break is disabled when there are unrated players without estimat
 msgstr ""
 
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
+msgstr ""
+
+msgid "This tie-break is not recommended on tournaments lasting over multiple FIDE periods."
 msgstr ""
 
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
@@ -5954,6 +6014,9 @@ msgid "Tournament name"
 msgstr ""
 
 msgid "Tournament not found or has no schedule."
+msgstr ""
+
+msgid "Tournament pairing number"
 msgstr ""
 
 msgid "Tournament performance rating"
