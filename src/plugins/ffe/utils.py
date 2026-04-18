@@ -203,8 +203,8 @@ class FFEUploadFailureStatusManager(EntityManager[FailureFFEUploadStatus]):
 class PlayerFFELicence(StrEnum):
     NONE = ''
     N = 'N'
-    A = 'A'
     B = 'B'
+    A = 'A'
 
     @property
     def name(self) -> str:
@@ -226,7 +226,7 @@ class PlayerFFELicence(StrEnum):
             case PlayerFFELicence.NONE:
                 return _('None *** FFE licence')
             case PlayerFFELicence.N:
-                return _('Expired *** FFE licence')
+                return _('N - Expired *** FFE licence')
             case PlayerFFELicence.A:
                 return _('A - Competition *** FFE licence')
             case PlayerFFELicence.B:
@@ -244,6 +244,18 @@ class PlayerFFELicence(StrEnum):
     def validate(string: str) -> bool:
         """Returns True if the string is a correct licence number."""
         return bool(re.match(r'^[A-Z]\d{5}$', string))
+
+    @property
+    def sort_index(self) -> int:
+        return _LICENCE_SORT_INDEX[self]
+
+
+_LICENCE_SORT_INDEX = {
+    PlayerFFELicence.NONE: 0,
+    PlayerFFELicence.N: 1,
+    PlayerFFELicence.B: 2,
+    PlayerFFELicence.A: 3,
+}
 
 
 class FFEArbiterTitle(StrEnum):

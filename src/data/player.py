@@ -4,10 +4,12 @@ from collections import Counter
 from datetime import date
 from functools import total_ordering, cached_property
 from typing import TYPE_CHECKING, Any
+
+from babel.lists import format_list
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
-from common.i18n import _
+from common.i18n import _, get_locale
 from common.i18n.utils import normalized_key
 from data.pairing import Pairing
 from data.player_categories import PlayerCategory
@@ -42,6 +44,7 @@ from utils.types import (
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
+    from data.criteria.tournament_criteria import TournamentCriterion
     from data.event import Event
     from data.tournament import Tournament
 
@@ -669,6 +672,28 @@ class TournamentPlayer(Player):
         self.board_id = board_id
         self.board_number = board_number
         self.color = color
+
+    @property
+    def matches_tournament_criteria(self) -> bool:
+        return not self.failing_tournament_criteria
+
+    @cached_property
+    def failing_tournament_criteria(self) -> list['TournamentCriterion']:
+        """Return the list of tournament criteria that the player does not match."""
+        return [
+            criterion
+            for criterion in self.tournament.criteria
+            if not criterion.is_player_included_function(self)
+        ]
+
+    @property
+    def failing_tournament_criteria_message(self) -> str:
+        """Return a formatted list of the failing tournament criteria."""
+        locale = get_locale()
+        return format_list(
+            [criterion.full_name for criterion in self.failing_tournament_criteria],
+            locale=locale,
+        )
 
     def achieves_any_title_norm(self) -> dict[TitleNorm, NormCheckResult]:
         from data.pairings.systems import RoundRobinPairingSystem

@@ -249,6 +249,8 @@ class PlayersTabColumnHandler:
         plugin_manager.hook_for_event(event, 'alter_players_tab_columns')(
             columns=columns
         )
+        for column in columns:
+            column.set_for_event(event)
         return {column.id: column for column in columns}
 
     def set_column_states(
