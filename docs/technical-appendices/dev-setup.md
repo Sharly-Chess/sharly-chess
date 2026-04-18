@@ -20,10 +20,14 @@ python --version
 python src/sharly_chess.py
 ```
 
-### Launching the interface with the ChessEvent platform
+## Configuring _FIDE_ local database unzipping
+
+The `src/.fide-database-zip-credentials` file, used to unzip the _FIDE_ local database, is not stored in the _GitHub_ repository.
+
+It must be generated in each developer’s environment (ask other developers for the credentials):
 
 ```
-python src/sharly_chess.py --chessevent
+python scripts/fide/generate_fide_database_zip_credentials.py --password=xxx
 ```
 
 ## Configuring Authentication with the FFE Server

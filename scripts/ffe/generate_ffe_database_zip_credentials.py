@@ -35,7 +35,7 @@ async def main():
         args.password,
     )
     print_interactive_success(
-        f'The credentials have been written to {FfeDatabase.CREDENTIALS_FILE}.'
+        f'The credentials have been written to {FfeDatabase.credentials_file()}.'
     )
 
 

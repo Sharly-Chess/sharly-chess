@@ -1,36 +1,24 @@
-import os.path
 import re
-import tempfile
-from xml.etree import ElementTree
-import zipfile
 from contextlib import suppress
 from logging import Logger
 from pathlib import Path
-from typing import Iterator, Any, Callable, override
+from typing import Iterator, Any, override
 
 from packaging.version import Version
-from requests import Response, get
-from requests.exceptions import ConnectionError
 
-from common import TEMPFILE_DIR
+from common import BASE_DIR
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
-from common.sharly_chess_config import SharlyChessConfig
 from data.player import PlayerRating
+from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
-from database.sqlite.local_source_database.databases import DatabaseLoaderProgress
 from database.sqlite.local_source_database.delays import MonthFirstDayOutdatedDelay
 from utils.enum import (
-    PlayerGender,
-    PlayerTitle,
     TournamentRating,
-    FideArbiterTitle,
 )
-from database.sqlite.config.config_store import StoredLocalSourceDatabase
-from database.sqlite.sqlite_database import SQLiteDatabase
 
 logger: Logger = get_logger()
 
@@ -61,12 +49,16 @@ class FideDatabase(LocalSourcePlayerDatabase):
         return Version('3.6.0')
 
     @property
-    def _schema_file_path(self) -> Path:
-        return SharlyChessConfig.database_sql_path / 'create_fide.sql'
-
-    @property
     def _source_file_name(self) -> str:
-        return 'players_list_xml.xml'
+        return 'fide_players_v1.db'
+
+    @classmethod
+    def credentials_file(cls) -> Path:
+        return BASE_DIR / 'src' / '.fide-database-zip-credentials'
+
+    @classmethod
+    def github_tag(cls) -> str:
+        return 'fide-latest'
 
     @override
     @property
@@ -76,145 +68,6 @@ class FideDatabase(LocalSourcePlayerDatabase):
             outdate_delay=MonthFirstDayOutdatedDelay.static_id(),
             outdate_action=NotifOutdatedAction.static_id(),
         )
-
-    def _download_source_file(self, source_file_dir: Path) -> bool:
-        fide_database_url: str = (
-            'https://ratings.fide.com/download/players_list_xml_legacy.zip'
-        )
-        with tempfile.TemporaryDirectory(dir=TEMPFILE_DIR) as tmpdir:
-            tmp_dir: Path = Path(tmpdir)
-            local_zip_file: Path = tmp_dir / os.path.basename(fide_database_url)
-            try:
-                response: Response = get(
-                    fide_database_url, allow_redirects=True, timeout=10
-                )
-                if response.status_code != 200:
-                    logger.error(
-                        self.log_prefix + 'Could not download [%s], error code [%d].',
-                        fide_database_url,
-                        response.status_code,
-                    )
-                    return False
-            except ConnectionError as ex:
-                logger.error(
-                    self.log_prefix + 'Could not download [%s]: %s.',
-                    fide_database_url,
-                    ex,
-                )
-                return False
-            local_zip_file.write_bytes(response.content)
-            if not local_zip_file.exists():
-                logger.error(
-                    self.log_prefix + 'No data received from [%s].', fide_database_url
-                )
-                return False
-
-            with zipfile.ZipFile(local_zip_file, 'r') as zip_ref:
-                zip_ref.extractall(source_file_dir)
-
-            if not Path(source_file_dir / self._source_file_name).exists():
-                logger.error(self.log_prefix + 'Could not unzip data.')
-                return False
-            return True
-
-    def _populate_from_source_file(
-        self, source_file_path: Path, database: SQLiteDatabase
-    ) -> bool:
-        # extract the number of items to calculate the ETA
-        with open(source_file_path, 'r') as f:
-            player_total_count: int = sum(
-                1 for line in f if line.startswith('<player>')
-            )
-        logger.debug(self.log_prefix + '%d players to add.', player_total_count)
-        logger.debug(self.log_prefix + 'Loading XML data...')
-        context = ElementTree.iterparse(source_file_path, events=('start', 'end'))
-        logger.debug(self.log_prefix + 'Storing players...')
-        progress: DatabaseLoaderProgress = DatabaseLoaderProgress(
-            log_prefix=self.log_prefix,
-            total_count=player_total_count,
-        )
-        fields: dict[str, tuple[str, Callable[[Any], Any] | None]] = {
-            'fideid': ('fide_id', lambda s: int(s.strip())),
-            'name': ('name', None),
-            'country': ('federation', lambda s: s.upper()),
-            'sex': ('gender', PlayerGender.from_key),
-            'title': ('fide_title', PlayerTitle.from_fide_value),
-            'o_title': ('fide_arbiter_title', FideArbiterTitle.from_fide_value),
-            'rating': ('standard_rating', int),
-            'rapid_rating': ('rapid_rating', int),
-            'blitz_rating': ('blitz_rating', int),
-            'birthday': ('year_of_birth', lambda s: int(s) if s else 0),
-            'k': ('k_standard', lambda s: int(s) if s else None),
-            'rapid_k': ('k_rapid', lambda s: int(s) if s else None),
-            'blitz_k': ('k_blitz', lambda s: int(s) if s else None),
-        }
-        db_columns = [field[0] for field in fields.values() if field[0] != 'name']
-        db_columns += [
-            'first_name',
-            'last_name',
-        ]
-        query = f"""INSERT INTO `player`({', '.join(db_columns)}) VALUES({', '.join([f':{c}' for c in db_columns])})"""
-        player_count: int = 0
-        to_write: list[dict[str, Any]] = []
-        data: dict[str, Any] = {}
-        root = next(context)[1]
-        with database:
-            for event, elem in context:
-                if event == 'start' and elem.tag == 'player':
-                    data = {}
-
-                if event == 'end' and elem.tag == 'player':
-                    to_write.append(data)
-                    player_count += 1
-                    if player_count % 1000 == 0:
-                        if self.stop_event.is_set():
-                            return False
-                        database.executemany(query, to_write)
-                        to_write.clear()
-                        progress.log(player_count)
-                    if player_count % 100_000 == 0:
-                        database.commit()
-
-                elif event == 'end' and elem.tag in fields:
-                    (field_name, field_function) = fields[elem.tag]
-                    data[field_name] = elem.text or ''
-                    elem.clear()
-                    root.clear()
-                    if field_function:
-                        data[field_name] = field_function(data[field_name])
-
-                    if field_name == 'name':
-                        if ',' in data['name']:
-                            last_name, first_name = data['name'].split(',', maxsplit=1)
-                            data['last_name'] = last_name.strip()
-                            data['first_name'] = first_name.strip()
-                        else:
-                            data['last_name'] = data['name'].strip()
-                            data['first_name'] = None
-                        del data['name']
-
-            if to_write:
-                database.executemany(query, to_write)
-                database.commit()
-                progress.log(player_count)
-
-        logger.info(
-            self.log_prefix + '%d players written to the database.', player_count
-        )
-        return True
-
-    @classmethod
-    def _create_indexes(cls, database: SQLiteDatabase):
-        database.execute(
-            'CREATE INDEX IF NOT EXISTS `player_first_name` ON `player` (`first_name` COLLATE NOCASE)'
-        )
-        database.execute(
-            'CREATE INDEX IF NOT EXISTS `player_last_name` ON `player` (`last_name` COLLATE NOCASE)'
-        )
-        database.execute(
-            'CREATE INDEX IF NOT EXISTS `player_fide_id` ON `player` (`fide_id`)'
-        )
-        database.commit()
 
     def read_federation_ids(self) -> Iterator[str]:
         self.execute(
