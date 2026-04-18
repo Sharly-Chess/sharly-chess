@@ -1691,9 +1691,6 @@ msgstr "Définir des groupes équilibrés"
 msgid "Define the criteria for players to belong to this category."
 msgstr "Définir les critères selon lesquels les joueur·euses appartiennent à cette catégorie."
 
-msgid "Define the criteria for players to participate in this tournament."
-msgstr "Définissez les critères permettant aux joueur·euses de participer à ce tournoi."
-
 msgid "Define the prizes of the category."
 msgstr "Définir les prix de la catégorie."
 
@@ -3255,6 +3252,9 @@ msgstr "Mauritanie"
 msgid "Mauritius"
 msgstr "Maurice"
 
+msgid "Max *** MAXIMUM"
+msgstr "Max"
+
 #, python-format
 msgid "Max age: %(num)d minute"
 msgid_plural "Max age: %(num)d minutes"
@@ -3328,11 +3328,20 @@ msgstr "Menus"
 msgid "Mexico"
 msgstr "Mexique"
 
+msgid "Min *** MINIMUM"
+msgstr "Min"
+
+msgid "Minimum category is expected to be lower or equal to the maximum category."
+msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
+
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
 
 msgid "Minimum rating"
 msgstr "Elo minimum"
+
+msgid "Minimum rating is expected to be lower than the maximum rating."
+msgstr "Le classement minimal doit être inférieur au classement maximal."
 
 msgid "Missing required column [{column}]."
 msgstr "Colonne obligatoire [{column}] manquante."
@@ -3900,9 +3909,6 @@ msgstr "Adversaire :"
 msgid "Opponents"
 msgstr "Adversaires"
 
-msgid "Opponents' ratings"
-msgstr "Classement des adversaires"
-
 msgid "Opponents' records"
 msgstr "Historique des adversaires"
 
@@ -4410,6 +4416,9 @@ msgstr "Port : {port}"
 msgid "Portugal"
 msgstr "Portugal"
 
+msgid "Positive values are expected."
+msgstr "Des valeurs positives sont attendues."
+
 msgid "Pref."
 msgstr "Préf."
 
@@ -4754,6 +4763,12 @@ msgstr "Retourner à la page d'accueil"
 
 msgid "Return to tournament"
 msgstr "Retour au tournoi"
+
+msgid "Reverse order"
+msgstr "Inverser l'ordre"
+
+msgid "Reversed"
+msgstr "Inversé"
 
 msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Pl."
@@ -5277,6 +5292,9 @@ msgstr "Standard"
 msgid "Standard (no flag)"
 msgstr "Standard (pas de drapeau)"
 
+msgid "Standard points"
+msgstr "Points standards"
+
 msgid "Standard rating"
 msgstr "Classement standard"
 
@@ -5541,6 +5559,9 @@ msgstr "Le nombre de joueur·euses par écran, facultatif (le nombre d'écrans s
 msgid "The number of points achieved against all players who have scored at least L points (L = {equation})."
 msgstr "Le nombre de points obtenus contre tou·tes les joueur·euses ayant atteint au moins L points (L = {equation})."
 
+msgid "The number of points in the standard 1/0.5/0 point system."
+msgstr "Le nombre de points dans le système de points standard 1/0,5/0."
+
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
 msgstr "Le nombre de rondes dans lesquelles un·e joueur·euse n'a pas reçu de point joker ou une défaite par forfait."
 
@@ -5571,6 +5592,15 @@ msgstr "Le numéro d'appariement ne peut pas être supérieur au nombre de joueu
 msgid "The pairing number is already attributed."
 msgstr "Le numéro d'appariement est déjà attribué."
 
+msgid "The pairing numbers of the tournament in ascending or descending order (ascending by default)."
+msgstr "Les numéros d'appariement du tournoi par ordre croissant ou décroissant (croissant par défaut)."
+
+msgid "The pairing numbers of the tournament in ascending order."
+msgstr "Les numéros d'appariement du tournoi par ordre croissant."
+
+msgid "The pairing numbers of the tournament in descending order."
+msgstr "Les numéros d'appariement du tournoi par ordre décroissant."
+
 msgid "The permissions of this account can not be updated."
 msgstr "Les permissions de ce compte ne peuvent être modifiées."
 
@@ -5594,6 +5624,15 @@ msgstr "Le classement utilisé lorsque la cadence est inférieure à 10 minutes.
 
 msgid "The rating used when the time control is more than 10 minutes and less than 60 minutes."
 msgstr "Le classement utilisé lorsque la cadence est supérieure à 10 minutes et inférieure à 60 minutes."
+
+msgid "The ratings in ascending or descending order (descending by default)."
+msgstr "Les classements par ordre croissant ou décroissant (décroissant par défaut)."
+
+msgid "The ratings in ascending order."
+msgstr "Les classements par ordre croissant."
+
+msgid "The ratings in descending order."
+msgstr "Les classements par ordre décroissant."
 
 msgid "The related objects will also be deleted:"
 msgstr "Les objets liés vont également être supprimés :"
@@ -5802,6 +5841,9 @@ msgstr "Ce départage peut-être utilisé plusieurs fois."
 msgid "This tie-break can't be used twice in a row (ignored)."
 msgstr "Ce départage ne peut être utilisé deux fois de suite (ignoré)."
 
+msgid "This tie-break has no effect with tournaments using the standard point system."
+msgstr "Ce départage n'a aucun effet pour les tournois utilisant le système de points standard."
+
 msgid "This tie-break is already used with the same modifiers."
 msgstr "Ce départage est déjà utilisé avec les mêmes modificateurs."
 
@@ -5813,6 +5855,9 @@ msgstr "Ce départage est désactivé lorsqu'il y a des joueur·euses non-class�
 
 msgid "This tie-break is not compatible with the pairing system [{pairing_system}] (ignored)."
 msgstr "Ce départage n'est pas compatible avec le système d'appariements [{pairing_system}] (ignoré)."
+
+msgid "This tie-break is not recommended on tournaments lasting over multiple FIDE periods."
+msgstr "Ce départage n'est pas recommandé pour les tournois se déroulant sur plusieurs périodes FIDE."
 
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
 msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es ({count} dans le tournoi)."
@@ -5969,6 +6014,9 @@ msgstr "Nom du tournoi"
 
 msgid "Tournament not found or has no schedule."
 msgstr "Tournoi introuvable ou sans horaire."
+
+msgid "Tournament pairing number"
+msgstr "Numéros d'appariement"
 
 msgid "Tournament performance rating"
 msgstr "Performance"

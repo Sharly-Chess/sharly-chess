@@ -4,6 +4,8 @@ from functools import cached_property
 from typing import Any, Self
 
 from common.i18n import _
+from data.criteria.managers import TournamentCriterionManager
+from data.criteria.tournament_criteria import TournamentCriterion
 from data.event import Event
 from data.player import TournamentPlayer, Player, MIN_YOB
 from data.tournament import Tournament
@@ -12,7 +14,7 @@ from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.ffe.utils import PlayerFFELicence
 from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME
-from plugins.sce.sce_mappers import SCEPlayerGender
+from plugins.sce.sce_mappers import SCEPlayerGender, SCETournamentCriteria
 from plugins.utils import PluginData
 from utils import Utils
 from utils.date_time import format_date, format_datetime
@@ -57,6 +59,7 @@ class SCETournamentSyncData:
     stop_date: date
     round_schedule: dict[int, datetime]
     time_control: str | None = None
+    criteria: list[TournamentCriterion] = field(default_factory=list)
 
     @property
     def start_date_str(self) -> str:
@@ -69,6 +72,10 @@ class SCETournamentSyncData:
     @property
     def type_str(self) -> str:
         return self.type.short_name
+
+    @property
+    def criteria_str(self) -> str:
+        return ', '.join(criterion.full_name for criterion in self.criteria)
 
     @cached_property
     def round_schedule_str(self) -> dict[int, str]:
@@ -98,6 +105,9 @@ class SCETournamentSyncData:
                 )
                 for schedule in data['round_schedule']
             },
+            criteria=SCETournamentCriteria.sce_data_to_core_value(
+                data['criteria'] or {}
+            ),
         )
 
     @classmethod
@@ -114,7 +124,20 @@ class SCETournamentSyncData:
                 for round_, datetime_ in tournament.round_datetimes.items()
                 if datetime_
             },
+            criteria=list(tournament.criteria),
         )
+
+    @classmethod
+    def _stored_criteria_to_criteria(
+        cls, stored_criteria: dict[str, Any]
+    ) -> list[TournamentCriterion]:
+        criteria: list[TournamentCriterion] = []
+        for criteria_id, stored_value in stored_criteria.items():
+            criterion = TournamentCriterionManager(None).get_object(criteria_id)
+            value = criterion.value_from_stored_value(stored_value)
+            criterion.set_value(value)
+            criteria.append(criterion)
+        return criteria
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -135,6 +158,7 @@ class SCETournamentSyncData:
                 int(round_): SQLiteDatabase.load_datetime_from_database_field(datetime_)
                 for round_, datetime_ in stored_value.get('round_schedule', {}).items()
             },
+            criteria=cls._stored_criteria_to_criteria(stored_value.get('criteria', {})),
         )
 
     def round_restricted_schedule(self, max_round: int) -> dict[str, datetime | None]:
@@ -178,6 +202,9 @@ class SCETournamentSyncData:
                 str(round_): SQLiteDatabase.dump_datetime_to_database_field(datetime_)
                 for round_, datetime_ in self.round_schedule.items()
             },
+            'criteria': {
+                criterion.id: criterion.stored_value for criterion in self.criteria
+            },
         }
 
     def to_sce_data(self) -> dict[str, Any]:
@@ -198,6 +225,7 @@ class SCETournamentSyncData:
                 }
                 for round_, datetime_ in self.round_schedule.items()
             ],
+            'criteria': SCETournamentCriteria.core_value_to_sce_data(self.criteria),
         }
 
     def augment_stored_tournament(
@@ -220,6 +248,9 @@ class SCETournamentSyncData:
             round_: self.round_schedule.get(round_)
             for round_ in range(1, self.rounds + 1)
         }
+        stored_tournament.criteria = {
+            criterion.id: criterion.stored_value for criterion in self.criteria
+        }
         plugin_data = SCETournamentPluginData.from_stored_value(
             stored_tournament.plugin_data.get(PLUGIN_NAME, {})
         )
@@ -236,6 +267,7 @@ class SCETournamentSyncData:
             'start_date_str': _('Start'),
             'stop_date_str': _('End'),
             'human_readable_time_control': _('Time control'),
+            'criteria_str': _('Criteria'),
         }
 
 

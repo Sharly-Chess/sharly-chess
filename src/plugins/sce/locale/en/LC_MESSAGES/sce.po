@@ -72,6 +72,9 @@ msgstr ""
 msgid "Conflict"
 msgstr ""
 
+msgid "Criteria"
+msgstr ""
+
 msgid "Data as it currently is on Sharly-Chess.com."
 msgstr ""
 

@@ -9,6 +9,7 @@ from data.loader import EventLoader
 import pytest
 from data.tie_breaks import tie_breaks, options
 from data.tie_breaks.cutters import Cut1TieBreakCutter
+from data.tie_breaks.options import ReversedTieBreakOption
 from data.tournament import Tournament
 from data.player import Player
 from plugins.ffe import ffe_tie_breaks
@@ -279,6 +280,41 @@ class SwissTieBreakTestCase(TieBreakTestCase):
             9: 2.5,
             10: 4,
         }
+        self.assertEqual(results, expected)
+
+    def test_standard_points(self):
+        tie_break_ = tie_breaks.StandardPointsTieBreak()
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {
+            2: 4,
+            1: 3.5,
+            3: 3.5,
+            4: 3.5,
+            16: 3.5,
+            6: 3,
+            5: 2.5,
+            8: 2.5,
+            11: 2.5,
+            12: 2,
+            14: 2,
+            15: 2,
+            7: 1.5,
+            9: 1.5,
+            13: 1.5,
+            10: 1,
+        }
+        self.assertEqual(results, expected)
+
+    def test_pairing_number(self):
+        tie_break_ = tie_breaks.PairingNumberTieBreak()
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {tpn: -tpn for tpn in range(1, 17)}
+        self.assertEqual(results, expected)
+
+    def test_pairing_number_reversed(self):
+        tie_break_ = tie_breaks.PairingNumberTieBreak([ReversedTieBreakOption(True)])
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {tpn: tpn for tpn in range(1, 17)}
         self.assertEqual(results, expected)
 
     def test_buchholz(self):
@@ -743,6 +779,52 @@ class SwissTieBreakTestCase(TieBreakTestCase):
                 13: 1908,  # NOTE(Amaras): this should be 1909
             },
         )
+
+    def test_player_rating(self):
+        tie_break_ = tie_breaks.PlayerRatingTieBreak()
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {
+            1: 2200,
+            2: 2150,
+            3: 2100,
+            4: 2050,
+            5: 2000,
+            6: 1950,
+            7: 1900,
+            8: 1850,
+            9: 1800,
+            10: 1750,
+            11: 1700,
+            12: 1650,
+            13: 1600,
+            14: 1550,
+            15: 1500,
+            16: 1450,
+        }
+        self.assertEqual(results, expected)
+
+    def test_player_rating_reversed(self):
+        tie_break_ = tie_breaks.PlayerRatingTieBreak([ReversedTieBreakOption(True)])
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {
+            1: -2200,
+            2: -2150,
+            3: -2100,
+            4: -2050,
+            5: -2000,
+            6: -1950,
+            7: -1900,
+            8: -1850,
+            9: -1800,
+            10: -1750,
+            11: -1700,
+            12: -1650,
+            13: -1600,
+            14: -1550,
+            15: -1500,
+            16: -1450,
+        }
+        self.assertEqual(results, expected)
 
     def test_kashdan(self):
         tie_break_ = tie_breaks.KashdanTieBreak()

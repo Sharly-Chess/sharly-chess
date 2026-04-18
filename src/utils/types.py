@@ -201,11 +201,25 @@ class TieBreakValue:
             raise RuntimeError('Reference has been garbage collected')
         return tie_break
 
-    def __str__(self) -> str:
+    @property
+    def display_value(self) -> str | float:
         if self.rank_progress is not None:
             if self.rank_progress > 0:
                 return f'▲ {self.rank_progress}'
             if self.rank_progress < 0:
                 return f'▼ {-self.rank_progress}'
             return ''
-        return Utils.points_str(float(self.value))
+        value = float(self.value)
+        if self.tie_break.display_absolute_value:
+            return abs(value)
+        return value
+
+    @property
+    def display_string_value(self) -> str:
+        value = self.display_value
+        if isinstance(value, float):
+            return Utils.points_str(value)
+        return value
+
+    def __str__(self) -> str:
+        return self.display_string_value

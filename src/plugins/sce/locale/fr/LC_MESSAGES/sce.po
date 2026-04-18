@@ -72,6 +72,9 @@ msgstr "Page de configuration du tournoi."
 msgid "Conflict"
 msgstr "Conflit"
 
+msgid "Criteria"
+msgstr "Critères"
+
 msgid "Data as it currently is on Sharly-Chess.com."
 msgstr "Les données actuelles sur Sharly-Chess.com."
 
