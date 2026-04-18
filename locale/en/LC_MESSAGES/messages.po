@@ -5845,7 +5845,7 @@ msgstr ""
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
 msgstr ""
 
-msgid "This tie-break is not recommended with tournaments using the standard point system."
+msgid "This tie-break has no effect with tournaments using the standard point system."
 msgstr ""
 
 msgid "This tournament has no titled players."
@@ -6991,6 +6991,4 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Opponents' ratings"
-#~ msgstr ""
 

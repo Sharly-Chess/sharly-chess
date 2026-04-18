@@ -5847,8 +5847,8 @@ msgstr "Ce départage n'est pas recommandé pour les tournois se déroulant sur 
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
 msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es ({count} dans le tournoi)."
 
-msgid "This tie-break is not recommended with tournaments using the standard point system."
-msgstr "Ce départage n'est pas recommandé pour les tournois utilisant le système de points standard."
+msgid "This tie-break has no effect with tournaments using the standard point system."
+msgstr "Ce départage n'a aucun effet pour les tournois utilisant le système de points standard."
 
 msgid "This tournament has no titled players."
 msgstr "Ce tournoi n'a pas de joueur·euses titré·es."
@@ -6992,7 +6992,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "Opponents' ratings"
-#~ msgstr "Classement des adversaires"
 
