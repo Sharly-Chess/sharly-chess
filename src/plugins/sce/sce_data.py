@@ -253,6 +253,7 @@ class SCEPlayerSyncData:
     rating_type: PlayerRatingType | None = None
     phone: str | None = None
     gender: PlayerGender = PlayerGender.NONE
+    comment: str | None = None
 
     # Plugin fields
     national_id: str | None = None
@@ -307,6 +308,7 @@ class SCEPlayerSyncData:
             if data['rating_type']
             else None,
             phone=data['phone_number'],
+            comment=data['comment'],
             gender=(
                 SCEPlayerGender.get_core_object(data['gender'])
                 if data['gender']
@@ -339,6 +341,7 @@ class SCEPlayerSyncData:
             rating_type=player.rating_type if player.rating else None,
             phone=player.phone,
             gender=player.gender,
+            comment=player.comment,
         )
         plugin_manager.hook_for_event(
             player.event, 'augment_sce_player_sync_data_from_player'
@@ -368,6 +371,7 @@ class SCEPlayerSyncData:
             ffe_licence=PlayerFFELicence(
                 stored_value.get('ffe_licence') or PlayerFFELicence.NONE
             ),
+            comment=stored_value.get('comment'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -391,6 +395,7 @@ class SCEPlayerSyncData:
                 else None
             ),
             'ffe_league': self.ffe_league,
+            'comment': self.comment,
         }
 
     def to_sce_data(self) -> dict[str, Any]:
@@ -415,6 +420,7 @@ class SCEPlayerSyncData:
             ),
             'ffe_league': self.ffe_league,
             'phone_number': self.phone,
+            'comment': self.comment,
         }
 
     def merge_with_other_sync_data(self, other_data: Self, ref_data: Self) -> Self:
@@ -449,6 +455,7 @@ class SCEPlayerSyncData:
         stored_player.club = self.club
         stored_player.phone = self.phone
         stored_player.gender = self.gender.value
+        stored_player.comment = self.comment
         if current_rating != self.rating or current_rating_type != self.rating_type:
             stored_player.ratings[tournament.rating.value] = PlayerRating.from_type(
                 self.rating, self.rating_type or PlayerRatingType.ESTIMATED
@@ -479,6 +486,7 @@ class SCEPlayerSyncData:
             'national_id': None,
             'ffe_licence_str': None,
             'phone': _('Phone'),
+            'comment': _('Comment'),
         }
         plugin_manager.hook_for_event(event, 'update_sce_player_diff_field_labels')(
             diff_fields=diff_fields

@@ -60,6 +60,9 @@ msgstr ""
 msgid "Club"
 msgstr ""
 
+msgid "Comment"
+msgstr ""
+
 msgid "Configuration page of the event."
 msgstr ""
 
