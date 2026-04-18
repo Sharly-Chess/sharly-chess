@@ -292,8 +292,8 @@ msgstr "Médian"
 msgid "Median Buchholz"
 msgstr "Buchholz médian"
 
-msgid "Minimum FFE licence required. Only applies to players of the FRA federation."
-msgstr "Licence FFE minimale requise. Ne s'applique que aux joueur·euses de la fédération FRA."
+msgid "Minimum FFE licence required (only applies to players of the FRA federation)."
+msgstr "Licence FFE minimale requise (ne s'applique que aux joueur·euses de la fédération FRA)."
 
 msgid "Modified"
 msgstr "Modifié"

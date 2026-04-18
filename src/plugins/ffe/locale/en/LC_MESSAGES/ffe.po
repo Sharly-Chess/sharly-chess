@@ -292,7 +292,7 @@ msgstr ""
 msgid "Median Buchholz"
 msgstr ""
 
-msgid "Minimum FFE licence required. Only applies to players of the FRA federation."
+msgid "Minimum FFE licence required (only applies to players of the FRA federation)."
 msgstr ""
 
 msgid "Modified"
