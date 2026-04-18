@@ -61,6 +61,7 @@
 ### _Chess-Results.com_
 
 - Moved the auto-upload options to the upload modal (4.0.0)
+- Fixed round schedule upload (4.0.5)
 
 ## _FFE_
 
