@@ -50,15 +50,15 @@
 - Added a sort option to the players list document (4.0.0)
 - Set rank as the default sort option for Berger grids (4.0.3)
 
-## Sharly-Chess.com
+## _Sharly-Chess.com_
 
 - Fixed tournament still uploadable after manual upload (4.0.2)
 - Fixed unique constraint violation on tournament names (4.0.2)
-- Added new player fields to the synchronisation (federation, FFE league, FFE licence, comment) (4.0.4)
+- Added new player fields to the synchronisation (federation, _FFE_ league, _FFE_ licence, comment) (4.0.4)
 
 ## Plugins
 
-### Chess-Results.com
+### _Chess-Results.com_
 
 - Moved the auto-upload options to the upload modal (4.0.0)
 
