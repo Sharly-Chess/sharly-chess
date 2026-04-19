@@ -40,7 +40,7 @@ from web.channels import channels_plugin
 logger = get_logger()
 
 
-class ZipCredentials:
+class FileCredentials:
     def __init__(
         self,
         file: Path,
@@ -55,11 +55,11 @@ class ZipCredentials:
         except FileNotFoundError as e:
             if DEVEL_ENV:
                 raise SharlyChessException(
-                    f'Could not read ZIP credentials ({e}), '
-                    'please run generate_xxx_zip_credentials.py.'
+                    f'Could not read file credentials [{file}] ({e}), '
+                    'please run generate_xxx_credentials.py.'
                 ) from e
             else:
-                raise SharlyChessException('Could not read ZIP credentials.') from None
+                raise SharlyChessException('Could not read file credentials.') from None
 
     @staticmethod
     def dump(
@@ -67,7 +67,7 @@ class ZipCredentials:
         password: str,
     ):
         """Dumps credentials to the given file.
-        The credentials can be read by `creds = ZipCredentials(file)`."""
+        The credentials can be read by `creds = FileCredentials(file)`."""
         credentials_file.parent.mkdir(exist_ok=True, parents=True)
         with open(credentials_file, 'w') as f:
             f.write(
@@ -469,7 +469,7 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
         cls,
         password: str,
     ):
-        ZipCredentials.dump(
+        FileCredentials.dump(
             cls.credentials_file(),
             password,
         )
@@ -523,7 +523,7 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
         if not self._download_from_github(source_file_dir, zip_filename):
             return False
         zip_target: Path = source_file_dir / zip_filename
-        credentials: ZipCredentials = ZipCredentials(self.credentials_file())
+        credentials: FileCredentials = FileCredentials(self.credentials_file())
         logger.info(self.log_prefix + 'Extracting zip archive...')
         try:
             with zipfile.ZipFile(zip_target, 'r') as zf:
@@ -541,7 +541,7 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
         if not self._download_from_github(source_file_dir, enc_filename):
             return False
         enc_target: Path = source_file_dir / enc_filename
-        credentials: ZipCredentials = ZipCredentials(self.credentials_file())
+        credentials: FileCredentials = FileCredentials(self.credentials_file())
         logger.info(self.log_prefix + 'Decrypting archive...')
         try:
             AesCbc.decrypt_file(

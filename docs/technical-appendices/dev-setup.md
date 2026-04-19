@@ -22,12 +22,12 @@ python src/sharly_chess.py
 
 ## Configuring _FIDE_ local database unzipping
 
-The `src/.fide-database-zip-credentials` file, used to unzip the _FIDE_ local database, is not stored in the _GitHub_ repository.
+The `src/.fide-database-enc-credentials` file, used to decrypt the _FIDE_ local database, is not stored in the _GitHub_ repository.
 
 It must be generated in each developer’s environment (ask other developers for the credentials):
 
 ```
-python scripts/fide/generate_fide_database_zip_credentials.py --password=xxx
+python scripts/fide/generate_fide_database_enc_credentials.py --password=xxx
 ```
 
 ## Configuring Authentication with the FFE Server

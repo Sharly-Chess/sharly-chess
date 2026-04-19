@@ -54,7 +54,7 @@ class FideDatabase(LocalSourcePlayerDatabase):
 
     @classmethod
     def credentials_file(cls) -> Path:
-        return BASE_DIR / 'src' / '.fide-database-zip-credentials'
+        return BASE_DIR / 'src' / '.fide-database-enc-credentials'
 
     @classmethod
     def github_tag(cls) -> str:
