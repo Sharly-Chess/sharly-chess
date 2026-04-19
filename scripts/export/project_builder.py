@@ -633,7 +633,7 @@ class ProjectBuilder(ABC):
                 files += [file for file in installer_dir.glob('**/*') if file.is_file()]
 
         files += [
-            self.src_dir / '.fide-database-zip-credentials',
+            self.src_dir / '.fide-database-enc-credentials',
             plugins.chess_results.PLUGIN_DIR / '.credentials',
             plugins.ffe.PLUGIN_DIR / '.sql-server-credentials',
             plugins.ffe.PLUGIN_DIR / '.database-zip-credentials',
