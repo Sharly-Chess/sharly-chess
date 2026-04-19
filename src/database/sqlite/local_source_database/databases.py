@@ -3,14 +3,14 @@ import base64
 import json
 import shutil
 import tempfile
+import threading
 import zipfile
-from time import time
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from math import floor
 from pathlib import Path
-import threading
 from sqlite3 import connect, DatabaseError
+from time import time
 from typing import override
 
 from packaging.version import Version
@@ -21,19 +21,20 @@ from common.i18n import _, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
+from database.sqlite.config.config_database import ConfigDatabase
+from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database.actions import (
     OutdatedAction,
     NotifOutdatedAction,
 )
+from database.sqlite.local_source_database.aes_cbc import AesCbc
 from database.sqlite.local_source_database.delays import (
     OutdatedDelay,
     DisabledOutdatedDelay,
 )
-from utils.entity import IdentifiableEntity
-from database.sqlite.config.config_database import ConfigDatabase
-from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
+from utils.entity import IdentifiableEntity
 from web.channels import channels_plugin
 
 logger = get_logger()
@@ -478,26 +479,27 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
     def github_tag(cls) -> str:
         pass
 
-    def _download_source_file(self, source_file_dir: Path) -> bool:
-        zip_filename = self._source_file_name.replace('.db', '.zip')
-        zip_target: Path = source_file_dir / zip_filename
-        zip_url: str = f'https://github.com/Sharly-Chess/databases/releases/download/{self.github_tag()}/{zip_filename}'
-        logger.info(self.log_prefix + 'Downloading [%s]...', zip_url)
+    def _download_from_github(
+        self,
+        source_file_dir: Path,
+        remote_filename: str,
+    ) -> bool:
+        target: Path = source_file_dir / remote_filename
+        url: str = f'https://github.com/Sharly-Chess/databases/releases/download/{self.github_tag()}/{remote_filename}'
+        logger.info(self.log_prefix + 'Downloading [%s]...', url)
         try:
-            response: Response = get(
-                zip_url, allow_redirects=True, timeout=60, stream=True
-            )
+            response: Response = get(url, allow_redirects=True, timeout=60, stream=True)
             if response.status_code != 200:
                 logger.error(
                     self.log_prefix + 'Could not download [%s], error code [%d].',
-                    zip_url,
+                    url,
                     response.status_code,
                 )
                 return False
             total = int(response.headers.get('content-length', 0))
             logger.info(self.log_prefix + 'Receiving %.1f MB...', total / 1_048_576)
             received = 0
-            with open(zip_target, 'wb') as f:
+            with open(target, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=1024 * 1024):
                     f.write(chunk)
                     received += len(chunk)
@@ -507,13 +509,20 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
         except ConnectionError as ex:
             logger.exception(
                 self.log_prefix + 'Could not download [%s]: %s.',
-                zip_url,
+                url,
                 ex,
             )
             return False
         logger.info(
             self.log_prefix + 'Download complete (%.1f MB).', received / 1_048_576
         )
+        return True
+
+    def _download_zip_source_file(self, source_file_dir: Path) -> bool:
+        zip_filename = self._source_file_name.replace('.db', '.zip')
+        if not self._download_from_github(source_file_dir, zip_filename):
+            return False
+        zip_target: Path = source_file_dir / zip_filename
         credentials: ZipCredentials = ZipCredentials(self.credentials_file())
         logger.info(self.log_prefix + 'Extracting zip archive...')
         try:
@@ -525,6 +534,27 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
         finally:
             zip_target.unlink(missing_ok=True)
         logger.info(self.log_prefix + 'Extraction complete.')
+        return True
+
+    def _download_enc_source_file(self, source_file_dir: Path) -> bool:
+        enc_filename = self._source_file_name.replace('.db', '.enc')
+        if not self._download_from_github(source_file_dir, enc_filename):
+            return False
+        enc_target: Path = source_file_dir / enc_filename
+        credentials: ZipCredentials = ZipCredentials(self.credentials_file())
+        logger.info(self.log_prefix + 'Decrypting archive...')
+        try:
+            AesCbc.decrypt_file(
+                enc_target,
+                source_file_dir / self._source_file_name,
+                credentials.password,
+            )
+        except Exception as ex:
+            logger.exception(self.log_prefix + 'Could not decrypt archive: %s.', ex)
+            return False
+        finally:
+            enc_target.unlink(missing_ok=True)
+        logger.info(self.log_prefix + 'Decryption complete.')
         return True
 
     def _use_external_generator(self):

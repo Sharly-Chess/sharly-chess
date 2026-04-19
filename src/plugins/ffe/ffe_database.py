@@ -71,6 +71,9 @@ class FfeDatabase(LocalSourcePlayerDatabase):
     def github_tag(cls) -> str:
         return 'ffe-latest'
 
+    def _download_source_file(self, source_file_dir: Path) -> bool:
+        return self._download_zip_source_file(source_file_dir)
+
     @override
     @property
     def default_stored_database(self) -> StoredLocalSourceDatabase:
