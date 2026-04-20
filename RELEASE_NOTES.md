@@ -68,7 +68,7 @@
 
 - Improved the upload modal (4.0.0)
 - Relocate the rules upload to a group button on the FFE modal (4.0.0)
-- Download FFE database from GitHub (4.0.5)
+- Speedup FFE database update (4.0.5)
 
 ### _ChessEvent_
 
