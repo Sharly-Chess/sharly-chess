@@ -20,7 +20,7 @@ python --version
 python src/sharly_chess.py
 ```
 
-## Configuring _FIDE_ local database unzipping
+## Configuring _FIDE_ local database decryption
 
 The `src/.fide-database-enc-credentials` file, used to decrypt the _FIDE_ local database, is not stored in the _GitHub_ repository.
 
