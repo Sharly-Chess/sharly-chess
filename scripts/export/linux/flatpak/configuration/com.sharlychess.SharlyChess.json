@@ -68,6 +68,7 @@
         "install -Dm644 LICENSE.md /app/share/licenses/com.sharlychess.SharlyChess/LICENSE.md",
         "PYTHONPATH=/app/lib/python3.13/site-packages /app/bin/pip-licenses --with-system --with-authors --with-urls --with-description --format=markdown --output-file=/app/share/licenses/com.sharlychess.SharlyChess/THIRD_PARTY_LICENSES.md",
         "PYTHONPATH=/app/lib/python3.13/site-packages python3 scripts/export/linux/flatpak/scripts/generate_notice.py /app/share/licenses/com.sharlychess.SharlyChess/NOTICE.txt",
+        "PYTHONPATH=/app/lib/python3.13/site-packages FLATPAK_ID= python3 scripts/fide/generate_fide_database_enc_credentials.py --password=$FIDE_DATABASE_ENC_PASSWORD",
         "PYTHONPATH=/app/lib/python3.13/site-packages FLATPAK_ID= python3 scripts/ffe/generate_ffe_sql_server_credentials.py --host=$FFE_SQL_SERVER_HOST --user=$FFE_SQL_SERVER_USER --password=$FFE_SQL_SERVER_PASSWORD --database=$FFE_SQL_SERVER_DATABASE --github",
         "PYTHONPATH=/app/lib/python3.13/site-packages FLATPAK_ID= python3 scripts/ffe/generate_ffe_database_zip_credentials.py --password=$FFE_DATABASE_ZIP_PASSWORD",
         "PYTHONPATH=/app/lib/python3.13/site-packages FLATPAK_ID= python3 scripts/chess_results/generate_chess_results_credentials.py --key=$CHESS_RESULTS_KEY --iv=$CHESS_RESULTS_IV",
