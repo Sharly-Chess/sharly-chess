@@ -86,12 +86,12 @@ The Linux job in `export.yml` builds the Flatpak for both architectures and publ
 | Secret                       | Description                                       |
 |------------------------------|---------------------------------------------------|
 | `GPG_PRIVATE_KEY`            | Private GPG key for signing the OSTree repository |
-| `FIDE_DATABASE_ENC_PASSWORD` | FFE database encryption password                  |
+| `FIDE_DATABASE_ENC_PASSWORD` | FIDE database encryption password                 |
 | `FFE_SQL_SERVER_HOST`        | FFE SQL server host                               |
 | `FFE_SQL_SERVER_USER`        | FFE SQL server user                               |
 | `FFE_SQL_SERVER_PASSWORD`    | FFE SQL server password                           |
 | `FFE_SQL_SERVER_DATABASE`    | FFE SQL server database name                      |
-| `FFE_DATABASE_ZIP_PASSWORD`  | FFE local database zip password                   |
+| `FFE_DATABASE_ENC_PASSWORD`  | FFE local database encryption password            |
 | `CHESS_RESULTS_AES_KEY`      | Chess-Results AES key                             |
 | `CHESS_RESULTS_AES_IV`       | Chess-Results AES IV                              |
 

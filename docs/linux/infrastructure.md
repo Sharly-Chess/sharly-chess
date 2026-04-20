@@ -131,7 +131,7 @@ Go to **Settings → Secrets and variables → Actions** in the repository.
 | `FFE_SQL_SERVER_USER`        | FFE SQL server user                     | Provided by the Sharly Chess team                                              |
 | `FFE_SQL_SERVER_PASSWORD`    | FFE SQL server password                 | Provided by the Sharly Chess team                                              |
 | `FFE_SQL_SERVER_DATABASE`    | FFE server database name                | Provided by the Sharly Chess team                                              |
-| `FFE_DATABASE_ZIP_PASSWORD`  | FFE local database zip password         | Provided by the Sharly Chess team                                              |
+| `FFE_DATABASE_ENC_PASSWORD`  | FFE local database encryption password  | Provided by the Sharly Chess team                                              |
 | `CHESS_RESULTS_AES_KEY`      | Chess-Results AES key                   | Provided by the Sharly Chess team                                              |
 | `CHESS_RESULTS_AES_IV`       | Chess-Results AES IV                    | Provided by the Sharly Chess team                                              |
 
