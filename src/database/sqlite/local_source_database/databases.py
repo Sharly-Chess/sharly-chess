@@ -28,7 +28,7 @@ from database.sqlite.local_source_database.actions import (
     OutdatedAction,
     NotifOutdatedAction,
 )
-from database.sqlite.local_source_database.aes_cbc import AesCbc
+from database.sqlite.local_source_database.aes_cbc import AesEcb
 from database.sqlite.local_source_database.delays import (
     OutdatedDelay,
     DisabledOutdatedDelay,
@@ -544,7 +544,7 @@ class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
         credentials: FileCredentials = FileCredentials(self.credentials_file())
         logger.info(self.log_prefix + 'Decrypting archive...')
         try:
-            AesCbc.decrypt_file(
+            AesEcb.decrypt_file(
                 enc_target,
                 source_file_dir / self._source_file_name,
                 credentials.password,

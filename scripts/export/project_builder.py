@@ -616,9 +616,7 @@ class ProjectBuilder(ABC):
             lib_dir / 'polyglot' / 'polyglot.js',
             lib_dir / 'select2' / 'themes' / 'dark-bootstrap-5.css',
         ]
-        sql_dir: Path = self.src_dir / 'database' / 'sql'
         files += [
-            sql_dir / 'create_fide.sql',
             PLUGINS_DIR / 'fra_schools' / 'create_fra_schools.sql',
         ]
         custom_dir: Path = self.src_dir / 'custom'

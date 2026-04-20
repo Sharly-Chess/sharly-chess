@@ -5,18 +5,17 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 
 
-class AesCbc:
-    """A utility class for simple AES-CBC encryption/decryption."""
+class AesEcb:
+    """A utility class for simple AES-ECB encryption/decryption."""
 
     @classmethod
     def _cipher(
         cls,
         key: str,
     ) -> Cipher:
-        b_key: bytes = key[:16].ljust(16).encode('utf-8')
         return Cipher(
-            algorithms.AES(key=b_key),
-            modes.CBC(initialization_vector=b_key),
+            algorithms.AES(key=key.encode('utf-8')),
+            modes.ECB(),
             backend=default_backend(),
         )
 
