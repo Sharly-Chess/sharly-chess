@@ -13,7 +13,8 @@ class AesCbc:
         cls,
         key: str,
     ) -> Cipher:
-        b_key: bytes = key[:16].ljust(16).encode('utf-8')
+        assert len(key) == 16
+        b_key: bytes = key.encode('utf-8')
         return Cipher(
             algorithms.AES(key=b_key),
             modes.CBC(initialization_vector=b_key),
