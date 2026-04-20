@@ -28,7 +28,7 @@ from database.sqlite.local_source_database.actions import (
     OutdatedAction,
     NotifOutdatedAction,
 )
-from database.sqlite.local_source_database.aes_cbc import AesEcb
+from database.sqlite.local_source_database.aes_ecb import AesEcb
 from database.sqlite.local_source_database.delays import (
     OutdatedDelay,
     DisabledOutdatedDelay,
