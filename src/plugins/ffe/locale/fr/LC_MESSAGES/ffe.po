@@ -224,7 +224,7 @@ msgid "Fédération Française des Échecs"
 msgstr "Fédération Française des Échecs"
 
 msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
-msgstr "Cependant, l'ordre des résultats de la dernière rondes restera le même que ceux de Sharly Chess."
+msgstr "Cependant, l'ordre des résultats de la dernière ronde restera le même que ceux de Sharly Chess."
 
 msgid "Import JSON file (papi-converter format)"
 msgstr "Importer un fichier JSON (format papi-converter)"

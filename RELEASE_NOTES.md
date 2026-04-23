@@ -29,8 +29,8 @@
 - Fixed player search keyboard selection (4.0.1)
 - Invalidate year of birth < 1900 (4.0.2)
 - Always export the year of birth in CSV export (4.0.2)
-- Added _check_in_ CSV column (4.0.5)
-- Download FIDE database from GitHub (4.0.5)
+- Added _check_in_ column to CSV export (4.0.5)
+- Download _FIDE_ database from _GitHub_ (4.0.5)
 
 ## Pairings
 
@@ -69,11 +69,15 @@
 
 - Improved the upload modal (4.0.0)
 - Relocate the rules upload to a group button on the FFE modal (4.0.0)
-- Speedup FFE database update (4.0.5)
+- Speedup _FFE_ database update (4.0.5)
 
 ### _ChessEvent_
 
 - Synchronize button moved to the _Data Transfer_ menu (4.0.0)
+
+### _FRA Schools_
+
+- Download database from _GitHub_ (4.0.5)
 
 ## Handicap Games
 
