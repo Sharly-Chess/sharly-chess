@@ -29,6 +29,7 @@
 - Fixed player search keyboard selection (4.0.1)
 - Invalidate year of birth < 1900 (4.0.2)
 - Always export the year of birth in CSV export (4.0.2)
+- Added _check_in_ CSV column (4.0.5)
 - Download FIDE database from GitHub (4.0.5)
 
 ## Pairings
