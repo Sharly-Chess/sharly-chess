@@ -77,6 +77,12 @@ jobs:
           FFE_DATABASE_ENC_PASSWORD: ${{ secrets.FFE_DATABASE_ENC_PASSWORD }}
         run: |
           python scripts/ffe/generate_ffe_database_enc_credentials.py --password="$env:FFE_DATABASE_ENC_PASSWORD"
+      - name: Generate FRA Schools database credentials
+        shell: powershell
+        env:
+          FRA_SCHOOLS_DATABASE_ENC_PASSWORD: ${{ secrets.FRA_SCHOOLS_DATABASE_ENC_PASSWORD }}
+        run: |
+          python scripts/fra_schools/generate_fra_schools_database_enc_credentials.py --password="$env:FRA_SCHOOLS_DATABASE_ENC_PASSWORD"
       - name: Set version variable
         id: version
         shell: bash
@@ -167,6 +173,7 @@ jobs:
           FFE_SQL_SERVER_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
           FFE_SQL_SERVER_DATABASE: ${{ secrets.FFE_SQL_SERVER_DATABASE }}
           FFE_DATABASE_ENC_PASSWORD: ${{ secrets.FFE_DATABASE_ENC_PASSWORD }}
+          FRA_SCHOOLS_DATABASE_ENC_PASSWORD: ${{ secrets.FRA_SCHOOLS_DATABASE_ENC_PASSWORD }}
           CHESS_RESULTS_KEY: ${{ secrets.CHESS_RESULTS_AES_KEY }}
           CHESS_RESULTS_IV: ${{ secrets.CHESS_RESULTS_AES_IV }}
         run: |
@@ -179,6 +186,7 @@ jobs:
               "FFE_SQL_SERVER_PASSWORD": env.FFE_SQL_SERVER_PASSWORD,
               "FFE_SQL_SERVER_DATABASE": env.FFE_SQL_SERVER_DATABASE,
               "FFE_DATABASE_ENC_PASSWORD": env.FFE_DATABASE_ENC_PASSWORD,
+              "FRA_SCHOOLS_DATABASE_ENC_PASSWORD": env.FRA_SCHOOLS_DATABASE_ENC_PASSWORD,
               "CHESS_RESULTS_KEY": env.CHESS_RESULTS_KEY,
               "CHESS_RESULTS_IV": env.CHESS_RESULTS_IV
             }
@@ -413,6 +421,12 @@ jobs:
           FFE_DATABASE_ENC_PASSWORD: ${{ secrets.FFE_DATABASE_ENC_PASSWORD }}
         run: |
           python scripts/ffe/generate_ffe_database_enc_credentials.py --password="$FFE_DATABASE_ENC_PASSWORD"
+      - name: Generate FRA Schools database credentials
+        shell: powershell
+        env:
+          FRA_SCHOOLS_DATABASE_ENC_PASSWORD: ${{ secrets.FRA_SCHOOLS_DATABASE_ENC_PASSWORD }}
+        run: |
+          python scripts/fra_schools/generate_fra_schools_database_enc_credentials.py --password="$env:FRA_SCHOOLS_DATABASE_ENC_PASSWORD"
       - name: Set version variable
         id: version
         shell: bash
