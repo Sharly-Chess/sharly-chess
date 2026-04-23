@@ -353,6 +353,18 @@ class PaidColumn(DatasheetColumn):
             raise SharlyChessException(_('A positive float is expected.'))
 
 
+class CheckInColumn(DatasheetColumn):
+    @property
+    def id(self) -> str:
+        return 'check_in'
+
+    def get_cell_content(self, player: Player) -> Any:
+        return int(player.check_in)
+
+    def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
+        stored_player.check_in = value == '1'
+
+
 class CommentColumn(DatasheetColumn):
     @property
     def id(self) -> str:
