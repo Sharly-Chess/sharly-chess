@@ -3,41 +3,44 @@ import base64
 import json
 import shutil
 import tempfile
-from time import time
+import threading
+import zipfile
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from math import floor
 from pathlib import Path
-import threading
 from sqlite3 import connect, DatabaseError
+from time import time
 from typing import override
 
 from packaging.version import Version
+from requests import Response, get
 
 from common import TMP_DIR, SharlyChessException, DEVEL_ENV, TEMPFILE_DIR
 from common.i18n import _, set_locale
 from common.logger import get_logger
 from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
+from database.sqlite.config.config_database import ConfigDatabase
+from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database.actions import (
     OutdatedAction,
     NotifOutdatedAction,
 )
+from database.sqlite.local_source_database.aes_ecb import AesEcb
 from database.sqlite.local_source_database.delays import (
     OutdatedDelay,
     DisabledOutdatedDelay,
 )
-from utils.entity import IdentifiableEntity
-from database.sqlite.config.config_database import ConfigDatabase
-from database.sqlite.config.config_store import StoredLocalSourceDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
+from utils.entity import IdentifiableEntity
 from web.channels import channels_plugin
 
 logger = get_logger()
 
 
-class ZipCredentials:
+class FileCredentials:
     def __init__(
         self,
         file: Path,
@@ -52,11 +55,11 @@ class ZipCredentials:
         except FileNotFoundError as e:
             if DEVEL_ENV:
                 raise SharlyChessException(
-                    f'Could not read ZIP credentials ({e}), '
-                    'please run generate_xxx_zip_credentials.py.'
+                    f'Could not read file credentials [{file}] ({e}), '
+                    'please run generate_xxx_credentials.py.'
                 ) from e
             else:
-                raise SharlyChessException('Could not read ZIP credentials.') from None
+                raise SharlyChessException('Could not read file credentials.') from None
 
     @staticmethod
     def dump(
@@ -64,7 +67,7 @@ class ZipCredentials:
         password: str,
     ):
         """Dumps credentials to the given file.
-        The credentials can be read by `creds = ZipCredentials(file)`."""
+        The credentials can be read by `creds = FileCredentials(file)`."""
         credentials_file.parent.mkdir(exist_ok=True, parents=True)
         with open(credentials_file, 'w') as f:
             f.write(
@@ -455,7 +458,123 @@ class LocalSourceDatabase(SQLiteDatabase, IdentifiableEntity, ABC):
         return self.stop_update(True)
 
 
-class LocalSourcePlayerDatabase(LocalSourceDatabase):
+class GitHubLocalSourceDatabase(LocalSourceDatabase, ABC):
+    @classmethod
+    @abstractmethod
+    def credentials_file(cls) -> Path:
+        pass
+
+    @classmethod
+    def dump_credentials(
+        cls,
+        password: str,
+    ):
+        FileCredentials.dump(
+            cls.credentials_file(),
+            password,
+        )
+
+    @classmethod
+    @abstractmethod
+    def github_tag(cls) -> str:
+        pass
+
+    def _download_from_github(
+        self,
+        source_file_dir: Path,
+        remote_filename: str,
+    ) -> bool:
+        target: Path = source_file_dir / remote_filename
+        url: str = f'https://github.com/Sharly-Chess/databases/releases/download/{self.github_tag()}/{remote_filename}'
+        logger.info(self.log_prefix + 'Downloading [%s]...', url)
+        try:
+            response: Response = get(url, allow_redirects=True, timeout=60, stream=True)
+            if response.status_code != 200:
+                logger.error(
+                    self.log_prefix + 'Could not download [%s], error code [%d].',
+                    url,
+                    response.status_code,
+                )
+                return False
+            total = int(response.headers.get('content-length', 0))
+            logger.info(self.log_prefix + 'Receiving %.1f MB...', total / 1_048_576)
+            received = 0
+            with open(target, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    f.write(chunk)
+                    received += len(chunk)
+                    logger.debug(
+                        self.log_prefix + 'Downloaded %d / %d bytes.', received, total
+                    )
+        except ConnectionError as ex:
+            logger.exception(
+                self.log_prefix + 'Could not download [%s]: %s.',
+                url,
+                ex,
+            )
+            return False
+        logger.info(
+            self.log_prefix + 'Download complete (%.1f MB).', received / 1_048_576
+        )
+        return True
+
+    def _download_zip_source_file(self, source_file_dir: Path) -> bool:
+        zip_filename = self._source_file_name.replace('.db', '.zip')
+        if not self._download_from_github(source_file_dir, zip_filename):
+            return False
+        zip_target: Path = source_file_dir / zip_filename
+        credentials: FileCredentials = FileCredentials(self.credentials_file())
+        logger.info(self.log_prefix + 'Extracting zip archive...')
+        try:
+            with zipfile.ZipFile(zip_target, 'r') as zf:
+                zf.extractall(source_file_dir, pwd=credentials.password.encode())
+        except Exception as ex:
+            logger.exception(self.log_prefix + 'Could not extract zip archive: %s.', ex)
+            return False
+        finally:
+            zip_target.unlink(missing_ok=True)
+        logger.info(self.log_prefix + 'Extraction complete.')
+        return True
+
+    def _download_enc_source_file(self, source_file_dir: Path) -> bool:
+        enc_filename = self._source_file_name.replace('.db', '.enc')
+        if not self._download_from_github(source_file_dir, enc_filename):
+            return False
+        enc_target: Path = source_file_dir / enc_filename
+        credentials: FileCredentials = FileCredentials(self.credentials_file())
+        logger.info(self.log_prefix + 'Decrypting archive...')
+        try:
+            AesEcb.decrypt_file(
+                enc_target,
+                source_file_dir / self._source_file_name,
+                credentials.password,
+            )
+        except Exception as ex:
+            logger.exception(self.log_prefix + 'Could not decrypt archive: %s.', ex)
+            return False
+        finally:
+            enc_target.unlink(missing_ok=True)
+        logger.info(self.log_prefix + 'Decryption complete.')
+        return True
+
+    def _use_external_generator(self):
+        return True
+
+    def _generate_from_source_file(
+        self, source_file_path: Path, tmp_file: Path
+    ) -> bool:
+        logger.info(self.log_prefix + 'Copying downloaded database to temp file...')
+        shutil.copy(source_file_path, tmp_file)
+        logger.info(self.log_prefix + 'Copy done.')
+        return True
+
+    @classmethod
+    def _create_indexes(cls, database: SQLiteDatabase):
+        # Indices are created by GitHub.
+        pass
+
+
+class LocalSourcePlayerDatabase(GitHubLocalSourceDatabase):
     """Represents a local database that provides player search functionality."""
 
     @abstractmethod
