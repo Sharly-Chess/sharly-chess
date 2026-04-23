@@ -616,9 +616,7 @@ class ProjectBuilder(ABC):
             lib_dir / 'polyglot' / 'polyglot.js',
             lib_dir / 'select2' / 'themes' / 'dark-bootstrap-5.css',
         ]
-        sql_dir: Path = self.src_dir / 'database' / 'sql'
         files += [
-            sql_dir / 'create_fide.sql',
             PLUGINS_DIR / 'fra_schools' / 'create_fra_schools.sql',
         ]
         custom_dir: Path = self.src_dir / 'custom'
@@ -633,6 +631,7 @@ class ProjectBuilder(ABC):
                 files += [file for file in installer_dir.glob('**/*') if file.is_file()]
 
         files += [
+            self.src_dir / '.fide-database-enc-credentials',
             plugins.chess_results.PLUGIN_DIR / '.credentials',
             plugins.ffe.PLUGIN_DIR / '.sql-server-credentials',
             plugins.ffe.PLUGIN_DIR / '.database-zip-credentials',

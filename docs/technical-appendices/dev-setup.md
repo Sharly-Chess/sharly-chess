@@ -20,10 +20,14 @@ python --version
 python src/sharly_chess.py
 ```
 
-### Launching the interface with the ChessEvent platform
+## Configuring _FIDE_ local database decryption
+
+The `src/.fide-database-enc-credentials` file, used to decrypt the _FIDE_ local database, is not stored in the _GitHub_ repository.
+
+It must be generated in each developer’s environment (ask other developers for the credentials):
 
 ```
-python src/sharly_chess.py --chessevent
+python scripts/fide/generate_fide_database_enc_credentials.py --password=xxx
 ```
 
 ## Configuring Authentication with the FFE Server

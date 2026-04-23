@@ -4,7 +4,7 @@ from argparse import ArgumentParser, Namespace
 from asyncio import run
 from pathlib import Path
 
-from plugins.ffe.ffe_database import FfeDatabase
+from database.sqlite.fide.fide_database import FideDatabase
 
 sys.path.extend(
     map(
@@ -22,7 +22,7 @@ from common.logger import print_interactive_success
 
 async def main():
     parser = ArgumentParser(
-        description='Generate credentials for the FFE local database.'
+        description='Generate credentials for the FIDE local database.'
     )
     parser.add_argument(
         '--password',
@@ -31,11 +31,11 @@ async def main():
         required=True,
     )
     args: Namespace = parser.parse_args()
-    FfeDatabase.dump_credentials(
+    FideDatabase.dump_credentials(
         args.password,
     )
     print_interactive_success(
-        f'The credentials have been written to {FfeDatabase.credentials_file()}.'
+        f'The credentials have been written to {FideDatabase.credentials_file()}.'
     )
 
 
