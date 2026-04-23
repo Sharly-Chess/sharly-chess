@@ -17,7 +17,7 @@ from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.local_source_database import LocalSourcePlayerDatabase
 from database.sqlite.local_source_database.actions import NotifOutdatedAction
 from database.sqlite.local_source_database.delays import Days2OutdatedDelay
-from plugins import ffe, PLUGINS_DIR
+from plugins import ffe
 from plugins.ffe import PLUGIN_NAME
 from plugins.ffe.utils import PlayerFFELicence, FfePlayerPluginData
 from utils.enum import (
@@ -65,7 +65,7 @@ class FfeDatabase(LocalSourcePlayerDatabase):
 
     @classmethod
     def credentials_file(cls) -> Path:
-        return PLUGINS_DIR / 'ffe' / '.database-enc-credentials'
+        return ffe.PLUGIN_DIR / '.database-enc-credentials'
 
     @classmethod
     def github_tag(cls) -> str:

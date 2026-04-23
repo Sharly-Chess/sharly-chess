@@ -40,7 +40,7 @@ It must be generated in each developer’s environment (ask other developers for
 python scripts/ffe/generate_ffe_sql_server_credentials.py --host=xxx --user=xxx --password=xxx --database=xxx
 ```
 
-## Configuring _FFE_ local database unzipping
+## Configuring _FFE_ local database decryption
 
 The `src/plugins/ffe/.database-enc-credentials` file, used to decrypt the _FFE_ local database, is not stored in the _GitHub_ repository.
 
@@ -48,6 +48,16 @@ It must be generated in each developer’s environment (ask other developers for
 
 ```
 python scripts/ffe/generate_ffe_database_enc_credentials.py --password=xxx
+```
+
+## Configuring _FRA Schools_ local database decryption
+
+The `src/plugins/fra_schools/.database-enc-credentials` file, used to decrypt the _FRA Schools_ local database, is not stored in the _GitHub_ repository.
+
+It must be generated in each developer’s environment (ask other developers for the credentials):
+
+```
+python scripts/fra_schools/generate_fra_schooms_database_enc_credentials.py --password=xxx
 ```
 
 ## Creating the Windows Executable
