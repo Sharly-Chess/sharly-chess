@@ -49,6 +49,12 @@ jobs:
         shell: cmd
         run: |
           python scripts/i18n/i18n_update.py
+      - name: Generate FIDE database credentials
+        shell: powershell
+        env:
+          FIDE_DATABASE_ENC_PASSWORD: ${{ secrets.FIDE_DATABASE_ENC_PASSWORD }}
+        run: |
+          python scripts/fide/generate_fide_database_enc_credentials.py --password="$env:FIDE_DATABASE_ENC_PASSWORD"
       - name: Generate Chess-Results credentials
         shell: powershell
         env:
@@ -155,6 +161,7 @@ jobs:
       - name: Inject secrets into manifest
         shell: bash
         env:
+          FIDE_DATABASE_ENC_PASSWORD: ${{ secrets.FIDE_DATABASE_ENC_PASSWORD }}
           FFE_SQL_SERVER_HOST: ${{ secrets.FFE_SQL_SERVER_HOST }}
           FFE_SQL_SERVER_USER: ${{ secrets.FFE_SQL_SERVER_USER }}
           FFE_SQL_SERVER_PASSWORD: ${{ secrets.FFE_SQL_SERVER_PASSWORD }}
@@ -166,6 +173,7 @@ jobs:
           MANIFEST="scripts/export/linux/flatpak/configuration/com.sharlychess.SharlyChess.json"
           jq '(.modules |= map(if .name == "sharly-chess" then .["build-options"] += {
             "env": {
+              "FIDE_DATABASE_ENC_PASSWORD": env.FIDE_DATABASE_ENC_PASSWORD,
               "FFE_SQL_SERVER_HOST": env.FFE_SQL_SERVER_HOST,
               "FFE_SQL_SERVER_USER": env.FFE_SQL_SERVER_USER,
               "FFE_SQL_SERVER_PASSWORD": env.FFE_SQL_SERVER_PASSWORD,
@@ -377,6 +385,12 @@ jobs:
         shell: bash
         run: |
           python scripts/i18n/i18n_update.py
+      - name: Generate FIDE database credentials
+        shell: bash
+        env:
+          FIDE_DATABASE_ENC_PASSWORD: ${{ secrets.FIDE_DATABASE_ENC_PASSWORD }}
+        run: |
+          python scripts/ffe/generate_ffe_database_zip_credentials.py --password="$FFE_DATABASE_ZIP_PASSWORD"
       - name: Generate Chess-Results credentials
         shell: powershell
         env:
