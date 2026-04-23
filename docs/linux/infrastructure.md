@@ -123,18 +123,19 @@ Go to **Settings → Secrets and variables → Actions** in the repository.
 
 ### Required secrets
 
-| Secret                       | Contents                                                           | How to obtain                                                                  |
-|------------------------------|--------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| `GPG_PRIVATE_KEY`            | ASCII-armored contents of `private.key`                            | `cat private.key` and copy in full (including the `-----BEGIN/END-----` lines) |
-| `FIDE_DATABASE_ENC_PASSWORD` | FIDE database encryption password                                  | Provided by the Sharly Chess team                                              |
-| `FFE_SQL_SERVER_HOST`        | FFE SQL server host                                                | Provided by the Sharly Chess team                                              |
-| `FFE_SQL_SERVER_USER`        | FFE SQL server user                                                | Provided by the Sharly Chess team                                              |
-| `FFE_SQL_SERVER_PASSWORD`    | FFE SQL server password                                            | Provided by the Sharly Chess team                                              |
-| `FFE_SQL_SERVER_DATABASE`    | FFE server database name                                           | Provided by the Sharly Chess team                                              |
-| `FFE_DATABASE_ENC_PASSWORD`  | FFE local database encryption password                             | Provided by the Sharly Chess team                                              |
-| `FFE_DATABASE_ZIP_PASSWORD`  | FFE local database zip password (to be removed in future versions) | Provided by the Sharly Chess team                                              |
-| `CHESS_RESULTS_AES_KEY`      | Chess-Results AES key                                              | Provided by the Sharly Chess team                                              |
-| `CHESS_RESULTS_AES_IV`       | Chess-Results AES IV                                               | Provided by the Sharly Chess team                                              |
+| Secret                              | Contents                                                           | How to obtain                                                                  |
+|-------------------------------------|--------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| `GPG_PRIVATE_KEY`                   | ASCII-armored contents of `private.key`                            | `cat private.key` and copy in full (including the `-----BEGIN/END-----` lines) |
+| `FIDE_DATABASE_ENC_PASSWORD`        | FIDE database encryption password                                  | Provided by the Sharly Chess team                                              |
+| `FFE_SQL_SERVER_HOST`               | FFE SQL server host                                                | Provided by the Sharly Chess team                                              |
+| `FFE_SQL_SERVER_USER`               | FFE SQL server user                                                | Provided by the Sharly Chess team                                              |
+| `FFE_SQL_SERVER_PASSWORD`           | FFE SQL server password                                            | Provided by the Sharly Chess team                                              |
+| `FFE_SQL_SERVER_DATABASE`           | FFE server database name                                           | Provided by the Sharly Chess team                                              |
+| `FFE_DATABASE_ENC_PASSWORD`         | FFE local database encryption password                             | Provided by the Sharly Chess team                                              |
+| `FFE_DATABASE_ZIP_PASSWORD`         | FFE local database zip password (to be removed in future versions) | Provided by the Sharly Chess team                                              |
+| `FRA_SCHOOLS_DATABASE_ENC_PASSWORD` | FRA Schools local database encryption password                     | Provided by the Sharly Chess team                                              |
+| `CHESS_RESULTS_AES_KEY`             | Chess-Results AES key                                              | Provided by the Sharly Chess team                                              |
+| `CHESS_RESULTS_AES_IV`              | Chess-Results AES IV                                               | Provided by the Sharly Chess team                                              |
 
 ### Verify the secrets
 

@@ -15,6 +15,7 @@ from packaging.version import Version, InvalidVersion
 
 import plugins.chess_results
 import plugins.ffe
+import plugins.fra_schools
 from common import BASE_DIR, EVENTS_FOLDER
 from common import SHARLY_CHESS_VERSION
 from common.installation_checker import (
@@ -24,7 +25,6 @@ from common.logger import get_logger
 from common.sharly_chess_config import SharlyChessConfig
 from database.sqlite.config import migrations as config_migrations
 from database.sqlite.event import migrations as event_migrations
-from plugins import PLUGINS_DIR
 from plugins.manager import plugin_manager
 from utils.file import shutil_delete_onerror
 
@@ -616,9 +616,6 @@ class ProjectBuilder(ABC):
             lib_dir / 'polyglot' / 'polyglot.js',
             lib_dir / 'select2' / 'themes' / 'dark-bootstrap-5.css',
         ]
-        files += [
-            PLUGINS_DIR / 'fra_schools' / 'create_fra_schools.sql',
-        ]
         custom_dir: Path = self.src_dir / 'custom'
         files += [file for file in custom_dir.glob('**/*') if file.is_file()]
         files += [file for file in self.locale_dir.glob('**/*.mo') if file.is_file()]
@@ -635,6 +632,7 @@ class ProjectBuilder(ABC):
             plugins.chess_results.PLUGIN_DIR / '.credentials',
             plugins.ffe.PLUGIN_DIR / '.sql-server-credentials',
             plugins.ffe.PLUGIN_DIR / '.database-enc-credentials',
+            plugins.fra_schools.PLUGIN_DIR / '.database-enc-credentials',
         ]
 
         # Add GUI resources
