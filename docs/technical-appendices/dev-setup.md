@@ -42,12 +42,12 @@ python scripts/ffe/generate_ffe_sql_server_credentials.py --host=xxx --user=xxx 
 
 ## Configuring _FFE_ local database unzipping
 
-The `src/plugins/ffe/.database-zip-credentials` file, used to unzip the _FFE_ local database, is not stored in the _GitHub_ repository.
+The `src/plugins/ffe/.database-enc-credentials` file, used to decrypt the _FFE_ local database, is not stored in the _GitHub_ repository.
 
 It must be generated in each developer’s environment (ask other developers for the credentials):
 
 ```
-python scripts/ffe/generate_ffe_database_zip_credentials.py --password=xxx
+python scripts/ffe/generate_ffe_database_enc_credentials.py --password=xxx
 ```
 
 ## Creating the Windows Executable

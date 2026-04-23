@@ -65,14 +65,14 @@ class FfeDatabase(LocalSourcePlayerDatabase):
 
     @classmethod
     def credentials_file(cls) -> Path:
-        return PLUGINS_DIR / 'ffe' / '.database-zip-credentials'
+        return PLUGINS_DIR / 'ffe' / '.database-enc-credentials'
 
     @classmethod
     def github_tag(cls) -> str:
         return 'ffe-latest'
 
     def _download_source_file(self, source_file_dir: Path) -> bool:
-        return self._download_zip_source_file(source_file_dir)
+        return self._download_enc_source_file(source_file_dir)
 
     @override
     @property
