@@ -634,7 +634,7 @@ class ProjectBuilder(ABC):
             self.src_dir / '.fide-database-enc-credentials',
             plugins.chess_results.PLUGIN_DIR / '.credentials',
             plugins.ffe.PLUGIN_DIR / '.sql-server-credentials',
-            plugins.ffe.PLUGIN_DIR / '.database-zip-credentials',
+            plugins.ffe.PLUGIN_DIR / '.database-enc-credentials',
         ]
 
         # Add GUI resources
