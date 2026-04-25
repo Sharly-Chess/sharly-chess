@@ -2014,7 +2014,7 @@ msgid "E.g.: 4 (split boards over 4 screens)"
 msgstr "Ex. : 4 (échiquiers sur 4 écrans)"
 
 msgid "E.g.: 4 (split players over 4 screens)"
-msgstr "Ex. : 4 (ur·euse sur 4 écrans)"
+msgstr "Ex. : 4 (joueur·euses sur 4 écrans)"
 
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "Ex. : @boards, @family, un-autre-ecran"
