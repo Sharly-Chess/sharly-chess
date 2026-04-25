@@ -574,8 +574,8 @@ class SwissTieBreakTestCase(TieBreakTestCase):
             3: 10.5,
             4: 9.25,  # EV 9.75: HPB R2 - 0.5 * (dummy capped to rounds/2=2.5 instead of 3.5)
             1: 8.0,
-            16: 7.25,
-            6: 6.0,  # EV 6.5: PAB R3 - 1 * (dummy capped to rounds/2=2.5 instead of 3)
+            16: 7.25,  # EV 6.5: PAB R3 - 1 * (dummy capped to rounds/2=2.5 instead of 3)
+            6: 6.0,
             11: 4.75,  # EV 5.75: Forfeit win R4 - 1 * (dummy capped to opponent score 1.5 instead of 2.5)
             8: 5.25,
             5: 4.25,
@@ -598,11 +598,13 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         expected = {
             2: 8.5,
             3: 9.25,
-            4: 7.75,  # EV 8.0
+            4: 7.75,  # EV 8.0: HPB R2
+            # 0.5 * (dummy capped to rounds/2=2.5 instead of 3)
+            # --> 1.5 General contribution cut instead of 1.75 Involuntary contribution
             1: 7.25,
             16: 5.75,
-            6: 5.0,  # EV 5.5
-            11: 3.25,  # EV 4.25
+            6: 5.0,  # EV 5.5: PAB R3 - 1 * (dummy capped to rounds/2=2.5 instead of 3)
+            11: 3.25,  # EV 4.25: Forfeit win R4 - 1 * (dummy capped to opponent score 1.5 instead of 2.5)
             8: 3.75,
             5: 3.25,
             12: 4.0,
