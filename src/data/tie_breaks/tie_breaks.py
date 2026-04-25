@@ -222,6 +222,24 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
                 score += pairing.result.points(tournament.point_values)
         return score
 
+    @classmethod
+    def adjusted_dummy_score(
+        cls,
+        dummy_score: float,
+        tournament: 'Tournament',
+        after_round: int,
+        adjust_fore: bool = False,
+        opponent: TournamentPlayer | None = None,
+    ) -> float:
+        if opponent:
+            opponent_score = cls.adjusted_score(
+                opponent,
+                after_round=after_round,
+                adjust_fore=adjust_fore,
+            )
+            dummy_score = min(dummy_score, opponent_score)
+        return min(dummy_score, tournament.rounds * tournament.draw_points)
+
 
 class PlayerRecordTieBreak(TieBreak, ABC):
     """Base class of the tie-breaks based on the player's record."""
@@ -609,28 +627,38 @@ class BuchholzTieBreak(OpponentRecordTieBreak, ABC):
         it gives the same results to all players in a RR tournament."""
         return [RoundRobinPairingSystem()]
 
-    @staticmethod
+    @classmethod
     def dummy_score(
+        cls,
         player: TournamentPlayer,
         *,
         after_round: int = 1,
         fore_modifier: bool = False,
+        opponent: TournamentPlayer | None = None,
     ) -> float:
         """Computes the dummy score for the given pairing after *after_round*."""
-        if not fore_modifier:
-            return player.points_after(after_round)
-        dummy = player.points_before(after_round)
-        last_pairing = player.pairings[after_round]
-        if last_pairing.result in (
-            Result.FULL_POINT_BYE,
-            Result.PAIRING_ALLOCATED_BYE,
-            Result.HALF_POINT_BYE,
-            Result.ZERO_POINT_BYE,
-        ):
-            dummy += last_pairing.result.points(player.point_values)
+        tournament = player.tournament
+        if fore_modifier:
+            dummy = player.points_before(after_round)
+            last_pairing = player.pairings[after_round]
+            if last_pairing.result in (
+                Result.FULL_POINT_BYE,
+                Result.PAIRING_ALLOCATED_BYE,
+                Result.HALF_POINT_BYE,
+                Result.ZERO_POINT_BYE,
+            ):
+                dummy += last_pairing.points
+            else:
+                dummy += tournament.draw_points
         else:
-            dummy += Result.DRAW.points(player.point_values)
-        return dummy
+            dummy = player.points_after(after_round)
+        return cls.adjusted_dummy_score(
+            dummy,
+            tournament,
+            after_round=after_round,
+            adjust_fore=fore_modifier,
+            opponent=opponent,
+        )
 
 
 class StandardBuchholzTieBreak(BuchholzTieBreak):
@@ -692,12 +720,9 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
         pairing_system = tournament.pairing_system
         if pairing_system == RoundRobinPairingSystem():
             return sum(
-                self.adjusted_score(
-                    tournament.players_by_id[pairing.opponent_id],
-                    after_round=after_round,
-                )
+                self.adjusted_score(pairing.opponent, after_round=after_round)
                 for pairing in pairings.values()
-                if pairing.opponent_id is not None
+                if pairing.opponent
             )
         scores: list[float] = []
         voluntary_unplayed: list[float] = []
@@ -717,7 +742,9 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
                 )
             )
             if should_add_dummy:
-                dummy_points = self.dummy_score(player, after_round=after_round)
+                dummy_points = self.dummy_score(
+                    player, after_round=after_round, opponent=pairing.opponent
+                )
                 if pairing.voluntary_unplayed:
                     # We must take those into account to ensure
                     # correct computations for cut-1
@@ -803,9 +830,6 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
         }
         scores: list[float] = []
         voluntary_unplayed: list[float] = []
-        dummy_points = self.dummy_score(
-            player, after_round=after_round, fore_modifier=True
-        )
         tournament: 'Tournament' = player.tournament
         for pairing in pairings.values():
             should_add_dummy = (pairing.unplayed and not self.played_modifier) or (
@@ -820,6 +844,12 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
                 )
             )
             if should_add_dummy:
+                dummy_points = self.dummy_score(
+                    player,
+                    after_round=after_round,
+                    fore_modifier=True,
+                    opponent=pairing.opponent,
+                )
                 if pairing.voluntary_unplayed:
                     # We must take those into account to ensure
                     # correct computations for cut-1
@@ -1082,15 +1112,21 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
             map(lambda t: t.contribution, voluntary_unplayed + general_contributions)
         )
 
-    @staticmethod
+    @classmethod
     def _dummy_score(
+        cls,
         player: TournamentPlayer,
         pairing: Pairing,
         *,
         after_round: int = 1,
     ) -> tuple[float, Result]:
         """Computes the dummy score for the given pairing after *after_round*."""
-        dummy = player.points_after(after_round)
+        dummy = cls.adjusted_dummy_score(
+            player.points_after(after_round),
+            player.tournament,
+            after_round=after_round,
+            opponent=pairing.opponent,
+        )
         match pairing.result:
             case (
                 Result.FORFEIT_WIN
