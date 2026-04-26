@@ -1,0 +1,77 @@
+<div
+    id="tie-break-sets-modal"
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: fit-content; min-width: min(90vw, 450px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Custom tie-break sets') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <p>
+                {{ _(
+                    'These sets are saved per pairing system and shared across events. '
+                    'Showing sets for [%(pairing_system)s].',
+                    pairing_system=admin_tournament.pairing_system.name
+                ) }}
+            </p>
+            {% if not tie_break_user_sets %}
+                <h5 class="text-center my-3">{{ _('No saved sets.') }}</h5>
+                <p>
+                    {{ _('Tie-break sets are saved from the Tie-breaks modal.') }}
+                </p>
+            {% else %}
+                <div class="d-flex flex-column gap-2">
+                    {% for tie_break_set in tie_break_user_sets %}
+                        <div class="border border-secondary bg-body-tertiary">
+                            <div class="p-2 d-flex align-items-center gap-4">
+                                <div class="text-start flex-grow-1">
+                                    <b>{{ tie_break_set.name }}</b>
+                                    (<i>{{ tie_break_set.tie_break_acronyms|join(' - ') }}</i>)
+                                </div>
+                                <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                    <button
+                                        class="btn btn-sm btn-outline-danger text-nowrap"
+                                        type="button"
+                                        hx-delete="{{ url_for(
+                                            'admin-tie-break-set-delete',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                            tie_break_set_id=tie_break_set.user_set_id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        data-bs-target="#modal-wrapper"
+                                    >
+                                        <i class="bi-trash-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        <div class="modal-footer">
+            <button
+                class="btn btn-secondary text-nowrap"
+                type="button"
+                hx-get="{{ url_for(
+                    'admin-tie-breaks-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>
