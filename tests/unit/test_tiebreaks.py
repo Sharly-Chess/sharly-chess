@@ -9,7 +9,10 @@ from data.loader import EventLoader
 import pytest
 from data.tie_breaks import tie_breaks, options
 from data.tie_breaks.cutters import Cut1TieBreakCutter
-from data.tie_breaks.options import ReversedTieBreakOption
+from data.tie_breaks.options import (
+    ReversedTieBreakOption,
+    LegacyMarch2026TieBreakOption,
+)
 from data.tournament import Tournament
 from data.player import Player
 from plugins.ffe import ffe_tie_breaks
@@ -99,6 +102,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
 
     def test_points(self):
         results = self.get_player_values(lambda p: p.total_points())
+
         expected = {
             2: 4,
             1: 3.5,
@@ -317,6 +321,31 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         expected = {tpn: tpn for tpn in range(1, 17)}
         self.assertEqual(results, expected)
 
+    def test_buchholz_legacy_2026(self):
+        tie_break_ = tie_breaks.StandardBuchholzTieBreak(
+            [LegacyMarch2026TieBreakOption(True)]
+        )
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {
+            2: 13.0,
+            3: 15.5,
+            4: 15.0,
+            1: 12.5,
+            16: 12.5,
+            6: 12.0,
+            8: 13.5,
+            11: 13.5,
+            5: 8.5,
+            15: 12.0,
+            12: 11.5,
+            14: 11.0,
+            7: 14.5,
+            13: 14.0,
+            9: 9.0,
+            10: 13.0,
+        }
+        self.assertEqual(results, expected)
+
     def test_buchholz(self):
         tie_break_ = tie_breaks.StandardBuchholzTieBreak()
         results = self.get_tie_break_player_values(tie_break_)
@@ -338,6 +367,33 @@ class SwissTieBreakTestCase(TieBreakTestCase):
             13: 14.0,
             9: 9.0,
             10: 13.0,
+        }
+        self.assertEqual(results, expected)
+
+    def test_buchholz_cut1_legacy_2026(self):
+        tie_break_ = tie_breaks.StandardBuchholzTieBreak(
+            [
+                options.CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id),
+                LegacyMarch2026TieBreakOption(True),
+            ]
+        )
+        results = self.get_tie_break_player_values(
+            tie_break_, only_ids=[5, 8, 11, 7, 9, 13, 1, 3, 4, 16, 12, 14, 15]
+        )
+        expected = {
+            5: 7.5,
+            8: 12.0,
+            11: 12.0,
+            7: 12.5,
+            9: 7.5,
+            13: 12.0,
+            1: 11.0,
+            3: 13.0,
+            4: 11.5,
+            16: 11.0,
+            12: 9.5,
+            14: 9.0,
+            15: 11.0,
         }
         self.assertEqual(results, expected)
 
@@ -418,6 +474,31 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         }
         self.assertEqual(results, expected)
 
+    def test_fore_buchholz_legacy_2026(self):
+        tie_break_ = tie_breaks.ForeBuchholzTieBreak(
+            [LegacyMarch2026TieBreakOption(True)]
+        )
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {
+            2: 13.5,
+            3: 15.0,
+            4: 15.5,
+            1: 13.5,
+            16: 13.5,
+            8: 12.5,
+            6: 12.0,
+            15: 12.0,
+            5: 10.0,
+            11: 12.5,
+            12: 11.5,
+            14: 10.5,
+            7: 13.5,
+            9: 9.5,
+            13: 13.5,
+            10: 12.5,
+        }
+        self.assertEqual(results, expected)
+
     def test_fore_buchholz(self):
         tie_break_ = tie_breaks.ForeBuchholzTieBreak()
         results = self.get_tie_break_player_values(tie_break_)
@@ -442,7 +523,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         }
         self.assertEqual(results, expected)
 
-    def test_buchholz_legacy(self):
+    def test_buchholz_papi(self):
         tie_break_ = ffe_tie_breaks.PapiBuchholzTieBreak(
             [PapiBuchholzTypeOption(StandardPapiBuchholzType().id)]
         )
@@ -467,7 +548,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         }
         self.assertEqual(results, expected)
 
-    def test_buchholz_cut_legacy(self):
+    def test_buchholz_cut_papi(self):
         tie_break_ = ffe_tie_breaks.PapiBuchholzTieBreak(
             [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
         )
@@ -492,7 +573,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         }
         self.assertEqual(results, expected)
 
-    def test_buchholz_median_legacy(self):
+    def test_buchholz_median_papi(self):
         tie_break_ = ffe_tie_breaks.PapiBuchholzTieBreak(
             [PapiBuchholzTypeOption(MedianPapiBuchholzType().id)]
         )
@@ -517,12 +598,13 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         }
         self.assertEqual(results, expected)
 
-    def test_aob(self):
-        aob = tie_breaks.AverageOfBuchholzTieBreak().compute_player_value
+    def test_aob_legacy_2026(self):
+        aob = tie_breaks.AverageOfBuchholzTieBreak(
+            [LegacyMarch2026TieBreakOption(True)]
+        ).compute_player_value
         results = self.get_player_values(
             lambda p: round(aob(p, after_round=self.tournament.rounds), 2)
         )
-        """ Exercise values (outdated since 03/2026) changes
         expected = {
             2: 13.6,
             3: 13.4,
@@ -541,7 +623,13 @@ class SwissTieBreakTestCase(TieBreakTestCase):
             7: 11.9,
             10: 10.9,
         }
-        """
+        self.assertEqual(results, expected)
+
+    def test_aob(self):
+        aob = tie_breaks.AverageOfBuchholzTieBreak().compute_player_value
+        results = self.get_player_values(
+            lambda p: round(aob(p, after_round=self.tournament.rounds), 2)
+        )
         # Does not match the exercise due to 03/2026 Handbook update (EV = Exercise value)
         # No way to recompute those by hand, as Buchholz test
         # was recomputed it's considered fine by this standard
@@ -565,6 +653,31 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         }
         self.assertEqual(results, expected)
 
+    def test_sonneborn_berger_swiss_legacy_2026(self):
+        tie_break_ = tie_breaks.SonnebornBergerTieBreak(
+            [LegacyMarch2026TieBreakOption(True)]
+        )
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {
+            2: 9.5,
+            3: 10.5,
+            4: 9.75,
+            1: 8.0,
+            16: 7.25,
+            6: 6.5,
+            11: 5.75,
+            8: 5.25,
+            5: 4.25,
+            14: 4.5,
+            12: 4.0,
+            15: 3.5,
+            13: 4.25,
+            7: 3.25,
+            9: 2.25,
+            10: 1.5,
+        }
+        self.assertEqual(results, expected)
+
     def test_sonneborn_berger_swiss(self):
         tie_break_ = tie_breaks.SonnebornBergerTieBreak()
         results = self.get_tie_break_player_values(tie_break_)
@@ -574,8 +687,8 @@ class SwissTieBreakTestCase(TieBreakTestCase):
             3: 10.5,
             4: 9.25,  # EV 9.75: HPB R2 - 0.5 * (dummy capped to rounds/2=2.5 instead of 3.5)
             1: 8.0,
-            16: 7.25,  # EV 6.5: PAB R3 - 1 * (dummy capped to rounds/2=2.5 instead of 3)
-            6: 6.0,
+            16: 7.25,
+            6: 6.0,  # EV 6.5: PAB R3 - 1 * (dummy capped to rounds/2=2.5 instead of 3)
             11: 4.75,  # EV 5.75: Forfeit win R4 - 1 * (dummy capped to opponent score 1.5 instead of 2.5)
             8: 5.25,
             5: 4.25,
@@ -586,6 +699,34 @@ class SwissTieBreakTestCase(TieBreakTestCase):
             7: 3.25,
             9: 2.25,
             10: 1.5,
+        }
+        self.assertEqual(results, expected)
+
+    def test_sb_cut1_swiss_legacy_2026(self):
+        tie_break_ = tie_breaks.SonnebornBergerTieBreak(
+            [
+                options.CutterTieBreakOption(Cut1TieBreakCutter.static_id()),
+                LegacyMarch2026TieBreakOption(True),
+            ]
+        )
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {
+            2: 8.5,
+            3: 9.25,
+            4: 8.0,
+            1: 7.25,
+            16: 5.75,
+            6: 5.5,
+            11: 4.25,
+            8: 3.75,
+            5: 3.25,
+            12: 4.0,
+            14: 3.0,
+            15: 2.5,
+            13: 4.25,
+            7: 1.25,
+            9: 2.25,
+            10: 0.0,
         }
         self.assertEqual(results, expected)
 
@@ -688,7 +829,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         }
         self.assertEqual(results, expected)
 
-    def test_tpr_legacy(self):
+    def test_performance_papi(self):
         tie_break_ = ffe_tie_breaks.PapiPerformanceTieBreak()
         results = self.get_tie_break_player_values(tie_break_)
         expected = {
@@ -879,7 +1020,7 @@ class SwissTieBreakTestCase(TieBreakTestCase):
         }
         self.assertEqual(results, expected)
 
-    def test_kashdan_legacy(self):
+    def test_kashdan_papi(self):
         tie_break_ = ffe_tie_breaks.PapiKashdanTieBreak()
         results = self.get_tie_break_player_values(tie_break_)
         expected = {
@@ -933,6 +1074,69 @@ class SwissDirectEncounterTieBreakTestCase(TieBreakTestCase):
             13: 0,
         }
         self.assertEqual(results, expected)
+
+
+@pytest.mark.unit
+class PLSwissTieBreakTestCase(TieBreakTestCase):
+    """Tests provided by Pierre Lapeyre (IA, Arbiter trainer).
+    See docs/tie_breaks/Tiebreak_exercises-PL-2026.pptm"""
+
+    @property
+    def json_file(self) -> str:
+        return 'pl-swiss'
+
+    def test_progressive_score(self):
+        tie_break_ = tie_breaks.ProgressiveScoresTieBreak()
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {
+            5: 12.5,
+            1: 11,
+            2: 12.5,
+            6: 10.5,
+            4: 9.5,
+            3: 9.5,
+            11: 8.5,
+            14: 6,
+            7: 8,
+            10: 5.5,
+            9: 4.5,
+            8: 3,
+            13: 2.5,
+            12: 1.5,
+        }
+        self.assertEqual(expected, results)
+
+    def test_buchholz(self):
+        tie_break_ = tie_breaks.StandardBuchholzTieBreak()
+        results = self.get_tie_break_player_values(tie_break_)
+        expected = {
+            5: 13.5,
+            1: 14.5,
+            2: 15.0,
+            6: 13.5,
+            4: 14.5,
+            3: 14.0,
+            11: 13.0,
+            14: 11.0,
+            7: 13.5,
+            10: 11.0,
+            9: 11.5,
+            8: 10.5,
+            13: 9.0,
+            12: 10.0,
+        }
+        self.assertEqual(expected, results)
+
+    def test_buchholz_cut1(self):
+        tie_break_ = tie_breaks.StandardBuchholzTieBreak(
+            [options.CutterWithMedianTieBreakOption(Cut1TieBreakCutter.static_id())]
+        )
+        results = self.get_tie_break_player_values(tie_break_, only_ids=[9, 12])
+        expected = {
+            9: 10.0,
+            12: 9.5,
+        }
+        self.assertEqual(expected, results)
 
 
 @pytest.mark.unit

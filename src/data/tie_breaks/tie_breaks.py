@@ -32,6 +32,7 @@ from data.tie_breaks.options import (
     CutterWithMedianTieBreakOption,
     EstimatedRatingsTieBreakOption,
     ReversedTieBreakOption,
+    LegacyMarch2026TieBreakOption,
 )
 from database.sqlite.event.event_store import StoredTieBreak
 from utils import Utils
@@ -165,6 +166,8 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
 
     def get_warning_for_tournament(self, tournament: 'Tournament') -> str | None:
         """Get a warning to display on the tie-break row."""
+        if self.is_legacy:
+            return _('This tie-break uses a legacy way to compute values.')
         return None
 
     @property
@@ -178,7 +181,11 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
             id=None,
             tournament_id=0,
             type=self.id,
-            options={option.id: option.value for option in self.options},
+            options={
+                option.id: option.value
+                for option in self.options
+                if not option.is_legacy
+            },
             index=0,
         )
 
@@ -239,6 +246,10 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
             )
             dummy_score = min(dummy_score, opponent_score)
         return min(dummy_score, tournament.rounds * tournament.draw_points)
+
+    @cached_property
+    def is_legacy(self) -> bool:
+        return any(option.is_legacy and option.value is True for option in self.options)
 
 
 class PlayerRecordTieBreak(TieBreak, ABC):
@@ -627,9 +638,20 @@ class BuchholzTieBreak(OpponentRecordTieBreak, ABC):
         it gives the same results to all players in a RR tournament."""
         return [RoundRobinPairingSystem()]
 
-    @classmethod
+    @cached_property
+    def legacy_03_2026(self) -> bool:
+        return self._get_option(LegacyMarch2026TieBreakOption).value
+
+    @cached_property
+    def fore_modifier(self) -> bool:
+        return self._get_option(ForeModifierTieBreakOption).value
+
+    @cached_property
+    def played_modifier(self) -> bool:
+        return self._get_option(PlayedModifierTieBreakOption).value
+
     def dummy_score(
-        cls,
+        self,
         player: TournamentPlayer,
         *,
         after_round: int = 1,
@@ -652,7 +674,9 @@ class BuchholzTieBreak(OpponentRecordTieBreak, ABC):
                 dummy += tournament.draw_points
         else:
             dummy = player.points_after(after_round)
-        return cls.adjusted_dummy_score(
+        if self.legacy_03_2026:
+            return dummy
+        return self.adjusted_dummy_score(
             dummy,
             tournament,
             after_round=after_round,
@@ -671,6 +695,7 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
     *cut_top* must be at most equal to *cut_bottom*.
       - PLAYED_MODIFIER: When True, forfeit losses and wins are considered
     played against the scheduled opponent.
+      - LEGACY_03_2026: Use the rules effective until March 2026 (legacy).
     See FIDE Handbook C.07.8.1"""
 
     @staticmethod
@@ -686,15 +711,12 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
         return [
             CutterWithMedianTieBreakOption,
             PlayedModifierTieBreakOption,
+            LegacyMarch2026TieBreakOption,
         ]
 
     @cached_property
     def cutter(self) -> TieBreakCutter:
         return self._get_option(CutterWithMedianTieBreakOption).cutter
-
-    @cached_property
-    def played_modifier(self) -> bool:
-        return self.get_option_values()[1]
 
     @property
     def base_acronym(self) -> str:
@@ -717,34 +739,26 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
             for round_index, pairing in player.pairings.items()
             if round_index <= after_round
         }
-        pairing_system = tournament.pairing_system
-        if pairing_system == RoundRobinPairingSystem():
-            return sum(
-                self.adjusted_score(pairing.opponent, after_round=after_round)
-                for pairing in pairings.values()
-                if pairing.opponent
-            )
+
         scores: list[float] = []
         voluntary_unplayed: list[float] = []
         for round_index, pairing in pairings.items():
-            should_add_dummy = pairing_system == SwissPairingSystem() and (
-                (pairing.unplayed and not self.played_modifier)
-                or (
-                    self.played_modifier
-                    and pairing.result
-                    in (
-                        Result.HALF_POINT_BYE,
-                        Result.ZERO_POINT_BYE,
-                        Result.FULL_POINT_BYE,
-                        Result.PAIRING_ALLOCATED_BYE,
-                        Result.REST_GAME,
-                    )
+            should_add_dummy = (pairing.unplayed and not self.played_modifier) or (
+                self.played_modifier
+                and pairing.result
+                in (
+                    Result.HALF_POINT_BYE,
+                    Result.ZERO_POINT_BYE,
+                    Result.FULL_POINT_BYE,
+                    Result.PAIRING_ALLOCATED_BYE,
+                    Result.REST_GAME,
                 )
             )
             if should_add_dummy:
                 dummy_points = self.dummy_score(
                     player, after_round=after_round, opponent=pairing.opponent
                 )
+
                 if pairing.voluntary_unplayed:
                     # We must take those into account to ensure
                     # correct computations for cut-1
@@ -754,12 +768,9 @@ class StandardBuchholzTieBreak(BuchholzTieBreak):
                 continue
             assert pairing.opponent_id is not None
             opponent: TournamentPlayer = tournament.players_by_id[pairing.opponent_id]
-            if pairing_system == SwissPairingSystem():
-                opponent_adjusted_score = self.adjusted_score(
-                    opponent, after_round=after_round
-                )
-            else:
-                opponent_adjusted_score = opponent.points_after(after_round)
+            opponent_adjusted_score = self.adjusted_score(
+                opponent, after_round=after_round
+            )
             scores.append(opponent_adjusted_score)
         voluntary_unplayed = sorted(voluntary_unplayed)
         scores = sorted(scores)
@@ -780,6 +791,7 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
     *cut_top* must be at most equal to *cut_bottom*.
       - PLAYED_MODIFIER: When True, forfeit losses and wins are considered
     played against the scheduled opponent.
+      - LEGACY_03_2026: Use the rules effective until March 2026 (legacy).
     See FIDE Handbook C.07.8.3"""
 
     @staticmethod
@@ -795,15 +807,12 @@ class ForeBuchholzTieBreak(BuchholzTieBreak):
         return [
             CutterWithMedianTieBreakOption,
             PlayedModifierTieBreakOption,
+            LegacyMarch2026TieBreakOption,
         ]
 
     @cached_property
     def cutter(self) -> TieBreakCutter:
         return self._get_option(CutterWithMedianTieBreakOption).cutter
-
-    @cached_property
-    def played_modifier(self) -> bool:
-        return self.get_option_values()[1]
 
     @property
     def base_acronym(self) -> str:
@@ -888,16 +897,20 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
 
     @staticmethod
     def available_options() -> list[type[TieBreakOption]]:
-        return [ForeModifierTieBreakOption]
-
-    @cached_property
-    def fore_modifier(self) -> bool:
-        return self.get_option_values()[0]
+        return [
+            ForeModifierTieBreakOption,
+            LegacyMarch2026TieBreakOption,
+        ]
 
     @cached_property
     def sub_tie_break(self) -> TieBreak:
+        options: list[TieBreakOption] = [
+            self._get_option(LegacyMarch2026TieBreakOption)
+        ]
         return (
-            ForeBuchholzTieBreak() if self.fore_modifier else StandardBuchholzTieBreak()
+            ForeBuchholzTieBreak(options)
+            if self.fore_modifier
+            else StandardBuchholzTieBreak(options)
         )
 
     @property
@@ -947,14 +960,22 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
     def static_name() -> str:
         return _('Average of opponents Buchholz')
 
-    @cached_property
-    def fore_modifier(self) -> bool:
-        return self.get_option_values()[0]
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return [
+            ForeModifierTieBreakOption,
+            LegacyMarch2026TieBreakOption,
+        ]
 
     @cached_property
     def sub_tie_break(self) -> TieBreak:
+        options: list[TieBreakOption] = [
+            self._get_option(LegacyMarch2026TieBreakOption)
+        ]
         return (
-            ForeBuchholzTieBreak() if self.fore_modifier else StandardBuchholzTieBreak()
+            ForeBuchholzTieBreak(options)
+            if self.fore_modifier
+            else StandardBuchholzTieBreak(options)
         )
 
     @property
@@ -967,10 +988,6 @@ class AverageOfBuchholzTieBreak(BuchholzTieBreak):
             'The average of the [{tie_break}] scores of '
             'the opponents played over the board.'
         ).format(tie_break=_('Fore Buchholz') if self.fore_modifier else _('Buchholz'))
-
-    @staticmethod
-    def available_options() -> list[type[TieBreakOption]]:
-        return [ForeModifierTieBreakOption]
 
     def compute_player_value(
         self, player: TournamentPlayer, *, after_round: int
@@ -1019,6 +1036,7 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
         return [
             CutterTieBreakOption,
             PlayedModifierTieBreakOption,
+            LegacyMarch2026TieBreakOption,
         ]
 
     @cached_property
@@ -1028,6 +1046,10 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
     @cached_property
     def played_modifier(self) -> bool:
         return self.get_option_values()[1]
+
+    @cached_property
+    def legacy_03_2026(self) -> bool:
+        return self._get_option(LegacyMarch2026TieBreakOption).value
 
     @property
     def base_acronym(self) -> str:
@@ -1112,21 +1134,22 @@ class SonnebornBergerTieBreak(OpponentRecordTieBreak):
             map(lambda t: t.contribution, voluntary_unplayed + general_contributions)
         )
 
-    @classmethod
     def _dummy_score(
-        cls,
+        self,
         player: TournamentPlayer,
         pairing: Pairing,
         *,
         after_round: int = 1,
     ) -> tuple[float, Result]:
         """Computes the dummy score for the given pairing after *after_round*."""
-        dummy = cls.adjusted_dummy_score(
-            player.points_after(after_round),
-            player.tournament,
-            after_round=after_round,
-            opponent=pairing.opponent,
-        )
+        dummy = player.points_after(after_round)
+        if not self.legacy_03_2026:
+            dummy = self.adjusted_dummy_score(
+                dummy,
+                player.tournament,
+                after_round=after_round,
+                opponent=pairing.opponent,
+            )
         match pairing.result:
             case (
                 Result.FORFEIT_WIN

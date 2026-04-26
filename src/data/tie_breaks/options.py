@@ -46,6 +46,12 @@ class TieBreakOption(Option, ABC):
     def variation_help_text(self) -> str:
         """Represent the variation in the tie-break help text."""
 
+    @property
+    def is_legacy(self) -> bool:
+        """Defines if the option marks the tie-break as legacy.
+        Tie-breaks with legacy options can no longer be modified."""
+        return False
+
 
 class BaseCutterTieBreakOption(TieBreakOption, ABC):
     @property
@@ -303,3 +309,43 @@ class ReversedTieBreakOption(TieBreakOption):
     @property
     def default_value(self) -> Any:
         return None
+
+
+class LegacyTieBreakOption(TieBreakOption, ABC):
+    @property
+    def template_file_stem(self) -> str:
+        return ''
+
+    @property
+    def template_name(self) -> str:
+        return ''
+
+    @property
+    def variation_acronym(self) -> str:
+        return ''
+
+    @property
+    def variation_name(self) -> str:
+        return _('Legacy')
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return False
+
+    @property
+    def is_legacy(self) -> bool:
+        return True
+
+
+class LegacyMarch2026TieBreakOption(LegacyTieBreakOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'LEGACY_03_2026'
+
+    @property
+    def variation_help_text(self) -> str:
+        return _('Rules used were only effective until march 2026 (legacy).')

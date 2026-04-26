@@ -3120,6 +3120,12 @@ msgstr ""
 msgid "Lebanon"
 msgstr ""
 
+msgid "Legacy"
+msgstr ""
+
+msgid "Legacy tie-breaks can no longer be created or edited."
+msgstr ""
+
 msgid "Lesotho"
 msgstr ""
 
@@ -4924,6 +4930,9 @@ msgstr ""
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
 
+msgid "Rules used were only effective until march 2026 (legacy)."
+msgstr ""
+
 msgid "Russia"
 msgstr ""
 
@@ -5930,6 +5939,9 @@ msgid "This tie-break is not recommended on tournaments lasting over multiple FI
 msgstr ""
 
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
+msgstr ""
+
+msgid "This tie-break uses a legacy way to compute values."
 msgstr ""
 
 msgid "This tournament has no titled players."
