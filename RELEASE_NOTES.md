@@ -78,6 +78,7 @@
 ### _FRA Schools_
 
 - Download database from _GitHub_ (4.0.5)
+- Fixed schools with no UAI code replacing each other (4.0.6)
 
 ## Handicap Games
 

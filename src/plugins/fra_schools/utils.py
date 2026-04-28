@@ -272,10 +272,12 @@ class FRASchoolsUtils:
             - if *update_existing* it is updated
             - otherwise it is ignored."""
         plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
-        school_id = next(
-            (s.id for s in plugin_data.fra_schools if s.code == school.code),
-            None,
-        )
+        school_id: int | None = None
+        if school.code:
+            school_id = next(
+                (s.id for s in plugin_data.fra_schools if s.code == school.code),
+                None,
+            )
         if not school_id:
             school_id = (
                 max(plugin_data.fra_schools_by_id | {0: ''}) + 1

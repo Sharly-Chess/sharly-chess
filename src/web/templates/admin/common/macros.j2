@@ -572,6 +572,7 @@ with_indicator: display a loading indicator, optional
     info='',
     autocomplete='',
     disabled=false,
+    prevent_wrapping=false,
     hx_get='',
     hx_post='',
     hx_target='',
@@ -593,7 +594,7 @@ with_indicator: display a loading indicator, optional
         {% else %}
             {% set value=data[name] %}
         {% endif %}
-        <div id="{{id}}-wrapper" class="input-block position-relative">
+        <div id="{{id}}-wrapper" class="input-block position-relative{% if prevent_wrapping %} flex-nowrap{% endif %}">
             <div class="d-flex align-items-center">
                 {%- if label -%}
                     <span
@@ -936,6 +937,7 @@ with_indicator: display a loading indicator, optional
     input_tooltip='',
     with_indicator=false,
     autocomplete='',
+    prevent_wrapping=false,
     hx_get='',
     hx_post='',
     hx_trigger='',
@@ -967,6 +969,7 @@ with_indicator: display a loading indicator, optional
         input_tooltip=input_tooltip,
         with_indicator=with_indicator,
         autocomplete=autocomplete,
+        prevent_wrapping=prevent_wrapping,
         hx_get=hx_get,
         hx_post=hx_post,
         hx_trigger=hx_trigger,
