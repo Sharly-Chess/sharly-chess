@@ -59,58 +59,100 @@ function keyboardShortcutManager(event) {
             break;
 
         case 't':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_T"));
             break;
 
         case 'c':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_C"));
             break;
 
         case 'p':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_P"));
             break;
 
         case 'j':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_J"));
             break;
 
         case 'a':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_A"));
             break;
 
         case 's':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_S"));
             break;
 
         case 'f':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_F"));
             break;
 
         case 'r':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_R"));
             break;
 
         case 'd':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_D"));
             break;
 
         case 'm':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_M"));
             break;
 
         case 'l':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_L"));
             break;
 
         case 'x':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_X"));
             break;
 
         case 'z':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_Z"));
             break;
 
         case 'i':
+            if (event.ctrlKey) {
+                break;
+            }
             document.body.dispatchEvent(new CustomEvent("SC_I"));
             break;
 
