@@ -13,8 +13,30 @@ function keyboardShortcutManager(event) {
     if (isModalOpened()) {return;}
     if (isTargetInput(event.target)) {return;}
 
-    switch(event.key.toLowerCase()) {
+    let navigationShortcuts = {
+        'a': "SC_A",
+        'c': "SC_C",
+        'd': "SC_D",
+        'f': "SC_F",
+        'i': "SC_I",
+        'j': "SC_J",
+        'l': "SC_L",
+        'm': "SC_M",
+        'p': "SC_P",
+        'r': "SC_R",
+        's': "SC_S",
+        't': "SC_T",
+        'x': "SC_X",
+        'z': "SC_Z",
+    }
+
+    let key = event.key.toLowerCase()
+
+    switch(key) {
         case '+':
+            if (event.ctrlKey || event.altKey) {
+                break
+            }
             document.body.dispatchEvent(new CustomEvent("SC_Plus"));
             break;
 
@@ -58,105 +80,10 @@ function keyboardShortcutManager(event) {
             document.body.dispatchEvent(new CustomEvent("SC_ArrowDown"));
             break;
 
-        case 't':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_T"));
-            break;
-
-        case 'c':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_C"));
-            break;
-
-        case 'p':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_P"));
-            break;
-
-        case 'j':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_J"));
-            break;
-
-        case 'a':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_A"));
-            break;
-
-        case 's':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_S"));
-            break;
-
-        case 'f':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_F"));
-            break;
-
-        case 'r':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_R"));
-            break;
-
-        case 'd':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_D"));
-            break;
-
-        case 'm':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_M"));
-            break;
-
-        case 'l':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_L"));
-            break;
-
-        case 'x':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_X"));
-            break;
-
-        case 'z':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_Z"));
-            break;
-
-        case 'i':
-            if (event.ctrlKey) {
-                break;
-            }
-            document.body.dispatchEvent(new CustomEvent("SC_I"));
-            break;
-
         default:
+            if (Object.keys(navigationShortcuts).includes(key) && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+                document.body.dispatchEvent(new CustomEvent(navigationShortcuts[key]));
+            }
             break
 
     }
