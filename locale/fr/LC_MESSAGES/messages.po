@@ -5156,6 +5156,9 @@ msgstr "Afficher les avertissements"
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
 
+msgid "Show/hide these screens."
+msgstr "Montrer/cacher ces écrans."
+
 msgid "Sierra Leone"
 msgstr "Sierra Leone"
 
