@@ -1655,6 +1655,7 @@ class Tournament:
         self.set_player_byes(player, new_byes)
         self.check_in_player(player, not withdraw)
         player.__dict__.pop('has_withdrawn', None)
+        player.__dict__.pop('check_in_status', None)
 
     def set_player_byes(self, player: TournamentPlayer, byes: dict[int, Result]):
         """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""

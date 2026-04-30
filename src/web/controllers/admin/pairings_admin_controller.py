@@ -1223,7 +1223,7 @@ class PairingsAdminController(BaseEventAdminController):
         errors: dict[str, str] | None = None,
     ) -> Template:
         tournament = web_context.get_admin_tournament()
-        if data is not None:
+        if data is None:
             data = {}
             for setting in tournament.pairing_variation.settings:
                 data |= setting.get_form_data(tournament)
