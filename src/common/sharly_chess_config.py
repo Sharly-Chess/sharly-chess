@@ -424,11 +424,13 @@ class SharlyChessConfig(metaclass=Singleton):
     # Other library versions, set manually and checked.
     bootstrap_version = Version('5.3.3')
     bootstrap_icons_version = Version('1.11.3')
+    bootstrap5_toggle_version = Version('5.3.3')
     htmx_version = Version('2.0.4')
     htmx_remove_me_version = Version('2.0.0')
     htmx_multi_swap_version = Version('2.0.0')
     htmx_ws_version = Version('2.0.3')
     jquery_version = Version('3.7.1')
+    progressbar_js_version = Version('1.1.1')
     sortable_version = Version('1.15.6')
     selectable_version = Version('0.22.0')
     morphdom_version = Version('2.7.4')

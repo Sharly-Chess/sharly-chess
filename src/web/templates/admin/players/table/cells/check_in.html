@@ -1,44 +1,51 @@
-{% set can_check_in = client.can_check_in_players(tournament.id) %}
-{% set check_in_status = tournament_player.check_in_status %}
-{% if check_in_status != 0 %}
+{% set status = tournament_player.check_in_status %}
+{% set player_id = tournament_player.id %}
+{% set is_bye_update = status not in (4, 5) %}
+{% set editable = not is_bye_update or client.can_set_zero_point_bye(tournament_player.tournament.id) %}
+
+<span
+    id="player-{{ player_id }}-check-in"
+    {% set click_detail = _(
+        'Click to mark as &quot;%(status)s&quot;',
+        status=_('Present') if status == 4 else _('Absent')
+    ) if status in (4, 5) else _('Click to cancel') %}
+    {{ macros.tooltip_attributes(
+        '',
+        '<div class="fw-bold">' ~ status.name ~ '</div>'
+        '<div class="fst-italic" style="font-size:80%">' ~ click_detail ~ '</div>'
+        if editable else status.name,
+        'right'
+    ) }}
+>
     <i
         data-testid="check-in-cell"
-        {% if check_in_status == 1 %}
-            class="bi-ban text-secondary"
-            {{ macros.tooltip_attributes(
-                'warning', _(
-                    'Player [%(player)s] is absent for the next round in tournament [%(tournament)s].',
-                    player=player.full_name, tournament=tournament.name
-                ), 'right'
-            ) }}
+        class="{{ status.icon_classes }}
+            {% if editable %}cursor-pointer{% endif %}
+            {% if after_check_in %}position-absolute z-1{% endif %}"
+        {% if not editable %}
+            style="opacity: 45%"
         {% else %}
-            {% if can_check_in %}
-                {% if tournament_player.check_in %}
-                    class="bi-check-circle-fill text-success cursor-pointer"
-                    {{ macros.tooltip_attributes('info', _('Click to check-out the player.'), 'right') }}
-                {% else %}
-                    class="bi-circle-fill text-warning cursor-pointer"
-                    {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
-                {% endif %}
+
+            hx-indicator="#please-wait"
+            {% if unsafe_player_check_in_enabled and status in (4, 5) %}
                 hx-patch="{{ url_for(
-                    'admin-player-check-in-out',
+                    'check-in-player-action',
                     event_uniq_id=admin_event.uniq_id,
-                    player_id=player.id,
-                    check_in=(not tournament_player.check_in)|int
+                    player_id=player_id,
                 ) }}"
-                onclick="isNextRefreshMessageIgnored = true;"
-                hx-on::before-request="$('#player-{{ player.id }} td').addClass('text-secondary');"
-                hx-swap="multi:#players-table-header,#player-{{ player.id }}:outerHTML,#players-table-empty-row:outerHTML"
-                hx-indicator="#please-wait"
+                hx-on::before-request="$('#player-{{ player_id }} td,#player-{{ player_id }} .player-link').addClass('text-secondary');"
+                onclick="refreshMessagesIgnored += 1"
+                hx-swap="multi:#players-table-header,#player-{{ player_id }}:outerHTML,#players-table-empty-row:outerHTML"
             {% else %}
-                {% if tournament_player.check_in %}
-                    class="bi-check-circle-fill text-success"
-                    {{ macros.tooltip_attributes('warning', _('You are not allowed to check-out the player.'), 'right') }}
-                {% else %}
-                    class="bi-circle-fill text-warning"
-                    {{ macros.tooltip_attributes('info', _('Click to check-in the player.'), 'right') }}
-                {% endif %}
+                hx-get="{{ url_for(
+                    'check-in-player-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    player_id=player_id,
+                ) }}"
             {% endif %}
         {% endif %}
     ></i>
-{% endif %}
+    {% if after_check_in %}
+        <i class="{{ status.icon_classes }} position-relative z-0"></i>
+    {% endif %}
+</span>

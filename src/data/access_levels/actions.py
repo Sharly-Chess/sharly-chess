@@ -10,7 +10,6 @@ class AuthActionCategory(StrEnum):
     ACCESS = auto()
     TOURNAMENTS = auto()
     PLAYERS = auto()
-    CHECK_IN = auto()
     PAIRINGS = auto()
     RANKINGS = auto()
     RESULTS = auto()
@@ -38,8 +37,6 @@ class AuthActionCategory(StrEnum):
                 return _('Tournaments', locale)
             case AuthActionCategory.PLAYERS:
                 return _('Players', locale)
-            case AuthActionCategory.CHECK_IN:
-                return _('Check-in', locale)
             case AuthActionCategory.PAIRINGS:
                 return _('Pairings', locale)
             case AuthActionCategory.RANKINGS:
@@ -92,9 +89,6 @@ class AuthAction(StrEnum):
     UPDATE_PLAYERS_HISTORY = auto()
     DELETE_PLAYERS = auto()
     DISTRIBUTE_PLAYERS = auto()
-
-    # Check-in
-    OPEN_CLOSE_CHECK_IN = auto()
     CHECK_IN_PLAYERS = auto()
 
     # Pairings
@@ -175,10 +169,9 @@ class AuthAction(StrEnum):
                 | AuthAction.UPDATE_PLAYERS_HISTORY
                 | AuthAction.DELETE_PLAYERS
                 | AuthAction.DISTRIBUTE_PLAYERS
+                | AuthAction.CHECK_IN_PLAYERS
             ):
                 return AuthActionCategory.PLAYERS
-            case AuthAction.OPEN_CLOSE_CHECK_IN | AuthAction.CHECK_IN_PLAYERS:
-                return AuthActionCategory.CHECK_IN
             case (
                 AuthAction.VIEW_PAIRINGS_TAB
                 | AuthAction.USE_PAIRING_ENGINE
@@ -270,8 +263,6 @@ class AuthAction(StrEnum):
                 return _('Delete players', locale)
             case AuthAction.DISTRIBUTE_PLAYERS:
                 return _('Distribute the players among the tournaments', locale)
-            case AuthAction.OPEN_CLOSE_CHECK_IN:
-                return _('Open/close check-in', locale)
             case AuthAction.CHECK_IN_PLAYERS:
                 return _('Check-in players', locale)
             case AuthAction.VIEW_PAIRINGS_TAB:

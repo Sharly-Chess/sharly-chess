@@ -72,6 +72,11 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         """Determines if the boards need reordering after they've been loaded."""
         return True
 
+    @property
+    def check_in_imported(self) -> bool:
+        """Defines if the player's check-in status is imported by the importer."""
+        return False
+
     @staticmethod
     def _reorder_tournament_boards(tournament: Tournament):
         with EventDatabase(tournament.event.uniq_id, True) as database:
@@ -137,6 +142,12 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         event = EventLoader().load_event(event.uniq_id)
         tournament = event.tournaments_by_id[tournament_id]
         tournament.set_tournament_players_pairing_numbers()
+        if not self.check_in_imported:
+            with EventDatabase(event.uniq_id, True) as database:
+                database.set_players_check_in(
+                    [player.id for player in tournament.tournament_players],
+                    tournament.default_player_check_in,
+                )
         for task in self.post_import_task:
             task(tournament)
         return tournament.id
@@ -159,7 +170,6 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             database.set_tournament_pairing_settings(
                 tournament_id, stored_tournament.pairing_settings
             )
-        database.set_tournament_check_in(tournament_id, stored_tournament.check_in_open)
         database.delete_all_tournament_stored_tie_breaks(tournament_id)
         for index, stored_tie_break in enumerate(stored_tournament.stored_tie_breaks):
             stored_tie_break.tournament_id = tournament_id

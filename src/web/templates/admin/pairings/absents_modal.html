@@ -1,0 +1,160 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ _('Absent players (%(count)d)', count=admin_absent_players|length) }}
+            </div>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-target="body"
+                hx-post="{{ url_for(
+                    'pairings-validate-absents',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_round
+                ) }}"
+                hx-indicator="#please-wait"
+            >
+                <div class="d-flex align-items-center justify-content-end pe-2 pb-2">
+                    <span class="pe-2 fs-5">
+                        {{ _('Apply to all players:') }}
+                    </span>
+                    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                        <input
+                            type="radio"
+                            class="btn-check"
+                            id="zpb-all"
+                            value="zpb"
+                            name="all_players"
+                            autocomplete="off"
+                            checked
+                        >
+                        <label
+                            class="btn btn-outline-primary"
+                            for="zpb-all"
+                            {{ macros.tooltip_attributes('', _('Zero-Point Bye for the next round')) }}
+                        >
+                            <i class="bi-0-circle-fill"></i>
+                        </label>
+
+                        <input
+                            type="radio"
+                            class="btn-check"
+                            id="withdraw-all"
+                            value="withdraw"
+                            name="all_players"
+                            autocomplete="off"
+                        >
+                        <label
+                            class="btn btn-outline-primary"
+                            for="withdraw-all"
+                            {{ macros.tooltip_attributes('', _('Withdraw from tournament')) }}
+                        >
+                            <i class="bi-door-open-fill"></i>
+                        </label>
+                        <input
+                            type="radio"
+                            class="btn-check"
+                            id="present-all"
+                            value="present"
+                            name="all_players"
+                            autocomplete="off"
+                        >
+                        <label
+                            class="btn btn-outline-primary"
+                            for="present-all"
+                            {{ macros.tooltip_attributes('', _('Mark as &quot;Present&quot; (will be paired next round)')) }}
+                        >
+                            <i class="bi-check-circle-fill"></i>
+                        </label>
+                    </div>
+                    <script>
+                        $('input[name="all_players"]').on('change', function() {
+                            $('.player-' + $(this).val()).prop('checked', true);
+                        });
+                    </script>
+                </div>
+                <div class="d-flex flex-column gap-2">
+                    {% for player in admin_absent_players %}
+                        <div class="border border-secondary bg-body-tertiary">
+                            <div class="p-2 d-flex align-items-center gap-4">
+                                <div class="text-start flex-grow-1">
+                                    {{ player.full_name }}
+                                </div>
+                                <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                                    <input
+                                        type="radio"
+                                        class="btn-check player-zpb"
+                                        name="player_{{ player.id }}"
+                                        id="zpb-{{ player.id }}"
+                                        value="zpb"
+                                        autocomplete="off"
+                                        checked
+                                    >
+                                    <label class="btn btn-outline-primary" for="zpb-{{ player.id }}">
+                                        <i class="bi-0-circle-fill"></i>
+                                    </label>
+
+                                    <input
+                                        type="radio"
+                                        class="btn-check player-withdraw"
+                                        name="player_{{ player.id }}"
+                                        id="withdraw-{{ player.id }}"
+                                        value="withdraw"
+                                        autocomplete="off"
+                                    >
+                                    <label class="btn btn-outline-primary" for="withdraw-{{ player.id }}">
+                                        <i class="bi-door-open-fill"></i>
+                                    </label>
+                                    <input
+                                        type="radio"
+                                        class="btn-check player-present"
+                                        name="player_{{ player.id }}"
+                                        id="present-{{ player.id }}"
+                                        value="present"
+                                        autocomplete="off"
+                                    >
+                                    <label class="btn btn-outline-primary" for="present-{{ player.id }}">
+                                        <i class="bi-check-circle-fill"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+
+            >
+                {% if admin_round == 1 %}
+                    <i class="bi-check-circle-fill pe-1"></i>
+                    {{ _('Validate') }}
+                {% else %}
+                    <i class="bi-shuffle pe-1"></i>
+                    {{ _('Validate and pair') }}
+                {% endif %}
+            </button>
+        </div>
+    </div>
+</div>

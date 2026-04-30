@@ -370,6 +370,16 @@ class SessionPlayersFilters(EventSessionVariable[dict[str, list[str]]]):
         self.set(filters)
 
 
+class SessionPlayersUnsafeCheckIn(EventSessionVariable[bool]):
+    @property
+    def key(self) -> str:
+        return 'players_unsafe_check_in'
+
+    @property
+    def default_value(self) -> bool:
+        return False
+
+
 class SessionPlayersEvent(NoneSessionVariable[str]):
     @property
     def key(self) -> str:

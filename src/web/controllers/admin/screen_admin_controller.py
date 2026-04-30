@@ -84,6 +84,10 @@ class ScreenAdminWebContext(BaseEventAdminWebContext):
         assert self.admin_screen_set is not None
         return self.admin_screen_set
 
+    def get_screen_type(self) -> ScreenType:
+        assert self.screen_type is not None
+        return self.screen_type
+
     @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
@@ -124,6 +128,7 @@ class ScreenAdminController(BaseEventAdminController):
                         | ScreenType.INPUT
                         | ScreenType.PLAYERS
                         | ScreenType.RANKING
+                        | ScreenType.CHECK_IN
                     ):
                         field = 'init_set_tournament_id'
                         init_set_tournament_id = WebContext.form_data_to_int(
@@ -196,6 +201,10 @@ class ScreenAdminController(BaseEventAdminController):
                     case ScreenType.BOARDS:
                         pass
                     case ScreenType.INPUT:
+                        input_exit_button = WebContext.form_data_to_bool(
+                            data, 'input_exit_button'
+                        )
+                    case ScreenType.CHECK_IN:
                         input_exit_button = WebContext.form_data_to_bool(
                             data, 'input_exit_button'
                         )
@@ -449,63 +458,23 @@ class ScreenAdminController(BaseEventAdminController):
         )
         event = web_context.get_admin_event()
         admin_screen_types_data: dict[ScreenType, dict[str, Any]] = {
-            ScreenType.INPUT: {
-                'title': _('Check-in / Results ({num})'),
-                'create_title': _('Check-in / Results entry'),
-                'create_tooltip': _(
-                    'Add a screen to check-in players or enter results.'
-                ),
-            },
-            ScreenType.BOARDS: {
-                'title': _('Pairings by board ({num})'),
-                'create_title': _('Pairings by board'),
-                'create_tooltip': _(
-                    'Add a screen to display the pairings by board number.'
-                ),
-            },
-            ScreenType.PLAYERS: {
-                'title': _('Pairings by player ({num})'),
-                'create_title': _('Pairings by player'),
-                'create_tooltip': _(
-                    'Add a screen to display the pairings by alphabetical order.'
-                ),
-            },
-            ScreenType.RESULTS: {
-                'title': _('Last results ({num})'),
-                'create_title': _('Last results'),
-                'create_tooltip': _('Add a screen to display the last results.'),
-            },
-            ScreenType.RANKING: {
-                'title': _('Ranking ({num})'),
-                'create_title': _('Ranking'),
-                'create_tooltip': _('Add a screen to display the ranking.'),
-            },
-            ScreenType.IMAGE: {
-                'title': _('Image ({num})'),
-                'create_title': _('Image'),
-                'create_tooltip': _('Add a screen to display an image.'),
-            },
+            screen_type: {} for screen_type in ScreenType
         }
         template_context: dict[str, Any] = web_context.template_context
 
         if web_context.client.can_manage_screens:
             # 'admin' view
             show_family_screens = SessionScreensShowFamilyScreens(request).get()
-            screens_by_type_sorted_by_uniq_id: dict[ScreenType, list[Screen]]
+            sorted_screens_by_type: dict[ScreenType, list[Screen]]
             if show_family_screens:
-                screens_by_type_sorted_by_uniq_id = event.sorted_screens_by_screen_type
+                sorted_screens_by_type = event.sorted_screens_by_screen_type
             else:
-                screens_by_type_sorted_by_uniq_id = (
-                    event.sorted_basic_screens_by_screen_type
-                )
+                sorted_screens_by_type = event.sorted_basic_screens_by_screen_type
             for screen_type_ in ScreenType.screen_types():
-                admin_screen_types_data[screen_type_]['screens'] = (
-                    screens_by_type_sorted_by_uniq_id[screen_type_]
-                )
+                screens = sorted_screens_by_type[screen_type_]
+                admin_screen_types_data[screen_type_]['screens'] = screens
                 admin_screen_types_data[screen_type_]['title'] = (
-                    admin_screen_types_data[screen_type_]['title'].format(
-                        num=len(admin_screen_types_data[screen_type_]['screens']) or '-'
-                    )
+                    f'{screen_type_.name} ({len(screens) or "-"})'
                 )
             template_context |= {
                 'admin_event_tab': 'admin-event-screens-tab',
@@ -520,30 +489,22 @@ class ScreenAdminController(BaseEventAdminController):
             }
         else:
             # 'user' view
-            if web_context.screen_type is None:
-                raise RuntimeError('screen_type not defined')
-            sorted_screens: list[Screen]
+            screen_type = web_context.get_screen_type()
             if web_context.client.can_view_private_screens:
-                sorted_screens = event.sorted_screens_by_screen_type[
-                    web_context.screen_type
-                ]
+                sorted_screens = event.sorted_screens_by_screen_type[screen_type]
             else:
-                sorted_screens = event.sorted_public_screens_by_screen_type[
-                    web_context.screen_type
-                ]
-
+                sorted_screens = event.sorted_public_screens_by_screen_type[screen_type]
             if not sorted_screens:
                 return Redirect(admin_event_url(request, event_uniq_id=event.uniq_id))
 
-            admin_screen_type_data: dict[str, Any] = admin_screen_types_data[
-                web_context.screen_type
-            ]
+            admin_screen_type_data = admin_screen_types_data[screen_type]
             admin_screen_type_data['screens'] = sorted_screens
-            admin_screen_type_data['title'] = admin_screen_type_data['title'].format(
-                num=len(admin_screen_type_data['screens']) or '-'
+            admin_screen_type_data['title'] = (
+                f'{screen_type.name} ({len(sorted_screens) or "-"})'
             )
+
             template_context |= {
-                'admin_event_tab': f'admin-event-{web_context.screen_type.value}-screens-tab',
+                'admin_event_tab': f'admin-event-{screen_type.value}-screens-tab',
                 'admin_screen_type_data': admin_screen_type_data,
                 'admin_screens_count': len(admin_screen_type_data['screens']),
             }
@@ -584,13 +545,14 @@ class ScreenAdminController(BaseEventAdminController):
                             assert stored_screen is not None
                             name = stored_screen.name
                         case 'create':
-                            assert web_context.screen_type is not None
-                            match web_context.screen_type:
+                            screen_type = web_context.get_screen_type()
+                            match screen_type:
                                 case (
                                     ScreenType.INPUT
                                     | ScreenType.BOARDS
                                     | ScreenType.PLAYERS
                                     | ScreenType.RANKING
+                                    | ScreenType.CHECK_IN
                                 ):
                                     init_set_tournament_id = list(
                                         event.tournaments_by_id.keys()
@@ -598,27 +560,10 @@ class ScreenAdminController(BaseEventAdminController):
                                 case ScreenType.RESULTS | ScreenType.IMAGE:
                                     pass
                                 case _:
-                                    raise ValueError(
-                                        f'screen_type=[{web_context.screen_type}]'
-                                    )
-                            name = event.get_unused_screen_name(
-                                screen_type=ScreenType(web_context.screen_type)
-                            )
-                            match web_context.screen_type:
-                                case ScreenType.RANKING:
-                                    ranking_crosstable = False
-                                case (
-                                    ScreenType.INPUT
-                                    | ScreenType.BOARDS
-                                    | ScreenType.PLAYERS
-                                    | ScreenType.RESULTS
-                                    | ScreenType.IMAGE
-                                ):
-                                    pass
-                                case _:
-                                    raise ValueError(
-                                        f'screen_type=[{web_context.screen_type}]'
-                                    )
+                                    raise ValueError(f'screen_type=[{screen_type}]')
+                            name = event.get_unused_screen_name(screen_type)
+                            if ScreenType.RANKING:
+                                ranking_crosstable = False
                         case 'clone':
                             screen = web_context.get_admin_screen()
                             name = event.get_unused_screen_name(
@@ -645,6 +590,8 @@ class ScreenAdminController(BaseEventAdminController):
                             match screen.type:
                                 case ScreenType.BOARDS:
                                     pass
+                                case ScreenType.CHECK_IN:
+                                    input_exit_button = stored_screen.input_exit_button
                                 case ScreenType.INPUT:
                                     input_exit_button = stored_screen.input_exit_button
                                 case ScreenType.PLAYERS:
@@ -681,9 +628,7 @@ class ScreenAdminController(BaseEventAdminController):
                                     background_image = stored_screen.background_image
                                     background_color = screen.background_color
                                 case _:
-                                    raise ValueError(
-                                        f'screen_type={web_context.admin_screen.type}'
-                                    )
+                                    raise ValueError(f'screen_type={screen.type}')
                             message_default = stored_screen.message_default
                             message_text = stored_screen.message_text
                         case 'create':
@@ -696,6 +641,8 @@ class ScreenAdminController(BaseEventAdminController):
                                     menu = '@boards'
                                 case ScreenType.INPUT:
                                     menu = '@input'
+                                case ScreenType.CHECK_IN:
+                                    menu = '@check-in'
                                 case ScreenType.PLAYERS:
                                     menu = '@players'
                                     columns = cls.get_default_players_screen_columns(
@@ -961,6 +908,7 @@ class ScreenAdminController(BaseEventAdminController):
                         ScreenType.INPUT,
                         ScreenType.PLAYERS,
                         ScreenType.RANKING,
+                        ScreenType.CHECK_IN,
                     ]:
                         if init_set_tournament_id is None:
                             raise RuntimeError(
@@ -984,6 +932,7 @@ class ScreenAdminController(BaseEventAdminController):
                         ScreenType.INPUT,
                         ScreenType.PLAYERS,
                         ScreenType.RANKING,
+                        ScreenType.CHECK_IN,
                     ]:
                         for screen_set in screen.sorted_screen_sets:
                             assert screen_set.id is not None
@@ -1375,6 +1324,15 @@ class ScreenAdminController(BaseEventAdminController):
         self, request: HTMXRequest
     ) -> Template | Redirect:
         return self._admin_event_screens_render(request, screen_type='input')
+
+    @get(
+        path='/event/{event_uniq_id:str}/check-in-screens',
+        name='admin-event-check-in-screens-tab',
+    )
+    async def htmx_admin_event_check_in_screens_tab(
+        self, request: HTMXRequest
+    ) -> Template | Redirect:
+        return self._admin_event_screens_render(request, screen_type='check-in')
 
     @get(
         path='/event/{event_uniq_id:str}/boards-screens',

@@ -127,7 +127,6 @@
 | `time_control_trf25`                      | `TEXT`    |                                            | The time control in TRF25 format                                                            |
 | `record_illegal_moves`                    | `INTEGER` |                                            | The maximum number of illegal moves that can be recorded for a player per round             |
 | `rules`                                   | `TEXT`    |                                            | The URL or server path to the tournament rules, in PDF format (by default, the event rules) |
-| `check_in_open`                           | `INTEGER` |                                            | Boolean:<br/>- `1`: Checking is open<br/>- `0`: Checking is closed                          |
 | `last_update`                             | `TEXT`    | NOT NULL                                   | The last date the tournament was modified                                                   |
 | `last_player_update`.                     | `TEXT`    | NOT NULL<br/>DEFAULT 0.0                   | The last date a player associated with this tournament was modified                         |
 | `last_pairing_update`                     | `TEXT`    | NOT NULL<br/>DEFAULT 0.0                   | The last date a pairing associated with this tournament score was modified                  |

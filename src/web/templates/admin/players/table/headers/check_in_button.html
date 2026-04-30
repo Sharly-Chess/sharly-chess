@@ -1,0 +1,15 @@
+{% if unsafe_player_check_in_enabled %}
+    <i
+        class="bi-exclamation-triangle-fill text-danger cursor-pointer ps-1"
+        hx-patch="{{ url_for(
+            'check-in-disable-unsafe',
+            event_uniq_id=admin_event.uniq_id,
+        ) }}"
+        hx-indicator="#please-wait"
+        hx-target="body"
+        {{ macros.tooltip_attributes('',
+            '<div class="">' ~_('Check-in confirmation disabled, watch out for missclicks.') ~ '</div>'
+            '<div class="fst-italic" style="font-size:90%">' ~ _('Click to re-enable') ~ '</div>'
+        ) }}
+    ></i>
+{% endif %}

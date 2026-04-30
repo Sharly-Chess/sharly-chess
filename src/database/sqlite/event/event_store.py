@@ -159,7 +159,6 @@ class StoredTournament:
     pairing: str = SharlyChessConfig.default_pairing_variation_id
     pairing_settings: dict[str, Any] = field(default_factory=dict[str, Any])
     current_round: int | None = None
-    check_in_open: bool = False
     rounds: int = 1
     rating: int = 1
     player_rating_type: int | None = None

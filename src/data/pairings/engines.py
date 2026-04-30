@@ -74,7 +74,7 @@ class PairingEngine(ABC):
         except Exception as e:
             logger.exception(e)
             return _('An error occurred. Consult the logs for more details.')
-        if len(stored_boards) == 0:
+        if not partial_pairings and len(stored_boards) == 0:
             return _('Pairing is not possible.')
         if self.reorder_boards:
             boards = [
@@ -92,8 +92,6 @@ class PairingEngine(ABC):
     ) -> str | None:
         """Determines if the pairings generation for round *at_round* is disabled.
         Returns an explanation message if it is, None if it is not."""
-        if tournament.check_in_open:
-            return _('Pairings disabled while check-in is open.')
         return self.invalid_player_count_message(tournament)
 
     def pairings_diff(
@@ -172,8 +170,8 @@ class BbpPairings(PairingEngine):
             not tournament.is_round_finished(round_) for round_ in range(1, at_round)
         ):
             return _(
-                'Pairings generation not allowed if previous '
-                'rounds have missing results or unpaired players.'
+                'Pairings generation not allowed if previous rounds have '
+                'missing results, players to pair or absent players.'
             )
         return None
 

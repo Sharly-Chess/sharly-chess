@@ -14,12 +14,27 @@
             <h4 class="text-danger">
                 {{ _('Warning: round #%(round)d is not finished.', round=admin_round) }}
             </h4>
-            <ul>
-                {% if admin_unpaired_player_count %}
-                    <li>{{ _('%(count)d players unpaired', count=admin_unpaired_player_count) }}</li>
+            <ul class="mb-0">
+                {% if unpaired_count %}
+                    <li>{{ ngettext(
+                        '%(num)d player to pair',
+                        '%(num)d players to pair',
+                        unpaired_count
+                    ) }}</li>
                 {% endif %}
-                {% if admin_no_result_board_count %}
-                    <li>{{ _('%(count)d boards without result', count=admin_no_result_board_count) }}</li>
+                {% if absent_count %}
+                    <li>{{ ngettext(
+                        '%(num)d absent player without byes',
+                        '%(num)d absent players without byes',
+                        absent_count
+                    ) }}</li>
+                {% endif %}
+                {% if no_result_board_count %}
+                    <li>{{ ngettext(
+                        '%(num)d board without result',
+                        '%(num)d boards without result',
+                        no_result_board_count
+                    ) }}</li>
                 {% endif %}
             </ul>
         </div>

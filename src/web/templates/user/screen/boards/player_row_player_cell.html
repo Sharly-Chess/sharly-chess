@@ -1,18 +1,18 @@
+{% set can_check_in = client.can_check_in_players(tournament.id) %}
 <div
     class="
-        tournament_player-cell
-        {% if screen.type == 'input' and last_check_in_updated and last_check_in_updated.expiration > now and last_check_in_updated.tournament_id == tournament.id and last_check_in_updated.player_id == tournament_player.id %}
+        player-cell
+        {% if screen.type == 'check-in' and last_check_in_updated and last_check_in_updated.expiration > now and last_check_in_updated.tournament_id == tournament.id and last_check_in_updated.player_id == tournament_player.id %}
             last_check_in_updated
         {% endif %}
-        {% if screen.type == 'input' and tournament.check_in_open %}
+        {% if screen.type == 'check-in' and can_check_in %}
             cursor-pointer
         {% endif %}
         overflow-hidden text-nowrap"
     style="text-overflow: ellipsis;"
     {% if
-        screen.type == 'input'
-        and client.can_check_in_players(tournament.id)
-        and tournament.check_in_open
+        screen.type == 'check-in'
+        and can_check_in
     %}
         hx-get="{{ url_for('user-checkin-modal', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=tournament_player.id) }}"
         hx-target="body"
@@ -21,7 +21,7 @@
         data-bs-target="#modal-wrapper"
     {% endif %}
 >
-    {% if tournament.check_in_open %}
+    {% if screen.type == 'check-in' %}
         <i
             class="{% if tournament_player.check_in %}bi-check-square-fill{% else %}bi-square{% endif %}"
         ></i>

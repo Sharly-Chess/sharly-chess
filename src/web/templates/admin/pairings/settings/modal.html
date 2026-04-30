@@ -12,9 +12,18 @@
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
                 {% if admin_tournament.pairing_system.round_per_round_pairing_generation %}
-                    hx-post="{{ url_for('admin-generate-round-pairings-with-settings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round) }}"
+                    hx-post="{{ url_for(
+                        'generate-round-pairings-with-settings',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round
+                    ) }}"
                 {% else %}
-                    hx-post="{{ url_for('admin-generate-tournament-pairings', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
+                    hx-post="{{ url_for(
+                        'generate-tournament-pairings',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id
+                    ) }}"
                 {% endif %}
                 hx-target="body"
                 hx-indicator="#please-wait"

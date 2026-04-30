@@ -1,0 +1,72 @@
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 450px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Reset check-in') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <h4>
+                {{ _('%(string)s:', string=_('Tournament')) }}
+                {{ admin_tournament.name }}
+            </h4>
+            <form
+                id="modal-form"
+                hx-post="{{ url_for(
+                    'check-in-reset',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id
+                ) }}"
+                hx-indicator="#please-wait"
+            >
+                <div>
+                    {{ admin_macros.radio_input(
+                        'status',
+                        label_by_value={
+                            'absent': _('Mark all players as "%(status)s" ', status=_('Absent')),
+                            'present': _('Mark all players as "%(status)s" ', status=_('Present')),
+                        },
+                    ) }}
+                    {% with type='info', message=_('Byes will not be impacted.'), alert_classes='mb-0 mt-2' %}
+                        {% include '/common/form_alert_block.html' %}
+                    {% endwith %}
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                hx-get="{{ url_for(
+                    'check-in-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id
+                ) }}"
+                hx-indicator="#please-wait"
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+            <button
+                id="submit-btn"
+                form="modal-form"
+                type="submit"
+                class="text-nowrap white btn btn-primary"
+                disabled
+            >
+                <i class="bi-arrow-counterclockwise lh-1"></i>
+                {{ _('Reset') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('input[name="status"]').on('change', function() {
+        $('#submit-btn').prop('disabled', false);
+    });
+    requestRefresh();
+</script>

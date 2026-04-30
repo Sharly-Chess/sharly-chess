@@ -63,6 +63,9 @@ class FamilyAdminWebContext(BaseEventAdminWebContext):
         return super().template_context | {
             'admin_family': self.admin_family,
             'family_type': self.family_type,
+            'family_screen_types': [
+                type_ for type_ in ScreenType if type_.families_allowed
+            ],
         }
 
 
@@ -171,14 +174,14 @@ class FamilyAdminController(BaseEventAdminController):
                     ).format(first=first, last=last)
                     errors['first'] = error
                     errors['last'] = error
-                match type_:
-                    case 'boards':
+                match ScreenType(type_):
+                    case ScreenType.BOARDS:
                         pass
-                    case 'input':
+                    case ScreenType.INPUT | ScreenType.CHECK_IN:
                         input_exit_button = WebContext.form_data_to_bool(
                             data, 'input_exit_button'
                         )
-                    case 'players':
+                    case ScreenType.PLAYERS:
                         players_show_unpaired = WebContext.form_data_to_bool(
                             data, 'players_show_unpaired'
                         )
@@ -191,7 +194,7 @@ class FamilyAdminController(BaseEventAdminController):
                         players_opponent_format = WebContext.form_data_to_int(
                             data, 'players_opponent_format'
                         )
-                    case 'ranking':
+                    case ScreenType.RANKING:
                         ranking_crosstable = WebContext.form_data_to_bool(
                             data, field := 'ranking_crosstable'
                         )
@@ -387,6 +390,8 @@ class FamilyAdminController(BaseEventAdminController):
                                     pass
                                 case ScreenType.INPUT:
                                     input_exit_button = stored_family.input_exit_button
+                                case ScreenType.CHECK_IN:
+                                    input_exit_button = stored_family.input_exit_button
                                 case ScreenType.PLAYERS:
                                     players_show_unpaired = (
                                         stored_family.players_show_unpaired or False
@@ -427,6 +432,8 @@ class FamilyAdminController(BaseEventAdminController):
                                     menu = '@boards'
                                 case ScreenType.INPUT:
                                     menu = '@input'
+                                case ScreenType.CHECK_IN:
+                                    menu = '@check-in'
                                 case ScreenType.PLAYERS:
                                     menu = '@players'
                                     columns = cls.get_default_players_screen_columns(

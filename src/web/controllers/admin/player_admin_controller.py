@@ -1,5 +1,5 @@
 import csv
-from collections import defaultdict
+from collections import defaultdict, Counter
 from collections.abc import Callable
 from datetime import date
 from functools import cached_property
@@ -38,7 +38,6 @@ from data.input_output.managers import DataSourceManager, PlayerExporterManager
 from data.player import Player, PlayerRating, TournamentPlayer, MIN_YOB, MAX_YOB
 from data.print_documents.documents import (
     PlayerListPrintDocument,
-    PlayerCheckinListPrintDocument,
 )
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -52,6 +51,7 @@ from utils.enum import (
     PlayerTitle,
     Result,
     FormAction,
+    CheckInStatus,
 )
 from plugins.manager import plugin_manager
 from web.controllers.admin.base_event_admin_controller import (
@@ -78,6 +78,7 @@ from web.session import (
     SessionPlayersSearch,
     SessionPlayersFilters,
     SessionPlayersImportUseDataSource,
+    SessionPlayersUnsafeCheckIn,
 )
 from web.utils import SelectOption
 
@@ -134,6 +135,10 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
     def get_admin_player(self) -> Player:
         assert self.admin_player is not None
         return self.admin_player
+
+    def get_admin_tournament_player(self) -> TournamentPlayer:
+        assert self.admin_player is not None
+        return self.admin_player.single_tournament_player
 
     def get_admin_data_source(self) -> DataSource:
         assert self.admin_data_source is not None
@@ -198,22 +203,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
 
     @property
     def default_print_document(self) -> str:
-        print_tournament_ids = self.default_tournament_for_print_modal(
-            tournament_id=None
-        )
-        tournaments = list(self.allowed_tournaments)
-        if print_tournament_ids:
-            tournaments = [
-                tournament
-                for tournament in tournaments
-                if tournament.id in print_tournament_ids
-            ]
-        check_in_open = all(tournament.check_in_open for tournament in tournaments)
-        return (
-            PlayerCheckinListPrintDocument.static_id()
-            if check_in_open
-            else PlayerListPrintDocument.static_id()
-        )
+        return PlayerListPrintDocument.static_id()
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -390,6 +380,9 @@ class PlayerAdminController(BaseEventAdminController):
             'sort_column': sort_column,
             'is_sort_asc': is_sort_asc,
             'is_search_active': len(allowed_players) > len(search_results),
+            'unsafe_player_check_in_enabled': SessionPlayersUnsafeCheckIn(
+                request, event
+            ).get(),
         }
 
     @classmethod
@@ -461,6 +454,8 @@ class PlayerAdminController(BaseEventAdminController):
             re_swap='outerHTML',
             re_target='#players-table',
             context=web_context.template_context | template_context,
+            trigger_event='close_modal',
+            after='settle',
         )
 
     @classmethod
@@ -468,12 +463,10 @@ class PlayerAdminController(BaseEventAdminController):
         cls,
         web_context: PlayerAdminWebContext,
         deleted_player_id: int | None = None,
+        after_check_in: bool = False,
+        close_modal: bool = True,
     ) -> HTMXTemplate:
-        template_context = (
-            web_context.template_context
-            | cls._player_table_header_context(web_context)
-            | cls._player_table_row_context(web_context)
-        )
+        template_context = web_context.template_context
         admin_player = web_context.admin_player
         search_results = cls.get_search_results(web_context)
         if admin_player and not deleted_player_id:
@@ -483,6 +476,8 @@ class PlayerAdminController(BaseEventAdminController):
                     if admin_player.id in search_results
                     else None
                 )
+                if not index:
+                    cls.set_players_search_results(web_context)
                 template_context |= {
                     'updated_player': admin_player,
                     'index': index,
@@ -491,13 +486,22 @@ class PlayerAdminController(BaseEventAdminController):
                 deleted_player_id = admin_player.id
         if deleted_player_id:
             if deleted_player_id in search_results:
-                search_results.remove(deleted_player_id)
-        template_context |= {'deleted_player_id': deleted_player_id}
+                cls.set_players_search_results(web_context)
+        template_context |= cls._player_table_header_context(web_context)
+        template_context |= cls._player_table_row_context(web_context)
+        template_context |= {
+            'deleted_player_id': deleted_player_id,
+            'after_check_in': after_check_in,
+        }
         return HTMXTemplate(
             template_name='/admin/players/table/header_and_row.html',
             context=template_context,
-            re_target='#modal-wrapper',
-            trigger_event='renumber_players_and_close_modal',
+            re_target='#replace-row-target',
+            trigger_event=(
+                'renumber_players_and_close_modal'
+                if close_modal
+                else 'renumber_players'
+            ),
             after='settle',
         )
 
@@ -551,7 +555,6 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_admin_event_players_set_filter(
         self,
         request: HTMXRequest,
-        event_uniq_id: str,
         column_id: str,
         filters: list[str],
     ) -> Template:
@@ -642,9 +645,13 @@ class PlayerAdminController(BaseEventAdminController):
         name='admin-player-row',
     )
     async def htmx_admin_player_row(
-        self, request: HTMXRequest, player_id: int
+        self,
+        request: HTMXRequest,
+        player_id: int,
+        close_modal: int = 1,
     ) -> Template:
-        return self._render_player_table_row(PlayerAdminWebContext(request, player_id))
+        web_context = PlayerAdminWebContext(request, player_id)
+        return self._render_player_table_row(web_context, close_modal=bool(close_modal))
 
     # -------------------------------------------------------------------------
     # Player Modal
@@ -961,8 +968,8 @@ class PlayerAdminController(BaseEventAdminController):
         errors = cls._validate_player_form_data(web_context, action, data)
         if errors:
             return None, errors
-        stored_player = cls._stored_player_from_data(data)
         tournament = event.tournaments_by_id[int(data['tournament_id'])]
+        stored_player = cls._stored_player_from_data(data, tournament, player)
         if not event.check_player_unicity(
             stored_player, tournament, player.id if player else None
         ):
@@ -1085,6 +1092,7 @@ class PlayerAdminController(BaseEventAdminController):
     def _stored_player_from_data(
         cls,
         data: dict[str, str],
+        tournament: Tournament,
         player: Player | None = None,
     ) -> StoredPlayer:
         date_of_birth: date | None = None
@@ -1141,6 +1149,7 @@ class PlayerAdminController(BaseEventAdminController):
             club=WebContext.form_data_to_str(data, 'club') or '',
             fixed=WebContext.form_data_to_int(data, 'fixed'),
             plugin_data=plugin_data,
+            check_in=player.check_in if player else tournament.default_player_check_in,
         )
 
     @post(
@@ -1218,7 +1227,6 @@ class PlayerAdminController(BaseEventAdminController):
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
             )
-        stored_player = self._stored_player_from_data(data, player)
         tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
         tournament = event.tournaments_by_id[tournament_id]
         event.update_player(player, stored_player)
@@ -1340,8 +1348,8 @@ class PlayerAdminController(BaseEventAdminController):
             hpb_disabled_message = message
             fpb_disabled_message = message
         bye_options: dict[Result, SelectOption] = {
-            Result.NO_RESULT: SelectOption(_('Present')),
-            Result.ZERO_POINT_BYE: SelectOption(_('Absent')),
+            Result.NO_RESULT: SelectOption('-'),
+            Result.ZERO_POINT_BYE: SelectOption(_('Zero-Point Bye')),
             Result.HALF_POINT_BYE: SelectOption(
                 _('Half-Point Bye'),
                 tooltip=hpb_disabled_message,
@@ -1387,28 +1395,27 @@ class PlayerAdminController(BaseEventAdminController):
     def _set_player_participation(
         self,
         web_context: PlayerAdminWebContext,
-        result: Result,
+        withdraw: bool = False,
     ) -> Template:
         tournament = web_context.get_admin_tournament()
-        player = web_context.get_admin_player()
+        player = web_context.get_admin_player().single_tournament_player
 
         # If there aren't any pairings, then the round for the bye is the first round
         round_for_participation = tournament.current_round or 1
-        if result == Result.NO_RESULT and tournament.round_has_pairings(
-            round_for_participation
-        ):
+        if not withdraw and tournament.round_has_pairings(round_for_participation):
             # If returning to tournament and pairings for this round, then start setting removing ZPBs from the next round only
             round_for_participation += 1
+        result = Result.ZERO_POINT_BYE if withdraw else Result.NO_RESULT
         new_byes = {
             round_: result
             for round_ in range(
                 round_for_participation,
                 tournament.rounds + 1,
             )
-            if player.single_tournament_player.pairings[round_].unpaired
+            if player.pairings[round_].unpaired
         }
-        tournament.set_player_byes(player.single_tournament_player, new_byes)
-
+        tournament.set_player_byes(player, new_byes)
+        tournament.check_in_player(player, not withdraw)
         return self._render_player_records_modal(web_context)
 
     @get(
@@ -1424,42 +1431,41 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path=(
-            '/withdraw-player/{event_uniq_id:str}/'
-            '{tournament_id:int}/{player_id:int}/{round:int}'
-        ),
-        name='admin-player-withdraw-player',
+        path='/records/withdraw-player/{event_uniq_id:str}/{player_id:int}',
+        name='records-withdraw-player',
         guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
     )
-    async def htmx_admin_withdraw_player(
+    async def htmx_withdraw_player(
         self,
         request: HTMXRequest,
-        tournament_id: int,
         player_id: int,
     ) -> Template:
-        web_context = PlayerAdminWebContext(request, player_id, tournament_id)
-        return self._set_player_participation(web_context, Result.ZERO_POINT_BYE)
+        web_context = PlayerAdminWebContext(request, player_id)
+        player = web_context.get_admin_tournament_player()
+        player.tournament.set_player_participation(player, withdraw=True)
+        return self._render_player_records_modal(web_context)
 
     @patch(
-        path='/return-player/{event_uniq_id:str}/{tournament_id:int}/{player_id:int}',
-        name='admin-player-return-player',
+        path='/records/return-player/{event_uniq_id:str}/{player_id:int}',
+        name='records-return-player',
         guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
     )
-    async def htmx_admin_return_player(
+    async def htmx_return_player(
         self,
         request: HTMXRequest,
-        tournament_id: int,
         player_id: int,
     ) -> Template:
-        web_context = PlayerAdminWebContext(request, player_id, tournament_id)
-        return self._set_player_participation(web_context, Result.NO_RESULT)
+        web_context = PlayerAdminWebContext(request, player_id)
+        player = web_context.get_admin_tournament_player()
+        player.tournament.set_player_participation(player)
+        return self._render_player_records_modal(web_context)
 
     @patch(
         path='/player-set-bye/{event_uniq_id:str}/{player_id:int}/{round:int}',
         name='admin-player-set-bye',
         guard=[SetByeGuard()],
     )
-    async def htmx_admin_player_set_bye(
+    async def htmx_player_set_bye(
         self,
         request: HTMXRequest,
         player_id: int,
@@ -1477,73 +1483,43 @@ class PlayerAdminController(BaseEventAdminController):
     # Check-in/out
     # -------------------------------------------------------------------------
 
-    @patch(
-        path='/tournament-open-check-in/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-open-check-in',
-        guard=[TournamentActionGuard(AuthAction.OPEN_CLOSE_CHECK_IN)],
-    )
-    async def htmx_admin_tournament_open_check_in(
-        self, request: HTMXRequest, tournament_id: int
-    ) -> Template:
-        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
-        admin_tournament = web_context.get_admin_tournament()
-        admin_tournament.open_check_in()
-        Message.success(
-            request,
-            _('Check-in is open for tournament [{tournament}].').format(
-                tournament=admin_tournament.name
-            ),
-        )
-        web_context = PlayerAdminWebContext(request, reload_event=True)
-        return self._render_players_tab(web_context)
+    @classmethod
+    def render_check_in_modal(
+        cls, web_context: PlayerAdminWebContext, message: str | None = None
+    ) -> HTMXTemplate:
+        template_context = web_context.template_context
+        tournaments = web_context.allowed_tournaments
+        total_check_in_status_grouped_counts = Counter[CheckInStatus]()
+        for tournament in tournaments:
+            for status in CheckInStatus:
+                total_check_in_status_grouped_counts[status] += (
+                    tournament.check_in_status_grouped_counts[status]
+                )
+        total_player_count = len(web_context.client.allowed_players)
+        plugin_columns: list = []
+        ordered_statuses = [
+            CheckInStatus.ABSENT,
+            CheckInStatus.PRESENT,
+            CheckInStatus.NEXT_ROUND_BYE,
+        ]
+        template_context |= {
+            'modal': 'check-in',
+            'allowed_tournaments': tournaments,
+            'plugin_columns': plugin_columns,
+            'total_check_in_status_grouped_counts': total_check_in_status_grouped_counts,
+            'total_player_count': total_player_count,
+            'ordered_statuses': ordered_statuses,
+            'message': message,
+        }
+        return cls._admin_base_event_render(template_context)
 
     @get(
-        path='/tournament-close-check-in-modal/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-close-check-in-modal',
+        path='/check-in/modal/{event_uniq_id:str}',
+        name='check-in-modal',
     )
-    async def htmx_tournament_close_check_in_modal(
-        self,
-        request: HTMXRequest,
-        tournament_id: int,
-    ) -> Template:
-        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
-        return self._admin_base_event_render(
-            web_context.template_context | {'modal': 'close_check_in'}
-        )
-
-    @patch(
-        path='/tournament-close-check-in/{event_uniq_id:str}/{tournament_id:int}',
-        name='admin-tournament-close-check-in',
-        guard=[ActionGuard(AuthAction.OPEN_CLOSE_CHECK_IN)],
-    )
-    async def htmx_admin_tournament_close_check_in(
-        self,
-        request: HTMXRequest,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
-        tournament_id: int,
-    ) -> Template:
-        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
-        tournament = web_context.get_admin_tournament()
-        action = WebContext.form_data_to_str(data, 'action') or ''
-        tournament.close_check_in(
-            action == 'zpb-next-round', action == 'zpb-tournament', action == 'delete'
-        )
-        Message.success(
-            request,
-            _('Check-in is closed for tournament [{tournament}].').format(
-                tournament=tournament.name
-            ),
-        )
-        return HTMXTemplate(
-            template_name='common/empty_modal_and_messages.html',
-            context={'messages': Message.messages(request)},
-            re_target='#modal-wrapper',
-            trigger_event='close_modal',
-            after='settle',
-        )
+    async def htmx_check_in_modal(self, request: HTMXRequest) -> Template:
+        web_context = PlayerAdminWebContext(request)
+        return self.render_check_in_modal(web_context)
 
     @classmethod
     def publish_new_checkin(cls, channels: ChannelsPlugin, tournament: Tournament):
@@ -1561,23 +1537,104 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/player-check-in-out/{event_uniq_id:str}/{player_id:int}/{check_in:int}',
-        name='admin-player-check-in-out',
+        path='/check-in/player-action/{event_uniq_id:str}/{player_id:int}',
+        name='check-in-player-action',
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
-    async def htmx_admin_player_check_in_out(
+    async def htmx_check_in_player_action(
         self,
         request: HTMXRequest,
         channels: ChannelsPlugin,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
         player_id: int,
-        check_in: int,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
-        player = web_context.get_admin_player()
-        tournament = player.single_tournament
-        tournament.check_in_player(player, bool(check_in))
+        event = web_context.get_admin_event()
+        player = web_context.get_admin_tournament_player()
+        tournament = player.tournament
+        status = player.check_in_status
+        if status in (CheckInStatus.ABSENT, CheckInStatus.PRESENT):
+            tournament.check_in_player(player, status == CheckInStatus.ABSENT)
+        elif status == CheckInStatus.WITHDRAWN:
+            tournament.set_player_participation(player)
+        else:
+            tournament.set_player_byes(
+                player, {tournament.current_round + 1: Result.NO_RESULT}
+            )
+            tournament.check_in_player(player, True)
         self.publish_new_checkin(channels, tournament)
-        return self._render_player_table_row(web_context)
+        if WebContext.form_data_to_bool(data, 'set_unsafe_check_in'):
+            SessionPlayersUnsafeCheckIn(request, event).set(True)
+            return self._render_players_table(web_context)
+        return self._render_player_table_row(web_context, after_check_in=True)
+
+    @get(
+        path='/check-in/player-modal/{event_uniq_id:str}/{player_id:int}',
+        name='check-in-player-modal',
+        guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_check_in_player_modal(
+        self, request: HTMXRequest, player_id: int
+    ) -> Template:
+        web_context = PlayerAdminWebContext(request, player_id=player_id)
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'check-in-player'}
+        )
+
+    @patch(
+        path='/check-in/disable-unsafe/{event_uniq_id:str}',
+        name='check-in-disable-unsafe',
+        guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_check_in_disable_unsafe(
+        self,
+        request: HTMXRequest,
+    ) -> Template:
+        web_context = PlayerAdminWebContext(request)
+        event = web_context.get_admin_event()
+        SessionPlayersUnsafeCheckIn(request, event).set(False)
+        return self._render_players_tab(web_context)
+
+    @get(
+        path='/check-in/reset-modal/{event_uniq_id:str}/{tournament_id:int}',
+        name='check-in-reset-modal',
+        guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_check_in_reset_modal(
+        self, request: HTMXRequest, tournament_id: int
+    ) -> Template:
+        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
+        return self._admin_base_event_render(
+            web_context.template_context | {'modal': 'check-in-reset'}
+        )
+
+    @post(
+        path='/check-in/reset/{event_uniq_id:str}/{tournament_id:int}',
+        name='check-in-reset',
+        guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_check_in_reset(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+        tournament_id: int,
+    ) -> Template:
+        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
+        tournament = web_context.get_admin_tournament()
+        check_in = data.get('status') == 'present'
+        tournament.check_in_all_players(check_in)
+        message = _(
+            'All the players of tournament [{tournament}] have been marked a "{status}".'
+        ).format(
+            tournament=tournament.name,
+            status=_('Present') if check_in else _('Absent'),
+        )
+        return self.render_check_in_modal(web_context, message)
 
     # -------------------------------------------------------------------------
     # Import
@@ -1725,7 +1782,11 @@ class PlayerAdminController(BaseEventAdminController):
         duplicated_indexes: set[int] = set()
         row_count = len(content_by_column_id[used_columns[0].id])
         for index in range(row_count):
-            stored_player = StoredPlayer(id=None, federation=event.federation)
+            stored_player = StoredPlayer(
+                id=None,
+                federation=event.federation,
+                check_in=tournament.default_player_check_in,
+            )
             for column in used_columns:
                 if column.is_informative:
                     continue
@@ -2265,7 +2326,7 @@ class PlayerAdminController(BaseEventAdminController):
 
     @get(
         path='/players/needs-refresh-message/{event_uniq_id:str}/{reason:str}',
-        name='admin-players-needs-refresh-message',
+        name='players-needs-refresh-message',
     )
     async def htmx_admin_players_refresh_message(
         self,

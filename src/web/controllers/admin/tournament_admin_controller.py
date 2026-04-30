@@ -438,7 +438,6 @@ class TournamentAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        check_in_open: bool = False
         start_date = event.start_date
         stop_date = event.stop_date
         rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
@@ -585,7 +584,6 @@ class TournamentAdminController(BaseEventAdminController):
             paired_bye_result=paired_bye_result,
             max_byes=max_byes,
             last_rounds_no_byes=last_rounds_no_byes,
-            check_in_open=check_in_open,
             location=location,
             player_rating_type=player_rating_type,
             start_date=start_date,

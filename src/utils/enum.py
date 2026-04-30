@@ -1003,8 +1003,9 @@ class BoardColor(StrEnum):
 
 
 class ScreenType(StrEnum):
-    BOARDS = 'boards'
     INPUT = 'input'
+    CHECK_IN = 'check-in'
+    BOARDS = 'boards'
     PLAYERS = 'players'
     RESULTS = 'results'
     RANKING = 'ranking'
@@ -1019,8 +1020,10 @@ class ScreenType(StrEnum):
         match self:
             case ScreenType.BOARDS:
                 return _('Pairings by board')
+            case ScreenType.CHECK_IN:
+                return _('Check-in')
             case ScreenType.INPUT:
-                return _('Check-in / Results entry')
+                return _('Results entry')
             case ScreenType.PLAYERS:
                 return _('Parings by player')
             case ScreenType.RESULTS:
@@ -1040,6 +1043,8 @@ class ScreenType(StrEnum):
         match self:
             case self.BOARDS:
                 return 'bi-card-list'
+            case self.CHECK_IN:
+                return 'bi-check-square'
             case self.INPUT:
                 return 'bi-pencil'
             case self.PLAYERS:
@@ -1054,10 +1059,32 @@ class ScreenType(StrEnum):
                 raise ValueError(f'Invalid screen type: {self}')
 
     @property
+    def tooltip_text(self) -> str:
+        match self:
+            case self.BOARDS:
+                return _('Boards screens show pairings by board number.')
+            case self.CHECK_IN:
+                return _('Check-in screens allow players to check-in or out.')
+            case self.INPUT:
+                return _(
+                    'Input screens show pairings by board number and allow people to enter results.'
+                )
+            case self.PLAYERS:
+                return _('Players screens show pairings by alphabetical order.')
+            case self.RESULTS:
+                return _('Results screens show the last results (most recent first).')
+            case self.RANKING:
+                return _('Ranking screens show the players by rank.')
+            case self.IMAGE:
+                return _('Image screens show an image (local or remote).')
+            case _:
+                raise ValueError(f'Invalid screen type: {self}')
+
+    @property
     def families_allowed(self) -> bool:
         """Returns True if the screen type can be used for families, False otherwise."""
         match self:
-            case self.BOARDS | self.INPUT | self.PLAYERS | self.RANKING:
+            case self.BOARDS | self.INPUT | self.PLAYERS | self.RANKING | self.CHECK_IN:
                 return True
             case self.RESULTS | self.IMAGE:
                 return False
@@ -1291,7 +1318,86 @@ class FormAction(StrEnum):
 
 
 class CheckInStatus(IntEnum):
-    CHECK_IN_CLOSED = 0
-    NEXT_ROUND_BYE = 1
-    NOT_CHECKED_IN = 2
-    CHECKED_IN = 3
+    WITHDRAWN = 0
+    NEXT_ROUND_ZPB = 1
+    NEXT_ROUND_HPB = 2
+    NEXT_ROUND_FPB = 3
+    ABSENT = 4
+    PRESENT = 5
+    NEXT_ROUND_BYE = 6
+
+    @property
+    def name(self) -> str:
+        match self:
+            case self.WITHDRAWN:
+                return _('Withdrawn')
+            case self.NEXT_ROUND_ZPB:
+                return _('Zero-Point Bye')
+            case self.NEXT_ROUND_HPB:
+                return _('Half-Point Bye')
+            case self.NEXT_ROUND_FPB:
+                return _('Full-Point Bye')
+            case self.NEXT_ROUND_BYE:
+                return ''
+            case self.PRESENT:
+                return _('Present')
+            case self.ABSENT:
+                return _('Absent')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def description(self) -> str:
+        match self:
+            case self.WITHDRAWN:
+                return _('Received a Zero-Point Bye for all the remaining rounds.')
+            case self.NEXT_ROUND_ZPB:
+                return _('Received a Zero-Point Bye for the next round.')
+            case self.NEXT_ROUND_HPB:
+                return _('Received a Half-Point Bye for the next round.')
+            case self.NEXT_ROUND_FPB:
+                return _('Received a Full-Point Bye for the next round.')
+            case self.NEXT_ROUND_BYE:
+                return ''
+            case self.ABSENT:
+                return _('Will not participate in upcoming rounds.')
+            case self.PRESENT:
+                return _('Will participate in upcoming rounds.')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def icon_classes(self) -> str:
+        return self.base_icon_class + ' ' + self.color_icon_class
+
+    @property
+    def base_icon_class(self) -> str:
+        match self:
+            case self.WITHDRAWN:
+                return 'bi-door-open-fill'
+            case self.NEXT_ROUND_ZPB:
+                return 'bi-0-circle-fill'
+            case self.NEXT_ROUND_HPB:
+                return 'bi-circle-half'
+            case self.NEXT_ROUND_FPB:
+                return 'bi-1-circle-fill'
+            case self.NEXT_ROUND_BYE:
+                return ''
+            case self.PRESENT:
+                return 'bi-check-circle-fill'
+            case self.ABSENT:
+                return 'bi-x-circle-fill'
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+    @property
+    def color_icon_class(self) -> str:
+        if self == self.PRESENT:
+            return 'text-success'
+        if self == self.ABSENT:
+            return 'text-danger'
+        return 'text-body opacity-75'
+
+    @property
+    def is_next_round_bye(self) -> bool:
+        return self not in (self.ABSENT, self.PRESENT)
