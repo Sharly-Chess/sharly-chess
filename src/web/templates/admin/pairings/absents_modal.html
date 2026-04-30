@@ -23,9 +23,12 @@
                 ) }}"
                 hx-indicator="#please-wait"
             >
+                <h5 class="mb-3">
+                    {{ _('Select the status of the following players:') }}
+                </h5>
                 <div class="d-flex align-items-center justify-content-end pe-2 pb-2">
                     <span class="pe-2 fs-5">
-                        {{ _('Apply to all players:') }}
+                        {{ _('Apply to all') }}
                     </span>
                     <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
                         <input
@@ -38,7 +41,7 @@
                             checked
                         >
                         <label
-                            class="btn btn-outline-primary"
+                            class="btn btn-outline-primary lh-1"
                             for="zpb-all"
                             {{ macros.tooltip_attributes('', _('Zero-Point Bye for the next round')) }}
                         >
@@ -54,7 +57,7 @@
                             autocomplete="off"
                         >
                         <label
-                            class="btn btn-outline-primary"
+                            class="btn btn-outline-primary lh-1"
                             for="withdraw-all"
                             {{ macros.tooltip_attributes('', _('Withdraw from tournament')) }}
                         >
@@ -69,7 +72,7 @@
                             autocomplete="off"
                         >
                         <label
-                            class="btn btn-outline-primary"
+                            class="btn btn-outline-primary lh-1"
                             for="present-all"
                             {{ macros.tooltip_attributes('', _('Mark as &quot;Present&quot; (will be paired next round)')) }}
                         >

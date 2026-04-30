@@ -655,8 +655,8 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Application"
 msgstr "Application"
 
-msgid "Apply to all players:"
-msgstr "Appliquer à tout·es les joueur·euses :"
+msgid "Apply to all"
+msgstr ""
 
 msgid "Apr *** APRIL"
 msgstr "Avr"
@@ -5007,6 +5007,9 @@ msgstr "Sélectionner un·e joueur·euse"
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
 
+msgid "Select the status of the following players:"
+msgstr ""
+
 msgid "Select the tournaments to add players to."
 msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
 
@@ -6973,4 +6976,7 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Apply to all players:"
+#~ msgstr "Appliquer à tout·es les joueur·euses :"
 

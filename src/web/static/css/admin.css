@@ -34,10 +34,16 @@
     text-decoration: none;
 }
 
+.player-secondary-link {
+    color: var(--bs-secondary-color);
+    opacity: 50%;
+}
+
 .player-link:hover {
     color: var(--bs-link-hover-color);
     text-decoration: underline;
     cursor: pointer;
+    opacity: 1;
 }
 
 .highlight .player-link, .highlight .player-link:hover {
