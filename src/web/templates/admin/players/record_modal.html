@@ -36,7 +36,7 @@
                         or tournament_player.pairings_by_round[tournament.current_round].needs_pairing_or_has_bye
                     ) %}
                         <button
-                            class="btn btn-sm btn-outline-primary w-100"
+                            class="btn btn-sm btn-outline-danger w-100"
                             {% if not client.can_set_zero_point_bye(tournament_player.tournament.id) %}
                                 disabled
                             {% else %}
@@ -49,6 +49,7 @@
                                 hx-indicator="#please-wait"
                             {% endif %}
                         >
+                            <i class="bi-sign-stop-fill pe-1"></i>
                             {{ _('Withdraw from tournament') }}
                         </button>
                     {% endif %}

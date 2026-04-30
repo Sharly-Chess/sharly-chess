@@ -20,11 +20,13 @@
                 <tr id="player-{{ tournament_player.id }}" class="player-row" data-player-id="{{ tournament_player.id }}">
                     <td>
                         <div class="d-flex align-items-center gap-2">
-                            {% include '/admin/player_link.html' %}
+                            {% with secondary_link = status == 0 %}
+                                {% include '/admin/player_link.html' %}
+                            {% endwith %}
                         </div>
                     </td>
 
-                    <td class="text-end">{{ tournament_player.rating_str }}</td>
+                    <td class="text-end{% if status == 0 %} text-secondary{% endif %}">{{ tournament_player.rating_str }}</td>
                     {% if admin_tournament.pairing_system.show_unpaired_player_modal %}
                         <td class="text-end">
                             <span

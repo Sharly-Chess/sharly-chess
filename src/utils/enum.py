@@ -1003,8 +1003,8 @@ class BoardColor(StrEnum):
 
 
 class ScreenType(StrEnum):
-    INPUT = 'input'
     CHECK_IN = 'check-in'
+    INPUT = 'input'
     BOARDS = 'boards'
     PLAYERS = 'players'
     RESULTS = 'results'

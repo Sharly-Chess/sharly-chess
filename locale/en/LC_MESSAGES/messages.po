@@ -661,7 +661,7 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
-msgid "Apply to all players:"
+msgid "Apply to all"
 msgstr ""
 
 msgid "Apply set"
@@ -5059,6 +5059,9 @@ msgstr ""
 msgid "Select the players and the data to update:"
 msgstr ""
 
+msgid "Select the status of the following players:"
+msgstr ""
+
 msgid "Select the tournaments to add players to."
 msgstr ""
 
@@ -7065,3 +7068,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+

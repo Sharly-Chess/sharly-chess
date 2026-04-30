@@ -2,7 +2,7 @@
     {% set full_name = tournament_player.last_name ~ ' ' ~ tournament_player.first_name if last_name_first else tournament_player.full_name %}
     {% if client.can_update_players_history(tournament_player.tournament.id)%}
         <a
-            class="player-link"
+            class="player-link{% if secondary_link %} player-secondary-link{% endif %}"
             hx-get="{{ url_for('admin-record-modal', event_uniq_id=admin_event.uniq_id, player_id=tournament_player.id) }}"
             hx-target="body"
             hx-indicator="#please-wait"
