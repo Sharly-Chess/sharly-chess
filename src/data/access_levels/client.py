@@ -349,16 +349,18 @@ class Client:
     # Check-in
     # ---------------------------------------------------------------------------------
 
-    @property
-    def can_open_close_check_in(self) -> bool:
-        """Returns true if the client can open and close the check-in."""
-        return AuthAction.OPEN_CLOSE_CHECK_IN in self.allowed_actions
+    @cached_property
+    def _check_in_players_allowed_tournament_ids(self) -> list[int]:
+        return [
+            tournament.id
+            for tournament in self.allowed_tournaments_for_action(
+                AuthAction.CHECK_IN_PLAYERS
+            )
+        ]
 
     def can_check_in_players(self, tournament_id: int) -> bool:
         """Returns True if the client can check-in players for a tournament."""
-        return self.action_allowed_for_tournament(
-            AuthAction.CHECK_IN_PLAYERS, tournament_id
-        )
+        return tournament_id in self._check_in_players_allowed_tournament_ids
 
     # ---------------------------------------------------------------------------------
     # Pairings
@@ -405,9 +407,16 @@ class Client:
             AuthAction.SET_CURRENT_ROUND, tournament_id
         )
 
+    @cached_property
+    def _set_zpb_allowed_tournament_ids(self) -> list[int]:
+        return [
+            tournament.id
+            for tournament in self.allowed_tournaments_for_action(AuthAction.SET_ZPB)
+        ]
+
     def can_set_zero_point_bye(self, tournament_id: int) -> bool:
         """Returns True if the client can set a zero point bye to a player."""
-        return self.action_allowed_for_tournament(AuthAction.SET_ZPB, tournament_id)
+        return tournament_id in self._set_zpb_allowed_tournament_ids
 
     def can_set_half_point_bye(self, tournament_id: int) -> bool:
         """Returns True if the client can set a half point bye to a player."""

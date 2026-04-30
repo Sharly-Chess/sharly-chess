@@ -1,0 +1,9 @@
+<td
+    id="{{ base_id }}-check-in-status-{{ status.value }}"
+    class="text-center"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+    {{ counter[status] }}
+</td>

@@ -75,6 +75,7 @@ class Screen:
                 | ScreenType.INPUT
                 | ScreenType.PLAYERS
                 | ScreenType.RANKING
+                | ScreenType.CHECK_IN
             ):
                 if self.stored_screen:
                     return {
@@ -142,7 +143,7 @@ class Screen:
         match self.type:
             case ScreenType.BOARDS | ScreenType.INPUT:
                 return self.sorted_screen_sets[0].name_for_boards
-            case ScreenType.PLAYERS:
+            case ScreenType.PLAYERS | ScreenType.CHECK_IN:
                 return self.sorted_screen_sets[0].name_for_players
             case ScreenType.RANKING:
                 return self.sorted_screen_sets[0].name_for_ranking
@@ -255,6 +256,7 @@ class Screen:
                 | ScreenType.INPUT
                 | ScreenType.PLAYERS
                 | ScreenType.RANKING
+                | ScreenType.CHECK_IN
             ):
                 single_tournament = len(self.event.tournaments_by_id) == 1
                 screen_set: ScreenSet = self.sorted_screen_sets[0]
@@ -279,6 +281,7 @@ class Screen:
                     ScreenType.PLAYERS,
                     ScreenType.INPUT,
                     ScreenType.BOARDS,
+                    ScreenType.CHECK_IN,
                 ]:
                     text = self.menu_text or self.default_players_screen_menu_text(
                         single_tournament=single_tournament,
@@ -309,7 +312,7 @@ class Screen:
                             else '-',
                         )
                 elif (
-                    self.type == ScreenType.PLAYERS
+                    self.type in (ScreenType.PLAYERS, ScreenType.CHECK_IN)
                     or not screen_set.tournament.current_round
                 ):
                     text = text.replace(
@@ -370,47 +373,20 @@ class Screen:
                 if not menu_part:
                     continue
                 is_screen_category = True
+                screen_type_category: ScreenType | None = None
                 match menu_part:
                     case '@boards':
-                        menu_screens += (
-                            self.event.sorted_screens_by_screen_type[ScreenType.BOARDS]
-                            if admin
-                            else self.event.sorted_public_screens_by_screen_type[
-                                ScreenType.BOARDS
-                            ]
-                        )
+                        screen_type_category = ScreenType.BOARDS
                     case '@input':
-                        menu_screens += (
-                            self.event.sorted_screens_by_screen_type[ScreenType.INPUT]
-                            if admin
-                            else self.event.sorted_public_screens_by_screen_type[
-                                ScreenType.INPUT
-                            ]
-                        )
+                        screen_type_category = ScreenType.INPUT
+                    case '@check-in':
+                        screen_type_category = ScreenType.CHECK_IN
                     case '@players':
-                        menu_screens += (
-                            self.event.sorted_screens_by_screen_type[ScreenType.PLAYERS]
-                            if admin
-                            else self.event.sorted_public_screens_by_screen_type[
-                                ScreenType.PLAYERS
-                            ]
-                        )
+                        screen_type_category = ScreenType.PLAYERS
                     case '@results':
-                        menu_screens += (
-                            self.event.sorted_screens_by_screen_type[ScreenType.RESULTS]
-                            if admin
-                            else self.event.sorted_public_screens_by_screen_type[
-                                ScreenType.RESULTS
-                            ]
-                        )
+                        screen_type_category = ScreenType.RESULTS
                     case '@ranking':
-                        menu_screens += (
-                            self.event.sorted_screens_by_screen_type[ScreenType.RANKING]
-                            if admin
-                            else self.event.sorted_public_screens_by_screen_type[
-                                ScreenType.RANKING
-                            ]
-                        )
+                        screen_type_category = ScreenType.RANKING
                     case '@family':
                         if self.family_id is None:
                             logger.warning(
@@ -422,6 +398,14 @@ class Screen:
                             ].screens_by_uniq_id.values()
                     case _:
                         is_screen_category = False
+                if screen_type_category:
+                    menu_screens += (
+                        self.event.sorted_screens_by_screen_type[screen_type_category]
+                        if admin
+                        else self.event.sorted_public_screens_by_screen_type[
+                            screen_type_category
+                        ]
+                    )
                 if is_screen_category:
                     continue
                 if '*' in menu_part:
@@ -477,8 +461,6 @@ class Screen:
 
     @property
     def input_exit_button(self) -> bool:
-        if self.type != ScreenType.INPUT:
-            raise ValueError(f'type=[{self.type}]')
         if self.stored_screen:
             exit_button = self.stored_screen.input_exit_button
             assert exit_button is not None
@@ -491,7 +473,7 @@ class Screen:
     @property
     def players_show_unpaired(self) -> bool:
         match self.type:
-            case ScreenType.BOARDS | ScreenType.INPUT:
+            case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.CHECK_IN:
                 # Needed to display the players before the first round is paired
                 return True
             case ScreenType.PLAYERS:

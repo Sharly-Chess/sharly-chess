@@ -122,6 +122,7 @@ class Family:
             ScreenType.PLAYERS,
             ScreenType.INPUT,
             ScreenType.BOARDS,
+            ScreenType.CHECK_IN,
         ]:
             text = self.menu_text or Screen.default_players_screen_menu_text(
                 single_tournament=single_tournament, first_last=True
@@ -284,6 +285,12 @@ class Family:
                     if cut_items_number:
                         self._calculated_first = 1
                         self._calculated_last = cut_items_number
+            case ScreenType.CHECK_IN:
+                players_instead_of_boards = True
+                cut_items_number = len(self.tournament.sorted_tournament_players)
+                if cut_items_number:
+                    self._calculated_first = 1
+                    self._calculated_last = cut_items_number
             case ScreenType.PLAYERS | ScreenType.RANKING:
                 players_instead_of_boards = False
                 if ScreenType(self.type) == ScreenType.PLAYERS:

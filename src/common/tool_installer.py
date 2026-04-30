@@ -150,6 +150,7 @@ class WebLibArchiveInstaller(WebLibInstaller):
         lib_files: set[str],
         archive_url: str,
         archive_filename: str,
+        archive_sub_folder_name: str | None = None,
         licence_files: set[str] | None = None,
         licence_type: str | None = None,
     ):
@@ -161,6 +162,9 @@ class WebLibArchiveInstaller(WebLibInstaller):
             lib_files,
             licence_files,
             licence_type,
+        )
+        self.archive_sub_folder_name = (
+            archive_sub_folder_name or self.version_folder_name
         )
         self.archive_url: str = archive_url.format(version=self.version)
         self.archive_filename: str = archive_filename.format(version=self.version)
@@ -175,7 +179,7 @@ class WebLibArchiveInstaller(WebLibInstaller):
             shutil.unpack_archive(archive_file, tmp_dir)
             # Copy requested library files
             for lib_file in self.lib_files:
-                src_file: Path = tmp_dir / self.version_folder_name / lib_file
+                src_file: Path = tmp_dir / self.archive_sub_folder_name / lib_file
                 dst_file: Path = self.version_install_dir / lib_file
                 dst_dir: Path = dst_file.parent
                 dst_dir.mkdir(parents=True, exist_ok=True)

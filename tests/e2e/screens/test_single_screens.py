@@ -75,7 +75,7 @@ class TestSingleScreensFunctionality:
             api_request_context,
             EVENT_ID,
             SCREEN_ID,
-            ScreenType.INPUT,
+            ScreenType.CHECK_IN,
             {'init_set_tournament_id': unpaired_tournament.id},
         )
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
@@ -89,11 +89,6 @@ class TestSingleScreensFunctionality:
 
         # Clicking the row should not trigger a check-in
         expect(row).not_to_have_attribute('hx-get', re.compile(r'.*checkin-modal.*'))
-
-        # Open check-in
-        api_request_context.patch(
-            f'/tournament-open-check-in/{EVENT_ID}/{unpaired_tournament.id}'
-        )
 
         # Reload the page
         lan_page.goto(f'/view/screen/{EVENT_ID}/{SCREEN_ID}')
