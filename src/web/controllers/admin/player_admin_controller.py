@@ -78,7 +78,6 @@ from web.session import (
     SessionPlayersSearch,
     SessionPlayersFilters,
     SessionPlayersImportUseDataSource,
-    SessionPlayersUnsafeCheckIn,
 )
 from web.utils import SelectOption
 
@@ -380,9 +379,6 @@ class PlayerAdminController(BaseEventAdminController):
             'sort_column': sort_column,
             'is_sort_asc': is_sort_asc,
             'is_search_active': len(allowed_players) > len(search_results),
-            'unsafe_player_check_in_enabled': SessionPlayersUnsafeCheckIn(
-                request, event
-            ).get(),
         }
 
     @classmethod
@@ -1545,14 +1541,9 @@ class PlayerAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         channels: ChannelsPlugin,
-        data: Annotated[
-            dict[str, str],
-            Body(media_type=RequestEncodingType.URL_ENCODED),
-        ],
         player_id: int,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, player_id)
-        event = web_context.get_admin_event()
         player = web_context.get_admin_tournament_player()
         tournament = player.tournament
         status = player.check_in_status
@@ -1566,9 +1557,6 @@ class PlayerAdminController(BaseEventAdminController):
             )
             tournament.check_in_player(player, True)
         self.publish_new_checkin(channels, tournament)
-        if WebContext.form_data_to_bool(data, 'set_unsafe_check_in'):
-            SessionPlayersUnsafeCheckIn(request, event).set(True)
-            return self._render_players_table(web_context)
         return self._render_player_table_row(web_context, after_check_in=True)
 
     @get(
@@ -1583,20 +1571,6 @@ class PlayerAdminController(BaseEventAdminController):
         return self._admin_base_event_render(
             web_context.template_context | {'modal': 'check-in-player'}
         )
-
-    @patch(
-        path='/check-in/disable-unsafe/{event_uniq_id:str}',
-        name='check-in-disable-unsafe',
-        guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
-    )
-    async def htmx_check_in_disable_unsafe(
-        self,
-        request: HTMXRequest,
-    ) -> Template:
-        web_context = PlayerAdminWebContext(request)
-        event = web_context.get_admin_event()
-        SessionPlayersUnsafeCheckIn(request, event).set(False)
-        return self._render_players_tab(web_context)
 
     @get(
         path='/check-in/reset-modal/{event_uniq_id:str}/{tournament_id:int}',

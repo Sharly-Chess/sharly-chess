@@ -1043,7 +1043,7 @@ msgid "Cancel"
 msgstr ""
 
 #, python-format
-msgid "Cancel \"%(bye)s\""
+msgid "Cancel \"%(bye)s\" "
 msgstr ""
 
 #, python-format
@@ -1051,7 +1051,7 @@ msgid "Cancel \"%(bye)s\" at round #%(round)s for [%(player)s]?"
 msgstr ""
 
 #, python-format
-msgid "Cancel \"%(bye)s\"<br/>and mark as \"Present\""
+msgid "Cancel \"%(bye)s\"<br/>and mark as \"Present\" "
 msgstr ""
 
 msgid "Candidate Master"
@@ -1119,9 +1119,6 @@ msgid "Check-in / Results entry"
 msgstr ""
 
 msgid "Check-in / Results entry ({tournament_name})"
-msgstr ""
-
-msgid "Check-in confirmation disabled, watch out for missclicks."
 msgstr ""
 
 msgid "Check-in players"
@@ -1207,9 +1204,6 @@ msgstr ""
 
 #, python-format
 msgid "Click to mark as &quot;%(status)s&quot;"
-msgstr ""
-
-msgid "Click to re-enable"
 msgstr ""
 
 msgid "Close"
@@ -2719,9 +2713,6 @@ msgstr ""
 msgid "If you have an account you may connect by clicking on the <i>Profile</i> button in the menu."
 msgstr ""
 
-msgid "Ignore this confirmation next time"
-msgstr ""
-
 msgid "Illegal moves are not recorded."
 msgstr ""
 
@@ -3191,10 +3182,6 @@ msgid "Mar *** MARCH"
 msgstr "Mar"
 
 msgid "March"
-msgstr ""
-
-#, python-format
-msgid "Mark [%(player)s] as \"%(status)s\"?"
 msgstr ""
 
 #, python-format
@@ -5133,9 +5120,6 @@ msgstr ""
 msgid "Show/hide the screens created from screen families."
 msgstr ""
 
-msgid "Show/hide these screens."
-msgstr ""
-
 msgid "Sierra Leone"
 msgstr ""
 
@@ -5717,9 +5701,6 @@ msgid "This account is active, anonymous users can log in to it."
 msgstr ""
 
 msgid "This account is not active, anonymous users can not log in to it."
-msgstr ""
-
-msgid "This confirmation may prevent missclicks leading to wrongfully paired players. It is recommended not to disable it outside of check-in periods."
 msgstr ""
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
@@ -6572,12 +6553,6 @@ msgstr ""
 msgid "You are not allowed to create tournaments."
 msgstr ""
 
-msgid "You are not allowed to set Half-Point Byes."
-msgstr ""
-
-msgid "You are not allowed to set Zero-Point Byes."
-msgstr ""
-
 msgid "You are not allowed to delete the tournament."
 msgstr ""
 
@@ -6618,6 +6593,9 @@ msgid "You are not allowed to set Full-Point Byes."
 msgstr ""
 
 msgid "You are not allowed to set Half-Point Byes."
+msgstr ""
+
+msgid "You are not allowed to set Zero-Point Byes."
 msgstr ""
 
 msgid "You are not allowed to set the current round."

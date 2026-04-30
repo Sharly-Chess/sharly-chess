@@ -1374,7 +1374,7 @@ class CheckInStatus(IntEnum):
     def base_icon_class(self) -> str:
         match self:
             case self.WITHDRAWN:
-                return 'bi-door-open-fill'
+                return 'bi-sign-stop-fill'
             case self.NEXT_ROUND_ZPB:
                 return 'bi-0-circle-fill'
             case self.NEXT_ROUND_HPB:

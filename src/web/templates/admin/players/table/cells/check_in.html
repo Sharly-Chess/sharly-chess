@@ -27,7 +27,7 @@
         {% else %}
 
             hx-indicator="#please-wait"
-            {% if unsafe_player_check_in_enabled and status in (4, 5) %}
+            {% if status in (4, 5) %}
                 hx-patch="{{ url_for(
                     'check-in-player-action',
                     event_uniq_id=admin_event.uniq_id,

@@ -99,9 +99,9 @@
                                 >
                                     {% set bye = check_in_status.name %}
                                     {{ (
-                                        _('Cancel "%(bye)s"', bye=bye)
+                                        _('Cancel "%(bye)s" ', bye=bye)
                                         if tournament_player.check_in else
-                                        _('Cancel "%(bye)s"<br/>and mark as "Present"', bye=bye)
+                                        _('Cancel "%(bye)s"<br/>and mark as "Present" ', bye=bye)
                                     ) | safe }}
                                 </button>
                             </span>

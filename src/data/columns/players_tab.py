@@ -246,10 +246,6 @@ class CheckInPlayersTabColumn(FilterPlayersTabColumn):
         return 'headers/check_in.html'
 
     @property
-    def header_button_template(self) -> str:
-        return 'headers/check_in_button.html'
-
-    @property
     def cell_template(self) -> str | None:
         return 'cells/check_in.html'
 

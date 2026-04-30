@@ -563,7 +563,7 @@ msgid "All players are paired."
 msgstr "Tou·tes les joueur·euses sont apparié·es."
 
 msgid "All players marked as \"Present\"."
-msgstr "Tou·tes les joueur·euses ont été marqué·es \"Présent·e\"."
+msgstr "Tou·tes les joueur·euses ont été marqué·es « Présent·e »."
 
 msgid "All the boards"
 msgstr "Tous les échiquiers"
@@ -581,7 +581,7 @@ msgid "All the players of the selected tournament will be deleted before importi
 msgstr "Tou·tes les joueur·euses du tournoi sélectionné seront supprimé·es avant d'importer ceux du fichier."
 
 msgid "All the players of tournament [{tournament}] have been marked a \"{status}\"."
-msgstr "Tou·tes les joueur·euses du tournoi [{tournament}] ont été marqué·es \"{status}\"."
+msgstr "Tou·tes les joueur·euses du tournoi [{tournament}] ont été marqué·es « {status} »."
 
 msgid "All the tournaments"
 msgstr "Tous les tournois"
@@ -1043,16 +1043,16 @@ msgid "Cancel"
 msgstr "Annuler"
 
 #, python-format
-msgid "Cancel \"%(bye)s\""
-msgstr "Annuler \"%(bye)s\""
+msgid "Cancel \"%(bye)s\" "
+msgstr "Annuler « %(bye)s »"
 
 #, python-format
 msgid "Cancel \"%(bye)s\" at round #%(round)s for [%(player)s]?"
-msgstr "Annuler \"%(bye)s\" à la ronde n°%(round)s for [%(player)s]?"
+msgstr "Annuler « %(bye)s » à la ronde n°%(round)s for [%(player)s]?"
 
 #, python-format
-msgid "Cancel \"%(bye)s\"<br/>and mark as \"Present\""
-msgstr "Annuler \"%(bye)s\"<br/>et marquer \"Présent·e\""
+msgid "Cancel \"%(bye)s\"<br/>and mark as \"Present\" "
+msgstr "Annuler « %(bye)s »<br/>et marquer « Présent·e »"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"
@@ -1120,9 +1120,6 @@ msgstr "Pointage / Saisie des résultats"
 
 msgid "Check-in / Results entry ({tournament_name})"
 msgstr "Pointage / Saisie des résultats ({tournament_name})"
-
-msgid "Check-in confirmation disabled, watch out for missclicks."
-msgstr "Confirmation de pointage désactivée, attention aux missclicks."
 
 msgid "Check-in players"
 msgstr "Pointer les joueur·euses"
@@ -1208,9 +1205,6 @@ msgstr "Cliquer pour modifier"
 #, python-format
 msgid "Click to mark as &quot;%(status)s&quot;"
 msgstr "Cliquer pour marquer &laquo; %(status)s &raquo;"
-
-msgid "Click to re-enable"
-msgstr "Cliquer pour réactiver"
 
 msgid "Close"
 msgstr "Fermer"
@@ -2719,9 +2713,6 @@ msgstr "Si vous ne pouvez pas contrôler qui a accès au réseau auquel vous êt
 msgid "If you have an account you may connect by clicking on the <i>Profile</i> button in the menu."
 msgstr "Si vous disposez d’un compte, vous pouvez vous connecter en cliquant sur le bouton Profil dans le menu."
 
-msgid "Ignore this confirmation next time"
-msgstr "Ignorer cette confirmation la prochaine fois"
-
 msgid "Illegal moves are not recorded."
 msgstr "Les coups illégaux ne sont pas enregistrés."
 
@@ -3194,16 +3185,12 @@ msgid "March"
 msgstr "Mars"
 
 #, python-format
-msgid "Mark [%(player)s] as \"%(status)s\"?"
-msgstr "Marquer [%(player)s] \"%(status)s\" ?"
-
-#, python-format
 msgid "Mark all players as \"%(status)s\" "
-msgstr "Marquer tout·es les joueur·euses \"%(status)s\" "
+msgstr "Marquer tout·es les joueur·euses « %(status)s » "
 
 #, python-format
 msgid "Mark as \"%(status)s\" "
-msgstr "Marquer \"%(status)s\" "
+msgstr "Marquer « %(status)s » "
 
 msgid "Mark as &quot;Present&quot; (will be paired next round)"
 msgstr "Marquer &quot;Présent·e&quot; (seront apparié·es à la prochaine ronde)"
@@ -4160,7 +4147,7 @@ msgid "Player [{player}] is duplicated."
 msgstr "Le·la joueur·euse [{player}] est dupliqué·e."
 
 msgid "Player [{player}] marked as \"{status}\"."
-msgstr "Le·la joueur·euse [{player}] a été marqué·e \"{status}\"."
+msgstr "Le·la joueur·euse [{player}] a été marqué·e « {status} »."
 
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
@@ -4597,16 +4584,16 @@ msgid "Ratings update"
 msgstr "Mise à jour des classements"
 
 msgid "Received a Full-Point Bye for the next round."
-msgstr "A reçu un point joker pour la ronde à venir."
+msgstr "Ont reçu un point joker pour la ronde à venir."
 
 msgid "Received a Half-Point Bye for the next round."
-msgstr "A reçu un demi-point joker (bye) pour la ronde à venir."
+msgstr "Ont reçu un demi-point joker (bye) pour la ronde à venir."
 
 msgid "Received a Zero-Point Bye for all the remaining rounds."
-msgstr "A reçu un forfait pour toutes les rondes à venir."
+msgstr "Ont reçu un forfait pour toutes les rondes à venir."
 
 msgid "Received a Zero-Point Bye for the next round."
-msgstr "A reçu un forfait pour la ronde à venir."
+msgstr "Ont reçu un forfait pour la ronde à venir."
 
 #, python-format
 msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
@@ -5134,9 +5121,6 @@ msgstr "Afficher les avertissements"
 
 msgid "Show/hide the screens created from screen families."
 msgstr "Montrer/cacher les écrans créés à partir de familles d'écrans."
-
-msgid "Show/hide these screens."
-msgstr "Montrer/cacher ces écrans."
 
 msgid "Sierra Leone"
 msgstr "Sierra Leone"
@@ -5720,9 +5704,6 @@ msgstr "Ce compte est actif, les utilisateur·ices anonymes peuvent s'y connecte
 
 msgid "This account is not active, anonymous users can not log in to it."
 msgstr "Ce compte est inactif, les utilisateur·ices anonymes ne peuvent s'y connecter."
-
-msgid "This confirmation may prevent missclicks leading to wrongfully paired players. It is recommended not to disable it outside of check-in periods."
-msgstr "Cette confirmation peut éviter les missclicks menant à des joueur·euses apparié·es par erreur. Il est recommandé de ne pas la désactiver en dehors des périodes de pointage."
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr "Cette source de données n'est pas disponible (pour plus de détails : Menu > Sources de données)."
@@ -6574,12 +6555,6 @@ msgstr "Vous n'êtes pas autorisé·e à annuler des byes."
 msgid "You are not allowed to create tournaments."
 msgstr "Vous n'êtes pas autorisé·e à créer des tournois."
 
-msgid "You are not allowed to set Half-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à déclarer des demi-points joker."
-
-msgid "You are not allowed to set Zero-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à déclarer des forfaits."
-
 msgid "You are not allowed to delete the tournament."
 msgstr "Vous n'êtes pas autorisé·e à supprimer le tournoi."
 
@@ -6620,7 +6595,10 @@ msgid "You are not allowed to set Full-Point Byes."
 msgstr "Vous n'êtes pas autorisé·e à attribuer des points joker entiers."
 
 msgid "You are not allowed to set Half-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à attribuer des demi-points joker."
+msgstr "Vous n'êtes pas autorisé·e à déclarer des demi-points joker."
+
+msgid "You are not allowed to set Zero-Point Byes."
+msgstr "Vous n'êtes pas autorisé·e à déclarer des forfaits."
 
 msgid "You are not allowed to set the current round."
 msgstr "Vous n'êtes pas autorisé·e à positionner la ronde courante."

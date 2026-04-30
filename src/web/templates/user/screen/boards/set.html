@@ -2,7 +2,7 @@
     <div
         class="boards-screen-set"
     >
-        {% if tournament.current_round %}
+        {% if screen.type != 'check-in' and tournament.current_round %}
             <div class="boards-set">
                 <h2 class="set-title text-center">
                     {% if tournament.current_round %}
