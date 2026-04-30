@@ -8,10 +8,6 @@
         <div class="modal-header">
             <div class="fs-5">
                 {{ _(
-                    'Mark [%(player)s] as "%(status)s"?',
-                    player=admin_player.full_name,
-                    status=_('Absent') if admin_player.check_in else _('Present'),
-                ) if status in (4, 5) else _(
                     'Return [%(player)s] to the tournament?',
                     player=admin_player.full_name
                 ) if status == 0 else _(
@@ -30,29 +26,6 @@
                 player_id=admin_player.id,
             ) }}"
         >
-            {% if status in (4, 5) %}
-                <div class="modal-body">
-                    {{ admin_macros.checkbox_input(
-                        name='set_unsafe_check_in',
-                        placeholder=_('Ignore this confirmation next time'),
-                    ) }}
-                    <span id="unsafe-warning" class="text-danger mt-1" style="display: none; font-size: 95%">
-                        {% with message=_(
-                            'This confirmation may prevent missclicks leading to '
-                            'wrongfully paired players. It is recommended not to '
-                            'disable it outside of check-in periods.'
-                        ), type='warning', alert_classes='mb-0' %}
-                            {% include '/common/form_alert_block.html' %}
-                        {% endwith %}
-                    </span>
-                    <script>
-                        $('#set-unsafe-check-in').change(function () {
-                            $('#unsafe-warning').width($('.modal-body').width());
-                            $('#unsafe-warning').css('display', this.checked?'block':'none');
-                        });
-                    </script>
-                </div>
-            {% endif %}
         </form>
         <div class="modal-footer">
             <button

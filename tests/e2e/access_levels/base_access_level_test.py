@@ -483,11 +483,9 @@ class BaseAccessLevelTest:
             )
 
             expect(check_in_button).to_have_attribute(
-                'hx-get', re.compile(r'.*check-in/player-modal.*')
+                'hx-patch', re.compile(r'.*check-in-player.*')
             )
             check_in_button.click()
-            self.auth_page.locator('#set-unsafe-check-in').click()
-            TestUtils.button_by_text(self.auth_page, 'Yes').click()
             expect(check_in_button).to_have_class(
                 re.compile(r'\bbi-check-circle-fill\b')
             )
@@ -495,7 +493,7 @@ class BaseAccessLevelTest:
             expect(check_in_button).to_have_class(re.compile(r'\bbi-x-circle-fill\b'))
         else:
             expect(check_in_button).not_to_have_attribute(
-                'hx-patch', re.compile(r'.*player-check-in.*')
+                'hx-patch', re.compile(r'.*check-in-player.*')
             )
 
     # --------------------------------------------------------------------------

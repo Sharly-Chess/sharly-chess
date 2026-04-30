@@ -12,12 +12,13 @@
     {% if set_all_present_message %}
         <button
             class="btn btn-outline-primary text-nowrap"
-            hx-get="{{ url_for(
+            hx-post="{{ url_for(
                 'pairings-set-all-present',
                 event_uniq_id=admin_event.uniq_id,
                 tournament_id=admin_tournament.id,
                 round=admin_round
             ) }}"
+            hx-target="body"
             hx-indicator="#please-wait"
         >
             <i class="bi-circle-check-fill pe-1"></i>
