@@ -3223,7 +3223,7 @@ msgid "Mark as \"%(status)s\" "
 msgstr "Marquer « %(status)s » "
 
 msgid "Mark as &quot;Present&quot; (will be paired next round)"
-msgstr "Marquer &quot;Présent·e&quot; (seront apparié·es à la prochaine ronde)"
+msgstr "Marquer &laquo; Présent·e &raquo; (seront apparié·es à la prochaine ronde)"
 
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ronde courante."
@@ -4712,7 +4712,7 @@ msgid "Reset"
 msgstr "Réinitialiser"
 
 msgid "Reset all the players to &quot;Absent&quot; or &quot;Present&quot; (byes not impacted)."
-msgstr "Réinitialiser tout·es les joueur·euses en &quot;Absent·e&quot; ou &quot;Présent·e&quot; (les forfaits et points joker ne sont pas impactés)."
+msgstr "Réinitialiser tout·es les joueur·euses en &laquo; Absent·e &raquo; ou &laquo; Présent·e &raquo; (les forfaits et points joker ne sont pas impactés)."
 
 msgid "Reset check-in"
 msgstr "Réinitialiser le pointage"
