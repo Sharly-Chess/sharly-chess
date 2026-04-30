@@ -4933,7 +4933,7 @@ msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
 
 msgid "Rules used were only effective until march 2026 (legacy)."
-msgstr "Les règles utilisées n'étaient effectives que jusqu'en Mars 2026 (obsolète)."
+msgstr "Les règles utilisées n'étaient effectives que jusqu'en Mars 2026 (obsolètes)."
 
 msgid "Russia"
 msgstr "Russie"
