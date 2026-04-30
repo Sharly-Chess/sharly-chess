@@ -992,8 +992,8 @@ msgstr ""
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr ""
 
-msgid "Byes"
-msgstr ""
+msgid "Byes *** ZPB, HPB or FPB"
+msgstr "Byes"
 
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
@@ -4632,10 +4632,6 @@ msgstr ""
 msgid "Received a Zero-Point Bye for the next round."
 msgstr ""
 
-#, python-format
-msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
-msgstr ""
-
 msgid "Record"
 msgstr ""
 
@@ -7056,4 +7052,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
+#~ msgstr ""
 

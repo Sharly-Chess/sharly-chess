@@ -992,7 +992,7 @@ msgstr "Par ordre alpha."
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
 
-msgid "Byes"
+msgid "Byes *** ZPB, HPB or FPB"
 msgstr "Forfaits ou points joker"
 
 msgid "Byes can't be set for the last round of the tournament."
@@ -4634,10 +4634,6 @@ msgstr "Ont reçu un forfait pour toutes les rondes à venir."
 msgid "Received a Zero-Point Bye for the next round."
 msgstr "Ont reçu un forfait pour la ronde à venir."
 
-#, python-format
-msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
-msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
-
 msgid "Record"
 msgstr "Historique"
 
@@ -7058,4 +7054,7 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
+#~ msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
 
