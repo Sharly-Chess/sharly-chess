@@ -27,6 +27,9 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
+msgid "Championnat de France des écoles et collèges"
+msgstr ""
+
 msgid "Choose at least one school."
 msgstr ""
 

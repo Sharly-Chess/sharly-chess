@@ -45,6 +45,7 @@ if TYPE_CHECKING:
     from data.criteria.player_filter_options import PlayerFilterOption
     from data.criteria.player_filters import PlayerFilter
     from data.tie_breaks import TieBreak, TieBreakOption
+    from data.tie_breaks.sets import TieBreakSet
     from data.tournament import Tournament
     from data.event import Event
     from database.sqlite.event.event_store import StoredPlayer
@@ -394,6 +395,12 @@ class AppHookSpecs:
         self, tie_break_option_types: list[type['TieBreakOption']]
     ):
         """Provide extra tournament tie-break options."""
+
+    @hookspec
+    def insert_tie_break_sets(
+        self, tie_break_sets: list['TieBreakSet'], event: 'Event'
+    ):
+        """Provide extra named tie-break sets, scoped per pairing system."""
 
     # ---------------------------------------------------------------------------------
     # Pairings

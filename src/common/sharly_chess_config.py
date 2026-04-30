@@ -42,6 +42,7 @@ from utils.date_time import DateFormatterManager
 if TYPE_CHECKING:
     from data.player import Federation
     from data.player_categories import PlayerCategorySet
+    from data.tie_breaks.sets import TieBreakSet
 
 logger: logging.Logger = get_logger()
 
@@ -278,6 +279,35 @@ class SharlyChessConfig(metaclass=Singleton):
             )
             for stored_set in self.stored_config.stored_player_category_sets
         ]
+
+    @property
+    def custom_tie_break_sets(self) -> list['TieBreakSet']:
+        from data.tie_breaks.sets import TieBreakSet, TieBreakSetSource
+        from database.sqlite.event.event_store import StoredTieBreak
+
+        sets: list['TieBreakSet'] = []
+        for stored_set in self.stored_config.stored_tie_break_sets:
+            stored_tie_breaks = [
+                StoredTieBreak(
+                    id=None,
+                    tournament_id=0,
+                    type=item['type'],
+                    options=item.get('options', {}),
+                    index=index,
+                )
+                for index, item in enumerate(stored_set.stored_tie_breaks)
+            ]
+            sets.append(
+                TieBreakSet(
+                    key=f'custom:{stored_set.id}',
+                    name=stored_set.name,
+                    source=TieBreakSetSource.CUSTOM,
+                    pairing_system_id=stored_set.pairing_system_id,
+                    stored_tie_breaks=stored_tie_breaks,
+                    custom_set_id=stored_set.id,
+                )
+            )
+        return sets
 
     # The port used by the Uvicorn web server.
     web_host: str = '0.0.0.0'

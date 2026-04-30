@@ -390,6 +390,9 @@ msgstr ""
 msgid "A positive value is expected."
 msgstr ""
 
+msgid "A set named [{name}] already exists. Tick the overwrite option to replace it."
+msgstr ""
+
 msgid "A set with this name already existe."
 msgstr ""
 
@@ -540,6 +543,9 @@ msgstr ""
 msgid "Add screens"
 msgstr ""
 
+msgid "Add tie-break"
+msgstr ""
+
 msgid "Add tournaments"
 msgstr ""
 
@@ -676,6 +682,9 @@ msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
 msgid "Application"
+msgstr ""
+
+msgid "Apply set"
 msgstr ""
 
 msgid "Apr *** APRIL"
@@ -1188,13 +1197,16 @@ msgstr ""
 msgid "Choose a random player"
 msgstr ""
 
+msgid "Choose a set…"
+msgstr ""
+
 msgid "Choose at least one value."
 msgstr ""
 
 msgid "Choose families to add"
 msgstr ""
 
-msgid "Choose my own"
+msgid "Choose my own tie-breaks"
 msgstr ""
 
 msgid "Choose one, many or no players."
@@ -1583,6 +1595,15 @@ msgid "Currently displaying rotator [{name}]"
 msgstr ""
 
 msgid "Currently displaying screen [{name}]"
+msgstr ""
+
+msgid "Custom"
+msgstr ""
+
+msgid "Custom sets"
+msgstr ""
+
+msgid "Custom tie-break sets"
 msgstr ""
 
 msgid "Cut values"
@@ -2553,6 +2574,9 @@ msgstr "Fr"
 msgid "France"
 msgstr ""
 
+msgid "From tournament"
+msgstr ""
+
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr ""
 
@@ -3207,10 +3231,16 @@ msgstr ""
 msgid "Manage archives"
 msgstr ""
 
+msgid "Manage custom sets"
+msgstr ""
+
 msgid "Manage events"
 msgstr ""
 
 msgid "Manage prizes"
+msgstr ""
+
+msgid "Manage saved tie-break sets for this pairing system."
 msgstr ""
 
 msgid "Manage screens"
@@ -3662,6 +3692,9 @@ msgstr ""
 msgid "No rotators"
 msgstr ""
 
+msgid "No saved sets."
+msgstr ""
+
 msgid "No screen families"
 msgstr ""
 
@@ -3677,7 +3710,7 @@ msgstr ""
 msgid "No such screens."
 msgstr ""
 
-msgid "No tie-breaks"
+msgid "No tie-breaks for [{tournament}]"
 msgstr ""
 
 msgid "No timers"
@@ -4330,6 +4363,9 @@ msgstr ""
 msgid "Please choose a federation."
 msgstr ""
 
+msgid "Please choose a name for the set."
+msgstr ""
+
 msgid "Please choose a player."
 msgstr ""
 
@@ -4543,6 +4579,9 @@ msgstr ""
 msgid "Qatar"
 msgstr ""
 
+msgid "Quick-apply a tie-break set"
+msgstr ""
+
 #, python-format
 msgid "R %(round)d *** ROUND COLUMN HEADER"
 msgstr "R %(round)d"
@@ -4638,10 +4677,6 @@ msgid "Ratings"
 msgstr ""
 
 msgid "Ratings update"
-msgstr ""
-
-#, python-format
-msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
 msgstr ""
 
 msgid "Record"
@@ -4895,6 +4930,9 @@ msgstr ""
 msgid "Rwanda"
 msgstr ""
 
+msgid "SC Recommendation"
+msgstr ""
+
 msgid "SCR"
 msgstr ""
 
@@ -4926,6 +4964,9 @@ msgid "Saudi Arabia"
 msgstr ""
 
 msgid "Save"
+msgstr ""
+
+msgid "Save current tie-breaks as custom set"
 msgstr ""
 
 msgid "Save the set or cancel."
@@ -5079,7 +5120,16 @@ msgstr ""
 msgid "Set Zero-Points Byes"
 msgstr ""
 
+msgid "Set [{name}] has been saved."
+msgstr ""
+
+msgid "Set [{name}] has been updated."
+msgstr ""
+
 msgid "Set illegal moves"
+msgstr ""
+
+msgid "Set name"
 msgstr ""
 
 msgid "Set special results"
@@ -5364,6 +5414,9 @@ msgid "Switzerland"
 msgstr ""
 
 msgid "Syria"
+msgstr ""
+
+msgid "System"
 msgstr ""
 
 msgid "TRF file"
@@ -5668,6 +5721,12 @@ msgstr ""
 msgid "The timer displayed on the screens of the family."
 msgstr ""
 
+msgid "The tournament has invalid tie-breaks; please fix them before saving as a set."
+msgstr ""
+
+msgid "The tournament has no tie-breaks to save."
+msgstr ""
+
 msgid "The tournament has not yet started."
 msgstr ""
 
@@ -5720,6 +5779,10 @@ msgid "There needs to be at least one screen or family defined for the rotator t
 msgstr ""
 
 msgid "These plugins can only be activated on events of their federation."
+msgstr ""
+
+#, python-format
+msgid "These sets are saved per pairing system and shared across events. Showing sets for [%(pairing_system)s]."
 msgstr ""
 
 msgid "These tournaments are already included for this account by a higher access level."
@@ -5836,6 +5899,12 @@ msgstr ""
 msgid "This screen is public (visible by the spectators)."
 msgstr ""
 
+msgid "This set contains [{name}] twice in a row."
+msgstr ""
+
+msgid "This set contains a duplicate tie-break ([{name}])."
+msgstr ""
+
 msgid "This tie-break can be used multiple times."
 msgstr ""
 
@@ -5876,16 +5945,25 @@ msgstr ""
 msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr ""
 
+msgid "Tie-break [{name}] is not available in this event."
+msgstr ""
+
 msgid "Tie-break based on the opponents' ratings and the player's score (consult the FIDE Handbook for more details)."
 msgstr ""
 
 msgid "Tie-break favoring players which have won against the players they are tied with (consult the FIDE handbook for more details)."
 msgstr ""
 
+msgid "Tie-break sets are saved from the Tie-breaks modal."
+msgstr ""
+
 msgid "Tie-breaks"
 msgstr ""
 
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
+msgstr ""
+
+msgid "Tie-breaks for [{tournament}]"
 msgstr ""
 
 msgid "Time control"
@@ -6313,9 +6391,6 @@ msgid "Use the Staff tab to declare arbiters."
 msgstr ""
 
 msgid "Use the alert message defined on each screen."
-msgstr ""
-
-msgid "Use the recommended tie-breaks"
 msgstr ""
 
 msgid "Use the standard FIDE rating for unrated players"
@@ -6962,6 +7037,9 @@ msgstr ""
 msgid "{first_name} {last_name}"
 msgstr ""
 
+msgid "{name}: {message}"
+msgstr ""
+
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr ""
 
@@ -7005,4 +7083,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
