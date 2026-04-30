@@ -4366,7 +4366,7 @@ msgid "Please choose a federation."
 msgstr "Veuillez choisir une fédération."
 
 msgid "Please choose a name for the set."
-msgstr "Merci de choisir un nom pour le jeu."
+msgstr "Veuillez choisir un nom pour le jeu."
 
 msgid "Please choose a player."
 msgstr "Veuillez choisir un·e joueur·euse."
