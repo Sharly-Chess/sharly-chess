@@ -1,7 +1,7 @@
 <div
     id="tie-break-sets-modal"
     class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: fit-content; min-width: min(90vw, 450px);"
+    style="--bs-modal-width: fit-content; min-width: min(90vw, 500px);"
 >
     <div class="modal-content">
         <div class="modal-header">
@@ -17,14 +17,14 @@
                     pairing_system=admin_tournament.pairing_system.name
                 ) }}
             </p>
-            {% if not tie_break_user_sets %}
+            {% if not tie_break_custom_sets %}
                 <h5 class="text-center my-3">{{ _('No saved sets.') }}</h5>
                 <p>
                     {{ _('Tie-break sets are saved from the Tie-breaks modal.') }}
                 </p>
             {% else %}
                 <div class="d-flex flex-column gap-2">
-                    {% for tie_break_set in tie_break_user_sets %}
+                    {% for tie_break_set in tie_break_custom_sets %}
                         <div class="border border-secondary bg-body-tertiary">
                             <div class="p-2 d-flex align-items-center gap-4">
                                 <div class="text-start flex-grow-1">
@@ -39,7 +39,7 @@
                                             'admin-tie-break-set-delete',
                                             event_uniq_id=admin_event.uniq_id,
                                             tournament_id=admin_tournament.id,
-                                            tie_break_set_id=tie_break_set.user_set_id,
+                                            tie_break_set_id=tie_break_set.custom_set_id,
                                         ) }}"
                                         hx-target="body"
                                         hx-indicator="#please-wait"

@@ -281,7 +281,7 @@ class SharlyChessConfig(metaclass=Singleton):
         ]
 
     @property
-    def user_tie_break_sets(self) -> list['TieBreakSet']:
+    def custom_tie_break_sets(self) -> list['TieBreakSet']:
         from data.tie_breaks.sets import TieBreakSet, TieBreakSetSource
         from database.sqlite.event.event_store import StoredTieBreak
 
@@ -299,12 +299,12 @@ class SharlyChessConfig(metaclass=Singleton):
             ]
             sets.append(
                 TieBreakSet(
-                    key=f'user:{stored_set.id}',
+                    key=f'custom:{stored_set.id}',
                     name=stored_set.name,
-                    source=TieBreakSetSource.USER,
+                    source=TieBreakSetSource.CUSTOM,
                     pairing_system_id=stored_set.pairing_system_id,
                     stored_tie_breaks=stored_tie_breaks,
-                    user_set_id=stored_set.id,
+                    custom_set_id=stored_set.id,
                 )
             )
         return sets

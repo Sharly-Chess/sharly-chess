@@ -1318,7 +1318,7 @@ class TournamentAdminController(BaseEventAdminController):
         for source in (
             TieBreakSetSource.SYSTEM,
             TieBreakSetSource.PLUGIN,
-            TieBreakSetSource.USER,
+            TieBreakSetSource.CUSTOM,
             TieBreakSetSource.TOURNAMENT,
         ):
             sets = grouped.get(source, [])
@@ -1337,15 +1337,15 @@ class TournamentAdminController(BaseEventAdminController):
                 )
             select_options[SOURCE_LABELS[source]] = options
 
-        existing_user_set_names = [
+        existing_custom_set_names = [
             tie_break_set.name
-            for tie_break_set in grouped.get(TieBreakSetSource.USER, [])
+            for tie_break_set in grouped.get(TieBreakSetSource.CUSTOM, [])
         ]
 
         context: dict[str, Any] = {
             'modal': 'tie_breaks',
             'tie_break_set_select_options': select_options,
-            'tie_break_set_user_names': existing_user_set_names,
+            'tie_break_set_custom_names': existing_custom_set_names,
             'tie_break_set_save_as_error': save_as_error,
             'tie_break_set_save_as_name_value': save_as_name_value or '',
         }
@@ -1646,20 +1646,20 @@ class TournamentAdminController(BaseEventAdminController):
 
     @staticmethod
     def _tie_break_sets_modal_context(tournament: Tournament) -> dict[str, Any]:
-        """Context for the user TB-set management modal: lists all user
+        """Context for the custom TB-set management modal: lists all custom
         sets for the current pairing system."""
-        user_sets = [
+        custom_sets = [
             tie_break_set
-            for tie_break_set in SharlyChessConfig().user_tie_break_sets
+            for tie_break_set in SharlyChessConfig().custom_tie_break_sets
             if tie_break_set.pairing_system_id == tournament.pairing_system.id
         ]
-        for tie_break_set in user_sets:
+        for tie_break_set in custom_sets:
             from data.tie_breaks.sets import fill_acronyms
 
             fill_acronyms(tie_break_set, tournament.event)
         return {
             'modal': 'tie_break_sets',
-            'tie_break_user_sets': user_sets,
+            'tie_break_custom_sets': custom_sets,
         }
 
     @get(

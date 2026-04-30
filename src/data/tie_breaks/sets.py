@@ -4,7 +4,8 @@ parameters) that can be applied to a tournament that has no tie-breaks yet.
 Sets come from four sources:
   - SYSTEM: code constants (SC recommendation, FIDE 2019…)
   - PLUGIN: provided by plugins via the `insert_tie_break_sets` hook
-  - USER: stored in the global `.scc` config DB
+  - CUSTOM: stored in the global `.scc` config DB, shared by all users of
+    the server instance
   - TOURNAMENT: snapshot of another tournament in the same event
 """
 
@@ -30,14 +31,14 @@ logger: Logger = get_logger()
 class TieBreakSetSource(StrEnum):
     SYSTEM = 'system'
     PLUGIN = 'plugin'
-    USER = 'user'
+    CUSTOM = 'custom'
     TOURNAMENT = 'tournament'
 
 
 SOURCE_LABELS: dict[TieBreakSetSource, str] = {
     TieBreakSetSource.SYSTEM: _('System'),
     TieBreakSetSource.PLUGIN: _('Plugins'),
-    TieBreakSetSource.USER: _('Mine'),
+    TieBreakSetSource.CUSTOM: _('Custom'),
     TieBreakSetSource.TOURNAMENT: _('From tournament'),
 }
 
@@ -53,7 +54,7 @@ class TieBreakSet:
     stored_tie_breaks: list[StoredTieBreak]
     disabled: bool = False
     disabled_reason: str | None = None
-    user_set_id: int | None = None
+    custom_set_id: int | None = None
     tie_break_acronyms: list[str] = field(default_factory=list)
 
     def instantiate_tie_breaks(self, event: 'Event') -> list['TieBreak | None']:
@@ -224,7 +225,7 @@ def available_tie_break_sets(
     grouped: dict[TieBreakSetSource, list[TieBreakSet]] = {
         TieBreakSetSource.SYSTEM: [],
         TieBreakSetSource.PLUGIN: [],
-        TieBreakSetSource.USER: [],
+        TieBreakSetSource.CUSTOM: [],
         TieBreakSetSource.TOURNAMENT: [],
     }
 
@@ -241,9 +242,9 @@ def available_tie_break_sets(
         if tie_break_set.pairing_system_id == pairing_system_id:
             grouped[TieBreakSetSource.PLUGIN].append(tie_break_set)
 
-    for tie_break_set in SharlyChessConfig().user_tie_break_sets:
+    for tie_break_set in SharlyChessConfig().custom_tie_break_sets:
         if tie_break_set.pairing_system_id == pairing_system_id:
-            grouped[TieBreakSetSource.USER].append(tie_break_set)
+            grouped[TieBreakSetSource.CUSTOM].append(tie_break_set)
 
     for sibling in sibling_tournaments_with_tie_breaks(tournament):
         grouped[TieBreakSetSource.TOURNAMENT].append(

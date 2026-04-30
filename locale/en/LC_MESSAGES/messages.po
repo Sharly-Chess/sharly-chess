@@ -543,6 +543,9 @@ msgstr ""
 msgid "Add screens"
 msgstr ""
 
+msgid "Add tie-break"
+msgstr ""
+
 msgid "Add tournaments"
 msgstr ""
 
@@ -1203,7 +1206,7 @@ msgstr ""
 msgid "Choose families to add"
 msgstr ""
 
-msgid "Choose my own"
+msgid "Choose my own tie-breaks"
 msgstr ""
 
 msgid "Choose one, many or no players."
@@ -1592,6 +1595,9 @@ msgid "Currently displaying rotator [{name}]"
 msgstr ""
 
 msgid "Currently displaying screen [{name}]"
+msgstr ""
+
+msgid "Custom"
 msgstr ""
 
 msgid "Custom sets"
@@ -3225,6 +3231,9 @@ msgstr ""
 msgid "Manage archives"
 msgstr ""
 
+msgid "Manage custom sets"
+msgstr ""
+
 msgid "Manage events"
 msgstr ""
 
@@ -3351,9 +3360,6 @@ msgstr ""
 
 msgid "Min *** MINIMUM"
 msgstr "Min"
-
-msgid "Mine"
-msgstr ""
 
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr ""
@@ -3704,7 +3710,7 @@ msgstr ""
 msgid "No such screens."
 msgstr ""
 
-msgid "No tie-breaks"
+msgid "No tie-breaks for [{tournament}]"
 msgstr ""
 
 msgid "No timers"
@@ -5957,6 +5963,9 @@ msgstr ""
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
 msgstr ""
 
+msgid "Tie-breaks for [{tournament}]"
+msgstr ""
+
 msgid "Time control"
 msgstr ""
 
@@ -7074,13 +7083,3 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
-#~ msgstr ""
-
-#~ msgid "Use the recommended tie-breaks"
-#~ msgstr ""
-
-#~ msgid "Plugin"
-#~ msgstr ""
-
