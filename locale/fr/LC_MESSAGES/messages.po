@@ -662,7 +662,7 @@ msgid "Application"
 msgstr "Application"
 
 msgid "Apply to all"
-msgstr ""
+msgstr "Appliquer à tout·es"
 
 msgid "Apply set"
 msgstr "Appliquer le jeu"
@@ -5062,7 +5062,7 @@ msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
 
 msgid "Select the status of the following players:"
-msgstr ""
+msgstr "Sélectionner le statut des joueur·euses suivant·es :"
 
 msgid "Select the tournaments to add players to."
 msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
