@@ -78,6 +78,7 @@ from web.controllers.base_controller import BaseController
 if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredTournament
     from data.tournament import Tournament
+    from data.tie_breaks.sets import TieBreakSet
 
 logger = get_logger()
 
@@ -479,3 +480,33 @@ class FRASchoolsPlugin(Plugin):
     @hookimpl(trylast=True)
     def alter_sce_upload_ranking_columns(self, columns: list[SCEUploadColumn]):
         self._replace_sce_upload_origin_columns(columns)
+
+    @hookimpl
+    def insert_tie_break_sets(self, tie_break_sets: list['TieBreakSet'], event: Event):
+        from data.tie_breaks import tie_breaks
+        from data.tie_breaks.sets import TieBreakSet, TieBreakSetSource
+        from plugins.ffe import ffe_tie_breaks
+        from plugins.ffe.ffe_tie_breaks import (
+            PapiBuchholzTypeOption,
+            StandardPapiBuchholzType,
+            CutPapiBuchholzType,
+        )
+
+        ordered = [
+            ffe_tie_breaks.PapiBuchholzTieBreak(
+                [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
+            ),
+            ffe_tie_breaks.PapiBuchholzTieBreak(
+                [PapiBuchholzTypeOption(StandardPapiBuchholzType().id)]
+            ),
+            tie_breaks.ProgressiveScoresTieBreak(),
+        ]
+        tie_break_sets.append(
+            TieBreakSet(
+                key=f'plugin:{PLUGIN_NAME}:fra-schools-championship',
+                name=_('Championnat de France des écoles et collèges'),
+                source=TieBreakSetSource.PLUGIN,
+                pairing_system_id='SWISS',
+                stored_tie_breaks=[tb.to_stored_value() for tb in ordered],
+            )
+        )

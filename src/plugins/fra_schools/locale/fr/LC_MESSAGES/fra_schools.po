@@ -27,6 +27,9 @@ msgstr "Âge moyen : %(years)s ans"
 msgid "Cancel"
 msgstr "Annuler"
 
+msgid "Championnat de France des écoles et collèges"
+msgstr "Championnat de France des écoles et collèges"
+
 msgid "Choose at least one school."
 msgstr "Choisir au moins un établissement."
 
