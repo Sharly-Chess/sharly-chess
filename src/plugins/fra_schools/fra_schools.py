@@ -17,6 +17,7 @@ from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterO
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.event import Event
 from data.input_output import TournamentImporter
+from data.pairings.systems import SwissPairingSystem
 from data.player import TournamentPlayer
 from data.print_documents import PlayerSplitter, PrintOption
 from data.print_documents.documents import (
@@ -506,7 +507,7 @@ class FRASchoolsPlugin(Plugin):
                 key=f'plugin:{PLUGIN_NAME}:fra-schools-championship',
                 name=_('Championnat de France des écoles et collèges'),
                 source=TieBreakSetSource.PLUGIN,
-                pairing_system_id='SWISS',
+                pairing_system_id=SwissPairingSystem.static_id(),
                 stored_tie_breaks=[tb.to_stored_value() for tb in ordered],
             )
         )

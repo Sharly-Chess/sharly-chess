@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Callable
 
 from common.i18n import _
+from data.pairings.systems import SwissPairingSystem, RoundRobinPairingSystem
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -40,13 +41,13 @@ SYSTEM_TIE_BREAK_SETS: list[SystemTieBreakSetDefinition] = [
     SystemTieBreakSetDefinition(
         key='sc-recommendation-swiss',
         name_factory=lambda: _('SC Recommendation'),
-        pairing_system_id='SWISS',
+        pairing_system_id=SwissPairingSystem.static_id(),
         tie_break_factory=_sc_recommendation_swiss,
     ),
     SystemTieBreakSetDefinition(
         key='sc-recommendation-round-robin',
         name_factory=lambda: _('SC Recommendation'),
-        pairing_system_id='ROUND_ROBIN',
+        pairing_system_id=RoundRobinPairingSystem.static_id(),
         tie_break_factory=_sc_recommendation_round_robin,
     ),
 ]

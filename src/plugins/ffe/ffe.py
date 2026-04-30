@@ -24,9 +24,11 @@ from data.criteria.tournament_criteria import (
     TournamentCriterion,
     GenderTournamentCriterion,
 )
+from data.event import Event
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.pairings.managers import PairingVariationManager
+from data.pairings.systems import SwissPairingSystem
 from data.pairings.variations import SwissVariation
 from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
 from data.player_categories import PlayerCategory, JuniorCategory
@@ -36,6 +38,7 @@ from data.print_documents.place_cards.data import PlaceCardPlayer
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
 from data.tie_breaks import TieBreak, TieBreakOption
+from data.tie_breaks.tie_breaks import ProgressiveScoresTieBreak
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
@@ -127,6 +130,7 @@ if TYPE_CHECKING:
     from database.sqlite.event.event_store import StoredEvent
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
+    from data.tie_breaks.sets import TieBreakSet
 
 
 class FfePluginHooks:
@@ -935,3 +939,54 @@ class FfePlugin(Plugin):
     def alter_sce_upload_ranking_columns(self, columns: list[SCEUploadColumn]):
         league = SCEUploadColumn('ffe_league', _('League'), is_custom=True)
         PluginUtils.insert_on_attr_equals(columns, league, 'id', 'federation')
+
+    @hookimpl
+    def insert_tie_break_sets(self, tie_break_sets: list['TieBreakSet'], event: Event):
+        from data.tie_breaks.sets import TieBreakSet, TieBreakSetSource
+        from plugins.ffe import ffe_tie_breaks
+        from plugins.ffe.ffe_tie_breaks import (
+            PapiBuchholzTypeOption,
+            StandardPapiBuchholzType,
+            CutPapiBuchholzType,
+        )
+
+        tie_break_sets.append(
+            TieBreakSet(
+                key=f'plugin:{PLUGIN_NAME}:ffe-youth-championship-swiss',
+                name=_('France jeunes et qualif. Suisse'),
+                source=TieBreakSetSource.PLUGIN,
+                pairing_system_id=SwissPairingSystem.static_id(),
+                stored_tie_breaks=[
+                    tb.to_stored_value()
+                    for tb in [
+                        ffe_tie_breaks.PapiBuchholzTieBreak(
+                            [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
+                        ),
+                        ffe_tie_breaks.PapiBuchholzTieBreak(
+                            [PapiBuchholzTypeOption(StandardPapiBuchholzType().id)]
+                        ),
+                        ffe_tie_breaks.PapiPerformanceTieBreak(),
+                    ]
+                ],
+            )
+        )
+        tie_break_sets.append(
+            TieBreakSet(
+                key=f'plugin:{PLUGIN_NAME}:ffe-youth-championship-swiss-estimated',
+                name=_('France jeunes et qualif. Suisse - Non-classé·es'),
+                source=TieBreakSetSource.PLUGIN,
+                pairing_system_id=SwissPairingSystem.static_id(),
+                stored_tie_breaks=[
+                    tb.to_stored_value()
+                    for tb in [
+                        ffe_tie_breaks.PapiBuchholzTieBreak(
+                            [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
+                        ),
+                        ffe_tie_breaks.PapiBuchholzTieBreak(
+                            [PapiBuchholzTypeOption(StandardPapiBuchholzType().id)]
+                        ),
+                        ProgressiveScoresTieBreak(),
+                    ]
+                ],
+            )
+        )

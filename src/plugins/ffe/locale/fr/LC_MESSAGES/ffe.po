@@ -208,6 +208,12 @@ msgstr[1] "Pour un tournoi de {rounds} rondes, les {count} valeurs les moins sig
 msgid "For unrated players, a representative rating is calculated."
 msgstr "Pour les joueur·euses estimé·es, un classement représentatif est calculé."
 
+msgid "France jeunes et qualif. Suisse"
+msgstr "France jeunes et qualif. Suisse"
+
+msgid "France jeunes et qualif. Suisse - Non-classé·es"
+msgstr "France jeunes et qualif. Suisse - Non-classé·es"
+
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
 

@@ -208,6 +208,12 @@ msgstr[1] ""
 msgid "For unrated players, a representative rating is calculated."
 msgstr ""
 
+msgid "France jeunes et qualif. Suisse"
+msgstr ""
+
+msgid "France jeunes et qualif. Suisse - Non-classé·es"
+msgstr ""
+
 msgid "French Chess Federation"
 msgstr ""
 
