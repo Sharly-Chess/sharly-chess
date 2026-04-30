@@ -104,7 +104,7 @@ class TestPlayersFunctionality:
         menu_button.click()
         delete_link = row.get_by_text('Delete')
         delete_link.click()
-        modal = page.locator('.modal-dialog')
+        modal = page.locator('#delete-modal')
         expect(modal).to_be_visible()
         modal.locator('button[type=submit]').click()
         expect(page.locator(f'tr#player-{player_id}')).not_to_be_attached()
