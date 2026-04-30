@@ -168,7 +168,7 @@
             <div
                 {% if not client.can_unpair_round(admin_tournament.id) %}
                     {{ macros.tooltip_attributes('warning', _('You are not allowed to unpair rounds.'), 'top') }}
-                {% elif allowed %}
+                {% else %}
                     {{ macros.tooltip_attributes('info', _('Unpair all the boards of this round.'), 'top') }}
                 {% endif %}
             >
