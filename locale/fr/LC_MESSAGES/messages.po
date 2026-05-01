@@ -664,6 +664,9 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Application"
 msgstr "Application"
 
+msgid "Apply to all"
+msgstr "Appliquer à tout·es"
+
 msgid "Apply set"
 msgstr "Appliquer le jeu"
 
@@ -998,10 +1001,17 @@ msgstr "La limite de byes (%(limit)d) est déjà atteinte pour ce tournoi."
 msgid "Byes *** ZPB, HPB or FPB"
 msgstr "Forfaits ou byes"
 
+#, python-format
+msgid "Byes (%(byes)d) *** PLAYERS WITH BYES"
+msgstr "Forfaits et absences (%(byes)d)"
+
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
 msgstr[0] "Les byes ne peuvent être attribués lors de la dernière ronde du tournoi."
 msgstr[1] "Les byes ne peuvent être attribués lors des {rounds} dernières rondes du tournoi."
+
+msgid "Byes will not be impacted."
+msgstr "Les forfaits et les byes ne seront pas impactés."
 
 msgid "Byes will not be impacted."
 msgstr "Les forfaits et les byes ne seront pas impactés."
@@ -5056,6 +5066,9 @@ msgstr "Sélectionner un·e joueur·euse"
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
 
+msgid "Select the status of the following players:"
+msgstr "Sélectionner le statut des joueur·euses suivant·es :"
+
 msgid "Select the tournaments to add players to."
 msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
 
@@ -7067,4 +7080,3 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
