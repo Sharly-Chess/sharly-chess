@@ -3120,6 +3120,12 @@ msgstr "Présentation"
 msgid "Lebanon"
 msgstr "Liban"
 
+msgid "Legacy"
+msgstr "Obsolète"
+
+msgid "Legacy tie-breaks can no longer be created or edited."
+msgstr "Les départages obsolètes ne peuvent plus être créés ou édités."
+
 msgid "Lesotho"
 msgstr "Lesotho"
 
@@ -4926,6 +4932,9 @@ msgstr "Lignes par écran :"
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
 
+msgid "Rules used were only effective until march 2026 (legacy)."
+msgstr "Les règles utilisées n'étaient effectives que jusqu'en mars 2026 (obsolètes)."
+
 msgid "Russia"
 msgstr "Russie"
 
@@ -5933,6 +5942,9 @@ msgstr "Ce départage n'est pas recommandé pour les tournois se déroulant sur 
 
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
 msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es ({count} dans le tournoi)."
+
+msgid "This tie-break uses a legacy way to compute values."
+msgstr "Ce départage utilise une manière obsolète de calculer les valeurs."
 
 msgid "This tournament has no titled players."
 msgstr "Ce tournoi n'a pas de joueur·euses titré·es."
