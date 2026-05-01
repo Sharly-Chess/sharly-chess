@@ -209,6 +209,10 @@ msgstr[1] ""
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
 msgstr ""
 
+#, python-format
+msgid "(Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half-Point Byes)."
+msgstr ""
+
 msgid "(by default)"
 msgstr ""
 
@@ -1677,6 +1681,9 @@ msgstr ""
 msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
 msgstr ""
 
+msgid "Definitive withdrawal"
+msgstr ""
+
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr ""
@@ -1870,6 +1877,10 @@ msgid "Djibouti"
 msgstr ""
 
 msgid "Do not edit this table manually, use script {script_name} instead."
+msgstr ""
+
+#, python-format
+msgid "Do not pair at round %(pairing_round)d (Zero-Point Bye)"
 msgstr ""
 
 msgid "Do not recover"
@@ -3222,9 +3233,6 @@ msgstr ""
 msgid "Mark as \"%(status)s\" "
 msgstr ""
 
-msgid "Mark as &quot;Present&quot; (will be paired next round)"
-msgstr ""
-
 msgid "Mark this round as over and define the next one as the current round."
 msgstr ""
 
@@ -3949,6 +3957,10 @@ msgid "Pair as BLACK"
 msgstr ""
 
 msgid "Pair as WHITE"
+msgstr ""
+
+#, python-format
+msgid "Pair at round %(pairing_round)d"
 msgstr ""
 
 msgid "Pair the unpaired players with each other."
@@ -5031,10 +5043,10 @@ msgstr ""
 msgid "Select player"
 msgstr ""
 
-msgid "Select the players and the data to update:"
+msgid "Select the action to apply to absent players:"
 msgstr ""
 
-msgid "Select the status of the following players:"
+msgid "Select the players and the data to update:"
 msgstr ""
 
 msgid "Select the tournaments to add players to."
@@ -6739,9 +6751,6 @@ msgstr ""
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr ""
 
-msgid "Zero-Point Bye for the next round"
-msgstr ""
-
 msgid "Zimbabwe"
 msgstr ""
 
@@ -6758,6 +6767,14 @@ msgid "all the players"
 msgstr ""
 
 msgid "all the tournaments"
+msgstr ""
+
+#, python-format
+msgid "and leave absent for the following rounds (this question will be asked again at round %(next_pairing_round)d)."
+msgstr ""
+
+#, python-format
+msgid "and mark present for subsequent rounds (this question will no longer be asked from round %(next_pairing_round)d)."
 msgstr ""
 
 msgid "boards from #{first} to #{last}"
@@ -7040,7 +7057,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
-#~ msgstr ""
 

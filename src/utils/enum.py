@@ -1374,7 +1374,7 @@ class CheckInStatus(IntEnum):
     def base_icon_class(self) -> str:
         match self:
             case self.WITHDRAWN:
-                return 'bi-sign-stop-fill'
+                return 'bi-sign-stop'
             case self.NEXT_ROUND_ZPB:
                 return 'bi-0-circle-fill'
             case self.NEXT_ROUND_HPB:
@@ -1396,7 +1396,7 @@ class CheckInStatus(IntEnum):
             return 'text-success'
         if self == self.ABSENT:
             return 'text-danger'
-        return 'text-body opacity-75'
+        return 'text-body text-secondary'
 
     @property
     def is_next_round_bye(self) -> bool:
