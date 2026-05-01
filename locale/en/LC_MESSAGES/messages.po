@@ -45,18 +45,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
-msgid "%(num)d absent player without byes"
-msgid_plural "%(num)d absent players without byes"
-msgstr[0] ""
-msgstr[1] ""
-
-#, python-format
-msgid "%(num)d board without result"
-msgid_plural "%(num)d boards without result"
-msgstr[0] ""
-msgstr[1] ""
-
-#, python-format
 msgid "%(num)d criterion"
 msgid_plural "%(num)d criteria"
 msgstr[0] ""
@@ -219,10 +207,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
-msgstr ""
-
-#, python-format
-msgid "(Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half-Point Byes)."
 msgstr ""
 
 msgid "(by default)"
@@ -428,13 +412,6 @@ msgstr ""
 msgid "Absents"
 msgstr ""
 
-#, python-format
-msgid "Absent players (%(count)d)"
-msgstr ""
-
-msgid "Absents"
-msgstr ""
-
 msgid "Absolute"
 msgstr ""
 
@@ -597,9 +574,6 @@ msgstr ""
 msgid "All players marked as \"Present\"."
 msgstr ""
 
-msgid "All players marked as \"Present\"."
-msgstr ""
-
 msgid "All the boards"
 msgstr ""
 
@@ -613,9 +587,6 @@ msgid "All the players"
 msgstr ""
 
 msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
-msgstr ""
-
-msgid "All the players of tournament [{tournament}] have been marked a \"{status}\"."
 msgstr ""
 
 msgid "All the players of tournament [{tournament}] have been marked a \"{status}\"."
@@ -691,9 +662,6 @@ msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
 msgid "Application"
-msgstr ""
-
-msgid "Apply to all"
 msgstr ""
 
 msgid "Apply set"
@@ -1088,10 +1056,6 @@ msgstr ""
 
 #, python-format
 msgid "Cancel \"%(bye)s\" "
-msgstr ""
-
-#, python-format
-msgid "Cancel \"%(bye)s\" at round #%(round)s for [%(player)s]?"
 msgstr ""
 
 #, python-format
@@ -3271,17 +3235,6 @@ msgstr ""
 msgid "Mark as \"%(status)s\" "
 msgstr ""
 
-msgid "Mark as &quot;Present&quot; (will be paired next round)"
-msgstr ""
-
-#, python-format
-msgid "Mark all players as \"%(status)s\" "
-msgstr ""
-
-#, python-format
-msgid "Mark as \"%(status)s\" "
-msgstr ""
-
 msgid "Mark this round as over and define the next one as the current round."
 msgstr ""
 
@@ -4681,18 +4634,6 @@ msgstr ""
 msgid "Received a Zero-Point Bye for the next round."
 msgstr ""
 
-msgid "Received a Full-Point Bye for the next round."
-msgstr ""
-
-msgid "Received a Half-Point Bye for the next round."
-msgstr ""
-
-msgid "Received a Zero-Point Bye for all the remaining rounds."
-msgstr ""
-
-msgid "Received a Zero-Point Bye for the next round."
-msgstr ""
-
 msgid "Record"
 msgstr ""
 
@@ -4812,10 +4753,6 @@ msgid "Results screens show the last results (most recent first)."
 msgstr ""
 
 msgid "Retry"
-msgstr ""
-
-#, python-format
-msgid "Return [%(player)s] to the tournament?"
 msgstr ""
 
 #, python-format
@@ -5108,16 +5045,13 @@ msgstr ""
 msgid "Select an account"
 msgstr ""
 
-msgid "Select player"
-msgstr ""
-
 msgid "Select an action for absent players:"
 msgstr ""
 
-msgid "Select the players and the data to update:"
+msgid "Select player"
 msgstr ""
 
-msgid "Select the status of the following players:"
+msgid "Select the players and the data to update:"
 msgstr ""
 
 msgid "Select the tournaments to add players to."
@@ -6075,9 +6009,6 @@ msgstr ""
 msgid "To pair"
 msgstr ""
 
-msgid "To pair"
-msgstr ""
-
 msgid "Today"
 msgstr ""
 
@@ -6828,7 +6759,8 @@ msgstr ""
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr ""
 
-msgid "Zero-Point Bye for the next round"
+#, python-format
+msgid "Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half-Point Byes."
 msgstr ""
 
 msgid "Zimbabwe"
@@ -6851,10 +6783,6 @@ msgstr ""
 
 #, python-format
 msgid "and leave absent for the following rounds (this question will be asked again at round %(next_pairing_round)d)."
-msgstr ""
-
-#, python-format
-msgid "and mark present for subsequent rounds (this question will no longer be asked from round %(next_pairing_round)d)."
 msgstr ""
 
 msgid "boards from #{first} to #{last}"
@@ -7137,4 +7065,19 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "(Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half-Point Byes)."
+#~ msgstr ""
+
+#~ msgid "Mark as &quot;Present&quot; (will be paired next round)"
+#~ msgstr ""
+
+#~ msgid "Select the status of the following players:"
+#~ msgstr ""
+
+#~ msgid "Zero-Point Bye for the next round"
+#~ msgstr ""
+
+#~ msgid "and mark present for subsequent rounds (this question will no longer be asked from round %(next_pairing_round)d)."
+#~ msgstr ""
 

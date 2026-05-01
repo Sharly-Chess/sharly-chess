@@ -209,10 +209,6 @@ msgstr[1] "(%(num)d écrans)"
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
 msgstr "(*) Connaître la liste des évènements en cours est nécessaire pour sélection les évènements avant de s'authentifier."
 
-#, python-format
-msgid "(Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half-Point Byes)."
-msgstr "(forfait pour la ronde %(pairing_round)d et toutes les rondes suivantes, suppression de tous les demi-points joker)."
-
 msgid "(by default)"
 msgstr "(par défaut)"
 
@@ -668,14 +664,11 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Application"
 msgstr "Application"
 
-msgid "Apply to all"
-msgstr "Appliquer à tout·es"
-
 msgid "Apply set"
 msgstr "Appliquer le jeu"
 
 msgid "Apply to all"
-msgstr "Appliquer à tou·tes"
+msgstr "Appliquer à tout·es"
 
 msgid "Apr *** APRIL"
 msgstr "Avr"
@@ -1685,7 +1678,7 @@ msgid "Define tournament groups among which players are distributed one at a tim
 msgstr "Définir des groupes de tournois parmi lesquels les joueur·euses sont répartis un par un, aboutissant à des tournois aux classements équilibrés."
 
 msgid "Definitive withdrawal"
-msgstr "Abandon définitif"
+msgstr "Forfait définitif"
 
 #, python-format
 msgid "Delay #%(num)d:"
@@ -5054,17 +5047,14 @@ msgstr "Tout sélectionner"
 msgid "Select an account"
 msgstr "Sélectionner un compte"
 
-msgid "Select player"
-msgstr "Sélectionner un·e joueur·euse"
-
 msgid "Select an action for absent players:"
 msgstr "Sélectionner une action pour les joueur·euses absent·es :"
 
+msgid "Select player"
+msgstr "Sélectionner un·e joueur·euse"
+
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
-
-msgid "Select the status of the following players:"
-msgstr "Sélectionner le statut des joueur·euses suivant·es :"
 
 msgid "Select the tournaments to add players to."
 msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
@@ -6771,6 +6761,10 @@ msgstr "Forfait"
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr "Le·la joueur·euse [{player}] a été marqué·e forfait."
 
+#, python-format
+msgid "Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half-Point Byes."
+msgstr "forfait pour la ronde %(pairing_round)d et toutes les rondes suivantes, suppression de tous les demi-points joker."
+
 msgid "Zimbabwe"
 msgstr "Zimbabwe"
 
@@ -6792,10 +6786,6 @@ msgstr "tous les tournois"
 #, python-format
 msgid "and leave absent for the following rounds (this question will be asked again at round %(next_pairing_round)d)."
 msgstr "et laisser absent·e pour les rondes suivantes (cette question sera posée à nouveau à la ronde %(next_pairing_round)d)."
-
-#, python-format
-msgid "and mark present for subsequent rounds (this question will no longer be asked from round %(next_pairing_round)d)."
-msgstr "et marquer présent·e pour les rondes suivantes (cette question ne sera plus posée à partir de la ronde %(next_pairing_round)d)."
 
 msgid "boards from #{first} to #{last}"
 msgstr "échiquiers du n°{first} au n°{last}"
@@ -7077,4 +7067,10 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Select the status of the following players:"
+#~ msgstr "Sélectionner le statut des joueur·euses suivant·es :"
+
+#~ msgid "and mark present for subsequent rounds (this question will no longer be asked from round %(next_pairing_round)d)."
+#~ msgstr "et marquer présent·e pour les rondes suivantes (cette question ne sera plus posée à partir de la ronde %(next_pairing_round)d)."
 

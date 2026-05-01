@@ -24,14 +24,33 @@
                 hx-indicator="#please-wait"
             >
                 <div class="mb-3">
-                    {{ _('Select the action to apply to absent players:') }}
+                    {{ _('Select an action for absent players:') }}
                 </div>
-                <div class="d-grid" style="grid-template-columns: 30px auto;">
+                <div class="d-grid" style="grid-template-columns: 30px min-content;">
                     <h5>
                         <i class="bi-0-circle-fill"></i>
                     </h5>
                     <span>
-                        <span class="fw-bold">
+                        <span
+                            class="text-nowrap"
+                            {% if admin_round < admin_tournament.rounds %}
+                                {{
+                                    macros.tooltip_attributes(
+                                        'right',
+                                        '<b>'
+                                        ~ _(
+                                            'Do not pair at round %(pairing_round)d (Zero-Point Bye)',
+                                            pairing_round=admin_round
+                                        )
+                                        ~ '</b> '
+                                        ~ _(
+                                            'and leave absent for the following rounds (this question will be asked again at round %(next_pairing_round)d).',
+                                            next_pairing_round=admin_round + 1
+                                        )
+                                    )
+                                }}
+                            {% endif %}
+                        >
                             {{
                                 _(
                                     'Do not pair at round %(pairing_round)d (Zero-Point Bye)',
@@ -39,37 +58,33 @@
                                 )
                             }}
                         </span>
-                        {% if admin_round < admin_tournament.rounds %}
-                            <br/>
-                            <span class="opacity-75">
-                                {{
-                                    _(
-                                        'and leave absent for the following rounds (this question will be asked again at round %(next_pairing_round)d).',
-                                        next_pairing_round=admin_round + 1
-                                    )
-                                }}
-                            </span>
-                        {% endif %}
                     </span>
                     {% if admin_round < admin_tournament.rounds %}
                         <h5>
                             <i class="bi-sign-stop"></i>
                         </h5>
                         <span>
-                            <span class="fw-bold">
+                            <span
+                                class="text-nowrap"
+                                {{
+                                    macros.tooltip_attributes(
+                                        'right',
+                                        '<b>'
+                                        ~ _(
+                                            'Definitive withdrawal'
+                                        )
+                                        ~ '</b> '
+                                        ~ _(
+                                            'Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half-Point Byes.',
+                                            pairing_round=admin_round
+                                        )
+                                    )
+                                }}
+                            >
                                 {{
                                     _(
                                         'Definitive withdrawal'
                                     )
-                                }}
-                            </span>
-                            <br/>
-                            <span class="opacity-75">
-                                {{
-                                _(
-                                    '(Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half-Point Byes).',
-                                    pairing_round=admin_round
-                                )
                                 }}
                             </span>
                         </span>
@@ -78,7 +93,26 @@
                         <i class="bi-check-circle-fill"></i>
                     </h5>
                     <span>
-                        <span class="fw-bold">
+                        <span
+                            class="text-nowrap"
+                            {% if admin_round < admin_tournament.rounds %}
+                                {{
+                                    macros.tooltip_attributes(
+                                        'right',
+                                        '<b>'
+                                        ~ _(
+                                            'Pair at round %(pairing_round)d',
+                                            pairing_round=admin_round
+                                        )
+                                        ~ '</b> '
+                                        ~ _(
+                                            'and leave absent for the following rounds (this question will be asked again at round %(next_pairing_round)d).',
+                                            next_pairing_round=admin_round + 1
+                                        )
+                                    )
+                                }}
+                            {% endif %}
+                        >
                             {{
                                 _(
                                     'Pair at round %(pairing_round)d',
@@ -86,17 +120,6 @@
                                 )
                             }}
                         </span>
-                        {% if admin_round < admin_tournament.rounds %}
-                            <br/>
-                            <span class="opacity-75">
-                                {{
-                                    _(
-                                        'and mark present for subsequent rounds (this question will no longer be asked from round %(next_pairing_round)d).',
-                                        next_pairing_round=admin_round + 1
-                                    )
-                                }}
-                            </span>
-                        {% endif %}
                     </span>
                 </div>
                 <div class="d-flex align-items-center justify-content-end pe-2 pb-2 mt-3">
