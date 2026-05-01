@@ -2201,6 +2201,9 @@ msgstr "Adresse e-mail"
 msgid "Email:"
 msgstr "Mél :"
 
+msgid "Enable player check-in from check-in screens."
+msgstr "Activer le pointage des joueur·euses depuis les écrans de pointage."
+
 msgid "Enable this account"
 msgstr "Activer ce compte"
 
@@ -4634,10 +4637,6 @@ msgstr "Ont reçu un forfait pour toutes les rondes à venir."
 msgid "Received a Zero-Point Bye for the next round."
 msgstr "Ont reçu un forfait pour la ronde à venir."
 
-#, python-format
-msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
-msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
-
 msgid "Record"
 msgstr "Historique"
 
@@ -7058,4 +7057,7 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
+#~ msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
 
