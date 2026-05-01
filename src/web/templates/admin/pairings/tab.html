@@ -163,7 +163,7 @@
             {% if not display_rankings %}
                 {% if has_unpaired %}
                     <div class="col-12 col-lg-3">
-                        {% with title=_('Byes'), unpaired_players=admin_bye_players, table_id='bye-players-table' %}
+                        {% with title=_('Byes *** ZPB, HPB or FPB'), unpaired_players=admin_bye_players, table_id='bye-players-table' %}
                             {% include '/admin/pairings/unpaired_table.html' %}
                         {% endwith %}
                         {% with title=_('Absents'), unpaired_players=admin_absent_players, table_id='absent-players-table' %}

@@ -995,8 +995,8 @@ msgstr ""
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr ""
 
-msgid "Byes"
-msgstr ""
+msgid "Byes *** ZPB, HPB or FPB"
+msgstr "Byes"
 
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
@@ -6760,7 +6760,7 @@ msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr ""
 
 #, python-format
-msgid "Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half-Point Byes."
+msgid "Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half or Full-Point Byes."
 msgstr ""
 
 msgid "Zimbabwe"
@@ -7079,5 +7079,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "and mark present for subsequent rounds (this question will no longer be asked from round %(next_pairing_round)d)."
+#~ msgstr ""
+
+#~ msgid "Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half-Point Byes."
 #~ msgstr ""
 
