@@ -122,9 +122,12 @@ class Family:
             ScreenType.PLAYERS,
             ScreenType.INPUT,
             ScreenType.BOARDS,
-            ScreenType.CHECK_IN,
         ]:
             text = self.menu_text or Screen.default_players_screen_menu_text(
+                single_tournament=single_tournament, first_last=True
+            )
+        elif ScreenType.CHECK_IN:
+            text = self.menu_text or Screen.default_check_in_screen_menu_text(
                 single_tournament=single_tournament, first_last=True
             )
         elif self.type == ScreenType.RANKING:

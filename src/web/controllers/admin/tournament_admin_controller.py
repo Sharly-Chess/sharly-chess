@@ -54,7 +54,7 @@ from database.sqlite.event.event_store import (
 from plugins.manager import plugin_manager
 from utils import Utils
 from utils.date_time import format_date, format_date_range
-from utils.enum import FormAction, Result, TournamentRating
+from utils.enum import FormAction, Result, TournamentRating, ScreenType
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -802,52 +802,29 @@ class TournamentAdminController(BaseEventAdminController):
                     timer_id: int | None = None
                     if len(event.timers_by_id) == 1:
                         timer_id = list(event.timers_by_id.keys())[0]
-                    for type_, menu, name in [
-                        (
-                            'input',
-                            '@input',
-                            _('Check-in / Results entry ({tournament_name})').format(
-                                tournament_name=tournament.name
-                            ),
-                        ),
-                        (
-                            'boards',
-                            '@boards',
-                            _('Pairings by board ({tournament_name})').format(
-                                tournament_name=tournament.name
-                            ),
-                        ),
-                        (
-                            'players',
-                            '@players',
-                            _('Pairings by player ({tournament_name})').format(
-                                tournament_name=tournament.name
-                            ),
-                        ),
-                        (
-                            'ranking',
-                            '@ranking',
-                            _('Ranking ({tournament_name})').format(
-                                tournament_name=tournament.name
-                            ),
-                        ),
+                    for screen_type in [
+                        ScreenType.CHECK_IN,
+                        ScreenType.INPUT,
+                        ScreenType.BOARDS,
+                        ScreenType.PLAYERS,
+                        ScreenType.RANKING,
                     ]:
                         stored_screen: StoredScreen = database.add_stored_screen(
                             StoredScreen(
                                 id=None,
                                 uniq_id=event.get_unused_screen_uniq_id(
                                     base_uniq_id=Utils.name_to_uniq_id(
-                                        f'{tournament.name}-{type_}'
+                                        f'{tournament.name}-{screen_type.value}'
                                     )
                                 ),
-                                type=type_,
+                                type=screen_type.value,
                                 public=True,
-                                name=name,
+                                name=f'{screen_type.name} ({tournament.name})',
                                 columns=1,
                                 font_size=None,
                                 menu_link=True,
                                 menu_text=None,
-                                menu=menu,
+                                menu=f'@{screen_type.value}',
                                 timer_id=timer_id,
                                 input_exit_button=False,
                                 players_show_unpaired=False,

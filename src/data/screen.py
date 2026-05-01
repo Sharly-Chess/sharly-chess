@@ -218,6 +218,21 @@ class Screen:
                 return _('%t (by player)')
 
     @staticmethod
+    def default_check_in_screen_menu_text(
+        single_tournament: bool, first_last: bool
+    ) -> str:
+        if single_tournament:
+            if first_last:
+                return '%f-%l'
+            else:
+                return _('Check-in')
+        else:
+            if first_last:
+                return '%t [%f-%l]'
+            else:
+                return _('%t (check-in)')
+
+    @staticmethod
     def default_ranking_screen_menu_text(
         single_tournament: bool,
         first_last: bool,
@@ -281,9 +296,13 @@ class Screen:
                     ScreenType.PLAYERS,
                     ScreenType.INPUT,
                     ScreenType.BOARDS,
-                    ScreenType.CHECK_IN,
                 ]:
                     text = self.menu_text or self.default_players_screen_menu_text(
+                        single_tournament=single_tournament,
+                        first_last=first_last and screen_set.first_item is not None,
+                    )
+                elif self.type == ScreenType.CHECK_IN:
+                    text = self.menu_text or self.default_check_in_screen_menu_text(
                         single_tournament=single_tournament,
                         first_last=first_last and screen_set.first_item is not None,
                     )

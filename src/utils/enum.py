@@ -1025,7 +1025,7 @@ class ScreenType(StrEnum):
             case ScreenType.INPUT:
                 return _('Results entry')
             case ScreenType.PLAYERS:
-                return _('Parings by player')
+                return _('Pairings by player')
             case ScreenType.RESULTS:
                 return _('Last results')
             case ScreenType.RANKING:
