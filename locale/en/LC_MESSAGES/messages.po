@@ -2201,6 +2201,9 @@ msgstr ""
 msgid "Email:"
 msgstr ""
 
+msgid "Enable player check-in from check-in screens."
+msgstr ""
+
 msgid "Enable this account"
 msgstr ""
 
@@ -4638,10 +4641,6 @@ msgstr ""
 msgid "Received a Zero-Point Bye for the next round."
 msgstr ""
 
-#, python-format
-msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
-msgstr ""
-
 msgid "Record"
 msgstr ""
 
@@ -7068,4 +7067,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
+#~ msgstr ""
 
