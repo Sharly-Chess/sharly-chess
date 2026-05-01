@@ -102,9 +102,9 @@ class TestPlayersFunctionality:
 
         menu_button = row.locator('td:nth-child(1)').locator('button')
         menu_button.click()
-        edit_link = row.get_by_text('Delete')
-        edit_link.click()
-        modal = page.locator('.modal-dialog')
+        delete_link = row.get_by_text('Delete')
+        delete_link.click()
+        modal = page.locator('#delete-modal')
         expect(modal).to_be_visible()
         modal.locator('button[type=submit]').click()
         expect(page.locator(f'tr#player-{player_id}')).not_to_be_attached()

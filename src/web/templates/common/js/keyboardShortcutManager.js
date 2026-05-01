@@ -3,10 +3,6 @@ function isTargetInput(target) {
     return target.isContentEditable || (isTextInput || target.tagName === "TEXTAREA" || target.tagName === "SELECT") && !target.readOnly;
 }
 
-function isModalOpened() {
-    return document.getElementById('modal-wrapper').classList.contains('show');
-}
-
 function keyboardShortcutManager(event) {
 
     if (event.repeat) {return;}

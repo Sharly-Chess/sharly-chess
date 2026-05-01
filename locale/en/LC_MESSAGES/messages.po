@@ -19,14 +19,6 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
 #, python-format
-msgid "%(count)d boards without result"
-msgstr ""
-
-#, python-format
-msgid "%(count)d players unpaired"
-msgstr ""
-
-#, python-format
 msgid "%(minutes)d minutes after"
 msgstr ""
 
@@ -37,6 +29,18 @@ msgstr ""
 #, python-format
 msgid "%(num).1f point group -"
 msgid_plural "%(num).1f points group -"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d absent player without byes"
+msgid_plural "%(num)d absent players without byes"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
+msgid "%(num)d board without result"
+msgid_plural "%(num)d boards without result"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -71,14 +75,14 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
-msgid "%(num)d player did not check-in"
-msgid_plural "%(num)d players did not check-in"
+msgid "%(num)d player does not match criteria."
+msgid_plural "%(num)d players do not match criteria."
 msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
-msgid "%(num)d player does not match criteria."
-msgid_plural "%(num)d players do not match criteria."
+msgid "%(num)d player to pair"
+msgid_plural "%(num)d players to pair"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -123,10 +127,6 @@ msgid "%(num)d unknown column (ignored)"
 msgid_plural "%(num)d unknown columns (ignored)"
 msgstr[0] ""
 msgstr[1] ""
-
-#, python-format
-msgid "%(player)s - Round %(num)s"
-msgstr ""
 
 #, python-format
 msgid "%(rating)s (%(rating_type)s)"
@@ -178,6 +178,9 @@ msgid "%t (by board)"
 msgstr ""
 
 msgid "%t (by player)"
+msgstr ""
+
+msgid "%t (check-in)"
 msgstr ""
 
 #, python-format
@@ -336,9 +339,6 @@ msgstr ""
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr ""
 
-msgid "<b>Delete</b> from the tournament"
-msgstr ""
-
 msgid "<first> and <second>"
 msgstr ""
 
@@ -405,6 +405,13 @@ msgstr ""
 msgid "Absent"
 msgstr ""
 
+#, python-format
+msgid "Absent players (%(count)d)"
+msgstr ""
+
+msgid "Absents"
+msgstr ""
+
 msgid "Absolute"
 msgstr ""
 
@@ -462,18 +469,6 @@ msgstr ""
 msgid "Add a display controller to the event."
 msgstr ""
 
-msgid "Add a family of screens to check-in players or enter results."
-msgstr ""
-
-msgid "Add a family of screens to display the pairings by alphabetical order."
-msgstr ""
-
-msgid "Add a family of screens to display the pairings by board."
-msgstr ""
-
-msgid "Add a family of screens to display the ranking."
-msgstr ""
-
 msgid "Add a group to the list."
 msgstr ""
 
@@ -490,24 +485,6 @@ msgid "Add a prize to the list."
 msgstr ""
 
 msgid "Add a rotator to the event."
-msgstr ""
-
-msgid "Add a screen to check-in players or enter results."
-msgstr ""
-
-msgid "Add a screen to display an image."
-msgstr ""
-
-msgid "Add a screen to display the last results."
-msgstr ""
-
-msgid "Add a screen to display the pairings by alphabetical order."
-msgstr ""
-
-msgid "Add a screen to display the pairings by board number."
-msgstr ""
-
-msgid "Add a screen to display the ranking."
 msgstr ""
 
 msgid "Add a set"
@@ -594,6 +571,9 @@ msgstr ""
 msgid "All players are paired."
 msgstr ""
 
+msgid "All players marked as \"Present\"."
+msgstr ""
+
 msgid "All the boards"
 msgstr ""
 
@@ -606,10 +586,10 @@ msgstr ""
 msgid "All the players"
 msgstr ""
 
-msgid "All the players intended to play the coming round did check-in."
+msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
 msgstr ""
 
-msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
+msgid "All the players of tournament [{tournament}] have been marked a \"{status}\"."
 msgstr ""
 
 msgid "All the tournaments"
@@ -684,6 +664,9 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
+msgid "Apply to all"
+msgstr ""
+
 msgid "Apply set"
 msgstr ""
 
@@ -733,12 +716,6 @@ msgid "Aruba"
 msgstr ""
 
 msgid "Assign a screen to the controller."
-msgstr ""
-
-msgid "Assign a zero-point bye <b>for the next round</b>"
-msgstr ""
-
-msgid "Assign a zero-point bye <b>for the rest of the tournament</b>"
 msgstr ""
 
 msgid "Assign to a display controller."
@@ -1018,14 +995,16 @@ msgstr ""
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr ""
 
-#, python-format
-msgid "Byes (%(byes)d) *** PLAYERS WITH BYES"
-msgstr "Byes (%(byes)d)"
+msgid "Byes"
+msgstr ""
 
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Byes will not be impacted."
+msgstr ""
 
 msgid "CA"
 msgstr ""
@@ -1075,10 +1054,16 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-msgid "Cancel Half-Point Bye"
+#, python-format
+msgid "Cancel \"%(bye)s\" "
 msgstr ""
 
-msgid "Cancel Zero-Point Bye"
+#, python-format
+msgid "Cancel \"%(bye)s\" at round #%(round)s for [%(player)s]?"
+msgstr ""
+
+#, python-format
+msgid "Cancel \"%(bye)s\"<br/>and mark as \"Present\" "
 msgstr ""
 
 msgid "Candidate Master"
@@ -1142,35 +1127,13 @@ msgstr ""
 msgid "Check-in"
 msgstr ""
 
-msgid "Check-in / Results ({num})"
-msgstr ""
-
-msgid "Check-in / Results entry"
-msgstr ""
-
-msgid "Check-in / Results entry ({tournament_name})"
-msgstr ""
-
-msgid "Check-in closed"
-msgstr ""
-
-msgid "Check-in is closed for tournament [{tournament}]."
-msgstr ""
-
-#, python-format
-msgid "Check-in is not allowed after the tournament has started for the [%(pairing_system)s] pairing system."
-msgstr ""
-
-msgid "Check-in is open for tournament [{tournament}]."
-msgstr ""
-
 msgid "Check-in players"
 msgstr ""
 
-msgid "Check-in via public screens"
+msgid "Check-in screens allow players to check-in or out."
 msgstr ""
 
-msgid "Checked-in"
+msgid "Check-in via public screens"
 msgstr ""
 
 msgid "Cheque"
@@ -1239,27 +1202,20 @@ msgstr ""
 msgid "Click and drag to select balanced groups."
 msgstr ""
 
-msgid "Click to check-in the player."
-msgstr ""
-
-msgid "Click to check-out the player."
+msgid "Click to cancel"
 msgstr ""
 
 msgid "Click to copy"
 msgstr ""
 
+msgid "Click to edit"
+msgstr ""
+
+#, python-format
+msgid "Click to mark as &quot;%(status)s&quot;"
+msgstr ""
+
 msgid "Close"
-msgstr ""
-
-msgid "Close check-in"
-msgstr ""
-
-#, python-format
-msgid "Close check-in for tournament [%(tournament)s]"
-msgstr ""
-
-#, python-format
-msgid "Close check-in for tournament [%(tournament)s]."
 msgstr ""
 
 msgid "Club"
@@ -1922,9 +1878,6 @@ msgstr ""
 msgid "Do not use this order as ranking."
 msgstr ""
 
-msgid "Do nothing (players will be eligible for pairing)"
-msgstr ""
-
 msgid "Do you want to install example event databases"
 msgstr ""
 
@@ -2245,6 +2198,9 @@ msgstr ""
 msgid "Email:"
 msgstr ""
 
+msgid "Enable player check-in from check-in screens."
+msgstr ""
+
 msgid "Enable this account"
 msgstr ""
 
@@ -2538,9 +2494,6 @@ msgstr ""
 msgid "Font size adjustment (%%):"
 msgstr ""
 
-msgid "For players who have not checked-in:"
-msgstr ""
-
 msgid "For players without a rapid or blitz FIDE rating, use instead their standard FIDE rating."
 msgstr ""
 
@@ -2791,9 +2744,6 @@ msgid "Illegal moves recording:"
 msgstr ""
 
 msgid "Image"
-msgstr ""
-
-msgid "Image ({num})"
 msgstr ""
 
 msgid "Image screens show an image (local or remote)."
@@ -3096,9 +3046,6 @@ msgstr ""
 msgid "Last results"
 msgstr ""
 
-msgid "Last results ({num})"
-msgstr ""
-
 msgid "Last update"
 msgstr ""
 
@@ -3271,6 +3218,17 @@ msgid "Mar *** MARCH"
 msgstr "Mar"
 
 msgid "March"
+msgstr ""
+
+#, python-format
+msgid "Mark all players as \"%(status)s\" "
+msgstr ""
+
+#, python-format
+msgid "Mark as \"%(status)s\" "
+msgstr ""
+
+msgid "Mark as &quot;Present&quot; (will be paired next round)"
 msgstr ""
 
 msgid "Mark this round as over and define the next one as the current round."
@@ -3545,9 +3503,6 @@ msgstr ""
 msgid "Next round"
 msgstr ""
 
-msgid "Next round bye"
-msgstr ""
-
 msgid "Nicaragua"
 msgstr ""
 
@@ -3555,6 +3510,9 @@ msgid "Niger"
 msgstr ""
 
 msgid "Nigeria"
+msgstr ""
+
+msgid "No"
 msgstr ""
 
 msgid "No Prize Bracket"
@@ -3764,9 +3722,6 @@ msgstr ""
 msgid "Not assigned"
 msgstr ""
 
-msgid "Not checked-in yet"
-msgstr ""
-
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr ""
 
@@ -3774,9 +3729,6 @@ msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
 msgstr ""
 
 msgid "Not logged in"
-msgstr ""
-
-msgid "Not paired"
 msgstr ""
 
 msgid "Not paired for this round"
@@ -3915,17 +3867,7 @@ msgstr ""
 msgid "Open Admin Interface"
 msgstr ""
 
-#, python-format
-msgid "Open check-in for tournament [%(tournament)s]."
-msgstr ""
-
 msgid "Open documentation"
-msgstr ""
-
-msgid "Open/close check-in"
-msgstr ""
-
-msgid "Open/close check-in."
 msgstr ""
 
 msgid "Opening the welcome page [{url}] in a browser…"
@@ -4071,22 +4013,7 @@ msgstr "P<u>a</u>irings"
 msgid "Pairings by board"
 msgstr ""
 
-msgid "Pairings by board ({num})"
-msgstr ""
-
-msgid "Pairings by board ({tournament_name})"
-msgstr ""
-
 msgid "Pairings by player"
-msgstr ""
-
-msgid "Pairings by player ({num})"
-msgstr ""
-
-msgid "Pairings by player ({tournament_name})"
-msgstr ""
-
-msgid "Pairings disabled while check-in is open."
 msgstr ""
 
 msgid "Pairings for round #{round}"
@@ -4095,7 +4022,10 @@ msgstr ""
 msgid "Pairings generated for all rounds of tournament [{tournament}]."
 msgstr ""
 
-msgid "Pairings generation not allowed if previous rounds have missing results or unpaired players."
+msgid "Pairings generation disabled if there are no players to pair."
+msgstr ""
+
+msgid "Pairings generation not allowed if previous rounds have missing results, players to pair or absent players."
 msgstr ""
 
 msgid "Pairings generation not allowed if there are fewer players than rounds."
@@ -4127,9 +4057,6 @@ msgid "Papua New Guinea"
 msgstr ""
 
 msgid "Paraguay"
-msgstr ""
-
-msgid "Parings by player"
 msgstr ""
 
 msgid "Participation Statistics"
@@ -4211,10 +4138,6 @@ msgstr ""
 msgid "Player [%(player)s] has been created."
 msgstr ""
 
-#, python-format
-msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament)s]."
-msgstr ""
-
 msgid "Player [{player_id}] - round {round}: "
 msgstr ""
 
@@ -4245,7 +4168,13 @@ msgstr ""
 msgid "Player [{player}] has returned for this round."
 msgstr ""
 
+msgid "Player [{player}] has returned to the tournament."
+msgstr ""
+
 msgid "Player [{player}] is duplicated."
+msgstr ""
+
+msgid "Player [{player}] marked as \"{status}\"."
 msgstr ""
 
 msgid "Player does not match tournament criteria: {names}"
@@ -4341,6 +4270,9 @@ msgid "Players which do not match the criteria of their tournament."
 msgstr ""
 
 msgid "Players which match the criteria of their tournament."
+msgstr ""
+
+msgid "Players who have received a bye for the incoming round and will therefore not be paired."
 msgstr ""
 
 msgid "Players without phone or email won't be included."
@@ -4463,6 +4395,9 @@ msgid "Pref."
 msgstr ""
 
 msgid "Present"
+msgstr ""
+
+msgid "Present and unpaired"
 msgstr ""
 
 msgid "Previous round"
@@ -4621,12 +4556,6 @@ msgstr ""
 msgid "Ranking %f-%l"
 msgstr ""
 
-msgid "Ranking ({num})"
-msgstr ""
-
-msgid "Ranking ({tournament_name})"
-msgstr ""
-
 #, python-format
 msgid "Ranking after round #%(round)d"
 msgstr ""
@@ -4683,6 +4612,18 @@ msgid "Ratings"
 msgstr ""
 
 msgid "Ratings update"
+msgstr ""
+
+msgid "Received a Full-Point Bye for the next round."
+msgstr ""
+
+msgid "Received a Half-Point Bye for the next round."
+msgstr ""
+
+msgid "Received a Zero-Point Bye for all the remaining rounds."
+msgstr ""
+
+msgid "Received a Zero-Point Bye for the next round."
 msgstr ""
 
 msgid "Record"
@@ -4755,6 +4696,15 @@ msgstr ""
 msgid "Res. ** RESULT COLUMN HEADER"
 msgstr "Res."
 
+msgid "Reset"
+msgstr ""
+
+msgid "Reset all the players to &quot;Absent&quot; or &quot;Present&quot; (byes not impacted)."
+msgstr ""
+
+msgid "Reset check-in"
+msgstr ""
+
 msgid "Reset manual tie-break"
 msgstr ""
 
@@ -4795,6 +4745,10 @@ msgid "Results screens show the last results (most recent first)."
 msgstr ""
 
 msgid "Retry"
+msgstr ""
+
+#, python-format
+msgid "Return [%(player)s] to the tournament?"
 msgstr ""
 
 msgid "Return to the home page"
@@ -5089,6 +5043,9 @@ msgstr ""
 msgid "Select the players and the data to update:"
 msgstr ""
 
+msgid "Select the status of the following players:"
+msgstr ""
+
 msgid "Select the tournaments to add players to."
 msgstr ""
 
@@ -5211,9 +5168,6 @@ msgid "Show warnings"
 msgstr ""
 
 msgid "Show/hide the screens created from screen families."
-msgstr ""
-
-msgid "Show/hide these screens."
 msgstr ""
 
 msgid "Sierra Leone"
@@ -6044,6 +5998,9 @@ msgstr ""
 msgid "To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player's name."
 msgstr ""
 
+msgid "To pair"
+msgstr ""
+
 msgid "Today"
 msgstr ""
 
@@ -6062,6 +6019,9 @@ msgstr ""
 msgid "Too much information to display on a single projector?"
 msgstr ""
 
+msgid "Total"
+msgstr ""
+
 msgid "Total prize value"
 msgstr ""
 
@@ -6070,14 +6030,6 @@ msgstr ""
 
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournament"
-
-#, python-format
-msgid "Tournament [%(tournament)s] is finished."
-msgstr ""
-
-#, python-format
-msgid "Tournament [%(tournament)s] is playing."
-msgstr ""
 
 msgid "Tournament [{tournament_id}] not found."
 msgstr ""
@@ -6305,10 +6257,6 @@ msgstr ""
 msgid "Unpair tournament"
 msgstr ""
 
-#, python-format
-msgid "Unpaired (%(unpaired)d)"
-msgstr ""
-
 msgid "Unpaired *** MAN"
 msgstr "Unpaired"
 
@@ -6322,9 +6270,6 @@ msgid "Unpaired: hidden"
 msgstr ""
 
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
-msgstr ""
-
-msgid "Unpairing all the boards of this round is not possible because the round has results."
 msgstr ""
 
 msgid "Unrated *** PLURAL"
@@ -6433,6 +6378,9 @@ msgid "Valid rows"
 msgstr ""
 
 msgid "Validate"
+msgstr ""
+
+msgid "Validate and pair"
 msgstr ""
 
 msgid "Value"
@@ -6611,6 +6559,12 @@ msgstr ""
 msgid "White wins"
 msgstr ""
 
+msgid "Will not participate in upcoming rounds."
+msgstr ""
+
+msgid "Will participate in upcoming rounds."
+msgstr ""
+
 msgid "Win"
 msgstr ""
 
@@ -6618,6 +6572,9 @@ msgid "With less players than prizes, some prizes will not be attributed."
 msgstr ""
 
 msgid "Withdraw from tournament"
+msgstr ""
+
+msgid "Withdrawn"
 msgstr ""
 
 msgid "Woman *** NAME FOR GENDER WOMAN"
@@ -6653,6 +6610,9 @@ msgstr ""
 msgid "Yemen"
 msgstr ""
 
+msgid "Yes"
+msgstr ""
+
 msgid "Yesterday"
 msgstr ""
 
@@ -6665,10 +6625,7 @@ msgstr ""
 msgid "You are not allowed to add players to the event."
 msgstr ""
 
-msgid "You are not allowed to check-in the player."
-msgstr ""
-
-msgid "You are not allowed to check-out the player."
+msgid "You are not allowed to cancel byes."
 msgstr ""
 
 msgid "You are not allowed to create tournaments."
@@ -6704,10 +6661,10 @@ msgstr ""
 msgid "You are not allowed to modify Half-Point Byes."
 msgstr ""
 
-msgid "You are not allowed to open/close check-in."
+msgid "You are not allowed to pair players."
 msgstr ""
 
-msgid "You are not allowed to pair players."
+msgid "You are not allowed to return players."
 msgstr ""
 
 msgid "You are not allowed to set Full-Point Byes."
@@ -6716,13 +6673,10 @@ msgstr ""
 msgid "You are not allowed to set Half-Point Byes."
 msgstr ""
 
+msgid "You are not allowed to set Zero-Point Byes."
+msgstr ""
+
 msgid "You are not allowed to set the current round."
-msgstr ""
-
-msgid "You are not allowed to set/unset Half-Point Byes."
-msgstr ""
-
-msgid "You are not allowed to set/unset Zero-Point Byes."
 msgstr ""
 
 msgid "You are not allowed to unpair rounds."
@@ -6795,6 +6749,9 @@ msgid "Zero-Point Bye"
 msgstr ""
 
 msgid "Zero-Point Bye attributed to player [{player}]."
+msgstr ""
+
+msgid "Zero-Point Bye for the next round"
 msgstr ""
 
 msgid "Zimbabwe"
@@ -7095,3 +7052,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
+#~ msgstr ""
+

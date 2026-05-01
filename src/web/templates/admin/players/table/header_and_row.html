@@ -15,8 +15,8 @@
         {{ nav_tab_title }}
     </button>
 </template>
-{% if updated_player %}
-    {% with swap_oob=True, player=updated_player, index=index %}
+{% if updated_player or after_check_in %}
+    {% with swap_oob=True, player=admin_player, index=index or '' %}
         <template>
             {% include '/admin/players/table/row.html' %}
         </template>
@@ -29,4 +29,39 @@
         >
         </tr>
     </template>
+{% endif %}
+
+{% if after_check_in %}
+    {% set delay = 15 %}
+    <script>
+        var circle = new ProgressBar.Circle('#player-{{ admin_player.id }}-check-in > :first-child', {
+            height: 20,
+            color: 'var(--bs-primary)',
+            duration: {{ delay }}000,
+            strokeWidth: 16,
+            svgStyle: {
+                position: 'absolute',
+                width: '20px',
+                left: '-2px',
+            },
+        });
+        circle.set(1);
+        circle.animate(0);
+        {% if deleted_player_id %}
+            if (!({{ admin_player.id }} in debouncedReplaceFunctionByPlayerId)) {
+                debouncedReplaceFunctionByPlayerId[{{ admin_player.id }}] = debounce(() => {
+                    if($('#player-{{ admin_player.id }}').data('delete')) {
+                        htmx.ajax('GET',
+                            "{{ url_for(
+                                'admin-player-row',
+                                event_uniq_id=admin_event.uniq_id,
+                                player_id=admin_player.id,
+                            ) }}?close_modal=0"
+                        )
+                    }
+                }, {{ delay }}000);
+            }
+            debouncedReplaceFunctionByPlayerId[{{ admin_player.id }}]();
+        {% endif %}
+    </script>
 {% endif %}

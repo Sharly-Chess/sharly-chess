@@ -1,7 +1,7 @@
 {% set bye_definition_allowed=admin_player.single_tournament.pairing_system.allow_bye_definition %}
 {% set tournament_player=admin_player.single_tournament_player %}
 <div id="player-record-modal" class="modal-dialog modal-dialog-scrollable admin-record-edit-modal">
-    <div class="modal-content">
+    <div class="modal-content" data-player-id="{{ admin_player.id }}">
         <div class="modal-header d-flex justify-content-between align-items-end">
             <div class="flex flex-column gap-0 align-items-start">
                 <h2 class="modal-title">
@@ -21,10 +21,8 @@
                                 disabled
                             {% else %}
                                 hx-patch="{{ url_for(
-                                    'admin-player-return-player',
+                                    'records-return-player',
                                     event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=tournament_player.tournament.id,
-                                    round=tournament_player.tournament.current_round,
                                     player_id=admin_player.id,
                                 ) }}"
                                 hx-target="body"
@@ -38,21 +36,20 @@
                         or tournament_player.pairings_by_round[tournament.current_round].needs_pairing_or_has_bye
                     ) %}
                         <button
-                            class="btn btn-sm btn-outline-primary w-100"
+                            class="btn btn-sm btn-outline-danger w-100"
                             {% if not client.can_set_zero_point_bye(tournament_player.tournament.id) %}
                                 disabled
                             {% else %}
                                 hx-patch="{{ url_for(
-                                    'admin-player-withdraw-player',
+                                    'records-withdraw-player',
                                     event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=tournament_player.tournament.id,
-                                    round=tournament_player.tournament.current_round,
                                     player_id=admin_player.id,
                                 ) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                             {% endif %}
                         >
+                            <i class="bi-sign-stop-fill pe-1"></i>
                             {{ _('Withdraw from tournament') }}
                         </button>
                     {% endif %}

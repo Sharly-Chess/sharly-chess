@@ -209,67 +209,14 @@ class BaseEventAdminWebContext(AdminWebContext):
                 )
                 rotators = event.public_sorted_rotators
                 display_controllers = event.sorted_public_display_controllers
-            screens: list[Screen]
-            screens = sorted_screens_by_screen_type[ScreenType.BOARDS]
-            nav_tabs |= {
-                'admin-event-boards-screens-tab': {
-                    'title': _('Pairings by board ({num})').format(
-                        num=len(screens) or '-'
-                    ),
+            for screen_type in ScreenType:
+                screens = sorted_screens_by_screen_type[screen_type]
+                nav_tabs[f'admin-event-{screen_type.value}-screens-tab'] = {
+                    'title': f'{screen_type.name} ({len(screens) or "-"})',
                     'template': 'screens/view_tab.html',
                     'disabled': not screens,
-                    'icon_class': ScreenType.BOARDS.icon_str,
-                },
-            }
-            screens = sorted_screens_by_screen_type[ScreenType.INPUT]
-            nav_tabs |= {
-                'admin-event-input-screens-tab': {
-                    'title': _('Check-in / Results ({num})').format(
-                        num=len(screens) or '-'
-                    ),
-                    'template': 'screens/view_tab.html',
-                    'disabled': not screens,
-                    'icon_class': ScreenType.INPUT.icon_str,
-                },
-            }
-            screens = sorted_screens_by_screen_type[ScreenType.PLAYERS]
-            nav_tabs |= {
-                'admin-event-players-screens-tab': {
-                    'title': _('Pairings by player ({num})').format(
-                        num=len(screens) or '-'
-                    ),
-                    'template': 'screens/view_tab.html',
-                    'disabled': not screens,
-                    'icon_class': ScreenType.PLAYERS.icon_str,
-                },
-            }
-            screens = sorted_screens_by_screen_type[ScreenType.RESULTS]
-            nav_tabs |= {
-                'admin-event-results-screens-tab': {
-                    'title': _('Last results ({num})').format(num=len(screens) or '-'),
-                    'template': 'screens/view_tab.html',
-                    'disabled': not screens,
-                    'icon_class': ScreenType.RESULTS.icon_str,
-                },
-            }
-            screens = sorted_screens_by_screen_type[ScreenType.RANKING]
-            nav_tabs |= {
-                'admin-event-ranking-screens-tab': {
-                    'title': _('Ranking ({num})').format(num=len(screens) or '-'),
-                    'template': 'screens/view_tab.html',
-                    'disabled': not screens,
-                    'icon_class': ScreenType.RANKING.icon_str,
-                },
-            }
-            screens = sorted_screens_by_screen_type[ScreenType.IMAGE]
-            nav_tabs |= {
-                'admin-event-image-screens-tab': {
-                    'title': _('Image ({num})').format(num=len(screens) or '-'),
-                    'template': 'screens/view_tab.html',
-                    'disabled': not screens,
-                    'icon_class': ScreenType.IMAGE.icon_str,
-                },
-            }
+                    'icon_class': screen_type.icon_str,
+                }
             nav_tabs |= {
                 'admin-event-rotators-tab': {
                     'title': _('Rotators ({num})').format(num=len(rotators) or '-'),

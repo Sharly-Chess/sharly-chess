@@ -633,7 +633,11 @@ class TournamentPlayer(Player):
             elif round_nb == after_round + 1:
                 if include_next_round_bye and pairing.next_round_bye:
                     games.append(trf_game)
-                elif next_round_pairings_as_zpb and not pairing.needs_pairing:
+                elif (
+                    include_next_round_bye
+                    and self.check_in_status_for_round(after_round + 1)
+                    == CheckInStatus.ABSENT
+                ) or (next_round_pairings_as_zpb and not pairing.needs_pairing):
                     games.append(
                         TrfGame(
                             startrank=0,
@@ -1090,7 +1094,7 @@ class TournamentPlayer(Player):
                 return True
         return False
 
-    @property
+    @cached_property
     def has_withdrawn(self) -> bool:
         """Returns True if the player has withdrawn from the tournament."""
         if self.tournament.finished:
@@ -1101,10 +1105,10 @@ class TournamentPlayer(Player):
         for round_ in range(
             max(self.tournament.current_round, 1), self.tournament.rounds + 1
         ):
+            pairing = self.pairings_by_round[round_]
             if (
-                round_ < self.tournament.rounds
-                and self.pairings_by_round[round_].paired
-            ) or self.pairings_by_round[round_].zero_point_bye:
+                round_ < self.tournament.rounds and pairing.paired
+            ) or pairing.zero_point_bye:
                 continue
             return False
         return True
@@ -1134,24 +1138,23 @@ class TournamentPlayer(Player):
 
     @cached_property
     def check_in_status(self) -> CheckInStatus:
-        if not self.tournament.check_in_open:
-            return CheckInStatus.CHECK_IN_CLOSED
-        if self.pairings[self.tournament.current_round + 1].next_round_bye:
-            return CheckInStatus.NEXT_ROUND_BYE
-        if self.check_in:
-            return CheckInStatus.CHECKED_IN
-        return CheckInStatus.NOT_CHECKED_IN
+        return self.check_in_status_for_round(self.tournament.current_round + 1)
 
-    @cached_property
-    def can_check_in_out(self) -> bool:
-        """Returns True if the player can check-in/out, i.e. does not have a ZPB for the next round."""
-        if self.tournament.finished:
-            return False
-        if self.tournament.playing:
-            return False
-        if not self.tournament.check_in_open:
-            return False
-        return not self.pairings[self.tournament.current_round + 1].next_round_bye
+    def check_in_status_for_round(self, round_: int) -> CheckInStatus:
+        if self.has_withdrawn:
+            return CheckInStatus.WITHDRAWN
+        pairing = self.pairings_by_round.get(round_)
+        if pairing:
+            match pairing.result:
+                case Result.ZERO_POINT_BYE:
+                    return CheckInStatus.NEXT_ROUND_ZPB
+                case Result.HALF_POINT_BYE:
+                    return CheckInStatus.NEXT_ROUND_HPB
+                case Result.FULL_POINT_BYE:
+                    return CheckInStatus.NEXT_ROUND_FPB
+        if self.check_in:
+            return CheckInStatus.PRESENT
+        return CheckInStatus.ABSENT
 
     @property
     def color_str(self) -> str:

@@ -68,7 +68,7 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        {% if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', ] %}
+                        {% if action == 'create' and screen_type.value in ['input', 'boards', 'players', 'ranking', 'check-in'] %}
                             <div class="col-12 col-md-6">
                                 {{ admin_macros.select_input(
                                     name='init_set_tournament_id',
@@ -160,7 +160,7 @@
                         </div>
                     {% endif %}
 
-                    {% if screen_type.value in ['input', 'boards', 'players', 'results', 'ranking', ] %}
+                    {% if screen_type.value in ['input', 'boards', 'players', 'results', 'ranking', 'check-in'] %}
                         <h4>
                             {{ _('Layout') }}
                         </h4>
@@ -193,7 +193,7 @@
                                     data=data, errors=errors
                                 ) }}
                             </div>
-                            {% if screen_type.value == 'input' %}
+                            {% if screen_type.value in ('input', 'check-in') %}
                                 <div class="col-12 col-md-6">
                                     {% include '../common/modal/exit_button.html' %}
                                 </div>
