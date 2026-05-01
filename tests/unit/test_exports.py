@@ -103,8 +103,10 @@ class TournamentExporterTestCase(TestCase):
             'DAVID': 1013,
             'ALYX': 1012,
             'FRANCK': 1011,
-            'MARIA': 1010,
-            'IRINA': 1009,
+            # Maria / Irina swapped from 03/2026 FIDE tie-breaks dummy update
+            # Maria BH -1 --> Forfeit win R4 - 1 * (dummy capped to opponent score 1.5 instead of 2.5)
+            'IRINA': 1010,
+            'MARIA': 1009,
             'HELENE': 1008,
             'REINE': 1007,
             'NICK': 1006,

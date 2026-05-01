@@ -926,7 +926,7 @@ class Tournament:
             round_ = self.current_round
         return self.pairing_variation.print_real_points(round_, self.rounds)
 
-    @property
+    @cached_property
     def point_values(self) -> dict[Result, float]:
         values: dict[Result, float]
         if self.three_points_for_a_win:
