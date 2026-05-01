@@ -5045,8 +5045,8 @@ msgstr "Sélectionner un compte"
 msgid "Select player"
 msgstr "Sélectionner un·e joueur·euse"
 
-msgid "Select the action to apply to absent players:"
-msgstr "Sélectionner l'action à effectuer pour les joueur·euses absent·es :"
+msgid "Select an action for absent players:"
+msgstr "Sélectionner une action pour les joueur·euses absent·es :"
 
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"

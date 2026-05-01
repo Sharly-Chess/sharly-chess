@@ -5043,7 +5043,7 @@ msgstr ""
 msgid "Select player"
 msgstr ""
 
-msgid "Select the action to apply to absent players:"
+msgid "Select an action for absent players:"
 msgstr ""
 
 msgid "Select the players and the data to update:"
