@@ -180,6 +180,9 @@ msgstr ""
 msgid "%t (by player)"
 msgstr ""
 
+msgid "%t (check-in)"
+msgstr ""
+
 #, python-format
 msgid "%t [Boards %f-%l]"
 msgstr ""
@@ -1122,12 +1125,6 @@ msgid "Check the box to allow other screens to display a link to this screen."
 msgstr ""
 
 msgid "Check-in"
-msgstr ""
-
-msgid "Check-in / Results entry"
-msgstr ""
-
-msgid "Check-in / Results entry ({tournament_name})"
 msgstr ""
 
 msgid "Check-in players"
@@ -4010,13 +4007,7 @@ msgstr "P<u>a</u>irings"
 msgid "Pairings by board"
 msgstr ""
 
-msgid "Pairings by board ({tournament_name})"
-msgstr ""
-
 msgid "Pairings by player"
-msgstr ""
-
-msgid "Pairings by player ({tournament_name})"
 msgstr ""
 
 msgid "Pairings for round #{round}"
@@ -4060,9 +4051,6 @@ msgid "Papua New Guinea"
 msgstr ""
 
 msgid "Paraguay"
-msgstr ""
-
-msgid "Parings by player"
 msgstr ""
 
 msgid "Participation Statistics"
@@ -4560,9 +4548,6 @@ msgstr ""
 
 #, python-format
 msgid "Ranking %f-%l"
-msgstr ""
-
-msgid "Ranking ({tournament_name})"
 msgstr ""
 
 #, python-format

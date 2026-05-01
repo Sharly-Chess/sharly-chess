@@ -180,6 +180,9 @@ msgstr "%t (par échiquier)"
 msgid "%t (by player)"
 msgstr "%t (par ordre alpha.)"
 
+msgid "%t (check-in)"
+msgstr "%t (check-in)"
+
 #, python-format
 msgid "%t [Boards %f-%l]"
 msgstr "%t [Éch. %f-%l]"
@@ -1123,12 +1126,6 @@ msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien ver
 
 msgid "Check-in"
 msgstr "Pointage"
-
-msgid "Check-in / Results entry"
-msgstr "Pointage / Saisie des résultats"
-
-msgid "Check-in / Results entry ({tournament_name})"
-msgstr "Pointage / Saisie des résultats ({tournament_name})"
 
 msgid "Check-in players"
 msgstr "Pointer les joueur·euses"
@@ -4012,14 +4009,8 @@ msgstr "<u>A</u>ppariements"
 msgid "Pairings by board"
 msgstr "Appariements par échiquier"
 
-msgid "Pairings by board ({tournament_name})"
-msgstr "Appariements par échiquier ({tournament_name})"
-
 msgid "Pairings by player"
 msgstr "Appariements par ordre alphabétique"
-
-msgid "Pairings by player ({tournament_name})"
-msgstr "Appariements par ordre alphabétique ({tournament_name})"
 
 msgid "Pairings for round #{round}"
 msgstr "Appariements de la ronde {round}"
@@ -4063,9 +4054,6 @@ msgstr "Papouasie-Nouvelle-Guinée"
 
 msgid "Paraguay"
 msgstr "Paraguay"
-
-msgid "Parings by player"
-msgstr "Appariements par ordre alphabétique"
 
 msgid "Participation Statistics"
 msgstr "Statistiques de participation"
@@ -4563,9 +4551,6 @@ msgstr "Classement %f à %l"
 #, python-format
 msgid "Ranking %f-%l"
 msgstr "Classement %f-%l"
-
-msgid "Ranking ({tournament_name})"
-msgstr "Classement ({tournament_name})"
 
 #, python-format
 msgid "Ranking after round #%(round)d"
