@@ -228,6 +228,10 @@ class Tournament:
         return SharlyChessConfig.default_record_illegal_moves
 
     @property
+    def check_in_open(self) -> bool:
+        return self.stored_tournament.check_in_open
+
+    @property
     def default_player_check_in(self) -> bool:
         return self.started
 
@@ -1634,6 +1638,12 @@ class Tournament:
                 else:
                     white_stored_pairing.result = pab_result.value
                 board.white_pairing.update(database)
+
+    def toggle_check_in_open(self):
+        check_in_open = not self.check_in_open
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.set_tournament_check_in_open(self.id, check_in_open)
+        self.stored_tournament.check_in_open = check_in_open
 
     def set_player_participation(
         self, player: TournamentPlayer, withdraw: bool = False

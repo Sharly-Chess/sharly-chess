@@ -48,7 +48,7 @@
                 <div>
                     <button
                         class="btn btn-outline-primary text-nowrap"
-                        hx-get="{{ url_for('check-in-modal', event_uniq_id=admin_event.uniq_id) }}"
+                        hx-get="{{ url_for('check-in-tournaments-modal', event_uniq_id=admin_event.uniq_id) }}"
                     >
                         <i class="bi-x-circle"></i><i class="bi-check-circle pe-1"></i>
                         {{ _('Check-in') }}

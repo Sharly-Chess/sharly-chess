@@ -16,7 +16,7 @@
             <form
                 id="modal-form"
                 hx-post="{{ url_for(
-                    'check-in-reset',
+                    'check-in-reset-tournament',
                     event_uniq_id=admin_event.uniq_id,
                     tournament_id=admin_tournament.id
                 ) }}"
@@ -41,7 +41,7 @@
                 type="button"
                 class="btn btn-secondary text-nowrap"
                 hx-get="{{ url_for(
-                    'check-in-modal',
+                    'check-in-tournaments-modal',
                     event_uniq_id=admin_event.uniq_id,
                     tournament_id=admin_tournament.id
                 ) }}"

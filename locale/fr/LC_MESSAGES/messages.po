@@ -4028,7 +4028,7 @@ msgid "Pairings generation disabled if there are no players to pair."
 msgstr "La génération d'appariements est désactivée si il n'y a pas de joueur·euses à apparier."
 
 msgid "Pairings generation not allowed if previous rounds have missing results, players to pair or absent players."
-msgstr "La génération d'appariements est désactivée des rondes précédentes ont des résultats manquants, des joueur·euse à apparier ou des joueur·euses absent·es."
+msgstr "La génération d'appariements est désactivée si les rondes précédentes ont des résultats manquants, des joueur·euses à apparier ou absent·es."
 
 msgid "Pairings generation not allowed if there are fewer players than rounds."
 msgstr "La génération d'appariements n'est pas autorisée s'il y a moins de joueur·euses que de rondes."
