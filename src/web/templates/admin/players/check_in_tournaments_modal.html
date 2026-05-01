@@ -101,7 +101,7 @@
                     {% endfor %}
                     {% if allowed_tournaments|length > 1 %}
                         <tr class="fw-bold">
-                            <td colspan="{{ 1 + plugin_columns|length }}" class="text-end">
+                            <td colspan="{{ 2 + plugin_columns|length }}" class="text-end">
                                 {{ _('Total') }}
                             </td>
                             {% for status in ordered_statuses %}
