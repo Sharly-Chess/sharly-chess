@@ -21,6 +21,14 @@
                     <th class="text-nowrap text-start">
                         {{ _('Tournament') }}
                     </th>
+                    <th
+                        class="text-nowrap text-center"
+                        {{ macros.tooltip_attributes('', _(
+                            'Enable player check-in from check-in screens.'
+                        )) }}
+                    >
+                        {{ _('Screens') }}
+                    </th>
                     <th class="text-nowrap text-center">
                         {{ _('Absent') }}
                     </th>
@@ -47,6 +55,21 @@
                             <td class="text-nowrap text-ellipsis mw-10em">
                                 {{ tournament.name }}
                             </td>
+                            <td class="text-nowrap text-center">
+                                <div class="form-check form-switch d-inline-block">
+                                    <input
+                                        name="tournament_{{ tournament.id }}_check_in_open"
+                                        class="form-check-input mt-2"
+                                        type="checkbox"
+                                        hx-post="{{ url_for(
+                                            'check-in-tournament-toggle-open',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                        ) }}"
+                                        {% if tournament.check_in_open %}checked{% endif %}
+                                    />
+                                </div>
+                            </td>
                             {% for status in ordered_statuses %}
                                 {% with base_id='tournament-' ~ tournament.id, counter=tournament.check_in_status_grouped_counts %}
                                     {% include 'check_in_table_status_cell.html' %}
@@ -64,7 +87,7 @@
                                         type="button"
                                         class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
                                         hx-get="{{ url_for(
-                                            'check-in-reset-modal',
+                                            'check-in-tournament-reset-modal',
                                             event_uniq_id=admin_event.uniq_id,
                                             tournament_id=tournament.id,
                                         ) }}"

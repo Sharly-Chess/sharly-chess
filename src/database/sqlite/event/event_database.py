@@ -612,6 +612,7 @@ class EventDatabase(MigrationDatabase):
                 row['pairing_settings'], {}
             ),
             current_round=row['current_round'],
+            check_in_open=cls.load_bool_from_database_field(row['check_in_open']),
             rounds=row['rounds'],
             rating=row['rating'],
             last_update=cls.load_datetime_from_database_field(row['last_update']),
@@ -712,6 +713,7 @@ class EventDatabase(MigrationDatabase):
 
     def add_stored_tournament(self, stored_tournament: StoredTournament) -> int:
         fields = self._get_tournament_fields_dict(stored_tournament)
+        fields |= {'check_in_open': True}
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
         self.execute(
@@ -734,6 +736,12 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_tournament(self, tournament_id: int):
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
+
+    def set_tournament_check_in_open(self, tournament_id: int, check_in_open: bool):
+        self.execute(
+            'UPDATE `tournament` SET `check_in_open` = ? WHERE `id` = ?',
+            (check_in_open, tournament_id),
+        )
 
     def set_tournament_pairing_settings(
         self, tournament_id: int, pairing_settings: dict[str, Any]

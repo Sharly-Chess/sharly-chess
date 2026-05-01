@@ -11,9 +11,6 @@ class Migration(BaseMigration):
             '   WHERE player.id = tp.player_id'
             ')'
         )
-        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `check_in_open`')
 
     def backward(self):
-        self.database.execute(
-            'ALTER TABLE `tournament` ADD `check_in_open` INTEGER NOT NULL DEFAULT 0'
-        )
+        pass

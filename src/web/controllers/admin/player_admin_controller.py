@@ -1499,7 +1499,7 @@ class PlayerAdminController(BaseEventAdminController):
             CheckInStatus.NEXT_ROUND_BYE,
         ]
         template_context |= {
-            'modal': 'check-in',
+            'modal': 'check-in-tournaments',
             'allowed_tournaments': tournaments,
             'plugin_columns': plugin_columns,
             'total_check_in_status_grouped_counts': total_check_in_status_grouped_counts,
@@ -1510,10 +1510,10 @@ class PlayerAdminController(BaseEventAdminController):
         return cls._admin_base_event_render(template_context)
 
     @get(
-        path='/check-in/modal/{event_uniq_id:str}',
-        name='check-in-modal',
+        path='/check-in/tournaments-modal/{event_uniq_id:str}',
+        name='check-in-tournaments-modal',
     )
-    async def htmx_check_in_modal(self, request: HTMXRequest) -> Template:
+    async def htmx_check_in_tournaments_modal(self, request: HTMXRequest) -> Template:
         web_context = PlayerAdminWebContext(request)
         return self.render_check_in_modal(web_context)
 
@@ -1573,24 +1573,24 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @get(
-        path='/check-in/reset-modal/{event_uniq_id:str}/{tournament_id:int}',
-        name='check-in-reset-modal',
+        path='/check-in/tournament-reset-modal/{event_uniq_id:str}/{tournament_id:int}',
+        name='check-in-tournament-reset-modal',
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
-    async def htmx_check_in_reset_modal(
+    async def htmx_check_in_tournament_reset_modal(
         self, request: HTMXRequest, tournament_id: int
     ) -> Template:
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         return self._admin_base_event_render(
-            web_context.template_context | {'modal': 'check-in-reset'}
+            web_context.template_context | {'modal': 'check-in-tournament-reset'}
         )
 
     @post(
-        path='/check-in/reset/{event_uniq_id:str}/{tournament_id:int}',
-        name='check-in-reset',
+        path='/check-in/reset-tournament/{event_uniq_id:str}/{tournament_id:int}',
+        name='check-in-reset-tournament',
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
-    async def htmx_check_in_reset(
+    async def htmx_check_in_reset_tournament(
         self,
         request: HTMXRequest,
         data: Annotated[
@@ -1609,6 +1609,24 @@ class PlayerAdminController(BaseEventAdminController):
             status=_('Present') if check_in else _('Absent'),
         )
         return self.render_check_in_modal(web_context, message)
+
+    @post(
+        path='/check-in/tournament-toggle-open/{event_uniq_id:str}/{tournament_id:int}',
+        name='check-in-tournament-toggle-open',
+        guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_check_in_tournament_toggle_open(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+    ) -> Template:
+        web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
+        tournament = web_context.get_admin_tournament()
+        tournament.toggle_check_in_open()
+        return HTMXTemplate(
+            template_name='/common/empty.html',
+            re_swap='none',
+        )
 
     # -------------------------------------------------------------------------
     # Import
