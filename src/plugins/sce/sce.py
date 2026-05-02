@@ -2,7 +2,10 @@ from typing import TYPE_CHECKING, Iterable, Any
 
 from packaging.version import Version
 
+from common import SharlyChessException
 from common.i18n import _
+from common.logger import get_logger
+from data.columns.column import Column
 from data.event import Event
 from data.loader import EventLoader
 from data.print_documents import QRCodeType
@@ -14,7 +17,9 @@ from plugins.sce.sce_background_uploader import (
     should_schedule_auto_upload,
     schedule_upload,
 )
+from plugins.sce.sce_entity import SCECheckInColumn
 from plugins.sce.sce_qr_codes import SCETournamentQRCodeType, SCEEventQRCodeType
+from plugins.sce.sce_session import SCESession
 from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.sce.sce_data import (
     SCETournamentPluginData,
@@ -38,6 +43,8 @@ if TYPE_CHECKING:
         StoredTournament,
         StoredPlayer,
     )
+
+logger = get_logger()
 
 
 class SCEPluginHooks:
@@ -206,6 +213,18 @@ class SCEPlugin(Plugin):
         plugin_data = SCEUtils.get_event_plugin_data(event)
         plugin_data.deleted_player_ids.append(sce_player_id)
         SCEUtils.update_event_plugin_data(event, plugin_data)
+
+    @hookimpl
+    def get_check_in_table_column(self) -> 'Column[Tournament]':
+        return SCECheckInColumn()
+
+    @hookimpl
+    def on_before_load_tournaments_check_in_modal(self, event: Event):
+        if SCEUtils.get_event_plugin_data(event).id:
+            try:
+                SCESession(event).update_event_check_in_schedules()
+            except SharlyChessException as e:
+                logger.exception(e)
 
     # ---------------------------------------------------------------------------------
     # Nav

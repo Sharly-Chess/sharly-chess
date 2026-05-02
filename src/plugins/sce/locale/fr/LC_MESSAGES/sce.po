@@ -57,6 +57,9 @@ msgstr "Choisir"
 msgid "Close"
 msgstr "Fermer"
 
+msgid "Closing"
+msgstr "Fermeture"
+
 msgid "Club"
 msgstr "Club"
 
@@ -99,6 +102,9 @@ msgstr "Modifier le·la joueur·euse"
 
 msgid "Edit the tournament"
 msgstr "Modifier le tournoi"
+
+msgid "Enable player check-in from Sharly-Chess.com."
+msgstr "Activer le pointage des joueur·euses depuis Sharly-Chess.com."
 
 msgid "End"
 msgstr "Fin"
@@ -196,11 +202,17 @@ msgstr "Pas de connection à internet."
 msgid "No player to synchronize yet, import or upload tournaments first."
 msgstr "Aucun·e joueur·euse à synchroniser pour le moment, vous devez d'abord importer ou mettre en ligne un tournoi."
 
+msgid "Not scheduled"
+msgstr "Non programmé"
+
 msgid "Not started"
 msgstr "Non démarré"
 
 msgid "Ongoing"
 msgstr "En cours"
+
+msgid "Opening"
+msgstr "Ouverture"
 
 msgid "Pending"
 msgstr "En attente"

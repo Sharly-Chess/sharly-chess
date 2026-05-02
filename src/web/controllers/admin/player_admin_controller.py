@@ -1499,8 +1499,12 @@ class PlayerAdminController(BaseEventAdminController):
 
     @classmethod
     def render_check_in_modal(
-        cls, web_context: PlayerAdminWebContext, message: str | None = None
+        cls,
+        web_context: PlayerAdminWebContext,
+        message: str | None = None,
+        message_type: str | None = None,
     ) -> HTMXTemplate:
+        event = web_context.get_admin_event()
         template_context = web_context.template_context
         tournaments = web_context.allowed_tournaments
         total_check_in_status_grouped_counts = Counter[CheckInStatus]()
@@ -1510,7 +1514,9 @@ class PlayerAdminController(BaseEventAdminController):
                     tournament.check_in_status_grouped_counts[status]
                 )
         total_player_count = len(web_context.client.allowed_players)
-        plugin_columns: list = []
+        plugin_columns = plugin_manager.hook_for_event(
+            event, 'get_check_in_table_column'
+        )()
         ordered_statuses = [
             CheckInStatus.ABSENT,
             CheckInStatus.PRESENT,
@@ -1524,6 +1530,7 @@ class PlayerAdminController(BaseEventAdminController):
             'total_player_count': total_player_count,
             'ordered_statuses': ordered_statuses,
             'message': message,
+            'message_type': message_type,
         }
         return cls._admin_base_event_render(template_context)
 
@@ -1533,6 +1540,10 @@ class PlayerAdminController(BaseEventAdminController):
     )
     async def htmx_check_in_tournaments_modal(self, request: HTMXRequest) -> Template:
         web_context = PlayerAdminWebContext(request)
+        event = web_context.get_admin_event()
+        plugin_manager.hook_for_event(
+            event, 'on_before_load_tournaments_check_in_modal'
+        )(event=event)
         return self.render_check_in_modal(web_context)
 
     @classmethod

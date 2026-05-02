@@ -9,3 +9,7 @@
 ## Players
 
 - Make check-in system permanent (4.1.0)
+
+## Sharly-Chess.com
+
+- Synchronized check-in (4.1.0)

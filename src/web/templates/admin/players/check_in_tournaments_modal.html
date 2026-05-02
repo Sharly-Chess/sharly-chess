@@ -10,7 +10,7 @@
         </div>
         <div class="modal-body">
             {% if message %}
-                {% with type='success' %}
+                {% with type=message_type or 'success' %}
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
@@ -29,6 +29,17 @@
                     >
                         {{ _('Screens') }}
                     </th>
+                    {% for column in plugin_columns %}
+                        <th
+                            class="text-nowrap {{ column.header_classes }}"
+                            {% set tooltip = column.header_tooltip %}
+                            {% if tooltip %}
+                                {{ macros.tooltip_attributes('', tooltip) }}
+                            {% endif %}
+                        >
+                            {{ column.header_content }}
+                        </th>
+                    {% endfor %}
                     <th class="text-nowrap text-center">
                         {{ _('Absent') }}
                     </th>
@@ -70,6 +81,11 @@
                                     />
                                 </div>
                             </td>
+                            {% for column in plugin_columns %}
+                                <td class="text-nowrap {{ column.get_cell_classes(tournament) }}">
+                                    {% include column.cell_template %}
+                                </td>
+                            {% endfor %}
                             {% for status in ordered_statuses %}
                                 {% with base_id='tournament-' ~ tournament.id, counter=tournament.check_in_status_grouped_counts %}
                                     {% include 'check_in_table_status_cell.html' %}

@@ -45,7 +45,12 @@ from web.controllers.admin.base_admin_controller import (
     BaseAdminController,
     AdminWebContext,
 )
+from web.controllers.admin.player_admin_controller import (
+    PlayerAdminController,
+    PlayerAdminWebContext,
+)
 from web.controllers.base_controller import WebContext
+from web.guards import ActionGuard, EventGuard, TournamentActionGuard
 from web.messages import Message
 from web.urls import build_internal_get_url, index_url, admin_event_url
 from web.utils import PKCEUtils
@@ -177,6 +182,10 @@ class SCEWebContext(AdminWebContext):
 
 class SCEAdminController(BaseAdminController):
     OAUTH_CODE_VERIFIER_BY_STATE: dict[str, tuple[str, datetime]] = {}
+    guards = [
+        EventGuard(),
+        TournamentActionGuard(AuthAction.PUBLISH_RESULTS),
+    ]
 
     @staticmethod
     def _clean_outdated_tournament_conflicts(web_context: SCEWebContext):
@@ -266,6 +275,7 @@ class SCEAdminController(BaseAdminController):
     @get(
         path='/sce/oauth/event-import',
         name='sce-oauth-event-import',
+        guard=[ActionGuard(AuthAction.MANAGE_EVENTS)],
     )
     async def htmx_sce_oauth_event_import(self, request: HTMXRequest) -> ClientRedirect:
         return self.trigger_oauth(request, redirect_action='import-event')
@@ -927,3 +937,30 @@ class SCEAdminController(BaseAdminController):
                 )
             message = message.format(player=sce_player.full_name)
         return self._render_player_duplicate_modal(web_context, message, message_type)
+
+    @post(
+        path='/sce/toggle-tournament-check-in-open/{event_uniq_id:str}/{tournament_id:int}',
+        name='sce-toggle-tournament-check-in-open',
+        guard=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_sce_toggle_tournament_check_in_open(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+    ) -> HTMXTemplate:
+        web_context = SCEWebContext(request, tournament_id=tournament_id)
+        event = web_context.get_admin_event()
+        tournament = web_context.get_tournament()
+        try:
+            SCESession(event).toggle_tournament_check_in(tournament)
+        except SharlyChessException as e:
+            logger.exception(e)
+            return PlayerAdminController.render_check_in_modal(
+                PlayerAdminWebContext(request),
+                message=_('An error occurred, consult the logs for more details.'),
+                message_type='error',
+            )
+        return HTMXTemplate(
+            template_name='/common/empty.html',
+            re_swap='none',
+        )
