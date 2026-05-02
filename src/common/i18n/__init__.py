@@ -1,4 +1,3 @@
-from traceback import extract_stack, StackSummary
 import gettext as gettext_lib
 import os
 import plistlib
@@ -164,14 +163,17 @@ _jinja_pattern: str = 'jinja2' + os.sep
 
 
 def get_i18n_domain() -> str:
-    global _domain_names
-    stack_summary: StackSummary = extract_stack()
-    for frame_summary in reversed(stack_summary):
-        if frame_summary.filename.rfind(_i18n_pattern) != -1:
-            continue
-        if frame_summary.filename.rfind(_jinja_pattern) != -1:
-            continue
-        return get_filename_plugin_name(frame_summary.filename)
+    """Walk the live Python frame chain to find the first non-i18n,
+    non-jinja2 caller and resolve its plugin domain."""
+    import sys
+    from types import FrameType
+
+    frame: FrameType | None = sys._getframe(1)  # skip get_i18n_domain itself
+    while frame is not None:
+        filename = frame.f_code.co_filename
+        if filename.rfind(_i18n_pattern) == -1 and filename.rfind(_jinja_pattern) == -1:
+            return get_filename_plugin_name(filename)
+        frame = frame.f_back
     return Domain.core_name
 
 
