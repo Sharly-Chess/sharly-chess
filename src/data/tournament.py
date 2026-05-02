@@ -1367,6 +1367,17 @@ class Tournament:
         # Remove the cached 'playing' value so that the pairing tab updates correctly
         self.__dict__.pop('playing', None)
 
+        # Incrementally refresh points for the two players whose pairing
+        # changed, so the response can render their cells without a full
+        # set_for_round() pass over every tournament_player.
+        before_round = self.current_round or 1
+        self.set_tournament_player_points(
+            board.white_tournament_player, before_round=before_round
+        )
+        self.set_tournament_player_points(
+            board.black_tournament_player, before_round=before_round
+        )
+
     def delete_result(self, board: Board):
         """Deletes the result for the given `board`."""
         assert board.black_tournament_player is not None
@@ -1384,6 +1395,16 @@ class Tournament:
 
         # Remove the cached 'playing' value so that the pairing tab updates correctly
         self.__dict__.pop('playing', None)
+
+        # Incrementally refresh points for the two players whose pairing
+        # changed (see add_result for rationale).
+        before_round = self.current_round or 1
+        self.set_tournament_player_points(
+            board.white_tournament_player, before_round=before_round
+        )
+        self.set_tournament_player_points(
+            board.black_tournament_player, before_round=before_round
+        )
 
     def check_in_player(self, player: Player, check_in: bool):
         """Stores the `check_in` status for the given `player`."""

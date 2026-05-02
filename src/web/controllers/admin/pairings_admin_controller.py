@@ -68,6 +68,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         player_id: int | None = None,
         action: PairingAction | None = None,
         reload_event: bool = False,
+        skip_set_for_round: bool = False,
     ):
         super().__init__(request, reload_event)
         self.admin_tournament: Tournament | None = None
@@ -124,7 +125,8 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
         self.admin_boards: list[Board] = []
         if self.admin_tournament is not None:
-            self.admin_tournament.set_for_round(self.admin_round)
+            if not skip_set_for_round:
+                self.admin_tournament.set_for_round(self.admin_round)
             self.admin_boards = self.admin_tournament.get_round_boards(self.admin_round)
 
         if self.admin_tournament and self.display_rankings:
@@ -430,6 +432,12 @@ class PairingsAdminController(BaseEventAdminController):
             round_=round_,
             board_id=board_id,
             action=None if validate_result else PairingAction.RESULT_UPDATE,
+            # The response only re-renders the affected pairing row + round
+            # controls, not anything that depends on every player's
+            # points/vpoints. add_result/delete_result update the two
+            # players' points incrementally, so we can skip the O(N)
+            # set_for_round() pass.
+            skip_set_for_round=True,
         )
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
