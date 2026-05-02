@@ -101,9 +101,10 @@ def schedule_sync(event: Event, force: bool = False):
     wait_time = 0.1
     sync_delay = SCE_SYNC_DELAY
     for tournament in event.tournaments:
-        plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
-        if plugin_data.id and plugin_data.check_in_open:
+        tpd = SCEUtils.get_tournament_plugin_data(tournament)
+        if tpd.id and tpd.check_in_open:
             sync_delay = SCE_CHECK_IN_OPEN_SYNC_DELAY
+            break
     if (
         not force
         and last_attempt_at
