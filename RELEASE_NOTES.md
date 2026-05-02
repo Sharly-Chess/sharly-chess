@@ -7,6 +7,7 @@
 - Use Flatpak for Linux build (4.0.0)
 - Rename _Upload_ menu to _Data Transfer_ (4.0.0)
 - Fixed scrolling the first error into view on long forms (4.0.3)
+- Fixed keyboard shortcuts (4.0.6)
 - Search for GitHub updates every hour only (4.0.6)
 
 ## Events
