@@ -15,6 +15,7 @@ from common import REQUEST_TIMEOUT
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.access_levels.actions import AuthAction
+from data.event_load_spec import needs_event
 from data.screen import Screen
 from data.screen_set import ScreenSet
 from utils import Utils
@@ -782,6 +783,13 @@ class ScreenAdminController(BaseEventAdminController):
     @get(
         path='/event/{event_uniq_id:str}/screens',
         name='admin-event-screens-tab',
+    )
+    @needs_event(
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_admin_event_screens_tab(
         self,

@@ -13,6 +13,7 @@ from litestar_htmx import HTMXTemplate
 
 from common.i18n import _
 from data.access_levels.actions import AuthAction
+from data.event_load_spec import needs_event
 from data.family import Family
 from data.rotator import Rotator
 from data.screen import Screen
@@ -88,6 +89,13 @@ class RotatorAdminController(BaseEventAdminController):
     @get(
         path='/event/{event_uniq_id:str}/rotators',
         name='admin-event-rotators-tab',
+    )
+    @needs_event(
+        load_screens=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_admin_event_rotators_tab(
         self,

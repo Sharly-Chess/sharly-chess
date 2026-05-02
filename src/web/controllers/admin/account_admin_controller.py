@@ -17,6 +17,7 @@ from data.access_levels.access_levels import AccessLevel, AccessLevelScope
 from data.access_levels.actions import AuthAction
 from data.access_levels.manager import AccessLevelManager
 from data.account import Account, Permission
+from data.event_load_spec import needs_event
 from data.input_output.managers import DataSourceManager
 from data.player import Player
 from database.sqlite.event.event_store import (
@@ -102,6 +103,16 @@ class AccountAdminController(BaseEventAdminController):
     @get(
         path='/event/{event_uniq_id:str}/accounts',
         name='admin-event-accounts-tab',
+    )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        tournament_load_boards=False,
+        tournament_load_tie_breaks=False,
+        tournament_load_prize_groups=False,
     )
     async def htmx_admin_event_accounts_tab(
         self,
