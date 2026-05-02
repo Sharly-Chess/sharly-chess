@@ -320,7 +320,7 @@ msgid "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applican
 msgstr "<b>1.4.4</b> Un maximum de 3/5 des adversaires peuvent provenir de la fédération du·de la candidat·e au titre."
 
 msgid "<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}"
-msgstr "<b>1.4.5</b> Pour cette norme, au moins {min} adversaires doivent détenir le ou les titre(s) suivant(s) : {titles}"
+msgstr "<b>1.4.5</b> Pour cette norme, au moins {min} adversaires doivent détenir le ou les titre(s) suivant(s) : {titles}"
 
 #, python-format
 msgid "<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM."
@@ -2011,10 +2011,10 @@ msgid "E.g.: 20 (players per screen)"
 msgstr "Ex. : 20 (joueur·euses par écran)"
 
 msgid "E.g.: 4 (split boards over 4 screens)"
-msgstr "Ex. : 4 (échiquiers sur 4 écrans)"
+msgstr "Ex. : 4 (échiquiers sur 4 écrans)"
 
 msgid "E.g.: 4 (split players over 4 screens)"
-msgstr "Ex. : 4 (ur·euse sur 4 écrans)"
+msgstr "Ex. : 4 (joueur·euses sur 4 écrans)"
 
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "Ex. : @boards, @family, un-autre-ecran"
@@ -2301,7 +2301,7 @@ msgid "Exclude the players matching the criterion instead of including them."
 msgstr "Exclure les joueur·euses correspondant au critère au lieu de les inclure."
 
 msgid "Exclude: {values}"
-msgstr "Exclure : {values}"
+msgstr "Exclure : {values}"
 
 msgid "Exempt *** MAN"
 msgstr "Exempt"
@@ -2393,10 +2393,10 @@ msgid "FORFEIT"
 msgstr "FORFAIT"
 
 msgid "Failed to process DMG file: [{ex}]."
-msgstr "Échec du traitement du fichier DMG : [{ex}]."
+msgstr "Échec du traitement du fichier DMG : [{ex}]."
 
 msgid "Failed to read [{download_url}]: [{ex}]."
-msgstr "Échec de la lecture de [{download_url}] : [{ex}]."
+msgstr "Échec de la lecture de [{download_url}] : [{ex}]."
 
 msgid "Families"
 msgstr "Familles"
@@ -4348,7 +4348,7 @@ msgid "Please select the account."
 msgstr "Veuillez sélectionner le compte."
 
 msgid "Please supply a valid URL (e.g. https://my.domain.com)."
-msgstr "Veuillez fournir une URL valide (par ex. : https://mon.domaine.fr)."
+msgstr "Veuillez fournir une URL valide (par ex. : https://mon.domaine.fr)."
 
 msgid "Please supply a valid email address."
 msgstr "Veuillez fournir une adresse email valide."
@@ -5761,7 +5761,7 @@ msgid "This rotator is public (visible by the spectators)."
 msgstr "Cet écran rotatif est public (visible des spectateur·ices)."
 
 msgid "This round hasn't started (current round: #{round})."
-msgstr "Cette ronde n’a pas encore commencé (ronde actuelle : #{round})."
+msgstr "Cette ronde n’a pas encore commencé (ronde actuelle : #{round})."
 
 msgid "This round is not finished (last finished: #{round})."
 msgstr "Cette ronde n'est pas terminée (dernière ronde terminée : n°{round})."
@@ -6087,7 +6087,7 @@ msgid "Undefined *** SINGULAR"
 msgstr "Non défini"
 
 msgid "Unexpected error during installation: [{ex}]."
-msgstr "Erreur inattendue pendant l’installation : [{ex}]."
+msgstr "Erreur inattendue pendant l’installation : [{ex}]."
 
 msgid "Unhandled file type [{suffix}] (expected: {expected})."
 msgstr "Type de fichier [{suffix}] non pris en charge (attendu : {expected})."
