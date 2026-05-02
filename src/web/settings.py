@@ -183,20 +183,36 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
 
 
 class TimedTemplate(Template):
-    """TEMP diagnostic: log per-render timing. Remove with the rest of the
-    perf instrumentation."""
+    """TEMP diagnostic: log per-render timing. When a render exceeds
+    `_PROFILE_THRESHOLD_MS`, also log the top frames from a cProfile pass.
+    Remove with the rest of the perf instrumentation."""
+
+    _PROFILE_THRESHOLD_MS = 50.0
+    _PROFILE_TOP_N = 20
 
     def render(self, *args, **kwargs):  # type: ignore[override]
+        import cProfile
+        import io
+        import pstats
         import time as _time
         from common.logger import get_logger as _get_logger
 
+        profiler = cProfile.Profile()
         start = _time.perf_counter()
+        profiler.enable()
         try:
             return super().render(*args, **kwargs)
         finally:
+            profiler.disable()
             elapsed_ms = (_time.perf_counter() - start) * 1000
             if elapsed_ms >= 1.0:
                 _get_logger().info('TPL %s took=%.1fms', self.name, elapsed_ms)
+            if elapsed_ms >= self._PROFILE_THRESHOLD_MS:
+                buf = io.StringIO()
+                pstats.Stats(profiler, stream=buf).sort_stats('cumulative').print_stats(
+                    self._PROFILE_TOP_N
+                )
+                _get_logger().info('TPL %s top frames:\n%s', self.name, buf.getvalue())
 
 
 class SharlyChessEnvironment(Environment):
