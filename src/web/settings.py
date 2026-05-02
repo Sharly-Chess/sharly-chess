@@ -8,7 +8,7 @@ from typing import Sequence
 
 import aiosqlite
 from aiosqlitepool import SQLiteConnectionPool
-from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+from jinja2 import Environment, FileSystemLoader, Template, TemplateNotFound
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
@@ -182,11 +182,30 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         return contents, os.path.normpath(filename), uptodate
 
 
+class TimedTemplate(Template):
+    """TEMP diagnostic: log per-render timing. Remove with the rest of the
+    perf instrumentation."""
+
+    def render(self, *args, **kwargs):  # type: ignore[override]
+        import time as _time
+        from common.logger import get_logger as _get_logger
+
+        start = _time.perf_counter()
+        try:
+            return super().render(*args, **kwargs)
+        finally:
+            elapsed_ms = (_time.perf_counter() - start) * 1000
+            if elapsed_ms >= 1.0:
+                _get_logger().info('TPL %s took=%.1fms', self.name, elapsed_ms)
+
+
 class SharlyChessEnvironment(Environment):
     """Override to:
     - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
     - use a loader that accepts relative path with ..
     - load the gettext methods"""
+
+    template_class = TimedTemplate
 
     def __init__(
         self,
@@ -292,13 +311,10 @@ class RequestTimingMiddleware(MiddlewareProtocol):
             return
         import time as _time
         from common.logger import get_logger as _get_logger
-        from database.sqlite.sqlite_database import (
-            request_db_open_count,
-            request_db_open_ms,
-        )
+        from database.sqlite import sqlite_database as _sqlitedb
 
-        request_db_open_count.set(0)
-        request_db_open_ms.set(0.0)
+        opens_at_start = _sqlitedb.db_total_opens
+        ms_at_start = _sqlitedb.db_total_ms
         start = _time.perf_counter()
         method = scope.get('method', '?')
         path = scope.get('raw_path', b'').decode(
@@ -308,8 +324,8 @@ class RequestTimingMiddleware(MiddlewareProtocol):
             await self.app(scope, receive, send)
         finally:
             elapsed_ms = (_time.perf_counter() - start) * 1000
-            db_count = request_db_open_count.get() or 0
-            db_ms = request_db_open_ms.get() or 0.0
+            db_count = _sqlitedb.db_total_opens - opens_at_start
+            db_ms = _sqlitedb.db_total_ms - ms_at_start
             _get_logger().info(
                 'REQUEST %s %s took=%.0fms db=%d/%.0fms',
                 method,

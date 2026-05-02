@@ -4,7 +4,6 @@ import time
 import traceback
 from collections import defaultdict
 from collections.abc import Iterable, Iterator
-from contextvars import ContextVar
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -21,14 +20,10 @@ logger = get_logger()
 # investigation is done.
 _db_open_counts: dict[str, int] = defaultdict(int)
 
-# Per-request accumulators (set by the timing middleware at request start,
-# read at request end). When unset, the values are None.
-request_db_open_count: ContextVar[int | None] = ContextVar(
-    'request_db_open_count', default=None
-)
-request_db_open_ms: ContextVar[float | None] = ContextVar(
-    'request_db_open_ms', default=None
-)
+# Process-wide totals (single-user diagnostic; not strictly thread-safe
+# under concurrent requests but accurate enough for a perf trace).
+db_total_opens: int = 0
+db_total_ms: float = 0.0
 
 
 def _db_open_caller() -> str:
@@ -103,10 +98,9 @@ class SQLiteDatabase:
             key = f'{self.file.name}:{"w" if self.write else "r"}'
             _db_open_counts[key] += 1
             elapsed_ms = (time.perf_counter() - start) * 1000
-            current_count = request_db_open_count.get()
-            if current_count is not None:
-                request_db_open_count.set(current_count + 1)
-                request_db_open_ms.set((request_db_open_ms.get() or 0.0) + elapsed_ms)
+            global db_total_opens, db_total_ms
+            db_total_opens += 1
+            db_total_ms += elapsed_ms
             logger.info(
                 'DB OPEN [%s] thread=%s n=%d elapsed=%.1fms caller=%s',
                 key,
