@@ -3874,6 +3874,9 @@ msgstr ""
 msgid "Open documentation"
 msgstr ""
 
+msgid "Open/close check-in"
+msgstr ""
+
 msgid "Opening the welcome page [{url}] in a browser…"
 msgstr ""
 
@@ -4513,12 +4516,6 @@ msgstr ""
 msgid "Public screen"
 msgstr ""
 
-msgid "Publish pairings"
-msgstr ""
-
-msgid "Publish rankings"
-msgstr ""
-
 msgid "Publish tournament results"
 msgstr ""
 
@@ -4590,9 +4587,6 @@ msgid "Ranking only"
 msgstr ""
 
 msgid "Ranking screens show the players by rank."
-msgstr ""
-
-msgid "Rankings"
 msgstr ""
 
 msgid "Rapid"
@@ -6435,12 +6429,6 @@ msgstr ""
 msgid "View Prizes tab"
 msgstr ""
 
-msgid "View draft pairings"
-msgstr ""
-
-msgid "View draft rankings"
-msgstr ""
-
 msgid "View event cards details"
 msgstr ""
 
@@ -6672,6 +6660,9 @@ msgid "You are not allowed to modify Full-Point Byes."
 msgstr ""
 
 msgid "You are not allowed to modify Half-Point Byes."
+msgstr ""
+
+msgid "You are not allowed to open or close this check-in."
 msgstr ""
 
 msgid "You are not allowed to pair players."

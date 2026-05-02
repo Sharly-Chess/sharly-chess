@@ -403,6 +403,9 @@ msgstr ""
 msgid "Year of birth"
 msgstr ""
 
+msgid "You are not allowed to open or close this check-in."
+msgstr ""
+
 msgid "consult the logs"
 msgstr ""
 

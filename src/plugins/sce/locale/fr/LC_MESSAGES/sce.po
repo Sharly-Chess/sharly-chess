@@ -403,6 +403,9 @@ msgstr "Mettre en ligne sur Sharly-Chess.com les tournois qui n'existent que loc
 msgid "Year of birth"
 msgstr "Année de naissance"
 
+msgid "You are not allowed to open or close this check-in."
+msgstr "Vous n'êtes pas autorisé·e à ouvrir ou fermer ce pointage."
+
 msgid "consult the logs"
 msgstr "consulter les logs"
 
