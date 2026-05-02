@@ -8,6 +8,7 @@ from collections import defaultdict
 from typing import Annotated, Any, Optional
 
 from data.access_levels.actions import AuthAction
+from data.event_load_spec import needs_event
 from data.input_output import DataSourceManager
 from data.pairings.engines import BbpPairings
 from data.pairings.bbp_history import TournamentHistoryPlayer
@@ -330,6 +331,14 @@ class PairingsAdminController(BaseEventAdminController):
         ],
         name='admin-event-pairings-tab',
     )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
+    )
     async def htmx_admin_pairings_tab(
         self,
         request: HTMXRequest,
@@ -509,6 +518,15 @@ class PairingsAdminController(BaseEventAdminController):
         name='admin-pairings-set-result',
         guards=[SetResultGuard()],
     )
+    @needs_event(
+        selected_tournament_param='tournament_id',
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
+    )
     async def htmx_admin_set_result(
         self,
         request: HTMXRequest,
@@ -532,6 +550,14 @@ class PairingsAdminController(BaseEventAdminController):
         name='admin-pairings-unpair-board',
         guards=[TournamentActionGuard(AuthAction.UNPAIR_BOARD)],
         status_code=HTTP_200_OK,
+    )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_admin_unpair(
         self,
@@ -566,6 +592,14 @@ class PairingsAdminController(BaseEventAdminController):
         name='admin-pairings-permute',
         guards=[TournamentActionGuard(AuthAction.PERMUTE_BOARD)],
     )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
+    )
     async def htmx_admin_permute(
         self,
         request: HTMXRequest,
@@ -589,6 +623,15 @@ class PairingsAdminController(BaseEventAdminController):
         name='admin-pairings-set-result-hotkey',
         guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
         data=Body(media_type=RequestEncodingType.URL_ENCODED),
+    )
+    @needs_event(
+        selected_tournament_param='tournament_id',
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_admin_set_result_hotkey(
         self,
@@ -635,6 +678,14 @@ class PairingsAdminController(BaseEventAdminController):
         name='pairings-player-check-in-out',
         guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
+    )
     async def htmx_pairings_player_check_in_out(
         self,
         request: HTMXRequest,
@@ -669,6 +720,14 @@ class PairingsAdminController(BaseEventAdminController):
         name='pairings-player-return-to-tournament',
         guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
     )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
+    )
     async def htmx_pairings_player_return_to_tournament(
         self,
         request: HTMXRequest,
@@ -699,6 +758,14 @@ class PairingsAdminController(BaseEventAdminController):
         ),
         name='pairings-set-player-zpb',
         guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
+    )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_set_player_zpb(
         self,
@@ -731,6 +798,14 @@ class PairingsAdminController(BaseEventAdminController):
         ),
         name='pairings-set-player-hpb',
         guards=[TournamentActionGuard(AuthAction.SET_HPB)],
+    )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_set_player_hpb(
         self,
@@ -778,6 +853,14 @@ class PairingsAdminController(BaseEventAdminController):
         ),
         name='pairings-cancel-player-bye',
         guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
+    )
+    @needs_event(
+        load_screens=False,
+        load_rotators=False,
+        load_families=False,
+        load_timers=False,
+        load_display_controllers=False,
+        load_accounts=False,
     )
     async def htmx_cancel_bye(
         self,
