@@ -146,11 +146,11 @@
                             type="button"
                             hx-indicator="#please-wait"
                         {% endif %}
-                        {% if sub_nav.shortcut %}
-                            hx-trigger="click, {{ sub_nav.shortcut }}"
-                        {% endif %}
+
                         {% if sub_nav.disabled %}
                             disabled
+                        {% elif sub_nav.shortcut %}
+                            hx-trigger="click, {{ sub_nav.shortcut }}"
                         {% endif %}
                     >
                         {% if nav_tab.icon_class %}
@@ -219,8 +219,7 @@
                     hx-indicator="#please-wait"
                     {% if nav_tab.disabled %}
                         disabled
-                    {% endif %}
-                    {% if nav_tab.shortcut %}
+                    {% elif nav_tab.shortcut %}
                             hx-trigger="click, {{ nav_tab.shortcut }}"
                     {% endif %}
                 >
