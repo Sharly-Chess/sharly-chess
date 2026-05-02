@@ -87,18 +87,31 @@
                             data=data, errors=errors
                         ) }}
                     </div>
+                    <div id="complementary-value-container" class="col-12">
+                        {{ admin_macros.number_input(
+                            name='complementary_value',
+                            label=_('%(string)s:', string=_('Complementary value')),
+                            step=0.01,
+                            tooltip_text=_('Optional monetary value of the complementary non-monetary prize (e.g. value of the trophy).'),
+                            data=data, errors=errors
+                        ) }}
+                    </div>
                     <script>
                         $('#type').change(function () {
                             const type = $(this).val();
                             var showDesc = true;
+                            var showCompValue = false;
                             {% for type in prize_types %}
                                 if (type === `{{ type.id }}`) {
                                     showDesc = {% if type.has_description %}true{% else %}false{% endif %};
+                                    showCompValue = {% if type.has_complementary_value %}true{% else %}false{% endif %};
                                     $('#description').prop('disabled', !showDesc);
                                     $('#description-container').css('display', showDesc ? '' : 'none');
                                     $('#description-label').html(
                                         `{{ _('%(string)s:', string=type.description_label) }}`
-                                    )
+                                    );
+                                    $('#complementary_value').prop('disabled', !showCompValue);
+                                    $('#complementary-value-container').css('display', showCompValue ? '' : 'none');
                                 }
                             {% endfor %}
                         });

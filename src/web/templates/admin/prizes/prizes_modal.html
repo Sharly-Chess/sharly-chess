@@ -17,10 +17,20 @@
                 {% if not admin_prize_category.prizes %}
                     <div class="text-danger">{{ _('No prizes.') }}</div>
                 {% else %}
-                    <b class="mb-1">
-                        {{ _('%(string)s:', string=_('Total prize value')) }}&nbsp;
-                        {{ admin_prize_category.format_total_prize_value(prize_currency) }}
-                    </b>
+                    <div class="d-flex gap-3 mb-1">
+                        {% if admin_prize_category.total_monetary_value %}
+                            <b>
+                                {{ _('Monetary:') }}&nbsp;
+                                {{ admin_prize_category.format_total_monetary_value(prize_currency) }}
+                            </b>
+                        {% endif %}
+                        {% if admin_prize_category.total_non_monetary_value %}
+                            <b>
+                                {{ _('Non-monetary:') }}&nbsp;
+                                {{ admin_prize_category.format_total_non_monetary_value(prize_currency) }}
+                            </b>
+                        {% endif %}
+                    </div>
                 {% endif %}
                 {% for prize in admin_prize_category.sorted_prizes %}
                     <div class="border border-secondary bg-body-tertiary">

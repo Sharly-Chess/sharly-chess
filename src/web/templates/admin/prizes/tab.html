@@ -302,6 +302,26 @@
                         {% include 'prize_category_card.html' %}
                     {% endwith %}
                 {% endfor %}
+                <div class="col-12">
+                    <div class="border-top pt-2 d-flex gap-4 justify-content-end text-secondary">
+                        <span class="fw-semibold">{{ _('Bracket total:') }}</span>
+                        {% if admin_prize_group.total_monetary_value %}
+                            <span>
+                                {{ _('Monetary:') }}
+                                {{ admin_prize_group.format_total_monetary_value(prize_currency) }}
+                            </span>
+                        {% endif %}
+                        {% if admin_prize_group.total_non_monetary_value %}
+                            <span>
+                                {{ _('Non-monetary:') }}
+                                {{ admin_prize_group.format_total_non_monetary_value(prize_currency) }}
+                            </span>
+                        {% endif %}
+                        {% if not admin_prize_group.total_monetary_value and not admin_prize_group.total_non_monetary_value %}
+                            <span>{{ _('No prizes defined') }}</span>
+                        {% endif %}
+                    </div>
+                </div>
             {% endif %}
         </div>
     </form>

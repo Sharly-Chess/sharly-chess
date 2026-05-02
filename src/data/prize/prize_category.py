@@ -154,14 +154,18 @@ class PrizeCategory:
         return any(not prize.is_monetary for prize in self.prizes)
 
     @property
-    def total_prize_value(self) -> float:
-        return sum(prize.value for prize in self.prizes)
+    def total_monetary_value(self) -> float:
+        return sum(prize.monetary_value for prize in self.prizes)
 
-    def format_total_prize_value(self, currency: str) -> str:
-        if self.has_non_monetary_prizes:
-            value = self.total_prize_value
-            return str(int(value)) if value.is_integer() else f'{value:.2f}'
-        return Utils.currency_value_str(self.total_prize_value, currency)
+    @property
+    def total_non_monetary_value(self) -> float:
+        return sum(prize.non_monetary_value for prize in self.prizes)
+
+    def format_total_monetary_value(self, currency: str) -> str:
+        return Utils.currency_value_str(self.total_monetary_value, currency)
+
+    def format_total_non_monetary_value(self, currency: str) -> str:
+        return Utils.currency_value_str(self.total_non_monetary_value, currency)
 
     def get_event_database(self) -> EventDatabase:
         return self.prize_group.get_event_database()

@@ -26,8 +26,16 @@
                             {% set prizes_assigned_to_players=prizes_assigned_to_players_by_category_id[prize_category_id] %}
                             <div class="section-title">
                                 {{ prize_category.name }}
-                                {% if prize_category.total_prize_value %}
-                                    ({{ _('total: %(total)s', total=prize_category.format_total_prize_value(prize_currency)) }})
+                                {% if prize_category.total_monetary_value or prize_category.total_non_monetary_value %}
+                                    (
+                                    {%- if prize_category.total_monetary_value -%}
+                                        {{ _('monetary: %(total)s', total=prize_category.format_total_monetary_value(prize_currency)) }}
+                                    {%- endif -%}
+                                    {%- if prize_category.total_monetary_value and prize_category.total_non_monetary_value %}, {% endif -%}
+                                    {%- if prize_category.total_non_monetary_value -%}
+                                        {{ _('non-monetary: %(total)s', total=prize_category.format_total_non_monetary_value(prize_currency)) }}
+                                    {%- endif -%}
+                                    )
                                 {% endif %}
                             </div>
                             <div class="subheading">

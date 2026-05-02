@@ -653,6 +653,20 @@ class Tournament:
             (group.name for group in self.prize_groups),
         )
 
+    @property
+    def total_monetary_prize_value(self) -> float:
+        return sum(group.total_monetary_value for group in self.prize_groups)
+
+    @property
+    def total_non_monetary_prize_value(self) -> float:
+        return sum(group.total_non_monetary_value for group in self.prize_groups)
+
+    def format_total_monetary_prize_value(self, currency: str) -> str:
+        return Utils.currency_value_str(self.total_monetary_prize_value, currency)
+
+    def format_total_non_monetary_prize_value(self, currency: str) -> str:
+        return Utils.currency_value_str(self.total_non_monetary_prize_value, currency)
+
     # -------------------------------------------------------------------------
     # Players
     # -------------------------------------------------------------------------

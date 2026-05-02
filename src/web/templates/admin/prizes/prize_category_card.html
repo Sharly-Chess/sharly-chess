@@ -100,10 +100,24 @@
                 </div>
             </div>
         {% endif %}
-        <div class="d-flex gap-2">
-            <div>{{ _('%(string)s:', string=_('Total prize value')) }}</div>
-            <div>{{ prize_category.format_total_prize_value(prize_currency) }}</div>
-        </div>
+        {% if prize_category.total_monetary_value %}
+            <div class="d-flex gap-2">
+                <div>{{ _('%(string)s:', string=_('Monetary')) }}</div>
+                <div>{{ prize_category.format_total_monetary_value(prize_currency) }}</div>
+            </div>
+        {% endif %}
+        {% if prize_category.total_non_monetary_value %}
+            <div class="d-flex gap-2">
+                <div>{{ _('%(string)s:', string=_('Non-monetary')) }}</div>
+                <div>{{ prize_category.format_total_non_monetary_value(prize_currency) }}</div>
+            </div>
+        {% endif %}
+        {% if not prize_category.total_monetary_value and not prize_category.total_non_monetary_value %}
+            <div class="d-flex gap-2">
+                <div>{{ _('%(string)s:', string=_('Total')) }}</div>
+                <div class="text-secondary">{{ _('No prizes defined') }}</div>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}
 

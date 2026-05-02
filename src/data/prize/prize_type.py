@@ -21,6 +21,11 @@ class PrizeType(IdentifiableEntity, ABC):
         """Defines if the prize has a description."""
 
     @property
+    @abstractmethod
+    def has_complementary_value(self) -> bool:
+        """Defines if the prize has an optional complementary monetary value."""
+
+    @property
     def description_label(self) -> str:
         return _('Description')
 
@@ -58,6 +63,10 @@ class MonetaryPrizeType(PrizeType):
         return False
 
     @property
+    def has_complementary_value(self) -> bool:
+        return False
+
+    @property
     def tooltip_message(self) -> str:
         return _('Prizes only defined as a monetary value.')
 
@@ -82,6 +91,10 @@ class NonMonetaryPrizeType(PrizeType):
     @property
     def has_description(self) -> bool:
         return True
+
+    @property
+    def has_complementary_value(self) -> bool:
+        return False
 
     @property
     def tooltip_message(self) -> str:
@@ -117,6 +130,10 @@ class HybridPrizeType(PrizeType):
 
     @property
     def has_description(self) -> bool:
+        return True
+
+    @property
+    def has_complementary_value(self) -> bool:
         return True
 
     @property

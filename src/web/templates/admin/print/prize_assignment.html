@@ -6,6 +6,8 @@
 
 
 {% block content %}
+    {% set multi_tournament = tournaments|length > 1 %}
+    {% set totals = namespace(monetary=0, non_monetary=0) %}
     {% for tournament in tournaments %}
         {% if not loop.first %}
             <div class="separator"></div>
@@ -25,8 +27,16 @@
                         {% for prize_category in prize_group.sorted_categories %}
                             <div class="section-title">
                                 {{ prize_category.name }}
-                                {% if prize_category.total_prize_value %}
-                                    ({{ _('total: %(total)s', total=prize_category.format_total_prize_value(prize_currency)) }})
+                                {% if prize_category.total_monetary_value or prize_category.total_non_monetary_value %}
+                                    (
+                                    {%- if prize_category.total_monetary_value -%}
+                                        {{ _('monetary: %(total)s', total=prize_category.format_total_monetary_value(prize_currency)) }}
+                                    {%- endif -%}
+                                    {%- if prize_category.total_monetary_value and prize_category.total_non_monetary_value %}, {% endif -%}
+                                    {%- if prize_category.total_non_monetary_value -%}
+                                        {{ _('non-monetary: %(total)s', total=prize_category.format_total_non_monetary_value(prize_currency)) }}
+                                    {%- endif -%}
+                                    )
                                 {% endif %}
                             </div>
                             <div class="subheading">
@@ -79,6 +89,25 @@
                     </div>
                 </div>
             {% endfor %}
+            {% if multi_tournament or tournament.sorted_prize_groups|length > 1 or (tournament.sorted_prize_groups|length == 1 and tournament.sorted_prize_groups[0].sorted_categories|length > 1) %}
+                <div class="section-sub-title" style="text-align: right;">
+                    <b>{{ _('Tournament total:') }}</b>
+                    {%- if tournament.total_monetary_prize_value %} {{ _('monetary: %(total)s', total=tournament.format_total_monetary_prize_value(prize_currency)) }}{% endif -%}
+                    {%- if tournament.total_monetary_prize_value and tournament.total_non_monetary_prize_value %} &nbsp;|&nbsp; {% endif -%}
+                    {%- if tournament.total_non_monetary_prize_value %}{{ _('non-monetary: %(total)s', total=tournament.format_total_non_monetary_prize_value(prize_currency)) }}{% endif %}
+                </div>
+            {% endif %}
+            {% set totals.monetary = totals.monetary + tournament.total_monetary_prize_value %}
+            {% set totals.non_monetary = totals.non_monetary + tournament.total_non_monetary_prize_value %}
         </div>
     {% endfor %}
+    {% if multi_tournament and (totals.monetary or totals.non_monetary) %}
+        <div class="separator"></div>
+        <div class="section-sub-title" style="text-align: right;">
+            <b>{{ _('Event total:') }}</b>
+            {%- if totals.monetary %} {{ _('monetary: %(total)s', total=format_prize_value(totals.monetary)) }}{% endif -%}
+            {%- if totals.monetary and totals.non_monetary %} &nbsp;|&nbsp; {% endif -%}
+            {%- if totals.non_monetary %}{{ _('non-monetary: %(total)s', total=format_prize_value(totals.non_monetary)) }}{% endif %}
+        </div>
+    {% endif %}
 {% endblock %}
