@@ -948,6 +948,9 @@ msgstr "Bosnie-Herzégovine"
 msgid "Botswana"
 msgstr "Botswana"
 
+msgid "Bracket total:"
+msgstr "Total du groupe :"
+
 msgid "Brazil"
 msgstr "Brésil"
 
@@ -1302,6 +1305,9 @@ msgstr "Appariements complémentaires générés avec succès !"
 
 msgid "Complementary prize"
 msgstr "Prix complémentaire"
+
+msgid "Complementary value"
+msgstr "Valeur complémentaire"
 
 msgid "Configuration *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>C</u>onfiguration"
@@ -2264,6 +2270,9 @@ msgstr "Export d'évènement"
 
 msgid "Event name"
 msgstr "Nom de l'évènement"
+
+msgid "Event total:"
+msgstr "Total de l'évènement :"
 
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
@@ -3355,6 +3364,13 @@ msgstr "Monaco"
 msgid "Monetary"
 msgstr "Monétaire"
 
+msgid "Monetary:"
+msgstr "Monétaire :"
+
+#, python-format
+msgid "monetary: %(total)s"
+msgstr "monétaire : %(total)s"
+
 msgid "Mongolia"
 msgstr "Mongolie"
 
@@ -3701,6 +3717,13 @@ msgstr "Dernières rondes sans bye :"
 msgid "Non-monetary"
 msgstr "Non-monétaire"
 
+msgid "Non-monetary:"
+msgstr "Non-monétaire :"
+
+#, python-format
+msgid "non-monetary: %(total)s"
+msgstr "non-monétaire : %(total)s"
+
 msgid "Non-monetary prizes are not compatible with categories in which the prizes are shared."
 msgstr "Les prix non-monétaires ne sont pas compatibles avec les catégories pour lesquelles les prix sont partagés."
 
@@ -3892,6 +3915,9 @@ msgstr "Adversaires"
 
 msgid "Opponents' records"
 msgstr "Historique des adversaires"
+
+msgid "Optional monetary value of the complementary non-monetary prize (e.g. value of the trophy)."
+msgstr "Valeur monétaire optionnelle du prix non-monétaire complémentaire (ex. : valeur du trophée)."
 
 msgid "Organiser"
 msgstr "Organisateur·ice"
@@ -6059,6 +6085,9 @@ msgstr "Nom du tournoi"
 
 msgid "Tournament not found or has no schedule."
 msgstr "Tournoi introuvable ou sans horaire."
+
+msgid "Tournament total:"
+msgstr "Total du tournoi :"
 
 msgid "Tournament pairing number"
 msgstr "Numéros d'appariement"
