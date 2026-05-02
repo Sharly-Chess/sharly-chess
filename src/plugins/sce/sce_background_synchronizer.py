@@ -8,7 +8,7 @@ from common.network import NetworkMonitor
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.loader import EventLoader
-from plugins.sce import SCE_SYNC_DELAY
+from plugins.sce import SCE_SYNC_DELAY, SCE_CHECK_IN_OPEN_SYNC_DELAY
 from plugins.sce.sce_session import SCESession
 from plugins.sce.sce_sync_status import (
     SCESyncStatus,
@@ -99,13 +99,18 @@ def schedule_sync(event: Event, force: bool = False):
     plugin_data = SCEUtils.get_event_plugin_data(event)
     last_attempt_at = plugin_data.last_sync_attempt_at
     wait_time = 0.1
+    sync_delay = SCE_SYNC_DELAY
+    for tournament in event.tournaments:
+        plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+        if plugin_data.id and plugin_data.check_in_open:
+            sync_delay = SCE_CHECK_IN_OPEN_SYNC_DELAY
     if (
         not force
         and last_attempt_at
-        and datetime.now() < last_attempt_at + timedelta(minutes=SCE_SYNC_DELAY)
+        and datetime.now() < last_attempt_at + timedelta(minutes=sync_delay)
     ):
         elapsed = (datetime.now() - last_attempt_at).total_seconds()
-        wait_time = max(SCE_SYNC_DELAY * 60 - elapsed, 0.1)
+        wait_time = max(sync_delay * 60 - elapsed, 0.1)
 
     remove_scheduled_sync(event.uniq_id)
     timer = Timer(
