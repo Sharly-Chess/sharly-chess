@@ -614,42 +614,59 @@ class SharlyChessServerToga(toga.App):
 
     # ------- Internals -------
     async def _process_message_queue(self):
-        """Background task to process pending messages from other threads."""
+        """Background task to process pending messages from other threads.
+        Drains all pending log messages in a single `evaluate_javascript`
+        call to avoid one WebView round-trip per message."""
         while True:
+            log_calls: list[tuple[str, str, str]] = []
             try:
                 while True:
                     msg_type, content, extra = self.message_queue.get_nowait()
                     if msg_type == 'log':
-                        self._append_log_message(content, extra)
+                        log_calls.append(self._build_log_call_args(content, extra))
             except queue.Empty:
                 pass
 
+            if log_calls:
+                self._append_log_messages(log_calls)
+
             await asyncio.sleep(0.1)
 
-    def _append_log_message(self, message: str, level: Optional[str]):
+    @staticmethod
+    def _build_log_call_args(
+        message: str, level: Optional[str]
+    ) -> tuple[str, str, str]:
         ts = datetime.now().strftime('%H:%M:%S')
-
         if '\x1b[' in message:
             html = ansi_to_html(message)
         else:
             html = (
                 message.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
             )
+        return (
+            json.dumps(ts),
+            json.dumps(html),
+            json.dumps(level or ''),
+        )
 
-        # Use json.dumps to make safe JS string literals
-        ts_js = json.dumps(ts)
-        html_js = json.dumps(html)
-        level_js = json.dumps((level or ''))
-
+    def _append_log_messages(self, calls: list[tuple[str, str, str]]):
+        """Issue a single JS payload that appends every queued log line.
+        Each tuple is `(ts_js, html_js, level_js)` already json-dumped."""
+        appends = '\n'.join(
+            f'appendLog({ts}, {html}, {level});' for ts, html, level in calls
+        )
         js = f"""
         (function() {{
             if (typeof appendLog !== 'function') {{
                 window.appendLog = {APPEND_LOG_JS}
             }}
-            appendLog({ts_js}, {html_js}, {level_js});
+            {appends}
         }})();"""
-
         self._eval_or_buffer_js(js)
+
+    def _append_log_message(self, message: str, level: Optional[str]):
+        # Kept for backwards compatibility; routes through the batched path.
+        self._append_log_messages([self._build_log_call_args(message, level)])
 
     def _on_start_server(self, widget: Any | None = None, **kwargs) -> None:
         """Start the server in a background thread."""
