@@ -25,8 +25,16 @@ from litestar.status_codes import (
 
 from litestar.stores.base import Store
 from litestar.template import TemplateConfig
-from litestar.types import ControllerRouterHandler, Middleware
+from litestar.types import (
+    ControllerRouterHandler,
+    Middleware,
+    ASGIApp,
+    Receive,
+    Scope,
+    Send,
+)
 from litestar.middleware.base import DefineMiddleware
+from litestar.middleware import MiddlewareProtocol
 
 from common import BASE_DIR, TMP_DIR
 from common.i18n import gettext, ngettext
@@ -191,6 +199,7 @@ class SharlyChessEnvironment(Environment):
             loader=template_loader,
             autoescape=True,
             trim_blocks=True,
+            auto_reload=False,
         )
         self.add_extension('jinja2.ext.i18n')
         self.install_gettext_callables(  # type: ignore
@@ -269,7 +278,50 @@ _session_config = ServerSideSessionConfig(
     ],
 )
 
+
+class RequestTimingMiddleware(MiddlewareProtocol):
+    """TEMP diagnostic: log total request time + DB open count/time per HTTP
+    request. Remove once perf investigation is done."""
+
+    def __init__(self, app: ASGIApp) -> None:
+        self.app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope['type'] != 'http':
+            await self.app(scope, receive, send)
+            return
+        import time as _time
+        from common.logger import get_logger as _get_logger
+        from database.sqlite.sqlite_database import (
+            request_db_open_count,
+            request_db_open_ms,
+        )
+
+        request_db_open_count.set(0)
+        request_db_open_ms.set(0.0)
+        start = _time.perf_counter()
+        method = scope.get('method', '?')
+        path = scope.get('raw_path', b'').decode(
+            'utf-8', errors='replace'
+        ) or scope.get('path', '?')
+        try:
+            await self.app(scope, receive, send)
+        finally:
+            elapsed_ms = (_time.perf_counter() - start) * 1000
+            db_count = request_db_open_count.get() or 0
+            db_ms = request_db_open_ms.get() or 0.0
+            _get_logger().info(
+                'REQUEST %s %s took=%.0fms db=%d/%.0fms',
+                method,
+                path,
+                elapsed_ms,
+                db_count,
+                db_ms,
+            )
+
+
 middlewares: Sequence[Middleware] = [
+    DefineMiddleware(RequestTimingMiddleware),
     DefineMiddleware(
         SessionMiddleware,
         backend=SkipUnchangedSessionBackend(config=_session_config),

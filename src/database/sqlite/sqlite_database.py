@@ -1,16 +1,44 @@
 import json
 import sqlite3
+import time
+import traceback
+from collections import defaultdict
 from collections.abc import Iterable, Iterator
+from contextvars import ContextVar
 from dataclasses import dataclass, field
 from datetime import date, datetime, timezone
 from pathlib import Path
 from sqlite3 import Connection, Cursor, connect, OperationalError
+from threading import get_ident
 from typing import Self, Any
 
 from common.logger import get_logger
 
 
 logger = get_logger()
+
+# TEMP diagnostics: count + log every SQLite open. Remove once perf
+# investigation is done.
+_db_open_counts: dict[str, int] = defaultdict(int)
+
+# Per-request accumulators (set by the timing middleware at request start,
+# read at request end). When unset, the values are None.
+request_db_open_count: ContextVar[int | None] = ContextVar(
+    'request_db_open_count', default=None
+)
+request_db_open_ms: ContextVar[float | None] = ContextVar(
+    'request_db_open_ms', default=None
+)
+
+
+def _db_open_caller() -> str:
+    """Return a short string identifying the caller outside this module."""
+    here = __file__
+    for frame in traceback.extract_stack()[-4::-1]:
+        if frame.filename == here:
+            continue
+        return f'{Path(frame.filename).name}:{frame.lineno} {frame.name}'
+    return '?'
 
 
 @dataclass
@@ -59,6 +87,7 @@ class SQLiteDatabase:
 
     def __enter__(self) -> Self:
         db_url: str = f'file:{self.file}?mode={"rw" if self.write else "ro"}'
+        start = time.perf_counter()
         try:
             self.database = connect(db_url, detect_types=1, uri=True)
             self.cursor = self.database.cursor()
@@ -70,6 +99,22 @@ class SQLiteDatabase:
                 self.cursor.execute(f'PRAGMA foreign_keys={fk_status}')
                 self.cursor.execute('PRAGMA journal_mode=DELETE')
                 self.cursor.execute('BEGIN IMMEDIATE')
+
+            key = f'{self.file.name}:{"w" if self.write else "r"}'
+            _db_open_counts[key] += 1
+            elapsed_ms = (time.perf_counter() - start) * 1000
+            current_count = request_db_open_count.get()
+            if current_count is not None:
+                request_db_open_count.set(current_count + 1)
+                request_db_open_ms.set((request_db_open_ms.get() or 0.0) + elapsed_ms)
+            logger.info(
+                'DB OPEN [%s] thread=%s n=%d elapsed=%.1fms caller=%s',
+                key,
+                get_ident(),
+                _db_open_counts[key],
+                elapsed_ms,
+                _db_open_caller(),
+            )
 
             return self
         except Exception as e:
