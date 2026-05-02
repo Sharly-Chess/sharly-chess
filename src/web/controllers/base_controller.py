@@ -333,9 +333,9 @@ class WebContext:
         if isinstance(value, float):
             return f'{value:.2f}'
         if isinstance(value, datetime):
-            return format_datetime(value)
+            return format_datetime(value, compact_no_year=False)
         if isinstance(value, date):
-            return format_date(value)
+            return format_date(value, compact_no_year=False)
         if isinstance(value, Path):
             return str(value)
         if isinstance(value, Federation):
@@ -374,7 +374,7 @@ class WebContext:
     ) -> str:
         if not start_date:
             return ''
-        return format_date_range(start_date, stop_date)
+        return format_date_range(start_date, stop_date, compact_no_year=False)
 
     @property
     def template_context(self) -> dict[str, Any]:

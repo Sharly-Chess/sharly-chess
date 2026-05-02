@@ -148,14 +148,6 @@ class Tournament:
     def date_range_str(self) -> str:
         return format_date_range(self.start_date, self.stop_date)
 
-    @property
-    def start_date_str(self) -> str:
-        return format_date(self.start_date)
-
-    @property
-    def stop_date_str(self) -> str:
-        return format_date(self.stop_date)
-
     # Round schedule
 
     @property

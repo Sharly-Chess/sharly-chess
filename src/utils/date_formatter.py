@@ -34,12 +34,21 @@ class DateFormatter(IdentifiableEntity, ABC):
         https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes"""
 
     @property
+    @abstractmethod
+    def python_format_no_year(self) -> str:
+        """Format used to parse a string in python with only month and day."""
+
+    @property
     def time_python_format(self) -> str:
         return '%H:%M'
 
     @property
     def datetime_python_format(self) -> str:
         return self.python_format + ' ' + self.time_python_format
+
+    @property
+    def datetime_python_format_no_year(self) -> str:
+        return self.python_format_no_year + ' ' + self.time_python_format
 
     @property
     @abstractmethod
@@ -84,6 +93,10 @@ class ISODateFormatter(DateFormatter):
         return '%Y-%m-%d'
 
     @property
+    def python_format_no_year(self) -> str:
+        return '%m-%d'
+
+    @property
     def air_date_picker_format(self) -> str:
         return 'yyyy-MM-dd'
 
@@ -115,6 +128,10 @@ class EUDateFormatter(DateFormatter):
     @property
     def python_format(self) -> str:
         return '%d/%m/%Y'
+
+    @property
+    def python_format_no_year(self) -> str:
+        return '%d/%m'
 
     @property
     def air_date_picker_format(self) -> str:
@@ -156,6 +173,10 @@ class USDateFormatter(DateFormatter):
     @property
     def python_format(self) -> str:
         return '%m/%d/%Y'
+
+    @property
+    def python_format_no_year(self) -> str:
+        return '%m/%d'
 
     @property
     def air_date_picker_format(self) -> str:

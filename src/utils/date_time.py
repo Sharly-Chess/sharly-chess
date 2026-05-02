@@ -24,23 +24,41 @@ def _date_formatter() -> DateFormatter:
     return SharlyChessConfig().date_formatter
 
 
-def format_date(date_: date | None = None) -> str:
-    return (date_ or date.today()).strftime(_date_formatter().python_format)
+def format_date(date_: date | None = None, compact_no_year: bool = True) -> str:
+    formatter = _date_formatter()
+    today = date.today()
+    if not date_:
+        date_ = today
+    return date_.strftime(
+        formatter.python_format_no_year
+        if compact_no_year and date_.year == today.year
+        else formatter.python_format
+    )
 
 
-def format_datetime(datetime_: datetime) -> str:
-    return datetime_.strftime(_date_formatter().datetime_python_format)
+def format_datetime(datetime_: datetime, compact_no_year: bool = True) -> str:
+    formatter = _date_formatter()
+    return datetime_.strftime(
+        formatter.datetime_python_format_no_year
+        if compact_no_year and datetime_.year == date.today().year
+        else formatter.datetime_python_format
+    )
 
 
 def format_time(datetime_: datetime) -> str:
     return datetime_.strftime(_date_formatter().time_python_format)
 
 
-def format_date_range(start_date: date, stop_date: date | None = None) -> str:
+def format_date_range(
+    start_date: date, stop_date: date | None = None, compact_no_year: bool = True
+) -> str:
     if not stop_date or start_date == stop_date:
-        return format_date(start_date)
+        return format_date(start_date, compact_no_year)
     return _date_formatter().range_separator.join(
-        [format_date(start_date), format_date(stop_date)]
+        [
+            format_date(start_date, compact_no_year),
+            format_date(stop_date, compact_no_year),
+        ]
     )
 
 

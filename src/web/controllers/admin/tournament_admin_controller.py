@@ -421,8 +421,8 @@ class TournamentAdminController(BaseEventAdminController):
             'force_schedule_open': any(
                 data.get(f'round_{n}_datetime') for n in range(1, rounds + 1)
             ),
-            'schedule_min_date': format_date(schedule_min_date),
-            'schedule_max_date': format_date(schedule_max_date),
+            'schedule_min_date': format_date(schedule_min_date, compact_no_year=False),
+            'schedule_max_date': format_date(schedule_max_date, compact_no_year=False),
         } | form_fields_templates_data
 
         return template_context
@@ -719,8 +719,8 @@ class TournamentAdminController(BaseEventAdminController):
             'data': schedule_form_data,
             'errors': {},
             'force_schedule_open': force_schedule_open,
-            'schedule_min_date': format_date(min_date),
-            'schedule_max_date': format_date(max_date),
+            'schedule_min_date': format_date(min_date, compact_no_year=False),
+            'schedule_max_date': format_date(max_date, compact_no_year=False),
         }
 
         return HTMXTemplate(

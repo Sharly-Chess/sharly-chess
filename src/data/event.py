@@ -86,11 +86,11 @@ class Event:
 
     @property
     def start_date_str(self) -> str:
-        return format_date(self.start_date)
+        return format_date(self.start_date, compact_no_year=False)
 
     @property
     def stop_date_str(self) -> str:
-        return format_date(self.stop_date)
+        return format_date(self.stop_date, compact_no_year=False)
 
     @property
     def date_range_str(self) -> str:
