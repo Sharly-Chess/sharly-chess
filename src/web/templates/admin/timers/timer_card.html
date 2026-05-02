@@ -19,14 +19,14 @@
                 {{ _('No hours.') }}
             </div>
         {% endif %}
-        {% for date_str, timer_hours in timer.timer_hours_by_date_str.items() %}
+        {% for iso_date, timer_hours in timer.timer_hours_by_iso_date.items() %}
             {% if timer_hours|length == 1 %}
                 <div>
                     <b>{{ timer_hours[0].triggered_at_str }} </b>
                     {{ timer_hours[0].name }}
                 </div>
             {% else %}
-                <b>{{ date_str }}</b>
+                <b>{{ format_iso_date(iso_date) }}</b>
                 {% for timer_hour in timer_hours %}
                     <div class="d-flex gap-3 ms-2">
                         <b class="text-end" style="min-width: 50px">

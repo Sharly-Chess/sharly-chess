@@ -12,7 +12,7 @@ from common.i18n import _
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTimerHour, StoredTimer
 from utils import Utils
-from utils.date_time import format_date, format_time, format_datetime
+from utils.date_time import format_time, format_datetime
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -64,8 +64,8 @@ class TimerHour:
         return int(self.triggered_at.timestamp())
 
     @property
-    def date_str(self) -> str:
-        return format_date(self.triggered_at.date())
+    def iso_date(self) -> str:
+        return self.triggered_at.date().isoformat()
 
     @property
     def time_str(self) -> str:
@@ -217,10 +217,10 @@ class Timer:
         return [timer_hour.uniq_id for timer_hour in self.timer_hours_by_id.values()]
 
     @property
-    def timer_hours_by_date_str(self) -> dict[str, list[TimerHour]]:
+    def timer_hours_by_iso_date(self) -> dict[str, list[TimerHour]]:
         timer_hours_by_date: dict[str, list[TimerHour]] = defaultdict(list)
         for timer_hour in self.sorted_timer_hours:
-            timer_hours_by_date[timer_hour.date_str].append(timer_hour)
+            timer_hours_by_date[timer_hour.iso_date].append(timer_hour)
         return timer_hours_by_date
 
     @property
@@ -264,13 +264,13 @@ class Timer:
         self.timer_hours_by_id.clear()
 
     def update_timer_hours_date(self, previous_date: date, new_date: date):
-        hours_by_date_str = self.timer_hours_by_date_str
+        hours_by_iso_date = self.timer_hours_by_iso_date
         new_date_hours_triggered_at = [
             hour.triggered_at
-            for hour in hours_by_date_str.get(format_date(new_date), [])
+            for hour in hours_by_iso_date.get(new_date.isoformat(), [])
         ]
         with EventDatabase(self.event.uniq_id, True) as database:
-            for timer_hour in hours_by_date_str.get(format_date(previous_date), []):
+            for timer_hour in hours_by_iso_date.get(previous_date.isoformat(), []):
                 stored_hour = timer_hour.stored_timer_hour
                 triggered_at = stored_hour.triggered_at.replace(
                     year=new_date.year, month=new_date.month, day=new_date.day

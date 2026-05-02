@@ -45,6 +45,10 @@ def format_datetime(datetime_: datetime, compact_no_year: bool = True) -> str:
     )
 
 
+def format_iso_date(iso_date: str, compact_no_year: bool = True) -> str:
+    return format_date(date.fromisoformat(iso_date), compact_no_year)
+
+
 def format_time(datetime_: datetime) -> str:
     return datetime_.strftime(_date_formatter().time_python_format)
 

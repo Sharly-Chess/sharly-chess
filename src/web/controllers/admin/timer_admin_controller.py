@@ -17,7 +17,7 @@ from data.access_levels.actions import AuthAction
 from data.timer import Timer, TimerHour
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTimer, StoredTimerHour
-from utils.date_time import format_date
+from utils.date_time import format_iso_date
 from utils.enum import FormAction
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
@@ -73,6 +73,7 @@ class TimerAdminWebContext(BaseEventAdminWebContext):
             'admin_timer': self.admin_timer,
             'admin_timer_hour': self.admin_timer_hour,
             'admin_event_tab': 'admin-event-timers-tab',
+            'format_iso_date': format_iso_date,
         }
 
 
@@ -811,8 +812,8 @@ class TimerAdminController(BaseEventAdminController):
 
         timer.update_timer_hours_date(previous_date, new_date)
         warning_message = ''
-        previous_date_hours = timer.timer_hours_by_date_str.get(
-            format_date(previous_date), []
+        previous_date_hours = timer.timer_hours_by_iso_date.get(
+            previous_date.isoformat(), []
         )
         if previous_date_hours:
             warning_message = ngettext(

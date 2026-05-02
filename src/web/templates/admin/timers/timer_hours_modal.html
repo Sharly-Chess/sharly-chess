@@ -65,11 +65,10 @@
                     {% endif %}
                 {% endif %}
                 {% set has_available_date = admin_timer.has_available_date %}
-                {% for date_str, timer_hours in admin_timer.timer_hours_by_date_str.items() %}
-                    {% set iso_date = sharly_chess_config.date_formatter.date_str_to_iso_format(date_str) %}
+                {% for iso_date, timer_hours in admin_timer.timer_hours_by_iso_date.items() %}
                     {% set id='date-' ~ iso_date %}
                     <h6 id="{{ id }}-field" class="date-field fw-bold mt-2">
-                        {{ date_str }}
+                        {{ format_iso_date(iso_date) }}
                         {% if has_available_date %}
                             <span>
                                 <button
@@ -92,7 +91,7 @@
                             {{ admin_macros.inline_date_form(
                                 id=id,
                                 name='date',
-                                placeholder=date_str,
+                                placeholder=format_iso_date(iso_date, compact_no_year=false),
                                 min_date=admin_event.start_date_str,
                                 max_date=admin_event.stop_date_str,
                                 patch_url=url_for(
