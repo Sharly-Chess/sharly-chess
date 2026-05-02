@@ -148,9 +148,6 @@ class Board:
         self.replace_player(white_player, 'black')
         with EventDatabase(self.tournament.event.uniq_id, True) as database:
             database.update_stored_board(self.stored_board)
-            if self.result != Result.NO_RESULT:
-                database.update_stored_pairing(self.white_pairing.stored_pairing)
-                database.update_stored_pairing(self.black_pairing.stored_pairing)
 
     def set_last_result_update(self, new_result: Result, database: EventDatabase):
         """Updates board timestamp. Clears board timestamp if result is NO_RESULT."""
