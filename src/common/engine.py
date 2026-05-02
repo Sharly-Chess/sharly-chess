@@ -10,6 +10,7 @@ import platform
 import subprocess
 from json import JSONDecodeError
 from pathlib import Path
+from time import time
 from typing import Any
 
 from packaging.version import Version
@@ -23,6 +24,7 @@ from common import (
     EVENTS_FOLDER,
     DEVEL_ENV,
     EVENTS_DIR,
+    TMP_DIR,
 )
 from common.i18n import _
 from common.installation_checker import InstallationChecker
@@ -395,6 +397,12 @@ class Engine:
         otherwise the most recent unstable release can be returned.
         If an error occurred or no release matches on the repository, returns None.
         Otherwise, the most recent version and its download URL are returned."""
+        marker: Path = TMP_DIR / '.github-updates-search'
+        if marker.exists() and time() - marker.lstat().st_mtime < 3600:
+            logger.debug(
+                'Already looked for a more recent version less than one hour ago, skipping.'
+            )
+            return None, None
         current_stable: bool = bool(
             re.match(r'^(\d+\.\d+\.\d+)$', str(SHARLY_CHESS_VERSION))
         )
@@ -418,6 +426,7 @@ class Engine:
             except JSONDecodeError as ex:
                 logger.warning('Invalid response from GitHub: [%s].', ex)
                 return None, None
+            marker.touch()
             version_download_urls: dict[Version, str] = {}
             for entry in entries:
                 tag_name: str = entry['tag_name']

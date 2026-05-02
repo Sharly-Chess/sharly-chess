@@ -79,7 +79,7 @@
                     </button>
                 </span>
                 <span
-                    {%if add_player_error_message %}
+                    {% if add_player_error_message %}
                         {{ macros.tooltip_attributes('warning', add_player_error_message, 'top') }}
                     {% else %}
                         {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
@@ -88,7 +88,6 @@
                     <button
                         data-testid="add-player-button"
                         class="btn btn-primary text-nowrap"
-                        hx-trigger="click, SC_Plus from:body"
                         hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
@@ -96,6 +95,8 @@
                         data-bs-target="#modal-wrapper"
                         {% if add_player_error_message %}
                             disabled
+                        {% else %}
+                            hx-trigger="click, SC_Plus from:body"
                         {% endif %}
                     >
                         <i class="bi-plus-square pe-1"></i>
