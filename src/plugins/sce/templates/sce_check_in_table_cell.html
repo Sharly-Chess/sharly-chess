@@ -3,7 +3,15 @@
     -
 {% else %}
     <span class="d-flex justify-content-center gap-1">
-        <div class="form-check form-switch d-inline-block">
+        {% set can_open_check_in = client.can_open_close_check_in(tournament.id) %}
+        <div
+            class="form-check form-switch d-inline-block"
+            {% if not can_open_check_in %}
+                {{ macros.tooltip_attributes('', _(
+                    'You are not allowed to open or close this check-in.'
+                )) }}
+            {% endif %}
+        >
             <input
                 name="tournament_{{ tournament.id }}_sce_check_in_open"
                 class="form-check-input mt-2"
@@ -15,6 +23,7 @@
                 ) }}"
                 hx-indicator="#please-wait"
                 {% if sce_data.check_in_open %}checked{% endif %}
+                {% if not can_open_check_in %}disabled{% endif %}
             />
         </div>
         {% set has_schedule = sce_data.check_in_opens_at or sce_data.check_in_closes_at %}

@@ -67,7 +67,15 @@
                                 {{ tournament.name }}
                             </td>
                             <td class="text-nowrap text-center">
-                                <div class="form-check form-switch d-inline-block">
+                                {% set can_open_check_in = client.can_open_close_check_in(tournament.id) %}
+                                <div
+                                    class="form-check form-switch d-inline-block"
+                                    {% if not can_open_check_in %}
+                                        {{ macros.tooltip_attributes('', _(
+                                            'You are not allowed to open or close this check-in.'
+                                        )) }}
+                                    {% endif %}
+                                >
                                     <input
                                         name="tournament_{{ tournament.id }}_check_in_open"
                                         class="form-check-input mt-2"
@@ -78,6 +86,7 @@
                                             tournament_id=tournament.id,
                                         ) }}"
                                         {% if tournament.check_in_open %}checked{% endif %}
+                                        {% if not can_open_check_in %}disabled{% endif %}
                                     />
                                 </div>
                             </td>

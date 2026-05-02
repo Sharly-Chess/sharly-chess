@@ -10,8 +10,8 @@ class AuthActionCategory(StrEnum):
     ACCESS = auto()
     TOURNAMENTS = auto()
     PLAYERS = auto()
+    CHECK_IN = auto()
     PAIRINGS = auto()
-    RANKINGS = auto()
     RESULTS = auto()
     SCREENS = auto()
     PRIZES = auto()
@@ -37,10 +37,10 @@ class AuthActionCategory(StrEnum):
                 return _('Tournaments', locale)
             case AuthActionCategory.PLAYERS:
                 return _('Players', locale)
+            case AuthActionCategory.CHECK_IN:
+                return _('Check-in', locale)
             case AuthActionCategory.PAIRINGS:
                 return _('Pairings', locale)
-            case AuthActionCategory.RANKINGS:
-                return _('Rankings', locale)
             case AuthActionCategory.RESULTS:
                 return _('Results', locale)
             case AuthActionCategory.SCREENS:
@@ -89,6 +89,9 @@ class AuthAction(StrEnum):
     UPDATE_PLAYERS_HISTORY = auto()
     DELETE_PLAYERS = auto()
     DISTRIBUTE_PLAYERS = auto()
+
+    # Check-in
+    OPEN_CLOSE_CHECK_IN = auto()
     CHECK_IN_PLAYERS = auto()
 
     # Pairings
@@ -102,12 +105,6 @@ class AuthAction(StrEnum):
     SET_ZPB = auto()
     SET_HPB = auto()
     SET_FPB = auto()
-    VIEW_DRAFT_PAIRINGS = auto()
-    PUBLISH_PAIRINGS = auto()
-
-    # Rankings
-    VIEW_DRAFT_RANKINGS = auto()
-    PUBLISH_RANKINGS = auto()
 
     # Results
     ENTER_RESULTS = auto()
@@ -169,9 +166,10 @@ class AuthAction(StrEnum):
                 | AuthAction.UPDATE_PLAYERS_HISTORY
                 | AuthAction.DELETE_PLAYERS
                 | AuthAction.DISTRIBUTE_PLAYERS
-                | AuthAction.CHECK_IN_PLAYERS
             ):
                 return AuthActionCategory.PLAYERS
+            case AuthAction.CHECK_IN_PLAYERS | AuthAction.OPEN_CLOSE_CHECK_IN:
+                return AuthActionCategory.CHECK_IN
             case (
                 AuthAction.VIEW_PAIRINGS_TAB
                 | AuthAction.USE_PAIRING_ENGINE
@@ -183,12 +181,8 @@ class AuthAction(StrEnum):
                 | AuthAction.SET_ZPB
                 | AuthAction.SET_HPB
                 | AuthAction.SET_FPB
-                | AuthAction.VIEW_DRAFT_PAIRINGS
-                | AuthAction.PUBLISH_PAIRINGS
             ):
                 return AuthActionCategory.PAIRINGS
-            case AuthAction.VIEW_DRAFT_RANKINGS | AuthAction.PUBLISH_RANKINGS:
-                return AuthActionCategory.RANKINGS
             case (
                 AuthAction.ENTER_RESULTS
                 | AuthAction.UPDATE_RESULTS
@@ -263,6 +257,8 @@ class AuthAction(StrEnum):
                 return _('Delete players', locale)
             case AuthAction.DISTRIBUTE_PLAYERS:
                 return _('Distribute the players among the tournaments', locale)
+            case AuthAction.OPEN_CLOSE_CHECK_IN:
+                return _('Open/close check-in', locale)
             case AuthAction.CHECK_IN_PLAYERS:
                 return _('Check-in players', locale)
             case AuthAction.VIEW_PAIRINGS_TAB:
@@ -285,14 +281,6 @@ class AuthAction(StrEnum):
                 return _('Set Half-Points Byes', locale)
             case AuthAction.SET_FPB:
                 return _('Set Full-Points Byes', locale)
-            case AuthAction.VIEW_DRAFT_PAIRINGS:
-                return _('View draft pairings', locale)
-            case AuthAction.PUBLISH_PAIRINGS:
-                return _('Publish pairings', locale)
-            case AuthAction.VIEW_DRAFT_RANKINGS:
-                return _('View draft rankings', locale)
-            case AuthAction.PUBLISH_RANKINGS:
-                return _('Publish rankings', locale)
             case AuthAction.ENTER_RESULTS:
                 return _('Enter results', locale)
             case AuthAction.UPDATE_RESULTS:
