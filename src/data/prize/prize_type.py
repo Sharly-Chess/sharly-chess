@@ -40,7 +40,13 @@ class PrizeType(IdentifiableEntity, ABC):
         """Build the name of the prize according to its type."""
 
     @classmethod
-    def get_prize_full_name(cls, value: float, description: str, currency: str) -> str:
+    def get_prize_full_name(
+        cls,
+        value: float,
+        description: str,
+        currency: str,
+        complementary_value: float | None = None,
+    ) -> str:
         """Full name of the prize, used on the prize list modal."""
         return cls.get_prize_name(value, description, currency)
 
@@ -108,11 +114,16 @@ class NonMonetaryPrizeType(PrizeType):
         return description
 
     @classmethod
-    def get_prize_full_name(cls, value: float, description: str, currency: str) -> str:
+    def get_prize_full_name(
+        cls,
+        value: float,
+        description: str,
+        currency: str,
+        complementary_value: float | None = None,
+    ) -> str:
         if not value:
             return description
-        value_str = _('value: {value}').format(value=Utils.localized_number(value))
-        return f'{description} ({value_str})'
+        return f'{description} ({Utils.currency_value_str(value, currency)})'
 
 
 class HybridPrizeType(PrizeType):
@@ -150,3 +161,16 @@ class HybridPrizeType(PrizeType):
     @classmethod
     def get_prize_name(cls, value: float, description: str, currency: str) -> str:
         return f'{Utils.currency_value_str(value, currency)} + {description}'
+
+    @classmethod
+    def get_prize_full_name(
+        cls,
+        value: float,
+        description: str,
+        currency: str,
+        complementary_value: float | None = None,
+    ) -> str:
+        base = cls.get_prize_name(value, description, currency)
+        if not complementary_value:
+            return base
+        return f'{base} ({Utils.currency_value_str(complementary_value, currency)})'

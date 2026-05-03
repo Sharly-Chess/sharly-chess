@@ -69,7 +69,7 @@ class Prize:
     @property
     def full_name(self) -> str:
         return self.type.get_prize_full_name(
-            self.value, self.description, self.currency
+            self.value, self.description, self.currency, self.complementary_value
         )
 
     @cached_property
