@@ -41,6 +41,7 @@
 - Clean display of pairing exceptions (4.0.2)
 - Fixed Koya tie-break calculation (4.0.3)
 - Fixed Round-Robin tournament round navigation (4.0.4)
+- Also revert the result when permuting the colors (4.0.6)
 
 ## Prizes
 
