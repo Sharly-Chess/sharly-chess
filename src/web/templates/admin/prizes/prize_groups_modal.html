@@ -16,10 +16,24 @@
             </h2>
         </div>
         <div class="modal-body">
-            <h4 class="mb-3">
+            <h4 class="mb-1">
                 {{ _('%(string)s:', string=_('Tournament')) }}
                 {{ admin_tournament.name }}
             </h4>
+            {% if admin_tournament.prize_groups %}
+                <div class="text-secondary mb-3">
+                    {{ macros.prize_totals_line(
+                        admin_tournament.format_total_monetary_prize_value(prize_currency)
+                            if admin_tournament.total_monetary_prize_value else None,
+                        admin_tournament.format_total_non_monetary_prize_value(prize_currency)
+                            if admin_tournament.total_non_monetary_prize_value else None,
+                    ) }}
+                    {% if not admin_tournament.total_monetary_prize_value
+                        and not admin_tournament.total_non_monetary_prize_value %}
+                        {{ _('No prizes defined') }}
+                    {% endif %}
+                </div>
+            {% endif %}
             <div class="d-flex flex-column gap-2">
                 {% if not admin_tournament.prize_groups %}
                     <div class="text-danger">{{ _('No prize brackets.') }}</div>
@@ -30,20 +44,17 @@
                         <div class="prize-group-row p-2 d-flex align-items-start gap-4">
                             <div class="flex-grow-1">
                                 <div>{{ prize_group.name }}</div>
-                                <div class="d-flex gap-3 mt-1" style="font-size: 0.85em;">
-                                    {% if prize_group.total_monetary_value %}
-                                        <span class="text-secondary">
-                                            {{ _('Monetary:') }}
-                                            {{ prize_group.format_total_monetary_value(prize_currency) }}
-                                        </span>
-                                    {% endif %}
-                                    {% if prize_group.total_non_monetary_value %}
-                                        <span class="text-secondary">
-                                            {{ _('Non-monetary:') }}
-                                            {{ prize_group.format_total_non_monetary_value(prize_currency) }}
-                                        </span>
-                                    {% endif %}
-                                </div>
+                                {% if prize_group.total_monetary_value
+                                    or prize_group.total_non_monetary_value %}
+                                    <div class="text-secondary mt-1" style="font-size: 0.85em;">
+                                        {{ macros.prize_totals_line(
+                                            prize_group.format_total_monetary_value(prize_currency)
+                                                if prize_group.total_monetary_value else None,
+                                            prize_group.format_total_non_monetary_value(prize_currency)
+                                                if prize_group.total_non_monetary_value else None,
+                                        ) }}
+                                    </div>
+                                {% endif %}
                             </div>
                             <div class="flex-shrink-0 d-flex gap-2 align-items-center">
                                 <button
@@ -118,26 +129,6 @@
                     </script>
                 {% endfor %}
             </div>
-            {% if admin_tournament.prize_groups %}
-                <div class="border-top mt-3 pt-2 d-flex gap-4 align-items-center">
-                    <span class="fw-semibold">{{ _('Tournament total:') }}</span>
-                    {% if admin_tournament.total_monetary_prize_value %}
-                        <span class="text-secondary">
-                            {{ _('Monetary:') }}
-                            {{ admin_tournament.format_total_monetary_prize_value(prize_currency) }}
-                        </span>
-                    {% endif %}
-                    {% if admin_tournament.total_non_monetary_prize_value %}
-                        <span class="text-secondary">
-                            {{ _('Non-monetary:') }}
-                            {{ admin_tournament.format_total_non_monetary_prize_value(prize_currency) }}
-                        </span>
-                    {% endif %}
-                    {% if not admin_tournament.total_monetary_prize_value and not admin_tournament.total_non_monetary_prize_value %}
-                        <span class="text-secondary">{{ _('No prizes defined') }}</span>
-                    {% endif %}
-                </div>
-            {% endif %}
         </div>
         <div class="modal-footer">
             <div class="flex-grow-1"></div>
