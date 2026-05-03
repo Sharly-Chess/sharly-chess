@@ -1140,6 +1140,10 @@ class TournamentPlayer(Player):
     def check_in_status(self) -> CheckInStatus:
         return self.check_in_status_for_round(self.tournament.current_round + 1)
 
+    @property
+    def check_in_status_no_bye(self) -> CheckInStatus:
+        return CheckInStatus.PRESENT if self.check_in else CheckInStatus.ABSENT
+
     def check_in_status_for_round(self, round_: int) -> CheckInStatus:
         if self.has_withdrawn:
             return CheckInStatus.WITHDRAWN

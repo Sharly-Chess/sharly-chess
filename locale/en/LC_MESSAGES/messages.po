@@ -664,10 +664,10 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
-msgid "Apply to all"
+msgid "Apply set"
 msgstr ""
 
-msgid "Apply set"
+msgid "Apply to all"
 msgstr ""
 
 msgid "Apr *** APRIL"
@@ -1060,10 +1060,6 @@ msgstr ""
 
 #, python-format
 msgid "Cancel \"%(bye)s\" at round #%(round)s for [%(player)s]?"
-msgstr ""
-
-#, python-format
-msgid "Cancel \"%(bye)s\"<br/>and mark as \"Present\" "
 msgstr ""
 
 msgid "Candidate Master"
@@ -4397,7 +4393,7 @@ msgstr ""
 msgid "Present"
 msgstr ""
 
-msgid "Present and unpaired"
+msgid "Present and to pair"
 msgstr ""
 
 msgid "Previous round"
@@ -4614,16 +4610,16 @@ msgstr ""
 msgid "Ratings update"
 msgstr ""
 
-msgid "Received a Full-Point Bye for the next round."
+msgid "Received a Full-Point Bye for the next round"
 msgstr ""
 
-msgid "Received a Half-Point Bye for the next round."
+msgid "Received a Half-Point Bye for the next round"
 msgstr ""
 
-msgid "Received a Zero-Point Bye for all the remaining rounds."
+msgid "Received a Zero-Point Bye for all the remaining rounds"
 msgstr ""
 
-msgid "Received a Zero-Point Bye for the next round."
+msgid "Received a Zero-Point Bye for the next round"
 msgstr ""
 
 msgid "Record"
@@ -6559,10 +6555,10 @@ msgstr ""
 msgid "White wins"
 msgstr ""
 
-msgid "Will not participate in upcoming rounds."
+msgid "Will not participate by default in upcoming rounds"
 msgstr ""
 
-msgid "Will participate in upcoming rounds."
+msgid "Will participate in upcoming rounds"
 msgstr ""
 
 msgid "Win"
