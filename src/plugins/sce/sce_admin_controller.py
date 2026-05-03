@@ -946,20 +946,31 @@ class SCEAdminController(BaseAdminController):
     async def htmx_sce_toggle_tournament_check_in_open(
         self,
         request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
         tournament_id: int,
     ) -> HTMXTemplate:
         web_context = SCEWebContext(request, tournament_id=tournament_id)
         event = web_context.get_admin_event()
         tournament = web_context.get_tournament()
-        try:
-            SCESession(event).toggle_tournament_check_in(tournament)
-        except SharlyChessException as e:
-            logger.exception(e)
-            return PlayerAdminController.render_check_in_modal(
-                PlayerAdminWebContext(request),
-                message=_('An error occurred, consult the logs for more details.'),
-                message_type='error',
-            )
+        check_in_open = web_context.form_data_to_bool(
+            data, f'tournament_{tournament.id}_sce_check_in_open'
+        )
+        if (
+            check_in_open
+            != SCEUtils.get_tournament_plugin_data(tournament).check_in_open
+        ):
+            try:
+                SCESession(event).toggle_tournament_check_in(tournament)
+            except SharlyChessException as e:
+                logger.exception(e)
+                return PlayerAdminController.render_check_in_modal(
+                    PlayerAdminWebContext(request),
+                    message=_('An error occurred, consult the logs for more details.'),
+                    message_type='error',
+                )
         return HTMXTemplate(
             template_name='/common/empty.html',
             re_swap='none',

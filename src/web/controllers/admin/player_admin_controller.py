@@ -1647,11 +1647,19 @@ class PlayerAdminController(BaseEventAdminController):
     async def htmx_check_in_tournament_toggle_open(
         self,
         request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
         tournament_id: int,
     ) -> Template:
         web_context = PlayerAdminWebContext(request, tournament_id=tournament_id)
         tournament = web_context.get_admin_tournament()
-        tournament.toggle_check_in_open()
+        check_in_open = web_context.form_data_to_bool(
+            data, f'tournament_{tournament.id}_check_in_open'
+        )
+        if check_in_open != tournament.check_in_open:
+            tournament.toggle_check_in_open()
         return HTMXTemplate(
             template_name='/common/empty.html',
             re_swap='none',

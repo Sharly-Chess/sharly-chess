@@ -1146,9 +1146,9 @@ class SCESession(Session):
             raise ValueError('Tournament not linked to Sharly-Chess.com')
         check_in_open = plugin_data.check_in_open
         request_function = (
-            self._open_tournament_check_in_request
+            self._close_tournament_check_in_request
             if check_in_open
-            else self._close_tournament_check_in_request
+            else self._open_tournament_check_in_request
         )
         self._run_with_token_validation(partial(request_function, tournament_id=sce_id))
         plugin_data.check_in_open = not check_in_open
