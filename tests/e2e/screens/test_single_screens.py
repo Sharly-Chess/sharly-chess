@@ -130,7 +130,9 @@ class TestSingleScreensFunctionality:
         expect(row.locator('i.bi-check-square-fill')).to_be_visible()
 
         # Test that the page is updated after a player is checked in on an admin screen
-        api_request_context.patch(f'/check-in/player-action/{EVENT_ID}/{marmite.id}')
+        api_request_context.patch(
+            f'/player-table/check-in-player/{EVENT_ID}/{marmite.id}'
+        )
 
         row = rows.filter(has_text='MARMITE')
         expect(row.locator('i.bi-check-square-fill')).to_be_visible()
