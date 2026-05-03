@@ -11,6 +11,8 @@ class Migration(BaseMigration):
             '   WHERE player.id = tp.player_id'
             ')'
         )
+        # Set all check-in open
+        self.database.execute('UPDATE tournament SET check_in_open = 1')
 
     def backward(self):
         pass
