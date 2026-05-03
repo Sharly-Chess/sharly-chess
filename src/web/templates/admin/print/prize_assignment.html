@@ -74,7 +74,7 @@
                                     {% endfor %}
                                 {% endif %}
                                 <div class="cell fw-bold">
-                                    {{ assigned_prize.name }}
+                                    {{ assigned_prize.full_name }}
                                 </div>
                                 {% if show_warnings and assigned_prize.warning %}
                                     <div class="warning">
@@ -87,13 +87,13 @@
                 </div>
             {% endfor %}
             {% if multi_tournament or tournament.sorted_prize_groups|length > 1 or (tournament.sorted_prize_groups|length == 1 and tournament.sorted_prize_groups[0].sorted_categories|length > 1) %}
-                <div class="section-sub-title" style="text-align: right;">
-                    <b>{{ macros.prize_totals_line(
+                <div class="section-sub-title fst-italic" style="text-align: right;">
+                    {{ macros.prize_totals_line(
                         tournament.format_total_monetary_prize_value(prize_currency)
                             if tournament.total_monetary_prize_value else None,
                         tournament.format_total_non_monetary_prize_value(prize_currency)
                             if tournament.total_non_monetary_prize_value else None,
-                    ) }}</b>
+                    ) }}
                 </div>
             {% endif %}
             {% set totals.monetary = totals.monetary + tournament.total_monetary_prize_value %}
@@ -102,11 +102,11 @@
     {% endfor %}
     {% if multi_tournament and (totals.monetary or totals.non_monetary) %}
         <div class="separator"></div>
-        <div class="section-sub-title" style="text-align: right;">
-            <b>{{ macros.prize_totals_line(
+        <div class="section-sub-title fst-italic" style="text-align: right;">
+            {{ macros.prize_totals_line(
                 format_prize_value(totals.monetary) if totals.monetary else None,
                 format_prize_value(totals.non_monetary) if totals.non_monetary else None,
-            ) }}</b>
+            ) }}
         </div>
     {% endif %}
 {% endblock %}

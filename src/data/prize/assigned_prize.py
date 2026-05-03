@@ -25,3 +25,13 @@ class AssignedPrize:
         return type_.get_prize_name(
             self.value, self.prize.description, self.prize.currency
         )
+
+    @property
+    def full_name(self) -> str:
+        type_ = self.prize.type if self.is_own else MonetaryPrizeType()
+        return type_.get_prize_full_name(
+            self.value,
+            self.prize.description,
+            self.prize.currency,
+            self.prize.complementary_value if self.is_own else None,
+        )
