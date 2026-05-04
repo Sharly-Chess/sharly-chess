@@ -664,9 +664,6 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Application"
 msgstr "Application"
 
-msgid "Apply to all"
-msgstr "Appliquer à tout·es"
-
 msgid "Apply set"
 msgstr "Appliquer le jeu"
 
@@ -1001,17 +998,10 @@ msgstr "La limite de byes (%(limit)d) est déjà atteinte pour ce tournoi."
 msgid "Byes *** ZPB, HPB or FPB"
 msgstr "Forfaits ou byes"
 
-#, python-format
-msgid "Byes (%(byes)d) *** PLAYERS WITH BYES"
-msgstr "Forfaits et absences (%(byes)d)"
-
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
 msgstr[0] "Les byes ne peuvent être attribués lors de la dernière ronde du tournoi."
 msgstr[1] "Les byes ne peuvent être attribués lors des {rounds} dernières rondes du tournoi."
-
-msgid "Byes will not be impacted."
-msgstr "Les forfaits et les byes ne seront pas impactés."
 
 msgid "Byes will not be impacted."
 msgstr "Les forfaits et les byes ne seront pas impactés."
@@ -1884,6 +1874,10 @@ msgstr "Djibouti"
 
 msgid "Do not edit this table manually, use script {script_name} instead."
 msgstr "Ne pas éditer ce tableau manuellement, utiliser plutôt le script {script_name}."
+
+#, python-format
+msgid "Do not pair at round %(pairing_round)d"
+msgstr "Ne pas apparier à la ronde %(pairing_round)d"
 
 #, python-format
 msgid "Do not pair at round %(pairing_round)d (Zero-Point Bye)"
@@ -4295,6 +4289,18 @@ msgstr "Les joueur·euses correspondant aux critères de leur tournoi."
 msgid "Players who have received a bye for the incoming round and will therefore not be paired."
 msgstr "Les joueur·euses ayant reçu un forfait ou un bye pour la rounde à venir et qui ne seront pas apparié·es."
 
+#, python-format
+msgid "Players will be paired at round %(pairing_round)d and marked as present for the following rounds."
+msgstr "Les joueur·euses seront apparié·es à la ronde %(pairing_round)d et marqué·es présent·es pour les rondes suivantes."
+
+#, python-format
+msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and all subsequent rounds, all Half or Full-Point Byes will be removed."
+msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et toutes les suivantes, les byes attribués seront supprimés."
+
+#, python-format
+msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and remain absent for the following rounds."
+msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et resteront absent·es pour les rondes suivantes."
+
 msgid "Players without phone or email won't be included."
 msgstr "Les joueur·euses sans numéro de téléphone ni adresse email ne seront pas inclus·es."
 
@@ -5065,9 +5071,6 @@ msgstr "Sélectionner un·e joueur·euse"
 
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
-
-msgid "Select the status of the following players:"
-msgstr "Sélectionner le statut des joueur·euses suivant·es :"
 
 msgid "Select the tournaments to add players to."
 msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
@@ -6774,10 +6777,6 @@ msgstr "Forfait"
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr "Le·la joueur·euse [{player}] a été marqué·e forfait."
 
-#, python-format
-msgid "Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half or Full-Point Byes."
-msgstr "forfait pour la ronde %(pairing_round)d et toutes les rondes suivantes, suppression de tous les byes."
-
 msgid "Zimbabwe"
 msgstr "Zimbabwe"
 
@@ -6795,10 +6794,6 @@ msgstr "tou·tes les joueur·euses"
 
 msgid "all the tournaments"
 msgstr "tous les tournois"
-
-#, python-format
-msgid "and leave absent for the following rounds (this question will be asked again at round %(next_pairing_round)d)."
-msgstr "et laisser absent·e pour les rondes suivantes (cette question sera posée à nouveau à la ronde %(next_pairing_round)d)."
 
 msgid "boards from #{first} to #{last}"
 msgstr "échiquiers du n°{first} au n°{last}"
@@ -7080,3 +7075,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+

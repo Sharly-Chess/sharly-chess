@@ -30,103 +30,78 @@
                     <h5>
                         <i class="bi-0-circle-fill"></i>
                     </h5>
-                    <span>
-                        <span
-                            class="text-nowrap"
-                            {% if admin_round < admin_tournament.rounds %}
+                    <span class="text-nowrap">
+                        {{
+                            _(
+                                'Do not pair at round %(pairing_round)d (Zero-Point Bye)',
+                                pairing_round=admin_round
+                            )
+                        }}
+                        {% if admin_round < admin_tournament.rounds %}
+                            <i
+                                class="bi-info-circle-fill ps-1"
                                 {{
                                     macros.tooltip_attributes(
                                         'right',
-                                        '<b>'
-                                        ~ _(
-                                            'Do not pair at round %(pairing_round)d (Zero-Point Bye)',
+                                        _(
+                                            'Players will receive a Zero-Point Bye at round %(pairing_round)d and remain absent for the following rounds.',
                                             pairing_round=admin_round
-                                        )
-                                        ~ '</b> '
-                                        ~ _(
-                                            'and leave absent for the following rounds (this question will be asked again at round %(next_pairing_round)d).',
-                                            next_pairing_round=admin_round + 1
                                         )
                                     )
                                 }}
-                            {% endif %}
-                        >
-                            {{
-                                _(
-                                    'Do not pair at round %(pairing_round)d (Zero-Point Bye)',
-                                    pairing_round=admin_round
-                                )
-                            }}
-                            {% if admin_round < admin_tournament.rounds %}
-                                <i class="bi-info-circle-fill ps-1"></i>
-                            {% endif %}
-                        </span>
+                            ></i>
+                        {% endif %}
                     </span>
                     {% if admin_round < admin_tournament.rounds %}
                         <h5>
                             <i class="bi-sign-stop"></i>
                         </h5>
-                        <span>
-                            <span
-                                class="text-nowrap"
+                        <span class="text-nowrap">
+                            {{
+                                _(
+                                    'Definitive withdrawal'
+                                )
+                            }}
+                            <i
+                                class="bi-info-circle-fill ps-1"
                                 {{
                                     macros.tooltip_attributes(
                                         'right',
-                                        '<b>'
-                                        ~ _(
-                                            'Definitive withdrawal'
-                                        )
-                                        ~ '</b> '
-                                        ~ _(
-                                            'Zero-Point Bye for round %(pairing_round)d and all subsequent rounds, removal of all Half or Full-Point Byes.',
+                                        _(
+                                            'Players will receive a Zero-Point Bye at round %(pairing_round)d and all subsequent rounds, all Half or Full-Point Byes will be removed.',
                                             pairing_round=admin_round
                                         )
                                     )
                                 }}
-                            >
-                                {{
-                                    _(
-                                        'Definitive withdrawal'
-                                    )
-                                }}
-                                <i class="bi-info-circle-fill ps-1"></i>
-                            </span>
+                            ></i>
                         </span>
                     {% endif %}
                     <h5>
                         <i class="bi-check-circle-fill"></i>
                     </h5>
-                    <span>
-                        <span
-                            class="text-nowrap"
-                            {% if admin_round < admin_tournament.rounds %}
-                                {{
-                                    macros.tooltip_attributes(
-                                        'right',
-                                        '<b>'
-                                        ~ _(
-                                            'Pair at round %(pairing_round)d',
-                                            pairing_round=admin_round
+                    <span class="text-nowrap">
+                        {{
+                            _(
+                                'Pair at round %(pairing_round)d',
+                                pairing_round=admin_round
+                            )
+                        }}
+                        {% if admin_round < admin_tournament.rounds %}
+                            <i
+                                class="bi-info-circle-fill ps-1"
+                                {% if admin_round < admin_tournament.rounds %}
+                                    {{
+                                        macros.tooltip_attributes(
+                                            'right',
+                                            _(
+                                                'Players will be paired at round %(pairing_round)d and marked as present for the following rounds.',
+                                                pairing_round=admin_round
+                                            )
                                         )
-                                        ~ '</b> '
-                                        ~ _(
-                                            'and leave absent for the following rounds (this question will be asked again at round %(next_pairing_round)d).',
-                                            next_pairing_round=admin_round + 1
-                                        )
-                                    )
-                                }}
-                            {% endif %}
-                        >
-                            {{
-                                _(
-                                    'Pair at round %(pairing_round)d',
-                                    pairing_round=admin_round
-                                )
-                            }}
-                            {% if admin_round < admin_tournament.rounds %}
-                                <i class="bi-info-circle-fill ps-1"></i>
-                            {% endif %}
-                        </span>
+                                    }}
+                                {% endif %}
+                            ></i>
+                        {% endif %}
                     </span>
                 </div>
                 <div class="d-flex align-items-center justify-content-end pe-2 pb-2 mt-3">
@@ -146,7 +121,7 @@
                         <label
                             class="btn btn-outline-primary lh-1"
                             for="zpb-all"
-                            {{ macros.tooltip_attributes('', _('Do not pair at round %(pairing_round)d (Zero-Point Bye)', pairing_round=admin_round)) }}
+                            {{ macros.tooltip_attributes('', _('Do not pair at round %(pairing_round)d', pairing_round=admin_round)) }}
                         >
                             <i class="bi-0-circle-fill"></i>
                         </label>
