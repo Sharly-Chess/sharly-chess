@@ -182,7 +182,7 @@ class SCEWebContext(AdminWebContext):
 
 class SCEAdminController(BaseAdminController):
     OAUTH_CODE_VERIFIER_BY_STATE: dict[str, tuple[str, datetime]] = {}
-    guards = [
+    publish_guards = [
         EventGuard(),
         TournamentActionGuard(AuthAction.PUBLISH_RESULTS),
     ]
@@ -283,6 +283,7 @@ class SCEAdminController(BaseAdminController):
     @get(
         path='/sce/oauth/event-connect/{event_uniq_id:str}',
         name='sce-oauth-event-connect',
+        guard=publish_guards,
     )
     async def htmx_sce_oauth_event_connect(
         self, request: HTMXRequest
@@ -426,6 +427,7 @@ class SCEAdminController(BaseAdminController):
     @get(
         path='/sce/sync-modal/{event_uniq_id:str}',
         name='sce-sync-modal',
+        guards=publish_guards,
     )
     async def htmx_sce_sync_modal(
         self,
@@ -468,6 +470,7 @@ class SCEAdminController(BaseAdminController):
     @patch(
         path='/sce/update-event-auto-player-sync/{event_uniq_id:str}',
         name='sce-update-event-auto-player-sync',
+        guards=publish_guards,
     )
     async def htmx_sce_update_event_auto_player_sync(
         self,
@@ -493,6 +496,7 @@ class SCEAdminController(BaseAdminController):
     @patch(
         path='/sce/update-event-auto-upload/{event_uniq_id:str}',
         name='sce-update-event-auto-upload',
+        guards=publish_guards,
     )
     async def htmx_sce_update_event_auto_upload(
         self,
@@ -520,6 +524,7 @@ class SCEAdminController(BaseAdminController):
     @patch(
         path='/sce/update-tournament-auto-upload/{event_uniq_id:str}/{tournament_id:int}',
         name='sce-update-tournament-auto-upload',
+        guards=publish_guards,
     )
     async def htmx_sce_update_tournament_auto_upload(
         self,
@@ -553,6 +558,7 @@ class SCEAdminController(BaseAdminController):
     @post(
         path='/sce/upload-tournament-results/{event_uniq_id:str}/{tournament_id:int}',
         name='sce-upload-tournament-results',
+        guards=publish_guards,
     )
     async def htmx_sce_upload_tournament_results(
         self,
@@ -567,6 +573,7 @@ class SCEAdminController(BaseAdminController):
     @post(
         path='/sce/upload-all-tournament-results/{event_uniq_id:str}',
         name='sce-upload-all-tournament-results',
+        guards=publish_guards,
     )
     async def htmx_sce_upload_all_tournament_results(
         self, request: HTMXRequest
@@ -578,6 +585,7 @@ class SCEAdminController(BaseAdminController):
     @post(
         path='/sce/sync-players/{event_uniq_id:str}',
         name='sce-sync-players',
+        guards=publish_guards,
     )
     async def htmx_sce_sync_players(self, request: HTMXRequest) -> HTMXTemplate:
         web_context = SCEWebContext(request)
@@ -621,6 +629,7 @@ class SCEAdminController(BaseAdminController):
     @get(
         path='/sce/tournament-conflict-modal/{event_uniq_id:str}',
         name='sce-tournament-conflict-modal',
+        guards=publish_guards,
     )
     async def htmx_sce_tournament_conflict_modal(
         self, request: HTMXRequest
@@ -631,6 +640,7 @@ class SCEAdminController(BaseAdminController):
     @post(
         path='/sce/resolve-tournament-conflict/{event_uniq_id:str}/{tournament_id:int}/{choice:str}',
         name='sce-resolve-tournament-conflict',
+        guards=publish_guards,
     )
     async def htmx_sce_resolve_tournament_conflict(
         self,
@@ -712,6 +722,7 @@ class SCEAdminController(BaseAdminController):
     @get(
         path='/sce/player-conflict-modal/{event_uniq_id:str}',
         name='sce-player-conflict-modal',
+        guards=publish_guards,
     )
     async def htmx_sce_player_conflict_modal(
         self, request: HTMXRequest
@@ -722,6 +733,7 @@ class SCEAdminController(BaseAdminController):
     @post(
         path='/sce/resolve-player-conflict/{event_uniq_id:str}/{player_id:int}/{choice:str}',
         name='sce-resolve-player-conflict',
+        guards=publish_guards,
     )
     async def htmx_sce_resolve_player_conflict(
         self,
@@ -772,6 +784,7 @@ class SCEAdminController(BaseAdminController):
     @post(
         path='/sce/import-tournament/{event_uniq_id:str}/{sce_tournament_id:str}',
         name='sce-import-tournament',
+        guards=publish_guards,
     )
     async def htmx_sce_import_tournament(
         self,
@@ -798,6 +811,7 @@ class SCEAdminController(BaseAdminController):
     @post(
         path='/sce/upload-local-tournament/{event_uniq_id:str}/{tournament_id:int}',
         name='sce-upload-local-tournament',
+        guards=publish_guards,
     )
     async def htmx_sce_upload_local_tournament(
         self,
@@ -877,6 +891,7 @@ class SCEAdminController(BaseAdminController):
     @get(
         path='/sce/player-duplicate-modal/{event_uniq_id:str}',
         name='sce-player-duplicate-modal',
+        guards=publish_guards,
     )
     async def htmx_sce_player_duplicate_modal(
         self, request: HTMXRequest
@@ -887,6 +902,7 @@ class SCEAdminController(BaseAdminController):
         path='/sce/delete-local-player/{event_uniq_id:str}/{player_id:int}',
         name='sce-delete-local-player',
         status_code=HTTP_200_OK,
+        guards=publish_guards,
     )
     async def htmx_sce_delete_local_player(
         self,
@@ -908,6 +924,7 @@ class SCEAdminController(BaseAdminController):
         path='/sce/delete-sce-player/{event_uniq_id:str}/{tournament_id:int}/{sce_player_id:str}',
         name='sce-delete-sce-player',
         status_code=HTTP_200_OK,
+        guards=publish_guards,
     )
     async def htmx_sce_delete_sce_player(
         self,
@@ -941,7 +958,7 @@ class SCEAdminController(BaseAdminController):
     @post(
         path='/sce/toggle-tournament-check-in-open/{event_uniq_id:str}/{tournament_id:int}',
         name='sce-toggle-tournament-check-in-open',
-        guard=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+        guards=publish_guards + [TournamentActionGuard(AuthAction.OPEN_CLOSE_CHECK_IN)],
     )
     async def htmx_sce_toggle_tournament_check_in_open(
         self,
