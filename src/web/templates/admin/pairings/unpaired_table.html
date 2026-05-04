@@ -28,30 +28,37 @@
 
                     <td class="text-end{% if status == 0 %} text-secondary{% endif %}">{{ tournament_player.rating_str }}</td>
                     {% if admin_tournament.pairing_system.show_unpaired_player_modal %}
-                        <td class="text-end">
-                            <span
-                                {{ macros.tooltip_attributes(
-                                    '',
-                                    '<div class="fw-bold">' ~ (status.name if status != 5 else _('Present and unpaired')) ~ '</div>'
-                                    '<div class="fst-italic" style="font-size:80%">' ~ _('Click to edit') ~ '</div>',
-                                    'right'
-                                ) }}
-                            >
+                        <td
+                            class="text-end text-nowrap cursor-pointer"
+                            hx-get="{{ url_for(
+                                'pairings-unpaired-player-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                tournament_id=admin_tournament.id,
+                                round=admin_round,
+                                player_id=tournament_player.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                        >
+                            {% if status not in (0, 4, 5) %}
+                                {% set status_no_bye = tournament_player.check_in_status_no_bye %}
                                 <i
-                                    class="{{ status.icon_classes }} cursor-pointer"
-                                    hx-get="{{ url_for(
-                                        'pairings-unpaired-player-modal',
-                                        event_uniq_id=admin_event.uniq_id,
-                                        tournament_id=admin_tournament.id,
-                                        round=admin_round,
-                                        player_id=tournament_player.id,
-                                    ) }}"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-wrapper"
+                                    class="{{ status_no_bye.icon_classes }}"
+                                    {{ macros.tooltip_attributes('', (
+                                        '<div class="fw-bold">' ~ status_no_bye.name ~ '</div>'
+                                        '<div class="fst-italic" style="font-size:90%">' ~ status_no_bye.description ~ '</div>'
+                                    )) }}
                                 ></i>
-                            </span>
+                            {% endif %}
+                            <i
+                                class="{{ status.icon_classes }}"
+                                {{ macros.tooltip_attributes('', (
+                                    '<div class="fw-bold">' ~ (status.name if status != 5 else _('Present and to pair')) ~ '</div>'
+                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                ), 'right') }}
+                            ></i>
                         </td>
                     {% endif %}
                 </tr>

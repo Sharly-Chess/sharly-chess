@@ -483,7 +483,7 @@ class BaseAccessLevelTest:
             )
 
             expect(check_in_button).to_have_attribute(
-                'hx-patch', re.compile(r'.*check-in/player-action.*')
+                'hx-patch', re.compile(r'.*player-table/check-in-player.*')
             )
             check_in_button.click()
             expect(check_in_button).to_have_class(
@@ -493,7 +493,7 @@ class BaseAccessLevelTest:
             expect(check_in_button).to_have_class(re.compile(r'\bbi-x-circle-fill\b'))
         else:
             expect(check_in_button).not_to_have_attribute(
-                'hx-patch', re.compile(r'.*check-in/player-action.*')
+                'hx-patch', re.compile(r'.*player-table/check-in-player.*')
             )
 
     # --------------------------------------------------------------------------

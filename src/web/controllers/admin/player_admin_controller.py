@@ -1427,6 +1427,24 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
+        path='/records/check-in-player/{event_uniq_id:str}/{player_id:int}',
+        name='records-check-in-player',
+        guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_records_check_in_player(
+        self,
+        request: HTMXRequest,
+        channels: ChannelsPlugin,
+        player_id: int,
+    ) -> Template:
+        web_context = PlayerAdminWebContext(request, player_id)
+        player = web_context.get_admin_tournament_player()
+        tournament = player.tournament
+        tournament.check_in_player(player, not player.check_in)
+        self.publish_new_checkin(channels, tournament)
+        return self._render_player_records_modal(web_context)
+
+    @patch(
         path='/records/withdraw-player/{event_uniq_id:str}/{player_id:int}',
         name='records-withdraw-player',
         guards=[TournamentActionGuard(AuthAction.SET_ZPB)],
@@ -1533,11 +1551,11 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @patch(
-        path='/check-in/player-action/{event_uniq_id:str}/{player_id:int}',
-        name='check-in-player-action',
+        path='/player-table/check-in-player/{event_uniq_id:str}/{player_id:int}',
+        name='player-table-check-in-player',
         guard=[PlayerTournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
     )
-    async def htmx_check_in_player_action(
+    async def htmx_player_table_check_in_player(
         self,
         request: HTMXRequest,
         channels: ChannelsPlugin,

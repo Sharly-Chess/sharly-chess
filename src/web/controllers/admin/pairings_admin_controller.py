@@ -788,8 +788,6 @@ class PairingsAdminController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
         player = web_context.get_admin_player()
         tournament.set_player_byes(player, {round: Result.NO_RESULT})
-        if not player.check_in:
-            tournament.check_in_player(player, True)
         message = _('Player [{player}] has returned for this round.').format(
             player=player.full_name
         )
