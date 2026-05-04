@@ -2551,10 +2551,10 @@ msgid "From your server find the screen or rotator you want to display, and sent
 msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
 
 msgid "Full-Point Bye"
-msgstr "Bye 1 point"
+msgstr "Bye point entier"
 
 msgid "Full-Point Bye (deprecated)"
-msgstr "Bye 1 point (obsolète)"
+msgstr "Bye point entier (obsolète)"
 
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GMI"
@@ -3737,7 +3737,7 @@ msgid "Not assigned"
 msgstr "Non-attribué"
 
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
-msgstr "Il n'y a pas assez de byes disponibles pour attribuer un bye 1 point (requis : 2)."
+msgstr "Il n'y a pas assez de byes disponibles pour attribuer un bye point entier (requis : 2)."
 
 msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
 msgstr "Il n'y a pas de bye disponible (requis : 1)."
@@ -4635,7 +4635,7 @@ msgid "Ratings update"
 msgstr "Mise à jour des classements"
 
 msgid "Received a Full-Point Bye for the next round."
-msgstr "Ont reçu un bye 1 point pour la ronde à venir."
+msgstr "Ont reçu un bye point entier pour la ronde à venir."
 
 msgid "Received a Half-Point Bye for the next round."
 msgstr "Ont reçu un bye pour la ronde à venir."
@@ -5101,7 +5101,7 @@ msgid "Server is already running!"
 msgstr "Le serveur est déjà en cours d'exécution !"
 
 msgid "Set Full-Points Byes"
-msgstr "Allouer des byes 1 point"
+msgstr "Allouer des byes point entier"
 
 msgid "Set Half-Points Byes"
 msgstr "Allouer des byes"
@@ -6679,7 +6679,7 @@ msgid "You are not allowed to manage prizes."
 msgstr "Vous n'êtes pas autorisé·e à gérer les prix."
 
 msgid "You are not allowed to modify Full-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à modifier des byes 1 point."
+msgstr "Vous n'êtes pas autorisé·e à modifier des byes point entier."
 
 msgid "You are not allowed to modify Half-Point Byes."
 msgstr "Vous n'êtes pas autorisé·e à modifier des byes."
@@ -6691,7 +6691,7 @@ msgid "You are not allowed to return players."
 msgstr "Vous n'êtes pas autorisé·e à faire revenir des joueur·euses."
 
 msgid "You are not allowed to set Full-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à attribuer des byes 1 point."
+msgstr "Vous n'êtes pas autorisé·e à attribuer des byes point entier."
 
 msgid "You are not allowed to set Half-Point Byes."
 msgstr "Vous n'êtes pas autorisé·e à déclarer des byes."
