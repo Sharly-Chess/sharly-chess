@@ -953,7 +953,7 @@ class FfePlugin(Plugin):
         tie_break_sets.append(
             TieBreakSet(
                 key=f'plugin:{PLUGIN_NAME}:ffe-youth-championship-swiss',
-                name=_('France jeunes et qualif. Suisse'),
+                name=_('France jeunes et qualif.'),
                 source=TieBreakSetSource.PLUGIN,
                 pairing_system_id=SwissPairingSystem.static_id(),
                 stored_tie_breaks=[
@@ -973,7 +973,7 @@ class FfePlugin(Plugin):
         tie_break_sets.append(
             TieBreakSet(
                 key=f'plugin:{PLUGIN_NAME}:ffe-youth-championship-swiss-estimated',
-                name=_('France jeunes et qualif. Suisse - Non-classé·es'),
+                name=_('France jeunes et qualif. Non-classé·es'),
                 source=TieBreakSetSource.PLUGIN,
                 pairing_system_id=SwissPairingSystem.static_id(),
                 stored_tie_breaks=[

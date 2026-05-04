@@ -211,7 +211,7 @@ msgstr ""
 msgid "France jeunes et qualif."
 msgstr ""
 
-msgid "France jeunes et qualif. - Non-classé·es"
+msgid "France jeunes et qualif. Non-classé·es"
 msgstr ""
 
 msgid "French Chess Federation"

@@ -211,8 +211,8 @@ msgstr "Pour les joueur·euses estimé·es, un classement représentatif est cal
 msgid "France jeunes et qualif."
 msgstr "France jeunes et qualif."
 
-msgid "France jeunes et qualif. - Non-classé·es"
-msgstr "France jeunes et qualif. - Non-classé·es"
+msgid "France jeunes et qualif. Non-classé·es"
+msgstr "France jeunes et qualif. Non-classé·es"
 
 msgid "French Chess Federation"
 msgstr "Fédération Française des Échecs"
