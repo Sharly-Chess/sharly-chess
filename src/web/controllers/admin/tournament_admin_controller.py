@@ -1301,12 +1301,24 @@ class TournamentAdminController(BaseEventAdminController):
                 continue
             options: dict[str, SelectOption] = {}
             for tie_break_set in sets:
-                preview = ' - '.join(tie_break_set.tie_break_acronyms) or '—'
+                preview = (
+                    '<br/>'.join(
+                        [
+                            f'{index}. {tie_break.acronym} - {tie_break.name}'
+                            for index, tie_break in enumerate(
+                                tie_break_set.instantiate_tie_breaks(tournament.event),
+                                start=1,
+                            )
+                            if tie_break is not None
+                        ]
+                    )
+                    or '—'
+                )
                 tooltip = (
                     tie_break_set.disabled_reason if tie_break_set.disabled else preview
                 )
                 options[f'{source.value}|{tie_break_set.key}'] = SelectOption(
-                    name=f'{tie_break_set.name} ({preview})',
+                    name=f'{tie_break_set.name} ({" - ".join(tie_break_set.tie_break_acronyms) or "-"})',
                     tooltip=tooltip,
                     disabled=tie_break_set.disabled,
                 )
