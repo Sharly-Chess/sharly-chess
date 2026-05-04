@@ -601,10 +601,7 @@ msgstr ""
 msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
 msgstr ""
 
-msgid "All the players of tournament [{tournament}] have been marked a \"{status}\"."
-msgstr ""
-
-msgid "All the players of tournament [{tournament}] have been marked a \"{status}\"."
+msgid "All the players of tournament [{tournament}] have been marked as \"{status}\"."
 msgstr ""
 
 msgid "All the tournaments"

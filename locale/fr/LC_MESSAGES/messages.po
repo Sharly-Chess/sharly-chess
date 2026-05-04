@@ -589,7 +589,7 @@ msgstr "Tou·tes les joueur·euses"
 msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
 msgstr "Tou·tes les joueur·euses du tournoi sélectionné seront supprimé·es avant d'importer ceux du fichier."
 
-msgid "All the players of tournament [{tournament}] have been marked a \"{status}\"."
+msgid "All the players of tournament [{tournament}] have been marked as \"{status}\"."
 msgstr "Tou·tes les joueur·euses du tournoi [{tournament}] ont été marqué·es « {status} »."
 
 msgid "All the tournaments"
