@@ -127,19 +127,19 @@
                                 <div class="flex-shrink-0 d-flex gap-2 align-items-center">
                                     <i
                                         class="bi-info-circle-fill ps-1 pt-1"
-                                        {{ macros.tooltip_attributes('', tie_break.help_text, 'top') }}
+                                        {{ macros.tooltip_attributes('', tie_break.help_text) }}
                                     ></i>
                                     {% if stored_id in invalid_messages_by_id %}
                                         <i
                                             class="bi-exclamation-triangle-fill text-danger pt-1"
-                                            {{ macros.tooltip_attributes('warning', invalid_messages_by_id[stored_id], 'top') }}
+                                            {{ macros.tooltip_attributes('warning', invalid_messages_by_id[stored_id]) }}
                                         ></i>
                                     {% else %}
                                         {% set warning_message = tie_break.get_warning_for_tournament(admin_tournament) %}
                                         {% if warning_message %}
                                             <i
                                                 class="bi-exclamation-triangle-fill text-warning pt-1"
-                                                {{ macros.tooltip_attributes('', warning_message, 'top') }}
+                                                {{ macros.tooltip_attributes('', warning_message) }}
                                             ></i>
                                         {% endif %}
                                     {% endif %}
@@ -154,27 +154,38 @@
                                             ) }}"
                                             hx-target="body"
                                             hx-indicator="#please-wait"
-                                            {{ macros.tooltip_attributes(
-                                                'info', _('This tie-break can be used multiple times.'), 'top'
-                                            ) }}
+                                            {{ macros.tooltip_attributes('', _(
+                                                'This tie-break can be used multiple times.'
+                                            )) }}
                                         >
                                             <i class="bi-copy"></i>
                                         </button>
                                     {% endif %}
-                                    <button
-                                        class="btn btn-sm btn-outline-primary text-nowrap"
-                                        hx-get="{{ url_for(
-                                            'admin-tie-break-update-modal',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            tournament_id=admin_tournament.id,
-                                            tie_break_id=stored_id,
-                                        ) }}"
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                        data-bs-target="#modal-wrapper"
+                                    <span
+                                        {% if tie_break.is_legacy %}
+                                            {{ macros.tooltip_attributes('', _(
+                                                'Legacy tie-breaks can no longer be created or edited.'
+                                            )) }}
+                                        {% endif %}
                                     >
-                                        <i class="bi-pencil-fill"></i>
-                                    </button>
+                                        <button
+                                            class="btn btn-sm btn-outline-primary text-nowrap"
+                                            hx-get="{{ url_for(
+                                                'admin-tie-break-update-modal',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                tournament_id=admin_tournament.id,
+                                                tie_break_id=stored_id,
+                                            ) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-target="#modal-wrapper"
+                                            {% if tie_break.is_legacy %}
+                                                disabled
+                                            {% endif %}
+                                        >
+                                            <i class="bi-pencil-fill"></i>
+                                        </button>
+                                    </span>
                                     <button
                                         class="btn btn-sm btn-outline-danger text-nowrap"
                                         hx-delete="{{ url_for(

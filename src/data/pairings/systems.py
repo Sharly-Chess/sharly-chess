@@ -88,11 +88,6 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return False
 
     @property
-    def allow_mid_tournament_check_in(self) -> bool:
-        """Defines if check-ins are allowed after the start of the tournament."""
-        return True
-
-    @property
     def variation_field_id(self) -> str:
         """ID of the form field selecting the variation of the system."""
         return f'{self.id}_pairing_variation'
@@ -255,10 +250,6 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
     @property
     def hide_pab_value_field(self) -> bool:
         return True
-
-    @property
-    def allow_mid_tournament_check_in(self) -> bool:
-        return False
 
     @property
     def pairing_buttons_template(self) -> str:

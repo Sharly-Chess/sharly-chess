@@ -54,7 +54,7 @@ from database.sqlite.event.event_store import (
 from plugins.manager import plugin_manager
 from utils import Utils
 from utils.date_time import format_date, format_date_range
-from utils.enum import FormAction, Result, TournamentRating
+from utils.enum import FormAction, Result, TournamentRating, ScreenType
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -438,7 +438,6 @@ class TournamentAdminController(BaseEventAdminController):
         errors: dict[str, str] = {}
         if data is None:
             data = {}
-        check_in_open: bool = False
         start_date = event.start_date
         stop_date = event.stop_date
         rounds = WebContext.form_data_to_int(data, field := 'rounds') or 1
@@ -585,7 +584,6 @@ class TournamentAdminController(BaseEventAdminController):
             paired_bye_result=paired_bye_result,
             max_byes=max_byes,
             last_rounds_no_byes=last_rounds_no_byes,
-            check_in_open=check_in_open,
             location=location,
             player_rating_type=player_rating_type,
             start_date=start_date,
@@ -804,52 +802,29 @@ class TournamentAdminController(BaseEventAdminController):
                     timer_id: int | None = None
                     if len(event.timers_by_id) == 1:
                         timer_id = list(event.timers_by_id.keys())[0]
-                    for type_, menu, name in [
-                        (
-                            'input',
-                            '@input',
-                            _('Check-in / Results entry ({tournament_name})').format(
-                                tournament_name=tournament.name
-                            ),
-                        ),
-                        (
-                            'boards',
-                            '@boards',
-                            _('Pairings by board ({tournament_name})').format(
-                                tournament_name=tournament.name
-                            ),
-                        ),
-                        (
-                            'players',
-                            '@players',
-                            _('Pairings by player ({tournament_name})').format(
-                                tournament_name=tournament.name
-                            ),
-                        ),
-                        (
-                            'ranking',
-                            '@ranking',
-                            _('Ranking ({tournament_name})').format(
-                                tournament_name=tournament.name
-                            ),
-                        ),
+                    for screen_type in [
+                        ScreenType.CHECK_IN,
+                        ScreenType.INPUT,
+                        ScreenType.BOARDS,
+                        ScreenType.PLAYERS,
+                        ScreenType.RANKING,
                     ]:
                         stored_screen: StoredScreen = database.add_stored_screen(
                             StoredScreen(
                                 id=None,
                                 uniq_id=event.get_unused_screen_uniq_id(
                                     base_uniq_id=Utils.name_to_uniq_id(
-                                        f'{tournament.name}-{type_}'
+                                        f'{tournament.name}-{screen_type.value}'
                                     )
                                 ),
-                                type=type_,
+                                type=screen_type.value,
                                 public=True,
-                                name=name,
+                                name=f'{screen_type.name} ({tournament.name})',
                                 columns=1,
                                 font_size=None,
                                 menu_link=True,
                                 menu_text=None,
-                                menu=menu,
+                                menu=f'@{screen_type.value}',
                                 timer_id=timer_id,
                                 input_exit_button=False,
                                 players_show_unpaired=False,
@@ -1326,12 +1301,24 @@ class TournamentAdminController(BaseEventAdminController):
                 continue
             options: dict[str, SelectOption] = {}
             for tie_break_set in sets:
-                preview = ' - '.join(tie_break_set.tie_break_acronyms) or '—'
+                preview = (
+                    '<br/>'.join(
+                        [
+                            f'{index}. {tie_break.acronym} - {tie_break.name}'
+                            for index, tie_break in enumerate(
+                                tie_break_set.instantiate_tie_breaks(tournament.event),
+                                start=1,
+                            )
+                            if tie_break is not None
+                        ]
+                    )
+                    or '—'
+                )
                 tooltip = (
                     tie_break_set.disabled_reason if tie_break_set.disabled else preview
                 )
                 options[f'{source.value}|{tie_break_set.key}'] = SelectOption(
-                    name=f'{tie_break_set.name} ({preview})',
+                    name=f'{tie_break_set.name} ({" - ".join(tie_break_set.tie_break_acronyms) or "-"})',
                     tooltip=tooltip,
                     disabled=tie_break_set.disabled,
                 )

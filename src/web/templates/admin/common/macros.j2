@@ -589,6 +589,7 @@ with_indicator: display a loading indicator, optional
     info='',
     autocomplete='',
     disabled=false,
+    prevent_wrapping=false,
     hx_get='',
     hx_post='',
     hx_target='',
@@ -610,7 +611,7 @@ with_indicator: display a loading indicator, optional
         {% else %}
             {% set value=data[name] %}
         {% endif %}
-        <div id="{{id}}-wrapper" class="input-block position-relative">
+        <div id="{{id}}-wrapper" class="input-block position-relative{% if prevent_wrapping %} flex-nowrap{% endif %}">
             <div class="d-flex align-items-center">
                 {%- if label -%}
                     <span
@@ -984,6 +985,7 @@ with_indicator: display a loading indicator, optional
     input_tooltip='',
     with_indicator=false,
     autocomplete='',
+    prevent_wrapping=false,
     hx_get='',
     hx_post='',
     hx_trigger='',
@@ -1015,6 +1017,7 @@ with_indicator: display a loading indicator, optional
         input_tooltip=input_tooltip,
         with_indicator=with_indicator,
         autocomplete=autocomplete,
+        prevent_wrapping=prevent_wrapping,
         hx_get=hx_get,
         hx_post=hx_post,
         hx_trigger=hx_trigger,
@@ -1206,7 +1209,7 @@ with_indicator: display a loading indicator, optional
 
 {% macro select_input(
     name,
-    label='NO LABEL',
+    label='',
     help_text='',
     tooltip_text='',
     doc_icon='',
@@ -1278,7 +1281,7 @@ with_indicator: display a loading indicator, optional
 
 {% macro checkbox_input(
     name,
-    label='NO LABEL',
+    label='',
     placeholder='NO PLACEHOLDER',
     help_text='',
     tooltip_text='',
@@ -1300,35 +1303,6 @@ with_indicator: display a loading indicator, optional
         errors=errors,
         error=error,
         disabled=disabled,
-    ) }}
-{% endmacro %}
-
-{% macro radio_input(
-    name,
-    label='NO LABEL',
-    placeholder='NO PLACEHOLDER',
-    help_text='',
-    tooltip_text='',
-    info='',
-    data={},
-    errors={},
-    error=false,
-    disabled=false,
-    value=''
-) %}
-    {{ _generic_input(
-        name=name,
-        input_type='radio',
-        label=label,
-        placeholder=placeholder,
-        help_text=help_text,
-        tooltip_text=tooltip_text,
-        info=info,
-        data=data,
-        errors=errors,
-        error=error,
-        disabled=disabled,
-        radio_value=value,
     ) }}
 {% endmacro %}
 
@@ -1581,6 +1555,75 @@ with_indicator: display a loading indicator, optional
     </script>
 {% endmacro %}
 
+{% macro toggle_input(
+    name,
+    label_on='ON',
+    label_off='OFF',
+    hx_patch='',
+    size='sm',
+    checked=false,
+    disabled=false
+) %}
+    {% set id=name|replace('_', '-') %}
+    <input
+        id="{{ id }}"
+        name="{{ name }}"
+        type="checkbox"
+        {% if hx_patch %}
+            hx-patch="{{ hx_patch }}"
+            hx-trigger="change delay:300ms"
+        {% endif %}
+        data-onlabel="{{ label_on }}"
+        data-offlabel="{{ label_off }}"
+        data-toggle="toggle"
+        data-size="{{ size }}"
+        {% if size == 'xs' %}
+            data-height="20"
+        {% endif %}
+        data-style="rounded"
+        {% if checked %}checked{% endif %}
+        {% if disabled %}disabled{% endif %}
+        {{ macros.tooltip_attributes('', 'test') }}
+    >
+    <script>
+       $('#{{ id }}').bootstrapToggle();
+    </script>
+{% endmacro %}
+
+{% macro radio_input(
+    name,
+    label_by_value,
+    tooltip_by_value,
+    selected=''
+) %}
+    {% set radio_id=name|replace('_', '-') %}
+    {% for value, label in label_by_value.items() %}
+        {% set id = radio_id ~ '-' ~ value %}
+        <div class="form-check">
+            <input
+                id="{{ id }}"
+                class="form-check-input"
+                type="radio"
+                name="{{ name }}"
+                value="{{ value }}"
+                {% if value == selected %}
+                    checked
+                {% endif %}
+            >
+            <label class="form-check-label" for="{{ id }}">
+                {{ label }}
+                {% if value in tooltip_by_value %}
+                    <i
+                        class="bi-info-circle-fill ps-1"
+                        style="font-size: 90%"
+                        {{ macros.tooltip_attributes('', tooltip_by_value[value]) }}
+                    ></i>
+                {% endif %}
+            </label>
+        </div>
+
+    {% endfor %}
+{% endmacro %}
 
 {% macro uniq_id_form(
     current_uniq_id,

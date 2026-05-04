@@ -57,6 +57,9 @@
                             <i class="bi-sort-{{ 'up' if is_asc_sort_icon else 'down' }} text-danger ps-1"></i>
                         {% endif %}
                     </div>
+                    {% if column.header_button_template %}
+                            {% include column.header_button_template %}
+                    {% endif %}
                     {% if column.is_filtrable and column.filter_values|length > 1 %}
                         {% include 'filter.html' %}
                     {% endif %}

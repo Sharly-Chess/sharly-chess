@@ -52,6 +52,7 @@ class TieBreakOptionManager(EventBoundEntityManager[TieBreakOption]):
             options.KoyaLimitTieBreakOption,
             options.ReversedTieBreakOption,
             options.EstimatedRatingsTieBreakOption,
+            options.LegacyMarch2026TieBreakOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_tie_break_option_types')(
             tie_break_option_types=tie_break_option_types

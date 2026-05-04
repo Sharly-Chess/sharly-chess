@@ -1,13 +1,13 @@
 {% with url=url_for('admin-event-players-tab', event_uniq_id=admin_event.uniq_id) %}
     <div
-        hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
+        hx-get="{{ url_for('players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="result") }}"
         hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }} from:body"
         hx-target="#refresh-message"
         hx-swap="innerHTML"
     >
     </div>
     <div
-        hx-get="{{ url_for('admin-players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
+        hx-get="{{ url_for('players-needs-refresh-message', event_uniq_id=admin_event.uniq_id, reason="checkin") }}"
         hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }} from:body"
         hx-target="#refresh-message"
         hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
@@ -45,9 +45,15 @@
                         {% endwith %}
                     </ul>
                 </div>
-                {% if allowed_tournaments %}
-                    {% include 'check_in_tournaments.html' %}
-                {% endif %}
+                <div>
+                    <button
+                        class="btn btn-outline-primary text-nowrap"
+                        hx-get="{{ url_for('check-in-tournaments-modal', event_uniq_id=admin_event.uniq_id) }}"
+                    >
+                        <i class="bi-x-circle"></i><i class="bi-check-circle pe-1"></i>
+                        {{ _('Check-in') }}
+                    </button>
+                </div>
                 {% set add_player_error_message = (
                     _('You are not allowed to add players to the event.')
                     if not client.can_add_player else
@@ -79,7 +85,7 @@
                     </button>
                 </span>
                 <span
-                    {%if add_player_error_message %}
+                    {% if add_player_error_message %}
                         {{ macros.tooltip_attributes('warning', add_player_error_message, 'top') }}
                     {% else %}
                         {{ macros.tooltip_attributes('info', _('Add a player to the event.'), 'top') }}
@@ -88,7 +94,6 @@
                     <button
                         data-testid="add-player-button"
                         class="btn btn-primary text-nowrap"
-                        hx-trigger="click, SC_Plus from:body"
                         hx-get="{{ url_for('admin-player-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
@@ -96,6 +101,8 @@
                         data-bs-target="#modal-wrapper"
                         {% if add_player_error_message %}
                             disabled
+                        {% else %}
+                            hx-trigger="click, SC_Plus from:body"
                         {% endif %}
                     >
                         <i class="bi-plus-square pe-1"></i>
@@ -168,9 +175,11 @@
     <section class="pb-1">
         {% include '/admin/players/table/table.html' %}
     </section>
+    <span id="replace-row-target"></span>
 {% endwith %}
 
 <script>
+    var debouncedReplaceFunctionByPlayerId = {};
     preparePrintModal("{{ default_print_document }}");
 
     $(document).ready(function() {

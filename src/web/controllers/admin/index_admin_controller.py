@@ -834,14 +834,7 @@ class IndexAdminController(BaseAdminController):
             request,
             _('Event [{uniq_id}] has been updated.').format(uniq_id=uniq_id),
         )
-
-        return HTMXTemplate(
-            template_name='common/empty_modal_and_messages.html',
-            context={'messages': Message.messages(request)},
-            re_target='#modal-wrapper',
-            trigger_event='close_modal',
-            after='settle',
-        )
+        return self._render_empty_modal_and_messages(request)
 
     @patch(
         path='/event-uniq-id-update/{event_uniq_id:str}',
@@ -1301,13 +1294,7 @@ class IndexAdminController(BaseAdminController):
             self.set_locale(request, stored_config.locale)
         config.load_and_set_env()
         Message.success(request, _('Sharly Chess settings have been updated.'))
-        return HTMXTemplate(
-            template_name='common/empty_modal_and_messages.html',
-            context={'messages': Message.messages(request)},
-            re_target='#modal-wrapper',
-            trigger_event='close_modal',
-            after='receive',
-        )
+        return self._render_empty_modal_and_messages(request, after_receive=True)
 
     @get(
         path='/database-status-badge',

@@ -64,9 +64,7 @@
                 {% for screen_type, screen_type_data in admin_screen_types_data.items() %}
                     {% set screen_type_create_enabled=admin_event.tournaments_by_id or screen_type.value in ['image', 'results'] %}
                     <span
-                        {% if screen_type_create_enabled %}
-                            {{ macros.tooltip_attributes('info', screen_type_data.create_tooltip, 'left') }}
-                        {% else %}
+                        {% if not screen_type_create_enabled %}
                             {{ macros.tooltip_attributes('info', _('You must create a tournament before creating these screens.'), 'left') }}
                         {% endif %}
                     >
@@ -140,7 +138,6 @@
                                 >
                                     <span
                                         class="form-check-label d-inline-flex align-items-center gap-2"
-                                        {{ macros.tooltip_attributes('info', _('Show/hide these screens.'), 'top') }}
                                     >
                                         <i class="bi bi-chevron-down"></i>
                                         {{ macros.screen_type_icon(screen_type, false) }}
@@ -152,7 +149,7 @@
                     </div>
 
                     <div class="collapse {% if expanded %}show{% endif %}" id="admin-screens-show-{{ screen_type.value }}">
-                        <div class="row gy-2 gx-3 mb-5">
+                        <div class="row gy-2 gx-3 mb-4">
                             {% if screen_type_data.screens %}
                                 {% for screen in screen_type_data.screens %}
                                     {% with
@@ -162,7 +159,7 @@
                                     {% endwith %}
                                 {% endfor %}
                             {% else %}
-                                <div class="col-12 my-3">
+                                <div class="col-12 my-3 mb-0">
                                     {{ _('No such screens.') }}
                                 </div>
                             {% endif %}
