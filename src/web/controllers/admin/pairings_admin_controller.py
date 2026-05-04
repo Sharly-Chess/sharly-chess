@@ -1205,7 +1205,11 @@ class PairingsAdminController(BaseEventAdminController):
         round: int,
     ) -> Template:
         web_context = PairingsAdminWebContext(request, tournament_id, round)
-
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        plugin_manager.hook_for_event(event, 'on_before_load_pairings_absents_modal')(
+            tournament=tournament
+        )
         return self._admin_event_pairings_render(
             web_context,
             {

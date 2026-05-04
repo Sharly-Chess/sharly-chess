@@ -196,6 +196,15 @@ class SCEPlugin(Plugin):
         tournament = event.tournaments_by_id[tournament_id]
         schedule_upload(tournament)
 
+    @hookimpl
+    def on_before_load_pairings_absents_modal(self, tournament: 'Tournament'):
+        plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+        if plugin_data.id and plugin_data.check_in_open:
+            try:
+                SCESession(tournament.event).sync_event()
+            except SharlyChessException as e:
+                logger.exception(e)
+
     # ---------------------------------------------------------------------------------
     # Player
     # ---------------------------------------------------------------------------------

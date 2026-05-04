@@ -316,6 +316,10 @@ class AppHookSpecs:
     ) -> str | None:
         """A signal sent when a special result is set. Returns a string to be displayed to the user"""
 
+    @hookspec
+    def on_before_load_pairings_absents_modal(self, tournament: 'Tournament'):
+        """Executed before the pairings absents modal is loaded."""
+
     # ---------------------------------------------------------------------------------
     # Upload
     # ---------------------------------------------------------------------------------
