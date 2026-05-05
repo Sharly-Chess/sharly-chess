@@ -1425,6 +1425,29 @@ class PairingsAdminController(BaseEventAdminController):
             },
         )
 
+    @get(
+        path=(
+            '/pairings/absents-modal/new-check-ins-message/'
+            '{event_uniq_id:str}/{tournament_id:int}/{round:int}'
+        ),
+        name='absents-modal-new-check-ins-message',
+    )
+    async def htmx_absents_modal_new_check_ins_message(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
+        )
+        return HTMXTemplate(
+            template_name='/admin/pairings/absents_new_check_ins_alert.html',
+            context=web_context.template_context,
+        )
+
     @classmethod
     def publish_new_user_results(
         cls,

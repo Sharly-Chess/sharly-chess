@@ -3481,6 +3481,10 @@ msgstr ""
 msgid "New category"
 msgstr ""
 
+#, python-format
+msgid "New check-ins are in, %(absents)d players now absent"
+msgstr ""
+
 msgid "New checkins are in, refresh your browser"
 msgstr ""
 

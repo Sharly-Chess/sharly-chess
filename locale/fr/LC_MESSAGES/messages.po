@@ -3481,6 +3481,10 @@ msgstr "Nouvelle-Zélande"
 msgid "New category"
 msgstr "Nouvelle catégorie"
 
+#, python-format
+msgid "New check-ins are in, %(absents)d players now absent"
+msgstr "De nouveaux pointages ont été effectués, il y a maintenant %(absents)d joueur·euses absent·es"
+
 msgid "New checkins are in, refresh your browser"
 msgstr "De nouveaux pointages ont été effectués, actualisez la page"
 

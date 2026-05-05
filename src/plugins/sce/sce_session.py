@@ -63,6 +63,7 @@ from plugins.utils import Plugin
 from utils import Utils
 from utils.enum import Result
 from web.channels import channels_plugin
+from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.urls import build_get_url
 
 logger: Logger = get_logger()
@@ -104,6 +105,7 @@ class SCESession(Session):
     def __init__(self, event: Event):
         super().__init__()
         self.event = event
+        self.new_check_ins_tournament_sce_ids: set[str] = set()
 
     @property
     def tokens(self) -> SCETokens:
@@ -550,8 +552,8 @@ class SCESession(Session):
                 player, plugin_data, write_stored_object=True
             )
             if local_check_in_updated:
-                channels_plugin.publish(
-                    {'event': f'new-checkins|{self.event.uniq_id}', 'data': ''}, ['ws']
+                self.new_check_ins_tournament_sce_ids.add(
+                    plugin_data.last_sync_data.tournament_id
                 )
         return PlayerStatus.CONFLICT if has_conflict else PlayerStatus.SUCCESS
 
@@ -1049,6 +1051,9 @@ class SCESession(Session):
                     conflict_count += 1
                 elif status == PlayerStatus.DUPLICATE:
                     duplicate_count += 1
+        for sce_id in self.new_check_ins_tournament_sce_ids:
+            tournament = SCEUtils.get_tournament_by_sce_id(self.event, sce_id)
+            PlayerAdminController.publish_new_checkin(channels_plugin, tournament)
 
         event_plugin_data.deleted_player_ids = []
         event_plugin_data.last_sync_at = datetime.now()
