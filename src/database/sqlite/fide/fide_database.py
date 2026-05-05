@@ -196,9 +196,9 @@ class FideDatabase(LocalSourcePlayerDatabase):
         self.execute('SELECT * FROM player WHERE fide_id = ?', (player_fide_id,))
         if player_row := self.fetchone():
             return {
-                TournamentRating.STANDARD: player_row.get('k_standard', None),
-                TournamentRating.RAPID: player_row.get('k_rapid', None),
-                TournamentRating.BLITZ: player_row.get('k_blitz', None),
+                TournamentRating.STANDARD: player_row.get('k_standard') or None,
+                TournamentRating.RAPID: player_row.get('k_rapid') or None,
+                TournamentRating.BLITZ: player_row.get('k_blitz') or None,
             }
         return None
 
