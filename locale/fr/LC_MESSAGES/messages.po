@@ -391,7 +391,7 @@ msgid "A positive value is expected."
 msgstr "Une valeur positive est attendue."
 
 msgid "A set named [{name}] already exists. Tick the overwrite option to replace it."
-msgstr "Un jeu nommé [{name}] existe déjà. Cochez l'option Remplacement pour le remplacer."
+msgstr "Un ensemble nommé [{name}] existe déjà. Cochez l'option Remplacement pour le remplacer."
 
 msgid "A set with this name already existe."
 msgstr "Un ensemble avec ce nom existe déjà."
@@ -664,8 +664,8 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Application"
 msgstr "Application"
 
-msgid "Apply set"
-msgstr "Appliquer le jeu"
+msgid "Apply"
+msgstr "Appliquer"
 
 msgid "Apply to all"
 msgstr "Appliquer à tout·es"
@@ -1157,16 +1157,13 @@ msgid "Choose a random player"
 msgstr "Choisir un·e joueur·euse au hasard"
 
 msgid "Choose a set…"
-msgstr "Choisir un jeu…"
+msgstr "Choisir un ensemble…"
 
 msgid "Choose at least one value."
 msgstr "Choisir au moins une valeur."
 
 msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
-
-msgid "Choose my own tie-breaks"
-msgstr "Choisir mes départages"
 
 msgid "Choose one, many or no players."
 msgstr "Choisissez aucun·e, un·e ou plusieurs joueur·euses."
@@ -1553,10 +1550,10 @@ msgid "Custom"
 msgstr "Personnalisés"
 
 msgid "Custom sets"
-msgstr "Jeux personnalisés"
+msgstr "Ensembles personnalisés"
 
 msgid "Custom tie-break sets"
-msgstr "Jeux de départages personnalisés"
+msgstr "Ensembles de départages personnalisés"
 
 msgid "Cut values"
 msgstr "Élaguer des valeurs"
@@ -2272,6 +2269,9 @@ msgstr "Export d'évènement"
 msgid "Event name"
 msgstr "Nom de l'évènement"
 
+msgid "Event tournaments"
+msgstr "Tournois de l'évènement"
+
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
 
@@ -2372,6 +2372,12 @@ msgstr "Base de données FIDE"
 
 msgid "FIDE rating lost"
 msgstr "classement FIDE perdu"
+
+msgid "FIDE recommendation (2019)"
+msgstr "Recommendation FIDE (2019)"
+
+msgid "FIDE recommendation - Unrated (2019)"
+msgstr "Recommendation FIDE - Non classé·es (2019)"
 
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
@@ -2533,9 +2539,6 @@ msgstr "Ve"
 
 msgid "France"
 msgstr "France"
-
-msgid "From tournament"
-msgstr "D'un tournoi"
 
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
 msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
@@ -3192,16 +3195,13 @@ msgid "Manage archives"
 msgstr "Gestion des archives"
 
 msgid "Manage custom sets"
-msgstr "Gérer les jeux personnalisés"
+msgstr "Gérer les ensembles personnalisés"
 
 msgid "Manage events"
 msgstr "Gestion des évènements"
 
 msgid "Manage prizes"
 msgstr "Gestion des prix"
-
-msgid "Manage saved tie-break sets for this pairing system."
-msgstr "Gérer les jeux de départages enregistrés pour ce système d'appariement."
 
 msgid "Manage screens"
 msgstr "Gestion des écrans"
@@ -3661,7 +3661,7 @@ msgid "No rotators"
 msgstr "Aucun écran rotatif"
 
 msgid "No saved sets."
-msgstr "Aucun jeu enregistré."
+msgstr "Aucun ensemble enregistré."
 
 msgid "No screen families"
 msgstr "Aucune famille d'écrans"
@@ -3678,8 +3678,8 @@ msgstr "Aucun écran."
 msgid "No such screens."
 msgstr "Aucun écran de ce type."
 
-msgid "No tie-breaks for [{tournament}]"
-msgstr "Aucun départage pour [{tournament}]"
+msgid "No tie-breaks."
+msgstr "Aucun départage."
 
 msgid "No timers"
 msgstr "Aucun chronomètre"
@@ -4324,7 +4324,7 @@ msgid "Please choose a federation."
 msgstr "Veuillez choisir une fédération."
 
 msgid "Please choose a name for the set."
-msgstr "Veuillez choisir un nom pour le jeu."
+msgstr "Veuillez choisir un nom pour l'ensemble."
 
 msgid "Please choose a player."
 msgstr "Veuillez choisir un·e joueur·euse."
@@ -4543,7 +4543,7 @@ msgid "Qatar"
 msgstr "Qatar"
 
 msgid "Quick-apply a tie-break set"
-msgstr "Appliquer un jeu de départages"
+msgstr "Appliquer un ensemble de départages"
 
 #, python-format
 msgid "R %(round)d *** ROUND COLUMN HEADER"
@@ -4641,7 +4641,6 @@ msgstr "Ont reçu un bye point entier pour la ronde à venir"
 
 msgid "Received a Half-Point Bye for the next round"
 msgstr "Ont reçu un bye pour la ronde à venir"
-
 
 msgid "Received a Zero-Point Bye for all the remaining rounds"
 msgstr "A reçu un forfait pour toutes les rondes à venir"
@@ -4916,9 +4915,6 @@ msgstr "Russie"
 msgid "Rwanda"
 msgstr "Rwanda"
 
-msgid "SC Recommendation"
-msgstr "Recommandation SC"
-
 msgid "SCR"
 msgstr "ÉCR"
 
@@ -4953,7 +4949,7 @@ msgid "Save"
 msgstr "Enregistrer"
 
 msgid "Save current tie-breaks as custom set"
-msgstr "Enregistrer les départages actuels comme jeu personnalisé"
+msgstr "Enregistrer les départages actuels comme ensemble personnalisé"
 
 msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
@@ -5110,16 +5106,16 @@ msgid "Set Zero-Points Byes"
 msgstr "Allouer des forfaits"
 
 msgid "Set [{name}] has been saved."
-msgstr "Le jeu [{name}] a été enregistré."
+msgstr "L'ensemble [{name}] a été enregistré."
 
 msgid "Set [{name}] has been updated."
-msgstr "Le jeu [{name}] a été mis à jour."
+msgstr "L'ensemble [{name}] a été mis à jour."
 
 msgid "Set illegal moves"
 msgstr "Noter les coups illégaux"
 
 msgid "Set name"
-msgstr "Nom du jeu"
+msgstr "Nom de l'ensemble"
 
 msgid "Set special results"
 msgstr "Noter des résultats spéciaux"
@@ -5159,6 +5155,9 @@ msgstr "Projet Sharly Chess"
 
 msgid "Sharly Chess reaches its full potential when used as a server, with other devices connected to the same network."
 msgstr "Sharly Chess atteint son plein potentiel lorsqu'utilisé comme un serveur, avec d'autres appareils connectés au même réseau."
+
+msgid "Sharly Chess recommendation"
+msgstr "Recommendation Sharly Chess"
 
 msgid "Sharly Chess server"
 msgstr "Serveur Sharly Chess"
@@ -5708,7 +5707,7 @@ msgid "The timer displayed on the screens of the family."
 msgstr "Le chronomètre affiché sur les écrans de la famille."
 
 msgid "The tournament has invalid tie-breaks; please fix them before saving as a set."
-msgstr "Le tournoi contient des départages invalides ; corrigez-les avant d'enregistrer le jeu."
+msgstr "Le tournoi contient des départages invalides ; corrigez-les avant d'enregistrer l'ensemble."
 
 msgid "The tournament has no tie-breaks to save."
 msgstr "Le tournoi ne contient aucun départage à enregistrer."
@@ -5767,9 +5766,8 @@ msgstr "Il doit y avoir au moins un écran ou une famille d'écrans définie pou
 msgid "These plugins can only be activated on events of their federation."
 msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur fédération."
 
-#, python-format
-msgid "These sets are saved per pairing system and shared across events. Showing sets for [%(pairing_system)s]."
-msgstr "Ces jeux sont enregistrés par système d'appariement et partagés entre les événements. Affichage pour [%(pairing_system)s]."
+msgid "These sets are saved per pairing system and shared across events."
+msgstr "Ces ensembles sont enregistrés par système d'appariement et partagés entre les événements."
 
 msgid "These tournaments are already included for this account by a higher access level."
 msgstr "Ces tournois sont déjà inclus pour ce compte par un niveau d'accès plus élevé."
@@ -5886,10 +5884,7 @@ msgid "This screen is public (visible by the spectators)."
 msgstr "Cet écran est public (visible des spectateur·ices)."
 
 msgid "This set contains [{name}] twice in a row."
-msgstr "Ce jeu contient [{name}] deux fois consécutivement."
-
-msgid "This set contains a duplicate tie-break ([{name}])."
-msgstr "Ce jeu contient un départage en doublon ([{name}])."
+msgstr "Cet ensemble contient [{name}] deux fois de suite."
 
 msgid "This tie-break can be used multiple times."
 msgstr "Ce départage peut-être utilisé plusieurs fois."
@@ -5944,16 +5939,13 @@ msgid "Tie-break favoring players which have won against the players they are ti
 msgstr "Départage favorisant les joueur·euses ayant gagné contre les joueur·euses ex aequo (consulter le règlement FIDE pour plus d'informations)."
 
 msgid "Tie-break sets are saved from the Tie-breaks modal."
-msgstr "Les jeux de départages sont enregistrés depuis la fenêtre Départages."
+msgstr "Les ensembles de départages sont enregistrés depuis la fenêtre Départages."
 
 msgid "Tie-breaks"
 msgstr "Départages"
 
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
 msgstr "Les départages déterminent le classement des joueur·euses ayant le même nombre de points."
-
-msgid "Tie-breaks for [{tournament}]"
-msgstr "Départages de [{tournament}]"
 
 msgid "Time control"
 msgstr "Cadence"
@@ -7025,9 +7017,6 @@ msgstr "ecran-{family_type}"
 
 msgid "{first_name} {last_name}"
 msgstr "{last_name} {first_name}"
-
-msgid "{name}: {message}"
-msgstr "{name} : {message}"
 
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr "{player.last_name} {player.first_name} avait remporté {previous_value} dans le groupe principal, mais a ensuite reçu un prix de {next_value} dans la catégorie « {cat_name} ». En quittant le groupe principal, la part du prix à sa place vaut désormais {new_share}."

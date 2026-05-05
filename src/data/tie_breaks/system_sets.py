@@ -6,9 +6,18 @@ system the set targets.
 """
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 from common.i18n import _
+from data.pairings.systems import SwissPairingSystem, RoundRobinPairingSystem
+from data.tie_breaks import tie_breaks
+from data.tie_breaks.cutters import Cut1TieBreakCutter
+from data.tie_breaks.options import (
+    CutterWithMedianTieBreakOption,
+    EstimatedRatingsTieBreakOption,
+)
+from data.tournament import Tournament
+from plugins.manager import plugin_manager
 
 if TYPE_CHECKING:
     from data.event import Event
@@ -17,55 +26,103 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class SystemTieBreakSetDefinition:
+class SystemTieBreakSet:
     key: str
-    name_factory: Callable[[], str]
-    pairing_system_id: str
-    tie_break_factory: Callable[[], list['TieBreak']]
+    name: str
+    tie_breaks: list['TieBreak']
 
 
-def _sc_recommendation_swiss() -> list['TieBreak']:
-    from data.pairings.systems import SwissPairingSystem
+def _swiss_system_sets(event: 'Event') -> list['SystemTieBreakSet']:
+    system_sets: list[SystemTieBreakSet] = [
+        SystemTieBreakSet(
+            key='swiss-sc-recommendation',
+            name=_('Sharly Chess recommendation'),
+            tie_breaks=[
+                tie_breaks.StandardBuchholzTieBreak(
+                    [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
+                ),
+                tie_breaks.DirectEncounterTieBreak(),
+                tie_breaks.StandardBuchholzTieBreak(),
+                tie_breaks.SonnebornBergerTieBreak(),
+                tie_breaks.WinsTieBreak(),
+            ],
+        ),
+        SystemTieBreakSet(
+            key='swiss-fide-recommendation-2019',
+            name=_('FIDE recommendation (2019)'),
+            tie_breaks=[
+                tie_breaks.StandardBuchholzTieBreak(
+                    [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
+                ),
+                tie_breaks.StandardBuchholzTieBreak(),
+                tie_breaks.SonnebornBergerTieBreak(),
+                tie_breaks.ProgressiveScoresTieBreak(),
+                tie_breaks.DirectEncounterTieBreak(),
+                tie_breaks.WinsTieBreak(),
+                tie_breaks.GamesWonWithBlackTieBreak(),
+            ],
+        ),
+        SystemTieBreakSet(
+            key='swiss-fide-recommendation-2019-unrated',
+            name=_('FIDE recommendation - Unrated (2019)'),
+            tie_breaks=[
+                tie_breaks.StandardBuchholzTieBreak(
+                    [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
+                ),
+                tie_breaks.StandardBuchholzTieBreak(),
+                tie_breaks.DirectEncounterTieBreak(),
+                tie_breaks.AverageRatingOpponentsTieBreak(
+                    [EstimatedRatingsTieBreakOption(True)]
+                ),
+                tie_breaks.WinsTieBreak(),
+                tie_breaks.GamesWonWithBlackTieBreak(),
+                tie_breaks.GamesPlayedWithBlackTieBreak(),
+                tie_breaks.SonnebornBergerTieBreak(),
+            ],
+        ),
+    ]
+    plugin_manager.hook_for_event(event, 'insert_swiss_system_tie_break_sets')(
+        system_sets=system_sets
+    )
+    return system_sets
 
-    return SwissPairingSystem().recommended_tie_breaks
+
+def _round_robin_system_sets() -> list['SystemTieBreakSet']:
+    system_sets: list[SystemTieBreakSet] = [
+        SystemTieBreakSet(
+            key='rr-fide-recommendation-2019',
+            name=_('FIDE recommendation (2019)'),
+            tie_breaks=[
+                tie_breaks.DirectEncounterTieBreak(),
+                tie_breaks.WinsTieBreak(),
+                tie_breaks.SonnebornBergerTieBreak(),
+                tie_breaks.KoyaTieBreak(),
+            ],
+        ),
+    ]
+    return system_sets
 
 
-def _sc_recommendation_round_robin() -> list['TieBreak']:
-    from data.pairings.systems import RoundRobinPairingSystem
-
-    return RoundRobinPairingSystem().recommended_tie_breaks
-
-
-SYSTEM_TIE_BREAK_SETS: list[SystemTieBreakSetDefinition] = [
-    SystemTieBreakSetDefinition(
-        key='sc-recommendation-swiss',
-        name_factory=lambda: _('SC Recommendation'),
-        pairing_system_id='SWISS',
-        tie_break_factory=_sc_recommendation_swiss,
-    ),
-    SystemTieBreakSetDefinition(
-        key='sc-recommendation-round-robin',
-        name_factory=lambda: _('SC Recommendation'),
-        pairing_system_id='ROUND_ROBIN',
-        tie_break_factory=_sc_recommendation_round_robin,
-    ),
-]
-
-
-def build_system_tie_break_sets(event: 'Event') -> list['TieBreakSet']:
+def build_system_tie_break_sets(tournament: 'Tournament') -> list['TieBreakSet']:
     """Materialize all system tie-break set definitions into TieBreakSet objects."""
     from data.tie_breaks.sets import TieBreakSet, TieBreakSetSource
 
-    sets: list['TieBreakSet'] = []
-    for definition in SYSTEM_TIE_BREAK_SETS:
-        tie_breaks = definition.tie_break_factory()
-        sets.append(
-            TieBreakSet(
-                key=definition.key,
-                name=definition.name_factory(),
-                source=TieBreakSetSource.SYSTEM,
-                pairing_system_id=definition.pairing_system_id,
-                stored_tie_breaks=[tb.to_stored_value() for tb in tie_breaks],
-            )
+    event = tournament.event
+    system_sets: list[SystemTieBreakSet] = []
+    system_id = tournament.pairing_system.id
+    if system_id == SwissPairingSystem().id:
+        system_sets = _swiss_system_sets(event)
+    elif system_id == RoundRobinPairingSystem().id:
+        system_sets = _round_robin_system_sets()
+    return [
+        TieBreakSet(
+            key=system_set.key,
+            name=system_set.name,
+            source=TieBreakSetSource.SYSTEM,
+            pairing_system_id=system_id,
+            stored_tie_breaks=[
+                tie_break.to_stored_value() for tie_break in system_set.tie_breaks
+            ],
         )
-    return sets
+        for system_set in system_sets
+    ]
