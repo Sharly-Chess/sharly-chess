@@ -57,6 +57,9 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
+msgid "Closing"
+msgstr ""
+
 msgid "Club"
 msgstr ""
 
@@ -98,6 +101,9 @@ msgid "Edit the player"
 msgstr ""
 
 msgid "Edit the tournament"
+msgstr ""
+
+msgid "Enable player check-in from Sharly-Chess.com."
 msgstr ""
 
 msgid "End"
@@ -196,10 +202,16 @@ msgstr ""
 msgid "No player to synchronize yet, import or upload tournaments first."
 msgstr ""
 
+msgid "Not scheduled"
+msgstr ""
+
 msgid "Not started"
 msgstr ""
 
 msgid "Ongoing"
+msgstr ""
+
+msgid "Opening"
 msgstr ""
 
 msgid "Pending"
@@ -391,6 +403,9 @@ msgstr ""
 msgid "Year of birth"
 msgstr ""
 
+msgid "You are not allowed to open or close this check-in."
+msgstr ""
+
 msgid "consult the logs"
 msgstr ""
 
@@ -407,4 +422,13 @@ msgid "{count} duplicated player detected."
 msgid_plural "{count} duplicated players detected."
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "Closed"
+#~ msgstr ""
+
+#~ msgid "Open"
+#~ msgstr ""
+
+#~ msgid "An error occurred while reaching Sharly-Chess.com, consult the logs for more details."
+#~ msgstr ""
 

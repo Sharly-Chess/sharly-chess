@@ -66,8 +66,8 @@
                         round=admin_round
                     ) }}"
                     hx-target="body"
-                    hx-indicator="#please-wait"
                 {% endif %}
+                hx-indicator="#please-wait"
             >
                 {% if admin_absent_players or admin_round == 1 %}
                     <i class="bi-caret-right"></i>

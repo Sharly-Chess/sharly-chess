@@ -10,7 +10,7 @@
         </div>
         <div class="modal-body">
             {% if message %}
-                {% with type='success' %}
+                {% with type=message_type or 'success' %}
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
@@ -29,6 +29,17 @@
                     >
                         {{ _('Screens') }}
                     </th>
+                    {% for column in plugin_columns %}
+                        <th
+                            class="text-nowrap {{ column.header_classes }}"
+                            {% set tooltip = column.header_tooltip %}
+                            {% if tooltip %}
+                                {{ macros.tooltip_attributes('', tooltip) }}
+                            {% endif %}
+                        >
+                            {{ column.header_content }}
+                        </th>
+                    {% endfor %}
                     <th class="text-nowrap text-center">
                         {{ _('Absent') }}
                     </th>
@@ -56,7 +67,15 @@
                                 {{ tournament.name }}
                             </td>
                             <td class="text-nowrap text-center">
-                                <div class="form-check form-switch d-inline-block">
+                                {% set can_open_check_in = client.can_open_close_check_in(tournament.id) %}
+                                <div
+                                    class="form-check form-switch d-inline-block"
+                                    {% if not can_open_check_in %}
+                                        {{ macros.tooltip_attributes('', _(
+                                            'You are not allowed to open or close this check-in.'
+                                        )) }}
+                                    {% endif %}
+                                >
                                     <input
                                         name="tournament_{{ tournament.id }}_check_in_open"
                                         class="form-check-input mt-2"
@@ -67,9 +86,15 @@
                                             tournament_id=tournament.id,
                                         ) }}"
                                         {% if tournament.check_in_open %}checked{% endif %}
+                                        {% if not can_open_check_in %}disabled{% endif %}
                                     />
                                 </div>
                             </td>
+                            {% for column in plugin_columns %}
+                                <td class="text-nowrap {{ column.get_cell_classes(tournament) }}">
+                                    {% include column.cell_template %}
+                                </td>
+                            {% endfor %}
                             {% for status in ordered_statuses %}
                                 {% with base_id='tournament-' ~ tournament.id, counter=tournament.check_in_status_grouped_counts %}
                                     {% include 'check_in_table_status_cell.html' %}

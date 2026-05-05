@@ -1,3 +1,4 @@
+import copy
 import json
 from datetime import datetime, timedelta
 from enum import Enum, auto
@@ -61,6 +62,8 @@ from plugins.sce.utils import SCEUtils
 from plugins.utils import Plugin
 from utils import Utils
 from utils.enum import Result
+from web.channels import channels_plugin
+from web.controllers.admin.player_admin_controller import PlayerAdminController
 from web.urls import build_get_url
 
 logger: Logger = get_logger()
@@ -102,6 +105,7 @@ class SCESession(Session):
     def __init__(self, event: Event):
         super().__init__()
         self.event = event
+        self.new_check_ins_tournament_sce_ids: set[str] = set()
 
     @property
     def tokens(self) -> SCETokens:
@@ -500,6 +504,12 @@ class SCESession(Session):
                 f'Tournament forced to [{local_sync_data.tournament_id}] (SC.com)'
             )
         needs_saving = True
+        last_sync_data = plugin_data.last_sync_data
+        local_check_in_updated = (
+            last_sync_data
+            and local_sync_data.check_in != sce_sync_data.check_in
+            and local_sync_data.check_in == last_sync_data.check_in
+        )
         if local_sync_data == sce_sync_data:
             # Already synced
             if local_sync_data == plugin_data.last_sync_data:
@@ -541,6 +551,10 @@ class SCESession(Session):
             SCEUtils.update_player_plugin_data(
                 player, plugin_data, write_stored_object=True
             )
+            if local_check_in_updated:
+                self.new_check_ins_tournament_sce_ids.add(
+                    getattr(plugin_data.last_sync_data, 'tournament_id')
+                )
         return PlayerStatus.CONFLICT if has_conflict else PlayerStatus.SUCCESS
 
     # -------------------------------------------------------------------------
@@ -732,6 +746,10 @@ class SCESession(Session):
                 log_operation(
                     f'Not mergeable dual changes, conflict created (details: {e})'
                 )
+        check_in_open = tournament_data_by_id[sce_tournament_id]['check_in_open']
+        if check_in_open != plugin_data.check_in_open:
+            plugin_data.check_in_open = check_in_open
+            needs_saving = True
         if needs_saving:
             SCEUtils.update_tournament_plugin_data(
                 tournament, plugin_data, write_stored_object=stored_object_modified
@@ -1033,6 +1051,9 @@ class SCESession(Session):
                     conflict_count += 1
                 elif status == PlayerStatus.DUPLICATE:
                     duplicate_count += 1
+        for sce_id in self.new_check_ins_tournament_sce_ids:
+            tournament = SCEUtils.get_tournament_by_sce_id(self.event, sce_id)
+            PlayerAdminController.publish_new_checkin(channels_plugin, tournament)
 
         event_plugin_data.deleted_player_ids = []
         event_plugin_data.last_sync_at = datetime.now()
@@ -1075,3 +1096,76 @@ class SCESession(Session):
         except Exception:
             body = {}
         return response.status_code, body
+
+    def _get_event_check_in_schedules_request(self) -> Response:
+        return requests.get(
+            self.base_event_url + '/check-in',
+            headers=self.api_headers,
+        )
+
+    def update_event_check_in_schedules(self):
+        response = self._run_with_token_validation(
+            self._get_event_check_in_schedules_request
+        )
+        data = response.json()['data']
+        schedule_data_by_id = {
+            schedule_data['id']: schedule_data for schedule_data in data['schedules']
+        }
+        for tournament_data in data['tournaments']:
+            tournament = SCEUtils.get_optional_tournament_by_sce_id(
+                self.event, tournament_data['id']
+            )
+            if not tournament:
+                continue
+            plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+            old_plugin_data = copy.copy(plugin_data)
+            plugin_data.check_in_open = tournament_data['check_in_open']
+            if schedule_id := tournament_data['schedule_id']:
+                schedule_data = schedule_data_by_id[schedule_id]
+                date_str = schedule_data['opens_at_date']
+                time_str = schedule_data['opens_at_time']
+                plugin_data.check_in_opens_at = (
+                    datetime.fromisoformat(date_str + ' ' + time_str)
+                    if date_str and time_str
+                    else None
+                )
+                date_str = schedule_data['closes_at_date']
+                time_str = schedule_data['closes_at_time']
+                plugin_data.check_in_closes_at = (
+                    datetime.fromisoformat(date_str + ' ' + time_str)
+                    if date_str and time_str
+                    else None
+                )
+            else:
+                plugin_data.check_in_opens_at = None
+                plugin_data.check_in_closes_at = None
+
+            if plugin_data != old_plugin_data:
+                SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+
+    def _open_tournament_check_in_request(self, tournament_id: str) -> Response:
+        return requests.post(
+            self.tournament_url(tournament_id) + '/check-in',
+            headers=self.api_headers,
+        )
+
+    def _close_tournament_check_in_request(self, tournament_id: str) -> Response:
+        return requests.delete(
+            self.tournament_url(tournament_id) + '/check-in',
+            headers=self.api_headers,
+        )
+
+    def toggle_tournament_check_in(self, tournament: Tournament):
+        plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+        sce_id = plugin_data.id
+        if not sce_id:
+            raise ValueError('Tournament not linked to Sharly-Chess.com')
+        check_in_open = plugin_data.check_in_open
+        request_function = (
+            self._close_tournament_check_in_request
+            if check_in_open
+            else self._open_tournament_check_in_request
+        )
+        self._run_with_token_validation(partial(request_function, tournament_id=sce_id))
+        plugin_data.check_in_open = not check_in_open
+        SCEUtils.update_tournament_plugin_data(tournament, plugin_data)

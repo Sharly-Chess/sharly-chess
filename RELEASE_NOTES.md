@@ -9,3 +9,8 @@
 ## Players
 
 - Make check-in system permanent (4.1.0)
+
+## Sharly-Chess.com
+
+- Added player check-in to the synchronization (4.1.0)
+- Open / close the online check-in from the check-in modal (4.1.0)

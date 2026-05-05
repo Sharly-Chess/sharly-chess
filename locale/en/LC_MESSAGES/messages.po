@@ -19,6 +19,10 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr ""
 
 #, python-format
+msgid "%(bye)s at round %(round)d"
+msgstr ""
+
+#, python-format
 msgid "%(minutes)d minutes after"
 msgstr ""
 
@@ -3477,6 +3481,10 @@ msgstr ""
 msgid "New category"
 msgstr ""
 
+#, python-format
+msgid "New check-ins are in, %(absents)d players now absent"
+msgstr ""
+
 msgid "New checkins are in, refresh your browser"
 msgstr ""
 
@@ -3872,6 +3880,9 @@ msgid "Open Admin Interface"
 msgstr ""
 
 msgid "Open documentation"
+msgstr ""
+
+msgid "Open/close check-in"
 msgstr ""
 
 msgid "Opening the welcome page [{url}] in a browser…"
@@ -4513,12 +4524,6 @@ msgstr ""
 msgid "Public screen"
 msgstr ""
 
-msgid "Publish pairings"
-msgstr ""
-
-msgid "Publish rankings"
-msgstr ""
-
 msgid "Publish tournament results"
 msgstr ""
 
@@ -4590,9 +4595,6 @@ msgid "Ranking only"
 msgstr ""
 
 msgid "Ranking screens show the players by rank."
-msgstr ""
-
-msgid "Rankings"
 msgstr ""
 
 msgid "Rapid"
@@ -6435,12 +6437,6 @@ msgstr ""
 msgid "View Prizes tab"
 msgstr ""
 
-msgid "View draft pairings"
-msgstr ""
-
-msgid "View draft rankings"
-msgstr ""
-
 msgid "View event cards details"
 msgstr ""
 
@@ -6672,6 +6668,9 @@ msgid "You are not allowed to modify Full-Point Byes."
 msgstr ""
 
 msgid "You are not allowed to modify Half-Point Byes."
+msgstr ""
+
+msgid "You are not allowed to open or close this check-in."
 msgstr ""
 
 msgid "You are not allowed to pair players."

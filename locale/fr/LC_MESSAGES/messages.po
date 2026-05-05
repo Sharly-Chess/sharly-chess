@@ -19,6 +19,10 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr "%%s est remplacé par le temps restant avant l'horaire."
 
 #, python-format
+msgid "%(bye)s at round %(round)d"
+msgstr "%(bye)s à la ronde %(round)d"
+
+#, python-format
 msgid "%(minutes)d minutes after"
 msgstr "%(minutes)d minutes après"
 
@@ -3477,6 +3481,10 @@ msgstr "Nouvelle-Zélande"
 msgid "New category"
 msgstr "Nouvelle catégorie"
 
+#, python-format
+msgid "New check-ins are in, %(absents)d players now absent"
+msgstr "De nouveaux pointages ont été effectués, il y a maintenant %(absents)d joueur·euses absent·es"
+
 msgid "New checkins are in, refresh your browser"
 msgstr "De nouveaux pointages ont été effectués, actualisez la page"
 
@@ -3875,6 +3883,9 @@ msgstr "Ouvrir l'interface d'administration"
 
 msgid "Open documentation"
 msgstr "Ouvrir la documentation"
+
+msgid "Open/close check-in"
+msgstr "Ouvrir/fermer le pointage"
 
 msgid "Opening the welcome page [{url}] in a browser…"
 msgstr "Ouverture de la page d'accueil [{url}] dans un navigateur…"
@@ -4515,12 +4526,6 @@ msgstr "Famille publique"
 msgid "Public screen"
 msgstr "Écran public"
 
-msgid "Publish pairings"
-msgstr "Publier les appariements"
-
-msgid "Publish rankings"
-msgstr "Publier les classements"
-
 msgid "Publish tournament results"
 msgstr "Publier les résultats"
 
@@ -4593,9 +4598,6 @@ msgstr "Classement seulement"
 
 msgid "Ranking screens show the players by rank."
 msgstr "Les écrans d'affichage de classement présentent les joueur·euses par ordre de classement."
-
-msgid "Rankings"
-msgstr "Classements"
 
 msgid "Rapid"
 msgstr "Rapide"
@@ -6437,12 +6439,6 @@ msgstr "Voir l'onglet Joueur·euses"
 msgid "View Prizes tab"
 msgstr "Voir l'onglet Prix"
 
-msgid "View draft pairings"
-msgstr "Voir les appariement avant publication"
-
-msgid "View draft rankings"
-msgstr "Voir les classement avant publication"
-
 msgid "View event cards details"
 msgstr "Voir les détails des cartes d'évènement"
 
@@ -6675,6 +6671,9 @@ msgstr "Vous n'êtes pas autorisé·e à modifier des byes point entier."
 
 msgid "You are not allowed to modify Half-Point Byes."
 msgstr "Vous n'êtes pas autorisé·e à modifier des byes."
+
+msgid "You are not allowed to open or close this check-in."
+msgstr "Vous n'êtes pas autorisé·e à ouvrir ou fermer ce pointage."
 
 msgid "You are not allowed to pair players."
 msgstr "Vous n'êtes pas autorisé·e à apparier les joueur·euses."

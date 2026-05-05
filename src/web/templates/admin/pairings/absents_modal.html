@@ -11,6 +11,16 @@
             </div>
         </div>
         <div class="modal-body">
+            <div
+                hx-get="{{ url_for(
+                    'absents-modal-new-check-ins-message',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_round
+                ) }}"
+                hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }}|{{ admin_tournament.id }} from:body"
+                hx-swap="innerHTML"
+            ></div>
             <form
                 id="modal-form"
                 hx-trigger="submit, enterKeypressFromModal"
@@ -243,3 +253,5 @@
         </div>
     </div>
 </div>
+
+<script>requestRefresh()</script>

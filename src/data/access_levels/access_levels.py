@@ -355,10 +355,7 @@ class PairingAccessLevel(AccessLevel):
             AuthAction.SET_CURRENT_ROUND,
             AuthAction.SET_ZPB,
             AuthAction.SET_HPB,
-            AuthAction.VIEW_DRAFT_PAIRINGS,
-            AuthAction.PUBLISH_PAIRINGS,
-            AuthAction.VIEW_DRAFT_RANKINGS,
-            AuthAction.PUBLISH_RANKINGS,
+            AuthAction.OPEN_CLOSE_CHECK_IN,
         ]
 
     def _help_text_content(self, locale: str | None = None) -> str:

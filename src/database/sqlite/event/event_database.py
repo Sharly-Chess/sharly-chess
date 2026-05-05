@@ -865,7 +865,7 @@ class EventDatabase(MigrationDatabase):
             federation=row['federation'],
             club=row['club'],
             fixed=row['fixed'],
-            check_in=row['check_in'],
+            check_in=cls.load_bool_from_database_field(row['check_in']),
             plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
         )
 

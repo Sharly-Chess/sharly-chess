@@ -57,7 +57,7 @@ if TYPE_CHECKING:
     from database.sqlite.local_source_database.databases import LocalSourceDatabase
     from plugins.migration import PluginMigrationManager
     from web.controllers.admin.player_admin_controller import PlayerAdminWebContext
-    from data.columns.column import ColumnUsage
+    from data.columns.column import ColumnUsage, Column
 
 hookspec = pluggy.HookspecMarker(APP_NAME)
 hookimpl = pluggy.HookimplMarker(APP_NAME)
@@ -193,6 +193,14 @@ class AppHookSpecs:
     ):
         """Provide extra columns for the player download datasheets"""
 
+    @hookspec
+    def get_check_in_table_column(self) -> 'Column[Tournament]':
+        """Get a column to insert into the check-in table."""
+
+    @hookspec
+    def on_before_load_tournaments_check_in_modal(self, event: 'Event'):
+        """Executed before the check-in modal is loaded."""
+
     # ---------------------------------------------------------------------------------
     # Events
     # ---------------------------------------------------------------------------------
@@ -307,6 +315,10 @@ class AppHookSpecs:
         self, tournament: 'Tournament | None', result: Result
     ) -> str | None:
         """A signal sent when a special result is set. Returns a string to be displayed to the user"""
+
+    @hookspec
+    def load_tournament_check_in_data(self, tournament: 'Tournament'):
+        """Load the check-in data of a tournament."""
 
     # ---------------------------------------------------------------------------------
     # Upload
