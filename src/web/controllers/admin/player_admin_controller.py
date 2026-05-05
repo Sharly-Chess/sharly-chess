@@ -1621,7 +1621,7 @@ class PlayerAdminController(BaseEventAdminController):
         check_in = data.get('status') == 'present'
         tournament.check_in_all_players(check_in)
         message = _(
-            'All the players of tournament [{tournament}] have been marked a "{status}".'
+            'All the players of tournament [{tournament}] have been marked as "{status}".'
         ).format(
             tournament=tournament.name,
             status=_('Present') if check_in else _('Absent'),

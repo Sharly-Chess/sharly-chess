@@ -589,7 +589,7 @@ msgstr "Tou·tes les joueur·euses"
 msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
 msgstr "Tou·tes les joueur·euses du tournoi sélectionné seront supprimé·es avant d'importer ceux du fichier."
 
-msgid "All the players of tournament [{tournament}] have been marked a \"{status}\"."
+msgid "All the players of tournament [{tournament}] have been marked as \"{status}\"."
 msgstr "Tou·tes les joueur·euses du tournoi [{tournament}] ont été marqué·es « {status} »."
 
 msgid "All the tournaments"
@@ -993,15 +993,15 @@ msgstr "Par ordre alpha."
 
 #, python-format
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
-msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
+msgstr "La limite de byes (%(limit)d) est déjà atteinte pour ce tournoi."
 
-msgid "Byes"
+msgid "Byes *** ZPB, HPB or FPB"
 msgstr "Forfaits ou byes"
 
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
-msgstr[0] "Les demi-points joker ne peuvent être attribués lors de la dernière ronde du tournoi."
-msgstr[1] "Les demi-points joker ne peuvent être attribués lors des {rounds} dernières rondes du tournoi."
+msgstr[0] "Les byes ne peuvent être attribués lors de la dernière ronde du tournoi."
+msgstr[1] "Les byes ne peuvent être attribués lors des {rounds} dernières rondes du tournoi."
 
 msgid "Byes will not be impacted."
 msgstr "Les forfaits et les byes ne seront pas impactés."
@@ -1673,6 +1673,9 @@ msgstr "Définir les écrans et familles d'écrans à afficher."
 msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
 msgstr "Définir des groupes de tournois parmi lesquels les joueur·euses sont répartis un par un, aboutissant à des tournois aux classements équilibrés."
 
+msgid "Definitive withdrawal"
+msgstr "Forfait définitif"
+
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr "Délai n°%(num)d :"
@@ -1867,6 +1870,14 @@ msgstr "Djibouti"
 
 msgid "Do not edit this table manually, use script {script_name} instead."
 msgstr "Ne pas éditer ce tableau manuellement, utiliser plutôt le script {script_name}."
+
+#, python-format
+msgid "Do not pair at round %(pairing_round)d"
+msgstr "Ne pas apparier à la ronde %(pairing_round)d"
+
+#, python-format
+msgid "Do not pair at round %(pairing_round)d (Zero-Point Bye)"
+msgstr "Ne pas apparier à la ronde %(pairing_round)d (forfait)"
 
 msgid "Do not recover"
 msgstr "Ne pas restaurer"
@@ -2530,10 +2541,10 @@ msgid "From your server find the screen or rotator you want to display, and sent
 msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
 
 msgid "Full-Point Bye"
-msgstr "Point joker entier"
+msgstr "Bye point entier"
 
 msgid "Full-Point Bye (deprecated)"
-msgstr "Point joker entier (obsolète)"
+msgstr "Bye point entier (obsolète)"
 
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GMI"
@@ -2650,10 +2661,10 @@ msgid "Haiti"
 msgstr "Haïti"
 
 msgid "Half-Point Bye"
-msgstr "Demi-point joker (bye)"
+msgstr "Bye"
 
 msgid "Half-Point Bye attributed to player [{player}]."
-msgstr "Un demi-point joker a été attribué au·à la joueur·euse [{player}]."
+msgstr "Un bye a été attribué au·à la joueur·euse [{player}]."
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches présente un risque qu'un prix ne soit pas attribué."
@@ -2779,7 +2790,7 @@ msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament}]."
 
 #, python-format
 msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
-msgstr "Impossible de définir un point joker dans les %(rounds)d dernières rondes du tournoi"
+msgstr "Impossible de définir un bye dans les %(rounds)d dernières rondes du tournoi"
 
 msgid "Impossible to set a round number lower than the last round with pairings #{round}."
 msgstr "Impossible d'attribuer un nombre de rondes inférieur à la dernière ronde appariée (ronde n°{round})."
@@ -3218,14 +3229,11 @@ msgstr "Mars"
 
 #, python-format
 msgid "Mark all players as \"%(status)s\" "
-msgstr "Marquer tout·es les joueur·euses « %(status)s » "
+msgstr "Marquer tou·tes les joueur·euses « %(status)s » "
 
 #, python-format
 msgid "Mark as \"%(status)s\" "
 msgstr "Marquer « %(status)s » "
-
-msgid "Mark as &quot;Present&quot; (will be paired next round)"
-msgstr "Marquer &quot;Présent·e&quot; (seront apparié·es à la prochaine ronde)"
 
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ronde courante."
@@ -3269,7 +3277,7 @@ msgstr "Âge maximum des résultats :"
 
 #, python-format
 msgid "Maximum number of byes: %(max_byes)d"
-msgstr "Nombre maximum de jokers (byes) : %(max_byes)d"
+msgstr "Nombre maximum de byes : %(max_byes)d"
 
 msgid "Maximum number of points (included):"
 msgstr "Nombre maximum de points (inclus) :"
@@ -3719,10 +3727,10 @@ msgid "Not assigned"
 msgstr "Non-attribué"
 
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
-msgstr "Il n'y a pas assez de demi-points joker disponibles pour attribuer un point joker entier (requis : 2)."
+msgstr "Il n'y a pas assez de byes disponibles pour attribuer un bye point entier (requis : 2)."
 
 msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
-msgstr "Il n'y a pas de demi-point joker disponible pour attribuer un demi-point joker (requis : 1)."
+msgstr "Il n'y a pas de bye disponible (requis : 1)."
 
 msgid "Not logged in"
 msgstr "Non connecté"
@@ -3759,11 +3767,11 @@ msgstr "Numéro (tournoi devant)"
 
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
-msgstr "Nombre de demi-points joker : %(byes)d (maximum : %(max_byes)d)"
+msgstr "Nombre de byes : %(byes)d (maximum : %(max_byes)d)"
 
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
-msgstr "Dernières rondes sans joker (bye) : %(last_rounds_no_byes)d"
+msgstr "Dernières rondes sans bye : %(last_rounds_no_byes)d"
 
 msgid "Number of games won"
 msgstr "Nombre de parties gagnées"
@@ -3954,6 +3962,10 @@ msgstr "Apparier avec les NOIRS"
 
 msgid "Pair as WHITE"
 msgstr "Apparier avec les BLANCS"
+
+#, python-format
+msgid "Pair at round %(pairing_round)d"
+msgstr "Apparier à la ronde %(pairing_round)d"
 
 msgid "Pair the unpaired players with each other."
 msgstr "Apparier les joueur·euses non-apparié·es ensembles."
@@ -4272,6 +4284,18 @@ msgstr "Les joueur·euses correspondant aux critères de leur tournoi."
 
 msgid "Players who have received a bye for the incoming round and will therefore not be paired."
 msgstr "Les joueur·euses ayant reçu un forfait ou un bye pour la rounde à venir et qui ne seront pas apparié·es."
+
+#, python-format
+msgid "Players will be paired at round %(pairing_round)d and marked as present for the following rounds."
+msgstr "Les joueur·euses seront apparié·es à la ronde %(pairing_round)d et marqué·es présent·es pour les rondes suivantes."
+
+#, python-format
+msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and all subsequent rounds, all Half or Full-Point Byes will be removed."
+msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et toutes les suivantes, les byes attribués seront supprimés."
+
+#, python-format
+msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and remain absent for the following rounds."
+msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et resteront absent·es pour les rondes suivantes."
 
 msgid "Players without phone or email won't be included."
 msgstr "Les joueur·euses sans numéro de téléphone ni adresse email ne seront pas inclus·es."
@@ -4613,10 +4637,11 @@ msgid "Ratings update"
 msgstr "Mise à jour des classements"
 
 msgid "Received a Full-Point Bye for the next round"
-msgstr "A reçu un point joker pour la ronde à venir"
+msgstr "Ont reçu un bye point entier pour la ronde à venir"
 
 msgid "Received a Half-Point Bye for the next round"
-msgstr "A reçu un demi-point joker (bye) pour la ronde à venir"
+msgstr "Ont reçu un bye pour la ronde à venir"
+
 
 msgid "Received a Zero-Point Bye for all the remaining rounds"
 msgstr "A reçu un forfait pour toutes les rondes à venir"
@@ -4698,7 +4723,7 @@ msgid "Reset"
 msgstr "Réinitialiser"
 
 msgid "Reset all the players to &quot;Absent&quot; or &quot;Present&quot; (byes not impacted)."
-msgstr "Réinitialiser tout·es les joueur·euses en &quot;Absent·e&quot; ou &quot;Présent·e&quot; (les forfaits et byes ne sont pas impactés)."
+msgstr "Réinitialiser tou·tes les joueur·euses en &laquo; Absent·e &raquo; ou &laquo; Présent·e &raquo; (les forfaits et byes ne sont pas impactés)."
 
 msgid "Reset check-in"
 msgstr "Réinitialiser le pointage"
@@ -5035,14 +5060,14 @@ msgstr "Tout sélectionner"
 msgid "Select an account"
 msgstr "Sélectionner un compte"
 
+msgid "Select an action for absent players:"
+msgstr "Sélectionner une action pour les joueur·euses absent·es :"
+
 msgid "Select player"
 msgstr "Sélectionner un·e joueur·euse"
 
 msgid "Select the players and the data to update:"
 msgstr "Sélectionner les joueur·euses et les données à mettre à jour :"
-
-msgid "Select the status of the following players:"
-msgstr "Sélectionner le statut des joueur·euses suivant·es :"
 
 msgid "Select the tournaments to add players to."
 msgstr "Sélectionner les tournois dans lesquels ajouter des joueur·euses."
@@ -5076,10 +5101,10 @@ msgid "Server is already running!"
 msgstr "Le serveur est déjà en cours d'exécution !"
 
 msgid "Set Full-Points Byes"
-msgstr "Allouer des points joker"
+msgstr "Allouer des byes point entier"
 
 msgid "Set Half-Points Byes"
-msgstr "Allouer des demi-points joker"
+msgstr "Allouer des byes"
 
 msgid "Set Zero-Points Byes"
 msgstr "Allouer des forfaits"
@@ -5578,7 +5603,7 @@ msgid "The number of points in the standard 1/0.5/0 point system."
 msgstr "Le nombre de points dans le système de points standard 1/0,5/0."
 
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
-msgstr "Le nombre de rondes dans lesquelles un·e joueur·euse n'a pas reçu de point joker ou une défaite par forfait."
+msgstr "Le nombre de rondes dans lesquelles un·e joueur·euse n'a pas reçu de bye ou une défaite par forfait."
 
 msgid "The number of rounds where a player obtains, with or without playing, as many points as awarded for a win."
 msgstr "Le nombre de rondes lors desquelles un·e joueur·euse obtient, en jouant ou non, autant de points que lors d'une victoire."
@@ -6012,7 +6037,7 @@ msgid "Too few players to generate the pairings (minimum: {min})."
 msgstr "Trop peu de joueur·euses pour générer les appariements (minimum : {min})."
 
 msgid "Too many byes for player [{player_name}]."
-msgstr "Trop de points joker pour le joueur [{player_name}]."
+msgstr "Trop de byes pour le joueur [{player_name}]."
 
 msgid "Too much information to display on a single projector?"
 msgstr "Trop d’informations à afficher sur un seul projecteur ?"
@@ -6654,10 +6679,10 @@ msgid "You are not allowed to manage prizes."
 msgstr "Vous n'êtes pas autorisé·e à gérer les prix."
 
 msgid "You are not allowed to modify Full-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à modifier des points joker entiers."
+msgstr "Vous n'êtes pas autorisé·e à modifier des byes point entier."
 
 msgid "You are not allowed to modify Half-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à modifier des demi-points joker."
+msgstr "Vous n'êtes pas autorisé·e à modifier des byes."
 
 msgid "You are not allowed to pair players."
 msgstr "Vous n'êtes pas autorisé·e à apparier les joueur·euses."
@@ -6666,10 +6691,10 @@ msgid "You are not allowed to return players."
 msgstr "Vous n'êtes pas autorisé·e à faire revenir des joueur·euses."
 
 msgid "You are not allowed to set Full-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à attribuer des points joker entiers."
+msgstr "Vous n'êtes pas autorisé·e à attribuer des byes point entier."
 
 msgid "You are not allowed to set Half-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à déclarer des demi-points joker."
+msgstr "Vous n'êtes pas autorisé·e à déclarer des byes."
 
 msgid "You are not allowed to set Zero-Point Byes."
 msgstr "Vous n'êtes pas autorisé·e à déclarer des forfaits."
@@ -6748,9 +6773,6 @@ msgstr "Forfait"
 
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr "Le·la joueur·euse [{player}] a été marqué·e forfait."
-
-msgid "Zero-Point Bye for the next round"
-msgstr "Forfait pour la prochaine ronde"
 
 msgid "Zimbabwe"
 msgstr "Zimbabwe"

@@ -589,7 +589,7 @@ msgstr ""
 msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
 msgstr ""
 
-msgid "All the players of tournament [{tournament}] have been marked a \"{status}\"."
+msgid "All the players of tournament [{tournament}] have been marked as \"{status}\"."
 msgstr ""
 
 msgid "All the tournaments"
@@ -995,8 +995,8 @@ msgstr ""
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
 msgstr ""
 
-msgid "Byes"
-msgstr ""
+msgid "Byes *** ZPB, HPB or FPB"
+msgstr "Byes"
 
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
@@ -1673,6 +1673,9 @@ msgstr ""
 msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
 msgstr ""
 
+msgid "Definitive withdrawal"
+msgstr ""
+
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr ""
@@ -1866,6 +1869,14 @@ msgid "Djibouti"
 msgstr ""
 
 msgid "Do not edit this table manually, use script {script_name} instead."
+msgstr ""
+
+#, python-format
+msgid "Do not pair at round %(pairing_round)d"
+msgstr ""
+
+#, python-format
+msgid "Do not pair at round %(pairing_round)d (Zero-Point Bye)"
 msgstr ""
 
 msgid "Do not recover"
@@ -3224,9 +3235,6 @@ msgstr ""
 msgid "Mark as \"%(status)s\" "
 msgstr ""
 
-msgid "Mark as &quot;Present&quot; (will be paired next round)"
-msgstr ""
-
 msgid "Mark this round as over and define the next one as the current round."
 msgstr ""
 
@@ -3953,6 +3961,10 @@ msgstr ""
 msgid "Pair as WHITE"
 msgstr ""
 
+#, python-format
+msgid "Pair at round %(pairing_round)d"
+msgstr ""
+
 msgid "Pair the unpaired players with each other."
 msgstr ""
 
@@ -4269,6 +4281,18 @@ msgid "Players which match the criteria of their tournament."
 msgstr ""
 
 msgid "Players who have received a bye for the incoming round and will therefore not be paired."
+msgstr ""
+
+#, python-format
+msgid "Players will be paired at round %(pairing_round)d and marked as present for the following rounds."
+msgstr ""
+
+#, python-format
+msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and all subsequent rounds, all Half or Full-Point Byes will be removed."
+msgstr ""
+
+#, python-format
+msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and remain absent for the following rounds."
 msgstr ""
 
 msgid "Players without phone or email won't be included."
@@ -5033,13 +5057,13 @@ msgstr ""
 msgid "Select an account"
 msgstr ""
 
+msgid "Select an action for absent players:"
+msgstr ""
+
 msgid "Select player"
 msgstr ""
 
 msgid "Select the players and the data to update:"
-msgstr ""
-
-msgid "Select the status of the following players:"
 msgstr ""
 
 msgid "Select the tournaments to add players to."
@@ -6747,9 +6771,6 @@ msgstr ""
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr ""
 
-msgid "Zero-Point Bye for the next round"
-msgstr ""
-
 msgid "Zimbabwe"
 msgstr ""
 
@@ -7048,7 +7069,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
-#~ msgstr ""
 

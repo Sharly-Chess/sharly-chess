@@ -23,11 +23,89 @@
                 ) }}"
                 hx-indicator="#please-wait"
             >
-                <h5 class="mb-3">
-                    {{ _('Select the status of the following players:') }}
-                </h5>
-                <div class="d-flex align-items-center justify-content-end pe-2 pb-2">
-                    <span class="pe-2 fs-5">
+                <div class="mb-3">
+                    {{ _('Select an action for absent players:') }}
+                </div>
+                <div class="d-grid ms-3" style="grid-template-columns: 30px min-content;">
+                    <h5>
+                        <i class="bi-0-circle-fill"></i>
+                    </h5>
+                    <span class="text-nowrap">
+                        {{
+                            _(
+                                'Do not pair at round %(pairing_round)d (Zero-Point Bye)',
+                                pairing_round=admin_round
+                            )
+                        }}
+                        {% if admin_round < admin_tournament.rounds %}
+                            <i
+                                class="bi-info-circle-fill ps-1"
+                                {{
+                                    macros.tooltip_attributes(
+                                        'right',
+                                        _(
+                                            'Players will receive a Zero-Point Bye at round %(pairing_round)d and remain absent for the following rounds.',
+                                            pairing_round=admin_round
+                                        )
+                                    )
+                                }}
+                            ></i>
+                        {% endif %}
+                    </span>
+                    {% if admin_round < admin_tournament.rounds %}
+                        <h5>
+                            <i class="bi-sign-stop"></i>
+                        </h5>
+                        <span class="text-nowrap">
+                            {{
+                                _(
+                                    'Definitive withdrawal'
+                                )
+                            }}
+                            <i
+                                class="bi-info-circle-fill ps-1"
+                                {{
+                                    macros.tooltip_attributes(
+                                        'right',
+                                        _(
+                                            'Players will receive a Zero-Point Bye at round %(pairing_round)d and all subsequent rounds, all Half or Full-Point Byes will be removed.',
+                                            pairing_round=admin_round
+                                        )
+                                    )
+                                }}
+                            ></i>
+                        </span>
+                    {% endif %}
+                    <h5>
+                        <i class="bi-check-circle-fill"></i>
+                    </h5>
+                    <span class="text-nowrap">
+                        {{
+                            _(
+                                'Pair at round %(pairing_round)d',
+                                pairing_round=admin_round
+                            )
+                        }}
+                        {% if admin_round < admin_tournament.rounds %}
+                            <i
+                                class="bi-info-circle-fill ps-1"
+                                {% if admin_round < admin_tournament.rounds %}
+                                    {{
+                                        macros.tooltip_attributes(
+                                            'right',
+                                            _(
+                                                'Players will be paired at round %(pairing_round)d and marked as present for the following rounds.',
+                                                pairing_round=admin_round
+                                            )
+                                        )
+                                    }}
+                                {% endif %}
+                            ></i>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="d-flex align-items-center justify-content-end pe-2 pb-2 mt-3">
+                    <span class="text-start flex-grow-1 fw-bold">
                         {{ _('Apply to all') }}
                     </span>
                     <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
@@ -43,26 +121,28 @@
                         <label
                             class="btn btn-outline-primary lh-1"
                             for="zpb-all"
-                            {{ macros.tooltip_attributes('', _('Zero-Point Bye for the next round')) }}
+                            {{ macros.tooltip_attributes('', _('Do not pair at round %(pairing_round)d', pairing_round=admin_round)) }}
                         >
                             <i class="bi-0-circle-fill"></i>
                         </label>
 
-                        <input
-                            type="radio"
-                            class="btn-check"
-                            id="withdraw-all"
-                            value="withdraw"
-                            name="all_players"
-                            autocomplete="off"
-                        >
-                        <label
-                            class="btn btn-outline-primary lh-1"
-                            for="withdraw-all"
-                            {{ macros.tooltip_attributes('', _('Withdraw from tournament')) }}
-                        >
-                            <i class="bi-sign-stop-fill"></i>
-                        </label>
+                        {% if admin_round < admin_tournament.rounds %}
+                            <input
+                                type="radio"
+                                class="btn-check"
+                                id="withdraw-all"
+                                value="withdraw"
+                                name="all_players"
+                                autocomplete="off"
+                            >
+                            <label
+                                class="btn btn-outline-primary lh-1"
+                                for="withdraw-all"
+                                {{ macros.tooltip_attributes('', _('Definitive withdrawal')) }}
+                            >
+                                <i class="bi-sign-stop"></i>
+                            </label>
+                        {% endif %}
                         <input
                             type="radio"
                             class="btn-check"
@@ -74,7 +154,7 @@
                         <label
                             class="btn btn-outline-primary lh-1"
                             for="present-all"
-                            {{ macros.tooltip_attributes('', _('Mark as &quot;Present&quot; (will be paired next round)')) }}
+                            {{ macros.tooltip_attributes('', _('Pair at round %(pairing_round)d', pairing_round=admin_round)) }}
                         >
                             <i class="bi-check-circle-fill"></i>
                         </label>
@@ -106,17 +186,19 @@
                                         <i class="bi-0-circle-fill"></i>
                                     </label>
 
-                                    <input
-                                        type="radio"
-                                        class="btn-check player-withdraw"
-                                        name="player_{{ player.id }}"
-                                        id="withdraw-{{ player.id }}"
-                                        value="withdraw"
-                                        autocomplete="off"
-                                    >
-                                    <label class="btn btn-outline-primary lh-1" for="withdraw-{{ player.id }}">
-                                        <i class="bi-sign-stop-fill"></i>
-                                    </label>
+                                    {% if admin_round < admin_tournament.rounds %}
+                                        <input
+                                            type="radio"
+                                            class="btn-check player-withdraw"
+                                            name="player_{{ player.id }}"
+                                            id="withdraw-{{ player.id }}"
+                                            value="withdraw"
+                                            autocomplete="off"
+                                        >
+                                        <label class="btn btn-outline-primary lh-1" for="withdraw-{{ player.id }}">
+                                            <i class="bi-sign-stop"></i>
+                                        </label>
+                                    {% endif %}
                                     <input
                                         type="radio"
                                         class="btn-check player-present"
