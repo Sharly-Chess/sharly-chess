@@ -26,8 +26,13 @@
                             {% set prizes_assigned_to_players=prizes_assigned_to_players_by_category_id[prize_category_id] %}
                             <div class="section-title">
                                 {{ prize_category.name }}
-                                {% if prize_category.total_prize_value %}
-                                    ({{ _('total: %(total)s', total=prize_category.format_total_prize_value(prize_currency)) }})
+                                {% if prize_category.total_monetary_value or prize_category.total_non_monetary_value %}
+                                    ({{- macros.prize_totals_line(
+                                        prize_category.format_total_monetary_value(prize_currency)
+                                            if prize_category.total_monetary_value else None,
+                                        prize_category.format_total_non_monetary_value(prize_currency)
+                                            if prize_category.total_non_monetary_value else None,
+                                    ) -}})
                                 {% endif %}
                             </div>
                             <div class="subheading">
@@ -52,7 +57,7 @@
                                 </div>
                                 <div class="cell value {{classes}}">
                                     <span class="fw-bold text-start text-nowrap">
-                                        {{ prize_assigned_to_player.name }}
+                                        {{ prize_assigned_to_player.full_name }}
                                     </span>
                                 </div>
                                 <div class="cell payment {{classes}}">

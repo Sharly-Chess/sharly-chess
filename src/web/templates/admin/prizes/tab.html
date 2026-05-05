@@ -116,62 +116,57 @@
             </button>
         </span>
     {% elif admin_prize_group %}
-        <div class="d-flex flex-column">
-            <div style="font-size: 0.8rem;">
-                {{ _('%(string)s:', string=_('Prize Brackets')) }}
-            </div>
-            <div class="d-flex align-items-end">
-                <select
-                    name="prize_group_id"
-                    class="form-select prize-group-controls"
-                    style="width: fit-content;"
-                    hx-trigger="change"
-                    hx-get="{{ url_for(
-                        'admin-event-prizes-tab',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id
-                    ) }}"
-                    hx-target="body"
-                    hx-replace-url="true"
-                    hx-indicator="#please-wait"
-                >
-                    {% for value, text in prize_group_options.items() %}
-                        <option value="{{ value }}" {% if value == admin_prize_group.id|string %}selected{%endif %}>
-                            {{ text }}
-                        </option>
-                    {% endfor %}
-                </select>
-                <span
+        <div class="d-flex align-items-center gap-1">
+            <select
+                name="prize_group_id"
+                class="form-select prize-group-controls"
+                style="width: fit-content;"
+                hx-trigger="change"
+                hx-get="{{ url_for(
+                    'admin-event-prizes-tab',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id
+                ) }}"
+                hx-target="body"
+                hx-replace-url="true"
+                hx-indicator="#please-wait"
+            >
+                {% for value, text in prize_group_options.items() %}
+                    <option value="{{ value }}" {% if value == admin_prize_group.id|string %}selected{%endif %}>
+                        {{ text }}
+                    </option>
+                {% endfor %}
+            </select>
+            <span
+                {% if not client.can_manage_prizes %}
+                    {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
+                {% else %}
+                    {{ macros.tooltip_attributes(
+                        'info',
+                        _('Manage the prize brackets of the tournament (1 player = 1 prize per bracket).'),
+                        'bottom'
+                    ) }}
+                {% endif %}
+            >
+                <button
+                    class="btn text-primary"
                     {% if not client.can_manage_prizes %}
-                        {{ macros.tooltip_attributes('warning', _('You are not allowed to manage prizes.'), 'bottom') }}
+                        disabled
                     {% else %}
-                        {{ macros.tooltip_attributes(
-                            'info',
-                            _('Manage the prize brackets of the tournament (1 player = 1 prize per bracket).'),
-                            'bottom'
-                        ) }}
+                        hx-get="{{ url_for(
+                            'admin-prize-groups-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
                     {% endif %}
                 >
-                    <button
-                        class="btn text-primary"
-                        {% if not client.can_manage_prizes %}
-                            disabled
-                        {% else %}
-                            hx-get="{{ url_for(
-                                'admin-prize-groups-modal',
-                                event_uniq_id=admin_event.uniq_id,
-                                tournament_id=admin_tournament.id,
-                            ) }}"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                            data-bs-toggle="modal"
-                            data-bs-target="#modal-wrapper"
-                        {% endif %}
-                    >
-                        <i class="bi-gear-fill"></i>
-                    </button>
-                </span>
-            </div>
+                    <i class="bi-gear-fill"></i>
+                </button>
+            </span>
         </div>
     {% else %}
         <span>
@@ -302,6 +297,21 @@
                         {% include 'prize_category_card.html' %}
                     {% endwith %}
                 {% endfor %}
+                <div class="col-12">
+                    <div class="border-top pt-2 text-end text-secondary">
+                        {% if admin_prize_group.total_monetary_value
+                            or admin_prize_group.total_non_monetary_value %}
+                            {{ macros.prize_totals_line(
+                                admin_prize_group.format_total_monetary_value(prize_currency)
+                                    if admin_prize_group.total_monetary_value else None,
+                                admin_prize_group.format_total_non_monetary_value(prize_currency)
+                                    if admin_prize_group.total_non_monetary_value else None,
+                            ) }}
+                        {% else %}
+                            {{ _('%(string)s:', string=_('Total')) }} {{ _('No prizes defined') }}
+                        {% endif %}
+                    </div>
+                </div>
             {% endif %}
         </div>
     </form>

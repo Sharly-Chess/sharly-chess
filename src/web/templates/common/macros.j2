@@ -256,3 +256,16 @@
         {% endif %}
     {% endif %}
 {% endmacro %}
+
+{% macro prize_totals_line(monetary_formatted, non_monetary_formatted) -%}
+    {%- set parts = [] -%}
+    {%- if monetary_formatted -%}
+        {{- parts.append(monetary_formatted ~ ' (' ~ _('Monetary') ~ ')') or '' -}}
+    {%- endif -%}
+    {%- if non_monetary_formatted -%}
+        {{- parts.append(non_monetary_formatted ~ ' (' ~ _('Non-monetary') ~ ')') or '' -}}
+    {%- endif -%}
+    {%- if parts -%}
+        {{ _('%(string)s:', string=_('Total')) }} {{ parts|join(', ') }}
+    {%- endif -%}
+{%- endmacro %}

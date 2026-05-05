@@ -1,42 +1,70 @@
 {% extends '/admin/print/base.html' %}
 
 {% block content %}
+    {% set multi_tournament = tournaments|length > 1 %}
+    {% set totals = namespace(monetary=0, non_monetary=0) %}
     {% for tournament in tournaments %}
+        {% if not loop.first %}
+            <div class="separator"></div>
+        {% endif %}
+        <div class="{% if not loop.first %}no-page-break{% endif %}">
+        <div class="tournament-title">{{ tournament.name }}</div>
+        {% for prize_group in tournament.sorted_prize_groups %}
             {% if not loop.first %}
-                <div class="separator"></div>
+                <div class="short-separator"></div>
             {% endif %}
-            <div class="{% if not loop.first %}no-page-break{% endif %}">
-            <div class="tournament-title">{{ tournament.name }}</div>
-            {% for prize_group in tournament.sorted_prize_groups %}
-                {% if not loop.first %}
-                    <div class="short-separator"></div>
-                {% endif %}
-                {% for prize_category in prize_group.sorted_categories %}
-                    <div class="no-page-break">
-                        <div class="section-title">
-                            {{ prize_category.name }}
-                            {% if prize_category.total_prize_value %}
-                                ({{ _('total: %(total)s', total=prize_category.format_total_prize_value(prize_currency)) }})
-                            {% endif %}
-                        </div>
-                        <div class="section-sub-title">
-                            {{ prize_category.format_shared_prizes(prize_currency) }}
-                        </div>
-                        <table style="margin: auto;">
-                            <tbody>
-                                {% for prize in prize_category.sorted_prizes %}
-                                    <tr>
-                                        <td class="important-cell">
-                                            {{ ordinal_integer(loop.index)|safe }}
-                                        </td>
-                                        <td>{{ prize.name }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+            {% for prize_category in prize_group.sorted_categories %}
+                <div class="no-page-break">
+                    <div class="section-title">
+                        {{ prize_category.name }}
+                        {% if prize_category.total_monetary_value or prize_category.total_non_monetary_value %}
+                            ({{- macros.prize_totals_line(
+                                prize_category.format_total_monetary_value(prize_currency)
+                                    if prize_category.total_monetary_value else None,
+                                prize_category.format_total_non_monetary_value(prize_currency)
+                                    if prize_category.total_non_monetary_value else None,
+                            ) -}})
+                        {% endif %}
                     </div>
-                {% endfor %}
+                    <div class="section-sub-title">
+                        {{ prize_category.format_shared_prizes(prize_currency) }}
+                    </div>
+                    <table style="margin: auto;">
+                        <tbody>
+                            {% for prize in prize_category.sorted_prizes %}
+                                <tr>
+                                    <td class="important-cell">
+                                        {{ ordinal_integer(loop.index)|safe }}
+                                    </td>
+                                    <td>{{ prize.full_name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             {% endfor %}
+        {% endfor %}
+        {% if multi_tournament or tournament.sorted_prize_groups|length > 1 or (tournament.sorted_prize_groups|length == 1 and tournament.sorted_prize_groups[0].sorted_categories|length > 1) %}
+            <div class="section-sub-title fst-italic" style="text-align: right;">
+                {{ macros.prize_totals_line(
+                    tournament.format_total_monetary_prize_value(prize_currency)
+                        if tournament.total_monetary_prize_value else None,
+                    tournament.format_total_non_monetary_prize_value(prize_currency)
+                        if tournament.total_non_monetary_prize_value else None,
+                ) }}
+            </div>
+        {% endif %}
+        {% set totals.monetary = totals.monetary + tournament.total_monetary_prize_value %}
+        {% set totals.non_monetary = totals.non_monetary + tournament.total_non_monetary_prize_value %}
         </div>
     {% endfor %}
+    {% if multi_tournament and (totals.monetary or totals.non_monetary) %}
+        <div class="separator"></div>
+        <div class="section-sub-title fst-italic" style="text-align: right;">
+            {{ macros.prize_totals_line(
+                format_prize_value(totals.monetary) if totals.monetary else None,
+                format_prize_value(totals.non_monetary) if totals.non_monetary else None,
+            ) }}
+        </div>
+    {% endif %}
 {% endblock %}

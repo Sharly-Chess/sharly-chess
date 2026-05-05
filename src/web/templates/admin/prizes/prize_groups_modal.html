@@ -16,20 +16,46 @@
             </h2>
         </div>
         <div class="modal-body">
-            <h4 class="mb-3">
+            <h4 class="mb-1">
                 {{ _('%(string)s:', string=_('Tournament')) }}
                 {{ admin_tournament.name }}
             </h4>
+            {% if admin_tournament.prize_groups|length > 1
+                or (admin_tournament.prize_groups|length == 1
+                    and admin_tournament.sorted_prize_groups[0].sorted_categories|length > 1) %}
+                {% if admin_tournament.total_monetary_prize_value
+                    or admin_tournament.total_non_monetary_prize_value %}
+                    <div class="text-secondary mb-3">
+                        {{ macros.prize_totals_line(
+                            admin_tournament.format_total_monetary_prize_value(prize_currency)
+                                if admin_tournament.total_monetary_prize_value else None,
+                            admin_tournament.format_total_non_monetary_prize_value(prize_currency)
+                                if admin_tournament.total_non_monetary_prize_value else None,
+                        ) }}
+                    </div>
+                {% endif %}
+            {% endif %}
             <div class="d-flex flex-column gap-2">
                 {% if not admin_tournament.prize_groups %}
                     <div class="text-danger">{{ _('No prize brackets.') }}</div>
                 {% endif %}
                 {% for prize_group in admin_tournament.sorted_prize_groups %}
                     {% set base_id = 'prize-group-' ~ prize_group.id|string %}
-                    <div id="{{ base_id }}-row" class="border border-secondary">
+                    <div id="{{ base_id }}-row" class="border border-secondary bg-body-tertiary">
                         <div class="prize-group-row p-2 d-flex align-items-start gap-4">
                             <div class="flex-grow-1">
-                                {{ prize_group.name }}
+                                <div>{{ prize_group.name }}</div>
+                                {% if prize_group.total_monetary_value
+                                    or prize_group.total_non_monetary_value %}
+                                    <div class="text-secondary mt-1" style="font-size: 0.85em;">
+                                        {{ macros.prize_totals_line(
+                                            prize_group.format_total_monetary_value(prize_currency)
+                                                if prize_group.total_monetary_value else None,
+                                            prize_group.format_total_non_monetary_value(prize_currency)
+                                                if prize_group.total_non_monetary_value else None,
+                                        ) }}
+                                    </div>
+                                {% endif %}
                             </div>
                             <div class="flex-shrink-0 d-flex gap-2 align-items-center">
                                 <button
