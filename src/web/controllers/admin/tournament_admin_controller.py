@@ -34,12 +34,12 @@ from data.pairings.systems import SwissPairingSystem
 from data.player import TournamentPlayer
 from data.tie_breaks import TieBreakManager, TieBreak, TieBreakOptionManager
 from data.tie_breaks.sets import (
-    SOURCE_LABELS,
     TieBreakSetSource,
     available_tie_break_sets,
     get_tie_break_set,
     instantiate_tie_break,
     stored_tie_break_to_dict,
+    TieBreakSet,
 )
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.config.config_store import StoredTieBreakSet
@@ -1290,39 +1290,23 @@ class TournamentAdminController(BaseEventAdminController):
         grouped = available_tie_break_sets(tournament)
 
         select_options: dict[str, dict[str, SelectOption]] = {}
-        for source in (
-            TieBreakSetSource.SYSTEM,
-            TieBreakSetSource.PLUGIN,
-            TieBreakSetSource.CUSTOM,
-            TieBreakSetSource.TOURNAMENT,
-        ):
+        for source in TieBreakSetSource:
             sets = grouped.get(source, [])
             if not sets:
                 continue
             options: dict[str, SelectOption] = {}
             for tie_break_set in sets:
-                preview = (
-                    '<br/>'.join(
-                        [
-                            f'{index}. {tie_break.acronym} - {tie_break.name}'
-                            for index, tie_break in enumerate(
-                                tie_break_set.instantiate_tie_breaks(tournament.event),
-                                start=1,
-                            )
-                            if tie_break is not None
-                        ]
-                    )
-                    or '—'
-                )
-                tooltip = (
-                    tie_break_set.disabled_reason if tie_break_set.disabled else preview
-                )
                 options[f'{source.value}|{tie_break_set.key}'] = SelectOption(
-                    name=f'{tie_break_set.name} ({" - ".join(tie_break_set.tie_break_acronyms) or "-"})',
-                    tooltip=tooltip,
+                    name=tie_break_set.name,
+                    tooltip=(
+                        tie_break_set.disabled_reason
+                        if tie_break_set.disabled
+                        else tie_break_set.tooltip_message(tournament.event)
+                    ),
                     disabled=tie_break_set.disabled,
+                    subtitle=' - '.join(tie_break_set.tie_break_acronyms),
                 )
-            select_options[SOURCE_LABELS[source]] = options
+            select_options[source.label] = options
 
         existing_custom_set_names = [
             tie_break_set.name
@@ -1635,18 +1619,24 @@ class TournamentAdminController(BaseEventAdminController):
     def _tie_break_sets_modal_context(tournament: Tournament) -> dict[str, Any]:
         """Context for the custom TB-set management modal: lists all custom
         sets for the current pairing system."""
-        custom_sets = [
-            tie_break_set
-            for tie_break_set in SharlyChessConfig().custom_tie_break_sets
-            if tie_break_set.pairing_system_id == tournament.pairing_system.id
-        ]
-        for tie_break_set in custom_sets:
+        system_name_by_id = PairingSystemManager(None).options()
+        custom_sets_by_pairing_system_name: dict[str, list[TieBreakSet]] = {
+            system_name: [] for system_name in system_name_by_id.values()
+        }
+        for tie_break_set in SharlyChessConfig().custom_tie_break_sets:
             from data.tie_breaks.sets import fill_acronyms
 
-            fill_acronyms(tie_break_set, tournament.event)
+            fill_acronyms(tie_break_set, event=None)
+            system_name = system_name_by_id[tie_break_set.pairing_system_id]
+            custom_sets_by_pairing_system_name[system_name].append(tie_break_set)
+
         return {
             'modal': 'tie_break_sets',
-            'tie_break_custom_sets': custom_sets,
+            'custom_sets_by_pairing_system_name': {
+                name: sets
+                for name, sets in custom_sets_by_pairing_system_name.items()
+                if sets
+            },
         }
 
     @get(

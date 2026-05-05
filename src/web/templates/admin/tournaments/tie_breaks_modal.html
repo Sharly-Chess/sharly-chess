@@ -1,31 +1,33 @@
+{% set has_tie_breaks = admin_tournament.tie_breaks_by_id|length > 0 %}
 <div
     id="tie-breaks-modal"
     class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: fit-content; min-width: min(90vw, 450px);"
+    style="--bs-modal-width: fit-content; min-width: min(90vw, {% if has_tie_breaks %}450px{% else %}550px{% endif %});"
 >
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
                 {{ _('Tie-breaks') }}
+                <i
+                    class="bi-info-circle-fill"
+                    style="font-size: 70%"
+                    {{ macros.tooltip_attributes('', _(
+                        'Tie-breaks determine the rankings for players '
+                        'that are tied with the same number of points.'
+                    )) }}
+                ></i>
             </h2>
         </div>
+        {% set has_custom_sets = tie_break_set_custom_names|length > 0 %}
         <div class="modal-body">
             {% if success_message %}
                 {% with type='success', message=success_message %}
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
-
             <h4 class="mb-3">
-                {% if admin_tournament.tie_breaks_by_id %}
-                    {{ _('Tie-breaks for [{tournament}]').format(
-                        tournament=admin_tournament.name
-                    ) }}
-                {% else %}
-                    {{ _('No tie-breaks for [{tournament}]').format(
-                        tournament=admin_tournament.name
-                    ) }}
-                {% endif %}
+                {{ _('%(string)s:', string=_('Tournament')) }}
+                {{ admin_tournament.name }}
                 {% set warning_message = admin_tournament.tie_breaks_warning_message %}
                 {% if warning_message %}
                     <i
@@ -35,13 +37,8 @@
                 {% endif %}
             </h4>
             {% if not admin_tournament.tie_breaks_by_id %}
-                <div>
-                    <p>
-                        {{ _(
-                            'Tie-breaks determine the rankings for players '
-                            'that are tied with the same number of points.'
-                        ) }}
-                    </p>
+                <div class="text-danger">{{ _('No tie-breaks.') }}</div>
+                <div class="pt-2">
                     {% if tie_break_set_select_options %}
                         <form
                             id="tie-break-set-apply-form"
@@ -74,9 +71,28 @@
                                 disabled
                             >
                                 <i class="bi-check-circle-fill pe-1"></i>
-                                {{ _('Apply set') }}
+                                {{ _('Apply') }}
                             </button>
                         </form>
+                        {% if has_custom_sets %}
+                            <div class="text-end {% if not save_as_invalid %}mt-3{% endif %}">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary btn-sm text-nowrap"
+                                    hx-get="{{ url_for(
+                                        'admin-tie-break-sets-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                    ) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    data-bs-target="#modal-wrapper"
+                                >
+                                    <i class="bi-gear-fill pe-1"></i>
+                                    {{ _('Manage custom sets') }}
+                                </button>
+                            </div>
+                        {% endif %}
                         <script>
                             (function () {
                                 var $sel = $('#tie-break-set');
@@ -224,113 +240,113 @@
                         </button>
                         <div id="custom-sets-collapse" class="collapse">
                             <div class="pt-2">
-                                    {% if not save_as_invalid %}
-                                        {% if tie_break_set_save_as_error %}
-                                            {% with type='warning', message=tie_break_set_save_as_error %}
-                                                {% include '/common/alert.html' %}
-                                            {% endwith %}
-                                        {% endif %}
-                                        <form
-                                            id="tie-break-set-save-form"
-                                            hx-post="{{ url_for(
-                                                'admin-save-tie-break-set',
+                                {% if not save_as_invalid %}
+                                    {% if tie_break_set_save_as_error %}
+                                        {% with type='warning', message=tie_break_set_save_as_error %}
+                                            {% include '/common/alert.html' %}
+                                        {% endwith %}
+                                    {% endif %}
+                                    <form
+                                        id="tie-break-set-save-form"
+                                        hx-post="{{ url_for(
+                                            'admin-save-tie-break-set',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        class="d-flex gap-2 align-items-end"
+                                    >
+                                        <div class="flex-grow-1">
+                                            <style>
+                                                #save-as-name-wrapper { flex-direction: column; }
+                                            </style>
+                                            {{ admin_macros.text_input(
+                                                name='save_as_name',
+                                                label=_('Save current tie-breaks as custom set'),
+                                                placeholder=_('Set name'),
+                                                data={'save_as_name': tie_break_set_save_as_name_value},
+                                                errors={}
+                                            ) }}
+                                        </div>
+                                        <input type="hidden" name="name" id="save-as-name-hidden"/>
+                                        <button
+                                            type="submit"
+                                            class="btn btn-outline-primary text-nowrap"
+                                            id="save-as-submit"
+                                            disabled
+                                        >
+                                            <i class="bi-floppy-fill pe-1"></i>
+                                            {{ _('Save') }}
+                                        </button>
+                                    </form>
+                                    {% set _show_overwrite_initial = (
+                                        tie_break_set_save_as_name_value
+                                        and tie_break_set_save_as_name_value in tie_break_set_custom_names
+                                    ) %}
+                                    <div
+                                        class="justify-content-end align-items-center gap-2 mt-1"
+                                        id="save-as-overwrite-wrapper"
+                                        style="display:{{ 'flex' if _show_overwrite_initial else 'none' }}"
+                                    >
+                                        <label class="form-check-label" for="save-as-overwrite">
+                                            {{ _('Overwrite') }}
+                                        </label>
+                                        <input
+                                            class="form-check-input m-0"
+                                            type="checkbox"
+                                            name="overwrite"
+                                            id="save-as-overwrite"
+                                            value="true"
+                                            form="tie-break-set-save-form"
+                                        />
+                                    </div>
+                                    <script>
+                                        (function () {
+                                            var nameInput = $('#save-as-name');
+                                            var hidden = $('#save-as-name-hidden');
+                                            var btn = $('#save-as-submit');
+                                            var existing = {{ tie_break_set_custom_names|tojson }};
+                                            function refresh() {
+                                                var v = nameInput.val();
+                                                hidden.val(v);
+                                                btn.prop('disabled', !v);
+                                                var collides = existing.indexOf(v) !== -1;
+                                                var wrap = document.getElementById(
+                                                    'save-as-overwrite-wrapper'
+                                                );
+                                                if (!wrap) return;
+                                                if (collides) {
+                                                    wrap.style.display = 'flex';
+                                                } else {
+                                                    wrap.style.display = 'none';
+                                                    $('#save-as-overwrite').prop('checked', false);
+                                                }
+                                            }
+                                            nameInput.on('input keyup', refresh);
+                                            refresh();
+                                        })();
+                                    </script>
+                                {% endif %}
+                                {% if has_custom_sets %}
+                                    <div class="text-end {% if not save_as_invalid %}mt-3{% endif %}">
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-primary btn-sm text-nowrap"
+                                            hx-get="{{ url_for(
+                                                'admin-tie-break-sets-modal',
                                                 event_uniq_id=admin_event.uniq_id,
                                                 tournament_id=admin_tournament.id,
                                             ) }}"
                                             hx-target="body"
                                             hx-indicator="#please-wait"
-                                            class="d-flex gap-2 align-items-end"
+                                            data-bs-target="#modal-wrapper"
                                         >
-                                            <div class="flex-grow-1">
-                                                <style>
-                                                    #save-as-name-wrapper { flex-direction: column; }
-                                                </style>
-                                                {{ admin_macros.text_input(
-                                                    name='save_as_name',
-                                                    label=_('Save current tie-breaks as custom set'),
-                                                    placeholder=_('Set name'),
-                                                    data={'save_as_name': tie_break_set_save_as_name_value},
-                                                    errors={}
-                                                ) }}
-                                            </div>
-                                            <input type="hidden" name="name" id="save-as-name-hidden"/>
-                                            <button
-                                                type="submit"
-                                                class="btn btn-outline-primary text-nowrap"
-                                                id="save-as-submit"
-                                                disabled
-                                            >
-                                                <i class="bi-floppy-fill pe-1"></i>
-                                                {{ _('Save') }}
-                                            </button>
-                                        </form>
-                                        {% set _show_overwrite_initial = (
-                                            tie_break_set_save_as_name_value
-                                            and tie_break_set_save_as_name_value in tie_break_set_custom_names
-                                        ) %}
-                                        <div
-                                            class="justify-content-end align-items-center gap-2 mt-1"
-                                            id="save-as-overwrite-wrapper"
-                                            style="display:{{ 'flex' if _show_overwrite_initial else 'none' }}"
-                                        >
-                                            <label class="form-check-label" for="save-as-overwrite">
-                                                {{ _('Overwrite') }}
-                                            </label>
-                                            <input
-                                                class="form-check-input m-0"
-                                                type="checkbox"
-                                                name="overwrite"
-                                                id="save-as-overwrite"
-                                                value="true"
-                                                form="tie-break-set-save-form"
-                                            />
-                                        </div>
-                                        <script>
-                                            (function () {
-                                                var nameInput = $('#save-as-name');
-                                                var hidden = $('#save-as-name-hidden');
-                                                var btn = $('#save-as-submit');
-                                                var existing = {{ tie_break_set_custom_names|tojson }};
-                                                function refresh() {
-                                                    var v = nameInput.val();
-                                                    hidden.val(v);
-                                                    btn.prop('disabled', !v);
-                                                    var collides = existing.indexOf(v) !== -1;
-                                                    var wrap = document.getElementById(
-                                                        'save-as-overwrite-wrapper'
-                                                    );
-                                                    if (!wrap) return;
-                                                    if (collides) {
-                                                        wrap.style.display = 'flex';
-                                                    } else {
-                                                        wrap.style.display = 'none';
-                                                        $('#save-as-overwrite').prop('checked', false);
-                                                    }
-                                                }
-                                                nameInput.on('input keyup', refresh);
-                                                refresh();
-                                            })();
-                                        </script>
-                                    {% endif %}
-                                    {% if has_custom_sets %}
-                                        <div class="text-end {% if not save_as_invalid %}mt-3{% endif %}">
-                                            <button
-                                                type="button"
-                                                class="btn btn-outline-primary btn-sm text-nowrap"
-                                                hx-get="{{ url_for(
-                                                    'admin-tie-break-sets-modal',
-                                                    event_uniq_id=admin_event.uniq_id,
-                                                    tournament_id=admin_tournament.id,
-                                                ) }}"
-                                                hx-target="body"
-                                                hx-indicator="#please-wait"
-                                                data-bs-target="#modal-wrapper"
-                                            >
-                                                <i class="bi-gear-fill pe-1"></i>
-                                                {{ _('Manage custom sets') }}
-                                            </button>
-                                        </div>
-                                    {% endif %}
+                                            <i class="bi-gear-fill pe-1"></i>
+                                            {{ _('Manage custom sets') }}
+                                        </button>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -346,28 +362,6 @@
                 <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Close') }}
             </button>
-            {% if not admin_tournament.tie_breaks_by_id and tie_break_set_custom_names %}
-                <button
-                    type="button"
-                    class="btn btn-outline-primary text-nowrap"
-                    hx-get="{{ url_for(
-                        'admin-tie-break-sets-modal',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                    ) }}"
-                    hx-target="body"
-                    hx-indicator="#please-wait"
-                    data-bs-target="#modal-wrapper"
-                    {{ macros.tooltip_attributes(
-                        'info',
-                        _('Manage saved tie-break sets for this pairing system.'),
-                        'top'
-                    ) }}
-                >
-                    <i class="bi-gear-fill pe-1"></i>
-                    {{ _('Manage custom sets') }}
-                </button>
-            {% endif %}
             <button
                 class="btn btn-primary text-nowrap"
                 hx-get="{{ url_for(

@@ -1,3 +1,9 @@
+msgid "\"France jeunes\" and qualifiers"
+msgstr ""
+
+msgid "\"France jeunes\" and qualifiers - Unrated"
+msgstr ""
+
 msgid "\"Niçois\" accelerated system"
 msgstr ""
 

@@ -27,9 +27,6 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-msgid "Championnat de France des écoles et collèges"
-msgstr ""
-
 msgid "Choose at least one school."
 msgstr ""
 
@@ -58,6 +55,9 @@ msgid "French Schools"
 msgstr ""
 
 msgid "French school"
+msgstr ""
+
+msgid "French schools championship"
 msgstr ""
 
 msgid "Hide the UAI codes for the FFE upload"
@@ -188,4 +188,7 @@ msgid "{count} school represented"
 msgid_plural "{count} schools represented"
 msgstr[0] ""
 msgstr[1] ""
+
+#~ msgid "Championnat de France des écoles et collèges"
+#~ msgstr ""
 

@@ -167,6 +167,9 @@
             {% if option.search %}
                 data-search="{{ option.search }}"
             {% endif %}
+            {% if option.subtitle %}
+                data-subtitle="{{ option.subtitle }}"
+            {% endif %}
             {% if option.disabled %}disabled{% endif %}
             {% if selected %}selected{% endif %}
         >
@@ -262,6 +265,12 @@
                 const $result = $('<span>' + data.text + '</span>');
                 const tooltip = $(data.element).attr('data-bs-title');
                 if (tooltip) $result.attr('data-bs-title', tooltip);
+                const subtitle = $(data.element).attr('data-subtitle');
+                if (subtitle) {
+                    $result.append($(
+                        '<div class="fst-italic" style="font-size: 70%">' + subtitle + '</div>'
+                    ));
+                }
                 const optionClass = $(data.element).data('class');
                 if (optionClass) $result.addClass(optionClass);
                 const search = $(data.element).data('search');

@@ -7,49 +7,56 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {{ _('Custom tie-break sets') }}
+                <i
+                    class="bi-info-circle-fill"
+                    style="font-size: 70%"
+                    {{ macros.tooltip_attributes('', _(
+                        'These sets are saved per pairing system and shared across events.'
+                    )) }}
+                ></i>
             </h2>
         </div>
         <div class="modal-body">
-            <p>
-                {{ _(
-                    'These sets are saved per pairing system and shared across events. '
-                    'Showing sets for [%(pairing_system)s].',
-                    pairing_system=admin_tournament.pairing_system.name
-                ) }}
-            </p>
-            {% if not tie_break_custom_sets %}
+            {% if not custom_sets_by_pairing_system_name %}
                 <h5 class="text-center my-3">{{ _('No saved sets.') }}</h5>
-                <p>
+                <p class="text-center">
                     {{ _('Tie-break sets are saved from the Tie-breaks modal.') }}
                 </p>
             {% else %}
                 <div class="d-flex flex-column gap-2">
-                    {% for tie_break_set in tie_break_custom_sets %}
-                        <div class="border border-secondary bg-body-tertiary">
-                            <div class="p-2 d-flex align-items-center gap-4">
-                                <div class="text-start flex-grow-1">
-                                    <b>{{ tie_break_set.name }}</b>
-                                    (<i>{{ tie_break_set.tie_break_acronyms|join(' - ') }}</i>)
-                                </div>
-                                <div class="flex-shrink-0 d-flex gap-2 align-items-center">
-                                    <button
-                                        class="btn btn-sm btn-outline-danger text-nowrap"
-                                        type="button"
-                                        hx-delete="{{ url_for(
-                                            'admin-tie-break-set-delete',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            tournament_id=admin_tournament.id,
-                                            tie_break_set_id=tie_break_set.custom_set_id,
-                                        ) }}"
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                        data-bs-target="#modal-wrapper"
-                                    >
-                                        <i class="bi-trash-fill"></i>
-                                    </button>
+                    {% for system_name, custom_sets in custom_sets_by_pairing_system_name.items() %}
+                        <h4>{{ system_name }}</h4>
+                        {% for tie_break_set in custom_sets %}
+                            <div class="border border-secondary bg-body-tertiary">
+                                <div class="p-2 d-flex align-items-center gap-4">
+                                    <div class="text-start flex-grow-1">
+                                        <b>{{ tie_break_set.name }}</b>
+                                        (<i>{{ tie_break_set.tie_break_acronyms|join(' - ') }}</i>)
+                                    </div>
+                                    <div class="flex-shrink-0 d-flex gap-2 align-items-center">
+                                        <i
+                                            class="bi-info-circle-fill"
+                                            {{ macros.tooltip_attributes('', tie_break_set.tooltip_message(admin_event)) }}
+                                        ></i>
+                                        <button
+                                            class="btn btn-sm btn-outline-danger text-nowrap"
+                                            type="button"
+                                            hx-delete="{{ url_for(
+                                                'admin-tie-break-set-delete',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                tournament_id=admin_tournament.id,
+                                                tie_break_set_id=tie_break_set.custom_set_id,
+                                            ) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-target="#modal-wrapper"
+                                        >
+                                            <i class="bi-trash-fill"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        {% endfor %}
                     {% endfor %}
                 </div>
             {% endif %}

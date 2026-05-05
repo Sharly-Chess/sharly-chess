@@ -2,8 +2,7 @@
 parameters) that can be applied to a tournament that has no tie-breaks yet.
 
 Sets come from four sources:
-  - SYSTEM: code constants (SC recommendation, FIDE 2019…)
-  - PLUGIN: provided by plugins via the `insert_tie_break_sets` hook
+  - SYSTEM: SC recommendation, FIDE 2019, plugins
   - CUSTOM: stored in the global `.scc` config DB, shared by all users of
     the server instance
   - TOURNAMENT: snapshot of another tournament in the same event
@@ -13,7 +12,7 @@ import copy
 from dataclasses import dataclass, field
 from enum import StrEnum
 from logging import Logger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from common.i18n import _
 from common.logger import get_logger
@@ -29,18 +28,21 @@ logger: Logger = get_logger()
 
 
 class TieBreakSetSource(StrEnum):
-    SYSTEM = 'system'
-    PLUGIN = 'plugin'
-    CUSTOM = 'custom'
     TOURNAMENT = 'tournament'
+    CUSTOM = 'custom'
+    SYSTEM = 'system'
 
-
-SOURCE_LABELS: dict[TieBreakSetSource, str] = {
-    TieBreakSetSource.SYSTEM: _('System'),
-    TieBreakSetSource.PLUGIN: _('Plugins'),
-    TieBreakSetSource.CUSTOM: _('Custom'),
-    TieBreakSetSource.TOURNAMENT: _('From tournament'),
-}
+    @property
+    def label(self) -> str:
+        match self:
+            case self.SYSTEM:
+                return _('System')
+            case self.CUSTOM:
+                return _('Custom')
+            case self.TOURNAMENT:
+                return _('Event tournaments')
+            case _:
+                raise ValueError(self)
 
 
 @dataclass
@@ -57,16 +59,30 @@ class TieBreakSet:
     custom_set_id: int | None = None
     tie_break_acronyms: list[str] = field(default_factory=list)
 
-    def instantiate_tie_breaks(self, event: 'Event') -> list['TieBreak | None']:
+    def instantiate_tie_breaks(
+        self, event: Optional['Event']
+    ) -> list['TieBreak | None']:
         """Materialize fresh TieBreak instances from the stored payload."""
         return [
             instantiate_tie_break(stored_tb, event)
             for stored_tb in self.stored_tie_breaks
         ]
 
+    def tooltip_message(self, event: Optional['Event'] = None) -> str:
+        return ''.join(
+            [
+                f'<div class="text-start">{index}. {tie_break.full_name}</div>'
+                for index, tie_break in enumerate(
+                    self.instantiate_tie_breaks(event),
+                    start=1,
+                )
+                if tie_break is not None
+            ]
+        )
+
 
 def instantiate_tie_break(
-    stored_tie_break: StoredTieBreak, event: 'Event'
+    stored_tie_break: StoredTieBreak, event: Optional['Event']
 ) -> 'TieBreak | None':
     """Materialize a single TieBreak from its stored value.
     Returns None if the type is unknown for this event (e.g. plugin disabled)."""
@@ -144,28 +160,24 @@ def evaluate_set_against_tournament(
                 name=friendly_name_for_tie_break_type(stored_tb.type)
             )
         if message := tournament.tie_break_invalid_message(tie_break):
-            return True, _('{name}: {message}').format(
-                name=tie_break.full_name, message=message
+            tooltip = (
+                f'<div class="fw-bold">'
+                f'  {tie_break.full_name} ({tie_break.acronym})'
+                f'</div>{message}'
             )
-
-    seen: list['TieBreak'] = []
+            return True, tooltip
     last_id: str | None = None
     for tie_break in tie_breaks:
         assert tie_break is not None
-        if not tie_break.allow_multiple and tie_break in seen:
-            return True, _(
-                'This set contains a duplicate tie-break ([{name}]).'
-            ).format(name=tie_break.full_name)
         if tie_break.allow_multiple and tie_break.id == last_id:
             return True, _('This set contains [{name}] twice in a row.').format(
                 name=tie_break.full_name
             )
-        seen.append(tie_break)
         last_id = tie_break.id
     return False, None
 
 
-def fill_acronyms(tie_break_set: TieBreakSet, event: 'Event') -> None:
+def fill_acronyms(tie_break_set: TieBreakSet, event: 'Event | None') -> None:
     """Populate `tie_break_acronyms` on the set for UI display."""
     acronyms: list[str] = []
     for tie_break in tie_break_set.instantiate_tie_breaks(event):
@@ -219,28 +231,13 @@ def available_tie_break_sets(
     Each set's `disabled` and `disabled_reason` are evaluated against the tournament."""
     from common.sharly_chess_config import SharlyChessConfig
     from data.tie_breaks.system_sets import build_system_tie_break_sets
-    from plugins.manager import plugin_manager
 
     pairing_system_id = tournament.pairing_system.id
     grouped: dict[TieBreakSetSource, list[TieBreakSet]] = {
-        TieBreakSetSource.SYSTEM: [],
-        TieBreakSetSource.PLUGIN: [],
-        TieBreakSetSource.CUSTOM: [],
-        TieBreakSetSource.TOURNAMENT: [],
+        source: [] for source in TieBreakSetSource
     }
 
-    for tie_break_set in build_system_tie_break_sets(tournament.event):
-        if tie_break_set.pairing_system_id == pairing_system_id:
-            grouped[TieBreakSetSource.SYSTEM].append(tie_break_set)
-
-    plugin_sets: list[TieBreakSet] = []
-    plugin_manager.hook_for_event(tournament.event, 'insert_tie_break_sets')(
-        tie_break_sets=plugin_sets, event=tournament.event
-    )
-    for tie_break_set in plugin_sets:
-        tie_break_set.source = TieBreakSetSource.PLUGIN
-        if tie_break_set.pairing_system_id == pairing_system_id:
-            grouped[TieBreakSetSource.PLUGIN].append(tie_break_set)
+    grouped[TieBreakSetSource.SYSTEM] = build_system_tie_break_sets(tournament)
 
     for tie_break_set in SharlyChessConfig().custom_tie_break_sets:
         if tie_break_set.pairing_system_id == pairing_system_id:

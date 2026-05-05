@@ -664,7 +664,7 @@ msgstr ""
 msgid "Application"
 msgstr ""
 
-msgid "Apply set"
+msgid "Apply"
 msgstr ""
 
 msgid "Apply to all"
@@ -2272,6 +2272,9 @@ msgstr ""
 msgid "Event name"
 msgstr ""
 
+msgid "Event tournaments"
+msgstr ""
+
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr ""
 
@@ -2371,6 +2374,12 @@ msgid "FIDE database"
 msgstr ""
 
 msgid "FIDE rating lost"
+msgstr ""
+
+msgid "FIDE recommendation (2019)"
+msgstr ""
+
+msgid "FIDE recommendation - Unrated (2019)"
 msgstr ""
 
 msgid "FM *** SHORT NAME FOR Fide Master"
@@ -2532,9 +2541,6 @@ msgid "Fr *** FRIDAY"
 msgstr "Fr"
 
 msgid "France"
-msgstr ""
-
-msgid "From tournament"
 msgstr ""
 
 msgid "From your server find the screen or rotator you want to display, and sent it to controller using the button with this icon:"
@@ -3200,9 +3206,6 @@ msgstr ""
 msgid "Manage prizes"
 msgstr ""
 
-msgid "Manage saved tie-break sets for this pairing system."
-msgstr ""
-
 msgid "Manage screens"
 msgstr ""
 
@@ -3678,7 +3681,7 @@ msgstr ""
 msgid "No such screens."
 msgstr ""
 
-msgid "No tie-breaks for [{tournament}]"
+msgid "No tie-breaks."
 msgstr ""
 
 msgid "No timers"
@@ -4913,9 +4916,6 @@ msgstr ""
 msgid "Rwanda"
 msgstr ""
 
-msgid "SC Recommendation"
-msgstr ""
-
 msgid "SCR"
 msgstr ""
 
@@ -5155,6 +5155,9 @@ msgid "Sharly Chess project"
 msgstr ""
 
 msgid "Sharly Chess reaches its full potential when used as a server, with other devices connected to the same network."
+msgstr ""
+
+msgid "Sharly Chess recommendation"
 msgstr ""
 
 msgid "Sharly Chess server"
@@ -5764,8 +5767,7 @@ msgstr ""
 msgid "These plugins can only be activated on events of their federation."
 msgstr ""
 
-#, python-format
-msgid "These sets are saved per pairing system and shared across events. Showing sets for [%(pairing_system)s]."
+msgid "These sets are saved per pairing system and shared across events."
 msgstr ""
 
 msgid "These tournaments are already included for this account by a higher access level."
@@ -5885,9 +5887,6 @@ msgstr ""
 msgid "This set contains [{name}] twice in a row."
 msgstr ""
 
-msgid "This set contains a duplicate tie-break ([{name}])."
-msgstr ""
-
 msgid "This tie-break can be used multiple times."
 msgstr ""
 
@@ -5947,9 +5946,6 @@ msgid "Tie-breaks"
 msgstr ""
 
 msgid "Tie-breaks determine the rankings for players that are tied with the same number of points."
-msgstr ""
-
-msgid "Tie-breaks for [{tournament}]"
 msgstr ""
 
 msgid "Time control"
@@ -7023,9 +7019,6 @@ msgstr ""
 msgid "{first_name} {last_name}"
 msgstr ""
 
-msgid "{name}: {message}"
-msgstr ""
-
 msgid "{player.first_name} {player.last_name} had won {previous_value} in the main group but was then given a prize of {next_value} in the category '{cat_name}' instead. By leaving the main group, the prize share for the place they were in is now worth {new_share}."
 msgstr ""
 
@@ -7069,4 +7062,37 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "Apply set"
+#~ msgstr ""
+
+#~ msgid "From tournament"
+#~ msgstr ""
+
+#~ msgid "Manage saved tie-break sets for this pairing system."
+#~ msgstr ""
+
+#~ msgid "No tie-breaks for [{tournament}]"
+#~ msgstr ""
+
+#~ msgid "SC Recommendation"
+#~ msgstr ""
+
+#~ msgid "These sets are saved per pairing system and shared across events. Showing sets for [%(pairing_system)s]."
+#~ msgstr ""
+
+#~ msgid "This set contains a duplicate tie-break ([{name}])."
+#~ msgstr ""
+
+#~ msgid "Tie-breaks for [{tournament}]"
+#~ msgstr ""
+
+#~ msgid "{name}: {message}"
+#~ msgstr ""
+
+#~ msgid "Fide recommendation (2019)"
+#~ msgstr ""
+
+#~ msgid "Fide recommendation - Unrated (2019)"
+#~ msgstr ""
 
