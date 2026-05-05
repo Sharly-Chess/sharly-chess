@@ -54,8 +54,13 @@
                             {% endif %}
                             <i
                                 class="{{ status.icon_classes }}"
+                                {% set status_name = (
+                                    _('Present and to pair') if status == 5 else
+                                    _('%(bye)s at round %(round)d', bye=status.name, round=admin_round)
+                                    if status in (1, 2, 3) else status.name
+                                ) %}
                                 {{ macros.tooltip_attributes('', (
-                                    '<div class="fw-bold">' ~ (status.name if status != 5 else _('Present and to pair')) ~ '</div>'
+                                    '<div class="fw-bold">' ~ status_name ~ '</div>'
                                     '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
                                 ), 'right') }}
                             ></i>

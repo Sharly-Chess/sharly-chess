@@ -62,6 +62,7 @@ from plugins.sce.utils import SCEUtils
 from plugins.utils import Plugin
 from utils import Utils
 from utils.enum import Result
+from web.channels import channels_plugin
 from web.urls import build_get_url
 
 logger: Logger = get_logger()
@@ -501,6 +502,12 @@ class SCESession(Session):
                 f'Tournament forced to [{local_sync_data.tournament_id}] (SC.com)'
             )
         needs_saving = True
+        last_sync_data = plugin_data.last_sync_data
+        local_check_in_updated = (
+            last_sync_data
+            and local_sync_data.check_in != sce_sync_data.check_in
+            and local_sync_data.check_in == last_sync_data.check_in
+        )
         if local_sync_data == sce_sync_data:
             # Already synced
             if local_sync_data == plugin_data.last_sync_data:
@@ -542,6 +549,10 @@ class SCESession(Session):
             SCEUtils.update_player_plugin_data(
                 player, plugin_data, write_stored_object=True
             )
+            if local_check_in_updated:
+                channels_plugin.publish(
+                    {'event': f'new-checkins|{self.event.uniq_id}', 'data': ''}, ['ws']
+                )
         return PlayerStatus.CONFLICT if has_conflict else PlayerStatus.SUCCESS
 
     # -------------------------------------------------------------------------

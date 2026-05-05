@@ -1553,13 +1553,6 @@ class PlayerAdminController(BaseEventAdminController):
             {'event': f'new-checkins|{event.uniq_id}', 'data': ''},
             ['ws'],
         )
-        channels.publish(
-            {
-                'event': f'new-checkins|{event.uniq_id}|{tournament.id}|{tournament.current_round}',
-                'data': '',
-            },
-            ['ws'],
-        )
 
     @patch(
         path='/player-table/check-in-player/{event_uniq_id:str}/{player_id:int}',

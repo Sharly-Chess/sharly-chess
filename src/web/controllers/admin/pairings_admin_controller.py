@@ -67,6 +67,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         board_id: int | None = None,
         player_id: int | None = None,
         action: PairingAction | None = None,
+        load_check_in_data: bool = False,
         reload_event: bool = False,
     ):
         super().__init__(request, reload_event)
@@ -92,6 +93,10 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
                 self.admin_tournament = event.tournaments_by_id[session_tournament_id]
             else:
                 self.admin_tournament = self.allowed_tournaments[0]
+        if load_check_in_data:
+            plugin_manager.hook_for_event(event, 'load_tournament_check_in_data')(
+                tournament=self.get_admin_tournament()
+            )
 
         self.display_rankings = self.admin_tournament and (
             self.admin_tournament.finished
@@ -1204,11 +1209,8 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int,
         round: int,
     ) -> Template:
-        web_context = PairingsAdminWebContext(request, tournament_id, round)
-        event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
-        plugin_manager.hook_for_event(event, 'on_before_load_pairings_absents_modal')(
-            tournament=tournament
+        web_context = PairingsAdminWebContext(
+            request, tournament_id, round, load_check_in_data=True
         )
         return self._admin_event_pairings_render(
             web_context,
@@ -1307,6 +1309,7 @@ class PairingsAdminController(BaseEventAdminController):
             request,
             tournament_id=tournament_id,
             round_=round,
+            load_check_in_data=True,
         )
         tournament = web_context.get_admin_tournament()
         for player in web_context.admin_absent_players:
