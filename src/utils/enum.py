@@ -1350,19 +1350,19 @@ class CheckInStatus(IntEnum):
     def description(self) -> str:
         match self:
             case self.WITHDRAWN:
-                return _('Received a Zero-Point Bye for all the remaining rounds.')
+                return _('Received a Zero-Point Bye for all the remaining rounds')
             case self.NEXT_ROUND_ZPB:
-                return _('Received a Zero-Point Bye for the next round.')
+                return _('Received a Zero-Point Bye for the next round')
             case self.NEXT_ROUND_HPB:
-                return _('Received a Half-Point Bye for the next round.')
+                return _('Received a Half-Point Bye for the next round')
             case self.NEXT_ROUND_FPB:
-                return _('Received a Full-Point Bye for the next round.')
+                return _('Received a Full-Point Bye for the next round')
             case self.NEXT_ROUND_BYE:
                 return ''
             case self.ABSENT:
-                return _('Will not participate in upcoming rounds.')
+                return _('Will not participate by default in upcoming rounds')
             case self.PRESENT:
-                return _('Will participate in upcoming rounds.')
+                return _('Will participate in upcoming rounds')
             case _:
                 raise ValueError(f'Unknown value: {self}')
 

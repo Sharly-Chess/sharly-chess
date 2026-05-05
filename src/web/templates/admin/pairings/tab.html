@@ -290,8 +290,8 @@
             }
 
             keyQueue.push({ code, pairing_board_id });
-            $('#pairing-row-' + pairing_board_id + ' td').addClass('text-secondary')
-            nextBoardId = $(`[data-board-id="${pairing_board_id}"]`).next().data("board-id")
+            $('#pairing-row-' + pairing_board_id + ' td, #pairing-row-' + pairing_board_id + ' .player-link').addClass('text-secondary');
+            nextBoardId = $(`[data-board-id="${pairing_board_id}"]`).next().data("board-id");
             if (nextBoardId) {
                 highlightBoard(nextBoardId, false);
             }

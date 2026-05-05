@@ -29,7 +29,7 @@
             hx-indicator="#please-wait"
             {% if status in (4, 5) %}
                 hx-patch="{{ url_for(
-                    'check-in-player-action',
+                    'player-table-check-in-player',
                     event_uniq_id=admin_event.uniq_id,
                     player_id=player_id,
                 ) }}"

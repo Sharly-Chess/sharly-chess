@@ -1062,10 +1062,6 @@ msgstr "Annuler « %(bye)s »"
 msgid "Cancel \"%(bye)s\" at round #%(round)s for [%(player)s]?"
 msgstr "Annuler « %(bye)s » à la ronde n°%(round)s for [%(player)s]?"
 
-#, python-format
-msgid "Cancel \"%(bye)s\"<br/>and mark as \"Present\" "
-msgstr "Annuler « %(bye)s »<br/>et marquer « Présent·e »"
-
 msgid "Candidate Master"
 msgstr "Candidat Maître"
 
@@ -4423,8 +4419,8 @@ msgstr "Préf."
 msgid "Present"
 msgstr "Présent·e"
 
-msgid "Present and unpaired"
-msgstr "Présent·e et non apparié·e"
+msgid "Present and to pair"
+msgstr "Présent·e et à apparier"
 
 msgid "Previous round"
 msgstr "Ronde précédente"
@@ -4640,17 +4636,18 @@ msgstr "Classements"
 msgid "Ratings update"
 msgstr "Mise à jour des classements"
 
-msgid "Received a Full-Point Bye for the next round."
-msgstr "Ont reçu un bye point entier pour la ronde à venir."
+msgid "Received a Full-Point Bye for the next round"
+msgstr "Ont reçu un bye point entier pour la ronde à venir"
 
-msgid "Received a Half-Point Bye for the next round."
-msgstr "Ont reçu un bye pour la ronde à venir."
+msgid "Received a Half-Point Bye for the next round"
+msgstr "Ont reçu un bye pour la ronde à venir"
 
-msgid "Received a Zero-Point Bye for all the remaining rounds."
-msgstr "Ont reçu un forfait pour toutes les rondes à venir."
 
-msgid "Received a Zero-Point Bye for the next round."
-msgstr "Ont reçu un forfait pour la ronde à venir."
+msgid "Received a Zero-Point Bye for all the remaining rounds"
+msgstr "A reçu un forfait pour toutes les rondes à venir"
+
+msgid "Received a Zero-Point Bye for the next round"
+msgstr "A reçu un forfait pour la ronde à venir"
 
 msgid "Record"
 msgstr "Historique"
@@ -6585,11 +6582,11 @@ msgstr "Blancs"
 msgid "White wins"
 msgstr "Victoire Blancs"
 
-msgid "Will not participate in upcoming rounds."
-msgstr "Ne participeront pas aux rondes à venir."
+msgid "Will not participate by default in upcoming rounds"
+msgstr "Ne participera par défaut pas aux rondes à venir"
 
-msgid "Will participate in upcoming rounds."
-msgstr "Participeront aux rondes à venir."
+msgid "Will participate in upcoming rounds"
+msgstr "Participera aux rondes à venir"
 
 msgid "Win"
 msgstr "Victoire"

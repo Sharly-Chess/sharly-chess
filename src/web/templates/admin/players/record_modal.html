@@ -6,6 +6,26 @@
             <div class="flex flex-column gap-0 align-items-start">
                 <h2 class="modal-title">
                     {{admin_player.title.short_name}} {{ admin_player.full_name }}
+                    {% if not tournament_player.has_withdrawn %}
+                        {% set status = tournament_player.check_in_status_no_bye %}
+                        <i
+                            class="{{ status.icon_classes }} cursor-pointer ps-1 fs-4"
+                            {% set click_detail = _(
+                                'Click to mark as &quot;%(status)s&quot;',
+                                status=_('Present') if status == 4 else _('Absent')
+                            ) %}
+                            {{ macros.tooltip_attributes('', (
+                                '<div class="fw-bold">' ~ status.name ~ '</div>'
+                                '<div class="fst-italic" style="font-size:80%">' ~ click_detail ~ '</div>'
+                            ), 'right') }}
+                            hx-patch="{{ url_for(
+                                'records-check-in-player',
+                                event_uniq_id=admin_event.uniq_id,
+                                player_id=tournament_player.id,
+                            ) }}"
+                            onclick="refreshMessagesIgnored += 1"
+                        ></i>
+                    {% endif %}
                 </h2>
                 <div>{{ admin_player.club }}</div>
                 {% set category = tournament_player.category.name %}
