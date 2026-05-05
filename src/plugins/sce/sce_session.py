@@ -553,7 +553,7 @@ class SCESession(Session):
             )
             if local_check_in_updated:
                 self.new_check_ins_tournament_sce_ids.add(
-                    plugin_data.last_sync_data.tournament_id
+                    getattr(plugin_data.last_sync_data, 'tournament_id')
                 )
         return PlayerStatus.CONFLICT if has_conflict else PlayerStatus.SUCCESS
 
