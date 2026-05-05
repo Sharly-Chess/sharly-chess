@@ -26,10 +26,8 @@ class TestTournamentFunctionality:
         expect(success_alert).to_be_visible()
         select_container = modal.locator('#tie-break-set').locator('..')
         select_container.locator('.select2-selection').click()
-        page.locator(
-            '.select2-results__option', has_text='SC Recommendation'
-        ).first.click()
-        TestUtils.button_by_text(modal, 'Apply set').click()
+        page.locator('.select2-results__option[id$="swiss-sc-recommendation"]').click()
+        TestUtils.button_by_text(modal, 'Apply').click()
 
         expect(modal.locator('.tie-break-row')).to_have_count(5)
         page.wait_for_timeout(500)

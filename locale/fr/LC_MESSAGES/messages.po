@@ -1165,9 +1165,6 @@ msgstr "Choisir au moins une valeur."
 msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
 
-msgid "Choose my own tie-breaks"
-msgstr "Choisir mes départages"
-
 msgid "Choose one, many or no players."
 msgstr "Choisissez aucun·e, un·e ou plusieurs joueur·euses."
 

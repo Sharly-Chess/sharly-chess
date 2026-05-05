@@ -1616,7 +1616,7 @@ class TournamentAdminController(BaseEventAdminController):
         )
 
     @staticmethod
-    def _tie_break_sets_modal_context(tournament: Tournament) -> dict[str, Any]:
+    def _tie_break_sets_modal_context() -> dict[str, Any]:
         """Context for the custom TB-set management modal: lists all custom
         sets for the current pairing system."""
         system_name_by_id = PairingSystemManager(None).options()
@@ -1652,10 +1652,8 @@ class TournamentAdminController(BaseEventAdminController):
         tournament_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
-        tournament = web_context.get_admin_tournament()
         return self._admin_base_event_render(
-            web_context.template_context
-            | self._tie_break_sets_modal_context(tournament)
+            web_context.template_context | self._tie_break_sets_modal_context()
         )
 
     @delete(
@@ -1674,13 +1672,11 @@ class TournamentAdminController(BaseEventAdminController):
         tie_break_set_id: int,
     ) -> Template:
         web_context = TournamentAdminWebContext(request, tournament_id)
-        tournament = web_context.get_admin_tournament()
         with ConfigDatabase(True) as database:
             database.delete_stored_tie_break_set(tie_break_set_id)
         SharlyChessConfig().load_and_set_env()
         return self._admin_base_event_render(
-            web_context.template_context
-            | self._tie_break_sets_modal_context(tournament)
+            web_context.template_context | self._tie_break_sets_modal_context()
         )
 
     @get(
