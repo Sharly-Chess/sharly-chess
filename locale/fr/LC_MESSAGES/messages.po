@@ -2377,7 +2377,7 @@ msgid "FIDE recommendation (2019)"
 msgstr "Recommendation FIDE (2019)"
 
 msgid "FIDE recommendation - Unrated (2019)"
-msgstr "Recommendation FIDE - Non-classé·es (2019)"
+msgstr "Recommendation FIDE - Non classé·es (2019)"
 
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"

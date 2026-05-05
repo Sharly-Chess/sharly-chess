@@ -7060,36 +7060,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Apply set"
-#~ msgstr ""
-
-#~ msgid "From tournament"
-#~ msgstr ""
-
-#~ msgid "Manage saved tie-break sets for this pairing system."
-#~ msgstr ""
-
-#~ msgid "No tie-breaks for [{tournament}]"
-#~ msgstr ""
-
-#~ msgid "SC Recommendation"
-#~ msgstr ""
-
-#~ msgid "These sets are saved per pairing system and shared across events. Showing sets for [%(pairing_system)s]."
-#~ msgstr ""
-
-#~ msgid "This set contains a duplicate tie-break ([{name}])."
-#~ msgstr ""
-
-#~ msgid "Tie-breaks for [{tournament}]"
-#~ msgstr ""
-
-#~ msgid "{name}: {message}"
-#~ msgstr ""
-
-#~ msgid "Fide recommendation (2019)"
-#~ msgstr ""
-
-#~ msgid "Fide recommendation - Unrated (2019)"
-#~ msgstr ""
-
