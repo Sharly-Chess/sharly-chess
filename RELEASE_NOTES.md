@@ -10,6 +10,10 @@
 
 - Make check-in system permanent (4.1.0)
 
+## Prizes
+
+- Add simple criteria creation from the category modal (4.1.0)
+
 ## Sharly-Chess.com
 
 - Added player check-in and french school to the synchronization (4.1.0)
