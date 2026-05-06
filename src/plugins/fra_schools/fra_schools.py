@@ -43,7 +43,7 @@ from plugins.fra_schools.fra_schools_controller import FRASchoolsController
 from plugins.fra_schools.fra_schools_database import FRASchoolsDatabase
 from plugins.fra_schools.fra_schools_entity import (
     FraSchoolCodeDatasheetColumn,
-    FraSchoolNameDatasheetColumn,
+    FraSchoolLabelDatasheetColumn,
     FraSchoolPlayerSplitter,
     FraSchoolTableColumn,
     FRASchoolPlayerFilter,
@@ -59,9 +59,11 @@ from plugins.fra_schools.utils import (
     FRASchoolsPlayerPluginData,
     FRASchoolsUtils,
     FRASchoolsEventPluginData,
+    FRASchool,
 )
 from plugins.hookspec import ExtraStatisticsSection, hookimpl
 from plugins.manager import Path
+from plugins.sce.sce_data import SCEPlayerSyncData, SCEFraSchoolSyncData
 from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.utils import (
     Plugin,
@@ -210,7 +212,7 @@ class FRASchoolsPlugin(Plugin):
         club: type[DatasheetColumn] = player_datasheet.ClubColumn
         fra_school_columns: list[DatasheetColumn] = [
             FraSchoolCodeDatasheetColumn(),
-            FraSchoolNameDatasheetColumn(),
+            FraSchoolLabelDatasheetColumn(),
         ]
         for column in fra_school_columns:
             PluginUtils.insert_on_isinstance(
@@ -395,7 +397,7 @@ class FRASchoolsPlugin(Plugin):
         if school:
             plugin_data = FRASchoolsUtils.get_event_plugin_data(tournament_player.event)
             if is_ffe_upload and plugin_data.hide_school_code_on_upload:
-                club = school.full_name_without_code
+                club = school.label
             else:
                 club = school.full_name
         papi_player.club = club
@@ -482,13 +484,71 @@ class FRASchoolsPlugin(Plugin):
             school_id
         ).to_stored_value()
 
+    SCE_MANUAL_PREFIX = 'manual:'
+
+    @hookimpl
+    def augment_sce_player_sync_data_from_player(
+        self,
+        player: TournamentPlayer,
+        sync_data: SCEPlayerSyncData,
+    ):
+        school = FRASchoolsUtils.get_player_school(player)
+        sync_data.fra_school = (
+            SCEFraSchoolSyncData(
+                code=school.code or self.SCE_MANUAL_PREFIX + str(school.id),
+                label=school.label,
+            )
+            if school
+            else None
+        )
+
+    @hookimpl
+    def augment_sce_player_sync_data_from_sce_data(
+        self,
+        sce_data: dict[str, Any],
+        sync_data: SCEPlayerSyncData,
+    ):
+        sync_data.fra_school = SCEFraSchoolSyncData.from_dict_value(
+            sce_data.get('fra_school')
+        )
+
+    @hookimpl
+    def augment_stored_player_from_sce_player_sync_data(
+        self,
+        event: Event,
+        stored_player: StoredPlayer,
+        sync_data: SCEPlayerSyncData,
+    ):
+        plugin_data = FRASchoolsPlayerPluginData.from_stored_value(
+            stored_player.plugin_data.get(PLUGIN_NAME, {})
+        )
+        sce_school = sync_data.fra_school
+        school_id: int | None = None
+        if sce_school:
+            if self.SCE_MANUAL_PREFIX in sce_school.code:
+                school_id = int(sce_school.code.replace(self.SCE_MANUAL_PREFIX, ''))
+            else:
+                school = FRASchoolsUtils.get_school_by_code(event, sce_school.code)
+                if school:
+                    plugin_data.fra_school_id = school.id
+                else:
+                    school = FRASchool.from_label(sce_school.label)
+                    school.code = sce_school.code
+                    school_id = FRASchoolsUtils.add_event_school(event, school)
+        plugin_data.fra_school_id = school_id
+        stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+
+    @hookimpl
+    def update_sce_player_diff_field_labels(self, diff_fields: dict[str, str | None]):
+        diff_fields['fra_school_label_str'] = _('School')
+
     @hookimpl
     def add_sce_upload_player_custom_fields(
         self, custom_fields: dict[str, Any], player: TournamentPlayer
     ):
         school = FRASchoolsUtils.get_player_school(player)
         if school:
-            custom_fields['fra_school'] = school.full_name_without_code
+            custom_fields['fra_school'] = school.label
 
     @staticmethod
     def _replace_sce_upload_origin_columns(columns: list[SCEUploadColumn]):

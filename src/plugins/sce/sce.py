@@ -65,8 +65,9 @@ class SCEPluginHooks:
         """Augment SCE player shared data from SCE API data."""
 
     @hookspec
-    def augment_stored_player_from_player_sync_data(
+    def augment_stored_player_from_sce_player_sync_data(
         self,
+        event: Event,
         stored_player: 'StoredPlayer',
         sync_data: SCEPlayerSyncData,
     ):

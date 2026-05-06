@@ -12,5 +12,5 @@
 
 ## Sharly-Chess.com
 
-- Added player check-in to the synchronization (4.1.0)
+- Added player check-in and french school to the synchronization (4.1.0)
 - Open / close the online check-in from the check-in modal (4.1.0)
