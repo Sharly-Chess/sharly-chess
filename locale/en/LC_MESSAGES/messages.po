@@ -536,6 +536,9 @@ msgstr ""
 msgid "Administrator"
 msgstr ""
 
+msgid "Advanced criteria can be created from the dedicated criteria form."
+msgstr ""
+
 msgid "Affects the rating that will be chosen for each player."
 msgstr ""
 
@@ -5196,6 +5199,9 @@ msgid "Sierra Leone"
 msgstr ""
 
 msgid "Signature"
+msgstr ""
+
+msgid "Simple criteria"
 msgstr ""
 
 msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
