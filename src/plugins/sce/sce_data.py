@@ -272,6 +272,24 @@ class SCETournamentSyncData:
 
 
 @dataclass
+class SCEFraSchoolSyncData:
+    code: str
+    label: str
+
+    def to_dict(self) -> dict[str, str]:
+        return asdict(self)
+
+    @classmethod
+    def from_dict_value(cls, value: dict[str, str] | None) -> Self | None:
+        if not value:
+            return None
+        return cls(
+            code=value['code'],
+            label=value['label'],
+        )
+
+
+@dataclass
 class SCEPlayerSyncData:
     tournament_id: str
     last_name: str
@@ -292,6 +310,7 @@ class SCEPlayerSyncData:
     national_id: str | None = None
     ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
     ffe_league: str | None = None
+    fra_school: SCEFraSchoolSyncData | None = None
 
     # Not stored
     mail: str | None = None
@@ -315,6 +334,12 @@ class SCEPlayerSyncData:
     @property
     def ffe_licence_str(self) -> str:
         return self.ffe_licence.short_name
+
+    @property
+    def fra_school_label_str(self) -> str:
+        if not self.fra_school:
+            return ''
+        return self.fra_school.label
 
     @classmethod
     def from_sce_data(
@@ -408,6 +433,9 @@ class SCEPlayerSyncData:
             ),
             comment=stored_value.get('comment'),
             check_in=stored_value.get('check_in', False),
+            fra_school=SCEFraSchoolSyncData.from_dict_value(
+                stored_value.get('fra_school')
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -433,6 +461,7 @@ class SCEPlayerSyncData:
             'ffe_league': self.ffe_league,
             'comment': self.comment,
             'check_in': self.check_in,
+            'fra_school': self.fra_school.to_dict() if self.fra_school else None,
         }
 
     def to_sce_data(self) -> dict[str, Any]:
@@ -459,6 +488,8 @@ class SCEPlayerSyncData:
             'phone_number': self.phone,
             'comment': self.comment,
             'checked_in': self.check_in,
+            'fra_school_code': self.fra_school.code if self.fra_school else None,
+            'fra_school_label': self.fra_school.label if self.fra_school else None,
         }
 
     def merge_with_other_sync_data(self, other_data: Self, ref_data: Self) -> Self:
@@ -505,8 +536,8 @@ class SCEPlayerSyncData:
         plugin_data.last_sync_data = self
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         plugin_manager.hook_for_event(
-            event, 'augment_stored_player_from_player_sync_data'
-        )(stored_player=stored_player, sync_data=self)
+            event, 'augment_stored_player_from_sce_player_sync_data'
+        )(event=event, stored_player=stored_player, sync_data=self)
 
     @staticmethod
     def diff_fields_by_property_name(event: Event) -> dict[str, str]:
@@ -516,6 +547,7 @@ class SCEPlayerSyncData:
             'first_name': _('First name'),
             'title_str': _('Title'),
             'rating_str': _('Rating'),
+            'fra_school_label_str': None,
             'federation': _('Federation'),
             'ffe_league': None,
             'club': _('Club'),

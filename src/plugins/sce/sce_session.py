@@ -33,6 +33,7 @@ from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredTournamentPlayer,
 )
+from plugins.fra_schools.fra_schools import FRASchoolsPlugin
 from plugins.manager import plugin_manager
 from plugins.sce import PLUGIN_NAME, SCE_BASE_URL, SCE_CLIENT_ID
 from plugins.sce.sce_event_status import (
@@ -817,6 +818,11 @@ class SCESession(Session):
             plugins: list[Plugin] = [SCEPlugin()]
             if stored_event.federation == 'FRA':
                 plugins.append(FfePlugin())
+                if any(
+                    'FRA_SCHOOL' in tournament_data['supplementary_fields']
+                    for tournament_data in data['tournaments']
+                ):
+                    plugins.append(FRASchoolsPlugin())
             stored_event.enabled_plugins = [
                 plugin.id
                 for plugin in plugin_manager.get_plugins_with_dependencies(plugins)
