@@ -387,10 +387,7 @@ class IndexAdminController(BaseAdminController):
                 name = loader.get_unused_event_name(stored_event.name)
                 uniq_id = loader.get_unused_event_uniq_id(stored_event.uniq_id)
             public = stored_event.public
-            allow_multi_tournament_players = (
-                stored_event.allow_multi_tournament_players
-                or admin_event.has_multi_tournament_players
-            )
+            allow_multi_tournament_players = admin_event.allow_multi_tournament_players
             federation = stored_event.federation
             location = stored_event.location
             age_category_base_date = stored_event.age_category_base_date
