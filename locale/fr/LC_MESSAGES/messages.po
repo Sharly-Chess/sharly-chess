@@ -536,6 +536,9 @@ msgstr "Administration"
 msgid "Administrator"
 msgstr "Administrateur·ice"
 
+msgid "Advanced criteria can be created from the dedicated criteria form."
+msgstr "Les critères avancés peuvent-être créés depuis le formulaire de critères."
+
 msgid "Affects the rating that will be chosen for each player."
 msgstr "Influe sur le classement qui sera choisi pour chaque joueur·euse."
 
@@ -5200,6 +5203,9 @@ msgstr "Sierra Leone"
 msgid "Signature"
 msgstr "Signature"
 
+msgid "Simple criteria"
+msgstr "Critères simples"
+
 msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
 msgstr "Les classements étant utilisés pour le calcul des départages, il est important qu'ils soient représentatifs du niveau des joueur·euses. Pour cette raison ce départage est déconseillé avec des joueur·euses non-classé·es."
 
@@ -7060,3 +7066,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
