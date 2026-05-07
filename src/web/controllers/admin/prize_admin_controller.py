@@ -462,7 +462,7 @@ class PrizeAdminController(BaseEventAdminController):
                                 else min_prize_value
                             )
                         )
-        if action == FormAction.CREATE:
+        if action == FormAction.CREATE and not is_main:
             field = 'criterion_rating'
             try:
                 min_rating = WebContext.form_data_to_int(
@@ -601,58 +601,59 @@ class PrizeAdminController(BaseEventAdminController):
             current_main_category.update()
         prize_category = prize_group.add_category(stored_category)
 
-        filters: list[PlayerFilter] = []
-        field = 'criterion_rating'
-        min_rating = web_context.form_data_to_int(data, field + '_min')
-        max_rating = web_context.form_data_to_int(data, field + '_max')
-        if min_rating or max_rating:
-            filters.append(
-                RatingPlayerFilter(
-                    [
-                        MinRatingOption(min_rating),
-                        MaxRatingOption(max_rating),
+        if not prize_category.is_main:
+            filters: list[PlayerFilter] = []
+            field = 'criterion_rating'
+            min_rating = web_context.form_data_to_int(data, field + '_min')
+            max_rating = web_context.form_data_to_int(data, field + '_max')
+            if min_rating or max_rating:
+                filters.append(
+                    RatingPlayerFilter(
+                        [
+                            MinRatingOption(min_rating),
+                            MaxRatingOption(max_rating),
+                        ]
+                    )
+                )
+            field = 'criterion_age_category'
+            min_category: PlayerCategory | None = None
+            max_category: PlayerCategory | None = None
+            min_id = WebContext.form_data_to_str(data, field + '_min')
+            max_id = WebContext.form_data_to_str(data, field + '_max')
+            if min_id and min_id != '__placeholder__':
+                min_category = PlayerCategory.from_id(min_id)
+            if max_id and max_id != '__placeholder__':
+                max_category = PlayerCategory.from_id(max_id)
+            if min_category or max_category:
+                if min_category and max_category:
+                    category_ids = [
+                        category.id
+                        for category in event.player_categories
+                        if min_category <= category <= max_category  # type: ignore
                     ]
+                else:
+                    category_ids = [getattr(min_category or max_category, 'id')]
+                filters.append(
+                    AgePlayerFilter(
+                        [
+                            AgeCategoriesOption(category_ids),
+                            AgeLowerOption(min_category is None),
+                            AgeGreaterOption(max_category is None),
+                        ]
+                    )
                 )
-            )
-        field = 'criterion_age_category'
-        min_category: PlayerCategory | None = None
-        max_category: PlayerCategory | None = None
-        min_id = WebContext.form_data_to_str(data, field + '_min')
-        max_id = WebContext.form_data_to_str(data, field + '_max')
-        if min_id and min_id != '__placeholder__':
-            min_category = PlayerCategory.from_id(min_id)
-        if max_id and max_id != '__placeholder__':
-            max_category = PlayerCategory.from_id(max_id)
-        if min_category or max_category:
-            if min_category and max_category:
-                category_ids = [
-                    category.id
-                    for category in event.player_categories
-                    if min_category <= category <= max_category  # type: ignore
-                ]
-            else:
-                category_ids = [getattr(min_category or max_category, 'id')]
-            filters.append(
-                AgePlayerFilter(
-                    [
-                        AgeCategoriesOption(category_ids),
-                        AgeLowerOption(min_category is None),
-                        AgeGreaterOption(max_category is None),
-                    ]
+            gender = WebContext.form_data_to_str(data, 'criterion_gender')
+            if gender:
+                filters.append(GenderPlayerFilter([GenderOption(gender)]))
+            for filter_ in filters:
+                prize_category.add_criterion(
+                    StoredPrizeCriterion(
+                        id=None,
+                        prize_category_id=prize_category.id,
+                        type=filter_.id,
+                        options={option.id: option.value for option in filter_.options},
+                    )
                 )
-            )
-        gender = WebContext.form_data_to_str(data, 'criterion_gender')
-        if gender:
-            filters.append(GenderPlayerFilter([GenderOption(gender)]))
-        for filter_ in filters:
-            prize_category.add_criterion(
-                StoredPrizeCriterion(
-                    id=None,
-                    prize_category_id=prize_category.id,
-                    type=filter_.id,
-                    options={option.id: option.value for option in filter_.options},
-                )
-            )
         if add_other:
             return self._render_prize_category_modal(
                 web_context,
