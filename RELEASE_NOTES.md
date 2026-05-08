@@ -9,6 +9,7 @@
 ## Players
 
 - Make check-in system permanent (4.1.0)
+- Fixed default check-in value of players of not started tournaments (4.1.1)
 
 ## Prizes
 
