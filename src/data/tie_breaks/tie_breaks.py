@@ -1,4 +1,3 @@
-import copy
 from abc import ABC, abstractmethod
 from bisect import bisect_right
 from collections import namedtuple, defaultdict
@@ -1827,7 +1826,7 @@ class DirectEncounterTieBreak(TieBreak):
             players_by_rank_group[rank_group].append(player)
 
         values_by_player_id: dict[int, int] = {}
-        point_values = copy.copy(tournament.point_values)
+        point_values = tournament.point_values.copy()
         if (
             tournament.pairing_system == SwissPairingSystem()
             and not self.played_modifier
