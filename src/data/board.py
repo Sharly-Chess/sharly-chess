@@ -80,9 +80,14 @@ class Board:
 
     @property
     def fixed_number(self) -> int | None:
-        return self.white_tournament_player.fixed or getattr(
-            self.black_tournament_player, 'fixed', None
-        )
+        fixed_white: int | None = self.white_tournament_player.fixed
+        fixed_black: int | None = getattr(self.black_tournament_player, 'fixed', None)
+        if fixed_white and fixed_black:
+            return max(fixed_white, fixed_black)
+        elif fixed_white:
+            return fixed_white
+        else:
+            return fixed_black
 
     @property
     def number(self) -> int:
