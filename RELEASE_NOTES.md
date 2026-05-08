@@ -9,6 +9,7 @@
 ## Players
 
 - Make check-in system permanent (4.1.0)
+- Fixed redirect when editing players from the pairings tab (4.1.1)
 
 ## Prizes
 
