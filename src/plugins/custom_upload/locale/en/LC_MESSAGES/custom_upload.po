@@ -55,7 +55,13 @@ msgstr ""
 msgid "Mode"
 msgstr ""
 
+msgid "Never uploaded"
+msgstr ""
+
 msgid "No document type is matching input"
+msgstr ""
+
+msgid "Not configured"
 msgstr ""
 
 msgid "Path in the server:"

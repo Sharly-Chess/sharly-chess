@@ -9,14 +9,25 @@
     {% for tournament in allowed_tournaments %}
         {% set configuration_verification_message = custom_upload_utils.custom_upload_configuration_verification_message(tournament) %}
         <tr>
+        <!-- TODO: adapt to new styling from FFE plugin upload modal -->
             <td style="width: 0;" class="text-nowrap">
                 {{ tournament.name }}
             </td>
             <td style="width: 0;" class="text-nowrap">
                 {{ _('Manual') }}
             </td>
-            <td>
-                <!-- TODO: show results -->
+            <td id="tournament-upload-statuses-{{ tournament.id }}" class="text-center">
+                {% set tournament_status = custom_upload_utils.resolve_tournament_upload_statuses(tournament)[0] %}
+                {% set tooltip_message = tournament_status.tooltip_message(tournament) %}
+                <span
+                        class="badge rounded-pill {{ tournament_status.css_classes }}"
+                        style="height: 20px"
+                        {% if tooltip_message %}
+                            {{ macros.tooltip_attributes('', tooltip_message) }}
+                        {% endif %}
+                >
+                    {{ tournament_status.name }}
+                </span>
             </td>
             <td>
                 <!-- TODO: handle properly rendering of list of documents -->

@@ -55,8 +55,14 @@ msgstr "Manuel"
 msgid "Mode"
 msgstr "Mode"
 
+msgid "Never uploaded"
+msgstr "Jamais mis en ligne"
+
 msgid "No document type is matching input"
 msgstr "Aucun document ne correspond à cette entrée"
+
+msgid "Not configured"
+msgstr "Non configuré"
 
 msgid "Path in the server:"
 msgstr "Chemin sur le serveur :"

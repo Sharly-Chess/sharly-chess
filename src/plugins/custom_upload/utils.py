@@ -6,6 +6,11 @@ from common.i18n import _
 from data.tournament import Tournament
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.custom_upload import PLUGIN_NAME
+from plugins.custom_upload.custom_upload_status import (
+    CustomUploadStatus,
+    NotConfiguredCustomUploadStatus,
+    NeverUploadedCustomUploadStatus,
+)
 from plugins.utils import PluginData
 from utils.enum import FormAction
 from web.controllers.base_controller import WebContext
@@ -30,6 +35,21 @@ class CustomUploadUtils:
         if not plugin_data.ftp_username or not plugin_data.ftp_password:
             return _('FTP credentials are not defined.')
         return None
+
+    @classmethod
+    def resolve_tournament_upload_statuses(
+        cls, tournament: Tournament
+    ) -> list[CustomUploadStatus]:
+        custom_upload_plugin_data = cls.get_tournament_plugin_data(tournament)
+
+        if (
+            not custom_upload_plugin_data.ftp_host
+            or not custom_upload_plugin_data.ftp_username
+            or not custom_upload_plugin_data.ftp_password
+        ):
+            return [NotConfiguredCustomUploadStatus()]
+
+        return [NeverUploadedCustomUploadStatus()]
 
 
 @dataclass
