@@ -11,7 +11,7 @@
 
 - Make check-in system permanent (4.1.0)
 - Fixed players' default check-in value of not started tournaments (4.1.1)
-- Fixed redirect when editing players from the pairings tab (4.1.1)
+- Fixed redirect when editing players from the Pairings tab (4.1.1)
 
 ## Prizes
 
