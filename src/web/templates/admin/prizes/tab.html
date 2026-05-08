@@ -62,10 +62,10 @@
         >
             <button
                 class="btn btn-primary text-nowrap"
-                hx-trigger="click, SC_Plus from:body"
                 {% if not admin_prize_group or not client.can_manage_prizes %}
                     disabled
                 {% else %}
+                    hx-trigger="click, SC_Plus from:body"
                     hx-get="{{ url_for(
                         'admin-prize-category-create-modal',
                         event_uniq_id=admin_event.uniq_id,

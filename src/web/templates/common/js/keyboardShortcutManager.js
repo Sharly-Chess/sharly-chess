@@ -3,18 +3,36 @@ function isTargetInput(target) {
     return target.isContentEditable || (isTextInput || target.tagName === "TEXTAREA" || target.tagName === "SELECT") && !target.readOnly;
 }
 
-function isModalOpened() {
-    return document.getElementById('modal-wrapper').classList.contains('show');
-}
-
 function keyboardShortcutManager(event) {
 
     if (event.repeat) {return;}
     if (isModalOpened()) {return;}
     if (isTargetInput(event.target)) {return;}
 
-    switch(event.key.toLowerCase()) {
+    let navigationShortcuts = {
+        'a': "SC_A",
+        'c': "SC_C",
+        'd': "SC_D",
+        'f': "SC_F",
+        'i': "SC_I",
+        'j': "SC_J",
+        'l': "SC_L",
+        'm': "SC_M",
+        'p': "SC_P",
+        'r': "SC_R",
+        's': "SC_S",
+        't': "SC_T",
+        'x': "SC_X",
+        'z': "SC_Z",
+    }
+
+    let key = event.key.toLowerCase()
+
+    switch(key) {
         case '+':
+            if (event.ctrlKey || event.altKey) {
+                break
+            }
             document.body.dispatchEvent(new CustomEvent("SC_Plus"));
             break;
 
@@ -58,63 +76,10 @@ function keyboardShortcutManager(event) {
             document.body.dispatchEvent(new CustomEvent("SC_ArrowDown"));
             break;
 
-        case 't':
-            document.body.dispatchEvent(new CustomEvent("SC_T"));
-            break;
-
-        case 'c':
-            document.body.dispatchEvent(new CustomEvent("SC_C"));
-            break;
-
-        case 'p':
-            document.body.dispatchEvent(new CustomEvent("SC_P"));
-            break;
-
-        case 'j':
-            document.body.dispatchEvent(new CustomEvent("SC_J"));
-            break;
-
-        case 'a':
-            document.body.dispatchEvent(new CustomEvent("SC_A"));
-            break;
-
-        case 's':
-            document.body.dispatchEvent(new CustomEvent("SC_S"));
-            break;
-
-        case 'f':
-            document.body.dispatchEvent(new CustomEvent("SC_F"));
-            break;
-
-        case 'r':
-            document.body.dispatchEvent(new CustomEvent("SC_R"));
-            break;
-
-        case 'd':
-            document.body.dispatchEvent(new CustomEvent("SC_D"));
-            break;
-
-        case 'm':
-            document.body.dispatchEvent(new CustomEvent("SC_M"));
-            break;
-
-        case 'l':
-            document.body.dispatchEvent(new CustomEvent("SC_L"));
-            break;
-
-        case 'x':
-            document.body.dispatchEvent(new CustomEvent("SC_X"));
-            break;
-
-        case 'z':
-            document.body.dispatchEvent(new CustomEvent("SC_Z"));
-            break;
-
-        case 'i':
-            document.body.dispatchEvent(new CustomEvent("SC_I"));
-            break;
-
         default:
+            if (Object.keys(navigationShortcuts).includes(key) && !event.shiftKey && !event.ctrlKey && !event.altKey) {
+                document.body.dispatchEvent(new CustomEvent(navigationShortcuts[key]));
+            }
             break
 
     }

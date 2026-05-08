@@ -77,14 +77,6 @@ class StoredPrizeGroup:
 
 
 @dataclass
-class StoredTournamentCriterion:
-    id: int | None
-    tournament_id: int
-    type: str
-    options: dict[str, Any]
-
-
-@dataclass
 class StoredTieBreak:
     id: int | None
     tournament_id: int
@@ -167,7 +159,7 @@ class StoredTournament:
     pairing: str = SharlyChessConfig.default_pairing_variation_id
     pairing_settings: dict[str, Any] = field(default_factory=dict[str, Any])
     current_round: int | None = None
-    check_in_open: bool = False
+    check_in_open: bool = True
     rounds: int = 1
     rating: int = 1
     player_rating_type: int | None = None
@@ -177,11 +169,10 @@ class StoredTournament:
     three_points_for_a_win: bool = False
     override_unrated_rapid_blitz: bool = True
     pab_value: int = Result.WIN.value
+    criteria: dict[str, Any] = field(default_factory=dict)
+    round_datetimes: dict[int, datetime | None] = field(default_factory=dict)
     stored_tie_breaks: list[StoredTieBreak] = field(
         default_factory=list[StoredTieBreak]
-    )
-    stored_criteria: list[StoredTournamentCriterion] = field(
-        default_factory=list[StoredTournamentCriterion]
     )
     stored_prize_groups: list[StoredPrizeGroup] = field(
         default_factory=list[StoredPrizeGroup]
@@ -190,12 +181,9 @@ class StoredTournament:
     stored_tournament_players: list[StoredTournamentPlayer] = field(
         default_factory=list[StoredTournamentPlayer]
     )
-
     stored_boards_by_round: dict[int, list[StoredBoard]] = field(
         default_factory=dict[int, list[StoredBoard]]
     )
-
-    round_datetimes: dict[int, datetime | None] = field(default_factory=dict)
 
     # Plugins can add their own tournament data
     plugin_data: dict[str, dict[str, Any]] = field(

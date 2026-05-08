@@ -52,24 +52,22 @@
             {{ _('Create a screen family') }}
         </button>
         <ul class="dropdown-menu">
-            {% for family_type, family_data in {
-                'input': { 'title': _('Check-in / Results entry'), 'icon_class': 'bi-pencil-fill', 'tooltip_text': _('Add a family of screens to check-in players or enter results.'), },
-                'boards': { 'title': _('Pairings by board'), 'icon_class': 'bi-card-list', 'tooltip_text': _('Add a family of screens to display the pairings by board.'), },
-                'players': { 'title': _('Pairings by player'), 'icon_class': 'bi-people-fill', 'tooltip_text': _('Add a family of screens to display the pairings by alphabetical order.'), },
-                'ranking': { 'title': _('Ranking'), 'icon_class': 'bi-trophy', 'tooltip_text': _('Add a family of screens to display the ranking.'), },
-            }.items() %}
+            {% for screen_type in family_screen_types %}
                 <li>
                     <button
                         class="dropdown-item text-start cursor-pointer"
-                        hx-get="{{ url_for('admin-family-create-modal', event_uniq_id=admin_event.uniq_id, family_type=family_type) }}"
+                        hx-get="{{ url_for(
+                            'admin-family-create-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            family_type=screen_type.value,
+                        ) }}"
                         hx-target="body"
                         hx-indicator="#please-wait"
                         data-bs-toggle="modal"
                         data-bs-target="#modal-wrapper"
-                        {{ macros.tooltip_attributes('info', family_data.tooltip_text, 'left') }}
                     >
-                        <i class="{{ family_data['icon_class'] }}"></i>
-                        {{ family_data['title'] }}
+                        <i class="{{ screen_type.icon_str }}"></i>
+                        {{ screen_type.name }}
                     </button>
                 </li>
             {% endfor %}

@@ -1,0 +1,17 @@
+{% extends '/common/alert.html' %}
+
+{% block alert_content %}
+    <div class="align-self-center">
+        {% if type == 'info' %}
+            <i class="bi-info-circle-fill"></i>
+        {% elif type == 'warning' %}
+            <i class="bi-exclamation-triangle-fill"></i>
+        {% endif %}
+    </div>
+    <div class="flex-grow-1 align-self-center">
+        {{ message }}
+    </div>
+{% endblock %}
+
+{% block remove_button %}
+{% endblock %}

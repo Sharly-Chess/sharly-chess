@@ -36,6 +36,11 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
         self.is_default_visible = True
 
     @property
+    def header_button_template(self) -> str | None:
+        """Template for a button added to the header, not conflicting with the sort."""
+        return None
+
+    @property
     def is_hideable(self) -> bool:
         """Defines if the column can be hidden."""
         return True
@@ -113,7 +118,7 @@ class PlayersTabColumn(Column[Player], IdentifiableEntity, ABC):
         return ''
 
     def get_filter_row_content(self, value: Any) -> str:
-        """Get the of a filter row from the value."""
+        """Get the content of a filter row from the value."""
         return value
 
     def get_filter_row_tooltip(self, value: Any) -> str:
@@ -173,7 +178,7 @@ class FilterPlayersTabColumn(PlayersTabColumn, ABC):
     def get_filter_key(self, player: Player) -> str: ...
 
 
-class NamePlayersTabColumn(PlayersTabColumn):
+class NamePlayersTabColumn(FilterPlayersTabColumn):
     @staticmethod
     def static_id() -> str:
         return 'name'
@@ -195,7 +200,7 @@ class NamePlayersTabColumn(PlayersTabColumn):
 
     @property
     def shared_classes(self) -> str:
-        return 'text-nowrap position-sticky px-3 table-sticky-border z-1'
+        return 'text-nowrap position-sticky table-sticky-border z-1 w-15em'
 
     @property
     def cell_template(self) -> str | None:
@@ -208,6 +213,20 @@ class NamePlayersTabColumn(PlayersTabColumn):
     def get_search_key(self, player: Player) -> str:
         return f'{player.last_name} {player.first_name}'
 
+    def get_filter_key(self, player: Player) -> str:
+        if player.single_tournament_player.matches_tournament_criteria:
+            return 'match'
+        return 'no-match'
+
+    @property
+    def filter_row_template(self) -> str:
+        return 'filter_rows/name.html'
+
+    def get_filter_row_tooltip(self, value: Any) -> str:
+        if value == 'match':
+            return _('Players which match the criteria of their tournament.')
+        return _('Players which do not match the criteria of their tournament.')
+
 
 class CheckInPlayersTabColumn(FilterPlayersTabColumn):
     @staticmethod
@@ -217,6 +236,10 @@ class CheckInPlayersTabColumn(FilterPlayersTabColumn):
     @staticmethod
     def static_name() -> str:
         return _('Check-in')
+
+    @property
+    def is_hideable(self) -> bool:
+        return False
 
     @property
     def header_template(self) -> str:
@@ -243,19 +266,18 @@ class CheckInPlayersTabColumn(FilterPlayersTabColumn):
     def get_filter_value_from_key(self, filter_key: str, event: Event) -> Any:
         return CheckInStatus(int(filter_key))
 
+    def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
+        return filter_value.value
+
     @property
     def filter_mandatory_keys(self) -> list[str]:
         return [
             str(status.value)
-            for status in CheckInStatus
-            if status != CheckInStatus.CHECK_IN_CLOSED
+            for status in (CheckInStatus.ABSENT, CheckInStatus.PRESENT)
         ]
 
-    def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
-        return any(tournament.check_in_open for tournament in tournaments)
-
-    def get_filter_value_sort_key(self, filter_value: ColumnFilterValue) -> Any:
-        return filter_value.value
+    def get_filter_row_tooltip(self, value: Any) -> str:
+        return CheckInStatus(int(value)).description
 
 
 class RatingPlayersTabColumn(PlayersTabColumn):

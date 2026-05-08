@@ -35,6 +35,10 @@
             {# https://air-datepicker.com #}
             <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/air-datepicker/air-datepicker-' ~ sharly_chess_config.air_datepicker_version ~ '/dist/air-datepicker.css') }}" type="text/css" />
             <script src="{{ url_for('static', file_path='/lib/air-datepicker/air-datepicker-' ~ sharly_chess_config.air_datepicker_version ~ '/dist/air-datepicker.js') }}"></script>
+            {# https://github.com/palcarazm/bootstrap5-toggle #}
+            <link rel="stylesheet" href="{{ url_for('static', file_path='/lib/bootstrap5-toggle/bootstrap5-toggle-' ~ sharly_chess_config.bootstrap5_toggle_version ~ '/css/bootstrap5-toggle.min.css') }}" type="text/css" />
+            <script src="{{ url_for('static', file_path='/lib/bootstrap5-toggle/bootstrap5-toggle-' ~ sharly_chess_config.bootstrap5_toggle_version ~ '/js/bootstrap5-toggle.jquery.min.js') }}"></script>
+            <script src="{{ url_for('static', file_path='/lib/progressbar.js/progressbar.js-' ~ sharly_chess_config.progressbar_js_version ~ '/dist/progressbar.min.js') }}"></script>
             <script>
                 {% include 'js/base.js' %}
                 {% include 'js/modals.js' %}

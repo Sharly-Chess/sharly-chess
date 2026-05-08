@@ -20,6 +20,10 @@ from data.columns.players_tab import (
 )
 from data.criteria.player_filter_options import PlayerFilterOption, ClubsFilterOption
 from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
+from data.criteria.tournament_criteria import (
+    TournamentCriterion,
+    GenderTournamentCriterion,
+)
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.pairings.managers import PairingVariationManager
@@ -32,6 +36,8 @@ from data.print_documents.place_cards.data import PlaceCardPlayer
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
 from data.tie_breaks import TieBreak, TieBreakOption
+from data.tie_breaks.system_sets import SystemTieBreakSet
+from data.tie_breaks.tie_breaks import ProgressiveScoresTieBreak
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
@@ -48,8 +54,6 @@ from plugins.ffe.ffe_entity import (
     LeaguePlayerSplitter,
     NicoisSwissVariation,
     FfeLeaguePlayerFilter,
-    FfeLicencePlayerFilter,
-    FfeLicenceFilterOption,
     FfeLeaguesFilterOption,
     FfeLeagueTableColumn,
     FfeIdDatasheetColumn,
@@ -59,6 +63,8 @@ from plugins.ffe.ffe_entity import (
     FfeLicenceTypeTableColumn,
     FfeLeaguePlayersTabColumn,
     FfeLicencePlayersTabColumn,
+    FfeLicenceTournamentCriterion,
+    FfeLeagueTournamentCriterion,
 )
 from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
 from plugins.ffe.ffe_upload_controller import (
@@ -648,6 +654,16 @@ class FfePlugin(Plugin):
     ) -> str | None:
         return PapiConverter.check_result(result, tournament)
 
+    @hookimpl
+    def insert_tournament_criteria_types(
+        self, criteria_types: list[type['TournamentCriterion']]
+    ):
+        licence: type[TournamentCriterion] = FfeLicenceTournamentCriterion
+        league: type[TournamentCriterion] = FfeLeagueTournamentCriterion
+        gender: type[TournamentCriterion] = GenderTournamentCriterion
+        PluginUtils.insert_on_equals(criteria_types, licence, gender)
+        PluginUtils.insert_on_equals(criteria_types, league, licence)
+
     # ---------------------------------------------------------------------------------
     # Upload
     # ---------------------------------------------------------------------------------
@@ -776,6 +792,48 @@ class FfePlugin(Plugin):
     ):
         tie_break_option_types.append(PapiBuchholzTypeOption)
 
+    @hookimpl
+    def insert_swiss_system_tie_break_sets(
+        self, system_sets: list['SystemTieBreakSet']
+    ):
+        from plugins.ffe import ffe_tie_breaks
+        from plugins.ffe.ffe_tie_breaks import (
+            PapiBuchholzTypeOption,
+            StandardPapiBuchholzType,
+            CutPapiBuchholzType,
+        )
+
+        system_sets.append(
+            SystemTieBreakSet(
+                key=f'{PLUGIN_NAME}:youth-championship-swiss',
+                name=_('"France jeunes" and qualifiers'),
+                tie_breaks=[
+                    ffe_tie_breaks.PapiBuchholzTieBreak(
+                        [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
+                    ),
+                    ffe_tie_breaks.PapiBuchholzTieBreak(
+                        [PapiBuchholzTypeOption(StandardPapiBuchholzType().id)]
+                    ),
+                    ffe_tie_breaks.PapiPerformanceTieBreak(),
+                ],
+            )
+        )
+        system_sets.append(
+            SystemTieBreakSet(
+                key=f'{PLUGIN_NAME}:youth-championship-swiss-unrated',
+                name=_('"France jeunes" and qualifiers - Unrated'),
+                tie_breaks=[
+                    ffe_tie_breaks.PapiBuchholzTieBreak(
+                        [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
+                    ),
+                    ffe_tie_breaks.PapiBuchholzTieBreak(
+                        [PapiBuchholzTypeOption(StandardPapiBuchholzType().id)]
+                    ),
+                    ProgressiveScoresTieBreak(),
+                ],
+            )
+        )
+
     # ---------------------------------------------------------------------------------
     # Pairings
     # ---------------------------------------------------------------------------------
@@ -797,17 +855,14 @@ class FfePlugin(Plugin):
         league: type[PlayerFilter] = FfeLeaguePlayerFilter
         club: type[PlayerFilter] = ClubPlayerFilter
         PluginUtils.insert_on_equals(player_filter_types, league, club)
-        player_filter_types.append(FfeLicencePlayerFilter)
 
     @hookimpl
     def insert_player_filter_option_types(
         self, player_filter_option_types: list[type['PlayerFilterOption']]
     ):
-        licence: type[PlayerFilterOption] = FfeLicenceFilterOption
         league: type[PlayerFilterOption] = FfeLeaguesFilterOption
         club: type[PlayerFilterOption] = ClubsFilterOption
         PluginUtils.insert_on_equals(player_filter_option_types, league, club)
-        player_filter_option_types.append(licence)
 
     # ---------------------------------------------------------------------------------
     # Accounts
@@ -870,13 +925,27 @@ class FfePlugin(Plugin):
         player: TournamentPlayer,
         sync_data: SCEPlayerSyncData,
     ):
-        sync_data.national_id = FFEUtils.get_player_plugin_data(
-            player
-        ).ffe_licence_number
+        plugin_data = FFEUtils.get_player_plugin_data(player)
+        sync_data.national_id = plugin_data.ffe_licence_number
+        sync_data.ffe_licence = plugin_data.ffe_licence
+        sync_data.ffe_league = plugin_data.league
 
     @hookimpl
-    def augment_stored_player_from_player_sync_data(
+    def augment_sce_player_sync_data_from_sce_data(
         self,
+        sce_data: dict[str, Any],
+        sync_data: SCEPlayerSyncData,
+    ):
+        sync_data.national_id = sce_data['national_id']
+        sync_data.ffe_licence = PlayerFFELicence(
+            sce_data['ffe_licence_type'] or PlayerFFELicence.NONE
+        )
+        sync_data.ffe_league = sce_data['ffe_league']
+
+    @hookimpl
+    def augment_stored_player_from_sce_player_sync_data(
+        self,
+        event: 'Event',
         stored_player: StoredPlayer,
         sync_data: SCEPlayerSyncData,
     ):
@@ -884,13 +953,15 @@ class FfePlugin(Plugin):
             stored_player.plugin_data.get(PLUGIN_NAME, {})
         )
         plugin_data.ffe_licence_number = sync_data.national_id
-        if plugin_data.ffe_licence == PlayerFFELicence.NONE and sync_data.national_id:
-            plugin_data.ffe_licence = PlayerFFELicence.N
+        plugin_data.ffe_licence = sync_data.ffe_licence
+        plugin_data.league = sync_data.ffe_league
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
 
     @hookimpl
-    def get_sce_national_id_player_field_label(self) -> str | None:
-        return _('FFE Licence no. *** LICENCE NUMBER')
+    def update_sce_player_diff_field_labels(self, diff_fields: dict[str, str | None]):
+        diff_fields['national_id'] = _('FFE Licence no. *** LICENCE NUMBER')
+        diff_fields['ffe_licence_str'] = _('FFE Licence')
+        diff_fields['ffe_league'] = _('League')
 
     @hookimpl
     def add_sce_upload_player_custom_fields(

@@ -81,8 +81,8 @@ class FRASchoolsController(BaseEventAdminController):
 
     @get(
         path=[
-            '/fra-schools/search-player/{event_uniq_id:str}',
-            '/fra-schools/search-player/{event_uniq_id:str}/{page:int}',
+            '/fra-schools/search/{event_uniq_id:str}',
+            '/fra-schools/search/{event_uniq_id:str}/{page:int}',
         ],
         name='fra-schools-search',
     )

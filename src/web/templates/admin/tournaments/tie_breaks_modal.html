@@ -1,20 +1,30 @@
+{% set has_tie_breaks = admin_tournament.tie_breaks_by_id|length > 0 %}
 <div
+    id="tie-breaks-modal"
     class="modal-dialog modal-dialog-scrollable"
-    style="--bs-modal-width: fit-content; min-width: min(90vw, 450px);"
+    style="--bs-modal-width: fit-content; min-width: min(90vw, {% if has_tie_breaks %}450px{% else %}550px{% endif %});"
 >
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
                 {{ _('Tie-breaks') }}
+                <i
+                    class="bi-info-circle-fill"
+                    style="font-size: 70%"
+                    {{ macros.tooltip_attributes('', _(
+                        'Tie-breaks determine the rankings for players '
+                        'that are tied with the same number of points.'
+                    )) }}
+                ></i>
             </h2>
         </div>
+        {% set has_custom_sets = tie_break_set_custom_names|length > 0 %}
         <div class="modal-body">
             {% if success_message %}
                 {% with type='success', message=success_message %}
                     {% include '/common/alert.html' %}
                 {% endwith %}
             {% endif %}
-
             <h4 class="mb-3">
                 {{ _('%(string)s:', string=_('Tournament')) }}
                 {{ admin_tournament.name }}
@@ -27,45 +37,81 @@
                 {% endif %}
             </h4>
             {% if not admin_tournament.tie_breaks_by_id %}
-                <h5 class="text-center mb-3">{{ _('No tie-breaks') }}</h5>
-                <div style="max-width: 450px">
-                    <p>
-                        {{ _(
-                            'Tie-breaks determine the rankings for players '
-                            'that are tied with the same number of points.'
-                        ) }}
-                    </p>
-                    <div>
-                        {{ _(
-                            'Recommended tie-breaks for a [%(pairing_system)s] tournament:',
-                            pairing_system=admin_tournament.pairing_system.name
-                        ) }}
-                    </div>
-                    <ol>
-                        {% for tie_break in admin_tournament.pairing_system.recommended_tie_breaks %}
-                            <li>
-                                {{ tie_break.full_name }}
-                                <i
-                                    class="bi-info-circle-fill ps-2"
-                                    style="font-size: 90%"
-                                    {{ macros.tooltip_attributes('', tie_break.help_text, 'top') }}
-                                ></i>
-                            </li>
-                        {% endfor %}
-                    </ol>
-                    <div class="text-center">
-                        <button
-                            class="btn btn-outline-primary text-nowrap text-center"
+                <div class="text-danger">{{ _('No tie-breaks.') }}</div>
+                <div class="pt-2">
+                    {% if tie_break_set_select_options %}
+                        <form
+                            id="tie-break-set-apply-form"
                             hx-post="{{ url_for(
-                                'admin-create-default-tie-breaks',
+                                'admin-apply-tie-break-set',
                                 event_uniq_id=admin_event.uniq_id,
                                 tournament_id=admin_tournament.id,
                             ) }}"
+                            hx-target="body"
                             hx-indicator="#please-wait"
+                            class="d-flex gap-2 align-items-end"
                         >
-                            {{ _('Use the recommended tie-breaks') }}
-                        </button>
-                    </div>
+                            <div class="flex-grow-1">
+                                <style>
+                                    #tie-break-set-wrapper { flex-direction: column; }
+                                </style>
+                                {{ admin_macros.select_input(
+                                    name='tie_break_set',
+                                    label=_('Quick-apply a tie-break set'),
+                                    placeholder=_('Choose a set…'),
+                                    select_options=tie_break_set_select_options,
+                                    tooltip_select=true,
+                                    data={}, errors={}
+                                ) }}
+                            </div>
+                            <button
+                                id="tie-break-set-apply-button"
+                                type="submit"
+                                class="btn btn-outline-primary text-nowrap"
+                                disabled
+                            >
+                                <i class="bi-check-circle-fill pe-1"></i>
+                                {{ _('Apply') }}
+                            </button>
+                        </form>
+                        {% if has_custom_sets %}
+                            <div class="text-end {% if not save_as_invalid %}mt-3{% endif %}">
+                                <button
+                                    type="button"
+                                    class="btn btn-outline-primary btn-sm text-nowrap"
+                                    hx-get="{{ url_for(
+                                        'admin-tie-break-sets-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                    ) }}"
+                                    hx-target="body"
+                                    hx-indicator="#please-wait"
+                                    data-bs-target="#modal-wrapper"
+                                >
+                                    <i class="bi-gear-fill pe-1"></i>
+                                    {{ _('Manage custom sets') }}
+                                </button>
+                            </div>
+                        {% endif %}
+                        <script>
+                            (function () {
+                                var $sel = $('#tie-break-set');
+                                $sel.prop('disabled', false);
+                                $sel.removeAttr('disabled');
+                                $sel.next('.select2-container')
+                                    .find('.select2-selection')
+                                    .removeAttr('aria-disabled')
+                                    .removeClass('select2-selection--disabled');
+                                $sel.change(function () {
+                                    var v = $(this).val();
+                                    $('#tie-break-set-apply-button').prop(
+                                        'disabled', !v || v === '__placeholder__'
+                                    );
+                                });
+                                $sel.trigger('change');
+                            })();
+                        </script>
+                    {% endif %}
                 </div>
             {% else %}
                 {% set reorder_enabled = admin_tournament.tie_breaks_by_id|length > 1 %}
@@ -97,19 +143,19 @@
                                 <div class="flex-shrink-0 d-flex gap-2 align-items-center">
                                     <i
                                         class="bi-info-circle-fill ps-1 pt-1"
-                                        {{ macros.tooltip_attributes('', tie_break.help_text, 'top') }}
+                                        {{ macros.tooltip_attributes('', tie_break.help_text) }}
                                     ></i>
                                     {% if stored_id in invalid_messages_by_id %}
                                         <i
                                             class="bi-exclamation-triangle-fill text-danger pt-1"
-                                            {{ macros.tooltip_attributes('warning', invalid_messages_by_id[stored_id], 'top') }}
+                                            {{ macros.tooltip_attributes('warning', invalid_messages_by_id[stored_id]) }}
                                         ></i>
                                     {% else %}
                                         {% set warning_message = tie_break.get_warning_for_tournament(admin_tournament) %}
                                         {% if warning_message %}
                                             <i
                                                 class="bi-exclamation-triangle-fill text-warning pt-1"
-                                                {{ macros.tooltip_attributes('', warning_message, 'top') }}
+                                                {{ macros.tooltip_attributes('', warning_message) }}
                                             ></i>
                                         {% endif %}
                                     {% endif %}
@@ -124,27 +170,38 @@
                                             ) }}"
                                             hx-target="body"
                                             hx-indicator="#please-wait"
-                                            {{ macros.tooltip_attributes(
-                                                'info', _('This tie-break can be used multiple times.'), 'top'
-                                            ) }}
+                                            {{ macros.tooltip_attributes('', _(
+                                                'This tie-break can be used multiple times.'
+                                            )) }}
                                         >
                                             <i class="bi-copy"></i>
                                         </button>
                                     {% endif %}
-                                    <button
-                                        class="btn btn-sm btn-outline-primary text-nowrap"
-                                        hx-get="{{ url_for(
-                                            'admin-tie-break-update-modal',
-                                            event_uniq_id=admin_event.uniq_id,
-                                            tournament_id=admin_tournament.id,
-                                            tie_break_id=stored_id,
-                                        ) }}"
-                                        hx-target="body"
-                                        hx-indicator="#please-wait"
-                                        data-bs-target="#modal-wrapper"
+                                    <span
+                                        {% if tie_break.is_legacy %}
+                                            {{ macros.tooltip_attributes('', _(
+                                                'Legacy tie-breaks can no longer be created or edited.'
+                                            )) }}
+                                        {% endif %}
                                     >
-                                        <i class="bi-pencil-fill"></i>
-                                    </button>
+                                        <button
+                                            class="btn btn-sm btn-outline-primary text-nowrap"
+                                            hx-get="{{ url_for(
+                                                'admin-tie-break-update-modal',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                tournament_id=admin_tournament.id,
+                                                tie_break_id=stored_id,
+                                            ) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-target="#modal-wrapper"
+                                            {% if tie_break.is_legacy %}
+                                                disabled
+                                            {% endif %}
+                                        >
+                                            <i class="bi-pencil-fill"></i>
+                                        </button>
+                                    </span>
                                     <button
                                         class="btn btn-sm btn-outline-danger text-nowrap"
                                         hx-delete="{{ url_for(
@@ -164,6 +221,136 @@
                         </div>
                     {% endfor %}
                 </form>
+                {% set save_as_invalid = invalid_messages_by_id|length > 0 %}
+                {% set has_custom_sets = tie_break_set_custom_names|length > 0 %}
+                {% if not save_as_invalid or has_custom_sets %}
+                    <div class="mt-3">
+                        <button
+                            type="button"
+                            class="collapse-button collapsed"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#custom-sets-collapse"
+                            aria-expanded="false"
+                            aria-controls="custom-sets-collapse"
+                        >
+                            <span class="form-check-label d-inline-flex align-items-center gap-2">
+                                <i class="bi bi-chevron-down"></i>
+                                {{ _('Custom sets') }}
+                            </span>
+                        </button>
+                        <div id="custom-sets-collapse" class="collapse">
+                            <div class="pt-2">
+                                {% if not save_as_invalid %}
+                                    {% if tie_break_set_save_as_error %}
+                                        {% with type='warning', message=tie_break_set_save_as_error %}
+                                            {% include '/common/alert.html' %}
+                                        {% endwith %}
+                                    {% endif %}
+                                    <form
+                                        id="tie-break-set-save-form"
+                                        hx-post="{{ url_for(
+                                            'admin-save-tie-break-set',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=admin_tournament.id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        class="d-flex gap-2 align-items-end"
+                                    >
+                                        <div class="flex-grow-1">
+                                            <style>
+                                                #save-as-name-wrapper { flex-direction: column; }
+                                            </style>
+                                            {{ admin_macros.text_input(
+                                                name='save_as_name',
+                                                label=_('Save current tie-breaks as custom set'),
+                                                placeholder=_('Set name'),
+                                                data={'save_as_name': tie_break_set_save_as_name_value},
+                                                errors={}
+                                            ) }}
+                                        </div>
+                                        <input type="hidden" name="name" id="save-as-name-hidden"/>
+                                        <button
+                                            type="submit"
+                                            class="btn btn-outline-primary text-nowrap"
+                                            id="save-as-submit"
+                                            disabled
+                                        >
+                                            <i class="bi-floppy-fill pe-1"></i>
+                                            {{ _('Save') }}
+                                        </button>
+                                    </form>
+                                    {% set _show_overwrite_initial = (
+                                        tie_break_set_save_as_name_value
+                                        and tie_break_set_save_as_name_value in tie_break_set_custom_names
+                                    ) %}
+                                    <div
+                                        class="justify-content-end align-items-center gap-2 mt-1"
+                                        id="save-as-overwrite-wrapper"
+                                        style="display:{{ 'flex' if _show_overwrite_initial else 'none' }}"
+                                    >
+                                        <label class="form-check-label" for="save-as-overwrite">
+                                            {{ _('Overwrite') }}
+                                        </label>
+                                        <input
+                                            class="form-check-input m-0"
+                                            type="checkbox"
+                                            name="overwrite"
+                                            id="save-as-overwrite"
+                                            value="true"
+                                            form="tie-break-set-save-form"
+                                        />
+                                    </div>
+                                    <script>
+                                        (function () {
+                                            var nameInput = $('#save-as-name');
+                                            var hidden = $('#save-as-name-hidden');
+                                            var btn = $('#save-as-submit');
+                                            var existing = {{ tie_break_set_custom_names|tojson }};
+                                            function refresh() {
+                                                var v = nameInput.val();
+                                                hidden.val(v);
+                                                btn.prop('disabled', !v);
+                                                var collides = existing.indexOf(v) !== -1;
+                                                var wrap = document.getElementById(
+                                                    'save-as-overwrite-wrapper'
+                                                );
+                                                if (!wrap) return;
+                                                if (collides) {
+                                                    wrap.style.display = 'flex';
+                                                } else {
+                                                    wrap.style.display = 'none';
+                                                    $('#save-as-overwrite').prop('checked', false);
+                                                }
+                                            }
+                                            nameInput.on('input keyup', refresh);
+                                            refresh();
+                                        })();
+                                    </script>
+                                {% endif %}
+                                {% if has_custom_sets %}
+                                    <div class="text-end {% if not save_as_invalid %}mt-3{% endif %}">
+                                        <button
+                                            type="button"
+                                            class="btn btn-outline-primary btn-sm text-nowrap"
+                                            hx-get="{{ url_for(
+                                                'admin-tie-break-sets-modal',
+                                                event_uniq_id=admin_event.uniq_id,
+                                                tournament_id=admin_tournament.id,
+                                            ) }}"
+                                            hx-target="body"
+                                            hx-indicator="#please-wait"
+                                            data-bs-target="#modal-wrapper"
+                                        >
+                                            <i class="bi-gear-fill pe-1"></i>
+                                            {{ _('Manage custom sets') }}
+                                        </button>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
             {% endif %}
         </div>
         <div class="modal-footer">
@@ -185,11 +372,7 @@
                 hx-indicator="#please-wait"
             >
                 <i class="bi-plus-square-fill pe-1"></i>
-                {% if admin_tournament.tie_breaks %}
-                    {{ _('Add') }}
-                {% else %}
-                    {{ _('Choose my own') }}
-                {% endif %}
+                {{ _('Add tie-break') }}
             </button>
         </div>
     </div>

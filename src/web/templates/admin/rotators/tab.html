@@ -42,7 +42,6 @@
         >
             <button
                 class="btn btn-primary text-nowrap ms-1"
-                hx-trigger="click, SC_Plus from:body"
                 hx-get="{{ url_for('admin-rotator-create-modal', event_uniq_id=admin_event.uniq_id) }}"
                 hx-target="body"
                 hx-indicator="#please-wait"
@@ -50,6 +49,8 @@
                 data-bs-target="#modal-wrapper"
                 {% if not admin_event.screens_by_uniq_id %}
                     disabled
+                {% else %}
+                    hx-trigger="click, SC_Plus from:body"
                 {% endif %}
             >
                 <i class="bi-plus-square pe-1"></i>

@@ -1,0 +1,8 @@
+<div class="col-12 col-md-6 mb-2">
+    {{ admin_macros.select_input(
+        name=criterion.form_key,
+        label=_('%(string)s:', string=criterion.name),
+        select_options=criterion.select_options,
+        data=data, errors=errors
+    ) }}
+</div>

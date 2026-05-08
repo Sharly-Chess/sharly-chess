@@ -2,7 +2,7 @@
     <div
         class="boards-screen-set"
     >
-        {% if tournament.current_round %}
+        {% if screen.type != 'check-in' and tournament.current_round %}
             <div class="boards-set">
                 <h2 class="set-title text-center">
                     {% if tournament.current_round %}
@@ -98,8 +98,8 @@
             <div class="players-set">
                 <h2 class="set-title text-center">
                     {{
-                        _('%(set_name)s (check-in)', set_name=screen_set.name_for_boards)
-                        if screen_set.tournament.check_in_open else
+                        _('%(set_name)s (check-in)', set_name=screen_set.name_for_players)
+                        if screen.type == 'check-in' else
                         _('%(set_name)s (registered players)', set_name=screen_set.name_for_boards)
                     }}
                 </h2>

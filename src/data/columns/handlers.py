@@ -331,6 +331,7 @@ class PlayerDatasheetColumnHandler:
             pds.ClubColumn(),
             pds.OwedColumn(),
             pds.PaidColumn(),
+            pds.CheckInColumn(),
             pds.CommentColumn(),
         ]
         columns += self.get_rating_columns()

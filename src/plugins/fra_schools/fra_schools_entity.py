@@ -44,7 +44,7 @@ class FraSchoolPlayerSplitter(PlayerSplitter):
     def get_split_key(tournament_player: TournamentPlayer) -> str:
         return getattr(
             FRASchoolsUtils.get_player_school(tournament_player),
-            'full_name_without_code',
+            'label',
             '',
         )
 
@@ -61,7 +61,7 @@ class FraSchoolTableColumn(TournamentPlayerTableColumn):
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return getattr(
             FRASchoolsUtils.get_player_school(tournament_player),
-            'full_name_without_code',
+            'label',
             '',
         )
 
@@ -116,16 +116,16 @@ class FraSchoolCodeDatasheetColumn(DatasheetColumn):
         ).to_stored_value()
 
 
-class FraSchoolNameDatasheetColumn(DatasheetColumn):
+class FraSchoolLabelDatasheetColumn(DatasheetColumn):
     @property
     def id(self) -> str:
-        return 'fra_school_name'
+        return 'fra_school_label'
 
     def get_cell_content(self, player: Player) -> Any:
         school = FRASchoolsUtils.get_player_school(player)
         if not school:
             return None
-        return school.full_name_without_code
+        return school.label
 
     @property
     def export_only(self) -> bool:

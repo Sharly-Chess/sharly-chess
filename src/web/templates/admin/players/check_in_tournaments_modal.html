@@ -1,0 +1,159 @@
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 800px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Check-in') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            {% if message %}
+                {% with type=message_type or 'success' %}
+                    {% include '/common/alert.html' %}
+                {% endwith %}
+            {% endif %}
+            <table
+                class="table prominent table-sm w-100 bg-light mx-auto mb-0 justify-content-center"
+            >
+                <thead>
+                    <th class="text-nowrap text-start">
+                        {{ _('Tournament') }}
+                    </th>
+                    <th
+                        class="text-nowrap text-center"
+                        {{ macros.tooltip_attributes('', _(
+                            'Enable player check-in from check-in screens.'
+                        )) }}
+                    >
+                        {{ _('Screens') }}
+                    </th>
+                    {% for column in plugin_columns %}
+                        <th
+                            class="text-nowrap {{ column.header_classes }}"
+                            {% set tooltip = column.header_tooltip %}
+                            {% if tooltip %}
+                                {{ macros.tooltip_attributes('', tooltip) }}
+                            {% endif %}
+                        >
+                            {{ column.header_content }}
+                        </th>
+                    {% endfor %}
+                    <th class="text-nowrap text-center">
+                        {{ _('Absent') }}
+                    </th>
+                    <th class="text-nowrap text-center">
+                        {{ _('Present') }}
+                    </th>
+                    <th
+                        class="text-nowrap text-center"
+                        {{ macros.tooltip_attributes('', _(
+                            'Players who have received a bye for the incoming '
+                            'round and will therefore not be paired.'
+                        )) }}
+                    >
+                        {{ _('Byes *** ZPB, HPB or FPB') }}
+                    </th>
+                    <th class="text-nowrap text-center">
+                        {{ _('Total') }}
+                    </th>
+                    <th></th>
+                </thead>
+                <tbody>
+                    {% for tournament in allowed_tournaments %}
+                        <tr>
+                            <td class="text-nowrap text-ellipsis mw-10em">
+                                {{ tournament.name }}
+                            </td>
+                            <td class="text-nowrap text-center">
+                                {% set can_open_check_in = client.can_open_close_check_in(tournament.id) %}
+                                <div
+                                    class="form-check form-switch d-inline-block"
+                                    {% if not can_open_check_in %}
+                                        {{ macros.tooltip_attributes('', _(
+                                            'You are not allowed to open or close this check-in.'
+                                        )) }}
+                                    {% endif %}
+                                >
+                                    <input
+                                        name="tournament_{{ tournament.id }}_check_in_open"
+                                        class="form-check-input mt-2"
+                                        type="checkbox"
+                                        hx-post="{{ url_for(
+                                            'check-in-tournament-toggle-open',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                        ) }}"
+                                        {% if tournament.check_in_open %}checked{% endif %}
+                                        {% if not can_open_check_in %}disabled{% endif %}
+                                    />
+                                </div>
+                            </td>
+                            {% for column in plugin_columns %}
+                                <td class="text-nowrap {{ column.get_cell_classes(tournament) }}">
+                                    {% include column.cell_template %}
+                                </td>
+                            {% endfor %}
+                            {% for status in ordered_statuses %}
+                                {% with base_id='tournament-' ~ tournament.id, counter=tournament.check_in_status_grouped_counts %}
+                                    {% include 'check_in_table_status_cell.html' %}
+                                {% endwith %}
+                            {% endfor %}
+                            <td class="text-center fw-bold">
+                                {{ tournament.tournament_players|length }}
+                            </td>
+                            <td class="d-flex gap-2 align-items-center">
+                                <div class="flex-grow-1"></div>
+                                <span {{ macros.tooltip_attributes('',
+                                    _('Reset all the players to &quot;Absent&quot; or &quot;Present&quot; (byes not impacted).')
+                                ) }}>
+                                    <button
+                                        type="button"
+                                        class="btn btn-outline-primary btn-sm d-flex h-100 align-items-center"
+                                        hx-get="{{ url_for(
+                                            'check-in-tournament-reset-modal',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            tournament_id=tournament.id,
+                                        ) }}"
+                                        hx-indicator="#please-wait"
+                                    >
+                                        <i class="bi-arrow-counterclockwise lh-1"></i>
+                                    </button>
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    {% if allowed_tournaments|length > 1 %}
+                        <tr class="fw-bold">
+                            <td colspan="{{ 2 + plugin_columns|length }}" class="text-end">
+                                {{ _('Total') }}
+                            </td>
+                            {% for status in ordered_statuses %}
+                                {% with base_id='total', counter=total_check_in_status_grouped_counts %}
+                                    {% include 'check_in_table_status_cell.html' %}
+                                {% endwith %}
+                            {% endfor %}
+                            <td class="text-center">{{ total_player_count }}</td>
+                            <td></td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('Close') }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    requestRefresh();
+</script>

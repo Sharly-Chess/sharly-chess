@@ -313,6 +313,7 @@ class SelectOption:
     disabled: bool = False
     classes: str = ''
     search: str | None = None
+    subtitle: str | None = None
 
 
 class PKCEUtils:

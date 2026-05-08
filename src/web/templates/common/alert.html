@@ -1,5 +1,5 @@
 <div
-    class="alert message-{% block type %}{{ type }}{% endblock %} alert-dismissible fade show p-2 d-flex align-items-start gap-3"
+    class="alert message-{% block type %}{{ type }}{% endblock %} alert-dismissible fade show p-2 d-flex align-items-start gap-3 {{ alert_classes }}"
     role="alert"
     {% if auto_remove %}
         remove-me="10s"

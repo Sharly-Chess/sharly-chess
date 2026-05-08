@@ -250,6 +250,25 @@
                 {% for form_fields_template in plugin_form_fields_templates %}
                     {% include form_fields_template %}
                 {% endfor %}
+                <button
+                    type="button"
+                    class="collapse-button {% if not force_criteria_open %}collapsed{% endif %} mt-3"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#criteria-collapse"
+                    aria-expanded="false"
+                >
+                    <h4 class="form-check-label d-inline-flex align-items-center gap-2">
+                        <i class="bi-chevron-down text-body"></i>
+                        {{ _('Criteria') }}
+                    </h4>
+                </button>
+                <div id="criteria-collapse" class="{% if not force_criteria_open %}collapse{% endif %}">
+                    <div class="row">
+                        {% for criterion in tournament_criteria %}
+                            {% include criterion.template_name %}
+                        {% endfor %}
+                    </div>
+                </div>
                 {% include '/admin/tournaments/tournament_schedule_section.html' %}
             </form>
 

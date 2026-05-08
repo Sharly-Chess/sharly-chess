@@ -221,7 +221,6 @@ class TestUtils:
             'location': None,
             'pairing': StandardSwissVariation.static_id(),
             'current_round': None,
-            'check_in_open': False,
             'rounds': 7,
             'rating': 1,
             'stored_prize_groups': [],

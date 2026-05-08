@@ -45,7 +45,7 @@ class ScreenUserController(BaseScreenUserController):
             case ScreenType.BOARDS | ScreenType.INPUT | ScreenType.RANKING:
                 if tournament.last_pairing_update > date:
                     return True
-            case ScreenType.PLAYERS:
+            case ScreenType.PLAYERS | ScreenType.CHECK_IN:
                 pass
             case _:
                 raise ValueError(f'type={screen_set.type}')
@@ -74,6 +74,7 @@ class ScreenUserController(BaseScreenUserController):
                     | ScreenType.INPUT
                     | ScreenType.PLAYERS
                     | ScreenType.RANKING
+                    | ScreenType.CHECK_IN
                 ):
                     for screen_set in screen.screen_sets:
                         if cls._user_screen_set_refresh_needed(screen_set, date_dt):

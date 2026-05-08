@@ -1,13 +1,3 @@
 {% set status = filter_value.value %}
-{% if status == 0 %}
-    {{ _('Check-in closed') }}
-{% elif status == 1 %}
-    <i class="bi-ban text-secondary pe-1"></i>
-    {{ _('Next round bye') }}
-{% elif status == 2 %}
-    <i class="bi-circle-fill text-warning pe-1"></i>
-    {{ _('Not checked-in yet') }}
-{% elif status == 3 %}
-    <i class="bi-check-circle-fill text-success pe-1"></i>
-    {{ _('Checked-in') }}
-{% endif %}
+<i class="{{ status.icon_classes }} pe-1"></i>
+{{ status.name }}

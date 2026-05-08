@@ -59,7 +59,7 @@ msgid "Connection failed"
 msgstr "Connexion échouée"
 
 msgid "Connection to the ChessEvent server failed."
-msgstr "Connection au serveur ChessEvent échouée."
+msgstr "Connexion au serveur ChessEvent échouée."
 
 msgid "Default credentials used to import tournaments from the ChessEvent platform."
 msgstr "Identifiants par défaut utilisés pour importer des tournois depuis la plateforme ChessEvent."

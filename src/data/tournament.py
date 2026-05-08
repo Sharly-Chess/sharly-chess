@@ -1,13 +1,11 @@
 from datetime import date, datetime
 import weakref
-from babel.lists import format_list
-from common.i18n import get_locale
 from collections import Counter
 from collections.abc import Collection
 from functools import cached_property
 from logging import Logger
 from operator import attrgetter
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any
 from _weakref import ReferenceType
 
 from trf import Tournament as TrfTournament
@@ -18,9 +16,9 @@ from common.logger import get_logger
 
 from data.account import Account
 from data.board import Board
-from data.criteria.managers import PlayerFilter
+from data.criteria.managers import TournamentCriterionManager
 from data.family import Family
-from data.player import Player, Federation, Club, TournamentPlayer
+from data.player import Player, TournamentPlayer
 from data.player_categories import PlayerCategory
 from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
@@ -32,11 +30,10 @@ from data.tie_breaks import (
     TieBreakManager,
     TieBreakOptionManager,
 )
-from data.tournament_criterion import TournamentCriterion
+from data.criteria.tournament_criteria import TournamentCriterion
 from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredBoard,
-    StoredTournamentCriterion,
     StoredTournamentPlayer,
     StoredPairing,
     StoredTieBreak,
@@ -55,6 +52,7 @@ from utils.enum import (
     ScreenType,
     RoleType,
     PlayerTitle,
+    CheckInStatus,
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
@@ -234,6 +232,10 @@ class Tournament:
         return self.stored_tournament.check_in_open
 
     @property
+    def default_player_check_in(self) -> bool:
+        return self.started
+
+    @property
     def first_board_number(self) -> int:
         return (
             self.stored_tournament.first_board_number
@@ -356,6 +358,9 @@ class Tournament:
             database.set_tournament_pairing_settings(self.id, pairing_settings)
         self.stored_tournament.pairing_settings = pairing_settings
         Utils.reset_cached_properties(self, 'pairing_settings')
+
+    def get_pairing_settings_data_errors(self, data: dict[str, str]) -> dict[str, Any]:
+        return self.pairing_variation.get_settings_data_errors(self, data)
 
     # -------------------------------------------------------------------------
     # Tie-breaks
@@ -545,63 +550,25 @@ class Tournament:
     # -------------------------------------------------------------------------
 
     @cached_property
-    def criteria_by_id(self) -> dict[int, TournamentCriterion]:
-        criteria_by_id = {}
-        for stored_criterion in self.stored_tournament.stored_criteria:
-            assert stored_criterion.id is not None
+    def criteria(self) -> list[TournamentCriterion]:
+        criteria: list[TournamentCriterion] = []
+        for criteria_id, stored_value in self.stored_tournament.criteria.items():
             try:
-                criteria_by_id[stored_criterion.id] = TournamentCriterion(
-                    self, stored_criterion
+                criterion = TournamentCriterionManager(self.event).get_object(
+                    criteria_id
                 )
-            except KeyError as e:
-                # This can happen when the plugin that defined the criteria is not enabled
-                logger.warning(
-                    'Criterion [%s] not found for tournament [%s]: %s',
-                    stored_criterion.id,
-                    self.name,
-                    e,
-                )
-                pass
-        return criteria_by_id
-
-    @property
-    def criteria(self) -> Collection[TournamentCriterion]:
-        return self.criteria_by_id.values()
-
-    def player_matches_criteria(self, tournament_player: TournamentPlayer) -> bool:
-        """Check if the player matches all criteria of this tournament."""
-        return all(
-            criterion.player_filter.is_player_included_function(tournament_player)
-            for criterion in self.criteria
-        )
-
-    def failing_criteria(
-        self, tournament_player: TournamentPlayer
-    ) -> list[PlayerFilter]:
-        """Return the list of criteria that the player does not match."""
-        return [
-            criterion.player_filter
-            for criterion in self.criteria
-            if not criterion.player_filter.is_player_included_function(
-                tournament_player
-            )
-        ]
-
-    def failing_criteria_message(self, tournament_player: TournamentPlayer) -> str:
-        """Return the list of criteria that the player does not match."""
-        locale = get_locale()
-        return format_list(
-            [criteria.name for criteria in self.failing_criteria(tournament_player)],
-            locale=locale,
-        )
+                value = criterion.value_from_stored_value(stored_value)
+                criterion.set_value(value)
+                criteria.append(criterion)
+            except KeyError:
+                logger.exception(f'Unknown criterion [{criteria_id}].')
+        return criteria
 
     @cached_property
     def num_players_not_matching_criteria(self) -> int:
         """Return the number of players matching all criteria of this tournament."""
         return sum(
-            1
-            for tournament_player in self.tournament_players_by_id.values()
-            if not self.player_matches_criteria(tournament_player)
+            not player.matches_tournament_criteria for player in self.tournament_players
         )
 
     @property
@@ -610,23 +577,7 @@ class Tournament:
 
     @property
     def criteria_string(self) -> str:
-        return ', '.join(criterion.name for criterion in self.criteria)
-
-    def add_criterion(
-        self, stored_criterion: StoredTournamentCriterion
-    ) -> TournamentCriterion:
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            object_id = database.add_stored_tournament_criterion(stored_criterion)
-        stored_criterion.id = object_id
-        tournament_criterion = TournamentCriterion(self, stored_criterion)
-        self.criteria_by_id[object_id] = tournament_criterion
-        return tournament_criterion
-
-    def delete_criterion(self, criterion_id: int):
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.delete_stored_tournament_criterion(criterion_id)
-        if criterion_id in self.criteria_by_id:
-            del self.criteria_by_id[criterion_id]
+        return ', '.join(criterion.full_name for criterion in self.criteria)
 
     # -------------------------------------------------------------------------
     # Prize groups
@@ -774,18 +725,6 @@ class Tournament:
             rank_by_player_id[player.id] = previous_rank
         return rank_by_player_id
 
-    @cached_property
-    def not_checked_in_players(self) -> list[TournamentPlayer]:
-        """Returns the players that are present for the coming round but not checked-in yet."""
-        if self.finished or self.playing or not self.check_in_open:
-            return []
-        else:
-            return [
-                tournament_player
-                for tournament_player in self.tournament_players
-                if tournament_player.can_check_in_out and not tournament_player.check_in
-            ]
-
     @property
     def min_player_rating(self) -> int | None:
         if not self.tournament_players:
@@ -814,32 +753,31 @@ class Tournament:
     def gender_counts(self) -> Counter[PlayerGender]:
         """Returns the number of players by gender."""
         counter: Counter[PlayerGender] = Counter[PlayerGender]()
-        for tournament_player in self.tournament_players:
-            counter[tournament_player.gender] += 1
+        for player in self.tournament_players:
+            counter[player.gender] += 1
         return counter
 
     @cached_property
-    def federation_counts(self) -> Counter[Federation]:
+    def federation_counts(self) -> Counter[str]:
         """Returns the number of players by federation."""
-        counter: Counter[Federation] = Counter[Federation]()
-        for tournament_player in self.tournament_players:
-            counter[tournament_player.federation] += 1
+        counter: Counter[str] = Counter[str]()
+        for player in self.tournament_players:
+            counter[player.federation.name] += 1
         return counter
 
     @cached_property
-    def club_counts(self) -> Counter[Club]:
+    def club_counts(self) -> Counter[str]:
         """Returns the number of players by club."""
-        counter: Counter[Club] = Counter[Club]()
-        for tournament_player in self.tournament_players:
-            if tournament_player.club is not None:
-                counter[tournament_player.club] += 1
+        counter: Counter[str] = Counter[str]()
+        for player in self.tournament_players:
+            counter[player.club.name] += 1
         return counter
 
     @cached_property
     def category_counts(self) -> Counter[PlayerCategory]:
         counter = Counter[PlayerCategory]()
-        for tournament_player in self.tournament_players:
-            counter[tournament_player.category] += 1
+        for player in self.tournament_players:
+            counter[player.category] += 1
         return counter
 
     @cached_property
@@ -850,17 +788,27 @@ class Tournament:
         return counter
 
     @cached_property
+    def check_in_status_grouped_counts(self) -> Counter[CheckInStatus]:
+        return self.check_in_status_grouped_counts_for_round(self.current_round + 1)
+
+    def check_in_status_grouped_counts_for_round(
+        self, round_: int
+    ) -> Counter[CheckInStatus]:
+        counter = Counter[CheckInStatus]()
+        for player in self.tournament_players:
+            status = player.check_in_status_for_round(round_)
+            if status not in (CheckInStatus.ABSENT, CheckInStatus.PRESENT):
+                status = CheckInStatus.NEXT_ROUND_BYE
+            counter[status] += 1
+        return counter
+
+    @cached_property
     def unrated_count(self) -> int:
-        return sum(
-            tournament_player.rating == 0
-            for tournament_player in self.tournament_players
-        )
+        return sum(player.rating == 0 for player in self.tournament_players)
 
     @cached_property
     def estimated_count(self) -> int:
-        return sum(
-            tournament_player.estimated for tournament_player in self.tournament_players
-        )
+        return sum(player.estimated for player in self.tournament_players)
 
     # -------------------------------------------------------------------------
     # Misc
@@ -928,6 +876,7 @@ class Tournament:
                     | ScreenType.BOARDS
                     | ScreenType.PLAYERS
                     | ScreenType.RANKING
+                    | ScreenType.CHECK_IN
                 ):
                     if all(
                         screen_set.tournament.id == self.id
@@ -954,6 +903,7 @@ class Tournament:
                     | ScreenType.BOARDS
                     | ScreenType.PLAYERS
                     | ScreenType.RANKING
+                    | ScreenType.CHECK_IN
                 ):
                     for screen_set in screen.sorted_screen_sets:
                         if screen_set.tournament.id == self.id:
@@ -976,7 +926,7 @@ class Tournament:
             round_ = self.current_round
         return self.pairing_variation.print_real_points(round_, self.rounds)
 
-    @property
+    @cached_property
     def point_values(self) -> dict[Result, float]:
         values: dict[Result, float]
         if self.three_points_for_a_win:
@@ -986,6 +936,10 @@ class Tournament:
 
         values[Result.PAIRING_ALLOCATED_BYE] = values[self.pab_value]
         return values
+
+    @property
+    def is_standard_point_system_used(self) -> bool:
+        return self.pab_value == Result.WIN and not self.three_points_for_a_win
 
     @cached_property
     def win_points(self) -> float:
@@ -1063,6 +1017,14 @@ class Tournament:
             players_by_id[tournament_player.id] = tournament_player
         return players_by_id
 
+    @property
+    def players_by_id(self) -> dict[int, TournamentPlayer]:
+        return self.tournament_players_by_id
+
+    @property
+    def players(self) -> Collection[TournamentPlayer]:
+        return self.tournament_players
+
     @cached_property
     def boards_by_id(self) -> dict[int, Board]:
         boards_by_id: dict[int, Board] = {}
@@ -1125,6 +1087,13 @@ class Tournament:
                 )
         plugin_manager.hook_for_event(self.event, 'set_for_round')(
             tournament=self, round_=round_
+        )
+
+    def generate_round_pairings(
+        self, at_round: int, partial_pairings: bool = False
+    ) -> str:
+        return self.pairing_variation.engine.generate_pairings(
+            self, at_round, partial_pairings
         )
 
     def pairings_generation_disabled_message(self, at_round: int) -> str | None:
@@ -1421,6 +1390,16 @@ class Tournament:
         with EventDatabase(self.event.uniq_id, write=True) as database:
             database.set_player_check_in(player.id, check_in)
         player.stored_player.check_in = check_in
+        player.__dict__.pop('check_in_status', None)
+
+    def check_in_all_players(self, check_in: bool):
+        player_ids = []
+        for player in self.players:
+            if player.check_in != check_in:
+                player_ids.append(player.id)
+                player.stored_player.check_in = check_in
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_players_check_in(player_ids, check_in)
 
     def add_player_to_tournament(
         self,
@@ -1660,67 +1639,39 @@ class Tournament:
                     white_stored_pairing.result = pab_result.value
                 board.white_pairing.update(database)
 
-    def open_check_in(self):
-        """Opens the check-in for the tournament and sets all the players as not checked-in for the next round."""
-        assert not self.finished, f'Tournament [{self.name}] is finished.'
-        assert not self.playing, f'Games are played for tournament [{self.name}].'
-        assert not self.check_in_open, (
-            f'Check-in already open for tournament [{self.name}].'
-        )
-        self.stored_tournament.check_in_open = True
-        player_ids: list[int] = []
-        for tournament_player in self.tournament_players:
-            player_ids.append(tournament_player.id)
-            tournament_player.stored_player.check_in = False
+    def toggle_check_in_open(self):
+        check_in_open = not self.check_in_open
+        with EventDatabase(self.event.uniq_id, True) as database:
+            database.set_tournament_check_in_open(self.id, check_in_open)
+        self.stored_tournament.check_in_open = check_in_open
 
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            database.set_tournament_check_in(self.id, True)
-            database.set_players_check_in(player_ids, False)
-
-    def close_check_in(
-        self, zpbs_next_round: bool, zpbs_last_rounds: bool, delete: bool
+    def set_player_participation(
+        self, player: TournamentPlayer, withdraw: bool = False
     ):
-        """Closes the check-in for the tournament and assigns a ZPB to all the players not checked-in
-        for the next round (if zpbs_last_rounds, for the rest of the tournament)."""
-        assert self.check_in_open, (
-            f'Check-in already closed for tournament [{self.name}].'
-        )
+        # If there aren't any pairings, then the round for the bye is the first round
+        round_for_participation = self.current_round or 1
+        if not withdraw and self.round_has_pairings(round_for_participation):
+            # If returning to tournament and pairings for this round, then start setting removing ZPBs from the next round only
+            round_for_participation += 1
+        result = Result.ZERO_POINT_BYE if withdraw else Result.NO_RESULT
+        new_byes = {
+            round_: result
+            for round_ in range(
+                round_for_participation,
+                self.rounds + 1,
+            )
+            if player.pairings[round_].unpaired
+        }
+        self.set_player_byes(player, new_byes)
+        self.check_in_player(player, not withdraw)
+        player.__dict__.pop('has_withdrawn', None)
+        player.__dict__.pop('check_in_status', None)
 
-        with EventDatabase(self.event.uniq_id, write=True) as database:
-            if delete:
-                assert not self.has_pairings, f'Tournament [{self.name}] has pairings.'
-                for tournament_player in self.not_checked_in_players:
-                    database.delete_stored_tournament_player(
-                        self.id, tournament_player.id
-                    )
-            else:
-                zpb_rounds: Sequence[int] = ()
-                if zpbs_last_rounds:
-                    zpb_rounds = range(self.current_round + 1, self.rounds + 1)
-                elif zpbs_next_round:
-                    zpb_rounds = (self.current_round + 1,)
-
-                if zpb_rounds:
-                    for tournament_player in self.not_checked_in_players:
-                        for round_ in zpb_rounds:
-                            pairing = tournament_player.pairings_by_round.get(
-                                round_, None
-                            )
-                            if pairing and pairing.result != Result.NO_RESULT:
-                                continue
-                            tournament_player.pairings_by_round[round_].update_result(
-                                database, Result.ZERO_POINT_BYE
-                            )
-            database.set_tournament_check_in(self.id, False)
-        self.stored_tournament.check_in_open = False
-
-    def set_player_byes(
-        self, tournament_player: TournamentPlayer, byes: dict[int, Result]
-    ):
+    def set_player_byes(self, player: TournamentPlayer, byes: dict[int, Result]):
         """Updates a player's pairings with ZPB, HPB, FPB or not-paired values."""
         with EventDatabase(self.event.uniq_id, write=True) as database:
             for round_, result in byes.items():
-                pairing = tournament_player.pairings_by_round[round_]
+                pairing = player.pairings_by_round[round_]
                 if pairing.unpaired:
                     pairing.update_result(database, result)
 

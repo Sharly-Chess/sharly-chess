@@ -57,15 +57,18 @@ function activateTooltips () {
 function scrollToFirstError() {
     var errorElements = document.querySelectorAll('#modal-wrapper .is-invalid');
     if (errorElements.length > 0) {
-        errorElements[0].scrollIntoView({
+        const element = errorElements[0];
+        element.scrollIntoView({
             behavior: "smooth",
             block: "start",
         });
+        element.select();
+        return true;
     }
+    return false;
 }
 
 window.addEventListener("do_print", function(event) {
-    closeModal();
     const form = document.createElement('form');
     form.method = 'get';
     form.action = window.location.origin +
@@ -89,12 +92,20 @@ window.addEventListener("download_ready", function () {
     document.getElementById("please-wait").classList.remove("htmx-request");
 });
 
-window.addEventListener("renumber_players_and_close_modal", function(event) {
-    var cells = document.querySelectorAll("#players-table th.index");
+function renumberPlayerTableRows() {
+    var cells = document.querySelectorAll("#players-table .index");
     cells.forEach((cell, i) => {
         cell.textContent = '' + (i + 1);
     });
+}
+
+window.addEventListener("renumber_players_and_close_modal", function(event) {
+    renumberPlayerTableRows();
     closeModal();
+});
+
+window.addEventListener("renumber_players", function(event) {
+    renumberPlayerTableRows();
 });
 
 window.addEventListener("show.bs.tooltip", function(event) {
@@ -416,10 +427,10 @@ function setPrintTournamentPlayerSelectOptions(
     }
 }
 
-var isNextRefreshMessageIgnored = false;
+var refreshMessagesIgnored = 0;
 function getIsNextRefreshMessageIgnored() {
-    if (isNextRefreshMessageIgnored) {
-        isNextRefreshMessageIgnored = false;
+    if (refreshMessagesIgnored > 0) {
+        refreshMessagesIgnored -= 1;
         return true;
     }
     return false;

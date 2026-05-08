@@ -7,7 +7,7 @@
         <button
             class="btn btn-primary text-nowrap"
             hx-trigger="click, SC_Plus from:body"
-        hx-get="{{ url_for('admin-event-modal', admin_tab=admin_tab, action='create') }}"
+            hx-get="{{ url_for('admin-event-modal', admin_tab=admin_tab, action='create') }}"
             hx-target="body"
             hx-indicator="#please-wait"
             data-bs-toggle="modal"

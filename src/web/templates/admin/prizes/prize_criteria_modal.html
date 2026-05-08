@@ -18,7 +18,7 @@
                 {% if not admin_prize_category.criteria %}
                     <div class="text-danger">{{ _('No criteria.') }}</div>
                 {% endif %}
-                {% for criterion in admin_prize_category.sorted_criteria %}
+                {% for criterion in admin_prize_category.criteria %}
                     <div class="border border-secondary bg-body-tertiary">
                         <div class="p-2 d-flex align-items-center gap-4">
                             <div class="flex-grow-1">

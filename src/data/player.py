@@ -4,10 +4,12 @@ from collections import Counter
 from datetime import date
 from functools import total_ordering, cached_property
 from typing import TYPE_CHECKING, Any
+
+from babel.lists import format_list
 from trf import Player as TrfPlayer
 from trf.Player import Game as TrfGame
 
-from common.i18n import _
+from common.i18n import _, get_locale
 from common.i18n.utils import normalized_key
 from data.pairing import Pairing
 from data.player_categories import PlayerCategory
@@ -42,6 +44,7 @@ from utils.types import (
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
+    from data.criteria.tournament_criteria import TournamentCriterion
     from data.event import Event
     from data.tournament import Tournament
 
@@ -630,7 +633,11 @@ class TournamentPlayer(Player):
             elif round_nb == after_round + 1:
                 if include_next_round_bye and pairing.next_round_bye:
                     games.append(trf_game)
-                elif next_round_pairings_as_zpb and not pairing.needs_pairing:
+                elif (
+                    include_next_round_bye
+                    and self.check_in_status_for_round(after_round + 1)
+                    == CheckInStatus.ABSENT
+                ) or (next_round_pairings_as_zpb and not pairing.needs_pairing):
                     games.append(
                         TrfGame(
                             startrank=0,
@@ -669,6 +676,28 @@ class TournamentPlayer(Player):
         self.board_id = board_id
         self.board_number = board_number
         self.color = color
+
+    @property
+    def matches_tournament_criteria(self) -> bool:
+        return not self.failing_tournament_criteria
+
+    @cached_property
+    def failing_tournament_criteria(self) -> list['TournamentCriterion']:
+        """Return the list of tournament criteria that the player does not match."""
+        return [
+            criterion
+            for criterion in self.tournament.criteria
+            if not criterion.is_player_included_function(self)
+        ]
+
+    @property
+    def failing_tournament_criteria_message(self) -> str:
+        """Return a formatted list of the failing tournament criteria."""
+        locale = get_locale()
+        return format_list(
+            [criterion.full_name for criterion in self.failing_tournament_criteria],
+            locale=locale,
+        )
 
     def achieves_any_title_norm(self) -> dict[TitleNorm, NormCheckResult]:
         from data.pairings.systems import RoundRobinPairingSystem
@@ -1065,7 +1094,7 @@ class TournamentPlayer(Player):
                 return True
         return False
 
-    @property
+    @cached_property
     def has_withdrawn(self) -> bool:
         """Returns True if the player has withdrawn from the tournament."""
         if self.tournament.finished:
@@ -1076,10 +1105,10 @@ class TournamentPlayer(Player):
         for round_ in range(
             max(self.tournament.current_round, 1), self.tournament.rounds + 1
         ):
+            pairing = self.pairings_by_round[round_]
             if (
-                round_ < self.tournament.rounds
-                and self.pairings_by_round[round_].paired
-            ) or self.pairings_by_round[round_].zero_point_bye:
+                round_ < self.tournament.rounds and pairing.paired
+            ) or pairing.zero_point_bye:
                 continue
             return False
         return True
@@ -1109,24 +1138,27 @@ class TournamentPlayer(Player):
 
     @cached_property
     def check_in_status(self) -> CheckInStatus:
-        if not self.tournament.check_in_open:
-            return CheckInStatus.CHECK_IN_CLOSED
-        if self.pairings[self.tournament.current_round + 1].next_round_bye:
-            return CheckInStatus.NEXT_ROUND_BYE
-        if self.check_in:
-            return CheckInStatus.CHECKED_IN
-        return CheckInStatus.NOT_CHECKED_IN
+        return self.check_in_status_for_round(self.tournament.current_round + 1)
 
-    @cached_property
-    def can_check_in_out(self) -> bool:
-        """Returns True if the player can check-in/out, i.e. does not have a ZPB for the next round."""
-        if self.tournament.finished:
-            return False
-        if self.tournament.playing:
-            return False
-        if not self.tournament.check_in_open:
-            return False
-        return not self.pairings[self.tournament.current_round + 1].next_round_bye
+    @property
+    def check_in_status_no_bye(self) -> CheckInStatus:
+        return CheckInStatus.PRESENT if self.check_in else CheckInStatus.ABSENT
+
+    def check_in_status_for_round(self, round_: int) -> CheckInStatus:
+        if self.has_withdrawn:
+            return CheckInStatus.WITHDRAWN
+        pairing = self.pairings_by_round.get(round_)
+        if pairing:
+            match pairing.result:
+                case Result.ZERO_POINT_BYE:
+                    return CheckInStatus.NEXT_ROUND_ZPB
+                case Result.HALF_POINT_BYE:
+                    return CheckInStatus.NEXT_ROUND_HPB
+                case Result.FULL_POINT_BYE:
+                    return CheckInStatus.NEXT_ROUND_FPB
+        if self.check_in:
+            return CheckInStatus.PRESENT
+        return CheckInStatus.ABSENT
 
     @property
     def color_str(self) -> str:

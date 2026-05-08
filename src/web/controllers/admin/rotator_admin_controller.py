@@ -164,7 +164,7 @@ class RotatorAdminController(BaseEventAdminController):
         }
         rotator_ids = [entity.id for entity in rotator_entities]
         for screen_type, entities in entities_by_screen_type.items():
-            if screen_type == ScreenType.INPUT:
+            if screen_type in (ScreenType.INPUT, ScreenType.CHECK_IN):
                 continue
             for entity in sorted(entities, key=attrgetter('name')):
                 suffix = ''

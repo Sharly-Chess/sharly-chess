@@ -184,7 +184,7 @@ class ChessResultsSession(Session):
                 'round',
                 {
                     'round': str(rnd),
-                    'date': dt.strftime('%Y/%m/%d') if dt else '',
+                    'date': dt.strftime('%Y%m%d') if dt else '',
                     'time': dt.strftime('%H:%M') if dt else '',
                 },
             )

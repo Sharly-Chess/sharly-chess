@@ -10,7 +10,7 @@
         event_uniq_id=admin_event.uniq_id,
     ) ~ (
         '?tournament_id=' ~ admin_tournament.id
-        if action != 'create'
+        if admin_tournament
         else ''
     ) }}"
     hx-include='[name="rounds"],[name^="round_"][name$="_datetime"],[name="date_range"]'

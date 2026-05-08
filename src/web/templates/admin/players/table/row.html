@@ -3,6 +3,9 @@
     {% if swap_oob %}
         hx-swap-oob="outerHTML:#player-{{ old_player_id or player.id}}"
     {% endif %}
+    {% if deleted_player_id %}
+        data-delete="true"
+    {% endif %}
 >
     {% set tournament_player = player.single_tournament_player %}
     {% set tournament = tournament_player.tournament %}

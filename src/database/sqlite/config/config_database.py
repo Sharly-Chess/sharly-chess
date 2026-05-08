@@ -14,6 +14,7 @@ from database.sqlite.config.config_store import (
     StoredPlugin,
     StoredLocalSourceDatabase,
     StoredPlayerCategorySet,
+    StoredTieBreakSet,
 )
 from database.sqlite.migration_database import MigrationDatabase
 
@@ -105,6 +106,7 @@ class ConfigDatabase(MigrationDatabase):
         self.execute('SELECT * FROM `info`')
         stored_config = self._row_to_stored_config(self.fetchone())
         stored_config.stored_player_category_sets = self.load_player_category_sets()
+        stored_config.stored_tie_break_sets = self.load_stored_tie_break_sets()
         return stored_config
 
     def load_stored_config(self) -> StoredConfig:
@@ -287,4 +289,74 @@ class ConfigDatabase(MigrationDatabase):
         self.execute(
             'DELETE FROM`player_category_set` WHERE `id` = ?',
             (player_category_set_id,),
+        )
+
+    # ---------------------------------------------------------------------------------
+    # StoredTieBreakSet
+    # ---------------------------------------------------------------------------------
+
+    def _row_to_stored_tie_break_set(self, row: dict[str, Any]) -> StoredTieBreakSet:
+        return StoredTieBreakSet(
+            id=row['id'],
+            name=row['name'],
+            pairing_system_id=row['pairing_system_id'],
+            stored_tie_breaks=self.load_json_from_database_field(
+                row['stored_tie_breaks'], []
+            ),
+        )
+
+    def load_stored_tie_break_sets(self) -> list[StoredTieBreakSet]:
+        self.execute('SELECT * FROM `tie_break_set`')
+        return [self._row_to_stored_tie_break_set(row) for row in self.fetchall()]
+
+    def find_stored_tie_break_set_by_name(
+        self, pairing_system_id: str, name: str
+    ) -> StoredTieBreakSet | None:
+        self.execute(
+            'SELECT * FROM `tie_break_set` '
+            'WHERE `pairing_system_id` = ? AND `name` = ?',
+            (pairing_system_id, name),
+        )
+        if row := self.fetchone():
+            return self._row_to_stored_tie_break_set(row)
+        return None
+
+    def add_stored_tie_break_set(self, stored_tie_break_set: StoredTieBreakSet) -> int:
+        fields = {
+            'name': stored_tie_break_set.name,
+            'pairing_system_id': stored_tie_break_set.pairing_system_id,
+            'stored_tie_breaks': self.dump_to_json_database_field(
+                stored_tie_break_set.stored_tie_breaks
+            ),
+        }
+        fields_str = ', '.join(f'`{field}`' for field in fields)
+        values_str = ', '.join(['?'] * len(fields))
+        self.execute(
+            f'INSERT INTO `tie_break_set` ({fields_str}) VALUES ({values_str})',
+            tuple(fields.values()),
+        )
+        id_ = self._last_inserted_id()
+        if id_ is None:
+            raise RuntimeError('Tie-break set insertion failed')
+        return id_
+
+    def update_stored_tie_break_set(self, stored_tie_break_set: StoredTieBreakSet):
+        assert stored_tie_break_set.id is not None
+        self.execute(
+            'UPDATE `tie_break_set` SET `name` = ?, '
+            '`pairing_system_id` = ?, `stored_tie_breaks` = ? WHERE `id` = ?',
+            (
+                stored_tie_break_set.name,
+                stored_tie_break_set.pairing_system_id,
+                self.dump_to_json_database_field(
+                    stored_tie_break_set.stored_tie_breaks
+                ),
+                stored_tie_break_set.id,
+            ),
+        )
+
+    def delete_stored_tie_break_set(self, tie_break_set_id: int):
+        self.execute(
+            'DELETE FROM `tie_break_set` WHERE `id` = ?',
+            (tie_break_set_id,),
         )

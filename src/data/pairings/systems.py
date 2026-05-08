@@ -18,7 +18,6 @@ if TYPE_CHECKING:
         SwissVariation,
         RoundRobinVariation,
     )
-    from data.tie_breaks import TieBreak
     from data.tournament import Tournament
     from data.event import Event
 
@@ -88,11 +87,6 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return False
 
     @property
-    def allow_mid_tournament_check_in(self) -> bool:
-        """Defines if check-ins are allowed after the start of the tournament."""
-        return True
-
-    @property
     def variation_field_id(self) -> str:
         """ID of the form field selecting the variation of the system."""
         return f'{self.id}_pairing_variation'
@@ -106,11 +100,6 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     def tie_break_help_container_id(self) -> str:
         """ID of the html element containing the tie-break help in the tournament form."""
         return f'{self.id}_tie_break_help_container'
-
-    @property
-    @abstractmethod
-    def recommended_tie_breaks(self) -> list['TieBreak']:
-        """List of tie-breaks recommended by the FIDE."""
 
 
 class SwissPairingSystem(PairingSystem['SwissVariation']):
@@ -192,22 +181,6 @@ class SwissPairingSystem(PairingSystem['SwissVariation']):
     def default_current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
 
-    @property
-    def recommended_tie_breaks(self) -> list['TieBreak']:
-        from data.tie_breaks import tie_breaks
-        from data.tie_breaks.options import CutterWithMedianTieBreakOption
-        from data.tie_breaks.cutters import Cut1TieBreakCutter
-
-        return [
-            tie_breaks.StandardBuchholzTieBreak(
-                [CutterWithMedianTieBreakOption(Cut1TieBreakCutter().id)]
-            ),
-            tie_breaks.DirectEncounterTieBreak(),
-            tie_breaks.StandardBuchholzTieBreak(),
-            tie_breaks.SonnebornBergerTieBreak(),
-            tie_breaks.WinsTieBreak(),
-        ]
-
 
 class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
     @staticmethod
@@ -257,10 +230,6 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
         return True
 
     @property
-    def allow_mid_tournament_check_in(self) -> bool:
-        return False
-
-    @property
     def pairing_buttons_template(self) -> str:
         return '/admin/pairings/round_robin_pairing_buttons.html'
 
@@ -294,14 +263,3 @@ class RoundRobinPairingSystem(PairingSystem['RoundRobinVariation']):
             ),
             1 if tournament.has_pairings else 0,
         )
-
-    @property
-    def recommended_tie_breaks(self) -> list['TieBreak']:
-        from data.tie_breaks import tie_breaks
-
-        return [
-            tie_breaks.DirectEncounterTieBreak(),
-            tie_breaks.WinsTieBreak(),
-            tie_breaks.SonnebornBergerTieBreak(),
-            tie_breaks.KoyaTieBreak(),
-        ]

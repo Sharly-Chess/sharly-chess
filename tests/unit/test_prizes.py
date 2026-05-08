@@ -8,7 +8,7 @@ from data.loader import EventLoader
 from data.player_categories import JuniorCategory, SeniorCategory
 from data.prize.prize_type import MonetaryPrizeType
 from data.tournament import Tournament
-from data.player import Federation, PlayerRating, Club
+from data.player import PlayerRating
 from data.criteria.player_filter_options import (
     GenderOption,
     MaxRatingOption,
@@ -1050,7 +1050,7 @@ class PrizesTestCase(TestCase):
         filter_in = 'Filtered in club'
         filter_out = 'Filtered out club'
         criterion = self.stored_criterion(
-            ClubPlayerFilter([ClubsFilterOption([Club(filter_in).to_query_param])])
+            ClubPlayerFilter([ClubsFilterOption([filter_in])])
         )
         category = self.stored_category(
             stored_prizes=prizes, stored_prize_criteria=[criterion]
@@ -1079,16 +1079,7 @@ class PrizesTestCase(TestCase):
         filter_in_2 = 'Filtered in club 2'
         filter_out = 'Filtered out club'
         criterion = self.stored_criterion(
-            ClubPlayerFilter(
-                [
-                    ClubsFilterOption(
-                        [
-                            Club(filter_in_1).to_query_param,
-                            Club(filter_in_2).to_query_param,
-                        ]
-                    )
-                ]
-            )
+            ClubPlayerFilter([ClubsFilterOption([filter_in_1, filter_in_2])])
         )
         category = self.stored_category(
             stored_prizes=prizes, stored_prize_criteria=[criterion]
@@ -1114,9 +1105,7 @@ class PrizesTestCase(TestCase):
             self.stored_prize(100),
         ]
         criterion = self.stored_criterion(
-            FederationPlayerFilter(
-                [FederationsFilterOption([Federation('FRA').to_query_param])]
-            )
+            FederationPlayerFilter([FederationsFilterOption(['FRA'])])
         )
         category = self.stored_category(
             stored_prizes=prizes, stored_prize_criteria=[criterion]
@@ -1142,16 +1131,7 @@ class PrizesTestCase(TestCase):
             self.stored_prize(100),
         ]
         criterion = self.stored_criterion(
-            FederationPlayerFilter(
-                [
-                    FederationsFilterOption(
-                        [
-                            Federation('FRA').to_query_param,
-                            Federation('BEL').to_query_param,
-                        ]
-                    )
-                ]
-            )
+            FederationPlayerFilter([FederationsFilterOption(['FRA', 'BEL'])])
         )
         category = self.stored_category(
             stored_prizes=prizes, stored_prize_criteria=[criterion]

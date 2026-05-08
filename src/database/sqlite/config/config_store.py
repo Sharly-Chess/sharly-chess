@@ -14,6 +14,14 @@ class StoredPlayerCategorySet:
 
 
 @dataclass
+class StoredTieBreakSet:
+    id: int | None
+    name: str
+    pairing_system_id: str
+    stored_tie_breaks: list[dict[str, Any]]
+
+
+@dataclass
 class StoredConfig:
     force_edit: bool
     console_log_level: int | None
@@ -27,6 +35,9 @@ class StoredConfig:
     locale: str | None = None
     stored_player_category_sets: list[StoredPlayerCategorySet] = field(
         default_factory=list[StoredPlayerCategorySet]
+    )
+    stored_tie_break_sets: list[StoredTieBreakSet] = field(
+        default_factory=list[StoredTieBreakSet]
     )
     errors: dict[str, str] = field(default_factory=dict[str, str])
 

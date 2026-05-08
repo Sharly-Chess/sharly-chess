@@ -7,7 +7,7 @@ from data.access_levels.actions import AuthAction
 from data.event import Event
 
 from litestar import get, patch
-from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
+from litestar.plugins.htmx import HTMXRequest
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
 from litestar.response import Template
@@ -153,11 +153,4 @@ class ScreenConfigAdminController(BaseEventAdminController):
             request,
             _('Screen configuration has been updated.').format(uniq_id=uniq_id),
         )
-
-        return HTMXTemplate(
-            template_name='common/empty_modal_and_messages.html',
-            context={'messages': Message.messages(request)},
-            re_target='#modal-wrapper',
-            trigger_event='close_modal',
-            after='settle',
-        )
+        return self._render_empty_modal_and_messages(request)

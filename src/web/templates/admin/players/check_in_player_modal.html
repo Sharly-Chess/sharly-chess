@@ -1,0 +1,50 @@
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: fit-content; min-width: min(90vw, 350px);"
+>
+    <div class="modal-content" data-player-id="{{ admin_player.id }}">
+        {% set tournament = admin_player.single_tournament %}
+        {% set status = admin_player.single_tournament_player.check_in_status %}
+        <div class="modal-header">
+            <div class="fs-5">
+                {{ _(
+                    'Return [%(player)s] to the tournament?',
+                    player=admin_player.full_name
+                ) if status == 0 else _(
+                    'Cancel "%(bye)s" at round #%(round)s for [%(player)s]?',
+                    bye=status.name,
+                    round=tournament.current_round + 1,
+                    player=admin_player.full_name,
+                ) }}
+            </div>
+        </div>
+        <form
+            id="modal-form"
+            hx-patch="{{ url_for(
+                'player-table-check-in-player',
+                event_uniq_id=admin_event.uniq_id,
+                player_id=admin_player.id,
+            ) }}"
+        >
+        </form>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill pe-1"></i>
+                {{ _('No') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+                onclick="refreshMessagesIgnored += 1"
+            >
+                <i class="bi-check-circle-fill pe-1"></i>
+                {{ _('Yes') }}
+            </button>
+        </div>
+    </div>
+</div>

@@ -3,6 +3,7 @@ from dataclasses import dataclass, asdict
 from functools import partial, cached_property
 from typing import Self, Any, Counter, Collection
 
+from common import SharlyChessException
 from common.i18n.utils import normalized_key
 from data.event import Player, Event
 from database.sqlite.event.event_database import EventDatabase
@@ -74,7 +75,7 @@ class FRASchool(PluginData):
 
     @property
     def full_name(self) -> str:
-        full_name = self.full_name_without_code
+        full_name = self.label
         if self.code:
             full_name = f'{self.code} {full_name}'
         return full_name
@@ -86,13 +87,29 @@ class FRASchool(PluginData):
         return self.name
 
     @property
-    def full_name_without_code(self) -> str:
-        full_name = self.name
+    def label(self) -> str:
+        label = self.name
         if self.city:
-            full_name += f', {self.city}'
+            label += f', {self.city}'
         if self.postal_code:
-            full_name += f' ({self.postal_code})'
-        return full_name
+            label += f' ({self.postal_code})'
+        return label
+
+    LABEL_PATTERN = re.compile(
+        r'^(?P<name>.*), (?P<city>[^,]*) \((?P<postal_code>.{5})\)$'
+    )
+
+    @classmethod
+    def from_label(cls, label: str) -> Self:
+        """Parse a string formatted in the full name format into FRASchool object."""
+        match = cls.LABEL_PATTERN.fullmatch(label)
+        if match is None:
+            raise SharlyChessException(f'Invalid school label format: {label}')
+        return cls(
+            name=match.group('name'),
+            city=match.group('city'),
+            postal_code=match.group('postal_code'),
+        )
 
     @cached_property
     def tooltip(self) -> str:
@@ -260,6 +277,14 @@ class FRASchoolsUtils:
         return event_schools_by_id.get(school_id, None)
 
     @classmethod
+    def get_school_by_code(cls, event: Event, code: str) -> FRASchool | None:
+        event_schools_by_id = cls.get_event_plugin_data(event).fra_schools_by_id
+        return next(
+            (school for school in event_schools_by_id.values() if school.code == code),
+            None,
+        )
+
+    @classmethod
     def add_event_school(
         cls,
         event: Event,
@@ -272,10 +297,12 @@ class FRASchoolsUtils:
             - if *update_existing* it is updated
             - otherwise it is ignored."""
         plugin_data = FRASchoolsUtils.get_event_plugin_data(event)
-        school_id = next(
-            (s.id for s in plugin_data.fra_schools if s.code == school.code),
-            None,
-        )
+        school_id: int | None = None
+        if school.code:
+            school_id = next(
+                (s.id for s in plugin_data.fra_schools if s.code == school.code),
+                None,
+            )
         if not school_id:
             school_id = (
                 max(plugin_data.fra_schools_by_id | {0: ''}) + 1

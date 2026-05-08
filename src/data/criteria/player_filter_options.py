@@ -7,7 +7,7 @@ from common.exception import OptionError
 from common.i18n import _
 from common.i18n.utils import normalized_key, by
 from common.sharly_chess_config import SharlyChessConfig
-from data.player import Club, Federation, TournamentPlayer
+from data.player import TournamentPlayer
 from data.player_categories import PlayerCategory, NoCategory
 from utils.enum import PlayerGender, PlayerRatingType
 from utils.option import Option
@@ -324,7 +324,7 @@ class RatingTypesFilterOption(SelectPlayerFilterOption[PlayerRatingType]):
                 raise OptionError(f'Unknown rating_type [{rating_type}]', self)
 
 
-class ClubsFilterOption(SelectPlayerFilterOption[Club]):
+class ClubsFilterOption(SelectPlayerFilterOption[str]):
     @staticmethod
     def static_id() -> str:
         return 'CLUBS'
@@ -337,24 +337,18 @@ class ClubsFilterOption(SelectPlayerFilterOption[Club]):
     def default_value(self) -> Any:
         return []
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[Club]:
+    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
         event_club_names = {player.club.name for player in tournament.event.players}
-        return [
-            Club(name) for name in sorted(event_club_names, key=normalized_key) if name
-        ]
+        return [name for name in sorted(event_club_names, key=normalized_key) if name]
 
-    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[Club]:
-        counter = tournament.club_counts
-        empty_club = Club('')
-        if empty_club in counter:
-            counter.pop(empty_club)
-        return counter
+    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
+        return tournament.club_counts
 
-    def get_key(self, object_: Club) -> str:
-        return object_.to_query_param
+    def get_key(self, object_: str) -> str:
+        return object_
 
-    def get_name(self, object_: Club) -> str:
-        return object_.name
+    def get_name(self, object_: str) -> str:
+        return object_
 
     def validate(self):
         self._validate_list_type(str)
@@ -362,7 +356,7 @@ class ClubsFilterOption(SelectPlayerFilterOption[Club]):
             raise OptionError(_('At least one value is expected.'), self)
 
 
-class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
+class FederationsFilterOption(SelectPlayerFilterOption[str]):
     @staticmethod
     def static_id() -> str:
         return 'FEDERATIONS'
@@ -375,23 +369,17 @@ class FederationsFilterOption(SelectPlayerFilterOption[Federation]):
     def default_value(self) -> Any:
         return []
 
-    def get_all_known_values(self, tournament: 'Tournament') -> list[Federation]:
-        return [Federation(code) for code in SharlyChessConfig().federations.keys()]
+    def get_all_known_values(self, tournament: 'Tournament') -> list[str]:
+        return list(SharlyChessConfig().federations.keys())
 
-    def get_tournament_player_counter(
-        self, tournament: 'Tournament'
-    ) -> Counter[Federation]:
-        counter = tournament.federation_counts
-        empty_federation = Federation('')
-        if empty_federation in counter:
-            counter.pop(empty_federation)
-        return counter
+    def get_tournament_player_counter(self, tournament: 'Tournament') -> Counter[str]:
+        return tournament.federation_counts
 
-    def get_key(self, object_: Federation) -> str:
-        return object_.to_query_param
+    def get_key(self, object_: str) -> str:
+        return object_
 
-    def get_name(self, object_: Federation) -> str:
-        code = object_.name
+    def get_name(self, object_: str) -> str:
+        code = object_
         federations: dict[str, str] = SharlyChessConfig().federations
         if code not in federations:
             return code

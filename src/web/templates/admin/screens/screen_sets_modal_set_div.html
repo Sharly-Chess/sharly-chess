@@ -24,11 +24,11 @@
                         ) }}
                     </div>
                 </div>
-                {% if admin_screen.type in ['boards', 'input', 'players', 'ranking', ] %}
+                {% if admin_screen.type in ['boards', 'input', 'players', 'ranking', 'check-in'] %}
                     <h4 class="mt-4">
                         {% if admin_screen.type in ['boards', 'input'] %}
                             {{ _('Board selection (by number)') }}
-                        {% elif admin_screen.type == 'players' %}
+                        {% elif admin_screen.type in ('players', 'check-in') %}
                             {{ _('Player selection (by alphabetical order)') }}
                         {% else %}
                             {{ _('Player selection (by rank)') }}
@@ -38,7 +38,7 @@
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
                             {% if admin_screen.type in ['boards', 'input'] %}
                                 {% set tooltip_text=_('The number of the first board to select.') %}
-                            {% elif admin_screen.type == 'players' %}
+                            {% elif admin_screen.type in ('players', 'check-in') %}
                                 {% set tooltip_text=_('The number of the first player to select.') %}
                             {% else %}
                                 {% set tooltip_text=_('The rank of the first player to select.') %}
@@ -55,7 +55,7 @@
                         <div class="{% if admin_screen.type in ['boards', 'input'] %}col-4{% else %}col-6{% endif %}">
                             {% if admin_screen.type in ['boards', 'input'] %}
                                 {% set tooltip_text=_('The number of the last board to select.') %}
-                            {% elif admin_screen.type == 'players' %}
+                            {% elif admin_screen.type in ('players', 'check-in') %}
                                 {% set tooltip_text=_('The number of the last player to select.') %}
                             {% else %}
                                 {% set tooltip_text=_('The rank of the last player to select.') %}

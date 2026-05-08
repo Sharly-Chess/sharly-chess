@@ -1,0 +1,619 @@
+{
+  "variables" : {
+    "arbiter" : "",
+    "timeControl" : "",
+    "ratingClass" : "Elo",
+    "startDate" : "26/04/2026",
+    "endDate" : "26/04/2026",
+    "pointSystem" : "NON",
+    "tiebreak1" : "Cumulatif",
+    "tiebreak2" : "Manuel",
+    "tiebreak3" : "",
+    "ratingThreshold1" : "0",
+    "ratingThreshold2" : "0",
+    "type" : "Suisse",
+    "homologation" : "",
+    "venue" : "",
+    "rounds" : "5",
+    "name" : "Nouvel évènement",
+    "pairing" : "Standard"
+  },
+  "players" : [ {
+    "federation" : "FRA",
+    "lastName" : "ARCIM",
+    "fixedBoard" : 1013,
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "elo" : 2500,
+    "fideTitle" : "g",
+    "owed" : 0,
+    "refFFE" : 830518731,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 2500,
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 7
+      },
+      "2" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "3" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 13
+      },
+      "4" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "5" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 1
+      }
+    },
+    "blitzElo" : 2500
+  }, {
+    "federation" : "FRA",
+    "lastName" : "BALTUS",
+    "fixedBoard" : 1012,
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "elo" : 2500,
+    "fideTitle" : "m",
+    "owed" : 0,
+    "refFFE" : 830518732,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 2500,
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 8
+      },
+      "2" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "3" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "4" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "5" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 0
+      }
+    },
+    "blitzElo" : 2500
+  }, {
+    "federation" : "FRA",
+    "lastName" : "FALK",
+    "fixedBoard" : 1009,
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "elo" : 2485,
+    "fideTitle" : "f",
+    "owed" : 0,
+    "refFFE" : 830518733,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 2485,
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 9
+      },
+      "2" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 5
+      },
+      "3" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "4" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "5" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 6
+      }
+    },
+    "blitzElo" : 2485
+  }, {
+    "federation" : "FRA",
+    "lastName" : "CALDER",
+    "fixedBoard" : 1010,
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "elo" : 2400,
+    "fideTitle" : "gf",
+    "owed" : 0,
+    "refFFE" : 830518734,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 2400,
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 10
+      },
+      "2" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 8
+      },
+      "3" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "4" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 4
+      },
+      "5" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 5
+      }
+    },
+    "blitzElo" : 2400
+  }, {
+    "federation" : "FRA",
+    "lastName" : "DURAND",
+    "fixedBoard" : 1014,
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "elo" : 2400,
+    "fideTitle" : "f",
+    "owed" : 0,
+    "refFFE" : 830518735,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 2400,
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 11
+      },
+      "2" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "3" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "4" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "5" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 10
+      }
+    },
+    "blitzElo" : 2400
+  }, {
+    "federation" : "FRA",
+    "lastName" : "ERIAN",
+    "fixedBoard" : 1011,
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "elo" : 2300,
+    "fideTitle" : "mf",
+    "owed" : 0,
+    "refFFE" : 830518736,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 2300,
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 12
+      },
+      "2" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 2
+      },
+      "3" : {
+        "result" : 6,
+        "color" : "N",
+        "opponent" : 10
+      },
+      "4" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "5" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 3
+      }
+    },
+    "blitzElo" : 2300
+  }, {
+    "federation" : "FRA",
+    "lastName" : "GILBERT",
+    "fixedBoard" : 1006,
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "elo" : 2250,
+    "fideTitle" : "f",
+    "owed" : 0,
+    "refFFE" : 830518737,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 2250,
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 13
+      },
+      "2" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 1
+      },
+      "3" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 9
+      },
+      "4" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 10
+      },
+      "5" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 2
+      }
+    },
+    "blitzElo" : 2250
+  }, {
+    "federation" : "FRA",
+    "lastName" : "KRINIA",
+    "fixedBoard" : 1003,
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "elo" : 2250,
+    "fideTitle" : "ff",
+    "owed" : 0,
+    "refFFE" : 830518738,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 2250,
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 0
+      },
+      "2" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 10
+      },
+      "3" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 11
+      },
+      "4" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 8
+      },
+      "5" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 12
+      }
+    },
+    "blitzElo" : 2250
+  }, {
+    "federation" : "FRA",
+    "lastName" : "LUMATH",
+    "fixedBoard" : 1004,
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "elo" : 2150,
+    "fideTitle" : "mf",
+    "owed" : 0,
+    "refFFE" : 830518739,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 2150,
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 1
+      },
+      "2" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 3
+      },
+      "3" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 12
+      },
+      "4" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "5" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 9
+      }
+    },
+    "blitzElo" : 2150
+  }, {
+    "federation" : "FRA",
+    "lastName" : "MARTIAL",
+    "fixedBoard" : 1005,
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "elo" : 2150,
+    "fideTitle" : "ff",
+    "owed" : 0,
+    "refFFE" : 830518740,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 2150,
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 2
+      },
+      "2" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 12
+      },
+      "3" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "4" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 13
+      },
+      "5" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 8
+      }
+    },
+    "blitzElo" : 2150
+  }, {
+    "federation" : "FRA",
+    "lastName" : "NEXIUS",
+    "fixedBoard" : 1008,
+    "checkedIn" : false,
+    "fideRapidElo" : "F",
+    "elo" : 2150,
+    "fideTitle" : "ff",
+    "owed" : 0,
+    "refFFE" : 830518741,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 2150,
+    "fideElo" : "F",
+    "fideBlitzElo" : "F",
+    "rounds" : {
+      "1" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 3
+      },
+      "2" : {
+        "result" : 3,
+        "color" : "N",
+        "opponent" : 7
+      },
+      "3" : {
+        "result" : 4,
+        "color" : "B",
+        "opponent" : 5
+      },
+      "4" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 6
+      },
+      "5" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 4
+      }
+    },
+    "blitzElo" : 2150
+  }, {
+    "federation" : "FRA",
+    "lastName" : "OUTSIDES",
+    "fixedBoard" : 1001,
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2100,
+    "owed" : 0,
+    "refFFE" : 830518742,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1199,
+    "fideElo" : "N",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "1" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 4
+      },
+      "2" : {
+        "result" : 0,
+        "color" : "F"
+      },
+      "3" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 7
+      },
+      "4" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 12
+      },
+      "5" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 13
+      }
+    },
+    "blitzElo" : 1199
+  }, {
+    "federation" : "FRA",
+    "lastName" : "PALOMAR",
+    "fixedBoard" : 1002,
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2050,
+    "owed" : 0,
+    "refFFE" : 830518743,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1199,
+    "fideElo" : "N",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "1" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 5
+      },
+      "2" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 9
+      },
+      "3" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 8
+      },
+      "4" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 11
+      },
+      "5" : {
+        "result" : 2,
+        "color" : "B",
+        "opponent" : 7
+      }
+    },
+    "blitzElo" : 1199
+  }, {
+    "federation" : "FRA",
+    "lastName" : "RAMBERT",
+    "fixedBoard" : 1007,
+    "checkedIn" : false,
+    "fideRapidElo" : "E",
+    "elo" : 2000,
+    "owed" : 0,
+    "refFFE" : 830518744,
+    "licenceType" : "N",
+    "paid" : 0,
+    "rapidElo" : 1199,
+    "fideElo" : "N",
+    "fideBlitzElo" : "E",
+    "rounds" : {
+      "1" : {
+        "result" : 1,
+        "color" : "N",
+        "opponent" : 6
+      },
+      "2" : {
+        "result" : 6,
+        "color" : "B"
+      },
+      "3" : {
+        "result" : 1,
+        "color" : "B",
+        "opponent" : 0
+      },
+      "4" : {
+        "result" : 2,
+        "color" : "N",
+        "opponent" : 9
+      },
+      "5" : {
+        "result" : 3,
+        "color" : "B",
+        "opponent" : 11
+      }
+    },
+    "blitzElo" : 1199
+  } ]
+}

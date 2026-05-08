@@ -5,7 +5,7 @@
 
 {% block header %}
     <div id="user-screen-header" class="header user-header user-screen-header">
-        {% if screen.type != 'input' or screen.input_exit_button %}
+        {% if screen.type not in ('input', 'check-in') or screen.input_exit_button %}
             <button
                 id="screen-exit-button"
                 class="btn btn-danger position-fixed bottom-0 end-0 me-2 mb-2 z-2"
@@ -106,14 +106,8 @@
         class="content user-content user-screen-content"
         style="--font-size: {{ screen.font_size or 100 }};"
     >
-        {% if screen.type == 'boards' %}
-            <div class="screen boards-screen">
-                {% for screen_set in screen.sorted_screen_sets %}
-                    {% include 'screen/boards/set.html' %}
-                {% endfor %}
-            </div>
-        {% elif screen.type == 'input' %}
-            <div class="screen input-screen">
+        {% if screen.type in ('boards', 'input', 'check-in') %}
+            <div class="screen {{ screen.type.value }}-screen">
                 {% for screen_set in screen.sorted_screen_sets %}
                     {% include 'screen/boards/set.html' %}
                 {% endfor %}

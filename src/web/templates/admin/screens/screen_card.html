@@ -14,7 +14,7 @@
 {% block card_text %}
     <div class="d-flex flex-column gap-1">
         {% if show_details and client.can_manage_screens %}
-            {% if screen.type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
+            {% if screen.type in ['input', 'boards', 'players', 'results', 'ranking', 'check-in'] %}
                 <div>
                     <span class="pe-1">{{ macros.screen_type_icon(screen.type, true) }}</span>
                     {{ _('Type: %(screen_type)s', screen_type=screen.type_str) }}
@@ -98,7 +98,7 @@
                 </div>
             {% endif %}
         {% endif %}
-        {% if screen.type in ['input', 'boards', 'players', 'results', 'ranking', ] %}
+        {% if screen.type in ['input', 'boards', 'players', 'results', 'ranking', 'check-in'] %}
             <div>
                 {{ _('Columns:') }} {% for i in range(screen.columns) %}<i class="bi-square-fill"></i> {% endfor %}
             </div>
@@ -127,7 +127,7 @@
             </div>
         {% endif %}
         {% if show_details and client.can_manage_screens %}
-            {% if screen.type == 'input' %}
+            {% if screen.type in ('input', 'check-in') %}
                 <div>
                     <i class="bi-x-circle pe-1"></i>
                     {{ _('Exit button:') }}
@@ -145,7 +145,7 @@
             <hr/>
         {% endif %}
 
-        {% if screen.type in ['boards', 'input', 'players', 'ranking', ] %}
+        {% if screen.type in ['boards', 'input', 'players', 'ranking', 'check-in'] %}
             {% for screen_set in screen.sorted_screen_sets %}
                 <div>
                     {{ screen_set.tournament.name }}
@@ -165,7 +165,7 @@
 
 {% block card_buttons_left %}
     {% if client.can_manage_screens %}
-        {% if not screen.family and screen.type in ['boards', 'input', 'players', 'ranking', ] %}
+        {% if not screen.family and screen.type in ['boards', 'input', 'players', 'ranking', 'check-in'] %}
             <span
                 {{ macros.tooltip_attributes(
                     'info',

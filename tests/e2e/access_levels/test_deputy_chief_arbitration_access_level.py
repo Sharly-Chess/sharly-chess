@@ -32,10 +32,6 @@ class TestDeputyChiefArbitrationAccessLevel(BaseAccessLevelTest):
         # Pairings tab
 
         super().assert_can_access_pairings_tab(True, auth_page)
-        super().assert_can_checkin_via_pairings_tab(
-            True,
-            api_request_context,
-        )
 
         # Screens
 

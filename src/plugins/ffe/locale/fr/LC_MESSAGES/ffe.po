@@ -1,3 +1,9 @@
+msgid "\"France jeunes\" and qualifiers"
+msgstr "France jeunes et qualif."
+
+msgid "\"France jeunes\" and qualifiers - Unrated"
+msgstr "France jeunes et qualif. - Non classé·es"
+
 msgid "\"Niçois\" accelerated system"
 msgstr "Système accéléré niçois"
 
@@ -35,9 +41,6 @@ msgstr "Indemnités d'arbitrage"
 
 msgid "At least one league is expected."
 msgstr "Au moins une ligue est attendue."
-
-msgid "At least one licence type is expected."
-msgstr "Au moins un type de licence est attendu."
 
 msgid "Auto-upload disabled"
 msgstr "Mise en ligne automatique désactivée"
@@ -115,9 +118,6 @@ msgstr "Arbitre Élite 2"
 
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
-
-msgid "Expired *** FFE licence"
-msgstr "Expirée"
 
 msgid "Expired FFE licence"
 msgstr "Licence FFE expirée"
@@ -224,7 +224,7 @@ msgid "Fédération Française des Échecs"
 msgstr "Fédération Française des Échecs"
 
 msgid "However, the order of the results of the last round will remain the same as the ones in Sharly Chess."
-msgstr "Cependant, l'ordre des résultats de la dernière rondes restera le même que ceux de Sharly Chess."
+msgstr "Cependant, l'ordre des résultats de la dernière ronde restera le même que ceux de Sharly Chess."
 
 msgid "Import JSON file (papi-converter format)"
 msgstr "Importer un fichier JSON (format papi-converter)"
@@ -298,8 +298,14 @@ msgstr "Médian"
 msgid "Median Buchholz"
 msgstr "Buchholz médian"
 
+msgid "Minimum FFE licence required (only applies to players of the FRA federation)."
+msgstr "Licence FFE minimale requise (ne s'applique que aux joueur·euses de la fédération FRA)."
+
 msgid "Modified"
 msgstr "Modifié"
+
+msgid "N - Expired *** FFE licence"
+msgstr "N - Expirée"
 
 msgid "Name"
 msgstr "Nom"

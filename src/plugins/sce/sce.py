@@ -2,10 +2,14 @@ from typing import TYPE_CHECKING, Iterable, Any
 
 from packaging.version import Version
 
+from common import SharlyChessException
 from common.i18n import _
+from common.logger import get_logger
+from data.columns.column import Column
 from data.event import Event
 from data.loader import EventLoader
 from data.print_documents import QRCodeType
+from database.sqlite.event.event_database import EventDatabase
 from plugins.hookspec import hookimpl, hookspec
 from plugins.sce import PLUGIN_NAME
 from plugins.sce.sce_admin_controller import SCEAdminController
@@ -13,7 +17,9 @@ from plugins.sce.sce_background_uploader import (
     should_schedule_auto_upload,
     schedule_upload,
 )
+from plugins.sce.sce_entity import SCECheckInColumn
 from plugins.sce.sce_qr_codes import SCETournamentQRCodeType, SCEEventQRCodeType
+from plugins.sce.sce_session import SCESession
 from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.sce.sce_data import (
     SCETournamentPluginData,
@@ -38,6 +44,8 @@ if TYPE_CHECKING:
         StoredPlayer,
     )
 
+logger = get_logger()
+
 
 class SCEPluginHooks:
     @hookspec
@@ -49,16 +57,25 @@ class SCEPluginHooks:
         """Augment SCE player shared data from a player."""
 
     @hookspec
-    def augment_stored_player_from_player_sync_data(
+    def augment_sce_player_sync_data_from_sce_data(
         self,
+        sce_data: dict[str, Any],
+        sync_data: SCEPlayerSyncData,
+    ):
+        """Augment SCE player shared data from SCE API data."""
+
+    @hookspec
+    def augment_stored_player_from_sce_player_sync_data(
+        self,
+        event: Event,
         stored_player: 'StoredPlayer',
         sync_data: SCEPlayerSyncData,
     ):
         """Augment a stored player from SCE player shared data."""
 
-    @hookspec(firstresult=True)
-    def get_sce_national_id_player_field_label(self) -> str | None:
-        """Label used for the 'national_id' player field in the conflict modal."""
+    @hookspec
+    def update_sce_player_diff_field_labels(self, diff_fields: dict[str, str | None]):
+        """Update the labels of the fields used for the conflict modal."""
 
     @hookspec
     def add_sce_upload_player_custom_fields(
@@ -132,6 +149,21 @@ class SCEPlugin(Plugin):
     def create_event_button_template(self) -> str:
         return '/sce_event_create_button.html'
 
+    @hookimpl
+    def on_event_duplicated(self, event_database: EventDatabase):
+        # Erase all SCE plugin data
+        stored_event = event_database.load_stored_event()
+        if PLUGIN_NAME not in stored_event.enabled_plugins:
+            return
+        stored_event.plugin_data[PLUGIN_NAME] = {}
+        event_database.update_stored_event(stored_event)
+        for stored_tournament in stored_event.stored_tournaments:
+            stored_tournament.plugin_data[PLUGIN_NAME] = {}
+            event_database.update_stored_tournament(stored_tournament)
+        for stored_player in stored_event.stored_players:
+            stored_player.plugin_data[PLUGIN_NAME] = {}
+            event_database.update_stored_player(stored_player)
+
     # ---------------------------------------------------------------------------------
     # Tournaments
     # ---------------------------------------------------------------------------------
@@ -165,6 +197,17 @@ class SCEPlugin(Plugin):
         tournament = event.tournaments_by_id[tournament_id]
         schedule_upload(tournament)
 
+    @hookimpl
+    def load_tournament_check_in_data(self, tournament: 'Tournament'):
+        event = tournament.event
+        epd = SCEUtils.get_event_plugin_data(event)
+        tpd = SCEUtils.get_tournament_plugin_data(tournament)
+        if tpd.id and tpd.check_in_open and epd.auto_player_sync:
+            try:
+                SCESession(event).sync_event()
+            except SharlyChessException as e:
+                logger.exception(e)
+
     # ---------------------------------------------------------------------------------
     # Player
     # ---------------------------------------------------------------------------------
@@ -182,6 +225,18 @@ class SCEPlugin(Plugin):
         plugin_data = SCEUtils.get_event_plugin_data(event)
         plugin_data.deleted_player_ids.append(sce_player_id)
         SCEUtils.update_event_plugin_data(event, plugin_data)
+
+    @hookimpl
+    def get_check_in_table_column(self) -> 'Column[Tournament]':
+        return SCECheckInColumn()
+
+    @hookimpl
+    def on_before_load_tournaments_check_in_modal(self, event: Event):
+        if SCEUtils.get_event_plugin_data(event).id:
+            try:
+                SCESession(event).update_event_check_in_schedules()
+            except SharlyChessException as e:
+                logger.exception(e)
 
     # ---------------------------------------------------------------------------------
     # Nav

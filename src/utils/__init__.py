@@ -207,12 +207,20 @@ class Utils:
             return None
         return currencies[0].alpha3
 
-    @staticmethod
+    country_codes_by_federation = {
+        'FRA': ['FR', 'RE', 'PM', 'NC', 'GF', 'GP', 'MQ'],
+    }
+
+    @classmethod
     def get_federation_from_alpha_2_country_code(
+        cls,
         alpha_2_country_code: str,
     ) -> str | None:
         from common.sharly_chess_config import SharlyChessConfig
 
+        for federation, country_codes in cls.country_codes_by_federation.items():
+            if alpha_2_country_code in country_codes:
+                return federation
         country = pycountry.countries.get(alpha_2=alpha_2_country_code)
         if country and country.alpha_3 in SharlyChessConfig().federations:
             return country.alpha_3
@@ -331,6 +339,29 @@ class Utils:
             tournament.last_player_update or datetime.min,
             tournament.last_pairing_update or datetime.min,
         )
+
+    @staticmethod
+    def get_rating_range_label(min_rating: int | None, max_rating: int | None) -> str:
+        from common.i18n import _
+
+        prefix = ''
+        suffix = ''
+        if max_rating:
+            if max_rating % 10 == 9:
+                suffix = f' < {max_rating + 1}'
+            else:
+                suffix = f' ≤ {max_rating}'
+            if min_rating:
+                if min_rating % 10 == 1:
+                    prefix = f'{min_rating - 1} < '
+                else:
+                    prefix = f'{min_rating} ≤ '
+        elif min_rating:
+            if min_rating % 10 == 1:
+                suffix = f' > {min_rating - 1}'
+            else:
+                suffix = f' ≥ {min_rating}'
+        return f'{prefix}{_("Rating")}{suffix}'
 
 
 class SupportsEquals(Protocol):

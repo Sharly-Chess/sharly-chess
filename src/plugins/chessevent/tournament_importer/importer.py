@@ -86,6 +86,10 @@ class ChessEventTournamentImporter(TournamentImporter):
     def doc_url(self) -> str | None:
         return 'chessevent'
 
+    @property
+    def check_in_imported(self) -> bool:
+        return True
+
     def _on_status_error_raised(
         self, error: ChessEventStatusError, tournament: Tournament | None
     ):
@@ -243,11 +247,6 @@ class ChessEventTournamentImporter(TournamentImporter):
             stored_tournament.plugin_data[ffe.PLUGIN_NAME] = {}
         if not stored_tournament.plugin_data[ffe.PLUGIN_NAME].get('ffe_id', None):
             stored_tournament.plugin_data[ffe.PLUGIN_NAME]['ffe_id'] = tournament.ffe_id
-        # Check-in not yet opened if no player has checked in,
-        # opened if some players have, but closed if all players have
-        stored_tournament.check_in_open = any(
-            player.check_in for player in tournament.players
-        ) and not all(player.check_in for player in tournament.players)
         return stored_tournament
 
     @classmethod

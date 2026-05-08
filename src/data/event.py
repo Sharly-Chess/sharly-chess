@@ -118,7 +118,10 @@ class Event:
 
     @property
     def allow_multi_tournament_players(self) -> bool:
-        return self.stored_event.allow_multi_tournament_players
+        return (
+            self.stored_event.allow_multi_tournament_players
+            or self.has_multi_tournament_players
+        )
 
     @cached_property
     def prize_currency(self) -> str:
