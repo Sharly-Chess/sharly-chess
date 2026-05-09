@@ -14,6 +14,10 @@
 - Fixed players' default check-in value of not started tournaments (4.1.1)
 - Fixed redirect when editing players from the Pairings tab (4.1.1)
 
+## Pairings
+
+- Fixed pairing number used instead of rank in rankings table (4.1.3)
+
 ## Prizes
 
 - Add simple criteria creation from the category modal (4.1.0)
