@@ -83,7 +83,7 @@
                     {{ macros.tooltip_attributes('warning', _('No games played on the board for this player.'), 'top') }}
                 {% endif %}
         >
-            <td class="rank text-end {{ no_played_games_class }}">{{ tournament_player.pairing_number }}</td>
+            <td class="rank text-end {{ no_played_games_class }}">{{ tournament_player.rank }}</td>
             <td class="title text-end {{ no_played_games_class }}">{{ tournament_player.title.short_name }}</td>
             <td class="name text-start {{ no_played_games_class }}">
                 {% include '/admin/player_link.html' %}
