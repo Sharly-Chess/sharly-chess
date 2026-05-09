@@ -127,7 +127,7 @@ class CustomUploadUploader:
             raw_plugin_data = tournament.plugin_data.get(PLUGIN_NAME, {})
             plugin_data = raw_plugin_data
 
-        return plugin_data.last_upload
+        return plugin_data.last_upload_at
 
     @classmethod
     def custom_upload_needed(cls, tournament: Tournament | StoredTournament) -> bool:
@@ -237,6 +237,12 @@ class CustomUploadUploader:
                     _('Error uploading tournament'),
                 )
             finally:
+                # TODO: update last upload date only in case of success
+                now = datetime.now()
+                tournament_plugin_data.last_upload_at = now
+                CustomUploadUtils.update_tournament_plugin_data(
+                    tournament, tournament_plugin_data
+                )
                 cls.publish_upload_event()
 
         return cls.upload_status_messages[result_id]

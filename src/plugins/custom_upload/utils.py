@@ -1,15 +1,18 @@
+import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any, Self
 
 from common.i18n import _
 from data.tournament import Tournament
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.sqlite_database import SQLiteDatabase
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_status import (
     CustomUploadStatus,
     NotConfiguredCustomUploadStatus,
     NeverUploadedCustomUploadStatus,
+    UpToDateCustomUploadStatus,
 )
 from plugins.utils import PluginData
 from utils.enum import FormAction
@@ -36,6 +39,22 @@ class CustomUploadUtils:
             return _('FTP credentials are not defined.')
         return None
 
+    @staticmethod
+    def update_tournament_plugin_data(
+        tournament: Tournament,
+        plugin_data: 'CustomUploadTournamentPluginData',
+    ):
+        tournament.stored_tournament.plugin_data[PLUGIN_NAME] = (
+            plugin_data.to_stored_value()
+        )
+        tournament.plugin_data[PLUGIN_NAME] = plugin_data
+        with EventDatabase(tournament.event.uniq_id, write=True) as database:
+            database.execute(
+                'UPDATE tournament SET plugin_data = '
+                f"json_set(plugin_data,'$.{PLUGIN_NAME}', json(?)) WHERE id = ?",
+                (json.dumps(plugin_data.to_stored_value()), tournament.id),
+            )
+
     @classmethod
     def resolve_tournament_upload_statuses(
         cls, tournament: Tournament
@@ -46,10 +65,15 @@ class CustomUploadUtils:
             not custom_upload_plugin_data.ftp_host
             or not custom_upload_plugin_data.ftp_username
             or not custom_upload_plugin_data.ftp_password
+            or not custom_upload_plugin_data.server_path
         ):
             return [NotConfiguredCustomUploadStatus()]
 
-        return [NeverUploadedCustomUploadStatus()]
+        # Current data status
+        if not custom_upload_plugin_data.last_upload_at:
+            return [NeverUploadedCustomUploadStatus()]
+        else:
+            return [UpToDateCustomUploadStatus()]
 
 
 @dataclass
@@ -58,7 +82,7 @@ class CustomUploadTournamentPluginData(PluginData):
     server_path: str | None = None
     ftp_username: str | None = None
     ftp_password: str | None = None
-    last_upload: datetime | None = None
+    last_upload_at: datetime | None = None
     document_urls: list[str] = field(default_factory=list)
 
     @classmethod
@@ -68,8 +92,8 @@ class CustomUploadTournamentPluginData(PluginData):
             server_path=stored_value.get('server_path', None),
             ftp_username=stored_value.get('ftp_username', None),
             ftp_password=stored_value.get('ftp_password', None),
-            last_upload=SQLiteDatabase.load_optional_timestamp_from_database_field(
-                stored_value.get('last_upload')
+            last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_upload_at')
             ),
             document_urls=stored_value.get('document_urls', []),
         )
@@ -80,6 +104,9 @@ class CustomUploadTournamentPluginData(PluginData):
             'server_path': self.server_path,
             'ftp_username': self.ftp_username,
             'ftp_password': self.ftp_password,
+            'last_upload_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_upload_at
+            ),
             'document_urls': self.document_urls,
         }
 
@@ -90,10 +117,10 @@ class CustomUploadTournamentPluginData(PluginData):
         previous_object: Self | None = None,
         action: str | None = None,
     ) -> Self:
-        last_upload: datetime | None = None
+        last_upload_at: datetime | None = None
         document_urls: list[str] | None = []
         if previous_object and action != FormAction.CLONE:
-            last_upload = previous_object.last_upload
+            last_upload_at = previous_object.last_upload_at
 
         # If action is UPDATE, it means form is for updating FTP configuration only
         # Document URLs should then stay as they are
@@ -108,7 +135,7 @@ class CustomUploadTournamentPluginData(PluginData):
         return cls(
             ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
             server_path=WebContext.form_data_to_str(data, 'server_path'),
-            last_upload=last_upload,
+            last_upload_at=last_upload_at,
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
             document_urls=document_urls,

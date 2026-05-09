@@ -58,6 +58,9 @@ msgstr ""
 msgid "Never uploaded"
 msgstr ""
 
+msgid "No changes detected since the last upload."
+msgstr ""
+
 msgid "No document type is matching input"
 msgstr ""
 
@@ -80,6 +83,9 @@ msgid "There should be no more than one unescaped '?' character"
 msgstr ""
 
 msgid "Tournament"
+msgstr ""
+
+msgid "Up to date"
 msgstr ""
 
 msgid "Upload"

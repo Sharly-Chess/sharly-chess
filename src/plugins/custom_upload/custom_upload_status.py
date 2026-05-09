@@ -25,12 +25,29 @@ class NeverUploadedCustomUploadStatus(CustomUploadStatus):
     def static_name() -> str:
         return _('Never uploaded')
 
+    def tooltip_message(self, tournament: Tournament) -> str | None:
+        return None
+
     @property
     def css_classes(self) -> str:
         return 'bg-secondary'
 
+
+class UpToDateCustomUploadStatus(CustomUploadStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'UP_TO_DATE'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Up to date')
+
     def tooltip_message(self, tournament: Tournament) -> str | None:
-        return None
+        return _('No changes detected since the last upload.')
+
+    @property
+    def css_classes(self) -> str:
+        return 'message-success'
 
 
 class NotConfiguredCustomUploadStatus(CustomUploadStatus):
@@ -42,13 +59,13 @@ class NotConfiguredCustomUploadStatus(CustomUploadStatus):
     def static_name() -> str:
         return _('Not configured')
 
-    @property
-    def css_classes(self) -> str:
-        return 'message-warning'
-
     def tooltip_message(self, tournament: Tournament) -> str | None:
         from plugins.custom_upload.utils import CustomUploadUtils
 
         return CustomUploadUtils.custom_upload_configuration_verification_message(
             tournament
         )
+
+    @property
+    def css_classes(self) -> str:
+        return 'message-warning'

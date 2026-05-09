@@ -58,6 +58,9 @@ msgstr "Mode"
 msgid "Never uploaded"
 msgstr "Jamais mis en ligne"
 
+msgid "No changes detected since the last upload."
+msgstr "Aucun changement détecté depuis la dernière mise en ligne."
+
 msgid "No document type is matching input"
 msgstr "Aucun document ne correspond à cette entrée"
 
@@ -81,6 +84,9 @@ msgstr "Il ne doit pas y avoir plus d'un caractère '?' non échappé"
 
 msgid "Tournament"
 msgstr "Tournoi"
+
+msgid "Up to date"
+msgstr "À jour"
 
 msgid "Upload"
 msgstr "Mettre en ligne"
