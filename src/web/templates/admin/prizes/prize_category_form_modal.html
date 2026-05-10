@@ -173,6 +173,7 @@
                                     $(sharePrizes).trigger('change');
                                     tooltip.enable();
                                 }
+                                $('#simple-criteria-container').css('display', isMain? 'none': 'block');
                             });
                             $('#share-prizes').on('change', (event) => {
                                 $('#prize-sharing-container').css(
@@ -183,6 +184,57 @@
                         </script>
                     {% endif %}
                 </div>
+                {% if action == 'create' %}
+                    <div
+                        id="simple-criteria-container"
+                        class="mt-3"
+                        {% if data['is_main'] == 'on' %}
+                            style="display: none"
+                        {% endif %}
+                    >
+                        <h4>
+                            {{ _('Simple criteria') }}
+                            <i
+                                class="bi-info-circle-fill text-body ps-1"
+                                style="font-size: 80%"
+                                {{ macros.tooltip_attributes('', _(
+                                    'Advanced criteria can be created from the dedicated criteria form.'
+                                )) }}
+                            ></i>
+                        </h4>
+                        <div class="row gy-2 gx-3">
+                            <div class="col-12">
+                                {{ admin_macros.integer_range_input(
+                                    name='criterion_rating',
+                                    label=_('%(string)s:', string=_('Rating')),
+                                    min_placeholder=_('Min *** MINIMUM'),
+                                    max_placeholder=_('Max *** MAXIMUM'),
+                                    number_min=0,
+                                    data=data, errors=errors,
+                                ) }}
+                            </div>
+                            <div class="col-12">
+                                {{ admin_macros.select_range_input(
+                                    name='criterion_age_category',
+                                    label=_('%(string)s:', string=_('Age')),
+                                    select_options=age_category_options,
+                                    min_placeholder=_('Min *** MINIMUM'),
+                                    max_placeholder=_('Max *** MAXIMUM'),
+                                    data=data,
+                                    errors=errors,
+                                ) }}
+                            </div>
+                            <div class="col-12">
+                                {{ admin_macros.select_input(
+                                    name='criterion_gender',
+                                    label=_('%(string)s:', string=_('Gender')),
+                                    select_options=gender_options,
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
             </form>
         </div>
         <div class="modal-footer">

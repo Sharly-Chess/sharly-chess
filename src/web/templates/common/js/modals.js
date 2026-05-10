@@ -12,6 +12,10 @@ function closeModal() {
     activateTooltips();
 }
 
+function isModalOpened() {
+    return document.getElementById('modal-wrapper').classList.contains('show');
+}
+
 window.addEventListener('show.bs.modal', function(event) {
     var target = $(event.relatedTarget);
     if (!target) return;

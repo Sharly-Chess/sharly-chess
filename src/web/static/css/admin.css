@@ -34,10 +34,16 @@
     text-decoration: none;
 }
 
+.player-secondary-link {
+    color: var(--bs-secondary-color);
+    opacity: 50%;
+}
+
 .player-link:hover {
     color: var(--bs-link-hover-color);
     text-decoration: underline;
     cursor: pointer;
+    opacity: 1;
 }
 
 .highlight .player-link, .highlight .player-link:hover {
@@ -67,6 +73,10 @@
     width: 15em;
 }
 
+.mw-10em {
+    max-width: 10em;
+    overflow: hidden;
+}
 .mw-15em {
     max-width: 15em;
     overflow: hidden;
@@ -74,6 +84,10 @@
 .mw-25em {
     max-width: 25em;
     overflow: hidden;
+}
+
+.opacity-75 {
+    opacity: 75%;
 }
 
 .pairing-modal .result-button {
@@ -128,10 +142,6 @@
 
 .pairing-modal .berger-number-input .pw-input-group:has(input[type="number"]) {
     width: auto;
-}
-
-[data-bs-theme=dark] table.prominent td.bye {
-    color: var(--bs-secondary-color);
 }
 
 .player-popover {
@@ -473,5 +483,12 @@
 }
 
 .ui-selecting {
-   background-color: var(--bs-secondary) !important;
+    background-color: var(--bs-secondary) !important;
+}
+
+.toggle.rounded,
+.toggle.rounded .toggle-on,
+.toggle.rounded .toggle-off,
+.toggle.rounded .toggle-handle{
+    border-radius: 20rem !important;
 }

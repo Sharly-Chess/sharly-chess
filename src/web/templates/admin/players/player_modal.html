@@ -304,6 +304,7 @@
                         {{ admin_macros.number_input(
                             name='owed',
                             label=_('Owed:'),
+                            step=0.01,
                             data=data, errors=errors
                         ) }}
                     </div>
@@ -311,6 +312,7 @@
                         {{ admin_macros.number_input(
                             name='paid',
                             label=_('Paid:'),
+                            step=0.01,
                             data=data, errors=errors
                         ) }}
                     </div>

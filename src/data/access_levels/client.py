@@ -349,10 +349,11 @@ class Client:
     # Check-in
     # ---------------------------------------------------------------------------------
 
-    @property
-    def can_open_close_check_in(self) -> bool:
-        """Returns true if the client can open and close the check-in."""
-        return AuthAction.OPEN_CLOSE_CHECK_IN in self.allowed_actions
+    def can_open_close_check_in(self, tournament_id: int) -> bool:
+        """Returns true if the client can open and close the check-in for the tournament."""
+        return self.action_allowed_for_tournament(
+            AuthAction.OPEN_CLOSE_CHECK_IN, tournament_id
+        )
 
     def can_check_in_players(self, tournament_id: int) -> bool:
         """Returns True if the client can check-in players for a tournament."""
@@ -405,9 +406,16 @@ class Client:
             AuthAction.SET_CURRENT_ROUND, tournament_id
         )
 
+    @cached_property
+    def _set_zpb_allowed_tournament_ids(self) -> list[int]:
+        return [
+            tournament.id
+            for tournament in self.allowed_tournaments_for_action(AuthAction.SET_ZPB)
+        ]
+
     def can_set_zero_point_bye(self, tournament_id: int) -> bool:
         """Returns True if the client can set a zero point bye to a player."""
-        return self.action_allowed_for_tournament(AuthAction.SET_ZPB, tournament_id)
+        return tournament_id in self._set_zpb_allowed_tournament_ids
 
     def can_set_half_point_bye(self, tournament_id: int) -> bool:
         """Returns True if the client can set a half point bye to a player."""
@@ -416,34 +424,6 @@ class Client:
     def can_set_full_point_bye(self, tournament_id: int) -> bool:
         """Returns True if the client can set a full point bye to a player."""
         return self.action_allowed_for_tournament(AuthAction.SET_FPB, tournament_id)
-
-    def can_view_draft_pairings(self, tournament_id: int) -> bool:
-        """Returns True if the client can view draft pairings (before they are published)."""
-        return self.action_allowed_for_tournament(
-            AuthAction.VIEW_DRAFT_PAIRINGS, tournament_id
-        )
-
-    def can_publish_pairings(self, tournament_id: int) -> bool:
-        """Returns True if the client can publish pairings."""
-        return self.action_allowed_for_tournament(
-            AuthAction.PUBLISH_PAIRINGS, tournament_id
-        )
-
-    # ---------------------------------------------------------------------------------
-    # Rankings
-    # ---------------------------------------------------------------------------------
-
-    def can_view_draft_rankings(self, tournament_id: int) -> bool:
-        """Returns True if the client can view draft rankings (before they are published)."""
-        return self.action_allowed_for_tournament(
-            AuthAction.VIEW_DRAFT_RANKINGS, tournament_id
-        )
-
-    def can_publish_rankings(self, tournament_id: int) -> bool:
-        """Returns True if the client can publish rankings."""
-        return self.action_allowed_for_tournament(
-            AuthAction.PUBLISH_RANKINGS, tournament_id
-        )
 
     # ---------------------------------------------------------------------------------
     # Results

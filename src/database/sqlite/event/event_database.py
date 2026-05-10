@@ -713,6 +713,7 @@ class EventDatabase(MigrationDatabase):
 
     def add_stored_tournament(self, stored_tournament: StoredTournament) -> int:
         fields = self._get_tournament_fields_dict(stored_tournament)
+        fields |= {'check_in_open': True}
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
         self.execute(
@@ -736,14 +737,10 @@ class EventDatabase(MigrationDatabase):
     def delete_stored_tournament(self, tournament_id: int):
         self.execute('DELETE FROM `tournament` WHERE `id` = ?;', (tournament_id,))
 
-    def set_tournament_check_in(self, tournament_id: int, o: bool):
-        """Opens (o is True) or closes (o is False) the check_in for the tournament."""
+    def set_tournament_check_in_open(self, tournament_id: int, check_in_open: bool):
         self.execute(
             'UPDATE `tournament` SET `check_in_open` = ? WHERE `id` = ?',
-            (
-                1 if o else 0,
-                tournament_id,
-            ),
+            (check_in_open, tournament_id),
         )
 
     def set_tournament_pairing_settings(
@@ -868,7 +865,7 @@ class EventDatabase(MigrationDatabase):
             federation=row['federation'],
             club=row['club'],
             fixed=row['fixed'],
-            check_in=row['check_in'],
+            check_in=cls.load_bool_from_database_field(row['check_in']),
             plugin_data=cls.load_json_from_database_field(row['plugin_data'], {}),
         )
 
@@ -1519,7 +1516,9 @@ class EventDatabase(MigrationDatabase):
             stored_screen.name,
             stored_screen.type,
             stored_screen.public,
-            stored_screen.input_exit_button if stored_screen.type == 'input' else None,
+            stored_screen.input_exit_button
+            if stored_screen.type in ('input', 'check-in')
+            else None,
             stored_screen.players_show_unpaired
             if stored_screen.type == 'players'
             else None,

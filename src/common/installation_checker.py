@@ -48,6 +48,22 @@ class InstallationChecker:
             licence_type='MIT',
         ),
         WebLibArchiveInstaller(
+            'Bootstrap 5 Toggle',
+            SharlyChessConfig.bootstrap5_toggle_version,
+            'bootstrap5-toggle',
+            'bootstrap5-toggle-{version}',
+            {
+                'js/bootstrap5-toggle.jquery.min.js',
+                'js/bootstrap5-toggle.jquery.min.js.map',
+                'css/bootstrap5-toggle.min.css',
+                'css/bootstrap5-toggle.min.css.map',
+            },
+            'https://registry.npmjs.org/bootstrap5-toggle/-/bootstrap5-toggle-{version}.tgz',
+            'bootstrap5-toggle-{version}.tgz',
+            archive_sub_folder_name='package',
+            licence_type='MIT',
+        ),
+        WebLibArchiveInstaller(
             'Sortable',
             SharlyChessConfig.sortable_version,
             'Sortable',
@@ -107,6 +123,20 @@ class InstallationChecker:
             },
             'https://github.com/t1m0n/air-datepicker/archive/refs/tags/v{version}.zip',
             'air-datepicker-{version}.zip',
+            licence_type='MIT',
+        ),
+        WebLibArchiveInstaller(
+            'ProgressBar.js',
+            SharlyChessConfig.progressbar_js_version,
+            'progressbar.js',
+            'progressbar.js-{version}',
+            {
+                'dist/progressbar.min.js',
+                'dist/progressbar.min.js.map',
+            },
+            'https://github.com/kimmobrunfeldt'
+            '/progressbar.js/archive/refs/tags/{version}.zip',
+            'progressbar.js-{version}.zip',
             licence_type='MIT',
         ),
         WebLibFileInstaller(

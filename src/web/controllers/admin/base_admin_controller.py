@@ -6,7 +6,7 @@ from litestar.plugins.htmx import HTMXRequest
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
-from utils.enum import TournamentRating
+from utils.enum import TournamentRating, ScreenType
 from plugins.manager import plugin_manager
 from web.controllers.base_controller import BaseController, WebContext
 from web.utils import RequestUtils
@@ -124,16 +124,11 @@ class BaseAdminController(BaseController):
 
     @staticmethod
     def _get_screen_type_options(family_screens_only: bool) -> dict[str, str]:
-        options: dict[str, str] = {
-            '': '-',
-            'input': _('Check-in / Results entry'),
-            'boards': _('Pairings by board'),
-            'players': _('Pairings by player'),
+        return {'': '-'} | {
+            screen_type.value: screen_type.name
+            for screen_type in ScreenType
+            if not family_screens_only or screen_type.families_allowed
         }
-        if not family_screens_only:
-            options['results'] = _('Last results')
-            options['image'] = _('Image')
-        return options
 
     @staticmethod
     def _get_timer_options(event: Event) -> dict[str, str]:
