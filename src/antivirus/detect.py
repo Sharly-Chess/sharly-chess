@@ -67,4 +67,5 @@ def detect_antivirus_programs() -> list[Antivirus]:
                 logger.debug('No antivirus program has been detected.')
             return detected_antivirus_programs
         case _:
-            return []
+            logger.debug('No antivirus detection for platform [%s].', sys.platform)
+    return []
