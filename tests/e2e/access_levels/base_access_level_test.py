@@ -197,7 +197,7 @@ class BaseAccessLevelTest:
         TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
 
     @pytest.fixture(autouse=True)
-    def public_input_unpaired_screen(
+    def public_check_in_screen(
         self,
         api_request_context: APIRequestContext,
         access_level_test_unpaired_tournament,
@@ -206,16 +206,16 @@ class BaseAccessLevelTest:
         stored_screen = TestUtils.create_screen(
             api_request_context,
             PUBLIC_EVENT_ID,
-            'Input Screen without pairings',
-            ScreenType.INPUT,
+            'Check-in Screen',
+            ScreenType.CHECK_IN,
             {
                 'init_set_tournament_id': access_level_test_unpaired_tournament.id,
                 'public': True,
             },
         )
-        self.unpaired_screen = stored_screen
+        self.check_in_screen = stored_screen
         yield stored_screen
-        self.unpaired_screen = None
+        self.check_in_screen = None
 
         TestUtils.delete_screen(api_request_context, PUBLIC_EVENT_ID, stored_screen.id)
 
@@ -309,13 +309,8 @@ class BaseAccessLevelTest:
         can_access: bool,
         api_request_context: APIRequestContext,
     ):
-        # Open check-in
-        api_request_context.patch(
-            f'/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
-        )
-
         self.auth_page.goto(
-            f'/view/screen/{PUBLIC_EVENT_ID}/{self.unpaired_screen.uniq_id}'
+            f'/view/screen/{PUBLIC_EVENT_ID}/{self.check_in_screen.uniq_id}'
         )
         rows = self.auth_page.locator('div.player-row')
 
@@ -474,11 +469,6 @@ class BaseAccessLevelTest:
         can_access: bool,
         api_request_context: APIRequestContext,
     ):
-        # Open check-in
-        api_request_context.patch(
-            f'/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
-        )
-
         self.auth_page.goto(f'/event/{PUBLIC_EVENT_ID}/players')
         rows = self.auth_page.locator('table#players-table tbody tr')
         row = rows.filter(has_text='AMOS')
@@ -488,22 +478,22 @@ class BaseAccessLevelTest:
             TestUtils.poll_expect_with_reload(
                 self.auth_page,
                 lambda: expect(check_in_button).to_have_class(
-                    re.compile(r'\bbi-circle-fill\b'), timeout=1
+                    re.compile(r'\bbi-x-circle-fill\b'), timeout=1
                 ),
             )
 
             expect(check_in_button).to_have_attribute(
-                'hx-patch', re.compile(r'.*player-check-in.*')
+                'hx-patch', re.compile(r'.*player-table/check-in-player.*')
             )
             check_in_button.click()
             expect(check_in_button).to_have_class(
                 re.compile(r'\bbi-check-circle-fill\b')
             )
             check_in_button.click()
-            expect(check_in_button).to_have_class(re.compile(r'\bbi-circle-fill\b'))
+            expect(check_in_button).to_have_class(re.compile(r'\bbi-x-circle-fill\b'))
         else:
             expect(check_in_button).not_to_have_attribute(
-                'hx-patch', re.compile(r'.*player-check-in.*')
+                'hx-patch', re.compile(r'.*player-table/check-in-player.*')
             )
 
     # --------------------------------------------------------------------------
@@ -526,42 +516,3 @@ class BaseAccessLevelTest:
             expect(pairings_button).not_to_be_visible()
             page.goto(f'/event/{PUBLIC_EVENT_ID}/pairings')
             page.wait_for_url('/error/403')
-
-    def assert_can_checkin_via_pairings_tab(
-        self,
-        can_access: bool,
-        api_request_context: APIRequestContext,
-    ):
-        # Open check-in
-        api_request_context.patch(
-            f'/tournament-open-check-in/{PUBLIC_EVENT_ID}/{self.unpaired_tournament.id}'
-        )
-
-        self.auth_page.goto(
-            f'/event/{PUBLIC_EVENT_ID}/pairings?tournament_id={self.unpaired_tournament.id}'
-        )
-        rows = self.auth_page.locator('table#unpaired-players-table tbody tr')
-        row = rows.filter(has_text='AMOS')
-        check_in_button = row.get_by_test_id('check-in-cell')
-
-        if can_access:
-            TestUtils.poll_expect_with_reload(
-                self.auth_page,
-                lambda: expect(check_in_button).to_have_class(
-                    re.compile(r'\bbi-circle-fill\b'), timeout=1
-                ),
-            )
-
-            expect(check_in_button).to_have_attribute(
-                'hx-post', re.compile(r'.*pairings-check-in-out.*')
-            )
-            check_in_button.click()
-            expect(check_in_button).to_have_class(
-                re.compile(r'\bbi-check-circle-fill\b')
-            )
-            check_in_button.click()
-            expect(check_in_button).to_have_class(re.compile(r'\bbi-circle-fill\b'))
-        else:
-            expect(check_in_button).not_to_have_attribute(
-                'hx-post', re.compile(r'.*pairings-check-in-out.*')
-            )

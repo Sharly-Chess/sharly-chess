@@ -143,6 +143,15 @@ class SCEUtils:
                 return tournament
         raise ValueError('Tournament not found')
 
+    @classmethod
+    def get_optional_tournament_by_sce_id(
+        cls, event: Event, sce_id: str
+    ) -> Tournament | None:
+        try:
+            return cls.get_tournament_by_sce_id(event, sce_id)
+        except ValueError:
+            return None
+
     @staticmethod
     def merge_dicts(
         dict1: dict[str, Any],

@@ -22,20 +22,21 @@
 
 {% if admin_tournament %}
     <div
-        hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
+        hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="result") }}"
         hx-trigger="ws:new-user-results|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_tournament.current_round }} from:body"
         hx-target="#refresh-message"
         hx-swap="innerHTML"
     >
     </div>
     <div
-        hx-get="{{ url_for('admin-pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
-        hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }}|{{ admin_tournament.id }}|{{ admin_tournament.current_round }} from:body"
+        hx-get="{{ url_for('pairings-needs-refresh-message', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, reason="checkin") }}"
+        hx-trigger="ws:new-checkins|{{ admin_event.uniq_id }}|{{ admin_tournament.id }} from:body"
+        hx-vals="js:{ignore: getIsNextRefreshMessageIgnored() && $('#refresh-message').is(':empty')}"
         hx-target="#refresh-message"
         hx-swap="innerHTML"
     >
     </div>
-    {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 %}
+    {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 or admin_absent_players|length > 0 %}
 
     <div class="container-fluid">
         <div class="pt-1 pb-1 row">
@@ -53,30 +54,7 @@
                 </div>
                 {% if not display_rankings %}
                     <div class="d-flex gap-2 justify-content-end mb-2 align-items-end">
-                        {% if admin_tournament.check_in_open %}
-                            <span
-                                {% if client.can_open_close_check_in %}
-                                    {{ macros.tooltip_attributes('info', _('Pairings disabled while check-in is open.'), 'top') }}
-                                {% else %}
-                                    {{ macros.tooltip_attributes('warning', _('You are not allowed to open/close check-in.'), 'top') }}
-                                {% endif %}
-                            >
-                                <button
-                                    class="btn btn-outline-primary text-nowrap"
-                                    hx-get="{{ url_for('admin-tournament-close-check-in-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id) }}"
-                                    hx-trigger="click"
-                                    hx-target="body"
-                                    hx-indicator="#please-wait"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-wrapper"
-                                    {{ macros.tooltip_attributes('info', _('Close check-in for tournament [%(tournament)s].', tournament=admin_tournament.name), 'top') }}
-                                >
-                                    {{ _('Close check-in') }}
-                                </button>
-                            </span>
-                        {% endif %}
                         {% include admin_tournament.pairing_system.pairing_buttons_template %}
-
                         {% if admin_boards %}
                             {% with name='show_without_results', wo_results=show_without_results %}
                                 <div class="btn-group">
@@ -185,17 +163,17 @@
             {% if not display_rankings %}
                 {% if has_unpaired %}
                     <div class="col-12 col-lg-3">
-                        {% if admin_bye_players|length > 0 %}
-                            {% with title=_('Byes (%(byes)d) *** PLAYERS WITH BYES', byes=admin_bye_players|length), unpaired=admin_bye_players, table_id='bye-players-table' %}
-                                {% include '/admin/pairings/unpaired_table.html' %}
-                            {% endwith %}
-                        {% endif %}
-
-                        {% if admin_unpaired|length > 0 %}
-                            {% with title=_('Unpaired (%(unpaired)d)', unpaired=admin_unpaired|length), unpaired=admin_unpaired, table_id='unpaired-players-table' %}
-                                {% include '/admin/pairings/unpaired_table.html' %}
-                            {% endwith %}
-                        {% endif %}
+                        {% with title=_('Byes *** ZPB, HPB or FPB'), unpaired_players=admin_bye_players, table_id='bye-players-table' %}
+                            {% include '/admin/pairings/unpaired_table.html' %}
+                        {% endwith %}
+                        {% with title=_('Absents'), unpaired_players=admin_absent_players, table_id='absent-players-table' %}
+                            {% include '/admin/pairings/unpaired_table.html' %}
+                        {% endwith %}
+                        {% with title=(
+                            _('To pair') if admin_tournament.pairing_system.split_unpaired_and_bye_players else _('Players')
+                        ), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
+                            {% include '/admin/pairings/unpaired_table.html' %}
+                        {% endwith %}
                     </div>
                 {% endif %}
 
@@ -312,8 +290,8 @@
             }
 
             keyQueue.push({ code, pairing_board_id });
-            $('#pairing-row-' + pairing_board_id + ' td').addClass('text-secondary')
-            nextBoardId = $(`[data-board-id="${pairing_board_id}"]`).next().data("board-id")
+            $('#pairing-row-' + pairing_board_id + ' td, #pairing-row-' + pairing_board_id + ' .player-link').addClass('text-secondary');
+            nextBoardId = $(`[data-board-id="${pairing_board_id}"]`).next().data("board-id");
             if (nextBoardId) {
                 highlightBoard(nextBoardId, false);
             }

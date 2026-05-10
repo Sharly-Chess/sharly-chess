@@ -19,12 +19,8 @@ msgid "%%s is replaced by the time left before the hour."
 msgstr "%%s est remplacé par le temps restant avant l'horaire."
 
 #, python-format
-msgid "%(count)d boards without result"
-msgstr "%(count)d échiquiers sans résultat"
-
-#, python-format
-msgid "%(count)d players unpaired"
-msgstr "%(count)d joueur·euses non-apparié·es"
+msgid "%(bye)s at round %(round)d"
+msgstr "%(bye)s à la ronde %(round)d"
 
 #, python-format
 msgid "%(minutes)d minutes after"
@@ -39,6 +35,18 @@ msgid "%(num).1f point group -"
 msgid_plural "%(num).1f points group -"
 msgstr[0] "Groupe de %(num).1f point -"
 msgstr[1] "Groupe de %(num).1f points -"
+
+#, python-format
+msgid "%(num)d absent player without byes"
+msgid_plural "%(num)d absent players without byes"
+msgstr[0] "%(num)d joueur·euse absent·e sans forfait ou bye"
+msgstr[1] "%(num)d joueur·euses absent·es sans forfait ou bye"
+
+#, python-format
+msgid "%(num)d board without result"
+msgid_plural "%(num)d boards without result"
+msgstr[0] "%(num)d échiquier sans résultat"
+msgstr[1] "%(num)d échiquiers sans résultat"
 
 #, python-format
 msgid "%(num)d criterion"
@@ -71,16 +79,16 @@ msgstr[0] "%(num)d joueur·euse"
 msgstr[1] "%(num)d joueur·euses"
 
 #, python-format
-msgid "%(num)d player did not check-in"
-msgid_plural "%(num)d players did not check-in"
-msgstr[0] "%(num)d joueur·euse n’a pas confirmé sa présence"
-msgstr[1] "%(num)d joueur·euses n’ont pas confirmé leur présence"
-
-#, python-format
 msgid "%(num)d player does not match criteria."
 msgid_plural "%(num)d players do not match criteria."
 msgstr[0] "%(num)d joueur·euse ne correspond pas aux critères."
 msgstr[1] "%(num)d joueur·euses ne correspondent pas aux critères."
+
+#, python-format
+msgid "%(num)d player to pair"
+msgid_plural "%(num)d players to pair"
+msgstr[0] "%(num)d joueur·euse à apparier"
+msgstr[1] "%(num)d joueur·euses à apparier"
 
 #, python-format
 msgid "%(num)d prize"
@@ -123,10 +131,6 @@ msgid "%(num)d unknown column (ignored)"
 msgid_plural "%(num)d unknown columns (ignored)"
 msgstr[0] "%(num)d colonne inconnue (ignorée)"
 msgstr[1] "%(num)d colonnes inconnues (ignorées)"
-
-#, python-format
-msgid "%(player)s - Round %(num)s"
-msgstr "%(player)s - Ronde %(num)s"
 
 #, python-format
 msgid "%(rating)s (%(rating_type)s)"
@@ -179,6 +183,9 @@ msgstr "%t (par échiquier)"
 
 msgid "%t (by player)"
 msgstr "%t (par ordre alpha.)"
+
+msgid "%t (check-in)"
+msgstr "%t (check-in)"
 
 #, python-format
 msgid "%t [Boards %f-%l]"
@@ -320,7 +327,7 @@ msgid "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applican
 msgstr "<b>1.4.4</b> Un maximum de 3/5 des adversaires peuvent provenir de la fédération du·de la candidat·e au titre."
 
 msgid "<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}"
-msgstr "<b>1.4.5</b> Pour cette norme, au moins {min} adversaires doivent détenir le ou les titre(s) suivant(s) : {titles}"
+msgstr "<b>1.4.5</b> Pour cette norme, au moins {min} adversaires doivent détenir le ou les titre(s) suivant(s) : {titles}"
 
 #, python-format
 msgid "<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM."
@@ -335,9 +342,6 @@ msgstr "<b>1.4.8a</b> La moyenne minimale des classements des adversaires requis
 #, python-format
 msgid "<b>1.4.8b</b> The minimum score is 35%% for all norms."
 msgstr "<b>1.4.8b</b> Le score minimum requis pour toutes les normes est de 35 %%."
-
-msgid "<b>Delete</b> from the tournament"
-msgstr "<b>Supprimer</b> du tournoi"
 
 msgid "<first> and <second>"
 msgstr "<first> et <second>"
@@ -390,6 +394,9 @@ msgstr "Un entier positif est attendu."
 msgid "A positive value is expected."
 msgstr "Une valeur positive est attendue."
 
+msgid "A set named [{name}] already exists. Tick the overwrite option to replace it."
+msgstr "Un ensemble nommé [{name}] existe déjà. Cochez l'option Remplacement pour le remplacer."
+
 msgid "A set with this name already existe."
 msgstr "Un ensemble avec ce nom existe déjà."
 
@@ -401,6 +408,13 @@ msgstr "ADM"
 
 msgid "Absent"
 msgstr "Absent·e"
+
+#, python-format
+msgid "Absent players (%(count)d)"
+msgstr "Joueur·euses absent·es (%(count)d)"
+
+msgid "Absents"
+msgstr "Absent·es"
 
 msgid "Absolute"
 msgstr "Préférence absolue"
@@ -459,18 +473,6 @@ msgstr "Ajouter un critère à la liste."
 msgid "Add a display controller to the event."
 msgstr "Ajouter un pilote d'afficheurs."
 
-msgid "Add a family of screens to check-in players or enter results."
-msgstr "Ajouter une famille d'écrans à l'évènement."
-
-msgid "Add a family of screens to display the pairings by alphabetical order."
-msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage des appariements par échiquier."
-
-msgid "Add a family of screens to display the pairings by board."
-msgstr "Ajouter à l'évènement une nouvelle famille d'écrans de saisie des résultats."
-
-msgid "Add a family of screens to display the ranking."
-msgstr "Ajouter à l'évènement une nouvelle famille d'écrans d'affichage du classement."
-
 msgid "Add a group to the list."
 msgstr "Ajouter un groupe à la liste"
 
@@ -488,24 +490,6 @@ msgstr "Ajouter un prix à la liste."
 
 msgid "Add a rotator to the event."
 msgstr "Ajouter un écran rotatif à l'évènement."
-
-msgid "Add a screen to check-in players or enter results."
-msgstr "Ajouter un écran de pointage des joueur·euses ou de saisie des résultats."
-
-msgid "Add a screen to display an image."
-msgstr "Ajouter un écran d'affichage d'une image."
-
-msgid "Add a screen to display the last results."
-msgstr "Ajouter un écran d'affichage des derniers résultats."
-
-msgid "Add a screen to display the pairings by alphabetical order."
-msgstr "Ajouter un écran d'affichage des appariements par ordre alphabétique."
-
-msgid "Add a screen to display the pairings by board number."
-msgstr "Ajouter un écran d'affichage des appariements par échiquier."
-
-msgid "Add a screen to display the ranking."
-msgstr "Ajouter un écran d'affichage du classement."
 
 msgid "Add a set"
 msgstr "Ajouter un ensemble"
@@ -540,6 +524,9 @@ msgstr "Ajouter des joueur·euses"
 msgid "Add screens"
 msgstr "Ajouter des écrans"
 
+msgid "Add tie-break"
+msgstr "Ajouter un départage"
+
 msgid "Add tournaments"
 msgstr "Ajouter des tournois"
 
@@ -548,6 +535,9 @@ msgstr "Administration"
 
 msgid "Administrator"
 msgstr "Administrateur·ice"
+
+msgid "Advanced criteria can be created from the dedicated criteria form."
+msgstr "Les critères avancés peuvent-être créés depuis le formulaire de critères."
 
 msgid "Affects the rating that will be chosen for each player."
 msgstr "Influe sur le classement qui sera choisi pour chaque joueur·euse."
@@ -588,6 +578,9 @@ msgstr "Tous les horaires ont été supprimés."
 msgid "All players are paired."
 msgstr "Tou·tes les joueur·euses sont apparié·es."
 
+msgid "All players marked as \"Present\"."
+msgstr "Tou·tes les joueur·euses ont été marqué·es « Présent·e »."
+
 msgid "All the boards"
 msgstr "Tous les échiquiers"
 
@@ -600,11 +593,11 @@ msgstr "Tous les objets dépendants seront également supprimés :"
 msgid "All the players"
 msgstr "Tou·tes les joueur·euses"
 
-msgid "All the players intended to play the coming round did check-in."
-msgstr "Tou·tes les joueur·euses supposé·es jouer la ronde ont pointé."
-
 msgid "All the players of the selected tournament will be deleted before importing the ones from the file."
 msgstr "Tou·tes les joueur·euses du tournoi sélectionné seront supprimé·es avant d'importer ceux du fichier."
+
+msgid "All the players of tournament [{tournament}] have been marked as \"{status}\"."
+msgstr "Tou·tes les joueur·euses du tournoi [{tournament}] ont été marqué·es « {status} »."
 
 msgid "All the tournaments"
 msgstr "Tous les tournois"
@@ -622,7 +615,7 @@ msgid "Allow links to this screen"
 msgstr "Autoriser les liens vers cet écran"
 
 msgid "Allow multi-tournament players"
-msgstr "Autoriser les joueur·eures multi-tournois"
+msgstr "Autoriser les joueur·euses multi-tournois"
 
 msgid "Allows access to Screens marked as public"
 msgstr "Autorise l'accès aux écrans publics"
@@ -678,6 +671,12 @@ msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs affi
 msgid "Application"
 msgstr "Application"
 
+msgid "Apply"
+msgstr "Appliquer"
+
+msgid "Apply to all"
+msgstr "Appliquer à tout·es"
+
 msgid "Apr *** APRIL"
 msgstr "Avr"
 
@@ -725,12 +724,6 @@ msgstr "Aruba"
 
 msgid "Assign a screen to the controller."
 msgstr "Attribuer un écran au pilote."
-
-msgid "Assign a zero-point bye <b>for the next round</b>"
-msgstr "Marquer forfait <b>pour la ronde à venir</b>"
-
-msgid "Assign a zero-point bye <b>for the rest of the tournament</b>"
-msgstr "Marquer forfait <b>pour le reste du tournoi</b>"
 
 msgid "Assign to a display controller."
 msgstr "Attribuer à un pilote d'écran."
@@ -1007,16 +1000,18 @@ msgstr "Par ordre alpha."
 
 #, python-format
 msgid "Bye limit (%(limit)d) is already reached for this tournament."
-msgstr "La limite de points joker (%(limit)d) est déjà atteinte pour ce tournoi."
+msgstr "La limite de byes (%(limit)d) est déjà atteinte pour ce tournoi."
 
-#, python-format
-msgid "Byes (%(byes)d) *** PLAYERS WITH BYES"
-msgstr "Forfaits et absences (%(byes)d)"
+msgid "Byes *** ZPB, HPB or FPB"
+msgstr "Forfaits ou byes"
 
 msgid "Byes can't be set for the last round of the tournament."
 msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
-msgstr[0] "Les demi-points joker ne peuvent être attribués lors de la dernière ronde du tournoi."
-msgstr[1] "Les demi-points joker ne peuvent être attribués lors des {rounds} dernières rondes du tournoi."
+msgstr[0] "Les byes ne peuvent être attribués lors de la dernière ronde du tournoi."
+msgstr[1] "Les byes ne peuvent être attribués lors des {rounds} dernières rondes du tournoi."
+
+msgid "Byes will not be impacted."
+msgstr "Les forfaits et les byes ne seront pas impactés."
 
 msgid "CA"
 msgstr "ARB"
@@ -1066,11 +1061,13 @@ msgstr "Canada"
 msgid "Cancel"
 msgstr "Annuler"
 
-msgid "Cancel Half-Point Bye"
-msgstr "Annuler le demi-point joker"
+#, python-format
+msgid "Cancel \"%(bye)s\" "
+msgstr "Annuler « %(bye)s »"
 
-msgid "Cancel Zero-Point Bye"
-msgstr "Annuler l'absence pour cette ronde"
+#, python-format
+msgid "Cancel \"%(bye)s\" at round #%(round)s for [%(player)s]?"
+msgstr "Annuler « %(bye)s » à la ronde n°%(round)s for [%(player)s]?"
 
 msgid "Candidate Master"
 msgstr "Candidat Maître"
@@ -1133,36 +1130,14 @@ msgstr "Cochez la case pour autoriser les autres écrans à afficher un lien ver
 msgid "Check-in"
 msgstr "Pointage"
 
-msgid "Check-in / Results ({num})"
-msgstr "Pointage / Saisie ({num})"
-
-msgid "Check-in / Results entry"
-msgstr "Pointage / Saisie des résultats"
-
-msgid "Check-in / Results entry ({tournament_name})"
-msgstr "Pointage / Saisie des résultats ({tournament_name})"
-
-msgid "Check-in closed"
-msgstr "Pointage fermé"
-
-msgid "Check-in is closed for tournament [{tournament}]."
-msgstr "Le pointage est fermé pour le tournoi [{tournament}]."
-
-#, python-format
-msgid "Check-in is not allowed after the tournament has started for the [%(pairing_system)s] pairing system."
-msgstr "Le pointage n'est pas autorisé après le début du tournoi pour le système d'appariements [%(pairing_system)s]."
-
-msgid "Check-in is open for tournament [{tournament}]."
-msgstr "Le pointage est ouvert pour le tournoi [{tournament}]."
-
 msgid "Check-in players"
 msgstr "Pointer les joueur·euses"
 
+msgid "Check-in screens allow players to check-in or out."
+msgstr "Les écrans de pointage permettent aux joueur·euses de se pointer."
+
 msgid "Check-in via public screens"
 msgstr "Pointage sur écrans publics"
-
-msgid "Checked-in"
-msgstr "Pointé·e"
 
 msgid "Cheque"
 msgstr "Chèque"
@@ -1188,14 +1163,14 @@ msgstr "Taipei chinois"
 msgid "Choose a random player"
 msgstr "Choisir un·e joueur·euse au hasard"
 
+msgid "Choose a set…"
+msgstr "Choisir un ensemble…"
+
 msgid "Choose at least one value."
 msgstr "Choisir au moins une valeur."
 
 msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
-
-msgid "Choose my own"
-msgstr "Choisir le mien"
 
 msgid "Choose one, many or no players."
 msgstr "Choisissez aucun·e, un·e ou plusieurs joueur·euses."
@@ -1227,28 +1202,21 @@ msgstr "Effacer tous les filtres."
 msgid "Click and drag to select balanced groups."
 msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
 
-msgid "Click to check-in the player."
-msgstr "Cliquer ici pour pointer le·la joueur·euse."
-
-msgid "Click to check-out the player."
-msgstr "Cliquer ici pour supprimer le pointage du·de la joueur·euse."
+msgid "Click to cancel"
+msgstr "Cliquer pour annuler"
 
 msgid "Click to copy"
 msgstr "Cliquer pour copier"
 
+msgid "Click to edit"
+msgstr "Cliquer pour modifier"
+
+#, python-format
+msgid "Click to mark as &quot;%(status)s&quot;"
+msgstr "Cliquer pour marquer &laquo; %(status)s &raquo;"
+
 msgid "Close"
 msgstr "Fermer"
-
-msgid "Close check-in"
-msgstr "Fermer le pointage"
-
-#, python-format
-msgid "Close check-in for tournament [%(tournament)s]"
-msgstr "Fermer le pointage pour le tournoi [%(tournament)s]"
-
-#, python-format
-msgid "Close check-in for tournament [%(tournament)s]."
-msgstr "Fermer le pointage pour le tournoi [%(tournament)s]."
 
 msgid "Club"
 msgstr "Club"
@@ -1585,6 +1553,15 @@ msgstr "Affiche actuellement l'écran rotatif [{name}]"
 msgid "Currently displaying screen [{name}]"
 msgstr "Affiche actuellement l'écran [{name}]"
 
+msgid "Custom"
+msgstr "Personnalisés"
+
+msgid "Custom sets"
+msgstr "Ensembles personnalisés"
+
+msgid "Custom tie-break sets"
+msgstr "Ensembles de départages personnalisés"
+
 msgid "Cut values"
 msgstr "Élaguer des valeurs"
 
@@ -1700,6 +1677,9 @@ msgstr "Définir les écrans et familles d'écrans à afficher."
 msgid "Define tournament groups among which players are distributed one at a time, leading up to tournaments with balanced ratings."
 msgstr "Définir des groupes de tournois parmi lesquels les joueur·euses sont répartis un par un, aboutissant à des tournois aux classements équilibrés."
 
+msgid "Definitive withdrawal"
+msgstr "Forfait définitif"
+
 #, python-format
 msgid "Delay #%(num)d:"
 msgstr "Délai n°%(num)d :"
@@ -1738,7 +1718,7 @@ msgid "Delete rotator"
 msgstr "Supprimer l'écran rotatif"
 
 msgid "Delete screen"
-msgstr "Supprier l'écran"
+msgstr "Supprimer l'écran"
 
 msgid "Delete screen family"
 msgstr "Supprimer la famille d'écrans"
@@ -1895,14 +1875,19 @@ msgstr "Djibouti"
 msgid "Do not edit this table manually, use script {script_name} instead."
 msgstr "Ne pas éditer ce tableau manuellement, utiliser plutôt le script {script_name}."
 
+#, python-format
+msgid "Do not pair at round %(pairing_round)d"
+msgstr "Ne pas apparier à la ronde %(pairing_round)d"
+
+#, python-format
+msgid "Do not pair at round %(pairing_round)d (Zero-Point Bye)"
+msgstr "Ne pas apparier à la ronde %(pairing_round)d (forfait)"
+
 msgid "Do not recover"
 msgstr "Ne pas restaurer"
 
 msgid "Do not use this order as ranking."
 msgstr "Ne pas utiliser cet ordre comme classement."
-
-msgid "Do nothing (players will be eligible for pairing)"
-msgstr "Ne rien faire (les joueur·euses seront apparié·es)"
 
 msgid "Do you want to install example event databases"
 msgstr "Voulez-vous installer des bases d'évènement d'exemple"
@@ -2014,10 +1999,10 @@ msgid "E.g.: 20 (players per screen)"
 msgstr "Ex. : 20 (joueur·euses par écran)"
 
 msgid "E.g.: 4 (split boards over 4 screens)"
-msgstr "Ex. : 4 (échiquiers sur 4 écrans)"
+msgstr "Ex. : 4 (échiquiers sur 4 écrans)"
 
 msgid "E.g.: 4 (split players over 4 screens)"
-msgstr "Ex. : 4 (ur·euse sur 4 écrans)"
+msgstr "Ex. : 4 (joueur·euses sur 4 écrans)"
 
 msgid "E.g.: @boards, @family, another-screen"
 msgstr "Ex. : @boards, @family, un-autre-ecran"
@@ -2224,6 +2209,9 @@ msgstr "Adresse e-mail"
 msgid "Email:"
 msgstr "Mél :"
 
+msgid "Enable player check-in from check-in screens."
+msgstr "Activer le pointage des joueur·euses depuis les écrans de pointage."
+
 msgid "Enable this account"
 msgstr "Activer ce compte"
 
@@ -2288,6 +2276,9 @@ msgstr "Export d'évènement"
 msgid "Event name"
 msgstr "Nom de l'évènement"
 
+msgid "Event tournaments"
+msgstr "Tournois de l'évènement"
+
 msgid "Event unique ID has been renamed from [{old_uniq_id}] to [{new_uniq_id}]."
 msgstr "L'identifiant unique de l'évènement à été renommé de [{old_uniq_id}] à [{new_uniq_id}]."
 
@@ -2304,7 +2295,7 @@ msgid "Exclude the players matching the criterion instead of including them."
 msgstr "Exclure les joueur·euses correspondant au critère au lieu de les inclure."
 
 msgid "Exclude: {values}"
-msgstr "Exclure : {values}"
+msgstr "Exclure : {values}"
 
 msgid "Exempt *** MAN"
 msgstr "Exempt"
@@ -2389,6 +2380,12 @@ msgstr "Base de données FIDE"
 msgid "FIDE rating lost"
 msgstr "classement FIDE perdu"
 
+msgid "FIDE recommendation (2019)"
+msgstr "Recommendation FIDE (2019)"
+
+msgid "FIDE recommendation - Unrated (2019)"
+msgstr "Recommendation FIDE - Non classé·es (2019)"
+
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
 
@@ -2396,10 +2393,10 @@ msgid "FORFEIT"
 msgstr "FORFAIT"
 
 msgid "Failed to process DMG file: [{ex}]."
-msgstr "Échec du traitement du fichier DMG : [{ex}]."
+msgstr "Échec du traitement du fichier DMG : [{ex}]."
 
 msgid "Failed to read [{download_url}]: [{ex}]."
-msgstr "Échec de la lecture de [{download_url}] : [{ex}]."
+msgstr "Échec de la lecture de [{download_url}] : [{ex}]."
 
 msgid "Families"
 msgstr "Familles"
@@ -2517,9 +2514,6 @@ msgstr "Miroir (recto-verso)"
 msgid "Font size adjustment (%%):"
 msgstr "Ajustement de la taille de police (%%) :"
 
-msgid "For players who have not checked-in:"
-msgstr "Pour les joueur·euses qui ne se sont pas pointé·es :"
-
 msgid "For players without a rapid or blitz FIDE rating, use instead their standard FIDE rating."
 msgstr "Pour les joueur·euses n'ayant pas de classement FIDE en rapide ou en blitz, utiliser à la place leur classement FIDE standard."
 
@@ -2557,10 +2551,10 @@ msgid "From your server find the screen or rotator you want to display, and sent
 msgstr "Depuis votre appareil principal, trouvez l’écran ou l’écran rotatif que vous souhaitez afficher, puis envoyez-le au pilote d’écran à l’aide du bouton portant cette icône :"
 
 msgid "Full-Point Bye"
-msgstr "Point joker entier"
+msgstr "Bye point entier"
 
 msgid "Full-Point Bye (deprecated)"
-msgstr "Point joker entier (obsolète)"
+msgstr "Bye point entier (obsolète)"
 
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GMI"
@@ -2677,10 +2671,10 @@ msgid "Haiti"
 msgstr "Haïti"
 
 msgid "Half-Point Bye"
-msgstr "Demi-point joker (bye)"
+msgstr "Bye"
 
 msgid "Half-Point Bye attributed to player [{player}]."
-msgstr "Un demi-point joker a été attribué au·à la joueur·euse [{player}]."
+msgstr "Un bye a été attribué au·à la joueur·euse [{player}]."
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches présente un risque qu'un prix ne soit pas attribué."
@@ -2769,9 +2763,6 @@ msgstr "Enregistrement des coups illégaux :"
 msgid "Image"
 msgstr "Image"
 
-msgid "Image ({num})"
-msgstr "Image ({num})"
-
 msgid "Image screens show an image (local or remote)."
 msgstr "Les écrans d'image affichent une image (locale ou distante)."
 
@@ -2809,7 +2800,7 @@ msgstr "Impossible d'ajouter des joueur·euses au tournoi [{tournament}]."
 
 #, python-format
 msgid "Impossible to set a bye in the last %(rounds)d rounds of the tournament"
-msgstr "Impossible de définir un point joker dans les %(rounds)d dernières rondes du tournoi"
+msgstr "Impossible de définir un bye dans les %(rounds)d dernières rondes du tournoi"
 
 msgid "Impossible to set a round number lower than the last round with pairings #{round}."
 msgstr "Impossible d'attribuer un nombre de rondes inférieur à la dernière ronde appariée (ronde n°{round})."
@@ -3072,9 +3063,6 @@ msgstr "Dernière ronde possible"
 msgid "Last results"
 msgstr "Derniers résultats"
 
-msgid "Last results ({num})"
-msgstr "Derniers résultats ({num})"
-
 msgid "Last update"
 msgstr "Dernière mise à jour"
 
@@ -3095,6 +3083,12 @@ msgstr "Présentation"
 
 msgid "Lebanon"
 msgstr "Liban"
+
+msgid "Legacy"
+msgstr "Obsolète"
+
+msgid "Legacy tie-breaks can no longer be created or edited."
+msgstr "Les départages obsolètes ne peuvent plus être créés ou édités."
 
 msgid "Lesotho"
 msgstr "Lesotho"
@@ -3207,6 +3201,9 @@ msgstr "Gestion des paramètres de l'application"
 msgid "Manage archives"
 msgstr "Gestion des archives"
 
+msgid "Manage custom sets"
+msgstr "Gérer les ensembles personnalisés"
+
 msgid "Manage events"
 msgstr "Gestion des évènements"
 
@@ -3236,6 +3233,14 @@ msgstr "Mars"
 
 msgid "March"
 msgstr "Mars"
+
+#, python-format
+msgid "Mark all players as \"%(status)s\" "
+msgstr "Marquer tou·tes les joueur·euses « %(status)s » "
+
+#, python-format
+msgid "Mark as \"%(status)s\" "
+msgstr "Marquer « %(status)s » "
 
 msgid "Mark this round as over and define the next one as the current round."
 msgstr "Marquer cette ronde comme terminée et définir la suivante comme la ronde courante."
@@ -3279,7 +3284,7 @@ msgstr "Âge maximum des résultats :"
 
 #, python-format
 msgid "Maximum number of byes: %(max_byes)d"
-msgstr "Nombre maximum de jokers (byes) : %(max_byes)d"
+msgstr "Nombre maximum de byes : %(max_byes)d"
 
 msgid "Maximum number of points (included):"
 msgstr "Nombre maximum de points (inclus) :"
@@ -3471,7 +3476,7 @@ msgstr "Nouveau classement FIDE (en supposant un <i>k</i> de <b>%(k)d</b>)"
 
 #, python-format
 msgid "New FIDE rating (based on player's official <i>k</i> of <b>%(k)d</b>)"
-msgstr "Nouveau classement FIDE (basé sur le <i>k</i< officiel du·de la joueur·euse : <b>%(k)d</b>)"
+msgstr "Nouveau classement FIDE (basé sur le <i>k</i> officiel du·de la joueur·euse : <b>%(k)d</b>)"
 
 msgid "New Zealand"
 msgstr "Nouvelle-Zélande"
@@ -3479,8 +3484,12 @@ msgstr "Nouvelle-Zélande"
 msgid "New category"
 msgstr "Nouvelle catégorie"
 
+#, python-format
+msgid "New check-ins are in, %(absents)d players now absent"
+msgstr "De nouveaux pointages ont été effectués, il y a maintenant %(absents)d joueur·euses absent·es"
+
 msgid "New checkins are in, refresh your browser"
-msgstr "De nouveaux pointages ont été effectués, actualisez votre navigateur"
+msgstr "De nouveaux pointages ont été effectués, actualisez la page"
 
 msgid "New display controller"
 msgstr "Nouveau pilote d'afficheurs"
@@ -3495,7 +3504,7 @@ msgid "New password. Leave blank for no change."
 msgstr "Le nouveau mot de passe. Laisser vide pour ne pas changer."
 
 msgid "New results are in, refresh your browser"
-msgstr "De nouveaux résultats ont été enregistrés, actualisez votre navigateur"
+msgstr "De nouveaux résultats ont été enregistrés, actualisez la page"
 
 msgid "New rotator"
 msgstr "Nouvel écran rotatif"
@@ -3509,9 +3518,6 @@ msgstr "Nouveau tournoi"
 msgid "Next round"
 msgstr "Ronde suivante"
 
-msgid "Next round bye"
-msgstr "Absent·e à la prochaine ronde"
-
 msgid "Nicaragua"
 msgstr "Nicaragua"
 
@@ -3520,6 +3526,9 @@ msgstr "Niger"
 
 msgid "Nigeria"
 msgstr "Nigéria"
+
+msgid "No"
+msgstr "Non"
 
 msgid "No Prize Bracket"
 msgstr "Aucun Groupe de Prix Non-Cumulables"
@@ -3662,6 +3671,9 @@ msgstr "Aucun rôle défini."
 msgid "No rotators"
 msgstr "Aucun écran rotatif"
 
+msgid "No saved sets."
+msgstr "Aucun ensemble enregistré."
+
 msgid "No screen families"
 msgstr "Aucune famille d'écrans"
 
@@ -3677,8 +3689,8 @@ msgstr "Aucun écran."
 msgid "No such screens."
 msgstr "Aucun écran de ce type."
 
-msgid "No tie-breaks"
-msgstr "Aucun départage"
+msgid "No tie-breaks."
+msgstr "Aucun départage."
 
 msgid "No timers"
 msgstr "Aucun chronomètre"
@@ -3725,20 +3737,14 @@ msgstr "Norvège"
 msgid "Not assigned"
 msgstr "Non-attribué"
 
-msgid "Not checked-in yet"
-msgstr "Pas encore point·ée"
-
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
-msgstr "Il n'y a pas assez de demi-points joker disponibles pour attribuer un point joker entier (requis : 2)."
+msgstr "Il n'y a pas assez de byes disponibles pour attribuer un bye point entier (requis : 2)."
 
 msgid "Not enough byes available to set a Half-Point Bye (required: 1)."
-msgstr "Il n'y a pas de demi-point joker disponible pour attribuer un demi-point joker (requis : 1)."
+msgstr "Il n'y a pas de bye disponible (requis : 1)."
 
 msgid "Not logged in"
 msgstr "Non connecté"
-
-msgid "Not paired"
-msgstr "Non-apparié·e"
 
 msgid "Not paired for this round"
 msgstr "Non-apparié·e pour cette ronde"
@@ -3772,11 +3778,11 @@ msgstr "Numéro (tournoi devant)"
 
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
-msgstr "Nombre de demi-points joker : %(byes)d (maximum : %(max_byes)d)"
+msgstr "Nombre de byes : %(byes)d (maximum : %(max_byes)d)"
 
 #, python-format
 msgid "Number of final rounds in which byes are prohibited: %(last_rounds_no_byes)d"
-msgstr "Dernières rondes sans joker (bye) : %(last_rounds_no_byes)d"
+msgstr "Dernières rondes sans bye : %(last_rounds_no_byes)d"
 
 msgid "Number of games won"
 msgstr "Nombre de parties gagnées"
@@ -3878,18 +3884,11 @@ msgstr "Seule l'année de naissance est nécessaire pour la plupart des tournois
 msgid "Open Admin Interface"
 msgstr "Ouvrir l'interface d'administration"
 
-#, python-format
-msgid "Open check-in for tournament [%(tournament)s]."
-msgstr "Ouvrir le pointage pour le tournoi [%(tournament)s]."
-
 msgid "Open documentation"
 msgstr "Ouvrir la documentation"
 
 msgid "Open/close check-in"
 msgstr "Ouvrir/fermer le pointage"
-
-msgid "Open/close check-in."
-msgstr "Ouvrir/fermer le pointage."
 
 msgid "Opening the welcome page [{url}] in a browser…"
 msgstr "Ouverture de la page d'accueil [{url}] dans un navigateur…"
@@ -3978,6 +3977,10 @@ msgstr "Apparier avec les NOIRS"
 msgid "Pair as WHITE"
 msgstr "Apparier avec les BLANCS"
 
+#, python-format
+msgid "Pair at round %(pairing_round)d"
+msgstr "Apparier à la ronde %(pairing_round)d"
+
 msgid "Pair the unpaired players with each other."
 msgstr "Apparier les joueur·euses non-apparié·es ensembles."
 
@@ -4023,7 +4026,7 @@ msgid "Pairing system"
 msgstr "Système d'appariements"
 
 msgid "Pairing-Allocated Bye assigned to player [{player}]."
-msgstr "Le·la joueur·euse [{player}] a été désigné·e exempt·e."
+msgstr "Le·la joueur·euse [{player}] a été apparié·e exempt·e."
 
 msgid "Pairings"
 msgstr "Appariements"
@@ -4034,23 +4037,8 @@ msgstr "<u>A</u>ppariements"
 msgid "Pairings by board"
 msgstr "Appariements par échiquier"
 
-msgid "Pairings by board ({num})"
-msgstr "Échiquiers ({num})"
-
-msgid "Pairings by board ({tournament_name})"
-msgstr "Appariements par échiquier ({tournament_name})"
-
 msgid "Pairings by player"
 msgstr "Appariements par ordre alphabétique"
-
-msgid "Pairings by player ({num})"
-msgstr "Ordre alpha. ({num})"
-
-msgid "Pairings by player ({tournament_name})"
-msgstr "Appariements par ordre alphabétique ({tournament_name})"
-
-msgid "Pairings disabled while check-in is open."
-msgstr "Les appariements sont désactivés lorsque le pointage est ouvert."
 
 msgid "Pairings for round #{round}"
 msgstr "Appariements de la ronde {round}"
@@ -4058,8 +4046,11 @@ msgstr "Appariements de la ronde {round}"
 msgid "Pairings generated for all rounds of tournament [{tournament}]."
 msgstr "Les appariements ont été générés pour toutes les rondes du tournoi [{tournament}]."
 
-msgid "Pairings generation not allowed if previous rounds have missing results or unpaired players."
-msgstr "La génération d'appariements n'est pas autorisée si une ronde passée a au moins un résultat manquant ou un·e joueur·euse non-apparié·e."
+msgid "Pairings generation disabled if there are no players to pair."
+msgstr "La génération d'appariements est désactivée si il n'y a pas de joueur·euses à apparier."
+
+msgid "Pairings generation not allowed if previous rounds have missing results, players to pair or absent players."
+msgstr "La génération d'appariements est désactivée si les rondes précédentes ont des résultats manquants, des joueur·euses à apparier ou absent·es."
 
 msgid "Pairings generation not allowed if there are fewer players than rounds."
 msgstr "La génération d'appariements n'est pas autorisée s'il y a moins de joueur·euses que de rondes."
@@ -4091,9 +4082,6 @@ msgstr "Papouasie-Nouvelle-Guinée"
 
 msgid "Paraguay"
 msgstr "Paraguay"
-
-msgid "Parings by player"
-msgstr "Appariements par ordre alphabétique"
 
 msgid "Participation Statistics"
 msgstr "Statistiques de participation"
@@ -4174,10 +4162,6 @@ msgstr "Joueur·euse Elo [Pts]"
 msgid "Player [%(player)s] has been created."
 msgstr "Le·la joueur·euse [%(player)s] a été créé·e."
 
-#, python-format
-msgid "Player [%(player)s] is absent for the next round in tournament [%(tournament)s]."
-msgstr "Le·la joueur·euse [%(player)s] est forfait pour la prochaine ronde dans le tournoi [%(tournament)s]."
-
 msgid "Player [{player_id}] - round {round}: "
 msgstr "Joueur·euse [{player_id}] - ronde {round} : "
 
@@ -4208,8 +4192,14 @@ msgstr "Le·la joueur·euse [{player}] a déjà été apparié·e dans le tourno
 msgid "Player [{player}] has returned for this round."
 msgstr "Le·la joueur·euse [{player}] est de retour pour cette ronde."
 
+msgid "Player [{player}] has returned to the tournament."
+msgstr "Le·la joueur·euse [{player}] est de retour pour le reste du tournoi."
+
 msgid "Player [{player}] is duplicated."
 msgstr "Le·la joueur·euse [{player}] est dupliqué·e."
+
+msgid "Player [{player}] marked as \"{status}\"."
+msgstr "Le·la joueur·euse [{player}] a été marqué·e « {status} »."
 
 msgid "Player does not match tournament criteria: {names}"
 msgstr "Le·la joueur·euse ne correspond pas aux critères du tournoi : {names}"
@@ -4306,6 +4296,21 @@ msgstr "Les joueur·euses ne correspondant pas aux critères de leur tournoi."
 msgid "Players which match the criteria of their tournament."
 msgstr "Les joueur·euses correspondant aux critères de leur tournoi."
 
+msgid "Players who have received a bye for the incoming round and will therefore not be paired."
+msgstr "Les joueur·euses ayant reçu un forfait ou un bye pour la rounde à venir et qui ne seront pas apparié·es."
+
+#, python-format
+msgid "Players will be paired at round %(pairing_round)d and marked as present for the following rounds."
+msgstr "Les joueur·euses seront apparié·es à la ronde %(pairing_round)d et marqué·es présent·es pour les rondes suivantes."
+
+#, python-format
+msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and all subsequent rounds, all Half or Full-Point Byes will be removed."
+msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et toutes les suivantes, les byes attribués seront supprimés."
+
+#, python-format
+msgid "Players will receive a Zero-Point Bye at round %(pairing_round)d and remain absent for the following rounds."
+msgstr "Les joueur·euses seront forfait à la ronde %(pairing_round)d et resteront absent·es pour les rondes suivantes."
+
 msgid "Players without phone or email won't be included."
 msgstr "Les joueur·euses sans numéro de téléphone ni adresse email ne seront pas inclus·es."
 
@@ -4331,6 +4336,9 @@ msgstr "Veuillez choisir une fédération"
 
 msgid "Please choose a federation."
 msgstr "Veuillez choisir une fédération."
+
+msgid "Please choose a name for the set."
+msgstr "Veuillez choisir un nom pour l'ensemble."
 
 msgid "Please choose a player."
 msgstr "Veuillez choisir un·e joueur·euse."
@@ -4366,7 +4374,7 @@ msgid "Please select the account."
 msgstr "Veuillez sélectionner le compte."
 
 msgid "Please supply a valid URL (e.g. https://my.domain.com)."
-msgstr "Veuillez fournir une URL valide (par ex. : https://mon.domaine.fr)."
+msgstr "Veuillez fournir une URL valide (par ex. : https://mon.domaine.fr)."
 
 msgid "Please supply a valid email address."
 msgstr "Veuillez fournir une adresse email valide."
@@ -4424,6 +4432,9 @@ msgstr "Préf."
 
 msgid "Present"
 msgstr "Présent·e"
+
+msgid "Present and to pair"
+msgstr "Présent·e et à apparier"
 
 msgid "Previous round"
 msgstr "Ronde précédente"
@@ -4518,12 +4529,6 @@ msgstr "Famille publique"
 msgid "Public screen"
 msgstr "Écran public"
 
-msgid "Publish pairings"
-msgstr "Publier les appariements"
-
-msgid "Publish rankings"
-msgstr "Publier les classements"
-
 msgid "Publish tournament results"
 msgstr "Publier les résultats"
 
@@ -4544,6 +4549,9 @@ msgstr "Type de QR Code :"
 
 msgid "Qatar"
 msgstr "Qatar"
+
+msgid "Quick-apply a tie-break set"
+msgstr "Appliquer un ensemble de départages"
 
 #, python-format
 msgid "R %(round)d *** ROUND COLUMN HEADER"
@@ -4578,12 +4586,6 @@ msgstr "Classement %f à %l"
 msgid "Ranking %f-%l"
 msgstr "Classement %f-%l"
 
-msgid "Ranking ({num})"
-msgstr "Classement ({num})"
-
-msgid "Ranking ({tournament_name})"
-msgstr "Classement ({tournament_name})"
-
 #, python-format
 msgid "Ranking after round #%(round)d"
 msgstr "Classement après la ronde %(round)d"
@@ -4599,9 +4601,6 @@ msgstr "Classement seulement"
 
 msgid "Ranking screens show the players by rank."
 msgstr "Les écrans d'affichage de classement présentent les joueur·euses par ordre de classement."
-
-msgid "Rankings"
-msgstr "Classements"
 
 msgid "Rapid"
 msgstr "Rapide"
@@ -4642,9 +4641,17 @@ msgstr "Classements"
 msgid "Ratings update"
 msgstr "Mise à jour des classements"
 
-#, python-format
-msgid "Recommended tie-breaks for a [%(pairing_system)s] tournament:"
-msgstr "Départages recommandés pour un tournoi [%(pairing_system)s] :"
+msgid "Received a Full-Point Bye for the next round"
+msgstr "Ont reçu un bye point entier pour la ronde à venir"
+
+msgid "Received a Half-Point Bye for the next round"
+msgstr "Ont reçu un bye pour la ronde à venir"
+
+msgid "Received a Zero-Point Bye for all the remaining rounds"
+msgstr "A reçu un forfait pour toutes les rondes à venir"
+
+msgid "Received a Zero-Point Bye for the next round"
+msgstr "A reçu un forfait pour la ronde à venir"
 
 msgid "Record"
 msgstr "Historique"
@@ -4716,6 +4723,15 @@ msgstr "Requis par le plug-in <b>%(plugin)s</b>."
 msgid "Res. ** RESULT COLUMN HEADER"
 msgstr "Rés."
 
+msgid "Reset"
+msgstr "Réinitialiser"
+
+msgid "Reset all the players to &quot;Absent&quot; or &quot;Present&quot; (byes not impacted)."
+msgstr "Réinitialiser tou·tes les joueur·euses en &laquo; Absent·e &raquo; ou &laquo; Présent·e &raquo; (les forfaits et byes ne sont pas impactés)."
+
+msgid "Reset check-in"
+msgstr "Réinitialiser le pointage"
+
 msgid "Reset manual tie-break"
 msgstr "Réinitialiser le départage manuel"
 
@@ -4757,6 +4773,10 @@ msgstr "Les écrans de résultats affichent les derniers résultats saisis par o
 
 msgid "Retry"
 msgstr "Ré-essayer"
+
+#, python-format
+msgid "Return [%(player)s] to the tournament?"
+msgstr "Faire revenir [%(player)s] dans le tournoi ?"
 
 msgid "Return to the home page"
 msgstr "Retourner à la page d'accueil"
@@ -4891,6 +4911,9 @@ msgstr "Lignes par écran :"
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
 
+msgid "Rules used were only effective until march 2026 (legacy)."
+msgstr "Les règles utilisées n'étaient effectives que jusqu'en mars 2026 (obsolètes)."
+
 msgid "Russia"
 msgstr "Russie"
 
@@ -4929,6 +4952,9 @@ msgstr "Arabie saoudite"
 
 msgid "Save"
 msgstr "Enregistrer"
+
+msgid "Save current tie-breaks as custom set"
+msgstr "Enregistrer les départages actuels comme ensemble personnalisé"
 
 msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
@@ -5035,6 +5061,9 @@ msgstr "Tout sélectionner"
 msgid "Select an account"
 msgstr "Sélectionner un compte"
 
+msgid "Select an action for absent players:"
+msgstr "Sélectionner une action pour les joueur·euses absent·es :"
+
 msgid "Select player"
 msgstr "Sélectionner un·e joueur·euse"
 
@@ -5073,16 +5102,25 @@ msgid "Server is already running!"
 msgstr "Le serveur est déjà en cours d'exécution !"
 
 msgid "Set Full-Points Byes"
-msgstr "Allouer des points joker"
+msgstr "Allouer des byes point entier"
 
 msgid "Set Half-Points Byes"
-msgstr "Allouer des demi-points joker"
+msgstr "Allouer des byes"
 
 msgid "Set Zero-Points Byes"
-msgstr "Noter des absences"
+msgstr "Allouer des forfaits"
+
+msgid "Set [{name}] has been saved."
+msgstr "L'ensemble [{name}] a été enregistré."
+
+msgid "Set [{name}] has been updated."
+msgstr "L'ensemble [{name}] a été mis à jour."
 
 msgid "Set illegal moves"
 msgstr "Noter les coups illégaux"
+
+msgid "Set name"
+msgstr "Nom de l'ensemble"
 
 msgid "Set special results"
 msgstr "Noter des résultats spéciaux"
@@ -5123,6 +5161,9 @@ msgstr "Projet Sharly Chess"
 msgid "Sharly Chess reaches its full potential when used as a server, with other devices connected to the same network."
 msgstr "Sharly Chess atteint son plein potentiel lorsqu'utilisé comme un serveur, avec d'autres appareils connectés au même réseau."
 
+msgid "Sharly Chess recommendation"
+msgstr "Recommendation Sharly Chess"
+
 msgid "Sharly Chess server"
 msgstr "Serveur Sharly Chess"
 
@@ -5161,6 +5202,9 @@ msgstr "Sierra Leone"
 
 msgid "Signature"
 msgstr "Signature"
+
+msgid "Simple criteria"
+msgstr "Critères simples"
 
 msgid "Since ratings are used in the tie-break calculation, it is important for them to be representative of the player's level. For this reason this tie-break is not recommended with unrated players."
 msgstr "Les classements étant utilisés pour le calcul des départages, il est important qu'ils soient représentatifs du niveau des joueur·euses. Pour cette raison ce départage est déconseillé avec des joueur·euses non-classé·es."
@@ -5365,6 +5409,9 @@ msgstr "Suisse"
 msgid "Syria"
 msgstr "Syrie"
 
+msgid "System"
+msgstr "Système"
+
 msgid "TRF file"
 msgstr "Fichier TRF"
 
@@ -5563,7 +5610,7 @@ msgid "The number of points in the standard 1/0.5/0 point system."
 msgstr "Le nombre de points dans le système de points standard 1/0,5/0."
 
 msgid "The number of rounds in which a player did not receive a HPB, a ZPB or a forfeit loss."
-msgstr "Le nombre de rondes dans lesquelles un·e joueur·euse n'a pas reçu de point joker ou une défaite par forfait."
+msgstr "Le nombre de rondes dans lesquelles un·e joueur·euse n'a pas reçu de bye ou une défaite par forfait."
 
 msgid "The number of rounds where a player obtains, with or without playing, as many points as awarded for a win."
 msgstr "Le nombre de rondes lors desquelles un·e joueur·euse obtient, en jouant ou non, autant de points que lors d'une victoire."
@@ -5667,6 +5714,12 @@ msgstr "Le chronomètre qui sera affiché en haut de l'écran."
 msgid "The timer displayed on the screens of the family."
 msgstr "Le chronomètre affiché sur les écrans de la famille."
 
+msgid "The tournament has invalid tie-breaks; please fix them before saving as a set."
+msgstr "Le tournoi contient des départages invalides ; corrigez-les avant d'enregistrer l'ensemble."
+
+msgid "The tournament has no tie-breaks to save."
+msgstr "Le tournoi ne contient aucun départage à enregistrer."
+
 msgid "The tournament has not yet started."
 msgstr "Le tournoi n'est pas encore commencé."
 
@@ -5720,6 +5773,9 @@ msgstr "Il doit y avoir au moins un écran ou une famille d'écrans définie pou
 
 msgid "These plugins can only be activated on events of their federation."
 msgstr "Ces plug-ins ne peuvent-être activés que pour les évènements de leur fédération."
+
+msgid "These sets are saved per pairing system and shared across events."
+msgstr "Ces ensembles sont enregistrés par système d'appariement et partagés entre les événements."
 
 msgid "These tournaments are already included for this account by a higher access level."
 msgstr "Ces tournois sont déjà inclus pour ce compte par un niveau d'accès plus élevé."
@@ -5812,7 +5868,7 @@ msgid "This rotator is public (visible by the spectators)."
 msgstr "Cet écran rotatif est public (visible des spectateur·ices)."
 
 msgid "This round hasn't started (current round: #{round})."
-msgstr "Cette ronde n’a pas encore commencé (ronde actuelle : #{round})."
+msgstr "Cette ronde n’a pas encore commencé (ronde actuelle : #{round})."
 
 msgid "This round is not finished (last finished: #{round})."
 msgstr "Cette ronde n'est pas terminée (dernière ronde terminée : n°{round})."
@@ -5834,6 +5890,9 @@ msgstr "Cet écran est privé (non visible des spectateur·ices)."
 
 msgid "This screen is public (visible by the spectators)."
 msgstr "Cet écran est public (visible des spectateur·ices)."
+
+msgid "This set contains [{name}] twice in a row."
+msgstr "Cet ensemble contient [{name}] deux fois de suite."
 
 msgid "This tie-break can be used multiple times."
 msgstr "Ce départage peut-être utilisé plusieurs fois."
@@ -5862,6 +5921,9 @@ msgstr "Ce départage n'est pas recommandé pour les tournois se déroulant sur 
 msgid "This tie-break is not recommended with estimated players ({count} in the tournament)."
 msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es ({count} dans le tournoi)."
 
+msgid "This tie-break uses a legacy way to compute values."
+msgstr "Ce départage utilise une manière obsolète de calculer les valeurs."
+
 msgid "This tournament has no titled players."
 msgstr "Ce tournoi n'a pas de joueur·euses titré·es."
 
@@ -5875,11 +5937,17 @@ msgstr "Victoire à 3 points"
 msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr "Le départage [%(tie_break)s] a été créé avec succès !"
 
+msgid "Tie-break [{name}] is not available in this event."
+msgstr "Le départage [{name}] n'est pas disponible dans cet événement."
+
 msgid "Tie-break based on the opponents' ratings and the player's score (consult the FIDE Handbook for more details)."
 msgstr "Départage basé sur le classement des adversaires et le score du·de la joueur·euse (consulter le règlement FIDE pour plus d'informations)."
 
 msgid "Tie-break favoring players which have won against the players they are tied with (consult the FIDE handbook for more details)."
 msgstr "Départage favorisant les joueur·euses ayant gagné contre les joueur·euses ex aequo (consulter le règlement FIDE pour plus d'informations)."
+
+msgid "Tie-break sets are saved from the Tie-breaks modal."
+msgstr "Les ensembles de départages sont enregistrés depuis la fenêtre Départages."
 
 msgid "Tie-breaks"
 msgstr "Départages"
@@ -5953,6 +6021,9 @@ msgstr "Pour apprendre à contrôler votre réseau, consultez <a href=\"%(link)s
 msgid "To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player's name."
 msgstr "Pour modifier les rondes précédentes, retourne sur la ronde concernée dans l’onglet Appariements ;<br />les exemptions peuvent ensuite être modifiées à l’aide des boutons situés à côté du nom du·de la joueur·euse."
 
+msgid "To pair"
+msgstr "À apparier"
+
 msgid "Today"
 msgstr "Aujourd'hui"
 
@@ -5966,10 +6037,13 @@ msgid "Too few players to generate the pairings (minimum: {min})."
 msgstr "Trop peu de joueur·euses pour générer les appariements (minimum : {min})."
 
 msgid "Too many byes for player [{player_name}]."
-msgstr "Trop de points joker pour le joueur [{player_name}]."
+msgstr "Trop de byes pour le joueur [{player_name}]."
 
 msgid "Too much information to display on a single projector?"
 msgstr "Trop d’informations à afficher sur un seul projecteur ?"
+
+msgid "Total"
+msgstr "Total"
 
 msgid "Total prize value"
 msgstr "Valeur totale des prix"
@@ -5979,14 +6053,6 @@ msgstr "Tournoi"
 
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournoi"
-
-#, python-format
-msgid "Tournament [%(tournament)s] is finished."
-msgstr "Le tournoi [%(tournament)s] est terminé."
-
-#, python-format
-msgid "Tournament [%(tournament)s] is playing."
-msgstr "Le tournoi [%(tournament)s] est en cours."
 
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
@@ -6147,7 +6213,7 @@ msgid "Undefined *** SINGULAR"
 msgstr "Non défini"
 
 msgid "Unexpected error during installation: [{ex}]."
-msgstr "Erreur inattendue pendant l’installation : [{ex}]."
+msgstr "Erreur inattendue pendant l’installation : [{ex}]."
 
 msgid "Unhandled file type [{suffix}] (expected: {expected})."
 msgstr "Type de fichier [{suffix}] non pris en charge (attendu : {expected})."
@@ -6214,10 +6280,6 @@ msgstr "Désapparier un échiquier"
 msgid "Unpair tournament"
 msgstr "Désapparier le tournoi"
 
-#, python-format
-msgid "Unpaired (%(unpaired)d)"
-msgstr "Non-apparié·es (%(unpaired)d)"
-
 msgid "Unpaired *** MAN"
 msgstr "Non apparié"
 
@@ -6232,9 +6294,6 @@ msgstr "Non apparié·es : caché·es"
 
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
 msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez tout ajustement manuel."
-
-msgid "Unpairing all the boards of this round is not possible because the round has results."
-msgstr "Désapparier tous les échiquiers est impossible tant que la ronde a des résultats enregistrés."
 
 msgid "Unrated *** PLURAL"
 msgstr "Non-classé·es"
@@ -6314,9 +6373,6 @@ msgstr "Utilisez l’onglet Staff pour déclarer les arbitres."
 msgid "Use the alert message defined on each screen."
 msgstr "Utiliser le message d'alerte défini pour chaque écran."
 
-msgid "Use the recommended tie-breaks"
-msgstr "Utiliser les départages recommandés"
-
 msgid "Use the standard FIDE rating for unrated players"
 msgstr "Utiliser le classement FIDE standard pour les joueur·euses non-classé·es"
 
@@ -6346,6 +6402,9 @@ msgstr "Lignes valides"
 
 msgid "Validate"
 msgstr "Valider"
+
+msgid "Validate and pair"
+msgstr "Valider et apparier"
 
 msgid "Value"
 msgstr "Valeur"
@@ -6385,12 +6444,6 @@ msgstr "Voir l'onglet Joueur·euses"
 
 msgid "View Prizes tab"
 msgstr "Voir l'onglet Prix"
-
-msgid "View draft pairings"
-msgstr "Voir les appariement avant publication"
-
-msgid "View draft rankings"
-msgstr "Voir les classement avant publication"
 
 msgid "View event cards details"
 msgstr "Voir les détails des cartes d'évènement"
@@ -6523,6 +6576,12 @@ msgstr "Blancs"
 msgid "White wins"
 msgstr "Victoire Blancs"
 
+msgid "Will not participate by default in upcoming rounds"
+msgstr "Ne participera par défaut pas aux rondes à venir"
+
+msgid "Will participate in upcoming rounds"
+msgstr "Participera aux rondes à venir"
+
 msgid "Win"
 msgstr "Victoire"
 
@@ -6530,6 +6589,9 @@ msgid "With less players than prizes, some prizes will not be attributed."
 msgstr "Avec moins de joueur·euses que de prix, certains prix ne vont pas être attribués."
 
 msgid "Withdraw from tournament"
+msgstr "Forfait définitif"
+
+msgid "Withdrawn"
 msgstr "Forfait définitif"
 
 msgid "Woman *** NAME FOR GENDER WOMAN"
@@ -6565,6 +6627,9 @@ msgstr "AAAA/MM/JJ"
 msgid "Yemen"
 msgstr "Yémen"
 
+msgid "Yes"
+msgstr "Oui"
+
 msgid "Yesterday"
 msgstr "Hier"
 
@@ -6577,11 +6642,8 @@ msgstr "Un mode d'édition non-sécurisé est activé. Changez de ronde pour le 
 msgid "You are not allowed to add players to the event."
 msgstr "Vous n'êtes pas autorisé·e à ajouter des joueur·euses à l'évènement."
 
-msgid "You are not allowed to check-in the player."
-msgstr "Vous n'êtes pas autorisé·e à pointer les joueur·euses."
-
-msgid "You are not allowed to check-out the player."
-msgstr "Vous n'êtes pas autorisé·e à dépointer les joueur·euses."
+msgid "You are not allowed to cancel byes."
+msgstr "Vous n'êtes pas autorisé·e à annuler des byes."
 
 msgid "You are not allowed to create tournaments."
 msgstr "Vous n'êtes pas autorisé·e à créer des tournois."
@@ -6611,31 +6673,31 @@ msgid "You are not allowed to manage prizes."
 msgstr "Vous n'êtes pas autorisé·e à gérer les prix."
 
 msgid "You are not allowed to modify Full-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à modifier des points joker entiers."
+msgstr "Vous n'êtes pas autorisé·e à modifier des byes point entier."
 
 msgid "You are not allowed to modify Half-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à modifier des demi-points joker."
+msgstr "Vous n'êtes pas autorisé·e à modifier des byes."
 
-msgid "You are not allowed to open/close check-in."
-msgstr "Vous n'êtes pas autorisé·e à ouvrir/fermer le pointage."
+msgid "You are not allowed to open or close this check-in."
+msgstr "Vous n'êtes pas autorisé·e à ouvrir ou fermer ce pointage."
 
 msgid "You are not allowed to pair players."
 msgstr "Vous n'êtes pas autorisé·e à apparier les joueur·euses."
 
+msgid "You are not allowed to return players."
+msgstr "Vous n'êtes pas autorisé·e à faire revenir des joueur·euses."
+
 msgid "You are not allowed to set Full-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à attribuer des points joker entiers."
+msgstr "Vous n'êtes pas autorisé·e à attribuer des byes point entier."
 
 msgid "You are not allowed to set Half-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à attribuer des demi-points joker."
+msgstr "Vous n'êtes pas autorisé·e à déclarer des byes."
+
+msgid "You are not allowed to set Zero-Point Byes."
+msgstr "Vous n'êtes pas autorisé·e à déclarer des forfaits."
 
 msgid "You are not allowed to set the current round."
 msgstr "Vous n'êtes pas autorisé·e à positionner la ronde courante."
-
-msgid "You are not allowed to set/unset Half-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à allouer des demi-points joker."
-
-msgid "You are not allowed to set/unset Zero-Point Byes."
-msgstr "Vous n'êtes pas autorisé·e à enregistrer des absences."
 
 msgid "You are not allowed to unpair rounds."
 msgstr "Vous n'êtes pas autorisé·e à désapparier les rondes."
@@ -6704,10 +6766,10 @@ msgid "Zambia"
 msgstr "Zambie"
 
 msgid "Zero-Point Bye"
-msgstr "Absent·e pour cette ronde"
+msgstr "Forfait"
 
 msgid "Zero-Point Bye attributed to player [{player}]."
-msgstr "Le·la joueur·euse [{player}] a été marqué·e absent·e."
+msgstr "Le·la joueur·euse [{player}] a été marqué·e forfait."
 
 msgid "Zimbabwe"
 msgstr "Zimbabwe"

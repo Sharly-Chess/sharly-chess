@@ -36,6 +36,8 @@ from data.print_documents.place_cards.data import PlaceCardPlayer
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
 from data.tie_breaks import TieBreak, TieBreakOption
+from data.tie_breaks.system_sets import SystemTieBreakSet
+from data.tie_breaks.tie_breaks import ProgressiveScoresTieBreak
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer
 from database.sqlite.fide.fide_database import FideDatabase
@@ -790,6 +792,48 @@ class FfePlugin(Plugin):
     ):
         tie_break_option_types.append(PapiBuchholzTypeOption)
 
+    @hookimpl
+    def insert_swiss_system_tie_break_sets(
+        self, system_sets: list['SystemTieBreakSet']
+    ):
+        from plugins.ffe import ffe_tie_breaks
+        from plugins.ffe.ffe_tie_breaks import (
+            PapiBuchholzTypeOption,
+            StandardPapiBuchholzType,
+            CutPapiBuchholzType,
+        )
+
+        system_sets.append(
+            SystemTieBreakSet(
+                key=f'{PLUGIN_NAME}:youth-championship-swiss',
+                name=_('"France jeunes" and qualifiers'),
+                tie_breaks=[
+                    ffe_tie_breaks.PapiBuchholzTieBreak(
+                        [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
+                    ),
+                    ffe_tie_breaks.PapiBuchholzTieBreak(
+                        [PapiBuchholzTypeOption(StandardPapiBuchholzType().id)]
+                    ),
+                    ffe_tie_breaks.PapiPerformanceTieBreak(),
+                ],
+            )
+        )
+        system_sets.append(
+            SystemTieBreakSet(
+                key=f'{PLUGIN_NAME}:youth-championship-swiss-unrated',
+                name=_('"France jeunes" and qualifiers - Unrated'),
+                tie_breaks=[
+                    ffe_tie_breaks.PapiBuchholzTieBreak(
+                        [PapiBuchholzTypeOption(CutPapiBuchholzType().id)]
+                    ),
+                    ffe_tie_breaks.PapiBuchholzTieBreak(
+                        [PapiBuchholzTypeOption(StandardPapiBuchholzType().id)]
+                    ),
+                    ProgressiveScoresTieBreak(),
+                ],
+            )
+        )
+
     # ---------------------------------------------------------------------------------
     # Pairings
     # ---------------------------------------------------------------------------------
@@ -899,8 +943,9 @@ class FfePlugin(Plugin):
         sync_data.ffe_league = sce_data['ffe_league']
 
     @hookimpl
-    def augment_stored_player_from_player_sync_data(
+    def augment_stored_player_from_sce_player_sync_data(
         self,
+        event: 'Event',
         stored_player: StoredPlayer,
         sync_data: SCEPlayerSyncData,
     ):

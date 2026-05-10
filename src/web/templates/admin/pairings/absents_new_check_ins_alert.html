@@ -1,0 +1,32 @@
+{% extends '/common/alert.html' %}
+
+{% block type %}warning{% endblock %}
+
+{% block alert_content %}
+    <div class="align-self-center"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <div class="flex-grow-1 align-self-center">
+        {{ _(
+            'New check-ins are in, %(absents)d players now absent',
+            absents=admin_absent_players|length
+        ) }}
+    </div>
+    <div class="align-self-center">
+        <button
+            type="button"
+            class="btn btn-sm btn-outline-dark"
+            hx-get="{{ url_for(
+                'pairings-absents-modal',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                round=admin_round,
+            ) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+        >
+            {{ _('Refresh') }}
+        </button>
+    </div>
+{% endblock %}
+
+{% block remove_button %}
+{% endblock %}

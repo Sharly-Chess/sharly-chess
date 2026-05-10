@@ -12,7 +12,6 @@ class AuthActionCategory(StrEnum):
     PLAYERS = auto()
     CHECK_IN = auto()
     PAIRINGS = auto()
-    RANKINGS = auto()
     RESULTS = auto()
     SCREENS = auto()
     PRIZES = auto()
@@ -42,8 +41,6 @@ class AuthActionCategory(StrEnum):
                 return _('Check-in', locale)
             case AuthActionCategory.PAIRINGS:
                 return _('Pairings', locale)
-            case AuthActionCategory.RANKINGS:
-                return _('Rankings', locale)
             case AuthActionCategory.RESULTS:
                 return _('Results', locale)
             case AuthActionCategory.SCREENS:
@@ -108,12 +105,6 @@ class AuthAction(StrEnum):
     SET_ZPB = auto()
     SET_HPB = auto()
     SET_FPB = auto()
-    VIEW_DRAFT_PAIRINGS = auto()
-    PUBLISH_PAIRINGS = auto()
-
-    # Rankings
-    VIEW_DRAFT_RANKINGS = auto()
-    PUBLISH_RANKINGS = auto()
 
     # Results
     ENTER_RESULTS = auto()
@@ -177,7 +168,7 @@ class AuthAction(StrEnum):
                 | AuthAction.DISTRIBUTE_PLAYERS
             ):
                 return AuthActionCategory.PLAYERS
-            case AuthAction.OPEN_CLOSE_CHECK_IN | AuthAction.CHECK_IN_PLAYERS:
+            case AuthAction.CHECK_IN_PLAYERS | AuthAction.OPEN_CLOSE_CHECK_IN:
                 return AuthActionCategory.CHECK_IN
             case (
                 AuthAction.VIEW_PAIRINGS_TAB
@@ -190,12 +181,8 @@ class AuthAction(StrEnum):
                 | AuthAction.SET_ZPB
                 | AuthAction.SET_HPB
                 | AuthAction.SET_FPB
-                | AuthAction.VIEW_DRAFT_PAIRINGS
-                | AuthAction.PUBLISH_PAIRINGS
             ):
                 return AuthActionCategory.PAIRINGS
-            case AuthAction.VIEW_DRAFT_RANKINGS | AuthAction.PUBLISH_RANKINGS:
-                return AuthActionCategory.RANKINGS
             case (
                 AuthAction.ENTER_RESULTS
                 | AuthAction.UPDATE_RESULTS
@@ -294,14 +281,6 @@ class AuthAction(StrEnum):
                 return _('Set Half-Points Byes', locale)
             case AuthAction.SET_FPB:
                 return _('Set Full-Points Byes', locale)
-            case AuthAction.VIEW_DRAFT_PAIRINGS:
-                return _('View draft pairings', locale)
-            case AuthAction.PUBLISH_PAIRINGS:
-                return _('Publish pairings', locale)
-            case AuthAction.VIEW_DRAFT_RANKINGS:
-                return _('View draft rankings', locale)
-            case AuthAction.PUBLISH_RANKINGS:
-                return _('Publish rankings', locale)
             case AuthAction.ENTER_RESULTS:
                 return _('Enter results', locale)
             case AuthAction.UPDATE_RESULTS:

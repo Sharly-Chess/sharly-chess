@@ -1,11 +1,31 @@
 {% set bye_definition_allowed=admin_player.single_tournament.pairing_system.allow_bye_definition %}
 {% set tournament_player=admin_player.single_tournament_player %}
 <div id="player-record-modal" class="modal-dialog modal-dialog-scrollable admin-record-edit-modal">
-    <div class="modal-content">
+    <div class="modal-content" data-player-id="{{ admin_player.id }}">
         <div class="modal-header d-flex justify-content-between align-items-end">
             <div class="flex flex-column gap-0 align-items-start">
                 <h2 class="modal-title">
                     {{admin_player.title.short_name}} {{ admin_player.full_name }}
+                    {% if not tournament_player.has_withdrawn %}
+                        {% set status = tournament_player.check_in_status_no_bye %}
+                        <i
+                            class="{{ status.icon_classes }} cursor-pointer ps-1 fs-4"
+                            {% set click_detail = _(
+                                'Click to mark as &quot;%(status)s&quot;',
+                                status=_('Present') if status == 4 else _('Absent')
+                            ) %}
+                            {{ macros.tooltip_attributes('', (
+                                '<div class="fw-bold">' ~ status.name ~ '</div>'
+                                '<div class="fst-italic" style="font-size:80%">' ~ click_detail ~ '</div>'
+                            ), 'right') }}
+                            hx-patch="{{ url_for(
+                                'records-check-in-player',
+                                event_uniq_id=admin_event.uniq_id,
+                                player_id=tournament_player.id,
+                            ) }}"
+                            onclick="refreshMessagesIgnored += 1"
+                        ></i>
+                    {% endif %}
                 </h2>
                 <div>{{ admin_player.club }}</div>
                 {% set category = tournament_player.category.name %}
@@ -21,10 +41,8 @@
                                 disabled
                             {% else %}
                                 hx-patch="{{ url_for(
-                                    'admin-player-return-player',
+                                    'records-return-player',
                                     event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=tournament_player.tournament.id,
-                                    round=tournament_player.tournament.current_round,
                                     player_id=admin_player.id,
                                 ) }}"
                                 hx-target="body"
@@ -38,21 +56,20 @@
                         or tournament_player.pairings_by_round[tournament.current_round].needs_pairing_or_has_bye
                     ) %}
                         <button
-                            class="btn btn-sm btn-outline-primary w-100"
+                            class="btn btn-sm btn-outline-danger w-100"
                             {% if not client.can_set_zero_point_bye(tournament_player.tournament.id) %}
                                 disabled
                             {% else %}
                                 hx-patch="{{ url_for(
-                                    'admin-player-withdraw-player',
+                                    'records-withdraw-player',
                                     event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=tournament_player.tournament.id,
-                                    round=tournament_player.tournament.current_round,
                                     player_id=admin_player.id,
                                 ) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
                             {% endif %}
                         >
+                            <i class="bi-sign-stop pe-1"></i>
                             {{ _('Withdraw from tournament') }}
                         </button>
                     {% endif %}
@@ -326,7 +343,16 @@
             {% if client.can_update_players %}
                 <button
                     class="btn btn-outline-primary"
-                    hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+                    hx-get="{{ url_for(
+                        'admin-player-modal',
+                        action='update',
+                        event_uniq_id=admin_event.uniq_id,
+                        player_id=admin_player.id
+                    ) }}?redirect_to={{ url_for(
+                        'admin-record-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        player_id=tournament_player.id,
+                    ) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
                     tabindex="0"
