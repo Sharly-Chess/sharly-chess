@@ -72,4 +72,5 @@ def detect_antivirus_programs(folder: Path | None = None) -> list[Antivirus]:
                 detected_antivirus_program.run(folder or Path())
             return detected_antivirus_programs
         case _:
-            return []
+            logger.debug('No antivirus detection for platform [%s].', sys.platform)
+    return []
