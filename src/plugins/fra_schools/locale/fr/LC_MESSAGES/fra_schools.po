@@ -57,6 +57,9 @@ msgstr "Établissements Scolaires"
 msgid "French school"
 msgstr "Établissement scolaire"
 
+msgid "French schools championship"
+msgstr "Championnat de France des écoles et collèges"
+
 msgid "Hide the UAI codes for the FFE upload"
 msgstr "Cacher les codes UAI lors de la mise en ligne FFE"
 

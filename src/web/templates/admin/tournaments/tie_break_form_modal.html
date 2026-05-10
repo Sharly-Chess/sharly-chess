@@ -52,15 +52,17 @@
                     ) }}
                 </div>
                 {% for option in tie_break_options %}
-                    <div
-                        class="row gy-2 gx-3"
-                        id="{{ option.container_id }}"
-                        {% if option.container_id not in containers_by_type[data['type']] %}
-                            style="display:none"
-                        {% endif %}
-                    >
-                        {% include option.template_name %}
-                    </div>
+                    {% if option.template_name %}
+                        <div
+                            class="row gy-2 gx-3"
+                            id="{{ option.container_id }}"
+                            {% if option.container_id not in containers_by_type[data['type']] %}
+                                style="display:none"
+                            {% endif %}
+                        >
+                            {% include option.template_name %}
+                        </div>
+                    {% endif %}
                 {% endfor %}
                 <script>
                     $('#type').change(function() {

@@ -24,10 +24,14 @@ class TestTournamentFunctionality:
         # Redirection to Tie-breaks
         success_alert = modal.locator(f"div.alert:has-text('{name}')")
         expect(success_alert).to_be_visible()
-        TestUtils.button_by_text(modal, 'Use the recommended tie-breaks').click()
-        expect(modal.locator('.tie-break-row')).to_have_count(5)
-        TestUtils.button_by_text(modal, 'Close').click()
+        select_container = modal.locator('#tie-break-set').locator('..')
+        select_container.locator('.select2-selection').click()
+        page.locator('.select2-results__option[id$="swiss-sc-recommendation"]').click()
+        TestUtils.button_by_text(modal, 'Apply').click()
 
+        expect(modal.locator('.tie-break-row')).to_have_count(5)
+        page.wait_for_timeout(500)
+        TestUtils.button_by_text(modal, 'Close').click()
         card = page.locator(f"div.card:has-text('{name}')")
         expect(card).to_be_visible()
 

@@ -449,6 +449,18 @@ class BaseController(Controller):
             },
         )
 
+    @staticmethod
+    def _render_empty_modal_and_messages(
+        request: HTMXRequest, after_receive: bool = False
+    ) -> HTMXTemplate:
+        return HTMXTemplate(
+            template_name='common/empty_modal_and_messages.html',
+            context={'messages': Message.messages(request)},
+            re_target='#modal-wrapper',
+            trigger_event='close_modal',
+            after='receive' if after_receive else 'settle',
+        )
+
     IF_MODIFIED_SINCE_HEADER: str = 'If-Modified-Since'
 
     def get_if_modified_since(self, request: HTMXRequest) -> float | None:

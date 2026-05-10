@@ -99,7 +99,7 @@
                             disabled=not client.can_update_event or has_multi_tournament_players,
                             data=data, errors=errors
                         ) }}
-                        {{ admin_macros.hidden_disabled_input(data, 'player_rating_type') }}
+                        {{ admin_macros.hidden_disabled_input(data, 'allow_multi_tournament_players') }}
                     </div>
                 </div>
                 <div class="row gy-2 gx-3">

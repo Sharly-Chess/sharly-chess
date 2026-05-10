@@ -24,7 +24,7 @@
             <div>
                 {{ _('Columns:') }} {% for i in range(family.columns) %}<i class="bi-square-fill"></i> {% endfor %}
             </div>
-            {% if family.type == 'input' %}
+            {% if family.type in ('input', 'check-in') %}
                 <div>
                     <i class="bi-x-circle pe-1"></i>
                     {{ _('Exit button:') }}
@@ -116,7 +116,7 @@
                             first=screen_set.first_board.id + tournament.first_board_number - 1,
                             last=screen_set.last_board.id + tournament.first_board_number - 1
                         ) }}
-                    {% elif family.type in ['boards', 'input', 'players', ] %}
+                    {% elif family.type in ['boards', 'input', 'players', 'check-in'] %}
                         {% if screen_set.first_tournament_player_by_name %}
                             {{ _('Players from %(first)s to %(last)s', first=screen_set.first_tournament_player_by_name.last_name[:8], last=screen_set.last_tournament_player_by_name.last_name[:8]) }}
                         {% else %}

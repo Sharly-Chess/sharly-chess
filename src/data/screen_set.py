@@ -491,7 +491,7 @@ class ScreenSet:
                     )
                 case _:
                     raise ValueError(f'first={self.first}, last={self.last}')
-        elif self.type in [ScreenType.PLAYERS]:
+        elif self.type in [ScreenType.PLAYERS, ScreenType.CHECK_IN]:
             match (self.first, self.last):
                 case (0, 0):
                     return _('all the players')

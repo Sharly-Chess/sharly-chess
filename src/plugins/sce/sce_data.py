@@ -272,6 +272,24 @@ class SCETournamentSyncData:
 
 
 @dataclass
+class SCEFraSchoolSyncData:
+    code: str
+    label: str
+
+    def to_dict(self) -> dict[str, str]:
+        return asdict(self)
+
+    @classmethod
+    def from_dict_value(cls, value: dict[str, str] | None) -> Self | None:
+        if not value:
+            return None
+        return cls(
+            code=value['code'],
+            label=value['label'],
+        )
+
+
+@dataclass
 class SCEPlayerSyncData:
     tournament_id: str
     last_name: str
@@ -286,11 +304,13 @@ class SCEPlayerSyncData:
     phone: str | None = None
     gender: PlayerGender = PlayerGender.NONE
     comment: str | None = None
+    check_in: bool = False
 
     # Plugin fields
     national_id: str | None = None
     ffe_licence: PlayerFFELicence = PlayerFFELicence.NONE
     ffe_league: str | None = None
+    fra_school: SCEFraSchoolSyncData | None = None
 
     # Not stored
     mail: str | None = None
@@ -314,6 +334,12 @@ class SCEPlayerSyncData:
     @property
     def ffe_licence_str(self) -> str:
         return self.ffe_licence.short_name
+
+    @property
+    def fra_school_label_str(self) -> str:
+        if not self.fra_school:
+            return ''
+        return self.fra_school.label
 
     @classmethod
     def from_sce_data(
@@ -346,6 +372,7 @@ class SCEPlayerSyncData:
                 if data['gender']
                 else PlayerGender.NONE
             ),
+            check_in=data['checked_in'],
             mail=data.get('user_email') if with_mail else None,
         )
         plugin_manager.hook_for_event(
@@ -374,6 +401,7 @@ class SCEPlayerSyncData:
             phone=player.phone,
             gender=player.gender,
             comment=player.comment,
+            check_in=player.check_in,
         )
         plugin_manager.hook_for_event(
             player.event, 'augment_sce_player_sync_data_from_player'
@@ -404,6 +432,10 @@ class SCEPlayerSyncData:
                 stored_value.get('ffe_licence') or PlayerFFELicence.NONE
             ),
             comment=stored_value.get('comment'),
+            check_in=stored_value.get('check_in', False),
+            fra_school=SCEFraSchoolSyncData.from_dict_value(
+                stored_value.get('fra_school')
+            ),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -428,6 +460,8 @@ class SCEPlayerSyncData:
             ),
             'ffe_league': self.ffe_league,
             'comment': self.comment,
+            'check_in': self.check_in,
+            'fra_school': self.fra_school.to_dict() if self.fra_school else None,
         }
 
     def to_sce_data(self) -> dict[str, Any]:
@@ -453,6 +487,9 @@ class SCEPlayerSyncData:
             'ffe_league': self.ffe_league,
             'phone_number': self.phone,
             'comment': self.comment,
+            'checked_in': self.check_in,
+            'fra_school_code': self.fra_school.code if self.fra_school else None,
+            'fra_school_label': self.fra_school.label if self.fra_school else None,
         }
 
     def merge_with_other_sync_data(self, other_data: Self, ref_data: Self) -> Self:
@@ -488,6 +525,7 @@ class SCEPlayerSyncData:
         stored_player.phone = self.phone
         stored_player.gender = self.gender.value
         stored_player.comment = self.comment
+        stored_player.check_in = self.check_in
         if current_rating != self.rating or current_rating_type != self.rating_type:
             stored_player.ratings[tournament.rating.value] = PlayerRating.from_type(
                 self.rating, self.rating_type or PlayerRatingType.ESTIMATED
@@ -498,8 +536,8 @@ class SCEPlayerSyncData:
         plugin_data.last_sync_data = self
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         plugin_manager.hook_for_event(
-            event, 'augment_stored_player_from_player_sync_data'
-        )(stored_player=stored_player, sync_data=self)
+            event, 'augment_stored_player_from_sce_player_sync_data'
+        )(event=event, stored_player=stored_player, sync_data=self)
 
     @staticmethod
     def diff_fields_by_property_name(event: Event) -> dict[str, str]:
@@ -509,6 +547,7 @@ class SCEPlayerSyncData:
             'first_name': _('First name'),
             'title_str': _('Title'),
             'rating_str': _('Rating'),
+            'fra_school_label_str': None,
             'federation': _('Federation'),
             'ffe_league': None,
             'club': _('Club'),
@@ -628,6 +667,9 @@ class SCETournamentPluginData(PluginData):
     last_upload_at: datetime | None = None
     last_upload_attempt_at: datetime | None = None
     upload_failure_id: str | None = None
+    check_in_open: bool = False
+    check_in_opens_at: datetime | None = None
+    check_in_closes_at: datetime | None = None
     last_sync_data: SCETournamentSyncData | None = None
     conflict_sync_data: SCETournamentSyncData | None = None
     duplicated_players_by_id: dict[str, SCEDuplicatedPlayer] = field(
@@ -654,6 +696,13 @@ class SCETournamentPluginData(PluginData):
                 stored_value.get('last_upload_attempt_at'),
             ),
             upload_failure_id=stored_value.get('upload_failure_id'),
+            check_in_open=stored_value.get('check_in_open', False),
+            check_in_opens_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('check_in_opens_at')
+            ),
+            check_in_closes_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('check_in_closes_at')
+            ),
             last_sync_data=(
                 SCETournamentSyncData.from_stored_value(stored_last_sync_data)
                 if stored_last_sync_data
@@ -683,6 +732,13 @@ class SCETournamentPluginData(PluginData):
                 self.last_upload_attempt_at
             ),
             'upload_failure_id': self.upload_failure_id,
+            'check_in_open': self.check_in_open,
+            'check_in_opens_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.check_in_opens_at
+            ),
+            'check_in_closes_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.check_in_closes_at
+            ),
             'last_sync_data': (
                 self.last_sync_data.to_stored_value() if self.last_sync_data else None
             ),
@@ -710,6 +766,21 @@ class SCETournamentPluginData(PluginData):
 
     def to_form_data(self, action: str | None = None) -> dict[str, str]:
         return {}
+
+    @staticmethod
+    def _schedule_tooltip_section(title: str, datetime_: datetime | None) -> str:
+        if not datetime_:
+            return ''
+        return (
+            f'<div class="text-center fw-bold">{title}</div>'
+            f'<div class="text-center">{format_datetime(datetime_)}</div>'
+        )
+
+    @property
+    def check_in_schedule_tooltip(self) -> str:
+        return self._schedule_tooltip_section(
+            _('Opening'), self.check_in_opens_at
+        ) + self._schedule_tooltip_section(_('Closing'), self.check_in_closes_at)
 
 
 @dataclass

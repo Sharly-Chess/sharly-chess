@@ -84,7 +84,9 @@ init-credentials-local.py
 /src/web/static/lib/air-datepicker
 /src/web/static/lib/bootstrap
 /src/web/static/lib/bootstrap-icons
+/src/web/static/lib/bootstrap5-toggle
 /src/web/static/lib/jquery
+/src/web/static/lib/progressbar.js
 /src/web/static/lib/htmx/htmx-*
 /src/web/static/lib/htmx/preload-*
 /src/web/static/lib/htmx/multi-swap-*
