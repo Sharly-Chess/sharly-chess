@@ -6,10 +6,9 @@ from typing import Any, Annotated
 from data.criteria.player_filter_options import (
     MinRatingOption,
     MaxRatingOption,
-    AgeCategoriesOption,
-    AgeLowerOption,
-    AgeGreaterOption,
     GenderOption,
+    MinAgeCategoryOption,
+    MaxAgeCategoryOption,
 )
 from data.loader import Event
 from litestar import get, post, patch, delete
@@ -566,7 +565,6 @@ class PrizeAdminController(BaseEventAdminController):
         prize_group_id: int,
     ) -> Template:
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
-        event = web_context.get_admin_event()
         prize_group = web_context.get_admin_prize_group()
 
         add_other = 'add_other' in data
@@ -616,29 +614,18 @@ class PrizeAdminController(BaseEventAdminController):
                     )
                 )
             field = 'criterion_age_category'
-            min_category: PlayerCategory | None = None
-            max_category: PlayerCategory | None = None
-            min_id = WebContext.form_data_to_str(data, field + '_min')
-            max_id = WebContext.form_data_to_str(data, field + '_max')
-            if min_id and min_id != '__placeholder__':
-                min_category = PlayerCategory.from_id(min_id)
-            if max_id and max_id != '__placeholder__':
-                max_category = PlayerCategory.from_id(max_id)
+            min_category = WebContext.form_data_to_str(data, field + '_min')
+            max_category = WebContext.form_data_to_str(data, field + '_max')
+            if min_category == '__placeholder__':
+                min_category = None
+            if max_category == '__placeholder__':
+                max_category = None
             if min_category or max_category:
-                if min_category and max_category:
-                    category_ids = [
-                        category.id
-                        for category in event.player_categories
-                        if min_category <= category <= max_category  # type: ignore
-                    ]
-                else:
-                    category_ids = [getattr(min_category or max_category, 'id')]
                 filters.append(
                     AgePlayerFilter(
                         [
-                            AgeCategoriesOption(category_ids),
-                            AgeLowerOption(min_category is None),
-                            AgeGreaterOption(max_category is None),
+                            MinAgeCategoryOption(min_category),
+                            MaxAgeCategoryOption(max_category),
                         ]
                     )
                 )
