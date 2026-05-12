@@ -21,6 +21,7 @@
 ## Prizes
 
 - Add simple criteria creation from the category modal (4.1.0)
+- Use category range for age criterion (4.1.4)
 
 ## _Sharly-Chess.com_
 
