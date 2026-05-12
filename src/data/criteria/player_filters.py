@@ -13,15 +13,14 @@ from data.criteria.player_filter_options import (
     GenderOption,
     MinRatingOption,
     MaxRatingOption,
-    AgeCategoriesOption,
-    AgeLowerOption,
-    AgeGreaterOption,
     ClubsFilterOption,
     FederationsFilterOption,
     RatingTypesFilterOption,
     PlayersFilterOption,
     ExcludeFilterOption,
     CommentsFilterOption,
+    MinAgeCategoryOption,
+    MaxAgeCategoryOption,
 )
 from data.player_categories import NoCategory, PlayerCategory
 from utils import Utils
@@ -122,48 +121,57 @@ class AgePlayerFilter(PlayerFilter):
 
     @staticmethod
     def available_options() -> list[type[PlayerFilterOption]]:
-        return [AgeCategoriesOption, AgeLowerOption, AgeGreaterOption]
+        return [MinAgeCategoryOption, MaxAgeCategoryOption]
+
+    @property
+    def category_range(self) -> tuple[PlayerCategory | None, PlayerCategory | None]:
+        min_id, max_id = self.get_option_values()
+        return (
+            PlayerCategory.from_id(min_id) if min_id else None,
+            PlayerCategory.from_id(max_id) if max_id else None,
+        )
 
     @cached_property
     def is_player_included_function(self) -> Callable[[TournamentPlayer], bool]:
-        age_categories, lower, greater = self.get_option_values()
-        categories = [PlayerCategory.from_id(category) for category in age_categories]
-        if lower:
-            category = categories[0]
+        min_category, max_category = self.category_range
+        if not min_category:
             return lambda player: (
-                player.category <= category  # type: ignore
+                player.category <= max_category  # type: ignore
                 and player.category != NoCategory()
             )
-        if greater:
-            category = categories[0]
-            return lambda player: player.category >= category  # type: ignore
-        return lambda player: player.category in categories
+        if not max_category:
+            return lambda player: (
+                player.category >= min_category  # type: ignore
+                and player.category != NoCategory()
+            )
+        if max_category == min_category:
+            return lambda player: player.category == max_category
+        return lambda player: min_category <= player.category <= max_category  # type: ignore
 
     def full_name(self, tournament: 'Tournament') -> str:
-        age_categories, lower, greater = self.get_option_values()
-        categories = [
-            PlayerCategory.from_id(category).name for category in age_categories
-        ]
-        if lower:
-            return f'{self.name} ≤ {categories[0]}'
-        if greater:
-            return f'{self.name} ≥ {categories[0]}'
-        return f'{self.name} ({", ".join(categories)})'
+        min_category, max_category = self.category_range
+        if not min_category:
+            return f'{self.name} ≤ {getattr(max_category, "name")}'
+        if not max_category:
+            return f'{self.name} ≥ {min_category.name}'
+        if max_category == min_category:
+            return f'{self.name} ({min_category.name})'
+        return f'{min_category.name} ≤ {self.name} ≤ {max_category.name}'
 
     def validate_options(self):
         super().validate_options()
-        age_categories, lower, greater = self.get_option_values()
-        if len(age_categories) > 1 and (lower or greater):
+        min_category, max_category = self.category_range
+        if not min_category and not max_category:
+            raise OptionError(
+                _('At least a minimum or a maximum category must be defined.'),
+                self._get_option(MinAgeCategoryOption),
+            )
+        if min_category and max_category and min_category > max_category:
             raise OptionError(
                 _(
-                    'Only one age category is expected with options including other categories.'
+                    'The maximum category must be at most equal to the minimum category.'
                 ),
-                self._get_option(AgeCategoriesOption),
-            )
-        if lower and greater:
-            raise OptionError(
-                'Only one of greater or lower option is allowed.',
-                self._get_option(AgeGreaterOption),
+                self._get_option(MaxAgeCategoryOption),
             )
 
 
