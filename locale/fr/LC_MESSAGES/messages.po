@@ -728,6 +728,9 @@ msgstr "Attribuer un écran au pilote."
 msgid "Assign to a display controller."
 msgstr "Attribuer à un pilote d'écran."
 
+msgid "At least a minimum or a maximum category must be defined."
+msgstr "Au moins une catégorie minimale ou catégorie maximale doit être définie."
+
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr "Au moins un Elo minimum ou un Elo maximum doit être défini."
 
@@ -2461,6 +2464,12 @@ msgstr "Fichier"
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
 msgstr "L'extension du fichier [{suffix}] est invalide (attendue : {expected})."
 
+msgid "Filter out players of higher categories."
+msgstr "Exclure les joueur·euses des catégories supérieures."
+
+msgid "Filter out players of lower categories."
+msgstr "Exclure les joueur·euses des catégories inférieures."
+
 msgid "Filter out players with a greater rating."
 msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
 
@@ -2813,12 +2822,6 @@ msgstr "Dans le tournoi"
 
 msgid "Include IDs and passwords for uploading results"
 msgstr "Inclure les identifiants et mots de passe nécessaires à la mise en ligne des résultats"
-
-msgid "Include greater categories"
-msgstr "Inclure les catégories supérieures"
-
-msgid "Include lower categories"
-msgstr "Inclure les catégories inférieures"
 
 msgid "Include non-monetary prizes"
 msgstr "Inclure les prix non-monétaires"
@@ -3279,6 +3282,9 @@ msgstr "Nombre max : %(num)d"
 msgid "Max number: unlimited"
 msgstr "Nombre max : illimité"
 
+msgid "Max. age category"
+msgstr "Catégorie d'âge max."
+
 msgid "Maximum age of the results:"
 msgstr "Âge maximum des résultats :"
 
@@ -3335,6 +3341,9 @@ msgstr "Mexique"
 
 msgid "Min *** MINIMUM"
 msgstr "Min"
+
+msgid "Min. age category"
+msgstr "Catégorie d'âge min."
 
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
@@ -3871,9 +3880,6 @@ msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans ro
 
 msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
 msgstr "Seuls les événements actuels et à venir déclarés comme <b>publics</b> par l’administrateur·ice sont visibles via le réseau."
-
-msgid "Only one age category is expected with options including other categories."
-msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autres catégories."
 
 msgid "Only required for users that need to connect to the server."
 msgstr "Uniquement requis pour les utilisateur·ices devant se connecter au serveur."
@@ -5547,6 +5553,9 @@ msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."
 #, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
 msgstr "L'âge maximal des résultats affichés sur l'écran, en minutes (par défaut %(minutes)d minutes)."
+
+msgid "The maximum category must be at most equal to the minimum category."
+msgstr "La catégorie maximale doit être au moins égale à la catégorie minimale."
 
 msgid "The maximum number of byes a player can pretend to."
 msgstr "Le nombre maximum de byes auquel un·e joueur·euse peut prétendre."

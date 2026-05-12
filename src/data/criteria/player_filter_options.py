@@ -191,18 +191,14 @@ class MaxRatingOption(RatingPlayerFilterOption):
         return 'MAX_RATING'
 
 
-class AgeCategoriesOption(SelectPlayerFilterOption[PlayerCategory]):
-    @staticmethod
-    def static_id() -> str:
-        return 'AGE_CATEGORIES'
-
+class AgeCategoryOption(SelectPlayerFilterOption[PlayerCategory], ABC):
     @property
     def type(self) -> type | UnionType:
-        return list[str]
+        return str | None
 
     @property
     def default_value(self) -> Any:
-        return []
+        return None
 
     def get_tournament_player_counter(
         self, tournament: 'Tournament'
@@ -212,8 +208,17 @@ class AgeCategoriesOption(SelectPlayerFilterOption[PlayerCategory]):
             del counter[NoCategory()]
         return counter
 
+    def age_select_options(
+        self,
+        tournament: 'Tournament',
+    ) -> dict[str, 'SelectOption'] | dict[str, dict[str, 'SelectOption']]:
+        from web.utils import SelectOption
+
+        options = super().select_options(tournament, False, False)
+        return {'': SelectOption('-')} | options  # type: ignore
+
     def get_all_known_values(self, tournament: 'Tournament') -> list[PlayerCategory]:
-        categories = tournament.event.player_categories
+        categories = tournament.event.player_categories.copy()
         categories.pop(0)
         return categories
 
@@ -224,66 +229,24 @@ class AgeCategoriesOption(SelectPlayerFilterOption[PlayerCategory]):
         return object_.name
 
     def validate(self):
-        self._validate_list_type(str)
-        if not self.value:
-            raise OptionError(_('At least one value is expected.'), self)
-        for category in self.value:
+        super().validate()
+        if self.value:
             try:
-                PlayerCategory.from_id(category)
+                PlayerCategory.from_id(self.value)
             except ValueError:
-                raise OptionError(f'Unknown category [{category}]', self)
+                raise OptionError(f'Unknown category [{self.value}]', self)
 
 
-class AgeRangePlayerFilterOption(PlayerFilterOption, ABC):
-    @property
-    @abstractmethod
-    def field_placeholder(self) -> str:
-        """Placeholder of the input field."""
-
-    @property
-    @abstractmethod
-    def other_field_id(self) -> str:
-        """ID of the other range field."""
-
-    @property
-    def type(self) -> type | UnionType:
-        return bool
-
-    @property
-    def default_value(self) -> Any:
-        return False
-
-    @property
-    def template_file_name(self) -> str:
-        return 'age_range'
-
-
-class AgeLowerOption(AgeRangePlayerFilterOption):
+class MinAgeCategoryOption(AgeCategoryOption):
     @staticmethod
     def static_id() -> str:
-        return 'AGE_LOWER'
-
-    @property
-    def field_placeholder(self) -> str:
-        return _('Include lower categories')
-
-    @property
-    def other_field_id(self) -> str:
-        return AgeGreaterOption.static_id()
+        return 'MIN_AGE_CATEGORY'
 
 
-class AgeGreaterOption(AgeRangePlayerFilterOption):
+class MaxAgeCategoryOption(AgeCategoryOption):
     @staticmethod
     def static_id() -> str:
-        return 'AGE_GREATER'
-
-    @property
-    def field_placeholder(self) -> str:
-        return _('Include greater categories')
-
-    @property
-    def other_field_id(self) -> str:
-        return AgeLowerOption.static_id()
+        return 'MAX_AGE_CATEGORY'
 
 
 class RatingTypesFilterOption(SelectPlayerFilterOption[PlayerRatingType]):
