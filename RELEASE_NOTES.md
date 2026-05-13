@@ -23,6 +23,10 @@
 - Add simple criteria creation from the category modal (4.1.0)
 - Use category range for age criterion (4.1.4)
 
+## Screens
+
+- Fixed error 500 before pairing on Results Entry screens with fixed boards (4.1.4)
+
 ## _Sharly-Chess.com_
 
 - Added player check-in and French school to the synchronization (4.1.0)

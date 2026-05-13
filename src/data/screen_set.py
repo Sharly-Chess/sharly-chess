@@ -272,7 +272,7 @@ class ScreenSet:
             name = name.replace('%l', str(self.last_tournament_player_by_rank.rank))
         return name
 
-    def _extract_data(self, items: list[Any]):
+    def _extract_data(self, items: list[Any], extract_boards: bool):
         if not items:
             self.items_lists = [
                 [],
@@ -281,7 +281,7 @@ class ScreenSet:
         # at first select the desired items
         first_index: int
         last_index: int
-        if self.fixed_board_numbers:
+        if extract_boards and self.fixed_board_numbers:
             if TYPE_CHECKING:
                 assert all(isinstance(item, Board) for item in items)
             selected_items = [
@@ -320,7 +320,7 @@ class ScreenSet:
 
     def _extract_boards(self):
         if self.items_lists is None:
-            self._extract_data(self.tournament.boards)
+            self._extract_data(items=self.tournament.boards, extract_boards=True)
 
     @property
     def boards_lists(self) -> list[list[Board]]:
@@ -350,10 +350,14 @@ class ScreenSet:
     def _extract_players_by_name(self):
         if self.items_lists is None:
             if self.players_show_unpaired:
-                self._extract_data(self.tournament.sorted_tournament_players)
+                self._extract_data(
+                    items=self.tournament.sorted_tournament_players,
+                    extract_boards=False,
+                )
             else:
                 self._extract_data(
-                    self.tournament.sorted_tournament_players_without_unpaired
+                    items=self.tournament.sorted_tournament_players_without_unpaired,
+                    extract_boards=False,
                 )
 
     @property
@@ -412,7 +416,7 @@ class ScreenSet:
     def _extract_players_by_rank(self):
         if self.items_lists is None:
             self._extract_data(
-                [
+                items=[
                     player
                     for player in self.tournament.tournament_players_by_rank.values()
                     if (
@@ -423,7 +427,8 @@ class ScreenSet:
                         self.ranking_max_points is None
                         or (player.points or 0) <= self.ranking_max_points
                     )
-                ]
+                ],
+                extract_boards=False,
             )
 
     @property
