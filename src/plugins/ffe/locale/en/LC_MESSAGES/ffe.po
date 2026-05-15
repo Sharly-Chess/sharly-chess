@@ -69,6 +69,9 @@ msgstr ""
 msgid "Chief arbiter (if different):"
 msgstr ""
 
+msgid "Choose a PDF file to upload for the selected tournaments."
+msgstr ""
+
 msgid "Choose at least one league."
 msgstr ""
 

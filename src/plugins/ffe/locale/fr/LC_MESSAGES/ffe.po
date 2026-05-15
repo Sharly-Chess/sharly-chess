@@ -69,6 +69,9 @@ msgstr "Dépot de plainte pour suspicion de triche"
 msgid "Chief arbiter (if different):"
 msgstr "Arbitre en chef (si différent·e) :"
 
+msgid "Choose a PDF file to upload for the selected tournaments."
+msgstr "Choisir un fichier PDF à mettre en ligne pour les tournois sélectionnés."
+
 msgid "Choose at least one league."
 msgstr "Choisir au moins une ligue."
 
