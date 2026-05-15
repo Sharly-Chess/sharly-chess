@@ -51,6 +51,9 @@ msgstr ""
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Leisure"
 
+msgid "Back"
+msgstr ""
+
 msgid "Black pairings are supposed to have an opponent"
 msgstr ""
 
@@ -201,6 +204,9 @@ msgstr ""
 msgid "Fees link not found, check that a tournament has already been sent and that the tournament has not been archived on the FFE website."
 msgstr ""
 
+msgid "File"
+msgstr ""
+
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
 msgstr[0] ""
@@ -334,9 +340,6 @@ msgstr "None"
 msgid "Not configured"
 msgstr ""
 
-msgid "OK"
-msgstr ""
-
 msgid "Ongoing"
 msgstr ""
 
@@ -359,6 +362,9 @@ msgid "Pending"
 msgstr ""
 
 msgid "Players:"
+msgstr ""
+
+msgid "Please select a file."
 msgstr ""
 
 msgid "Replace the player to update this field."
@@ -515,6 +521,12 @@ msgid "Upload automatically every %(delay)d minutes."
 msgstr ""
 
 msgid "Upload rules"
+msgstr ""
+
+msgid "Upload the FFE rules"
+msgstr ""
+
+msgid "Upload the rules in PDF format to the FFE website for one or more tournaments."
 msgstr ""
 
 msgid "Upload to the FFE site"

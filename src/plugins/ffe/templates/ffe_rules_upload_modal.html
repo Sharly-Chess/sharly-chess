@@ -1,0 +1,107 @@
+{% import '/common/macros.j2' as macros with context %}
+{% import '/admin/common/macros.j2' as admin_macros with context %}
+
+{% set event_plugin_data = admin_event.plugin_data.ffe %}
+
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: fit-content; min-width: min(90vw, 450px);"
+>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                {{ _('Upload the FFE rules') }}
+            </h2>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-post="{{ url_for('ffe-modal-upload-rules', event_uniq_id=admin_event.uniq_id) }}"
+                enctype="multipart/form-data"
+                hx-target="body"
+                hx-indicator="#please-wait"
+            >
+                {% if ffe_configured_tournaments|length == 1 %}
+                    {% set tournament = ffe_configured_tournaments[0] %}
+                    <h4>
+                        {{ _('%(string)s:', string=_('Tournament')) }}
+                        {{ tournament.name }}
+                    </h4>
+                    <input type="hidden" name="tournament_{{ tournament.id }}" value="on"/>
+                {% endif %}
+                {{ admin_macros.file_input(
+                    name='rules_file',
+                    label=_('%(string)s:', string=_('File')),
+                    file_accept='application/pdf',
+                    data=data, errors=errors
+                ) }}
+                {% if ffe_configured_tournaments|length > 1 %}
+                    <table class="table prominent table-striped mt-3 mb-1 table-sm table-hover w-100 bg-light mx-auto justify-content-center">
+                        <thead class="modal-table-sticky-header">
+                            <tr>
+                                <th class="ps-2" style="width: 10px">
+                                    {% set name = 'all_tournaments' %}
+                                    <input
+                                        class="form-check-input blue-checkbox"
+                                        name="{{ name }}"
+                                        type="checkbox"
+                                        onclick="
+                                            $('.tournament-checkbox').prop('checked', this.checked);
+                                            $('#upload-button').prop('disabled', !this.checked);"
+                                        {% if data[name] %}checked{% endif %}
+                                    />
+                                </th>
+                                <th>{{ _('Tournament') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tournament in ffe_configured_tournaments %}
+                                <tr>
+                                    <td class="ps-2">
+                                        {% set name = 'tournament_' ~ tournament.id %}
+                                        <input
+                                            class="form-check-input blue-checkbox tournament-checkbox"
+                                            name="{{ name }}"
+                                            onclick="$('#upload-button').prop('disabled', $('.tournament-checkbox:checked').length == 0);"
+                                            type="checkbox"
+                                            {% if data[name] %}checked{% endif %}
+                                        />
+                                    </td>
+                                    <td>
+                                        {{ tournament.name }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </form>
+        </div>
+
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                hx-get="{{ url_for(
+                    'ffe-upload-modal', event_uniq_id=admin_event.uniq_id
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-target="#modal-wrapper"
+            >
+                <i class="bi-arrow-left-circle-fill pe-1"></i>
+                {{ _('Back') }}
+            </button>
+
+            <button
+                type="submit"
+                id="upload-button"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                <i class="bi bi-upload pe-1"></i>
+                {{ _('Upload') }}
+            </button>
+        </div>
+    </div>
+</div>
