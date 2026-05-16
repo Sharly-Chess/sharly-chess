@@ -292,6 +292,19 @@ msgstr "0 - ½ (NC)"
 msgid "1 - 0 (U)"
 msgstr "1 - 0 (NC)"
 
+#, python-format
+msgid "1.4.1e/f: round(s) %(rounds)s ignored"
+msgstr "1.4.1e/f : ronde(s) %(rounds)s ignorée(s)"
+
+msgid "1.4.2c applied"
+msgstr "1.4.2c appliqué"
+
+msgid "1.4.3d applied"
+msgstr "1.4.3d appliqué"
+
+msgid "1.5.6a met"
+msgstr "1.5.6a respecté"
+
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
@@ -2092,6 +2105,9 @@ msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple :
 msgid "Each player can only be awarded one prize per bracket."
 msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
 
+msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
+msgstr "Chaque ligne représente une norme réalisée par un joueur. Le certificat IT1 pour chaque norme se génère séparément via le Rapport de normes par joueur."
+
 msgid "Ecuador"
 msgstr "Équateur"
 
@@ -2431,6 +2447,9 @@ msgstr "Fev"
 msgid "February"
 msgstr "Février"
 
+msgid "Fed"
+msgstr "Féd."
+
 msgid "Fed. *** FEDERATION COLUMN HEADER"
 msgstr "Féd."
 
@@ -2534,6 +2553,9 @@ msgstr "Fore"
 
 msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
+
+msgid "Forecast considers 1.4.1c (PAB exception), 1.4.1e/f (ignore games), 1.4.2c (last-round opponent forfeit) and 1.4.3d (Swiss exemption)."
+msgstr "La prévision prend en compte 1.4.1c (exception PAB), 1.4.1e/f (parties ignorées), 1.4.2c (forfait adverse en dernière ronde) et 1.4.3d (dérogation Suisse)."
 
 msgid "Forfeit Loss"
 msgstr "Défaite par forfait"
@@ -3458,6 +3480,9 @@ msgstr "Arbitre National"
 msgid "Nauru"
 msgstr "Nauru"
 
+msgid "Needs"
+msgstr "Requis"
+
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
 
@@ -3626,6 +3651,9 @@ msgstr "Aucune permission définie."
 msgid "No permissions."
 msgstr "Aucune permission."
 
+msgid "No player is in contention for a title norm in round {round}."
+msgstr "Aucun joueur ne peut prétendre à une norme à la ronde {round}."
+
 msgid "No players"
 msgstr "Aucun·e joueur·euse"
 
@@ -3704,6 +3732,9 @@ msgstr "Aucun départage."
 msgid "No timers"
 msgstr "Aucun chronomètre"
 
+msgid "No title norm has been achieved in this tournament."
+msgstr "Aucune norme de titre n'a été réalisée dans ce tournoi."
+
 msgid "No tournaments"
 msgstr "Aucun tournoi"
 
@@ -3734,8 +3765,14 @@ msgstr "Aucun"
 msgid "None *** FEDERATION"
 msgstr "Aucune"
 
+msgid "Norm"
+msgstr "Norme"
+
 msgid "Norm Report"
 msgstr "Rapport de norme"
+
+msgid "Norm(s) Achieved"
+msgstr "Norme(s) réalisée(s)"
 
 msgid "North Macedonia"
 msgstr "Macédoine du Nord"
@@ -3763,6 +3800,9 @@ msgstr "Non-spécifié"
 
 msgid "Note: norms are computed based only on <em>completed</em> games."
 msgstr "Note : les normes ne sont calculées qu'à partir des parties <em>terminées</em>."
+
+msgid "Notes"
+msgstr "Notes"
 
 msgid "Notification"
 msgstr "Notification"
@@ -3901,6 +3941,9 @@ msgstr "Ouverture de la page d'accueil [{url}] dans un navigateur…"
 
 msgid "Opponent"
 msgstr "Adversaire"
+
+msgid "Opponent (R{round})"
+msgstr "Adversaire (R{round})"
 
 msgid "Opponent Elo"
 msgstr "Adversaire Elo"
@@ -4148,6 +4191,9 @@ msgstr "Chevalets"
 
 msgid "Place card type:"
 msgstr "Type de chevalet :"
+
+msgid "Played"
+msgstr "Parties"
 
 msgid "Player"
 msgstr "Joueur·euse"
@@ -4569,6 +4615,9 @@ msgstr "R {round}"
 msgid "RES"
 msgstr "RÉS"
 
+msgid "Ra"
+msgstr "Ra"
+
 msgid "Random"
 msgstr "Aléatoire"
 
@@ -4913,6 +4962,9 @@ msgstr "Rondes désigné comme jouant"
 
 msgid "Rows per screen:"
 msgstr "Lignes par écran :"
+
+msgid "Rp"
+msgstr "Rp"
 
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
@@ -5531,6 +5583,9 @@ msgstr "Le premier tournoi de l'écran."
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
 
+msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
+msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
+
 msgid "The least and the most significant values are removed."
 msgid_plural "The {count} least and the {count} most significant values are removed."
 msgstr[0] "La valeur la moins élevée et la valeur la plus élevée sont retirées."
@@ -6020,6 +6075,18 @@ msgstr "Chronomètres : %(num)d"
 msgid "Timor-Leste"
 msgstr "Timor-Leste"
 
+msgid "Title"
+msgstr "Titre"
+
+msgid "Title Norms"
+msgstr "Normes de titre"
+
+msgid "Title Norms Achieved"
+msgstr "Normes de titre réalisées"
+
+msgid "Title Norms Forecast — Round {round}"
+msgstr "Prévision des normes de titre — Ronde {round}"
+
 msgid "Titled players"
 msgstr "Joueur·euses titré·es"
 
@@ -6062,6 +6129,9 @@ msgstr "Tournoi"
 
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournoi"
+
+msgid "Tournament Norms Summary"
+msgstr "Résumé des normes du tournoi"
 
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
@@ -6561,6 +6631,9 @@ msgstr "Une semaine"
 msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
+msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm secured — round optional\" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it."
+msgstr "Ce dont le joueur a besoin à la ronde {round} pour réaliser chaque norme. « tout résultat à l'échiquier » signifie qu'une victoire, nulle ou défaite jouée conviennent — mais la ronde doit néanmoins être jouée (une absence devient une défaite par forfait et invalide la norme). « norme acquise — ronde optionnelle » signifie que la norme est déjà acquise grâce aux rondes précédentes (1.4.1e) ; la partie de la ronde {round} ne l'affecte pas."
+
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans."
 
@@ -6798,6 +6871,9 @@ msgstr "tou·tes les joueur·euses"
 msgid "all the tournaments"
 msgstr "tous les tournois"
 
+msgid "any OTB result"
+msgstr "tout résultat à l'échiquier"
+
 msgid "boards from #{first} to #{last}"
 msgstr "échiquiers du n°{first} au n°{last}"
 
@@ -6827,6 +6903,9 @@ msgstr "effacer les filtres"
 
 msgid "default"
 msgstr "défaut"
+
+msgid "draw or better"
+msgstr "nulle ou mieux"
 
 msgid "either the duration or the increment must be greater than 0."
 msgstr "la durée ou l’incrément doit être supérieur à 0."
@@ -6869,6 +6948,9 @@ msgstr "mon-ecran"
 
 msgid "no"
 msgstr "non"
+
+msgid "norm secured — round optional"
+msgstr "norme acquise — ronde optionnelle"
 
 msgid "player already received a PAB in a previous round"
 msgstr "le·la joueur·euse a déjà été exempt·e lors d'une ronde précédente"
@@ -6967,6 +7049,9 @@ msgstr "valeur : {value}"
 #, python-format
 msgid "vs %(player)s"
 msgstr "contre %(player)s"
+
+msgid "win required"
+msgstr "victoire requise"
 
 msgid "yes"
 msgstr "oui"

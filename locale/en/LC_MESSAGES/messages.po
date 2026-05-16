@@ -292,6 +292,19 @@ msgstr ""
 msgid "1 - 0 (U)"
 msgstr ""
 
+#, python-format
+msgid "1.4.1e/f: round(s) %(rounds)s ignored"
+msgstr ""
+
+msgid "1.4.2c applied"
+msgstr ""
+
+msgid "1.4.3d applied"
+msgstr ""
+
+msgid "1.5.6a met"
+msgstr ""
+
 msgid "1st day of the month"
 msgstr ""
 
@@ -2092,6 +2105,9 @@ msgstr ""
 msgid "Each player can only be awarded one prize per bracket."
 msgstr ""
 
+msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
+msgstr ""
+
 msgid "Ecuador"
 msgstr ""
 
@@ -2431,6 +2447,9 @@ msgstr "Feb"
 msgid "February"
 msgstr ""
 
+msgid "Fed"
+msgstr ""
+
 msgid "Fed. *** FEDERATION COLUMN HEADER"
 msgstr "Fed."
 
@@ -2533,6 +2552,9 @@ msgid "Fore"
 msgstr ""
 
 msgid "Fore Buchholz"
+msgstr ""
+
+msgid "Forecast considers 1.4.1c (PAB exception), 1.4.1e/f (ignore games), 1.4.2c (last-round opponent forfeit) and 1.4.3d (Swiss exemption)."
 msgstr ""
 
 msgid "Forfeit Loss"
@@ -3458,6 +3480,9 @@ msgstr ""
 msgid "Nauru"
 msgstr ""
 
+msgid "Needs"
+msgstr ""
+
 msgid "Neither screen nor rotator currently assigned"
 msgstr ""
 
@@ -3626,6 +3651,9 @@ msgstr ""
 msgid "No permissions."
 msgstr ""
 
+msgid "No player is in contention for a title norm in round {round}."
+msgstr ""
+
 msgid "No players"
 msgstr ""
 
@@ -3704,6 +3732,9 @@ msgstr ""
 msgid "No timers"
 msgstr ""
 
+msgid "No title norm has been achieved in this tournament."
+msgstr ""
+
 msgid "No tournaments"
 msgstr ""
 
@@ -3734,7 +3765,13 @@ msgstr ""
 msgid "None *** FEDERATION"
 msgstr "None"
 
+msgid "Norm"
+msgstr ""
+
 msgid "Norm Report"
+msgstr ""
+
+msgid "Norm(s) Achieved"
 msgstr ""
 
 msgid "North Macedonia"
@@ -3762,6 +3799,9 @@ msgid "Not specified"
 msgstr ""
 
 msgid "Note: norms are computed based only on <em>completed</em> games."
+msgstr ""
+
+msgid "Notes"
 msgstr ""
 
 msgid "Notification"
@@ -3898,6 +3938,9 @@ msgid "Opening the welcome page [{url}] in a browser…"
 msgstr ""
 
 msgid "Opponent"
+msgstr ""
+
+msgid "Opponent (R{round})"
 msgstr ""
 
 msgid "Opponent Elo"
@@ -4145,6 +4188,9 @@ msgid "Place Cards"
 msgstr ""
 
 msgid "Place card type:"
+msgstr ""
+
+msgid "Played"
 msgstr ""
 
 msgid "Player"
@@ -4567,6 +4613,9 @@ msgstr "R {round}"
 msgid "RES"
 msgstr ""
 
+msgid "Ra"
+msgstr ""
+
 msgid "Random"
 msgstr ""
 
@@ -4910,6 +4959,9 @@ msgid "Rounds one Elected to Play"
 msgstr ""
 
 msgid "Rows per screen:"
+msgstr ""
+
+msgid "Rp"
 msgstr ""
 
 msgid "Rpd *** RAPID RATING ACRONYM"
@@ -5529,6 +5581,9 @@ msgstr ""
 msgid "The following categories will also be deleted:"
 msgstr ""
 
+msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
+msgstr ""
+
 msgid "The least and the most significant values are removed."
 msgid_plural "The {count} least and the {count} most significant values are removed."
 msgstr[0] ""
@@ -6018,6 +6073,18 @@ msgstr ""
 msgid "Timor-Leste"
 msgstr ""
 
+msgid "Title"
+msgstr ""
+
+msgid "Title Norms"
+msgstr ""
+
+msgid "Title Norms Achieved"
+msgstr ""
+
+msgid "Title Norms Forecast — Round {round}"
+msgstr ""
+
 msgid "Titled players"
 msgstr ""
 
@@ -6060,6 +6127,9 @@ msgstr ""
 
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournament"
+
+msgid "Tournament Norms Summary"
+msgstr ""
 
 msgid "Tournament [{tournament_id}] not found."
 msgstr ""
@@ -6559,6 +6629,9 @@ msgstr ""
 msgid "Welcome to Sharly Chess!"
 msgstr ""
 
+msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm secured — round optional\" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it."
+msgstr ""
+
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr ""
 
@@ -6796,6 +6869,9 @@ msgstr ""
 msgid "all the tournaments"
 msgstr ""
 
+msgid "any OTB result"
+msgstr ""
+
 msgid "boards from #{first} to #{last}"
 msgstr ""
 
@@ -6824,6 +6900,9 @@ msgid "clear filters"
 msgstr ""
 
 msgid "default"
+msgstr ""
+
+msgid "draw or better"
 msgstr ""
 
 msgid "either the duration or the increment must be greater than 0."
@@ -6866,6 +6945,9 @@ msgid "my-screen"
 msgstr ""
 
 msgid "no"
+msgstr ""
+
+msgid "norm secured — round optional"
 msgstr ""
 
 msgid "player already received a PAB in a previous round"
@@ -6964,6 +7046,9 @@ msgstr ""
 
 #, python-format
 msgid "vs %(player)s"
+msgstr ""
+
+msgid "win required"
 msgstr ""
 
 msgid "yes"
