@@ -46,6 +46,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.PrizeAssignmentPrintDocument,
             documents.PrizeReceiptsPrintDocument,
             documents.StatisticsPrintDocument,
+            documents.TournamentNormsSummaryPrintDocument,
             documents.NormReportPrintDocument,
             documents.QRCodePrintDocument,
             documents.PlaceCardPrintDocument,

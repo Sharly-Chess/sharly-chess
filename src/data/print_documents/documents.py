@@ -52,7 +52,7 @@ from data.print_documents.place_cards.types import PlaceCardType
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.enum import Result
+from utils.enum import Result, TitleNorm
 from utils.types import PlayerTitle
 from utils.option import Option, OptionHandler
 
@@ -1216,6 +1216,98 @@ class NormReportPrintDocument(PrintDocument):
             'norms': norms,
             'tournament_player': tournament_player,
             'PlayerTitle': PlayerTitle,
+        }
+
+
+class TournamentNormsSummaryPrintDocument(PrintDocument):
+    """Tournament-wide summary of all title norms achieved.
+
+    Lists every player who picked up at least one norm above their current
+    title, with the per-norm performance figures. Companion to the per-player
+    IT1 form (NormReportPrintDocument).
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'tournament-norms-summary'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Tournament Norms Summary')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption]
+
+    @property
+    def title(self) -> str:
+        return _('Title Norms Achieved')
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(
+            tournament.rating == TournamentRating.STANDARD
+            and tournament.has_titled_players
+            for tournament in allowed_tournaments
+        )
+
+    def validate_options(self):
+        super().validate_options()
+        tournament = self.tournament
+        if tournament.rating != TournamentRating.STANDARD:
+            raise OptionError(
+                _(
+                    'This document is only available for standard time control tournaments.'
+                ),
+                self._get_option(TournamentPrintOption),
+            )
+        if not tournament.has_titled_players:
+            raise OptionError(
+                _('This tournament has no titled players.'),
+                self._get_option(TournamentPrintOption),
+            )
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/tournament_norms_summary.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        achievers: list[dict[str, Any]] = []
+        for tournament_player in self.tournament.tournament_players_by_id.values():
+            achieved = {
+                tn: result
+                for tn, result in tournament_player.achieves_any_title_norm().items()
+                if result.is_met
+                and tournament_player.title.sort_index < tn.player_title.sort_index
+            }
+            if achieved:
+                achievers.append(
+                    {
+                        'player': tournament_player,
+                        'norms': achieved,
+                    }
+                )
+
+        # Stable ordering: highest norm first (GM > IM > WGM > WIM), then by
+        # the player's tie-break-aware name key.
+        def _sort_key(entry):
+            top_norm = max(
+                entry['norms'].keys(), key=lambda tn: tn.player_title.sort_index
+            )
+            return (-top_norm.player_title.sort_index, entry['player'].name_sort_key)
+
+        achievers.sort(key=_sort_key)
+        return {
+            'event': self.get_event(),
+            'tournament': self.tournament,
+            'achievers': achievers,
+            'start': self.tournament.start_date.strftime('%Y.%m.%d'),
+            'end': self.tournament.stop_date.strftime('%Y.%m.%d'),
+            'PlayerTitle': PlayerTitle,
+            'TitleNorm': TitleNorm,
         }
 
 

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ _('Tournament Norms Summary') }}</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 1100px;
+                margin: 2rem auto;
+                line-height: 1.4;
+                font-size: 0.85rem;
+            }
+            h1 {
+                text-align: center;
+                font-size: 1.4rem;
+                margin: 0 0 0.3rem 0;
+            }
+            .subtitle {
+                text-align: center;
+                color: #444;
+                margin: 0 0 1.5rem 0;
+            }
+            .empty {
+                text-align: center;
+                font-style: italic;
+                margin: 2rem 0;
+                color: #555;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 1rem;
+                border: 1px solid black;
+            }
+            th,
+            td {
+                border: 1px solid #888;
+                padding: 0.35rem 0.5rem;
+                vertical-align: top;
+            }
+            th {
+                background: #eee;
+                font-weight: 600;
+                text-align: left;
+            }
+            td.center {
+                text-align: center;
+            }
+            td.right {
+                text-align: right;
+            }
+            .norm-badge {
+                display: inline-block;
+                padding: 0.05rem 0.4rem;
+                border: 1px solid #333;
+                border-radius: 4px;
+                font-weight: 600;
+                margin-right: 0.3rem;
+            }
+            .perf {
+                font-family: 'Courier New', monospace;
+            }
+            .note {
+                font-size: 0.75rem;
+                color: #666;
+                font-style: italic;
+            }
+            @media print {
+                body {
+                    margin: 0;
+                    padding: 10mm;
+                }
+                @page {
+                    size: A4 landscape;
+                    margin: 10mm;
+                }
+                th {
+                    background: #eee !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1>{{ _('Title Norms Achieved') }}</h1>
+        <p class="subtitle">
+            {{ event.name }} &mdash; {{ tournament.name }}
+            ({{ start }} &ndash; {{ end }})
+        </p>
+
+        {% if not achievers %}
+            <p class="empty">{{ _('No title norm has been achieved in this tournament.') }}</p>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>{{ _('Player') }}</th>
+                        <th>{{ _('FIDE ID') }}</th>
+                        <th>{{ _('Fed') }}</th>
+                        <th>{{ _('Title') }}</th>
+                        <th>{{ _('Norm(s) Achieved') }}</th>
+                        <th class="center">{{ _('Played') }}</th>
+                        <th class="center">{{ _('Score') }}</th>
+                        <th class="center">{{ _('Ra') }}</th>
+                        <th class="center">{{ _('Rp') }}</th>
+                        <th>{{ _('Notes') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in achievers %}
+                        {% set player = entry.player %}
+                        {# One row per norm so each row carries its own Rp/Ra/score. #}
+                        {% for tn, norm in entry.norms.items() %}
+                            <tr>
+                                {% if loop.first %}
+                                    <td rowspan="{{ entry.norms | length }}">
+                                        {{ player.full_name }}
+                                    </td>
+                                    <td rowspan="{{ entry.norms | length }}" class="center">
+                                        {{ player.fide_id or '-' }}
+                                    </td>
+                                    <td rowspan="{{ entry.norms | length }}" class="center">
+                                        {{ player.federation }}
+                                    </td>
+                                    <td rowspan="{{ entry.norms | length }}" class="center">
+                                        {{ player.title.short_name or '-' }}
+                                    </td>
+                                {% endif %}
+                                <td class="center">
+                                    <span class="norm-badge">{{ tn.name }}</span>
+                                </td>
+                                <td class="center">{{ norm.played_games }}</td>
+                                <td class="center">{{ norm.score }}</td>
+                                <td class="center perf">{{ norm.average_rating }}</td>
+                                <td class="center perf">{{ norm.performance }}</td>
+                                <td>
+                                    {% set notes = [] %}
+                                    {% if norm.applied_142c %}
+                                        {% set _ = notes.append(_('1.4.2c applied')) %}
+                                    {% endif %}
+                                    {% if norm.ignored_rounds_via_search %}
+                                        {% set _ = notes.append(
+                                            _('1.4.1e/f: round(s) %(rounds)s ignored') | format(
+                                                rounds=(norm.ignored_rounds_via_search | sort | join(', '))
+                                            )
+                                        ) %}
+                                    {% endif %}
+                                    {% if norm.requirement_156a_met %}
+                                        {% set _ = notes.append(_('1.5.6a met')) %}
+                                    {% endif %}
+                                    {% if norm.is_143d_met and norm.not_enough_federations %}
+                                        {% set _ = notes.append(_('1.4.3d applied')) %}
+                                    {% endif %}
+                                    {% if notes %}
+                                        <span class="note">{{ notes | join('; ') }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <p style="margin-top: 1rem; font-size: 0.75rem; color: #666;">
+                {{ _('Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report.') }}
+            </p>
+        {% endif %}
+    </body>
+</html>
