@@ -184,6 +184,10 @@ class NormCheckResult:
     # and only falls back to 1.4.2c if it yields `is_met` where 1.4.1c didn't.
     applied_142c: bool = False
 
+    # 1.4.1e / 1.4.1f — rounds the subset searcher dropped to satisfy the
+    # norm. Empty when no search ran or when no winning subset was found.
+    ignored_rounds_via_search: frozenset[int] = field(default_factory=frozenset)
+
     @property
     def is_143d_met(self) -> bool:
         return (

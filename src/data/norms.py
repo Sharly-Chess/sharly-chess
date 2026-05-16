@@ -19,8 +19,9 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import dataclass, field
+from itertools import combinations
 from operator import attrgetter
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Iterable
 
 from common.i18n import _
 from utils import Utils
@@ -43,6 +44,10 @@ class NormInputs:
     interpretation. Rebuilt with `include_last_forfeit_as_loss=True` for the
     1.4.2c fallback if 1.4.1c fails. Carries `has_last_round_forfeit_against`
     so the orchestrator can decide whether a B-pass is worth doing.
+
+    `included_rounds` runs parallel to `opponents` / `results_list` — entry
+    `i` corresponds to round `included_rounds[i]`. The subset searcher uses
+    this to drop specific rounds via `without_rounds()`.
     """
 
     played_games: int = 0
@@ -50,10 +55,46 @@ class NormInputs:
     titles_counter: Counter[PlayerTitle] = field(default_factory=Counter)
     opponents: list['TournamentPlayer'] = field(default_factory=list)
     results_list: list[Result] = field(default_factory=list)
+    included_rounds: list[int] = field(default_factory=list)
     forfeits_or_byes: int = 0
     ignored_opponents_ids: set[int] = field(default_factory=set)
     score: float = 0.0
     has_last_round_forfeit_against: bool = False
+
+    def without_rounds(self, drop: frozenset[int]) -> 'NormInputs':
+        """Return a copy with the specified rounds removed from the mix.
+
+        Counters and score are recomputed from the kept entries.
+        `forfeits_or_byes`, `ignored_opponents_ids` and
+        `has_last_round_forfeit_against` are preserved unchanged — they
+        describe properties of the FULL pairing set, not the search subset.
+        """
+        if not drop:
+            return self
+        kept_idx = [i for i, r in enumerate(self.included_rounds) if r not in drop]
+        kept_opponents = [self.opponents[i] for i in kept_idx]
+        kept_results = [self.results_list[i] for i in kept_idx]
+        kept_rounds = [self.included_rounds[i] for i in kept_idx]
+
+        feds: Counter[Federation] = Counter()
+        titles: Counter[PlayerTitle] = Counter()
+        for opponent in kept_opponents:
+            feds[opponent.federation] += 1
+            if opponent.title in TitleNorm.TITLE_HOLDERS:
+                titles[opponent.title] += 1
+
+        return NormInputs(
+            played_games=len(kept_idx),
+            federations_counter=feds,
+            titles_counter=titles,
+            opponents=kept_opponents,
+            results_list=kept_results,
+            included_rounds=kept_rounds,
+            forfeits_or_byes=self.forfeits_or_byes,
+            ignored_opponents_ids=self.ignored_opponents_ids,
+            score=sum(r.points() for r in kept_results),
+            has_last_round_forfeit_against=self.has_last_round_forfeit_against,
+        )
 
 
 class TitleNormEvaluator:
@@ -182,6 +223,7 @@ class TitleNormEvaluator:
             )
             inputs.results_list.append(effective_result)
             inputs.opponents.append(opponent)
+            inputs.included_rounds.append(rnd)
 
         inputs.score = sum(r.points() for r in inputs.results_list)
         return inputs
@@ -467,3 +509,233 @@ class TitleNormEvaluator:
         flag = self.tournament.high_level_tournament
         for res in results.values():
             res.requirement_156a_met = flag
+
+
+# ---------------------------------------------------------------------------
+# Subset search — FIDE 1.4.1e and 1.4.1f
+# ---------------------------------------------------------------------------
+
+
+class _MonotonicPruner:
+    """Tracks ignore-subsets known to fail a *monotonic* requirement.
+
+    A check is monotonic in subset size when dropping more games can never
+    fix it. Once we know subset S fails such a check, every superset T ⊇ S
+    must also fail, so we skip T without evaluation.
+
+    Five of the per-norm checks are monotonic in this sense:
+    - games (played count strictly decreases with more drops)
+    - score (each drop removes ≥0 points)
+    - federations count (distinct federations never grows)
+    - title-holders count
+    - required-titles count
+
+    Performance and average-rating are NOT monotonic — dropping a low
+    opponent can improve Ra → fix performance — so we don't track those.
+    """
+
+    def __init__(self):
+        self._failed: list[frozenset[int]] = []
+
+    def is_doomed(self, candidate: frozenset[int]) -> bool:
+        return any(failed <= candidate for failed in self._failed)
+
+    def record_failure(self, candidate: frozenset[int]):
+        self._failed.append(candidate)
+
+
+def _is_monotonic_failure(result: NormCheckResult) -> bool:
+    """True iff `result` failed at least one of the monotonic checks.
+
+    Such failures imply every superset will also fail the same check.
+    """
+    return bool(
+        result.not_enough_games
+        or result.score_too_low
+        or result.not_enough_federations
+        or result.not_enough_title_holders
+        or result.not_enough_required_titles
+    )
+
+
+class TitleNormSubsetSearcher:
+    """Searches subsets of the applicant's games for one that satisfies
+    a norm — implements FIDE 1.4.1e (ignore later games after a title
+    result was already achieved) and 1.4.1f (ignore games against
+    defeated opponents). Wraps `TitleNormEvaluator` for the per-subset
+    norm check.
+
+    Strategy per norm:
+      1. Fast path — full game set (no ignores).
+      2. 1.4.2c fast path — if a last-round forfeit-against exists, try
+         the "include as LOSS" interpretation on the full game set.
+      3. Search path — enumerate ignore-subsets (smallest first, most
+         promising first within each size) and stop at the first that
+         meets the norm. Prune supersets of known monotonic failures.
+
+    When no subset meets the norm, returns the baseline result so the
+    arbiter still sees diagnostic flags.
+    """
+
+    def __init__(self, player: 'TournamentPlayer'):
+        self.player = player
+        self.evaluator = TitleNormEvaluator(player)
+
+    @property
+    def tournament(self):
+        return self.player.tournament
+
+    # ---------- top-level orchestration ----------
+
+    def evaluate(self) -> dict[TitleNorm, NormCheckResult]:
+        baseline = self.evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        baseline_142c: NormInputs | None = (
+            self.evaluator.collect_inputs(include_last_forfeit_as_loss=True)
+            if baseline.has_last_round_forfeit_against
+            else None
+        )
+
+        results: dict[TitleNorm, NormCheckResult] = {}
+        for tn in TitleNorm.values():
+            meets_gender = tn.satisfies_gender_requirement(self.player.gender)
+            results[tn] = self._search_one(baseline, baseline_142c, tn, meets_gender)
+
+        self.evaluator.apply_big_tournament_exemption(results)
+        self.evaluator.apply_high_level_tournament_flag(results)
+        return results
+
+    # ---------- per-norm search ----------
+
+    def _search_one(
+        self,
+        baseline: NormInputs,
+        baseline_142c: NormInputs | None,
+        tn: TitleNorm,
+        meets_gender: bool,
+    ) -> NormCheckResult:
+        # Fast path 1: full game set.
+        baseline_result = self.evaluator.evaluate_one(baseline, tn, meets_gender)
+        if baseline_result.is_met:
+            return baseline_result
+
+        # Fast path 2: 1.4.2c interpretation on the full set.
+        if baseline_142c is not None:
+            result_142c = self.evaluator.evaluate_one(baseline_142c, tn, meets_gender)
+            if result_142c.is_met:
+                result_142c.applied_142c = True
+                return result_142c
+
+        # Search path: 1.4.1e/f over baseline.
+        winner = self._search_subsets(baseline, tn, meets_gender)
+        if winner is not None:
+            return winner
+
+        # Search path also over the 1.4.2c interpretation.
+        if baseline_142c is not None:
+            winner = self._search_subsets(baseline_142c, tn, meets_gender)
+            if winner is not None:
+                winner.applied_142c = True
+                return winner
+
+        return baseline_result  # nothing helped — return the baseline diagnostics
+
+    def _search_subsets(
+        self,
+        inputs: NormInputs,
+        tn: TitleNorm,
+        meets_gender: bool,
+    ) -> NormCheckResult | None:
+        """Try every promising ignore-subset against `inputs`. Returns the
+        first NormCheckResult satisfying the norm, or None if none does.
+        """
+        max_ignores = self._max_ignores(tn)
+        if max_ignores <= 0:
+            return None
+        droppable = self._droppable_rounds(inputs)
+        if not droppable:
+            return None
+
+        pruner = _MonotonicPruner()
+        for candidate in self._candidates(droppable, max_ignores, inputs):
+            if pruner.is_doomed(candidate):
+                continue
+            modified = inputs.without_rounds(candidate)
+            result = self.evaluator.evaluate_one(modified, tn, meets_gender)
+            if result.is_met:
+                result.ignored_rounds_via_search = candidate
+                return result
+            if _is_monotonic_failure(result):
+                pruner.record_failure(candidate)
+        return None
+
+    # ---------- candidate generation ----------
+
+    def _max_ignores(self, tn: TitleNorm) -> int:
+        """Maximum number of rounds the applicant may drop while still
+        meeting the norm's minimum game count."""
+        return self.tournament.rounds - tn.minimum_rounds(self.tournament)
+
+    def _droppable_rounds(self, inputs: NormInputs) -> set[int]:
+        """Rounds the spec allows the applicant to drop.
+
+        1.4.1f — any round where the applicant defeated their opponent
+                 (a real win, not a forfeit-win — forfeit-wins aren't
+                 even in `included_rounds` under the 1.4.1c interpretation).
+        1.4.1e — any tail round (non-RR only). After-a-title-result test
+                 isn't applied explicitly: if dropping a tail round still
+                 yields a norm, by definition the prefix achieves it.
+        """
+        from data.pairings.systems import RoundRobinPairingSystem
+
+        droppable: set[int] = set()
+
+        # 1.4.1f — won rounds in the mix.
+        for rnd, result in zip(inputs.included_rounds, inputs.results_list):
+            if result in (Result.WIN, Result.UNRATED_WIN):
+                droppable.add(rnd)
+
+        # 1.4.1e — tail rounds, non-RR only.
+        if self.tournament.pairing_system != RoundRobinPairingSystem():
+            total = self.tournament.rounds
+            tail_window = self._max_ignores_for_any_norm()
+            for r in range(max(1, total - tail_window + 1), total + 1):
+                if r in inputs.included_rounds:
+                    droppable.add(r)
+
+        return droppable
+
+    def _max_ignores_for_any_norm(self) -> int:
+        """Largest possible ignore-set size across all norms — defines the
+        tail-window for 1.4.1e candidate generation."""
+        return max(self._max_ignores(tn) for tn in TitleNorm.values())
+
+    def _candidates(
+        self,
+        droppable: set[int],
+        max_ignores: int,
+        inputs: NormInputs,
+    ) -> Iterable[frozenset[int]]:
+        """Yield ignore-subsets by ascending size; within a size class,
+        try the most-promising first (drops yielding the largest expected
+        Ra improvement, i.e. dropping the lowest-rated opponents first).
+        """
+        opponent_by_round = dict(zip(inputs.included_rounds, inputs.opponents))
+        # Pre-compute the per-round drop score: lower opponent rating ⇒
+        # dropping that round is more likely to lift Ra.
+        round_score: dict[int, int] = {
+            rnd: (
+                opponent_by_round[rnd].rating
+                if opponent_by_round[rnd].rating_type == PlayerRatingType.FIDE
+                else 1400
+            )
+            for rnd in droppable
+        }
+        limit = min(max_ignores, len(droppable))
+        for size in range(1, limit + 1):
+            sized = combinations(droppable, size)
+            ranked = sorted(
+                sized,
+                key=lambda combo: sum(round_score[r] for r in combo),
+            )
+            for combo in ranked:
+                yield frozenset(combo)

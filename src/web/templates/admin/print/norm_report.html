@@ -389,6 +389,13 @@
                     {% if norm.applied_142c %}
                         {% set _ = remarks.append('1.4.2c applied: last-round opponent forfeit included in the mix and scored as a loss.') %}
                     {% endif %}
+                    {% if norm.ignored_rounds_via_search %}
+                        {% set _ = remarks.append(
+                            '1.4.1e/f applied: round(s) ' ~
+                            (norm.ignored_rounds_via_search | sort | join(', ')) ~
+                            ' ignored.'
+                        ) %}
+                    {% endif %}
                     <input value="{{ remarks | join(' ') }}" />
                 </div>
 
@@ -431,7 +438,10 @@
                             {% set too_many_one = true %}
                             {% set err = norm.too_many_one_federation[1] %}
                         {% endif %}
-                        {% set ignored = norm.ignored_opponents_ids and opp.id in norm.ignored_opponents_ids %}
+                        {% set ignored = (
+                            (norm.ignored_opponents_ids and opp.id in norm.ignored_opponents_ids)
+                            or rnd in norm.ignored_rounds_via_search
+                        ) %}
                         <tr class="{{ 'ignored' if ignored }}">
                             <td>{{ rnd }}</td>
                             <td><input class="name-cell" value="{{ opp.full_name }}" /></td>

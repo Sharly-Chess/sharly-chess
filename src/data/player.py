@@ -698,9 +698,9 @@ class TournamentPlayer(Player):
         )
 
     def achieves_any_title_norm(self) -> dict[TitleNorm, NormCheckResult]:
-        from data.norms import TitleNormEvaluator
+        from data.norms import TitleNormSubsetSearcher
 
-        return TitleNormEvaluator(self).evaluate()
+        return TitleNormSubsetSearcher(self).evaluate()
 
     @cached_property
     def has_real_pairings(self) -> bool:
