@@ -1,0 +1,469 @@
+"""FIDE title-norm evaluation (B.01, effective 1 January 2024).
+
+Entry point: `TitleNormEvaluator(tournament_player).evaluate()` returns a
+`dict[TitleNorm, NormCheckResult]` covering all four norms (GM, IM, WGM, WIM).
+
+Spec mapping is annotated inline; section numbers refer to FIDE Handbook B.01
+as summarised in `docs/technical-appendices/fide-title-norms.md`.
+
+Public API:
+- `TitleNormEvaluator` — the per-applicant evaluator.
+- `NormInputs` — snapshot of pairings-derived data used by the per-rule checks.
+
+The 1.4.3d and 1.5.6a tournament-wide checks live on `Tournament` itself
+(`big_tournament_exemption`, `high_level_tournament`) since they don't depend
+on the applicant.
+"""
+
+from __future__ import annotations
+
+from collections import Counter
+from dataclasses import dataclass, field
+from operator import attrgetter
+from typing import TYPE_CHECKING
+
+from common.i18n import _
+from utils import Utils
+from utils.enum import PlayerRatingType, PlayerTitle, Result, TitleNorm
+from utils.types import (
+    Federation,
+    NormCheckResult,
+    PlayerRatingAndType,
+)
+
+if TYPE_CHECKING:
+    from data.player import TournamentPlayer
+
+
+@dataclass
+class NormInputs:
+    """Snapshot of pairings-derived inputs for the per-norm checks.
+
+    Built once (`include_last_forfeit_as_loss=False`) for the default 1.4.1c
+    interpretation. Rebuilt with `include_last_forfeit_as_loss=True` for the
+    1.4.2c fallback if 1.4.1c fails. Carries `has_last_round_forfeit_against`
+    so the orchestrator can decide whether a B-pass is worth doing.
+    """
+
+    played_games: int = 0
+    federations_counter: Counter[Federation] = field(default_factory=Counter)
+    titles_counter: Counter[PlayerTitle] = field(default_factory=Counter)
+    opponents: list['TournamentPlayer'] = field(default_factory=list)
+    results_list: list[Result] = field(default_factory=list)
+    forfeits_or_byes: int = 0
+    ignored_opponents_ids: set[int] = field(default_factory=set)
+    score: float = 0.0
+    has_last_round_forfeit_against: bool = False
+
+
+class TitleNormEvaluator:
+    """Per-applicant FIDE title-norm evaluator.
+
+    Builds the opponent mix from the applicant's pairings, runs every per-norm
+    requirement check, and orchestrates the 1.4.2c dual evaluation (try
+    1.4.1c first; fall back to 1.4.2c only if the default doesn't satisfy).
+    """
+
+    def __init__(self, player: 'TournamentPlayer'):
+        self.player = player
+
+    @property
+    def tournament(self):
+        return self.player.tournament
+
+    # ---------- top-level orchestration ----------
+
+    def evaluate(self) -> dict[TitleNorm, NormCheckResult]:
+        # Default 1.4.1c interpretation: forfeit-wins excluded from the mix;
+        # a single forfeit-win/PAB in a 9-round event lets 8 played games
+        # still credit as a 9-game norm.
+        inputs_a = self.collect_inputs(include_last_forfeit_as_loss=False)
+
+        # 1.4.2c fallback: only built when a last-round opponent-forfeit
+        # exists. Includes that game as a played LOSS so the applicant
+        # "must have played" but "can afford to lose". Different mix and
+        # score → different Rp than the 1.4.1c interpretation.
+        inputs_b: NormInputs | None = (
+            self.collect_inputs(include_last_forfeit_as_loss=True)
+            if inputs_a.has_last_round_forfeit_against
+            else None
+        )
+
+        results: dict[TitleNorm, NormCheckResult] = {}
+        for tn in TitleNorm.values():
+            meets_gender = tn.satisfies_gender_requirement(self.player.gender)
+            res = self.evaluate_one(inputs_a, tn, meets_gender)
+            if inputs_b is not None and not res.is_met:
+                res_b = self.evaluate_one(inputs_b, tn, meets_gender)
+                if res_b.is_met:
+                    res_b.applied_142c = True
+                    res = res_b
+            results[tn] = res
+
+        # 1.4.3d and 1.5.6a are tournament-wide. Pull the cached values
+        # off the Tournament — same answer for every applicant, computed once.
+        self.apply_big_tournament_exemption(results)
+        self.apply_high_level_tournament_flag(results)
+        return results
+
+    # ---------- input gathering ----------
+
+    def collect_inputs(self, include_last_forfeit_as_loss: bool) -> NormInputs:
+        """Single pass over the applicant's pairings → opponent mix + score.
+
+        When `include_last_forfeit_as_loss` is True, a last-round FORFEIT_WIN
+        is counted as a played game with the applicant scored as LOSS — the
+        1.4.2c interpretation. Otherwise (default 1.4.1c), forfeit-wins are
+        excluded from the mix and `forfeits_or_byes` tracks them for the
+        9-round 8+1 exemption.
+        """
+        from data.pairings.systems import RoundRobinPairingSystem
+
+        inputs = NormInputs()
+        is_round_robin = self.tournament.pairing_system == RoundRobinPairingSystem()
+        last_round = self.tournament.rounds
+
+        for rnd, pairing in self.player.pairings_by_round.items():
+            if pairing.result.is_board_bye or pairing.result == Result.FORFEIT_WIN:
+                inputs.forfeits_or_byes += 1
+
+            is_last_round_forfeit_against = (
+                rnd == last_round
+                and pairing.result == Result.FORFEIT_WIN
+                and pairing.opponent is not None
+            )
+            if is_last_round_forfeit_against:
+                inputs.has_last_round_forfeit_against = True
+
+            include_as_played = pairing.opponent is not None and (
+                not pairing.result.is_unplayed
+                or (include_last_forfeit_as_loss and is_last_round_forfeit_against)
+            )
+            if not include_as_played:
+                continue
+
+            inputs.played_games += 1
+            opponent = pairing.opponent
+            assert opponent is not None  # narrowed by include_as_played
+
+            # 1.4.2b — round-robin only: ignore unrated opponents who lost every
+            # game they actually played against a FIDE-rated opponent.
+            if is_round_robin and opponent.rating_type != PlayerRatingType.FIDE:
+                scored_zero_against_rated = True
+                for opponent_pairing in opponent.pairings_by_round.values():
+                    if (
+                        opponent_pairing.opponent
+                        and not opponent_pairing.result.is_loss
+                        and not opponent_pairing.result.is_unplayed
+                        and opponent_pairing.opponent.rating_type
+                        == PlayerRatingType.FIDE
+                    ):
+                        scored_zero_against_rated = False
+                        break
+                if scored_zero_against_rated:
+                    inputs.ignored_opponents_ids.add(opponent.id)
+                    continue
+
+            # 1.4.2a — opponent must belong to a FIDE federation.
+            if opponent.federation == Federation('NON'):
+                inputs.ignored_opponents_ids.add(opponent.id)
+                continue
+            inputs.federations_counter[opponent.federation] += 1
+
+            # 1.4.5a — CM/WCM are NOT counted as title-holders.
+            if opponent.title in TitleNorm.TITLE_HOLDERS:
+                inputs.titles_counter[opponent.title] += 1
+
+            # 1.4.2c — the last-round forfeit-against is scored as a LOSS.
+            effective_result = (
+                Result.LOSS
+                if include_last_forfeit_as_loss and is_last_round_forfeit_against
+                else pairing.result
+            )
+            inputs.results_list.append(effective_result)
+            inputs.opponents.append(opponent)
+
+        inputs.score = sum(r.points() for r in inputs.results_list)
+        return inputs
+
+    # ---------- per-rule requirement checks (granular, testable) ----------
+    # Each returns the boolean outcome and any measured value(s) the form
+    # needs to display. Names mirror the spec sections.
+
+    def games_requirement(self, inputs: NormInputs, tn: TitleNorm) -> tuple[bool, int]:
+        """1.4.1 — minimum game count, plus 1.4.1c exemption (9-round events
+        only: 8 played + exactly 1 forfeit-win/PAB → credited as a 9-game
+        norm). DRR (10 rounds) gets no 8+1 exemption.
+
+        Returns (passes, min_required) so the form can render the threshold.
+        """
+        min_games = tn.minimum_rounds(self.tournament)
+        allow_1_4_1c = (
+            self.tournament.rounds == 9
+            and inputs.played_games == 8
+            and inputs.forfeits_or_byes == 1
+        )
+        passes = inputs.played_games >= min_games or allow_1_4_1c
+        return passes, min_games
+
+    def federation_count_requirement(self, inputs: NormInputs) -> tuple[bool, int, int]:
+        """1.4.3 — at least 2 federations other than the applicant's.
+        Returns (passes, distinct_federations, own_count)."""
+        own_count = inputs.federations_counter.get(self.player.federation, 0)
+        num_feds = len(inputs.federations_counter)
+        if own_count:
+            passes = num_feds > 2
+        else:
+            passes = num_feds >= 2
+        return passes, num_feds, own_count
+
+    def own_federation_requirement(self, inputs: NormInputs, tn: TitleNorm) -> bool:
+        """1.4.4 — at most 3/5 of opponents from the applicant's federation."""
+        own_count = inputs.federations_counter.get(self.player.federation, 0)
+        return own_count <= tn.maximum_of_own_federation(self.tournament.rounds)
+
+    def top_federation_requirement(
+        self, inputs: NormInputs, tn: TitleNorm
+    ) -> tuple[bool, Federation | None, int]:
+        """1.4.4 — at most 2/3 of opponents from any single federation.
+        Returns (passes, top_federation, top_count) — top_federation is None
+        when the applicant has no counted opponents."""
+        if not inputs.federations_counter:
+            return True, None, 0
+        top_fed, top_count = inputs.federations_counter.most_common(1)[0]
+        passes = top_count <= tn.maximum_of_one_federation(self.tournament.rounds)
+        return passes, top_fed, top_count
+
+    def title_holders_requirement(
+        self, inputs: NormInputs, tn: TitleNorm
+    ) -> tuple[bool, int]:
+        """1.4.5a — at least 50% of opponents are title-holders (CM/WCM
+        excluded; the inputs already filter those out via TITLE_HOLDERS).
+        Returns (passes, num_title_holders)."""
+        num_titles = sum(inputs.titles_counter.values())
+        return (
+            num_titles >= tn.minimum_title_holders(self.tournament.rounds),
+            num_titles,
+        )
+
+    def required_titles_requirement(
+        self, inputs: NormInputs, tn: TitleNorm
+    ) -> tuple[bool, int]:
+        """1.4.5b-e — minimum count of opponents holding the norm's required
+        title set (e.g. GM norm needs 3+ GMs, IM norm needs 3+ IMs/GMs, etc.).
+        Returns (passes, count_met)."""
+        count = sum(inputs.titles_counter.get(t, 0) for t in tn.required_titles)
+        return count >= tn.minimum_required_titles(self.tournament), count
+
+    def score_requirement(self, inputs: NormInputs) -> bool:
+        """1.4.8b — at least 35%. Threshold uses the tournament's round count
+        (the norm's nominal length), not played_games — so a 1.4.1c-credited
+        9-game norm achieved in 8 games still requires 35% of 9."""
+        return inputs.score >= TitleNorm.minimum_score(self.tournament.rounds)
+
+    def opponent_rating_floor_and_average(
+        self, inputs: NormInputs, tn: TitleNorm
+    ) -> tuple[float, 'TournamentPlayer | None', int | None]:
+        """1.4.6 + 1.4.7 — apply rating floor to (at most) the single lowest
+        opponent, then return the rounded average. Also returns the adjusted
+        opponent and the floor value so the form can show the adjustment.
+        """
+        sorted_opponents = sorted(
+            inputs.opponents,
+            key=lambda o: o.rating if o.rating_type == PlayerRatingType.FIDE else 1400,
+        )
+        rating_list = [
+            PlayerRatingAndType(
+                o.rating if o.rating_type == PlayerRatingType.FIDE else 1400,
+                o.rating_type,
+            )
+            for o in sorted_opponents
+        ]
+
+        adjusted_player: 'TournamentPlayer | None' = None
+        adjusted_rating: int | None = None
+        if rating_list and rating_list[0].value < tn.minimum_rating:
+            rating_list[0].value = tn.minimum_rating
+            rating_list[0].type = PlayerRatingType.FIDE
+            adjusted_player = sorted_opponents[0]
+            adjusted_rating = tn.minimum_rating
+            rating_list.sort(key=attrgetter('value'))
+
+        values = [r.value for r in rating_list]
+        avg = Utils.round_ranking(sum(values) / len(values)) if values else 0
+        return avg, adjusted_player, adjusted_rating
+
+    @staticmethod
+    def norm_performance(avg: float, score: float, played_games: int) -> float:
+        """1.4.8 — Rp = Ra + dp, where dp comes from the 1.4.9 table looked up
+        on the rounded fractional score."""
+        max_score = Result.WIN.points() * played_games
+        if not max_score:
+            return avg
+        fractional = Utils.round_ranking(100 * score / max_score) / 100
+        return avg + Utils.performance_bonus(fractional)
+
+    # ---------- per-norm orchestrator ----------
+
+    def evaluate_one(
+        self,
+        inputs: NormInputs,
+        tn: TitleNorm,
+        meets_gender: bool,
+    ) -> NormCheckResult:
+        """Run every per-norm check against one set of inputs."""
+        res = NormCheckResult(title_norm=tn, meets_gender=meets_gender)
+        res.ignored_opponents_ids = inputs.ignored_opponents_ids
+        res.played_games = inputs.played_games
+
+        # 1.4.1 / 1.4.1c
+        games_ok, min_games = self.games_requirement(inputs, tn)
+        if not games_ok:
+            res.not_enough_games = _('At least {min} games must be played.').format(
+                min=min_games
+            )
+
+        # 1.4.3 / 1.4.4
+        feds_ok, num_feds, own_count = self.federation_count_requirement(inputs)
+        if not feds_ok:
+            res.not_enough_federations = _(
+                '<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt.'
+            )
+        res.from_own_federations_count = own_count
+        res.from_host_federations_count = inputs.federations_counter.get(
+            Federation(self.player.event.federation), 0
+        )
+        res.federations_count = num_feds
+
+        if not self.own_federation_requirement(inputs, tn):
+            res.too_many_own_federation = _(
+                "<b>1.4.4</b> A maximum of 3/5 of the opponents may come from the applicant's federation."
+            )
+
+        top_ok, top_fed, _top_count = self.top_federation_requirement(inputs, tn)
+        if not top_ok and top_fed is not None:
+            res.too_many_one_federation = (
+                top_fed,
+                _(
+                    '<b>1.4.4</b> A maximum of 2/3 of the opponents from one federation.'
+                ),
+            )
+
+        # 1.4.5a / 1.4.5b-e
+        th_ok, num_titles = self.title_holders_requirement(inputs, tn)
+        if not th_ok:
+            res.not_enough_title_holders = _(
+                '<b>1.4.5a</b> At least 50%% of the opponents shall be title-holders, excluding CM and WCM.'
+            ).replace('%%', '%')
+        res.num_title_holders = num_titles
+        res.title_counts = inputs.titles_counter
+
+        rt_ok, rt_met = self.required_titles_requirement(inputs, tn)
+        if not rt_ok:
+            res.not_enough_required_titles = _(
+                '<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}'
+            ).format(
+                min=tn.minimum_required_titles(self.tournament),
+                titles=', '.join(str(title) for title in tn.required_titles),
+            )
+        res.required_titles = list(tn.required_titles)
+        res.required_titles_met = rt_met
+
+        # 1.4.8b
+        if not self.score_requirement(inputs):
+            res.score_too_low = _(
+                '<b>1.4.8b</b> The minimum score is 35%% for all norms.'
+            ).replace('%%', '%')
+        res.score = inputs.score
+
+        # 1.4.6 / 1.4.7
+        avg, adjusted_player, adjusted_rating = self.opponent_rating_floor_and_average(
+            inputs, tn
+        )
+        res.adjusted_player = adjusted_player
+        res.adjusted_player_rating = adjusted_rating
+        res.num_rated_players = sum(
+            1 for o in inputs.opponents if o.rating_type == PlayerRatingType.FIDE
+        ) + (
+            1
+            if adjusted_player and adjusted_player.rating_type != PlayerRatingType.FIDE
+            else 0
+        )
+        res.average_rating = avg
+        if avg < tn.minimum_average:
+            res.average_too_low = _(
+                '<b>1.4.8a</b> The minimum average rating of the opponents for this norm is {min}.'
+            ).format(min=tn.minimum_average)
+
+        # 1.4.8 — performance
+        performance = self.norm_performance(avg, inputs.score, inputs.played_games)
+        res.performance = performance
+        if performance < tn.minimum_performance:
+            res.performance_too_low = _(
+                '<b>1.4.8</b> The minimum performance for this norm is {min}.'
+            ).format(min=tn.minimum_performance)
+
+        # How many points off the threshold the applicant is. Positive when
+        # exceeding, negative when short. Iterates by half-points to find the
+        # tipping score.
+        res.performance_diff = self._performance_diff(
+            avg, inputs.score, inputs.played_games, tn.minimum_performance
+        )
+        return res
+
+    def _performance_diff(
+        self,
+        avg: float,
+        score: float,
+        played_games: int,
+        target_performance: float,
+    ) -> float | None:
+        """Distance (in points) from the tipping score where Rp crosses the
+        target. Positive ⇒ exceeded by this much; negative ⇒ short by this
+        much. None when there's no max_score (no games)."""
+        max_score = Result.WIN.points() * played_games
+        if not max_score:
+            return None
+        draw = Result.DRAW.points()
+        if self.norm_performance(avg, score, played_games) < target_performance:
+            new_score = score
+            while new_score < max_score:
+                new_score += draw
+                if (
+                    self.norm_performance(avg, new_score, played_games)
+                    >= target_performance
+                ):
+                    return score - new_score
+            return None
+        new_score = score
+        while new_score > 0:
+            new_score -= draw
+            if self.norm_performance(avg, new_score, played_games) < target_performance:
+                return score - new_score - draw
+        return None
+
+    # ---------- tournament-wide checks (delegate to Tournament) ----------
+
+    def apply_big_tournament_exemption(self, results: dict[TitleNorm, NormCheckResult]):
+        """1.4.3d — apply the cached tournament-wide counts to every result."""
+        exemption = self.tournament.big_tournament_exemption
+        msg = _(
+            '<b>1.4.3d</b> Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles.'
+        )
+        for res in results.values():
+            res.all_federations_count = exemption.federations
+            res.not_enough_all_federations = msg if exemption.federations < 3 else None
+            res.eligible_players_count = exemption.foreigners
+            res.not_enough_foreign_players = msg if exemption.foreigners < 20 else None
+            res.eligible_players_title_count = exemption.titled_foreigners
+            res.not_enough_all_title_holders = (
+                msg if exemption.titled_foreigners < 10 else None
+            )
+
+    def apply_high_level_tournament_flag(
+        self, results: dict[TitleNorm, NormCheckResult]
+    ):
+        """1.5.6a — set the cached flag on every result."""
+        flag = self.tournament.high_level_tournament
+        for res in results.values():
+            res.requirement_156a_met = flag

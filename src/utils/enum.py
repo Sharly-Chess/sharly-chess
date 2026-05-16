@@ -1,6 +1,6 @@
 """A file grouping all the "utility" enum"""
 
-from enum import Enum, StrEnum, IntEnum, auto
+from enum import Enum, StrEnum, IntEnum, auto, nonmember
 from math import ceil
 from typing import Iterator, Self, TYPE_CHECKING
 
@@ -938,9 +938,11 @@ class TitleNorm(Enum):
     def maximum_of_one_federation(rounds: int) -> int:
         return (2 * rounds) // 3
 
-    @property
-    def title_holders(self) -> tuple[PlayerTitle, ...]:
-        return (
+    # 1.4.5a — titles that count as "title-holders" for the 50% rule.
+    # CM and WCM are explicitly excluded by the spec. Same set for every norm.
+    # `nonmember` stops Enum's metaclass from turning the tuple into a member.
+    TITLE_HOLDERS = nonmember(
+        (
             PlayerTitle.WOMAN_FIDE_MASTER,
             PlayerTitle.FIDE_MASTER,
             PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
@@ -948,6 +950,19 @@ class TitleNorm(Enum):
             PlayerTitle.WOMAN_GRANDMASTER,
             PlayerTitle.GRANDMASTER,
         )
+    )
+
+    # 1.4.3d — the Swiss-exception's "titleholder" subset excludes FM/WFM.
+    # Spec wording: "at least 10 GM/IM/WGM/WIM titleholders" (narrower than
+    # 1.4.5a's title-holder set).
+    MASTER_TITLES = nonmember(
+        (
+            PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            PlayerTitle.INTERNATIONAL_MASTER,
+            PlayerTitle.WOMAN_GRANDMASTER,
+            PlayerTitle.GRANDMASTER,
+        )
+    )
 
     @property
     def required_titles(self) -> tuple[PlayerTitle, ...]:

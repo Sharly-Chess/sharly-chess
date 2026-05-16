@@ -349,12 +349,12 @@
                 </section>
 
                 <section>
-                    {% set applying_143d = is_swiss and (
-                            norm.not_enough_federations or
-                            norm.too_many_own_federation or
-                            norm.too_many_one_federation
-                        )
-                    %}
+                    {# 1.4.3d only exempts 1.4.3 (foreign-fed count). It does
+                       NOT exempt 1.4.4 (own-fed / one-fed caps), which have
+                       no spec exemptions. So we only "apply 1.4.3d" — and
+                       care about red-highlighting its sub-criteria — when
+                       1.4.3 itself failed. #}
+                    {% set applying_143d = is_swiss and norm.not_enough_federations %}
                     <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.4.3d:</div>
                     <div class="grid" style="grid-template-columns: 3fr 5fr;">
                         <div class="item {{ 'error' if applying_143d and norm.not_enough_all_federations else '' }}">
@@ -382,7 +382,14 @@
                 </section>
                 <div class="item" style="margin-top: 0.5rem;">
                     <label>Special remarks:</label>
-                    <input value="{{ 'This tournament meets the requirements of 1.5.6a.' if norm.requirement_156a_met else '' }}" />
+                    {% set remarks = [] %}
+                    {% if norm.requirement_156a_met %}
+                        {% set _ = remarks.append('This tournament meets the requirements of 1.5.6a.') %}
+                    {% endif %}
+                    {% if norm.applied_142c %}
+                        {% set _ = remarks.append('1.4.2c applied: last-round opponent forfeit included in the mix and scored as a loss.') %}
+                    {% endif %}
+                    <input value="{{ remarks | join(' ') }}" />
                 </div>
 
                 <table style="margin-top: var(--row-gap);">
@@ -415,10 +422,12 @@
                         {% if opp.id == norm.adjusted_player.id %}
                             {% set adjusted_opp_rating = norm.adjusted_player_rating %}
                         {% endif %}
-                        {% if not norm.is_143d_met and norm.too_many_own_federation and opp.federation == tournament_player.federation %}
+                        {# 1.4.4 caps are NOT exempted by 1.4.3d — highlight
+                           federation violations regardless of 1.4.3d status. #}
+                        {% if norm.too_many_own_federation and opp.federation == tournament_player.federation %}
                             {% set too_many_own = true %}
                             {% set err = norm.too_many_own_federation %}
-                        {% elif not norm.is_143d_met and norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
+                        {% elif norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
                             {% set too_many_one = true %}
                             {% set err = norm.too_many_one_federation[1] %}
                         {% endif %}

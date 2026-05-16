@@ -2,7 +2,7 @@ import weakref
 from collections import Counter
 from dataclasses import dataclass, field
 from functools import total_ordering
-from typing import Optional, Self, SupportsFloat, TYPE_CHECKING
+from typing import NamedTuple, Optional, Self, SupportsFloat, TYPE_CHECKING
 
 from utils import Utils
 from utils.enum import (
@@ -122,6 +122,18 @@ class PlayerRatingAndType:
         return f'{self.value} {self.type.short_name}' if self.value else '-'
 
 
+class BigTournamentExemption(NamedTuple):
+    """Aggregated per-tournament counts used by 1.4.3d (Swiss size exception).
+
+    Each field is the worst-case (minimum) across every round in the
+    tournament — 1.4.3d requires the threshold to hold for *every* round.
+    """
+
+    federations: int
+    foreigners: int
+    titled_foreigners: int
+
+
 @dataclass
 class NormCheckResult:
     title_norm: TitleNorm
@@ -165,6 +177,12 @@ class NormCheckResult:
 
     # 1.5.6a
     requirement_156a_met: bool = False
+
+    # 1.4.2c — True if this result used the "last-round opponent forfeit
+    # included as a played LOSS" fallback rather than the default 1.4.1c
+    # "forfeit excluded" interpretation. The norm check tries 1.4.1c first
+    # and only falls back to 1.4.2c if it yields `is_met` where 1.4.1c didn't.
+    applied_142c: bool = False
 
     @property
     def is_143d_met(self) -> bool:
