@@ -342,6 +342,7 @@ class OnlineDataSource(DataSource, ABC):
         cls._connection_last_checked_at = datetime.now()
         if not NetworkMonitor.connected():
             cls.connection_status = None
+            return
         cls.connection_status = await cls.check_connection()
 
     @property
