@@ -1275,6 +1275,23 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        tournament = self.tournament
+        common = {
+            'event': self.get_event(),
+            'tournament': tournament,
+            'start': tournament.start_date.strftime('%Y.%m.%d'),
+            'end': tournament.stop_date.strftime('%Y.%m.%d'),
+            'PlayerTitle': PlayerTitle,
+            'TitleNorm': TitleNorm,
+            'Result': Result,
+        }
+        if tournament.finished:
+            return common | {'mode': 'achieved'} | self._achieved_context()
+        if self._has_forecastable_last_round():
+            return common | {'mode': 'forecast'} | self._forecast_context()
+        return common | {'mode': 'pending'}
+
+    def _achieved_context(self) -> dict[str, Any]:
         achievers: list[dict[str, Any]] = []
         for tournament_player in self.tournament.tournament_players_by_id.values():
             achieved = {
@@ -1284,12 +1301,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
                 and tournament_player.title.sort_index < tn.player_title.sort_index
             }
             if achieved:
-                achievers.append(
-                    {
-                        'player': tournament_player,
-                        'norms': achieved,
-                    }
-                )
+                achievers.append({'player': tournament_player, 'norms': achieved})
 
         # Stable ordering: highest norm first (GM > IM > WGM > WIM), then by
         # the player's tie-break-aware name key.
@@ -1300,14 +1312,59 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
             return (-top_norm.player_title.sort_index, entry['player'].name_sort_key)
 
         achievers.sort(key=_sort_key)
+        return {'achievers': achievers}
+
+    def _has_forecastable_last_round(self) -> bool:
+        """True iff the last round is paired (at least one player has an
+        opponent and an unentered result). Forecast is meaningful only then."""
+        last = self.tournament.rounds
+        for p in self.tournament.tournament_players_by_id.values():
+            pairing = p.pairings_by_round.get(last)
+            if (
+                pairing is not None
+                and pairing.opponent is not None
+                and pairing.result == Result.NO_RESULT
+            ):
+                return True
+        return False
+
+    def _forecast_context(self) -> dict[str, Any]:
+        from data.norms import TitleNormForecaster
+
+        last = self.tournament.rounds
+        candidates: list[dict[str, Any]] = []
+        for tournament_player in self.tournament.tournament_players_by_id.values():
+            forecaster = TitleNormForecaster(tournament_player)
+            if not forecaster.can_forecast_round(last):
+                continue
+            chaseable = forecaster.chaseable_norms(last)
+            if not chaseable:
+                continue
+            pairing = tournament_player.pairings_by_round[last]
+            candidates.append(
+                {
+                    'player': tournament_player,
+                    'opponent': pairing.opponent,
+                    'requirements': chaseable,  # dict[TitleNorm, Result]
+                }
+            )
+
+        # Order: GM-chasers first, then by player name. Within a player,
+        # norms are already TitleNorm-ordered by the forecaster.
+        def _sort_key(entry):
+            highest_norm = max(
+                entry['requirements'].keys(),
+                key=lambda tn: tn.player_title.sort_index,
+            )
+            return (
+                -highest_norm.player_title.sort_index,
+                entry['player'].name_sort_key,
+            )
+
+        candidates.sort(key=_sort_key)
         return {
-            'event': self.get_event(),
-            'tournament': self.tournament,
-            'achievers': achievers,
-            'start': self.tournament.start_date.strftime('%Y.%m.%d'),
-            'end': self.tournament.stop_date.strftime('%Y.%m.%d'),
-            'PlayerTitle': PlayerTitle,
-            'TitleNorm': TitleNorm,
+            'candidates': candidates,
+            'forecast_round': last,
         }
 
 

@@ -114,18 +114,27 @@ class TitleNormEvaluator:
 
     # ---------- top-level orchestration ----------
 
-    def evaluate(self) -> dict[TitleNorm, NormCheckResult]:
+    def evaluate(
+        self,
+        result_overrides: dict[int, Result] | None = None,
+    ) -> dict[TitleNorm, NormCheckResult]:
         # Default 1.4.1c interpretation: forfeit-wins excluded from the mix;
         # a single forfeit-win/PAB in a 9-round event lets 8 played games
         # still credit as a 9-game norm.
-        inputs_a = self.collect_inputs(include_last_forfeit_as_loss=False)
+        inputs_a = self.collect_inputs(
+            include_last_forfeit_as_loss=False,
+            result_overrides=result_overrides,
+        )
 
         # 1.4.2c fallback: only built when a last-round opponent-forfeit
         # exists. Includes that game as a played LOSS so the applicant
         # "must have played" but "can afford to lose". Different mix and
         # score → different Rp than the 1.4.1c interpretation.
         inputs_b: NormInputs | None = (
-            self.collect_inputs(include_last_forfeit_as_loss=True)
+            self.collect_inputs(
+                include_last_forfeit_as_loss=True,
+                result_overrides=result_overrides,
+            )
             if inputs_a.has_last_round_forfeit_against
             else None
         )
@@ -149,7 +158,11 @@ class TitleNormEvaluator:
 
     # ---------- input gathering ----------
 
-    def collect_inputs(self, include_last_forfeit_as_loss: bool) -> NormInputs:
+    def collect_inputs(
+        self,
+        include_last_forfeit_as_loss: bool,
+        result_overrides: dict[int, Result] | None = None,
+    ) -> NormInputs:
         """Single pass over the applicant's pairings → opponent mix + score.
 
         When `include_last_forfeit_as_loss` is True, a last-round FORFEIT_WIN
@@ -157,27 +170,42 @@ class TitleNormEvaluator:
         1.4.2c interpretation. Otherwise (default 1.4.1c), forfeit-wins are
         excluded from the mix and `forfeits_or_byes` tracks them for the
         9-round 8+1 exemption.
+
+        `result_overrides` substitutes a hypothetical result for given
+        rounds — used by the forecaster to evaluate "what if round 9 is a
+        WIN/DRAW/LOSS" without mutating the stored tournament state.
+        Overrides only apply where the pairing has an opponent.
         """
         from data.pairings.systems import RoundRobinPairingSystem
 
         inputs = NormInputs()
         is_round_robin = self.tournament.pairing_system == RoundRobinPairingSystem()
         last_round = self.tournament.rounds
+        overrides = result_overrides or {}
 
         for rnd, pairing in self.player.pairings_by_round.items():
-            if pairing.result.is_board_bye or pairing.result == Result.FORFEIT_WIN:
+            override = overrides.get(rnd)
+            effective_pairing_result = (
+                override
+                if override is not None and pairing.opponent is not None
+                else pairing.result
+            )
+            if (
+                effective_pairing_result.is_board_bye
+                or effective_pairing_result == Result.FORFEIT_WIN
+            ):
                 inputs.forfeits_or_byes += 1
 
             is_last_round_forfeit_against = (
                 rnd == last_round
-                and pairing.result == Result.FORFEIT_WIN
+                and effective_pairing_result == Result.FORFEIT_WIN
                 and pairing.opponent is not None
             )
             if is_last_round_forfeit_against:
                 inputs.has_last_round_forfeit_against = True
 
             include_as_played = pairing.opponent is not None and (
-                not pairing.result.is_unplayed
+                not effective_pairing_result.is_unplayed
                 or (include_last_forfeit_as_loss and is_last_round_forfeit_against)
             )
             if not include_as_played:
@@ -219,7 +247,7 @@ class TitleNormEvaluator:
             effective_result = (
                 Result.LOSS
                 if include_last_forfeit_as_loss and is_last_round_forfeit_against
-                else pairing.result
+                else effective_pairing_result
             )
             inputs.results_list.append(effective_result)
             inputs.opponents.append(opponent)
@@ -587,10 +615,19 @@ class TitleNormSubsetSearcher:
 
     # ---------- top-level orchestration ----------
 
-    def evaluate(self) -> dict[TitleNorm, NormCheckResult]:
-        baseline = self.evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+    def evaluate(
+        self,
+        result_overrides: dict[int, Result] | None = None,
+    ) -> dict[TitleNorm, NormCheckResult]:
+        baseline = self.evaluator.collect_inputs(
+            include_last_forfeit_as_loss=False,
+            result_overrides=result_overrides,
+        )
         baseline_142c: NormInputs | None = (
-            self.evaluator.collect_inputs(include_last_forfeit_as_loss=True)
+            self.evaluator.collect_inputs(
+                include_last_forfeit_as_loss=True,
+                result_overrides=result_overrides,
+            )
             if baseline.has_last_round_forfeit_against
             else None
         )
@@ -739,3 +776,115 @@ class TitleNormSubsetSearcher:
             )
             for combo in ranked:
                 yield frozenset(combo)
+
+
+# ---------------------------------------------------------------------------
+# What-if forecasting — feeds hypothetical results to the searcher
+# ---------------------------------------------------------------------------
+
+
+# Outcomes the forecaster enumerates, in worst-to-best order. The summariser
+# walks this list and returns the first outcome that achieves the norm —
+# which is therefore the minimum required result.
+_FORECAST_OUTCOMES: tuple[Result, ...] = (Result.LOSS, Result.DRAW, Result.WIN)
+
+
+@dataclass(frozen=True)
+class ForecastRequirement:
+    """What a player needs in a future round to achieve a norm.
+
+    `minimum_outcome` is the cheapest OTB result that achieves the norm
+    (LOSS = even a played loss works; DRAW = ≥ ½ point; WIN = full point).
+
+    `play_required` distinguishes two "any-result-works" cases:
+      * True (typical 9-round Swiss): all three OTB outcomes pass the
+        9-game evaluation, but a no-show becomes a forfeit-loss → 1.4.2c
+        excludes it → only 8 played games → norm fails 1.4.1. The player
+        must sit at the board even if the result doesn't matter.
+      * False (rounds > min_games, 1.4.1e drops round N): the searcher
+        confirmed the norm holds with round N removed entirely. The
+        player technically doesn't need to play this round for the norm
+        (tournament rules may still require attendance).
+    """
+
+    minimum_outcome: Result
+    play_required: bool
+
+
+class TitleNormForecaster:
+    """Computes "what does this player need in round N?" by running the
+    full searcher against hypothetical round-N results.
+
+    Used when the tournament is not yet finished: round N is paired but
+    not played, and the arbiter wants to know what each candidate player
+    needs from their last game.
+    """
+
+    def __init__(self, player: 'TournamentPlayer'):
+        self.player = player
+
+    @property
+    def tournament(self):
+        return self.player.tournament
+
+    def can_forecast_round(self, round_: int) -> bool:
+        """True iff the player has an opponent in `round_` (round paired)
+        and the result isn't already entered."""
+        pairing = self.player.pairings_by_round.get(round_)
+        if pairing is None or pairing.opponent is None:
+            return False
+        return pairing.result == Result.NO_RESULT
+
+    def forecast_round(
+        self, round_: int
+    ) -> dict[Result, dict[TitleNorm, NormCheckResult]]:
+        """For each candidate outcome (LOSS, DRAW, WIN) of `round_`, return
+        the per-norm result that would arise."""
+        out: dict[Result, dict[TitleNorm, NormCheckResult]] = {}
+        for outcome in _FORECAST_OUTCOMES:
+            searcher = TitleNormSubsetSearcher(self.player)
+            out[outcome] = searcher.evaluate(result_overrides={round_: outcome})
+        return out
+
+    def minimum_required_result(
+        self,
+        round_: int,
+        tn: TitleNorm,
+    ) -> Result | None:
+        """The cheapest result in `round_` that achieves `tn`. Returns:
+        - LOSS  ⇒ the norm is achieved regardless of outcome ("any").
+        - DRAW  ⇒ draw or better suffices.
+        - WIN   ⇒ only a win achieves it.
+        - None  ⇒ the norm is unachievable from any outcome."""
+        forecast = self.forecast_round(round_)
+        for outcome in _FORECAST_OUTCOMES:
+            if forecast[outcome][tn].is_met:
+                return outcome
+        return None
+
+    def chaseable_norms(self, round_: int) -> dict[TitleNorm, ForecastRequirement]:
+        """All norms within reach via at least one outcome, mapped to a
+        `ForecastRequirement` describing the minimum result and whether
+        the player must play the round. Skips norms below or equal to
+        the applicant's current title, and norms unreachable from any
+        outcome."""
+        forecast = self.forecast_round(round_)
+        chaseable: dict[TitleNorm, ForecastRequirement] = {}
+        for tn in TitleNorm.values():
+            # Skip norms not above the applicant's current title.
+            if tn.player_title.sort_index <= self.player.title.sort_index:
+                continue
+            # First outcome (in LOSS, DRAW, WIN order) that achieves it.
+            for outcome in _FORECAST_OUTCOMES:
+                result = forecast[outcome][tn]
+                if result.is_met:
+                    # If the searcher dropped round_ from the mix at this
+                    # outcome (i.e. 1.4.1e applied), the round is optional
+                    # for the norm.
+                    round_dropped = round_ in result.ignored_rounds_via_search
+                    chaseable[tn] = ForecastRequirement(
+                        minimum_outcome=outcome,
+                        play_required=not round_dropped,
+                    )
+                    break
+        return chaseable
