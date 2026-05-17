@@ -160,7 +160,46 @@
                 border-top: 2px solid black;
                 padding-bottom: 4rem;
             }
+            details.audit {
+                margin-top: var(--row-gap);
+                border: 1px dashed #888;
+                padding: 0.4rem 0.6rem;
+                background: #fafafa;
+                font-size: 0.75rem;
+            }
+            details.audit > summary {
+                cursor: pointer;
+                font-weight: 600;
+                color: #333;
+            }
+            details.audit table {
+                margin-top: 0.6rem;
+                border: 1px solid #bbb;
+                font-size: 0.75rem;
+            }
+            details.audit th,
+            details.audit td {
+                border-top: 1px solid #ddd;
+                border-bottom: 1px solid #ddd;
+                padding: 0.2rem 0.4rem;
+                text-align: left;
+            }
+            details.audit td.center {
+                text-align: center;
+            }
+            details.audit tr.excluded,
+            details.audit tr.dropped,
+            details.audit tr.no_opponent {
+                color: #777;
+                font-style: italic;
+            }
+            details.audit tr.dropped {
+                color: #c79f00;
+            }
             @media print {
+                .no-print {
+                    display: none !important;
+                }
                 body {
                     margin: 0;
                     padding: 10mm;
@@ -197,6 +236,20 @@
         </style>
     </head>
     <body>
+        {# Reason-key → translated text map for the per-round audit block.
+           Built once at body scope so the dict is shared across all
+           per-norm sections. #}
+        {% set reason_text = {
+            'included': _('Counted toward the norm.'),
+            'included_as_1_4_2c_loss': _('1.4.2c: last-round opponent forfeit, counted as a played LOSS.'),
+            'rule_1_4_2a': _('1.4.2a: opponent has no FIDE federation (NON) — not counted.'),
+            'rule_1_4_2b': _('1.4.2b: round-robin only — unrated opponent scored zero against every FIDE-rated opponent.'),
+            'forfeit_win_excluded': _('Forfeit win against a no-show — not counted as a played game.'),
+            'board_bye': _('Pairing-allocated bye / half-point bye / rest game — no opponent.'),
+            'unplayed_no_pairing': _('Unplayed (no result recorded).'),
+            'no_opponent': _('No opponent paired this round.'),
+            'ignored_via_1_4_1ef': _('1.4.1e/f: ignored by the subset search to satisfy this norm.'),
+        } %}
         {% for norm_title, norm in norms.items() %}
             {% if loop.first %}
                 <div class="info">
@@ -388,15 +441,18 @@
                 </section>
                 <div class="item" style="margin-top: 0.5rem;">
                     <label>Special remarks:</label>
+                    {# Don't assign to `_` here — that's the gettext function,
+                       and clobbering it breaks any later `_(...)` calls in
+                       this loop iteration (e.g. the per-round audit block). #}
                     {% set remarks = [] %}
                     {% if norm.requirement_156a_met %}
-                        {% set _ = remarks.append('This tournament meets the requirements of 1.5.6a.') %}
+                        {% set _discard = remarks.append('This tournament meets the requirements of 1.5.6a.') %}
                     {% endif %}
                     {% if norm.applied_142c %}
-                        {% set _ = remarks.append('1.4.2c applied: last-round opponent forfeit included in the mix and scored as a loss.') %}
+                        {% set _discard = remarks.append('1.4.2c applied: last-round opponent forfeit included in the mix and scored as a loss.') %}
                     {% endif %}
                     {% if norm.ignored_rounds_via_search %}
-                        {% set _ = remarks.append(
+                        {% set _discard = remarks.append(
                             '1.4.1e/f applied: round(s) ' ~
                             (norm.ignored_rounds_via_search | sort | join(', ')) ~
                             ' ignored.'
@@ -547,6 +603,75 @@
                 </div>
 
                 <h1 style="text-align: right; margin: 0; padding: 0; font-style: italic">This report is not valid until confirmed by QC </h1>
+
+                {# Per-round audit trail. Screen-only — hidden from the
+                   printed IT1 via .no-print. One row per round in the
+                   applicant's schedule, with the decision the evaluator
+                   made and the reason. Reason keys are stable strings
+                   produced by collect_inputs / the search; `reason_text`
+                   (built at body top) maps them to translated strings. #}
+                <details class="audit no-print">
+                    <summary>{{ _('Per-round audit — why each round was counted (or not)') }}</summary>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="center">{{ _('R') }}</th>
+                                <th>{{ _('Opponent') }}</th>
+                                <th class="center">{{ _('Fed') }}</th>
+                                <th class="center">{{ _('Title') }}</th>
+                                <th class="center">{{ _('Rating') }}</th>
+                                <th class="center">{{ _('Result') }}</th>
+                                <th class="center">{{ _('Counted') }}</th>
+                                <th>{{ _('Reason') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for entry in norm.round_audit %}
+                            <tr class="{{ entry.decision.value }}">
+                                <td class="center">{{ entry.round_ }}</td>
+                                <td>
+                                    {% if entry.opponent %}
+                                        {{ entry.opponent.full_name }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td class="center">
+                                    {{ entry.opponent.federation if entry.opponent else '—' }}
+                                </td>
+                                <td class="center">
+                                    {% if entry.opponent and entry.opponent.title %}
+                                        {{ entry.opponent.title.short_name or '—' }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td class="center">
+                                    {% if entry.opponent and entry.opponent.rating %}
+                                        {{ entry.opponent.rating }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td class="center">
+                                    {{ entry.raw_result | string if entry.raw_result else '—' }}
+                                    {% if entry.effective_result and entry.effective_result != entry.raw_result %}
+                                        → {{ entry.effective_result | string }}
+                                    {% endif %}
+                                </td>
+                                <td class="center">
+                                    {% if entry.decision.value == 'included' %}✓
+                                    {% elif entry.decision.value == 'dropped' %}⊘
+                                    {% else %}✗{% endif %}
+                                </td>
+                                <td>
+                                    {{ reason_text.get(entry.reason_key, entry.reason_key) }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </details>
             </form>
         {% endfor %}
 

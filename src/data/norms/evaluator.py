@@ -6,7 +6,19 @@ from operator import attrgetter
 from typing import TYPE_CHECKING
 
 from common.i18n import _
-from data.norms.inputs import NormInputs
+from data.norms.inputs import (
+    NormInputs,
+    REASON_BOARD_BYE,
+    REASON_FORFEIT_WIN_EXCLUDED,
+    REASON_INCLUDED,
+    REASON_INCLUDED_AS_142C_LOSS,
+    REASON_NO_OPPONENT,
+    REASON_RULE_142A,
+    REASON_RULE_142B,
+    REASON_UNPLAYED_NO_PAIRING,
+    RoundAuditEntry,
+    RoundDecision,
+)
 from utils import Utils
 from utils.enum import PlayerRatingType, Result, TitleNorm
 from utils.types import Federation, NormCheckResult, PlayerRatingAndType
@@ -14,6 +26,24 @@ from utils.types import Federation, NormCheckResult, PlayerRatingAndType
 if TYPE_CHECKING:
     from data.player import TournamentPlayer
     from data.tournament import Tournament
+
+
+def _no_opponent_reason(opponent, effective_result: Result) -> str:
+    """Audit reason for a round the evaluator did NOT include as a played
+    game. Four distinct cases — kept separate so the IT1 audit makes
+    the cause explicit (a forfeit-win-against-no-show is not the same
+    thing as a half-point bye or a missing pairing).
+
+    The result is checked first because a PAB round legitimately has no
+    opponent (`pairing.opponent is None`); falling through to
+    `REASON_NO_OPPONENT` for that case would mask the bye."""
+    if effective_result == Result.FORFEIT_WIN:
+        return REASON_FORFEIT_WIN_EXCLUDED
+    if effective_result.is_board_bye:
+        return REASON_BOARD_BYE
+    if opponent is None:
+        return REASON_NO_OPPONENT
+    return REASON_UNPLAYED_NO_PAIRING
 
 
 def _resolve_min_games(
@@ -162,6 +192,18 @@ class TitleNormEvaluator:
                 or (include_last_forfeit_as_loss and is_last_round_forfeit_against)
             )
             if not include_as_played:
+                inputs.round_audit.append(
+                    RoundAuditEntry(
+                        round_=rnd,
+                        opponent=pairing.opponent,
+                        raw_result=pairing.result,
+                        effective_result=None,
+                        decision=RoundDecision.NO_OPPONENT,
+                        reason_key=_no_opponent_reason(
+                            pairing.opponent, effective_pairing_result
+                        ),
+                    )
+                )
                 continue
 
             inputs.played_games += 1
@@ -184,11 +226,31 @@ class TitleNormEvaluator:
                         break
                 if scored_zero_against_rated:
                     inputs.ignored_opponents_ids.add(opponent.id)
+                    inputs.round_audit.append(
+                        RoundAuditEntry(
+                            round_=rnd,
+                            opponent=opponent,
+                            raw_result=pairing.result,
+                            effective_result=None,
+                            decision=RoundDecision.EXCLUDED,
+                            reason_key=REASON_RULE_142B,
+                        )
+                    )
                     continue
 
             # 1.4.2a — opponent must belong to a FIDE federation.
             if opponent.federation == Federation('NON'):
                 inputs.ignored_opponents_ids.add(opponent.id)
+                inputs.round_audit.append(
+                    RoundAuditEntry(
+                        round_=rnd,
+                        opponent=opponent,
+                        raw_result=pairing.result,
+                        effective_result=None,
+                        decision=RoundDecision.EXCLUDED,
+                        reason_key=REASON_RULE_142A,
+                    )
+                )
                 continue
             inputs.federations_counter[opponent.federation] += 1
 
@@ -197,14 +259,27 @@ class TitleNormEvaluator:
                 inputs.titles_counter[opponent.title] += 1
 
             # 1.4.2c — the last-round forfeit-against is scored as a LOSS.
-            effective_result = (
-                Result.LOSS
-                if include_last_forfeit_as_loss and is_last_round_forfeit_against
-                else effective_pairing_result
+            applied_142c = (
+                include_last_forfeit_as_loss and is_last_round_forfeit_against
             )
+            effective_result = Result.LOSS if applied_142c else effective_pairing_result
             inputs.results_list.append(effective_result)
             inputs.opponents.append(opponent)
             inputs.included_rounds.append(rnd)
+            inputs.round_audit.append(
+                RoundAuditEntry(
+                    round_=rnd,
+                    opponent=opponent,
+                    raw_result=pairing.result,
+                    effective_result=effective_result,
+                    decision=RoundDecision.INCLUDED,
+                    reason_key=(
+                        REASON_INCLUDED_AS_142C_LOSS
+                        if applied_142c
+                        else REASON_INCLUDED
+                    ),
+                )
+            )
 
         inputs.score = sum(r.points() for r in inputs.results_list)
         return inputs
@@ -347,6 +422,7 @@ class TitleNormEvaluator:
         res = NormCheckResult(title_norm=tn, meets_gender=meets_gender)
         res.ignored_opponents_ids = inputs.ignored_opponents_ids
         res.played_games = inputs.played_games
+        res.round_audit = inputs.round_audit
 
         # 1.4.1 / 1.4.1c
         games_ok, min_games = self.games_requirement(inputs, tn)

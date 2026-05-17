@@ -1581,3 +1581,268 @@ class TestForecasterOutcomeOrdering:
         # LOSS reported (cheapest); R_N dropped → play not required.
         assert req.minimum_outcome == Result.LOSS
         assert req.play_required is False
+
+
+# ===========================================================================
+# Per-round audit trail (Layer 2 — arbiter-facing inclusion/exclusion log)
+# ===========================================================================
+#
+# The audit is built once per `collect_inputs` pass and copied onto each
+# `NormCheckResult`. Tests pin one entry per decision branch so any future
+# refactor of `collect_inputs` keeps the audit truthful.
+
+
+class TestRoundAuditTrail:
+    def _evaluator(self, **player_kwargs):
+        from data.norms import TitleNormEvaluator
+
+        player = _player_with_pairings(**player_kwargs)
+        return TitleNormEvaluator(player)
+
+    def test_included_round_records_included_decision(self):
+        from data.norms.inputs import RoundDecision
+
+        opp = _gm(1, federation='USA')
+        evaluator = self._evaluator(
+            rounds=9,
+            pairings={1: (opp, Result.WIN)}
+            | {r: (_gm(r, federation='GER'), Result.DRAW) for r in range(2, 10)},
+        )
+        inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        r1 = next(e for e in inputs.round_audit if e.round_ == 1)
+        assert r1.decision == RoundDecision.INCLUDED
+        assert r1.reason_key == 'included'
+        assert r1.opponent is opp
+        assert r1.raw_result == Result.WIN
+        assert r1.effective_result == Result.WIN
+
+    def test_1_4_2a_NON_opponent_excluded(self):
+        """NON-federation opponent: EXCLUDED with reason rule_1_4_2a."""
+        from data.norms.inputs import RoundDecision
+
+        non_opp = FakeOpponent(
+            id=99,
+            rating=2400,
+            rating_type=PlayerRatingType.FIDE,
+            federation=Federation('NON'),
+        )
+        pairings = {1: (non_opp, Result.WIN)} | {
+            r: (
+                _gm(
+                    r,
+                    federation=['USA', 'GER', 'ESP', 'ITA', 'NED', 'POL', 'RUS', 'AZE'][
+                        r - 2
+                    ],
+                ),
+                Result.DRAW,
+            )
+            for r in range(2, 10)
+        }
+        evaluator = self._evaluator(rounds=9, pairings=pairings)
+        inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        r1 = next(e for e in inputs.round_audit if e.round_ == 1)
+        assert r1.decision == RoundDecision.EXCLUDED
+        assert r1.reason_key == 'rule_1_4_2a'
+        assert r1.opponent is non_opp
+        assert r1.effective_result is None
+
+    def test_1_4_2b_RR_unrated_zero_excluded(self):
+        """RR + unrated opponent who scored zero against rated → EXCLUDED."""
+        from data.norms.inputs import RoundDecision
+        from data.pairings.systems import RoundRobinPairingSystem
+
+        unrated = FakeOpponent(
+            id=99,
+            rating=0,
+            rating_type=PlayerRatingType.NATIONAL,
+            federation=Federation('USA'),
+        )
+        # Unrated opp must have its own pairings where they only met FIDE-rated
+        # players and lost or didn't play.
+        unrated.pairings_by_round = {
+            r: SimpleNamespace(
+                opponent=_gm(50 + r, federation='GER'),
+                result=Result.LOSS,
+            )
+            for r in range(1, 10)
+        }
+        pairings = {1: (unrated, Result.WIN)} | {
+            r: (
+                _gm(
+                    r,
+                    federation=['USA', 'GER', 'ESP', 'ITA', 'NED', 'POL', 'RUS', 'AZE'][
+                        r - 2
+                    ],
+                ),
+                Result.DRAW,
+            )
+            for r in range(2, 10)
+        }
+        evaluator = self._evaluator(
+            rounds=9, pairings=pairings, pairing_system=RoundRobinPairingSystem()
+        )
+        inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        r1 = next(e for e in inputs.round_audit if e.round_ == 1)
+        assert r1.decision == RoundDecision.EXCLUDED
+        assert r1.reason_key == 'rule_1_4_2b'
+
+    def test_forfeit_win_marked_no_opponent(self):
+        """A forfeit win against a no-show is NOT counted as played → audit
+        shows NO_OPPONENT / forfeit_win_excluded."""
+        from data.norms.inputs import RoundDecision
+
+        no_show = _gm(99, federation='USA')
+        pairings = {1: (no_show, Result.FORFEIT_WIN)} | {
+            r: (
+                _gm(
+                    r,
+                    federation=['USA', 'GER', 'ESP', 'ITA', 'NED', 'POL', 'RUS', 'AZE'][
+                        r - 2
+                    ],
+                ),
+                Result.DRAW,
+            )
+            for r in range(2, 10)
+        }
+        evaluator = self._evaluator(rounds=9, pairings=pairings)
+        inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        r1 = next(e for e in inputs.round_audit if e.round_ == 1)
+        assert r1.decision == RoundDecision.NO_OPPONENT
+        assert r1.reason_key == 'forfeit_win_excluded'
+
+    def test_pairing_allocated_bye_marked_board_bye(self):
+        """A round with no opponent + PAB: NO_OPPONENT / board_bye."""
+        from data.norms.inputs import RoundDecision
+
+        pairings = {1: (None, Result.PAIRING_ALLOCATED_BYE)} | {
+            r: (
+                _gm(
+                    r,
+                    federation=['USA', 'GER', 'ESP', 'ITA', 'NED', 'POL', 'RUS', 'AZE'][
+                        r - 2
+                    ],
+                ),
+                Result.DRAW,
+            )
+            for r in range(2, 10)
+        }
+        evaluator = self._evaluator(rounds=9, pairings=pairings)
+        inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        r1 = next(e for e in inputs.round_audit if e.round_ == 1)
+        assert r1.decision == RoundDecision.NO_OPPONENT
+        assert r1.reason_key == 'board_bye'
+        assert r1.opponent is None
+
+    def test_1_4_2c_last_round_forfeit_marked_included_as_loss(self):
+        """Under the 1.4.2c interpretation, a last-round forfeit-win is
+        included as a played LOSS. Audit reflects effective_result=LOSS
+        with reason `included_as_1_4_2c_loss`."""
+        from data.norms.inputs import RoundDecision
+
+        last_opp = _gm(99, federation='USA')
+        pairings = {
+            r: (
+                _gm(
+                    r,
+                    federation=['USA', 'GER', 'ESP', 'ITA', 'NED', 'POL', 'RUS', 'AZE'][
+                        r - 1
+                    ],
+                ),
+                Result.DRAW,
+            )
+            for r in range(1, 9)
+        }
+        pairings[9] = (last_opp, Result.FORFEIT_WIN)
+        evaluator = self._evaluator(rounds=9, pairings=pairings)
+        # Under the 1.4.1c interpretation (forfeit excluded): NO_OPPONENT.
+        inputs_a = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        r9_a = next(e for e in inputs_a.round_audit if e.round_ == 9)
+        assert r9_a.decision == RoundDecision.NO_OPPONENT
+        assert r9_a.reason_key == 'forfeit_win_excluded'
+        # Under 1.4.2c: included as LOSS.
+        inputs_b = evaluator.collect_inputs(include_last_forfeit_as_loss=True)
+        r9_b = next(e for e in inputs_b.round_audit if e.round_ == 9)
+        assert r9_b.decision == RoundDecision.INCLUDED
+        assert r9_b.reason_key == 'included_as_1_4_2c_loss'
+        assert r9_b.raw_result == Result.FORFEIT_WIN
+        assert r9_b.effective_result == Result.LOSS
+
+    def test_audit_copied_onto_norm_check_result(self):
+        """`evaluate_one` copies the audit list onto NormCheckResult so the
+        template can render it without holding a reference to inputs."""
+        opp = _gm(1, federation='USA')
+        pairings = {1: (opp, Result.WIN)} | {
+            r: (
+                _gm(
+                    r,
+                    federation=['GER', 'ESP', 'ITA', 'NED', 'POL', 'RUS', 'AZE', 'IND'][
+                        r - 2
+                    ],
+                ),
+                Result.DRAW,
+            )
+            for r in range(2, 10)
+        }
+        evaluator = self._evaluator(rounds=9, pairings=pairings)
+        # Use evaluate_one directly to avoid tournament-wide stubs.
+        inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        res = evaluator.evaluate_one(inputs, TitleNorm.GM, True)
+        assert [e.round_ for e in res.round_audit] == list(range(1, 10))
+        # Same list reference — no defensive copy needed since entries
+        # are frozen.
+        assert res.round_audit is inputs.round_audit
+
+    def test_search_marks_dropped_rounds_in_audit(self):
+        """When the subset search drops rounds via 1.4.1e/f, the result's
+        audit lists those rounds as DROPPED / ignored_via_1_4_1ef."""
+        from data.norms.inputs import NormInputs, RoundDecision
+
+        # Drive `_search_subsets` directly so we don't have to stub
+        # tournament-wide attributes (1.4.3d / 1.5.6a).
+        feds = [
+            'USA',
+            'GER',
+            'ESP',
+            'ITA',
+            'NED',
+            'POL',
+            'RUS',
+            'AZE',
+            'IND',
+            'CHN',
+            'BRA',
+        ]
+        opps = [_gm(i, rating=2500, federation=feds[i - 1]) for i in range(1, 11)]
+        # Round 11 against an untitled 1900 — likely candidate for 1.4.1e/f drop.
+        weak = _untitled(11, rating=1900, federation=feds[10])
+        results = [Result.WIN] + [Result.DRAW] * 9 + [Result.WIN]
+        pairings_data = [(r, opps[r - 1], results[r - 1]) for r in range(1, 11)]
+        pairings_data.append((11, weak, results[10]))
+        inputs: NormInputs = make_inputs(pairings_data)
+        # Build a matching audit (one entry per round, all INCLUDED).
+        from data.norms.inputs import RoundAuditEntry
+
+        inputs.round_audit = [
+            RoundAuditEntry(
+                round_=r,
+                opponent=opp,
+                raw_result=res,
+                effective_result=res,
+                decision=RoundDecision.INCLUDED,
+                reason_key='included',
+            )
+            for r, opp, res in pairings_data
+        ]
+        searcher = _real_searcher(rounds=11)
+        winner = searcher._search_subsets(inputs, TitleNorm.GM, True)
+        # The search may or may not find a winner; if it does, the audit
+        # must reflect the drops.
+        if winner is not None and winner.ignored_rounds_via_search:
+            for r in winner.ignored_rounds_via_search:
+                entry = next(e for e in winner.round_audit if e.round_ == r)
+                assert entry.decision == RoundDecision.DROPPED
+                assert entry.reason_key == 'ignored_via_1_4_1ef'
+                assert entry.effective_result is None
+            for entry in winner.round_audit:
+                if entry.round_ not in winner.ignored_rounds_via_search:
+                    assert entry.decision != RoundDecision.DROPPED

@@ -215,6 +215,13 @@ class NormCheckResult:
     # norm. Empty when no search ran or when no winning subset was found.
     ignored_rounds_via_search: frozenset[int] = field(default_factory=frozenset)
 
+    # Per-round audit trail copied from the `NormInputs` that produced
+    # this result. One entry per round in the applicant's schedule, with
+    # the decision (included / excluded / dropped / no opponent) and a
+    # reason key. Rendered by the IT1 in a collapsible block. Typed as
+    # list[Any] here to avoid a circular import with data.norms.inputs.
+    round_audit: list = field(default_factory=list)
+
     @property
     def is_143d_met(self) -> bool:
         return (

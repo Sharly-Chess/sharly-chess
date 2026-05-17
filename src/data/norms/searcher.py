@@ -134,6 +134,11 @@ class TitleNormSubsetSearcher:
             result = self.evaluator.evaluate_one(modified, tn, meets_gender)
             if result.is_met:
                 result.ignored_rounds_via_search = candidate
+                # Flip the dropped rounds' audit entries to DROPPED so the
+                # IT1 reflects what the search did, not just what
+                # collect_inputs produced. `audit_with_dropped` returns a
+                # fresh list — entries themselves stay frozen.
+                result.round_audit = inputs.audit_with_dropped(candidate)
                 return result
         return None
 
