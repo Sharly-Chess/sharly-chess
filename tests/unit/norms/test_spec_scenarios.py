@@ -1584,6 +1584,107 @@ class TestForecasterOutcomeOrdering:
 
 
 # ===========================================================================
+# Tournament Norms Summary — early forecast unlock
+# ===========================================================================
+#
+# Fire on the latest paired-but-unplayed round, gated per-player on having
+# played ≥ min_games − 1 games.
+# Lets an 11-round Swiss with 9-game norms forecast from R9 onward, not just
+# R11.
+
+
+class TestForecastDocumentEarlyUnlock:
+    def _doc_with_players(self, players, rounds=11):
+        """Minimal duck-type of TournamentNormsSummaryPrintDocument for the
+        helpers under test. Only `.tournament` is read."""
+        from types import SimpleNamespace as NS
+
+        tournament = NS(
+            rounds=rounds,
+            tournament_players_by_id={i: p for i, p in enumerate(players)},
+        )
+        return NS(tournament=tournament)
+
+    def _player_with_schedule(
+        self, played_rounds: list[int], paired_unplayed: dict[int, int] | None = None
+    ):
+        """A duck-typed player whose pairings_by_round contains `played` flags
+        and (optionally) entries for paired-unplayed rounds whose round numbers
+        map to opponent ids."""
+        from types import SimpleNamespace as NS
+
+        pairings = {}
+        for r in played_rounds:
+            pairings[r] = NS(
+                opponent=NS(id=999),  # arbitrary present opponent
+                result=Result.WIN,
+                played=True,
+            )
+        for r, opp_id in (paired_unplayed or {}).items():
+            pairings[r] = NS(
+                opponent=NS(id=opp_id),
+                result=Result.NO_RESULT,
+                played=False,
+            )
+        return NS(pairings_by_round=pairings)
+
+    def test_find_forecastable_round_returns_highest_paired_unplayed(self):
+        """Highest paired-but-unplayed round across all players wins."""
+        from data.print_documents.documents import TournamentNormsSummaryPrintDocument
+
+        p_a = self._player_with_schedule(
+            played_rounds=[1, 2, 3, 4, 5, 6, 7, 8],
+            paired_unplayed={9: 11},
+        )
+        p_b = self._player_with_schedule(
+            played_rounds=[1, 2, 3, 4, 5, 6, 7, 8],
+            paired_unplayed={9: 12},
+        )
+        doc = self._doc_with_players([p_a, p_b])
+        assert TournamentNormsSummaryPrintDocument._find_forecastable_round(doc) == 9
+
+    def test_find_forecastable_round_picks_higher_when_two_paired(self):
+        """If R9 AND R10 are both paired-unplayed, R10 wins."""
+        from data.print_documents.documents import TournamentNormsSummaryPrintDocument
+
+        p = self._player_with_schedule(
+            played_rounds=[1, 2, 3, 4, 5, 6, 7, 8],
+            paired_unplayed={9: 11, 10: 12},
+        )
+        doc = self._doc_with_players([p])
+        assert TournamentNormsSummaryPrintDocument._find_forecastable_round(doc) == 10
+
+    def test_find_forecastable_round_returns_none_when_no_pairings(self):
+        """All games already entered (or no opponent on the unplayed pairings)."""
+        from data.print_documents.documents import TournamentNormsSummaryPrintDocument
+
+        p = self._player_with_schedule(played_rounds=[1, 2, 3, 4, 5, 6, 7, 8, 9])
+        doc = self._doc_with_players([p])
+        assert TournamentNormsSummaryPrintDocument._find_forecastable_round(doc) is None
+
+    def test_played_games_before_counts_played_only(self):
+        """Counts only `pairing.played` rounds strictly before the given round."""
+        from data.print_documents.documents import TournamentNormsSummaryPrintDocument
+
+        p = self._player_with_schedule(
+            played_rounds=[1, 2, 3, 4, 5, 6, 7, 8],
+            paired_unplayed={9: 11, 10: 12},
+        )
+        # Before R9: 8 played.
+        assert TournamentNormsSummaryPrintDocument._played_games_before(p, 9) == 8
+        # Before R10: 8 played (R9 unplayed, doesn't count).
+        assert TournamentNormsSummaryPrintDocument._played_games_before(p, 10) == 8
+        # Before R5: 4 played.
+        assert TournamentNormsSummaryPrintDocument._played_games_before(p, 5) == 4
+
+    def test_played_games_before_zero_at_round_one(self):
+        from data.print_documents.documents import TournamentNormsSummaryPrintDocument
+
+        p = self._player_with_schedule(played_rounds=[1, 2, 3])
+        assert TournamentNormsSummaryPrintDocument._played_games_before(p, 1) == 0
+
+
+# ===========================================================================
 # Per-round audit trail (Layer 2 — arbiter-facing inclusion/exclusion log)
 # ===========================================================================
 #

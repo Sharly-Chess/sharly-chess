@@ -1338,8 +1338,11 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         }
         if tournament.finished:
             return common | {'mode': 'achieved'} | self._achieved_context()
-        if self._has_forecastable_last_round():
-            return common | {'mode': 'forecast'} | self._forecast_context()
+        forecast_round = self._find_forecastable_round()
+        if forecast_round is not None:
+            return (
+                common | {'mode': 'forecast'} | self._forecast_context(forecast_round)
+            )
         return common | {'mode': 'pending'}
 
     def _achieved_context(self) -> dict[str, Any]:
@@ -1368,36 +1371,65 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         achievers.sort(key=_sort_key)
         return {'achievers': achievers}
 
-    def _has_forecastable_last_round(self) -> bool:
-        """True iff the last round is paired (at least one player has an
-        opponent and an unentered result). Forecast is meaningful only then."""
-        last = self.tournament.rounds
+    def _find_forecastable_round(self) -> int | None:
+        """The highest round that is paired AND has at least one unentered
+        result across all players. None if no such round exists.
+
+        Forecast meaning: this is the next round about to be played. In an
+        11-round event with R10/R11 not yet paired, this is the most recent
+        paired round; once R11 is paired, this jumps to R11.
+        """
+        best: int | None = None
         for p in self.tournament.tournament_players_by_id.values():
-            pairing = p.pairings_by_round.get(last)
-            if (
-                pairing is not None
-                and pairing.opponent is not None
-                and pairing.result == Result.NO_RESULT
-            ):
-                return True
-        return False
+            for rnd, pairing in p.pairings_by_round.items():
+                if (
+                    pairing.opponent is not None
+                    and pairing.result == Result.NO_RESULT
+                    and (best is None or rnd > best)
+                ):
+                    best = rnd
+        return best
 
-    def _forecast_context(self) -> dict[str, Any]:
+    @staticmethod
+    def _played_games_before(player, round_: int) -> int:
+        """Count of the player's played games in rounds strictly < round_.
+        Used to gate forecast eligibility on the 1.4.1 games threshold."""
+        return sum(
+            1
+            for r, pairing in player.pairings_by_round.items()
+            if r < round_ and pairing.played
+        )
+
+    def _forecast_context(self, forecast_round: int) -> dict[str, Any]:
         from data.norms import TitleNormForecaster
+        from data.norms.evaluator import _resolve_min_games
 
-        min_games = _resolve_min_games_override(self)
-        last = self.tournament.rounds
+        override = _resolve_min_games_override(self)
         candidates: list[dict[str, Any]] = []
         for tournament_player in self.tournament.tournament_players_by_id.values():
             forecaster = TitleNormForecaster(
-                tournament_player, min_games_override=min_games
+                tournament_player, min_games_override=override
             )
-            if not forecaster.can_forecast_round(last):
+            if not forecaster.can_forecast_round(forecast_round):
                 continue
-            chaseable = forecaster.chaseable_norms(last)
+            # 1.4.1 eligibility — player must be one played-game short of
+            # the minimum so this round can plausibly bring them to it.
+            # Use the lowest min_games across norms (DRR sits at 10, Swiss
+            # at 9, an override can be 7) so we don't filter someone who
+            # qualifies for a lower norm but not yet for GM.
+            min_needed = min(
+                _resolve_min_games(tn, tournament_player.tournament, override)
+                for tn in TitleNorm.values()
+            )
+            if (
+                self._played_games_before(tournament_player, forecast_round)
+                < min_needed - 1
+            ):
+                continue
+            chaseable = forecaster.chaseable_norms(forecast_round)
             if not chaseable:
                 continue
-            pairing = tournament_player.pairings_by_round[last]
+            pairing = tournament_player.pairings_by_round[forecast_round]
             candidates.append(
                 {
                     'player': tournament_player,
@@ -1421,7 +1453,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         candidates.sort(key=_sort_key)
         return {
             'candidates': candidates,
-            'forecast_round': last,
+            'forecast_round': forecast_round,
         }
 
 
