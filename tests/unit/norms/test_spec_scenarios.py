@@ -572,18 +572,22 @@ class TestRule_1_4_2a_FID_nuance:
             tournament_players_by_id=players,
         )
         exemption = compute_big_tournament_exemption(tournament)
-        # The 3 USA players are foreign and contribute. The FID player is
-        # "accepted" so present, but excluded from federation diversity
-        # by 1.4.3d's foreign-player filter.
-        # foreigners = USA × 3 + FID × 1 = 4 (it's not FRA so it qualifies
-        # as "not from host federation"). FID IS counted in foreigners
-        # because compute_big_tournament_exemption only filters out
-        # NON and host-fed at the eligible-players step. FID stays.
-        assert exemption.foreigners == 4
-        # federations: only non-FID feds counted → just USA → 1 distinct fed.
+        # 1.4.2a: FID is accepted but doesn't count as a foreign player.
+        # → foreigners excludes BOTH the host-fed (FRA) AND the FID player.
+        # Only the 3 USA players qualify.
+        assert exemption.foreigners == 3, (
+            f'FID should NOT count toward 1.4.3d foreigner count per 1.4.2a. '
+            f'Got {exemption.foreigners}; expected 3 (USA only).'
+        )
+        # federations: only non-FID, non-host feds counted → just USA.
         assert exemption.federations == 1, (
             f'FID should NOT count toward 1.4.3d federation diversity. '
             f'Got {exemption.federations} feds; expected 1 (USA only).'
+        )
+        # titled_foreigners: same exclusion — FID GM doesn't count.
+        assert exemption.titled_foreigners == 3, (
+            f'FID GM should NOT count toward 1.4.3d titled-foreigner count. '
+            f'Got {exemption.titled_foreigners}; expected 3 (USA GMs only).'
         )
 
 
@@ -873,9 +877,15 @@ class TestRule_1_4_8_Rp_boundary:
 
 
 class TestRule_1_5_6a:
-    def _build_tournament(self, ratings: list[int], rounds: int = 9):
+    def _build_tournament(
+        self, ratings: list[int], rounds: int = 9, swiss: bool = True
+    ):
         """Build a tournament with len(ratings) players, each at the given
         rating, present in every round of a synthetic Swiss event."""
+        from data.pairings.systems import (
+            RoundRobinPairingSystem,
+            SwissPairingSystem,
+        )
 
         def _round_pairing():
             return SimpleNamespace(
@@ -891,9 +901,11 @@ class TestRule_1_5_6a:
                 rating=rating,
                 pairings_by_round={r: _round_pairing() for r in range(1, rounds + 1)},
             )
+        pairing_system = SwissPairingSystem() if swiss else RoundRobinPairingSystem()
         return SimpleNamespace(
             event=SimpleNamespace(federation='FRA'),
             rounds=rounds,
+            pairing_system=pairing_system,
             tournament_players_by_id=players,
         )
 
@@ -921,6 +933,7 @@ class TestRule_1_5_6a:
         """The check is per-round (worst-case). One round with <40 present
         kills the eligibility."""
         from data.norms import compute_high_level_tournament
+        from data.pairings.systems import SwissPairingSystem
 
         # 40 strong players. One of them missed 2 rounds → excluded from
         # eligible_players entirely, so every round counts 39 present.
@@ -949,10 +962,63 @@ class TestRule_1_5_6a:
         tournament = SimpleNamespace(
             event=SimpleNamespace(federation='FRA'),
             rounds=9,
+            pairing_system=SwissPairingSystem(),
             tournament_players_by_id=players,
         )
         # Player 1 missed >1 round → excluded → 39 eligible players → fails.
         assert compute_high_level_tournament(tournament) is False
+
+    def test_not_high_level_for_round_robin(self):
+        """1.5.6a is Swiss-only. A 40-player Round Robin that would pass
+        every other criterion must still fail."""
+        from data.norms import compute_high_level_tournament
+
+        tournament = self._build_tournament([2200] * 40, rounds=9, swiss=False)
+        assert compute_high_level_tournament(tournament) is False
+
+    def test_pab_recipient_counts_as_present(self):
+        """Documents the policy choice: a player receiving a PAB this round
+        is counted toward the 40-player "present" threshold. Spec is
+        ambiguous; current implementation includes PAB recipients."""
+        from data.norms import compute_high_level_tournament
+        from data.pairings.systems import SwissPairingSystem
+
+        # 40 players at 2200. One of them has a PAB in round 5 (not at the
+        # board) but is otherwise present every round.
+        def _pairing(result=Result.DRAW):
+            return SimpleNamespace(
+                result=result,
+                opponent=None,
+                unplayed=result.is_unplayed,
+                played=not result.is_unplayed,
+            )
+
+        players = {}
+        for i in range(1, 41):
+            pairings = {
+                r: (
+                    _pairing(Result.PAIRING_ALLOCATED_BYE)
+                    if (i == 40 and r == 5)
+                    else _pairing()
+                )
+                for r in range(1, 10)
+            }
+            players[i] = SimpleNamespace(
+                rating_type=PlayerRatingType.FIDE,
+                federation=Federation('USA'),
+                title=PlayerTitle.NONE,
+                rating=2200,
+                pairings_by_round=pairings,
+            )
+        tournament = SimpleNamespace(
+            event=SimpleNamespace(federation='FRA'),
+            rounds=9,
+            pairing_system=SwissPairingSystem(),
+            tournament_players_by_id=players,
+        )
+        # Despite player #40 having a PAB in round 5, every round still
+        # has 40 "present" players → 1.5.6a passes.
+        assert compute_high_level_tournament(tournament) is True
 
 
 # ===========================================================================

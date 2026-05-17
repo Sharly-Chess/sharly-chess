@@ -990,6 +990,15 @@ def compute_big_tournament_exemption(
     worst_titled = float('inf')
 
     for rnd in range(1, tournament.rounds + 1):
+        # "Present" interpretation: a player counts as present this round
+        # if they played a real game OR received a Pairing Allocated Bye /
+        # Rest Game. The spec says the per-round threshold must hold "for
+        # this purpose" of eligibility, with PAB explicitly excluded from
+        # what counts as "missing a round". Including PAB recipients here
+        # matches that intent — the player is participating in the round's
+        # mechanics, just not at a board. (Strict "must be at a board"
+        # reading would make 1.4.3d harder to satisfy in any event with
+        # bye-eligible bottom seeds — not what FIDE practice does.)
         present = []
         for p in eligible_players:
             pairing = p.pairings_by_round.get(rnd)
@@ -999,12 +1008,14 @@ def compute_big_tournament_exemption(
             ):
                 present.append(p)
 
-        n_players = len(present)
-        n_titled = sum(1 for p in present if p.title in TitleNorm.MASTER_TITLES)
-        # 1.4.2a — FID is accepted but isn't a "real" federation for diversity.
-        n_feds = len(
-            {p.federation for p in present if p.federation != Federation('FID')}
-        )
+        # 1.4.2a: FID players are accepted as participants but do NOT count
+        # as foreign players. 1.4.3d's "at least 20 FIDE rated foreign
+        # players ... from at least 3 different federations, at least 10 of
+        # whom hold ..." therefore excludes FID from all three counts.
+        present_foreign = [p for p in present if p.federation != Federation('FID')]
+        n_players = len(present_foreign)
+        n_titled = sum(1 for p in present_foreign if p.title in TitleNorm.MASTER_TITLES)
+        n_feds = len({p.federation for p in present_foreign})
 
         worst_players = min(worst_players, n_players)
         worst_federations = min(worst_federations, n_feds)
@@ -1020,14 +1031,24 @@ def compute_big_tournament_exemption(
 
 
 def compute_high_level_tournament(tournament: 'Tournament') -> bool:
-    """FIDE 1.5.6a — every round must have at least 40 FIDE-rated players
-    whose average rating is at least 2000.
+    """FIDE 1.5.6a — Swiss-only. Every round must have at least 40 FIDE-rated
+    players whose average rating is at least 2000.
 
     Players are counted only if they missed at most one round (PAB /
     forfeit-win / rest-game don't count as missing). NON-federation
     players are excluded; host federation is NOT excluded here (this
     differs from 1.4.3d, which IS host-federation-blind).
+
+    1.5.6a is explicitly a Swiss-tournament path (the spec text says
+    "Individual Swiss tournament"); we return False for any non-Swiss
+    pairing system so RR/DRR/Knockout events don't accidentally claim
+    the exemption.
     """
+    from data.pairings.systems import SwissPairingSystem
+
+    if tournament.pairing_system != SwissPairingSystem():
+        return False
+
     eligible_players = []
     for p in tournament.tournament_players_by_id.values():
         if p.rating_type != PlayerRatingType.FIDE:
@@ -1047,6 +1068,8 @@ def compute_high_level_tournament(tournament: 'Tournament') -> bool:
         eligible_players.append(p)
 
     for rnd in range(1, tournament.rounds + 1):
+        # "Present" includes PAB/REST_GAME recipients — same interpretation
+        # as compute_big_tournament_exemption (see comment there).
         present = []
         for p in eligible_players:
             pairing = p.pairings_by_round.get(rnd)
