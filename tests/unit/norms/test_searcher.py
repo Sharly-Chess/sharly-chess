@@ -615,21 +615,7 @@ class TestSearcherWithRealEvaluator:
             _gm(10, federation='CHN'),
             _gm(11, federation='BRA'),
         ]
-        results = [
-            Result.WIN,
-            Result.WIN,
-            Result.WIN,
-            Result.WIN,
-            Result.WIN,
-            Result.WIN,
-            Result.WIN,
-            Result.WIN,
-            Result.DRAW,
-            Result.DRAW,
-            Result.LOSS,
-        ]
-        # That's 8 wins + 2 draws + 1 loss = 9 points… too high; bring down.
-        # Adjust: 7 wins + 3 draws + 1 loss = 8.5
+        # 7 wins + 3 draws + 1 loss = 8.5 / 11.
         results = [
             Result.WIN,
             Result.WIN,
@@ -736,14 +722,11 @@ class TestSearcherWithRealEvaluator:
         from data.pairings.variations import DoubleBergerRoundRobinVariation
         from data.pairings.systems import RoundRobinPairingSystem
 
-        opponents = [_im(i, rating=2300) for i in range(1, 11)]
-        results = [Result.WIN] * 10  # baseline passes Rp comfortably
-        inputs = make_inputs(list(zip(range(1, 11), opponents, results)))
-
+        results = [Result.WIN] * 10
         searcher = _real_searcher(rounds=10, pairing_system=RoundRobinPairingSystem())
         searcher.player.tournament.pairing_variation = DoubleBergerRoundRobinVariation()
-        # Even if baseline failed, search wouldn't run; we engineer baseline
-        # to fail by using all-own-fed opponents.
+        # Engineer a baseline that fails 1.4.4 (all-own-fed) so we can
+        # observe that the search does NOT run despite the failure.
         own_fed_opponents = [
             _im(i, rating=2300, federation='FRA') for i in range(1, 11)
         ]
