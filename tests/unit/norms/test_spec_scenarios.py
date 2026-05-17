@@ -1268,3 +1268,323 @@ class TestMinGamesDocumentIntegration:
         for v in (7, 8, 9, 11):
             opt.value = v
             _validate_min_games_only_for_swiss(doc)  # no raise
+
+
+# ===========================================================================
+# 1.4.3d eligibility filter — players must miss at most one round
+# ===========================================================================
+
+
+class TestRule_1_4_3d_eligibility:
+    """`compute_big_tournament_exemption`'s eligibility filter rejects
+    players who missed more than one non-PAB / non-forfeit-win round."""
+
+    def _make_player(self, federation: str, missed_rounds: set[int], rounds: int = 9):
+        from data.pairings.systems import SwissPairingSystem  # noqa: F401
+
+        def _pairing(missed: bool):
+            return SimpleNamespace(
+                result=Result.ZERO_POINT_BYE if missed else Result.DRAW,
+                opponent=None,
+                unplayed=missed,
+                played=not missed,
+            )
+
+        return SimpleNamespace(
+            rating_type=PlayerRatingType.FIDE,
+            federation=Federation(federation),
+            title=PlayerTitle.GRANDMASTER,
+            rating=2500,
+            pairings_by_round={
+                r: _pairing(missed=(r in missed_rounds)) for r in range(1, rounds + 1)
+            },
+        )
+
+    def _tournament(self, players: list, rounds: int = 9):
+        from data.pairings.systems import SwissPairingSystem
+
+        return SimpleNamespace(
+            event=SimpleNamespace(federation='FRA'),
+            rounds=rounds,
+            pairing_system=SwissPairingSystem(),
+            tournament_players_by_id={i: p for i, p in enumerate(players, start=1)},
+        )
+
+    def test_player_with_zero_missed_rounds_is_eligible(self):
+        from data.norms import compute_big_tournament_exemption
+
+        # 4 USA, 4 GER, 4 ESP — all attended every round.
+        players = (
+            [self._make_player('USA', set()) for _ in range(4)]
+            + [self._make_player('GER', set()) for _ in range(4)]
+            + [self._make_player('ESP', set()) for _ in range(4)]
+        )
+        exemption = compute_big_tournament_exemption(self._tournament(players))
+        assert exemption.foreigners == 12  # all present
+        assert exemption.federations == 3
+
+    def test_player_with_one_missed_round_is_eligible_but_absent_that_round(self):
+        """One missed round → still eligible, just absent that single round."""
+        from data.norms import compute_big_tournament_exemption
+
+        # 4 USA + 4 GER + 4 ESP. One of the USA players misses round 5.
+        players = [self._make_player('USA', set()) for _ in range(3)]
+        players.append(self._make_player('USA', {5}))  # missed round 5
+        players += [self._make_player('GER', set()) for _ in range(4)]
+        players += [self._make_player('ESP', set()) for _ in range(4)]
+        exemption = compute_big_tournament_exemption(self._tournament(players))
+        # Worst round (round 5): 11 present (12 eligible − the one absent).
+        assert exemption.foreigners == 11
+
+    def test_player_with_two_missed_rounds_is_excluded_entirely(self):
+        """A player missing >1 round is removed from `eligible_players`
+        completely — they don't contribute to ANY round's count."""
+        from data.norms import compute_big_tournament_exemption
+
+        # 4 USA + 4 GER + 4 ESP. One of the USA players misses 2 rounds.
+        players = [self._make_player('USA', set()) for _ in range(3)]
+        players.append(self._make_player('USA', {3, 5}))  # >1 missed
+        players += [self._make_player('GER', set()) for _ in range(4)]
+        players += [self._make_player('ESP', set()) for _ in range(4)]
+        exemption = compute_big_tournament_exemption(self._tournament(players))
+        # The doomed player contributes to NO round. Every round has 11.
+        assert exemption.foreigners == 11
+
+    def test_pab_does_not_count_as_missed_round(self):
+        """Spec: "players will be counted only if they miss at most one
+        round (excluding pairing allocated byes)" — PAB rounds aren't
+        misses for eligibility."""
+        from data.norms import compute_big_tournament_exemption
+
+        def _pab():
+            return SimpleNamespace(
+                result=Result.PAIRING_ALLOCATED_BYE,
+                opponent=None,
+                unplayed=True,
+                played=False,
+            )
+
+        def _played():
+            return SimpleNamespace(
+                result=Result.DRAW, opponent=None, unplayed=False, played=True
+            )
+
+        # One player has 3 PABs (way over 1) plus all-played → still eligible.
+        special = SimpleNamespace(
+            rating_type=PlayerRatingType.FIDE,
+            federation=Federation('USA'),
+            title=PlayerTitle.GRANDMASTER,
+            rating=2500,
+            pairings_by_round={
+                r: (_pab() if r in {2, 4, 6} else _played()) for r in range(1, 10)
+            },
+        )
+        players = [special]
+        players += [self._make_player('GER', set()) for _ in range(4)]
+        players += [self._make_player('ESP', set()) for _ in range(4)]
+        exemption = compute_big_tournament_exemption(self._tournament(players))
+        # Special is eligible AND counts as present (PAB = present per our
+        # documented policy). Every round has 9 present (1 + 4 + 4).
+        assert exemption.foreigners == 9
+
+
+# ===========================================================================
+# Forecaster — `TitleNormForecaster` public API
+# ===========================================================================
+
+
+def _forecaster_with_pairings(
+    *,
+    rounds: int,
+    pairings: dict,
+    federation: str = 'FRA',
+    title: PlayerTitle = PlayerTitle.NONE,
+    pairing_system=None,
+):
+    """Build a fake TournamentPlayer + TitleNormForecaster from pairings.
+    Helper for forecaster tests."""
+    from data.norms import TitleNormForecaster
+    from data.pairings.systems import SwissPairingSystem
+    from utils.enum import PlayerGender
+
+    def _fake_pairing(result, opponent):
+        return SimpleNamespace(
+            result=result,
+            opponent=opponent,
+            unplayed=result.is_unplayed,
+            played=not result.is_unplayed,
+        )
+
+    fake_pairings = {
+        rnd: _fake_pairing(result, opp) for rnd, (opp, result) in pairings.items()
+    }
+    player = SimpleNamespace(
+        federation=Federation(federation),
+        gender=PlayerGender.MAN,
+        title=PlayerTitle(title),
+        event=SimpleNamespace(federation=federation),
+        tournament=SimpleNamespace(
+            rounds=rounds,
+            pairing_system=pairing_system or SwissPairingSystem(),
+            pairing_variation=None,
+            tournament_players_by_id={},
+            big_tournament_exemption=__import__(
+                'utils.types', fromlist=['BigTournamentExemption']
+            ).BigTournamentExemption(0, 0, 0),
+            high_level_tournament=False,
+        ),
+        pairings_by_round=fake_pairings,
+    )
+    return TitleNormForecaster(player)
+
+
+class TestForecasterCanForecastRound:
+    """`can_forecast_round` gates whether a forecast is meaningful."""
+
+    def test_paired_unentered_round_can_be_forecast(self):
+        opp = _gm(1)
+        forecaster = _forecaster_with_pairings(
+            rounds=9, pairings={9: (opp, Result.NO_RESULT)}
+        )
+        assert forecaster.can_forecast_round(9)
+
+    def test_unpaired_round_cannot_be_forecast(self):
+        # No pairing entry at all for round 9.
+        forecaster = _forecaster_with_pairings(rounds=9, pairings={})
+        assert not forecaster.can_forecast_round(9)
+
+    def test_round_with_no_opponent_cannot_be_forecast(self):
+        forecaster = _forecaster_with_pairings(
+            rounds=9, pairings={9: (None, Result.ZERO_POINT_BYE)}
+        )
+        assert not forecaster.can_forecast_round(9)
+
+    def test_already_played_round_cannot_be_forecast(self):
+        # If the result is entered already, the forecast for that round is
+        # moot — the arbiter should look at the achieved-norms view instead.
+        opp = _gm(1)
+        forecaster = _forecaster_with_pairings(
+            rounds=9, pairings={9: (opp, Result.WIN)}
+        )
+        assert not forecaster.can_forecast_round(9)
+
+
+class TestForecasterMinimumRequiredResult:
+    """`minimum_required_result` returns the cheapest outcome (LOSS, DRAW,
+    WIN, or None) achieving a norm."""
+
+    def _strong_field_player(
+        self, ratings_and_results, last_round_opp, last_round_rounds=9
+    ):
+        """Build a forecaster for a player who has played `ratings_and_results`
+        and faces `last_round_opp` in the last round (unentered)."""
+        opps = [
+            _gm(i, rating=r, federation=fed)
+            for i, (r, fed, _res) in enumerate(ratings_and_results, start=1)
+        ]
+        pairings = {
+            i: (opps[i - 1], res)
+            for i, (_r, _fed, res) in enumerate(ratings_and_results, start=1)
+        }
+        pairings[last_round_rounds] = (last_round_opp, Result.NO_RESULT)
+        return _forecaster_with_pairings(rounds=last_round_rounds, pairings=pairings)
+
+    def test_any_outcome_works_when_player_already_secured(self):
+        """8 wins against strong GMs going into R9 — Rp is way above 2600
+        no matter what R9 does."""
+        # Avg with 9 GMs at 2400 + 1 GM opp at 2400 = 2400. With 8 wins,
+        # any R9 outcome: score 8.0/9 = 0.889 → dp 351 → Rp 2751 (LOSS).
+        ratings_and_results = [
+            (2400, fed, Result.WIN)
+            for fed in ('USA', 'GER', 'ESP', 'ITA', 'NED', 'POL', 'RUS', 'AZE')
+        ]
+        last_opp = _gm(99, rating=2400, federation='IND')
+        forecaster = self._strong_field_player(ratings_and_results, last_opp)
+        # Even LOSS achieves the GM norm.
+        assert forecaster.minimum_required_result(9, TitleNorm.GM) == Result.LOSS
+
+    def test_returns_none_when_no_outcome_achieves(self):
+        """Weak field + losses — no R9 outcome saves it."""
+        ratings_and_results = [
+            (1900, fed, Result.LOSS)
+            for fed in ('USA', 'USA', 'USA', 'USA', 'USA', 'USA', 'USA', 'USA')
+        ]
+        last_opp = _gm(99, rating=1900, federation='USA')
+        forecaster = self._strong_field_player(ratings_and_results, last_opp)
+        # Way too few foreign feds + Ra too low — none of W/D/L can rescue.
+        assert forecaster.minimum_required_result(9, TitleNorm.GM) is None
+
+
+class TestForecasterChaseableNorms:
+    """`chaseable_norms` filters out norms ≤ current title and unreachable
+    ones, returning ForecastRequirement (minimum_outcome + play_required)."""
+
+    def test_no_chaseable_norms_for_existing_gm(self):
+        """A GM-titled player has no higher norm to chase."""
+        # Player already a GM → nothing above.
+        opp = _gm(1)
+        forecaster = _forecaster_with_pairings(
+            rounds=9,
+            pairings={1: (opp, Result.WIN), 9: (opp, Result.NO_RESULT)},
+            title=PlayerTitle.GRANDMASTER,
+        )
+        chaseable = forecaster.chaseable_norms(9)
+        assert chaseable == {}
+
+    def test_returns_forecast_requirement_with_play_required_true(self):
+        """In a 9-round Swiss (no headroom for 1.4.1e tail-drop) where the
+        full mix passes for all three outcomes, ForecastRequirement has
+        `play_required=True` — the player MUST sit at the board even if
+        the outcome doesn't matter."""
+        # 8 wins against strong GMs + a strong R9 opponent. All three R9
+        # outcomes give a norm via the full 9-game mix (Ra=2400).
+        ratings_and_feds = [
+            (2400, fed)
+            for fed in ('USA', 'GER', 'ESP', 'ITA', 'NED', 'POL', 'RUS', 'AZE')
+        ]
+        opps = [
+            _gm(i, rating=r, federation=fed)
+            for i, (r, fed) in enumerate(ratings_and_feds, start=1)
+        ]
+        last_opp = _gm(99, rating=2400, federation='IND')
+        pairings = {i: (opps[i - 1], Result.WIN) for i in range(1, 9)}
+        pairings[9] = (last_opp, Result.NO_RESULT)
+        forecaster = _forecaster_with_pairings(rounds=9, pairings=pairings)
+        chaseable = forecaster.chaseable_norms(9)
+        # GM achievable.
+        assert TitleNorm.GM in chaseable
+        req = chaseable[TitleNorm.GM]
+        assert req.minimum_outcome == Result.LOSS  # any OTB result works
+        # 9-round Swiss has max_ignores=0 → R_N can't be 1.4.1e-dropped.
+        # Therefore play is required.
+        assert req.play_required is True
+
+
+class TestForecasterOutcomeOrdering:
+    """Regression: the LOSS→DRAW→WIN iteration in `_FORECAST_OUTCOMES` returns
+    the genuinely-cheapest outcome. With 1.4.1e/f drops, all three outcomes
+    in a >9-round Swiss collapse to the same R1..R(N-1) mix when R_N is
+    dropped — so LOSS (cheapest) wins the ordering, consistent with spec."""
+
+    def test_loss_picked_when_tail_drop_rescues(self):
+        """11-round Swiss. Baseline mix fails Rp regardless of R_N outcome,
+        but dropping R_N (tail) leaves a passing R1..R10 mix. All three
+        outcomes pass via 1.4.1e tail-drop → LOSS wins."""
+        # 10 strong GMs in R1..R10 against which the applicant scored 7.5.
+        # Avg 2400 with score 7.5/10 = 0.75 → dp 193 → Rp 2593 (just fails by 7).
+        # Adjust: 8/10 = 0.8 → dp 240 → Rp 2640 (passes prefix).
+        # Add R11 opp: forecast LOSS/DRAW/WIN. Searcher drops R11 (tail) →
+        # leaves R1..R10 which passes. All three outcomes pass.
+        feds = ['USA', 'GER', 'ESP', 'ITA', 'NED', 'POL', 'RUS', 'AZE', 'IND', 'CHN']
+        opps = [_gm(i, rating=2400, federation=feds[i - 1]) for i in range(1, 11)]
+        results = [Result.WIN] * 8 + [Result.LOSS] * 2  # 8 points in 10 games
+        pairings = {i: (opps[i - 1], results[i - 1]) for i in range(1, 11)}
+        last_opp = _gm(99, rating=2400, federation='BRA')
+        pairings[11] = (last_opp, Result.NO_RESULT)
+        forecaster = _forecaster_with_pairings(rounds=11, pairings=pairings)
+        chaseable = forecaster.chaseable_norms(11)
+        assert TitleNorm.GM in chaseable
+        req = chaseable[TitleNorm.GM]
+        # LOSS reported (cheapest); R_N dropped → play not required.
+        assert req.minimum_outcome == Result.LOSS
+        assert req.play_required is False

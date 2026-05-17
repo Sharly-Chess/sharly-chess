@@ -920,6 +920,14 @@ class TitleNormForecaster:
         the applicant's current title, and norms unreachable from any
         outcome."""
         forecast = self.forecast_round(round_)
+        # Separate "is R_N dispensable?" check — run the searcher with
+        # R_N forced out of the mix (NO_RESULT → unplayed → not collected).
+        # Whether the searcher's per-outcome winner happens to drop R_N
+        # depends on heuristic ordering, so we can't use that. This check
+        # is authoritative: if the norm holds with R_N entirely excluded,
+        # then play is genuinely optional for the norm.
+        secured_norms = self._secured_norms_without_round(round_)
+
         chaseable: dict[TitleNorm, ForecastRequirement] = {}
         for tn in TitleNorm.values():
             # Skip norms not above the applicant's current title.
@@ -929,16 +937,26 @@ class TitleNormForecaster:
             for outcome in _FORECAST_OUTCOMES:
                 result = forecast[outcome][tn]
                 if result.is_met:
-                    # If the searcher dropped round_ from the mix at this
-                    # outcome (i.e. 1.4.1e applied), the round is optional
-                    # for the norm.
-                    round_dropped = round_ in result.ignored_rounds_via_search
                     chaseable[tn] = ForecastRequirement(
                         minimum_outcome=outcome,
-                        play_required=not round_dropped,
+                        play_required=tn not in secured_norms,
                     )
                     break
         return chaseable
+
+    def _secured_norms_without_round(self, round_: int) -> set[TitleNorm]:
+        """Norms achieved with `round_` excluded from the mix entirely.
+
+        Equivalent to "what if the player no-shows" — the override
+        Result.NO_RESULT marks the pairing as unplayed, so collect_inputs
+        skips it. The searcher's 1.4.1e/f explorations apply normally to
+        the prefix R1..R(round_-1).
+        """
+        searcher = TitleNormSubsetSearcher(
+            self.player, min_games_override=self.min_games_override
+        )
+        results = searcher.evaluate(result_overrides={round_: Result.NO_RESULT})
+        return {tn for tn, res in results.items() if res.is_met}
 
 
 # ---------------------------------------------------------------------------
