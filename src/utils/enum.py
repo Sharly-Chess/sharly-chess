@@ -856,6 +856,8 @@ class TitleNorm(Enum):
                 return PlayerTitle.INTERNATIONAL_MASTER
             case TitleNorm.GM:
                 return PlayerTitle.GRANDMASTER
+            case _:
+                raise AssertionError(f'unhandled TitleNorm: {self!r}')
 
     def satisfies_gender_requirement(self, gender: PlayerGender) -> bool:
         match self:

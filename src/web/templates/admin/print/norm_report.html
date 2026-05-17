@@ -441,9 +441,6 @@
                 </section>
                 <div class="item" style="margin-top: 0.5rem;">
                     <label>Special remarks:</label>
-                    {# Don't assign to `_` here — that's the gettext function,
-                       and clobbering it breaks any later `_(...)` calls in
-                       this loop iteration (e.g. the per-round audit block). #}
                     {% set remarks = [] %}
                     {% if norm.requirement_156a_met %}
                         {% set _discard = remarks.append('This tournament meets the requirements of 1.5.6a.') %}

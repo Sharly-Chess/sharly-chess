@@ -67,10 +67,11 @@ def compute_big_tournament_exemption(
         # bye-eligible bottom seeds — not what FIDE practice does.)
         present = []
         for p in eligible_players:
-            pairing = p.pairings_by_round.get(rnd)
-            if pairing and (
-                pairing.played
-                or pairing.result in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
+            round_pairing = p.pairings_by_round.get(rnd)
+            if round_pairing and (
+                round_pairing.played
+                or round_pairing.result
+                in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
             ):
                 present.append(p)
 
@@ -138,10 +139,11 @@ def compute_high_level_tournament(tournament: 'Tournament') -> bool:
         # as compute_big_tournament_exemption (see comment there).
         present = []
         for p in eligible_players:
-            pairing = p.pairings_by_round.get(rnd)
-            if pairing and (
-                pairing.played
-                or pairing.result in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
+            round_pairing = p.pairings_by_round.get(rnd)
+            if round_pairing and (
+                round_pairing.played
+                or round_pairing.result
+                in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
             ):
                 present.append(p)
         top_rated = sorted((p.rating for p in present), reverse=True)[:40]

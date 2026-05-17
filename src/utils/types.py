@@ -122,36 +122,38 @@ class PlayerRatingAndType:
         return f'{self.value} {self.type.short_name}' if self.value else '-'
 
 
+# 1.4.3d thresholds (FIDE Handbook B.01, 1 Jan 2024). Module-level so the
+# typing.NamedTuple below isn't confused into treating them as fields.
+BIG_TOURNAMENT_MIN_FEDERATIONS = 3
+BIG_TOURNAMENT_MIN_FOREIGNERS = 20
+BIG_TOURNAMENT_MIN_TITLED_FOREIGNERS = 10
+
+
 class BigTournamentExemption(NamedTuple):
     """Aggregated per-tournament counts used by 1.4.3d (Swiss size exception).
 
     Each field is the worst-case (minimum) across every round in the
     tournament — 1.4.3d requires the threshold to hold for *every* round.
 
-    The three thresholds live here so any spec change is a one-line edit
-    instead of a grep across templates and rule code.
+    The threshold constants live at module level above; the properties
+    here apply them so the per-field check is a one-liner.
     """
 
     federations: int
     foreigners: int
     titled_foreigners: int
 
-    # 1.4.3d thresholds (FIDE Handbook B.01, 1 Jan 2024).
-    MIN_FEDERATIONS = 3
-    MIN_FOREIGNERS = 20
-    MIN_TITLED_FOREIGNERS = 10
-
     @property
     def federations_met(self) -> bool:
-        return self.federations >= self.MIN_FEDERATIONS
+        return self.federations >= BIG_TOURNAMENT_MIN_FEDERATIONS
 
     @property
     def foreigners_met(self) -> bool:
-        return self.foreigners >= self.MIN_FOREIGNERS
+        return self.foreigners >= BIG_TOURNAMENT_MIN_FOREIGNERS
 
     @property
     def titled_foreigners_met(self) -> bool:
-        return self.titled_foreigners >= self.MIN_TITLED_FOREIGNERS
+        return self.titled_foreigners >= BIG_TOURNAMENT_MIN_TITLED_FOREIGNERS
 
     @property
     def is_met(self) -> bool:

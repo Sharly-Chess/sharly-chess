@@ -211,10 +211,6 @@
                                     <td class="center perf">{{ norm.average_rating }}</td>
                                     <td class="center perf">{{ norm.performance }}</td>
                                     <td>
-                                        {# Don't assign to `_` here — that's
-                                           the gettext function, and clobbering
-                                           it breaks any later `_(...)` call in
-                                           this loop iteration. #}
                                         {% set notes = [] %}
                                         {% if norm.applied_142c %}
                                             {% set _discard = notes.append(_('1.4.2c applied')) %}
