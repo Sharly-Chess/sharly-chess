@@ -292,11 +292,23 @@ msgstr ""
 msgid "1 - 0 (U)"
 msgstr ""
 
+msgid "1.4.1e/f: ignored by the subset search to satisfy this norm."
+msgstr ""
+
 #, python-format
 msgid "1.4.1e/f: round(s) %(rounds)s ignored"
 msgstr ""
 
+msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
+msgstr ""
+
+msgid "1.4.2b: round-robin only — unrated opponent scored zero against every FIDE-rated opponent."
+msgstr ""
+
 msgid "1.4.2c applied"
+msgstr ""
+
+msgid "1.4.2c: last-round opponent forfeit, counted as a played LOSS."
 msgstr ""
 
 msgid "1.4.3d applied"
@@ -1391,6 +1403,12 @@ msgstr ""
 msgid "Could not connect to data source [{data_source}]."
 msgstr ""
 
+msgid "Counted"
+msgstr ""
+
+msgid "Counted toward the norm."
+msgstr ""
+
 msgid "Create"
 msgstr ""
 
@@ -2378,6 +2396,9 @@ msgstr ""
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
+msgid "FIDE 1.4.1. Default is 9. Lower to 7 for World or Continental Team Championships, or to 8 for the World Cup (1.4.1b exceptions). Only applies to Swiss tournaments."
+msgstr ""
+
 msgid "FIDE Arbiter"
 msgstr ""
 
@@ -2561,6 +2582,9 @@ msgid "Forfeit Loss"
 msgstr ""
 
 msgid "Forfeit Win"
+msgstr ""
+
+msgid "Forfeit win against a no-show — not counted as a played game."
 msgstr ""
 
 msgid "Forfeited games are always considered as played in Round-Robin tournaments."
@@ -3370,6 +3394,12 @@ msgstr ""
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr ""
 
+msgid "Minimum games for a norm"
+msgstr ""
+
+msgid "Minimum games for a norm must be at least 7."
+msgstr ""
+
 msgid "Minimum number of points (included):"
 msgstr ""
 
@@ -3628,6 +3658,9 @@ msgid "No network detected, use the Refresh button when connected."
 msgstr ""
 
 msgid "No new hours to create from tournament [{name}] (all rounds are already covered)."
+msgstr ""
+
+msgid "No opponent paired this round."
 msgstr ""
 
 msgid "No organiser"
@@ -3928,6 +3961,9 @@ msgstr ""
 msgid "Open Admin Interface"
 msgstr ""
 
+msgid "Open IT1 certificate for this norm"
+msgstr ""
+
 msgid "Open documentation"
 msgstr ""
 
@@ -4075,6 +4111,9 @@ msgstr ""
 msgid "Pairing-Allocated Bye assigned to player [{player}]."
 msgstr ""
 
+msgid "Pairing-allocated bye / half-point bye / rest game — no opponent."
+msgstr ""
+
 msgid "Pairings"
 msgstr ""
 
@@ -4146,6 +4185,9 @@ msgid "Payment"
 msgstr ""
 
 msgid "Pending"
+msgstr ""
+
+msgid "Per-round audit — why each round was counted (or not)"
 msgstr ""
 
 msgid "Perfect tournament performance"
@@ -4603,6 +4645,9 @@ msgstr ""
 msgid "Quick-apply a tie-break set"
 msgstr ""
 
+msgid "R"
+msgstr ""
+
 #, python-format
 msgid "R %(round)d *** ROUND COLUMN HEADER"
 msgstr "R %(round)d"
@@ -4692,6 +4737,9 @@ msgid "Ratings"
 msgstr ""
 
 msgid "Ratings update"
+msgstr ""
+
+msgid "Reason"
 msgstr ""
 
 msgid "Received a Full-Point Bye for the next round"
@@ -5637,6 +5685,9 @@ msgstr ""
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr ""
 
+msgid "The minimum-games override only applies to Swiss tournaments (FIDE 1.4.1b). Leave at default ({default}) for Round Robin and Double Round Robin events."
+msgstr ""
+
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr ""
@@ -6370,6 +6421,9 @@ msgid "Unpaired: hidden"
 msgstr ""
 
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
+msgstr ""
+
+msgid "Unplayed (no result recorded)."
 msgstr ""
 
 msgid "Unrated *** PLURAL"

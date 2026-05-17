@@ -211,22 +211,32 @@
                                     <td class="center perf">{{ norm.average_rating }}</td>
                                     <td class="center perf">{{ norm.performance }}</td>
                                     <td>
+                                        {# Don't assign to `_` here — that's
+                                           the gettext function, and clobbering
+                                           it breaks any later `_(...)` call in
+                                           this loop iteration. #}
                                         {% set notes = [] %}
                                         {% if norm.applied_142c %}
-                                            {% set _ = notes.append(_('1.4.2c applied')) %}
+                                            {% set _discard = notes.append(_('1.4.2c applied')) %}
                                         {% endif %}
                                         {% if norm.ignored_rounds_via_search %}
-                                            {% set _ = notes.append(
-                                                _('1.4.1e/f: round(s) %(rounds)s ignored') | format(
+                                            {# newstyle gettext: pass the
+                                               substitution kwarg directly to
+                                               `_`, not via the `format` filter
+                                               — newstyle converts %(name)s to
+                                               .format() syntax internally. #}
+                                            {% set _discard = notes.append(
+                                                _(
+                                                    '1.4.1e/f: round(s) %(rounds)s ignored',
                                                     rounds=(norm.ignored_rounds_via_search | sort | join(', '))
                                                 )
                                             ) %}
                                         {% endif %}
                                         {% if norm.requirement_156a_met %}
-                                            {% set _ = notes.append(_('1.5.6a met')) %}
+                                            {% set _discard = notes.append(_('1.5.6a met')) %}
                                         {% endif %}
                                         {% if norm.is_143d_met and norm.not_enough_federations %}
-                                            {% set _ = notes.append(_('1.4.3d applied')) %}
+                                            {% set _discard = notes.append(_('1.4.3d applied')) %}
                                         {% endif %}
                                         {% if notes %}
                                             <span class="note">{{ notes | join('; ') }}</span>

@@ -292,12 +292,24 @@ msgstr "0 - ½ (NC)"
 msgid "1 - 0 (U)"
 msgstr "1 - 0 (NC)"
 
+msgid "1.4.1e/f: ignored by the subset search to satisfy this norm."
+msgstr "1.4.1e/f : ignorée par la recherche de sous-ensembles pour satisfaire cette norme."
+
 #, python-format
 msgid "1.4.1e/f: round(s) %(rounds)s ignored"
 msgstr "1.4.1e/f : ronde(s) %(rounds)s ignorée(s)"
 
+msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
+msgstr "1.4.2a : adversaire sans fédération FIDE (NON) — non compté."
+
+msgid "1.4.2b: round-robin only — unrated opponent scored zero against every FIDE-rated opponent."
+msgstr "1.4.2b : toutes rondes uniquement — adversaire non classé ayant marqué zéro contre tous ses adversaires classés FIDE."
+
 msgid "1.4.2c applied"
 msgstr "1.4.2c appliqué"
+
+msgid "1.4.2c: last-round opponent forfeit, counted as a played LOSS."
+msgstr "1.4.2c : forfait de l'adversaire à la dernière ronde, compté comme une DÉFAITE jouée."
 
 msgid "1.4.3d applied"
 msgstr "1.4.3d appliqué"
@@ -1391,6 +1403,12 @@ msgstr "Côte d'Ivoire"
 msgid "Could not connect to data source [{data_source}]."
 msgstr "Impossible de se connecter à la source de données [{data_source}]."
 
+msgid "Counted"
+msgstr "Compté"
+
+msgid "Counted toward the norm."
+msgstr "Compté pour la norme."
+
 msgid "Create"
 msgstr "Créer"
 
@@ -2378,6 +2396,9 @@ msgstr "FIDE"
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
+msgid "FIDE 1.4.1. Default is 9. Lower to 7 for World or Continental Team Championships, or to 8 for the World Cup (1.4.1b exceptions). Only applies to Swiss tournaments."
+msgstr "FIDE 1.4.1. Par défaut 9. Réduire à 7 pour les Championnats du Monde ou Continentaux par équipes, ou à 8 pour la Coupe du Monde (exceptions 1.4.1b). Ne s'applique qu'aux tournois Suisses."
+
 msgid "FIDE Arbiter"
 msgstr "Arbitre FIDE"
 
@@ -2562,6 +2583,9 @@ msgstr "Défaite par forfait"
 
 msgid "Forfeit Win"
 msgstr "Victoire par forfait"
+
+msgid "Forfeit win against a no-show — not counted as a played game."
+msgstr "Gain par forfait contre un adversaire absent — non comptée comme une partie jouée."
 
 msgid "Forfeited games are always considered as played in Round-Robin tournaments."
 msgstr "Les parties gagnées ou perdues par forfait sont toujours considérées comme jouées dans les tournois Toutes-Rondes."
@@ -3370,6 +3394,12 @@ msgstr "Catégorie d'âge min."
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
 
+msgid "Minimum games for a norm"
+msgstr "Nombre minimum de parties pour une norme"
+
+msgid "Minimum games for a norm must be at least 7."
+msgstr "Le nombre minimum de parties pour une norme doit être d'au moins 7."
+
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
 
@@ -3629,6 +3659,9 @@ msgstr "Aucun réseau détecté, utilisez le bouton Actualiser après connexion.
 
 msgid "No new hours to create from tournament [{name}] (all rounds are already covered)."
 msgstr "Aucun nouvel horaire à créer depuis le tournoi [{name}] (toutes les rondes sont déjà couvertes)."
+
+msgid "No opponent paired this round."
+msgstr "Aucun adversaire apparié à cette ronde."
 
 msgid "No organiser"
 msgstr "Aucun organisateur·ice"
@@ -3930,6 +3963,9 @@ msgstr "Seule l'année de naissance est nécessaire pour la plupart des tournois
 msgid "Open Admin Interface"
 msgstr "Ouvrir l'interface d'administration"
 
+msgid "Open IT1 certificate for this norm"
+msgstr "Ouvrir le certificat IT1 pour cette norme"
+
 msgid "Open documentation"
 msgstr "Ouvrir la documentation"
 
@@ -4077,6 +4113,9 @@ msgstr "Système d'appariements"
 msgid "Pairing-Allocated Bye assigned to player [{player}]."
 msgstr "Le·la joueur·euse [{player}] a été apparié·e exempt·e."
 
+msgid "Pairing-allocated bye / half-point bye / rest game — no opponent."
+msgstr "Bye attribué / bye à demi-point / partie de repos — aucun adversaire."
+
 msgid "Pairings"
 msgstr "Appariements"
 
@@ -4149,6 +4188,9 @@ msgstr "Paiement"
 
 msgid "Pending"
 msgstr "À venir"
+
+msgid "Per-round audit — why each round was counted (or not)"
+msgstr "Audit par ronde — pourquoi chaque ronde a été comptée (ou non)"
 
 msgid "Perfect tournament performance"
 msgstr "Performance parfaite"
@@ -4605,6 +4647,9 @@ msgstr "Qatar"
 msgid "Quick-apply a tie-break set"
 msgstr "Appliquer un ensemble de départages"
 
+msgid "R"
+msgstr "R"
+
 #, python-format
 msgid "R %(round)d *** ROUND COLUMN HEADER"
 msgstr "R %(round)d"
@@ -4695,6 +4740,9 @@ msgstr "Classements"
 
 msgid "Ratings update"
 msgstr "Mise à jour des classements"
+
+msgid "Reason"
+msgstr "Raison"
 
 msgid "Received a Full-Point Bye for the next round"
 msgstr "Ont reçu un bye point entier pour la ronde à venir"
@@ -5639,6 +5687,9 @@ msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
 
+msgid "The minimum-games override only applies to Swiss tournaments (FIDE 1.4.1b). Leave at default ({default}) for Round Robin and Double Round Robin events."
+msgstr "Le remplacement du nombre minimum de parties ne s'applique qu'aux tournois Suisses (FIDE 1.4.1b). Laisser la valeur par défaut ({default}) pour les tournois toutes rondes et toutes rondes doubles."
+
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
 msgstr "Le nom de la famille d' écrans, facultatif. Les mots-clés suivants sont remplacés automatiquement par les numéros des échiquiers ou les noms des joueur·euses : %%f=first (premier), %%l=last (dernier), %%t=tournament (tournoi)."
@@ -6373,6 +6424,9 @@ msgstr "Non apparié·es : caché·es"
 
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
 msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez tout ajustement manuel."
+
+msgid "Unplayed (no result recorded)."
+msgstr "Non jouée (aucun résultat enregistré)."
 
 msgid "Unrated *** PLURAL"
 msgstr "Non-classé·es"
