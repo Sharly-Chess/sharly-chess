@@ -8,3 +8,7 @@
 - Added automatic removal of specific played games in order to try to fulfil the norm requirements (4.2.0)
 - Fix a norm calculation bug that incorrectly considered CM and WCM as title-holders (4.2.0)
 - Added support for norm exemption 1.4.2c (last round forfeit as loss) (4.2.0)
+
+## _Sharly-Chess.com_
+
+- Added missing timeouts (4.2.0)
