@@ -371,6 +371,58 @@ class ClubThresholdPrintOption(PrintOption):
             raise OptionError(_('A positive value is expected.'), self)
 
 
+class MinimumGamesPrintOption(PrintOption):
+    """1.4.1 — minimum games for a title norm. Defaults to 9.
+
+    Allows the arbiter to override for events that qualify for 1.4.1b
+    exceptions (7-round World/Continental Team Championships → 7;
+    8-round World Cup → 8) — these aren't auto-detected from tournament
+    metadata.
+
+    Only applies to Swiss tournaments. The 1.4.1b exceptions don't apply
+    to Round Robin / Double Round Robin (1.4.1e: "In tournaments with
+    predetermined pairings, a norm must be based on all scheduled rounds").
+    The option's UI hides itself when a non-Swiss tournament is selected
+    (see `swiss_tournament_ids` + the template's JS).
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'minimum-games'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int
+
+    @property
+    def default_value(self) -> Any:
+        return 9
+
+    @property
+    def swiss_tournament_ids(self) -> list[int]:
+        """IDs of the event's tournaments where this option is meaningful.
+        Rendered into the option template's JS to drive UI hide/show on
+        tournament-select change."""
+        from data.pairings.systems import SwissPairingSystem
+
+        if self.event is None:
+            return []
+        return [
+            t.id
+            for t in self.event.tournaments
+            if t.pairing_system == SwissPairingSystem()
+        ]
+
+    @override
+    def validate(self):
+        super().validate()
+        # FIDE 1.4.1 / 1.4.1b: 9 is the default; the only spec-recognised
+        # reductions are to 7 (World/Continental Team Championships) and
+        # 8 (World Cup, counted as 9).
+        if self.value is None or self.value < 7:
+            raise OptionError(_('Minimum games for a norm must be at least 7.'), self)
+
+
 class QRCodePrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:

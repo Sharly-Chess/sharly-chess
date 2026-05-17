@@ -107,12 +107,27 @@ class TitleNormEvaluator:
     1.4.1c first; fall back to 1.4.2c only if the default doesn't satisfy).
     """
 
-    def __init__(self, player: 'TournamentPlayer'):
+    def __init__(
+        self,
+        player: 'TournamentPlayer',
+        min_games_override: int | None = None,
+    ):
+        """`min_games_override` overrides FIDE 1.4.1's default minimum (9,
+        or 10 for DRR). Used for events qualifying for 1.4.1b exceptions
+        (e.g. 7-round team championships) — the spec value is set by the
+        arbiter via the print options, since the qualifying event types
+        aren't auto-detected from the tournament metadata."""
         self.player = player
+        self.min_games_override = min_games_override
 
     @property
     def tournament(self):
         return self.player.tournament
+
+    def _min_games(self, tn: TitleNorm) -> int:
+        if self.min_games_override is not None:
+            return self.min_games_override
+        return tn.minimum_rounds(self.tournament)
 
     # ---------- top-level orchestration ----------
 
@@ -268,8 +283,10 @@ class TitleNormEvaluator:
         norm). DRR (10 rounds) gets no 8+1 exemption.
 
         Returns (passes, min_required) so the form can render the threshold.
+        The applicable minimum is `min_games_override` when set, otherwise
+        `tn.minimum_rounds(tournament)` (9 / 10 for DRR).
         """
-        min_games = tn.minimum_rounds(self.tournament)
+        min_games = self._min_games(tn)
         allow_1_4_1c = (
             self.tournament.rounds == 9
             and inputs.played_games == 8
@@ -615,9 +632,18 @@ class TitleNormSubsetSearcher:
     arbiter still sees diagnostic flags.
     """
 
-    def __init__(self, player: 'TournamentPlayer'):
+    def __init__(
+        self,
+        player: 'TournamentPlayer',
+        min_games_override: int | None = None,
+    ):
+        """`min_games_override` is forwarded to the evaluator and used by
+        the subset-search to bound `max_ignores`."""
         self.player = player
-        self.evaluator = TitleNormEvaluator(player)
+        self.min_games_override = min_games_override
+        self.evaluator = TitleNormEvaluator(
+            player, min_games_override=min_games_override
+        )
 
     @property
     def tournament(self):
@@ -717,10 +743,18 @@ class TitleNormSubsetSearcher:
 
     # ---------- candidate generation ----------
 
+    def _min_games(self, tn: TitleNorm) -> int:
+        """Mirrors `TitleNormEvaluator._min_games`. Kept local to the
+        searcher so tests that mock the evaluator don't break the
+        searcher's own `max_ignores` calculation."""
+        if self.min_games_override is not None:
+            return self.min_games_override
+        return tn.minimum_rounds(self.tournament)
+
     def _max_ignores(self, tn: TitleNorm) -> int:
         """Maximum number of rounds the applicant may drop while still
         meeting the norm's minimum game count."""
-        return self.tournament.rounds - tn.minimum_rounds(self.tournament)
+        return self.tournament.rounds - self._min_games(tn)
 
     def _droppable_rounds(self, inputs: NormInputs) -> set[int]:
         """Rounds the spec allows the applicant to drop.
@@ -830,8 +864,13 @@ class TitleNormForecaster:
     needs from their last game.
     """
 
-    def __init__(self, player: 'TournamentPlayer'):
+    def __init__(
+        self,
+        player: 'TournamentPlayer',
+        min_games_override: int | None = None,
+    ):
         self.player = player
+        self.min_games_override = min_games_override
 
     @property
     def tournament(self):
@@ -852,7 +891,9 @@ class TitleNormForecaster:
         the per-norm result that would arise."""
         out: dict[Result, dict[TitleNorm, NormCheckResult]] = {}
         for outcome in _FORECAST_OUTCOMES:
-            searcher = TitleNormSubsetSearcher(self.player)
+            searcher = TitleNormSubsetSearcher(
+                self.player, min_games_override=self.min_games_override
+            )
             out[outcome] = searcher.evaluate(result_overrides={round_: outcome})
         return out
 

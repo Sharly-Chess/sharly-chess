@@ -697,10 +697,14 @@ class TournamentPlayer(Player):
             locale=locale,
         )
 
-    def achieves_any_title_norm(self) -> dict[TitleNorm, NormCheckResult]:
+    def achieves_any_title_norm(
+        self, min_games_override: int | None = None
+    ) -> dict[TitleNorm, NormCheckResult]:
         from data.norms import TitleNormSubsetSearcher
 
-        return TitleNormSubsetSearcher(self).evaluate()
+        return TitleNormSubsetSearcher(
+            self, min_games_override=min_games_override
+        ).evaluate()
 
     @cached_property
     def has_real_pairings(self) -> bool:

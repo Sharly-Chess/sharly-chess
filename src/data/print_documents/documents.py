@@ -23,6 +23,7 @@ from data.player import TournamentPlayer, TournamentRating
 from data.print_documents.options import (
     PairingStylePrintOption,
     MandatoryPlayerPrintOption,
+    MinimumGamesPrintOption,
     OptionalPlayerPrintOption,
     PlayerSplitPrintOption,
     PrintOption,
@@ -1150,6 +1151,44 @@ class StatisticsPrintDocument(PrintDocument):
         }
 
 
+# ---------------------------------------------------------------------------
+# Helpers shared by the two norm documents
+# ---------------------------------------------------------------------------
+
+
+def _resolve_min_games_override(document: 'PrintDocument') -> int | None:
+    """Return the 1.4.1 minimum-games override to pass to the evaluator.
+
+    FIDE 1.4.1b's reductions (7 / 8 games) only apply to Swiss / team /
+    World Cup formats — never to Round Robin or Double Round Robin
+    (1.4.1e: "In tournaments with predetermined pairings, a norm must be
+    based on all scheduled rounds"). For non-Swiss tournaments we return
+    None so the evaluator falls back to `tn.minimum_rounds(tournament)`,
+    keeping DRR's 10-game requirement intact.
+    """
+    if document.tournament.pairing_system != SwissPairingSystem():
+        return None
+    return document._get_option(MinimumGamesPrintOption).value
+
+
+def _validate_min_games_only_for_swiss(document: 'PrintDocument') -> None:
+    """Raise if the arbiter set a non-default minimum-games override on a
+    non-Swiss tournament. Spec is clear: 1.4.1b exceptions don't apply to
+    RR/DRR."""
+    if document.tournament.pairing_system == SwissPairingSystem():
+        return
+    option = document._get_option(MinimumGamesPrintOption)
+    if option.value != option.default_value:
+        raise OptionError(
+            _(
+                'The minimum-games override only applies to Swiss tournaments '
+                '(FIDE 1.4.1b). Leave at default ({default}) for Round Robin '
+                'and Double Round Robin events.'
+            ).format(default=option.default_value),
+            option,
+        )
+
+
 class NormReportPrintDocument(PrintDocument):
     @staticmethod
     def static_id() -> str:
@@ -1161,7 +1200,11 @@ class NormReportPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, MandatoryPlayerPrintOption]
+        return [
+            TournamentPrintOption,
+            MandatoryPlayerPrintOption,
+            MinimumGamesPrintOption,
+        ]
 
     @property
     def title(self) -> str:
@@ -1192,6 +1235,7 @@ class NormReportPrintDocument(PrintDocument):
                 _('This tournament has no titled players.'),
                 self._get_option(TournamentPrintOption),
             )
+        _validate_min_games_only_for_swiss(self)
 
     @property
     def template_name(self) -> str:
@@ -1200,10 +1244,13 @@ class NormReportPrintDocument(PrintDocument):
     @property
     def template_context(self) -> dict[str, Any]:
         player_id = self._get_option(MandatoryPlayerPrintOption).value
+        min_games = _resolve_min_games_override(self)
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm
-            for norm_title, norm in tournament_player.achieves_any_title_norm().items()
+            for norm_title, norm in tournament_player.achieves_any_title_norm(
+                min_games_override=min_games
+            ).items()
             if norm.meets_gender
             and tournament_player.title.sort_index < norm_title.player_title.sort_index
         }
@@ -1237,7 +1284,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption]
+        return [TournamentPrintOption, MinimumGamesPrintOption]
 
     @property
     def title(self) -> str:
@@ -1268,6 +1315,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
                 _('This tournament has no titled players.'),
                 self._get_option(TournamentPrintOption),
             )
+        _validate_min_games_only_for_swiss(self)
 
     @property
     def template_name(self) -> str:
@@ -1292,11 +1340,14 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         return common | {'mode': 'pending'}
 
     def _achieved_context(self) -> dict[str, Any]:
+        min_games = _resolve_min_games_override(self)
         achievers: list[dict[str, Any]] = []
         for tournament_player in self.tournament.tournament_players_by_id.values():
             achieved = {
                 tn: result
-                for tn, result in tournament_player.achieves_any_title_norm().items()
+                for tn, result in tournament_player.achieves_any_title_norm(
+                    min_games_override=min_games
+                ).items()
                 if result.is_met
                 and tournament_player.title.sort_index < tn.player_title.sort_index
             }
@@ -1331,10 +1382,13 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
     def _forecast_context(self) -> dict[str, Any]:
         from data.norms import TitleNormForecaster
 
+        min_games = _resolve_min_games_override(self)
         last = self.tournament.rounds
         candidates: list[dict[str, Any]] = []
         for tournament_player in self.tournament.tournament_players_by_id.values():
-            forecaster = TitleNormForecaster(tournament_player)
+            forecaster = TitleNormForecaster(
+                tournament_player, min_games_override=min_games
+            )
             if not forecaster.can_forecast_round(last):
                 continue
             chaseable = forecaster.chaseable_norms(last)
