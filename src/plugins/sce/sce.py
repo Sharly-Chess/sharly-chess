@@ -5,6 +5,7 @@ from packaging.version import Version
 from common import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
+from common.network import NetworkMonitor
 from data.columns.column import Column
 from data.event import Event
 from data.loader import EventLoader
@@ -232,7 +233,7 @@ class SCEPlugin(Plugin):
 
     @hookimpl
     def on_before_load_tournaments_check_in_modal(self, event: Event):
-        if SCEUtils.get_event_plugin_data(event).id:
+        if SCEUtils.get_event_plugin_data(event).id and NetworkMonitor.connected():
             try:
                 SCESession(event).update_event_check_in_schedules()
             except SharlyChessException as e:
