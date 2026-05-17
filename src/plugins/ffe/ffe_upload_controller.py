@@ -222,7 +222,7 @@ class FfeUploadController(BaseEventAdminController):
                 )
                 rules_file.unlink(missing_ok=True)
             else:
-                message = _('A file is expected.')
+                message = _('Please select a file.')
             return self._render_ffe_rules_upload_modal(
                 web_context, normalized_data, {'rules_file': message}
             )

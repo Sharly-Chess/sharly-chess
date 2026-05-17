@@ -10,13 +10,12 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2 class="modal-title">
-                {{ _('FFE rules') }}
+                {{ _('Upload the FFE rules') }}
                 <i
                     class="bi-info-circle-fill text-body ps-1"
                     style="font-size: 75%"
                     {{ macros.tooltip_attributes('', _(
-                        'Choose a PDF file to upload as rules to the '
-                        'FFE website for the selected tournaments.'
+                        'Select the rules file in PDF format.'
                     )) }}
                 ></i>
             </h2>
@@ -39,7 +38,6 @@
                 {% endif %}
                 {{ admin_macros.file_input(
                     name='rules_file',
-                    label=_('%(string)s:', string=_('Rules file')),
                     file_accept='application/pdf',
                     data=data, errors=errors
                 ) }}

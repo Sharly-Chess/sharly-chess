@@ -18,7 +18,7 @@ msgstr ""
 msgid "A - Competition *** FFE licence"
 msgstr "A - Competition"
 
-msgid "A file is expected."
+msgid "Please select a file."
 msgstr ""
 
 msgid "A non-empty string is expected"
@@ -75,7 +75,7 @@ msgstr ""
 msgid "Chief arbiter (if different):"
 msgstr ""
 
-msgid "Choose a PDF file to upload as rules to the FFE website for the selected tournaments."
+msgid "Select the rules in PDF format."
 msgstr ""
 
 msgid "Choose at least one league."
@@ -189,7 +189,7 @@ msgstr ""
 msgid "FFE password:"
 msgstr ""
 
-msgid "FFE rules"
+msgid "Upload the FFE rules"
 msgstr ""
 
 msgid "FFE site"
@@ -373,9 +373,6 @@ msgstr ""
 msgid "Replace the player to update this field."
 msgstr ""
 
-msgid "Rules file"
-msgstr ""
-
 msgid "Rules successfully uploaded."
 msgstr ""
 
@@ -519,7 +516,7 @@ msgstr ""
 msgid "Upload"
 msgstr ""
 
-msgid "Upload a rules file in PDF format to the FFE website for one or more tournaments."
+msgid "Upload the rules in PDF format to the FFE website for one or more tournaments."
 msgstr ""
 
 msgid "Upload all tournaments"
