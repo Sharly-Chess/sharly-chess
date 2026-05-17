@@ -90,7 +90,7 @@ class TitleNormForecaster:
     ) -> Result | None:
         """The cheapest result in `round_` that achieves `tn`. Returns:
         - LOSS  ⇒ the norm is achieved regardless of outcome ("any").
-        - DRAW  ⇒ draw or better suffices.
+        - DRAW  ⇒ draw suffices.
         - WIN   ⇒ only a win achieves it.
         - None  ⇒ the norm is unachievable from any outcome."""
         forecast = self.forecast_round(round_)

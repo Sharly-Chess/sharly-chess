@@ -6956,7 +6956,7 @@ msgstr ""
 msgid "default"
 msgstr ""
 
-msgid "draw or better"
+msgid "draw or win"
 msgstr ""
 
 msgid "either the duration or the increment must be greater than 0."
