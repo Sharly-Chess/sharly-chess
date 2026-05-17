@@ -18,9 +18,6 @@ msgstr "%(string)s :"
 msgid "A - Competition *** FFE licence"
 msgstr "A - Compétition"
 
-msgid "Please select a file."
-msgstr "Veuillez sélectionner un fichier."
-
 msgid "A non-empty string is expected"
 msgstr "Une chaîne de caractères non vide est attendue"
 
@@ -74,9 +71,6 @@ msgstr "Dépot de plainte pour suspicion de triche"
 
 msgid "Chief arbiter (if different):"
 msgstr "Arbitre en chef (si différent·e) :"
-
-msgid "Select the rules in PDF format."
-msgstr "Sélectionner le règlement au format PDF."
 
 msgid "Choose at least one league."
 msgstr "Choisir au moins une ligue."
@@ -189,9 +183,6 @@ msgstr "Mot de passe FFE non défini."
 msgid "FFE password:"
 msgstr "Mot de passe FFE :"
 
-msgid "Upload the FFE rules"
-msgstr "Mise en ligne du règlement FFE"
-
 msgid "FFE site"
 msgstr "Site de la FFE"
 
@@ -212,6 +203,9 @@ msgstr "Échec"
 
 msgid "Fees link not found, check that a tournament has already been sent and that the tournament has not been archived on the FFE website."
 msgstr "Lien de facture non trouvé, vérifier qu'un tournoi a été envoyé et que le tournoi n'a pas été archivé sur le site web FFE."
+
+msgid "File"
+msgstr "Fichier"
 
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
@@ -370,6 +364,9 @@ msgstr "En attente"
 msgid "Players:"
 msgstr "Joueur·euses :"
 
+msgid "Please select a file."
+msgstr "Veuillez sélectionner un fichier."
+
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
 
@@ -516,9 +513,6 @@ msgstr "À jour"
 msgid "Upload"
 msgstr "Mettre en ligne"
 
-msgid "Upload the rules in PDF format to the FFE website for one or more tournaments."
-msgstr "Mettre en ligne le règlement au format PDF sur le site FFE pour un ou plusieurs tournois."
-
 msgid "Upload all tournaments"
 msgstr "Mettre en ligne tous les tournois"
 
@@ -528,6 +522,12 @@ msgstr "Mettre en ligne automatiquement toutes les %(delay)d minutes."
 
 msgid "Upload rules"
 msgstr "Mettre en ligne le règlement"
+
+msgid "Upload the FFE rules"
+msgstr "Mise en ligne du règlement FFE"
+
+msgid "Upload the rules in PDF format to the FFE website for one or more tournaments."
+msgstr "Mettre en ligne le règlement au format PDF sur le site FFE pour un ou plusieurs tournois."
 
 msgid "Upload to the FFE site"
 msgstr "Mettre en ligne sur le site de la FFE"

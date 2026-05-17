@@ -18,9 +18,6 @@ msgstr ""
 msgid "A - Competition *** FFE licence"
 msgstr "A - Competition"
 
-msgid "Please select a file."
-msgstr ""
-
 msgid "A non-empty string is expected"
 msgstr ""
 
@@ -73,9 +70,6 @@ msgid "Cheating complaint"
 msgstr ""
 
 msgid "Chief arbiter (if different):"
-msgstr ""
-
-msgid "Select the rules in PDF format."
 msgstr ""
 
 msgid "Choose at least one league."
@@ -189,9 +183,6 @@ msgstr ""
 msgid "FFE password:"
 msgstr ""
 
-msgid "Upload the FFE rules"
-msgstr ""
-
 msgid "FFE site"
 msgstr ""
 
@@ -211,6 +202,9 @@ msgid "Failure"
 msgstr ""
 
 msgid "Fees link not found, check that a tournament has already been sent and that the tournament has not been archived on the FFE website."
+msgstr ""
+
+msgid "File"
 msgstr ""
 
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
@@ -370,6 +364,9 @@ msgstr ""
 msgid "Players:"
 msgstr ""
 
+msgid "Please select a file."
+msgstr ""
+
 msgid "Replace the player to update this field."
 msgstr ""
 
@@ -516,9 +513,6 @@ msgstr ""
 msgid "Upload"
 msgstr ""
 
-msgid "Upload the rules in PDF format to the FFE website for one or more tournaments."
-msgstr ""
-
 msgid "Upload all tournaments"
 msgstr ""
 
@@ -527,6 +521,12 @@ msgid "Upload automatically every %(delay)d minutes."
 msgstr ""
 
 msgid "Upload rules"
+msgstr ""
+
+msgid "Upload the FFE rules"
+msgstr ""
+
+msgid "Upload the rules in PDF format to the FFE website for one or more tournaments."
 msgstr ""
 
 msgid "Upload to the FFE site"

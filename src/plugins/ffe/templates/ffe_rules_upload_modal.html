@@ -11,13 +11,6 @@
         <div class="modal-header">
             <h2 class="modal-title">
                 {{ _('Upload the FFE rules') }}
-                <i
-                    class="bi-info-circle-fill text-body ps-1"
-                    style="font-size: 75%"
-                    {{ macros.tooltip_attributes('', _(
-                        'Select the rules file in PDF format.'
-                    )) }}
-                ></i>
             </h2>
         </div>
         <div class="modal-body">
@@ -38,6 +31,7 @@
                 {% endif %}
                 {{ admin_macros.file_input(
                     name='rules_file',
+                    label=_('%(string)s:', string=_('File')),
                     file_accept='application/pdf',
                     data=data, errors=errors
                 ) }}
