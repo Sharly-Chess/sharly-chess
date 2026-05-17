@@ -1332,6 +1332,9 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
             'PlayerTitle': PlayerTitle,
             'TitleNorm': TitleNorm,
             'Result': Result,
+            # Passed through to the per-row links into the IT1 doc so the
+            # generated URL carries the same minimum-games choice.
+            'min_games_override': _resolve_min_games_override(self),
         }
         if tournament.finished:
             return common | {'mode': 'achieved'} | self._achieved_context()

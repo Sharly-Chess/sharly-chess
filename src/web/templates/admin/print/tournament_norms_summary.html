@@ -58,6 +58,32 @@
                 font-weight: 600;
                 margin-right: 0.3rem;
             }
+            .norm-badge-link {
+                text-decoration: none;
+                color: inherit;
+            }
+            .norm-badge-link:hover .norm-badge {
+                background: #ffe;
+                border-color: #000;
+            }
+            tr.norm-row {
+                cursor: pointer;
+            }
+            tr.norm-row:hover {
+                background: #f5f5f5;
+            }
+            @media print {
+                /* Keep the link styles visible in print as plain rows. */
+                tr.norm-row {
+                    cursor: default;
+                }
+                tr.norm-row:hover {
+                    background: transparent;
+                }
+                .norm-badge-link {
+                    pointer-events: none;
+                }
+            }
             .requirement {
                 font-weight: 700;
             }
@@ -144,7 +170,21 @@
                         {% for entry in achievers %}
                             {% set player = entry.player %}
                             {% for tn, norm in entry.norms.items() %}
-                                <tr>
+                                {# Build a deep link into the per-player Norm
+                                   Report (IT1 form), anchored to this norm.
+                                   The options query string is pipe-separated
+                                   and URL-encoded; document-view handler
+                                   unquotes then splits. #}
+                                {% set _opts = 'tournament=' ~ tournament.id ~ '|mandatory-player=' ~ player.id %}
+                                {% if min_games_override is not none %}
+                                    {% set _opts = _opts ~ '|minimum-games=' ~ min_games_override %}
+                                {% endif %}
+                                {% set norm_url = url_for(
+                                    'document-view',
+                                    event_uniq_id=event.uniq_id,
+                                    document='norm-report',
+                                ) ~ '?options=' ~ (_opts | urlencode) ~ '#norm-' ~ tn.name %}
+                                <tr class="norm-row" data-href="{{ norm_url }}">
                                     {% if loop.first %}
                                         <td rowspan="{{ entry.norms | length }}">
                                             {{ player.full_name }}
@@ -160,7 +200,11 @@
                                         </td>
                                     {% endif %}
                                     <td class="center">
-                                        <span class="norm-badge">{{ tn.name }}</span>
+                                        <a href="{{ norm_url }}" target="_blank"
+                                           class="norm-badge-link"
+                                           title="{{ _('Open IT1 certificate for this norm') }}">
+                                            <span class="norm-badge">{{ tn.name }}</span>
+                                        </a>
                                     </td>
                                     <td class="center">{{ norm.played_games }}</td>
                                     <td class="center">{{ norm.score }}</td>
@@ -269,5 +313,20 @@
                 </p>
             {% endif %}
         {% endif %}
+        <script>
+            // Whole-row click → open the IT1 deep-link in a new tab.
+            // The norm-badge cell already has an <a>; this just extends
+            // the clickable area to the entire row.
+            (() => {
+                document.querySelectorAll('tr.norm-row[data-href]').forEach((tr) => {
+                    tr.addEventListener('click', (e) => {
+                        // Don't double-fire when the user clicks the explicit
+                        // <a> inside the cell.
+                        if (e.target.closest('a')) return;
+                        window.open(tr.dataset.href, '_blank');
+                    });
+                });
+            })();
+        </script>
     </body>
 </html>
