@@ -27,6 +27,7 @@ from common.i18n import _
 from utils import Utils
 from utils.enum import PlayerRatingType, PlayerTitle, Result, TitleNorm
 from utils.types import (
+    BigTournamentExemption,
     Federation,
     NormCheckResult,
     PlayerRatingAndType,
@@ -34,6 +35,7 @@ from utils.types import (
 
 if TYPE_CHECKING:
     from data.player import TournamentPlayer
+    from data.tournament import Tournament
 
 
 @dataclass
@@ -288,20 +290,23 @@ class TitleNormEvaluator:
         return passes, num_feds, own_count
 
     def own_federation_requirement(self, inputs: NormInputs, tn: TitleNorm) -> bool:
-        """1.4.4 — at most 3/5 of opponents from the applicant's federation."""
+        """1.4.4 — at most 3/5 of opponents from the applicant's federation.
+        Threshold scales with the size of the opponent mix (played_games),
+        per the spec wording "3/5 of the opponents"."""
         own_count = inputs.federations_counter.get(self.player.federation, 0)
-        return own_count <= tn.maximum_of_own_federation(self.tournament.rounds)
+        return own_count <= tn.maximum_of_own_federation(inputs.played_games)
 
     def top_federation_requirement(
         self, inputs: NormInputs, tn: TitleNorm
     ) -> tuple[bool, Federation | None, int]:
         """1.4.4 — at most 2/3 of opponents from any single federation.
-        Returns (passes, top_federation, top_count) — top_federation is None
-        when the applicant has no counted opponents."""
+        Threshold scales with played_games. Returns (passes, top_federation,
+        top_count); top_federation is None when there are no counted
+        opponents."""
         if not inputs.federations_counter:
             return True, None, 0
         top_fed, top_count = inputs.federations_counter.most_common(1)[0]
-        passes = top_count <= tn.maximum_of_one_federation(self.tournament.rounds)
+        passes = top_count <= tn.maximum_of_one_federation(inputs.played_games)
         return passes, top_fed, top_count
 
     def title_holders_requirement(
@@ -309,10 +314,11 @@ class TitleNormEvaluator:
     ) -> tuple[bool, int]:
         """1.4.5a — at least 50% of opponents are title-holders (CM/WCM
         excluded; the inputs already filter those out via TITLE_HOLDERS).
-        Returns (passes, num_title_holders)."""
+        Threshold scales with played_games per spec wording "50% of the
+        opponents". Returns (passes, num_title_holders)."""
         num_titles = sum(inputs.titles_counter.values())
         return (
-            num_titles >= tn.minimum_title_holders(self.tournament.rounds),
+            num_titles >= tn.minimum_title_holders(inputs.played_games),
             num_titles,
         )
 
@@ -320,16 +326,19 @@ class TitleNormEvaluator:
         self, inputs: NormInputs, tn: TitleNorm
     ) -> tuple[bool, int]:
         """1.4.5b-e — minimum count of opponents holding the norm's required
-        title set (e.g. GM norm needs 3+ GMs, IM norm needs 3+ IMs/GMs, etc.).
-        Returns (passes, count_met)."""
+        title set (GM norm needs at least 1/3 GMs, min 3; etc.). Threshold
+        scales with played_games. Returns (passes, count_met)."""
         count = sum(inputs.titles_counter.get(t, 0) for t in tn.required_titles)
-        return count >= tn.minimum_required_titles(self.tournament), count
+        return (
+            count >= tn.minimum_required_titles(self.tournament, inputs.played_games),
+            count,
+        )
 
     def score_requirement(self, inputs: NormInputs) -> bool:
-        """1.4.8b — at least 35%. Threshold uses the tournament's round count
-        (the norm's nominal length), not played_games — so a 1.4.1c-credited
-        9-game norm achieved in 8 games still requires 35% of 9."""
-        return inputs.score >= TitleNorm.minimum_score(self.tournament.rounds)
+        """1.4.8b — at least 35% of the played games. Threshold scales with
+        played_games — 1.4.1c-credited 9-game norms (8 played + 1 PAB)
+        require 35% of the 8 played, not 35% of 9."""
+        return inputs.score >= TitleNorm.minimum_score(inputs.played_games)
 
     def opponent_rating_floor_and_average(
         self, inputs: NormInputs, tn: TitleNorm
@@ -433,7 +442,7 @@ class TitleNormEvaluator:
             res.not_enough_required_titles = _(
                 '<b>1.4.5</b> For this norm, at least {min} opponents must have these title(s): {titles}'
             ).format(
-                min=tn.minimum_required_titles(self.tournament),
+                min=tn.minimum_required_titles(self.tournament, inputs.played_games),
                 titles=', '.join(str(title) for title in tn.required_titles),
             )
         res.required_titles = list(tn.required_titles)
@@ -551,15 +560,16 @@ class _MonotonicPruner:
     fix it. Once we know subset S fails such a check, every superset T ⊇ S
     must also fail, so we skip T without evaluation.
 
-    Five of the per-norm checks are monotonic in this sense:
-    - games (played count strictly decreases with more drops)
-    - score (each drop removes ≥0 points)
-    - federations count (distinct federations never grows)
-    - title-holders count
-    - required-titles count
+    Only one per-norm check is reliably monotonic once thresholds scale
+    with played_games (per spec wording "50% of opponents", "1/3 of
+    opponents", etc.): `not_enough_games`. Played-game count strictly
+    decreases with more drops and the threshold is fixed at 9.
 
-    Performance and average-rating are NOT monotonic — dropping a low
-    opponent can improve Ra → fix performance — so we don't track those.
+    The other checks (score, title-holders %, required-titles %,
+    federation count) all *can* recover when more games are dropped —
+    e.g. dropping an untitled opponent improves the titled %.
+    Average and performance were already known non-monotonic for the
+    same reason (dropping a low opponent lifts Ra).
     """
 
     def __init__(self):
@@ -573,17 +583,17 @@ class _MonotonicPruner:
 
 
 def _is_monotonic_failure(result: NormCheckResult) -> bool:
-    """True iff `result` failed at least one of the monotonic checks.
+    """True iff `result` failed the (only) monotonic check.
 
-    Such failures imply every superset will also fail the same check.
+    `not_enough_games` is monotonic because played_games strictly
+    decreases with each additional dropped round, and the threshold is
+    a fixed minimum (1.4.1) — once below it, more drops can't recover.
+
+    All other failures (score, titled-holders %, required-titles %,
+    federation count, average, performance) can be fixed by dropping a
+    different round, so we don't prune their supersets.
     """
-    return bool(
-        result.not_enough_games
-        or result.score_too_low
-        or result.not_enough_federations
-        or result.not_enough_title_holders
-        or result.not_enough_required_titles
-    )
+    return bool(result.not_enough_games)
 
 
 class TitleNormSubsetSearcher:
@@ -888,3 +898,125 @@ class TitleNormForecaster:
                     )
                     break
         return chaseable
+
+
+# ---------------------------------------------------------------------------
+# Tournament-wide norm calculations (1.4.3d, 1.5.6a)
+# ---------------------------------------------------------------------------
+#
+# These don't depend on any one applicant — they describe the tournament
+# itself. `Tournament.big_tournament_exemption` and `.high_level_tournament`
+# are thin `@cached_property` delegates to these functions, which keeps the
+# norm-logic surface here while preserving the per-instance caching the
+# searcher relies on.
+
+
+def compute_big_tournament_exemption(
+    tournament: 'Tournament',
+) -> BigTournamentExemption:
+    """FIDE 1.4.3d — Swiss exemption inputs.
+
+    Counts the worst (minimum) across every round of:
+    - eligible foreign FIDE-rated players (≤1 missed round, not host fed),
+    - distinct non-FID federations among those players,
+    - GM/IM/WGM/WIM holders among those players (1.4.3d's narrower title
+      set — FM/WFM don't count).
+
+    The applicant-side norm check compares these to ≥20 / ≥3 / ≥10 to
+    decide whether the 1.4.3d exemption from 1.4.3 (and 1.4.4) applies.
+    """
+    host_fed = Federation(tournament.event.federation)
+    eligible_players = []
+    for p in tournament.tournament_players_by_id.values():
+        if p.rating_type != PlayerRatingType.FIDE:
+            continue
+        if p.federation in (Federation('NON'), host_fed):
+            continue
+        missed_rounds = 0
+        for pairing in p.pairings_by_round.values():
+            if pairing.unplayed and pairing.result not in (
+                Result.FORFEIT_WIN,
+                Result.PAIRING_ALLOCATED_BYE,
+                Result.REST_GAME,
+            ):
+                missed_rounds += 1
+        if missed_rounds > 1:
+            continue
+        eligible_players.append(p)
+
+    worst_players = float('inf')
+    worst_federations = float('inf')
+    worst_titled = float('inf')
+
+    for rnd in range(1, tournament.rounds + 1):
+        present = []
+        for p in eligible_players:
+            pairing = p.pairings_by_round.get(rnd)
+            if pairing and (
+                pairing.played
+                or pairing.result in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
+            ):
+                present.append(p)
+
+        n_players = len(present)
+        n_titled = sum(1 for p in present if p.title in TitleNorm.MASTER_TITLES)
+        # 1.4.2a — FID is accepted but isn't a "real" federation for diversity.
+        n_feds = len(
+            {p.federation for p in present if p.federation != Federation('FID')}
+        )
+
+        worst_players = min(worst_players, n_players)
+        worst_federations = min(worst_federations, n_feds)
+        worst_titled = min(worst_titled, n_titled)
+
+    if worst_players is float('inf'):
+        return BigTournamentExemption(0, 0, 0)
+    return BigTournamentExemption(
+        federations=int(worst_federations),
+        foreigners=int(worst_players),
+        titled_foreigners=int(worst_titled),
+    )
+
+
+def compute_high_level_tournament(tournament: 'Tournament') -> bool:
+    """FIDE 1.5.6a — every round must have at least 40 FIDE-rated players
+    whose average rating is at least 2000.
+
+    Players are counted only if they missed at most one round (PAB /
+    forfeit-win / rest-game don't count as missing). NON-federation
+    players are excluded; host federation is NOT excluded here (this
+    differs from 1.4.3d, which IS host-federation-blind).
+    """
+    eligible_players = []
+    for p in tournament.tournament_players_by_id.values():
+        if p.rating_type != PlayerRatingType.FIDE:
+            continue
+        if p.federation == Federation('NON'):
+            continue
+        missed_rounds = 0
+        for pairing in p.pairings_by_round.values():
+            if pairing.unplayed and pairing.result not in (
+                Result.FORFEIT_WIN,
+                Result.PAIRING_ALLOCATED_BYE,
+                Result.REST_GAME,
+            ):
+                missed_rounds += 1
+        if missed_rounds > 1:
+            continue
+        eligible_players.append(p)
+
+    for rnd in range(1, tournament.rounds + 1):
+        present = []
+        for p in eligible_players:
+            pairing = p.pairings_by_round.get(rnd)
+            if pairing and (
+                pairing.played
+                or pairing.result in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
+            ):
+                present.append(p)
+        top_rated = sorted((p.rating for p in present), reverse=True)[:40]
+        if len(top_rated) < 40:
+            return False
+        if sum(top_rated) / len(top_rated) < 2000:
+            return False
+    return True

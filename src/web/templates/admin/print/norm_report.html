@@ -349,12 +349,18 @@
                 </section>
 
                 <section>
-                    {# 1.4.3d only exempts 1.4.3 (foreign-fed count). It does
-                       NOT exempt 1.4.4 (own-fed / one-fed caps), which have
-                       no spec exemptions. So we only "apply 1.4.3d" — and
-                       care about red-highlighting its sub-criteria — when
-                       1.4.3 itself failed. #}
-                    {% set applying_143d = is_swiss and norm.not_enough_federations %}
+                    {# 1.4.3d, when its per-round conditions are met, exempts
+                       BOTH 1.4.3 (foreign-fed count) AND 1.4.4 (federation
+                       caps). The "Otherwise, 1.4.4 applies" clause inside
+                       1.4.3d is what couples 1.4.4 to this exception. So we
+                       care about the 1.4.3d block whenever 1.4.3 OR 1.4.4
+                       fails — the player needs 1.4.3d to save them either way. #}
+                    {% set applying_143d = is_swiss and (
+                            norm.not_enough_federations
+                            or norm.too_many_own_federation
+                            or norm.too_many_one_federation
+                        )
+                    %}
                     <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.4.3d:</div>
                     <div class="grid" style="grid-template-columns: 3fr 5fr;">
                         <div class="item {{ 'error' if applying_143d and norm.not_enough_all_federations else '' }}">
@@ -429,12 +435,14 @@
                         {% if opp.id == norm.adjusted_player.id %}
                             {% set adjusted_opp_rating = norm.adjusted_player_rating %}
                         {% endif %}
-                        {# 1.4.4 caps are NOT exempted by 1.4.3d — highlight
-                           federation violations regardless of 1.4.3d status. #}
-                        {% if norm.too_many_own_federation and opp.federation == tournament_player.federation %}
+                        {# 1.4.4 violations only matter when 1.4.3d isn't
+                           rescuing the player. The "Otherwise, 1.4.4 applies"
+                           clause inside 1.4.3d makes 1.4.3d an exemption from
+                           1.4.4 as well as 1.4.3. #}
+                        {% if not norm.is_143d_met and norm.too_many_own_federation and opp.federation == tournament_player.federation %}
                             {% set too_many_own = true %}
                             {% set err = norm.too_many_own_federation %}
-                        {% elif norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
+                        {% elif not norm.is_143d_met and norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
                             {% set too_many_one = true %}
                             {% set err = norm.too_many_one_federation[1] %}
                         {% endif %}

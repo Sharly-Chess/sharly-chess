@@ -198,16 +198,27 @@ class NormCheckResult:
 
     @property
     def is_met(self) -> bool:
-        return self.meets_gender and not (
+        if not self.meets_gender:
+            return False
+        # These checks have no exemption — must all pass.
+        if (
             self.not_enough_games
-            or self.not_enough_federations
-            or self.too_many_own_federation
-            or self.too_many_one_federation
             or self.not_enough_title_holders
             or self.not_enough_required_titles
             or self.score_too_low
             or self.average_too_low
             or self.performance_too_low
+        ):
+            return False
+        # 1.4.3 (foreign-fed count) and 1.4.4 (federation caps) are both
+        # exempted when 1.4.3d's per-round Swiss conditions are met —
+        # per the "Otherwise, 1.4.4 applies" clause inside 1.4.3d.
+        if self.is_143d_met:
+            return True
+        return not (
+            self.not_enough_federations
+            or self.too_many_own_federation
+            or self.too_many_one_federation
         )
 
 

@@ -238,25 +238,30 @@ class TestIsMonotonicFailure:
     def test_clean_result_not_failure(self):
         assert not _is_monotonic_failure(self._result())
 
+    def test_not_enough_games_is_monotonic(self):
+        # `not_enough_games` is the only check we can soundly prune on.
+        # played_games strictly decreases with each drop; the min threshold
+        # is fixed, so once below it more drops can't recover.
+        assert _is_monotonic_failure(self._result(not_enough_games='x'))
+
     @pytest.mark.parametrize(
         'flag',
         [
-            'not_enough_games',
+            # All scaling-threshold checks: dropping more games can shift
+            # the threshold and let a superset pass.
             'score_too_low',
             'not_enough_federations',
             'not_enough_title_holders',
             'not_enough_required_titles',
+            'too_many_own_federation',
+            # These were already known non-monotonic (drop a low opp lifts Ra).
+            'average_too_low',
+            'performance_too_low',
         ],
     )
-    def test_each_monotonic_flag_triggers(self, flag):
-        assert _is_monotonic_failure(self._result(**{flag: 'x'}))
-
-    @pytest.mark.parametrize(
-        'flag', ['too_many_own_federation', 'average_too_low', 'performance_too_low']
-    )
     def test_non_monotonic_flags_dont_trigger(self, flag):
-        # too_many_own/one and average/perf are NOT monotonic in subset size,
-        # so the pruner must not snapshot supersets when they fail.
+        # The pruner must not snapshot supersets when these fail —
+        # a different subset might fix the rule.
         assert not _is_monotonic_failure(self._result(**{flag: 'x'}))
 
 
