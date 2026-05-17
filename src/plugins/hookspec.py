@@ -177,11 +177,16 @@ class AppHookSpecs:
     ) -> Optional['PlayerRatingAndType']:
         """Get the estimated rating of a player."""
 
+    @hookspec
+    def validate_player_tournament_move(
+        self, tournament: 'Tournament', player: 'TournamentPlayer'
+    ):
+        """Test if a player can be moved to a tournament.
+        Raises a translated ValueError if so."""
+
     @hookspec(firstresult=True)
-    def is_tournament_participation_possible(
-        self, tournament: 'Tournament', tournament_player: 'TournamentPlayer'
-    ) -> str | None:
-        """Test if a player can participate in a tournament"""
+    def player_distribution_error_message(self, event: 'Event') -> str | None:
+        """Get an error message disabling the player distribution."""
 
     @hookspec
     def alter_players_tab_columns(self, columns: list['PlayersTabColumn']):
