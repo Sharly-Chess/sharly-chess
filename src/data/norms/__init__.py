@@ -20,16 +20,24 @@ from data.norms.forecaster import ForecastRequirement, TitleNormForecaster
 from data.norms.inputs import NormInputs
 from data.norms.searcher import TitleNormSubsetSearcher
 from data.norms.tournament_checks import (
+    BigTournamentRoundCounts,
+    HighLevelRoundCounts,
     compute_big_tournament_exemption,
+    compute_big_tournament_exemption_trail,
     compute_high_level_tournament,
+    compute_high_level_tournament_trail,
 )
 
 __all__ = [
+    'BigTournamentRoundCounts',
     'ForecastRequirement',
+    'HighLevelRoundCounts',
     'NormInputs',
     'TitleNormEvaluator',
     'TitleNormForecaster',
     'TitleNormSubsetSearcher',
     'compute_big_tournament_exemption',
+    'compute_big_tournament_exemption_trail',
     'compute_high_level_tournament',
+    'compute_high_level_tournament_trail',
 ]

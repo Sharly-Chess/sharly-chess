@@ -133,6 +133,14 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(pts)s score-points above the Rp threshold"
+msgstr ""
+
+#, python-format
+msgid "%(pts)s score-points below the Rp threshold"
+msgstr ""
+
+#, python-format
 msgid "%(rating)s (%(rating_type)s)"
 msgstr ""
 
@@ -210,7 +218,14 @@ msgid_plural "(%(num)d screens)"
 msgstr[0] ""
 msgstr[1] ""
 
+#, python-format
+msgid "(%(total)s total, %(own)s from own federation)"
+msgstr ""
+
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
+msgstr ""
+
+msgid "(arbiter override, 1.4.1b)"
 msgstr ""
 
 msgid "(by default)"
@@ -292,6 +307,15 @@ msgstr ""
 msgid "1 - 0 (U)"
 msgstr ""
 
+msgid "1. Per-rule checks"
+msgstr ""
+
+msgid "1.4.1 — Games played"
+msgstr ""
+
+msgid "1.4.1c (default — forfeit excluded)"
+msgstr ""
+
 msgid "1.4.1e/f: ignored by the subset search to satisfy this norm."
 msgstr ""
 
@@ -305,19 +329,85 @@ msgstr ""
 msgid "1.4.2b: round-robin only — unrated opponent scored zero against every FIDE-rated opponent."
 msgstr ""
 
+msgid "1.4.2c (forfeit as LOSS)"
+msgstr ""
+
 msgid "1.4.2c applied"
+msgstr ""
+
+msgid "1.4.2c was applied: the last-round opponent forfeit was included in the mix and scored as a played loss. The default 1.4.1c interpretation (forfeit excluded) is shown alongside for comparison."
 msgstr ""
 
 msgid "1.4.2c: last-round opponent forfeit, counted as a played LOSS."
 msgstr ""
 
+msgid "1.4.3 — At least 2 foreign federations"
+msgstr ""
+
 msgid "1.4.3d applied"
+msgstr ""
+
+msgid "1.4.3d requires every round to have at least 20 FIDE-rated foreigners (excl. FID), from at least 3 federations, of whom at least 10 hold GM/IM/WGM/WIM. "
+msgstr ""
+
+msgid "1.4.4 — One-federation cap"
+msgstr ""
+
+msgid "1.4.4 — Own federation cap"
+msgstr ""
+
+msgid "1.4.5a — Title holders (CM/WCM excluded)"
+msgstr ""
+
+msgid "1.4.5b-e — Required titles"
+msgstr ""
+
+msgid "1.4.6 floor applied"
+msgstr ""
+
+msgid "1.4.6 — Minimum opponent rating"
+msgstr ""
+
+msgid "1.4.8 — Performance rating (Rp)"
+msgstr ""
+
+msgid "1.4.8a — Minimum opponent average (Ra)"
+msgstr ""
+
+msgid "1.4.8b — Minimum score"
+msgstr ""
+
+msgid "1.5.6a is a Swiss-only criterion; the per-round figures below are shown for context."
 msgstr ""
 
 msgid "1.5.6a met"
 msgstr ""
 
+msgid "1.5.6a requires every round to have at least 40 FIDE-rated players whose top-40 average is at least 2000."
+msgstr ""
+
+#, python-format
+msgid "1/3 of %(n)s opponents, min 3"
+msgstr ""
+
 msgid "1st day of the month"
+msgstr ""
+
+msgid "2. Opponent ratings (1.4.6 + 1.4.7)"
+msgstr ""
+
+#, python-format
+msgid "2/3 of %(n)s opponents"
+msgstr ""
+
+msgid "3. Performance rating (Rp)"
+msgstr ""
+
+#, python-format
+msgid "3/5 of %(n)s opponents"
+msgstr ""
+
+msgid "4. Federation distribution (counted opponents)"
 msgstr ""
 
 msgid "400 - Bad request"
@@ -332,11 +422,23 @@ msgstr ""
 msgid "404 - Page Not Found"
 msgstr ""
 
+msgid "5. 1.4.3d per-round breakdown"
+msgstr ""
+
 #, python-format
 msgid "50%% of the maximum possible score"
 msgstr ""
 
 msgid "500 - Internal Server Error"
+msgstr ""
+
+msgid "6. 1.5.6a per-round breakdown"
+msgstr ""
+
+msgid "7. 1.4.2c interpretation — side by side"
+msgstr ""
+
+msgid "8. Per-round audit"
 msgstr ""
 
 msgid "<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt."
@@ -431,6 +533,9 @@ msgstr ""
 msgid "ADM"
 msgstr ""
 
+msgid "APPLIED"
+msgstr ""
+
 msgid "Absent"
 msgstr ""
 
@@ -487,6 +592,9 @@ msgid "Actions"
 msgstr ""
 
 msgid "Actions / Access levels"
+msgstr ""
+
+msgid "Actual"
 msgstr ""
 
 msgid "Add"
@@ -693,6 +801,9 @@ msgstr ""
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr ""
 
+msgid "Applicant's federation"
+msgstr ""
+
 msgid "Application"
 msgstr ""
 
@@ -795,7 +906,13 @@ msgstr ""
 msgid "Average"
 msgstr ""
 
+msgid "Average (Ra), rounded per 1.4.7:"
+msgstr ""
+
 msgid "Average of opponents Buchholz"
+msgstr ""
+
+msgid "Average opponent rating (Ra)"
 msgstr ""
 
 msgid "Average perfect performance of opponents"
@@ -1063,6 +1180,9 @@ msgid "CSV file"
 msgstr ""
 
 msgid "CSV format"
+msgstr ""
+
+msgid "Calculation details — read-only audit view, hidden when printed."
 msgstr ""
 
 msgid "Cambodia"
@@ -1403,6 +1523,9 @@ msgstr ""
 msgid "Could not connect to data source [{data_source}]."
 msgstr ""
 
+msgid "Count"
+msgstr ""
+
 msgid "Counted"
 msgstr ""
 
@@ -1579,6 +1702,9 @@ msgstr ""
 
 #, python-format
 msgid "Current round: %(round)d"
+msgstr ""
+
+msgid "Current title:"
 msgstr ""
 
 msgid "Currently displaying rotator [{name}]"
@@ -2113,6 +2239,9 @@ msgstr ""
 msgid "EXEMPT"
 msgstr ""
 
+msgid "EXEMPT (1.4.3d)"
+msgstr ""
+
 #, python-format
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr ""
@@ -2390,6 +2519,9 @@ msgstr "F"
 msgid "FA *** SHORT NAME FOR FIDE Arbiter"
 msgstr "FA"
 
+msgid "FAIL"
+msgstr ""
+
 msgid "FIDE"
 msgstr ""
 
@@ -2424,6 +2556,9 @@ msgid "FIDE recommendation (2019)"
 msgstr ""
 
 msgid "FIDE recommendation - Unrated (2019)"
+msgstr ""
+
+msgid "FIDE-rated present"
 msgstr ""
 
 msgid "FM *** SHORT NAME FOR Fide Master"
@@ -2556,6 +2691,9 @@ msgstr ""
 msgid "Floats"
 msgstr ""
 
+msgid "Floor applied to"
+msgstr ""
+
 msgid "Foldable (mirrored top)"
 msgstr ""
 
@@ -2576,6 +2714,9 @@ msgid "Fore Buchholz"
 msgstr ""
 
 msgid "Forecast considers 1.4.1c (PAB exception), 1.4.1e/f (ignore games), 1.4.2c (last-round opponent forfeit) and 1.4.3d (Swiss exemption)."
+msgstr ""
+
+msgid "Foreigners"
 msgstr ""
 
 msgid "Forfeit Loss"
@@ -3391,6 +3532,9 @@ msgstr "Min"
 msgid "Min. age category"
 msgstr ""
 
+msgid "Min:"
+msgstr ""
+
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr ""
 
@@ -3479,8 +3623,17 @@ msgstr "N"
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
 
+msgid "N/A"
+msgstr ""
+
 msgid "NA *** SHORT NAME FOR National Arbiter"
 msgstr "NA"
+
+msgid "NORM ACHIEVED"
+msgstr ""
+
+msgid "NOT ACHIEVED"
+msgstr ""
 
 msgid "Name"
 msgstr ""
@@ -3633,6 +3786,9 @@ msgstr ""
 msgid "No families to add."
 msgstr ""
 
+msgid "No floor needed"
+msgstr ""
+
 msgid "No games against FIDE rated opponents."
 msgstr ""
 
@@ -3658,6 +3814,9 @@ msgid "No network detected, use the Refresh button when connected."
 msgstr ""
 
 msgid "No new hours to create from tournament [{name}] (all rounds are already covered)."
+msgstr ""
+
+msgid "No norm is reachable for this player. The IT1 certificate is the right place to inspect the player."
 msgstr ""
 
 msgid "No opponent paired this round."
@@ -3801,6 +3960,13 @@ msgstr "None"
 msgid "Norm"
 msgstr ""
 
+msgid "Norm Calculation Details"
+msgstr ""
+
+#, python-format
+msgid "Norm Calculation Details — %(norm)s"
+msgstr ""
+
 msgid "Norm Report"
 msgstr ""
 
@@ -3829,6 +3995,9 @@ msgid "Not paired for this round"
 msgstr ""
 
 msgid "Not specified"
+msgstr ""
+
+msgid "Note"
 msgstr ""
 
 msgid "Note: norms are computed based only on <em>completed</em> games."
@@ -4033,6 +4202,9 @@ msgstr ""
 msgid "PAI"
 msgstr ""
 
+msgid "PASS"
+msgstr ""
+
 msgid "PENALTY"
 msgstr ""
 
@@ -4187,13 +4359,16 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
-msgid "Per-round audit — why each round was counted (or not)"
-msgstr ""
-
 msgid "Perfect tournament performance"
 msgstr ""
 
+msgid "Performance bonus (dp)"
+msgstr ""
+
 msgid "Performance indicators for round #{round}"
+msgstr ""
+
+msgid "Performance rating (Rp)"
 msgstr ""
 
 msgid "Period"
@@ -4233,6 +4408,9 @@ msgid "Place card type:"
 msgstr ""
 
 msgid "Played"
+msgstr ""
+
+msgid "Played games"
 msgstr ""
 
 msgid "Player"
@@ -4817,6 +4995,9 @@ msgstr ""
 msgid "Request to the database failed."
 msgstr ""
 
+msgid "Required (1.4.8)"
+msgstr ""
+
 #, python-format
 msgid "Required by plugin <b>%(plugin)s</b>."
 msgstr ""
@@ -4974,6 +5155,9 @@ msgstr ""
 msgid "Round %(round)d - Board %(board_number)d"
 msgstr ""
 
+msgid "Round meets 1.5.6a?"
+msgstr ""
+
 msgid "Round number or text"
 msgstr ""
 
@@ -5014,6 +5198,13 @@ msgstr ""
 
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
+
+msgid "Rule"
+msgstr ""
+
+#, python-format
+msgid "Rule 1.4.6: the lowest-rated opponent is raised to the norm floor (%(r)s) before computing the average."
+msgstr ""
 
 msgid "Rules used were only effective until march 2026 (legacy)."
 msgstr ""
@@ -6046,6 +6237,9 @@ msgstr ""
 msgid "Three points for a win"
 msgstr ""
 
+msgid "Threshold"
+msgstr ""
+
 #, python-format
 msgid "Tie-break [%(tie_break)s] successfully created!"
 msgstr ""
@@ -6136,6 +6330,9 @@ msgstr ""
 msgid "Title Norms Forecast — Round {round}"
 msgstr ""
 
+msgid "Titled (M-titles)"
+msgstr ""
+
 msgid "Titled players"
 msgstr ""
 
@@ -6165,6 +6362,9 @@ msgid "Too many byes for player [{player_name}]."
 msgstr ""
 
 msgid "Too much information to display on a single projector?"
+msgstr ""
+
+msgid "Top-40 average"
 msgstr ""
 
 msgid "Total"
@@ -6561,6 +6761,12 @@ msgstr ""
 msgid "Venezuela"
 msgstr ""
 
+msgid "Verdict"
+msgstr ""
+
+msgid "Verdict:"
+msgstr ""
+
 msgid "Version: {version}"
 msgstr ""
 
@@ -6574,6 +6780,10 @@ msgid "View Players tab"
 msgstr ""
 
 msgid "View Prizes tab"
+msgstr ""
+
+#, python-format
+msgid "View calculation details for %(norm)s →"
 msgstr ""
 
 msgid "View event cards details"
@@ -6974,7 +7184,13 @@ msgstr ""
 msgid "example"
 msgstr ""
 
+msgid "federations other than the applicant's"
+msgstr ""
+
 msgid "forfeits played"
+msgstr ""
+
+msgid "from"
 msgstr ""
 
 msgid "from move 1"
@@ -7004,6 +7220,14 @@ msgstr ""
 msgid "norm secured — round optional"
 msgstr ""
 
+#, python-format
+msgid "of %(n)s opponents"
+msgstr ""
+
+#, python-format
+msgid "of %(n)s played games"
+msgstr ""
+
 msgid "player already received a PAB in a previous round"
 msgstr ""
 
@@ -7026,6 +7250,10 @@ msgid "players from start to #{last}, on {parts} screens"
 msgstr ""
 
 msgid "players on {parts} screens"
+msgstr ""
+
+#, python-format
+msgid "raised to %(r)s"
 msgstr ""
 
 msgid "ranking from #{first} to #{last}"
@@ -7100,6 +7328,10 @@ msgstr ""
 
 #, python-format
 msgid "vs %(player)s"
+msgstr ""
+
+#, python-format
+msgid "was %(r)s"
 msgstr ""
 
 msgid "win required"
@@ -7212,4 +7444,10 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+msgid "← Back to IT1 certificate"
+msgstr ""
+
+#~ msgid "1.4.3d requires every round to have at least 20 FIDE-rated foreigners (excl. FID), from at least 3 federations, of whom at least 10 hold GM/IM/WGM/WIM. The bottleneck row is highlighted."
+#~ msgstr ""
 

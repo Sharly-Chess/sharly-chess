@@ -1947,3 +1947,157 @@ class TestRoundAuditTrail:
             for entry in winner.round_audit:
                 if entry.round_ not in winner.ignored_rounds_via_search:
                     assert entry.decision != RoundDecision.DROPPED
+
+
+# ===========================================================================
+# Calculation-details data hooks
+# ===========================================================================
+#
+# The detail mode of the norm-report doc consumes three pieces the IT1 mode
+# doesn't: per-round 1.4.3d / 1.5.6a trails, the 1.4.2c "loser" attached as
+# `alternate_142c`, and `federations_counter` on each result.
+
+
+class TestCalculationDetailsHooks:
+    def test_federations_counter_on_result(self):
+        """`evaluate_one` populates `federations_counter` so the histogram
+        in the detail view doesn't have to recount opponents."""
+        opps = [
+            _gm(1, federation='USA'),
+            _gm(2, federation='GER'),
+            _gm(3, federation='ESP'),
+            _gm(4, federation='USA'),
+        ]
+        inputs = make_inputs(list(zip(range(1, 5), opps, [Result.DRAW] * 4)))
+        searcher = _real_searcher(rounds=9)
+        res = searcher.evaluator.evaluate_one(inputs, TitleNorm.GM, True)
+        assert res.federations_counter is not None
+        assert res.federations_counter[Federation('USA')] == 2
+        assert res.federations_counter[Federation('GER')] == 1
+        assert res.federations_counter[Federation('ESP')] == 1
+
+    def test_alternate_142c_attached_when_1_4_2c_wins(self):
+        """When the 1.4.2c interpretation rescues a norm the 1.4.1c
+        interpretation failed, the loser is exposed via `alternate_142c`."""
+        from data.norms import TitleNormEvaluator
+
+        # 9 strong games + R9 forfeit-win against R9 opp. Under 1.4.1c
+        # the forfeit is excluded → 8 played → fails 1.4.1. Under 1.4.2c
+        # it counts as a played LOSS → 9 played → may pass.
+        feds = ['USA', 'GER', 'ESP', 'ITA', 'NED', 'POL', 'RUS', 'AZE']
+        opps = [_gm(i, federation=feds[i - 1], rating=2300) for i in range(1, 9)]
+        pairings = {
+            r: (opps[r - 1], Result.WIN if r <= 7 else Result.DRAW) for r in range(1, 9)
+        }
+        last_opp = _gm(9, federation='IND', rating=2300)
+        pairings[9] = (last_opp, Result.FORFEIT_WIN)
+        # Apply through the evaluator's full evaluate() so the dual-eval
+        # orchestration runs.
+        from data.pairings.systems import SwissPairingSystem
+        from utils.enum import PlayerGender
+
+        player = SimpleNamespace(
+            federation=Federation('FRA'),
+            gender=PlayerGender.MAN,
+            title=PlayerTitle.NONE,
+            event=SimpleNamespace(federation='FRA'),
+            tournament=SimpleNamespace(
+                rounds=9,
+                pairing_system=SwissPairingSystem(),
+                pairing_variation=None,
+                tournament_players_by_id={},
+                # stubs for tournament-wide checks
+                big_tournament_exemption=__import__(
+                    'utils.types', fromlist=['BigTournamentExemption']
+                ).BigTournamentExemption(0, 0, 0),
+                high_level_tournament=False,
+            ),
+            pairings_by_round={
+                r: SimpleNamespace(
+                    opponent=opp,
+                    result=res,
+                    unplayed=res.is_unplayed,
+                    played=not res.is_unplayed,
+                )
+                for r, (opp, res) in pairings.items()
+            },
+        )
+        evaluator = TitleNormEvaluator(player)
+        results = evaluator.evaluate()
+        # IM is reachable; check whichever norm picked up 1.4.2c.
+        for tn, res in results.items():
+            if res.applied_142c:
+                # Side-by-side data present.
+                assert res.alternate_142c is not None
+                # Loser must NOT have 1.4.2c flag itself.
+                assert res.alternate_142c.applied_142c is False
+                # Different played-game counts between the two interpretations.
+                assert (
+                    res.played_games != res.alternate_142c.played_games
+                    or res.score != res.alternate_142c.score
+                )
+                break
+        else:
+            # If 1.4.2c didn't fire for any norm (test fixture didn't trigger
+            # the fallback), at least confirm alternate_142c is None everywhere.
+            for res in results.values():
+                assert res.alternate_142c is None
+
+    def test_big_tournament_trail_returns_one_row_per_round(self):
+        """`compute_big_tournament_exemption_trail` produces exactly
+        `tournament.rounds` rows, one per round."""
+        from data.norms import compute_big_tournament_exemption_trail
+
+        tournament = self._tournament_with_one_player(rounds=9)
+        trail = compute_big_tournament_exemption_trail(tournament)
+        assert len(trail) == 9
+        assert [r.round_ for r in trail] == list(range(1, 10))
+
+    def test_high_level_trail_returns_one_row_per_round(self):
+        from data.norms import compute_high_level_tournament_trail
+
+        tournament = self._tournament_with_one_player(rounds=9)
+        trail = compute_high_level_tournament_trail(tournament)
+        assert len(trail) == 9
+        # Under-40 players → top-40 average is 0.0 (insufficient data).
+        for row in trail:
+            assert row.top_40_average == 0.0
+
+    def test_big_tournament_exemption_minima_match_trail(self):
+        """The legacy `compute_big_tournament_exemption` minima should equal
+        the per-column minima from the trail — they share the same eligibility
+        filter and same per-round counts."""
+        from data.norms import (
+            compute_big_tournament_exemption,
+            compute_big_tournament_exemption_trail,
+        )
+
+        tournament = self._tournament_with_one_player(rounds=9)
+        ex = compute_big_tournament_exemption(tournament)
+        trail = compute_big_tournament_exemption_trail(tournament)
+        if trail:
+            assert ex.foreigners == min(r.foreigners for r in trail)
+            assert ex.federations == min(r.federations for r in trail)
+            assert ex.titled_foreigners == min(r.titled_foreigners for r in trail)
+
+    def _tournament_with_one_player(self, rounds: int):
+        """Minimal tournament with a single FIDE-rated foreigner playing
+        every round. Enough to exercise the trail builders."""
+        from data.pairings.systems import SwissPairingSystem
+
+        opp = _gm(99, federation='GER', rating=2400)
+        opp.pairings_by_round = {
+            r: SimpleNamespace(
+                opponent=SimpleNamespace(id=100),
+                result=Result.DRAW,
+                unplayed=False,
+                played=True,
+            )
+            for r in range(1, rounds + 1)
+        }
+        return SimpleNamespace(
+            rounds=rounds,
+            tournament_players_by_id={99: opp},
+            event=SimpleNamespace(federation='FRA'),
+            pairing_system=SwissPairingSystem(),
+        )

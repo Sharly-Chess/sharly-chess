@@ -174,6 +174,7 @@ class NormCheckResult:
     from_host_federations_count: int = 0
     num_title_holders: int = 0
     title_counts: Optional[Counter[PlayerTitle]] = None
+    federations_counter: Optional[Counter['Federation']] = None
     required_titles: list[PlayerTitle] = field(default_factory=list)
     required_titles_met: int = 0
     num_rated_players: int = 0
@@ -212,6 +213,12 @@ class NormCheckResult:
     # "forfeit excluded" interpretation. The norm check tries 1.4.1c first
     # and only falls back to 1.4.2c if it yields `is_met` where 1.4.1c didn't.
     applied_142c: bool = False
+
+    # When `applied_142c` is True, the 1.4.1c interpretation's losing
+    # NormCheckResult — populated so the calculation-details view can show
+    # both Rps side by side. None when 1.4.2c did not apply (1.4.1c won
+    # outright, or no last-round forfeit existed).
+    alternate_142c: Optional['NormCheckResult'] = None
 
     # 1.4.1e / 1.4.1f — rounds the subset searcher dropped to satisfy the
     # norm. Empty when no search ran or when no winning subset was found.

@@ -97,6 +97,7 @@ class TitleNormSubsetSearcher:
             result_142c = self.evaluator.evaluate_one(baseline_142c, tn, meets_gender)
             if result_142c.is_met:
                 result_142c.applied_142c = True
+                result_142c.alternate_142c = baseline_result
                 return result_142c
 
         # Search path: 1.4.1e/f over baseline.
@@ -109,6 +110,7 @@ class TitleNormSubsetSearcher:
             winner = self._search_subsets(baseline_142c, tn, meets_gender)
             if winner is not None:
                 winner.applied_142c = True
+                winner.alternate_142c = baseline_result
                 return winner
 
         return baseline_result  # nothing helped — return the baseline diagnostics

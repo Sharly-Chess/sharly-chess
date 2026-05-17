@@ -250,6 +250,7 @@
             'no_opponent': _('No opponent paired this round.'),
             'ignored_via_1_4_1ef': _('1.4.1e/f: ignored by the subset search to satisfy this norm.'),
         } %}
+
         {% for norm_title, norm in norms.items() %}
             {% if loop.first %}
                 <div class="info">
@@ -266,6 +267,25 @@
             {% endif %}
             <div class="heading">
                 {{norm_title.name}}
+            </div>
+            {# Non-print deep-link to the separate Norm Calculation Details
+               document. That doc is hidden from the picker
+               (`is_available()` returns False) — this link is the only
+               way for arbiters to reach it. #}
+            {% set _opts_details = (
+                'tournament=' ~ tournament.id
+                ~ '|mandatory-player=' ~ tournament_player.id
+                ~ '|norm-choice=' ~ norm_title.name
+            ) %}
+            {% if min_games_override is not none %}
+                {% set _opts_details = _opts_details ~ '|minimum-games=' ~ min_games_override %}
+            {% endif %}
+            <div class="no-print" style="text-align: center; margin: 0.4rem 0;">
+                <a href="{{ url_for('document-view', event_uniq_id=event.uniq_id, document='norm-calculation-details') ~ '?options=' ~ (_opts_details | urlencode) }}"
+                   target="_blank"
+                   style="font-size: 0.85rem; color: #0a4dbf; text-decoration: none;">
+                    {{ _('View calculation details for %(norm)s →', norm=norm_title.name) }}
+                </a>
             </div>
             <form class="break-after" id="norm-{{ norm_title.name }}">
                 <h1 style="text-align: right; margin: 0; padding: 0;">IT 1</h1>
@@ -600,75 +620,6 @@
                 </div>
 
                 <h1 style="text-align: right; margin: 0; padding: 0; font-style: italic">This report is not valid until confirmed by QC </h1>
-
-                {# Per-round audit trail. Screen-only — hidden from the
-                   printed IT1 via .no-print. One row per round in the
-                   applicant's schedule, with the decision the evaluator
-                   made and the reason. Reason keys are stable strings
-                   produced by collect_inputs / the search; `reason_text`
-                   (built at body top) maps them to translated strings. #}
-                <details class="audit no-print">
-                    <summary>{{ _('Per-round audit — why each round was counted (or not)') }}</summary>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="center">{{ _('R') }}</th>
-                                <th>{{ _('Opponent') }}</th>
-                                <th class="center">{{ _('Fed') }}</th>
-                                <th class="center">{{ _('Title') }}</th>
-                                <th class="center">{{ _('Rating') }}</th>
-                                <th class="center">{{ _('Result') }}</th>
-                                <th class="center">{{ _('Counted') }}</th>
-                                <th>{{ _('Reason') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        {% for entry in norm.round_audit %}
-                            <tr class="{{ entry.decision.value }}">
-                                <td class="center">{{ entry.round_ }}</td>
-                                <td>
-                                    {% if entry.opponent %}
-                                        {{ entry.opponent.full_name }}
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
-                                <td class="center">
-                                    {{ entry.opponent.federation if entry.opponent else '—' }}
-                                </td>
-                                <td class="center">
-                                    {% if entry.opponent and entry.opponent.title %}
-                                        {{ entry.opponent.title.short_name or '—' }}
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
-                                <td class="center">
-                                    {% if entry.opponent and entry.opponent.rating %}
-                                        {{ entry.opponent.rating }}
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
-                                <td class="center">
-                                    {{ entry.raw_result | string if entry.raw_result else '—' }}
-                                    {% if entry.effective_result and entry.effective_result != entry.raw_result %}
-                                        → {{ entry.effective_result | string }}
-                                    {% endif %}
-                                </td>
-                                <td class="center">
-                                    {% if entry.decision.value == 'included' %}✓
-                                    {% elif entry.decision.value == 'dropped' %}⊘
-                                    {% else %}✗{% endif %}
-                                </td>
-                                <td>
-                                    {{ reason_text.get(entry.reason_key, entry.reason_key) }}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
-                </details>
             </form>
         {% endfor %}
 

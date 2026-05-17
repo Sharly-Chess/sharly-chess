@@ -423,6 +423,42 @@ class MinimumGamesPrintOption(PrintOption):
             raise OptionError(_('Minimum games for a norm must be at least 7.'), self)
 
 
+class NormChoicePrintOption(PrintOption):
+    """Which norm to render in the Norm Calculation Details document.
+    The detail doc shows only one norm at a time, so the arbiter picks
+    which one to audit via the deep-link from the IT1."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'norm-choice'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return 'GM'
+
+    @property
+    def norm_choices(self) -> dict[str, str]:
+        """{value: label} mapping for the dropdown. Mirrors `TitleNorm`'s
+        four members in `values()` order (WIM, WGM, IM, GM)."""
+        from utils.enum import TitleNorm
+
+        return {tn.name: tn.name for tn in TitleNorm.values()}
+
+    @override
+    def validate(self):
+        super().validate()
+        from utils.enum import TitleNorm
+
+        valid = {tn.name for tn in TitleNorm.values()}
+        if self.value not in valid:
+            # Untranslated, should not happen via UI
+            raise OptionError(f'Unknown norm: {self.value}', self)
+
+
 class QRCodePrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:

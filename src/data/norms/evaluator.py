@@ -130,6 +130,9 @@ class TitleNormEvaluator:
                 res_b = self.evaluate_one(inputs_b, tn, meets_gender)
                 if res_b.is_met:
                     res_b.applied_142c = True
+                    # Carry the losing 1.4.1c interpretation so the
+                    # detail view can render the side-by-side Rps.
+                    res_b.alternate_142c = res
                     res = res_b
             results[tn] = res
 
@@ -465,6 +468,7 @@ class TitleNormEvaluator:
             ).replace('%%', '%')
         res.num_title_holders = num_titles
         res.title_counts = inputs.titles_counter
+        res.federations_counter = inputs.federations_counter
 
         rt_ok, rt_met = self.required_titles_requirement(inputs, tn)
         if not rt_ok:

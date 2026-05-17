@@ -5,17 +5,131 @@ itself. `Tournament.big_tournament_exemption` and `.high_level_tournament`
 are thin `@cached_property` delegates to these functions, which keeps the
 norm-logic surface here while preserving the per-instance caching the
 searcher relies on.
+
+The `_trail` variants build per-round detail for the calculation-details
+view; they're not used on the hot path. Both `compute_*` functions and
+their `_trail` siblings share the eligibility filter via private helpers.
 """
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from utils.enum import PlayerRatingType, Result, TitleNorm
 from utils.types import BigTournamentExemption, Federation
 
 if TYPE_CHECKING:
+    from data.player import TournamentPlayer
     from data.tournament import Tournament
+
+
+@dataclass(frozen=True)
+class BigTournamentRoundCounts:
+    """Per-round breakdown of the 1.4.3d inputs. The detail view renders
+    one row per round; the worst-case (minimum) row is the bottleneck
+    that determines whether the exemption applies."""
+
+    round_: int
+    foreigners: int
+    federations: int
+    titled_foreigners: int
+
+
+@dataclass(frozen=True)
+class HighLevelRoundCounts:
+    """Per-round breakdown of the 1.5.6a inputs. Each round must have at
+    least 40 FIDE-rated players with a top-40 average rating ≥ 2000."""
+
+    round_: int
+    fide_rated_present: int
+    top_40_average: float  # 0.0 when fewer than 40 players are present
+
+
+def _is_present_at_round(player: 'TournamentPlayer', round_: int) -> bool:
+    """A player counts as present this round if they played a real game
+    OR received a Pairing-Allocated Bye / Rest Game. PAB is excluded from
+    "missing a round" by the spec, so it's included here for consistency.
+    """
+    pairing = player.pairings_by_round.get(round_)
+    if pairing is None:
+        return False
+    return pairing.played or pairing.result in (
+        Result.PAIRING_ALLOCATED_BYE,
+        Result.REST_GAME,
+    )
+
+
+def _missed_rounds(player: 'TournamentPlayer') -> int:
+    """Count of rounds the player neither played nor received a PAB / RG /
+    forfeit-win for. ≤ 1 keeps the player eligible for both 1.4.3d and
+    1.5.6a tournament-wide checks."""
+    missed = 0
+    for pairing in player.pairings_by_round.values():
+        if pairing.unplayed and pairing.result not in (
+            Result.FORFEIT_WIN,
+            Result.PAIRING_ALLOCATED_BYE,
+            Result.REST_GAME,
+        ):
+            missed += 1
+    return missed
+
+
+def _eligible_for_143d(tournament: 'Tournament') -> list['TournamentPlayer']:
+    """FIDE-rated, not NON-fed, not host-fed, ≤ 1 missed round."""
+    host_fed = Federation(tournament.event.federation)
+    return [
+        p
+        for p in tournament.tournament_players_by_id.values()
+        if p.rating_type == PlayerRatingType.FIDE
+        and p.federation not in (Federation('NON'), host_fed)
+        and _missed_rounds(p) <= 1
+    ]
+
+
+def _eligible_for_156a(tournament: 'Tournament') -> list['TournamentPlayer']:
+    """FIDE-rated, not NON-fed, ≤ 1 missed round. Host federation is NOT
+    excluded (differs from 1.4.3d)."""
+    return [
+        p
+        for p in tournament.tournament_players_by_id.values()
+        if p.rating_type == PlayerRatingType.FIDE
+        and p.federation != Federation('NON')
+        and _missed_rounds(p) <= 1
+    ]
+
+
+def _round_counts_143d(
+    eligible: list['TournamentPlayer'], round_: int
+) -> BigTournamentRoundCounts:
+    """Foreign FIDE-rated present this round, distinct non-FID feds, and
+    GM/IM/WGM/WIM holders within that set. FID is filtered out here
+    because 1.4.3d's "foreign" wording excludes FID."""
+    present = [p for p in eligible if _is_present_at_round(p, round_)]
+    present_foreign = [p for p in present if p.federation != Federation('FID')]
+    return BigTournamentRoundCounts(
+        round_=round_,
+        foreigners=len(present_foreign),
+        federations=len({p.federation for p in present_foreign}),
+        titled_foreigners=sum(
+            1 for p in present_foreign if p.title in TitleNorm.MASTER_TITLES
+        ),
+    )
+
+
+def _round_counts_156a(
+    eligible: list['TournamentPlayer'], round_: int
+) -> HighLevelRoundCounts:
+    """FIDE-rated present this round, plus the top-40 rating average. The
+    average is 0.0 when fewer than 40 are present (insufficient data)."""
+    present = [p for p in eligible if _is_present_at_round(p, round_)]
+    top_rated = sorted((p.rating for p in present), reverse=True)[:40]
+    avg = sum(top_rated) / len(top_rated) if len(top_rated) >= 40 else 0.0
+    return HighLevelRoundCounts(
+        round_=round_,
+        fide_rated_present=len(present),
+        top_40_average=avg,
+    )
 
 
 def compute_big_tournament_exemption(
@@ -32,69 +146,31 @@ def compute_big_tournament_exemption(
     The applicant-side norm check compares these to ≥20 / ≥3 / ≥10 to
     decide whether the 1.4.3d exemption from 1.4.3 (and 1.4.4) applies.
     """
-    host_fed = Federation(tournament.event.federation)
-    eligible_players = []
-    for p in tournament.tournament_players_by_id.values():
-        if p.rating_type != PlayerRatingType.FIDE:
-            continue
-        if p.federation in (Federation('NON'), host_fed):
-            continue
-        missed_rounds = 0
-        for pairing in p.pairings_by_round.values():
-            if pairing.unplayed and pairing.result not in (
-                Result.FORFEIT_WIN,
-                Result.PAIRING_ALLOCATED_BYE,
-                Result.REST_GAME,
-            ):
-                missed_rounds += 1
-        if missed_rounds > 1:
-            continue
-        eligible_players.append(p)
-
-    worst_players = float('inf')
-    worst_federations = float('inf')
-    worst_titled = float('inf')
-
-    for rnd in range(1, tournament.rounds + 1):
-        # "Present" interpretation: a player counts as present this round
-        # if they played a real game OR received a Pairing Allocated Bye /
-        # Rest Game. The spec says the per-round threshold must hold "for
-        # this purpose" of eligibility, with PAB explicitly excluded from
-        # what counts as "missing a round". Including PAB recipients here
-        # matches that intent — the player is participating in the round's
-        # mechanics, just not at a board. (Strict "must be at a board"
-        # reading would make 1.4.3d harder to satisfy in any event with
-        # bye-eligible bottom seeds — not what FIDE practice does.)
-        present = []
-        for p in eligible_players:
-            round_pairing = p.pairings_by_round.get(rnd)
-            if round_pairing and (
-                round_pairing.played
-                or round_pairing.result
-                in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
-            ):
-                present.append(p)
-
-        # 1.4.2a: FID players are accepted as participants but do NOT count
-        # as foreign players. 1.4.3d's "at least 20 FIDE rated foreign
-        # players ... from at least 3 different federations, at least 10 of
-        # whom hold ..." therefore excludes FID from all three counts.
-        present_foreign = [p for p in present if p.federation != Federation('FID')]
-        n_players = len(present_foreign)
-        n_titled = sum(1 for p in present_foreign if p.title in TitleNorm.MASTER_TITLES)
-        n_feds = len({p.federation for p in present_foreign})
-
-        worst_players = min(worst_players, n_players)
-        worst_federations = min(worst_federations, n_feds)
-        worst_titled = min(worst_titled, n_titled)
-
-    if worst_players is float('inf'):
+    eligible = _eligible_for_143d(tournament)
+    if not eligible or tournament.rounds < 1:
         return BigTournamentExemption(0, 0, 0)
+    per_round = [
+        _round_counts_143d(eligible, rnd) for rnd in range(1, tournament.rounds + 1)
+    ]
     return BigTournamentExemption(
-        federations=int(worst_federations),
-        foreigners=int(worst_players),
-        titled_foreigners=int(worst_titled),
+        federations=min(r.federations for r in per_round),
+        foreigners=min(r.foreigners for r in per_round),
+        titled_foreigners=min(r.titled_foreigners for r in per_round),
     )
+
+
+def compute_big_tournament_exemption_trail(
+    tournament: 'Tournament',
+) -> list[BigTournamentRoundCounts]:
+    """Per-round 1.4.3d breakdown for the calculation-details view.
+
+    Returns one entry per round of the tournament. Used by the IT1
+    detail mode to prove the exemption — the bottleneck round (whichever
+    is smallest in each column) determines whether 1.4.3d applies."""
+    eligible = _eligible_for_143d(tournament)
+    return [
+        _round_counts_143d(eligible, rnd) for rnd in range(1, tournament.rounds + 1)
+    ]
 
 
 def compute_high_level_tournament(tournament: 'Tournament') -> bool:
@@ -116,39 +192,24 @@ def compute_high_level_tournament(tournament: 'Tournament') -> bool:
     if tournament.pairing_system != SwissPairingSystem():
         return False
 
-    eligible_players = []
-    for p in tournament.tournament_players_by_id.values():
-        if p.rating_type != PlayerRatingType.FIDE:
-            continue
-        if p.federation == Federation('NON'):
-            continue
-        missed_rounds = 0
-        for pairing in p.pairings_by_round.values():
-            if pairing.unplayed and pairing.result not in (
-                Result.FORFEIT_WIN,
-                Result.PAIRING_ALLOCATED_BYE,
-                Result.REST_GAME,
-            ):
-                missed_rounds += 1
-        if missed_rounds > 1:
-            continue
-        eligible_players.append(p)
-
+    eligible = _eligible_for_156a(tournament)
     for rnd in range(1, tournament.rounds + 1):
-        # "Present" includes PAB/REST_GAME recipients — same interpretation
-        # as compute_big_tournament_exemption (see comment there).
-        present = []
-        for p in eligible_players:
-            round_pairing = p.pairings_by_round.get(rnd)
-            if round_pairing and (
-                round_pairing.played
-                or round_pairing.result
-                in (Result.PAIRING_ALLOCATED_BYE, Result.REST_GAME)
-            ):
-                present.append(p)
-        top_rated = sorted((p.rating for p in present), reverse=True)[:40]
-        if len(top_rated) < 40:
-            return False
-        if sum(top_rated) / len(top_rated) < 2000:
+        counts = _round_counts_156a(eligible, rnd)
+        if counts.fide_rated_present < 40 or counts.top_40_average < 2000:
             return False
     return True
+
+
+def compute_high_level_tournament_trail(
+    tournament: 'Tournament',
+) -> list[HighLevelRoundCounts]:
+    """Per-round 1.5.6a breakdown for the calculation-details view.
+
+    Returns one entry per round, regardless of pairing system — the
+    template can decide whether to render. Non-Swiss tournaments don't
+    qualify for 1.5.6a, but seeing the actual figures is still useful
+    audit context."""
+    eligible = _eligible_for_156a(tournament)
+    return [
+        _round_counts_156a(eligible, rnd) for rnd in range(1, tournament.rounds + 1)
+    ]

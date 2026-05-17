@@ -24,6 +24,7 @@ from data.print_documents.options import (
     PairingStylePrintOption,
     MandatoryPlayerPrintOption,
     MinimumGamesPrintOption,
+    NormChoicePrintOption,
     OptionalPlayerPrintOption,
     PlayerSplitPrintOption,
     PrintOption,
@@ -1263,6 +1264,106 @@ class NormReportPrintDocument(PrintDocument):
             'norms': norms,
             'tournament_player': tournament_player,
             'PlayerTitle': PlayerTitle,
+            'min_games_override': min_games,
+        }
+
+
+class NormCalculationDetailsPrintDocument(PrintDocument):
+    """Per-norm calculation audit view — hidden from the document picker
+    and only reachable via the "View calculation details" deep-link on
+    the IT1 (NormReportPrintDocument).
+
+    `is_available()` returns False so the picker never shows this doc.
+    The route handler at `/document-view/{event}/{document}` doesn't
+    consult `is_available`, so the deep-link continues to work. This
+    keeps the picker clean for arbiters while exposing the full
+    calculation audit at a stable URL."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'norm-calculation-details'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Norm Calculation Details')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            TournamentPrintOption,
+            MandatoryPlayerPrintOption,
+            MinimumGamesPrintOption,
+            NormChoicePrintOption,
+        ]
+
+    @property
+    def title(self) -> str:
+        return 'Norm Calculation Details'
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        # Hidden from the picker. Reach this doc via the IT1's
+        # "View calculation details" deep-link instead.
+        return False
+
+    def validate_options(self):
+        super().validate_options()
+        _validate_min_games_only_for_swiss(self)
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/norm_calculation_details.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        from data.norms import (
+            compute_big_tournament_exemption_trail,
+            compute_high_level_tournament_trail,
+        )
+        from data.norms.evaluator import _resolve_min_games
+
+        player_id = self._get_option(MandatoryPlayerPrintOption).value
+        min_games = _resolve_min_games_override(self)
+        tournament_player = self.tournament.tournament_players_by_id[player_id]
+        norms = {
+            norm_title: norm
+            for norm_title, norm in tournament_player.achieves_any_title_norm(
+                min_games_override=min_games
+            ).items()
+            if norm.meets_gender
+            and tournament_player.title.sort_index < norm_title.player_title.sort_index
+        }
+        norm_choice_value = self._get_option(NormChoicePrintOption).value
+        # Resolve the chosen norm name to the TitleNorm enum, scoped to
+        # the norms this player can claim. Falls back to the first
+        # available if the picked one isn't in the player's list.
+        chosen_norm = next(
+            (tn for tn in norms.keys() if tn.name == norm_choice_value),
+            next(iter(norms.keys()), None),
+        )
+        chosen_norm_result = norms.get(chosen_norm) if chosen_norm else None
+        # Threshold the template displays for 1.4.1. Same resolver the
+        # evaluator uses, so the displayed "≥ N" always matches the
+        # verdict (avoids a bug where DRR/single-RR were misreported).
+        min_games_threshold = (
+            _resolve_min_games(chosen_norm, self.tournament, min_games)
+            if chosen_norm
+            else (min_games if min_games is not None else 9)
+        )
+        return {
+            'event': self.get_event(),
+            'tournament': self.tournament,
+            'is_swiss': self.tournament.pairing_system == SwissPairingSystem(),
+            'start': self.tournament.start_date.strftime('%Y.%m.%d'),
+            'end': self.tournament.stop_date.strftime('%Y.%m.%d'),
+            'norms': norms,
+            'chosen_norm': chosen_norm,
+            'chosen_norm_result': chosen_norm_result,
+            'tournament_player': tournament_player,
+            'min_games_override': min_games,
+            'min_games_threshold': min_games_threshold,
+            'exemption_trail': compute_big_tournament_exemption_trail(self.tournament),
+            'high_level_trail': compute_high_level_tournament_trail(self.tournament),
         }
 
 
