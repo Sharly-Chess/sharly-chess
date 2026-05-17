@@ -6926,7 +6926,7 @@ msgid "all the tournaments"
 msgstr "tous les tournois"
 
 msgid "any OTB result"
-msgstr "tout résultat à l'échiquier"
+msgstr "tout résultat sur l'échiquier"
 
 msgid "boards from #{first} to #{last}"
 msgstr "échiquiers du n°{first} au n°{last}"
