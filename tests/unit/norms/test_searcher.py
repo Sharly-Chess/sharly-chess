@@ -1,9 +1,8 @@
 """Tests for the 1.4.1e/f subset searcher.
 
-The searcher's hard edges live in three places, tested individually:
+The searcher's hard edges live in two places, tested individually:
 
   * `NormInputs.without_rounds` — pure data manipulation (no Tournament).
-  * `_MonotonicPruner` — superset-of-failure detection.
   * `TitleNormSubsetSearcher._droppable_rounds` / `_candidates` —
     candidate generation. Tested against a faked-evaluator setup so we
     can drive the search without building a full tournament.
@@ -12,7 +11,6 @@ Then end-to-end scenarios exercise `_search_one` with a fake evaluator
 that returns is_met for specific subsets, verifying:
 
   * Smallest winning subset is returned.
-  * Pruning skips supersets of monotonic failures.
   * 1.4.2c interacts correctly with the search (forfeit-as-loss search).
   * Search exits early when an earlier (smaller) subset already won.
   * When nothing wins, the baseline (full game set) result is returned.
@@ -33,8 +31,6 @@ from data.norms import (
     NormInputs,
     TitleNormEvaluator,
     TitleNormSubsetSearcher,
-    _MonotonicPruner,
-    _is_monotonic_failure,
 )
 from utils.enum import PlayerRatingType, PlayerTitle, Result, TitleNorm
 from utils.types import Federation, NormCheckResult
@@ -179,90 +175,6 @@ class TestWithoutRounds:
         inputs = self._build()
         inputs.without_rounds(frozenset([3]))
         assert inputs.played_games == 3  # unchanged
-
-
-# ---------------------------------------------------------------------------
-# _MonotonicPruner
-# ---------------------------------------------------------------------------
-
-
-class TestMonotonicPruner:
-    def test_unseen_candidates_not_doomed(self):
-        pruner = _MonotonicPruner()
-        assert not pruner.is_doomed(frozenset([1, 2]))
-
-    def test_exact_match_is_doomed(self):
-        pruner = _MonotonicPruner()
-        pruner.record_failure(frozenset([1, 2]))
-        assert pruner.is_doomed(frozenset([1, 2]))
-
-    def test_superset_is_doomed(self):
-        pruner = _MonotonicPruner()
-        pruner.record_failure(frozenset([1, 2]))
-        # {1,2,3} is a superset → must be doomed
-        assert pruner.is_doomed(frozenset([1, 2, 3]))
-
-    def test_subset_is_not_doomed(self):
-        # {1} is a subset of {1,2}; dropping fewer rounds might still pass.
-        pruner = _MonotonicPruner()
-        pruner.record_failure(frozenset([1, 2]))
-        assert not pruner.is_doomed(frozenset([1]))
-
-    def test_disjoint_is_not_doomed(self):
-        pruner = _MonotonicPruner()
-        pruner.record_failure(frozenset([1, 2]))
-        assert not pruner.is_doomed(frozenset([3, 4]))
-
-    def test_multiple_failures_any_subset_dooms(self):
-        pruner = _MonotonicPruner()
-        pruner.record_failure(frozenset([1]))
-        pruner.record_failure(frozenset([5]))
-        # Both {1} and {5} are subsets of {1,2,5} → doomed.
-        assert pruner.is_doomed(frozenset([1, 2, 5]))
-        # {2,3} contains neither → not doomed.
-        assert not pruner.is_doomed(frozenset([2, 3]))
-
-
-# ---------------------------------------------------------------------------
-# _is_monotonic_failure
-# ---------------------------------------------------------------------------
-
-
-class TestIsMonotonicFailure:
-    def _result(self, **flags) -> NormCheckResult:
-        res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
-        for name, value in flags.items():
-            setattr(res, name, value)
-        return res
-
-    def test_clean_result_not_failure(self):
-        assert not _is_monotonic_failure(self._result())
-
-    def test_not_enough_games_is_monotonic(self):
-        # `not_enough_games` is the only check we can soundly prune on.
-        # played_games strictly decreases with each drop; the min threshold
-        # is fixed, so once below it more drops can't recover.
-        assert _is_monotonic_failure(self._result(not_enough_games='x'))
-
-    @pytest.mark.parametrize(
-        'flag',
-        [
-            # All scaling-threshold checks: dropping more games can shift
-            # the threshold and let a superset pass.
-            'score_too_low',
-            'not_enough_federations',
-            'not_enough_title_holders',
-            'not_enough_required_titles',
-            'too_many_own_federation',
-            # These were already known non-monotonic (drop a low opp lifts Ra).
-            'average_too_low',
-            'performance_too_low',
-        ],
-    )
-    def test_non_monotonic_flags_dont_trigger(self, flag):
-        # The pruner must not snapshot supersets when these fail —
-        # a different subset might fix the rule.
-        assert not _is_monotonic_failure(self._result(**{flag: 'x'}))
 
 
 # ---------------------------------------------------------------------------
@@ -516,40 +428,6 @@ class TestSearchSubsets:
         assert result is not None
         assert result.is_met
         assert result.ignored_rounds_via_search == frozenset({5})
-
-    def test_pruner_skips_supersets_of_monotonic_failures(self):
-        # 11 rounds, 5 wins. Setup: subset {1} fails monotonically →
-        # any subset containing 1 should be skipped (never evaluated).
-        opps = [FakeOpponent(i, 2400) for i in range(1, 12)]
-        rounds_data = [
-            (r, opps[r - 1], Result.WIN if r in {1, 3, 5, 7, 9} else Result.DRAW)
-            for r in range(1, 12)
-        ]
-        inputs = make_inputs(rounds_data)
-        searcher = _make_searcher(rounds=11)
-
-        evaluated_subsets: list[frozenset[int]] = []
-
-        def stub_evaluate_one(inp, tn, gender):
-            dropped = frozenset(set(range(1, 12)) - set(inp.included_rounds))
-            evaluated_subsets.append(dropped)
-            if 1 in dropped:
-                # If we ever evaluate a set containing 1, mark it
-                # monotonically failing so the pruner records it.
-                if dropped == frozenset({1}):
-                    return _make_result(meets=False, not_enough_games='fail')
-                # If pruning works, no superset of {1} reaches here.
-                # Defensive: also flag this so the test failure is visible.
-                pytest.fail(f'pruner failed — evaluated superset of {{1}}: {dropped}')
-            return _make_result(meets=False)  # non-monotonic failure
-
-        searcher.evaluator = MagicMock(spec=TitleNormEvaluator)
-        searcher.evaluator.evaluate_one.side_effect = stub_evaluate_one
-        searcher._search_subsets(inputs, TitleNorm.GM, True)
-        # We expect {1} evaluated exactly once; supersets of {1} skipped.
-        assert frozenset({1}) in evaluated_subsets
-        supersets_evaluated = [s for s in evaluated_subsets if frozenset({1}) < s]
-        assert supersets_evaluated == []
 
     def test_returns_none_when_no_subset_wins(self):
         opps = [FakeOpponent(i, 2400) for i in range(1, 12)]

@@ -127,11 +127,38 @@ class BigTournamentExemption(NamedTuple):
 
     Each field is the worst-case (minimum) across every round in the
     tournament — 1.4.3d requires the threshold to hold for *every* round.
+
+    The three thresholds live here so any spec change is a one-line edit
+    instead of a grep across templates and rule code.
     """
 
     federations: int
     foreigners: int
     titled_foreigners: int
+
+    # 1.4.3d thresholds (FIDE Handbook B.01, 1 Jan 2024).
+    MIN_FEDERATIONS = 3
+    MIN_FOREIGNERS = 20
+    MIN_TITLED_FOREIGNERS = 10
+
+    @property
+    def federations_met(self) -> bool:
+        return self.federations >= self.MIN_FEDERATIONS
+
+    @property
+    def foreigners_met(self) -> bool:
+        return self.foreigners >= self.MIN_FOREIGNERS
+
+    @property
+    def titled_foreigners_met(self) -> bool:
+        return self.titled_foreigners >= self.MIN_TITLED_FOREIGNERS
+
+    @property
+    def is_met(self) -> bool:
+        """True iff the tournament qualifies for 1.4.3d (and 1.4.4) exemption."""
+        return (
+            self.federations_met and self.foreigners_met and self.titled_foreigners_met
+        )
 
 
 @dataclass

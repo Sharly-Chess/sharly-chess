@@ -27,7 +27,6 @@ from tests.unit.norms.test_searcher import (
 )
 from data.norms import (
     TitleNormEvaluator,
-    _is_monotonic_failure,
 )
 from utils.enum import PlayerRatingType, PlayerTitle, Result, TitleNorm
 from utils.types import Federation, NormCheckResult
@@ -182,27 +181,37 @@ class TestRule_1_4_3d:
 
 
 # ===========================================================================
-# Monotonicity property tests — pruner correctness
+# Proportional thresholds allow rescue by dropping more games
 # ===========================================================================
 #
-# `_is_monotonic_failure` claims: if a check returns True for a subset S,
-# every superset T ⊇ S must also return True (so the pruner can skip T).
-# These tests enumerate concrete counter-example attempts to verify the
-# claim only fires for actually-monotonic flags.
+# Under FIDE 1.4.1c, the 1.4.4 / 1.4.5 / 1.4.8b thresholds scale with
+# `played_games` rather than `tournament.rounds`. Dropping a round can
+# therefore RESCUE a check that failed at the full game count — the
+# threshold drops faster than the underlying count. Each test below pins
+# a concrete counter-example to one such check.
+#
+# Why we care: (1) regression guard if anyone reverts the thresholds to
+# fixed `tournament.rounds`; (2) proves the subset search must be a flat
+# loop — naive "skip supersets of failing subsets" pruning would skip
+# winning subsets, because failure at size k does not imply failure at
+# size k+1.
 
 
-class TestMonotonicityProperty:
-    """For every flag the pruner treats as monotonic, no counter-example
-    must exist where dropping more rounds (a superset of drops) makes the
-    check pass.
+class TestProportionalThresholdsAllowRescue:
+    """Each test demonstrates one evaluator check where dropping more
+    rounds (a superset of drops) can rescue a previously-failing result —
+    a direct consequence of proportional thresholds.
     """
 
     def _evaluator(self) -> TitleNormEvaluator:
         return _real_searcher(rounds=11).evaluator
 
-    def test_not_enough_games_is_truly_monotonic(self):
-        """Dropping more rounds strictly decreases played_games.
-        Threshold (min_games) is fixed → once below, can't recover."""
+    def test_not_enough_games_cannot_be_rescued_by_dropping(self):
+        """Counter-example to rescue: the games-count threshold is fixed
+        (not proportional), so once played_games drops below `min_games`,
+        further drops can't recover it. The lone non-rescuable check —
+        which is also why the searcher's `max_ignores` upper-bound
+        prevents this check ever firing during search."""
         opponents = [_gm(i) for i in range(1, 12)]
         # 11 opponents, all wins.
         results = [Result.WIN] * 11
@@ -220,8 +229,10 @@ class TestMonotonicityProperty:
         res_t = evaluator.evaluate_one(superset, TitleNorm.GM, True)
         assert res_t.not_enough_games
 
-    def test_score_too_low_is_NOT_monotonic(self):
-        """Counter-example: dropping more LOSSES improves fractional score."""
+    def test_score_too_low_rescued_by_dropping_losses(self):
+        """Rescue: dropping LOSS rounds raises the fractional score, and
+        the 35% threshold scales with played_games — so a baseline that
+        fails 1.4.8b can pass after enough drops."""
         # 11 opponents at 2400. 4 wins + 3 draws + 4 losses = 5.5 points.
         # Threshold (35% of played_games):
         #   played=11, score=5.5 → 5.5 / 11 = 0.5 → 35% = 3.85 → PASS
@@ -245,21 +256,15 @@ class TestMonotonicityProperty:
         # (Other checks may still fail; we're only asserting non-monotonicity
         # of the score check itself.)
         assert not rescued.score_too_low, (
-            f'Score check should be non-monotonic. '
+            f'1.4.8b should be rescuable by dropping losses. '
             f'baseline score={baseline.score}, played={baseline.played_games}; '
             f'after-drop score={rescued.score}, played={rescued.played_games}'
         )
-        # The pruner must therefore NOT treat score_too_low as monotonic.
-        assert not _is_monotonic_failure(
-            NormCheckResult(
-                title_norm=TitleNorm.GM,
-                meets_gender=True,
-                score_too_low='x',
-            )
-        )
 
-    def test_title_holders_count_is_NOT_monotonic(self):
-        """Counter-example: dropping untitled opponents improves the titled %.
+    def test_title_holders_count_rescued_by_dropping_untitled(self):
+        """Rescue: dropping untitled opponents lowers the 50% threshold
+        (scales with played_games) faster than it lowers titled count,
+        so 1.4.5a can pass after enough drops.
 
         E.g. played=10, titled=4 → ceil(10/2)=5, fails (4<5).
         Drop 2 untitled → played=8, titled=4 → ceil(8/2)=4, passes.
@@ -281,22 +286,15 @@ class TestMonotonicityProperty:
             inputs.without_rounds(frozenset({9, 10})), TitleNorm.GM, True
         )
         assert not rescued.not_enough_title_holders, (
-            f'Title-holders check should be non-monotonic with scaling threshold. '
+            f'1.4.5a should be rescuable by dropping untitled opponents. '
             f'baseline: titled={baseline.num_title_holders}, played={baseline.played_games}; '
             f'after-drop: titled={rescued.num_title_holders}, played={rescued.played_games}'
         )
-        # Pruner must not treat as monotonic.
-        assert not _is_monotonic_failure(
-            NormCheckResult(
-                title_norm=TitleNorm.GM,
-                meets_gender=True,
-                not_enough_title_holders='x',
-            )
-        )
 
-    def test_required_titles_count_is_NOT_monotonic(self):
-        """Counter-example: with "min 3" floor, dropping non-GMs improves
-        the 1/3 ratio without losing the floor.
+    def test_required_titles_count_rescued_by_dropping_lower_titles(self):
+        """Rescue: with the "min 3" floor, dropping non-GMs lowers the 1/3
+        threshold without losing the floor, so 1.4.5b-e can pass after
+        enough drops.
 
         played=10, GMs=3 → max(ceil(10/3), 3) = 4, fails (3<4).
         Drop 2 non-GMs → played=8, GMs=3 → max(ceil(8/3), 3) = 3, passes.
@@ -315,20 +313,20 @@ class TestMonotonicityProperty:
             inputs.without_rounds(frozenset({9, 10})), TitleNorm.GM, True
         )
         assert not rescued.not_enough_required_titles, (
-            'Required-titles check should be non-monotonic — the min-3 '
-            'floor means dropping non-required opponents can recover.'
+            '1.4.5b-e should be rescuable by dropping non-required '
+            'opponents — the min-3 floor still holds.'
         )
 
-    def test_too_many_own_federation_is_NOT_monotonic(self):
-        """Counter-example: dropping own-fed opponents lowers BOTH own_count
-        AND the threshold (floor(3·played/5)). The threshold can drop faster
-        than own_count, letting a superset of drops recover.
+    def test_too_many_own_federation_rescued_by_dropping_own_fed(self):
+        """Rescue: dropping own-fed opponents lowers BOTH own_count AND
+        the threshold (floor(3·played/5)). The threshold can drop faster
+        than own_count, so 1.4.4's 3/5 cap can pass after enough drops.
 
         Baseline played=9, 6 FRA + 3 USA, applicant from FRA:
           threshold = floor(3·9/5) = 5;  own=6 > 5  → fails.
-        Drop 1 FRA (subset S):
+        Drop 1 FRA:
           played=8, own=5, threshold = floor(24/5) = 4;  5 > 4 → still fails.
-        Drop 2 FRAs (superset T ⊋ S):
+        Drop 2 FRAs:
           played=7, own=4, threshold = floor(21/5) = 4;  4 > 4 false → PASSES.
         """
         opponents = [_gm(i, federation='FRA') for i in range(1, 7)] + [
@@ -344,37 +342,35 @@ class TestMonotonicityProperty:
             'Setup: baseline should fail 1.4.4 (own=6 > 5).'
         )
 
-        # Subset S: drop one FRA (round 1).
-        s = inputs.without_rounds(frozenset({1}))
-        res_s = searcher.evaluator.evaluate_one(s, TitleNorm.GM, True)
-        assert res_s.too_many_own_federation, (
-            'S = drop 1 FRA: own=5, played=8, threshold=4 → 5>4 should fail.'
+        # Intermediate drop: one FRA.
+        intermediate = inputs.without_rounds(frozenset({1}))
+        res_intermediate = searcher.evaluator.evaluate_one(
+            intermediate, TitleNorm.GM, True
+        )
+        assert res_intermediate.too_many_own_federation, (
+            'Drop 1 FRA: own=5, played=8, threshold=4 → 5>4 should fail.'
         )
 
-        # Superset T ⊋ S: drop two FRAs (rounds 1 and 2).
-        t = inputs.without_rounds(frozenset({1, 2}))
-        res_t = searcher.evaluator.evaluate_one(t, TitleNorm.GM, True)
-        assert not res_t.too_many_own_federation, (
-            f'T = drop 2 FRAs: own=4, played=7, threshold=4 → 4>4 should pass. '
-            f'Got too_many_own_federation={res_t.too_many_own_federation}.'
+        # Larger drop: two FRAs.
+        rescued_inputs = inputs.without_rounds(frozenset({1, 2}))
+        res_rescued = searcher.evaluator.evaluate_one(
+            rescued_inputs, TitleNorm.GM, True
         )
-        # Therefore the check is NOT monotonic in subset size.
-        assert not _is_monotonic_failure(
-            NormCheckResult(
-                title_norm=TitleNorm.GM,
-                meets_gender=True,
-                too_many_own_federation='x',
-            )
+        assert not res_rescued.too_many_own_federation, (
+            f'Drop 2 FRAs: own=4, played=7, threshold=4 → 4>4 should pass. '
+            f'Got too_many_own_federation={res_rescued.too_many_own_federation}.'
         )
 
-    def test_too_many_one_federation_is_NOT_monotonic(self):
-        """Counter-example for the 2/3-cap version of 1.4.4.
+    def test_too_many_one_federation_rescued_by_dropping_top_fed(self):
+        """Rescue for the 2/3-cap version of 1.4.4. Dropping top-fed
+        opponents shrinks both `top` and the threshold (floor(2·played/3))
+        — the threshold drops faster, so 1.4.4's 2/3 cap can pass.
 
         Baseline played=9, 7 USA + 2 FRA, applicant from FRA:
           threshold = floor(2·9/3) = 6;  top=7 > 6  → fails.
         Drop 1 USA:
           played=8, top=6, threshold = floor(16/3) = 5;  6 > 5 → still fails.
-        Drop 3 USAs (superset):
+        Drop 3 USAs:
           played=6, top=4, threshold = floor(12/3) = 4;  4 > 4 false → PASSES.
         """
         opponents = [_gm(i, federation='USA') for i in range(1, 8)] + [
@@ -388,24 +384,21 @@ class TestMonotonicityProperty:
             'Setup: baseline should fail 1.4.4 (top USA=7 > 6).'
         )
 
-        # Subset S: drop one USA.
-        s = inputs.without_rounds(frozenset({1}))
-        res_s = searcher.evaluator.evaluate_one(s, TitleNorm.GM, True)
-        assert res_s.too_many_one_federation
-
-        # Superset T ⊋ S: drop three USAs.
-        t = inputs.without_rounds(frozenset({1, 2, 3}))
-        res_t = searcher.evaluator.evaluate_one(t, TitleNorm.GM, True)
-        assert not res_t.too_many_one_federation, (
-            f'T = drop 3 USAs: top=4, played=6, threshold=4 → 4>4 should pass. '
-            f'Got too_many_one_federation={res_t.too_many_one_federation}.'
+        # Intermediate drop: one USA.
+        intermediate = inputs.without_rounds(frozenset({1}))
+        res_intermediate = searcher.evaluator.evaluate_one(
+            intermediate, TitleNorm.GM, True
         )
-        assert not _is_monotonic_failure(
-            NormCheckResult(
-                title_norm=TitleNorm.GM,
-                meets_gender=True,
-                too_many_one_federation=(Federation('USA'), 'x'),
-            )
+        assert res_intermediate.too_many_one_federation
+
+        # Larger drop: three USAs.
+        rescued_inputs = inputs.without_rounds(frozenset({1, 2, 3}))
+        res_rescued = searcher.evaluator.evaluate_one(
+            rescued_inputs, TitleNorm.GM, True
+        )
+        assert not res_rescued.too_many_one_federation, (
+            f'Drop 3 USAs: top=4, played=6, threshold=4 → 4>4 should pass. '
+            f'Got too_many_one_federation={res_rescued.too_many_one_federation}.'
         )
 
 
