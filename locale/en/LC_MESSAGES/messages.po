@@ -7160,9 +7160,3 @@ msgstr ""
 msgid "½ - ½ (U)"
 msgstr ""
 
-#~ msgid "Missing men: %(count)d"
-#~ msgstr ""
-
-#~ msgid "Missing women: %(count)d"
-#~ msgstr ""
-
