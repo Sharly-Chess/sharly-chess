@@ -16,3 +16,7 @@
 ## _Sharly-Chess.com_
 
 - Added missing timeouts (4.2.0)
+
+## _FFE_
+
+- Clarify the rules upload (4.2.0)

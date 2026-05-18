@@ -3,7 +3,7 @@ from typing import Any, Annotated
 
 from litestar import get, post, patch
 from litestar.enums import RequestEncodingType
-from litestar.exceptions import NotFoundException, ClientException
+from litestar.exceptions import NotFoundException
 from litestar.params import Body
 from litestar.response import Template
 from litestar_htmx import HTMXRequest, HTMXTemplate
@@ -53,11 +53,21 @@ class FfeWebContext(AdminWebContext):
         return self.client.allowed_tournaments_for_action(AuthAction.PUBLISH_RESULTS)
 
     @property
+    def ffe_configured_tournaments(self) -> list[Tournament]:
+        ffe_configured_tournaments: list[Tournament] = []
+        for tournament in self.allowed_tournaments:
+            plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
+            if plugin_data.ffe_id and plugin_data.password:
+                ffe_configured_tournaments.append(tournament)
+        return ffe_configured_tournaments
+
+    @property
     def template_context(self) -> dict[str, Any]:
         return super().template_context | {
             'ffe_utils': FFEUtils,
             'tournament': self.tournament,
             'allowed_tournaments': self.allowed_tournaments,
+            'ffe_configured_tournaments': self.ffe_configured_tournaments,
             'FFE_UPLOAD_DELAY': FFE_UPLOAD_DELAY,
         }
 
@@ -74,16 +84,10 @@ class FfeUploadController(BaseEventAdminController):
         message: str | None = None,
         message_type: str | None = None,
     ) -> HTMXTemplate:
-        ffe_configured_tournaments: list[Tournament] = []
-        for tournament in web_context.allowed_tournaments:
-            plugin_data = FFEUtils.get_tournament_plugin_data(tournament)
-            if plugin_data.ffe_id and plugin_data.password:
-                ffe_configured_tournaments.append(tournament)
         template_context = web_context.template_context
         template_context |= {
             'message': message,
             'message_type': message_type,
-            'ffe_configured_tournaments': ffe_configured_tournaments,
         }
         return cls._render_modal('/ffe_upload_modal.html', template_context)
 
@@ -91,11 +95,43 @@ class FfeUploadController(BaseEventAdminController):
         path='/ffe/upload-modal/{event_uniq_id:str}',
         name='ffe-upload-modal',
     )
-    async def htmx_admin_ffe_upload_modal(
+    async def htmx_ffe_upload_modal(
         self,
         request: HTMXRequest,
     ) -> Template:
         return self._render_ffe_upload_modal(FfeWebContext(request))
+
+    @classmethod
+    def _render_ffe_rules_upload_modal(
+        cls,
+        web_context: FfeWebContext,
+        data: dict[str, str] | None = None,
+        errors: dict[str, str] | None = None,
+    ) -> HTMXTemplate:
+        if data is None:
+            data = WebContext.values_dict_to_form_data(
+                {'all_tournaments': True}
+                | {
+                    f'tournament_{tournament.id}': True
+                    for tournament in web_context.ffe_configured_tournaments
+                }
+            )
+        template_context = web_context.template_context
+        template_context |= {
+            'data': data,
+            'errors': errors or {},
+        }
+        return cls._render_modal('/ffe_rules_upload_modal.html', template_context)
+
+    @get(
+        path='/ffe/rules-upload-modal/{event_uniq_id:str}',
+        name='ffe-rules-upload-modal',
+    )
+    async def htmx_ffe_rules_upload_modal(
+        self,
+        request: HTMXRequest,
+    ) -> Template:
+        return self._render_ffe_rules_upload_modal(FfeWebContext(request))
 
     @classmethod
     def _render_upload_results(cls, web_context: FfeWebContext) -> HTMXTemplate:
@@ -173,14 +209,9 @@ class FfeUploadController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = FfeWebContext(request)
-        event = web_context.get_admin_event()
         normalized_data = await WebContext.normalize_multipart_data(data)
         rules_file = WebContext.form_data_to_path(normalized_data, 'rules_file')
-        tournament_ids = WebContext.form_data_to_list_int(
-            normalized_data, 'tournament_ids'
-        )
         error_tournament_names: list[str] = []
-
         if not rules_file or rules_file.suffix != '.pdf':
             if rules_file:
                 message = _(
@@ -191,13 +222,16 @@ class FfeUploadController(BaseEventAdminController):
                 )
                 rules_file.unlink(missing_ok=True)
             else:
-                message = 'No rules file specified'
-            return self._render_ffe_upload_modal(web_context, message, 'error')
+                message = _('Please select a file.')
+            return self._render_ffe_rules_upload_modal(
+                web_context, normalized_data, {'rules_file': message}
+            )
 
-        for tournament_id in tournament_ids:
-            tournament = event.tournaments_by_id.get(tournament_id)
-            if not tournament:
-                raise ClientException(f'Tournament [{tournament_id}] not found')
+        for tournament in web_context.ffe_configured_tournaments:
+            if not WebContext.form_data_to_path(
+                normalized_data, f'tournament_{tournament.id}'
+            ):
+                continue
             try:
                 FFESession(tournament).upload_rules(rules_file)
             except SharlyChessException as error:
