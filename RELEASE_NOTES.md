@@ -16,6 +16,7 @@
 ## _Sharly-Chess.com_
 
 - Added missing timeouts (4.2.0)
+- Prevent moving players from a synced tournament to a not-synced tournament (4.2.0)
 
 ## _FFE_
 
