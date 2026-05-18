@@ -95,8 +95,8 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.TeamSizePrintOption,
             options.MaxTeamsPerEntityPrintOption,
             options.MinGenderCountPrintOption,
-            options.RankIncompleteTeamsFirstPrintOption,
             options.DisplayIncompleteTeamsPrintOption,
+            options.RankIncompleteTeamsFirstPrintOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_print_option')(
             print_options=print_options
