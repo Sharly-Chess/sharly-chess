@@ -417,7 +417,7 @@
                                 <div class="error-info">
                                     {{ norm.not_enough_required_titles | safe }}
                                 </div>
-                                <label>{{ title }}:</label>
+                                <label>{{ title.value }}:</label>
                                 <input value="{{ norm.title_counts[title] }}" />
                             </div>
                         {% endfor %}
