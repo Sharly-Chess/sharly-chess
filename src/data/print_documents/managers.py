@@ -1,6 +1,4 @@
 from typing import override
-
-from common import experimental_features_enabled
 from data.print_documents import (
     documents,
     options,
@@ -43,12 +41,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.PairingPrintDocument,
             documents.ResultPrintDocument,
             documents.PlayerRankingPrintDocument,
-        ]
-        if experimental_features_enabled():
-            print_documents += [
-                documents.TeamRankingPrintDocument,
-            ]
-        print_documents += [
+            documents.TeamRankingPrintDocument,
             documents.PlayerCrosstablePrintDocument,
             documents.PlayerRoundPerformanceIndicatorPrintDocument,
             documents.BergerGridPrintDocument,
