@@ -36,3 +36,7 @@
 - Added player check-in and French school to the synchronization (4.1.0)
 - Open / close the online check-in from the check-in modal (4.1.0)
 - Added missing timeouts (4.1.5)
+
+## _FFE_
+
+- Clarify the rules upload (4.1.5)
