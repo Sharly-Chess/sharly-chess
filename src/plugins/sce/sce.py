@@ -247,7 +247,7 @@ class SCEPlugin(Plugin):
         dst_id = SCEUtils.get_tournament_plugin_data(tournament).id
         if src_id and not dst_id:
             message = _(
-                'Moving a player from a tournament synchronised with '
+                'Moving a player from a tournament synchronized with '
                 'Sharly-Chess.com to not synchronized tournament is not allowed.'
             )
             raise ValueError(message)
