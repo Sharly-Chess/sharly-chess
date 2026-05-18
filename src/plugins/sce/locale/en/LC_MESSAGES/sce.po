@@ -187,7 +187,7 @@ msgstr ""
 msgid "Modified"
 msgstr ""
 
-msgid "Moving a player from a tournament synchronized with Sharly-Chess.com to not synchronized tournament is not allowed."
+msgid "Moving a player from a tournament synchronized with Sharly-Chess.com to non-synchronized tournament is not allowed."
 msgstr ""
 
 msgid "Name"
