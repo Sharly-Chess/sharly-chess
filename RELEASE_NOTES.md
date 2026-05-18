@@ -1,5 +1,9 @@
 # _Sharly Chess_ release notes
 
+## General
+
+- Improved detection of internet connectivity (4.1.5)
+
 ## Tournaments
 
 - Simplify the criteria to include them into the form (4.1.0)
