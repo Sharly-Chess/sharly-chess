@@ -29,7 +29,7 @@
 
 ## Documents
 
-- Added custom team ranking (4.1.5)
+- Added custom team ranking documents (4.1.5)
 
 ## _Sharly-Chess.com_
 
