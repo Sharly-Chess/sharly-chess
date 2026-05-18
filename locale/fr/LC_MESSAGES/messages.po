@@ -5662,7 +5662,7 @@ msgid "The minimum numbers of players to form a complete team (%(default_value)d
 msgstr "Le nombre minimum de joueur·euses pour former une équipe complète (%(default_value)d par défaut)."
 
 msgid "The minimum players count of each gender to form a complete team."
-msgstr "Le nombre minimum de joueur·euses pour former une équipe complète."
+msgstr "Le nombre minimum de joueur·euses de chaque genre pour former une équipe complète."
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
