@@ -54,9 +54,15 @@ class TitleNormForecaster:
         self,
         player: 'TournamentPlayer',
         min_games_override: int | None = None,
+        rule_143_exemption: str = 'none',
     ):
+        """`rule_143_exemption` is the arbiter's manual selection for
+        1.4.3a/b/c. Defaults to 'none' so existing callers see no behavior
+        change. Applied to every forecast result so a/b/c-eligible
+        players show the right `chaseable_norms` for their event type."""
         self.player = player
         self.min_games_override = min_games_override
+        self.rule_143_exemption = rule_143_exemption
 
     @property
     def tournament(self):
@@ -75,12 +81,22 @@ class TitleNormForecaster:
     ) -> dict[Result, dict[TitleNorm, NormCheckResult]]:
         """For each candidate outcome (LOSS, DRAW, WIN) of `round_`, return
         the per-norm result that would arise."""
+        from data.norms.tournament_checks import apply_143abc_exemption
+        from utils.types import Federation
+
+        event_fed = Federation(self.player.event.federation)
         out: dict[Result, dict[TitleNorm, NormCheckResult]] = {}
         for outcome in _FORECAST_OUTCOMES:
             searcher = TitleNormSubsetSearcher(
                 self.player, min_games_override=self.min_games_override
             )
-            out[outcome] = searcher.evaluate(result_overrides={round_: outcome})
+            results = searcher.evaluate(result_overrides={round_: outcome})
+            # Apply 1.4.3a/b/c exemption so `is_met` reflects the spec
+            # exemption when the arbiter has flagged the event type.
+            apply_143abc_exemption(
+                results, self.rule_143_exemption, self.player.federation, event_fed
+            )
+            out[outcome] = results
         return out
 
     def minimum_required_result(

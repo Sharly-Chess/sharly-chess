@@ -179,6 +179,9 @@
                                 {% if min_games_override is not none %}
                                     {% set _opts = _opts ~ '|minimum-games=' ~ min_games_override %}
                                 {% endif %}
+                                {% if rule_143_exemption_code and rule_143_exemption_code != 'none' %}
+                                    {% set _opts = _opts ~ '|rule-143-exemption=' ~ rule_143_exemption_code %}
+                                {% endif %}
                                 {% set norm_url = url_for(
                                     'document-view',
                                     event_uniq_id=event.uniq_id,
@@ -233,6 +236,11 @@
                                         {% endif %}
                                         {% if norm.is_143d_met and norm.not_enough_federations %}
                                             {% set _discard = notes.append(_('1.4.3d applied')) %}
+                                        {% endif %}
+                                        {% if norm.is_143_exempt_via_abc %}
+                                            {% set _discard = notes.append(
+                                                _('1.4.3%(code)s applied', code=norm.rule_143_exemption)
+                                            ) %}
                                         {% endif %}
                                         {% if notes %}
                                             <span class="note">{{ notes | join('; ') }}</span>

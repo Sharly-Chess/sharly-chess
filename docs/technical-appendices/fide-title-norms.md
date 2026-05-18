@@ -112,7 +112,7 @@ Exemptions from that normal rule:
 - `1.4.3a`: Final stage of national open/men's championship and national women's championship, subject to the regulation's zonal/sub-zonal limitation.
 - `1.4.3b`: National team championships. The exemption applies only to players from the federation that registered the event, and results from different divisions cannot be combined.
 - `1.4.3c`: Zonal and sub-zonal tournaments.
-- `1.4.3d`: Swiss tournaments where every round includes at least 20 FIDE-rated foreign players from at least 3 federations, including at least 10 GM/IM/WGM/WIM titleholders. For this purpose, players are counted only if they miss at most one round (excluding pairing-allocated byes). **Otherwise, `1.4.4` applies.**
+- `1.4.3d`: Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles. For this purpose, players are counted only if they miss at most one round (excluding pairing-allocated byes). **Otherwise, `1.4.4` applies.**
 
 The "Otherwise, `1.4.4` applies" clause is important: when `1.4.3d`'s tournament-wide conditions are met, the player is exempted from **both** `1.4.3` (foreign-federation count) AND `1.4.4` (federation caps). When `1.4.3d` is not met, the normal `1.4.4` caps apply. `1.4.3a`–`1.4.3c` only exempt `1.4.3`, not `1.4.4`.
 

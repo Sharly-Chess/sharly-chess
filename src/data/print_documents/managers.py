@@ -79,6 +79,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.NonMonetaryPrintOption,
             options.ClubThresholdPrintOption,
             options.MinimumGamesPrintOption,
+            options.Rule143ExemptionPrintOption,
             options.QRCodeNetworkPrintOption,
             options.PlaceCardBoardNumbersPrintOption,
             options.PlaceCardMirrorPrintOption,

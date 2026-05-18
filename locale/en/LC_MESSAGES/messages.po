@@ -307,9 +307,6 @@ msgstr ""
 msgid "1 - 0 (U)"
 msgstr ""
 
-msgid "1. Per-rule checks"
-msgstr ""
-
 msgid "1.4.1 — Games played"
 msgstr ""
 
@@ -335,16 +332,29 @@ msgstr ""
 msgid "1.4.2c applied"
 msgstr ""
 
+msgid "1.4.2c interpretation — side by side"
+msgstr ""
+
 msgid "1.4.2c was applied: the last-round opponent forfeit was included in the mix and scored as a played loss. The default 1.4.1c interpretation (forfeit excluded) is shown alongside for comparison."
 msgstr ""
 
 msgid "1.4.2c: last-round opponent forfeit, counted as a played LOSS."
 msgstr ""
 
+msgid "1.4.3 exemption:"
+msgstr "Exemption 1.4.3 :"
+
 msgid "1.4.3 — At least 2 foreign federations"
 msgstr ""
 
+#, python-format
+msgid "1.4.3%(code)s applied"
+msgstr ""
+
 msgid "1.4.3d applied"
+msgstr ""
+
+msgid "1.4.3d per-round breakdown"
 msgstr ""
 
 msgid "1.4.3d requires every round to have at least 20 FIDE-rated foreigners (excl. FID), from at least 3 federations, of whom at least 10 hold GM/IM/WGM/WIM. "
@@ -377,10 +387,10 @@ msgstr ""
 msgid "1.4.8b — Minimum score"
 msgstr ""
 
-msgid "1.5.6a is a Swiss-only criterion; the per-round figures below are shown for context."
+msgid "1.5.6a met"
 msgstr ""
 
-msgid "1.5.6a met"
+msgid "1.5.6a per-round breakdown"
 msgstr ""
 
 msgid "1.5.6a requires every round to have at least 40 FIDE-rated players whose top-40 average is at least 2000."
@@ -393,21 +403,12 @@ msgstr ""
 msgid "1st day of the month"
 msgstr ""
 
-msgid "2. Opponent ratings (1.4.6 + 1.4.7)"
-msgstr ""
-
 #, python-format
 msgid "2/3 of %(n)s opponents"
 msgstr ""
 
-msgid "3. Performance rating (Rp)"
-msgstr ""
-
 #, python-format
 msgid "3/5 of %(n)s opponents"
-msgstr ""
-
-msgid "4. Federation distribution (counted opponents)"
 msgstr ""
 
 msgid "400 - Bad request"
@@ -422,23 +423,11 @@ msgstr ""
 msgid "404 - Page Not Found"
 msgstr ""
 
-msgid "5. 1.4.3d per-round breakdown"
-msgstr ""
-
 #, python-format
 msgid "50%% of the maximum possible score"
 msgstr ""
 
 msgid "500 - Internal Server Error"
-msgstr ""
-
-msgid "6. 1.5.6a per-round breakdown"
-msgstr ""
-
-msgid "7. 1.4.2c interpretation — side by side"
-msgstr ""
-
-msgid "8. Per-round audit"
 msgstr ""
 
 msgid "<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt."
@@ -2528,7 +2517,7 @@ msgstr ""
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
-msgid "FIDE 1.4.1. Default is 9. Lower to 7 for World or Continental Team Championships, or to 8 for the World Cup (1.4.1b exceptions). Only applies to Swiss tournaments."
+msgid "FIDE 1.4.1. Default is 9. Lower to 7 for World or Continental Team Championships, or to 8 for the World Cup (1.4.1b exceptions)."
 msgstr ""
 
 msgid "FIDE Arbiter"
@@ -2610,6 +2599,9 @@ msgid "Fed. *** FEDERATION COLUMN HEADER"
 msgstr "Fed."
 
 msgid "Federation"
+msgstr ""
+
+msgid "Federation distribution (counted opponents)"
 msgstr ""
 
 msgid "Federation plugins"
@@ -3660,6 +3652,12 @@ msgstr "National"
 msgid "National Arbiter"
 msgstr ""
 
+msgid "National championship final (1.4.3a)"
+msgstr ""
+
+msgid "National team championship (1.4.3b)"
+msgstr ""
+
 msgid "Nauru"
 msgstr ""
 
@@ -4154,6 +4152,9 @@ msgstr ""
 msgid "Opponent Elo [Pts]"
 msgstr ""
 
+msgid "Opponent ratings (1.4.6 + 1.4.7)"
+msgstr ""
+
 msgid "Opponent:"
 msgstr ""
 
@@ -4357,6 +4358,12 @@ msgid "Payment"
 msgstr ""
 
 msgid "Pending"
+msgstr ""
+
+msgid "Per-round audit"
+msgstr ""
+
+msgid "Per-rule checks"
 msgstr ""
 
 msgid "Perfect tournament performance"
@@ -4945,6 +4952,9 @@ msgid "Refresh"
 msgstr ""
 
 msgid "Refresh this page."
+msgstr ""
+
+msgid "Regular event"
 msgstr ""
 
 msgid "Release {version} has been installed in [{folder}]."
@@ -7118,6 +7128,9 @@ msgstr ""
 msgid "Zimbabwe"
 msgstr ""
 
+msgid "Zonal or sub-zonal (1.4.3c)"
+msgstr ""
+
 msgid "[{value}] is not a positive value."
 msgstr ""
 
@@ -7447,7 +7460,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-
-#~ msgid "1.4.3d requires every round to have at least 20 FIDE-rated foreigners (excl. FID), from at least 3 federations, of whom at least 10 hold GM/IM/WGM/WIM. The bottleneck row is highlighted."
-#~ msgstr ""
 

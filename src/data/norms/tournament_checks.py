@@ -213,3 +213,43 @@ def compute_high_level_tournament_trail(
     return [
         _round_counts_156a(eligible, rnd) for rnd in range(1, tournament.rounds + 1)
     ]
+
+
+def apply_143abc_exemption(
+    results: dict,  # dict[TitleNorm, NormCheckResult]
+    exemption_code: str,
+    applicant_federation: 'Federation',
+    event_federation: 'Federation',
+) -> None:
+    """Mutate `results` to apply the 1.4.3a/b/c exemption, if any.
+
+    `exemption_code` is the arbiter's selection from the print option:
+    - 'none'   → no manual exemption (1.4.3d still auto-applies elsewhere).
+    - '1.4.3a' → National championship final. Exempts 1.4.3 only for
+                 players whose federation == event's registering federation.
+    - '1.4.3b' → National team championship. Same player filter as a.
+    - '1.4.3c' → Zonal or sub-zonal. Exempts 1.4.3 for ALL players
+                 regardless of federation.
+
+    NONE of a/b/c exempt 1.4.4 — only 1.4.3d does that. The result's
+    `is_met` honors this asymmetry via `is_143_exempt_via_abc`.
+
+    Sets `result.rule_143_exemption` to 'a' / 'b' / 'c' / None as
+    appropriate. The print templates render a badge from this field.
+    """
+    if exemption_code == 'none':
+        return
+
+    # a and b are player-scoped: only the registering federation's
+    # players are exempt. c is tournament-scoped (applies to everyone).
+    if exemption_code in ('1.4.3a', '1.4.3b'):
+        if applicant_federation != event_federation:
+            return
+
+    code_map = {'1.4.3a': 'a', '1.4.3b': 'b', '1.4.3c': 'c'}
+    code = code_map.get(exemption_code)
+    if code is None:
+        return  # unknown value — validate() should have caught this
+
+    for res in results.values():
+        res.rule_143_exemption = code

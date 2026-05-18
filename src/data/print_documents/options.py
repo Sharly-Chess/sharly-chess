@@ -423,6 +423,58 @@ class MinimumGamesPrintOption(PrintOption):
             raise OptionError(_('Minimum games for a norm must be at least 7.'), self)
 
 
+class Rule143ExemptionPrintOption(PrintOption):
+    """Selects which FIDE 1.4.3 exemption (a/b/c) applies, based on the
+    type of event the tournament is part of. The arbiter sets this on the
+    print doc — there's no automatic detection because nothing in the
+    tournament metadata identifies a "National Championship final" or a
+    "Zonal".
+
+    Spec mapping:
+    - 'none'  → no exemption (default).
+    - '1.4.3a' → National men's/open championship final stage.
+                  Exempts 1.4.3 ONLY for players from the event's
+                  registering federation.
+    - '1.4.3b' → National team championships.
+                  Same player filter as 1.4.3a.
+    - '1.4.3c' → Zonal / Sub-zonal tournament.
+                  Exempts 1.4.3 for ALL players (no federation filter).
+
+    None of a/b/c exempt 1.4.4 — only 1.4.3d does that (see
+    `compute_big_tournament_exemption`).
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'rule-143-exemption'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return 'none'
+
+    @property
+    def exemption_choices(self) -> dict[str, str]:
+        """{value: label} for the dropdown. Labels include the spec
+        reference so the arbiter sees the rule being invoked."""
+        return {
+            'none': _('Regular event'),
+            '1.4.3a': _('National championship final (1.4.3a)'),
+            '1.4.3b': _('National team championship (1.4.3b)'),
+            '1.4.3c': _('Zonal or sub-zonal (1.4.3c)'),
+        }
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value not in ('none', '1.4.3a', '1.4.3b', '1.4.3c'):
+            # Untranslated; should not happen via UI
+            raise OptionError(f'Unknown 1.4.3 exemption: {self.value}', self)
+
+
 class NormChoicePrintOption(PrintOption):
     """Which norm to render in the Norm Calculation Details document.
     The detail doc shows only one norm at a time, so the arbiter picks

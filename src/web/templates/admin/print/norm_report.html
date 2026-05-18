@@ -280,6 +280,9 @@
             {% if min_games_override is not none %}
                 {% set _opts_details = _opts_details ~ '|minimum-games=' ~ min_games_override %}
             {% endif %}
+            {% if rule_143_exemption_code and rule_143_exemption_code != 'none' %}
+                {% set _opts_details = _opts_details ~ '|rule-143-exemption=' ~ rule_143_exemption_code %}
+            {% endif %}
             <div class="no-print" style="text-align: center; margin: 0.4rem 0;">
                 <a href="{{ url_for('document-view', event_uniq_id=event.uniq_id, document='norm-calculation-details') ~ '?options=' ~ (_opts_details | urlencode) }}"
                    target="_blank"
@@ -473,6 +476,11 @@
                             '1.4.1e/f applied: round(s) ' ~
                             (norm.ignored_rounds_via_search | sort | join(', ')) ~
                             ' ignored.'
+                        ) %}
+                    {% endif %}
+                    {% if norm.is_143_exempt_via_abc %}
+                        {% set _discard = remarks.append(
+                            '1.4.3' ~ norm.rule_143_exemption ~ ' applied: 1.4.3 federation requirement waived for event type.'
                         ) %}
                     {% endif %}
                     <input value="{{ remarks | join(' ') }}" />

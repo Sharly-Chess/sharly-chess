@@ -140,6 +140,9 @@
         {% if min_games_override is not none %}
             {% set _opts_it1 = _opts_it1 ~ '|minimum-games=' ~ min_games_override %}
         {% endif %}
+        {% if rule_143_exemption_code and rule_143_exemption_code != 'none' %}
+            {% set _opts_it1 = _opts_it1 ~ '|rule-143-exemption=' ~ rule_143_exemption_code %}
+        {% endif %}
         <div class="nav-bar no-print">
             <span>{{ _('Calculation details — read-only audit view, hidden when printed.') }}</span>
             <a href="{{ url_for('document-view', event_uniq_id=event.uniq_id, document='norm-report') ~ '?options=' ~ (_opts_it1 | urlencode) }}">
@@ -153,6 +156,11 @@
             </p>
         {% else %}
             {% set norm = chosen_norm_result %}
+            {# Section numbering counter. Sections render conditionally
+               (Swiss-only ones are hidden for RR/DRR; 1.4.2c only when
+               applied), so the displayed numbers must reflect what's
+               actually visible. #}
+            {% set sec = namespace(n=0) %}
 
             <div class="calc-banner">
                 <h1>{{ _('Norm Calculation Details — %(norm)s', norm=chosen_norm.name) }}</h1>
@@ -178,7 +186,7 @@
 
             {#— 1. Per-rule arithmetic —#}
             <section class="calc-section">
-                <h2>{{ _('1. Per-rule checks') }}</h2>
+                {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Per-rule checks') }}</h2>
                 <table class="calc-table">
                     <thead>
                         <tr>
@@ -230,17 +238,20 @@
                                 {% endif %}
                             </td>
                             <td class="center">
-                                {% if norm.not_enough_federations and not norm.is_143d_met %}
-                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
-                                {% elif norm.not_enough_federations and norm.is_143d_met %}
-                                    <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
-                                {% else %}
+                                {% if not norm.not_enough_federations %}
                                     <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% elif norm.is_143d_met %}
+                                    <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
+                                {% elif norm.is_143_exempt_via_abc %}
+                                    <span class="verdict-pass">{{ _('EXEMPT') }} (1.4.3{{ norm.rule_143_exemption }})</span>
+                                {% else %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
 
-                        {# 1.4.4 — federation caps #}
+                        {# 1.4.4 — federation caps. Note: 1.4.3a/b/c do NOT
+                           exempt 1.4.4 — only 1.4.3d does. #}
                         <tr>
                             <td>{{ _('1.4.4 — Own federation cap') }}</td>
                             <td>
@@ -404,7 +415,7 @@
 
             {#— 2. Opponent ratings list (1.4.6 floor) —#}
             <section class="calc-section">
-                <h2>{{ _('2. Opponent ratings (1.4.6 + 1.4.7)') }}</h2>
+                {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Opponent ratings (1.4.6 + 1.4.7)') }}</h2>
                 {% if norm.adjusted_player %}
                     <p style="font-size: 0.8rem; margin: 0 0 0.6rem 0;">
                         {{ _('Rule 1.4.6: the lowest-rated opponent is raised to the norm floor (%(r)s) before computing the average.', r=chosen_norm.minimum_rating) }}
@@ -458,7 +469,7 @@
 
             {#— 3. Performance breakdown —#}
             <section class="calc-section">
-                <h2>{{ _('3. Performance rating (Rp)') }}</h2>
+                {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Performance rating (Rp)') }}</h2>
                 <table class="calc-table">
                     <tr>
                         <th>{{ _('Played games') }}</th>
@@ -491,7 +502,7 @@
             {#— 4. Federation histogram —#}
             {% if norm.federations_counter %}
             <section class="calc-section">
-                <h2>{{ _('4. Federation distribution (counted opponents)') }}</h2>
+                {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Federation distribution (counted opponents)') }}</h2>
                 <table class="calc-table">
                     <thead>
                         <tr>
@@ -517,10 +528,14 @@
             </section>
             {% endif %}
 
-            {#— 5. 1.4.3d per-round trail —#}
-            {% if exemption_trail %}
+            {#— 5. 1.4.3d per-round trail — Swiss-only per spec. RR / DRR
+                cannot satisfy 1.4.3d (the rule explicitly says "Swiss
+                System tournaments"), so we hide the breakdown for non-Swiss
+                events to avoid showing an inapplicable bottleneck table. #}
+            {% if is_swiss and exemption_trail %}
+            {% set sec.n = sec.n + 1 %}
             <section class="calc-section">
-                <h2>{{ _('5. 1.4.3d per-round breakdown') }}</h2>
+                <h2>{{ sec.n }}. {{ _('1.4.3d per-round breakdown') }}</h2>
                 <p style="font-size: 0.8rem; margin: 0 0 0.6rem 0;">
                     {{ _('1.4.3d requires every round to have at least 20 FIDE-rated foreigners (excl. FID), from at least 3 federations, of whom at least 10 hold GM/IM/WGM/WIM. ') }}
                 </p>
@@ -567,18 +582,15 @@
             </section>
             {% endif %}
 
-            {#— 6. 1.5.6a per-round trail —#}
+            {#— 6. 1.5.6a per-round trail — Swiss-only per spec.
+                Hidden entirely for non-Swiss events. #}
+            {% if is_swiss %}
+            {% set sec.n = sec.n + 1 %}
             <section class="calc-section">
-                <h2>{{ _('6. 1.5.6a per-round breakdown') }}</h2>
-                {% if not is_swiss %}
-                    <p style="font-size: 0.8rem; color: #777; font-style: italic;">
-                        {{ _('1.5.6a is a Swiss-only criterion; the per-round figures below are shown for context.') }}
-                    </p>
-                {% else %}
-                    <p style="font-size: 0.8rem; margin: 0 0 0.6rem 0;">
-                        {{ _('1.5.6a requires every round to have at least 40 FIDE-rated players whose top-40 average is at least 2000.') }}
-                    </p>
-                {% endif %}
+                <h2>{{ sec.n }}. {{ _('1.5.6a per-round breakdown') }}</h2>
+                <p style="font-size: 0.8rem; margin: 0 0 0.6rem 0;">
+                    {{ _('1.5.6a requires every round to have at least 40 FIDE-rated players whose top-40 average is at least 2000.') }}
+                </p>
                 <table class="calc-table">
                     <colgroup>
                         <col style="width: 1%;">
@@ -609,11 +621,13 @@
                     </tbody>
                 </table>
             </section>
+            {% endif %}
 
             {#— 7. 1.4.2c side-by-side (when applicable) —#}
             {% if norm.applied_142c and norm.alternate_142c %}
+            {% set sec.n = sec.n + 1 %}
             <section class="calc-section">
-                <h2>{{ _('7. 1.4.2c interpretation — side by side') }}</h2>
+                <h2>{{ sec.n }}. {{ _('1.4.2c interpretation — side by side') }}</h2>
                 <p style="font-size: 0.8rem; margin: 0 0 0.6rem 0;">
                     {{ _('1.4.2c was applied: the last-round opponent forfeit was included in the mix and scored as a played loss. The default 1.4.1c interpretation (forfeit excluded) is shown alongside for comparison.') }}
                 </p>
@@ -670,7 +684,7 @@
 
             {#— 8. Per-round audit —#}
             <section class="calc-section">
-                <h2>{{ _('8. Per-round audit') }}</h2>
+                {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Per-round audit') }}</h2>
                 <table class="calc-table">
                     <colgroup>
                         <col style="width: 1%;">

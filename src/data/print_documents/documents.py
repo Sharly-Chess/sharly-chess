@@ -26,6 +26,7 @@ from data.print_documents.options import (
     MinimumGamesPrintOption,
     NormChoicePrintOption,
     OptionalPlayerPrintOption,
+    Rule143ExemptionPrintOption,
     PlayerSplitPrintOption,
     PrintOption,
     QRCodeNetworkPrintOption,
@@ -1205,6 +1206,7 @@ class NormReportPrintDocument(PrintDocument):
             TournamentPrintOption,
             MandatoryPlayerPrintOption,
             MinimumGamesPrintOption,
+            Rule143ExemptionPrintOption,
         ]
 
     @property
@@ -1244,8 +1246,12 @@ class NormReportPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        from data.norms import apply_143abc_exemption
+        from utils.types import Federation
+
         player_id = self._get_option(MandatoryPlayerPrintOption).value
         min_games = _resolve_min_games_override(self)
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm
@@ -1255,6 +1261,12 @@ class NormReportPrintDocument(PrintDocument):
             if norm.meets_gender
             and tournament_player.title.sort_index < norm_title.player_title.sort_index
         }
+        apply_143abc_exemption(
+            norms,
+            exemption_code,
+            tournament_player.federation,
+            Federation(self.get_event().federation),
+        )
         return {
             'event': self.get_event(),
             'tournament': self.tournament,
@@ -1265,6 +1277,7 @@ class NormReportPrintDocument(PrintDocument):
             'tournament_player': tournament_player,
             'PlayerTitle': PlayerTitle,
             'min_games_override': min_games,
+            'rule_143_exemption_code': exemption_code,
         }
 
 
@@ -1294,6 +1307,7 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
             MandatoryPlayerPrintOption,
             MinimumGamesPrintOption,
             NormChoicePrintOption,
+            Rule143ExemptionPrintOption,
         ]
 
     @property
@@ -1317,13 +1331,16 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
     @property
     def template_context(self) -> dict[str, Any]:
         from data.norms import (
+            apply_143abc_exemption,
             compute_big_tournament_exemption_trail,
             compute_high_level_tournament_trail,
         )
         from data.norms.evaluator import _resolve_min_games
+        from utils.types import Federation
 
         player_id = self._get_option(MandatoryPlayerPrintOption).value
         min_games = _resolve_min_games_override(self)
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm
@@ -1333,6 +1350,12 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
             if norm.meets_gender
             and tournament_player.title.sort_index < norm_title.player_title.sort_index
         }
+        apply_143abc_exemption(
+            norms,
+            exemption_code,
+            tournament_player.federation,
+            Federation(self.get_event().federation),
+        )
         norm_choice_value = self._get_option(NormChoicePrintOption).value
         # Resolve the chosen norm name to the TitleNorm enum, scoped to
         # the norms this player can claim. Falls back to the first
@@ -1362,6 +1385,7 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
             'tournament_player': tournament_player,
             'min_games_override': min_games,
             'min_games_threshold': min_games_threshold,
+            'rule_143_exemption_code': exemption_code,
             'exemption_trail': compute_big_tournament_exemption_trail(self.tournament),
             'high_level_trail': compute_high_level_tournament_trail(self.tournament),
         }
@@ -1385,7 +1409,11 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, MinimumGamesPrintOption]
+        return [
+            TournamentPrintOption,
+            MinimumGamesPrintOption,
+            Rule143ExemptionPrintOption,
+        ]
 
     @property
     def title(self) -> str:
@@ -1436,6 +1464,11 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
             # Passed through to the per-row links into the IT1 doc so the
             # generated URL carries the same minimum-games choice.
             'min_games_override': _resolve_min_games_override(self),
+            # Same idea: clicked-through IT1 keeps the arbiter's
+            # event-type selection (1.4.3a/b/c).
+            'rule_143_exemption_code': self._get_option(
+                Rule143ExemptionPrintOption
+            ).value,
         }
         if tournament.finished:
             return common | {'mode': 'achieved'} | self._achieved_context()
@@ -1447,14 +1480,29 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         return common | {'mode': 'pending'}
 
     def _achieved_context(self) -> dict[str, Any]:
+        from data.norms import apply_143abc_exemption
+        from utils.types import Federation
+
         min_games = _resolve_min_games_override(self)
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
+        event_federation = Federation(self.get_event().federation)
         achievers: list[dict[str, Any]] = []
         for tournament_player in self.tournament.tournament_players_by_id.values():
+            all_norms = tournament_player.achieves_any_title_norm(
+                min_games_override=min_games
+            )
+            # Apply 1.4.3a/b/c exemption before is_met filtering — the
+            # exemption can flip a is_met=False norm to is_met=True for
+            # players from the event's federation (or all players for c).
+            apply_143abc_exemption(
+                all_norms,
+                exemption_code,
+                tournament_player.federation,
+                event_federation,
+            )
             achieved = {
                 tn: result
-                for tn, result in tournament_player.achieves_any_title_norm(
-                    min_games_override=min_games
-                ).items()
+                for tn, result in all_norms.items()
                 if result.is_met
                 and tournament_player.title.sort_index < tn.player_title.sort_index
             }
@@ -1506,10 +1554,13 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         from data.norms.evaluator import _resolve_min_games
 
         override = _resolve_min_games_override(self)
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
         candidates: list[dict[str, Any]] = []
         for tournament_player in self.tournament.tournament_players_by_id.values():
             forecaster = TitleNormForecaster(
-                tournament_player, min_games_override=override
+                tournament_player,
+                min_games_override=override,
+                rule_143_exemption=exemption_code,
             )
             if not forecaster.can_forecast_round(forecast_round):
                 continue

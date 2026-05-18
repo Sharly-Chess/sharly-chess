@@ -307,9 +307,6 @@ msgstr "0 - ½ (NC)"
 msgid "1 - 0 (U)"
 msgstr "1 - 0 (NC)"
 
-msgid "1. Per-rule checks"
-msgstr "1. Vérifications par règle"
-
 msgid "1.4.1 — Games played"
 msgstr "1.4.1 — Parties jouées"
 
@@ -335,17 +332,30 @@ msgstr "1.4.2c (forfait compté comme DÉFAITE)"
 msgid "1.4.2c applied"
 msgstr "1.4.2c appliqué"
 
+msgid "1.4.2c interpretation — side by side"
+msgstr "Interprétation 1.4.2c — comparaison"
+
 msgid "1.4.2c was applied: the last-round opponent forfeit was included in the mix and scored as a played loss. The default 1.4.1c interpretation (forfeit excluded) is shown alongside for comparison."
 msgstr "1.4.2c a été appliqué : le forfait de l'adversaire à la dernière ronde a été inclus dans le panel et compté comme une défaite jouée. L'interprétation 1.4.1c par défaut (forfait exclu) est affichée à côté pour comparaison."
 
 msgid "1.4.2c: last-round opponent forfeit, counted as a played LOSS."
 msgstr "1.4.2c : forfait de l'adversaire à la dernière ronde, compté comme une DÉFAITE jouée."
 
+msgid "1.4.3 exemption:"
+msgstr "Exemption 1.4.3 :"
+
 msgid "1.4.3 — At least 2 foreign federations"
 msgstr "1.4.3 — Au moins 2 fédérations étrangères"
 
+#, python-format
+msgid "1.4.3%(code)s applied"
+msgstr "1.4.3%(code)s appliqué"
+
 msgid "1.4.3d applied"
 msgstr "1.4.3d appliqué"
+
+msgid "1.4.3d per-round breakdown"
+msgstr "Détail 1.4.3d par ronde"
 
 msgid "1.4.3d requires every round to have at least 20 FIDE-rated foreigners (excl. FID), from at least 3 federations, of whom at least 10 hold GM/IM/WGM/WIM. "
 msgstr "1.4.3d exige que chaque ronde compte au moins 20 joueurs étrangers classés FIDE (hors FID), répartis dans au moins 3 fédérations, dont au moins 10 portent les titres GM/IM/WGM/WIM."
@@ -377,11 +387,11 @@ msgstr "1.4.8a — Moyenne minimale des adversaires (Ra)"
 msgid "1.4.8b — Minimum score"
 msgstr "1.4.8b — Score minimal"
 
-msgid "1.5.6a is a Swiss-only criterion; the per-round figures below are shown for context."
-msgstr "1.5.6a est un critère réservé au système suisse ; les chiffres par ronde ci-dessous sont fournis à titre indicatif."
-
 msgid "1.5.6a met"
 msgstr "1.5.6a respecté"
+
+msgid "1.5.6a per-round breakdown"
+msgstr "Détail 1.5.6a par ronde"
 
 msgid "1.5.6a requires every round to have at least 40 FIDE-rated players whose top-40 average is at least 2000."
 msgstr "1.5.6a exige que chaque ronde compte au moins 40 joueurs classés FIDE dont la moyenne des 40 meilleurs est d'au moins 2000."
@@ -393,22 +403,13 @@ msgstr "1/3 de %(n)s adversaires, min 3"
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
-msgid "2. Opponent ratings (1.4.6 + 1.4.7)"
-msgstr "2. Classements des adversaires (1.4.6 + 1.4.7)"
-
 #, python-format
 msgid "2/3 of %(n)s opponents"
 msgstr "2/3 de %(n)s adversaires"
 
-msgid "3. Performance rating (Rp)"
-msgstr "3. Performance (Rp)"
-
 #, python-format
 msgid "3/5 of %(n)s opponents"
 msgstr "3/5 de %(n)s adversaires"
-
-msgid "4. Federation distribution (counted opponents)"
-msgstr "4. Répartition par fédération (adversaires comptés)"
 
 msgid "400 - Bad request"
 msgstr "400 - Mauvaise requête"
@@ -422,24 +423,12 @@ msgstr "403 - Accès non-autorisé"
 msgid "404 - Page Not Found"
 msgstr "404 - Page non trouvée"
 
-msgid "5. 1.4.3d per-round breakdown"
-msgstr "5. Détail 1.4.3d par ronde"
-
 #, python-format
 msgid "50%% of the maximum possible score"
 msgstr "50 %% du score maximal possible"
 
 msgid "500 - Internal Server Error"
 msgstr "500 - Erreur interne du serveur"
-
-msgid "6. 1.5.6a per-round breakdown"
-msgstr "6. Détail 1.5.6a par ronde"
-
-msgid "7. 1.4.2c interpretation — side by side"
-msgstr "7. Interprétation 1.4.2c — comparaison"
-
-msgid "8. Per-round audit"
-msgstr "8. Audit par ronde"
 
 msgid "<b>1.4.3</b> At least two federations other than that of the title applicant must be included, except 1.4.3a - 1.4.3d shall be exempt."
 msgstr "<b>1.4.3</b> Au moins deux fédérations autres que celle du·de la candidat·e au titre doivent être représentées, sauf dans les cas d’exemption prévus aux articles 1.4.3a à 1.4.3d."
@@ -2528,8 +2517,8 @@ msgstr "FIDE"
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
-msgid "FIDE 1.4.1. Default is 9. Lower to 7 for World or Continental Team Championships, or to 8 for the World Cup (1.4.1b exceptions). Only applies to Swiss tournaments."
-msgstr "FIDE 1.4.1. Par défaut 9. Réduire à 7 pour les Championnats du Monde ou Continentaux par équipes, ou à 8 pour la Coupe du Monde (exceptions 1.4.1b). Ne s'applique qu'aux tournois Suisses."
+msgid "FIDE 1.4.1. Default is 9. Lower to 7 for World or Continental Team Championships, or to 8 for the World Cup (1.4.1b exceptions)."
+msgstr "FIDE 1.4.1. Par défaut 9. Réduire à 7 pour les Championnats du Monde ou Continentaux par équipes, ou à 8 pour la Coupe du Monde (exceptions 1.4.1b)."
 
 msgid "FIDE Arbiter"
 msgstr "Arbitre FIDE"
@@ -2611,6 +2600,9 @@ msgstr "Féd."
 
 msgid "Federation"
 msgstr "Fédération"
+
+msgid "Federation distribution (counted opponents)"
+msgstr "Répartition par fédération (adversaires comptés)"
 
 msgid "Federation plugins"
 msgstr "Plug-ins de fédération"
@@ -3660,6 +3652,12 @@ msgstr "National"
 msgid "National Arbiter"
 msgstr "Arbitre National"
 
+msgid "National championship final (1.4.3a)"
+msgstr "Finale du championnat national (1.4.3a)"
+
+msgid "National team championship (1.4.3b)"
+msgstr "Championnat national par équipes (1.4.3b)"
+
 msgid "Nauru"
 msgstr "Nauru"
 
@@ -4156,6 +4154,9 @@ msgstr "Adversaire Elo"
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
 
+msgid "Opponent ratings (1.4.6 + 1.4.7)"
+msgstr "Classements des adversaires (1.4.6 + 1.4.7)"
+
 msgid "Opponent:"
 msgstr "Adversaire :"
 
@@ -4360,6 +4361,12 @@ msgstr "Paiement"
 
 msgid "Pending"
 msgstr "À venir"
+
+msgid "Per-round audit"
+msgstr "Audit par ronde"
+
+msgid "Per-rule checks"
+msgstr "Vérifications par règle"
 
 msgid "Perfect tournament performance"
 msgstr "Performance parfaite"
@@ -4948,6 +4955,9 @@ msgstr "Actualiser"
 
 msgid "Refresh this page."
 msgstr "Actualiser la page."
+
+msgid "Regular event"
+msgstr "Évènement régulier"
 
 msgid "Release {version} has been installed in [{folder}]."
 msgstr "La nouvelle version {version} a été installée dans [{folder}]."
@@ -7119,6 +7129,9 @@ msgstr "Le·la joueur·euse [{player}] a été marqué·e forfait."
 
 msgid "Zimbabwe"
 msgstr "Zimbabwe"
+
+msgid "Zonal or sub-zonal (1.4.3c)"
+msgstr "Tournoi zonal ou sous-zonal (1.4.3c)"
 
 msgid "[{value}] is not a positive value."
 msgstr "[{value}] n'est pas une valeur positive."

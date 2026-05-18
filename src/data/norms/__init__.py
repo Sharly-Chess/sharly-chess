@@ -22,6 +22,7 @@ from data.norms.searcher import TitleNormSubsetSearcher
 from data.norms.tournament_checks import (
     BigTournamentRoundCounts,
     HighLevelRoundCounts,
+    apply_143abc_exemption,
     compute_big_tournament_exemption,
     compute_big_tournament_exemption_trail,
     compute_high_level_tournament,
@@ -36,6 +37,7 @@ __all__ = [
     'TitleNormEvaluator',
     'TitleNormForecaster',
     'TitleNormSubsetSearcher',
+    'apply_143abc_exemption',
     'compute_big_tournament_exemption',
     'compute_big_tournament_exemption_trail',
     'compute_high_level_tournament',

@@ -181,6 +181,176 @@ class TestRule_1_4_3d:
 
 
 # ===========================================================================
+# 1.4.3a/b/c — manual event-type exemptions (set by the arbiter)
+# ===========================================================================
+#
+# a (National championship final) and b (National team championship) only
+# apply to players from the event's REGISTERING federation. c (Zonal /
+# Sub-zonal) applies to ALL players regardless of federation. None of
+# a/b/c exempt 1.4.4 — only 1.4.3d does.
+#
+# Applied by `apply_143abc_exemption()` based on the
+# Rule143ExemptionPrintOption value set on the doc.
+
+
+class TestRule_1_4_3abc:
+    def _failing_143_result(self) -> NormCheckResult:
+        """A result that fails 1.4.3 (foreign-fed count) but passes
+        everything else — the right shape to test the a/b/c rescue."""
+        res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
+        res.not_enough_federations = 'violation'
+        # 1.4.3d NOT met (so a/b/c is the only possible rescue path).
+        res.not_enough_all_federations = 'violation'
+        return res
+
+    def _norms_dict(self) -> dict:
+        return {TitleNorm.GM: self._failing_143_result()}
+
+    # ---------- 'none' = no manual exemption ----------
+
+    def test_none_leaves_rule_143_exemption_unset(self):
+        from data.norms import apply_143abc_exemption
+
+        norms = self._norms_dict()
+        apply_143abc_exemption(norms, 'none', Federation('FRA'), Federation('FRA'))
+        assert norms[TitleNorm.GM].rule_143_exemption is None
+        assert not norms[TitleNorm.GM].is_143_exempt_via_abc
+        assert not norms[TitleNorm.GM].is_met  # 1.4.3 still blocks
+
+    # ---------- '1.4.3a' national championship — applicant from event fed ----------
+
+    def test_143a_exempts_player_from_event_federation(self):
+        """National championship: only players from the registering
+        federation are exempt from 1.4.3."""
+        from data.norms import apply_143abc_exemption
+
+        norms = self._norms_dict()
+        apply_143abc_exemption(norms, '1.4.3a', Federation('FRA'), Federation('FRA'))
+        assert norms[TitleNorm.GM].rule_143_exemption == 'a'
+        assert norms[TitleNorm.GM].is_143_exempt_via_abc
+        assert norms[TitleNorm.GM].is_met  # 1.4.3 violation now exempted
+
+    def test_143a_does_NOT_exempt_foreign_player(self):
+        """A player whose federation ≠ event's federation is NOT exempt
+        under 1.4.3a/b — those are scoped to the registering federation."""
+        from data.norms import apply_143abc_exemption
+
+        norms = self._norms_dict()
+        apply_143abc_exemption(norms, '1.4.3a', Federation('USA'), Federation('FRA'))
+        assert norms[TitleNorm.GM].rule_143_exemption is None
+        assert not norms[TitleNorm.GM].is_met
+
+    # ---------- '1.4.3b' national team — same scoping as a ----------
+
+    def test_143b_exempts_player_from_event_federation(self):
+        from data.norms import apply_143abc_exemption
+
+        norms = self._norms_dict()
+        apply_143abc_exemption(norms, '1.4.3b', Federation('GER'), Federation('GER'))
+        assert norms[TitleNorm.GM].rule_143_exemption == 'b'
+        assert norms[TitleNorm.GM].is_met
+
+    def test_143b_does_NOT_exempt_foreign_player(self):
+        from data.norms import apply_143abc_exemption
+
+        norms = self._norms_dict()
+        apply_143abc_exemption(norms, '1.4.3b', Federation('USA'), Federation('GER'))
+        assert norms[TitleNorm.GM].rule_143_exemption is None
+        assert not norms[TitleNorm.GM].is_met
+
+    # ---------- '1.4.3c' zonal — applies to everyone ----------
+
+    def test_143c_exempts_player_from_event_federation(self):
+        from data.norms import apply_143abc_exemption
+
+        norms = self._norms_dict()
+        apply_143abc_exemption(norms, '1.4.3c', Federation('FRA'), Federation('FRA'))
+        assert norms[TitleNorm.GM].rule_143_exemption == 'c'
+        assert norms[TitleNorm.GM].is_met
+
+    def test_143c_exempts_foreign_player(self):
+        """Zonal/sub-zonal exemption is NOT scoped to the registering
+        federation — applies to every player in the event."""
+        from data.norms import apply_143abc_exemption
+
+        norms = self._norms_dict()
+        apply_143abc_exemption(norms, '1.4.3c', Federation('USA'), Federation('FRA'))
+        assert norms[TitleNorm.GM].rule_143_exemption == 'c'
+        assert norms[TitleNorm.GM].is_met
+
+    # ---------- 1.4.4 NOT exempted by a/b/c ----------
+
+    def test_abc_does_NOT_exempt_144_own_fed_cap(self):
+        """Even with 1.4.3c applied, a 1.4.4 own-fed violation still
+        blocks is_met. Only 1.4.3d covers 1.4.4."""
+        from data.norms import apply_143abc_exemption
+
+        res = self._failing_143_result()
+        res.too_many_own_federation = 'violation'
+        norms = {TitleNorm.GM: res}
+        apply_143abc_exemption(norms, '1.4.3c', Federation('USA'), Federation('FRA'))
+        assert res.rule_143_exemption == 'c'
+        assert res.is_143_exempt_via_abc
+        # 1.4.3 is exempt, but 1.4.4 own-fed still fails.
+        assert not res.is_met
+
+    def test_abc_does_NOT_exempt_144_one_fed_cap(self):
+        from data.norms import apply_143abc_exemption
+
+        res = self._failing_143_result()
+        res.too_many_one_federation = (Federation('USA'), 'violation')
+        norms = {TitleNorm.GM: res}
+        apply_143abc_exemption(norms, '1.4.3a', Federation('FRA'), Federation('FRA'))
+        assert res.rule_143_exemption == 'a'
+        assert not res.is_met  # 1.4.4 one-fed still blocks
+
+    # ---------- 1.4.3d co-exists with a/b/c ----------
+
+    def test_143d_wins_when_both_could_apply(self):
+        """If 1.4.3d holds AND a/b/c also applies, the result still
+        passes — both exemption paths reach the same is_met=True.
+        1.4.3d's exemption is broader (covers 1.4.4 too)."""
+        from data.norms import apply_143abc_exemption
+
+        # 1.4.3d sub-criteria met
+        res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
+        res.not_enough_federations = 'violation'  # 1.4.3 fails
+        res.too_many_own_federation = 'violation'  # 1.4.4 also fails
+        # 1.4.3d's per-round counts met (no error messages set)
+        norms = {TitleNorm.GM: res}
+        apply_143abc_exemption(norms, '1.4.3a', Federation('FRA'), Federation('FRA'))
+        # Both exemption paths active.
+        assert res.is_143d_met
+        assert res.is_143_exempt_via_abc
+        # is_met passes via the broader 1.4.3d (which covers 1.4.4).
+        assert res.is_met
+
+    def test_abc_alone_blocks_when_1_4_4_violated(self):
+        """When 1.4.3d does NOT hold and 1.4.4 also fails, a/b/c alone
+        cannot save the norm — 1.4.4 still applies."""
+        from data.norms import apply_143abc_exemption
+
+        res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
+        res.not_enough_federations = 'violation'
+        res.too_many_own_federation = 'violation'
+        res.not_enough_foreign_players = 'violation'  # → 1.4.3d NOT met
+        norms = {TitleNorm.GM: res}
+        apply_143abc_exemption(norms, '1.4.3a', Federation('FRA'), Federation('FRA'))
+        assert not res.is_143d_met
+        assert res.is_143_exempt_via_abc
+        assert not res.is_met  # 1.4.4 still applies, blocks
+
+    def test_unknown_exemption_code_is_noop(self):
+        """An unknown code (shouldn't happen via UI; validate() catches it)
+        leaves results unchanged."""
+        from data.norms import apply_143abc_exemption
+
+        norms = self._norms_dict()
+        apply_143abc_exemption(norms, '1.4.3z', Federation('FRA'), Federation('FRA'))
+        assert norms[TitleNorm.GM].rule_143_exemption is None
+
+
+# ===========================================================================
 # Proportional thresholds allow rescue by dropping more games
 # ===========================================================================
 #
@@ -2101,3 +2271,181 @@ class TestCalculationDetailsHooks:
             event=SimpleNamespace(federation='FRA'),
             pairing_system=SwissPairingSystem(),
         )
+
+
+# ===========================================================================
+# 1.4.3a/b/c — end-to-end scenarios through evaluator + forecaster
+# ===========================================================================
+#
+# These exercise the full path from a real opponent mix through the
+# evaluator's per-rule checks, then `apply_143abc_exemption`, then is_met.
+# Complements `TestRule_1_4_3abc` which tests the applier in isolation
+# with hand-built NormCheckResults.
+
+
+class TestRule_1_4_3abc_EndToEnd:
+    def _player_failing_143_only(self, *, federation: str):
+        """A 9-round Swiss player whose opponent mix has all GMs from the
+        applicant's OWN federation. Result: 1.4.3 fails (no other
+        federations), 1.4.4 own-fed cap also fails (5/5 from own fed), but
+        Ra/Rp/score/title-holders all pass strongly. This shape lets us
+        observe what each exemption actually rescues."""
+        opps = [_gm(i, rating=2500, federation=federation) for i in range(1, 10)]
+        pairings = {
+            r: (opps[r - 1], Result.WIN if r <= 6 else Result.DRAW)
+            for r in range(1, 10)
+        }
+        return _player_with_pairings(federation=federation, rounds=9, pairings=pairings)
+
+    def test_143c_via_evaluator_does_NOT_rescue_when_144_fails(self):
+        """1.4.3c (zonal) exempts 1.4.3 only — 1.4.4 still applies.
+        Setup: applicant from FRA, all 9 opponents also from FRA.
+        Both 1.4.3 (only 1 fed) and 1.4.4 own-fed cap (9/9 from own)
+        fail. 1.4.3c can't rescue because 1.4.4 still blocks."""
+        from data.norms import TitleNormEvaluator, apply_143abc_exemption
+
+        player = self._player_failing_143_only(federation='FRA')
+        evaluator = TitleNormEvaluator(player)
+        inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        res = evaluator.evaluate_one(inputs, TitleNorm.GM, True)
+        # evaluate_one doesn't run the tournament-wide 1.4.3d check, so
+        # is_143d_met defaults True. Set the 1.4.3d violation explicitly
+        # so the test exercises ONLY the a/b/c path.
+        res.not_enough_all_federations = '1.4.3d not met'
+        res.not_enough_foreign_players = '1.4.3d not met'
+        res.not_enough_all_title_holders = '1.4.3d not met'
+        # Setup verification: 1.4.3 fails, 1.4.4 also fails, 1.4.3d not met.
+        assert res.not_enough_federations
+        assert res.too_many_own_federation
+        assert not res.is_143d_met
+        assert not res.is_met
+        # Apply 1.4.3c (any-player exemption).
+        apply_143abc_exemption(
+            {TitleNorm.GM: res}, '1.4.3c', Federation('FRA'), Federation('FRA')
+        )
+        assert res.rule_143_exemption == 'c'
+        assert res.is_143_exempt_via_abc
+        # Still NOT met because 1.4.4 wasn't exempted.
+        assert not res.is_met, '1.4.4 own-fed cap still applies under 1.4.3c'
+
+    def test_143a_via_evaluator_rescues_only_event_fed_players(self):
+        """National championship final: same opponent mix, two players.
+        Player from event fed → exemption applies. Player from another
+        federation → exemption does NOT apply."""
+        from data.norms import TitleNormEvaluator, apply_143abc_exemption
+
+        # All opponents from USA: 1.4.3 fails (only 1 foreign federation)
+        # regardless of applicant. We don't need is_met to flip — this
+        # scenario verifies that the exemption applier correctly scopes
+        # the flag to event-fed players only (unit tests in
+        # `TestRule_1_4_3abc` cover the is_met arithmetic).
+        usa_opps = [_gm(i, rating=2500, federation='USA') for i in range(1, 10)]
+        pairings = {
+            r: (usa_opps[r - 1], Result.WIN if r <= 3 else Result.DRAW)
+            for r in range(1, 10)
+        }
+        player_fra = _player_with_pairings(
+            federation='FRA',
+            rounds=9,
+            pairings=pairings,
+        )
+        evaluator_fra = TitleNormEvaluator(player_fra)
+        inputs_fra = evaluator_fra.collect_inputs(include_last_forfeit_as_loss=False)
+        res_fra = evaluator_fra.evaluate_one(inputs_fra, TitleNorm.GM, True)
+        assert res_fra.not_enough_federations, '1.4.3 must fail for setup'
+
+        # Apply 1.4.3a — event = FRA (matches applicant).
+        apply_143abc_exemption(
+            {TitleNorm.GM: res_fra},
+            '1.4.3a',
+            Federation('FRA'),
+            Federation('FRA'),
+        )
+        assert res_fra.rule_143_exemption == 'a'
+
+        # Same opponent mix, applicant from GER (NOT event fed).
+        player_ger = _player_with_pairings(
+            federation='GER',
+            rounds=9,
+            pairings=pairings,
+        )
+        evaluator_ger = TitleNormEvaluator(player_ger)
+        inputs_ger = evaluator_ger.collect_inputs(include_last_forfeit_as_loss=False)
+        res_ger = evaluator_ger.evaluate_one(inputs_ger, TitleNorm.GM, True)
+        # Apply 1.4.3a — event = FRA, applicant = GER → no exemption.
+        apply_143abc_exemption(
+            {TitleNorm.GM: res_ger},
+            '1.4.3a',
+            Federation('GER'),
+            Federation('FRA'),
+        )
+        assert res_ger.rule_143_exemption is None, (
+            '1.4.3a should NOT exempt the foreign player (GER ≠ FRA)'
+        )
+
+    def test_forecaster_with_143c_unlocks_chaseable_norm(self):
+        """Forecaster ctor accepts rule_143_exemption='1.4.3c'; the
+        chaseable-norms machinery passes the exemption through to each
+        per-outcome evaluation so a norm previously unreachable becomes
+        reachable."""
+        from data.norms import TitleNormForecaster
+        from data.pairings.systems import SwissPairingSystem
+        from utils.enum import PlayerGender
+
+        # Set up the same single-foreign-fed shape: applicant from FRA,
+        # rounds 1-8 against USA GMs, round 9 still unplayed.
+        usa_opps = [_gm(i, rating=2500, federation='USA') for i in range(1, 9)]
+        pairings = {
+            r: (usa_opps[r - 1], Result.WIN if r <= 5 else Result.DRAW)
+            for r in range(1, 9)
+        }
+        # Last-round opponent (not yet played):
+        last_opp = _gm(99, rating=2500, federation='USA')
+        pairings[9] = (last_opp, Result.NO_RESULT)
+
+        def _fake_pairing(result, opp):
+            return SimpleNamespace(
+                result=result,
+                opponent=opp,
+                unplayed=result.is_unplayed,
+                played=not result.is_unplayed,
+            )
+
+        from utils.types import BigTournamentExemption as _Btx
+
+        player = SimpleNamespace(
+            federation=Federation('FRA'),
+            gender=PlayerGender.MAN,
+            title=PlayerTitle.NONE,
+            event=SimpleNamespace(federation='FRA'),
+            tournament=SimpleNamespace(
+                rounds=9,
+                pairing_system=SwissPairingSystem(),
+                pairing_variation=None,
+                tournament_players_by_id={},
+                big_tournament_exemption=_Btx(0, 0, 0),
+                high_level_tournament=False,
+            ),
+            pairings_by_round={
+                r: _fake_pairing(res, opp) for r, (opp, res) in pairings.items()
+            },
+        )
+
+        # Without exemption → 1.4.3 fails (single foreign fed) → no norm
+        # chaseable regardless of round 9 outcome.
+        plain = TitleNormForecaster(player)
+        chaseable_plain = plain.chaseable_norms(9)
+        assert TitleNorm.GM not in chaseable_plain, (
+            'Without 1.4.3c, single-foreign-fed mix fails 1.4.3 → no chaseable GM'
+        )
+
+        # With 1.4.3c → exemption flag propagates to every per-outcome
+        # forecast result. (Whether the norm becomes is_met depends on
+        # whether 1.4.4 also passes — covered by the unit tests in
+        # `TestRule_1_4_3abc`. Here we verify the forecaster threads the
+        # exemption code into each searcher run.)
+        exempt = TitleNormForecaster(player, rule_143_exemption='1.4.3c')
+        for outcome_result in exempt.forecast_round(9).values():
+            assert outcome_result[TitleNorm.GM].is_143_exempt_via_abc, (
+                'Forecaster must apply rule_143_exemption to every per-outcome result'
+            )
