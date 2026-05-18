@@ -2,7 +2,13 @@
     {{ admin_macros.number_input(
         name=option.id,
         label=_('Gender threshold:'),
-        tooltip_text=_('The minimum players count of each gender to form a complete team.'),
+        tooltip_text=_(
+            'The minimum players count of each gender to form a complete team. '
+            'If set, then the teams will be formed by selecting (by ranking order) '
+            'at first the number of required players of each gender and then '
+            'completing with other players. If not enough players are available '
+            'for each gender then the team will be incomplete.'
+        ),
         min=1,
         data=data, errors=errors
     ) }}

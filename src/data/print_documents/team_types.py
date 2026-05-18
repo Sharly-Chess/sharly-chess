@@ -49,7 +49,7 @@ class ClubTeamType(TeamType):
 
     @staticmethod
     def static_name() -> str:
-        return _('Players from the same club')
+        return _('Clubs')
 
     @property
     def team_class(self) -> type:
@@ -83,7 +83,7 @@ class FederationTeamType(TeamType):
 
     @staticmethod
     def static_name() -> str:
-        return _('Players from the same federation')
+        return _('Federations')
 
     @property
     def team_class(self) -> type:

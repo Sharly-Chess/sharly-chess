@@ -33,7 +33,7 @@ class FfeLeagueTeamType(TeamType):
 
     @staticmethod
     def static_name() -> str:
-        return _('Players from the same league (FFE)')
+        return _('Leagues (FFE)')
 
     @property
     def team_class(self) -> type:

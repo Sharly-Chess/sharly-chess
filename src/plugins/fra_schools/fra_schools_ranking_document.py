@@ -56,7 +56,7 @@ class FraSchoolsTeamType(TeamType):
 
     @staticmethod
     def static_name() -> str:
-        return _('Players from the same school (FRA)')
+        return _('French schools (FRA)')
 
     @property
     def team_class(self) -> type:
@@ -98,7 +98,7 @@ class FraSchoolsRankingPrintDocument(TeamRankingPrintDocument):
 
     @staticmethod
     def static_name() -> str:
-        return _('School ranking (FRA)')
+        return _('FFE Scholar Championship')
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:

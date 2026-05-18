@@ -1182,6 +1182,9 @@ msgstr "Choisir au moins une valeur."
 msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
 
+msgid "Choose how the teams are formed."
+msgstr "Choisir la manière dont les équipes sont constituées."
+
 msgid "Choose one, many or no players."
 msgstr "Choisissez aucun·e, un·e ou plusieurs joueur·euses."
 
@@ -4304,12 +4307,6 @@ msgstr "Joueur·euses de %(first)d à %(last)d"
 msgid "Players from %(first)s to %(last)s"
 msgstr "joueur·euses de %(first)s à %(last)s"
 
-msgid "Players from the same club"
-msgstr "Joueur·euses du même club"
-
-msgid "Players from the same federation"
-msgstr "Joueur·euses de la même fédération"
-
 msgid "Players import"
 msgstr "Import de joueur·euses"
 
@@ -5661,8 +5658,8 @@ msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es
 msgid "The minimum numbers of players to form a complete team (%(default_value)d by default)."
 msgstr "Le nombre minimum de joueur·euses pour former une équipe complète (%(default_value)d par défaut)."
 
-msgid "The minimum players count of each gender to form a complete team."
-msgstr "Le nombre minimum de joueur·euses de chaque genre pour former une équipe complète."
+msgid "The minimum players count of each gender to form a complete team. If set, then the teams will be formed by selecting (by ranking order) at first the number of required players of each gender and then completing with other players. If not enough players are available for each gender then the team will be incomplete."
+msgstr "Le nombre minimum de joueur·euses de chaque genre pour former une équipe complète. Lorsque défini, les équipes seront formées en sélectionnant d'abord (par ordre de classement) le nombre requis de joueur·euses de chaque genre, puis en complétant avec d'autres joueur·euses. Si le nombre de joueur·euses disponibles pour un genre est insuffisant, l'équipe sera incomplète."
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
@@ -7161,4 +7158,7 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+#~ msgid "The minimum players count of each gender to form a complete team."
+#~ msgstr "Le nombre minimum de joueur·euses de chaque genre pour former une équipe complète."
 

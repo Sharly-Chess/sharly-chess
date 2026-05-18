@@ -38,6 +38,9 @@ msgstr "Metre à jour l'établissement scolaire sélectionné."
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
 
+msgid "FFE Scholar Championship"
+msgstr "Classement championnat scolaire FFE"
+
 msgid "French School Competitions"
 msgstr "Compétitions scolaires françaises"
 
@@ -46,6 +49,9 @@ msgstr "Établissements Scolaires"
 
 msgid "French school"
 msgstr "Établissement scolaire"
+
+msgid "French schools (FRA)"
+msgstr "Établissements scolaires (FRA)"
 
 msgid "French schools championship"
 msgstr "Championnat de France des écoles et collèges"
@@ -68,9 +74,6 @@ msgstr "Filles manquantes : {count}"
 msgid "Name"
 msgstr "Nom"
 
-msgid "Players from the same school (FRA)"
-msgstr "Joueur·euses du même établissement (FRA)"
-
 msgid "Please validate the French school to continue."
 msgstr "Merci de valider l'établissement scolaire avant de continuer."
 
@@ -91,9 +94,6 @@ msgstr "Établissement"
 
 msgid "School not specified"
 msgstr "Établissement scolaire non renseigné"
-
-msgid "School ranking (FRA)"
-msgstr "Classement par établissement (FRA)"
 
 msgid "Schools"
 msgstr "Établissements"

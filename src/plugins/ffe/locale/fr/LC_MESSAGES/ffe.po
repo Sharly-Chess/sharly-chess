@@ -274,6 +274,9 @@ msgstr "Ligue :"
 msgid "Leagues"
 msgstr "Ligues"
 
+msgid "Leagues (FFE)"
+msgstr "Ligues (FFE)"
+
 msgid "Lic. *** LICENCE COLUMN HEADER"
 msgstr "Lic."
 
@@ -357,9 +360,6 @@ msgstr "Fichier Papi"
 
 msgid "Pending"
 msgstr "En attente"
-
-msgid "Players from the same league (FFE)"
-msgstr "Joueur·euses de la même ligue (FFE)"
 
 msgid "Players:"
 msgstr "Joueur·euses :"

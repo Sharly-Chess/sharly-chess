@@ -1182,6 +1182,9 @@ msgstr ""
 msgid "Choose families to add"
 msgstr ""
 
+msgid "Choose how the teams are formed."
+msgstr ""
+
 msgid "Choose one, many or no players."
 msgstr ""
 
@@ -4302,12 +4305,6 @@ msgstr ""
 msgid "Players from %(first)s to %(last)s"
 msgstr ""
 
-msgid "Players from the same club"
-msgstr ""
-
-msgid "Players from the same federation"
-msgstr ""
-
 msgid "Players import"
 msgstr ""
 
@@ -5659,7 +5656,7 @@ msgstr ""
 msgid "The minimum numbers of players to form a complete team (%(default_value)d by default)."
 msgstr ""
 
-msgid "The minimum players count of each gender to form a complete team."
+msgid "The minimum players count of each gender to form a complete team. If set, then the teams will be formed by selecting (by ranking order) at first the number of required players of each gender and then completing with other players. If not enough players are available for each gender then the team will be incomplete."
 msgstr ""
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
@@ -7159,4 +7156,7 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
+
+#~ msgid "The minimum players count of each gender to form a complete team."
+#~ msgstr ""
 

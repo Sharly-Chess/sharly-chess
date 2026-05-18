@@ -38,6 +38,9 @@ msgstr ""
 msgid "Exclude: {values}"
 msgstr ""
 
+msgid "FFE Scholar Championship"
+msgstr ""
+
 msgid "French School Competitions"
 msgstr ""
 
@@ -45,6 +48,9 @@ msgid "French Schools"
 msgstr ""
 
 msgid "French school"
+msgstr ""
+
+msgid "French schools (FRA)"
 msgstr ""
 
 msgid "French schools championship"
@@ -68,9 +74,6 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-msgid "Players from the same school (FRA)"
-msgstr ""
-
 msgid "Please validate the French school to continue."
 msgstr ""
 
@@ -90,9 +93,6 @@ msgid "School *** SCHOOL COLUMN HEADER"
 msgstr "School"
 
 msgid "School not specified"
-msgstr ""
-
-msgid "School ranking (FRA)"
 msgstr ""
 
 msgid "Schools"
