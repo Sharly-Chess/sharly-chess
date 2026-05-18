@@ -209,7 +209,7 @@ class TitleNormEvaluator:
             opponent = pairing.opponent
             assert opponent is not None  # narrowed by include_as_played
 
-            # 1.4.2b — round-robin only: ignore unrated opponents who lost every
+            # 1.4.2b — Round-Robin only: ignore unrated opponents who lost every
             # game they actually played against a FIDE-rated opponent.
             if is_round_robin and opponent.rating_type != PlayerRatingType.FIDE:
                 scored_zero_against_rated = True

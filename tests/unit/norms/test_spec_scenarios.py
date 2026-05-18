@@ -765,7 +765,7 @@ class TestRule_1_4_2a_FID_nuance:
 # 1.4.2b — RR: unrated opponents who score 0 against rated opponents
 # ===========================================================================
 #
-# In round-robin tournaments, an unrated player who lost every game against
+# In Round-Robin tournaments, an unrated player who lost every game against
 # a FIDE-rated opponent is dropped from the applicant's mix. Swiss is
 # unaffected.
 
@@ -1139,7 +1139,7 @@ class TestRule_1_5_6a:
         assert compute_high_level_tournament(tournament) is False
 
     def test_not_high_level_for_round_robin(self):
-        """1.5.6a is Swiss-only. A 40-player Round Robin that would pass
+        """1.5.6a is Swiss-only. A 40-player Round-Robin that would pass
         every other criterion must still fail."""
         from data.norms import compute_high_level_tournament
 

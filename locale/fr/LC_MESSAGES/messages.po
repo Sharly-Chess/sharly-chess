@@ -314,17 +314,17 @@ msgid "1.4.1c (default — forfeit excluded)"
 msgstr "1.4.1c (par défaut — forfait exclu)"
 
 msgid "1.4.1e/f: ignored by the subset search to satisfy this norm."
-msgstr "1.4.1e/f : ignorée par la recherche de sous-ensembles pour satisfaire cette norme."
+msgstr "1.4.1e/f : ignorée par la recherche de sous-ensembles pour satisfaire cette norme."
 
 #, python-format
 msgid "1.4.1e/f: round(s) %(rounds)s ignored"
-msgstr "1.4.1e/f : ronde(s) %(rounds)s ignorée(s)"
+msgstr "1.4.1e/f : ronde(s) %(rounds)s ignorée(s)"
 
 msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
-msgstr "1.4.2a : adversaire sans fédération FIDE (NON) — non compté."
+msgstr "1.4.2a : adversaire sans fédération FIDE (NON) — non compté·e."
 
-msgid "1.4.2b: round-robin only — unrated opponent scored zero against every FIDE-rated opponent."
-msgstr "1.4.2b : toutes rondes uniquement — adversaire non classé ayant marqué zéro contre tous ses adversaires classés FIDE."
+msgid "1.4.2b: Round-Robin only — unrated opponent scored zero against every FIDE-rated opponent."
+msgstr "1.4.2b : Toutes-Rondes uniquement — adversaire non classé·e ayant marqué zéro contre tous ses adversaires classé·es FIDE."
 
 msgid "1.4.2c (forfeit as LOSS)"
 msgstr "1.4.2c (forfait compté comme DÉFAITE)"
@@ -336,13 +336,13 @@ msgid "1.4.2c interpretation — side by side"
 msgstr "Interprétation 1.4.2c — comparaison"
 
 msgid "1.4.2c was applied: the last-round opponent forfeit was included in the mix and scored as a played loss. The default 1.4.1c interpretation (forfeit excluded) is shown alongside for comparison."
-msgstr "1.4.2c a été appliqué : le forfait de l'adversaire à la dernière ronde a été inclus dans le panel et compté comme une défaite jouée. L'interprétation 1.4.1c par défaut (forfait exclu) est affichée à côté pour comparaison."
+msgstr "1.4.2c a été appliqué : le forfait de l'adversaire à la dernière ronde a été inclus dans le panel et compté comme une défaite jouée. L'interprétation 1.4.1c par défaut (forfait exclu) est affichée à côté pour comparaison."
 
 msgid "1.4.2c: last-round opponent forfeit, counted as a played LOSS."
-msgstr "1.4.2c : forfait de l'adversaire à la dernière ronde, compté comme une DÉFAITE jouée."
+msgstr "1.4.2c : forfait de l'adversaire à la dernière ronde, compté comme une DÉFAITE jouée."
 
 msgid "1.4.3 exemption:"
-msgstr "Exemption 1.4.3 :"
+msgstr "Exemption 1.4.3 :"
 
 msgid "1.4.3 — At least 2 foreign federations"
 msgstr "1.4.3 — Au moins 2 fédérations étrangères"
@@ -358,16 +358,16 @@ msgid "1.4.3d per-round breakdown"
 msgstr "Détail 1.4.3d par ronde"
 
 msgid "1.4.3d requires every round to have at least 20 FIDE-rated foreigners (excl. FID), from at least 3 federations, of whom at least 10 hold GM/IM/WGM/WIM. "
-msgstr "1.4.3d exige que chaque ronde compte au moins 20 joueurs étrangers classés FIDE (hors FID), répartis dans au moins 3 fédérations, dont au moins 10 portent les titres GM/IM/WGM/WIM."
+msgstr "1.4.3d exige que chaque ronde compte au moins 20 joueur·euses étranger·es classé·es FIDE (hors FID), réparti·es dans au moins 3 fédérations, dont au moins 10 portent les titres GM/IM/WGM/WIM."
 
 msgid "1.4.4 — One-federation cap"
 msgstr "1.4.4 — Plafond pour une fédération"
 
 msgid "1.4.4 — Own federation cap"
-msgstr "1.4.4 — Plafond pour la fédération du candidat"
+msgstr "1.4.4 — Plafond pour la fédération du·de la candidat·e"
 
 msgid "1.4.5a — Title holders (CM/WCM excluded)"
-msgstr "1.4.5a — Joueurs titrés (CM/WCM exclus)"
+msgstr "1.4.5a — Joueur·euses titré·es (CM/WCM exclu·es)"
 
 msgid "1.4.5b-e — Required titles"
 msgstr "1.4.5b-e — Titres requis"
@@ -394,7 +394,7 @@ msgid "1.5.6a per-round breakdown"
 msgstr "Détail 1.5.6a par ronde"
 
 msgid "1.5.6a requires every round to have at least 40 FIDE-rated players whose top-40 average is at least 2000."
-msgstr "1.5.6a exige que chaque ronde compte au moins 40 joueurs classés FIDE dont la moyenne des 40 meilleurs est d'au moins 2000."
+msgstr "1.5.6a exige que chaque ronde compte au moins 40 joueur·euses classé·es FIDE dont la moyenne des 40 meilleur·es est d'au moins 2000."
 
 #, python-format
 msgid "1/3 of %(n)s opponents, min 3"
@@ -539,7 +539,7 @@ msgid "Absolute"
 msgstr "Préférence absolue"
 
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
-msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
+msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
 
 msgid "Access control"
 msgstr "Contrôle d'accès"
@@ -791,7 +791,7 @@ msgid "Any number of devices can be controlled by the same display controller."
 msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs afficheurs."
 
 msgid "Applicant's federation"
-msgstr "Fédération du candidat"
+msgstr "Fédération du·de la candidat·e"
 
 msgid "Application"
 msgstr "Application"
@@ -896,7 +896,7 @@ msgid "Average"
 msgstr "Moyenne"
 
 msgid "Average (Ra), rounded per 1.4.7:"
-msgstr "Moyenne (Ra), arrondie selon 1.4.7 :"
+msgstr "Moyenne (Ra), arrondie selon 1.4.7 :"
 
 msgid "Average of opponents Buchholz"
 msgstr "Moyenne du Buchholz des adversaires"
@@ -1694,7 +1694,7 @@ msgid "Current round: %(round)d"
 msgstr "Ronde courante : %(round)d"
 
 msgid "Current title:"
-msgstr "Titre actuel :"
+msgstr "Titre actuel :"
 
 msgid "Currently displaying rotator [{name}]"
 msgstr "Affiche actuellement l'écran rotatif [{name}]"
@@ -2242,7 +2242,7 @@ msgid "Each player can only be awarded one prize per bracket."
 msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
 
 msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
-msgstr "Chaque ligne représente une norme réalisée par un joueur. Le certificat IT1 pour chaque norme se génère séparément via le Rapport de normes par joueur."
+msgstr "Chaque ligne représente une norme réalisée par un·e joueur·euse. Le certificat IT1 pour chaque norme se génère séparément via le Rapport de normes par joueur·euse."
 
 msgid "Ecuador"
 msgstr "Équateur"
@@ -2548,7 +2548,7 @@ msgid "FIDE recommendation - Unrated (2019)"
 msgstr "Recommendation FIDE - Non classé·es (2019)"
 
 msgid "FIDE-rated present"
-msgstr "Joueurs classés FIDE présents"
+msgstr "Joueur·euses classé·es FIDE présent·es"
 
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
@@ -2602,7 +2602,7 @@ msgid "Federation"
 msgstr "Fédération"
 
 msgid "Federation distribution (counted opponents)"
-msgstr "Répartition par fédération (adversaires comptés)"
+msgstr "Répartition par fédération (adversaires compté·es)"
 
 msgid "Federation plugins"
 msgstr "Plug-ins de fédération"
@@ -2706,7 +2706,7 @@ msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
 
 msgid "Forecast considers 1.4.1c (PAB exception), 1.4.1e/f (ignore games), 1.4.2c (last-round opponent forfeit) and 1.4.3d (Swiss exemption)."
-msgstr "La prévision prend en compte 1.4.1c (exception PAB), 1.4.1e/f (parties ignorées), 1.4.2c (forfait adverse en dernière ronde) et 1.4.3d (dérogation Suisse)."
+msgstr "La prévision prend en compte 1.4.1c (exemption), 1.4.1e/f (parties ignorées), 1.4.2c (forfait adverse en dernière ronde) et 1.4.3d (dérogation Suisse)."
 
 msgid "Foreigners"
 msgstr "Étrangers"
@@ -2718,7 +2718,7 @@ msgid "Forfeit Win"
 msgstr "Victoire par forfait"
 
 msgid "Forfeit win against a no-show — not counted as a played game."
-msgstr "Gain par forfait contre un adversaire absent — non comptée comme une partie jouée."
+msgstr "Gain par forfait contre un·e adversaire absent·e — non compté comme une partie jouée."
 
 msgid "Forfeited games are always considered as played in Round-Robin tournaments."
 msgstr "Les parties gagnées ou perdues par forfait sont toujours considérées comme jouées dans les tournois Toutes-Rondes."
@@ -3525,7 +3525,7 @@ msgid "Min. age category"
 msgstr "Catégorie d'âge min."
 
 msgid "Min:"
-msgstr "Min :"
+msgstr "Min :"
 
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
@@ -3815,10 +3815,10 @@ msgid "No new hours to create from tournament [{name}] (all rounds are already c
 msgstr "Aucun nouvel horaire à créer depuis le tournoi [{name}] (toutes les rondes sont déjà couvertes)."
 
 msgid "No norm is reachable for this player. The IT1 certificate is the right place to inspect the player."
-msgstr "Aucune norme n'est accessible pour ce joueur. Le certificat IT1 est l'endroit approprié pour consulter ce joueur."
+msgstr "Aucune norme n'est accessible pour ce·tte joueur·euse. Le certificat IT1 est l'endroit approprié pour consulter ce·tte joueur·euse."
 
 msgid "No opponent paired this round."
-msgstr "Aucun adversaire apparié à cette ronde."
+msgstr "Aucun·e adversaire apparié·e à cette ronde."
 
 msgid "No organiser"
 msgstr "Aucun organisateur·ice"
@@ -3842,7 +3842,7 @@ msgid "No permissions."
 msgstr "Aucune permission."
 
 msgid "No player is in contention for a title norm in round {round}."
-msgstr "Aucun joueur ne peut prétendre à une norme à la ronde {round}."
+msgstr "Aucun·e joueur·euse ne peut prétendre à une norme à la ronde {round}."
 
 msgid "No players"
 msgstr "Aucun·e joueur·euse"
@@ -4283,11 +4283,11 @@ msgstr "Format d’appariement :"
 msgid "Pairing system"
 msgstr "Système d'appariements"
 
+msgid "Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent."
+msgstr "Exempt / Bye / Partie non jouée — aucun adversaire."
+
 msgid "Pairing-Allocated Bye assigned to player [{player}]."
 msgstr "Le·la joueur·euse [{player}] a été apparié·e exempt·e."
-
-msgid "Pairing-allocated bye / half-point bye / rest game — no opponent."
-msgstr "Bye attribué / bye à demi-point / partie de repos — aucun adversaire."
 
 msgid "Pairings"
 msgstr "Appariements"
@@ -5070,7 +5070,7 @@ msgstr "Ré-essayer"
 
 #, python-format
 msgid "Return [%(player)s] to the tournament?"
-msgstr "Faire revenir [%(player)s] dans le tournoi ?"
+msgstr "Faire revenir [%(player)s] dans le tournoi ?"
 
 msgid "Return to the home page"
 msgstr "Retourner à la page d'accueil"
@@ -5168,7 +5168,7 @@ msgid "Round %(round)d - Board %(board_number)d"
 msgstr "Ronde %(round)d – Echiquier %(board_number)d"
 
 msgid "Round meets 1.5.6a?"
-msgstr "La ronde satisfait 1.5.6a ?"
+msgstr "La ronde satisfait 1.5.6a ?"
 
 msgid "Round number or text"
 msgstr "Numéro de ronde ou texte"
@@ -5216,7 +5216,7 @@ msgstr "Règle"
 
 #, python-format
 msgid "Rule 1.4.6: the lowest-rated opponent is raised to the norm floor (%(r)s) before computing the average."
-msgstr "Règle 1.4.6 : le classement du plus faible adversaire est relevé au plancher de la norme (%(r)s) avant le calcul de la moyenne."
+msgstr "Règle 1.4.6 : le classement du·de la plus faible adversaire est relevé au plancher de la norme (%(r)s) avant le calcul de la moyenne."
 
 msgid "Rules used were only effective until march 2026 (legacy)."
 msgstr "Les règles utilisées n'étaient effectives que jusqu'en mars 2026 (obsolètes)."
@@ -5888,8 +5888,8 @@ msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
 
-msgid "The minimum-games override only applies to Swiss tournaments (FIDE 1.4.1b). Leave at default ({default}) for Round Robin and Double Round Robin events."
-msgstr "Le remplacement du nombre minimum de parties ne s'applique qu'aux tournois Suisses (FIDE 1.4.1b). Laisser la valeur par défaut ({default}) pour les tournois toutes rondes et toutes rondes doubles."
+msgid "The minimum-games override only applies to Swiss tournaments (FIDE 1.4.1b). Leave at default ({default}) for Round-Robin and Double Round-Robin events."
+msgstr "Le remplacement du nombre minimum de parties ne s'applique qu'aux tournois Suisses (FIDE 1.4.1b). Laisser la valeur par défaut ({default}) pour les tournois Toutes-Rondes et Toutes-Rondes doubles."
 
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
@@ -6127,7 +6127,7 @@ msgid "This document is not available for unpaired tournaments."
 msgstr "Ce document n'est pas disponible pour les tournois non-appariés."
 
 msgid "This document is only available for Round-Robin tournaments."
-msgstr "Ce document est seulement disponible pour les tournois toutes rondes."
+msgstr "Ce document est seulement disponible pour les tournois Toutes-Rondes."
 
 msgid "This document is only available for standard time control tournaments."
 msgstr "Ce document est disponible uniquement pour les tournois en cadence classique."
@@ -6377,7 +6377,7 @@ msgid "Too much information to display on a single projector?"
 msgstr "Trop d’informations à afficher sur un seul projecteur ?"
 
 msgid "Top-40 average"
-msgstr "Moyenne des 40 meilleurs"
+msgstr "Moyenne des 40 meilleur·es"
 
 msgid "Total"
 msgstr "Total"
@@ -6777,7 +6777,7 @@ msgid "Verdict"
 msgstr "Verdict"
 
 msgid "Verdict:"
-msgstr "Verdict :"
+msgstr "Verdict :"
 
 msgid "Version: {version}"
 msgstr "Version : {version}"
@@ -6906,7 +6906,7 @@ msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
 msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm secured — round optional\" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it."
-msgstr "Ce dont le joueur a besoin à la ronde {round} pour réaliser chaque norme. « tout résultat à l'échiquier » signifie qu'une victoire, nulle ou défaite jouée conviennent — mais la ronde doit néanmoins être jouée (une absence devient une défaite par forfait et invalide la norme). « norme acquise — ronde optionnelle » signifie que la norme est déjà acquise grâce aux rondes précédentes (1.4.1e) ; la partie de la ronde {round} ne l'affecte pas."
+msgstr "Ce dont le·la joueur·euse a besoin à la ronde {round} pour réaliser chaque norme. « tout résultat sur l'échiquier » signifie qu'une victoire, nulle ou défaite jouée conviennent — mais la ronde doit néanmoins être jouée (une absence devient une défaite par forfait et invalide la norme). « norme acquise — ronde optionnelle » signifie que la norme est déjà acquise grâce aux rondes précédentes (1.4.1e) ; la partie de la ronde {round} ne l'affecte pas."
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans."
@@ -7200,7 +7200,7 @@ msgid "example"
 msgstr "exemple"
 
 msgid "federations other than the applicant's"
-msgstr "fédérations autres que celle du candidat"
+msgstr "fédérations autres que celle du·de la candidat·e"
 
 msgid "forfeits played"
 msgstr "forfaits joués"

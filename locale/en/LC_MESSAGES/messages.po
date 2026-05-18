@@ -323,7 +323,7 @@ msgstr ""
 msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
 msgstr ""
 
-msgid "1.4.2b: round-robin only — unrated opponent scored zero against every FIDE-rated opponent."
+msgid "1.4.2b: Round-Robin only — unrated opponent scored zero against every FIDE-rated opponent."
 msgstr ""
 
 msgid "1.4.2c (forfeit as LOSS)"
@@ -4281,10 +4281,10 @@ msgstr ""
 msgid "Pairing system"
 msgstr ""
 
-msgid "Pairing-Allocated Bye assigned to player [{player}]."
+msgid "Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent."
 msgstr ""
 
-msgid "Pairing-allocated bye / half-point bye / rest game — no opponent."
+msgid "Pairing-Allocated Bye assigned to player [{player}]."
 msgstr ""
 
 msgid "Pairings"
@@ -5886,7 +5886,7 @@ msgstr ""
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr ""
 
-msgid "The minimum-games override only applies to Swiss tournaments (FIDE 1.4.1b). Leave at default ({default}) for Round Robin and Double Round Robin events."
+msgid "The minimum-games override only applies to Swiss tournaments (FIDE 1.4.1b). Leave at default ({default}) for Round-Robin and Double Round-Robin events."
 msgstr ""
 
 #, python-format

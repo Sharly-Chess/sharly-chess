@@ -2,7 +2,7 @@
 
 ## Documents
 
-- Added a new document to get a summary of norms achieved, or a forecast of norms taht can be achieved for the final round.
+- Added a new document to get a summary of norms achieved, or a forecast of norms that can be achieved for the final round
 - Add options to the norm document for the number of rounds and the event type
 - Added detailed calculations to the norm report to allow for easy validation
 - Added automatic removal of specific played games in order to try to forfil the norm requirements

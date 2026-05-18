@@ -380,7 +380,7 @@ class MinimumGamesPrintOption(PrintOption):
     metadata.
 
     Only applies to Swiss tournaments. The 1.4.1b exceptions don't apply
-    to Round Robin / Double Round Robin (1.4.1e: "In tournaments with
+    to Round-Robin / Double Round-Robin (1.4.1e: "In tournaments with
     predetermined pairings, a norm must be based on all scheduled rounds").
     The option's UI hides itself when a non-Swiss tournament is selected
     (see `swiss_tournament_ids` + the template's JS).

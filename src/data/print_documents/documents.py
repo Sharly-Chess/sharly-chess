@@ -1162,7 +1162,7 @@ def _resolve_min_games_override(document: 'PrintDocument') -> int | None:
     """Return the 1.4.1 minimum-games override to pass to the evaluator.
 
     FIDE 1.4.1b's reductions (7 / 8 games) only apply to Swiss / team /
-    World Cup formats — never to Round Robin or Double Round Robin
+    World Cup formats — never to Round-Robin or Double Round-Robin
     (1.4.1e: "In tournaments with predetermined pairings, a norm must be
     based on all scheduled rounds"). For non-Swiss tournaments we return
     None so the evaluator falls back to `tn.minimum_rounds(tournament)`,
@@ -1184,8 +1184,8 @@ def _validate_min_games_only_for_swiss(document: 'PrintDocument') -> None:
         raise OptionError(
             _(
                 'The minimum-games override only applies to Swiss tournaments '
-                '(FIDE 1.4.1b). Leave at default ({default}) for Round Robin '
-                'and Double Round Robin events.'
+                '(FIDE 1.4.1b). Leave at default ({default}) for Round-Robin '
+                'and Double Round-Robin events.'
             ).format(default=option.default_value),
             option,
         )

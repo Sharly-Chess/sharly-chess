@@ -95,8 +95,8 @@ Started games are included. Under `1.4.2c`, a last-round opponent forfeit can st
 Permitted formats under `1.4.2e`:
 
 - Swiss.
-- Round Robin.
-- Double Round Robin.
+- Round-Robin.
+- Double Round-Robin.
 - Knockout.
 
 Other formats require prior QC Chairperson approval.
