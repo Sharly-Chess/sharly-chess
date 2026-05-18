@@ -217,7 +217,9 @@ class SharlyChessConfig(metaclass=Singleton):
 
     @property
     def experimental_features(self) -> list[str]:
-        return []
+        return [
+            'Team ranking',
+        ]
 
     @property
     def launch_browser(self) -> bool:
