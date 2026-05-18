@@ -550,6 +550,7 @@ def _real_searcher(
     pairing_system=None,
 ) -> TitleNormSubsetSearcher:
     from data.pairings.systems import SwissPairingSystem
+    from utils.types import BigTournamentExemption
 
     player = SimpleNamespace(
         federation=Federation(federation),
@@ -559,6 +560,11 @@ def _real_searcher(
             rounds=rounds,
             pairing_system=pairing_system or SwissPairingSystem(),
             pairing_variation=None,
+            # Stubs for the tournament-wide checks that `evaluate_one`
+            # stamps onto every NormCheckResult. Default to "not met"
+            # so tests don't inadvertently get the 1.4.3d exemption.
+            big_tournament_exemption=BigTournamentExemption(0, 0, 0),
+            high_level_tournament=False,
         ),
     )
     return TitleNormSubsetSearcher(player)

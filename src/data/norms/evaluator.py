@@ -136,10 +136,6 @@ class TitleNormEvaluator:
                     res = res_b
             results[tn] = res
 
-        # 1.4.3d and 1.5.6a are tournament-wide. Pull the cached values
-        # off the Tournament — same answer for every applicant, computed once.
-        self.apply_big_tournament_exemption(results)
-        self.apply_high_level_tournament_flag(results)
         return results
 
     # ---------- input gathering ----------
@@ -521,7 +517,31 @@ class TitleNormEvaluator:
         res.performance_diff = self._performance_diff(
             avg, inputs.score, inputs.played_games, tn.minimum_performance
         )
+
+        # Set 1.4.3d / 1.5.6a fields before returning, so `is_met` reads
+        # them in the 1.4.2c fallback decision. `is_143d_met` returns
+        # True while its three flag fields are None, so deferring this
+        # would skip 1.4.2c when only 1.4.4 fails.
+        self._apply_tournament_wide_checks(res)
         return res
+
+    def _apply_tournament_wide_checks(self, res: NormCheckResult) -> None:
+        """Stamp the 1.4.3d counts/flags and the 1.5.6a flag onto one
+        result. The values are tournament-wide (cached on Tournament),
+        applied per-result so `is_met` reads them correctly."""
+        exemption = self.tournament.big_tournament_exemption
+        msg = _(
+            '<b>1.4.3d</b> Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles.'
+        )
+        res.all_federations_count = exemption.federations
+        res.not_enough_all_federations = None if exemption.federations_met else msg
+        res.eligible_players_count = exemption.foreigners
+        res.not_enough_foreign_players = None if exemption.foreigners_met else msg
+        res.eligible_players_title_count = exemption.titled_foreigners
+        res.not_enough_all_title_holders = (
+            None if exemption.titled_foreigners_met else msg
+        )
+        res.requirement_156a_met = self.tournament.high_level_tournament
 
     def _performance_diff(
         self,
@@ -553,29 +573,3 @@ class TitleNormEvaluator:
             if self.norm_performance(avg, new_score, played_games) < target_performance:
                 return score - new_score - draw
         return None
-
-    # ---------- tournament-wide checks (delegate to Tournament) ----------
-
-    def apply_big_tournament_exemption(self, results: dict[TitleNorm, NormCheckResult]):
-        """1.4.3d — apply the cached tournament-wide counts to every result."""
-        exemption = self.tournament.big_tournament_exemption
-        msg = _(
-            '<b>1.4.3d</b> Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles.'
-        )
-        for res in results.values():
-            res.all_federations_count = exemption.federations
-            res.not_enough_all_federations = None if exemption.federations_met else msg
-            res.eligible_players_count = exemption.foreigners
-            res.not_enough_foreign_players = None if exemption.foreigners_met else msg
-            res.eligible_players_title_count = exemption.titled_foreigners
-            res.not_enough_all_title_holders = (
-                None if exemption.titled_foreigners_met else msg
-            )
-
-    def apply_high_level_tournament_flag(
-        self, results: dict[TitleNorm, NormCheckResult]
-    ):
-        """1.5.6a — set the cached flag on every result."""
-        flag = self.tournament.high_level_tournament
-        for res in results.values():
-            res.requirement_156a_met = flag

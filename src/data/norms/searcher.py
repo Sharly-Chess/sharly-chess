@@ -74,8 +74,6 @@ class TitleNormSubsetSearcher:
             meets_gender = tn.satisfies_gender_requirement(self.player.gender)
             results[tn] = self._search_one(baseline, baseline_142c, tn, meets_gender)
 
-        self.evaluator.apply_big_tournament_exemption(results)
-        self.evaluator.apply_high_level_tournament_flag(results)
         return results
 
     # ---------- per-norm search ----------

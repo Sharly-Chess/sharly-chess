@@ -606,6 +606,7 @@ def _player_with_pairings(
     """
     from data.pairings.systems import SwissPairingSystem
     from utils.enum import PlayerGender
+    from utils.types import BigTournamentExemption
 
     fake_pairings = {
         rnd: _fake_pairing(result, opp) for rnd, (opp, result) in pairings.items()
@@ -620,6 +621,12 @@ def _player_with_pairings(
             pairing_system=pairing_system or SwissPairingSystem(),
             pairing_variation=pairing_variation,
             tournament_players_by_id=tournament_players_by_id or {},
+            # Tournament-wide check stubs — `evaluate_one` reads these
+            # to stamp 1.4.3d / 1.5.6a onto every NormCheckResult.
+            # Default to "not met" so tests don't get an unintended
+            # 1.4.3d exemption.
+            big_tournament_exemption=BigTournamentExemption(0, 0, 0),
+            high_level_tournament=False,
         ),
         pairings_by_round=fake_pairings,
     )
@@ -2449,3 +2456,103 @@ class TestRule_1_4_3abc_EndToEnd:
             assert outcome_result[TitleNorm.GM].is_143_exempt_via_abc, (
                 'Forecaster must apply rule_143_exemption to every per-outcome result'
             )
+
+
+# ===========================================================================
+# 1.4.2c rescue when 1.4.4 fails — orchestrator must defer is_met check
+# ===========================================================================
+#
+# Setup: 9-round Swiss. Applicant gets 8 played games (7.0 / 8) against
+# strong GMs, with 6 of those 8 from one federation. Round 9 is a
+# FORFEIT_WIN against a 9th GM (different federation).
+#
+# Under 1.4.1c (forfeit excluded):
+#   - 1.4.1 passes via the 8+1 PAB exception.
+#   - 1.4.4 one-fed cap fails: 6 from one fed > ⌊2 × 8 / 3⌋ = 5.
+#   - is_met should be False → orchestrator must try 1.4.2c.
+#
+# Under 1.4.2c (forfeit as LOSS, 9 played):
+#   - 1.4.4 one-fed cap passes: 6 ≤ ⌊2 × 9 / 3⌋ = 6.
+#   - Rp ≈ 2620 ≥ 2600 → norm achieved.
+
+
+class TestRule_1_4_2c_Rescue_When_1_4_4_Fails:
+    def test_orchestrator_falls_back_to_1_4_2c_when_1_4_4_only_blocks(self):
+        """When 1.4.1c fails ONLY on 1.4.4 (proportional cap) and 1.4.2c's
+        scaled threshold rescues it, applied_142c must be True with
+        alternate_142c populated for the side-by-side view."""
+        from data.norms import TitleNormSubsetSearcher
+        from data.pairings.systems import SwissPairingSystem
+        from utils.enum import PlayerGender
+        from utils.types import BigTournamentExemption as _Btx
+
+        # 6 GER GMs + 1 FIN GM + 1 GAB GM = 8 opponents in R1-R8.
+        ger_opps = [_gm(i, rating=2400, federation='GER') for i in range(1, 7)]
+        fin_opp = _gm(7, rating=2400, federation='FIN')
+        gab_opp = _gm(8, rating=2400, federation='GAB')
+        # Score 7.0 / 8 = strong Rp under 1.4.1c (2736-ish).
+        results_r1_8 = [Result.WIN] * 6 + [Result.WIN] + [Result.DRAW]
+        # That's 7 wins + 1 draw = 7.5. Use 6W + 2D = 7.0 instead.
+        results_r1_8 = [Result.WIN] * 6 + [Result.DRAW] + [Result.DRAW]
+        # 6 wins + 2 draws = 7.0.
+        pairings_r1_8 = list(
+            zip(
+                range(1, 9),
+                ger_opps + [fin_opp, gab_opp],
+                results_r1_8,
+            )
+        )
+        # R9: forfeit-win against a GEO GM.
+        geo_opp = _gm(9, rating=2400, federation='GEO')
+
+        def _fake_pairing(result, opp):
+            return SimpleNamespace(
+                result=result,
+                opponent=opp,
+                unplayed=result.is_unplayed,
+                played=not result.is_unplayed,
+            )
+
+        pairings_dict = {
+            rnd: _fake_pairing(res, opp) for rnd, opp, res in pairings_r1_8
+        }
+        pairings_dict[9] = _fake_pairing(Result.FORFEIT_WIN, geo_opp)
+
+        player = SimpleNamespace(
+            federation=Federation('FRA'),  # not in any opponent's fed
+            gender=PlayerGender.MAN,
+            title=PlayerTitle.NONE,
+            event=SimpleNamespace(federation='FRA'),
+            tournament=SimpleNamespace(
+                rounds=9,
+                pairing_system=SwissPairingSystem(),
+                pairing_variation=None,
+                tournament_players_by_id={},
+                # Tournament-wide 1.4.3d NOT met (small event).
+                big_tournament_exemption=_Btx(0, 0, 0),
+                high_level_tournament=False,
+            ),
+            pairings_by_round=pairings_dict,
+        )
+
+        searcher = TitleNormSubsetSearcher(player)
+        results = searcher.evaluate()
+        gm_result = results[TitleNorm.GM]
+
+        # Sanity: the 1.4.2c rescue must have fired.
+        assert gm_result.applied_142c, (
+            '1.4.2c must rescue: 1.4.1c fails 1.4.4 (6 GER > 5 cap on 8 played) '
+            'but 1.4.2c passes (6 ≤ 6 cap on 9 played).'
+        )
+        assert gm_result.alternate_142c is not None, (
+            'alternate_142c must hold the failing 1.4.1c result for the '
+            'side-by-side view'
+        )
+        # The 1.4.2c reading achieves the norm.
+        assert gm_result.is_met, (
+            'GM norm should be achieved under 1.4.2c: Rp ≈ 2620, federation '
+            'caps satisfied at 9 played, all other rules pass.'
+        )
+        # The 1.4.1c reading did NOT achieve it (because of 1.4.4 one-fed).
+        assert not gm_result.alternate_142c.is_met
+        assert gm_result.alternate_142c.too_many_one_federation
