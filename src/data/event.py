@@ -403,6 +403,10 @@ class Event:
             return _(
                 'Distributing the players is allowed only if all the tournaments use the same rating.'
             )
+        if error_message := plugin_manager.hook_for_event(
+            self, 'player_distribution_error_message'
+        )(event=self):
+            return error_message
         return None
 
     @cached_property

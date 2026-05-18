@@ -457,35 +457,33 @@ class FfePlugin(Plugin):
         return PlayerRatingAndType(value, PlayerRatingType.ESTIMATED)
 
     @hookimpl
-    def is_tournament_participation_possible(
-        self, tournament: 'Tournament', tournament_player: TournamentPlayer
-    ) -> str | None:
-        plugin_data = FFEUtils.get_player_plugin_data(tournament_player)
+    def validate_player_tournament_move(
+        self, tournament: 'Tournament', player: TournamentPlayer
+    ):
+        plugin_data = FFEUtils.get_player_plugin_data(player)
         ffe_licence_number = plugin_data.ffe_licence_number
         ffe_id = plugin_data.ffe_id
         if ffe_licence_number and any(
-            FFEUtils.get_player_plugin_data(tournament_player_).ffe_licence_number
+            FFEUtils.get_player_plugin_data(player_).ffe_licence_number
             == ffe_licence_number
-            for tournament_player_ in tournament.tournament_players_by_id.values()
+            for player_ in tournament.tournament_players_by_id.values()
         ):
-            return _(
+            message = _(
                 'FFE licence [{ffe_licence_number}] already '
                 'present in tournament [{tournament}].'
             ).format(
                 ffe_licence_number=ffe_licence_number,
                 tournament=tournament.name,
             )
-
-        if ffe_id and any(
+            raise ValueError(message)
+        elif ffe_id and any(
             FFEUtils.get_player_plugin_data(tournament_player_).ffe_id == ffe_id
             for tournament_player_ in tournament.tournament_players_by_id.values()
         ):
             # This string is not translated because the error should never happen
-            return (
+            raise ValueError(
                 f'FFE ID [{ffe_id}] already present in tournament [{tournament.name}].'
             )
-
-        return None
 
     @staticmethod
     def _get_ffe_club_sort_key(player: Player) -> tuple:
