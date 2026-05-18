@@ -6,6 +6,7 @@ from data.print_documents import (
     player_sorters,
     pairing_styles,
     qrcode_types,
+    team_types,
 )
 from data.print_documents.documents import PrintDocument
 from data.print_documents.options import PrintOption
@@ -26,6 +27,7 @@ from data.print_documents.place_cards.types import (
 from data.print_documents.player_sorters import GridPlayerSorter, ListPlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
+from data.print_documents.team_types import TeamType
 from plugins.manager import plugin_manager
 from utils.entity import EventBoundEntityManager, EntityManager
 
@@ -39,6 +41,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.PairingPrintDocument,
             documents.ResultPrintDocument,
             documents.PlayerRankingPrintDocument,
+            documents.TeamRankingPrintDocument,
             documents.PlayerCrosstablePrintDocument,
             documents.PlayerRoundPerformanceIndicatorPrintDocument,
             documents.BergerGridPrintDocument,
@@ -63,6 +66,7 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.QRCodePrintOption,
             options.PlaceCardPrintOption,
             options.PlaceCardTemplatePrintOption,
+            options.TeamTypePrintOption,
             options.TournamentPrintOption,
             options.TournamentsPrintOption,
             options.MandatoryPlayerPrintOption,
@@ -81,6 +85,11 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.PlaceCardMirrorPrintOption,
             options.PlaceCardCropMarksPrintOption,
             options.PlayerHistoryOption,
+            options.TeamSizePrintOption,
+            options.MaxTeamsPerEntityPrintOption,
+            options.MinGenderCountPrintOption,
+            options.RankIncompleteTeamsFirstPrintOption,
+            options.DisplayIncompleteTeamsPrintOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_print_option')(
             print_options=print_options
@@ -167,3 +176,16 @@ class PrintPlaceCardCropMarksManager(EntityManager[PlaceCardCropMarks]):
             SolidBorderPlaceCardCropMarks,
             DashedBorderPlaceCardCropMarks,
         ]
+
+
+class PrintTeamTypeManager(EventBoundEntityManager[TeamType]):
+    @override
+    def entity_types(self) -> list[type[TeamType]]:
+        types = [
+            team_types.ClubTeamType,
+            team_types.FederationTeamType,
+        ]
+        plugin_manager.hook_for_event(self.event, 'insert_print_team_types')(
+            team_types=types
+        )
+        return types

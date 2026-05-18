@@ -1,0 +1,8 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Teams:'),
+        select_options=option.team_type_options,
+        data=data, errors=errors
+    ) }}
+</div>

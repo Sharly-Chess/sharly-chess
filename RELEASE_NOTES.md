@@ -27,6 +27,10 @@
 
 - Fixed error 500 before pairing on Results Entry screens with fixed boards (4.1.4)
 
+## Documents
+
+- Added custom team ranking (4.1.5)
+
 ## _Sharly-Chess.com_
 
 - Added player check-in and French school to the synchronization (4.1.0)

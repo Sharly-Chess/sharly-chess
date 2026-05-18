@@ -1,8 +1,8 @@
 <div class="col-12">
     {{ admin_macros.number_input(
         name=option.id,
-        label=_('Teams per school:'),
-        tooltip_text=_('Maximum number of teams per school.'),
+        label=_('Gender threshold:'),
+        tooltip_text=_('The minimum players count of each gender to form a complete team.'),
         min=1,
         data=data, errors=errors
     ) }}

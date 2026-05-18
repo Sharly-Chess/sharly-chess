@@ -1170,11 +1170,20 @@ class TournamentPlayer(Player):
 
     @property
     def tie_break_values(self) -> list[TieBreakValue]:
-        """Returns the player's tie-break values as strings."""
+        """Returns the player's tie-break values."""
         assert self._tie_break_values is not None, (
             'Player._tie_break_values is not set, call Tournament.compute_player_ranks() before.'
         )
         return self._tie_break_values
+
+    @property
+    def team_ranking_tie_break_values(self) -> list[TieBreakValue]:
+        """Returns the player's tie-break values (only the tie-breaks used for team ranking)."""
+        return [
+            tie_break_value
+            for tie_break_index, tie_break_value in enumerate(self.tie_break_values)
+            if self.tournament.tie_breaks[tie_break_index].is_used_for_team_ranking
+        ]
 
     def compute_tie_break_values(self, *, after_round: int):
         self._tie_break_values = [

@@ -647,6 +647,9 @@ msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appar
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 
+msgid "An integer greater than 1 is expected."
+msgstr "Un entier supérieur à 1 est attendu."
+
 msgid "An unexpected error occurred while reading the CSV file. Consult the logs for more details."
 msgstr "Une erreur inattendue s'est produite lors de la lecture du fichier CSV. Consultez les logs pour plus de détails."
 
@@ -769,6 +772,10 @@ msgstr "Créer automatiquement les horaires à partir des horaires des rondes d'
 
 msgid "Average"
 msgstr "Moyenne"
+
+#, python-format
+msgid "Average age: %(years)s"
+msgstr "Âge moyen : %(years)s"
 
 msgid "Average of opponents Buchholz"
 msgstr "Moyenne du Buchholz des adversaires"
@@ -1305,6 +1312,9 @@ msgstr "Appariements complémentaires générés avec succès !"
 
 msgid "Complementary prize"
 msgstr "Prix complémentaire"
+
+msgid "Complete Team"
+msgstr "Équipe complète"
 
 msgid "Configuration *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>C</u>onfiguration"
@@ -2589,6 +2599,9 @@ msgstr "Genre"
 msgid "Gender ({gender})"
 msgstr "Genre ({gender})"
 
+msgid "Gender threshold:"
+msgstr "Seuil de genre :"
+
 msgid "Gender:"
 msgstr "Genre :"
 
@@ -2838,6 +2851,9 @@ msgstr "Inclure les données privées des joueur·euses (mél, tél, etc.)"
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
 msgstr "Inclut tous les autres rôles et donne un accès complet à l'application ; ce niveau d'accès est donné seulement en accédant à Sharly Chess sur l'ordinateur sur lequel est lancé le serveur (à aucun autre appareil du réseau)."
 
+msgid "Incomplete Team"
+msgstr "Équipe incomplète"
+
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
 
@@ -2846,6 +2862,9 @@ msgstr "Incrément (sec) :"
 
 msgid "India"
 msgstr "Inde"
+
+msgid "Individual ranking"
+msgstr "Classement individuel"
 
 msgid "Indonesia"
 msgstr "Indonésie"
@@ -3357,11 +3376,17 @@ msgstr "Elo minimum"
 msgid "Minimum rating is expected to be lower than the maximum rating."
 msgstr "Le classement minimal doit être inférieur au classement maximal."
 
+msgid "Missing men: {count}"
+msgstr "Hommes manquants : {count}"
+
 msgid "Missing required column [{column}]."
 msgstr "Colonne obligatoire [{column}] manquante."
 
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
+
+msgid "Missing women: {count}"
+msgstr "Femmes manquantes : {count}"
 
 msgid "Mo *** MONDAY"
 msgstr "Lu"
@@ -3819,6 +3844,9 @@ msgstr "Nombre d'écrans"
 msgid "Number of screens:"
 msgstr "Nombre d'écrans :"
 
+msgid "Number of teams:"
+msgstr "Nombre d'équipes :"
+
 msgid "Number of wins"
 msgstr "Nombre de victoires"
 
@@ -3932,11 +3960,17 @@ msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur
 msgid "Origin: {template_origin}"
 msgstr "Origine : {template_origin}"
 
+msgid "Other missing players: {count}"
+msgstr "Autres joueur·euses manquant·es : {count}"
+
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr "Les autres joueur·euses de ce groupe de points n'entrent pas dans les prix (prix inférieur au seuil minimum)."
 
 msgid "Others"
 msgstr "Autres"
+
+msgid "Overall ranking"
+msgstr "Classement général"
 
 msgid "Overwrite"
 msgstr "Remplacement"
@@ -4270,6 +4304,12 @@ msgstr "Joueur·euses de %(first)d à %(last)d"
 msgid "Players from %(first)s to %(last)s"
 msgstr "joueur·euses de %(first)s à %(last)s"
 
+msgid "Players from the same club"
+msgstr "Joueur·euses du même club"
+
+msgid "Players from the same federation"
+msgstr "Joueur·euses de la même fédération"
+
 msgid "Players import"
 msgstr "Import de joueur·euses"
 
@@ -4581,6 +4621,12 @@ msgstr "Tirer les numéros d'appariement aléatoirement."
 msgid "Rank"
 msgstr "Classement"
 
+msgid "Rank complete teams first"
+msgstr "Classer les équipes complètes en premier"
+
+msgid "Rank incomplete teams"
+msgstr "Classer les équipes incomplètes"
+
 msgid "Ranking"
 msgstr "Classement"
 
@@ -4601,6 +4647,12 @@ msgstr "Classement après la ronde {round}"
 
 msgid "Ranking before the first round"
 msgstr "Classement avant la première ronde"
+
+msgid "Ranking by club after round #{round}"
+msgstr "Classement par club après la ronde n°{round}"
+
+msgid "Ranking by federation after round #{round}"
+msgstr "Classement par fédération après la ronde n°{round}"
 
 msgid "Ranking only"
 msgstr "Classement seulement"
@@ -5433,6 +5485,21 @@ msgstr "Tadjikistan"
 msgid "Tanzania"
 msgstr "Tanzanie"
 
+msgid "Team ranking"
+msgstr "Classement par équipe"
+
+msgid "Team size:"
+msgstr "Taille des équipes :"
+
+msgid "Teams per club:"
+msgstr "Équipes par club :"
+
+msgid "Teams per federation:"
+msgstr "Équipes par fédération :"
+
+msgid "Teams:"
+msgstr "Équipes :"
+
 msgid "Template:"
 msgstr "Modèle :"
 
@@ -5569,6 +5636,15 @@ msgstr "Le nombre maximum de points réalisé par les joueur·euses affiché·es
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
 msgstr "Le nombre maximum de résultats à afficher sur l'écran, facultatif (si ce champ est laissé vide, tous les résultats sont affichés)."
 
+msgid "The maximum number of teams of the same origin (club, federation...), no limit by default."
+msgstr "Le nombre maximum d'équipes de même origine (club, fédération...), pas de limite par défaut."
+
+msgid "The maximum number of teams per club."
+msgstr "Le nombre maximum d'équipes par club."
+
+msgid "The maximum number of teams per federation."
+msgstr "Le nombre maximum d'équipes par fédération."
+
 msgid "The maximum rating must be at most equal to the minimum rating."
 msgstr "Le Elo maximum doit au moins être égal au Elo minimum."
 
@@ -5580,6 +5656,13 @@ msgstr "Nombre minimum de joueurs requis pour qu’un club soit affiché."
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
+
+#, python-format
+msgid "The minimum numbers of players to form a complete team (%(default_value)d by default)."
+msgstr "Le nombre minimum de joueur·euses pour former une équipe complète (%(default_value)d par défaut)."
+
+msgid "The minimum players count of each gender to form a complete team."
+msgstr "Le nombre minimum de joueur·euses pour former une équipe complète."
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
@@ -6848,6 +6931,9 @@ msgstr "forfaits joués"
 
 msgid "from move 1"
 msgstr "depuis le 1er coup"
+
+msgid "incomplete *** INCOMPLETE TEAM"
+msgstr "incomplète"
 
 msgid "last"
 msgstr "dernier"

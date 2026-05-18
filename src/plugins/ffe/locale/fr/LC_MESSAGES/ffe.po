@@ -358,8 +358,14 @@ msgstr "Fichier Papi"
 msgid "Pending"
 msgstr "En attente"
 
+msgid "Players from the same league (FFE)"
+msgstr "Joueur·euses de la même ligue (FFE)"
+
 msgid "Players:"
 msgstr "Joueur·euses :"
+
+msgid "Ranking by league after round #{round}"
+msgstr "Classement par ligue après la ronde n°{round}"
 
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
@@ -423,6 +429,9 @@ msgstr "T6 Exclusion d'un·e joueur·euse"
 msgid "T7 Player reporting"
 msgstr "T7 Signalement d'un·e joueur·euse"
 
+msgid "Teams per league:"
+msgstr "Équipes par ligue :"
+
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
 msgstr "Le système d'accélération de Bakou n'est pas reconnu par la FFE, il peut y avoir des différences dans l'affichage des appariements sur le site web de la FFE."
 
@@ -440,6 +449,9 @@ msgstr "Le format Papi ne supporte pas le résultat [{result}]."
 
 msgid "The [{tie_break}] tie-break as implemented in Papi."
 msgstr "Le départage [{tie_break}] tel qu'implémenté dans Papi."
+
+msgid "The maximum number of teams per league."
+msgstr "Le nombre maximum d'équipes par ligue."
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."

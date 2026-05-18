@@ -475,11 +475,11 @@ class TournamentRating(IntEnum):
     def from_key(cls, key: str) -> Self:
         match key.lower():
             case 'standard':
-                return cls.STANDARD
+                return cls.STANDARD  # type: ignore
             case 'rapid':
-                return cls.RAPID
+                return cls.RAPID  # type: ignore
             case 'blitz':
-                return cls.BLITZ
+                return cls.BLITZ  # type: ignore
             case _:
                 raise ValueError(f'Unknown value: {key}')
 
@@ -1029,7 +1029,7 @@ class ScreenType(StrEnum):
             case ScreenType.RESULTS:
                 return _('Last results')
             case ScreenType.RANKING:
-                return _('Ranking')
+                return _('Individual ranking')
             case ScreenType.IMAGE:
                 return _('Image')
             case _:

@@ -358,7 +358,13 @@ msgstr ""
 msgid "Pending"
 msgstr ""
 
+msgid "Players from the same league (FFE)"
+msgstr ""
+
 msgid "Players:"
+msgstr ""
+
+msgid "Ranking by league after round #{round}"
 msgstr ""
 
 msgid "Replace the player to update this field."
@@ -423,6 +429,9 @@ msgstr ""
 msgid "T7 Player reporting"
 msgstr ""
 
+msgid "Teams per league:"
+msgstr ""
+
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
 msgstr ""
 
@@ -439,6 +448,9 @@ msgid "The Papi format does not support result [{result}]."
 msgstr ""
 
 msgid "The [{tie_break}] tie-break as implemented in Papi."
+msgstr ""
+
+msgid "The maximum number of teams per league."
 msgstr ""
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
