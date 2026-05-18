@@ -6238,7 +6238,7 @@ msgstr ""
 msgid "This tie-break uses a legacy way to compute values."
 msgstr ""
 
-msgid "This tournament has no titled players."
+msgid "This tournament has no norm-eligible titled players."
 msgstr ""
 
 msgid "This unique ID is already used."
@@ -7460,4 +7460,3 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
-

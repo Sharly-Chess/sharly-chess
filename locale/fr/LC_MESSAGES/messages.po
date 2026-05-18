@@ -6240,8 +6240,8 @@ msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es (
 msgid "This tie-break uses a legacy way to compute values."
 msgstr "Ce départage utilise une manière obsolète de calculer les valeurs."
 
-msgid "This tournament has no titled players."
-msgstr "Ce tournoi n'a pas de joueur·euses titré·es."
+msgid "This tournament has no norm-eligible titled players."
+msgstr "Ce tournoi ne comporte aucun joueur titré éligible pour les calculs de normes.
 
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
@@ -7462,4 +7462,3 @@ msgstr "½ - ½ (NC)"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
-

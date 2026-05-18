@@ -1219,7 +1219,7 @@ class NormReportPrintDocument(PrintDocument):
             return False
         return any(
             tournament.rating == TournamentRating.STANDARD
-            and tournament.has_titled_players
+            and tournament.has_norm_eligible_titled_players
             for tournament in allowed_tournaments
         )
 
@@ -1233,9 +1233,9 @@ class NormReportPrintDocument(PrintDocument):
                 ),
                 self._get_option(TournamentPrintOption),
             )
-        if not tournament.has_titled_players:
+        if not tournament.has_norm_eligible_titled_players:
             raise OptionError(
-                _('This tournament has no titled players.'),
+                _('This tournament has no norm-eligible titled players.'),
                 self._get_option(TournamentPrintOption),
             )
         _validate_min_games_only_for_swiss(self)
@@ -1425,7 +1425,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
             return False
         return any(
             tournament.rating == TournamentRating.STANDARD
-            and tournament.has_titled_players
+            and tournament.has_norm_eligible_titled_players
             for tournament in allowed_tournaments
         )
 
@@ -1439,9 +1439,9 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
                 ),
                 self._get_option(TournamentPrintOption),
             )
-        if not tournament.has_titled_players:
+        if not tournament.has_norm_eligible_titled_players:
             raise OptionError(
-                _('This tournament has no titled players.'),
+                _('This tournament has no norm-eligible titled players.'),
                 self._get_option(TournamentPrintOption),
             )
         _validate_min_games_only_for_swiss(self)

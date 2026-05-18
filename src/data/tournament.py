@@ -53,7 +53,9 @@ from utils.enum import (
     RoleType,
     PlayerTitle,
     CheckInStatus,
+    TitleNorm,
 )
+
 from utils.types import BigTournamentExemption
 from data.norms import (
     compute_big_tournament_exemption,
@@ -985,6 +987,13 @@ class Tournament:
     def has_titled_players(self) -> bool:
         return any(
             player.title != PlayerTitle.NONE for player in self.tournament_players
+        )
+
+    @property
+    def has_norm_eligible_titled_players(self) -> bool:
+        return any(
+            player.title in TitleNorm.TITLE_HOLDERS
+            for player in self.tournament_players
         )
 
     @cached_property
