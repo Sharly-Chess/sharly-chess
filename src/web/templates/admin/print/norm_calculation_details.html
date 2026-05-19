@@ -467,7 +467,13 @@
                 </table>
             </section>
 
-            {#— 3. Performance breakdown —#}
+            {#— 3. Performance breakdown.
+                dp is a *lookup* in the FIDE 1.4.9 table, keyed on the
+                rounded fractional score. The rows below spell that out
+                step-by-step: rounded percent → dp → Rp. The "Minimum
+                score to clear the Rp threshold" block below reuses the
+                same shape for the tipping score so the two layouts mirror
+                each other. #}
             <section class="calc-section">
                 {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Performance rating (Rp)') }}</h2>
                 <table class="calc-table">
@@ -476,17 +482,30 @@
                         <td>{{ norm.played_games }}</td>
                     </tr>
                     <tr>
-                        <th>{{ _('Score') }}</th>
-                        <td>{{ norm.score }} / {{ norm.played_games }} =
-                            {{ '%.3f' | format((norm.score / norm.played_games) if norm.played_games else 0) }}</td>
-                    </tr>
-                    <tr>
                         <th>{{ _('Average opponent rating (Ra)') }}</th>
                         <td>{{ norm.average_rating }}</td>
                     </tr>
                     <tr>
-                        <th>{{ _('Performance bonus (dp)') }}</th>
-                        <td><span class="formula">dp = Rp − Ra = {{ (norm.performance - norm.average_rating) | int }}</span></td>
+                        <th>{{ _('Score') }}</th>
+                        <td>
+                            {% if actual_score_proof %}
+                                {{ norm.score }} / {{ norm.played_games }}
+                                = {{ '%.3f' | format(actual_score_proof.raw_percent) }}%
+                                → {{ actual_score_proof.rounded_percent }}%
+                            {% else %}
+                                {{ norm.score }} / {{ norm.played_games }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ _('Performance bonus (dp), from 1.4.9 table') }}</th>
+                        <td>
+                            {% if actual_score_proof %}
+                                {{ actual_score_proof.dp }}
+                            {% else %}
+                                {{ (norm.performance - norm.average_rating) | int }}
+                            {% endif %}
+                        </td>
                     </tr>
                     <tr>
                         <th>{{ _('Performance rating (Rp)') }}</th>
@@ -497,6 +516,30 @@
                         <td>{{ chosen_norm.minimum_performance }}</td>
                     </tr>
                 </table>
+
+                {% if score_required_proof %}
+                <p style="font-size: 0.8rem; margin: 0.8rem 0 0.4rem 0; font-weight: 600;">
+                    {{ _('Minimum score to clear the Rp threshold') }}
+                </p>
+                <table class="calc-table">
+                    <tr>
+                        <th>{{ _('Score') }}</th>
+                        <td>
+                            <b>{{ score_required_proof.score }}</b> / {{ norm.played_games }}
+                            = {{ '%.3f' | format(score_required_proof.raw_percent) }}%
+                            → {{ score_required_proof.rounded_percent }}%
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ _('Performance bonus (dp), from 1.4.9 table') }}</th>
+                        <td>{{ score_required_proof.dp }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ _('Performance rating (Rp) at this score') }}</th>
+                        <td><span class="formula">Rp = Ra + dp = {{ score_required_proof.rp }}</span></td>
+                    </tr>
+                </table>
+                {% endif %}
             </section>
 
             {#— 4. Federation histogram —#}

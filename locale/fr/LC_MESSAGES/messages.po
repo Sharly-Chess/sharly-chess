@@ -6241,7 +6241,7 @@ msgid "This tie-break uses a legacy way to compute values."
 msgstr "Ce départage utilise une manière obsolète de calculer les valeurs."
 
 msgid "This tournament has no norm-eligible titled players."
-msgstr "Ce tournoi ne comporte aucun joueur titré éligible pour les calculs de normes.
+msgstr "Ce tournoi ne comporte aucun joueur titré éligible pour les calculs de normes."
 
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
@@ -7462,3 +7462,19 @@ msgstr "½ - ½ (NC)"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+
+#: src/web/templates/admin/print/norm_calculation_details.html
+msgid "Minimum score to clear the Rp threshold"
+msgstr "Score minimal pour franchir le seuil Rp"
+
+#: src/web/templates/admin/print/norm_calculation_details.html
+msgid "Percentage (raw → rounded)"
+msgstr "Pourcentage (brut → arrondi)"
+
+#: src/web/templates/admin/print/norm_calculation_details.html
+msgid "Performance rating (Rp) at this score"
+msgstr "Performance (Rp) à ce score"
+
+#: src/web/templates/admin/print/norm_calculation_details.html
+msgid "Performance bonus (dp), from 1.4.9 table"
+msgstr "Bonus de performance (dp), table 1.4.9"

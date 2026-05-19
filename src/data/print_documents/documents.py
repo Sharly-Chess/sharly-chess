@@ -1373,6 +1373,23 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
             if chosen_norm
             else (min_games if min_games is not None else 9)
         )
+        # Two score proofs sharing the same shape — used by section 3 to
+        # show the rounding + 1.4.9 dp lookup explicitly.
+        # `actual_score_proof`: the player's actual score (upper table).
+        # `score_required_proof`: the tipping score that just clears Rp
+        # (lower table, the "minimum score to clear the Rp threshold").
+        actual_score_proof = self._build_score_proof_for(
+            chosen_norm_result,
+            chosen_norm_result.score if chosen_norm_result else None,
+        )
+        tipping_score = (
+            chosen_norm_result.score - chosen_norm_result.performance_diff
+            if chosen_norm_result and chosen_norm_result.performance_diff is not None
+            else None
+        )
+        score_required_proof = self._build_score_proof_for(
+            chosen_norm_result, tipping_score
+        )
         return {
             'event': self.get_event(),
             'tournament': self.tournament,
@@ -1386,8 +1403,39 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
             'min_games_override': min_games,
             'min_games_threshold': min_games_threshold,
             'rule_143_exemption_code': exemption_code,
+            'actual_score_proof': actual_score_proof,
+            'score_required_proof': score_required_proof,
             'exemption_trail': compute_big_tournament_exemption_trail(self.tournament),
             'high_level_trail': compute_high_level_tournament_trail(self.tournament),
+        }
+
+    @staticmethod
+    def _build_score_proof_for(norm_result, score) -> dict[str, Any] | None:
+        """Spell out the Rp computation for a given score on this norm.
+
+        Returns None when there's nothing to show (no result, no score,
+        or zero played games). Otherwise returns the rounding + lookup
+        chain that produces Rp:
+        - `score`: the score being explained (as-is).
+        - `raw_percent`: 100 × score / played, unrounded.
+        - `rounded_percent`: FIDE-rounded (half up) to integer.
+        - `dp`: bonus looked up from the 1.4.9 table at the rounded
+          fractional. Negative for sub-50% scores.
+        - `rp`: Ra + dp.
+        Used for both the actual-score row in section 3 and the
+        tipping-score proof below it.
+        """
+        if norm_result is None or score is None or not norm_result.played_games:
+            return None
+        raw_percent = 100 * score / norm_result.played_games
+        rounded_percent = Utils.round_ranking(raw_percent)
+        dp = Utils.performance_bonus(rounded_percent / 100)
+        return {
+            'score': score,
+            'raw_percent': raw_percent,
+            'rounded_percent': rounded_percent,
+            'dp': dp,
+            'rp': norm_result.average_rating + dp,
         }
 
 
