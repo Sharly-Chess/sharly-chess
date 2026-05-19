@@ -3545,6 +3545,9 @@ msgstr ""
 msgid "Minimum rating is expected to be lower than the maximum rating."
 msgstr ""
 
+msgid "Minimum score to clear the Rp threshold"
+msgstr ""
+
 msgid "Missing required column [{column}]."
 msgstr ""
 
@@ -4369,13 +4372,16 @@ msgstr ""
 msgid "Perfect tournament performance"
 msgstr ""
 
-msgid "Performance bonus (dp)"
+msgid "Performance bonus (dp), from 1.4.9 table"
 msgstr ""
 
 msgid "Performance indicators for round #{round}"
 msgstr ""
 
 msgid "Performance rating (Rp)"
+msgstr ""
+
+msgid "Performance rating (Rp) at this score"
 msgstr ""
 
 msgid "Period"

@@ -3545,6 +3545,9 @@ msgstr "Elo minimum"
 msgid "Minimum rating is expected to be lower than the maximum rating."
 msgstr "Le classement minimal doit être inférieur au classement maximal."
 
+msgid "Minimum score to clear the Rp threshold"
+msgstr "Score minimal pour franchir le seuil Rp"
+
 msgid "Missing required column [{column}]."
 msgstr "Colonne obligatoire [{column}] manquante."
 
@@ -4371,14 +4374,17 @@ msgstr "Vérifications par règle"
 msgid "Perfect tournament performance"
 msgstr "Performance parfaite"
 
-msgid "Performance bonus (dp)"
-msgstr "Bonus de performance (dp)"
+msgid "Performance bonus (dp), from 1.4.9 table"
+msgstr "Bonus de performance (dp), table 1.4.9"
 
 msgid "Performance indicators for round #{round}"
 msgstr "Indicateurs de performance pour la ronde n°{round}"
 
 msgid "Performance rating (Rp)"
 msgstr "Performance (Rp)"
+
+msgid "Performance rating (Rp) at this score"
+msgstr "Performance (Rp) à ce score"
 
 msgid "Period"
 msgstr "Période"
@@ -6241,7 +6247,7 @@ msgid "This tie-break uses a legacy way to compute values."
 msgstr "Ce départage utilise une manière obsolète de calculer les valeurs."
 
 msgid "This tournament has no norm-eligible titled players."
-msgstr "Ce tournoi ne comporte aucun joueur titré éligible pour les calculs de normes.
+msgstr "Ce tournoi ne comporte aucun joueur titré éligible pour les calculs de normes."
 
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."

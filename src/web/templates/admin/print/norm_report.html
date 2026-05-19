@@ -253,7 +253,7 @@
 
         {% for norm_title, norm in norms.items() %}
             {% if loop.first %}
-                <div class="info">
+                <div class="info" id="norm-{{ norm_title.name }}">
                     {{_('Scroll down to review all the norms…')}}
                     <br />
                     {{_('Unmet requirements are highlighted in red and should be verified. They will appear in black when printed.')}}
@@ -265,7 +265,7 @@
             {% else %}
                 <div class="spacer"></div>
             {% endif %}
-            <div class="heading">
+            <div class="heading" {% if not loop.first %}id="norm-{{ norm_title.name }}{% endif %}">
                 {{norm_title.name}}
             </div>
             {# Non-print deep-link to the separate Norm Calculation Details
@@ -290,7 +290,7 @@
                     {{ _('View calculation details for %(norm)s →', norm=norm_title.name) }}
                 </a>
             </div>
-            <form class="break-after" id="norm-{{ norm_title.name }}">
+            <form class="break-after">
                 <h1 style="text-align: right; margin: 0; padding: 0;">IT 1</h1>
                 <section style="margin-top: 0.1rem;">
                     <h1>Certificate of Title Result (IT1)</h1>
