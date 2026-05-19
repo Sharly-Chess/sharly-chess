@@ -1,0 +1,35 @@
+<div class="col-12">
+    {{ admin_macros.number_input(
+        name=option.id,
+        label=_('Minimum games for a norm'),
+        tooltip_text=_('FIDE 1.4.1. Default is 9. Lower to 7 for World or Continental Team Championships, or to 8 for the World Cup (1.4.1b exceptions).'),
+        min=7,
+        data=data, errors=errors
+    ) }}
+</div>
+<script>
+    (() => {
+        // FIDE 1.4.1b — see MinimumGamesPrintOption. Hide this option whenever
+        // the currently-selected tournament uses a non-Swiss pairing system.
+        const swissTournamentIds = {{ option.swiss_tournament_ids | tojson }};
+        const $container = $('#{{ option.container_id }}');
+        const $tournamentSelect = $('.modal #tournament');
+
+        function applyVisibility() {
+            const selectedId = parseInt($tournamentSelect.val(), 10);
+            if (Number.isNaN(selectedId) || swissTournamentIds.includes(selectedId)) {
+                $container.show();
+            } else {
+                $container.hide();
+            }
+        }
+
+        $tournamentSelect.on('change', applyVisibility);
+        // Also react when the document selection changes — the print modal's
+        // own hide/show pass runs first, so defer with setTimeout.
+        $('.modal #document').on('change', () => setTimeout(applyVisibility, 0));
+
+        // Initial sync once the modal renders.
+        setTimeout(applyVisibility, 0);
+    })();
+</script>

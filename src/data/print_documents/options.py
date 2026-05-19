@@ -371,6 +371,146 @@ class ClubThresholdPrintOption(PrintOption):
             raise OptionError(_('A positive value is expected.'), self)
 
 
+class MinimumGamesPrintOption(PrintOption):
+    """1.4.1 — minimum games for a title norm. Defaults to 9.
+
+    Allows the arbiter to override for events that qualify for 1.4.1b
+    exceptions (7-round World/Continental Team Championships → 7;
+    8-round World Cup → 8) — these aren't auto-detected from tournament
+    metadata.
+
+    Only applies to Swiss tournaments. The 1.4.1b exceptions don't apply
+    to Round-Robin / Double Round-Robin (1.4.1e: "In tournaments with
+    predetermined pairings, a norm must be based on all scheduled rounds").
+    The option's UI hides itself when a non-Swiss tournament is selected
+    (see `swiss_tournament_ids` + the template's JS).
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'minimum-games'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int
+
+    @property
+    def default_value(self) -> Any:
+        return 9
+
+    @property
+    def swiss_tournament_ids(self) -> list[int]:
+        """IDs of the event's tournaments where this option is meaningful.
+        Rendered into the option template's JS to drive UI hide/show on
+        tournament-select change."""
+        from data.pairings.systems import SwissPairingSystem
+
+        if self.event is None:
+            return []
+        return [
+            t.id
+            for t in self.event.tournaments
+            if t.pairing_system == SwissPairingSystem()
+        ]
+
+    @override
+    def validate(self):
+        super().validate()
+        # FIDE 1.4.1 / 1.4.1b: 9 is the default; the only spec-recognised
+        # reductions are to 7 (World/Continental Team Championships) and
+        # 8 (World Cup, counted as 9).
+        if self.value is None or self.value < 7:
+            raise OptionError(_('Minimum games for a norm must be at least 7.'), self)
+
+
+class Rule143ExemptionPrintOption(PrintOption):
+    """Selects which FIDE 1.4.3 exemption (a/b/c) applies, based on the
+    type of event the tournament is part of. The arbiter sets this on the
+    print doc — there's no automatic detection because nothing in the
+    tournament metadata identifies a "National Championship final" or a
+    "Zonal".
+
+    Spec mapping:
+    - 'none'  → no exemption (default).
+    - '1.4.3a' → National men's/open championship final stage.
+                  Exempts 1.4.3 ONLY for players from the event's
+                  registering federation.
+    - '1.4.3b' → National team championships.
+                  Same player filter as 1.4.3a.
+    - '1.4.3c' → Zonal / Sub-zonal tournament.
+                  Exempts 1.4.3 for ALL players (no federation filter).
+
+    None of a/b/c exempt 1.4.4 — only 1.4.3d does that (see
+    `compute_big_tournament_exemption`).
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'rule-143-exemption'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return 'none'
+
+    @property
+    def exemption_choices(self) -> dict[str, str]:
+        """{value: label} for the dropdown. Labels include the spec
+        reference so the arbiter sees the rule being invoked."""
+        return {
+            'none': _('Regular event'),
+            '1.4.3a': _('National championship final (1.4.3a)'),
+            '1.4.3b': _('National team championship (1.4.3b)'),
+            '1.4.3c': _('Zonal or sub-zonal (1.4.3c)'),
+        }
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value not in ('none', '1.4.3a', '1.4.3b', '1.4.3c'):
+            # Untranslated; should not happen via UI
+            raise OptionError(f'Unknown 1.4.3 exemption: {self.value}', self)
+
+
+class NormChoicePrintOption(PrintOption):
+    """Which norm to render in the Norm Calculation Details document.
+    The detail doc shows only one norm at a time, so the arbiter picks
+    which one to audit via the deep-link from the IT1."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'norm-choice'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return 'GM'
+
+    @property
+    def norm_choices(self) -> dict[str, str]:
+        """{value: label} mapping for the dropdown. Mirrors `TitleNorm`'s
+        four members in `values()` order (WIM, WGM, IM, GM)."""
+        from utils.enum import TitleNorm
+
+        return {tn.name: tn.name for tn in TitleNorm.values()}
+
+    @override
+    def validate(self):
+        super().validate()
+        from utils.enum import TitleNorm
+
+        valid = {tn.name for tn in TitleNorm.values()}
+        if self.value not in valid:
+            # Untranslated, should not happen via UI
+            raise OptionError(f'Unknown norm: {self.value}', self)
+
+
 class QRCodePrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:

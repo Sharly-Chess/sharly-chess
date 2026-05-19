@@ -53,6 +53,13 @@ from utils.enum import (
     RoleType,
     PlayerTitle,
     CheckInStatus,
+    TitleNorm,
+)
+
+from utils.types import BigTournamentExemption
+from data.norms import (
+    compute_big_tournament_exemption,
+    compute_high_level_tournament,
 )
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
@@ -982,6 +989,13 @@ class Tournament:
             player.title != PlayerTitle.NONE for player in self.tournament_players
         )
 
+    @property
+    def has_norm_eligible_titled_players(self) -> bool:
+        return any(
+            player.title in TitleNorm.TITLE_HOLDERS
+            for player in self.tournament_players
+        )
+
     @cached_property
     def last_paired_round(self) -> int:
         return next(
@@ -1139,6 +1153,23 @@ class Tournament:
 
     def is_round_in_tournament(self, round_: int) -> bool:
         return 1 <= round_ <= self.rounds
+
+    @cached_property
+    def big_tournament_exemption(self) -> BigTournamentExemption:
+        """1.4.3d Swiss exception — see data.norms for the calculation.
+
+        Cached on the Tournament instance so the per-applicant searcher
+        can read it cheaply for every player.
+        """
+        return compute_big_tournament_exemption(self)
+
+    @cached_property
+    def high_level_tournament(self) -> bool:
+        """1.5.6a — see data.norms for the calculation.
+
+        Cached on the Tournament instance for per-applicant lookup.
+        """
+        return compute_high_level_tournament(self)
 
     def to_trf(
         self,

@@ -23,7 +23,10 @@ from data.player import TournamentPlayer, TournamentRating
 from data.print_documents.options import (
     PairingStylePrintOption,
     MandatoryPlayerPrintOption,
+    MinimumGamesPrintOption,
+    NormChoicePrintOption,
     OptionalPlayerPrintOption,
+    Rule143ExemptionPrintOption,
     PlayerSplitPrintOption,
     PrintOption,
     QRCodeNetworkPrintOption,
@@ -52,7 +55,7 @@ from data.print_documents.place_cards.types import PlaceCardType
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.enum import Result
+from utils.enum import Result, TitleNorm
 from utils.types import PlayerTitle
 from utils.option import Option, OptionHandler
 
@@ -1150,6 +1153,44 @@ class StatisticsPrintDocument(PrintDocument):
         }
 
 
+# ---------------------------------------------------------------------------
+# Helpers shared by the two norm documents
+# ---------------------------------------------------------------------------
+
+
+def _resolve_min_games_override(document: 'PrintDocument') -> int | None:
+    """Return the 1.4.1 minimum-games override to pass to the evaluator.
+
+    FIDE 1.4.1b's reductions (7 / 8 games) only apply to Swiss / team /
+    World Cup formats — never to Round-Robin or Double Round-Robin
+    (1.4.1e: "In tournaments with predetermined pairings, a norm must be
+    based on all scheduled rounds"). For non-Swiss tournaments we return
+    None so the evaluator falls back to `tn.minimum_rounds(tournament)`,
+    keeping DRR's 10-game requirement intact.
+    """
+    if document.tournament.pairing_system != SwissPairingSystem():
+        return None
+    return document._get_option(MinimumGamesPrintOption).value
+
+
+def _validate_min_games_only_for_swiss(document: 'PrintDocument') -> None:
+    """Raise if the arbiter set a non-default minimum-games override on a
+    non-Swiss tournament. Spec is clear: 1.4.1b exceptions don't apply to
+    RR/DRR."""
+    if document.tournament.pairing_system == SwissPairingSystem():
+        return
+    option = document._get_option(MinimumGamesPrintOption)
+    if option.value != option.default_value:
+        raise OptionError(
+            _(
+                'The minimum-games override only applies to Swiss tournaments '
+                '(FIDE 1.4.1b). Leave at default ({default}) for Round-Robin '
+                'and Double Round-Robin events.'
+            ).format(default=option.default_value),
+            option,
+        )
+
+
 class NormReportPrintDocument(PrintDocument):
     @staticmethod
     def static_id() -> str:
@@ -1161,7 +1202,12 @@ class NormReportPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, MandatoryPlayerPrintOption]
+        return [
+            TournamentPrintOption,
+            MandatoryPlayerPrintOption,
+            MinimumGamesPrintOption,
+            Rule143ExemptionPrintOption,
+        ]
 
     @property
     def title(self) -> str:
@@ -1173,7 +1219,7 @@ class NormReportPrintDocument(PrintDocument):
             return False
         return any(
             tournament.rating == TournamentRating.STANDARD
-            and tournament.has_titled_players
+            and tournament.has_norm_eligible_titled_players
             for tournament in allowed_tournaments
         )
 
@@ -1187,11 +1233,12 @@ class NormReportPrintDocument(PrintDocument):
                 ),
                 self._get_option(TournamentPrintOption),
             )
-        if not tournament.has_titled_players:
+        if not tournament.has_norm_eligible_titled_players:
             raise OptionError(
-                _('This tournament has no titled players.'),
+                _('This tournament has no norm-eligible titled players.'),
                 self._get_option(TournamentPrintOption),
             )
+        _validate_min_games_only_for_swiss(self)
 
     @property
     def template_name(self) -> str:
@@ -1199,14 +1246,27 @@ class NormReportPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        from data.norms import apply_143abc_exemption
+        from utils.types import Federation
+
         player_id = self._get_option(MandatoryPlayerPrintOption).value
+        min_games = _resolve_min_games_override(self)
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm
-            for norm_title, norm in tournament_player.achieves_any_title_norm().items()
+            for norm_title, norm in tournament_player.achieves_any_title_norm(
+                min_games_override=min_games
+            ).items()
             if norm.meets_gender
             and tournament_player.title.sort_index < norm_title.player_title.sort_index
         }
+        apply_143abc_exemption(
+            norms,
+            exemption_code,
+            tournament_player.federation,
+            Federation(self.get_event().federation),
+        )
         return {
             'event': self.get_event(),
             'tournament': self.tournament,
@@ -1216,6 +1276,336 @@ class NormReportPrintDocument(PrintDocument):
             'norms': norms,
             'tournament_player': tournament_player,
             'PlayerTitle': PlayerTitle,
+            'min_games_override': min_games,
+            'rule_143_exemption_code': exemption_code,
+        }
+
+
+class NormCalculationDetailsPrintDocument(PrintDocument):
+    """Per-norm calculation audit view — hidden from the document picker
+    and only reachable via the "View calculation details" deep-link on
+    the IT1 (NormReportPrintDocument).
+
+    `is_available()` returns False so the picker never shows this doc.
+    The route handler at `/document-view/{event}/{document}` doesn't
+    consult `is_available`, so the deep-link continues to work. This
+    keeps the picker clean for arbiters while exposing the full
+    calculation audit at a stable URL."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'norm-calculation-details'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Norm Calculation Details')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            TournamentPrintOption,
+            MandatoryPlayerPrintOption,
+            MinimumGamesPrintOption,
+            NormChoicePrintOption,
+            Rule143ExemptionPrintOption,
+        ]
+
+    @property
+    def title(self) -> str:
+        return 'Norm Calculation Details'
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        # Hidden from the picker. Reach this doc via the IT1's
+        # "View calculation details" deep-link instead.
+        return False
+
+    def validate_options(self):
+        super().validate_options()
+        _validate_min_games_only_for_swiss(self)
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/norm_calculation_details.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        from data.norms import (
+            apply_143abc_exemption,
+            compute_big_tournament_exemption_trail,
+            compute_high_level_tournament_trail,
+        )
+        from data.norms.evaluator import _resolve_min_games
+        from utils.types import Federation
+
+        player_id = self._get_option(MandatoryPlayerPrintOption).value
+        min_games = _resolve_min_games_override(self)
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
+        tournament_player = self.tournament.tournament_players_by_id[player_id]
+        norms = {
+            norm_title: norm
+            for norm_title, norm in tournament_player.achieves_any_title_norm(
+                min_games_override=min_games
+            ).items()
+            if norm.meets_gender
+            and tournament_player.title.sort_index < norm_title.player_title.sort_index
+        }
+        apply_143abc_exemption(
+            norms,
+            exemption_code,
+            tournament_player.federation,
+            Federation(self.get_event().federation),
+        )
+        norm_choice_value = self._get_option(NormChoicePrintOption).value
+        # Resolve the chosen norm name to the TitleNorm enum, scoped to
+        # the norms this player can claim. Falls back to the first
+        # available if the picked one isn't in the player's list.
+        chosen_norm = next(
+            (tn for tn in norms.keys() if tn.name == norm_choice_value),
+            next(iter(norms.keys()), None),
+        )
+        chosen_norm_result = norms.get(chosen_norm) if chosen_norm else None
+        # Threshold the template displays for 1.4.1. Same resolver the
+        # evaluator uses, so the displayed "≥ N" always matches the
+        # verdict (avoids a bug where DRR/single-RR were misreported).
+        min_games_threshold = (
+            _resolve_min_games(chosen_norm, self.tournament, min_games)
+            if chosen_norm
+            else (min_games if min_games is not None else 9)
+        )
+        return {
+            'event': self.get_event(),
+            'tournament': self.tournament,
+            'is_swiss': self.tournament.pairing_system == SwissPairingSystem(),
+            'start': self.tournament.start_date.strftime('%Y.%m.%d'),
+            'end': self.tournament.stop_date.strftime('%Y.%m.%d'),
+            'norms': norms,
+            'chosen_norm': chosen_norm,
+            'chosen_norm_result': chosen_norm_result,
+            'tournament_player': tournament_player,
+            'min_games_override': min_games,
+            'min_games_threshold': min_games_threshold,
+            'rule_143_exemption_code': exemption_code,
+            'exemption_trail': compute_big_tournament_exemption_trail(self.tournament),
+            'high_level_trail': compute_high_level_tournament_trail(self.tournament),
+        }
+
+
+class TournamentNormsSummaryPrintDocument(PrintDocument):
+    """Tournament-wide summary of all title norms achieved.
+
+    Lists every player who picked up at least one norm above their current
+    title, with the per-norm performance figures. Companion to the per-player
+    IT1 form (NormReportPrintDocument).
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'tournament-norms-summary'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Tournament Norms Summary')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            TournamentPrintOption,
+            MinimumGamesPrintOption,
+            Rule143ExemptionPrintOption,
+        ]
+
+    @property
+    def title(self) -> str:
+        return _('Title Norms Achieved')
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(
+            tournament.rating == TournamentRating.STANDARD
+            and tournament.has_norm_eligible_titled_players
+            for tournament in allowed_tournaments
+        )
+
+    def validate_options(self):
+        super().validate_options()
+        tournament = self.tournament
+        if tournament.rating != TournamentRating.STANDARD:
+            raise OptionError(
+                _(
+                    'This document is only available for standard time control tournaments.'
+                ),
+                self._get_option(TournamentPrintOption),
+            )
+        if not tournament.has_norm_eligible_titled_players:
+            raise OptionError(
+                _('This tournament has no norm-eligible titled players.'),
+                self._get_option(TournamentPrintOption),
+            )
+        _validate_min_games_only_for_swiss(self)
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/tournament_norms_summary.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        tournament = self.tournament
+        common = {
+            'event': self.get_event(),
+            'tournament': tournament,
+            'start': tournament.start_date.strftime('%Y.%m.%d'),
+            'end': tournament.stop_date.strftime('%Y.%m.%d'),
+            'PlayerTitle': PlayerTitle,
+            'TitleNorm': TitleNorm,
+            'Result': Result,
+            # Passed through to the per-row links into the IT1 doc so the
+            # generated URL carries the same minimum-games choice.
+            'min_games_override': _resolve_min_games_override(self),
+            # Same idea: clicked-through IT1 keeps the arbiter's
+            # event-type selection (1.4.3a/b/c).
+            'rule_143_exemption_code': self._get_option(
+                Rule143ExemptionPrintOption
+            ).value,
+        }
+        if tournament.finished:
+            return common | {'mode': 'achieved'} | self._achieved_context()
+        forecast_round = self._find_forecastable_round()
+        if forecast_round is not None:
+            return (
+                common | {'mode': 'forecast'} | self._forecast_context(forecast_round)
+            )
+        return common | {'mode': 'pending'}
+
+    def _achieved_context(self) -> dict[str, Any]:
+        from data.norms import apply_143abc_exemption
+        from utils.types import Federation
+
+        min_games = _resolve_min_games_override(self)
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
+        event_federation = Federation(self.get_event().federation)
+        achievers: list[dict[str, Any]] = []
+        for tournament_player in self.tournament.tournament_players_by_id.values():
+            all_norms = tournament_player.achieves_any_title_norm(
+                min_games_override=min_games
+            )
+            # Apply 1.4.3a/b/c exemption before is_met filtering — the
+            # exemption can flip a is_met=False norm to is_met=True for
+            # players from the event's federation (or all players for c).
+            apply_143abc_exemption(
+                all_norms,
+                exemption_code,
+                tournament_player.federation,
+                event_federation,
+            )
+            achieved = {
+                tn: result
+                for tn, result in all_norms.items()
+                if result.is_met
+                and tournament_player.title.sort_index < tn.player_title.sort_index
+            }
+            if achieved:
+                achievers.append({'player': tournament_player, 'norms': achieved})
+
+        # Stable ordering: highest norm first (GM > IM > WGM > WIM), then by
+        # the player's tie-break-aware name key.
+        def _sort_key(entry):
+            top_norm = max(
+                entry['norms'].keys(), key=lambda tn: tn.player_title.sort_index
+            )
+            return (-top_norm.player_title.sort_index, entry['player'].name_sort_key)
+
+        achievers.sort(key=_sort_key)
+        return {'achievers': achievers}
+
+    def _find_forecastable_round(self) -> int | None:
+        """The highest round that is paired AND has at least one unentered
+        result across all players. None if no such round exists.
+
+        Forecast meaning: this is the next round about to be played. In an
+        11-round event with R10/R11 not yet paired, this is the most recent
+        paired round; once R11 is paired, this jumps to R11.
+        """
+        best: int | None = None
+        for p in self.tournament.tournament_players_by_id.values():
+            for rnd, pairing in p.pairings_by_round.items():
+                if (
+                    pairing.opponent is not None
+                    and pairing.result == Result.NO_RESULT
+                    and (best is None or rnd > best)
+                ):
+                    best = rnd
+        return best
+
+    @staticmethod
+    def _played_games_before(player, round_: int) -> int:
+        """Count of the player's played games in rounds strictly < round_.
+        Used to gate forecast eligibility on the 1.4.1 games threshold."""
+        return sum(
+            1
+            for r, pairing in player.pairings_by_round.items()
+            if r < round_ and pairing.played
+        )
+
+    def _forecast_context(self, forecast_round: int) -> dict[str, Any]:
+        from data.norms import TitleNormForecaster
+        from data.norms.evaluator import _resolve_min_games
+
+        override = _resolve_min_games_override(self)
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
+        candidates: list[dict[str, Any]] = []
+        for tournament_player in self.tournament.tournament_players_by_id.values():
+            forecaster = TitleNormForecaster(
+                tournament_player,
+                min_games_override=override,
+                rule_143_exemption=exemption_code,
+            )
+            if not forecaster.can_forecast_round(forecast_round):
+                continue
+            # 1.4.1 eligibility — player must be one played-game short of
+            # the minimum so this round can plausibly bring them to it.
+            # Use the lowest min_games across norms (DRR sits at 10, Swiss
+            # at 9, an override can be 7) so we don't filter someone who
+            # qualifies for a lower norm but not yet for GM.
+            min_needed = min(
+                _resolve_min_games(tn, tournament_player.tournament, override)
+                for tn in TitleNorm.values()
+            )
+            if (
+                self._played_games_before(tournament_player, forecast_round)
+                < min_needed - 1
+            ):
+                continue
+            chaseable = forecaster.chaseable_norms(forecast_round)
+            if not chaseable:
+                continue
+            pairing = tournament_player.pairings_by_round[forecast_round]
+            candidates.append(
+                {
+                    'player': tournament_player,
+                    'opponent': pairing.opponent,
+                    'requirements': chaseable,  # dict[TitleNorm, Result]
+                }
+            )
+
+        # Order: GM-chasers first, then by player name. Within a player,
+        # norms are already TitleNorm-ordered by the forecaster.
+        def _sort_key(entry):
+            highest_norm = max(
+                entry['requirements'].keys(),
+                key=lambda tn: tn.player_title.sort_index,
+            )
+            return (
+                -highest_norm.player_title.sort_index,
+                entry['player'].name_sort_key,
+            )
+
+        candidates.sort(key=_sort_key)
+        return {
+            'candidates': candidates,
+            'forecast_round': forecast_round,
         }
 
 

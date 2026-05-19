@@ -46,7 +46,9 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.PrizeAssignmentPrintDocument,
             documents.PrizeReceiptsPrintDocument,
             documents.StatisticsPrintDocument,
+            documents.TournamentNormsSummaryPrintDocument,
             documents.NormReportPrintDocument,
+            documents.NormCalculationDetailsPrintDocument,
             documents.QRCodePrintDocument,
             documents.PlaceCardPrintDocument,
         ]
@@ -76,6 +78,8 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.ShowWarningsPrintOption,
             options.NonMonetaryPrintOption,
             options.ClubThresholdPrintOption,
+            options.MinimumGamesPrintOption,
+            options.Rule143ExemptionPrintOption,
             options.QRCodeNetworkPrintOption,
             options.PlaceCardBoardNumbersPrintOption,
             options.PlaceCardMirrorPrintOption,
