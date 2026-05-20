@@ -176,9 +176,6 @@
                                    and URL-encoded; document-view handler
                                    unquotes then splits. #}
                                 {% set _opts = 'tournament=' ~ tournament.id ~ '|mandatory-player=' ~ player.id %}
-                                {% if min_games_override is not none %}
-                                    {% set _opts = _opts ~ '|minimum-games=' ~ min_games_override %}
-                                {% endif %}
                                 {% if rule_143_exemption_code and rule_143_exemption_code != 'none' %}
                                     {% set _opts = _opts ~ '|rule-143-exemption=' ~ rule_143_exemption_code %}
                                 {% endif %}

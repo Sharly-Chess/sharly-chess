@@ -23,7 +23,6 @@ from data.player import TournamentPlayer, TournamentRating
 from data.print_documents.options import (
     PairingStylePrintOption,
     MandatoryPlayerPrintOption,
-    MinimumGamesPrintOption,
     NormChoicePrintOption,
     OptionalPlayerPrintOption,
     Rule143ExemptionPrintOption,
@@ -1153,44 +1152,6 @@ class StatisticsPrintDocument(PrintDocument):
         }
 
 
-# ---------------------------------------------------------------------------
-# Helpers shared by the two norm documents
-# ---------------------------------------------------------------------------
-
-
-def _resolve_min_games_override(document: 'PrintDocument') -> int | None:
-    """Return the 1.4.1 minimum-games override to pass to the evaluator.
-
-    FIDE 1.4.1b's reductions (7 / 8 games) only apply to Swiss / team /
-    World Cup formats — never to Round-Robin or Double Round-Robin
-    (1.4.1e: "In tournaments with predetermined pairings, a norm must be
-    based on all scheduled rounds"). For non-Swiss tournaments we return
-    None so the evaluator falls back to `tn.minimum_rounds(tournament)`,
-    keeping DRR's 10-game requirement intact.
-    """
-    if document.tournament.pairing_system != SwissPairingSystem():
-        return None
-    return document._get_option(MinimumGamesPrintOption).value
-
-
-def _validate_min_games_only_for_swiss(document: 'PrintDocument') -> None:
-    """Raise if the arbiter set a non-default minimum-games override on a
-    non-Swiss tournament. Spec is clear: 1.4.1b exceptions don't apply to
-    RR/DRR."""
-    if document.tournament.pairing_system == SwissPairingSystem():
-        return
-    option = document._get_option(MinimumGamesPrintOption)
-    if option.value != option.default_value:
-        raise OptionError(
-            _(
-                'The minimum-games override only applies to Swiss tournaments '
-                '(FIDE 1.4.1b). Leave at default ({default}) for Round-Robin '
-                'and Double Round-Robin events.'
-            ).format(default=option.default_value),
-            option,
-        )
-
-
 class NormReportPrintDocument(PrintDocument):
     @staticmethod
     def static_id() -> str:
@@ -1205,7 +1166,6 @@ class NormReportPrintDocument(PrintDocument):
         return [
             TournamentPrintOption,
             MandatoryPlayerPrintOption,
-            MinimumGamesPrintOption,
             Rule143ExemptionPrintOption,
         ]
 
@@ -1238,7 +1198,6 @@ class NormReportPrintDocument(PrintDocument):
                 _('This tournament has no norm-eligible titled players.'),
                 self._get_option(TournamentPrintOption),
             )
-        _validate_min_games_only_for_swiss(self)
 
     @property
     def template_name(self) -> str:
@@ -1250,14 +1209,11 @@ class NormReportPrintDocument(PrintDocument):
         from utils.types import Federation
 
         player_id = self._get_option(MandatoryPlayerPrintOption).value
-        min_games = _resolve_min_games_override(self)
         exemption_code = self._get_option(Rule143ExemptionPrintOption).value
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm
-            for norm_title, norm in tournament_player.achieves_any_title_norm(
-                min_games_override=min_games
-            ).items()
+            for norm_title, norm in tournament_player.achieves_any_title_norm().items()
             if norm.meets_gender
             and tournament_player.title.sort_index < norm_title.player_title.sort_index
         }
@@ -1276,7 +1232,6 @@ class NormReportPrintDocument(PrintDocument):
             'norms': norms,
             'tournament_player': tournament_player,
             'PlayerTitle': PlayerTitle,
-            'min_games_override': min_games,
             'rule_143_exemption_code': exemption_code,
         }
 
@@ -1305,7 +1260,6 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
         return [
             TournamentPrintOption,
             MandatoryPlayerPrintOption,
-            MinimumGamesPrintOption,
             NormChoicePrintOption,
             Rule143ExemptionPrintOption,
         ]
@@ -1320,10 +1274,6 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
         # "View calculation details" deep-link instead.
         return False
 
-    def validate_options(self):
-        super().validate_options()
-        _validate_min_games_only_for_swiss(self)
-
     @property
     def template_name(self) -> str:
         return '/admin/print/norm_calculation_details.html'
@@ -1335,18 +1285,15 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
             compute_big_tournament_exemption_trail,
             compute_high_level_tournament_trail,
         )
-        from data.norms.evaluator import _resolve_min_games
+        from utils.enum import TitleNorm as _TitleNorm
         from utils.types import Federation
 
         player_id = self._get_option(MandatoryPlayerPrintOption).value
-        min_games = _resolve_min_games_override(self)
         exemption_code = self._get_option(Rule143ExemptionPrintOption).value
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm
-            for norm_title, norm in tournament_player.achieves_any_title_norm(
-                min_games_override=min_games
-            ).items()
+            for norm_title, norm in tournament_player.achieves_any_title_norm().items()
             if norm.meets_gender
             and tournament_player.title.sort_index < norm_title.player_title.sort_index
         }
@@ -1365,13 +1312,10 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
             next(iter(norms.keys()), None),
         )
         chosen_norm_result = norms.get(chosen_norm) if chosen_norm else None
-        # Threshold the template displays for 1.4.1. Same resolver the
-        # evaluator uses, so the displayed "≥ N" always matches the
-        # verdict (avoids a bug where DRR/single-RR were misreported).
+        # Threshold the template displays for 1.4.1 — comes straight
+        # from the TitleNorm enum (9 for Swiss, 10 for DRR).
         min_games_threshold = (
-            _resolve_min_games(chosen_norm, self.tournament, min_games)
-            if chosen_norm
-            else (min_games if min_games is not None else 9)
+            _TitleNorm.minimum_rounds(self.tournament) if chosen_norm else 9
         )
         # Two score proofs sharing the same shape — used by section 3 to
         # show the rounding + 1.4.9 dp lookup explicitly.
@@ -1400,7 +1344,6 @@ class NormCalculationDetailsPrintDocument(PrintDocument):
             'chosen_norm': chosen_norm,
             'chosen_norm_result': chosen_norm_result,
             'tournament_player': tournament_player,
-            'min_games_override': min_games,
             'min_games_threshold': min_games_threshold,
             'rule_143_exemption_code': exemption_code,
             'actual_score_proof': actual_score_proof,
@@ -1459,7 +1402,6 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
     def available_options() -> list[type[PrintOption]]:
         return [
             TournamentPrintOption,
-            MinimumGamesPrintOption,
             Rule143ExemptionPrintOption,
         ]
 
@@ -1492,7 +1434,6 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
                 _('This tournament has no norm-eligible titled players.'),
                 self._get_option(TournamentPrintOption),
             )
-        _validate_min_games_only_for_swiss(self)
 
     @property
     def template_name(self) -> str:
@@ -1509,11 +1450,9 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
             'PlayerTitle': PlayerTitle,
             'TitleNorm': TitleNorm,
             'Result': Result,
-            # Passed through to the per-row links into the IT1 doc so the
-            # generated URL carries the same minimum-games choice.
-            'min_games_override': _resolve_min_games_override(self),
-            # Same idea: clicked-through IT1 keeps the arbiter's
-            # event-type selection (1.4.3a/b/c).
+            # Forwarded to the per-row deep-links so the clicked-through
+            # IT1 / details doc keeps the arbiter's event-type selection
+            # (1.4.3a/b/c).
             'rule_143_exemption_code': self._get_option(
                 Rule143ExemptionPrintOption
             ).value,
@@ -1531,14 +1470,11 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
         from data.norms import apply_143abc_exemption
         from utils.types import Federation
 
-        min_games = _resolve_min_games_override(self)
         exemption_code = self._get_option(Rule143ExemptionPrintOption).value
         event_federation = Federation(self.get_event().federation)
         achievers: list[dict[str, Any]] = []
         for tournament_player in self.tournament.tournament_players_by_id.values():
-            all_norms = tournament_player.achieves_any_title_norm(
-                min_games_override=min_games
-            )
+            all_norms = tournament_player.achieves_any_title_norm()
             # Apply 1.4.3a/b/c exemption before is_met filtering — the
             # exemption can flip a is_met=False norm to is_met=True for
             # players from the event's federation (or all players for c).
@@ -1599,15 +1535,12 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
 
     def _forecast_context(self, forecast_round: int) -> dict[str, Any]:
         from data.norms import TitleNormForecaster
-        from data.norms.evaluator import _resolve_min_games
 
-        override = _resolve_min_games_override(self)
         exemption_code = self._get_option(Rule143ExemptionPrintOption).value
         candidates: list[dict[str, Any]] = []
         for tournament_player in self.tournament.tournament_players_by_id.values():
             forecaster = TitleNormForecaster(
                 tournament_player,
-                min_games_override=override,
                 rule_143_exemption=exemption_code,
             )
             if not forecaster.can_forecast_round(forecast_round):
@@ -1615,10 +1548,10 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
             # 1.4.1 eligibility — player must be one played-game short of
             # the minimum so this round can plausibly bring them to it.
             # Use the lowest min_games across norms (DRR sits at 10, Swiss
-            # at 9, an override can be 7) so we don't filter someone who
-            # qualifies for a lower norm but not yet for GM.
+            # at 9) so we don't filter someone who qualifies for a lower
+            # norm but not yet for GM.
             min_needed = min(
-                _resolve_min_games(tn, tournament_player.tournament, override)
+                tn.minimum_rounds(tournament_player.tournament)
                 for tn in TitleNorm.values()
             )
             if (

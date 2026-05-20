@@ -1192,14 +1192,14 @@ class TestRule_1_5_6a:
 
 
 # ===========================================================================
-# 1.4.1 — minimum games for a norm (with arbiter override per 1.4.1b)
+# 1.4.1 — minimum games for a norm (with min_games_override parameter)
 # ===========================================================================
 #
-# Default is 9 (or 10 for DRR). The arbiter can override down to 7 for
-# World/Continental Team Championships, or 8 for World Cup (per 1.4.1b).
-# The override is exposed via `MinimumGamesPrintOption` on the norm
-# documents and threaded as `min_games_override` through the evaluator,
-# searcher and forecaster.
+# Default is 9 (or 10 for DRR). The evaluator / searcher / forecaster
+# accept an optional `min_games_override` parameter for internal use
+# (e.g. tests, future hooks). No print-doc option exposes it — the
+# 1.4.1b reductions to 7/8 only apply to team tournaments, which aren't
+# modelled here.
 
 
 class TestRule_1_4_1_min_games_override:
@@ -1272,172 +1272,6 @@ class TestRule_1_4_1_min_games_override:
         # And: searcher constructed with override creates evaluator with same.
         s = TitleNormSubsetSearcher(player, min_games_override=8)
         assert s.evaluator.min_games_override == 8
-
-
-class TestMinimumGamesPrintOption:
-    """The option itself: type, default, validation."""
-
-    def _option(self, value=None):
-        from data.print_documents.options import MinimumGamesPrintOption
-        from types import SimpleNamespace
-
-        # Options need an event for translation context; SimpleNamespace works.
-        event = SimpleNamespace()
-        opt = MinimumGamesPrintOption(event)
-        if value is not None:
-            opt.value = value
-        return opt
-
-    def test_default_is_9(self):
-        opt = self._option()
-        assert opt.default_value == 9
-        # Until set, value resolves to default.
-        assert opt.value == 9
-
-    def test_type_is_int(self):
-        opt = self._option()
-        assert opt.type is int
-
-    def test_validate_accepts_7(self):
-        # 7-round World/Continental Team Championships per 1.4.1b.
-        opt = self._option(value=7)
-        opt.validate()  # no raise
-
-    def test_validate_accepts_8(self):
-        # 8-round World Cup per 1.4.1b.
-        opt = self._option(value=8)
-        opt.validate()
-
-    def test_validate_accepts_9_default(self):
-        opt = self._option(value=9)
-        opt.validate()
-
-    def test_validate_accepts_higher_than_9(self):
-        # Larger overrides are conceptually weird but technically more
-        # restrictive than spec; not the option's job to reject.
-        opt = self._option(value=20)
-        opt.validate()
-
-    def test_validate_rejects_below_7(self):
-        from common.exception import OptionError
-
-        for bad in (6, 1, 0, -1):
-            opt = self._option(value=bad)
-            with pytest.raises(OptionError):
-                opt.validate()
-
-    def test_validate_rejects_none(self):
-        from common.exception import OptionError
-
-        opt = self._option(value=None)
-        # Setting value=None then explicitly making sure validate rejects.
-        # The default_value (9) wouldn't fire here because we explicitly set it.
-        opt.value = None
-        with pytest.raises(OptionError):
-            opt.validate()
-
-    def test_swiss_tournament_ids_with_no_event_returns_empty(self):
-        """Defensive: an option built without an event must not crash when
-        the template reads `swiss_tournament_ids`."""
-        opt = self._option()
-        opt.event = None
-        assert opt.swiss_tournament_ids == []
-
-    def test_swiss_tournament_ids_filters_to_swiss_only(self):
-        """The UI hide/show pulls this list to know which tournament IDs
-        keep the option visible."""
-        from data.pairings.systems import (
-            RoundRobinPairingSystem,
-            SwissPairingSystem,
-        )
-        from types import SimpleNamespace
-
-        swiss = SimpleNamespace(id=1, pairing_system=SwissPairingSystem())
-        rr = SimpleNamespace(id=2, pairing_system=RoundRobinPairingSystem())
-        swiss_2 = SimpleNamespace(id=3, pairing_system=SwissPairingSystem())
-        event = SimpleNamespace(tournaments=[swiss, rr, swiss_2])
-
-        opt = self._option()
-        opt.event = event
-        assert opt.swiss_tournament_ids == [1, 3]
-
-
-class TestMinGamesDocumentIntegration:
-    """The two norm documents resolve the override only for Swiss
-    tournaments, and reject non-default values on non-Swiss in validate."""
-
-    def _swiss_doc(self):
-        """A minimal stand-in for a print document whose `tournament` is
-        Swiss. Just enough surface for `_resolve_min_games_override` and
-        `_validate_min_games_only_for_swiss`."""
-        from data.pairings.systems import SwissPairingSystem
-        from data.print_documents.options import MinimumGamesPrintOption
-        from types import SimpleNamespace
-
-        opt = MinimumGamesPrintOption(SimpleNamespace(tournaments=[]))
-        doc = SimpleNamespace(
-            tournament=SimpleNamespace(pairing_system=SwissPairingSystem()),
-            _get_option=lambda t: opt,
-        )
-        return doc, opt
-
-    def _rr_doc(self):
-        from data.pairings.systems import RoundRobinPairingSystem
-        from data.print_documents.options import MinimumGamesPrintOption
-        from types import SimpleNamespace
-
-        opt = MinimumGamesPrintOption(SimpleNamespace(tournaments=[]))
-        doc = SimpleNamespace(
-            tournament=SimpleNamespace(pairing_system=RoundRobinPairingSystem()),
-            _get_option=lambda t: opt,
-        )
-        return doc, opt
-
-    def test_resolve_returns_option_value_for_swiss(self):
-        from data.print_documents.documents import _resolve_min_games_override
-
-        doc, opt = self._swiss_doc()
-        opt.value = 7
-        assert _resolve_min_games_override(doc) == 7
-
-    def test_resolve_returns_none_for_rr_regardless_of_value(self):
-        from data.print_documents.documents import _resolve_min_games_override
-
-        doc, opt = self._rr_doc()
-        opt.value = 9  # default; still None on RR
-        assert _resolve_min_games_override(doc) is None
-        opt.value = 7  # explicit override; still None on RR
-        assert _resolve_min_games_override(doc) is None
-
-    def test_validate_passes_default_on_rr(self):
-        from data.print_documents.documents import (
-            _validate_min_games_only_for_swiss,
-        )
-
-        doc, opt = self._rr_doc()
-        opt.value = opt.default_value  # 9
-        _validate_min_games_only_for_swiss(doc)  # no raise
-
-    def test_validate_rejects_non_default_on_rr(self):
-        from common.exception import OptionError
-        from data.print_documents.documents import (
-            _validate_min_games_only_for_swiss,
-        )
-
-        doc, opt = self._rr_doc()
-        opt.value = 7
-        with pytest.raises(OptionError):
-            _validate_min_games_only_for_swiss(doc)
-
-    def test_validate_accepts_any_value_on_swiss(self):
-        from data.print_documents.documents import (
-            _validate_min_games_only_for_swiss,
-        )
-
-        doc, opt = self._swiss_doc()
-        for v in (7, 8, 9, 11):
-            opt.value = v
-            _validate_min_games_only_for_swiss(doc)  # no raise
 
 
 # ===========================================================================
