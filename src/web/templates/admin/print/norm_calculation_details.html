@@ -18,7 +18,6 @@
     is_swiss            — bool
     exemption_trail     — list[BigTournamentRoundCounts]
     high_level_trail    — list[HighLevelRoundCounts]
-    min_games_override  — int | None
 #}
 <!DOCTYPE html>
 <html lang="en" translate="no">
@@ -137,9 +136,6 @@
 
         {# Non-print nav: link back to the IT1 view. #}
         {% set _opts_it1 = 'tournament=' ~ tournament.id ~ '|mandatory-player=' ~ tournament_player.id %}
-        {% if min_games_override is not none %}
-            {% set _opts_it1 = _opts_it1 ~ '|minimum-games=' ~ min_games_override %}
-        {% endif %}
         {% if rule_143_exemption_code and rule_143_exemption_code != 'none' %}
             {% set _opts_it1 = _opts_it1 ~ '|rule-143-exemption=' ~ rule_143_exemption_code %}
         {% endif %}
@@ -197,16 +193,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {# 1.4.1 — minimum games. `min_games_threshold` is
-                           computed in template_context using the same resolver
-                           the evaluator uses, so display and verdict always agree. #}
+                        {# 1.4.1 — minimum games. `min_games_threshold`
+                           comes from TitleNorm.minimum_rounds (9 Swiss,
+                           10 DRR); matches what the evaluator checks. #}
                         <tr>
                             <td>{{ _('1.4.1 — Games played') }}</td>
-                            <td><span class="formula">≥ {{ min_games_threshold }}</span>
-                                {% if min_games_override is not none and min_games_override != 9 %}
-                                    <br /><span style="font-size: 0.7rem; color: #666;">{{ _('(arbiter override, 1.4.1b)') }}</span>
-                                {% endif %}
-                            </td>
+                            <td><span class="formula">≥ {{ min_games_threshold }}</span></td>
                             <td>{{ norm.played_games }}</td>
                             <td class="center">
                                 {% if norm.not_enough_games %}
