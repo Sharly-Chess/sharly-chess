@@ -1182,9 +1182,6 @@ msgstr "Choisir au moins une valeur."
 msgid "Choose families to add"
 msgstr "Choisir des familles à ajouter"
 
-msgid "Choose how the teams are formed."
-msgstr "Choisir la manière dont les équipes sont constituées."
-
 msgid "Choose one, many or no players."
 msgstr "Choisissez aucun·e, un·e ou plusieurs joueur·euses."
 
@@ -2602,9 +2599,6 @@ msgstr "Genre"
 msgid "Gender ({gender})"
 msgstr "Genre ({gender})"
 
-msgid "Gender threshold:"
-msgstr "Seuil de genre :"
-
 msgid "Gender:"
 msgstr "Genre :"
 
@@ -2773,6 +2767,9 @@ msgstr "Identité"
 msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
 msgstr "Si définie, toutes les dates des tournois et des chronomètres seront mises à jour relativement à cette date."
 
+msgid "If set, then the teams are formed by selecting (by ranking order) at first the number of required players of each gender and then completing with any remaining players. Teams with less women/men are considered \"incomplete\"."
+msgstr "Si défini, alors les équipes sont formées en sélectionnat (par ordre de classement) en premier le nombre requis de femmes/hommes, puis complétées avec les autres joueur·euses restant·es. Les équipes avec un nombre insuffisant de femmes/hommes sont considérées « incomplètes »."
+
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr "Si vous ne pouvez pas contrôler qui a accès au réseau auquel vous êtes connecté, il est fortement recommandé de ne pas créer de compte."
 
@@ -2857,6 +2854,9 @@ msgstr "Inclut tous les autres rôles et donne un accès complet à l'applicatio
 msgid "Incomplete Team"
 msgstr "Équipe incomplète"
 
+msgid "Incomplete teams do have enough players or enough women/men."
+msgstr "Les équipes incomplètes sont celles avec un nombre insuffisant de joueur·euses, ou un nombre insuffisant de femmes/hommes."
+
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
 
@@ -2868,6 +2868,9 @@ msgstr "Inde"
 
 msgid "Individual ranking"
 msgstr "Classement individuel"
+
+msgid "Individual team ranking"
+msgstr "Classement individuel par équipe"
 
 msgid "Indonesia"
 msgstr "Indonésie"
@@ -3246,6 +3249,10 @@ msgstr "Gérer les groupes non-cumulables"
 
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr "Gérer les groupes de prix non-cumulables du tournoi (1 joueur·euse = 1 prix par groupe)."
+
+#, python-format
+msgid "Mandatory"
+msgstr "Obligatoire"
 
 msgid "Manual"
 msgstr "Manuel"
@@ -3813,6 +3820,9 @@ msgstr "Numéro (double-face, tournoi au dos)"
 msgid "Number (tournament on front)"
 msgstr "Numéro (tournoi devant)"
 
+msgid "Number of W/M per team:"
+msgstr "Nombre de F/H par équipe :"
+
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
 msgstr "Nombre de byes : %(byes)d (maximum : %(max_byes)d)"
@@ -3831,6 +3841,9 @@ msgstr "Le nombre de demi-points au-dessus ou en dessous des 50 %% de points re
 msgid "Number of players"
 msgstr "Nombre de joueur·euses"
 
+msgid "Number of players per team:"
+msgstr "Nombre de joueur·euses par équipe :"
+
 #, python-format
 msgid "Number of players: %(num)d"
 msgstr "Nombre de joueur·euses : %(num)d"
@@ -3847,8 +3860,8 @@ msgstr "Nombre d'écrans"
 msgid "Number of screens:"
 msgstr "Nombre d'écrans :"
 
-msgid "Number of teams:"
-msgstr "Nombre d'équipes :"
+msgid "Number of teams per club:"
+msgstr "Nombre d'équipes par club :"
 
 msgid "Number of wins"
 msgstr "Nombre de victoires"
@@ -3947,6 +3960,10 @@ msgstr "Adversaires"
 
 msgid "Opponents' records"
 msgstr "Historique des adversaires"
+
+#, python-format
+msgid "Optional"
+msgstr "Facultatif"
 
 msgid "Organiser"
 msgstr "Organisateur·ice"
@@ -5482,17 +5499,11 @@ msgstr "Tadjikistan"
 msgid "Tanzania"
 msgstr "Tanzanie"
 
-msgid "Team ranking"
-msgstr "Classement par équipe"
-
-msgid "Team size:"
-msgstr "Taille des équipes :"
-
-msgid "Teams per club:"
-msgstr "Équipes par club :"
-
 msgid "Teams per federation:"
-msgstr "Équipes par fédération :"
+msgstr "Nombre d'équipes par fédération :"
+
+msgid "Teams with fewer players are considered \"incomplete\"."
+msgstr "Les équipes avec moins de joueur·euses sont considérées « incomplètes »."
 
 msgid "Teams:"
 msgstr "Équipes :"
@@ -5633,9 +5644,6 @@ msgstr "Le nombre maximum de points réalisé par les joueur·euses affiché·es
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
 msgstr "Le nombre maximum de résultats à afficher sur l'écran, facultatif (si ce champ est laissé vide, tous les résultats sont affichés)."
 
-msgid "The maximum number of teams of the same origin (club, federation...), no limit by default."
-msgstr "Le nombre maximum d'équipes de même origine (club, fédération...), pas de limite par défaut."
-
 msgid "The maximum number of teams per club."
 msgstr "Le nombre maximum d'équipes par club."
 
@@ -5653,13 +5661,6 @@ msgstr "Nombre minimum de joueurs requis pour qu’un club soit affiché."
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
 msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es (si vide, tou·tes les joueur·euses sont affiché·es)."
-
-#, python-format
-msgid "The minimum numbers of players to form a complete team (%(default_value)d by default)."
-msgstr "Le nombre minimum de joueur·euses pour former une équipe complète (%(default_value)d par défaut)."
-
-msgid "The minimum players count of each gender to form a complete team. If set, then the teams will be formed by selecting (by ranking order) at first the number of required players of each gender and then completing with other players. If not enough players are available for each gender then the team will be incomplete."
-msgstr "Le nombre minimum de joueur·euses de chaque genre pour former une équipe complète. Lorsque défini, les équipes seront formées en sélectionnant d'abord (par ordre de classement) le nombre requis de joueur·euses de chaque genre, puis en complétant avec d'autres joueur·euses. Si le nombre de joueur·euses disponibles pour un genre est insuffisant, l'équipe sera incomplète."
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
@@ -5838,6 +5839,9 @@ msgstr "Les valeurs doivent être supérieures au seuil de partage de la catégo
 
 msgid "The values to take into account when computing the tie-break."
 msgstr "Les valeurs à prendre en compte lors du calcul du départage."
+
+msgid "The way to form teams."
+msgstr "La manière de constituer les équipes."
 
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
@@ -7158,7 +7162,4 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
-
-#~ msgid "The minimum players count of each gender to form a complete team."
-#~ msgstr "Le nombre minimum de joueur·euses de chaque genre pour former une équipe complète."
 

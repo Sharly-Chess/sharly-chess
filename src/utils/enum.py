@@ -1029,7 +1029,7 @@ class ScreenType(StrEnum):
             case ScreenType.RESULTS:
                 return _('Last results')
             case ScreenType.RANKING:
-                return _('Individual ranking')
+                return _('Ranking')
             case ScreenType.IMAGE:
                 return _('Image')
             case _:

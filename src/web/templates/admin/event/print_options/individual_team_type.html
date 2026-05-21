@@ -1,0 +1,40 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Teams:'),
+        tooltip_text=_('The way to form teams.'),
+        select_options=option.team_type_options,
+        data=data, errors=errors
+    ) }}
+</div>
+
+<script>
+    $(document).ready(function() {
+        const modalInfoPerTeamType = {{ individual_team_modal_info_per_team_type | tojson }};
+        const individualTeamTypeSelect = $('.modal #individual-team-type');
+
+        function setIndividualTeamPrintDocumentModalLabelText(labelTextSelector, text) {
+            $(labelTextSelector).text(text);
+        }
+
+        function setIndividualTeamPrintDocumentModalTooltipText(iconSelector, text) {
+            {# This works when initializing the modal. #}
+            $(iconSelector).attr('data-bs-title', '<i class=\'\'></i> ' + text);
+            {# This works when the modal is already loaded (updating data-bs-title does not work). #}
+            var tooltip = bootstrap.Tooltip.getInstance(iconSelector)
+            if (tooltip) {
+                tooltip.setContent({ '.tooltip-inner': '<i class=\'\'></i> ' + text });
+            }
+        }
+
+        function updateIndividualTeamType() {
+            const teamTypeId = individualTeamTypeSelect.val();
+            setIndividualTeamPrintDocumentModalLabelText('.modal #individual-team-max-per-entity-label-text', modalInfoPerTeamType[teamTypeId]['max_per_entity_label']);
+            setIndividualTeamPrintDocumentModalTooltipText('.modal #individual-team-max-per-entity-label i', modalInfoPerTeamType[teamTypeId]['max_per_entity_tooltip']);
+            setIndividualTeamPrintDocumentModalTooltipText('.modal #individual-team-display-incomplete-wrapper span i', modalInfoPerTeamType[teamTypeId]['display_incomplete_tooltip']);
+        }
+
+        individualTeamTypeSelect.on('change', updateIndividualTeamType);
+        updateIndividualTeamType();
+    })
+</script>

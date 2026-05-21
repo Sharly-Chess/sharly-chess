@@ -44,20 +44,20 @@ from data.print_documents.options import (
     PlaceCardBoardNumbersPrintOption,
     OptionalPlayersPrintOption,
     PlayerHistoryOption,
-    TeamTypePrintOption,
-    TeamSizePrintOption,
-    MaxTeamsPerEntityPrintOption,
-    MinGenderCountPrintOption,
-    RankIncompleteTeamsFirstPrintOption,
-    DisplayIncompleteTeamsPrintOption,
+    IndividualTeamTypePrintOption,
+    IndividualTeamSizePrintOption,
+    IndividualTeamMinGenderCountPrintOption,
+    IndividualTeamMaxPerEntityPrintOption,
+    IndividualTeamRankIncompleteFirstPrintOption,
+    IndividualTeamDisplayIncompletePrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
     PlaceCardTemplate,
 )
 from data.print_documents.place_cards.types import PlaceCardType
-from data.print_documents.team_types import TeamType
-from data.print_documents.teams import Team
+from data.print_documents.team_types import IndividualTeamType
+from data.print_documents.teams import IndividualTeam
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
@@ -1352,14 +1352,14 @@ class PlaceCardPrintDocument(PrintDocument):
             )
 
 
-class TeamRankingPrintDocument(PrintDocument, ABC):
+class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
     @staticmethod
     def static_id() -> str:
-        return 'team-ranking'
+        return 'individual-team-ranking'
 
     @staticmethod
     def static_name() -> str:
-        return _('Team ranking')
+        return _('Individual team ranking')
 
     @property
     def template_name(self) -> str:
@@ -1368,19 +1368,19 @@ class TeamRankingPrintDocument(PrintDocument, ABC):
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
         return [
-            TeamTypePrintOption,
             TournamentPrintOption,
             RoundPrintOption,
-            TeamSizePrintOption,
-            MaxTeamsPerEntityPrintOption,
-            MinGenderCountPrintOption,
-            RankIncompleteTeamsFirstPrintOption,
-            DisplayIncompleteTeamsPrintOption,
+            IndividualTeamTypePrintOption,
+            IndividualTeamSizePrintOption,
+            IndividualTeamMinGenderCountPrintOption,
+            IndividualTeamMaxPerEntityPrintOption,
+            IndividualTeamRankIncompleteFirstPrintOption,
+            IndividualTeamDisplayIncompletePrintOption,
         ]
 
     @property
-    def team_type(self) -> TeamType:
-        return self._get_option(TeamTypePrintOption).team_type
+    def team_type(self) -> IndividualTeamType:
+        return self._get_option(IndividualTeamTypePrintOption).team_type
 
     @property
     def ranking_round(self) -> int:
@@ -1392,17 +1392,17 @@ class TeamRankingPrintDocument(PrintDocument, ABC):
     @cached_property
     def display_incomplete_teams(self) -> bool:
         """Returns True if incomplete teams must be displayed."""
-        return self._get_option(DisplayIncompleteTeamsPrintOption).value
+        return self._get_option(IndividualTeamDisplayIncompletePrintOption).value
 
     @cached_property
     def rank_incomplete_teams_first(self) -> bool:
         """Returns True if complete teams must be ranked before incomplete ones."""
-        return self._get_option(RankIncompleteTeamsFirstPrintOption).value
+        return self._get_option(IndividualTeamRankIncompleteFirstPrintOption).value
 
     @property
     def team_size(self) -> int:
         """Returns the minimum number of players to form a team."""
-        return self._get_option(TeamSizePrintOption).value
+        return self._get_option(IndividualTeamSizePrintOption).value
 
     @property
     def title(self) -> str:
@@ -1410,19 +1410,11 @@ class TeamRankingPrintDocument(PrintDocument, ABC):
 
     @property
     def max_teams_per_entity(self) -> int | None:
-        return self._get_option(MaxTeamsPerEntityPrintOption).value
-
-    @property
-    def max_teams_per_entity_label(self) -> str:
-        return self.team_type.max_teams_per_entity_label
-
-    @property
-    def max_teams_per_entity_tooltip(self) -> str:
-        return self.team_type.max_teams_per_entity_tooltip
+        return self._get_option(IndividualTeamMaxPerEntityPrintOption).value
 
     @property
     def min_gender_count(self) -> int:
-        return self._get_option(MinGenderCountPrintOption).value or 0
+        return self._get_option(IndividualTeamMinGenderCountPrintOption).value or 0
 
     @property
     def youngest_team_last_tie_break(self) -> bool:
@@ -1457,7 +1449,7 @@ class TeamRankingPrintDocument(PrintDocument, ABC):
         selected.sort(key=lambda p: p.rank)
         return selected
 
-    def _get_team_sort_key(self, t: Team) -> tuple:
+    def _get_team_sort_key(self, t: IndividualTeam) -> tuple:
         """Returns the key used to sort the teams."""
         base: list[float] = []
         if self.rank_incomplete_teams_first:
@@ -1468,9 +1460,9 @@ class TeamRankingPrintDocument(PrintDocument, ABC):
             base.append(-(t.avg_age_years or 0.0))
         return tuple(base)
 
-    def _sort_teams(self, teams: list[Team]):
+    def _sort_teams(self, teams: list[IndividualTeam]):
         """Remove useless team labels and sort the teams."""
-        teams_by_entity: dict[str, list[Team]] = defaultdict(list)
+        teams_by_entity: dict[str, list[IndividualTeam]] = defaultdict(list)
         for team in teams:
             teams_by_entity[team.entity].append(team)
 
@@ -1483,7 +1475,7 @@ class TeamRankingPrintDocument(PrintDocument, ABC):
         return teams
 
     @property
-    def ordered_teams(self) -> list[Team]:
+    def ordered_teams(self) -> list[IndividualTeam]:
         """
         Produce ranked teams (A, B, ...).
         Uses tournament-wide ordering and points/tiebreaks already computed by compute_player_ranks().
@@ -1504,7 +1496,7 @@ class TeamRankingPrintDocument(PrintDocument, ABC):
             if entity := self.team_type.get_player_entity(player):
                 players_by_entity.setdefault(entity, []).append(player)
 
-        teams: list[Team] = []
+        teams: list[IndividualTeam] = []
         for entity, pool in players_by_entity.items():
             remaining = list(pool)
             team_idx = 0
@@ -1517,7 +1509,7 @@ class TeamRankingPrintDocument(PrintDocument, ABC):
                 selected_players = self._extract_team_from_pool(remaining)
                 if not selected_players:
                     break
-                team: Team = self.team_type.team_class(
+                team: IndividualTeam = self.team_type.team_class(
                     tournament=self.tournament,
                     team_size=self.team_size,
                     min_gender_count=self.min_gender_count,

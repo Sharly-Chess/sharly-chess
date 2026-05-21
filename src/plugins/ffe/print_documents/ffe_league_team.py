@@ -3,13 +3,13 @@ from typing import Any
 
 from common.i18n import _
 from data.player import TournamentPlayer
-from data.print_documents import TeamType
-from data.print_documents.teams import Team
+from data.print_documents import IndividualTeamType
+from data.print_documents.teams import IndividualTeam
 from plugins.ffe.utils import FFEUtils, FFE_LEAGUES
 
 
 @dataclass
-class FfeLeagueTeam(Team[str]):
+class FfeLeagueTeam(IndividualTeam[str]):
     @property
     def league(self) -> str:
         return self.entity
@@ -26,10 +26,10 @@ class FfeLeagueTeam(Team[str]):
         return name
 
 
-class FfeLeagueTeamType(TeamType):
+class FfeLeagueIndividualTeamType(IndividualTeamType):
     @staticmethod
     def static_id() -> str:
-        return 'ffe-league-team-type'
+        return 'ffe-league-individual-team-type'
 
     @staticmethod
     def static_name() -> str:
@@ -52,9 +52,9 @@ class FfeLeagueTeamType(TeamType):
         return _('League')
 
     @property
-    def max_teams_per_entity_label(self) -> str:
-        return _('Teams per league:')
+    def modal_info_max_per_entity_label(self) -> str:
+        return _('Number of teams per league:')
 
     @property
-    def max_teams_per_entity_tooltip(self) -> str:
+    def modal_info_max_per_entity_tooltip(self) -> str:
         return _('The maximum number of teams per league.')

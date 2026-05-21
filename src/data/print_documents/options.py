@@ -24,7 +24,7 @@ from data.print_documents.player_sorters import (
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
-from data.print_documents.team_types import TeamType, ClubTeamType
+from data.print_documents.team_types import IndividualTeamType, ClubIndividualTeamType
 from utils.option import Option
 
 if TYPE_CHECKING:
@@ -681,10 +681,10 @@ class PlayerHistoryOption(PrintOption):
         return False
 
 
-class TeamTypePrintOption(PrintOption):
+class IndividualTeamTypePrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
-        return 'team-type'
+        return 'individual-team-type'
 
     @property
     def type(self) -> type | UnionType:
@@ -692,19 +692,19 @@ class TeamTypePrintOption(PrintOption):
 
     @property
     def default_value(self) -> Any:
-        return ClubTeamType.static_id()
+        return ClubIndividualTeamType.static_id()
 
     @property
     def team_type_options(self) -> dict[str, str]:
-        from data.print_documents import PrintTeamTypeManager
+        from data.print_documents import PrintIndividualTeamTypeManager
 
-        return PrintTeamTypeManager(self.event).options()
+        return PrintIndividualTeamTypeManager(self.event).options()
 
     @cached_property
-    def team_type(self) -> TeamType:
-        from data.print_documents import PrintTeamTypeManager
+    def team_type(self) -> IndividualTeamType:
+        from data.print_documents import PrintIndividualTeamTypeManager
 
-        return PrintTeamTypeManager(self.event).get_object(self.value)
+        return PrintIndividualTeamTypeManager(self.event).get_object(self.value)
 
     @override
     def validate(self):
@@ -715,10 +715,10 @@ class TeamTypePrintOption(PrintOption):
             raise OptionError(f'Unknown team type: {self.value}', self)
 
 
-class TeamSizePrintOption(PrintOption):
+class IndividualTeamSizePrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
-        return 'team-size'
+        return 'individual-team-size'
 
     @property
     def type(self) -> type | UnionType:
@@ -726,19 +726,19 @@ class TeamSizePrintOption(PrintOption):
 
     @property
     def default_value(self) -> Any:
-        return 4
+        return None
 
     @override
     def validate(self):
         super().validate()
-        if self.value is not None and self.value < 2:
+        if self.value is None or self.value < 2:
             raise OptionError(_('An integer greater than 1 is expected.'), self)
 
 
-class MaxTeamsPerEntityPrintOption(PrintOption, ABC):
+class IndividualTeamMaxPerEntityPrintOption(PrintOption, ABC):
     @staticmethod
     def static_id() -> str:
-        return 'max-teams-per-entity'
+        return 'individual-team-max-per-entity'
 
     @property
     def type(self) -> type | UnionType:
@@ -755,10 +755,10 @@ class MaxTeamsPerEntityPrintOption(PrintOption, ABC):
             raise OptionError(_('A positive integer is expected.'), self)
 
 
-class MinGenderCountPrintOption(PrintOption):
+class IndividualTeamMinGenderCountPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
-        return 'min-gender-count'
+        return 'individual-team-min-gender-count'
 
     @property
     def type(self) -> type | UnionType:
@@ -775,10 +775,10 @@ class MinGenderCountPrintOption(PrintOption):
             raise OptionError(_('A positive integer is expected.'), self)
 
 
-class DisplayIncompleteTeamsPrintOption(PrintOption):
+class IndividualTeamDisplayIncompletePrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
-        return 'display-incomplete-teams'
+        return 'individual-team-display-incomplete'
 
     @property
     def type(self) -> type | UnionType:
@@ -789,10 +789,10 @@ class DisplayIncompleteTeamsPrintOption(PrintOption):
         return True
 
 
-class RankIncompleteTeamsFirstPrintOption(PrintOption):
+class IndividualTeamRankIncompleteFirstPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
-        return 'rank-incomplete-teams-first'
+        return 'individual-team-rank-incomplete-first'
 
     @property
     def type(self) -> type | UnionType:

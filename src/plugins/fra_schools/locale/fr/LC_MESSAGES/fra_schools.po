@@ -74,6 +74,9 @@ msgstr "Filles manquantes : {count}"
 msgid "Name"
 msgstr "Nom"
 
+msgid "Number of teams per school:"
+msgstr "Nombre d'équipes par établissement :"
+
 msgid "Please validate the French school to continue."
 msgstr "Merci de valider l'établissement scolaire avant de continuer."
 
@@ -102,8 +105,8 @@ msgstr "Établissements"
 msgid "Search by: %(fields)s"
 msgstr "Rechercher par : %(fields)s"
 
-msgid "Teams per school:"
-msgstr "Équipes par établissement :"
+msgid "Teams are considered complete when they have 8 players including 2 boys and 2 girls."
+msgstr "Les équipes sont considérées complètes lorsqu'elles comprennent 8 joueur·euses dont 2 garçons et 2 filles."
 
 #, python-format
 msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."

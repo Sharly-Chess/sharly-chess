@@ -74,6 +74,9 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
+msgid "Number of teams per school:"
+msgstr ""
+
 msgid "Please validate the French school to continue."
 msgstr ""
 
@@ -102,7 +105,7 @@ msgstr ""
 msgid "Search by: %(fields)s"
 msgstr ""
 
-msgid "Teams per school:"
+msgid "Teams are considered complete when they have 8 players including 2 boys and 2 girls."
 msgstr ""
 
 #, python-format

@@ -27,7 +27,7 @@ from data.print_documents.place_cards.types import (
 from data.print_documents.player_sorters import GridPlayerSorter, ListPlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
-from data.print_documents.team_types import TeamType
+from data.print_documents.team_types import IndividualTeamType
 from plugins.manager import plugin_manager
 from utils.entity import EventBoundEntityManager, EntityManager
 
@@ -41,7 +41,7 @@ class PrintDocumentManager(EventBoundEntityManager[PrintDocument]):
             documents.PairingPrintDocument,
             documents.ResultPrintDocument,
             documents.PlayerRankingPrintDocument,
-            documents.TeamRankingPrintDocument,
+            documents.IndividuelTeamRankingPrintDocument,
             documents.PlayerCrosstablePrintDocument,
             documents.PlayerRoundPerformanceIndicatorPrintDocument,
             documents.BergerGridPrintDocument,
@@ -66,7 +66,6 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.QRCodePrintOption,
             options.PlaceCardPrintOption,
             options.PlaceCardTemplatePrintOption,
-            options.TeamTypePrintOption,
             options.TournamentPrintOption,
             options.TournamentsPrintOption,
             options.MandatoryPlayerPrintOption,
@@ -85,11 +84,12 @@ class PrintDocumentOptionManager(EventBoundEntityManager[PrintOption]):
             options.PlaceCardMirrorPrintOption,
             options.PlaceCardCropMarksPrintOption,
             options.PlayerHistoryOption,
-            options.TeamSizePrintOption,
-            options.MaxTeamsPerEntityPrintOption,
-            options.MinGenderCountPrintOption,
-            options.DisplayIncompleteTeamsPrintOption,
-            options.RankIncompleteTeamsFirstPrintOption,
+            options.IndividualTeamTypePrintOption,
+            options.IndividualTeamSizePrintOption,
+            options.IndividualTeamMinGenderCountPrintOption,
+            options.IndividualTeamMaxPerEntityPrintOption,
+            options.IndividualTeamDisplayIncompletePrintOption,
+            options.IndividualTeamRankIncompleteFirstPrintOption,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_print_option')(
             print_options=print_options
@@ -178,14 +178,14 @@ class PrintPlaceCardCropMarksManager(EntityManager[PlaceCardCropMarks]):
         ]
 
 
-class PrintTeamTypeManager(EventBoundEntityManager[TeamType]):
+class PrintIndividualTeamTypeManager(EventBoundEntityManager[IndividualTeamType]):
     @override
-    def entity_types(self) -> list[type[TeamType]]:
-        types = [
-            team_types.ClubTeamType,
-            team_types.FederationTeamType,
+    def entity_types(self) -> list[type[IndividualTeamType]]:
+        individual_team_types = [
+            team_types.ClubIndividualTeamType,
+            team_types.FederationIndividualTeamType,
         ]
-        plugin_manager.hook_for_event(self.event, 'insert_print_team_types')(
-            team_types=types
+        plugin_manager.hook_for_event(self.event, 'insert_print_individual_team_types')(
+            individual_team_types=individual_team_types
         )
-        return types
+        return individual_team_types

@@ -40,7 +40,7 @@ if TYPE_CHECKING:
         PrintOption,
         PlayerSplitter,
         QRCodeType,
-        TeamType,
+        IndividualTeamType,
     )
     from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
@@ -390,7 +390,9 @@ class AppHookSpecs:
         """Provide QR Code options"""
 
     @hookspec
-    def insert_print_team_types(self, team_types: list[type['TeamType']]):
+    def insert_print_individual_team_types(
+        self, individual_team_types: list[type['IndividualTeamType']]
+    ):
         """Provide print team type options"""
 
     @hookspec

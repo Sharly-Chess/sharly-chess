@@ -343,6 +343,9 @@ msgstr "Aucune"
 msgid "Not configured"
 msgstr "Non configuré"
 
+msgid "Number of teams per league:"
+msgstr "Nombre d'équipes par ligue :"
+
 msgid "Ongoing"
 msgstr "En cours"
 
@@ -434,9 +437,6 @@ msgstr "T6 Exclusion d'un·e joueur·euse"
 
 msgid "T7 Player reporting"
 msgstr "T7 Signalement d'un·e joueur·euse"
-
-msgid "Teams per league:"
-msgstr "Équipes par ligue :"
 
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."
 msgstr "Le système d'accélération de Bakou n'est pas reconnu par la FFE, il peut y avoir des différences dans l'affichage des appariements sur le site web de la FFE."

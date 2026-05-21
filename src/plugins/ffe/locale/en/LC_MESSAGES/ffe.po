@@ -343,6 +343,9 @@ msgstr "None"
 msgid "Not configured"
 msgstr ""
 
+msgid "Number of teams per league:"
+msgstr ""
+
 msgid "Ongoing"
 msgstr ""
 
@@ -433,9 +436,6 @@ msgid "T6 Player exclusion"
 msgstr ""
 
 msgid "T7 Player reporting"
-msgstr ""
-
-msgid "Teams per league:"
 msgstr ""
 
 msgid "The Baku acceleration system is not recognized by the FFE, there may be differences in the display of pairings on the FFE website."

@@ -18,11 +18,11 @@ from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.event import Event
 from data.input_output import TournamentImporter
 from data.player import TournamentPlayer
-from data.print_documents import PlayerSplitter, TeamType
+from data.print_documents import PlayerSplitter, IndividualTeamType
 from data.print_documents.documents import (
     PrintDocument,
     StatisticsPrintDocument,
-    TeamRankingPrintDocument,
+    IndividuelTeamRankingPrintDocument,
 )
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.tie_breaks.system_sets import SystemTieBreakSet
@@ -52,7 +52,7 @@ from plugins.fra_schools.fra_schools_entity import (
 )
 from plugins.fra_schools.fra_schools_ranking_document import (
     FraSchoolsRankingPrintDocument,
-    FraSchoolsTeamType,
+    FraSchoolsIndividualTeamType,
 )
 from plugins.fra_schools.utils import (
     FRASchoolsPlayerPluginData,
@@ -245,7 +245,7 @@ class FRASchoolsPlugin(Plugin):
     @hookimpl
     def insert_print_document(self, print_documents: list[type['PrintDocument']]):
         sps: type[PrintDocument] = FraSchoolsRankingPrintDocument
-        pps: type[PrintDocument] = TeamRankingPrintDocument
+        pps: type[PrintDocument] = IndividuelTeamRankingPrintDocument
         PluginUtils.insert_on_equals(print_documents, sps, pps, True)
 
     @hookimpl(trylast=True)
@@ -277,8 +277,10 @@ class FRASchoolsPlugin(Plugin):
         PluginUtils.insert_on_equals(player_splitter_types, lps, cps, False)
 
     @hookimpl
-    def insert_print_team_types(self, team_types: list[type[TeamType]]):
-        team_types.append(FraSchoolsTeamType)
+    def insert_print_individual_team_types(
+        self, individual_team_types: list[type[IndividualTeamType]]
+    ):
+        individual_team_types.append(FraSchoolsIndividualTeamType)
 
     @hookimpl
     def get_extra_statistics_sections(

@@ -4,22 +4,22 @@ from typing import Any
 
 from common.i18n import _
 from data.player import TournamentPlayer
-from data.print_documents import PrintOption, TeamType
+from data.print_documents import PrintOption, IndividualTeamType
 from data.print_documents.documents import (
     RoundPrintOption,
     TournamentPrintOption,
-    TeamRankingPrintDocument,
+    IndividuelTeamRankingPrintDocument,
 )
 from data.print_documents.options import (
-    MaxTeamsPerEntityPrintOption,
-    DisplayIncompleteTeamsPrintOption,
+    IndividualTeamMaxPerEntityPrintOption,
+    IndividualTeamDisplayIncompletePrintOption,
 )
-from data.print_documents.teams import Team
+from data.print_documents.teams import IndividualTeam
 from plugins.fra_schools.fra_schools_controller import FRASchool, FRASchoolsUtils
 
 
 @dataclass
-class FraSchoolsTeam(Team[FRASchool]):
+class FraSchoolsIndividualTeam(IndividualTeam[FRASchool]):
     @property
     def school(self) -> FRASchool:
         return self.entity
@@ -49,7 +49,7 @@ class FraSchoolsTeam(Team[FRASchool]):
         return _('Missing boys: {count}').format(count=self.missing_men)
 
 
-class FraSchoolsTeamType(TeamType):
+class FraSchoolsIndividualTeamType(IndividualTeamType):
     @staticmethod
     def static_id() -> str:
         return 'fra-schools-team-type'
@@ -60,7 +60,7 @@ class FraSchoolsTeamType(TeamType):
 
     @property
     def team_class(self) -> type:
-        return FraSchoolsTeam
+        return FraSchoolsIndividualTeam
 
     @staticmethod
     def get_player_entity(player: TournamentPlayer) -> Any | None:
@@ -83,15 +83,21 @@ class FraSchoolsTeamType(TeamType):
         return _('School')
 
     @property
-    def max_teams_per_entity_label(self) -> str:
-        return _('Teams per school:')
+    def modal_info_display_incomplete_tooltip(self) -> str:
+        return _(
+            'Teams are considered complete when they have 8 players including 2 boys and 2 girls.'
+        )
 
     @property
-    def max_teams_per_entity_tooltip(self) -> str:
+    def modal_info_max_per_entity_label(self) -> str:
+        return _('Number of teams per school:')
+
+    @property
+    def modal_info_max_per_entity_tooltip(self) -> str:
         return _('The maximum number of teams per school.')
 
 
-class FraSchoolsRankingPrintDocument(TeamRankingPrintDocument):
+class FraSchoolsRankingPrintDocument(IndividuelTeamRankingPrintDocument):
     @staticmethod
     def static_id() -> str:
         return 'fra-schools-ranking'
@@ -105,13 +111,13 @@ class FraSchoolsRankingPrintDocument(TeamRankingPrintDocument):
         return [
             TournamentPrintOption,
             RoundPrintOption,
-            MaxTeamsPerEntityPrintOption,
-            DisplayIncompleteTeamsPrintOption,
+            IndividualTeamMaxPerEntityPrintOption,
+            IndividualTeamDisplayIncompletePrintOption,
         ]
 
     @property
-    def team_type(self) -> TeamType:
-        return FraSchoolsTeamType()
+    def team_type(self) -> IndividualTeamType:
+        return FraSchoolsIndividualTeamType()
 
     @cached_property
     def rank_incomplete_teams_first(self) -> bool:

@@ -15,7 +15,7 @@ from utils.types import Club, Federation
 
 
 @dataclass
-class Team[T](ABC):
+class IndividualTeam[T](ABC):
     tournament: Tournament
     team_size: int
     min_gender_count: int
@@ -135,7 +135,7 @@ class Team[T](ABC):
 
 
 @dataclass
-class ClubTeam(Team[Club]):
+class ClubIndividualTeam(IndividualTeam[Club]):
     @property
     def club(self) -> Club:
         return self.entity
@@ -150,7 +150,7 @@ class ClubTeam(Team[Club]):
 
 
 @dataclass
-class FederationTeam(Team[Federation]):
+class FederationIndividualTeam(IndividualTeam[Federation]):
     @property
     def federation(self) -> Federation:
         return self.entity

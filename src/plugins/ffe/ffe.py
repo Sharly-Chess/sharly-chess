@@ -30,12 +30,17 @@ from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
 from data.player_categories import PlayerCategory, JuniorCategory
-from data.print_documents import PlayerSplitter, PrintDocument, PrintOption, TeamType
+from data.print_documents import (
+    PlayerSplitter,
+    PrintDocument,
+    PrintOption,
+    IndividualTeamType,
+)
 from data.print_documents.documents import StatisticsPrintDocument
 from data.print_documents.place_cards.data import PlaceCardPlayer
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
-from data.print_documents.team_types import ClubTeamType
+from data.print_documents.team_types import ClubIndividualTeamType
 from data.tie_breaks import TieBreak, TieBreakOption
 from data.tie_breaks.system_sets import SystemTieBreakSet
 from data.tie_breaks.tie_breaks import ProgressiveScoresTieBreak
@@ -83,7 +88,7 @@ from plugins.ffe.ffe_upload_controller import (
 )
 from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
 from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
-from plugins.ffe.print_documents.ffe_league_team import FfeLeagueTeamType
+from plugins.ffe.print_documents.ffe_league_team import FfeLeagueIndividualTeamType
 from plugins.ffe.print_documents.ffe_options import (
     FFEDocumentTypePrintOption,
     FFET3NoLicencePlayersPrintOption,
@@ -736,10 +741,12 @@ class FfePlugin(Plugin):
         qrcode_types.append(FFESiteQRCodeType)
 
     @hookimpl
-    def insert_print_team_types(self, team_types: list[type[TeamType]]):
-        ltt: type[TeamType] = FfeLeagueTeamType
-        ctt: type[TeamType] = ClubTeamType
-        PluginUtils.insert_on_equals(team_types, ltt, ctt)
+    def insert_print_individual_team_types(
+        self, individual_team_types: list[type[IndividualTeamType]]
+    ):
+        ltt: type[IndividualTeamType] = FfeLeagueIndividualTeamType
+        ctt: type[IndividualTeamType] = ClubIndividualTeamType
+        PluginUtils.insert_on_equals(individual_team_types, ltt, ctt)
 
     @hookimpl
     def get_extra_statistics_sections(

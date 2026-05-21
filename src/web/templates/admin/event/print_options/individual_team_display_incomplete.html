@@ -1,0 +1,21 @@
+<div class="col-12">
+    {{ admin_macros.switch_input(
+        name=option.id,
+        placeholder=_('Rank incomplete teams'),
+        tooltip_text='TODO display_incomplete_teams_tooltip',
+        data=data, errors=errors
+    ) }}
+</div>
+
+<script>
+    $(document).ready(function() {
+        const individualTeamDisplayIncompleteSwitch = $('.modal #individual-team-display-incomplete');
+
+        function updateIndividualTeamDisplayIncompleteSwitch() {
+            $('.modal #individual-team-rank-incomplete-first_container').css('display', individualTeamDisplayIncompleteSwitch.is(':checked') ? 'block' : 'none');
+        }
+
+        individualTeamDisplayIncompleteSwitch.on('change', updateIndividualTeamDisplayIncompleteSwitch);
+        updateIndividualTeamDisplayIncompleteSwitch();
+    })
+</script>

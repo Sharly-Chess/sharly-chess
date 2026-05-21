@@ -248,7 +248,7 @@ class Screen:
                 if crosstable:
                     return _('Crosstable')
                 else:
-                    return _('Individual ranking')
+                    return _('Ranking')
         else:
             if first_last:
                 if crosstable:
@@ -558,7 +558,7 @@ class Screen:
             if crosstable:
                 return _('Crosstable')
             else:
-                return _('Individual ranking')
+                return _('Ranking')
         else:
             return str(type_)
 

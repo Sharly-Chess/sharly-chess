@@ -1182,9 +1182,6 @@ msgstr ""
 msgid "Choose families to add"
 msgstr ""
 
-msgid "Choose how the teams are formed."
-msgstr ""
-
 msgid "Choose one, many or no players."
 msgstr ""
 
@@ -2602,9 +2599,6 @@ msgstr ""
 msgid "Gender ({gender})"
 msgstr ""
 
-msgid "Gender threshold:"
-msgstr ""
-
 msgid "Gender:"
 msgstr ""
 
@@ -2773,6 +2767,9 @@ msgstr ""
 msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
 msgstr ""
 
+msgid "If set, then the teams are formed by selecting (by ranking order) at first the number of required players of each gender and then completing with any remaining players. Teams with less women/men are considered \"incomplete\"."
+msgstr ""
+
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr ""
 
@@ -2857,6 +2854,9 @@ msgstr ""
 msgid "Incomplete Team"
 msgstr ""
 
+msgid "Incomplete teams do have enough players or enough women/men."
+msgstr ""
+
 msgid "Incorrect installation, exiting."
 msgstr ""
 
@@ -2867,6 +2867,9 @@ msgid "India"
 msgstr ""
 
 msgid "Individual ranking"
+msgstr ""
+
+msgid "Individual team ranking"
 msgstr ""
 
 msgid "Indonesia"
@@ -3245,6 +3248,10 @@ msgid "Manage the prize brackets"
 msgstr ""
 
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
+msgstr ""
+
+#, python-format
+msgid "Mandatory"
 msgstr ""
 
 msgid "Manual"
@@ -3813,6 +3820,9 @@ msgstr ""
 msgid "Number (tournament on front)"
 msgstr ""
 
+msgid "Number of W/M per team:"
+msgstr ""
+
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
 msgstr ""
@@ -3831,6 +3841,9 @@ msgstr ""
 msgid "Number of players"
 msgstr ""
 
+msgid "Number of players per team:"
+msgstr ""
+
 #, python-format
 msgid "Number of players: %(num)d"
 msgstr ""
@@ -3847,7 +3860,7 @@ msgstr ""
 msgid "Number of screens:"
 msgstr ""
 
-msgid "Number of teams:"
+msgid "Number of teams per club:"
 msgstr ""
 
 msgid "Number of wins"
@@ -3944,6 +3957,10 @@ msgid "Opponents"
 msgstr ""
 
 msgid "Opponents' records"
+msgstr ""
+
+#, python-format
+msgid "Optional"
 msgstr ""
 
 msgid "Organiser"
@@ -5480,16 +5497,10 @@ msgstr ""
 msgid "Tanzania"
 msgstr ""
 
-msgid "Team ranking"
-msgstr ""
-
-msgid "Team size:"
-msgstr ""
-
-msgid "Teams per club:"
-msgstr ""
-
 msgid "Teams per federation:"
+msgstr ""
+
+msgid "Teams with fewer players are considered \"incomplete\"."
 msgstr ""
 
 msgid "Teams:"
@@ -5631,9 +5642,6 @@ msgstr ""
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
 msgstr ""
 
-msgid "The maximum number of teams of the same origin (club, federation...), no limit by default."
-msgstr ""
-
 msgid "The maximum number of teams per club."
 msgstr ""
 
@@ -5650,13 +5658,6 @@ msgid "The minimum number of players needed for a club to be displayed."
 msgstr ""
 
 msgid "The minimum number of points of the players displayed (if left empty, all the players are displayed)."
-msgstr ""
-
-#, python-format
-msgid "The minimum numbers of players to form a complete team (%(default_value)d by default)."
-msgstr ""
-
-msgid "The minimum players count of each gender to form a complete team. If set, then the teams will be formed by selecting (by ranking order) at first the number of required players of each gender and then completing with other players. If not enough players are available for each gender then the team will be incomplete."
 msgstr ""
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
@@ -5835,6 +5836,9 @@ msgid "The values have to be higher than the sharing threshold of the category (
 msgstr ""
 
 msgid "The values to take into account when computing the tie-break."
+msgstr ""
+
+msgid "The way to form teams."
 msgstr ""
 
 msgid "The way to share the prizes between players with the same points."
@@ -7156,7 +7160,4 @@ msgstr ""
 
 msgid "½ - ½ (U)"
 msgstr ""
-
-#~ msgid "The minimum players count of each gender to form a complete team."
-#~ msgstr ""
 
