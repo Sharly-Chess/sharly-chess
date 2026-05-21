@@ -1,0 +1,15 @@
+<div class="col-12">
+    {{ admin_macros.number_input(
+        name=option.id,
+        label=_('Number of W/M per team:'),
+        placeholder=_('Optional'),
+        tooltip_text=_(
+            'If set, then the teams are formed by selecting (by ranking order) '
+            'at first the number of required players of each gender and then '
+            'completing with any remaining players. Teams with less women/men '
+            'are considered "incomplete".'
+        ),
+        min=1,
+        data=data, errors=errors
+    ) }}
+</div>
