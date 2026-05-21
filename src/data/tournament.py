@@ -1217,9 +1217,7 @@ class Tournament:
                 for dt in [self.round_datetimes.get(idx)]
             ],
             num_rounds=self.rounds,
-            initial_color=(
-                seed_setting.get_value(self).value if seed_setting.is_set(self) else ''
-            ),
+            initial_color=seed_setting.get_value(self).value,
             individuals_point_system={
                 TrfPointSystemResult.get_outer_value(result) or '': value
                 for result, value in self.point_values.items()
