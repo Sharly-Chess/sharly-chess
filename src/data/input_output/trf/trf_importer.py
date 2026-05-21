@@ -423,13 +423,13 @@ class TrfTournamentImporter(FileTournamentImporter):
             year_of_birth=year_of_birth,
             federation=trf_player.federation.upper() or 'FID',
         )
-
-        plugin_manager.hook_for_event(
-            event, 'augment_stored_player_from_trf_national_player'
-        )(
-            stored_player=stored_player,
-            trf_national_player=national_player,
-        )
+        if national_player:
+            plugin_manager.hook_for_event(
+                event, 'augment_stored_player_from_trf_national_player'
+            )(
+                stored_player=stored_player,
+                trf_national_player=national_player,
+            )
         return stored_player
 
     @staticmethod
