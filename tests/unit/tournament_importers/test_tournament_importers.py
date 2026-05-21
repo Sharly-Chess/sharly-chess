@@ -5,7 +5,7 @@ import pytest
 
 from data.event import Event
 from data.input_output.tournament_importer_options import FileOption
-from data.input_output.tournament_importers import TrfTournamentImporter
+from data.input_output.trf.trf_importer import TrfTournamentImporter
 from data.loader import EventLoader
 from database.sqlite.event.event_database import EventDatabase
 from plugins.ffe.ffe_tournament_importers import (

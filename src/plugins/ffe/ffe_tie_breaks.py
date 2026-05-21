@@ -13,6 +13,7 @@ from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import TournamentPlayer
 from data.tie_breaks import TieBreak, TieBreakOption
 from data.tie_breaks.categories import TieBreakCategory
+from data.tie_breaks.options import SilentTieBreakOption
 from data.tie_breaks.tie_breaks import (
     TournamentPerformanceRatingTieBreak,
     KashdanTieBreak,
@@ -429,7 +430,7 @@ class PapiBuchholzTypeManager(EntityManager[PapiBuchholzType]):
         ]
 
 
-class PapiBuchholzTypeOption(TieBreakOption):
+class PapiBuchholzTypeOption(SilentTieBreakOption):
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-PAPI_BUCHHOLZ_TYPE'
@@ -440,18 +441,6 @@ class PapiBuchholzTypeOption(TieBreakOption):
 
     @property
     def template_file_stem(self) -> str:
-        return ''
-
-    @property
-    def variation_acronym(self) -> str:
-        return ''
-
-    @property
-    def variation_name(self) -> str:
-        return ''
-
-    @property
-    def variation_help_text(self) -> str:
         return ''
 
     @property

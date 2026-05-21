@@ -335,20 +335,33 @@ class BbpPairingsInstaller(ExecutableInstaller):
 
     @property
     def _version(self) -> Version:
+        """BbpPairings main project version."""
         return Version('6.0.0')
+
+    @property
+    def _sc_sub_version(self) -> int | None:
+        """Sharly Chess subversion of the BbpPairings release."""
+        return 2
+
+    @property
+    def _full_version(self) -> str:
+        version = f'{self.version}-sc'
+        if self._sc_sub_version:
+            version += str(self._sc_sub_version)
+        return version
 
     @cached_property
     def system_handler(self) -> SystemHandler:
         match sys.platform:
             case 'win32':
                 return SystemHandler(
-                    executable_dir=f'bbpPairings-v{self.version}',
+                    executable_dir=f'bbpPairings-v{self._full_version}',
                     executable_filename='bbpPairings-windows.exe',
                     archive_filename='bbpPairings-Windows.zip',
                 )
             case 'darwin':
                 return SystemHandler(
-                    executable_dir=f'bbpPairings-v{self.version}',
+                    executable_dir=f'bbpPairings-v{self._full_version}',
                     executable_filename='bbpPairings-macos',
                     archive_filename='bbpPairings-macOS.zip',
                 )
@@ -384,9 +397,10 @@ class BbpPairingsInstaller(ExecutableInstaller):
 
     def install(self) -> bool:
         archive_filename = self.system_handler.archive_filename
+
         build_url: str = (
             'https://github.com/Sharly-Chess/bbpPairings'
-            f'/releases/download/v{self.version}-sc/{archive_filename}'
+            f'/releases/download/v{self._full_version}/{archive_filename}'
         )
         self.install_dir.mkdir(parents=True, exist_ok=True)
         archive_path: Path = self.install_dir / archive_filename

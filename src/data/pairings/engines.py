@@ -8,7 +8,6 @@ from typing import TextIO, TYPE_CHECKING
 
 from common import TMP_DIR
 from data.pairings.bbp_history import TournamentHistory, parse_bbp_checklist_text
-import trf
 from typing_extensions import override
 
 from common.exception import SharlyChessException
@@ -21,7 +20,7 @@ from data.board import Board
 from data.pairings.settings import BergerNumbersSetting
 from database.sqlite.event.event_store import StoredBoard
 from utils import Utils
-from utils.enum import TrfType, Result
+from utils.enum import Result
 
 if TYPE_CHECKING:
     from data.tournament import Tournament
@@ -186,12 +185,13 @@ class BbpPairings(PairingEngine):
             trf_file_path = pairings_dir / 'pairings-input.trfx'
             pairings_file_path = pairings_dir / 'pairings-output.txt'
             trf_tournament = tournament.to_trf(
-                TrfType.TRF_BX,
                 after_round=round_ - 1,
                 next_round_pairings_as_zpb=partial_pairings,
             )
             with open(trf_file_path, 'w', encoding='utf-8') as trf_file:
-                trf.dump(trf_file, trf_tournament)
+                from data.input_output.trf.trf_serializer import TrfSerializer
+
+                TrfSerializer.dump(trf_file, trf_tournament)
             result = Utils.run_process(
                 [
                     self.executable_path,
@@ -275,12 +275,13 @@ class BbpPairings(PairingEngine):
             checklist_file_path = pairings_dir / 'checklist-output.txt'
             checklist_file_path.unlink(missing_ok=True)
             trf_tournament = tournament.to_trf(
-                TrfType.TRF_BX,
                 after_round=round_ - 1,
                 next_round_pairings_as_zpb=False,
             )
             with open(trfx_file_path, 'w', encoding='utf-8') as trf_file:
-                trf.dump(trf_file, trf_tournament)
+                from data.input_output.trf.trf_serializer import TrfSerializer
+
+                TrfSerializer.dump(trf_file, trf_tournament)
             result = Utils.run_process(
                 [
                     self.executable_path,

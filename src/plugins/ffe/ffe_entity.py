@@ -26,7 +26,10 @@ from database.sqlite.event.event_store import StoredPlayer
 from plugins.ffe import PLUGIN_NAME, PLUGIN_DIR
 from plugins.ffe.ffe_database import PlayerFFELicence
 from plugins.ffe.utils import FFEUtils, FfePlayerPluginData, FFE_LEAGUES
-from plugins.pairing_acceleration.pairing_settings import AccelerationGroup
+from plugins.pairing_acceleration.pairing_settings import (
+    AccelerationGroup,
+    AccelerationRule,
+)
 from plugins.pairing_acceleration.pairing_variations import (
     Acceleration3GroupsSwissVariation,
 )
@@ -132,6 +135,57 @@ class NicoisSwissVariation(Acceleration3GroupsSwissVariation):
             draw_points=Result.DRAW.points(tournament.point_values),
             win_points=Result.WIN.points(tournament.point_values),
         )
+
+    def get_tournament_accelerated_rules(
+        self, rounds: int, draw_points: float, win_points: float
+    ) -> list[AccelerationRule]:
+        rules: list[AccelerationRule] = []
+        # Starting points: Group A - 2, Group B - 1, Group C - 0
+        starting_vpoints_by_group = {
+            AccelerationGroup.A: 2 * win_points,
+            AccelerationGroup.B: win_points,
+            AccelerationGroup.C: 0,
+        }
+        # Players cannot have more than 2 virtual points
+        max_vpoints = 2 * win_points
+        # If a player gets at least half the possible score,
+        # their capital is set at 2 points.
+        max_threshold = rounds * win_points / 2
+        for group, starting_vpoints in starting_vpoints_by_group.items():
+            threshold = 0.0
+            vpoints = starting_vpoints
+            while vpoints < max_vpoints and threshold < max_threshold:
+                rule = AccelerationRule(
+                    vpoints=vpoints,
+                    first_round=1,
+                    last_round=rounds - 2,
+                    group=group,
+                    points_threshold=threshold,
+                )
+                rules.append(rule)
+                # Players get a virtual draw points for 2 real draw points
+                # Exception: Group B gets a draw point at 3 draw points and one at 5
+                if group == AccelerationGroup.B:
+                    threshold = (
+                        3 * draw_points
+                        if threshold == 0
+                        else 5 * draw_points
+                        if threshold == 3 * draw_points
+                        else max_threshold
+                    )
+                else:
+                    threshold += 2 * draw_points
+                vpoints += draw_points
+
+            rule = AccelerationRule(
+                vpoints=max_vpoints,
+                first_round=1,
+                last_round=rounds - 2,
+                group=group,
+                points_threshold=min(max_threshold, threshold),
+            )
+            rules.append(rule)
+        return rules
 
     @classmethod
     def _get_group_a_tooltip_lines(
