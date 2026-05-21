@@ -29,18 +29,13 @@ class IndividualTeamType(IdentifiableEntity, ABC):
         """Returns the string used for the team column header."""
 
     @property
-    def modal_info(self) -> dict[str, str]:
+    def modal_info(self) -> dict[str, str | bool]:
         """Returns the information to display on the print modal as a dict."""
         return {
             'display_incomplete_tooltip': self.modal_info_display_incomplete_tooltip,
             'max_per_entity_label': self.modal_info_max_per_entity_label,
             'max_per_entity_tooltip': self.modal_info_max_per_entity_tooltip,
         }
-
-    @property
-    def modal_info_display_incomplete_tooltip(self) -> str:
-        """Returns the tooltip to use on the document modal for the "Rank incomplete teams:" tooltip."""
-        return _('Incomplete teams do have enough players or enough women/men.')
 
     @property
     @abstractmethod
@@ -51,6 +46,11 @@ class IndividualTeamType(IdentifiableEntity, ABC):
     @abstractmethod
     def modal_info_max_per_entity_tooltip(self) -> str:
         """Returns the tooltip to use on the document modal for the "Max teams:" input."""
+
+    @property
+    def modal_info_display_incomplete_tooltip(self) -> str:
+        """Returns the tooltip to use on the document modal for the "Rank incomplete teams:" tooltip."""
+        return _('Incomplete teams do have enough players or enough women/men.')
 
 
 class ClubIndividualTeamType(IndividualTeamType):

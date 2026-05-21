@@ -787,17 +787,3 @@ class IndividualTeamDisplayIncompletePrintOption(PrintOption):
     @property
     def default_value(self) -> Any:
         return True
-
-
-class IndividualTeamRankIncompleteFirstPrintOption(PrintOption):
-    @staticmethod
-    def static_id() -> str:
-        return 'individual-team-rank-incomplete-first'
-
-    @property
-    def type(self) -> type | UnionType:
-        return bool
-
-    @property
-    def default_value(self) -> Any:
-        return False

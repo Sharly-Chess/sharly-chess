@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from functools import cached_property
 from typing import Any
 
 from common.i18n import _
@@ -83,18 +82,18 @@ class FraSchoolsIndividualTeamType(IndividualTeamType):
         return _('School')
 
     @property
-    def modal_info_display_incomplete_tooltip(self) -> str:
-        return _(
-            'Teams are considered complete when they have 8 players including 2 boys and 2 girls.'
-        )
-
-    @property
     def modal_info_max_per_entity_label(self) -> str:
         return _('Number of teams per school:')
 
     @property
     def modal_info_max_per_entity_tooltip(self) -> str:
         return _('The maximum number of teams per school.')
+
+    @property
+    def modal_info_display_incomplete_tooltip(self) -> str:
+        return _(
+            'Teams are considered complete when they have 8 players including 2 boys and 2 girls.'
+        )
 
 
 class FraSchoolsRankingPrintDocument(IndividuelTeamRankingPrintDocument):
@@ -118,10 +117,6 @@ class FraSchoolsRankingPrintDocument(IndividuelTeamRankingPrintDocument):
     @property
     def team_type(self) -> IndividualTeamType:
         return FraSchoolsIndividualTeamType()
-
-    @cached_property
-    def rank_incomplete_teams_first(self) -> bool:
-        return True
 
     @property
     def team_size(self) -> int:

@@ -6,16 +6,3 @@
         data=data, errors=errors
     ) }}
 </div>
-
-<script>
-    $(document).ready(function() {
-        const individualTeamDisplayIncompleteSwitch = $('.modal #individual-team-display-incomplete');
-
-        function updateIndividualTeamDisplayIncompleteSwitch() {
-            $('.modal #individual-team-rank-incomplete-first_container').css('display', individualTeamDisplayIncompleteSwitch.is(':checked') ? 'block' : 'none');
-        }
-
-        individualTeamDisplayIncompleteSwitch.on('change', updateIndividualTeamDisplayIncompleteSwitch);
-        updateIndividualTeamDisplayIncompleteSwitch();
-    })
-</script>

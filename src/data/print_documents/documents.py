@@ -48,7 +48,6 @@ from data.print_documents.options import (
     IndividualTeamSizePrintOption,
     IndividualTeamMinGenderCountPrintOption,
     IndividualTeamMaxPerEntityPrintOption,
-    IndividualTeamRankIncompleteFirstPrintOption,
     IndividualTeamDisplayIncompletePrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
@@ -1363,7 +1362,7 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
 
     @property
     def template_name(self) -> str:
-        return '/admin/print/entity_ranking.html'
+        return '/admin/print/individual_team_ranking.html'
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
@@ -1374,7 +1373,6 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
             IndividualTeamSizePrintOption,
             IndividualTeamMinGenderCountPrintOption,
             IndividualTeamMaxPerEntityPrintOption,
-            IndividualTeamRankIncompleteFirstPrintOption,
             IndividualTeamDisplayIncompletePrintOption,
         ]
 
@@ -1393,11 +1391,6 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
     def display_incomplete_teams(self) -> bool:
         """Returns True if incomplete teams must be displayed."""
         return self._get_option(IndividualTeamDisplayIncompletePrintOption).value
-
-    @cached_property
-    def rank_incomplete_teams_first(self) -> bool:
-        """Returns True if complete teams must be ranked before incomplete ones."""
-        return self._get_option(IndividualTeamRankIncompleteFirstPrintOption).value
 
     @property
     def team_size(self) -> int:
@@ -1451,11 +1444,10 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
 
     def _get_team_sort_key(self, t: IndividualTeam) -> tuple:
         """Returns the key used to sort the teams."""
-        base: list[float] = []
-        if self.rank_incomplete_teams_first:
-            base.append(0 if t.is_complete else 1)
-        base.append(-t.total_points)
-        base.extend([-x for x in getattr(t, 'tie_break_sums', [])])
+        base: list[float] = [
+            0 if t.is_complete else 1,
+            -t.total_points,
+        ] + [-x for x in getattr(t, 'tie_break_sums', [])]
         if self.youngest_team_last_tie_break:
             base.append(-(t.avg_age_years or 0.0))
         return tuple(base)

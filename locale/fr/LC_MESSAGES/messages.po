@@ -3250,7 +3250,6 @@ msgstr "Gérer les groupes non-cumulables"
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr "Gérer les groupes de prix non-cumulables du tournoi (1 joueur·euse = 1 prix par groupe)."
 
-#, python-format
 msgid "Mandatory"
 msgstr "Obligatoire"
 
@@ -3961,7 +3960,6 @@ msgstr "Adversaires"
 msgid "Opponents' records"
 msgstr "Historique des adversaires"
 
-#, python-format
 msgid "Optional"
 msgstr "Facultatif"
 
@@ -4634,9 +4632,6 @@ msgstr "Tirer les numéros d'appariement aléatoirement."
 
 msgid "Rank"
 msgstr "Classement"
-
-msgid "Rank complete teams first"
-msgstr "Classer les équipes complètes en premier"
 
 msgid "Rank incomplete teams"
 msgstr "Classer les équipes incomplètes"

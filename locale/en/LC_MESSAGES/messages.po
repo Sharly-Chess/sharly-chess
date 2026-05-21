@@ -3250,7 +3250,6 @@ msgstr ""
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr ""
 
-#, python-format
 msgid "Mandatory"
 msgstr ""
 
@@ -3959,7 +3958,6 @@ msgstr ""
 msgid "Opponents' records"
 msgstr ""
 
-#, python-format
 msgid "Optional"
 msgstr ""
 
@@ -4631,9 +4629,6 @@ msgid "Randomly select the pairing numbers."
 msgstr ""
 
 msgid "Rank"
-msgstr ""
-
-msgid "Rank complete teams first"
 msgstr ""
 
 msgid "Rank incomplete teams"
