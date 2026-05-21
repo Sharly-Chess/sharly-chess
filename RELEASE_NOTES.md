@@ -4,6 +4,10 @@
 
 - Improved detection of internet connectivity (4.2.0)
 
+## Tournaments
+
+- TRF26 import / export (4.2.0)
+
 ## Documents
 
 - Added a new document to get a summary of norms achieved, or a forecast of norms that can be achieved for the final round (4.2.0)
