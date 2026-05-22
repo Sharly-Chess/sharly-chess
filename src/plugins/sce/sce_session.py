@@ -495,6 +495,7 @@ class SCESession(Session):
                 pd = SCEUtils.get_player_plugin_data(player)
                 pd.id = result.get('registration_id')
                 pd.last_sync_data = sync_data
+                pd.is_duplicated = False
                 SCEUtils.update_player_plugin_data(player, pd, write_stored_object=True)
                 log_operation('Creation (SC.com)')
 
