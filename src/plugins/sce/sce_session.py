@@ -14,7 +14,6 @@ from litestar.status_codes import (
     HTTP_403_FORBIDDEN,
     HTTP_200_OK,
     HTTP_404_NOT_FOUND,
-    HTTP_409_CONFLICT,
 )
 from requests import Session, HTTPError, Response
 
@@ -323,38 +322,6 @@ class SCESession(Session):
     # -------------------------------------------------------------------------
     # Player
     # -------------------------------------------------------------------------
-
-    def _create_registration_request(
-        self,
-        data: SCEPlayerSyncData,
-    ):
-        payload = data.to_sce_data()
-        return requests.post(
-            self.tournament_url(data.tournament_id) + '/registrations',
-            headers=self.api_headers,
-            json=payload,
-        )
-
-    def create_sce_player(self, player: TournamentPlayer) -> bool:
-        """Create a player on SC.com, returns False if it already exists, True if it succeeds."""
-        plugin_data = SCEUtils.get_player_plugin_data(player)
-        sync_data = SCEPlayerSyncData.from_player(player)
-        response = self._run_with_token_validation(
-            partial(self._create_registration_request, data=sync_data),
-            skip_validation=True,
-        )
-        try:
-            self.validate_api_response(response)
-        except SharlyChessException as e:
-            if response.status_code != HTTP_409_CONFLICT:
-                raise e
-            plugin_data.is_duplicated = True
-            SCEUtils.update_player_plugin_data(player, plugin_data)
-            return False
-        plugin_data.id = response.json()['data']['id']
-        plugin_data.last_sync_data = sync_data
-        SCEUtils.update_player_plugin_data(player, plugin_data)
-        return True
 
     def _update_registration_request(
         self,
@@ -760,17 +727,16 @@ class SCESession(Session):
         event_plugin_data = SCEUtils.get_event_plugin_data(event)
         event_plugin_data.tournament_names_by_id[sce_id] = tournament.name
         SCEUtils.update_event_plugin_data(event, event_plugin_data)
-        duplicate_count = 0
+        builder = SCEBatchBuilder()
+        counters = _BatchSyncCounters()
         for player in tournament.tournament_players:
-            if self.create_sce_player(player):
-                logger.debug(log_prefix + 'Player [%s] created', player.full_name)
-            else:
-                duplicate_count += 1
-                logger.error(
-                    log_prefix + 'Player [%s] already exists, skipped',
-                    player.full_name,
-                )
-        return duplicate_count
+            self._plan_player_sync(
+                player,
+                sce_sync_data=None,
+                builder=builder,
+                counters=counters,
+            )
+        return counters.duplicate_count
 
     def _update_tournament_request(
         self, data: SCETournamentSyncData, sce_tournament_id: str
