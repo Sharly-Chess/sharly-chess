@@ -35,7 +35,7 @@
     text-align: center;
 }
 
-.team-title {
+.team-title, .team-title * {
     grid-column: 1 / -1;
     contain: inline-size;
     font-size: 1.5rem;
@@ -44,12 +44,10 @@
 }
 
 .team-label {
-    font-size: 1.5rem;
     font-weight: bold;
 }
 
-.school-city {
-    font-size: 1.5rem;
+.team-title .team-suffix {
     font-style: italic;
 }
 

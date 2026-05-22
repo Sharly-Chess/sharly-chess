@@ -24,10 +24,15 @@ from data.print_documents.player_sorters import (
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
+from data.print_documents.individual_teams import (
+    IndividualTeamType,
+    ClubIndividualTeamType,
+)
 from utils.option import Option
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.print_documents import PrintIndividualTeamTypeManager
     from data.print_documents.documents import PlaceCardTemplate
 
 
@@ -766,3 +771,120 @@ class PlayerHistoryOption(PrintOption):
     @property
     def default_value(self) -> Any:
         return False
+
+
+class IndividualTeamTypePrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-type'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return ClubIndividualTeamType.static_id()
+
+    @property
+    def manager(self) -> 'PrintIndividualTeamTypeManager':
+        from data.print_documents import PrintIndividualTeamTypeManager
+
+        return PrintIndividualTeamTypeManager(self.event)
+
+    @property
+    def team_type_options(self) -> dict[str, str]:
+        return self.manager.options()
+
+    @cached_property
+    def team_type(self) -> IndividualTeamType:
+        return self.manager.get_object(self.value)
+
+    @property
+    def max_per_entity_label_per_type(self) -> dict[str, str]:
+        return {
+            team_type.id: team_type.max_per_entity_label
+            for team_type in self.manager.objects()
+        }
+
+    @override
+    def validate(self):
+        try:
+            _type = self.team_type
+        except KeyError:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown team type: {self.value}', self)
+
+
+class IndividualTeamSizePrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-size'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return 4
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is None or self.value < 2:
+            raise OptionError(_('An integer greater than 1 is expected.'), self)
+
+
+class IndividualTeamMaxPerEntityPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-max-per-entity'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is not None and self.value < 1:
+            raise OptionError(_('A positive integer is expected.'), self)
+
+
+class IndividualTeamMinGenderCountPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-min-gender-count'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is not None and self.value < 0:
+            raise OptionError(_('A positive integer is expected.'), self)
+
+
+class IndividualTeamDisplayIncompletePrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-display-incomplete'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return True

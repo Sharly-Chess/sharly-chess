@@ -7,8 +7,8 @@ from typing import Any, TYPE_CHECKING, Iterable, Optional
 from packaging.version import Version
 
 from common import TEST_ENV, DEVEL_ENV
-from common.i18n import _, ngettext
 from common.exception import SharlyChessException
+from common.i18n import _, ngettext
 from data.account import Account
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
@@ -30,11 +30,17 @@ from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
 from data.player_categories import PlayerCategory, JuniorCategory
-from data.print_documents import PlayerSplitter, PrintDocument, PrintOption
+from data.print_documents import (
+    PlayerSplitter,
+    PrintDocument,
+    PrintOption,
+    IndividualTeamType,
+)
 from data.print_documents.documents import StatisticsPrintDocument
 from data.print_documents.place_cards.data import PlaceCardPlayer
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
+from data.print_documents.individual_teams import ClubIndividualTeamType
 from data.tie_breaks import TieBreak, TieBreakOption
 from data.tie_breaks.system_sets import SystemTieBreakSet
 from data.tie_breaks.tie_breaks import ProgressiveScoresTieBreak
@@ -65,10 +71,7 @@ from plugins.ffe.ffe_entity import (
     FfeLicencePlayersTabColumn,
     FfeLicenceTournamentCriterion,
     FfeLeagueTournamentCriterion,
-)
-from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
-from plugins.ffe.ffe_upload_controller import (
-    FfeUploadController,
+    FfeLeagueIndividualTeamType,
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
@@ -81,7 +84,11 @@ from plugins.ffe.ffe_tournament_importers import (
     PapiJsonTournamentImporter,
     PapiTournamentImporter,
 )
+from plugins.ffe.ffe_upload_controller import (
+    FfeUploadController,
+)
 from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
+from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
 from plugins.ffe.print_documents.ffe_options import (
     FFEDocumentTypePrintOption,
     FFET3NoLicencePlayersPrintOption,
@@ -106,8 +113,8 @@ from plugins.ffe.utils import (
 from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
-from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.sce.sce_data import SCEPlayerSyncData
+from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.utils import (
     ExtraStatisticsSection,
     NavDataTransferItem,
@@ -730,6 +737,14 @@ class FfePlugin(Plugin):
     @hookimpl
     def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
         qrcode_types.append(FFESiteQRCodeType)
+
+    @hookimpl
+    def insert_print_individual_team_types(
+        self, individual_team_types: list[type[IndividualTeamType]]
+    ):
+        ltt: type[IndividualTeamType] = FfeLeagueIndividualTeamType
+        ctt: type[IndividualTeamType] = ClubIndividualTeamType
+        PluginUtils.insert_on_equals(individual_team_types, ltt, ctt)
 
     @hookimpl
     def get_extra_statistics_sections(

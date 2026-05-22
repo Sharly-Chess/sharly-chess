@@ -422,6 +422,14 @@ class Tournament:
         ]
 
     @property
+    def team_ranking_tie_breaks(self) -> list[TieBreak]:
+        return [
+            tie_break
+            for tie_break in self.tie_breaks
+            if tie_break.is_used_for_team_ranking
+        ]
+
+    @property
     def tie_breaks_with_invalid(self) -> Collection[TieBreak]:
         return self.tie_breaks_by_id.values()
 
