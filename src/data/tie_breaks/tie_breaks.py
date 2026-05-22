@@ -251,6 +251,11 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     def is_legacy(self) -> bool:
         return any(option.is_legacy and option.value is True for option in self.options)
 
+    @property
+    def is_used_for_team_ranking(self) -> bool:
+        # Override this property for tie-breaks that should not be used for team ranking.
+        return True
+
 
 class PlayerRecordTieBreak(TieBreak, ABC):
     """Base class of the tie-breaks based on the player's record."""
@@ -1944,6 +1949,10 @@ class DirectEncounterTieBreak(TieBreak):
             group_points + Result.WIN.points(point_values) * not_played,
         )
 
+    @property
+    def is_used_for_team_ranking(self) -> bool:
+        return False
+
 
 class ManualTieBreak(TieBreak):
     """Used for play-off's, etc"""
@@ -1985,3 +1994,7 @@ class ManualTieBreak(TieBreak):
         if not player.tournament.finished:
             return 0
         return player.stored_tournament_player.manual_tiebreak or 0
+
+    @property
+    def is_used_for_team_ranking(self) -> bool:
+        return False

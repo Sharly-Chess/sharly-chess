@@ -1,7 +1,7 @@
 import itertools
 import logging
 from abc import ABC, abstractmethod
-from collections import Counter
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from functools import cached_property, partial
 from typing import Any, Callable, override
@@ -13,9 +13,10 @@ from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
 from data.board import Board
+from data.columns import player_table as columns
 from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
-from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
 from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
+from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
 from data.event import Event
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
@@ -45,18 +46,24 @@ from data.print_documents.options import (
     PlaceCardBoardNumbersPrintOption,
     OptionalPlayersPrintOption,
     PlayerHistoryOption,
+    IndividualTeamTypePrintOption,
+    IndividualTeamSizePrintOption,
+    IndividualTeamMinGenderCountPrintOption,
+    IndividualTeamMaxPerEntityPrintOption,
+    IndividualTeamDisplayIncompletePrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
     PlaceCardTemplate,
 )
 from data.print_documents.place_cards.types import PlaceCardType
+from data.print_documents.individual_teams import IndividualTeamType, IndividualTeam
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.enum import Result, TitleNorm
-from utils.types import PlayerTitle
+from utils.enum import Result, TitleNorm, PlayerGender
 from utils.option import Option, OptionHandler
+from utils.types import PlayerTitle
 
 logger: logging.Logger = get_logger()
 
@@ -347,11 +354,11 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
 class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
     @staticmethod
     def static_id() -> str:
-        return 'ranking'
+        return 'individual-ranking'
 
     @staticmethod
     def static_name() -> str:
-        return _('Ranking')
+        return _('Individual ranking')
 
     @property
     def title(self) -> str:
@@ -1712,3 +1719,233 @@ class PlaceCardPrintDocument(PrintDocument):
             raise OptionError(
                 f'Unknown template [{template_option.value}]', template_option
             )
+
+
+class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-ranking'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Individual team ranking')
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/individual_team_ranking.html'
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            TournamentPrintOption,
+            RoundPrintOption,
+            IndividualTeamTypePrintOption,
+            IndividualTeamSizePrintOption,
+            IndividualTeamMinGenderCountPrintOption,
+            IndividualTeamMaxPerEntityPrintOption,
+            IndividualTeamDisplayIncompletePrintOption,
+        ]
+
+    @property
+    def team_type(self) -> IndividualTeamType:
+        return self._get_option(IndividualTeamTypePrintOption).team_type
+
+    @property
+    def ranking_round(self) -> int:
+        return (
+            self._get_option(RoundPrintOption).value
+            or self.tournament.max_ranking_round
+        )
+
+    @cached_property
+    def display_incomplete_teams(self) -> bool:
+        """Returns True if incomplete teams must be displayed."""
+        return self._get_option(IndividualTeamDisplayIncompletePrintOption).value
+
+    @property
+    def team_size(self) -> int:
+        """Returns the minimum number of players to form a team."""
+        return self._get_option(IndividualTeamSizePrintOption).value
+
+    @property
+    def title(self) -> str:
+        return self.team_type.document_title(self.ranking_round)
+
+    @property
+    def max_teams_per_entity(self) -> int | None:
+        return self._get_option(IndividualTeamMaxPerEntityPrintOption).value
+
+    @property
+    def min_gender_count(self) -> int:
+        return self._get_option(IndividualTeamMinGenderCountPrintOption).value or 0
+
+    @property
+    def youngest_team_last_tie_break(self) -> bool:
+        """Returns True to use the age as the last tie-break (youngest wins)."""
+        return False
+
+    @property
+    def team_type_table_header(self) -> str:
+        return self.team_type.overall_table_header
+
+    def _extract_team_from_pool(
+        self,
+        pool_in_order: list[TournamentPlayer],
+    ) -> list[TournamentPlayer]:
+        """
+        Build one team (up to *team_size* contributors) from a club's pool.
+        Returns (selected_players, meta)."""
+        selected: list[TournamentPlayer] = []
+        if self.min_gender_count:
+            women = [p for p in pool_in_order if p.gender == PlayerGender.WOMAN]
+            chosen_women = women[: self.min_gender_count]
+            selected.extend(chosen_women)
+            men = [p for p in pool_in_order if p.gender == PlayerGender.MAN]
+            chosen_men = [p for p in men if p not in selected][: self.min_gender_count]
+            selected.extend(chosen_men)
+        # Fill ANY slots (do NOT compensate missing girl/boy with extra ANY)
+        already = set(p.id for p in selected)
+        remainder = [p for p in pool_in_order if p.id not in already]
+        if self.team_size > 2 * self.min_gender_count:
+            any_fillers = remainder[: self.team_size - 2 * self.min_gender_count]
+            selected.extend(any_fillers)
+        selected.sort(key=lambda p: p.rank)
+        return selected
+
+    def _get_team_sort_key(self, t: IndividualTeam) -> tuple:
+        """Returns the key used to sort the teams."""
+        base: list[float] = [
+            0 if t.is_complete else 1,
+            -t.total_points,
+        ] + [-x for x in getattr(t, 'tie_break_sums', [])]
+        if self.youngest_team_last_tie_break:
+            base.append(-(t.avg_age_years or 0.0))
+        return tuple(base)
+
+    def _sort_teams(self, teams: list[IndividualTeam]):
+        """Remove useless team labels and sort the teams."""
+        teams_by_entity: dict[str, list[IndividualTeam]] = defaultdict(list)
+        for team in teams:
+            teams_by_entity[team.entity].append(team)
+
+        # Remove labels when there's only one team for that entity
+        for team_list in teams_by_entity.values():
+            if len(team_list) == 1:
+                team_list[0].label = ''
+
+        teams.sort(key=self._get_team_sort_key)
+        return teams
+
+    @property
+    def ordered_teams(self) -> list[IndividualTeam]:
+        """
+        Produce ranked teams (A, B, ...).
+        Uses tournament-wide ordering and points/tiebreaks already computed by compute_player_ranks().
+        """
+
+        assert self.event is not None
+        ordered_players: list[TournamentPlayer] = [
+            tournament_player
+            for tournament_player in self.tournament.compute_tournament_player_ranks(
+                after_round=self.ranking_round
+            ).values()
+            if not self.tournament.started or tournament_player.has_played_games
+        ]
+
+        # Group by entity
+        players_by_entity: dict[Any, list[TournamentPlayer]] = {}
+        for player in ordered_players:
+            if entity := self.team_type.get_player_entity(player):
+                players_by_entity.setdefault(entity, []).append(player)
+
+        teams: list[IndividualTeam] = []
+        for entity, pool in players_by_entity.items():
+            remaining = list(pool)
+            team_idx = 0
+            while remaining and (
+                self.max_teams_per_entity is None
+                or team_idx < self.max_teams_per_entity
+            ):
+                team_idx += 1
+                label = chr(ord('A') + (team_idx - 1))  # "A", "B", ...
+                selected_players = self._extract_team_from_pool(remaining)
+                if not selected_players:
+                    break
+                team = IndividualTeam(
+                    tournament=self.tournament,
+                    team_size=self.team_size,
+                    min_gender_count=self.min_gender_count,
+                    entity=entity,
+                    label=label,
+                    players=selected_players,
+                    type=self.team_type,
+                )
+                if self.display_incomplete_teams or team.is_complete:
+                    teams.append(team)
+                # Consume used players for the next team (B, C, …)
+                used_ids = {p.id for p in selected_players}
+                remaining = [p for p in remaining if p.id not in used_ids]
+                if label == 'Z':
+                    break
+        self._sort_teams(teams)
+        return teams
+
+    @override
+    def validate_options(self):
+        super().validate_options()
+        ranking_round = self._get_option(RoundPrintOption)
+        if ranking_round.value is None:
+            if self.tournament.max_ranking_round < 1:
+                raise OptionError(
+                    _('The tournament has not yet started.'),
+                    ranking_round,
+                )
+            return
+        if ranking_round.value > self.tournament.rounds:
+            raise OptionError(
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
+                ranking_round,
+            )
+        if ranking_round.value > self.tournament.max_ranking_round:
+            raise OptionError(
+                _('This round is not finished (last finished: #{round}).').format(
+                    round=self.tournament.max_ranking_round
+                ),
+                ranking_round,
+            )
+
+    @property
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
+        tournament = self.tournament
+        column_types: list[Callable[[ColumnUsage], TournamentPlayerTableColumn]] = [
+            columns.RankColumn,
+            columns.NameColumn,
+            columns.CategoryColumn,
+            columns.GenderColumn,
+            columns.PointsColumn,
+        ]
+        for index in range(len(tournament.team_ranking_tie_breaks)):
+            column_types.append(
+                partial(
+                    columns.TeamRankingTieBreakColumn,
+                    tournament=tournament,
+                    index=index,
+                )
+            )
+        return PlayerColumnHandler(self.get_event(), ColumnUsage.PRINT).get_columns(
+            column_types
+        )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {
+            'tournament': self.tournament,
+            'subtitle': self.tournament.name,
+            'ordered_teams': self.ordered_teams,
+            'player_columns': self.player_columns,
+            'ordinal_integer': Utils.ordinal_integer,
+            'localized_number': Utils.localized_number,
+            'points_str': Utils.points_str,
+        }

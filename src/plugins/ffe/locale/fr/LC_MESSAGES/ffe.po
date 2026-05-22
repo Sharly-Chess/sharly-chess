@@ -280,6 +280,9 @@ msgstr "Ligue :"
 msgid "Leagues"
 msgstr "Ligues"
 
+msgid "Leagues (FFE)"
+msgstr "Ligues (FFE)"
+
 msgid "Lic. *** LICENCE COLUMN HEADER"
 msgstr "Lic."
 
@@ -297,6 +300,9 @@ msgstr "Licence :"
 
 msgid "Make visible on FFE site"
 msgstr "Rendre visible sur le site de la FFE"
+
+msgid "Max. teams per league:"
+msgstr "Max. d'équipes par ligue :"
 
 msgid "Median"
 msgstr "Médian"
@@ -366,6 +372,9 @@ msgstr "Joueur·euses :"
 
 msgid "Please select a file."
 msgstr "Veuillez sélectionner un fichier."
+
+msgid "Ranking by league after round #{round}"
+msgstr "Classement par ligue après la ronde n°{round}"
 
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
