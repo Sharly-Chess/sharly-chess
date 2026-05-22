@@ -225,9 +225,6 @@ msgstr ""
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
 msgstr ""
 
-msgid "(arbiter override, 1.4.1b)"
-msgstr ""
-
 msgid "(by default)"
 msgstr ""
 
@@ -898,11 +895,11 @@ msgstr ""
 msgid "Average"
 msgstr ""
 
-#, python-format
-msgid "Average age: %(years)s"
+msgid "Average (Ra), rounded per 1.4.7:"
 msgstr ""
 
-msgid "Average (Ra), rounded per 1.4.7:"
+#, python-format
+msgid "Average age: %(years)s"
 msgstr ""
 
 msgid "Average of opponents Buchholz"
@@ -2527,9 +2524,6 @@ msgstr ""
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
-msgid "FIDE 1.4.1. Default is 9. Lower to 7 for World or Continental Team Championships, or to 8 for the World Cup (1.4.1b exceptions)."
-msgstr ""
-
 msgid "FIDE Arbiter"
 msgstr ""
 
@@ -3556,12 +3550,6 @@ msgid "Min:"
 msgstr ""
 
 msgid "Minimum category is expected to be lower or equal to the maximum category."
-msgstr ""
-
-msgid "Minimum games for a norm"
-msgstr ""
-
-msgid "Minimum games for a norm must be at least 7."
 msgstr ""
 
 msgid "Minimum number of points (included):"
@@ -5948,9 +5936,6 @@ msgid "The minimum number of points of the players displayed (if left empty, all
 msgstr ""
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
-msgstr ""
-
-msgid "The minimum-games override only applies to Swiss tournaments (FIDE 1.4.1b). Leave at default ({default}) for Round-Robin and Double Round-Robin events."
 msgstr ""
 
 #, python-format

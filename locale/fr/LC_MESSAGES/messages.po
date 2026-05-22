@@ -225,9 +225,6 @@ msgstr "(%(total)s au total, %(own)s de sa propre fédération)"
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
 msgstr "(*) Connaître la liste des évènements en cours est nécessaire pour sélection les évènements avant de s'authentifier."
 
-msgid "(arbiter override, 1.4.1b)"
-msgstr "(remplacement par l'arbitre, 1.4.1b)"
-
 msgid "(by default)"
 msgstr "(par défaut)"
 
@@ -2527,9 +2524,6 @@ msgstr "FIDE"
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
-msgid "FIDE 1.4.1. Default is 9. Lower to 7 for World or Continental Team Championships, or to 8 for the World Cup (1.4.1b exceptions)."
-msgstr "FIDE 1.4.1. Par défaut 9. Réduire à 7 pour les Championnats du Monde ou Continentaux par équipes, ou à 8 pour la Coupe du Monde (exceptions 1.4.1b)."
-
 msgid "FIDE Arbiter"
 msgstr "Arbitre FIDE"
 
@@ -3557,12 +3551,6 @@ msgstr "Min :"
 
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
-
-msgid "Minimum games for a norm"
-msgstr "Nombre minimum de parties pour une norme"
-
-msgid "Minimum games for a norm must be at least 7."
-msgstr "Le nombre minimum de parties pour une norme doit être d'au moins 7."
 
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
@@ -5951,9 +5939,6 @@ msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
-
-msgid "The minimum-games override only applies to Swiss tournaments (FIDE 1.4.1b). Leave at default ({default}) for Round-Robin and Double Round-Robin events."
-msgstr "Le remplacement du nombre minimum de parties ne s'applique qu'aux tournois Suisses (FIDE 1.4.1b). Laisser la valeur par défaut ({default}) pour les tournois Toutes-Rondes et Toutes-Rondes doubles."
 
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
