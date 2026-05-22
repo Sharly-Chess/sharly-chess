@@ -3311,7 +3311,7 @@ msgid "Max. teams per club:"
 msgstr "Max. d'équipes par club :"
 
 msgid "Max. teams per federation:"
-msgstr "Max. d'équipes par club :"
+msgstr "Max. d'équipes par fédération :"
 
 msgid "Maximum age of the results:"
 msgstr "Âge maximum des résultats :"
