@@ -301,6 +301,9 @@ msgstr "Licence :"
 msgid "Make visible on FFE site"
 msgstr "Rendre visible sur le site de la FFE"
 
+msgid "Max. teams per league:"
+msgstr "Max. d'équipes par ligue :"
+
 msgid "Median"
 msgstr "Médian"
 
@@ -342,9 +345,6 @@ msgstr "Aucune"
 
 msgid "Not configured"
 msgstr "Non configuré"
-
-msgid "Number of teams per league:"
-msgstr "Nombre d'équipes par ligue :"
 
 msgid "Ongoing"
 msgstr "En cours"
@@ -455,9 +455,6 @@ msgstr "Le format Papi ne supporte pas le résultat [{result}]."
 
 msgid "The [{tie_break}] tie-break as implemented in Papi."
 msgstr "Le départage [{tie_break}] tel qu'implémenté dans Papi."
-
-msgid "The maximum number of teams per league."
-msgstr "Le nombre maximum d'équipes par ligue."
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."
 msgstr "Le mot de passe du tournoi sur le site FFE doit être composé de 10 lettres majuscules."

@@ -24,11 +24,15 @@ from data.print_documents.player_sorters import (
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
-from data.print_documents.team_types import IndividualTeamType, ClubIndividualTeamType
+from data.print_documents.individual_teams import (
+    IndividualTeamType,
+    ClubIndividualTeamType,
+)
 from utils.option import Option
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.print_documents import PrintIndividualTeamTypeManager
     from data.print_documents.documents import PlaceCardTemplate
 
 
@@ -695,16 +699,25 @@ class IndividualTeamTypePrintOption(PrintOption):
         return ClubIndividualTeamType.static_id()
 
     @property
-    def team_type_options(self) -> dict[str, str]:
+    def manager(self) -> 'PrintIndividualTeamTypeManager':
         from data.print_documents import PrintIndividualTeamTypeManager
 
-        return PrintIndividualTeamTypeManager(self.event).options()
+        return PrintIndividualTeamTypeManager(self.event)
+
+    @property
+    def team_type_options(self) -> dict[str, str]:
+        return self.manager.options()
 
     @cached_property
     def team_type(self) -> IndividualTeamType:
-        from data.print_documents import PrintIndividualTeamTypeManager
+        return self.manager.get_object(self.value)
 
-        return PrintIndividualTeamTypeManager(self.event).get_object(self.value)
+    @property
+    def max_per_entity_label_per_type(self) -> dict[str, str]:
+        return {
+            team_type.id: team_type.max_per_entity_label
+            for team_type in self.manager.objects()
+        }
 
     @override
     def validate(self):
@@ -726,7 +739,7 @@ class IndividualTeamSizePrintOption(PrintOption):
 
     @property
     def default_value(self) -> Any:
-        return None
+        return 4
 
     @override
     def validate(self):
@@ -735,7 +748,7 @@ class IndividualTeamSizePrintOption(PrintOption):
             raise OptionError(_('An integer greater than 1 is expected.'), self)
 
 
-class IndividualTeamMaxPerEntityPrintOption(PrintOption, ABC):
+class IndividualTeamMaxPerEntityPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
         return 'individual-team-max-per-entity'

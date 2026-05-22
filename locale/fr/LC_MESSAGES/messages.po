@@ -2767,9 +2767,6 @@ msgstr "Identité"
 msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
 msgstr "Si définie, toutes les dates des tournois et des chronomètres seront mises à jour relativement à cette date."
 
-msgid "If set, then the teams are formed by selecting (by ranking order) at first the number of required players of each gender and then completing with any remaining players. Teams with less women/men are considered \"incomplete\"."
-msgstr "Si défini, alors les équipes sont formées en sélectionnat (par ordre de classement) en premier le nombre requis de femmes/hommes, puis complétées avec les autres joueur·euses restant·es. Les équipes avec un nombre insuffisant de femmes/hommes sont considérées « incomplètes »."
-
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr "Si vous ne pouvez pas contrôler qui a accès au réseau auquel vous êtes connecté, il est fortement recommandé de ne pas créer de compte."
 
@@ -2836,6 +2833,9 @@ msgstr "Dans le tournoi"
 msgid "Include IDs and passwords for uploading results"
 msgstr "Inclure les identifiants et mots de passe nécessaires à la mise en ligne des résultats"
 
+msgid "Include incomplete teams"
+msgstr "Inclure les équipes incomplètes"
+
 msgid "Include non-monetary prizes"
 msgstr "Inclure les prix non-monétaires"
 
@@ -2853,9 +2853,6 @@ msgstr "Inclut tous les autres rôles et donne un accès complet à l'applicatio
 
 msgid "Incomplete Team"
 msgstr "Équipe incomplète"
-
-msgid "Incomplete teams do have enough players or enough women/men."
-msgstr "Les équipes incomplètes sont celles avec un nombre insuffisant de joueur·euses, ou un nombre insuffisant de femmes/hommes."
 
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
@@ -3250,9 +3247,6 @@ msgstr "Gérer les groupes non-cumulables"
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr "Gérer les groupes de prix non-cumulables du tournoi (1 joueur·euse = 1 prix par groupe)."
 
-msgid "Mandatory"
-msgstr "Obligatoire"
-
 msgid "Manual"
 msgstr "Manuel"
 
@@ -3312,6 +3306,12 @@ msgstr "Nombre max : illimité"
 
 msgid "Max. age category"
 msgstr "Catégorie d'âge max."
+
+msgid "Max. teams per club:"
+msgstr "Max. d'équipes par club :"
+
+msgid "Max. teams per federation:"
+msgstr "Max. d'équipes par club :"
 
 msgid "Maximum age of the results:"
 msgstr "Âge maximum des résultats :"
@@ -3385,8 +3385,8 @@ msgstr "Elo minimum"
 msgid "Minimum rating is expected to be lower than the maximum rating."
 msgstr "Le classement minimal doit être inférieur au classement maximal."
 
-msgid "Missing men: {count}"
-msgstr "Hommes manquants : {count}"
+msgid "Missing men"
+msgstr "Hommes manquants"
 
 msgid "Missing required column [{column}]."
 msgstr "Colonne obligatoire [{column}] manquante."
@@ -3394,8 +3394,8 @@ msgstr "Colonne obligatoire [{column}] manquante."
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
 
-msgid "Missing women: {count}"
-msgstr "Femmes manquantes : {count}"
+msgid "Missing women"
+msgstr "Femmes manquantes"
 
 msgid "Mo *** MONDAY"
 msgstr "Lu"
@@ -3859,9 +3859,6 @@ msgstr "Nombre d'écrans"
 msgid "Number of screens:"
 msgstr "Nombre d'écrans :"
 
-msgid "Number of teams per club:"
-msgstr "Nombre d'équipes par club :"
-
 msgid "Number of wins"
 msgstr "Nombre de victoires"
 
@@ -3959,9 +3956,6 @@ msgstr "Adversaires"
 
 msgid "Opponents' records"
 msgstr "Historique des adversaires"
-
-msgid "Optional"
-msgstr "Facultatif"
 
 msgid "Organiser"
 msgstr "Organisateur·ice"
@@ -4632,9 +4626,6 @@ msgstr "Tirer les numéros d'appariement aléatoirement."
 
 msgid "Rank"
 msgstr "Classement"
-
-msgid "Rank incomplete teams"
-msgstr "Classer les équipes incomplètes"
 
 msgid "Ranking"
 msgstr "Classement"
@@ -5494,14 +5485,11 @@ msgstr "Tadjikistan"
 msgid "Tanzania"
 msgstr "Tanzanie"
 
-msgid "Teams per federation:"
-msgstr "Nombre d'équipes par fédération :"
-
-msgid "Teams with fewer players are considered \"incomplete\"."
+msgid "Teams with fewer players are considered &quot;incomplete&quot;."
 msgstr "Les équipes avec moins de joueur·euses sont considérées « incomplètes »."
 
-msgid "Teams:"
-msgstr "Équipes :"
+msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
+msgstr "Les équipes avec moins de femmes/hommes sont considérées « incomplètes »."
 
 msgid "Template:"
 msgstr "Modèle :"
@@ -5638,12 +5626,6 @@ msgstr "Le nombre maximum de points réalisé par les joueur·euses affiché·es
 
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
 msgstr "Le nombre maximum de résultats à afficher sur l'écran, facultatif (si ce champ est laissé vide, tous les résultats sont affichés)."
-
-msgid "The maximum number of teams per club."
-msgstr "Le nombre maximum d'équipes par club."
-
-msgid "The maximum number of teams per federation."
-msgstr "Le nombre maximum d'équipes par fédération."
 
 msgid "The maximum rating must be at most equal to the minimum rating."
 msgstr "Le Elo maximum doit au moins être égal au Elo minimum."
@@ -6237,6 +6219,9 @@ msgstr "Turkménistan"
 
 msgid "Type"
 msgstr "Type"
+
+msgid "Type of teams:"
+msgstr "Type d'équipes :"
 
 msgid "Type:"
 msgstr "Type :"

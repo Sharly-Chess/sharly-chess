@@ -47,6 +47,10 @@
     font-weight: bold;
 }
 
+.team-title .team-suffix {
+    font-style: italic;
+}
+
 .team-info {
     grid-column: 1 / -1;
     contain: inline-size;

@@ -57,7 +57,7 @@
             <div id="team-{{ team.id }}" class="team no-page-break">
                 <div class="team-rank">{{ ordinal_integer(loop.index)|safe }}</div>
                 <div class="team-title">
-                    {{ team.name | safe }}
+                    {{ team.title_name | safe }}
                 </div>
                 <div class="team-info">
                     {% if document.youngest_team_last_tie_break and team.avg_age_years %}

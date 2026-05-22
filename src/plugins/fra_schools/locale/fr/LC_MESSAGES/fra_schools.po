@@ -59,23 +59,26 @@ msgstr "Championnat de France des écoles et collèges"
 msgid "Hide the UAI codes for the FFE upload"
 msgstr "Cacher les codes UAI lors de la mise en ligne FFE"
 
+msgid "Include incomplete teams"
+msgstr "Inclure les équipes incomplètes"
+
 msgid "Invalid format (expected: {format})."
 msgstr "Format invalide (attendu : {format})."
 
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
 
-msgid "Missing boys: {count}"
-msgstr "Garçons manquants : {count}"
+msgid "Max. teams per school:"
+msgstr "Max. d'équipes par établissement :"
 
-msgid "Missing girls: {count}"
-msgstr "Filles manquantes : {count}"
+msgid "Missing boys"
+msgstr "Garçons manquants"
+
+msgid "Missing girls"
+msgstr "Filles manquantes"
 
 msgid "Name"
 msgstr "Nom"
-
-msgid "Number of teams per school:"
-msgstr "Nombre d'équipes par établissement :"
 
 msgid "Please validate the French school to continue."
 msgstr "Merci de valider l'établissement scolaire avant de continuer."
@@ -115,9 +118,6 @@ msgstr "La base de données [%(database)s] n'est pas installée (pour l'installe
 #, python-format
 msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
 msgstr "La base de données [%(database)s] a été mise à jour pour la dernière fois il y a plus de %(age)d mois. Il est préférable de la mettre à jour avant de continuer (Menu > Sources de données)."
-
-msgid "The maximum number of teams per school."
-msgstr "Le nombre maximum d'équipes par établissement."
 
 msgid "The school with that code already exists."
 msgstr "L'établissement ayant ce code existe déjà."

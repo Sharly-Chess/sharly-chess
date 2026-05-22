@@ -6,7 +6,7 @@ from data.print_documents import (
     player_sorters,
     pairing_styles,
     qrcode_types,
-    team_types,
+    individual_teams,
 )
 from data.print_documents.documents import PrintDocument
 from data.print_documents.options import PrintOption
@@ -27,7 +27,7 @@ from data.print_documents.place_cards.types import (
 from data.print_documents.player_sorters import GridPlayerSorter, ListPlayerSorter
 from data.print_documents.player_splitters import PlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
-from data.print_documents.team_types import IndividualTeamType
+from data.print_documents.individual_teams import IndividualTeamType
 from plugins.manager import plugin_manager
 from utils.entity import EventBoundEntityManager, EntityManager
 
@@ -181,8 +181,8 @@ class PrintIndividualTeamTypeManager(EventBoundEntityManager[IndividualTeamType]
     @override
     def entity_types(self) -> list[type[IndividualTeamType]]:
         individual_team_types = [
-            team_types.ClubIndividualTeamType,
-            team_types.FederationIndividualTeamType,
+            individual_teams.ClubIndividualTeamType,
+            individual_teams.FederationIndividualTeamType,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_print_individual_team_types')(
             individual_team_types=individual_team_types

@@ -2767,9 +2767,6 @@ msgstr ""
 msgid "If defined, all the dates of the tournaments and timers will be updated relatively to this date."
 msgstr ""
 
-msgid "If set, then the teams are formed by selecting (by ranking order) at first the number of required players of each gender and then completing with any remaining players. Teams with less women/men are considered \"incomplete\"."
-msgstr ""
-
 msgid "If you can't control who has access to the network you are connected to, it is highly recommended to not create any account."
 msgstr ""
 
@@ -2836,6 +2833,9 @@ msgstr ""
 msgid "Include IDs and passwords for uploading results"
 msgstr ""
 
+msgid "Include incomplete teams"
+msgstr ""
+
 msgid "Include non-monetary prizes"
 msgstr ""
 
@@ -2852,9 +2852,6 @@ msgid "Includes all other access levels and grants full access to the applicatio
 msgstr ""
 
 msgid "Incomplete Team"
-msgstr ""
-
-msgid "Incomplete teams do have enough players or enough women/men."
 msgstr ""
 
 msgid "Incorrect installation, exiting."
@@ -3250,9 +3247,6 @@ msgstr ""
 msgid "Manage the prize brackets of the tournament (1 player = 1 prize per bracket)."
 msgstr ""
 
-msgid "Mandatory"
-msgstr ""
-
 msgid "Manual"
 msgstr ""
 
@@ -3311,6 +3305,12 @@ msgid "Max number: unlimited"
 msgstr ""
 
 msgid "Max. age category"
+msgstr ""
+
+msgid "Max. teams per club:"
+msgstr ""
+
+msgid "Max. teams per federation:"
 msgstr ""
 
 msgid "Maximum age of the results:"
@@ -3385,7 +3385,7 @@ msgstr ""
 msgid "Minimum rating is expected to be lower than the maximum rating."
 msgstr ""
 
-msgid "Missing men: {count}"
+msgid "Missing men"
 msgstr ""
 
 msgid "Missing required column [{column}]."
@@ -3394,7 +3394,7 @@ msgstr ""
 msgid "Missing required field [{field}]."
 msgstr ""
 
-msgid "Missing women: {count}"
+msgid "Missing women"
 msgstr ""
 
 msgid "Mo *** MONDAY"
@@ -3859,9 +3859,6 @@ msgstr ""
 msgid "Number of screens:"
 msgstr ""
 
-msgid "Number of teams per club:"
-msgstr ""
-
 msgid "Number of wins"
 msgstr ""
 
@@ -3956,9 +3953,6 @@ msgid "Opponents"
 msgstr ""
 
 msgid "Opponents' records"
-msgstr ""
-
-msgid "Optional"
 msgstr ""
 
 msgid "Organiser"
@@ -4629,9 +4623,6 @@ msgid "Randomly select the pairing numbers."
 msgstr ""
 
 msgid "Rank"
-msgstr ""
-
-msgid "Rank incomplete teams"
 msgstr ""
 
 msgid "Ranking"
@@ -5492,13 +5483,10 @@ msgstr ""
 msgid "Tanzania"
 msgstr ""
 
-msgid "Teams per federation:"
+msgid "Teams with fewer players are considered &quot;incomplete&quot;."
 msgstr ""
 
-msgid "Teams with fewer players are considered \"incomplete\"."
-msgstr ""
-
-msgid "Teams:"
+msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
 msgstr ""
 
 msgid "Template:"
@@ -5635,12 +5623,6 @@ msgid "The maximum number of points of the players displayed (if left empty, all
 msgstr ""
 
 msgid "The maximum number of results displayed on the screen, optional (if left empty, all the results are displayed)."
-msgstr ""
-
-msgid "The maximum number of teams per club."
-msgstr ""
-
-msgid "The maximum number of teams per federation."
 msgstr ""
 
 msgid "The maximum rating must be at most equal to the minimum rating."
@@ -6234,6 +6216,9 @@ msgid "Turkmenistan"
 msgstr ""
 
 msgid "Type"
+msgstr ""
+
+msgid "Type of teams:"
 msgstr ""
 
 msgid "Type:"

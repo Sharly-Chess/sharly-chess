@@ -59,22 +59,25 @@ msgstr ""
 msgid "Hide the UAI codes for the FFE upload"
 msgstr ""
 
+msgid "Include incomplete teams"
+msgstr ""
+
 msgid "Invalid format (expected: {format})."
 msgstr ""
 
 msgid "Loading more results…"
 msgstr ""
 
-msgid "Missing boys: {count}"
+msgid "Max. teams per school:"
 msgstr ""
 
-msgid "Missing girls: {count}"
+msgid "Missing boys"
+msgstr ""
+
+msgid "Missing girls"
 msgstr ""
 
 msgid "Name"
-msgstr ""
-
-msgid "Number of teams per school:"
 msgstr ""
 
 msgid "Please validate the French school to continue."
@@ -114,9 +117,6 @@ msgstr ""
 
 #, python-format
 msgid "The database [%(database)s] was last updated over %(age)d months ago. It is preferable to update it before proceeding (Menu > Data sources)."
-msgstr ""
-
-msgid "The maximum number of teams per school."
 msgstr ""
 
 msgid "The school with that code already exists."

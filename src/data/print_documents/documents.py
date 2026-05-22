@@ -55,8 +55,7 @@ from data.print_documents.place_cards.template import (
     PlaceCardTemplate,
 )
 from data.print_documents.place_cards.types import PlaceCardType
-from data.print_documents.team_types import IndividualTeamType
-from data.print_documents.teams import IndividualTeam
+from data.print_documents.individual_teams import IndividualTeamType, IndividualTeam
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
@@ -1501,13 +1500,14 @@ class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
                 selected_players = self._extract_team_from_pool(remaining)
                 if not selected_players:
                     break
-                team: IndividualTeam = self.team_type.team_class(
+                team = IndividualTeam(
                     tournament=self.tournament,
                     team_size=self.team_size,
                     min_gender_count=self.min_gender_count,
                     entity=entity,
                     label=label,
                     players=selected_players,
+                    type=self.team_type,
                 )
                 if self.display_incomplete_teams or team.is_complete:
                     teams.append(team)

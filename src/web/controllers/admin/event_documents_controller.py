@@ -107,14 +107,7 @@ class EventDocumentsController(BaseEventAdminController):
             ]
             for tournament in allowed_tournaments
         }
-        from data.print_documents import PrintIndividualTeamTypeManager
 
-        individual_team_modal_info_per_team_type = {
-            team_type().static_id(): team_type().modal_info
-            for team_type in PrintIndividualTeamTypeManager(
-                web_context.get_admin_event()
-            ).entity_types()
-        }
         template_context = {
             'modal': 'print',
             'client': web_context.client,
@@ -129,7 +122,6 @@ class EventDocumentsController(BaseEventAdminController):
             'current_document_option_ids': current_document_option_ids,
             'print_options': print_options,
             'containers_by_document': containers_by_document,
-            'individual_team_modal_info_per_team_type': individual_team_modal_info_per_team_type,
             'data': data,
             'success_message': success_message,
             'errors': errors or {},

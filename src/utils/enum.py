@@ -475,11 +475,11 @@ class TournamentRating(IntEnum):
     def from_key(cls, key: str) -> Self:
         match key.lower():
             case 'standard':
-                return cls.STANDARD  # type: ignore
+                return cls.STANDARD
             case 'rapid':
-                return cls.RAPID  # type: ignore
+                return cls.RAPID
             case 'blitz':
-                return cls.BLITZ  # type: ignore
+                return cls.BLITZ
             case _:
                 raise ValueError(f'Unknown value: {key}')
 

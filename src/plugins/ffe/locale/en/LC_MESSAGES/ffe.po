@@ -301,6 +301,9 @@ msgstr ""
 msgid "Make visible on FFE site"
 msgstr ""
 
+msgid "Max. teams per league:"
+msgstr ""
+
 msgid "Median"
 msgstr ""
 
@@ -341,9 +344,6 @@ msgid "None *** FFE licence"
 msgstr "None"
 
 msgid "Not configured"
-msgstr ""
-
-msgid "Number of teams per league:"
 msgstr ""
 
 msgid "Ongoing"
@@ -454,9 +454,6 @@ msgid "The Papi format does not support result [{result}]."
 msgstr ""
 
 msgid "The [{tie_break}] tie-break as implemented in Papi."
-msgstr ""
-
-msgid "The maximum number of teams per league."
 msgstr ""
 
 msgid "The password of the tournament on the FFE website is made of 10 uppercase letters."

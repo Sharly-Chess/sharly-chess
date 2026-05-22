@@ -40,7 +40,7 @@ from data.print_documents.documents import StatisticsPrintDocument
 from data.print_documents.place_cards.data import PlaceCardPlayer
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
-from data.print_documents.team_types import ClubIndividualTeamType
+from data.print_documents.individual_teams import ClubIndividualTeamType
 from data.tie_breaks import TieBreak, TieBreakOption
 from data.tie_breaks.system_sets import SystemTieBreakSet
 from data.tie_breaks.tie_breaks import ProgressiveScoresTieBreak
@@ -71,6 +71,7 @@ from plugins.ffe.ffe_entity import (
     FfeLicencePlayersTabColumn,
     FfeLicenceTournamentCriterion,
     FfeLeagueTournamentCriterion,
+    FfeLeagueIndividualTeamType,
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
@@ -88,7 +89,6 @@ from plugins.ffe.ffe_upload_controller import (
 )
 from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
 from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
-from plugins.ffe.print_documents.ffe_league_team import FfeLeagueIndividualTeamType
 from plugins.ffe.print_documents.ffe_options import (
     FFEDocumentTypePrintOption,
     FFET3NoLicencePlayersPrintOption,

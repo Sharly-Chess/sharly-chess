@@ -18,7 +18,7 @@ from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.event import Event
 from data.input_output import TournamentImporter
 from data.player import TournamentPlayer
-from data.print_documents import PlayerSplitter, IndividualTeamType
+from data.print_documents import PlayerSplitter, IndividualTeamType, PrintOption
 from data.print_documents.documents import (
     PrintDocument,
     StatisticsPrintDocument,
@@ -51,7 +51,9 @@ from plugins.fra_schools.fra_schools_entity import (
     FraSchoolsPlayersTabColumn,
 )
 from plugins.fra_schools.fra_schools_ranking_document import (
+    FRASchoolsIndividualTeamMaxPerSchoolPrintOption,
     FraSchoolsRankingPrintDocument,
+    FRASchoolsIndividualTeamDisplayIncompletePrintOption,
     FraSchoolsIndividualTeamType,
 )
 from plugins.fra_schools.utils import (
@@ -247,6 +249,11 @@ class FRASchoolsPlugin(Plugin):
         sps: type[PrintDocument] = FraSchoolsRankingPrintDocument
         pps: type[PrintDocument] = IndividuelTeamRankingPrintDocument
         PluginUtils.insert_on_equals(print_documents, sps, pps, True)
+
+    @hookimpl
+    def insert_print_option(self, print_options: list[type['PrintOption']]):
+        print_options.append(FRASchoolsIndividualTeamMaxPerSchoolPrintOption)
+        print_options.append(FRASchoolsIndividualTeamDisplayIncompletePrintOption)
 
     @hookimpl(trylast=True)
     def alter_print_and_screen_player_columns(

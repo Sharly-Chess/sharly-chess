@@ -1,9 +1,6 @@
 <div class="col-12">
     {{ admin_macros.number_input(
         name=option.id,
-        label='Number of teams per ?:',
-        placeholder=_('Optional'),
-        tooltip_text='?',
         min=1,
         data=data, errors=errors
     ) }}

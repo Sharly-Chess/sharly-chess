@@ -1,54 +1,18 @@
-from dataclasses import dataclass
-from typing import Any
-
 from common.i18n import _
 from data.player import TournamentPlayer
-from data.print_documents import PrintOption, IndividualTeamType
-from data.print_documents.documents import (
-    RoundPrintOption,
-    TournamentPrintOption,
-    IndividuelTeamRankingPrintDocument,
-)
+from data.print_documents import IndividualTeamType, PrintOption
+from data.print_documents.documents import IndividuelTeamRankingPrintDocument
 from data.print_documents.options import (
-    IndividualTeamMaxPerEntityPrintOption,
+    TournamentPrintOption,
+    RoundPrintOption,
     IndividualTeamDisplayIncompletePrintOption,
+    IndividualTeamMaxPerEntityPrintOption,
 )
-from data.print_documents.teams import IndividualTeam
-from plugins.fra_schools.fra_schools_controller import FRASchool, FRASchoolsUtils
+from plugins.fra_schools import PLUGIN_NAME
+from plugins.fra_schools.utils import FRASchool, FRASchoolsUtils
 
 
-@dataclass
-class FraSchoolsIndividualTeam(IndividualTeam[FRASchool]):
-    @property
-    def school(self) -> FRASchool:
-        return self.entity
-
-    @property
-    def base_id(self) -> str:
-        return self.school.name
-
-    @property
-    def base_name(self) -> str:
-        return self.school.name
-
-    @property
-    def name(self) -> str:
-        name = super().name
-        if self.school.city:
-            name += f', {self.school.city}'
-        return name
-
-    @property
-    def missing_women_str(self) -> str:
-        return _('Missing girls: {count}').format(count=self.missing_women)
-
-    @property
-    def missing_men_str(self) -> str:
-        """Returns the number of missing men as a printable string."""
-        return _('Missing boys: {count}').format(count=self.missing_men)
-
-
-class FraSchoolsIndividualTeamType(IndividualTeamType):
+class FraSchoolsIndividualTeamType(IndividualTeamType[FRASchool]):
     @staticmethod
     def static_id() -> str:
         return 'fra-schools-team-type'
@@ -57,12 +21,8 @@ class FraSchoolsIndividualTeamType(IndividualTeamType):
     def static_name() -> str:
         return _('French schools (FRA)')
 
-    @property
-    def team_class(self) -> type:
-        return FraSchoolsIndividualTeam
-
     @staticmethod
-    def get_player_entity(player: TournamentPlayer) -> Any | None:
+    def get_player_entity(player: TournamentPlayer) -> FRASchool | None:
         player_plugin_data = FRASchoolsUtils.get_player_plugin_data(player)
         school_id: int | None = player_plugin_data.fra_school_id
         if not school_id:
@@ -73,6 +33,20 @@ class FraSchoolsIndividualTeamType(IndividualTeamType):
         except KeyError:
             return None
 
+    def get_team_base_id(self, school: FRASchool) -> str:
+        return str(school.id)
+
+    def get_team_base_name(self, school: FRASchool) -> str:
+        return school.name
+
+    def get_team_name_suffix(self, school: FRASchool, is_title: bool) -> str | None:
+        if not school.city:
+            return None
+        suffix = school.city
+        if is_title and school.postal_code:
+            suffix += f' ({school.postal_code})'
+        return suffix
+
     @staticmethod
     def document_title(round_: int) -> str:
         return _('Ranking by school after round #{round}').format(round=round_)
@@ -82,18 +56,40 @@ class FraSchoolsIndividualTeamType(IndividualTeamType):
         return _('School')
 
     @property
-    def modal_info_max_per_entity_label(self) -> str:
-        return _('Number of teams per school:')
+    def max_per_entity_label(self) -> str:
+        return _('Max. teams per school:')
 
     @property
-    def modal_info_max_per_entity_tooltip(self) -> str:
-        return _('The maximum number of teams per school.')
+    def missing_women_label(self) -> str:
+        return _('Missing girls')
 
     @property
-    def modal_info_display_incomplete_tooltip(self) -> str:
-        return _(
-            'Teams are considered complete when they have 8 players including 2 boys and 2 girls.'
-        )
+    def missing_men_label(self) -> str:
+        return _('Missing boys')
+
+
+class FRASchoolsIndividualTeamMaxPerSchoolPrintOption(
+    IndividualTeamMaxPerEntityPrintOption
+):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-individual-team-max-per-school'
+
+    @property
+    def template_name(self) -> str:
+        return '/fra_schools_individual_team_max_per_school.html'
+
+
+class FRASchoolsIndividualTeamDisplayIncompletePrintOption(
+    IndividualTeamDisplayIncompletePrintOption
+):
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-individual-team-display-incomplete'
+
+    @property
+    def template_name(self) -> str:
+        return '/fra_schools_individual_team_display_incomplete.html'
 
 
 class FraSchoolsRankingPrintDocument(IndividuelTeamRankingPrintDocument):
@@ -110,9 +106,19 @@ class FraSchoolsRankingPrintDocument(IndividuelTeamRankingPrintDocument):
         return [
             TournamentPrintOption,
             RoundPrintOption,
-            IndividualTeamMaxPerEntityPrintOption,
-            IndividualTeamDisplayIncompletePrintOption,
+            FRASchoolsIndividualTeamMaxPerSchoolPrintOption,
+            FRASchoolsIndividualTeamDisplayIncompletePrintOption,
         ]
+
+    @property
+    def display_incomplete_teams(self) -> bool:
+        return self._get_option(
+            FRASchoolsIndividualTeamDisplayIncompletePrintOption
+        ).value
+
+    @property
+    def max_teams_per_entity(self) -> int | None:
+        return self._get_option(FRASchoolsIndividualTeamMaxPerSchoolPrintOption).value
 
     @property
     def team_type(self) -> IndividualTeamType:
