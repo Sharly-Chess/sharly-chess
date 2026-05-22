@@ -19,7 +19,7 @@ from data.criteria.player_filters import PlayerFilter
 from data.criteria.tournament_criteria import TournamentCriterion
 from data.event import Event
 from data.player import Player, TournamentPlayer
-from data.print_documents import PlayerSplitter, PrintOption, IndividualTeamType
+from data.print_documents import PlayerSplitter, PrintOption
 from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
 from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
