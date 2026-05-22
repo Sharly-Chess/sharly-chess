@@ -966,7 +966,7 @@ class PlayerAdminController(BaseEventAdminController):
             return None, errors
         tournament = event.tournaments_by_id[int(data['tournament_id'])]
         stored_player = cls._stored_player_from_data(data, tournament, player)
-        if not event.check_player_unicity(
+        if event.get_player_duplicate(
             stored_player, tournament, player.id if player else None
         ):
             errors['alert'] = (
@@ -1304,9 +1304,8 @@ class PlayerAdminController(BaseEventAdminController):
                 ),
             )
         else:
-            event.delete_player(player.id)
+            event.delete_player(player)
             deleted_player_id = player.id
-            plugin_manager.hook_for_event(event, 'on_player_deleted')(player=player)
         return self._render_player_table_row(
             web_context, deleted_player_id=deleted_player_id
         )
