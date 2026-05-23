@@ -1,4 +1,3 @@
-import re
 from collections import Counter
 from collections.abc import Callable
 from functools import partial, cached_property, cache
@@ -489,7 +488,7 @@ class FfeLicenceNumberDatasheetColumn(DatasheetColumn):
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         if not value:
             return
-        if not re.match(r'^[A-Z]\d{5}', value):
+        if not PlayerFFELicence.validate(value):
             raise SharlyChessException(
                 _('Invalid format (expected: {format}).').format(format='A12345')
             )
