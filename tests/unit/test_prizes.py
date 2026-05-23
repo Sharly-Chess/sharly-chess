@@ -13,12 +13,11 @@ from data.criteria.player_filter_options import (
     GenderOption,
     MaxRatingOption,
     MinRatingOption,
-    AgeCategoriesOption,
-    AgeLowerOption,
-    AgeGreaterOption,
     ClubsFilterOption,
     FederationsFilterOption,
     RatingTypesFilterOption,
+    MaxAgeCategoryOption,
+    MinAgeCategoryOption,
 )
 from data.criteria.player_filters import (
     GenderPlayerFilter,
@@ -537,7 +536,7 @@ class PrizesTestCase(TestCase):
         )
 
         first_youth = self.stored_prize(50)
-
+        u14 = JuniorCategory(14).id
         youth_category = self.stored_category(
             'youth',
             stored_prizes=[
@@ -545,7 +544,12 @@ class PrizesTestCase(TestCase):
             ],
             stored_prize_criteria=[
                 self.stored_criterion(
-                    AgePlayerFilter([AgeCategoriesOption([JuniorCategory(14).id])])
+                    AgePlayerFilter(
+                        [
+                            MinAgeCategoryOption(u14),
+                            MaxAgeCategoryOption(u14),
+                        ]
+                    )
                 )
             ],
         )
@@ -931,8 +935,14 @@ class PrizesTestCase(TestCase):
             self.stored_prize(200),
             self.stored_prize(100),
         ]
+        u14 = JuniorCategory(14).id
         criterion = self.stored_criterion(
-            AgePlayerFilter([AgeCategoriesOption([JuniorCategory(14).id])])
+            AgePlayerFilter(
+                [
+                    MinAgeCategoryOption(u14),
+                    MaxAgeCategoryOption(u14),
+                ]
+            )
         )
         category = self.stored_category(
             stored_prizes=prizes, stored_prize_criteria=[criterion]
@@ -959,7 +969,10 @@ class PrizesTestCase(TestCase):
         ]
         criterion = self.stored_criterion(
             AgePlayerFilter(
-                [AgeCategoriesOption([JuniorCategory(14).id, JuniorCategory(12).id])]
+                [
+                    MinAgeCategoryOption(JuniorCategory(12).id),
+                    MaxAgeCategoryOption(JuniorCategory(14).id),
+                ]
             )
         )
         category = self.stored_category(
@@ -988,8 +1001,7 @@ class PrizesTestCase(TestCase):
         criterion = self.stored_criterion(
             AgePlayerFilter(
                 [
-                    AgeCategoriesOption([JuniorCategory(14).id]),
-                    AgeLowerOption(True),
+                    MaxAgeCategoryOption(JuniorCategory(14).id),
                 ]
             )
         )
@@ -1017,12 +1029,7 @@ class PrizesTestCase(TestCase):
             self.stored_prize(100),
         ]
         criterion = self.stored_criterion(
-            AgePlayerFilter(
-                [
-                    AgeCategoriesOption([SeniorCategory(50).id]),
-                    AgeGreaterOption(True),
-                ]
-            )
+            AgePlayerFilter([MinAgeCategoryOption(SeniorCategory(50).id)])
         )
         category = self.stored_category(
             stored_prizes=prizes, stored_prize_criteria=[criterion]

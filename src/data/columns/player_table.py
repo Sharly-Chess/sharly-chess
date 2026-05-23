@@ -276,6 +276,29 @@ class TieBreakColumn(TournamentPlayerTableColumn):
         return 'text-center'
 
 
+class TeamRankingTieBreakColumn(TournamentPlayerTableColumn):
+    def __init__(
+        self,
+        usage: ColumnUsage,
+        tournament: Tournament,
+        index: int,
+    ):
+        super().__init__(usage)
+        self.tournament = tournament
+        self.index = index
+
+    @property
+    def header_content(self) -> str:
+        return self.tournament.team_ranking_tie_breaks[self.index].acronym
+
+    def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
+        return str(tournament_player.team_ranking_tie_break_values[self.index])
+
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
+
+
 class PaidColumn(TournamentPlayerTableColumn):
     @property
     def header_content(self) -> str:

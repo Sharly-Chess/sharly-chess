@@ -343,7 +343,16 @@
             {% if client.can_update_players %}
                 <button
                     class="btn btn-outline-primary"
-                    hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=admin_player.id) }}"
+                    hx-get="{{ url_for(
+                        'admin-player-modal',
+                        action='update',
+                        event_uniq_id=admin_event.uniq_id,
+                        player_id=admin_player.id
+                    ) }}?redirect_to={{ url_for(
+                        'admin-record-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        player_id=tournament_player.id,
+                    ) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
                     tabindex="0"

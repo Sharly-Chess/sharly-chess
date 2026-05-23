@@ -7,6 +7,7 @@ from common import SharlyChessException
 from common.i18n import _
 from common.i18n.utils import unicode_normalize
 from common.logger import get_logger
+from common.network import NetworkMonitor
 from data.columns.handlers import PlayerDatasheetColumnHandler
 import data.columns.player_datasheet as pds
 from data.columns.player_datasheet import DatasheetColumn
@@ -366,11 +367,13 @@ class FfeOnlineDataSource(OnlineDataSource, _FfeDataSource):
 
     @classmethod
     async def check_connection(cls) -> bool:
+        if not NetworkMonitor.connected():
+            return False
         try:
             async with FFESqlServer():
                 return True
         except SharlyChessException as e:
-            logger.exception(e)
+            logger.warning('FFE connection check failed: %s', e)
             return False
 
     @property

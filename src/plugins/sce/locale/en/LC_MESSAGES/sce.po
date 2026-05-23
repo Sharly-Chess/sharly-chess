@@ -94,6 +94,9 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
+msgid "Distributing the players is allowed only if all the tournaments are synchronized with Sharly-Chess.com."
+msgstr ""
+
 msgid "Edit"
 msgstr ""
 
@@ -182,6 +185,9 @@ msgid "Local players"
 msgstr ""
 
 msgid "Modified"
+msgstr ""
+
+msgid "Moving a player from a tournament synchronized with Sharly-Chess.com to non-synchronized tournament is not allowed."
 msgstr ""
 
 msgid "Name"
@@ -422,13 +428,4 @@ msgid "{count} duplicated player detected."
 msgid_plural "{count} duplicated players detected."
 msgstr[0] ""
 msgstr[1] ""
-
-#~ msgid "Closed"
-#~ msgstr ""
-
-#~ msgid "Open"
-#~ msgstr ""
-
-#~ msgid "An error occurred while reaching Sharly-Chess.com, consult the logs for more details."
-#~ msgstr ""
 

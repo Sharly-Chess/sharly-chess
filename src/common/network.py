@@ -5,10 +5,16 @@ import ipaddress
 import subprocess
 import socket
 import sys
-import random
+from concurrent.futures import (
+    ThreadPoolExecutor,
+    TimeoutError as FutureTimeoutError,
+    as_completed,
+)
 from logging import Logger
 import time
 from typing import Optional
+from urllib.error import URLError
+from urllib.request import Request, urlopen
 import psutil
 import pathlib
 import ctypes
@@ -25,6 +31,19 @@ LOCALHOST_NAME: str = 'localhost'
 logger: Logger = get_logger()
 
 SLEEP_TIME = 15
+
+# Captive-portal probes: plaintext HTTP endpoints with predictable responses.
+# Anything else (login HTML, 302 to portal, cert error after redirect, timeout)
+# means we have a DHCP lease but no real internet. HTTP (not HTTPS) on purpose,
+# so portals can't transparently MITM us.
+# Format: (url, expected_status, expected_body_prefix or None).
+_CONNECTIVITY_PROBES: list[tuple[str, int, bytes | None]] = [
+    ('http://connectivitycheck.gstatic.com/generate_204', 204, None),
+    ('http://detectportal.firefox.com/success.txt', 200, b'success'),
+    ('http://www.msftconnecttest.com/connecttest.txt', 200, b'Microsoft Connect Test'),
+]
+_PROBE_TIMEOUT = 3  # seconds, per probe
+_CONFIRM_DELAY = 2  # seconds, wait before re-probing after a first failure
 
 # ---------------- Common helpers ----------------
 
@@ -372,42 +391,62 @@ class NetworkMonitor:
     connected_status = True
 
     @staticmethod
-    def _test_dns_server(ip: str) -> bool:
-        """Tries to connect to a given DNS over TCP server (port 53).
-        Returns True if it connected, False otherwise"""
-        # https://stackoverflow.com/questions/3764291/how-can-i-see-if-theres-an-available-and-active-network-connection-in-python
+    def _probe(url: str, expected_status: int, expected_body: bytes | None) -> bool:
+        """Hits one captive-portal probe URL. True only if status matches and
+        (when set) body starts with the expected prefix. Portal hijacks return
+        login HTML / wrong status / cert errors after redirect → False."""
         try:
-            socket.setdefaulttimeout(3)
-            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((ip, 53))
-            return True
-        except socket.error:
+            req = Request(url, headers={'User-Agent': 'SharlyChess-Connectivity'})
+            with urlopen(req, timeout=_PROBE_TIMEOUT) as resp:
+                if resp.status != expected_status:
+                    return False
+                if expected_body is None:
+                    return True
+                return resp.read(len(expected_body)).startswith(expected_body)
+        except (URLError, OSError, ValueError):
             return False
 
     @classmethod
-    def _test_for_internet_connection(cls):
+    def _run_probes(cls) -> bool:
+        """Fires all probes in parallel — True if any returns OK within
+        _PROBE_TIMEOUT. Different vendors so one blocked endpoint doesn't
+        kill detection. Returns on first success without waiting for
+        stragglers; their threads finish in the background and self-close.
+
+        Outer timeout is essential: urlopen's timeout only bounds the socket
+        connect/read — it does NOT bound socket.getaddrinfo. When offline, the
+        system DNS resolver can hang ~30s before giving up. as_completed's
+        timeout caps the total wall-time regardless."""
+        pool = ThreadPoolExecutor(max_workers=len(_CONNECTIVITY_PROBES))
+        futures = [pool.submit(cls._probe, *probe) for probe in _CONNECTIVITY_PROBES]
+        ok = False
+        try:
+            for fut in as_completed(futures, timeout=_PROBE_TIMEOUT):
+                try:
+                    if fut.result(timeout=0):
+                        ok = True
+                        break
+                except Exception:
+                    continue
+        except FutureTimeoutError:
+            pass
+        finally:
+            pool.shutdown(wait=False, cancel_futures=True)
+        return ok
+
+    @classmethod
+    def _test_for_internet_connection(cls, confirm: bool = True):
         from web.server_engine import ServerEngine
 
-        # https://www.iana.org/domains/root/servers
-        root_dns_servers: list[str] = [
-            '198.41.0.4',
-            '170.247.170.2',
-            '192.33.4.12',
-            '199.7.91.13',
-            '192.203.230.10',
-            '192.5.5.241',
-            '192.112.36.4',
-            '198.97.190.53',
-            '192.36.148.17',
-            '192.58.128.30',
-            '193.0.14.129',
-            '199.7.83.42',
-            '202.12.27.33',
-        ]
+        ok = cls._run_probes()
+        if not ok and confirm:
+            # Same-cycle confirmation: a single fail might be a Wi-Fi blip or
+            # transient DNS hiccup. Wait briefly and re-probe before flipping.
+            # Skipped on sync paths (use_cached=False) to keep blocking short.
+            time.sleep(_CONFIRM_DELAY)
+            ok = cls._run_probes()
 
-        # NOTE(Amaras): if you need to prioritize servers, use the `counts`
-        # keyword argument to specify integer weights for each server.
-        selected_servers: list[str] = random.sample(root_dns_servers, 2)
-        if any(cls._test_dns_server(server) for server in selected_servers):
+        if ok:
             if not cls.connected_status:
                 logger.info('Internet connection established')
                 if ServerEngine.app:
@@ -453,5 +492,6 @@ class NetworkMonitor:
         and so the returned value isn't 100% sure"""
 
         if not use_cached:
-            cls._test_for_internet_connection()
+            # Skip the 2s confirm delay on the sync path — caller is blocked.
+            cls._test_for_internet_connection(confirm=False)
         return cls.connected_status

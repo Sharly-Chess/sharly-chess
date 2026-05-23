@@ -2,7 +2,7 @@ import weakref
 from collections import Counter
 from dataclasses import dataclass, field
 from functools import total_ordering
-from typing import Optional, Self, SupportsFloat, TYPE_CHECKING
+from typing import NamedTuple, Optional, Self, SupportsFloat, TYPE_CHECKING
 
 from utils import Utils
 from utils.enum import (
@@ -122,6 +122,47 @@ class PlayerRatingAndType:
         return f'{self.value} {self.type.short_name}' if self.value else '-'
 
 
+# 1.4.3d thresholds (FIDE Handbook B.01, 1 Jan 2024). Module-level so the
+# typing.NamedTuple below isn't confused into treating them as fields.
+BIG_TOURNAMENT_MIN_FEDERATIONS = 3
+BIG_TOURNAMENT_MIN_FOREIGNERS = 20
+BIG_TOURNAMENT_MIN_TITLED_FOREIGNERS = 10
+
+
+class BigTournamentExemption(NamedTuple):
+    """Aggregated per-tournament counts used by 1.4.3d (Swiss size exception).
+
+    Each field is the worst-case (minimum) across every round in the
+    tournament — 1.4.3d requires the threshold to hold for *every* round.
+
+    The threshold constants live at module level above; the properties
+    here apply them so the per-field check is a one-liner.
+    """
+
+    federations: int
+    foreigners: int
+    titled_foreigners: int
+
+    @property
+    def federations_met(self) -> bool:
+        return self.federations >= BIG_TOURNAMENT_MIN_FEDERATIONS
+
+    @property
+    def foreigners_met(self) -> bool:
+        return self.foreigners >= BIG_TOURNAMENT_MIN_FOREIGNERS
+
+    @property
+    def titled_foreigners_met(self) -> bool:
+        return self.titled_foreigners >= BIG_TOURNAMENT_MIN_TITLED_FOREIGNERS
+
+    @property
+    def is_met(self) -> bool:
+        """True iff the tournament qualifies for 1.4.3d (and 1.4.4) exemption."""
+        return (
+            self.federations_met and self.foreigners_met and self.titled_foreigners_met
+        )
+
+
 @dataclass
 class NormCheckResult:
     title_norm: TitleNorm
@@ -133,6 +174,7 @@ class NormCheckResult:
     from_host_federations_count: int = 0
     num_title_holders: int = 0
     title_counts: Optional[Counter[PlayerTitle]] = None
+    federations_counter: Optional[Counter['Federation']] = None
     required_titles: list[PlayerTitle] = field(default_factory=list)
     required_titles_met: int = 0
     num_rated_players: int = 0
@@ -166,6 +208,38 @@ class NormCheckResult:
     # 1.5.6a
     requirement_156a_met: bool = False
 
+    # 1.4.2c — True if this result used the "last-round opponent forfeit
+    # included as a played LOSS" fallback rather than the default 1.4.1c
+    # "forfeit excluded" interpretation. The norm check tries 1.4.1c first
+    # and only falls back to 1.4.2c if it yields `is_met` where 1.4.1c didn't.
+    applied_142c: bool = False
+
+    # When `applied_142c` is True, the 1.4.1c interpretation's losing
+    # NormCheckResult — populated so the calculation-details view can show
+    # both Rps side by side. None when 1.4.2c did not apply (1.4.1c won
+    # outright, or no last-round forfeit existed).
+    alternate_142c: Optional['NormCheckResult'] = None
+
+    # 1.4.1e / 1.4.1f — rounds the subset searcher dropped to satisfy the
+    # norm. Empty when no search ran or when no winning subset was found.
+    ignored_rounds_via_search: frozenset[int] = field(default_factory=frozenset)
+
+    # Per-round audit trail copied from the `NormInputs` that produced
+    # this result. One entry per round in the applicant's schedule, with
+    # the decision (included / excluded / dropped / no opponent) and a
+    # reason key. Rendered by the IT1 in a collapsible block. Typed as
+    # list[Any] here to avoid a circular import with data.norms.inputs.
+    round_audit: list = field(default_factory=list)
+
+    # 1.4.3a/b/c — exemption from 1.4.3 only (NOT 1.4.4). Set by the
+    # print doc's `apply_143abc_exemption` based on the arbiter's
+    # tournament-type selection. Values: 'a', 'b', 'c', or None.
+    # Independent of 1.4.3d: both exemption paths can hold on the same
+    # result simultaneously. `is_met` checks 1.4.3d first as a fast path
+    # (it covers more — both 1.4.3 and 1.4.4); a/b/c only matters when
+    # 1.4.3d doesn't hold.
+    rule_143_exemption: str | None = None
+
     @property
     def is_143d_met(self) -> bool:
         return (
@@ -175,17 +249,35 @@ class NormCheckResult:
         )
 
     @property
+    def is_143_exempt_via_abc(self) -> bool:
+        return self.rule_143_exemption in ('a', 'b', 'c')
+
+    @property
     def is_met(self) -> bool:
-        return self.meets_gender and not (
+        if not self.meets_gender:
+            return False
+        # These checks have no exemption — must all pass.
+        if (
             self.not_enough_games
-            or self.not_enough_federations
-            or self.too_many_own_federation
-            or self.too_many_one_federation
             or self.not_enough_title_holders
             or self.not_enough_required_titles
             or self.score_too_low
             or self.average_too_low
             or self.performance_too_low
+        ):
+            return False
+        # 1.4.3d exempts BOTH 1.4.3 and 1.4.4 ("Otherwise, 1.4.4 applies"
+        # clause inside 1.4.3d means 1.4.4 stops applying only when
+        # 1.4.3d holds).
+        if self.is_143d_met:
+            return True
+        # 1.4.3a/b/c exempt 1.4.3 only. 1.4.4 still applies on top.
+        if self.is_143_exempt_via_abc:
+            return not (self.too_many_own_federation or self.too_many_one_federation)
+        return not (
+            self.not_enough_federations
+            or self.too_many_own_federation
+            or self.too_many_one_federation
         )
 
 

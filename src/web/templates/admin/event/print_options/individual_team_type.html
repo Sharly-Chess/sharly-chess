@@ -1,0 +1,18 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('Type of teams:'),
+        tooltip_text=_('The way to form teams.'),
+        select_options=option.team_type_options,
+        data=data, errors=errors
+    ) }}
+</div>
+
+<script>
+    $('#individual-team-type').on('change', function () {
+        $('#individual-team-max-per-entity-label-text').text(
+            {{ option.max_per_entity_label_per_type | tojson }}[this.value]
+        );
+    });
+    triggerModalInitEvent('#individual-team-type');
+</script>

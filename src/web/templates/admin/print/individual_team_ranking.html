@@ -1,7 +1,7 @@
 {% extends '/admin/print/base.html' %}
 
 {% block css %}
-    {% include 'school_ranking.css' %}
+    {% include 'individual_team_ranking.css' %}
 {% endblock %}
 
 {% block content %}
@@ -9,23 +9,23 @@
         <div class="section-title">{{ _('Overall ranking') }}</div>
         <div
             class="teams-overall centered"
-            style="grid-template-columns: repeat({{ tournament.tie_breaks|length + 3 }}, max-content);"
+            style="grid-template-columns: repeat({{ tournament.team_ranking_tie_breaks|length + 3 }}, max-content);"
         >
             <div class="overall-header text-end fw-bold">
                 {{ _('Rk. *** RANK COLUMN HEADER') }}
             </div>
             <div class="overall-header">
-                {{ _('School') }}
+                {{ document.overall_table_header }}
             </div>
             <div class="overall-header text-center fw-bold">
                 {{ _('Pts *** POINTS COLUMN HEADER') }}
             </div>
-            {% for tie_break in tournament.tie_breaks %}
+            {% for tie_break in tournament.team_ranking_tie_breaks %}
                 <div class="overall-header text-center">
                     {{ tie_break.acronym }}
                 </div>
             {% endfor %}
-            {% for team in ordered_school_teams %}
+            {% for team in ordered_teams %}
                 <div class="overall-cell text-end fw-bold">
                     {{ ordinal_integer(loop.index)|safe }}
                 </div>
@@ -34,7 +34,7 @@
                     onclick="document.getElementById('team-{{ team.id }}').scrollIntoView()"
                     style="cursor: pointer"
                 >
-                    {{ team.school.name }}{% if team.label %}<span class="fw-bold"> {{ team.label }}</span>{% endif %}{% if team.school.city %}, {{ team.school.city }}{% endif %}
+                    {{ team.name | safe }}
                     {% if not team.is_complete %}
                         <i>({{ _('incomplete *** INCOMPLETE TEAM') }})</i>
                     {% endif %}
@@ -51,44 +51,37 @@
         </div>
     </section>
     <section class="teams" style="grid-template-columns: repeat({{player_columns|length}}, max-content);">
-        {% for team in ordered_school_teams %}
+        {% for team in ordered_teams %}
             <div class="separator"></div>
 
             <div id="team-{{ team.id }}" class="team no-page-break">
                 <div class="team-rank">{{ ordinal_integer(loop.index)|safe }}</div>
                 <div class="team-title">
-                    {{ team.school.name }}{% if team.label %}<span class="team-label"> {{ team.label }}</span>{% endif %}{% if team.school.city %},
-                        <span class="school-city">
-                            {{ team.school.city }}
-                            {% if team.school.postal_code %}
-                                ({{ team.school.postal_code }})
-                            {% endif %}
-                        </span>
-                    {% endif %}
+                    {{ team.title_name | safe }}
                 </div>
                 <div class="team-info">
-                    {% if team.avg_age_years %}
+                    {% if document.youngest_team_last_tie_break and team.avg_age_years %}
                         <div style="margin-bottom: 0.75rem;">
                             {{ _('Average age: %(years)s', years=localized_number(team.avg_age_years)) }}
                         </div>
                     {% endif %}
                     {% if team.is_complete %}
-                        {% if include_incomplete %}
+                        {% if document.display_incomplete_teams %}
                             <i>{{ _('Complete Team') }}</i>
                         {% endif %}
                     {% else %}
                         <i>{{ _('Incomplete Team') }}</i>
-                        {% if team.missing_boys %}
+                        {% if document.min_gender_count and team.missing_men %}
                             <br/>
-                            {{ _('Missing boys: %(count)d', count=team.missing_boys) }}
+                            {{ team.missing_men_str }}
                         {% endif %}
-                        {% if team.missing_girls %}
+                        {% if document.min_gender_count and team.missing_women %}
                             <br/>
-                            {{ _('Missing girls: %(count)d', count=team.missing_girls) }}
+                            {{ team.missing_women_str }}
                         {% endif %}
-                        {% if team.missing_slots %}
+                        {% if team.missing_any %}
                             <br/>
-                            {{ _('Other missing players: %(count)d', count=team.missing_slots) }}
+                            {{ team.missing_any_str }}
                         {% endif %}
                     {% endif %}
                 </div>
@@ -99,13 +92,13 @@
                     </div>
                 {% endfor %}
 
-                {% for tournament_player in team.tournament_players %}
+                {% for player in team.players %}
                     {% for column in player_columns %}
-                        <div class="player-cell {{ column.get_cell_classes(tournament_player) }}">
+                        <div class="player-cell {{ column.get_cell_classes(player) }}">
                             {% if column.cell_template %}
                                 {% include column.cell_template %}
                             {% else %}
-                                {{ macros.column_cell(column, tournament_player) }}
+                                {{ macros.column_cell(column, player) }}
                             {% endif %}
                         </div>
                     {% endfor %}
@@ -116,9 +109,9 @@
                 <div class="total">
                    {{ points_str(team.total_points) }}
                 </div>
-                {% for tb_sum in team.tie_break_sums %}
+                {% for tie_break_sum in team.tie_break_sums %}
                      <div class="total">
-                        {{ points_str(tb_sum) }}
+                        {{ points_str(tie_break_sum) }}
                     </div>
                 {% endfor %}
             </div>

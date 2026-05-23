@@ -2204,16 +2204,10 @@ class PlayerAdminController(BaseEventAdminController):
                     tournament=dst_tournament.name,
                 ),
             )
-        if plugin_error := (
-            plugin_manager.hook_for_event(
-                event, 'is_tournament_participation_possible'
-            )(
-                tournament=dst_tournament,
-                tournament_player=player.single_tournament_player,
-            )
-            or None
-        ):
-            raise ValueError(plugin_error)
+        plugin_manager.hook_for_event(event, 'validate_player_tournament_move')(
+            tournament=dst_tournament,
+            player=player.single_tournament_player,
+        )
 
     @get(
         path='/history-popover/{event_uniq_id:str}/{tournament_id:int}/{player_id:int}',

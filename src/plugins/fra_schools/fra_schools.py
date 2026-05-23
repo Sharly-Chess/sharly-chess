@@ -3,8 +3,8 @@ from typing import TYPE_CHECKING, Any, override, Iterable
 
 from packaging.version import Version
 
-from common.logger import get_logger
 from common.i18n import _, ngettext
+from common.logger import get_logger
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
 from data.columns.player_table import TournamentPlayerTableColumn, ColumnUsage
@@ -18,11 +18,11 @@ from data.criteria.player_filters import PlayerFilter, ClubPlayerFilter
 from data.event import Event
 from data.input_output import TournamentImporter
 from data.player import TournamentPlayer
-from data.print_documents import PlayerSplitter, PrintOption
+from data.print_documents import PlayerSplitter, IndividualTeamType, PrintOption
 from data.print_documents.documents import (
     PrintDocument,
-    PlayerRankingPrintDocument,
     StatisticsPrintDocument,
+    IndividuelTeamRankingPrintDocument,
 )
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.tie_breaks.system_sets import SystemTieBreakSet
@@ -51,9 +51,10 @@ from plugins.fra_schools.fra_schools_entity import (
     FraSchoolsPlayersTabColumn,
 )
 from plugins.fra_schools.fra_schools_ranking_document import (
+    FRASchoolsIndividualTeamMaxPerSchoolPrintOption,
     FraSchoolsRankingPrintDocument,
-    FraSchoolsTeamsPrintOption,
-    FraSchoolsIncompletePrintOption,
+    FRASchoolsIndividualTeamDisplayIncompletePrintOption,
+    FraSchoolsIndividualTeamType,
 )
 from plugins.fra_schools.utils import (
     FRASchoolsPlayerPluginData,
@@ -246,15 +247,13 @@ class FRASchoolsPlugin(Plugin):
     @hookimpl
     def insert_print_document(self, print_documents: list[type['PrintDocument']]):
         sps: type[PrintDocument] = FraSchoolsRankingPrintDocument
-        pps: type[PrintDocument] = PlayerRankingPrintDocument
+        pps: type[PrintDocument] = IndividuelTeamRankingPrintDocument
         PluginUtils.insert_on_equals(print_documents, sps, pps, True)
 
     @hookimpl
     def insert_print_option(self, print_options: list[type['PrintOption']]):
-        print_options += [
-            FraSchoolsTeamsPrintOption,
-            FraSchoolsIncompletePrintOption,
-        ]
+        print_options.append(FRASchoolsIndividualTeamMaxPerSchoolPrintOption)
+        print_options.append(FRASchoolsIndividualTeamDisplayIncompletePrintOption)
 
     @hookimpl(trylast=True)
     def alter_print_and_screen_player_columns(
@@ -283,6 +282,12 @@ class FRASchoolsPlugin(Plugin):
         lps: type[PlayerSplitter] = FraSchoolPlayerSplitter
         cps: type[PlayerSplitter] = ClubPlayerSplitter
         PluginUtils.insert_on_equals(player_splitter_types, lps, cps, False)
+
+    @hookimpl
+    def insert_print_individual_team_types(
+        self, individual_team_types: list[type[IndividualTeamType]]
+    ):
+        individual_team_types.append(FraSchoolsIndividualTeamType)
 
     @hookimpl
     def get_extra_statistics_sections(

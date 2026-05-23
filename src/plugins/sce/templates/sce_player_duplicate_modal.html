@@ -47,7 +47,7 @@
                                         {{ player.full_name }}
                                     </div>
                                     <button
-                                        class="btn btn-outline-primary"
+                                        class="btn btn-sm btn-outline-primary"
                                         hx-get="{{ url_for(
                                             'admin-player-modal',
                                             action='update',
@@ -70,7 +70,7 @@
                                         ) }}
                                     >
                                         <button
-                                            class="btn btn-outline-danger"
+                                            class="btn btn-sm btn-outline-danger"
                                             hx-delete="{{ url_for(
                                                 'sce-delete-local-player',
                                                 event_uniq_id=admin_event.uniq_id,
@@ -114,7 +114,7 @@
                                         {{ player.full_name }}
                                     </div>
                                     <button
-                                        class="btn btn-outline-danger"
+                                        class="btn btn-sm btn-outline-danger"
                                         hx-delete="{{ url_for(
                                             'sce-delete-sce-player',
                                             event_uniq_id=admin_event.uniq_id,
@@ -124,7 +124,7 @@
                                     >
                                         <i class="bi-trash-fill"></i>
                                     </button>
-                                </span>
+                                </div>
                             </div>
                         {% endfor %}
                     {% endfor %}
