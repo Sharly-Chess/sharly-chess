@@ -31,6 +31,9 @@ msgstr ""
 msgid "E.g.: /tournaments/my_tournament/"
 msgstr ""
 
+msgid "Failure"
+msgstr ""
+
 msgid "FTP credentials are not defined."
 msgstr ""
 
@@ -47,6 +50,9 @@ msgid "Host:"
 msgstr ""
 
 msgid "Last upload"
+msgstr ""
+
+msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr ""
 
 msgid "Manual"
@@ -95,4 +101,7 @@ msgid "Upload tournament documents to custom location."
 msgstr ""
 
 msgid "Upload tournaments now"
+msgstr ""
+
+msgid "consult the logs"
 msgstr ""

@@ -13,8 +13,11 @@ from plugins.custom_upload.custom_upload_status import (
     NotConfiguredCustomUploadStatus,
     NeverUploadedCustomUploadStatus,
     UpToDateCustomUploadStatus,
+    FailureCustomUploadStatus,
+    UnexpectedFailureCustomUploadStatus,
 )
 from plugins.utils import PluginData
+from utils.entity import EntityManager
 from utils.enum import FormAction
 from web.controllers.base_controller import WebContext
 
@@ -69,11 +72,25 @@ class CustomUploadUtils:
         ):
             return [NotConfiguredCustomUploadStatus()]
 
+        # Last upload failure
+        if custom_upload_plugin_data.upload_failure_id:
+            status = CustomUploadFailureStatusManager().get_object(
+                custom_upload_plugin_data.upload_failure_id
+            )
+            return [status]
+
         # Current data status
         if not custom_upload_plugin_data.last_upload_at:
             return [NeverUploadedCustomUploadStatus()]
         else:
             return [UpToDateCustomUploadStatus()]
+
+
+class CustomUploadFailureStatusManager(EntityManager[FailureCustomUploadStatus]):
+    def entity_types(self) -> list[type[FailureCustomUploadStatus]]:
+        return [
+            UnexpectedFailureCustomUploadStatus,
+        ]
 
 
 @dataclass
@@ -83,6 +100,8 @@ class CustomUploadTournamentPluginData(PluginData):
     ftp_username: str | None = None
     ftp_password: str | None = None
     last_upload_at: datetime | None = None
+    last_upload_attempt_at: datetime | None = None
+    upload_failure_id: str | None = None
     document_urls: list[str] = field(default_factory=list)
 
     @classmethod
@@ -95,6 +114,10 @@ class CustomUploadTournamentPluginData(PluginData):
             last_upload_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
                 stored_value.get('last_upload_at')
             ),
+            last_upload_attempt_at=SQLiteDatabase.load_optional_timestamp_from_database_field(
+                stored_value.get('last_upload_attempt_at')
+            ),
+            upload_failure_id=stored_value.get('upload_failure_id'),
             document_urls=stored_value.get('document_urls', []),
         )
 
@@ -107,6 +130,10 @@ class CustomUploadTournamentPluginData(PluginData):
             'last_upload_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
                 self.last_upload_at
             ),
+            'last_upload_attempt_at': SQLiteDatabase.dump_optional_datetime_to_timestamp_field(
+                self.last_upload_attempt_at
+            ),
+            'upload_failure_id': self.upload_failure_id,
             'document_urls': self.document_urls,
         }
 
@@ -118,13 +145,17 @@ class CustomUploadTournamentPluginData(PluginData):
         action: str | None = None,
     ) -> Self:
         last_upload_at: datetime | None = None
-        document_urls: list[str] | None = []
+        last_upload_attempt_at: datetime | None = None
+        upload_failure_id: str | None = None
+        document_urls: list[str] = []
         if previous_object and action != FormAction.CLONE:
             last_upload_at = previous_object.last_upload_at
+            last_upload_attempt_at = previous_object.last_upload_attempt_at
+            upload_failure_id = previous_object.upload_failure_id
 
         # If action is UPDATE, it means form is for updating FTP configuration only
         # Document URLs should then stay as they are
-        if action == FormAction.UPDATE:
+        if previous_object and action == FormAction.UPDATE:
             document_urls = previous_object.document_urls
         if action == 'edit_documents':
             document_urls = [
@@ -135,9 +166,11 @@ class CustomUploadTournamentPluginData(PluginData):
         return cls(
             ftp_host=WebContext.form_data_to_str(data, 'ftp_host'),
             server_path=WebContext.form_data_to_str(data, 'server_path'),
-            last_upload_at=last_upload_at,
             ftp_username=WebContext.form_data_to_str(data, 'ftp_username'),
             ftp_password=WebContext.form_data_to_str(data, 'ftp_password'),
+            last_upload_at=last_upload_at,
+            last_upload_attempt_at=last_upload_attempt_at,
+            upload_failure_id=upload_failure_id,
             document_urls=document_urls,
         )
 

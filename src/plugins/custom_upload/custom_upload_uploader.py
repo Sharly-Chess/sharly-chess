@@ -19,6 +19,9 @@ from data.loader import EventLoader
 from data.tournament import Tournament
 from database.sqlite.event.event_store import StoredTournament
 from plugins.custom_upload import PLUGIN_NAME
+from plugins.custom_upload.custom_upload_status import (
+    UnexpectedFailureCustomUploadStatus,
+)
 from plugins.custom_upload.utils import (
     CustomUploadUtils,
     CustomUploadTournamentPluginData,
@@ -207,6 +210,8 @@ class CustomUploadUploader:
         )
 
         with paramiko.SSHClient() as client:
+            failure_status = None
+
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
             host = tournament_plugin_data.ftp_host
@@ -236,10 +241,15 @@ class CustomUploadUploader:
                     CustomUploadStatus.ERROR,
                     _('Error uploading tournament'),
                 )
+                failure_status = UnexpectedFailureCustomUploadStatus()
             finally:
-                # TODO: update last upload date only in case of success
                 now = datetime.now()
-                tournament_plugin_data.last_upload_at = now
+                if failure_status:
+                    tournament_plugin_data.upload_failure_id = failure_status.id
+                else:
+                    tournament_plugin_data.upload_failure_id = None
+                    tournament_plugin_data.last_upload_at = now
+                tournament_plugin_data.last_upload_attempt_at = now
                 CustomUploadUtils.update_tournament_plugin_data(
                     tournament, tournament_plugin_data
                 )

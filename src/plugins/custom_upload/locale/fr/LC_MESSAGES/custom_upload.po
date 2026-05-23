@@ -31,6 +31,9 @@ msgstr "Exemple : mon_identifiant"
 msgid "E.g.: /tournaments/my_tournament/"
 msgstr "Exemple : /tournois/mon_tournoi"
 
+msgid "Failure"
+msgstr "Échec"
+
 msgid "FTP credentials are not defined."
 msgstr "Les identifiants FTP ne sont pas définis"
 
@@ -48,6 +51,9 @@ msgstr "Hôte :"
 
 msgid "Last upload"
 msgstr "Dernière mise en ligne"
+
+msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
+msgstr "La dernière tentative de mise en ligne a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
 
 msgid "Manual"
 msgstr "Manuel"
@@ -96,3 +102,6 @@ msgstr "Mise en ligne de documents sur un site personnel"
 
 msgid "Upload tournaments now"
 msgstr "Mettre en ligne les tournois maintenant"
+
+msgid "consult the logs"
+msgstr "consulter les logs"

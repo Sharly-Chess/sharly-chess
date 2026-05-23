@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from common.i18n import _
 from data.tournament import Tournament
+from utils.date_time import format_date, format_time
 from utils.entity import IdentifiableEntity
 
 
@@ -69,3 +70,44 @@ class NotConfiguredCustomUploadStatus(CustomUploadStatus):
     @property
     def css_classes(self) -> str:
         return 'message-warning'
+
+
+class FailureCustomUploadStatus(CustomUploadStatus, ABC):
+    @staticmethod
+    def static_name() -> str:
+        return _('Failure')
+
+    @property
+    def css_classes(self) -> str:
+        return 'message-error'
+
+    @property
+    @abstractmethod
+    def details(self) -> str:
+        """Reason why the upload failed, displayed in the tooltip."""
+
+    def tooltip_message(self, tournament: Tournament) -> str | None:
+        from plugins.custom_upload.utils import CustomUploadUtils
+
+        last_attempt_at = CustomUploadUtils.get_tournament_plugin_data(
+            tournament
+        ).last_upload_attempt_at
+        assert last_attempt_at is not None
+        return _(
+            'Last upload attempt failed on {last_attempt_date} '
+            'at {last_attempt_time} (details: {details}).'
+        ).format(
+            last_attempt_date=format_date(last_attempt_at.date()),
+            last_attempt_time=format_time(last_attempt_at),
+            details=self.details,
+        )
+
+
+class UnexpectedFailureCustomUploadStatus(FailureCustomUploadStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'UNEXPECTED_FAILURE'
+
+    @property
+    def details(self) -> str:
+        return _('consult the logs')
