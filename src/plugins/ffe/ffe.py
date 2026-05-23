@@ -491,7 +491,7 @@ class FfePlugin(Plugin):
             pass
         if tnp.origin in FFE_LEAGUES:
             plugin_data.league = tnp.origin
-        if re.match(r'^[A-Z]\d{5}$', tnp.national_id):
+        if PlayerFFELicence.validate(tnp.national_id):
             plugin_data.ffe_licence_number = tnp.national_id
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
 
