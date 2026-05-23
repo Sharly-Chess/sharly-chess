@@ -260,7 +260,7 @@ class NationalPlayerEntry(TrfEntry):
         )
 
     def load(self, tournament: TrfTournament, data: str):
-        match = self.LINE_PATTERN.fullmatch(data)
+        match = self.LINE_PATTERN.fullmatch(data.ljust(80))
         if match is None:
             raise self.line_exception(data)
 

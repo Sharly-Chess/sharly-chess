@@ -59,14 +59,15 @@ class TrfSerializer:
         ]
 
         for line in lines:
+            data = line[4:].replace('\n', '')
             for entry_ in ENTRIES:
                 if line.startswith(entry_.din + ' '):
-                    entry_.load(tournament, line[4:])
+                    entry_.load(tournament, data)
                     break
 
             din = line[:3]
             if din in federation_codes:
-                NationalPlayerEntry(din).load(tournament, line[4:])
+                NationalPlayerEntry(din).load(tournament, data)
 
             if line.startswith('XX'):
                 field, value = line.split(' ', 1)
