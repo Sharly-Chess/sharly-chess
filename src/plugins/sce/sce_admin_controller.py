@@ -914,7 +914,7 @@ class SCEAdminController(BaseAdminController):
         player = web_context.get_player()
         if player.has_real_pairings:
             raise ClientException(f'Player [{player.full_name}] is not deletable')
-        event.delete_player(player.id)
+        event.delete_player(player)
         web_context = SCEWebContext(request, reload_event=True)
         return self._render_player_duplicate_modal(
             web_context, _('Player [{player}] deleted.').format(player=player.full_name)
@@ -945,6 +945,11 @@ class SCEAdminController(BaseAdminController):
                 SCESession(event).delete_sce_player(plugin_data.id, sce_player_id)
                 del plugin_data.duplicated_players_by_id[sce_player_id]
                 SCEUtils.update_tournament_plugin_data(tournament, plugin_data)
+                for player in event.players:
+                    p_plugin_data = SCEUtils.get_player_plugin_data(player)
+                    if p_plugin_data.duplicated_registration_id == sce_player_id:
+                        p_plugin_data.duplicated_registration_id = None
+                        SCEUtils.update_player_plugin_data(player, p_plugin_data)
                 message = _('Player [{player}] deleted.')
             except SharlyChessException as e:
                 logger.exception(e)
