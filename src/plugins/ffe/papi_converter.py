@@ -373,7 +373,7 @@ class PapiConverter:
                 ).date(),
                 stop_date=datetime.strptime(variables.endDate, PAPI_DATE_FORMAT).date(),
             )
-
+        stored_tournament.override_unrated_rapid_blitz = False
         rounds = 7
         if variables.rounds:
             if not variables.rounds.isdigit():
