@@ -71,6 +71,7 @@ logger: Logger = get_logger()
 # Per-event lock to serialise token refreshes and avoid rotation race conditions
 _refresh_locks: WeakValueDictionary[str, Lock] = WeakValueDictionary()
 _refresh_locks_mutex = Lock()
+SCE_TIMEOUT = 15
 
 
 def _get_refresh_lock(event_uniq_id: str) -> Lock:
@@ -217,6 +218,7 @@ class SCESession(Session):
                 'client_id': SCE_CLIENT_ID,
                 'redirect_uri': redirect_uri,
             },
+            timeout=SCE_TIMEOUT,
         )
         cls.validate_api_response(response)
         data = response.json()
@@ -256,6 +258,7 @@ class SCESession(Session):
                     'refresh_token': self.tokens.refresh_token,
                     'client_id': SCE_CLIENT_ID,
                 },
+                timeout=SCE_TIMEOUT,
             )
             if response.status_code in [HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN]:
                 logger.warning(
@@ -323,6 +326,39 @@ class SCESession(Session):
     # Player
     # -------------------------------------------------------------------------
 
+    def _create_registration_request(
+        self,
+        data: SCEPlayerSyncData,
+    ):
+        payload = data.to_sce_data()
+        return requests.post(
+            self.tournament_url(data.tournament_id) + '/registrations',
+            headers=self.api_headers,
+            json=payload,
+            timeout=SCE_TIMEOUT,
+        )
+
+    def create_sce_player(self, player: TournamentPlayer) -> bool:
+        """Create a player on SC.com, returns False if it already exists, True if it succeeds."""
+        plugin_data = SCEUtils.get_player_plugin_data(player)
+        sync_data = SCEPlayerSyncData.from_player(player)
+        response = self._run_with_token_validation(
+            partial(self._create_registration_request, data=sync_data),
+            skip_validation=True,
+        )
+        try:
+            self.validate_api_response(response)
+        except SharlyChessException as e:
+            if response.status_code != HTTP_409_CONFLICT:
+                raise e
+            plugin_data.is_duplicated = True
+            SCEUtils.update_player_plugin_data(player, plugin_data)
+            return False
+        plugin_data.id = response.json()['data']['id']
+        plugin_data.last_sync_data = sync_data
+        SCEUtils.update_player_plugin_data(player, plugin_data)
+        return True
+
     def _update_registration_request(
         self,
         data: SCEPlayerSyncData,
@@ -333,6 +369,7 @@ class SCESession(Session):
             self.registration_url(sce_tournament_id, sce_player_id),
             headers=self.api_headers,
             json=data.to_sce_data(),
+            timeout=SCE_TIMEOUT,
         )
 
     def update_sce_player(
@@ -354,6 +391,7 @@ class SCESession(Session):
         return requests.delete(
             self.registration_url(sce_tournament_id, sce_player_id),
             headers=self.api_headers,
+            timeout=SCE_TIMEOUT,
         )
 
     def delete_sce_player(
@@ -709,6 +747,7 @@ class SCESession(Session):
             self.base_event_url + '/tournaments',
             headers=self.api_headers,
             json=data.to_sce_data(),
+            timeout=SCE_TIMEOUT,
         )
 
     def create_sce_tournament(self, tournament: Tournament) -> int:
@@ -746,6 +785,7 @@ class SCESession(Session):
             self.tournament_url(sce_tournament_id),
             headers=self.api_headers,
             json=data.to_sce_data(),
+            timeout=SCE_TIMEOUT,
         )
 
     def update_sce_tournament(
@@ -871,6 +911,7 @@ class SCESession(Session):
         return requests.get(
             build_get_url(SCE_BASE_URL, '/api/v1/events/' + self.sce_event_id, params),
             headers=self.api_headers,
+            timeout=SCE_TIMEOUT,
         )
 
     def _get_event_data(
@@ -1229,6 +1270,7 @@ class SCESession(Session):
             self.base_event_url + f'/tournaments/{sce_tournament_id}/results',
             headers=self.api_headers,
             data=json.dumps(payload),
+            timeout=SCE_TIMEOUT,
         )
 
     def upload_tournament_results(
@@ -1251,6 +1293,7 @@ class SCESession(Session):
         return requests.get(
             self.base_event_url + '/check-in',
             headers=self.api_headers,
+            timeout=SCE_TIMEOUT,
         )
 
     def update_event_check_in_schedules(self):
@@ -1297,12 +1340,14 @@ class SCESession(Session):
         return requests.post(
             self.tournament_url(tournament_id) + '/check-in',
             headers=self.api_headers,
+            timeout=SCE_TIMEOUT,
         )
 
     def _close_tournament_check_in_request(self, tournament_id: str) -> Response:
         return requests.delete(
             self.tournament_url(tournament_id) + '/check-in',
             headers=self.api_headers,
+            timeout=SCE_TIMEOUT,
         )
 
     def toggle_tournament_check_in(self, tournament: Tournament):

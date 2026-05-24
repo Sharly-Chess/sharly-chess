@@ -1,8 +1,8 @@
 <div class="col-12">
     {{ admin_macros.number_input(
         name=option.id,
-        label=_('Teams per school:'),
-        tooltip_text=_('Maximum number of teams per school.'),
+        label=_('Number of W/M per team:'),
+        tooltip_text=_('Teams with fewer women/men are considered &quot;incomplete&quot;.'),
         min=1,
         data=data, errors=errors
     ) }}

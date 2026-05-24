@@ -5,6 +5,7 @@ from packaging.version import Version
 from common import SharlyChessException
 from common.i18n import _
 from common.logger import get_logger
+from common.network import NetworkMonitor
 from data.columns.column import Column
 from data.event import Event
 from data.loader import EventLoader
@@ -232,11 +233,37 @@ class SCEPlugin(Plugin):
 
     @hookimpl
     def on_before_load_tournaments_check_in_modal(self, event: Event):
-        if SCEUtils.get_event_plugin_data(event).id:
+        if SCEUtils.get_event_plugin_data(event).id and NetworkMonitor.connected():
             try:
                 SCESession(event).update_event_check_in_schedules()
             except SharlyChessException as e:
                 logger.exception(e)
+
+    @hookimpl
+    def validate_player_tournament_move(
+        self, tournament: 'Tournament', player: 'TournamentPlayer'
+    ):
+        src_id = SCEUtils.get_tournament_plugin_data(player.tournament).id
+        dst_id = SCEUtils.get_tournament_plugin_data(tournament).id
+        if src_id and not dst_id:
+            message = _(
+                'Moving a player from a tournament synchronized with '
+                'Sharly-Chess.com to non-synchronized tournament is not allowed.'
+            )
+            raise ValueError(message)
+
+    @hookimpl
+    def player_distribution_error_message(self, event: 'Event') -> str | None:
+        sce_ids = [
+            SCEUtils.get_tournament_plugin_data(tournament).id
+            for tournament in event.tournaments
+        ]
+        if any(sce_ids) and not all(sce_ids):
+            return _(
+                'Distributing the players is allowed only if all the '
+                'tournaments are synchronized with Sharly-Chess.com.'
+            )
+        return None
 
     # ---------------------------------------------------------------------------------
     # Nav

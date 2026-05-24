@@ -629,7 +629,7 @@ with_indicator: display a loading indicator, optional
                         for="{{ id }}"
                         class="form-check-label flex-grow-1"
                     >
-                        {{- label -}}
+                        <span id="{{ id }}-label-text">{{- label -}}</span>
                         {%- if doc_icon -%}
                             <span class="text-nowrap">{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>
                         {%- endif -%}

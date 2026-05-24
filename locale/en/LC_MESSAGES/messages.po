@@ -225,9 +225,6 @@ msgstr ""
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
 msgstr ""
 
-msgid "(arbiter override, 1.4.1b)"
-msgstr ""
-
 msgid "(by default)"
 msgstr ""
 
@@ -769,6 +766,9 @@ msgstr ""
 msgid "An error occurred. Consult the logs for more details."
 msgstr ""
 
+msgid "An integer greater than 1 is expected."
+msgstr ""
+
 msgid "An unexpected error occurred while reading the CSV file. Consult the logs for more details."
 msgstr ""
 
@@ -896,6 +896,10 @@ msgid "Average"
 msgstr ""
 
 msgid "Average (Ra), rounded per 1.4.7:"
+msgstr ""
+
+#, python-format
+msgid "Average age: %(years)s"
 msgstr ""
 
 msgid "Average of opponents Buchholz"
@@ -1438,6 +1442,9 @@ msgid "Complementary pairings successfully generated!"
 msgstr ""
 
 msgid "Complementary prize"
+msgstr ""
+
+msgid "Complete Team"
 msgstr ""
 
 msgid "Configuration *** WITH_SHORTCUT_INDICATION"
@@ -2517,9 +2524,6 @@ msgstr ""
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
-msgid "FIDE 1.4.1. Default is 9. Lower to 7 for World or Continental Team Championships, or to 8 for the World Cup (1.4.1b exceptions)."
-msgstr ""
-
 msgid "FIDE Arbiter"
 msgstr ""
 
@@ -3002,6 +3006,9 @@ msgstr ""
 msgid "Include IDs and passwords for uploading results"
 msgstr ""
 
+msgid "Include incomplete teams"
+msgstr ""
+
 msgid "Include non-monetary prizes"
 msgstr ""
 
@@ -3017,6 +3024,9 @@ msgstr ""
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
 msgstr ""
 
+msgid "Incomplete Team"
+msgstr ""
+
 msgid "Incorrect installation, exiting."
 msgstr ""
 
@@ -3024,6 +3034,12 @@ msgid "Increment (sec):"
 msgstr ""
 
 msgid "India"
+msgstr ""
+
+msgid "Individual ranking"
+msgstr ""
+
+msgid "Individual team ranking"
 msgstr ""
 
 msgid "Indonesia"
@@ -3464,6 +3480,12 @@ msgstr ""
 msgid "Max. age category"
 msgstr ""
 
+msgid "Max. teams per club:"
+msgstr ""
+
+msgid "Max. teams per federation:"
+msgstr ""
+
 msgid "Maximum age of the results:"
 msgstr ""
 
@@ -3530,12 +3552,6 @@ msgstr ""
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr ""
 
-msgid "Minimum games for a norm"
-msgstr ""
-
-msgid "Minimum games for a norm must be at least 7."
-msgstr ""
-
 msgid "Minimum number of points (included):"
 msgstr ""
 
@@ -3548,10 +3564,16 @@ msgstr ""
 msgid "Minimum score to clear the Rp threshold"
 msgstr ""
 
+msgid "Missing men"
+msgstr ""
+
 msgid "Missing required column [{column}]."
 msgstr ""
 
 msgid "Missing required field [{field}]."
+msgstr ""
+
+msgid "Missing women"
 msgstr ""
 
 msgid "Mo *** MONDAY"
@@ -4028,6 +4050,9 @@ msgstr ""
 msgid "Number (tournament on front)"
 msgstr ""
 
+msgid "Number of W/M per team:"
+msgstr ""
+
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
 msgstr ""
@@ -4044,6 +4069,9 @@ msgid "Number of half-points above or below the 50%% limit required for opponent
 msgstr ""
 
 msgid "Number of players"
+msgstr ""
+
+msgid "Number of players per team:"
 msgstr ""
 
 #, python-format
@@ -4182,10 +4210,16 @@ msgstr ""
 msgid "Origin: {template_origin}"
 msgstr ""
 
+msgid "Other missing players: {count}"
+msgstr ""
+
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr ""
 
 msgid "Others"
+msgstr ""
+
+msgid "Overall ranking"
 msgstr ""
 
 msgid "Overwrite"
@@ -4883,6 +4917,12 @@ msgid "Ranking after round #{round}"
 msgstr ""
 
 msgid "Ranking before the first round"
+msgstr ""
+
+msgid "Ranking by club after round #{round}"
+msgstr ""
+
+msgid "Ranking by federation after round #{round}"
 msgstr ""
 
 msgid "Ranking only"
@@ -5738,6 +5778,12 @@ msgstr ""
 msgid "Tanzania"
 msgstr ""
 
+msgid "Teams with fewer players are considered &quot;incomplete&quot;."
+msgstr ""
+
+msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
+msgstr ""
+
 msgid "Template:"
 msgstr ""
 
@@ -5890,9 +5936,6 @@ msgid "The minimum number of points of the players displayed (if left empty, all
 msgstr ""
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
-msgstr ""
-
-msgid "The minimum-games override only applies to Swiss tournaments (FIDE 1.4.1b). Leave at default ({default}) for Round-Robin and Double Round-Robin events."
 msgstr ""
 
 #, python-format
@@ -6068,6 +6111,9 @@ msgid "The values have to be higher than the sharing threshold of the category (
 msgstr ""
 
 msgid "The values to take into account when computing the tie-break."
+msgstr ""
+
+msgid "The way to form teams."
 msgstr ""
 
 msgid "The way to share the prizes between players with the same points."
@@ -6492,6 +6538,9 @@ msgid "Turkmenistan"
 msgstr ""
 
 msgid "Type"
+msgstr ""
+
+msgid "Type of teams:"
 msgstr ""
 
 msgid "Type:"
@@ -7214,6 +7263,9 @@ msgstr ""
 
 msgid "from move 1"
 msgstr ""
+
+msgid "incomplete *** INCOMPLETE TEAM"
+msgstr "incomplete"
 
 msgid "last"
 msgstr ""

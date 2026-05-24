@@ -1,4 +1,3 @@
-import re
 from collections import Counter
 from collections.abc import Callable
 from functools import partial, cached_property, cache
@@ -19,7 +18,7 @@ from data.criteria.player_filters import PlayerFilter
 from data.criteria.tournament_criteria import TournamentCriterion
 from data.event import Event
 from data.player import Player, TournamentPlayer
-from data.print_documents import PlayerSplitter, PrintOption
+from data.print_documents import PlayerSplitter, PrintOption, IndividualTeamType
 from data.print_documents.documents import QRCodePrintDocument, TournamentPrintOption
 from data.print_documents.qrcode_types import QRCodeType
 from data.tournament import Tournament
@@ -489,9 +488,11 @@ class FfeLicenceNumberDatasheetColumn(DatasheetColumn):
     def _augment_stored_player(self, stored_player: StoredPlayer, value: str):
         if not value:
             return
-        if not re.match(r'^[A-Z]\d{5}', value):
+        if not PlayerFFELicence.validate(value):
             raise SharlyChessException(
-                _('Invalid format (expected: {format}).').format(format='A12345')
+                _('Invalid format (expected: {format}).').format(
+                    format='A12345, AB1234'
+                )
             )
         plugin_data = FfePlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
@@ -545,3 +546,38 @@ class FfeLeagueDatasheetColumn(DatasheetColumn):
         )
         plugin_data.league = value
         stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+
+
+class FfeLeagueIndividualTeamType(IndividualTeamType[str]):
+    @staticmethod
+    def static_id() -> str:
+        return 'ffe-league-individual-team-type'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Leagues (FFE)')
+
+    @staticmethod
+    def get_player_entity(player: TournamentPlayer) -> str | None:
+        return FFEUtils.get_player_plugin_data(player).league
+
+    def get_team_base_id(self, league: str) -> str:
+        return league
+
+    def get_team_base_name(self, league: str) -> str:
+        name = league
+        if league in FFE_LEAGUES:
+            name += f' - {FFE_LEAGUES[league]}'
+        return name
+
+    @staticmethod
+    def document_title(round_: int) -> str:
+        return _('Ranking by league after round #{round}').format(round=round_)
+
+    @property
+    def overall_table_header(self) -> str:
+        return _('League')
+
+    @property
+    def max_per_entity_label(self) -> str:
+        return _('Max. teams per league:')

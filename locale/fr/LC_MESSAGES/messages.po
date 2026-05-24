@@ -225,9 +225,6 @@ msgstr "(%(total)s au total, %(own)s de sa propre fédération)"
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
 msgstr "(*) Connaître la liste des évènements en cours est nécessaire pour sélection les évènements avant de s'authentifier."
 
-msgid "(arbiter override, 1.4.1b)"
-msgstr "(remplacement par l'arbitre, 1.4.1b)"
-
 msgid "(by default)"
 msgstr "(par défaut)"
 
@@ -769,6 +766,9 @@ msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appar
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 
+msgid "An integer greater than 1 is expected."
+msgstr "Un entier supérieur à 1 est attendu."
+
 msgid "An unexpected error occurred while reading the CSV file. Consult the logs for more details."
 msgstr "Une erreur inattendue s'est produite lors de la lecture du fichier CSV. Consultez les logs pour plus de détails."
 
@@ -897,6 +897,10 @@ msgstr "Moyenne"
 
 msgid "Average (Ra), rounded per 1.4.7:"
 msgstr "Moyenne (Ra), arrondie selon 1.4.7 :"
+
+#, python-format
+msgid "Average age: %(years)s"
+msgstr "Âge moyen : %(years)s"
 
 msgid "Average of opponents Buchholz"
 msgstr "Moyenne du Buchholz des adversaires"
@@ -1439,6 +1443,9 @@ msgstr "Appariements complémentaires générés avec succès !"
 
 msgid "Complementary prize"
 msgstr "Prix complémentaire"
+
+msgid "Complete Team"
+msgstr "Équipe complète"
 
 msgid "Configuration *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>C</u>onfiguration"
@@ -2517,9 +2524,6 @@ msgstr "FIDE"
 msgid "FIDE *** NAME FOR RATING TYPE FIDE"
 msgstr "Fide"
 
-msgid "FIDE 1.4.1. Default is 9. Lower to 7 for World or Continental Team Championships, or to 8 for the World Cup (1.4.1b exceptions)."
-msgstr "FIDE 1.4.1. Par défaut 9. Réduire à 7 pour les Championnats du Monde ou Continentaux par équipes, ou à 8 pour la Coupe du Monde (exceptions 1.4.1b)."
-
 msgid "FIDE Arbiter"
 msgstr "Arbitre FIDE"
 
@@ -3002,6 +3006,9 @@ msgstr "Dans le tournoi"
 msgid "Include IDs and passwords for uploading results"
 msgstr "Inclure les identifiants et mots de passe nécessaires à la mise en ligne des résultats"
 
+msgid "Include incomplete teams"
+msgstr "Inclure les équipes incomplètes"
+
 msgid "Include non-monetary prizes"
 msgstr "Inclure les prix non-monétaires"
 
@@ -3017,6 +3024,9 @@ msgstr "Inclure les données privées des joueur·euses (mél, tél, etc.)"
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
 msgstr "Inclut tous les autres rôles et donne un accès complet à l'application ; ce niveau d'accès est donné seulement en accédant à Sharly Chess sur l'ordinateur sur lequel est lancé le serveur (à aucun autre appareil du réseau)."
 
+msgid "Incomplete Team"
+msgstr "Équipe incomplète"
+
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
 
@@ -3025,6 +3035,12 @@ msgstr "Incrément (sec) :"
 
 msgid "India"
 msgstr "Inde"
+
+msgid "Individual ranking"
+msgstr "Classement individuel"
+
+msgid "Individual team ranking"
+msgstr "Classement individuel par équipe"
 
 msgid "Indonesia"
 msgstr "Indonésie"
@@ -3464,6 +3480,12 @@ msgstr "Nombre max : illimité"
 msgid "Max. age category"
 msgstr "Catégorie d'âge max."
 
+msgid "Max. teams per club:"
+msgstr "Max. d'équipes par club :"
+
+msgid "Max. teams per federation:"
+msgstr "Max. d'équipes par fédération :"
+
 msgid "Maximum age of the results:"
 msgstr "Âge maximum des résultats :"
 
@@ -3530,12 +3552,6 @@ msgstr "Min :"
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
 
-msgid "Minimum games for a norm"
-msgstr "Nombre minimum de parties pour une norme"
-
-msgid "Minimum games for a norm must be at least 7."
-msgstr "Le nombre minimum de parties pour une norme doit être d'au moins 7."
-
 msgid "Minimum number of points (included):"
 msgstr "Nombre minimum de points (inclus) :"
 
@@ -3548,11 +3564,17 @@ msgstr "Le classement minimal doit être inférieur au classement maximal."
 msgid "Minimum score to clear the Rp threshold"
 msgstr "Score minimal pour franchir le seuil Rp"
 
+msgid "Missing men"
+msgstr "Hommes manquants"
+
 msgid "Missing required column [{column}]."
 msgstr "Colonne obligatoire [{column}] manquante."
 
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
+
+msgid "Missing women"
+msgstr "Femmes manquantes"
 
 msgid "Mo *** MONDAY"
 msgstr "Lu"
@@ -4028,6 +4050,9 @@ msgstr "Numéro (double-face, tournoi au dos)"
 msgid "Number (tournament on front)"
 msgstr "Numéro (tournoi devant)"
 
+msgid "Number of W/M per team:"
+msgstr "Nombre de F/H par équipe :"
+
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
 msgstr "Nombre de byes : %(byes)d (maximum : %(max_byes)d)"
@@ -4045,6 +4070,9 @@ msgstr "Le nombre de demi-points au-dessus ou en dessous des 50 %% de points re
 
 msgid "Number of players"
 msgstr "Nombre de joueur·euses"
+
+msgid "Number of players per team:"
+msgstr "Nombre de joueur·euses par équipe :"
 
 #, python-format
 msgid "Number of players: %(num)d"
@@ -4184,11 +4212,17 @@ msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur
 msgid "Origin: {template_origin}"
 msgstr "Origine : {template_origin}"
 
+msgid "Other missing players: {count}"
+msgstr "Autres joueur·euses manquant·es : {count}"
+
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr "Les autres joueur·euses de ce groupe de points n'entrent pas dans les prix (prix inférieur au seuil minimum)."
 
 msgid "Others"
 msgstr "Autres"
+
+msgid "Overall ranking"
+msgstr "Classement général"
 
 msgid "Overwrite"
 msgstr "Remplacement"
@@ -4886,6 +4920,12 @@ msgstr "Classement après la ronde {round}"
 
 msgid "Ranking before the first round"
 msgstr "Classement avant la première ronde"
+
+msgid "Ranking by club after round #{round}"
+msgstr "Classement par club après la ronde n°{round}"
+
+msgid "Ranking by federation after round #{round}"
+msgstr "Classement par fédération après la ronde n°{round}"
 
 msgid "Ranking only"
 msgstr "Classement seulement"
@@ -5740,6 +5780,12 @@ msgstr "Tadjikistan"
 msgid "Tanzania"
 msgstr "Tanzanie"
 
+msgid "Teams with fewer players are considered &quot;incomplete&quot;."
+msgstr "Les équipes avec moins de joueur·euses sont considérées « incomplètes »."
+
+msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
+msgstr "Les équipes avec moins de femmes/hommes sont considérées « incomplètes »."
+
 msgid "Template:"
 msgstr "Modèle :"
 
@@ -5893,9 +5939,6 @@ msgstr "Le nombre minimum de points réalisé par les joueur·euses affiché·es
 
 msgid "The minimum value of a shared prize in this category (by default: no threshold)."
 msgstr "La valeur minimale d'un prix partagé dans cette catégorie (pas de seuil par défaut)."
-
-msgid "The minimum-games override only applies to Swiss tournaments (FIDE 1.4.1b). Leave at default ({default}) for Round-Robin and Double Round-Robin events."
-msgstr "Le remplacement du nombre minimum de parties ne s'applique qu'aux tournois Suisses (FIDE 1.4.1b). Laisser la valeur par défaut ({default}) pour les tournois Toutes-Rondes et Toutes-Rondes doubles."
 
 #, python-format
 msgid "The name of the screen family, optional. The following tokens are automatically replaced by the board numbers or players' names):  %%f=first, %%l=last, %%t=tournament."
@@ -6071,6 +6114,9 @@ msgstr "Les valeurs doivent être supérieures au seuil de partage de la catégo
 
 msgid "The values to take into account when computing the tie-break."
 msgstr "Les valeurs à prendre en compte lors du calcul du départage."
+
+msgid "The way to form teams."
+msgstr "La manière de constituer les équipes."
 
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
@@ -6495,6 +6541,9 @@ msgstr "Turkménistan"
 
 msgid "Type"
 msgstr "Type"
+
+msgid "Type of teams:"
+msgstr "Type d'équipes :"
 
 msgid "Type:"
 msgstr "Type :"
@@ -7216,6 +7265,9 @@ msgstr "de"
 
 msgid "from move 1"
 msgstr "depuis le 1er coup"
+
+msgid "incomplete *** INCOMPLETE TEAM"
+msgstr "incomplète"
 
 msgid "last"
 msgstr "dernier"
