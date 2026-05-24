@@ -326,39 +326,6 @@ class SCESession(Session):
     # Player
     # -------------------------------------------------------------------------
 
-    def _create_registration_request(
-        self,
-        data: SCEPlayerSyncData,
-    ):
-        payload = data.to_sce_data()
-        return requests.post(
-            self.tournament_url(data.tournament_id) + '/registrations',
-            headers=self.api_headers,
-            json=payload,
-            timeout=SCE_TIMEOUT,
-        )
-
-    def create_sce_player(self, player: TournamentPlayer) -> bool:
-        """Create a player on SC.com, returns False if it already exists, True if it succeeds."""
-        plugin_data = SCEUtils.get_player_plugin_data(player)
-        sync_data = SCEPlayerSyncData.from_player(player)
-        response = self._run_with_token_validation(
-            partial(self._create_registration_request, data=sync_data),
-            skip_validation=True,
-        )
-        try:
-            self.validate_api_response(response)
-        except SharlyChessException as e:
-            if response.status_code != HTTP_409_CONFLICT:
-                raise e
-            plugin_data.is_duplicated = True
-            SCEUtils.update_player_plugin_data(player, plugin_data)
-            return False
-        plugin_data.id = response.json()['data']['id']
-        plugin_data.last_sync_data = sync_data
-        SCEUtils.update_player_plugin_data(player, plugin_data)
-        return True
-
     def _update_registration_request(
         self,
         data: SCEPlayerSyncData,
