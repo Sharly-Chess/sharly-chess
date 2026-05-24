@@ -490,7 +490,9 @@ class FfeLicenceNumberDatasheetColumn(DatasheetColumn):
             return
         if not PlayerFFELicence.validate(value):
             raise SharlyChessException(
-                _('Invalid format (expected: {format}).').format(format='A12345')
+                _('Invalid format (expected: {format}).').format(
+                    format='A12345, AB1234'
+                )
             )
         plugin_data = FfePlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})
