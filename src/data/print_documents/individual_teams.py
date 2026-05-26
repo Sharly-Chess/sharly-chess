@@ -76,8 +76,8 @@ class IndividualTeam:
     def missing_women_str(self) -> str:
         """Returns the number of missing women as a printable string."""
         return _('{string}: {value}').format(
-            string=self.type.missing_men_label,
-            value=self.missing_men,
+            string=self.type.missing_women_label,
+            value=self.missing_women,
         )
 
     @property
