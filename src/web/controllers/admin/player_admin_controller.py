@@ -1164,9 +1164,8 @@ class PlayerAdminController(BaseEventAdminController):
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
         action = FormAction.CREATE
-        add_other = WebContext.resolve_add_other(
-            data, SessionPlayersAddOtherActive(request)
-        )
+        add_other = 'add_other' in data
+        SessionPlayersAddOtherActive(request).set(add_other)
 
         stored_player, errors = self._read_player_form_data(web_context, action, data)
         if not stored_player:

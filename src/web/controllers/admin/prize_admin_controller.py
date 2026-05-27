@@ -567,9 +567,8 @@ class PrizeAdminController(BaseEventAdminController):
         web_context = PrizeAdminWebContext(request, tournament_id, prize_group_id)
         prize_group = web_context.get_admin_prize_group()
 
-        add_other = WebContext.resolve_add_other(
-            data, SessionPrizeCategoriesAddOtherActive(request)
-        )
+        add_other = 'add_other' in data
+        SessionPrizeCategoriesAddOtherActive(request).set(add_other)
         action = FormAction.CREATE
         if errors := self._validate_prize_category_form_data(data, action, prize_group):
             return self._render_prize_category_modal(
@@ -997,9 +996,8 @@ class PrizeAdminController(BaseEventAdminController):
         )
         event = web_context.get_admin_event()
 
-        add_other = WebContext.resolve_add_other(
-            data, SessionPrizeCriteriaAddOtherActive(request)
-        )
+        add_other = 'add_other' in data
+        SessionPrizeCriteriaAddOtherActive(request).set(add_other)
         flat_data = WebContext.flatten_list_data(data)
         if errors := self._validate_prize_criterion_form_data(event, flat_data):
             return self._admin_event_prizes_render(
@@ -1309,9 +1307,8 @@ class PrizeAdminController(BaseEventAdminController):
             request, tournament_id, prize_group_id, prize_category_id
         )
 
-        add_other = WebContext.resolve_add_other(
-            data, SessionPrizesAddOtherActive(request)
-        )
+        add_other = 'add_other' in data
+        SessionPrizesAddOtherActive(request).set(add_other)
         prize_category = web_context.get_admin_prize_category()
 
         if errors := self._validate_prize_form_data(

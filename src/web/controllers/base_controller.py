@@ -13,7 +13,6 @@ from litestar.datastructures import UploadFile
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.controller import Controller
 from litestar.response import Template
-from typing_extensions import TYPE_CHECKING
 
 from common import check_rgb_str, DEVEL_ENV
 from common.exception import FormError
@@ -33,9 +32,6 @@ from data.player import Federation, Club
 from utils import Utils
 from utils.date_time import format_date, format_date_range, format_datetime
 from web.messages import Message
-
-if TYPE_CHECKING:
-    from web.session import BoolSessionVariable
 
 logger: Logger = get_logger()
 
@@ -379,19 +375,6 @@ class WebContext:
         if not start_date:
             return ''
         return format_date_range(start_date, stop_date)
-
-    @staticmethod
-    def resolve_add_other(
-        data: dict[str, str], session_variable: 'BoolSessionVariable'
-    ) -> bool:
-        if 'add_other' in data:
-            add_other = True
-        elif 'create' in data:
-            add_other = False
-        else:
-            return session_variable.get()
-        session_variable.set(add_other)
-        return add_other
 
     @property
     def template_context(self) -> dict[str, Any]:
