@@ -718,13 +718,14 @@ class TournamentPlayer(Player):
     @cached_property
     def has_withdrawn(self) -> bool:
         """Returns True if the player has withdrawn from the tournament."""
-        return self.has_withdrawn_for_round(self.tournament.current_round or 1)
+        return self.has_withdrawn_for_round(self.tournament.current_round)
 
     def has_withdrawn_for_round(self, at_round: int) -> bool:
         """Check that the player only has zpbs for all remaining rounds."""
+        rounds = self.tournament.rounds
         return all(
             self.pairings_by_round[round_].zero_point_bye
-            for round_ in range(at_round, self.tournament.rounds + 1)
+            for round_ in range(min(at_round or 1, rounds), rounds + 1)
         )
 
     @property
@@ -761,9 +762,8 @@ class TournamentPlayer(Player):
     def check_in_status_for_round(self, round_: int) -> CheckInStatus:
         if self.has_withdrawn_for_round(round_):
             return CheckInStatus.WITHDRAWN
-        pairing = self.pairings_by_round.get(round_)
-        if pairing:
-            match pairing.result:
+        if round_ <= self.tournament.rounds:
+            match self.pairings_by_round[round_].result:
                 case Result.ZERO_POINT_BYE:
                     return CheckInStatus.NEXT_ROUND_ZPB
                 case Result.HALF_POINT_BYE:
