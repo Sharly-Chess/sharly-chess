@@ -1897,6 +1897,9 @@ msgstr ""
 msgid "Delete the screen family."
 msgstr ""
 
+msgid "Delete the screen."
+msgstr ""
+
 msgid "Delete the timer."
 msgstr ""
 
@@ -2116,6 +2119,9 @@ msgid "Duplicate the rotator."
 msgstr ""
 
 msgid "Duplicate the screen family."
+msgstr ""
+
+msgid "Duplicate the screen."
 msgstr ""
 
 msgid "Duplicate the timer."
@@ -7518,3 +7524,4 @@ msgstr ""
 
 msgid "← Back to IT1 certificate"
 msgstr ""
+
