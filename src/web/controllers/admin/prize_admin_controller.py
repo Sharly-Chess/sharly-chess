@@ -997,10 +997,10 @@ class PrizeAdminController(BaseEventAdminController):
         )
         event = web_context.get_admin_event()
 
-        add_other = WebContext.resolve_add_other(
-            data, SessionPrizeCriteriaAddOtherActive(request)
-        )
         flat_data = WebContext.flatten_list_data(data)
+        add_other = WebContext.resolve_add_other(
+            flat_data, SessionPrizeCriteriaAddOtherActive(request)
+        )
         if errors := self._validate_prize_criterion_form_data(event, flat_data):
             return self._admin_event_prizes_render(
                 web_context,
