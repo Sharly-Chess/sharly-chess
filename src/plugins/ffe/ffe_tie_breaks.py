@@ -261,7 +261,7 @@ class PapiPerformanceTieBreak(BasePapiTieBreak):
             score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
-        max_score = len(ratings) * Result.WIN.points(tournament.point_values)
+        max_score = len(ratings) * tournament.win_points
         average = sum(ratings) / len(ratings)
         fractional_score = score / max_score
         bonus = self._performance_bonus(fractional_score)
@@ -530,7 +530,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
             if round_index > after_round:
                 continue
             if pairing.unplayed:
-                score += Result.DRAW.points(tournament.point_values)
+                score += tournament.draw_points
                 continue
             if pairing.requested_bye:
                 if all(
@@ -538,7 +538,7 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
                     for index, p in player.pairings.items()
                     if round_index < index <= after_round
                 ):
-                    score += Result.DRAW.points(tournament.point_values)
+                    score += tournament.draw_points
                 else:
                     score += pairing.result.points(tournament.point_values)
             else:

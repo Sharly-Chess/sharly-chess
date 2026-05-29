@@ -188,6 +188,7 @@ class PlayerAdminWebContext(BaseEventAdminWebContext):
     def carry_over_fields(self) -> list[str]:
         fields = [
             'tournament_id',
+            'team_id',
             'mail',
             'phone',
             'comment',
@@ -733,7 +734,15 @@ class PlayerAdminController(BaseEventAdminController):
                     tournament_id = event.sorted_not_finished_tournaments[0].id
             else:
                 assert admin_player is not None
-                tournament_id = admin_player.single_tournament.id
+                if event.is_team_event:
+                    tournament_id = (
+                        admin_player.team.tournament_id
+                        if admin_player.team is not None
+                        and admin_player.team.tournament_id is not None
+                        else None
+                    )
+                else:
+                    tournament_id = admin_player.single_tournament.id
 
             rating_data: dict[str, Any] = {}
             for tournament_rating in TournamentRating:
@@ -754,12 +763,19 @@ class PlayerAdminController(BaseEventAdminController):
                     stored_plugin_data.get(plugin_id, {})
                 ).to_form_data(action=action if not search_stored_player else None)
 
+            team_id_value: int | None = None
+            if event.is_team_event:
+                if admin_player is not None:
+                    team_id_value = admin_player.team_id
+                elif action == FormAction.CREATE and len(event.sorted_teams) == 1:
+                    team_id_value = event.sorted_teams[0].id
             data = WebContext.values_dict_to_form_data(
                 {
                     'last_name': last_name,
                     'first_name': first_name,
                     'gender': gender,
                     'tournament_id': tournament_id,
+                    'team_id': team_id_value or '',
                     'title': title,
                     'federation': federation,
                     'fide_id': fide_id,
@@ -790,6 +806,11 @@ class PlayerAdminController(BaseEventAdminController):
             if admin_player.single_tournament not in tournaments:
                 tournaments.insert(0, admin_player.single_tournament)
         tournament_options |= web_context.get_tournament_options(tournaments)
+
+        team_options: dict[str, str] = {'': _('— No team —')}
+        if event.is_team_event:
+            for team in event.sorted_teams:
+                team_options[str(team.id)] = team.name
         plugin_templates_by_section: dict[str, list[str]] = defaultdict(list)
         plugin_manager.hook_for_event(event, 'insert_player_form_fields_template')(
             templates_by_section=plugin_templates_by_section
@@ -829,6 +850,8 @@ class PlayerAdminController(BaseEventAdminController):
             },
             'federation_options': cls._get_federation_options(),
             'tournament_options': tournament_options,
+            'team_options': team_options,
+            'is_team_event': event.is_team_event,
             'selected_data_source': SessionPlayersActiveDataSource(request).get(),
             'plugin_templates_by_section': plugin_templates_by_section,
             'previous_player': (
@@ -964,6 +987,20 @@ class PlayerAdminController(BaseEventAdminController):
         errors = cls._validate_player_form_data(web_context, action, data)
         if errors:
             return None, errors
+        if event.is_team_event:
+            team_id = WebContext.form_data_to_int(data, 'team_id')
+            team = event.teams_by_id.get(team_id) if team_id else None
+            tournament = team.tournament if team is not None else None
+            stored_player = cls._stored_player_from_data(data, tournament, player)
+            if any(
+                cls._matches_existing_player(
+                    stored_player, p, player.id if player else None
+                )
+                for p in event.players_by_id.values()
+            ):
+                errors['alert'] = _('This player already exists in the event.')
+                return None, errors
+            return stored_player, errors
         tournament = event.tournaments_by_id[int(data['tournament_id'])]
         stored_player = cls._stored_player_from_data(data, tournament, player)
         if event.get_player_duplicate(
@@ -979,6 +1016,19 @@ class PlayerAdminController(BaseEventAdminController):
             return None, errors
         return stored_player, errors
 
+    @staticmethod
+    def _matches_existing_player(
+        stored: StoredPlayer, existing: Player, current_player_id: int | None
+    ) -> bool:
+        if existing.id == current_player_id:
+            return False
+        if (
+            stored.first_name == existing.first_name
+            and stored.last_name == existing.last_name
+        ):
+            return True
+        return False
+
     @classmethod
     def _validate_player_form_data(
         cls,
@@ -988,27 +1038,33 @@ class PlayerAdminController(BaseEventAdminController):
     ) -> dict[str, str]:
         event = web_context.get_admin_event()
         errors: dict[str, str] = {}
-        tournament: Tournament | None = None
-        field = 'tournament_id'
-        try:
-            tournament_id = WebContext.form_data_to_int(data, field)
-            if not tournament_id:
-                raise ValueError('Tournament ID not supplied')
-            tournament = event.tournaments_by_id[tournament_id]
-        except (ValueError, KeyError):
-            errors[field] = _('Please choose the tournament.')
-        if action != FormAction.CREATE and tournament is not None:
-            player = web_context.get_admin_player()
-            if tournament.id != player.single_tournament.id:
-                try:
-                    cls._validate_player_tournament_move(
-                        event,
-                        player,
-                        player.single_tournament,
-                        tournament,
-                    )
-                except ValueError as e:
-                    errors[field] = str(e)
+        if event.is_team_event:
+            field = 'team_id'
+            team_id = WebContext.form_data_to_int(data, field)
+            if team_id and team_id not in event.teams_by_id:
+                errors[field] = _('Unknown team.')
+        else:
+            tournament: Tournament | None = None
+            field = 'tournament_id'
+            try:
+                tournament_id = WebContext.form_data_to_int(data, field)
+                if not tournament_id:
+                    raise ValueError('Tournament ID not supplied')
+                tournament = event.tournaments_by_id[tournament_id]
+            except (ValueError, KeyError):
+                errors[field] = _('Please choose the tournament.')
+            if action != FormAction.CREATE and tournament is not None:
+                player = web_context.get_admin_player()
+                if tournament.id != player.single_tournament.id:
+                    try:
+                        cls._validate_player_tournament_move(
+                            event,
+                            player,
+                            player.single_tournament,
+                            tournament,
+                        )
+                    except ValueError as e:
+                        errors[field] = str(e)
 
         last_name = WebContext.form_data_to_str(data, field := 'last_name')
         if not last_name:
@@ -1088,7 +1144,7 @@ class PlayerAdminController(BaseEventAdminController):
     def _stored_player_from_data(
         cls,
         data: dict[str, str],
-        tournament: Tournament,
+        tournament: Tournament | None,
         player: Player | None = None,
     ) -> StoredPlayer:
         date_of_birth: date | None = None
@@ -1145,7 +1201,11 @@ class PlayerAdminController(BaseEventAdminController):
             club=WebContext.form_data_to_str(data, 'club') or '',
             fixed=WebContext.form_data_to_int(data, 'fixed'),
             plugin_data=plugin_data,
-            check_in=player.check_in if player else tournament.default_player_check_in,
+            check_in=(
+                player.check_in
+                if player
+                else (tournament.default_player_check_in if tournament else False)
+            ),
         )
 
     @post(
@@ -1173,20 +1233,30 @@ class PlayerAdminController(BaseEventAdminController):
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
             )
-        tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
-        tournament = event.tournaments_by_id[tournament_id]
-        player_id = event.add_player(stored_player, [tournament])
-        self.set_players_search_results(web_context)
-        player = tournament.tournament_players_by_id[player_id]
         warning_message: str | None = None
-        if not player.matches_tournament_criteria:
-            warning_message = _(
-                'Player [{player}] has been created, but '
-                'does not match tournament criteria: {names}'
-            ).format(
-                player=player.full_name,
-                names=player.failing_tournament_criteria_message,
-            )
+        if event.is_team_event:
+            team_id = WebContext.form_data_to_int(data, 'team_id')
+            player_id = event.add_player(stored_player, [])
+            self.set_players_search_results(web_context)
+            if team_id and team_id in event.teams_by_id:
+                team = event.teams_by_id[team_id]
+                event_player = event.players_by_id[player_id]
+                with EventDatabase(event.uniq_id, True) as database:
+                    team.add_player(event_player, database)
+        else:
+            tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
+            tournament = event.tournaments_by_id[tournament_id]
+            player_id = event.add_player(stored_player, [tournament])
+            self.set_players_search_results(web_context)
+            player = tournament.tournament_players_by_id[player_id]
+            if not player.matches_tournament_criteria:
+                warning_message = _(
+                    'Player [{player}] has been created, but '
+                    'does not match tournament criteria: {names}'
+                ).format(
+                    player=player.full_name,
+                    names=player.failing_tournament_criteria_message,
+                )
 
         if add_other:
             return self._render_players_form_modal(
@@ -1202,10 +1272,11 @@ class PlayerAdminController(BaseEventAdminController):
         if warning_message:
             Message.warning(request, warning_message)
         else:
+            created_player = event.players_by_id[player_id]
             Message.success(
                 request,
                 _('Player [{player}] has been created.').format(
-                    player=player.full_name
+                    player=created_player.full_name
                 ),
             )
         return self._render_players_tab(web_context)
@@ -1224,12 +1295,23 @@ class PlayerAdminController(BaseEventAdminController):
             return self._render_players_form_modal(
                 web_context, action, data=data, errors=errors
             )
-        tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
-        tournament = event.tournaments_by_id[tournament_id]
         event.update_player(player, stored_player)
-        previous_tournament = player.single_tournament
-        if tournament.id != previous_tournament.id:
-            event.move_player_to_tournament(player, tournament)
+        if event.is_team_event:
+            team_id = WebContext.form_data_to_int(data, 'team_id')
+            new_team = event.teams_by_id.get(team_id) if team_id else None
+            current_team = player.team
+            if new_team is not current_team:
+                with EventDatabase(event.uniq_id, True) as database:
+                    if current_team is not None and new_team is None:
+                        current_team.remove_player(player, database)
+                    elif new_team is not None:
+                        new_team.add_player(player, database)
+        else:
+            tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
+            tournament = event.tournaments_by_id[tournament_id]
+            previous_tournament = player.single_tournament
+            if tournament.id != previous_tournament.id:
+                event.move_player_to_tournament(player, tournament)
 
         redirect_to = WebContext.form_data_to_str(data, 'redirect_to')
         if redirect_to:

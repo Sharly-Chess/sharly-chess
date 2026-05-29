@@ -25,6 +25,7 @@ from data.loader import EventLoader
 from data.player import TournamentPlayer, Player
 from data.rotator import Rotator
 from data.screen import Screen
+from data.team import Team
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils.enum import Result
@@ -151,6 +152,28 @@ class RequestUtils:
             )
         request.state[cls.REQUEST_DISPLAY_CONTROLLER_ATTR] = display_controller
         return display_controller
+
+    REQUEST_TEAM_ATTR: str = 'sharly_chess_team'
+    TEAM_ID_PARAM: str = 'team_id'
+
+    @classmethod
+    def get_team(cls, request: HTMXRequest) -> Team:
+        if cls.REQUEST_TEAM_ATTR in request.state:
+            return request.state[cls.REQUEST_TEAM_ATTR]
+        team_id = cls._get_request_param(request, cls.TEAM_ID_PARAM)
+        try:
+            team = cls.get_event(request).teams_by_id[team_id]
+        except KeyError:
+            raise NotFoundException(f'Team [{team_id}] not found.')
+        request.state[cls.REQUEST_TEAM_ATTR] = team
+        return team
+
+    @classmethod
+    def get_optional_team(cls, request: HTMXRequest) -> Team | None:
+        try:
+            return cls.get_team(request)
+        except ValidationException:
+            return None
 
     REQUEST_TOURNAMENT_ATTR: str = 'sharly_chess_tournament'
     TOURNAMENT_ID_PARAM: str = 'tournament_id'

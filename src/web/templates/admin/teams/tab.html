@@ -1,0 +1,132 @@
+{% extends '../../common/admin_cards_container.html' %}
+
+{% block top_left_nav %}
+    {{ admin_macros.admin_title(_('Teams'), '') }}
+{% endblock %}
+
+{% block top_right_nav %}
+    {% if client.can_update_tournaments %}
+        <button
+            class="btn btn-primary text-nowrap ms-1"
+            hx-get="{{ url_for('admin-team-create-modal', event_uniq_id=admin_event.uniq_id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >
+            <i class="bi-plus-square pe-1"></i>
+            {{ _('Create a team') }}
+        </button>
+    {% endif %}
+{% endblock %}
+
+{% block cards_container_cards %}
+    {% if admin_event.teams %}
+        {% set draggable = client.can_update_tournaments %}
+        <form
+            id="teams-form"
+            {% if draggable %}
+                hx-patch="{{ url_for('admin-teams-reassign', event_uniq_id=admin_event.uniq_id) }}"
+                hx-target="body"
+                hx-trigger="teams-changed"
+                hx-indicator="#please-wait"
+            {% endif %}
+        >
+            {% for tournament in sorted_tournaments %}
+                {% set tournament_teams = teams_by_tournament_id.get(tournament.id, []) %}
+                {% set sortable = draggable %}
+                <div class="mb-5">
+                    <h5 class="border-bottom pb-1">
+                        <i class="bi-diagram-3-fill me-1"></i>
+                        {{ tournament.name }}
+                        <span class="text-muted small">({{ tournament_teams|length }})</span>
+                    </h5>
+                    <div
+                        class="row gy-3 gx-3 team-sortable"
+                        data-tournament-id="{{ tournament.id }}"
+                    >
+                        {% for team in tournament_teams %}
+                            {% include 'team_card.html' %}
+                        {% endfor %}
+                        {% if not tournament_teams %}
+                            <div class="col-12 non-sortable">
+                                <div
+                                    class="text-center text-muted p-4 rounded"
+                                    style="border: 2px dashed var(--bs-border-color);"
+                                >
+                                    <i class="bi-box-arrow-in-down d-block fs-3 mb-2"></i>
+                                    {{ _('Drag teams here') }}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="mb-3">
+                <h5 class="border-bottom pb-1 text-muted">
+                    <i class="bi-question-circle me-1"></i>
+                    {{ _('Unassigned') }}
+                    <span class="text-muted small">({{ unassigned_teams|length }})</span>
+                </h5>
+                {% set sortable = draggable %}
+                <div
+                    class="row gy-3 gx-3 team-sortable"
+                    data-tournament-id=""
+                >
+                    {% for team in unassigned_teams %}
+                        {% include 'team_card.html' %}
+                    {% endfor %}
+                </div>
+                {% if not unassigned_teams %}
+                    <div class="text-muted ms-3 mt-3">
+                        {{ _('All teams are assigned to a tournament.') }}
+                    </div>
+                {% endif %}
+            </div>
+        </form>
+        {% if draggable %}
+            <script>
+                (function () {
+                    function refreshAssignments() {
+                        document.querySelectorAll('.assignment-input').forEach(function (input) {
+                            const parent = input.closest('.team-sortable');
+                            if (!parent) return;
+                            const tid = parent.dataset.tournamentId || '';
+                            const teamId = (input.value || '').split(':')[0] || '';
+                            input.value = teamId + ':' + tid;
+                        });
+                    }
+                    document.querySelectorAll('.team-sortable').forEach(function (container) {
+                        new Sortable(container, {
+                            group: 'teams',
+                            animation: 150,
+                            ghostClass: 'sortable-ghost',
+                            filter: '.non-sortable',
+                            preventOnFilter: true,
+                            onEnd: function () {
+                                refreshAssignments();
+                                htmx.trigger('#teams-form', 'teams-changed');
+                            },
+                        });
+                    });
+                    refreshAssignments();
+                })();
+            </script>
+        {% endif %}
+    {% else %}
+        <div class="mx-auto" style="max-width: 500px;">
+            <h5 class="mt-2 my-5 text-center">{{ _('No teams') }}</h5>
+            {% if client.can_update_tournaments %}
+                <p>
+                    {{ _('Create teams and assign them to tournaments.') }}
+                </p>
+                <p>
+                    {{ _(
+                        'Teams can be created without a tournament assignment '
+                        'and assigned later.'
+                    ) }}
+                </p>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}

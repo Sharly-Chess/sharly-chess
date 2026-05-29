@@ -8,7 +8,7 @@ from typing import Any
 
 
 from common.sharly_chess_config import SharlyChessConfig
-from utils.enum import Result
+from utils.enum import EventType
 
 
 @dataclass
@@ -93,6 +93,7 @@ class StoredPairing:
     result: int
     board_id: int | None
     illegal_moves: int = 0
+    effective_points: float | None = None
 
 
 @dataclass
@@ -102,6 +103,47 @@ class StoredBoard:
     black_player_id: int | None
     index: int
     last_result_update: datetime | None = None
+    team_board_id: int | None = None
+
+
+@dataclass
+class StoredTeamRoundLineupEntry:
+    team_id: int
+    round_: int
+    player_id: int
+    index: int
+
+
+@dataclass
+class StoredTeam:
+    id: int | None
+    name: str
+    tournament_id: int | None = None
+    pairing_number: int | None = None
+    stored_round_lineups: dict[int, list[StoredTeamRoundLineupEntry]] = field(
+        default_factory=dict[int, list[StoredTeamRoundLineupEntry]]
+    )
+
+
+@dataclass
+class StoredTeamBoard:
+    id: int | None
+    tournament_id: int
+    round_: int
+    team_a_id: int
+    index: int
+    team_b_id: int | None = None
+    last_result_update: datetime | None = None
+
+
+@dataclass
+class StoredTeamPairingBlock:
+    id: int | None
+    tournament_id: int
+    team_a_id: int
+    team_b_id: int
+    round_: int | None = None
+    reason: str | None = None
 
 
 @dataclass
@@ -135,6 +177,8 @@ class StoredPlayer:
     club: str | None = None
     fixed: int | None = None
     check_in: bool = False
+    team_id: int | None = None
+    team_index: int | None = None
 
     plugin_data: dict[str, dict[str, Any]] = field(
         default_factory=dict[str, dict[str, Any]]
@@ -166,11 +210,15 @@ class StoredTournament:
     last_update: datetime = field(default_factory=datetime.now)
     last_player_update: datetime | None = None
     last_pairing_update: datetime | None = None
-    three_points_for_a_win: bool = False
     override_unrated_rapid_blitz: bool = True
-    pab_value: int = Result.WIN.value
+    game_points: dict[int, float] | None = None
     criteria: dict[str, Any] = field(default_factory=dict)
     round_datetimes: dict[int, datetime | None] = field(default_factory=dict)
+    team_player_count: int | None = None
+    match_points: dict[int, float] | None = None
+    color_pattern: str | None = None
+    primary_score: str | None = None
+    secondary_score: str | None = None
     stored_tie_breaks: list[StoredTieBreak] = field(
         default_factory=list[StoredTieBreak]
     )
@@ -183,6 +231,12 @@ class StoredTournament:
     )
     stored_boards_by_round: dict[int, list[StoredBoard]] = field(
         default_factory=dict[int, list[StoredBoard]]
+    )
+    stored_team_boards_by_round: dict[int, list[StoredTeamBoard]] = field(
+        default_factory=dict[int, list[StoredTeamBoard]]
+    )
+    stored_team_pairing_blocks: list[StoredTeamPairingBlock] = field(
+        default_factory=list[StoredTeamPairingBlock]
     )
 
     # Plugins can add their own tournament data
@@ -366,6 +420,7 @@ class BaseStoredEvent:
     organiser_email: str | None = None
     organiser_director: str | None = None
     allow_multi_tournament_players: bool = True
+    event_type: EventType = EventType.INDIVIDUAL
 
     # Plugins can add their own event data
     plugin_data: dict[str, dict[str, Any]] = field(
@@ -380,6 +435,7 @@ class StoredEvent(BaseStoredEvent):
     stored_tournaments: list[StoredTournament] = field(
         default_factory=list[StoredTournament]
     )
+    stored_teams: list[StoredTeam] = field(default_factory=list[StoredTeam])
     stored_timers: list[StoredTimer] = field(default_factory=list[StoredTimer])
     stored_screens: list[StoredScreen] = field(default_factory=list[StoredScreen])
     stored_families: list[StoredFamily] = field(default_factory=list[StoredFamily])

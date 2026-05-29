@@ -23,6 +23,7 @@ from data.columns.players_tab import (
     FideIdPlayersTabColumn,
     PaymentPlayersTabColumn,
     TournamentPlayersTabColumn,
+    TeamPlayersTabColumn,
     CommentPlayersTabColumn,
     RecordPlayersTabColumn,
 )
@@ -243,6 +244,7 @@ class PlayersTabColumnHandler:
             FideIdPlayersTabColumn(),
             PaymentPlayersTabColumn(),
             TournamentPlayersTabColumn(),
+            TeamPlayersTabColumn(),
             CommentPlayersTabColumn(),
             RecordPlayersTabColumn(),
         ]

@@ -480,3 +480,39 @@ class DoubleBergerPairingEngine(BergerPairingEngine):
                 (round_ % (berger_table_round_count + 1)) + 1
             ]
         ]
+
+
+# ---------------------------------------------------------------------------------
+# Team pairing engine stubs. Real implementations will land in future bites.
+# ---------------------------------------------------------------------------------
+
+
+class _TeamPairingEngineStub(PairingEngine, ABC):
+    """Placeholder engine for team pairing variations. Raises on use."""
+
+    def _generate_stored_boards(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        partial_pairings: bool = False,
+    ) -> list[StoredBoard]:
+        raise NotImplementedError(f'{type(self).__name__} is not yet implemented.')
+
+    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+        return None
+
+
+class TeamSwissEngine(_TeamPairingEngineStub):
+    pass
+
+
+class TeamBergerEngine(_TeamPairingEngineStub):
+    pass
+
+
+class TeamDoubleBergerEngine(_TeamPairingEngineStub):
+    pass
+
+
+class MolterEngine(_TeamPairingEngineStub):
+    pass

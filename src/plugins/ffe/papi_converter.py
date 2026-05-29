@@ -418,7 +418,21 @@ class PapiConverter:
                 )
             except KeyError:
                 raise_unknown_value('pointSystem', variables.pointSystem)
-        stored_tournament.three_points_for_a_win = three_points_for_a_win
+        if three_points_for_a_win:
+            game_points = {
+                Result.WIN.value: 3.0,
+                Result.DRAW.value: 1.0,
+                Result.LOSS.value: 0.0,
+            }
+        else:
+            game_points = {
+                Result.WIN.value: 1.0,
+                Result.DRAW.value: 0.5,
+                Result.LOSS.value: 0.0,
+            }
+        game_points[Result.ZERO_POINT_BYE.value] = 0.0
+        game_points[Result.PAIRING_ALLOCATED_BYE.value] = game_points[Result.WIN.value]
+        stored_tournament.game_points = game_points
         stored_tournament.location = variables.venue
         ffe_id = None
         if variables.homologation:
@@ -799,7 +813,7 @@ class PapiConverter:
             tiebreak2=papi_tiebreaks[1],
             tiebreak3=papi_tiebreaks[2],
             pointSystem=PapiThreePointsForAWin.get_outer_value(
-                tournament.three_points_for_a_win
+                tournament.win_points == 3.0
             ),
             arbiter='',
             timeControl=tournament.time_control_trf25,
@@ -822,7 +836,7 @@ class PapiConverter:
             papi_player = self._player_to_papi_player(
                 tournament_player,
                 player_id_to_index,
-                tournament.pab_value,
+                tournament.pab_equivalent_result,
                 manual_tiebreak_by_player_id.get(tournament_player.id, None),
                 anonymize_player_data,
             )

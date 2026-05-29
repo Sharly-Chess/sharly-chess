@@ -23,6 +23,8 @@ from data.prize.assigned_prize import AssignedPrize
 from data.prize.prize_category import PrizeCategory
 from data.prize.prize_group import PrizeGroup
 from data.screen import Screen
+from data.team_board import TeamBoard
+from data.team_pairing_block import TeamPairingBlock
 from data.tie_breaks import (
     TieBreak,
     TieBreakOption,
@@ -45,6 +47,7 @@ from utils.enum import (
     BoardColor,
     PlayerGender,
     Result,
+    ScoreType,
     TournamentRating,
     PlayerRatingType,
     ScreenType,
@@ -70,6 +73,7 @@ if TYPE_CHECKING:
         TrfAcceleratedRound,
     )
     from data.pairings import PairingVariation, PairingSystem
+    from data.team import Team
 
 logger: Logger = get_logger()
 
@@ -317,13 +321,137 @@ class Tournament:
     def override_unrated_rapid_blitz(self) -> bool:
         return self.stored_tournament.override_unrated_rapid_blitz
 
-    @property
-    def three_points_for_a_win(self) -> bool:
-        return self.stored_tournament.three_points_for_a_win
+    # -------------------------------------------------------------------------
+    # Team tournament settings
+    # -------------------------------------------------------------------------
 
     @property
-    def pab_value(self) -> Result:
-        return Result(self.stored_tournament.pab_value)
+    def is_team_tournament(self) -> bool:
+        return self.stored_tournament.team_player_count is not None
+
+    @property
+    def team_player_count(self) -> int | None:
+        return self.stored_tournament.team_player_count
+
+    @cached_property
+    def match_points(self) -> dict[Result, float]:
+        """Points awarded for a team match outcome, indexed by `Result`.
+        Empty dict for individual tournaments. The stored ``match_points`` dict
+        only carries overrides; Olympiad defaults (2/1/0) fill in the rest.
+        PAB match points default to the WIN value (unopposed team = win).
+        Forfeit is handled separately."""
+        if not self.is_team_tournament:
+            return {}
+        raw = self.stored_tournament.match_points or {}
+        win = float(raw.get(Result.WIN.value, 2.0))
+        return {
+            Result.WIN: win,
+            Result.DRAW: float(raw.get(Result.DRAW.value, 1.0)),
+            Result.LOSS: float(raw.get(Result.LOSS.value, 0.0)),
+            Result.PAIRING_ALLOCATED_BYE: float(
+                raw.get(Result.PAIRING_ALLOCATED_BYE.value, win)
+            ),
+        }
+
+    @property
+    def primary_score(self) -> 'ScoreType':
+        """Score basis used as primary (FIDE 1.2.1). Default: match points
+        for team tournaments; not used for individual tournaments."""
+        raw = self.stored_tournament.primary_score
+        if raw:
+            return ScoreType(raw)
+        return ScoreType.MATCH_POINTS
+
+    @property
+    def secondary_score(self) -> 'ScoreType':
+        """Score basis used as secondary (e.g. for colour allocation).
+        Default: game points."""
+        raw = self.stored_tournament.secondary_score
+        if raw:
+            return ScoreType(raw)
+        return ScoreType.GAME_POINTS
+
+    @property
+    def color_pattern(self) -> str | None:
+        return self.stored_tournament.color_pattern
+
+    @cached_property
+    def teams_by_id(self) -> dict[int, 'Team']:
+        return {
+            team.id: team
+            for team in self.event.teams_by_id.values()
+            if team.tournament_id == self.id
+        }
+
+    @property
+    def teams(self) -> Collection['Team']:
+        return self.teams_by_id.values()
+
+    @cached_property
+    def sorted_teams(self) -> list['Team']:
+        return sorted(self.teams, key=attrgetter('name'))
+
+    @cached_property
+    def teams_by_pairing_number(self) -> dict[int, 'Team']:
+        return {
+            team.pairing_number: team
+            for team in self.teams
+            if team.pairing_number is not None
+        }
+
+    def clear_team_cache(self):
+        Utils.reset_cached_properties(
+            self,
+            'teams_by_id',
+            'sorted_teams',
+            'teams_by_pairing_number',
+            'team_boards_by_id',
+            'team_boards_by_round',
+            'team_pairing_blocks',
+        )
+
+    @cached_property
+    def team_boards_by_id(self) -> dict[int, TeamBoard]:
+        return {
+            stored_team_board.id: TeamBoard(self, stored_team_board)
+            for stored_team_boards in (
+                self.stored_tournament.stored_team_boards_by_round.values()
+            )
+            for stored_team_board in stored_team_boards
+            if stored_team_board.id is not None
+        }
+
+    @cached_property
+    def team_boards_by_round(self) -> dict[int, list[TeamBoard]]:
+        result: dict[int, list[TeamBoard]] = {}
+        for team_board in self.team_boards_by_id.values():
+            result.setdefault(team_board.round, []).append(team_board)
+        for round_team_boards in result.values():
+            round_team_boards.sort(key=lambda tb: tb.index)
+        return result
+
+    def get_round_team_boards(self, round_: int) -> list[TeamBoard]:
+        return self.team_boards_by_round.get(round_, [])
+
+    @cached_property
+    def team_pairing_blocks(self) -> list[TeamPairingBlock]:
+        return [
+            TeamPairingBlock(self, stored_block)
+            for stored_block in self.stored_tournament.stored_team_pairing_blocks
+        ]
+
+    def get_round_team_pairing_blocks(self, round_: int) -> list[TeamPairingBlock]:
+        return [
+            block
+            for block in self.team_pairing_blocks
+            if block.applies_to_round(round_)
+        ]
+
+    def is_team_pair_blocked(self, team_a_id: int, team_b_id: int, round_: int) -> bool:
+        return any(
+            block.involves(team_a_id, team_b_id)
+            for block in self.get_round_team_pairing_blocks(round_)
+        )
 
     # -------------------------------------------------------------------------
     # Pairing settings
@@ -946,16 +1074,49 @@ class Tournament:
 
     @cached_property
     def point_values(self) -> dict[Result, float]:
-        values: dict[Result, float] = {}
-        if self.three_points_for_a_win:
-            values = {Result.WIN: 3, Result.DRAW: 1, Result.LOSS: 0}
-        if self.pab_value != Result.WIN:
-            values[Result.PAIRING_ALLOCATED_BYE] = values[self.pab_value]
-        return values
+        """Game points awarded per result type. The stored ``game_points`` dict
+        only carries overrides; defaults fill in the rest:
+            WIN  = 1.0
+            DRAW = 0.5
+            LOSS = 0.0
+            ZERO_POINT_BYE          defaults to LOSS value
+            PAIRING_ALLOCATED_BYE   defaults to WIN value
+        """
+        raw = self.stored_tournament.game_points or {}
+        win = float(raw.get(Result.WIN.value, 1.0))
+        draw = float(raw.get(Result.DRAW.value, 0.5))
+        loss = float(raw.get(Result.LOSS.value, 0.0))
+        zpb = float(raw.get(Result.ZERO_POINT_BYE.value, loss))
+        pab = float(raw.get(Result.PAIRING_ALLOCATED_BYE.value, win))
+        return {
+            Result.WIN: win,
+            Result.DRAW: draw,
+            Result.LOSS: loss,
+            Result.ZERO_POINT_BYE: zpb,
+            Result.PAIRING_ALLOCATED_BYE: pab,
+        }
 
     @property
     def is_standard_point_system_used(self) -> bool:
-        return self.pab_value == Result.WIN and not self.three_points_for_a_win
+        """True if the point system matches the FIDE default 1/0.5/0 with PAB=1."""
+        return (
+            self.win_points == 1.0
+            and self.draw_points == 0.5
+            and self.loss_points == 0.0
+            and self.pab_points == 1.0
+        )
+
+    @property
+    def pab_equivalent_result(self) -> Result:
+        """Which game result (WIN/DRAW/LOSS) the Pairing Allocated Bye is worth.
+        Used for legacy interop where PAB is expressed as one of those three."""
+        if self.pab_points == self.win_points:
+            return Result.WIN
+        if self.pab_points == self.draw_points:
+            return Result.DRAW
+        if self.pab_points == self.loss_points:
+            return Result.LOSS
+        return Result.WIN
 
     @cached_property
     def win_points(self) -> float:
@@ -968,6 +1129,14 @@ class Tournament:
     @cached_property
     def loss_points(self) -> float:
         return Result.LOSS.points(self.point_values)
+
+    @cached_property
+    def pab_points(self) -> float:
+        return Result.PAIRING_ALLOCATED_BYE.points(self.point_values)
+
+    @cached_property
+    def zpb_points(self) -> float:
+        return Result.ZERO_POINT_BYE.points(self.point_values)
 
     @cached_property
     def current_round(self) -> int:

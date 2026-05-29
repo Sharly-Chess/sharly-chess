@@ -66,6 +66,7 @@
 | `message_color`                  | `TEXT`    |                           | The color of the event's alert messages in hexadecimal format `#RRGGBB` (default `#FF0000`)                                                         |
 | `message_background_color`       | `TEXT`    |                           | The background color of the event's alert messages in hexadecimal format `#RRGGBB` (default `#FFFF00`)                                              |
 | `federation`                     | `TEXT`    | NOT NULL<br/>DEFAULT 'NO' | The event's federation code                                                                                                                         |
+| `event_type`                     | `TEXT`    | NOT NULL<br/>DEFAULT 'INDIVIDUAL' | The competition type hosted by the event (`INDIVIDUAL`, `TEAM`; extensible)                                                                  |
 | `deprecated_chessevent_user_id`  | `TEXT`    |                           | _Deprecated_                                                                                                                                        |
 | `deprecated_chessevent_password` | `TEXT`    |                           | _Deprecated_                                                                                                                                        |
 | `deprecated_chessevent_event_id` | `TEXT`    |                           | _Deprecated_                                                                                                                                        |
@@ -142,6 +143,10 @@
 | `three_points_for_a_win`                  | `INTEGER` | NOT NULL<br/>DEFAULT 0.0                   | Boolean:<br/>- `0`: 1 point for a win<br/>- `1`: 3 points for a win                         |
 | `round_datetimes`                         | `TEXT`    | NOT NULL<br/>DEFAULT '{}'                  | The round schedule in JSON format ({int: datetime, None})                                   |
 | `criteria`                                | `TEXT`    | NOT NULL<br/>DEFAULT '{}'                  | The criteria in JSON format ({str: Any})                                                    |
+| `team_player_count`                       | `INTEGER` |                                            | Number of boards per team match. `NULL` for individual tournaments                          |
+| `match_points`                            | `TEXT`    |                                            | Points awarded per team match outcome, JSON dict keyed by `Result.value` (team mode only)   |
+| `game_points_usage`                       | `TEXT`    |                                            | How individual game points combine for match outcome: `SUM` or `WIN_COUNT` (team mode only) |
+| `color_pattern`                           | `TEXT`    |                                            | Per-board color allocation pattern ID (plugin-extendable, team mode only)                   |
 | `deprecated_chessevent_user_id`           | `TEXT`    |                                            | _Deprecated_                                                                                |
 | `deprecated_chessevent_password`          | `TEXT`    |                                            | _Deprecated_                                                                                |
 | `deprecated_chessevent_event_id`          | `TEXT`    |                                            | _Deprecated_                                                                                |
@@ -170,6 +175,7 @@
 | `club`          | `TEXT`    |                                            | The player's chess club                         |
 | `fixed`         | `INTEGER` |                                            | The player's fixed table (if any)               |
 | `check_in`      | `INTEGER` | NOT NULL<br/>DEFAULT 0                     | Boolean: whether the player has checked in      |
+| `team_id`       | `INTEGER` | REFERENCES `team`(`id`) ON DELETE SET NULL | The player's team (team tournaments only)       |
 | `plugin_data`   | `TEXT`    | NOT NULL                                   | Additional data used by plugins, in JSON format |
 
 ### `tournament_player` table (tournament player associations)
@@ -189,6 +195,7 @@
 | `black_player_id`    | `INTEGER` | REFERENCES `player`(`id`)                                     | The black player ID (can be NULL for byes)    |
 | `index`              | `INTEGER` | NOT NULL                                                      | The board number/index                        |
 | `last_result_update` | `TEXT`    |                                                               | Timestamp of the last result update for board |
+| `team_board_id`      | `INTEGER` | REFERENCES `team_board`(`id`) ON DELETE SET NULL              | Parent team match (team tournaments only)     |
 
 ### `pairing` table (tournament pairings and results)
 
@@ -200,6 +207,48 @@
 | `result`        | `INTEGER` | NOT NULL                                                                             | The game result for the player                          |
 | `board_id`      | `INTEGER` | REFERENCES `board`(`id`)                                                             | The board ID where the game is played                   |
 | `illegal_moves` | `INTEGER` | NOT NULL<br/>DEFAULT 0                                                               | Number of illegal moves made by the player in the round |
+| `effective_points` | `REAL` |                                                                                      | Override game points used for match-point calc          |
+
+### `team` table (teams in team tournaments)
+
+| Field            | Type      | Constraint                                                       | Description                                                              |
+|------------------|-----------|------------------------------------------------------------------|--------------------------------------------------------------------------|
+| `id`             | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                       | The team ID                                                              |
+| `tournament_id`  | `INTEGER` | REFERENCES `tournament`(`id`) ON DELETE SET NULL                 | The assigned tournament (`NULL` = unassigned, event-scoped)              |
+| `name`           | `TEXT`    | NOT NULL                                                         | The team name                                                            |
+| `pairing_number` | `INTEGER` |                                                                  | The team's pairing number in the tournament                              |
+
+### `team_round_lineup` table (team line-ups per round)
+
+| Field        | Type      | Constraint                                                       | Description                                                      |
+|--------------|-----------|------------------------------------------------------------------------|------------------------------------------------------------|
+| `team_id`    | `INTEGER` | NOT NULL<br/>REFERENCES `team`(`id`) ON DELETE CASCADE<br/>PRIMARY KEY | The team ID                                                |
+| `round`      | `INTEGER` | NOT NULL<br/>PRIMARY KEY                                               | The round number                                           |
+| `player_id`  | `INTEGER` | NOT NULL<br/>REFERENCES `player`(`id`) ON DELETE CASCADE               | The player playing on this board for the round             |
+| `index`      | `INTEGER` | NOT NULL<br/>PRIMARY KEY                                               | The board index within the team for that round (0-based)   |
+
+### `team_board` table (team-vs-team matches)
+
+| Field                | Type      | Constraint                                                              | Description                                                |
+|----------------------|-----------|-------------------------------------------------------------------------|------------------------------------------------------------|
+| `id`                 | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                              | The team match ID                                          |
+| `tournament_id`      | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) ON DELETE CASCADE            | The tournament ID                                          |
+| `round`              | `INTEGER` | NOT NULL                                                                | The round number                                           |
+| `team_a_id`          | `INTEGER` | NOT NULL<br/>REFERENCES `team`(`id`) ON DELETE CASCADE                  | One of the two teams (symmetric; colors via `color_pattern`) |
+| `team_b_id`          | `INTEGER` | REFERENCES `team`(`id`) ON DELETE CASCADE                               | The other team (`NULL` = bye)                              |
+| `index`              | `INTEGER` | NOT NULL                                                                | The team match number/index in the round                   |
+| `last_result_update` | `TEXT`    |                                                                         | Timestamp of the last result update                        |
+
+### `team_pairing_block` table (prohibited team pairings)
+
+| Field           | Type      | Constraint                                                              | Description                                                                      |
+|-----------------|-----------|-------------------------------------------------------------------------|----------------------------------------------------------------------------------|
+| `id`            | `INTEGER` | NOT NULL<br/>PRIMARY KEY<br/>AUTOINCREMENT                              | The block entry ID                                                               |
+| `tournament_id` | `INTEGER` | NOT NULL<br/>REFERENCES `tournament`(`id`) ON DELETE CASCADE            | The tournament ID                                                                |
+| `round`         | `INTEGER` |                                                                         | The round to block on; `NULL` = block for all rounds                             |
+| `team_a_id`     | `INTEGER` | NOT NULL<br/>REFERENCES `team`(`id`) ON DELETE CASCADE                  | First team in the prohibited pair                                                |
+| `team_b_id`     | `INTEGER` | NOT NULL<br/>REFERENCES `team`(`id`) ON DELETE CASCADE                  | Second team in the prohibited pair                                               |
+| `reason`        | `TEXT`    |                                                                         | Optional explanation (e.g. same club, won previous rounds)                       |
 
 ### `screen` table (screens)
 

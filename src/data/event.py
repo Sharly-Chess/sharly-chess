@@ -26,6 +26,7 @@ from data.player_categories import (
 )
 from data.rotator import Rotator
 from data.screen import Screen
+from data.team import Team
 from data.timer import Timer
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
@@ -34,6 +35,7 @@ from plugins.utils import PluginData, Plugin
 from utils import Utils
 from utils.date_time import format_date, format_date_range
 from utils.enum import (
+    EventType,
     RoleType,
     ScreenType,
 )
@@ -44,6 +46,7 @@ from database.sqlite.event.event_store import (
     StoredRotator,
     StoredPermission,
     StoredRole,
+    StoredTeam,
     StoredTimer,
 )
 
@@ -111,6 +114,14 @@ class Event:
     @property
     def federation(self) -> str:
         return self.stored_event.federation
+
+    @property
+    def event_type(self) -> EventType:
+        return self.stored_event.event_type
+
+    @property
+    def is_team_event(self) -> bool:
+        return self.event_type == EventType.TEAM
 
     @property
     def player_rating_type(self) -> PlayerRatingType:
@@ -560,8 +571,52 @@ class Event:
             )
             database.delete_stored_tournament_player(source_tournament.id, player.id)
             del source_tournament.tournament_players_by_id[player.id]
-        player.single_tournament_id = destination_tournament.id
+        player.optional_single_tournament_id = destination_tournament.id
         self.clear_player_cache()
+
+    # --------------------------------------------------------------------------
+    # Teams
+    # --------------------------------------------------------------------------
+
+    @cached_property
+    def teams_by_id(self) -> dict[int, Team]:
+        return {
+            stored_team.id: Team(self, stored_team)
+            for stored_team in self.stored_event.stored_teams
+            if stored_team.id is not None
+        }
+
+    @property
+    def teams(self) -> Collection[Team]:
+        return self.teams_by_id.values()
+
+    @cached_property
+    def sorted_teams(self) -> list[Team]:
+        return sorted(self.teams, key=attrgetter('name'))
+
+    def clear_team_cache(self):
+        Utils.reset_cached_properties(self, 'teams_by_id', 'sorted_teams')
+
+    def add_team(self, stored_team: StoredTeam) -> Team:
+        with EventDatabase(self.uniq_id, True) as database:
+            stored_team.id = database.add_stored_team(stored_team)
+            self.stored_event.stored_teams.append(stored_team)
+        self.clear_team_cache()
+        for tournament in self.tournaments:
+            tournament.clear_team_cache()
+        return self.teams_by_id[stored_team.id]
+
+    def delete_team(self, team: Team):
+        with EventDatabase(self.uniq_id, True) as database:
+            database.delete_stored_team(team.id)
+        self.stored_event.stored_teams = [
+            stored_team
+            for stored_team in self.stored_event.stored_teams
+            if stored_team.id != team.id
+        ]
+        self.clear_team_cache()
+        for tournament in self.tournaments:
+            tournament.clear_team_cache()
 
     @cached_property
     def basic_screens_by_id(self) -> dict[int, Screen]:

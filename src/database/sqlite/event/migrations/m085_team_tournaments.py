@@ -1,0 +1,199 @@
+import json
+
+from database.sqlite.migration import BaseMigration
+
+
+# Result enum values used by the migration. Keep in sync with utils.enum.Result.
+_RESULT_LOSS = 1
+_RESULT_DRAW = 2
+_RESULT_WIN = 3
+_RESULT_ZERO_POINT_BYE = 7
+_RESULT_PAIRING_ALLOCATED_BYE = 9
+
+
+def _initial_game_points(
+    three_points_for_a_win: int | None,
+    pab_value: int | None,
+) -> str | None:
+    """Build the migrated game_points override dict.
+    Only non-default values are stored; returns None when defaults apply
+    (1/0.5/0 game points, PAB worth a win)."""
+    overrides: dict[int, float] = {}
+    if three_points_for_a_win:
+        overrides[_RESULT_WIN] = 3.0
+        overrides[_RESULT_DRAW] = 1.0
+        overrides[_RESULT_LOSS] = 0.0
+        draw_pts = 1.0
+        loss_pts = 0.0
+    else:
+        draw_pts = 0.5
+        loss_pts = 0.0
+    if pab_value == _RESULT_DRAW:
+        overrides[_RESULT_PAIRING_ALLOCATED_BYE] = draw_pts
+    elif pab_value == _RESULT_LOSS:
+        overrides[_RESULT_PAIRING_ALLOCATED_BYE] = loss_pts
+    # PAB defaulting to WIN value is the implicit default, no override needed.
+    if not overrides:
+        return None
+    return json.dumps({str(k): v for k, v in overrides.items()})
+
+
+class Migration(BaseMigration):
+    def forward(self):
+        # New tables
+        self.database.execute(
+            'CREATE TABLE `team` ('
+            '   `id` INTEGER NOT NULL,'
+            '   `tournament_id` INTEGER,'
+            '   `name` TEXT NOT NULL,'
+            '   `pairing_number` INTEGER,'
+            '   PRIMARY KEY(`id` AUTOINCREMENT),'
+            '   FOREIGN KEY (`tournament_id`) REFERENCES '
+            '   `tournament`(`id`) ON DELETE SET NULL'
+            ')'
+        )
+        self.database.execute(
+            'CREATE TABLE `team_round_lineup` ('
+            '   `team_id` INTEGER NOT NULL,'
+            '   `round` INTEGER NOT NULL,'
+            '   `player_id` INTEGER NOT NULL,'
+            '   `index` INTEGER NOT NULL,'
+            '   PRIMARY KEY (`team_id`, `round`, `index`),'
+            '   FOREIGN KEY (`team_id`) REFERENCES '
+            '   `team`(`id`) ON DELETE CASCADE,'
+            '   FOREIGN KEY (`player_id`) REFERENCES '
+            '   `player`(`id`) ON DELETE CASCADE'
+            ')'
+        )
+        self.database.execute(
+            'CREATE TABLE `team_board` ('
+            '   `id` INTEGER NOT NULL,'
+            '   `tournament_id` INTEGER NOT NULL,'
+            '   `round` INTEGER NOT NULL,'
+            '   `team_a_id` INTEGER NOT NULL,'
+            '   `team_b_id` INTEGER,'
+            '   `index` INTEGER NOT NULL,'
+            '   `last_result_update` TEXT,'
+            '   PRIMARY KEY(`id` AUTOINCREMENT),'
+            '   FOREIGN KEY (`tournament_id`) REFERENCES '
+            '   `tournament`(`id`) ON DELETE CASCADE,'
+            '   FOREIGN KEY (`team_a_id`) REFERENCES '
+            '   `team`(`id`) ON DELETE CASCADE,'
+            '   FOREIGN KEY (`team_b_id`) REFERENCES '
+            '   `team`(`id`) ON DELETE CASCADE'
+            ')'
+        )
+        self.database.execute(
+            'CREATE TABLE `team_pairing_block` ('
+            '   `id` INTEGER NOT NULL,'
+            '   `tournament_id` INTEGER NOT NULL,'
+            '   `round` INTEGER,'
+            '   `team_a_id` INTEGER NOT NULL,'
+            '   `team_b_id` INTEGER NOT NULL,'
+            '   `reason` TEXT,'
+            '   PRIMARY KEY(`id` AUTOINCREMENT),'
+            '   FOREIGN KEY (`tournament_id`) REFERENCES '
+            '   `tournament`(`id`) ON DELETE CASCADE,'
+            '   FOREIGN KEY (`team_a_id`) REFERENCES '
+            '   `team`(`id`) ON DELETE CASCADE,'
+            '   FOREIGN KEY (`team_b_id`) REFERENCES '
+            '   `team`(`id`) ON DELETE CASCADE'
+            ')'
+        )
+
+        # ALTER existing tables
+        self.database.execute(
+            "ALTER TABLE `info` ADD `event_type` TEXT NOT NULL DEFAULT 'INDIVIDUAL'"
+        )
+        self.database.execute(
+            'ALTER TABLE `player` ADD `team_id` INTEGER '
+            'REFERENCES `team`(`id`) ON DELETE SET NULL'
+        )
+        self.database.execute('ALTER TABLE `player` ADD `team_index` INTEGER')
+        self.database.execute(
+            'ALTER TABLE `board` ADD `team_board_id` INTEGER '
+            'REFERENCES `team_board`(`id`) ON DELETE SET NULL'
+        )
+        self.database.execute(
+            'ALTER TABLE `tournament` ADD `team_player_count` INTEGER'
+        )
+        self.database.execute('ALTER TABLE `tournament` ADD `match_points` TEXT')
+        self.database.execute('ALTER TABLE `tournament` ADD `color_pattern` TEXT')
+        self.database.execute('ALTER TABLE `tournament` ADD `primary_score` TEXT')
+        self.database.execute('ALTER TABLE `tournament` ADD `secondary_score` TEXT')
+        self.database.execute('ALTER TABLE `pairing` ADD `effective_points` REAL')
+
+        # Replace three_points_for_a_win/pab_value with a single game_points JSON
+        # column covering WIN, DRAW, LOSS, ZERO_POINT_BYE, PAIRING_ALLOCATED_BYE.
+        self.database.execute('ALTER TABLE `tournament` ADD `game_points` TEXT')
+        self.database.execute(
+            'SELECT `id`, `three_points_for_a_win`, `pab_value` FROM `tournament`'
+        )
+        for row in self.database.fetchall():
+            self.database.execute(
+                'UPDATE `tournament` SET `game_points` = ? WHERE `id` = ?',
+                (
+                    _initial_game_points(
+                        row['three_points_for_a_win'], row['pab_value']
+                    ),
+                    row['id'],
+                ),
+            )
+        self.database.execute(
+            'ALTER TABLE `tournament` DROP COLUMN `three_points_for_a_win`'
+        )
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `pab_value`')
+
+    def backward(self):
+        self.database.execute('ALTER TABLE `pairing` DROP COLUMN `effective_points`')
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `secondary_score`')
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `primary_score`')
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `color_pattern`')
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `match_points`')
+        self.database.execute(
+            'ALTER TABLE `tournament` DROP COLUMN `team_player_count`'
+        )
+        self.database.execute('ALTER TABLE `board` DROP COLUMN `team_board_id`')
+        self.database.execute('ALTER TABLE `player` DROP COLUMN `team_index`')
+        self.database.execute('ALTER TABLE `player` DROP COLUMN `team_id`')
+        self.database.execute('ALTER TABLE `info` DROP COLUMN `event_type`')
+
+        self.database.execute('DROP TABLE `team_pairing_block`')
+        self.database.execute('DROP TABLE `team_board`')
+        self.database.execute('DROP TABLE `team_round_lineup`')
+        self.database.execute('DROP TABLE `team`')
+
+        # Restore old columns, populating from game_points before dropping it.
+        self.database.execute(
+            'ALTER TABLE `tournament` ADD `three_points_for_a_win` '
+            'INTEGER NOT NULL DEFAULT 0'
+        )
+        self.database.execute(
+            'ALTER TABLE `tournament` ADD `pab_value` INTEGER NOT NULL DEFAULT 3'
+        )
+        self.database.execute('SELECT `id`, `game_points` FROM `tournament`')
+        rows = self.database.fetchall()
+        for row in rows:
+            game_points = row['game_points']
+            if not game_points:
+                continue
+            data = json.loads(game_points)
+            win_pts = float(data.get(str(_RESULT_WIN), 1.0))
+            draw_pts = float(data.get(str(_RESULT_DRAW), 0.5))
+            loss_pts = float(data.get(str(_RESULT_LOSS), 0.0))
+            pab_pts = float(data.get(str(_RESULT_PAIRING_ALLOCATED_BYE), win_pts))
+            three_pts = 1 if win_pts == 3.0 else 0
+            if pab_pts == win_pts:
+                pab = _RESULT_WIN
+            elif pab_pts == draw_pts:
+                pab = _RESULT_DRAW
+            elif pab_pts == loss_pts:
+                pab = _RESULT_LOSS
+            else:
+                pab = _RESULT_WIN
+            self.database.execute(
+                'UPDATE `tournament` SET `three_points_for_a_win` = ?, '
+                '`pab_value` = ? WHERE `id` = ?',
+                (three_pts, pab, row['id']),
+            )
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `game_points`')

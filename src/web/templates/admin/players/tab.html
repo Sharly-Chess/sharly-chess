@@ -59,9 +59,11 @@
                     _('You are not allowed to add players to the event.')
                     if not client.can_add_player else
                     _('Tournaments are finished, you can not add players any longer.')
-                    if not player_addable_tournaments and allowed_tournaments else
+                    if not player_addable_tournaments and allowed_tournaments
+                        and not admin_event.is_team_event else
                     _('Add a tournament before adding players.')
-                    if not player_addable_tournaments else ''
+                    if not player_addable_tournaments
+                        and not admin_event.is_team_event else ''
                 ) %}
                 <span
                     {%if add_player_error_message %}

@@ -112,17 +112,14 @@ class Board:
     @property
     def result_str(self) -> str:
         if self.result == Result.PAIRING_ALLOCATED_BYE:
-            match self.tournament.pab_value:
-                case Result.WIN:
-                    return str(Result.PAIRING_ALLOCATED_BYE)
-                case Result.DRAW:
-                    return str(Result.PENALTY_DL)
-                case Result.LOSS:
-                    return str(Result.REST_GAME)
-                case _:
-                    raise ValueError(
-                        f'Unexpected pab value: {self.tournament.pab_value}'
-                    )
+            tournament = self.tournament
+            if tournament.pab_points == tournament.win_points:
+                return str(Result.PAIRING_ALLOCATED_BYE)
+            if tournament.pab_points == tournament.draw_points:
+                return str(Result.PENALTY_DL)
+            if tournament.pab_points == tournament.loss_points:
+                return str(Result.REST_GAME)
+            return str(Result.PAIRING_ALLOCATED_BYE)
         return str(self.result)
 
     @property

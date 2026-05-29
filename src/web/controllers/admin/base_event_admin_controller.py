@@ -122,6 +122,16 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE TOURNAMENTS TAB")} from:body',
                 },
             }
+        if event.is_team_event and self.client.can_view_tournaments_tab:
+            nav_tabs |= {
+                'admin-event-teams-tab': {
+                    'title': _('Teams ({num})').format(
+                        num=len(event.teams_by_id) or '-'
+                    ),
+                    'template': 'teams/tab.html',
+                    'icon_class': 'bi-flag-fill',
+                },
+            }
         if self.client.can_view_players_tab:
             nav_tabs |= {
                 'admin-event-players-tab': {

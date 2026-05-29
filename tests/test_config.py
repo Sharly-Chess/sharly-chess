@@ -21,7 +21,6 @@ from database.sqlite.event.event_store import (
 from plugins.ffe.ffe_tournament_importers import PapiJsonTournamentImporter
 from utils.enum import (
     ScreenType,
-    Result,
     PlayersScreenPlayerFormat,
     PlayersScreenBoardFormat,
     PlayersScreenOpponentFormat,
@@ -225,7 +224,6 @@ class TestUtils:
             'rating': 1,
             'stored_prize_groups': [],
             'plugin_data': None,
-            'pab_value': Result.WIN.value,
         }
 
         # Merge overrides

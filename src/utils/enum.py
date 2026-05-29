@@ -799,6 +799,38 @@ class FideArbiterTitle(StrEnum):
         return self.value
 
 
+class EventType(StrEnum):
+    """The type of competition an event hosts."""
+
+    INDIVIDUAL = 'INDIVIDUAL'
+    TEAM = 'TEAM'
+
+    def __str__(self):
+        match self:
+            case EventType.INDIVIDUAL:
+                return _('Individual')
+            case EventType.TEAM:
+                return _('Team')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
+class ScoreType(StrEnum):
+    """Which score basis a team tournament uses (FIDE 1.2.1)."""
+
+    MATCH_POINTS = 'MATCH_POINTS'
+    GAME_POINTS = 'GAME_POINTS'
+
+    def __str__(self) -> str:
+        match self:
+            case ScoreType.MATCH_POINTS:
+                return _('Match points')
+            case ScoreType.GAME_POINTS:
+                return _('Game points')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
 class RoleType(StrEnum):
     CHIEF_ARBITER = 'chief_arbiter'
     DEPUTY_ARBITER = 'deputy_arbiter'

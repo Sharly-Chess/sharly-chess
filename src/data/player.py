@@ -42,6 +42,7 @@ if TYPE_CHECKING:
     from _weakref import ReferenceType
     from data.criteria.tournament_criteria import TournamentCriterion
     from data.event import Event
+    from data.team import Team
     from data.tournament import Tournament
     from data.input_output.trf.trf_data import TrfPlayer
 
@@ -184,6 +185,48 @@ class Player:
         return Club(self.stored_player.club or '')
 
     @property
+    def team_id(self) -> int | None:
+        return self.stored_player.team_id
+
+    @property
+    def team_index(self) -> int | None:
+        return self.stored_player.team_index
+
+    @property
+    def event_default_rating(self) -> int | None:
+        """Best available rating for the event's default rating type."""
+        rating = self.event_default_rating_and_type
+        return rating.value or None
+
+    @cached_property
+    def event_default_rating_and_type(self) -> 'PlayerRatingAndType':
+        """Rating + its source type for display in team/event contexts.
+
+        Uses the team's tournament rating type (Standard/Rapid/Blitz) and
+        player-rating type (FIDE/National/Estimated) when the player is on a
+        team assigned to a tournament. Falls back to Standard + event default
+        for unassigned players."""
+        team = self.team
+        if team is not None and team.tournament is not None:
+            tournament = team.tournament
+            return self.get_rating_and_type(
+                tournament.rating,
+                tournament.player_rating_type,
+                self.category,
+            )
+        return self.get_rating_and_type(
+            TournamentRating.STANDARD,
+            self.event.player_rating_type,
+            self.category,
+        )
+
+    @property
+    def team(self) -> 'Team | None':
+        if (team_id := self.team_id) is None:
+            return None
+        return self.event.teams_by_id.get(team_id)
+
+    @property
     def fixed(self) -> int | None:
         return self.stored_player.fixed
 
@@ -192,20 +235,48 @@ class Player:
         return self.stored_player.check_in
 
     @cached_property
-    def single_tournament_id(self) -> int:
-        """The tournament this player is assigned to (for single tournament events)"""
+    def optional_single_tournament_id(self) -> int | None:
+        """The tournament this player is assigned to, or None if unassigned.
+        For team events, derived from the player's team."""
+        if self.event.is_team_event:
+            team = self.team
+            if team is not None and team.tournament_id is not None:
+                return team.tournament_id
+            return None
         for tournament in self.event.tournaments:
             if self.id in tournament.tournament_players_by_id:
                 return tournament.id
-        raise RuntimeError('Player not assigned to a tournament')
+        return None
+
+    @property
+    def single_tournament_id(self) -> int:
+        """The tournament this player is assigned to. Raises if unassigned."""
+        tournament_id = self.optional_single_tournament_id
+        if tournament_id is None:
+            raise RuntimeError('Player not assigned to a tournament')
+        return tournament_id
 
     @property
     def single_tournament(self) -> 'Tournament':
         return self.event.tournaments_by_id[self.single_tournament_id]
 
     @property
+    def optional_single_tournament(self) -> 'Tournament | None':
+        tournament_id = self.optional_single_tournament_id
+        if tournament_id is None:
+            return None
+        return self.event.tournaments_by_id[tournament_id]
+
+    @property
     def single_tournament_player(self) -> 'TournamentPlayer':
         return self.single_tournament.tournament_players_by_id[self.id]
+
+    @property
+    def optional_single_tournament_player(self) -> 'TournamentPlayer | None':
+        tournament = self.optional_single_tournament
+        if tournament is None:
+            return None
+        return tournament.tournament_players_by_id.get(self.id)
 
     def replace_stored_player(self, stored_player: StoredPlayer):
         self.stored_player = stored_player

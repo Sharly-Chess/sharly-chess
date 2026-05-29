@@ -113,6 +113,14 @@
     {% include 'prizes/prize_form_modal.html' %}
 {% elif modal == 'prize_players' %}
     {% include 'prizes/prize_players_modal.html' %}
+{% elif modal == 'team' %}
+    {% include 'teams/team_modal.html' %}
+{% elif modal == 'team_delete' %}
+    {% include 'teams/team_delete_modal.html' %}
+{% elif modal == 'team_roster' %}
+    {% include 'teams/team_roster_modal.html' %}
+{% elif modal == 'team_lineups' %}
+    {% include 'teams/team_lineups_modal.html' %}
 {% elif modal == 'account' %}
     {% include 'accounts/account_modal.html' %}
 {% elif modal == 'account_delete' %}

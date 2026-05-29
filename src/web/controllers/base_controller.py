@@ -335,7 +335,7 @@ class WebContext:
         if isinstance(value, int):
             return str(value)
         if isinstance(value, float):
-            return f'{value:.2f}'
+            return f'{value:.2f}'.rstrip('0').rstrip('.')
         if isinstance(value, datetime):
             return format_datetime(value)
         if isinstance(value, date):

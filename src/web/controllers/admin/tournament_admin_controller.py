@@ -34,7 +34,7 @@ from data.input_output.tournament_importer_options import (
 from data.input_output.tournament_importers import TournamentImporter
 from data.input_output.trf.trf_importer import TrfTournamentImporter
 from data.pairings import PairingSystem, PairingSystemManager
-from data.pairings.systems import SwissPairingSystem
+from data.pairings.systems import SwissPairingSystem, TeamSwissPairingSystem
 from data.player import TournamentPlayer
 from data.tie_breaks import TieBreakManager, TieBreak, TieBreakOptionManager
 from data.tie_breaks.sets import (
@@ -58,7 +58,14 @@ from database.sqlite.event.event_store import (
 from plugins.manager import plugin_manager
 from utils import Utils
 from utils.date_time import format_date, format_date_range
-from utils.enum import FormAction, Result, TournamentRating, ScreenType
+from utils.enum import (
+    BoardColor,
+    FormAction,
+    Result,
+    ScoreType,
+    ScreenType,
+    TournamentRating,
+)
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminWebContext,
     BaseEventAdminController,
@@ -238,7 +245,11 @@ class TournamentAdminController(BaseEventAdminController):
     ):
         admin_event = web_context.get_admin_event()
         pairing_systems = PairingSystemManager(admin_event).objects()
-        pairing_system: PairingSystem = SwissPairingSystem()
+        pairing_system: PairingSystem = (
+            TeamSwissPairingSystem()
+            if admin_event.is_team_event
+            else SwissPairingSystem()
+        )
         tournament_criteria = TournamentCriterionManager(admin_event).objects()
         if data is None:
             match action:
@@ -263,15 +274,23 @@ class TournamentAdminController(BaseEventAdminController):
             pairing_variations: dict[str, str | None] = {
                 system.variation_field_id: None for system in pairing_systems
             }
-            three_points_for_a_win: bool | None = None
-            pab_value: int | None = None
             override_unrated_rapid_blitz: bool = True
+            team_player_count: int | None = None
+            color_pattern: str | None = None
+            game_points: dict[int, float] | None = None
+            match_points: dict[int, float] | None = None
+            primary_score: str | None = None
+            secondary_score: str | None = None
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             if action == 'create':
                 rounds = 7
                 rating = TournamentRating.STANDARD.value
                 start_date = admin_event.start_date
                 stop_date = admin_event.stop_date
+                if admin_event.is_team_event:
+                    team_player_count = 4
+                    primary_score = ScoreType.MATCH_POINTS.value
+                    secondary_score = ScoreType.GAME_POINTS.value
             else:
                 admin_tournament = web_context.get_admin_tournament()
                 stored_tournament = admin_tournament.stored_tournament
@@ -291,10 +310,18 @@ class TournamentAdminController(BaseEventAdminController):
                 pairing_variations[
                     admin_tournament.pairing_system.variation_field_id
                 ] = admin_tournament.pairing_variation.id
-                three_points_for_a_win = stored_tournament.three_points_for_a_win
-                pab_value = stored_tournament.pab_value
                 override_unrated_rapid_blitz = (
                     stored_tournament.override_unrated_rapid_blitz
+                )
+                team_player_count = stored_tournament.team_player_count
+                color_pattern = stored_tournament.color_pattern
+                game_points = stored_tournament.game_points
+                match_points = stored_tournament.match_points
+                primary_score = (
+                    stored_tournament.primary_score or ScoreType.MATCH_POINTS.value
+                )
+                secondary_score = (
+                    stored_tournament.secondary_score or ScoreType.GAME_POINTS.value
                 )
                 for criterion in tournament_criteria:
                     if criterion.id in stored_tournament.criteria:
@@ -342,9 +369,44 @@ class TournamentAdminController(BaseEventAdminController):
                     'rounds': rounds,
                     'rating': rating,
                     'pairing_system': pairing_system.id,
-                    'three_points_for_a_win': three_points_for_a_win,
-                    'pab_value': pab_value,
                     'override_unrated_rapid_blitz': override_unrated_rapid_blitz,
+                    'team_player_count': team_player_count,
+                    'color_pattern': color_pattern,
+                    'gp_win': (
+                        game_points.get(Result.WIN.value) if game_points else None
+                    ),
+                    'gp_draw': (
+                        game_points.get(Result.DRAW.value) if game_points else None
+                    ),
+                    'gp_loss': (
+                        game_points.get(Result.LOSS.value) if game_points else None
+                    ),
+                    'gp_zpb': (
+                        game_points.get(Result.ZERO_POINT_BYE.value)
+                        if game_points
+                        else None
+                    ),
+                    'gp_pab': (
+                        game_points.get(Result.PAIRING_ALLOCATED_BYE.value)
+                        if game_points
+                        else None
+                    ),
+                    'mp_win': (
+                        match_points.get(Result.WIN.value) if match_points else None
+                    ),
+                    'mp_draw': (
+                        match_points.get(Result.DRAW.value) if match_points else None
+                    ),
+                    'mp_loss': (
+                        match_points.get(Result.LOSS.value) if match_points else None
+                    ),
+                    'mp_pab': (
+                        match_points.get(Result.PAIRING_ALLOCATED_BYE.value)
+                        if match_points
+                        else None
+                    ),
+                    'primary_score': primary_score,
+                    'secondary_score': secondary_score,
                     'date_range': WebContext.value_to_date_range_form_data(
                         start_date, stop_date
                     ),
@@ -388,12 +450,6 @@ class TournamentAdminController(BaseEventAdminController):
             option=player_rating_type_options[str(admin_event.player_rating_type.value)]
         )
 
-        pab_value_options = {
-            str(Result.WIN.value): _('Win'),
-            str(Result.DRAW.value): _('Draw'),
-            str(Result.LOSS.value): _('Loss'),
-        }
-
         # data and errors are always populated by the if/else block above
         assert data is not None
         assert errors is not None
@@ -410,7 +466,10 @@ class TournamentAdminController(BaseEventAdminController):
             if action == 'clone'
             else None,
             'player_rating_type_options': player_rating_type_options,
-            'pab_value_options': pab_value_options,
+            'is_team_event': admin_event.is_team_event,
+            'BoardColor': BoardColor,
+            'TeamSwissPairingSystem': TeamSwissPairingSystem,
+            'score_type_options': {t.value: str(t) for t in ScoreType},
             'modal': 'tournament',
             'action': action,
             'data': data,
@@ -419,6 +478,20 @@ class TournamentAdminController(BaseEventAdminController):
             'force_criteria_open': any(
                 criterion.is_used_in_form_data(data)
                 for criterion in tournament_criteria
+            ),
+            'force_points_open': any(
+                field in errors or (data.get(field) or '').strip()
+                for field in (
+                    'gp_win',
+                    'gp_draw',
+                    'gp_loss',
+                    'gp_zpb',
+                    'gp_pab',
+                    'mp_win',
+                    'mp_draw',
+                    'mp_loss',
+                    'mp_pab',
+                )
             ),
             # The current rounds count is needed to render the schedule inputs
             'schedule_rounds': rounds,
@@ -473,9 +546,14 @@ class TournamentAdminController(BaseEventAdminController):
         except FormError as e:
             errors[field] = str(e)
 
+        default_pairing_system_id = (
+            TeamSwissPairingSystem.static_id()
+            if event.is_team_event
+            else SwissPairingSystem.static_id()
+        )
         pairing_system = PairingSystemManager(event).get_object(
             WebContext.form_data_to_str(data, 'pairing_system')
-            or SwissPairingSystem.static_id()
+            or default_pairing_system_id
         )
         pairing = WebContext.form_data_to_str(
             data, f'{pairing_system.id}_pairing_variation'
@@ -515,13 +593,94 @@ class TournamentAdminController(BaseEventAdminController):
         last_rounds_no_byes = WebContext.form_data_to_int(data, 'last_rounds_no_byes')
         location = WebContext.form_data_to_str(data, 'location')
         player_rating_type = WebContext.form_data_to_int(data, 'player_rating_type')
-        three_points_for_a_win = WebContext.form_data_to_bool(
-            data, 'three_points_for_a_win'
-        )
         override_unrated_rapid_blitz = WebContext.form_data_to_bool(
             data, 'override_unrated_rapid_blitz'
         )
-        pab_value = WebContext.form_data_to_int(data, 'pab_value')
+
+        game_points: dict[int, float] = {}
+        for result, gp_field in (
+            (Result.WIN, 'gp_win'),
+            (Result.DRAW, 'gp_draw'),
+            (Result.LOSS, 'gp_loss'),
+            (Result.ZERO_POINT_BYE, 'gp_zpb'),
+            (Result.PAIRING_ALLOCATED_BYE, 'gp_pab'),
+        ):
+            raw = WebContext.form_data_to_str(data, gp_field)
+            if raw is None or raw == '':
+                continue
+            try:
+                game_points[result.value] = float(raw)
+            except ValueError:
+                errors[gp_field] = _('A number is expected.')
+
+        team_player_count: int | None = None
+        color_pattern: str | None = None
+        match_points: dict[int, float] | None = None
+        primary_score: str | None = None
+        secondary_score: str | None = None
+        if event.is_team_event:
+            team_player_count = WebContext.form_data_to_int(
+                data, field := 'team_player_count'
+            )
+            if team_player_count is None or team_player_count < 1:
+                errors[field] = _('A positive integer is expected.')
+
+            for field_name, default_value in (
+                ('primary_score', ScoreType.MATCH_POINTS.value),
+                ('secondary_score', ScoreType.GAME_POINTS.value),
+            ):
+                raw_score = (
+                    WebContext.form_data_to_str(data, field_name) or default_value
+                )
+                try:
+                    valid = ScoreType(raw_score).value
+                except ValueError:
+                    errors[field_name] = f'Invalid score type value [{raw_score}].'
+                    valid = default_value
+                if field_name == 'primary_score':
+                    primary_score = valid
+                else:
+                    secondary_score = valid
+
+            color_pattern = (
+                WebContext.form_data_to_str(data, field := 'color_pattern') or None
+            )
+            if color_pattern is not None:
+                stripped = color_pattern.strip().upper()
+                allowed = {BoardColor.WHITE.value, BoardColor.BLACK.value}
+                if not stripped:
+                    color_pattern = None
+                elif not set(stripped) <= allowed:
+                    errors[field] = _(
+                        'Use only "{w}" and "{b}" characters '
+                        '(or leave blank for default).'
+                    ).format(w=BoardColor.WHITE.value, b=BoardColor.BLACK.value)
+                elif (
+                    team_player_count is not None
+                    and team_player_count > 0
+                    and len(stripped) != team_player_count
+                ):
+                    errors[field] = _(
+                        'Length ({len}) must match players per team match ({count}).'
+                    ).format(len=len(stripped), count=team_player_count)
+                else:
+                    color_pattern = stripped
+
+            match_points = {}
+            for result, mp_field in (
+                (Result.WIN, 'mp_win'),
+                (Result.DRAW, 'mp_draw'),
+                (Result.LOSS, 'mp_loss'),
+                (Result.PAIRING_ALLOCATED_BYE, 'mp_pab'),
+            ):
+                raw = WebContext.form_data_to_str(data, mp_field)
+                if raw is None or raw == '':
+                    continue
+                try:
+                    match_points[result.value] = float(raw)
+                except ValueError:
+                    errors[mp_field] = _('A number is expected.')
+
         stored_criteria: dict[str, Any] = {}
         for criterion in TournamentCriterionManager(event).objects():
             value = criterion.value_from_form_data(data, errors)
@@ -595,9 +754,13 @@ class TournamentAdminController(BaseEventAdminController):
             rounds=rounds or 1,
             rating=rating or TournamentRating.STANDARD.value,
             pairing=pairing or '',
-            three_points_for_a_win=three_points_for_a_win,
-            pab_value=pab_value or Result.WIN.value,
             override_unrated_rapid_blitz=override_unrated_rapid_blitz,
+            game_points=game_points or None,
+            team_player_count=team_player_count,
+            match_points=match_points,
+            color_pattern=color_pattern,
+            primary_score=primary_score,
+            secondary_score=secondary_score,
             plugin_data=plugin_data,
             round_datetimes=round_datetimes,
             criteria=stored_criteria,

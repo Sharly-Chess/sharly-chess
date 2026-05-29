@@ -225,7 +225,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
                 ):
                     score += pairing.result.points(tournament.point_values)
                 else:
-                    score += Result.DRAW.points(tournament.point_values)
+                    score += tournament.draw_points
                 continue
             if pairing.requested_bye:
                 if all(
@@ -233,7 +233,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
                     for index, p in player.pairings.items()
                     if round_index < index <= after_round
                 ):
-                    score += Result.DRAW.points(tournament.point_values)
+                    score += tournament.draw_points
                 else:
                     score += pairing.result.points(tournament.point_values)
             else:
@@ -1250,10 +1250,10 @@ class KoyaTieBreak(OpponentRecordTieBreak):
         self, player: TournamentPlayer, *, after_round: int
     ) -> float:
         tournament: 'Tournament' = player.tournament
-        win_points = Result.WIN.points(tournament.point_values)
+        win_points = tournament.win_points
         score_limit = 0.5 * win_points * after_round
         if self.limit:
-            draw_points = Result.DRAW.points(tournament.point_values)
+            draw_points = tournament.draw_points
             score_limit += draw_points * self.limit
         pairings: dict[int, Pairing] = {
             round_index: pairing
@@ -1418,7 +1418,7 @@ class TournamentPerformanceRatingTieBreak(OpponentRatingTieBreak):
             score += pairing.result.points(tournament.point_values)
         if not ratings:
             return 0
-        max_score = len(ratings) * Result.WIN.points(tournament.point_values)
+        max_score = len(ratings) * tournament.win_points
         average = sum(ratings) / len(ratings)
         fractional_score = round(score / max_score, 2)
         bonus = Utils.performance_bonus(fractional_score)

@@ -136,19 +136,6 @@
     <!-- end admin_players_sort_link() -->
 {% endmacro %}
 
-{% macro gender_icon(gender) %}
-    {% if gender.value == 0 %}
-        {% set _icon_class='-' %}
-    {% elif gender.value == 1 %}
-        {% set _icon_class='bi-person-standing-dress' %}
-    {% elif gender.value == 2 %}
-        {% set _icon_class='bi-person-standing' %}
-    {% else %}
-        {% set _icon_class='bi-question' %}
-    {% endif %}
-    {%- if _icon_class -%}<i class="{{ _icon_class }}"></i>{%- endif -%}
-{% endmacro %}
-
 {% macro _select_option(value, text_or_option, selected) %}
     {% if text_or_option is string %}
         <option value="{{ value }}" {% if selected %}selected{% endif %}>

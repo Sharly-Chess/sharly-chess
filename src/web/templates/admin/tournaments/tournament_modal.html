@@ -177,7 +177,6 @@
                             {% for pairing_system in pairing_systems %}
                                 elements = $('#{{ pairing_system.variation_container_id }}');
                                 if ($(this).val() === '{{ pairing_system.id }}') {
-                                    $('#pab-value-container').{% if pairing_system.hide_pab_value_field %}hide(){% else %}show(){% endif %};
                                     elements.show();
                                 } else {
                                     elements.hide();
@@ -215,14 +214,6 @@
                         ) }}
                     </div>
 
-                    <div id="pab-value-container" class="col-12 col-md-6">
-                        {{ admin_macros.select_input(
-                            name='pab_value',
-                            label=_('Value of the pairing allocated bye:'),
-                            select_options=pab_value_options,
-                            data=data, errors=errors
-                        ) }}
-                    </div>
                     <div class="col-12 col-md-6">
                         {{ admin_macros.number_input(
                             name='record_illegal_moves',
@@ -237,14 +228,329 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6">
-                        {{ admin_macros.switch_input(
-                            name='three_points_for_a_win',
-                            placeholder=_('Three points for a win'),
-                            tooltip_text=_('Use the 3/1/0 points system instead of the standard 1/0.5/0 system.'),
-                            data=data, errors=errors
-                        ) }}
+                </div>
+
+                {% if is_team_event %}
+                    <h4 class="mt-3">{{ _('Team competition') }}</h4>
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='team_player_count',
+                                label=_('Players per team match:'),
+                                min=1,
+                                tooltip_text=_('Number of boards in each team match.'),
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="d-flex align-items-center gap-2 flex-wrap">
+                                <label class="form-label mb-0">
+                                    {{ _('Colour pattern:') }}
+                                    <i
+                                        class="bi bi-info-circle-fill ms-1"
+                                        {{ macros.tooltip_attributes(
+                                            '',
+                                            _(
+                                                'Click each board to toggle the colour of the first team. '
+                                                'White = first team plays white on that board, '
+                                                'black = first team plays black.'
+                                            ),
+                                            'top',
+                                        ) }}
+                                    ></i>
+                                </label>
+                                <div id="color-pattern-swatches" class="d-flex gap-1"></div>
+                            </div>
+                            <input
+                                type="hidden"
+                                name="color_pattern"
+                                id="color-pattern-value"
+                                value="{{ data['color_pattern'] or '' }}"
+                            >
+                            {% if errors.get('color_pattern') %}
+                                <div class="invalid-feedback d-block">
+                                    {{ errors['color_pattern'] }}
+                                </div>
+                            {% endif %}
+                            <script>
+                                (function () {
+                                    const WHITE = '{{ BoardColor.WHITE.value }}';
+                                    const BLACK = '{{ BoardColor.BLACK.value }}';
+                                    const $countInput = $('#team-player-count');
+                                    const $hidden = $('#color-pattern-value');
+                                    const $container = $('#color-pattern-swatches');
+
+                                    function currentPattern() {
+                                        const allowed = new RegExp(
+                                            `[^${WHITE}${BLACK}]`, 'g'
+                                        );
+                                        return ($hidden.val() || '')
+                                            .toUpperCase()
+                                            .replace(allowed, '');
+                                    }
+
+                                    function defaultChar(boardIndex) {
+                                        return boardIndex % 2 === 0 ? WHITE : BLACK;
+                                    }
+
+                                    function render() {
+                                        const count = parseInt($countInput.val(), 10) || 0;
+                                        const stored = currentPattern();
+                                        $container.empty();
+                                        if (count <= 0) {
+                                            $hidden.val('');
+                                            return;
+                                        }
+                                        let next = '';
+                                        for (let i = 0; i < count; i++) {
+                                            const ch = (stored[i] === WHITE || stored[i] === BLACK)
+                                                ? stored[i] : defaultChar(i);
+                                            next += ch;
+                                            const isWhite = ch === WHITE;
+                                            const $btn = $('<button>', {
+                                                type: 'button',
+                                                'data-board': i,
+                                                'data-state': ch,
+                                                class: 'cp-swatch border rounded d-flex align-items-center justify-content-center',
+                                                css: {
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    background: isWhite ? '#ffffff' : '#212529',
+                                                    color: isWhite ? '#212529' : '#ffffff',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.8rem',
+                                                },
+                                                text: String(i + 1),
+                                            });
+                                            $container.append($btn);
+                                        }
+                                        $hidden.val(next);
+                                    }
+
+                                    $container.on('click', '.cp-swatch', function () {
+                                        const $btn = $(this);
+                                        const state = $btn.attr('data-state') === WHITE ? BLACK : WHITE;
+                                        $btn.attr('data-state', state);
+                                        const isWhite = state === WHITE;
+                                        $btn.css({
+                                            background: isWhite ? '#ffffff' : '#212529',
+                                            color: isWhite ? '#212529' : '#ffffff',
+                                        });
+                                        let pattern = '';
+                                        $container.children('.cp-swatch').each(function () {
+                                            pattern += $(this).attr('data-state');
+                                        });
+                                        $hidden.val(pattern);
+                                    });
+
+                                    $countInput.on('change input', render);
+                                    render();
+                                })();
+                            </script>
+                        </div>
                     </div>
+                    <div id="team-swiss-scores-container" class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.select_input(
+                                name='primary_score',
+                                label=_('Primary score:'),
+                                tooltip_text=_(
+                                    'Which score is the ranking based on. '
+                                ),
+                                select_options=score_type_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.select_input(
+                                name='secondary_score',
+                                label=_('Colour allocation:'),
+                                tooltip_text=_(
+                                    'Score used for colour allocation when pairing. '
+                                ),
+                                select_options=score_type_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                    <script>
+                        (function () {
+                            const TEAM_SWISS_ID = '{{ TeamSwissPairingSystem.static_id() }}';
+                            const $container = $('#team-swiss-scores-container');
+                            function sync() {
+                                $container.toggle($('#pairing-system').val() === TEAM_SWISS_ID);
+                            }
+                            $('#pairing-system').on('change', sync);
+                            sync();
+                        })();
+                    </script>
+                {% endif %}
+
+                <button
+                    type="button"
+                    class="collapse-button {% if not force_points_open %}collapsed{% endif %} mt-3"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#points-collapse"
+                    aria-expanded="false"
+                >
+                    <h4 class="form-check-label d-inline-flex align-items-center gap-2">
+                        <i class="bi-chevron-down text-body"></i>
+                        {{ _('Point attribution') }}
+                    </h4>
+                </button>
+                <div id="points-collapse" class="{% if not force_points_open %}collapse{% endif %}">
+                    {% if is_team_event %}
+                        <h6 class="mt-3 mb-2 text-uppercase text-muted small fw-bold border-bottom pb-1">
+                            {{ _('Game points') }}
+                        </h6>
+                    {% endif %}
+                    <div class="row gy-2 gx-3">
+                        <div class="col-6 col-md-4">
+                            {{ admin_macros.number_input(
+                                name='gp_win',
+                                label=_('Win:'),
+                                placeholder='1',
+                                step='any',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-6 col-md-4">
+                            {{ admin_macros.number_input(
+                                name='gp_draw',
+                                label=_('Draw:'),
+                                placeholder='0.5',
+                                step='any',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-6 col-md-4">
+                            {{ admin_macros.number_input(
+                                name='gp_loss',
+                                label=_('Loss:'),
+                                placeholder='0',
+                                step='any',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                    <div class="row gy-2 gx-3 mt-1">
+                        <div class="col-6 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='gp_zpb',
+                                label=_('Absence:'),
+                                placeholder='0',
+                                tooltip_text=_('Zero-point bye / forfeit loss. Defaults to the Loss value.'),
+                                step='any',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div class="col-6 col-md-6">
+                            {{ admin_macros.number_input(
+                                name='gp_pab',
+                                label=_('PAB (Team):') if is_team_event else _('PAB:'),
+                                placeholder='1',
+                                tooltip_text=(
+                                    _(
+                                        'Total game points awarded to the team '
+                                        'for a Pairing Allocated Bye. '
+                                        'Defaults to the Win value multiplied '
+                                        'by the number of boards.'
+                                    )
+                                    if is_team_event else
+                                    _(
+                                        'Pairing allocated bye. '
+                                        'Defaults to the Win value.'
+                                    )
+                                ),
+                                step='any',
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                    <script>
+                        (function () {
+                            const IS_TEAM_EVENT = {{ 'true' if is_team_event else 'false' }};
+                            function effectiveValue($input, fallback) {
+                                const v = ($input.val() || '').trim();
+                                if (v !== '') return v;
+                                const p = $input.attr('placeholder');
+                                return p && p !== '' ? p : fallback;
+                            }
+                            const $gpWin = $('#gp-win');
+                            const $gpLoss = $('#gp-loss');
+                            const $gpZpb = $('#gp-zpb');
+                            const $gpPab = $('#gp-pab');
+                            const $mpWin = $('#mp-win');
+                            const $mpPab = $('#mp-pab');
+                            const $teamPlayerCount = $('#team-player-count');
+                            function syncDerived() {
+                                $gpZpb.attr('placeholder', effectiveValue($gpLoss, '0'));
+                                let pabPlaceholder = effectiveValue($gpWin, '1');
+                                if (IS_TEAM_EVENT && $teamPlayerCount.length) {
+                                    const win = parseFloat(pabPlaceholder);
+                                    const count = parseInt($teamPlayerCount.val() || '0', 10);
+                                    if (!isNaN(win) && count > 0) {
+                                        pabPlaceholder = String(win * count);
+                                    }
+                                }
+                                $gpPab.attr('placeholder', pabPlaceholder);
+                                if ($mpPab.length) {
+                                    $mpPab.attr('placeholder', effectiveValue($mpWin, '2'));
+                                }
+                            }
+                            $gpWin.on('input change', syncDerived);
+                            $gpLoss.on('input change', syncDerived);
+                            $mpWin.on('input change', syncDerived);
+                            $teamPlayerCount.on('input change', syncDerived);
+                            syncDerived();
+                        })();
+                    </script>
+                    {% if is_team_event %}
+                        <h6 class="mt-4 mb-2 text-uppercase text-muted small fw-bold border-bottom pb-1">
+                            {{ _('Match points') }}
+                        </h6>
+                        <div class="row gy-2 gx-3">
+                            <div class="col-6 col-md-4">
+                                {{ admin_macros.number_input(
+                                    name='mp_win',
+                                    label=_('Win:'),
+                                    placeholder='2',
+                                    step='any',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-6 col-md-4">
+                                {{ admin_macros.number_input(
+                                    name='mp_draw',
+                                    label=_('Draw:'),
+                                    placeholder='1',
+                                    step='any',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                            <div class="col-6 col-md-4">
+                                {{ admin_macros.number_input(
+                                    name='mp_loss',
+                                    label=_('Loss:'),
+                                    placeholder='0',
+                                    step='any',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        </div>
+                        <div class="row gy-2 gx-3 mt-1">
+                            <div class="col-6 col-md-6">
+                                {{ admin_macros.number_input(
+                                    name='mp_pab',
+                                    label=_('PAB:'),
+                                    placeholder='2',
+                                    tooltip_text=_('Pairing allocated bye. Defaults to the Win value.'),
+                                    step='any',
+                                    data=data, errors=errors
+                                ) }}
+                            </div>
+                        </div>
+                    {% endif %}
                 </div>
 
                 {% for form_fields_template in plugin_form_fields_templates %}

@@ -400,6 +400,12 @@ class SessionPlayersAddOtherActive(BoolSessionVariable):
         return 'players_add_other_active'
 
 
+class SessionTeamsAddOtherActive(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'teams_add_other_active'
+
+
 class SessionPlayersImportUseDataSource(BoolSessionVariable):
     @property
     def key(self) -> str:

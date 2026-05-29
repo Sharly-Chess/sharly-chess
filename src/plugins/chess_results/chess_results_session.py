@@ -245,7 +245,7 @@ class ChessResultsSession(Session):
         # --- Pairings / Results ---
         ppair = ET.SubElement(root, 'playerpairings')
         point_values: dict[Result, float] = {
-            Result.PAIRING_ALLOCATED_BYE: tournament.pab_value.point_value,
+            Result.PAIRING_ALLOCATED_BYE: tournament.pab_points,
         }
         for round_ in range(1, tournament.current_round + 1):
             tournament.set_for_round(round_)

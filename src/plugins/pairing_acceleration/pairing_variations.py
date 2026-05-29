@@ -20,7 +20,6 @@ from plugins.pairing_acceleration.pairing_settings import (
     AccelerationRule,
 )
 from utils import Utils
-from utils.enum import Result
 
 
 class AccelerationSwissVariation(SwissVariation, ABC):
@@ -396,8 +395,8 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
     def _get_group_a_tooltip_lines(
         cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
-        win_points = Result.WIN.points(tournament.point_values)
-        draw_points = Result.DRAW.points(tournament.point_values)
+        win_points = tournament.win_points
+        draw_points = tournament.draw_points
         rounds = tournament.rounds
         win_max_rounds = cls.full_point_rounds(rounds)
         draw_max_rounds = cls.accelerated_rounds(rounds)
@@ -439,7 +438,7 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
     def _get_group_a_tooltip_lines(
         cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
-        win_points = Result.WIN.points(tournament.point_values)
+        win_points = tournament.win_points
         return [
             (cls._rounds_prefix(1, 2), win_points),
             (cls._rounds_prefix(3, tournament.rounds), 0),
@@ -461,7 +460,7 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
         if at_round <= 2:
             group = cls.get_player_group(tournament, tournament_player)
             if group == AccelerationGroup.A:
-                return Result.WIN.points(tournament.point_values)
+                return tournament.win_points
         return 0.0
 
     @staticmethod
@@ -500,7 +499,7 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
     def _get_group_a_tooltip_lines(
         cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
-        win_points = Result.WIN.points(tournament.point_values)
+        win_points = tournament.win_points
         return [
             (cls._rounds_prefix(1, 2), win_points),
             (cls._rounds_prefix(3, tournament.rounds), 0),
@@ -510,7 +509,7 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
     def _get_group_b_tooltip_lines(
         cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
-        draw_points = Result.DRAW.points(tournament.point_values)
+        draw_points = tournament.draw_points
         return [
             (cls._rounds_prefix(1), 0),
             (cls._rounds_prefix(2), draw_points),
@@ -529,9 +528,9 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
         if at_round <= 2:
             group = cls.get_player_group(tournament, tournament_player)
             if group == AccelerationGroup.A:
-                return Result.WIN.points(tournament.point_values)
+                return tournament.win_points
             elif at_round == 2:
-                return Result.DRAW.points(tournament.point_values)
+                return tournament.draw_points
         return 0.0
 
     @staticmethod
@@ -593,7 +592,7 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
     def _get_group_a_tooltip_lines(
         cls, tournament: Tournament
     ) -> list[tuple[str, float | None]]:
-        win_points = Result.WIN.points(tournament.point_values)
+        win_points = tournament.win_points
         return [
             (cls._rounds_prefix(1, tournament.rounds - 2), 2 * win_points),
             (cls._rounds_prefix(tournament.rounds - 1, tournament.rounds), 0),
@@ -603,8 +602,8 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
     def _get_detailed_group_tooltip_lines(
         cls, tournament: Tournament, group: AccelerationGroup
     ) -> list[tuple[str, float | None]]:
-        draw_points = Result.DRAW.points(tournament.point_values)
-        win_points = Result.WIN.points(tournament.point_values)
+        draw_points = tournament.draw_points
+        win_points = tournament.win_points
         get_vpoints = partial(
             cls._compute_virtual_points,
             group=group,
