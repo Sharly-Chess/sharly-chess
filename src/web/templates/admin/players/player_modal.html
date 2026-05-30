@@ -230,17 +230,17 @@
                         <div class="text-center">
                             <button
                                 id="add-estimated"
+                                type="button"
                                 class="btn btn-sm btn-outline-primary"
-                                {{ macros.tooltip_attributes(
-                                    'info', _('Players may have default estimated ratings depending on the activated plugins.'), 'top'
-                                ) }}
+                                {{ macros.tooltip_attributes('info', _(
+                                    'Players may have default estimated ratings depending on the activated plugins.'
+                                )) }}
                             >
                                 <i class="bi-plus-circle pe-1"></i>
                                 {{ _('Add manual estimated ratings') }}
                             </button>
                             <script>
                                 $('#add-estimated').click(function (e) {
-                                    e.preventDefault();
                                     $('.estimated-container').css('display', 'flex');
                                     $(this).parent().css('display', 'none');
                                 })
