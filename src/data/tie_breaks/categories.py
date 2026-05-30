@@ -32,3 +32,15 @@ class OtherCategory(TieBreakCategory):
     @property
     def name(self) -> str:
         return _('Others')
+
+
+class TeamScoreCategory(TieBreakCategory):
+    @property
+    def name(self) -> str:
+        return _("Team's record")
+
+
+class TeamOpponentRecordCategory(TieBreakCategory):
+    @property
+    def name(self) -> str:
+        return _("Team opponents' records")

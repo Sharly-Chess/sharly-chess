@@ -26,6 +26,7 @@ from data.screen import Screen
 from data.team_board import TeamBoard
 from data.team_pairing_block import TeamPairingBlock
 from data.tie_breaks import (
+    TeamTieBreak,
     TieBreak,
     TieBreakOption,
     TieBreakManager,
@@ -78,6 +79,8 @@ if TYPE_CHECKING:
     )
     from data.pairings import PairingVariation, PairingSystem
     from data.team import Team
+    from data.tie_breaks.team_records import TeamRecord
+    from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
 
 logger: Logger = get_logger()
 
@@ -450,6 +453,8 @@ class Tournament:
                         )
                         standings[b_player.team_id]['played'] += 1
             rows = list(standings.values())
+            for row in rows:
+                row['tie_break_values'] = []
             rows.sort(key=lambda e: (-e['gp'], e['team'].name.lower()))
             for rank, entry in enumerate(rows, 1):
                 entry['rank'] = rank
@@ -517,19 +522,92 @@ class Tournament:
                     ent_b['draws'] += 1
         rows = list(standings.values())
         primary = self.primary_score
-        secondary = self.secondary_score
 
         def score_value(entry: dict[str, Any], score_type: ScoreType) -> float:
             if score_type == ScoreType.MATCH_POINTS:
                 return float(entry['mp'])
             return float(entry['gp'])
 
+        def base_key(entry: dict[str, Any]) -> tuple[float, ...]:
+            """Primary score is the only mandatory ranking key (FIDE
+            C.07 §11 / AF §12). Secondary is *not* implicit — users
+            opt into it by adding the MPvGP tie-break."""
+            return (-score_value(entry, primary),)
+
+        for row in rows:
+            row['tie_break_values'] = []
+
+        team_tie_breaks = [tb for tb in self.tie_breaks if tb.supports_team_mode]
+        if team_tie_breaks:
+            team_records_list = self.team_records(after_round=self.current_round)
+            records_by_id = {r.team_id: r for r in team_records_list}
+            context = self.team_tie_break_context()
+            after_round = self.current_round
+            for tb in team_tie_breaks:
+                if tb.display_rank_delta and isinstance(tb, TeamTieBreak):
+                    # Group-level resolution (EDE): cluster rows by the
+                    # sort key so far, then ask the tie-break to assign
+                    # rank-deltas within each still-tied group.
+                    rows.sort(
+                        key=lambda e: base_key(e)
+                        + tuple(-v for v in e['tie_break_values'])
+                    )
+                    groups: list[list[dict[str, Any]]] = []
+                    current: list[dict[str, Any]] = []
+                    current_key: tuple[float, ...] | None = None
+                    for row in rows:
+                        key = base_key(row) + tuple(-v for v in row['tie_break_values'])
+                        if key != current_key:
+                            if current:
+                                groups.append(current)
+                            current = [row]
+                            current_key = key
+                        else:
+                            current.append(row)
+                    if current:
+                        groups.append(current)
+                    tied = [
+                        [
+                            records_by_id[r['team'].id]
+                            for r in g
+                            if r['team'].id in records_by_id
+                        ]
+                        for g in groups
+                        if len(g) > 1
+                    ]
+                    values_map: dict[int, float] = (
+                        tb.compute_all_team_values(
+                            tied,
+                            records_by_id,
+                            context,
+                            after_round=after_round,
+                        )
+                        if tied
+                        else {}
+                    )
+                    for row in rows:
+                        row['tie_break_values'].append(
+                            float(values_map.get(row['team'].id, 0.0))
+                        )
+                else:
+                    # Scalar tie-break — compute one value per team.
+                    for row in rows:
+                        rec = records_by_id.get(row['team'].id)
+                        if rec is None:
+                            row['tie_break_values'].append(0.0)
+                            continue
+                        value = tb.compute_team_value(
+                            rec,
+                            records_by_id,
+                            context,
+                            after_round=after_round,
+                        )
+                        row['tie_break_values'].append(float(value))
+
         rows.sort(
-            key=lambda e: (
-                -score_value(e, primary),
-                -score_value(e, secondary),
-                e['team'].name.lower(),
-            )
+            key=lambda e: base_key(e)
+            + tuple(-v for v in e['tie_break_values'])
+            + (e['team'].name.lower(),)
         )
         for rank, entry in enumerate(rows, 1):
             entry['rank'] = rank
@@ -592,6 +670,138 @@ class Tournament:
 
     def get_round_team_boards(self, round_: int) -> list[TeamBoard]:
         return self.team_boards_by_round.get(round_, [])
+
+    def team_tie_break_context(self) -> 'TeamTieBreakContext':
+        """Snapshot the tournament parameters team tie-breaks need."""
+        from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
+
+        match_points = self.match_points
+        team_size = self.team_player_count or 0
+        return TeamTieBreakContext(
+            primary_score=self.primary_score,
+            secondary_score=self.secondary_score,
+            rounds=self.rounds,
+            win_mp=match_points.get(Result.WIN, 2.0),
+            draw_mp=match_points.get(Result.DRAW, 1.0),
+            loss_mp=match_points.get(Result.LOSS, 0.0),
+            team_player_count=team_size,
+            draw_gp=team_size * self.draw_points,
+        )
+
+    def _team_board_scores_for(
+        self, team_board: TeamBoard, team_id: int
+    ) -> tuple[float, ...]:
+        """Per-board own scores for ``team_id`` in this match, ordered
+        by board index. Required by board-weighted tie-breaks (FFE
+        Berlin, knockout BC/TBR/BBE)."""
+        scores: list[float] = []
+        for board in sorted(team_board.boards, key=lambda b: b.index):
+            white_player = self.event.players_by_id.get(
+                board.stored_board.white_player_id
+            )
+            white_team_id = white_player.team_id if white_player else None
+            white_pts = board.white_pairing.points
+            black_pts = (
+                board.black_pairing.points if board.black_tournament_player else 0.0
+            )
+            scores.append(white_pts if white_team_id == team_id else black_pts)
+        return tuple(scores)
+
+    def team_records(self, *, after_round: int | None = None) -> list['TeamRecord']:
+        """Build :class:`TeamRecord` instances for every team in this
+        tournament, suitable as input to the team tie-break compute API.
+
+        Only PLAYED and PAB match types are currently emitted — the
+        underlying data model does not yet capture team-level HPB / ZPB
+        / forfeit semantics. When those land, this method should
+        widen accordingly."""
+        from data.tie_breaks.team_records import (
+            TeamMatchRecord,
+            TeamMatchType,
+            TeamRecord,
+        )
+
+        if after_round is None:
+            after_round = self.current_round
+        match_points = self.match_points
+        win_mp = match_points.get(Result.WIN, 2.0)
+        draw_mp = match_points.get(Result.DRAW, 1.0)
+        loss_mp = match_points.get(Result.LOSS, 0.0)
+        pab_mp = match_points.get(Result.PAIRING_ALLOCATED_BYE, win_mp)
+
+        totals_mp: dict[int, float] = {team.id: 0.0 for team in self.teams}
+        totals_gp: dict[int, float] = {team.id: 0.0 for team in self.teams}
+        matches_per_team: dict[int, list[TeamMatchRecord]] = {
+            team.id: [] for team in self.teams
+        }
+
+        for team_board in self.team_boards_by_id.values():
+            if team_board.round > after_round:
+                continue
+            stb = team_board.stored_team_board
+            a_id = stb.team_a_id
+            b_id = stb.team_b_id
+            a_gp, b_gp = team_board.game_points
+            a_boards = self._team_board_scores_for(team_board, a_id)
+            if b_id is None:
+                matches_per_team[a_id].append(
+                    TeamMatchRecord(
+                        round_=team_board.round,
+                        opponent_id=None,
+                        own_mp=pab_mp,
+                        own_gp=self.pab_points,
+                        match_type=TeamMatchType.PAB,
+                        board_scores=a_boards,
+                    )
+                )
+                totals_mp[a_id] += pab_mp
+                totals_gp[a_id] += self.pab_points
+                continue
+            if a_gp > b_gp:
+                a_mp, b_mp = win_mp, loss_mp
+            elif a_gp < b_gp:
+                a_mp, b_mp = loss_mp, win_mp
+            else:
+                a_mp = b_mp = draw_mp
+            b_boards = self._team_board_scores_for(team_board, b_id)
+            matches_per_team[a_id].append(
+                TeamMatchRecord(
+                    round_=team_board.round,
+                    opponent_id=b_id,
+                    own_mp=a_mp,
+                    own_gp=a_gp,
+                    match_type=TeamMatchType.PLAYED,
+                    board_scores=a_boards,
+                )
+            )
+            matches_per_team[b_id].append(
+                TeamMatchRecord(
+                    round_=team_board.round,
+                    opponent_id=a_id,
+                    own_mp=b_mp,
+                    own_gp=b_gp,
+                    match_type=TeamMatchType.PLAYED,
+                    board_scores=b_boards,
+                )
+            )
+            totals_mp[a_id] += a_mp
+            totals_gp[a_id] += a_gp
+            totals_mp[b_id] += b_mp
+            totals_gp[b_id] += b_gp
+
+        records: list[TeamRecord] = []
+        for team in self.teams:
+            records.append(
+                TeamRecord(
+                    team_id=team.id,
+                    name=team.name,
+                    total_mp=totals_mp[team.id],
+                    total_gp=totals_gp[team.id],
+                    matches=sorted(matches_per_team[team.id], key=lambda m: m.round_),
+                    pairing_number=team.pairing_number,
+                )
+            )
+        return records
 
     @cached_property
     def team_pairing_blocks(self) -> list[TeamPairingBlock]:
@@ -752,7 +962,7 @@ class Tournament:
     def tie_break_invalid_message(self, tie_break: TieBreak) -> str | None:
         """Get a message explaining why a tie-break is invalid in the context of the tournament.
         Return or None if it is valid."""
-        if self.pairing_system in tie_break.forbidden_pairing_systems:
+        if not tie_break.is_compatible_with(self.pairing_system):
             return _(
                 'This tie-break is not compatible with '
                 'the pairing system [{pairing_system}] (ignored).'
@@ -784,7 +994,7 @@ class Tournament:
     def reorder_tie_breaks(self, ordered_ids: list[int]):
         if len(ordered_ids) != len(self.tie_breaks_by_id):
             raise ValueError(f'{ordered_ids=}')
-        for object_id, tie_break in self.tie_breaks_by_id.items():
+        for object_id in self.tie_breaks_by_id:
             if object_id not in ordered_ids:
                 raise ValueError(
                     f'Tie break [{object_id}] not part of tournament [{self.name}].'

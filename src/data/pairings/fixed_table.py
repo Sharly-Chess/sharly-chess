@@ -139,6 +139,12 @@ class FixedTablePairingSystem(PairingSystem['FixedTableVariation'], ABC):
     def split_unpaired_and_bye_players(self) -> bool:
         return False
 
+    @property
+    def supports_match_points(self) -> bool:
+        # Fixed-table systems aggregate individual game points only;
+        # there's no match-points side of the score.
+        return False
+
     @abstractmethod
     def get_table(
         self, team_count: int, players_per_team: int

@@ -1504,11 +1504,25 @@ class TournamentAdminController(BaseEventAdminController):
 
         tie_break_select_options: dict[str, dict[str, SelectOption]] = defaultdict(dict)
         for tie_break in TieBreakManager(event).objects():
-            if tournament.pairing_system in tie_break.forbidden_pairing_systems:
+            if not tie_break.is_compatible_with(tournament.pairing_system):
                 continue
+            # Team events: only tie-breaks that produce a per-team value
+            # (FIDE MTB26 "both" + team-only groups). Individual events:
+            # everything except team-only.
+            if event.is_team_event:
+                if not tie_break.supports_team_mode:
+                    continue
+            else:
+                if tie_break.is_team_tiebreak:
+                    continue
+            # Picker shows the family acronym (e.g. ``ESB``) instead
+            # of the configured variant (``EMMSB``) — the variant is a
+            # tie-break option, not a separate type. Same idea for the
+            # tooltip: explain the family, not the default variant.
             tie_break_select_options[tie_break.category.name][tie_break.id] = (
                 SelectOption(
-                    f'{tie_break.acronym} - {tie_break.name}', tie_break.help_text
+                    f'{tie_break.picker_acronym} - {tie_break.name}',
+                    tie_break.picker_help_text,
                 )
             )
         return {

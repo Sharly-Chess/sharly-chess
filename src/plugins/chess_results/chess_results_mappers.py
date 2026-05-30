@@ -4,6 +4,7 @@ from typing import Self
 from data.pairings import PairingSystem
 from data.pairings.systems import SwissPairingSystem, RoundRobinPairingSystem
 from data.tie_breaks import TieBreak, tie_breaks as tb
+from data.tie_breaks import team_tie_breaks as ttb
 from data.tie_breaks.cutters import TieBreakCutter
 from data.tournament import Tournament, TournamentRating
 from plugins.ffe import ffe_tie_breaks as ffe_tb
@@ -152,6 +153,18 @@ class ChessResultsTieBreak:
                 | tb.PlayerRatingTieBreak
             ):
                 # TODO (Molrn) Contact CR admin to add codes for those
+                return cls(5)
+            case (
+                ttb.MatchPointsVsGamePointsTieBreak
+                | ttb.ExtendedSonnebornBergerTeamTieBreak
+                | ttb.ScoresAndScheduleStrengthCombinationTieBreak
+                | ttb.ExtendedDirectEncounterTieBreak
+                | ffe_tb.BerlinTieBreak
+            ):
+                # TODO: Chess-Results has no dedicated codes for FIDE
+                # C.07 team tie-breaks (or the FFE Berlin tie-break)
+                # yet; fall back to ``5`` (manual / informative) so
+                # the export still validates.
                 return cls(5)
 
         raise NotImplementedError(

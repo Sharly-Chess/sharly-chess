@@ -1,5 +1,10 @@
 {% set standings = admin_tournament.team_standings() %}
-{% set show_match_cols = admin_tournament.pairing_system.paired_by_team %}
+{% set primary_is_mp = (
+    admin_tournament.pairing_system.paired_by_team
+    and admin_tournament.primary_score|string == 'MATCH_POINTS'
+) %}
+{% set primary_is_gp = not primary_is_mp %}
+{% set team_tie_breaks = admin_tournament.tie_breaks | selectattr('supports_team_mode') | list %}
 <div class="d-flex">
     <h4>{{ _('Team ranking') }}</h4>
 </div>
@@ -15,13 +20,22 @@
             <th class="rank text-end">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
             <th class="name text-start">{{ _('Team') }}</th>
             <th class="text-center">{{ _('Played') }}</th>
-            {% if show_match_cols %}
+            {% if primary_is_mp %}
                 <th class="text-center">{{ _('W') }}</th>
                 <th class="text-center">{{ _('D') }}</th>
                 <th class="text-center">{{ _('L') }}</th>
                 <th class="text-center fw-bold">{{ _('MP') }}</th>
+            {% else %}
+                <th class="text-center fw-bold">{{ _('GP') }}</th>
             {% endif %}
-            <th class="text-center fw-bold">{{ _('GP') }}</th>
+            {% for tie_break in team_tie_breaks %}
+                <th
+                    class="text-center"
+                    {{ macros.tooltip_attributes(
+                        '', tie_break.help_text, 'top'
+                    ) if tie_break.help_text }}
+                >{{ tie_break.acronym }}</th>
+            {% endfor %}
         </tr>
     </thead>
     <tbody>
@@ -32,13 +46,26 @@
                     <strong>{{ row.team.name }}</strong>
                 </td>
                 <td class="text-center">{{ row.played }}</td>
-                {% if show_match_cols %}
+                {% if primary_is_mp %}
                     <td class="text-center">{{ row.wins }}</td>
                     <td class="text-center">{{ row.draws }}</td>
                     <td class="text-center">{{ row.losses }}</td>
                     <td class="text-center fw-bold">{{ '%g'|format(row.mp) }}</td>
+                {% else %}
+                    <td class="text-center fw-bold">{{ '%g'|format(row.gp) }}</td>
                 {% endif %}
-                <td class="text-center fw-bold">{{ '%g'|format(row.gp) }}</td>
+                {% for tie_break in team_tie_breaks %}
+                    {% set value = row.tie_break_values[loop.index0] %}
+                    <td class="text-center">
+                        {% if tie_break.display_rank_delta %}
+                            {{ ('+%d'|format(value|int)) if value else '—' }}
+                        {% elif value == value|round(0) %}
+                            {{ value|int }}
+                        {% else %}
+                            {{ '%.2f'|format(value) }}
+                        {% endif %}
+                    </td>
+                {% endfor %}
             </tr>
         {% endfor %}
         {% if not standings %}

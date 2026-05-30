@@ -460,8 +460,7 @@ class AppHookSpecs:
 
     @hookspec
     def insert_team_pairing_systems(self, pairing_systems: list[type['PairingSystem']]):
-        """Provide extra team-event pairing systems (e.g. plugin-defined
-        fixed-table systems)."""
+        """Provide extra team-event pairing systems"""
 
     @hookspec
     def insert_team_pairing_variations(

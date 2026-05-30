@@ -836,6 +836,7 @@ class FfePlugin(Plugin):
             PluginUtils.insert_on_equals(
                 tie_break_types, tie_break_type, tie_break_type.base_tie_break_type()
             )
+        tie_break_types.append(ffe_tie_breaks.BerlinTieBreak)
 
     @hookimpl
     def insert_tie_break_option_types(

@@ -11,9 +11,11 @@ from data.pairing import Pairing
 from data.pairings import PairingSystem
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import TournamentPlayer
-from data.tie_breaks import TieBreak, TieBreakOption
-from data.tie_breaks.categories import TieBreakCategory
+from data.tie_breaks import TeamTieBreak, TieBreak, TieBreakOption
+from data.tie_breaks.categories import TeamScoreCategory, TieBreakCategory
 from data.tie_breaks.options import SilentTieBreakOption
+from data.tie_breaks.team_records import TeamRecord
+from data.tie_breaks.team_tie_breaks import TeamTieBreakContext
 from data.tie_breaks.tie_breaks import (
     TournamentPerformanceRatingTieBreak,
     KashdanTieBreak,
@@ -91,6 +93,9 @@ class BasePapiTieBreak(TieBreak, ABC):
     @property
     def forbidden_pairing_systems(self) -> list[PairingSystem]:
         return self.base_tie_break.forbidden_pairing_systems
+
+    def is_compatible_with(self, pairing_system: PairingSystem) -> bool:
+        return self.base_tie_break.is_compatible_with(pairing_system)
 
 
 class PapiPerformanceTieBreak(BasePapiTieBreak):
@@ -670,3 +675,68 @@ class PapiSumOfBuchholzTieBreak(BasePapiTieBreak):
             for opponent in opponents
             if opponent is not None
         )
+
+
+# -----------------------------------------------------------------------------
+# Team tie-breaks
+# -----------------------------------------------------------------------------
+
+
+class BerlinTieBreak(TeamTieBreak):
+    """FFE *Coefficient d'échiquier* / Berlin (Règlement FFE §11.1).
+
+    Each board carries a coefficient: bottom board = 1, second-to-last
+    = 2, ..., top board = ``team_player_count``. A team's Berlin
+    score is the sum over every played round of (board score ×
+    coefficient). The intent is to weight the top boards: a win on
+    board 1 contributes more than a win on the last board.
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-BERLIN'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Berlin')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return []
+
+    @property
+    def base_acronym(self) -> str:
+        return 'BER'
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            "Each board's score is multiplied by a coefficient — the "
+            'top board by N, the next by N-1, and so on down to the '
+            'bottom board by 1 — then summed across all rounds. '
+            'Rewards results on the higher boards (FFE règlement §11.1).'
+        )
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return TeamScoreCategory()
+
+    def compute_team_value(
+        self,
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> float:
+        boards = tournament_context.team_player_count
+        total = 0.0
+        for match in team_record.matches:
+            if match.round_ > after_round:
+                continue
+            for board_index, score in enumerate(match.board_scores):
+                if board_index >= boards:
+                    break
+                coefficient = boards - board_index
+                total += score * coefficient
+        return total

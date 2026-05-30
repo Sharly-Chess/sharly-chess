@@ -1,0 +1,13 @@
+<div class="col-12">
+    {{ admin_macros.number_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Normalisation factor')),
+        tooltip_text=_(
+            'Override the auto-computed F_N factor. Leave at 0 to '
+            'use the default (FIDE MTB26 formula based on rounds and '
+            'team size). Integer 1-99.'
+        ),
+        min=0, max=99, step=1,
+        data=data, errors=errors
+    ) }}
+</div>

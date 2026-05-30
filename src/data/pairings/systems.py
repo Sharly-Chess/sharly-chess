@@ -94,6 +94,14 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
         return True
 
     @property
+    def supports_match_points(self) -> bool:
+        """Whether the system exposes a match-point score alongside
+        game points. Tie-breaks (or tie-break options) that need MP
+        as a reference score can use this to declare themselves
+        incompatible with systems where MP doesn't exist."""
+        return True
+
+    @property
     def variation_field_id(self) -> str:
         """ID of the form field selecting the variation of the system."""
         return f'{self.id}_pairing_variation'

@@ -1,0 +1,24 @@
+{% if admin_event.is_team_event %}
+{# Pairing systems without match-point scoring have only one valid
+   choice — emit a hidden field rather than a one-option dropdown. #}
+{% if not admin_tournament.pairing_system.supports_match_points %}
+<input type="hidden" name="{{ option.id }}" value="GP"/>
+{% else %}
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Team score basis')),
+        tooltip_text=_(
+            'Which team score the tie-break uses for its calculation. '
+            'Match points are the FIDE default; game points apply for '
+            'tournaments where the primary score is GP (e.g. FFE Molter).'
+        ),
+        select_options=option.score_options,
+        tooltip_select=true,
+        data=data, errors=errors
+    ) }}
+</div>
+{% endif %}
+{% else %}
+<input type="hidden" name="{{ option.id }}" value="{{ option.default_value }}"/>
+{% endif %}
