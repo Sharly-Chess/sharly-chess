@@ -3714,7 +3714,7 @@ msgid "National rating support for other federations than the event federation {
 msgstr "Support du classement national pour les fédérations autres que la fédération de l'évènement {federation}"
 
 msgid "National rating support for unknown player [{player}]."
-msgstr "Support du classement national un·e joueur·euse inconnu·e [{player}]."
+msgstr "Support du classement national pour le·la joueur·euse inconnu·e [{player}]."
 
 msgid "National team championship (1.4.3b)"
 msgstr "Championnat national par équipes (1.4.3b)"
