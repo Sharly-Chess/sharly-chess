@@ -975,6 +975,10 @@ class Tournament:
             or self.pairing_system.default_current_round(self)
         )
 
+    @property
+    def is_last_round(self) -> bool:
+        return self.current_round == self.rounds
+
     @cached_property
     def is_fully_paired(self) -> bool:
         return all(self.is_round_paired(round_) for round_ in range(1, self.rounds + 1))
