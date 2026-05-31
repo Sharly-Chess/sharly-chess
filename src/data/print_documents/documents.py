@@ -1,7 +1,7 @@
 import itertools
 import logging
 from abc import ABC, abstractmethod
-from collections import Counter
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from functools import cached_property, partial
 from typing import Any, Callable, override
@@ -13,9 +13,10 @@ from common.logger import get_logger
 from data.access_levels.actions import AuthAction
 from data.access_levels.client import Client
 from data.board import Board
+from data.columns import player_table as columns
 from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
-from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
 from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
+from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
 from data.event import Event
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
@@ -23,7 +24,9 @@ from data.player import TournamentPlayer, TournamentRating
 from data.print_documents.options import (
     PairingStylePrintOption,
     MandatoryPlayerPrintOption,
+    NormChoicePrintOption,
     OptionalPlayerPrintOption,
+    Rule143ExemptionPrintOption,
     PlayerSplitPrintOption,
     PrintOption,
     QRCodeNetworkPrintOption,
@@ -43,18 +46,24 @@ from data.print_documents.options import (
     PlaceCardBoardNumbersPrintOption,
     OptionalPlayersPrintOption,
     PlayerHistoryOption,
+    IndividualTeamTypePrintOption,
+    IndividualTeamSizePrintOption,
+    IndividualTeamMinGenderCountPrintOption,
+    IndividualTeamMaxPerEntityPrintOption,
+    IndividualTeamDisplayIncompletePrintOption,
 )
 from data.print_documents.place_cards.crop_marks import PlaceCardCropMarks
 from data.print_documents.place_cards.template import (
     PlaceCardTemplate,
 )
 from data.print_documents.place_cards.types import PlaceCardType
+from data.print_documents.individual_teams import IndividualTeamType, IndividualTeam
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.enum import Result
-from utils.types import PlayerTitle
+from utils.enum import Result, TitleNorm, PlayerGender
 from utils.option import Option, OptionHandler
+from utils.types import PlayerTitle
 
 logger: logging.Logger = get_logger()
 
@@ -345,11 +354,11 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
 class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
     @staticmethod
     def static_id() -> str:
-        return 'ranking'
+        return 'individual-ranking'
 
     @staticmethod
     def static_name() -> str:
-        return _('Ranking')
+        return _('Individual ranking')
 
     @property
     def title(self) -> str:
@@ -1161,7 +1170,11 @@ class NormReportPrintDocument(PrintDocument):
 
     @staticmethod
     def available_options() -> list[type[PrintOption]]:
-        return [TournamentPrintOption, MandatoryPlayerPrintOption]
+        return [
+            TournamentPrintOption,
+            MandatoryPlayerPrintOption,
+            Rule143ExemptionPrintOption,
+        ]
 
     @property
     def title(self) -> str:
@@ -1173,7 +1186,7 @@ class NormReportPrintDocument(PrintDocument):
             return False
         return any(
             tournament.rating == TournamentRating.STANDARD
-            and tournament.has_titled_players
+            and tournament.has_norm_eligible_titled_players
             for tournament in allowed_tournaments
         )
 
@@ -1187,9 +1200,9 @@ class NormReportPrintDocument(PrintDocument):
                 ),
                 self._get_option(TournamentPrintOption),
             )
-        if not tournament.has_titled_players:
+        if not tournament.has_norm_eligible_titled_players:
             raise OptionError(
-                _('This tournament has no titled players.'),
+                _('This tournament has no norm-eligible titled players.'),
                 self._get_option(TournamentPrintOption),
             )
 
@@ -1199,7 +1212,11 @@ class NormReportPrintDocument(PrintDocument):
 
     @property
     def template_context(self) -> dict[str, Any]:
+        from data.norms import apply_143abc_exemption
+        from utils.types import Federation
+
         player_id = self._get_option(MandatoryPlayerPrintOption).value
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
         tournament_player = self.tournament.tournament_players_by_id[player_id]
         norms = {
             norm_title: norm
@@ -1207,6 +1224,12 @@ class NormReportPrintDocument(PrintDocument):
             if norm.meets_gender
             and tournament_player.title.sort_index < norm_title.player_title.sort_index
         }
+        apply_143abc_exemption(
+            norms,
+            exemption_code,
+            tournament_player.federation,
+            Federation(self.get_event().federation),
+        )
         return {
             'event': self.get_event(),
             'tournament': self.tournament,
@@ -1216,6 +1239,361 @@ class NormReportPrintDocument(PrintDocument):
             'norms': norms,
             'tournament_player': tournament_player,
             'PlayerTitle': PlayerTitle,
+            'rule_143_exemption_code': exemption_code,
+        }
+
+
+class NormCalculationDetailsPrintDocument(PrintDocument):
+    """Per-norm calculation audit view — hidden from the document picker
+    and only reachable via the "View calculation details" deep-link on
+    the IT1 (NormReportPrintDocument).
+
+    `is_available()` returns False so the picker never shows this doc.
+    The route handler at `/document-view/{event}/{document}` doesn't
+    consult `is_available`, so the deep-link continues to work. This
+    keeps the picker clean for arbiters while exposing the full
+    calculation audit at a stable URL."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'norm-calculation-details'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Norm Calculation Details')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            TournamentPrintOption,
+            MandatoryPlayerPrintOption,
+            NormChoicePrintOption,
+            Rule143ExemptionPrintOption,
+        ]
+
+    @property
+    def title(self) -> str:
+        return 'Norm Calculation Details'
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        # Hidden from the picker. Reach this doc via the IT1's
+        # "View calculation details" deep-link instead.
+        return False
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/norm_calculation_details.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        from data.norms import (
+            apply_143abc_exemption,
+            compute_big_tournament_exemption_trail,
+            compute_high_level_tournament_trail,
+        )
+        from utils.enum import TitleNorm as _TitleNorm
+        from utils.types import Federation
+
+        player_id = self._get_option(MandatoryPlayerPrintOption).value
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
+        tournament_player = self.tournament.tournament_players_by_id[player_id]
+        norms = {
+            norm_title: norm
+            for norm_title, norm in tournament_player.achieves_any_title_norm().items()
+            if norm.meets_gender
+            and tournament_player.title.sort_index < norm_title.player_title.sort_index
+        }
+        apply_143abc_exemption(
+            norms,
+            exemption_code,
+            tournament_player.federation,
+            Federation(self.get_event().federation),
+        )
+        norm_choice_value = self._get_option(NormChoicePrintOption).value
+        # Resolve the chosen norm name to the TitleNorm enum, scoped to
+        # the norms this player can claim. Falls back to the first
+        # available if the picked one isn't in the player's list.
+        chosen_norm = next(
+            (tn for tn in norms.keys() if tn.name == norm_choice_value),
+            next(iter(norms.keys()), None),
+        )
+        chosen_norm_result = norms.get(chosen_norm) if chosen_norm else None
+        # Threshold the template displays for 1.4.1 — comes straight
+        # from the TitleNorm enum (9 for Swiss, 10 for DRR).
+        min_games_threshold = (
+            _TitleNorm.minimum_rounds(self.tournament) if chosen_norm else 9
+        )
+        # Two score proofs sharing the same shape — used by section 3 to
+        # show the rounding + 1.4.9 dp lookup explicitly.
+        # `actual_score_proof`: the player's actual score (upper table).
+        # `score_required_proof`: the tipping score that just clears Rp
+        # (lower table, the "minimum score to clear the Rp threshold").
+        actual_score_proof = self._build_score_proof_for(
+            chosen_norm_result,
+            chosen_norm_result.score if chosen_norm_result else None,
+        )
+        tipping_score = (
+            chosen_norm_result.score - chosen_norm_result.performance_diff
+            if chosen_norm_result and chosen_norm_result.performance_diff is not None
+            else None
+        )
+        score_required_proof = self._build_score_proof_for(
+            chosen_norm_result, tipping_score
+        )
+        return {
+            'event': self.get_event(),
+            'tournament': self.tournament,
+            'is_swiss': self.tournament.pairing_system == SwissPairingSystem(),
+            'start': self.tournament.start_date.strftime('%Y.%m.%d'),
+            'end': self.tournament.stop_date.strftime('%Y.%m.%d'),
+            'norms': norms,
+            'chosen_norm': chosen_norm,
+            'chosen_norm_result': chosen_norm_result,
+            'tournament_player': tournament_player,
+            'min_games_threshold': min_games_threshold,
+            'rule_143_exemption_code': exemption_code,
+            'actual_score_proof': actual_score_proof,
+            'score_required_proof': score_required_proof,
+            'exemption_trail': compute_big_tournament_exemption_trail(self.tournament),
+            'high_level_trail': compute_high_level_tournament_trail(self.tournament),
+        }
+
+    @staticmethod
+    def _build_score_proof_for(norm_result, score) -> dict[str, Any] | None:
+        """Spell out the Rp computation for a given score on this norm.
+
+        Returns None when there's nothing to show (no result, no score,
+        or zero played games). Otherwise returns the rounding + lookup
+        chain that produces Rp:
+        - `score`: the score being explained (as-is).
+        - `raw_percent`: 100 × score / played, unrounded.
+        - `rounded_percent`: FIDE-rounded (half up) to integer.
+        - `dp`: bonus looked up from the 1.4.9 table at the rounded
+          fractional. Negative for sub-50% scores.
+        - `rp`: Ra + dp.
+        Used for both the actual-score row in section 3 and the
+        tipping-score proof below it.
+        """
+        if norm_result is None or score is None or not norm_result.played_games:
+            return None
+        raw_percent = 100 * score / norm_result.played_games
+        rounded_percent = Utils.round_ranking(raw_percent)
+        dp = Utils.performance_bonus(rounded_percent / 100)
+        return {
+            'score': score,
+            'raw_percent': raw_percent,
+            'rounded_percent': rounded_percent,
+            'dp': dp,
+            'rp': norm_result.average_rating + dp,
+        }
+
+
+class TournamentNormsSummaryPrintDocument(PrintDocument):
+    """Tournament-wide summary of all title norms achieved.
+
+    Lists every player who picked up at least one norm above their current
+    title, with the per-norm performance figures. Companion to the per-player
+    IT1 form (NormReportPrintDocument).
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'tournament-norms-summary'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Tournament Norms Summary')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            TournamentPrintOption,
+            Rule143ExemptionPrintOption,
+        ]
+
+    @property
+    def title(self) -> str:
+        return _('Title Norms Achieved')
+
+    @classmethod
+    def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
+        if not super().is_available(allowed_tournaments):
+            return False
+        return any(
+            tournament.rating == TournamentRating.STANDARD
+            and tournament.has_norm_eligible_titled_players
+            for tournament in allowed_tournaments
+        )
+
+    def validate_options(self):
+        super().validate_options()
+        tournament = self.tournament
+        if tournament.rating != TournamentRating.STANDARD:
+            raise OptionError(
+                _(
+                    'This document is only available for standard time control tournaments.'
+                ),
+                self._get_option(TournamentPrintOption),
+            )
+        if not tournament.has_norm_eligible_titled_players:
+            raise OptionError(
+                _('This tournament has no norm-eligible titled players.'),
+                self._get_option(TournamentPrintOption),
+            )
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/tournament_norms_summary.html'
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        tournament = self.tournament
+        common = {
+            'event': self.get_event(),
+            'tournament': tournament,
+            'start': tournament.start_date.strftime('%Y.%m.%d'),
+            'end': tournament.stop_date.strftime('%Y.%m.%d'),
+            'PlayerTitle': PlayerTitle,
+            'TitleNorm': TitleNorm,
+            'Result': Result,
+            # Forwarded to the per-row deep-links so the clicked-through
+            # IT1 / details doc keeps the arbiter's event-type selection
+            # (1.4.3a/b/c).
+            'rule_143_exemption_code': self._get_option(
+                Rule143ExemptionPrintOption
+            ).value,
+        }
+        if tournament.finished:
+            return common | {'mode': 'achieved'} | self._achieved_context()
+        forecast_round = self._find_forecastable_round()
+        if forecast_round is not None:
+            return (
+                common | {'mode': 'forecast'} | self._forecast_context(forecast_round)
+            )
+        return common | {'mode': 'pending'}
+
+    def _achieved_context(self) -> dict[str, Any]:
+        from data.norms import apply_143abc_exemption
+        from utils.types import Federation
+
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
+        event_federation = Federation(self.get_event().federation)
+        achievers: list[dict[str, Any]] = []
+        for tournament_player in self.tournament.tournament_players_by_id.values():
+            all_norms = tournament_player.achieves_any_title_norm()
+            # Apply 1.4.3a/b/c exemption before is_met filtering — the
+            # exemption can flip a is_met=False norm to is_met=True for
+            # players from the event's federation (or all players for c).
+            apply_143abc_exemption(
+                all_norms,
+                exemption_code,
+                tournament_player.federation,
+                event_federation,
+            )
+            achieved = {
+                tn: result
+                for tn, result in all_norms.items()
+                if result.is_met
+                and tournament_player.title.sort_index < tn.player_title.sort_index
+            }
+            if achieved:
+                achievers.append({'player': tournament_player, 'norms': achieved})
+
+        # Stable ordering: highest norm first (GM > IM > WGM > WIM), then by
+        # the player's tie-break-aware name key.
+        def _sort_key(entry):
+            top_norm = max(
+                entry['norms'].keys(), key=lambda tn: tn.player_title.sort_index
+            )
+            return (-top_norm.player_title.sort_index, entry['player'].name_sort_key)
+
+        achievers.sort(key=_sort_key)
+        return {'achievers': achievers}
+
+    def _find_forecastable_round(self) -> int | None:
+        """The highest round that is paired AND has at least one unentered
+        result across all players. None if no such round exists.
+
+        Forecast meaning: this is the next round about to be played. In an
+        11-round event with R10/R11 not yet paired, this is the most recent
+        paired round; once R11 is paired, this jumps to R11.
+        """
+        best: int | None = None
+        for p in self.tournament.tournament_players_by_id.values():
+            for rnd, pairing in p.pairings_by_round.items():
+                if (
+                    pairing.opponent is not None
+                    and pairing.result == Result.NO_RESULT
+                    and (best is None or rnd > best)
+                ):
+                    best = rnd
+        return best
+
+    @staticmethod
+    def _played_games_before(player, round_: int) -> int:
+        """Count of the player's played games in rounds strictly < round_.
+        Used to gate forecast eligibility on the 1.4.1 games threshold."""
+        return sum(
+            1
+            for r, pairing in player.pairings_by_round.items()
+            if r < round_ and pairing.played
+        )
+
+    def _forecast_context(self, forecast_round: int) -> dict[str, Any]:
+        from data.norms import TitleNormForecaster
+
+        exemption_code = self._get_option(Rule143ExemptionPrintOption).value
+        candidates: list[dict[str, Any]] = []
+        for tournament_player in self.tournament.tournament_players_by_id.values():
+            forecaster = TitleNormForecaster(
+                tournament_player,
+                rule_143_exemption=exemption_code,
+            )
+            if not forecaster.can_forecast_round(forecast_round):
+                continue
+            # 1.4.1 eligibility — player must be one played-game short of
+            # the minimum so this round can plausibly bring them to it.
+            # Use the lowest min_games across norms (DRR sits at 10, Swiss
+            # at 9) so we don't filter someone who qualifies for a lower
+            # norm but not yet for GM.
+            min_needed = min(
+                tn.minimum_rounds(tournament_player.tournament)
+                for tn in TitleNorm.values()
+            )
+            if (
+                self._played_games_before(tournament_player, forecast_round)
+                < min_needed - 1
+            ):
+                continue
+            chaseable = forecaster.chaseable_norms(forecast_round)
+            if not chaseable:
+                continue
+            pairing = tournament_player.pairings_by_round[forecast_round]
+            candidates.append(
+                {
+                    'player': tournament_player,
+                    'opponent': pairing.opponent,
+                    'requirements': chaseable,  # dict[TitleNorm, Result]
+                }
+            )
+
+        # Order: GM-chasers first, then by player name. Within a player,
+        # norms are already TitleNorm-ordered by the forecaster.
+        def _sort_key(entry):
+            highest_norm = max(
+                entry['requirements'].keys(),
+                key=lambda tn: tn.player_title.sort_index,
+            )
+            return (
+                -highest_norm.player_title.sort_index,
+                entry['player'].name_sort_key,
+            )
+
+        candidates.sort(key=_sort_key)
+        return {
+            'candidates': candidates,
+            'forecast_round': forecast_round,
         }
 
 
@@ -1341,3 +1719,233 @@ class PlaceCardPrintDocument(PrintDocument):
             raise OptionError(
                 f'Unknown template [{template_option.value}]', template_option
             )
+
+
+class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-ranking'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Individual team ranking')
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/individual_team_ranking.html'
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            TournamentPrintOption,
+            RoundPrintOption,
+            IndividualTeamTypePrintOption,
+            IndividualTeamSizePrintOption,
+            IndividualTeamMinGenderCountPrintOption,
+            IndividualTeamMaxPerEntityPrintOption,
+            IndividualTeamDisplayIncompletePrintOption,
+        ]
+
+    @property
+    def team_type(self) -> IndividualTeamType:
+        return self._get_option(IndividualTeamTypePrintOption).team_type
+
+    @property
+    def ranking_round(self) -> int:
+        return (
+            self._get_option(RoundPrintOption).value
+            or self.tournament.max_ranking_round
+        )
+
+    @cached_property
+    def display_incomplete_teams(self) -> bool:
+        """Returns True if incomplete teams must be displayed."""
+        return self._get_option(IndividualTeamDisplayIncompletePrintOption).value
+
+    @property
+    def team_size(self) -> int:
+        """Returns the minimum number of players to form a team."""
+        return self._get_option(IndividualTeamSizePrintOption).value
+
+    @property
+    def title(self) -> str:
+        return self.team_type.document_title(self.ranking_round)
+
+    @property
+    def max_teams_per_entity(self) -> int | None:
+        return self._get_option(IndividualTeamMaxPerEntityPrintOption).value
+
+    @property
+    def min_gender_count(self) -> int:
+        return self._get_option(IndividualTeamMinGenderCountPrintOption).value or 0
+
+    @property
+    def youngest_team_last_tie_break(self) -> bool:
+        """Returns True to use the age as the last tie-break (youngest wins)."""
+        return False
+
+    @property
+    def team_type_table_header(self) -> str:
+        return self.team_type.overall_table_header
+
+    def _extract_team_from_pool(
+        self,
+        pool_in_order: list[TournamentPlayer],
+    ) -> list[TournamentPlayer]:
+        """
+        Build one team (up to *team_size* contributors) from a club's pool.
+        Returns (selected_players, meta)."""
+        selected: list[TournamentPlayer] = []
+        if self.min_gender_count:
+            women = [p for p in pool_in_order if p.gender == PlayerGender.WOMAN]
+            chosen_women = women[: self.min_gender_count]
+            selected.extend(chosen_women)
+            men = [p for p in pool_in_order if p.gender == PlayerGender.MAN]
+            chosen_men = [p for p in men if p not in selected][: self.min_gender_count]
+            selected.extend(chosen_men)
+        # Fill ANY slots (do NOT compensate missing girl/boy with extra ANY)
+        already = set(p.id for p in selected)
+        remainder = [p for p in pool_in_order if p.id not in already]
+        if self.team_size > 2 * self.min_gender_count:
+            any_fillers = remainder[: self.team_size - 2 * self.min_gender_count]
+            selected.extend(any_fillers)
+        selected.sort(key=lambda p: p.rank)
+        return selected
+
+    def _get_team_sort_key(self, t: IndividualTeam) -> tuple:
+        """Returns the key used to sort the teams."""
+        base: list[float] = [
+            0 if t.is_complete else 1,
+            -t.total_points,
+        ] + [-x for x in getattr(t, 'tie_break_sums', [])]
+        if self.youngest_team_last_tie_break:
+            base.append(-(t.avg_age_years or 0.0))
+        return tuple(base)
+
+    def _sort_teams(self, teams: list[IndividualTeam]):
+        """Remove useless team labels and sort the teams."""
+        teams_by_entity: dict[str, list[IndividualTeam]] = defaultdict(list)
+        for team in teams:
+            teams_by_entity[team.entity].append(team)
+
+        # Remove labels when there's only one team for that entity
+        for team_list in teams_by_entity.values():
+            if len(team_list) == 1:
+                team_list[0].label = ''
+
+        teams.sort(key=self._get_team_sort_key)
+        return teams
+
+    @property
+    def ordered_teams(self) -> list[IndividualTeam]:
+        """
+        Produce ranked teams (A, B, ...).
+        Uses tournament-wide ordering and points/tiebreaks already computed by compute_player_ranks().
+        """
+
+        assert self.event is not None
+        ordered_players: list[TournamentPlayer] = [
+            tournament_player
+            for tournament_player in self.tournament.compute_tournament_player_ranks(
+                after_round=self.ranking_round
+            ).values()
+            if not self.tournament.started or tournament_player.has_played_games
+        ]
+
+        # Group by entity
+        players_by_entity: dict[Any, list[TournamentPlayer]] = {}
+        for player in ordered_players:
+            if entity := self.team_type.get_player_entity(player):
+                players_by_entity.setdefault(entity, []).append(player)
+
+        teams: list[IndividualTeam] = []
+        for entity, pool in players_by_entity.items():
+            remaining = list(pool)
+            team_idx = 0
+            while remaining and (
+                self.max_teams_per_entity is None
+                or team_idx < self.max_teams_per_entity
+            ):
+                team_idx += 1
+                label = chr(ord('A') + (team_idx - 1))  # "A", "B", ...
+                selected_players = self._extract_team_from_pool(remaining)
+                if not selected_players:
+                    break
+                team = IndividualTeam(
+                    tournament=self.tournament,
+                    team_size=self.team_size,
+                    min_gender_count=self.min_gender_count,
+                    entity=entity,
+                    label=label,
+                    players=selected_players,
+                    type=self.team_type,
+                )
+                if self.display_incomplete_teams or team.is_complete:
+                    teams.append(team)
+                # Consume used players for the next team (B, C, …)
+                used_ids = {p.id for p in selected_players}
+                remaining = [p for p in remaining if p.id not in used_ids]
+                if label == 'Z':
+                    break
+        self._sort_teams(teams)
+        return teams
+
+    @override
+    def validate_options(self):
+        super().validate_options()
+        ranking_round = self._get_option(RoundPrintOption)
+        if ranking_round.value is None:
+            if self.tournament.max_ranking_round < 1:
+                raise OptionError(
+                    _('The tournament has not yet started.'),
+                    ranking_round,
+                )
+            return
+        if ranking_round.value > self.tournament.rounds:
+            raise OptionError(
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
+                ranking_round,
+            )
+        if ranking_round.value > self.tournament.max_ranking_round:
+            raise OptionError(
+                _('This round is not finished (last finished: #{round}).').format(
+                    round=self.tournament.max_ranking_round
+                ),
+                ranking_round,
+            )
+
+    @property
+    def player_columns(self) -> list[TournamentPlayerTableColumn]:
+        tournament = self.tournament
+        column_types: list[Callable[[ColumnUsage], TournamentPlayerTableColumn]] = [
+            columns.RankColumn,
+            columns.NameColumn,
+            columns.CategoryColumn,
+            columns.GenderColumn,
+            columns.PointsColumn,
+        ]
+        for index in range(len(tournament.team_ranking_tie_breaks)):
+            column_types.append(
+                partial(
+                    columns.TeamRankingTieBreakColumn,
+                    tournament=tournament,
+                    index=index,
+                )
+            )
+        return PlayerColumnHandler(self.get_event(), ColumnUsage.PRINT).get_columns(
+            column_types
+        )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {
+            'tournament': self.tournament,
+            'subtitle': self.tournament.name,
+            'ordered_teams': self.ordered_teams,
+            'player_columns': self.player_columns,
+            'ordinal_integer': Utils.ordinal_integer,
+            'localized_number': Utils.localized_number,
+            'points_str': Utils.points_str,
+        }

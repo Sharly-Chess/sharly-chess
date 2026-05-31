@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ _('Tournament Norms Summary') }}</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 1100px;
+                margin: 2rem auto;
+                line-height: 1.4;
+                font-size: 0.85rem;
+            }
+            h1 {
+                text-align: center;
+                font-size: 1.4rem;
+                margin: 0 0 0.3rem 0;
+            }
+            .subtitle {
+                text-align: center;
+                color: #444;
+                margin: 0 0 1.5rem 0;
+            }
+            .empty {
+                text-align: center;
+                font-style: italic;
+                margin: 2rem 0;
+                color: #555;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-top: 1rem;
+                border: 1px solid black;
+            }
+            th,
+            td {
+                border: 1px solid #888;
+                padding: 0.35rem 0.5rem;
+                vertical-align: top;
+            }
+            th {
+                background: #eee;
+                font-weight: 600;
+                text-align: left;
+            }
+            td.center {
+                text-align: center;
+            }
+            td.right {
+                text-align: right;
+            }
+            .norm-badge {
+                display: inline-block;
+                padding: 0.05rem 0.4rem;
+                border: 1px solid #333;
+                border-radius: 4px;
+                font-weight: 600;
+                margin-right: 0.3rem;
+            }
+            .norm-badge-link {
+                text-decoration: none;
+                color: inherit;
+            }
+            .norm-badge-link:hover .norm-badge {
+                background: #ffe;
+                border-color: #000;
+            }
+            tr.norm-row {
+                cursor: pointer;
+            }
+            tr.norm-row:hover {
+                background: #f5f5f5;
+            }
+            @media print {
+                /* Keep the link styles visible in print as plain rows. */
+                tr.norm-row {
+                    cursor: default;
+                }
+                tr.norm-row:hover {
+                    background: transparent;
+                }
+                .norm-badge-link {
+                    pointer-events: none;
+                }
+            }
+            .requirement {
+                font-weight: 700;
+            }
+            .req-secured {
+                color: #0a7d2e;
+                font-weight: 700;
+            }
+            .req-any {
+                color: #0a7d2e;
+            }
+            .req-draw {
+                color: #c79f00;
+            }
+            .req-win {
+                color: #b30016;
+            }
+            .perf {
+                font-family: 'Courier New', monospace;
+            }
+            .note {
+                font-size: 0.75rem;
+                color: #666;
+                font-style: italic;
+            }
+            @media print {
+                body {
+                    margin: 0;
+                    padding: 10mm;
+                }
+                @page {
+                    size: A4 landscape;
+                    margin: 10mm;
+                }
+                th {
+                    background: #eee !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1>
+            {% if mode == 'achieved' %}
+                {{ _('Title Norms Achieved') }}
+            {% elif mode == 'forecast' %}
+                {{ _('Title Norms Forecast — Round {round}').format(round=forecast_round) }}
+            {% else %}
+                {{ _('Title Norms') }}
+            {% endif %}
+        </h1>
+        <p class="subtitle">
+            {{ event.name }} &mdash; {{ tournament.name }}
+            ({{ start }} &ndash; {{ end }})
+        </p>
+
+        {% if mode == 'pending' %}
+            <p class="empty">
+                {{ _('The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm.') }}
+            </p>
+        {% elif mode == 'achieved' %}
+            {# ───────────────── Mode: tournament complete ───────────────── #}
+            {% if not achievers %}
+                <p class="empty">
+                    {{ _('No title norm has been achieved in this tournament.') }}
+                </p>
+            {% else %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{{ _('Player') }}</th>
+                            <th>{{ _('FIDE ID') }}</th>
+                            <th>{{ _('Fed') }}</th>
+                            <th>{{ _('Title') }}</th>
+                            <th>{{ _('Norm(s) Achieved') }}</th>
+                            <th class="center">{{ _('Played') }}</th>
+                            <th class="center">{{ _('Score') }}</th>
+                            <th class="center">{{ _('Ra') }}</th>
+                            <th class="center">{{ _('Rp') }}</th>
+                            <th>{{ _('Notes') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in achievers %}
+                            {% set player = entry.player %}
+                            {% for tn, norm in entry.norms.items() %}
+                                {# Build a deep link into the per-player Norm
+                                   Report (IT1 form), anchored to this norm.
+                                   The options query string is pipe-separated
+                                   and URL-encoded; document-view handler
+                                   unquotes then splits. #}
+                                {% set _opts = 'tournament=' ~ tournament.id ~ '|mandatory-player=' ~ player.id %}
+                                {% if rule_143_exemption_code and rule_143_exemption_code != 'none' %}
+                                    {% set _opts = _opts ~ '|rule-143-exemption=' ~ rule_143_exemption_code %}
+                                {% endif %}
+                                {% set norm_url = url_for(
+                                    'document-view',
+                                    event_uniq_id=event.uniq_id,
+                                    document='norm-report',
+                                ) ~ '?options=' ~ (_opts | urlencode) ~ '#norm-' ~ tn.name %}
+                                <tr class="norm-row" data-href="{{ norm_url }}">
+                                    {% if loop.first %}
+                                        <td rowspan="{{ entry.norms | length }}">
+                                            {{ player.full_name }}
+                                        </td>
+                                        <td rowspan="{{ entry.norms | length }}" class="center">
+                                            {{ player.fide_id or '-' }}
+                                        </td>
+                                        <td rowspan="{{ entry.norms | length }}" class="center">
+                                            {{ player.federation }}
+                                        </td>
+                                        <td rowspan="{{ entry.norms | length }}" class="center">
+                                            {{ player.title.short_name or '-' }}
+                                        </td>
+                                    {% endif %}
+                                    <td class="center">
+                                        <a href="{{ norm_url }}" target="_blank"
+                                           class="norm-badge-link"
+                                           title="{{ _('Open IT1 certificate for this norm') }}">
+                                            <span class="norm-badge">{{ tn.name }}</span>
+                                        </a>
+                                    </td>
+                                    <td class="center">{{ norm.played_games }}</td>
+                                    <td class="center">{{ norm.score }}</td>
+                                    <td class="center perf">{{ norm.average_rating }}</td>
+                                    <td class="center perf">{{ norm.performance }}</td>
+                                    <td>
+                                        {% set notes = [] %}
+                                        {% if norm.applied_142c %}
+                                            {% set _discard = notes.append(_('1.4.2c applied')) %}
+                                        {% endif %}
+                                        {% if norm.ignored_rounds_via_search %}
+                                            {# newstyle gettext: pass the
+                                               substitution kwarg directly to
+                                               `_`, not via the `format` filter
+                                               — newstyle converts %(name)s to
+                                               .format() syntax internally. #}
+                                            {% set _discard = notes.append(
+                                                _(
+                                                    '1.4.1e/f: round(s) %(rounds)s ignored',
+                                                    rounds=(norm.ignored_rounds_via_search | sort | join(', '))
+                                                )
+                                            ) %}
+                                        {% endif %}
+                                        {% if norm.requirement_156a_met %}
+                                            {% set _discard = notes.append(_('1.5.6a met')) %}
+                                        {% endif %}
+                                        {% if norm.is_143d_met and norm.not_enough_federations %}
+                                            {% set _discard = notes.append(_('1.4.3d applied')) %}
+                                        {% endif %}
+                                        {% if norm.is_143_exempt_via_abc %}
+                                            {% set _discard = notes.append(
+                                                _('1.4.3%(code)s applied', code=norm.rule_143_exemption)
+                                            ) %}
+                                        {% endif %}
+                                        {% if notes %}
+                                            <span class="note">{{ notes | join('; ') }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p style="margin-top: 1rem; font-size: 0.75rem; color: #666;">
+                    {{ _('Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report.') }}
+                </p>
+            {% endif %}
+        {% elif mode == 'forecast' %}
+            {# ─────────── Mode: forecast for last paired round ─────────── #}
+            {% if not candidates %}
+                <p class="empty">
+                    {{ _('No player is in contention for a title norm in round {round}.').format(round=forecast_round) }}
+                </p>
+            {% else %}
+                <p style="margin: 0.5rem 0 1rem 0; font-style: italic; color: #444;">
+                    {{ _('What the player needs in round {round} to achieve each norm. "any OTB result" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). "norm secured — round optional" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it.').format(round=forecast_round) }}
+                </p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{{ _('Player') }}</th>
+                            <th>{{ _('Fed') }}</th>
+                            <th>{{ _('Title') }}</th>
+                            <th>{{ _('Opponent (R{round})').format(round=forecast_round) }}</th>
+                            <th>{{ _('Norm') }}</th>
+                            <th class="center">{{ _('Needs') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in candidates %}
+                            {% set player = entry.player %}
+                            {% set opp = entry.opponent %}
+                            {% for tn, required in entry.requirements.items() %}
+                                <tr>
+                                    {% if loop.first %}
+                                        <td rowspan="{{ entry.requirements | length }}">
+                                            {{ player.full_name }}
+                                        </td>
+                                        <td rowspan="{{ entry.requirements | length }}" class="center">
+                                            {{ player.federation }}
+                                        </td>
+                                        <td rowspan="{{ entry.requirements | length }}" class="center">
+                                            {{ player.title.short_name or '-' }}
+                                        </td>
+                                        <td rowspan="{{ entry.requirements | length }}">
+                                            {{ opp.full_name }}
+                                            <span class="note">
+                                                {{ opp.title.short_name or '' }}
+                                                {% if opp.rating %}({{ opp.rating }}){% endif %}
+                                                — {{ opp.federation }}
+                                            </span>
+                                        </td>
+                                    {% endif %}
+                                    <td class="center">
+                                        <span class="norm-badge">{{ tn.name }}</span>
+                                    </td>
+                                    <td class="center requirement">
+                                        {% if not required.play_required %}
+                                            <span class="req-secured">{{ _('norm secured — round optional') }}</span>
+                                        {% elif required.minimum_outcome == Result.LOSS %}
+                                            <span class="req-any">{{ _('any OTB result') }}</span>
+                                        {% elif required.minimum_outcome == Result.DRAW %}
+                                            <span class="req-draw">{{ _('draw or win') }}</span>
+                                        {% elif required.minimum_outcome == Result.WIN %}
+                                            <span class="req-win">{{ _('win required') }}</span>
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p style="margin-top: 1rem; font-size: 0.75rem; color: #666;">
+                    {{ _('Forecast considers 1.4.1c (PAB exception), 1.4.1e/f (ignore games), 1.4.2c (last-round opponent forfeit) and 1.4.3d (Swiss exemption).') }}
+                </p>
+            {% endif %}
+        {% endif %}
+        <script>
+            // Whole-row click → open the IT1 deep-link in a new tab.
+            // The norm-badge cell already has an <a>; this just extends
+            // the clickable area to the entire row.
+            (() => {
+                document.querySelectorAll('tr.norm-row[data-href]').forEach((tr) => {
+                    tr.addEventListener('click', (e) => {
+                        // Don't double-fire when the user clicks the explicit
+                        // <a> inside the cell.
+                        if (e.target.closest('a')) return;
+                        window.open(tr.dataset.href, '_blank');
+                    });
+                });
+            })();
+        </script>
+    </body>
+</html>

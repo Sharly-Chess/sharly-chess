@@ -160,7 +160,46 @@
                 border-top: 2px solid black;
                 padding-bottom: 4rem;
             }
+            details.audit {
+                margin-top: var(--row-gap);
+                border: 1px dashed #888;
+                padding: 0.4rem 0.6rem;
+                background: #fafafa;
+                font-size: 0.75rem;
+            }
+            details.audit > summary {
+                cursor: pointer;
+                font-weight: 600;
+                color: #333;
+            }
+            details.audit table {
+                margin-top: 0.6rem;
+                border: 1px solid #bbb;
+                font-size: 0.75rem;
+            }
+            details.audit th,
+            details.audit td {
+                border-top: 1px solid #ddd;
+                border-bottom: 1px solid #ddd;
+                padding: 0.2rem 0.4rem;
+                text-align: left;
+            }
+            details.audit td.center {
+                text-align: center;
+            }
+            details.audit tr.excluded,
+            details.audit tr.dropped,
+            details.audit tr.no_opponent {
+                color: #777;
+                font-style: italic;
+            }
+            details.audit tr.dropped {
+                color: #c79f00;
+            }
             @media print {
+                .no-print {
+                    display: none !important;
+                }
                 body {
                     margin: 0;
                     padding: 10mm;
@@ -197,9 +236,24 @@
         </style>
     </head>
     <body>
+        {# Reason-key → translated text map for the per-round audit block.
+           Built once at body scope so the dict is shared across all
+           per-norm sections. #}
+        {% set reason_text = {
+            'included': _('Counted toward the norm.'),
+            'included_as_1_4_2c_loss': _('1.4.2c: last-round opponent forfeit, counted as a played LOSS.'),
+            'rule_1_4_2a': _('1.4.2a: opponent has no FIDE federation (NON) — not counted.'),
+            'rule_1_4_2b': _('1.4.2b: Round-Robin only — unrated opponent scored zero against every FIDE-rated opponent.'),
+            'forfeit_win_excluded': _('Forfeit win against a no-show — not counted as a played game.'),
+            'board_bye': _('Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent.'),
+            'unplayed_no_pairing': _('Unplayed (no result recorded).'),
+            'no_opponent': _('No opponent paired this round.'),
+            'ignored_via_1_4_1ef': _('1.4.1e/f: ignored by the subset search to satisfy this norm.'),
+        } %}
+
         {% for norm_title, norm in norms.items() %}
             {% if loop.first %}
-                <div class="info">
+                <div class="info" id="norm-{{ norm_title.name }}">
                     {{_('Scroll down to review all the norms…')}}
                     <br />
                     {{_('Unmet requirements are highlighted in red and should be verified. They will appear in black when printed.')}}
@@ -211,8 +265,27 @@
             {% else %}
                 <div class="spacer"></div>
             {% endif %}
-            <div class="heading">
+            <div class="heading" {% if not loop.first %}id="norm-{{ norm_title.name }}{% endif %}">
                 {{norm_title.name}}
+            </div>
+            {# Non-print deep-link to the separate Norm Calculation Details
+               document. That doc is hidden from the picker
+               (`is_available()` returns False) — this link is the only
+               way for arbiters to reach it. #}
+            {% set _opts_details = (
+                'tournament=' ~ tournament.id
+                ~ '|mandatory-player=' ~ tournament_player.id
+                ~ '|norm-choice=' ~ norm_title.name
+            ) %}
+            {% if rule_143_exemption_code and rule_143_exemption_code != 'none' %}
+                {% set _opts_details = _opts_details ~ '|rule-143-exemption=' ~ rule_143_exemption_code %}
+            {% endif %}
+            <div class="no-print" style="text-align: center; margin: 0.4rem 0;">
+                <a href="{{ url_for('document-view', event_uniq_id=event.uniq_id, document='norm-calculation-details') ~ '?options=' ~ (_opts_details | urlencode) }}"
+                   target="_blank"
+                   style="font-size: 0.85rem; color: #0a4dbf; text-decoration: none;">
+                    {{ _('View calculation details for %(norm)s →', norm=norm_title.name) }}
+                </a>
             </div>
             <form class="break-after">
                 <h1 style="text-align: right; margin: 0; padding: 0;">IT 1</h1>
@@ -341,7 +414,7 @@
                                 <div class="error-info">
                                     {{ norm.not_enough_required_titles | safe }}
                                 </div>
-                                <label>{{ title }}:</label>
+                                <label>{{ title.value }}:</label>
                                 <input value="{{ norm.title_counts[title] }}" />
                             </div>
                         {% endfor %}
@@ -349,10 +422,16 @@
                 </section>
 
                 <section>
+                    {# 1.4.3d, when its per-round conditions are met, exempts
+                       BOTH 1.4.3 (foreign-fed count) AND 1.4.4 (federation
+                       caps). The "Otherwise, 1.4.4 applies" clause inside
+                       1.4.3d is what couples 1.4.4 to this exception. So we
+                       care about the 1.4.3d block whenever 1.4.3 OR 1.4.4
+                       fails — the player needs 1.4.3d to save them either way. #}
                     {% set applying_143d = is_swiss and (
-                            norm.not_enough_federations or
-                            norm.too_many_own_federation or
-                            norm.too_many_one_federation
+                            norm.not_enough_federations
+                            or norm.too_many_own_federation
+                            or norm.too_many_one_federation
                         )
                     %}
                     <div style="font-size: 0.9rem; font-weight: bold;">Where applying 1.4.3d:</div>
@@ -382,7 +461,26 @@
                 </section>
                 <div class="item" style="margin-top: 0.5rem;">
                     <label>Special remarks:</label>
-                    <input value="{{ 'This tournament meets the requirements of 1.5.6a.' if norm.requirement_156a_met else '' }}" />
+                    {% set remarks = [] %}
+                    {% if norm.requirement_156a_met %}
+                        {% set _discard = remarks.append('This tournament meets the requirements of 1.5.6a.') %}
+                    {% endif %}
+                    {% if norm.applied_142c %}
+                        {% set _discard = remarks.append('1.4.2c applied: last-round opponent forfeit included in the mix and scored as a loss.') %}
+                    {% endif %}
+                    {% if norm.ignored_rounds_via_search %}
+                        {% set _discard = remarks.append(
+                            '1.4.1e/f applied: round(s) ' ~
+                            (norm.ignored_rounds_via_search | sort | join(', ')) ~
+                            ' ignored.'
+                        ) %}
+                    {% endif %}
+                    {% if norm.is_143_exempt_via_abc %}
+                        {% set _discard = remarks.append(
+                            '1.4.3' ~ norm.rule_143_exemption ~ ' applied: 1.4.3 federation requirement waived for event type.'
+                        ) %}
+                    {% endif %}
+                    <input value="{{ remarks | join(' ') }}" />
                 </div>
 
                 <table style="margin-top: var(--row-gap);">
@@ -415,6 +513,10 @@
                         {% if opp.id == norm.adjusted_player.id %}
                             {% set adjusted_opp_rating = norm.adjusted_player_rating %}
                         {% endif %}
+                        {# 1.4.4 violations only matter when 1.4.3d isn't
+                           rescuing the player. The "Otherwise, 1.4.4 applies"
+                           clause inside 1.4.3d makes 1.4.3d an exemption from
+                           1.4.4 as well as 1.4.3. #}
                         {% if not norm.is_143d_met and norm.too_many_own_federation and opp.federation == tournament_player.federation %}
                             {% set too_many_own = true %}
                             {% set err = norm.too_many_own_federation %}
@@ -422,7 +524,10 @@
                             {% set too_many_one = true %}
                             {% set err = norm.too_many_one_federation[1] %}
                         {% endif %}
-                        {% set ignored = norm.ignored_opponents_ids and opp.id in norm.ignored_opponents_ids %}
+                        {% set ignored = (
+                            (norm.ignored_opponents_ids and opp.id in norm.ignored_opponents_ids)
+                            or rnd in norm.ignored_rounds_via_search
+                        ) %}
                         <tr class="{{ 'ignored' if ignored }}">
                             <td>{{ rnd }}</td>
                             <td><input class="name-cell" value="{{ opp.full_name }}" /></td>

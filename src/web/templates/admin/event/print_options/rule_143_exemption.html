@@ -1,0 +1,8 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('1.4.3 exemption:'),
+        select_options=option.exemption_choices,
+        data=data, errors=errors
+    ) }}
+</div>

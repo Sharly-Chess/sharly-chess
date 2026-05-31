@@ -403,6 +403,10 @@ class Event:
             return _(
                 'Distributing the players is allowed only if all the tournaments use the same rating.'
             )
+        if error_message := plugin_manager.hook_for_event(
+            self, 'player_distribution_error_message'
+        )(event=self):
+            return error_message
         return None
 
     @cached_property
@@ -437,9 +441,12 @@ class Event:
                 tournament.add_player_to_tournament(stored_player, database)
         return stored_player.id
 
-    def delete_player(self, player_id: int):
+    def delete_player(self, player: Player):
         with EventDatabase(self.uniq_id, True) as database:
-            database.delete_stored_player(player_id)
+            database.delete_stored_player(player.id)
+        del self.players_by_id[player.id]
+        del player.single_tournament.tournament_players_by_id[player.id]
+        plugin_manager.hook_for_event(self, 'on_player_deleted')(player=player)
 
     def update_player(self, player: Player, new_stored_player: StoredPlayer):
         new_stored_player.id = player.id
@@ -472,21 +479,25 @@ class Event:
             return True
         return False
 
-    def check_player_unicity(
+    def get_player_duplicate(
         self,
         stored_player: StoredPlayer,
         tournament: Tournament,
         player_id: int | None = None,
-    ) -> bool:
+    ) -> Player | None:
         players = (
             tournament.tournament_players
             if self.allow_multi_tournament_players
             else self.players
         )
-        return all(
-            not self._are_player_duplicates(stored_player, player)
-            for player in players
-            if player.id != player_id
+        return next(
+            (
+                player
+                for player in players
+                if player.id != player_id
+                and self._are_player_duplicates(stored_player, player)
+            ),
+            None,
         )
 
     @cached_property

@@ -1,0 +1,8 @@
+<div class="col-12">
+    {{ admin_macros.number_input(
+        name=option.id,
+        label=_('Max. teams per school:'),
+        min=1,
+        data=data, errors=errors
+    ) }}
+</div>

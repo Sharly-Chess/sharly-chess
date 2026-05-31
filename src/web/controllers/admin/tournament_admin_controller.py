@@ -1462,8 +1462,9 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id)
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
-        add_other = 'add_other' in data
-        SessionTieBreakAddOtherActive(request).set(add_other)
+        add_other = WebContext.resolve_add_other(
+            data, SessionTieBreakAddOtherActive(request)
+        )
         if errors := self._validate_tie_break_form_data(
             web_context, FormAction.CREATE, data
         ):

@@ -7,8 +7,8 @@ from typing import Any, TYPE_CHECKING, Iterable, Optional
 from packaging.version import Version
 
 from common import TEST_ENV, DEVEL_ENV
-from common.i18n import _, ngettext
 from common.exception import SharlyChessException
+from common.i18n import _, ngettext
 from data.account import Account
 from data.columns import player_table, player_datasheet
 from data.columns.player_datasheet import DatasheetColumn
@@ -30,11 +30,17 @@ from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
 from data.player_categories import PlayerCategory, JuniorCategory
-from data.print_documents import PlayerSplitter, PrintDocument, PrintOption
+from data.print_documents import (
+    PlayerSplitter,
+    PrintDocument,
+    PrintOption,
+    IndividualTeamType,
+)
 from data.print_documents.documents import StatisticsPrintDocument
 from data.print_documents.place_cards.data import PlaceCardPlayer
 from data.print_documents.player_splitters import ClubPlayerSplitter
 from data.print_documents.qrcode_types import QRCodeType
+from data.print_documents.individual_teams import ClubIndividualTeamType
 from data.tie_breaks import TieBreak, TieBreakOption
 from data.tie_breaks.system_sets import SystemTieBreakSet
 from data.tie_breaks.tie_breaks import ProgressiveScoresTieBreak
@@ -65,10 +71,7 @@ from plugins.ffe.ffe_entity import (
     FfeLicencePlayersTabColumn,
     FfeLicenceTournamentCriterion,
     FfeLeagueTournamentCriterion,
-)
-from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
-from plugins.ffe.ffe_upload_controller import (
-    FfeUploadController,
+    FfeLeagueIndividualTeamType,
 )
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
@@ -81,7 +84,11 @@ from plugins.ffe.ffe_tournament_importers import (
     PapiJsonTournamentImporter,
     PapiTournamentImporter,
 )
+from plugins.ffe.ffe_upload_controller import (
+    FfeUploadController,
+)
 from plugins.ffe.papi_converter import PapiConverter, PapiPlayer
+from plugins.ffe.print_documents.ffe_documents import FFEPrintDocument
 from plugins.ffe.print_documents.ffe_options import (
     FFEDocumentTypePrintOption,
     FFET3NoLicencePlayersPrintOption,
@@ -106,8 +113,8 @@ from plugins.ffe.utils import (
 from plugins.hookspec import hookimpl, hookspec
 from plugins.migration import PluginMigrationManager
 from plugins.pairing_acceleration.pairing_acceleration import PairingAccelerationPlugin
-from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.sce.sce_data import SCEPlayerSyncData
+from plugins.sce.sce_tournament_results_builder import SCEUploadColumn
 from plugins.utils import (
     ExtraStatisticsSection,
     NavDataTransferItem,
@@ -457,35 +464,33 @@ class FfePlugin(Plugin):
         return PlayerRatingAndType(value, PlayerRatingType.ESTIMATED)
 
     @hookimpl
-    def is_tournament_participation_possible(
-        self, tournament: 'Tournament', tournament_player: TournamentPlayer
-    ) -> str | None:
-        plugin_data = FFEUtils.get_player_plugin_data(tournament_player)
+    def validate_player_tournament_move(
+        self, tournament: 'Tournament', player: TournamentPlayer
+    ):
+        plugin_data = FFEUtils.get_player_plugin_data(player)
         ffe_licence_number = plugin_data.ffe_licence_number
         ffe_id = plugin_data.ffe_id
         if ffe_licence_number and any(
-            FFEUtils.get_player_plugin_data(tournament_player_).ffe_licence_number
+            FFEUtils.get_player_plugin_data(player_).ffe_licence_number
             == ffe_licence_number
-            for tournament_player_ in tournament.tournament_players_by_id.values()
+            for player_ in tournament.tournament_players_by_id.values()
         ):
-            return _(
+            message = _(
                 'FFE licence [{ffe_licence_number}] already '
                 'present in tournament [{tournament}].'
             ).format(
                 ffe_licence_number=ffe_licence_number,
                 tournament=tournament.name,
             )
-
-        if ffe_id and any(
+            raise ValueError(message)
+        elif ffe_id and any(
             FFEUtils.get_player_plugin_data(tournament_player_).ffe_id == ffe_id
             for tournament_player_ in tournament.tournament_players_by_id.values()
         ):
             # This string is not translated because the error should never happen
-            return (
+            raise ValueError(
                 f'FFE ID [{ffe_id}] already present in tournament [{tournament.name}].'
             )
-
-        return None
 
     @staticmethod
     def _get_ffe_club_sort_key(player: Player) -> tuple:
@@ -732,6 +737,14 @@ class FfePlugin(Plugin):
     @hookimpl
     def insert_print_qrcode_types(self, qrcode_types: list[type[QRCodeType]]):
         qrcode_types.append(FFESiteQRCodeType)
+
+    @hookimpl
+    def insert_print_individual_team_types(
+        self, individual_team_types: list[type[IndividualTeamType]]
+    ):
+        ltt: type[IndividualTeamType] = FfeLeagueIndividualTeamType
+        ctt: type[IndividualTeamType] = ClubIndividualTeamType
+        PluginUtils.insert_on_equals(individual_team_types, ltt, ctt)
 
     @hookimpl
     def get_extra_statistics_sections(
