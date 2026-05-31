@@ -24,10 +24,15 @@ from data.print_documents.player_sorters import (
 )
 from data.print_documents.player_splitters import PlayerSplitter, NoSplitPlayerSplitter
 from data.print_documents.qrcode_types import NetworkQRCodeType, QRCodeType
+from data.print_documents.individual_teams import (
+    IndividualTeamType,
+    ClubIndividualTeamType,
+)
 from utils.option import Option
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.print_documents import PrintIndividualTeamTypeManager
     from data.print_documents.documents import PlaceCardTemplate
 
 
@@ -371,6 +376,94 @@ class ClubThresholdPrintOption(PrintOption):
             raise OptionError(_('A positive value is expected.'), self)
 
 
+class Rule143ExemptionPrintOption(PrintOption):
+    """Selects which FIDE 1.4.3 exemption (a/b/c) applies, based on the
+    type of event the tournament is part of. The arbiter sets this on the
+    print doc — there's no automatic detection because nothing in the
+    tournament metadata identifies a "National Championship final" or a
+    "Zonal".
+
+    Spec mapping:
+    - 'none'  → no exemption (default).
+    - '1.4.3a' → National men's/open championship final stage.
+                  Exempts 1.4.3 ONLY for players from the event's
+                  registering federation.
+    - '1.4.3b' → National team championships.
+                  Same player filter as 1.4.3a.
+    - '1.4.3c' → Zonal / Sub-zonal tournament.
+                  Exempts 1.4.3 for ALL players (no federation filter).
+
+    None of a/b/c exempt 1.4.4 — only 1.4.3d does that (see
+    `compute_big_tournament_exemption`).
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return 'rule-143-exemption'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return 'none'
+
+    @property
+    def exemption_choices(self) -> dict[str, str]:
+        """{value: label} for the dropdown. Labels include the spec
+        reference so the arbiter sees the rule being invoked."""
+        return {
+            'none': _('Regular event'),
+            '1.4.3a': _('National championship final (1.4.3a)'),
+            '1.4.3b': _('National team championship (1.4.3b)'),
+            '1.4.3c': _('Zonal or sub-zonal (1.4.3c)'),
+        }
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value not in ('none', '1.4.3a', '1.4.3b', '1.4.3c'):
+            # Untranslated; should not happen via UI
+            raise OptionError(f'Unknown 1.4.3 exemption: {self.value}', self)
+
+
+class NormChoicePrintOption(PrintOption):
+    """Which norm to render in the Norm Calculation Details document.
+    The detail doc shows only one norm at a time, so the arbiter picks
+    which one to audit via the deep-link from the IT1."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'norm-choice'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return 'GM'
+
+    @property
+    def norm_choices(self) -> dict[str, str]:
+        """{value: label} mapping for the dropdown. Mirrors `TitleNorm`'s
+        four members in `values()` order (WIM, WGM, IM, GM)."""
+        from utils.enum import TitleNorm
+
+        return {tn.name: tn.name for tn in TitleNorm.values()}
+
+    @override
+    def validate(self):
+        super().validate()
+        from utils.enum import TitleNorm
+
+        valid = {tn.name for tn in TitleNorm.values()}
+        if self.value not in valid:
+            # Untranslated, should not happen via UI
+            raise OptionError(f'Unknown norm: {self.value}', self)
+
+
 class QRCodePrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
@@ -678,3 +771,120 @@ class PlayerHistoryOption(PrintOption):
     @property
     def default_value(self) -> Any:
         return False
+
+
+class IndividualTeamTypePrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-type'
+
+    @property
+    def type(self) -> type | UnionType:
+        return str
+
+    @property
+    def default_value(self) -> Any:
+        return ClubIndividualTeamType.static_id()
+
+    @property
+    def manager(self) -> 'PrintIndividualTeamTypeManager':
+        from data.print_documents import PrintIndividualTeamTypeManager
+
+        return PrintIndividualTeamTypeManager(self.event)
+
+    @property
+    def team_type_options(self) -> dict[str, str]:
+        return self.manager.options()
+
+    @cached_property
+    def team_type(self) -> IndividualTeamType:
+        return self.manager.get_object(self.value)
+
+    @property
+    def max_per_entity_label_per_type(self) -> dict[str, str]:
+        return {
+            team_type.id: team_type.max_per_entity_label
+            for team_type in self.manager.objects()
+        }
+
+    @override
+    def validate(self):
+        try:
+            _type = self.team_type
+        except KeyError:
+            # Untranslated, should not happen
+            raise OptionError(f'Unknown team type: {self.value}', self)
+
+
+class IndividualTeamSizePrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-size'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return 4
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is None or self.value < 2:
+            raise OptionError(_('An integer greater than 1 is expected.'), self)
+
+
+class IndividualTeamMaxPerEntityPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-max-per-entity'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is not None and self.value < 1:
+            raise OptionError(_('A positive integer is expected.'), self)
+
+
+class IndividualTeamMinGenderCountPrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-min-gender-count'
+
+    @property
+    def type(self) -> type | UnionType:
+        return int | None
+
+    @property
+    def default_value(self) -> Any:
+        return None
+
+    @override
+    def validate(self):
+        super().validate()
+        if self.value is not None and self.value < 0:
+            raise OptionError(_('A positive integer is expected.'), self)
+
+
+class IndividualTeamDisplayIncompletePrintOption(PrintOption):
+    @staticmethod
+    def static_id() -> str:
+        return 'individual-team-display-incomplete'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return True

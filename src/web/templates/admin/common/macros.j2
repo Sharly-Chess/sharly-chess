@@ -580,6 +580,7 @@ with_indicator: display a loading indicator, optional
     multiple_select=false,
     tooltip_select=false,
     select_search_placeholder='',
+    select_search_disabled=false,
     select_all=false,
     file_accept='',
     min_date='',
@@ -628,7 +629,7 @@ with_indicator: display a loading indicator, optional
                         for="{{ id }}"
                         class="form-check-label flex-grow-1"
                     >
-                        {{- label -}}
+                        <span id="{{ id }}-label-text">{{- label -}}</span>
                         {%- if doc_icon -%}
                             <span class="text-nowrap">{{ macros.doc_icon(doc_icon, 'ms-2') }}</span>
                         {%- endif -%}
@@ -670,6 +671,7 @@ with_indicator: display a loading indicator, optional
                         placeholder=placeholder,
                         multiple_select_all=select_all,
                         search_placeholder=select_search_placeholder,
+                        search_disabled=select_search_disabled,
                         error=error or (name in errors),
                         tooltip_select=tooltip_select,
                         onchange=onchange,
@@ -1230,6 +1232,7 @@ with_indicator: display a loading indicator, optional
     multiple_select=false,
     tooltip_select=false,
     search_placeholder='',
+    search_disabled=false,
     select_all=false,
     placeholder='',
     disabled=false,
@@ -1250,6 +1253,7 @@ with_indicator: display a loading indicator, optional
         multiple_select=multiple_select,
         tooltip_select=tooltip_select,
         select_search_placeholder=search_placeholder,
+        select_search_disabled=search_disabled,
         select_all=select_all,
         placeholder=placeholder,
         disabled=disabled,

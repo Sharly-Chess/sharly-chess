@@ -1,0 +1,767 @@
+{#
+  Norm Calculation Details — standalone audit document.
+
+  Renders one chosen norm's full math: per-rule arithmetic, opponent
+  ratings list (with the 1.4.6 floor highlighted), Rp breakdown,
+  federation histogram, 1.4.3d / 1.5.6a per-round trails, the 1.4.2c
+  side-by-side when it applied, and the per-round audit trail.
+
+  Hidden from the document picker (`is_available()` returns False on
+  NormCalculationDetailsPrintDocument). The only entry point is the
+  "View calculation details" deep-link on the IT1 (NormReportPrintDocument).
+
+  Expected context:
+    chosen_norm         — TitleNorm being inspected (may be None)
+    chosen_norm_result  — NormCheckResult for that norm
+    tournament_player   — TournamentPlayer
+    tournament, event   — usual context
+    is_swiss            — bool
+    exemption_trail     — list[BigTournamentRoundCounts]
+    high_level_trail    — list[HighLevelRoundCounts]
+#}
+<!DOCTYPE html>
+<html lang="en" translate="no">
+    <head>
+        <meta charset="UTF-8" />
+        <title>{{ _('Norm Calculation Details') }}</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 900px;
+                margin: 2rem auto;
+                line-height: 1.4;
+                font-size: 0.85rem;
+            }
+            .calc-banner {
+                text-align: center;
+                padding: 0.6rem;
+                border-bottom: 2px solid black;
+                margin-bottom: 1rem;
+            }
+            .calc-banner h1 {
+                font-size: 1.4rem;
+                margin: 0;
+            }
+            .calc-banner .player {
+                font-weight: 600;
+                font-size: 1.1rem;
+                margin-top: 0.3rem;
+            }
+            .calc-banner .meta {
+                font-size: 0.85rem;
+                color: #444;
+                margin-top: 0.2rem;
+            }
+            .calc-section {
+                margin: 1.2rem 0;
+                border: 1px solid #888;
+                padding: 0.8rem;
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            .calc-section h2 {
+                margin: 0 0 0.6rem 0;
+                font-size: 1.05rem;
+                border-bottom: 1px solid #bbb;
+                padding-bottom: 0.3rem;
+            }
+            .calc-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.8rem;
+            }
+            .calc-table th,
+            .calc-table td {
+                border: 1px solid #bbb;
+                padding: 0.3rem 0.5rem;
+                text-align: left;
+                vertical-align: top;
+            }
+            .calc-table th {
+                background: #eee;
+                font-weight: 600;
+            }
+            .calc-table td.right,
+            .calc-table th.right { text-align: right; }
+            .calc-table td.center,
+            .calc-table th.center { text-align: center; }
+            .verdict-pass { color: #0a7d2e; font-weight: 700; }
+            .verdict-fail { color: #b30016; font-weight: 700; }
+            .verdict-na { color: #777; }
+            .bottleneck-row { background: #fff8e0; font-weight: 600; }
+            .floored-row { background: #fff0f0; }
+            .floored-row td:last-child { font-style: italic; color: #b30016; }
+            .formula { font-family: 'Courier New', monospace; font-size: 0.78rem; }
+            .nav-bar {
+                background: #fafafa;
+                border: 1px dashed #888;
+                padding: 0.5rem 0.7rem;
+                margin-bottom: 1rem;
+                font-size: 0.85rem;
+                display: flex;
+                gap: 0.8rem;
+                align-items: center;
+            }
+            .nav-bar a {
+                color: #0a4dbf;
+                text-decoration: none;
+            }
+            .nav-bar a:hover { text-decoration: underline; }
+            .empty {
+                text-align: center;
+                font-style: italic;
+                margin: 2rem 0;
+                color: #555;
+            }
+            @media print {
+                .nav-bar { display: none !important; }
+                body { margin: 0; padding: 10mm; }
+                @page { size: A4 portrait; margin: 10mm; }
+            }
+        </style>
+    </head>
+    <body>
+        {# Audit-reason key → translated text map (consumed by section 8). #}
+        {% set reason_text = {
+            'included': _('Counted toward the norm.'),
+            'included_as_1_4_2c_loss': _('1.4.2c: last-round opponent forfeit, counted as a played LOSS.'),
+            'rule_1_4_2a': _('1.4.2a: opponent has no FIDE federation (NON) — not counted.'),
+            'rule_1_4_2b': _('1.4.2b: Round-Robin only — unrated opponent scored zero against every FIDE-rated opponent.'),
+            'forfeit_win_excluded': _('Forfeit win against a no-show — not counted as a played game.'),
+            'board_bye': _('Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent.'),
+            'unplayed_no_pairing': _('Unplayed (no result recorded).'),
+            'no_opponent': _('No opponent paired this round.'),
+            'ignored_via_1_4_1ef': _('1.4.1e/f: ignored by the subset search to satisfy this norm.'),
+        } %}
+
+        {# Non-print nav: link back to the IT1 view. #}
+        {% set _opts_it1 = 'tournament=' ~ tournament.id ~ '|mandatory-player=' ~ tournament_player.id %}
+        {% if rule_143_exemption_code and rule_143_exemption_code != 'none' %}
+            {% set _opts_it1 = _opts_it1 ~ '|rule-143-exemption=' ~ rule_143_exemption_code %}
+        {% endif %}
+        <div class="nav-bar no-print">
+            <span>{{ _('Calculation details — read-only audit view, hidden when printed.') }}</span>
+            <a href="{{ url_for('document-view', event_uniq_id=event.uniq_id, document='norm-report') ~ '?options=' ~ (_opts_it1 | urlencode) }}">
+                {{ _('← Back to IT1 certificate') }}
+            </a>
+        </div>
+
+        {% if not chosen_norm or not chosen_norm_result %}
+            <p class="empty">
+                {{ _('No norm is reachable for this player. The IT1 certificate is the right place to inspect the player.') }}
+            </p>
+        {% else %}
+            {% set norm = chosen_norm_result %}
+            {# Section numbering counter. Sections render conditionally
+               (Swiss-only ones are hidden for RR/DRR; 1.4.2c only when
+               applied), so the displayed numbers must reflect what's
+               actually visible. #}
+            {% set sec = namespace(n=0) %}
+
+            <div class="calc-banner">
+                <h1>{{ _('Norm Calculation Details — %(norm)s', norm=chosen_norm.name) }}</h1>
+                <div class="player">{{ tournament_player.full_name }}</div>
+                <div class="meta">
+                    {{ tournament_player.federation }} —
+                    {{ _('Current title:') }} {{ tournament_player.title.short_name or '—' }} —
+                    {{ _('FIDE ID:') }} {{ tournament_player.fide_id or '—' }}
+                </div>
+                <div class="meta">
+                    {{ event.name }} / {{ tournament.name }}
+                    ({{ start }} – {{ end }})
+                </div>
+                <div class="meta">
+                    {{ _('Verdict:') }}
+                    {% if norm.is_met %}
+                        <span class="verdict-pass">{{ _('NORM ACHIEVED') }}</span>
+                    {% else %}
+                        <span class="verdict-fail">{{ _('NOT ACHIEVED') }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            {#— 1. Per-rule arithmetic —#}
+            <section class="calc-section">
+                {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Per-rule checks') }}</h2>
+                <table class="calc-table">
+                    <thead>
+                        <tr>
+                            <th>{{ _('Rule') }}</th>
+                            <th>{{ _('Threshold') }}</th>
+                            <th>{{ _('Actual') }}</th>
+                            <th class="center">{{ _('Verdict') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {# 1.4.1 — minimum games. `min_games_threshold`
+                           comes from TitleNorm.minimum_rounds (9 Swiss,
+                           10 DRR); matches what the evaluator checks. #}
+                        <tr>
+                            <td>{{ _('1.4.1 — Games played') }}</td>
+                            <td><span class="formula">≥ {{ min_games_threshold }}</span></td>
+                            <td>{{ norm.played_games }}</td>
+                            <td class="center">
+                                {% if norm.not_enough_games %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
+                                {% else %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {# 1.4.3 — federations.
+                           Spec: at least 2 federations OTHER than the
+                           applicant's. So the "actual" we compare against
+                           the ≥ 2 threshold is `total − 1` when any of the
+                           applicant's own federation is present, else `total`. #}
+                        {% set _other_feds = norm.federations_count - (1 if norm.from_own_federations_count > 0 else 0) %}
+                        <tr>
+                            <td>{{ _('1.4.3 — At least 2 foreign federations') }}</td>
+                            <td>
+                                ≥ 2
+                                <br /><span style="font-size: 0.7rem; color: #666;">{{ _("federations other than the applicant's") }}</span>
+                            </td>
+                            <td>
+                                {{ _other_feds }}
+                                {% if norm.from_own_federations_count > 0 %}
+                                    <br /><span style="font-size: 0.7rem; color: #666;">
+                                        {{ _('(%(total)s total, %(own)s from own federation)', total=norm.federations_count, own=norm.from_own_federations_count) }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="center">
+                                {% if not norm.not_enough_federations %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% elif norm.is_143d_met %}
+                                    <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
+                                {% elif norm.is_143_exempt_via_abc %}
+                                    <span class="verdict-pass">{{ _('EXEMPT') }} (1.4.3{{ norm.rule_143_exemption }})</span>
+                                {% else %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {# 1.4.4 — federation caps. Note: 1.4.3a/b/c do NOT
+                           exempt 1.4.4 — only 1.4.3d does. #}
+                        <tr>
+                            <td>{{ _('1.4.4 — Own federation cap') }}</td>
+                            <td>
+                                ≤ {{ (norm.played_games * 3 // 5) }}
+                                <br /><span style="font-size: 0.7rem; color: #666;">{{ _('3/5 of %(n)s opponents', n=norm.played_games) }}</span>
+                            </td>
+                            <td>{{ norm.from_own_federations_count }}</td>
+                            <td class="center">
+                                {% if norm.too_many_own_federation and not norm.is_143d_met %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
+                                {% elif norm.too_many_own_federation and norm.is_143d_met %}
+                                    <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
+                                {% else %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ _('1.4.4 — One-federation cap') }}</td>
+                            <td>
+                                ≤ {{ (norm.played_games * 2 // 3) }}
+                                <br /><span style="font-size: 0.7rem; color: #666;">{{ _('2/3 of %(n)s opponents', n=norm.played_games) }}</span>
+                            </td>
+                            <td>
+                                {% if norm.federations_counter and norm.federations_counter|length > 0 %}
+                                    {% set top_fed, top_count = norm.federations_counter.most_common(1)[0] %}
+                                    {{ top_count }} {{ _('from') }} {{ top_fed }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td class="center">
+                                {% if norm.too_many_one_federation and not norm.is_143d_met %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
+                                {% elif norm.too_many_one_federation and norm.is_143d_met %}
+                                    <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
+                                {% else %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {# 1.4.5a — title holders #}
+                        <tr>
+                            <td>{{ _('1.4.5a — Title holders (CM/WCM excluded)') }}</td>
+                            <td>
+                                ≥ {{ ((norm.played_games + 1) // 2) }}
+                                <br /><span style="font-size: 0.7rem; color: #666;">50% {{ _('of %(n)s opponents', n=norm.played_games) }}</span>
+                            </td>
+                            <td>{{ norm.num_title_holders }}</td>
+                            <td class="center">
+                                {% if norm.not_enough_title_holders %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
+                                {% else %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {# 1.4.5b-e — required titles.
+                           Threshold = max(ceil(played/3), 3); the floor of 3
+                           dominates until played ≥ 9, then 1/3 takes over. #}
+                        {% set _req_threshold = [((norm.played_games + 2) // 3), 3] | max %}
+                        <tr>
+                            <td>{{ _('1.4.5b-e — Required titles') }} ({{ norm.required_titles | join(', ') }})</td>
+                            <td>
+                                ≥ {{ _req_threshold }}
+                                <br /><span style="font-size: 0.7rem; color: #666;">{{ _('1/3 of %(n)s opponents, min 3', n=norm.played_games) }}</span>
+                            </td>
+                            <td>{{ norm.required_titles_met }}</td>
+                            <td class="center">
+                                {% if norm.not_enough_required_titles %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
+                                {% else %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {# 1.4.6 — minimum opponent rating. Not a pass/fail rule but a
+                           transformation: if any opponent is below the norm floor,
+                           their rating is raised to the floor before Ra is computed. #}
+                        <tr>
+                            <td>{{ _('1.4.6 — Minimum opponent rating') }}</td>
+                            <td><span class="formula">≥ {{ chosen_norm.minimum_rating }}</span></td>
+                            <td>
+                                {% if norm.adjusted_player %}
+                                    {{ _('Floor applied to') }} {{ norm.adjusted_player.full_name }}
+                                    ({{ _('raised to %(r)s', r=norm.adjusted_player_rating) }})
+                                {% else %}
+                                    {{ _('No floor needed') }}
+                                {% endif %}
+                            </td>
+                            <td class="center">
+                                {% if norm.adjusted_player %}
+                                    <span class="verdict-na">{{ _('APPLIED') }}</span>
+                                {% else %}
+                                    <span class="verdict-na">{{ _('N/A') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {# 1.4.8a — minimum average #}
+                        <tr>
+                            <td>{{ _('1.4.8a — Minimum opponent average (Ra)') }}</td>
+                            <td><span class="formula">≥ {{ chosen_norm.minimum_average }}</span></td>
+                            <td>{{ norm.average_rating }}</td>
+                            <td class="center">
+                                {% if norm.average_too_low %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
+                                {% else %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {# 1.4.8b — score 35% #}
+                        <tr>
+                            <td>{{ _('1.4.8b — Minimum score') }} (35%)</td>
+                            <td>
+                                ≥ {{ '%.2f' | format(norm.played_games * 0.35) }}
+                                <br /><span style="font-size: 0.7rem; color: #666;">35% {{ _('of %(n)s played games', n=norm.played_games) }}</span>
+                            </td>
+                            <td>{{ norm.score }}</td>
+                            <td class="center">
+                                {% if norm.score_too_low %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
+                                {% else %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        {# 1.4.8 — performance #}
+                        <tr>
+                            <td>{{ _('1.4.8 — Performance rating (Rp)') }}</td>
+                            <td><span class="formula">≥ {{ chosen_norm.minimum_performance }}</span></td>
+                            <td>
+                                {{ norm.performance }}
+                                {% if norm.performance_diff is not none %}
+                                    <br /><span style="font-size: 0.75rem; color: #666;">
+                                        {% if norm.performance_diff >= 0 %}
+                                            {{ _('%(pts)s score-points above the Rp threshold', pts=('%.1f' | format(norm.performance_diff))) }}
+                                        {% else %}
+                                            {{ _('%(pts)s score-points below the Rp threshold', pts=('%.1f' | format(-norm.performance_diff))) }}
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="center">
+                                {% if norm.performance_too_low %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
+                                {% else %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            {#— 2. Opponent ratings list (1.4.6 floor) —#}
+            <section class="calc-section">
+                {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Opponent ratings (1.4.6 + 1.4.7)') }}</h2>
+                {% if norm.adjusted_player %}
+                    <p style="font-size: 0.8rem; margin: 0 0 0.6rem 0;">
+                        {{ _('Rule 1.4.6: the lowest-rated opponent is raised to the norm floor (%(r)s) before computing the average.', r=chosen_norm.minimum_rating) }}
+                    </p>
+                {% endif %}
+                <table class="calc-table">
+                    <thead>
+                        <tr>
+                            <th class="center">#</th>
+                            <th>{{ _('Opponent') }}</th>
+                            <th class="center">{{ _('Fed') }}</th>
+                            <th class="center">{{ _('Title') }}</th>
+                            <th class="right">{{ _('Rating') }}</th>
+                            <th>{{ _('Note') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in norm.round_audit if entry.decision.value == 'included' %}
+                            <tr {% if norm.adjusted_player and entry.opponent.id == norm.adjusted_player.id %}class="floored-row"{% endif %}>
+                                <td class="center">{{ loop.index }}</td>
+                                <td>{{ entry.opponent.full_name }}</td>
+                                <td class="center">{{ entry.opponent.federation }}</td>
+                                <td class="center">{{ entry.opponent.title.short_name or '—' }}</td>
+                                <td class="right">
+                                    {% if norm.adjusted_player and entry.opponent.id == norm.adjusted_player.id %}
+                                        {{ norm.adjusted_player_rating }}
+                                        <span style="font-size: 0.7rem; color: #666;">
+                                            ({{ _('was %(r)s', r=entry.opponent.rating or '—') }})
+                                        </span>
+                                    {% else %}
+                                        {{ entry.opponent.rating or '—' }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if norm.adjusted_player and entry.opponent.id == norm.adjusted_player.id %}
+                                        {{ _('1.4.6 floor applied') }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="4" class="right">{{ _('Average (Ra), rounded per 1.4.7:') }}</th>
+                            <th class="right">{{ norm.average_rating }}</th>
+                            <th></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+
+            {#— 3. Performance breakdown.
+                dp is a *lookup* in the FIDE 1.4.9 table, keyed on the
+                rounded fractional score. The rows below spell that out
+                step-by-step: rounded percent → dp → Rp. The "Minimum
+                score to clear the Rp threshold" block below reuses the
+                same shape for the tipping score so the two layouts mirror
+                each other. #}
+            <section class="calc-section">
+                {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Performance rating (Rp)') }}</h2>
+                <table class="calc-table">
+                    <tr>
+                        <th>{{ _('Played games') }}</th>
+                        <td>{{ norm.played_games }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ _('Average opponent rating (Ra)') }}</th>
+                        <td>{{ norm.average_rating }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ _('Score') }}</th>
+                        <td>
+                            {% if actual_score_proof %}
+                                {{ norm.score }} / {{ norm.played_games }}
+                                = {{ '%.3f' | format(actual_score_proof.raw_percent) }}%
+                                → {{ actual_score_proof.rounded_percent }}%
+                            {% else %}
+                                {{ norm.score }} / {{ norm.played_games }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ _('Performance bonus (dp), from 1.4.9 table') }}</th>
+                        <td>
+                            {% if actual_score_proof %}
+                                {{ actual_score_proof.dp }}
+                            {% else %}
+                                {{ (norm.performance - norm.average_rating) | int }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ _('Performance rating (Rp)') }}</th>
+                        <td><span class="formula">Rp = Ra + dp = {{ norm.performance }}</span></td>
+                    </tr>
+                    <tr>
+                        <th>{{ _('Required (1.4.8)') }}</th>
+                        <td>{{ chosen_norm.minimum_performance }}</td>
+                    </tr>
+                </table>
+
+                {% if score_required_proof %}
+                <p style="font-size: 0.8rem; margin: 0.8rem 0 0.4rem 0; font-weight: 600;">
+                    {{ _('Minimum score to clear the Rp threshold') }}
+                </p>
+                <table class="calc-table">
+                    <tr>
+                        <th>{{ _('Score') }}</th>
+                        <td>
+                            <b>{{ score_required_proof.score }}</b> / {{ norm.played_games }}
+                            = {{ '%.3f' | format(score_required_proof.raw_percent) }}%
+                            → {{ score_required_proof.rounded_percent }}%
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ _('Performance bonus (dp), from 1.4.9 table') }}</th>
+                        <td>{{ score_required_proof.dp }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ _('Performance rating (Rp) at this score') }}</th>
+                        <td><span class="formula">Rp = Ra + dp = {{ score_required_proof.rp }}</span></td>
+                    </tr>
+                </table>
+                {% endif %}
+            </section>
+
+            {#— 4. Federation histogram —#}
+            {% if norm.federations_counter %}
+            <section class="calc-section">
+                {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Federation distribution (counted opponents)') }}</h2>
+                <table class="calc-table">
+                    <thead>
+                        <tr>
+                            <th>{{ _('Federation') }}</th>
+                            <th class="right">{{ _('Count') }}</th>
+                            <th>{{ _('Note') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fed, count in norm.federations_counter.most_common() %}
+                            <tr>
+                                <td>{{ fed }}</td>
+                                <td class="right">{{ count }}</td>
+                                <td>
+                                    {% if fed == tournament_player.federation %}
+                                        {{ _("Applicant's federation") }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+            {% endif %}
+
+            {#— 5. 1.4.3d per-round trail — Swiss-only per spec. RR / DRR
+                cannot satisfy 1.4.3d (the rule explicitly says "Swiss
+                System tournaments"), so we hide the breakdown for non-Swiss
+                events to avoid showing an inapplicable bottleneck table. #}
+            {% if is_swiss and exemption_trail %}
+            {% set sec.n = sec.n + 1 %}
+            <section class="calc-section">
+                <h2>{{ sec.n }}. {{ _('1.4.3d per-round breakdown') }}</h2>
+                <p style="font-size: 0.8rem; margin: 0 0 0.6rem 0;">
+                    {{ _('1.4.3d requires every round to have at least 20 FIDE-rated foreigners (excl. FID), from at least 3 federations, of whom at least 10 hold GM/IM/WGM/WIM. ') }}
+                </p>
+                {% set min_fed = exemption_trail | map(attribute='federations') | min %}
+                {% set min_for = exemption_trail | map(attribute='foreigners') | min %}
+                {% set min_tit = exemption_trail | map(attribute='titled_foreigners') | min %}
+                <table class="calc-table">
+                    <colgroup>
+                        <col style="width: 1%;">
+                        <col><col><col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th class="center">{{ _('Round') }}</th>
+                            <th class="right">{{ _('Foreigners') }}</th>
+                            <th class="right">{{ _('Federations') }}</th>
+                            <th class="right">{{ _('Titled (M-titles)') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in exemption_trail %}
+                            {# Highlight the SPECIFIC cell that matches the
+                               worst-case minimum for its column. The arbiter
+                               then sees exactly which column constrained
+                               1.4.3d on this round, not just "something
+                               on this row was the bottleneck." #}
+                            <tr>
+                                <td class="center">{{ row.round_ }}</td>
+                                <td class="right {% if row.foreigners == min_for %}bottleneck-row{% endif %}">{{ row.foreigners }}</td>
+                                <td class="right {% if row.federations == min_fed %}bottleneck-row{% endif %}">{{ row.federations }}</td>
+                                <td class="right {% if row.titled_foreigners == min_tit %}bottleneck-row{% endif %}">{{ row.titled_foreigners }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr style="background: #f0f0f0; font-weight: 700;">
+                            <th class="right">{{ _('Min:') }}</th>
+                            <th class="right">{{ min_for }} {% if min_for >= 20 %}<span class="verdict-pass">✓</span>{% else %}<span class="verdict-fail">✗</span>{% endif %}</th>
+                            <th class="right">{{ min_fed }} {% if min_fed >= 3 %}<span class="verdict-pass">✓</span>{% else %}<span class="verdict-fail">✗</span>{% endif %}</th>
+                            <th class="right">{{ min_tit }} {% if min_tit >= 10 %}<span class="verdict-pass">✓</span>{% else %}<span class="verdict-fail">✗</span>{% endif %}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </section>
+            {% endif %}
+
+            {#— 6. 1.5.6a per-round trail — Swiss-only per spec.
+                Hidden entirely for non-Swiss events. #}
+            {% if is_swiss %}
+            {% set sec.n = sec.n + 1 %}
+            <section class="calc-section">
+                <h2>{{ sec.n }}. {{ _('1.5.6a per-round breakdown') }}</h2>
+                <p style="font-size: 0.8rem; margin: 0 0 0.6rem 0;">
+                    {{ _('1.5.6a requires every round to have at least 40 FIDE-rated players whose top-40 average is at least 2000.') }}
+                </p>
+                <table class="calc-table">
+                    <colgroup>
+                        <col style="width: 1%;">
+                        <col><col><col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th class="center">{{ _('Round') }}</th>
+                            <th class="right">{{ _('FIDE-rated present') }}</th>
+                            <th class="right">{{ _('Top-40 average') }}</th>
+                            <th class="center">{{ _('Round meets 1.5.6a?') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in high_level_trail %}
+                            {% set round_pass = (row.fide_rated_present >= 40 and row.top_40_average >= 2000) %}
+                            <tr>
+                                <td class="center">{{ row.round_ }}</td>
+                                <td class="right">{{ row.fide_rated_present }}</td>
+                                <td class="right">
+                                    {% if row.fide_rated_present >= 40 %}{{ '%.0f' | format(row.top_40_average) }}{% else %}—{% endif %}
+                                </td>
+                                <td class="center">
+                                    {% if round_pass %}<span class="verdict-pass">✓</span>{% else %}<span class="verdict-fail">✗</span>{% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+            {% endif %}
+
+            {#— 7. 1.4.2c side-by-side (when applicable) —#}
+            {% if norm.applied_142c and norm.alternate_142c %}
+            {% set sec.n = sec.n + 1 %}
+            <section class="calc-section">
+                <h2>{{ sec.n }}. {{ _('1.4.2c interpretation — side by side') }}</h2>
+                <p style="font-size: 0.8rem; margin: 0 0 0.6rem 0;">
+                    {{ _('1.4.2c was applied: the last-round opponent forfeit was included in the mix and scored as a played loss. The default 1.4.1c interpretation (forfeit excluded) is shown alongside for comparison.') }}
+                </p>
+                <table class="calc-table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th class="right">{{ _('1.4.1c (default — forfeit excluded)') }}</th>
+                            <th class="right">{{ _('1.4.2c (forfeit as LOSS)') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>{{ _('Played games') }}</th>
+                            <td class="right">{{ norm.alternate_142c.played_games }}</td>
+                            <td class="right">{{ norm.played_games }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ _('Score') }}</th>
+                            <td class="right">{{ norm.alternate_142c.score }}</td>
+                            <td class="right">{{ norm.score }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ _('Ra') }}</th>
+                            <td class="right">{{ norm.alternate_142c.average_rating }}</td>
+                            <td class="right">{{ norm.average_rating }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ _('Rp') }}</th>
+                            <td class="right">{{ norm.alternate_142c.performance }}</td>
+                            <td class="right">{{ norm.performance }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ _('Verdict') }}</th>
+                            <td class="right">
+                                {% if norm.alternate_142c.is_met %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% else %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="right">
+                                {% if norm.is_met %}
+                                    <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% else %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            {% endif %}
+
+            {#— 8. Per-round audit —#}
+            <section class="calc-section">
+                {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Per-round audit') }}</h2>
+                <table class="calc-table">
+                    <colgroup>
+                        <col style="width: 1%;">
+                        <col><col><col><col><col><col><col>
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th class="center">{{ _('R') }}</th>
+                            <th>{{ _('Opponent') }}</th>
+                            <th class="center">{{ _('Fed') }}</th>
+                            <th class="center">{{ _('Title') }}</th>
+                            <th class="right">{{ _('Rating') }}</th>
+                            <th class="center">{{ _('Result') }}</th>
+                            <th class="center">{{ _('Counted') }}</th>
+                            <th>{{ _('Reason') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for entry in norm.round_audit %}
+                            <tr>
+                                <td class="center">{{ entry.round_ }}</td>
+                                <td>{% if entry.opponent %}{{ entry.opponent.full_name }}{% else %}—{% endif %}</td>
+                                <td class="center">{{ entry.opponent.federation if entry.opponent else '—' }}</td>
+                                <td class="center">{% if entry.opponent and entry.opponent.title %}{{ entry.opponent.title.short_name or '—' }}{% else %}—{% endif %}</td>
+                                <td class="right">{% if entry.opponent and entry.opponent.rating %}{{ entry.opponent.rating }}{% else %}—{% endif %}</td>
+                                <td class="center">
+                                    {{ entry.raw_result | string if entry.raw_result else '—' }}
+                                    {% if entry.effective_result and entry.effective_result != entry.raw_result %}
+                                        → {{ entry.effective_result | string }}
+                                    {% endif %}
+                                </td>
+                                <td class="center">
+                                    {% if entry.decision.value == 'included' %}✓
+                                    {% elif entry.decision.value == 'dropped' %}⊘
+                                    {% else %}✗{% endif %}
+                                </td>
+                                <td>{{ reason_text.get(entry.reason_key, entry.reason_key) }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        {% endif %}
+    </body>
+</html>

@@ -86,8 +86,9 @@ class SCEUtils:
                         (json.dumps(plugin_data.to_stored_value()),),
                     )
 
-    @staticmethod
+    @classmethod
     def update_tournament_plugin_data(
+        cls,
         tournament: Tournament,
         plugin_data: SCETournamentPluginData,
         write: bool = True,
@@ -102,14 +103,26 @@ class SCEUtils:
                 if write_stored_object:
                     database.update_stored_tournament(tournament.stored_tournament)
                 else:
-                    database.execute(
-                        'UPDATE tournament SET plugin_data = '
-                        "json_set(plugin_data,'$.sce', json(?)) WHERE id = ?",
-                        (json.dumps(plugin_data.to_stored_value()), tournament.id),
+                    cls.update_tournament_plugin_data_from_database(
+                        tournament, plugin_data, database
                     )
 
-    @staticmethod
+    @classmethod
+    def update_tournament_plugin_data_from_database(
+        cls,
+        tournament: Tournament,
+        plugin_data: SCETournamentPluginData,
+        database: EventDatabase,
+    ):
+        database.execute(
+            'UPDATE tournament SET plugin_data = '
+            "json_set(plugin_data,'$.sce', json(?)) WHERE id = ?",
+            (json.dumps(plugin_data.to_stored_value()), tournament.id),
+        )
+
+    @classmethod
     def update_player_plugin_data(
+        cls,
         player: Player,
         plugin_data: SCEPlayerPluginData,
         write: bool = True,
@@ -122,11 +135,22 @@ class SCEUtils:
                 if write_stored_object:
                     database.update_stored_player(player.stored_player)
                 else:
-                    database.execute(
-                        'UPDATE player SET plugin_data = '
-                        "json_set(plugin_data,'$.sce', json(?)) WHERE id = ?",
-                        (json.dumps(plugin_data.to_stored_value()), player.id),
+                    cls.update_player_plugin_data_from_database(
+                        player, plugin_data, database
                     )
+
+    @classmethod
+    def update_player_plugin_data_from_database(
+        cls,
+        player: Player,
+        plugin_data: SCEPlayerPluginData,
+        database: EventDatabase,
+    ):
+        database.execute(
+            'UPDATE player SET plugin_data = '
+            "json_set(plugin_data,'$.sce', json(?)) WHERE id = ?",
+            (json.dumps(plugin_data.to_stored_value()), player.id),
+        )
 
     @classmethod
     def get_event_sce_tournaments(cls, event: Event) -> list[Tournament]:

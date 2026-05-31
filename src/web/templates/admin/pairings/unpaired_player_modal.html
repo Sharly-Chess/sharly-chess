@@ -16,11 +16,16 @@
                 </div>
             </div>
             <div class="modal-body">
+                {% set check_in_status = tournament_player.check_in_status_for_round(admin_round) %}
                 <div class="d-flex flex-column align-items-center justify-content-center gap-2">
-                    {% if tournament_player.has_withdrawn %}
+                    {% if check_in_status == 0 %}
                         <span
                             class="w-100"
-                            {% if not can_set_zpb %}
+                            {% if admin_tournament.is_last_round %}
+                                {{ macros.tooltip_attributes('', _(
+                                    'It is not possible to return players on the last round.'
+                                ), 'right') }}
+                            {% elif not can_set_zpb %}
                                 {{ macros.tooltip_attributes('', _(
                                     'You are not allowed to return players.'
                                 ), 'right') }}
@@ -38,14 +43,13 @@
                                 ) }}"
                                 hx-target="body"
                                 hx-indicator="#please-wait"
-                                {% if not can_set_zpb %}disabled{% endif %}
+                                {% if not can_set_zpb or admin_tournament.is_last_round %}disabled{% endif %}
                             >
                                 {{ _('Return to tournament') }}
                             </button>
                         </span>
                     {% else %}
                         {% set action = 'BYE_UPDATE' %}
-                        {% set check_in_status = tournament_player.check_in_status_for_round(admin_round) %}
                         <button
                             class="btn btn-outline-primary w-100"
                             hx-patch="{{ url_for(
