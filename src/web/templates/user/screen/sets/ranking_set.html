@@ -1,0 +1,56 @@
+<div
+    class="ranking-screen-set"
+>
+    <h2 class="set-title text-center">
+        {% if screen_set.screen.ranking_round %}
+            {{ _('%(set_name)s (round %(round)d)', set_name=screen_set.name_for_ranking, round=screen_set.screen.ranking_round) }}
+        {% else %}
+            {{ screen_set.name_for_ranking }}
+        {% endif %}
+    </h2>
+    {% set player_columns = columns_by_tournament_id[tournament.id] %}
+    <div class="row gy-2 gx-3 screen-set-row mx-0 w-100">
+        {% for tournament_players in screen_set.tournament_players_by_rank_lists %}
+            <div class="col screen-set-col {% if loop.first %}ps-0{% endif %} {% if loop.last %}pe-0{% endif %}">
+                <table class="table table-striped table-sm bg-light">
+                    <thead>
+                        <tr class="player-header">
+                            {% for column in player_columns %}
+                                <th class="fw-bold {{ column.header_classes }}">
+                                    {% if column.header_template %}
+                                        {% include column.header_template %}
+                                    {% else %}
+                                        {{ macros.column_header(column) }}
+                                    {% endif %}
+                                </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if tournament_players %}
+                            {% for tournament_player in tournament_players %}
+                                <tr id="player-{{ tournament_player.id }}" class="player-row {{ 'even' if loop.index is even else 'odd' }}">
+                                    {% for column in player_columns %}
+                                        <td class="{{ column.get_cell_classes(tournament_player) }}">
+                                            {% if column.cell_template %}
+                                                {% include column.cell_template %}
+                                            {% else %}
+                                                {{ macros.column_cell(column, tournament_player) }}
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr class="odd">
+                                <td class="text-start" colspan="{{ player_columns | length }}">
+                                    {{ _('No players.') }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+    </div>
+</div>
