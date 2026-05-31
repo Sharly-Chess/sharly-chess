@@ -3174,6 +3174,9 @@ msgstr "Israël"
 msgid "It is highly recommended to set at least one tie-break."
 msgstr "Il est fortement recommandé de définir au moins un départage."
 
+msgid "It is not possible to return players on the last round."
+msgstr "Il n'est pas possible de faire revenir des joueur·euses lors de la dernière ronde."
+
 msgid "Italy"
 msgstr "Italie"
 
@@ -5221,9 +5224,6 @@ msgstr "Numéro de ronde ou texte"
 
 msgid "Round performance indicators"
 msgstr "Indicateurs de performance pour la ronde"
-
-msgid "Round skipped"
-msgstr "Absent·e"
 
 #, python-format
 msgid "Round {} started for %%s"
