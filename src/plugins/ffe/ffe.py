@@ -26,6 +26,7 @@ from data.criteria.tournament_criteria import (
 )
 from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
+from data.input_output.trf.trf_data import TrfNationalPlayer
 from data.pairings.managers import PairingVariationManager
 from data.pairings.variations import SwissVariation
 from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
@@ -77,6 +78,8 @@ from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
     BasePapiTieBreak,
     PapiBuchholzTypeOption,
+    PapiBuchholzTypeManager,
+    PapiBuchholzTieBreak,
 )
 from plugins.ffe.ffe_tournament_controller import FfeTournamentController
 from plugins.ffe.ffe_tournament_exporters import PapiTournamentExporter
@@ -464,6 +467,35 @@ class FfePlugin(Plugin):
         return PlayerRatingAndType(value, PlayerRatingType.ESTIMATED)
 
     @hookimpl
+    def augment_trf_national_player(
+        self, player: 'Player', trf_national_player: 'TrfNationalPlayer'
+    ):
+        plugin_data = FFEUtils.get_player_plugin_data(player)
+        trf_national_player.classification = plugin_data.ffe_licence.value
+        trf_national_player.national_id = plugin_data.ffe_licence_number or ''
+        trf_national_player.origin = plugin_data.league or ''
+
+    @hookimpl
+    def augment_stored_player_from_trf_national_player(
+        self,
+        stored_player: 'StoredPlayer',
+        trf_national_player: 'TrfNationalPlayer',
+    ):
+        tnp = trf_national_player
+        plugin_data = FfePlayerPluginData.from_stored_value(
+            stored_player.plugin_data.get(PLUGIN_NAME, {})
+        )
+        try:
+            plugin_data.ffe_licence = PlayerFFELicence(tnp.classification)
+        except ValueError:
+            pass
+        if tnp.origin in FFE_LEAGUES:
+            plugin_data.league = tnp.origin
+        if PlayerFFELicence.validate(tnp.national_id):
+            plugin_data.ffe_licence_number = tnp.national_id
+        stored_player.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
+
+    @hookimpl
     def validate_player_tournament_move(
         self, tournament: 'Tournament', player: TournamentPlayer
     ):
@@ -846,6 +878,14 @@ class FfePlugin(Plugin):
                 ],
             )
         )
+
+    @hookimpl
+    def add_tie_breaks_to_trf_acronym_mapping(
+        self, tie_break_by_acronym: dict[str, TieBreak]
+    ):
+        for buchholz_type in PapiBuchholzTypeManager().objects():
+            tie_break = PapiBuchholzTieBreak([PapiBuchholzTypeOption(buchholz_type.id)])
+            tie_break_by_acronym[tie_break.trf_acronym] = tie_break
 
     # ---------------------------------------------------------------------------------
     # Pairings

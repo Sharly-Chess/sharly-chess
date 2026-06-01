@@ -4,3 +4,23 @@
     file_accept=', '.join(importer.accepted_file_suffixes),
     data=data, errors=errors
 ) }}
+{% if importer.on_file_selected_post_route_name %}
+    <form
+        style="display:none"
+        hx-post="{{ url_for(
+            importer.on_file_selected_post_route_name,
+            event_uniq_id=admin_event.uniq_id,
+        ) }}"
+        enctype="multipart/form-data"
+    >
+        <input id="file-copy" type="file" name="file">
+        <button id="file-selected-submit" type="submit"></button>
+    </form>
+    <script>
+        $('#file').on('input', function () {
+            const input = document.getElementById('file-copy');
+            input.files = document.getElementById('file').files;
+            $('#file-selected-submit').click();
+        });
+    </script>
+{% endif %}
