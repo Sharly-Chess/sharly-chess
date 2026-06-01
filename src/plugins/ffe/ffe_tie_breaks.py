@@ -57,6 +57,19 @@ class BasePapiTieBreak(TieBreak, ABC):
         return f'{cls.base_tie_break_type().static_name()} (PAPI)'
 
     @property
+    def is_fide_tie_break(self) -> bool:
+        return False
+
+    @property
+    def trf_sub_acronym(self) -> str:
+        """Acronyme used to represent the papi tie-break in the TRF."""
+        return self.id
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_PAPI_' + self.trf_sub_acronym
+
+    @property
     def full_name(self) -> str:
         return f'{self.base_full_name} (PAPI)'
 
@@ -491,6 +504,10 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
     @property
     def base_acronym(self) -> str:
         return self.type.acronym
+
+    @property
+    def trf_sub_acronym(self) -> str:
+        return f'{self.id}_{self.type.id}'
 
     @property
     def base_full_name(self) -> str:

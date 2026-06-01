@@ -44,23 +44,24 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
         return tie_break_types
 
     @cached_property
-    def _manual_acronym_mapping(self) -> dict[str, TieBreak]:
+    def _manual_trf_acronym_mapping(self) -> dict[str, TieBreak]:
         """Manual mapping of tie-break per acronym.
         Required when the base acronym depends on options."""
         tie_break_by_acronym: dict[str, TieBreak] = {}
-        plugin_manager.hook_for_event(self.event, 'add_tie_breaks_to_acronym_mapping')(
-            tie_break_by_acronym=tie_break_by_acronym
-        )
+        plugin_manager.hook_for_event(
+            self.event, 'add_tie_breaks_to_trf_acronym_mapping'
+        )(tie_break_by_acronym=tie_break_by_acronym)
         return {
             acronym.upper(): tie_break
             for acronym, tie_break in tie_break_by_acronym.items()
         }
 
-    def tie_break_from_acronym(self, acronym: str) -> TieBreak | None:
+    def tie_break_from_trf_acronym(self, acronym: str) -> TieBreak | None:
         acronym = acronym.upper()
-        tie_break = self._manual_acronym_mapping.get(acronym)
+        tie_break = self._manual_trf_acronym_mapping.get(acronym)
         if tie_break:
             return tie_break
+        acronym = acronym.split('OTHER_', maxsplit=1)[-1]
         base_acronym = acronym.split('/')[0]
         tie_break = next(
             (

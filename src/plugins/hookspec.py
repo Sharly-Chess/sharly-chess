@@ -442,7 +442,7 @@ class AppHookSpecs:
         """Provide extra system tie-break sets for the swiss pairing system."""
 
     @hookspec
-    def add_tie_breaks_to_acronym_mapping(
+    def add_tie_breaks_to_trf_acronym_mapping(
         self, tie_break_by_acronym: dict[str, 'TieBreak']
     ):
         """AAdd tie-breaks whose base acronym does not necessarily match to a manual acronym mapping."""

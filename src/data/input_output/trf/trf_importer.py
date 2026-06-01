@@ -201,7 +201,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         unknown_acronyms: list[str] = []
         manager = TieBreakManager(event)
         for acronym in tie_break_acronyms:
-            tie_break = manager.tie_break_from_acronym(acronym)
+            tie_break = manager.tie_break_from_trf_acronym(acronym)
             if tie_break:
                 tie_breaks.append(tie_break)
             else:

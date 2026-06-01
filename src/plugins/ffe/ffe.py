@@ -880,15 +880,12 @@ class FfePlugin(Plugin):
         )
 
     @hookimpl
-    def add_tie_breaks_to_acronym_mapping(
+    def add_tie_breaks_to_trf_acronym_mapping(
         self, tie_break_by_acronym: dict[str, TieBreak]
     ):
-        tie_break_by_acronym |= {
-            buchholz_type.acronym: PapiBuchholzTieBreak(
-                [PapiBuchholzTypeOption(buchholz_type.id)]
-            )
-            for buchholz_type in PapiBuchholzTypeManager().objects()
-        }
+        for buchholz_type in PapiBuchholzTypeManager().objects():
+            tie_break = PapiBuchholzTieBreak([PapiBuchholzTypeOption(buchholz_type.id)])
+            tie_break_by_acronym[tie_break.trf_acronym] = tie_break
 
     # ---------------------------------------------------------------------------------
     # Pairings
