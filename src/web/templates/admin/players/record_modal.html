@@ -28,6 +28,9 @@
                     {% endif %}
                 </h2>
                 <div>{{ admin_player.club }}</div>
+                {% if admin_event.is_team_event and admin_player.team %}
+                    <div><strong>{{ _('Team:') }}</strong> {{ admin_player.team.name }}</div>
+                {% endif %}
                 {% set category = tournament_player.category.name %}
                 <div>{{ admin_player.federation }}, {{ tournament_player.rating_str }}{% if category %}, {{ category }}{% endif %}</div>
             </div>

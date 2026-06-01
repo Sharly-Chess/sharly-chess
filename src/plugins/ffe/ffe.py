@@ -28,6 +28,8 @@ from data.input_output import DataSource, TournamentExporter, TournamentImporter
 from data.input_output.data_source import FideDataSource
 from data.input_output.trf.trf_data import TrfNationalPlayer
 from data.pairings.managers import PairingVariationManager
+from data.pairings.systems import PairingSystem
+from data.pairings.variations import PairingVariation
 from data.pairings.variations import SwissVariation
 from data.player import Player, PlayerRating, PlayerRatingAndType, TournamentPlayer
 from data.player_categories import PlayerCategory, JuniorCategory
@@ -107,6 +109,10 @@ from plugins.ffe.utils import (
     FfeAccountPluginData,
     FFEArbiterTitle,
     FFE_LEAGUES,
+)
+from plugins.ffe.ffe_molter import (
+    FFEMolterPairingSystem,
+    StandardFFEMolterVariation,
 )
 from plugins.ffe.utils import (
     FfeEventPluginData,
@@ -896,6 +902,16 @@ class FfePlugin(Plugin):
         self, variation_types: list[type[SwissVariation]]
     ):
         variation_types.append(NicoisSwissVariation)
+
+    @hookimpl
+    def insert_team_pairing_systems(self, pairing_systems: list[type['PairingSystem']]):
+        pairing_systems.append(FFEMolterPairingSystem)
+
+    @hookimpl
+    def insert_team_pairing_variations(
+        self, variations: list[type['PairingVariation']]
+    ):
+        variations.append(StandardFFEMolterVariation)
 
     # ---------------------------------------------------------------------------------
     # Prizes

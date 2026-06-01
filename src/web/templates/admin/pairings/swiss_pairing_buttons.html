@@ -8,6 +8,7 @@
     {% set set_all_present_message = (
         _('Pairings generation disabled if there are no players to pair.')
         if not admin_boards and not admin_unpaired and admin_absent_players
+            and not admin_event.is_team_event
     ) %}
     {% if set_all_present_message %}
         <button

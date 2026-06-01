@@ -807,6 +807,24 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
     transform: rotate(-90deg);
 }
 
+.team-block-chevron {
+    transition: transform 0.3s ease;
+}
+[aria-expanded="false"] .team-block-chevron {
+    transform: rotate(-90deg);
+}
+.color-chip {
+    display: inline-block;
+    width: 0.85rem;
+    height: 0.85rem;
+    border: 1px solid #999;
+    border-radius: 2px;
+    vertical-align: middle;
+    margin-right: 0.4rem;
+}
+.color-chip-w { background: #ffffff; }
+.color-chip-b { background: #000000; }
+
 @keyframes spin {
     to {
         transform: rotate(360deg);

@@ -121,6 +121,7 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `tournament` ADD `color_pattern` TEXT')
         self.database.execute('ALTER TABLE `tournament` ADD `primary_score` TEXT')
         self.database.execute('ALTER TABLE `tournament` ADD `secondary_score` TEXT')
+        self.database.execute('ALTER TABLE `tournament` ADD `team_colour_type` TEXT')
         self.database.execute('ALTER TABLE `pairing` ADD `effective_points` REAL')
 
         # Replace three_points_for_a_win/pab_value with a single game_points JSON
@@ -146,6 +147,7 @@ class Migration(BaseMigration):
 
     def backward(self):
         self.database.execute('ALTER TABLE `pairing` DROP COLUMN `effective_points`')
+        self.database.execute('ALTER TABLE `tournament` DROP COLUMN `team_colour_type`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `secondary_score`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `primary_score`')
         self.database.execute('ALTER TABLE `tournament` DROP COLUMN `color_pattern`')

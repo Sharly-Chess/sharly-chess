@@ -1,0 +1,70 @@
+{% set has_real_pts = admin_tournament.print_real_points(admin_round) %}
+{% set has_illegal = admin_tournament.record_illegal_moves %}
+{# Row column layout: Bd | Pts | (real_pts)? | (illegal)? | Player | Result | (illegal)? | Player | (real_pts)? | Pts
+   team_a span covers from Pts through team_a Player.
+   team_b span covers from team_b Player through Pts. #}
+{% set team_a_colspan = 2 + (1 if has_real_pts else 0) + (1 if has_illegal else 0) %}
+{% set team_b_colspan = 2 + (1 if has_real_pts else 0) + (1 if has_illegal else 0) %}
+<tbody
+    id="team-block-header-{{ team_board.id }}"
+    class="team-block-header-tbody"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+    <tr
+        class="team-block-header"
+        data-block-id="team-block-body-{{ team_board.id }}"
+        aria-expanded="true"
+        style="cursor: pointer;"
+    >
+        <td class="bg-secondary-subtle text-center">
+            <i class="bi bi-chevron-down team-block-chevron"></i>
+        </td>
+        <td colspan="{{ team_a_colspan }}" class="bg-secondary-subtle">
+            <div class="d-flex align-items-center">
+                <strong class="flex-grow-1">{{ team_board.team_a.name }}</strong>
+                {% if team_board.team_b and client.can_use_pairing_engine(admin_tournament.id) %}
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary lineup-edit-toggle ms-2"
+                        data-target-block="team-block-body-{{ team_board.id }}"
+                        data-side="a"
+                        onclick="event.stopPropagation(); toggleLineupEdit(this);"
+                        {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
+                    >
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                {% endif %}
+            </div>
+        </td>
+        <td class="bg-secondary-subtle text-center fw-bold">
+            {% if team_board.team_b %}
+                {{ team_board.match_score_display }}
+            {% else %}
+                {{ _('EXEMPT') }}
+            {% endif %}
+        </td>
+        <td colspan="{{ team_b_colspan }}" class="bg-secondary-subtle">
+            <div class="d-flex align-items-center">
+                {% if team_board.team_b and client.can_use_pairing_engine(admin_tournament.id) %}
+                    <button
+                        type="button"
+                        class="btn btn-sm btn-outline-secondary lineup-edit-toggle me-2"
+                        data-target-block="team-block-body-{{ team_board.id }}"
+                        data-side="b"
+                        onclick="event.stopPropagation(); toggleLineupEdit(this);"
+                        {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
+                    >
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                {% endif %}
+                <strong class="text-end flex-grow-1">
+                    {% if team_board.team_b %}
+                        {{ team_board.team_b.name }}
+                    {% endif %}
+                </strong>
+            </div>
+        </td>
+    </tr>
+</tbody>

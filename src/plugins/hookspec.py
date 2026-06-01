@@ -28,7 +28,8 @@ if TYPE_CHECKING:
     from data.columns.players_tab import PlayersTabColumn
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
     from data.input_output.trf.trf_data import TrfNationalPlayer
-    from data.pairings.variations import SwissVariation
+    from data.pairings.systems import PairingSystem
+    from data.pairings.variations import PairingVariation, SwissVariation
     from data.player import (
         Player,
         TournamentPlayer,
@@ -456,6 +457,18 @@ class AppHookSpecs:
         self, variation_types: list[type['SwissVariation']]
     ):
         """Provide extra swiss pairing variations."""
+
+    @hookspec
+    def insert_team_pairing_systems(self, pairing_systems: list[type['PairingSystem']]):
+        """Provide extra team-event pairing systems (e.g. plugin-defined
+        fixed-table systems)."""
+
+    @hookspec
+    def insert_team_pairing_variations(
+        self, variations: list[type['PairingVariation']]
+    ):
+        """Provide extra team-event pairing variations to expose alongside
+        the core Team Swiss / Team Round-Robin variations."""
 
     # ---------------------------------------------------------------------------------
     # Prizes

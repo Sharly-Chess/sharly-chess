@@ -1,0 +1,52 @@
+{% set standings = admin_tournament.team_standings() %}
+{% set show_match_cols = admin_tournament.pairing_system.paired_by_team %}
+<div class="d-flex">
+    <h4>{{ _('Team ranking') }}</h4>
+</div>
+<table
+    id="team-rankings-table"
+    class="rankings-table table prominent table-sm table-hover w-100 bg-light"
+>
+    <thead
+        class="position-sticky z-2"
+        style="top: var(--header-height);"
+    >
+        <tr class="player-header">
+            <th class="rank text-end">{{ _('Rk. *** RANK COLUMN HEADER') }}</th>
+            <th class="name text-start">{{ _('Team') }}</th>
+            <th class="text-center">{{ _('Played') }}</th>
+            {% if show_match_cols %}
+                <th class="text-center">{{ _('W') }}</th>
+                <th class="text-center">{{ _('D') }}</th>
+                <th class="text-center">{{ _('L') }}</th>
+                <th class="text-center fw-bold">{{ _('MP') }}</th>
+            {% endif %}
+            <th class="text-center fw-bold">{{ _('GP') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in standings %}
+            <tr class="player-row {{ 'even' if loop.index is even else 'odd' }}">
+                <td class="rank text-end">{{ row.rank }}</td>
+                <td class="name text-start">
+                    <strong>{{ row.team.name }}</strong>
+                </td>
+                <td class="text-center">{{ row.played }}</td>
+                {% if show_match_cols %}
+                    <td class="text-center">{{ row.wins }}</td>
+                    <td class="text-center">{{ row.draws }}</td>
+                    <td class="text-center">{{ row.losses }}</td>
+                    <td class="text-center fw-bold">{{ '%g'|format(row.mp) }}</td>
+                {% endif %}
+                <td class="text-center fw-bold">{{ '%g'|format(row.gp) }}</td>
+            </tr>
+        {% endfor %}
+        {% if not standings %}
+            <tr>
+                <td colspan="99" class="text-center text-muted p-3">
+                    {{ _('No teams in this tournament.') }}
+                </td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>

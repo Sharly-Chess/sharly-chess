@@ -12,7 +12,6 @@ from data.pairings.engines import (
     TeamSwissEngine,
     TeamBergerEngine,
     TeamDoubleBergerEngine,
-    MolterEngine,
 )
 from data.pairings.settings import (
     PairingSetting,
@@ -265,33 +264,17 @@ class TeamSwissVariation(PairingVariation, ABC):
 
     @property
     def trf_encoded_type(self) -> str:
-        # No canonical FIDE TRF26 code for team Swiss; use the OTHER_
-        # prefix per the convention used by non-FIDE acronyms elsewhere.
-        return 'OTHER_TEAM_DUTCH_2026'
+        # Placeholder TRF26 team-Swiss code. The real value depends on
+        # the tournament's primary / secondary score choice and is
+        # filled in by ``Tournament._team_trf_encoded_type`` when the
+        # TRF is emitted; variations don't see the tournament.
+        return 'FIDE_TEAM_TYPEA_MP_GP'
 
 
 class TeamRoundRobinVariation(PairingVariation, ABC):
     @staticmethod
     def system() -> 'PairingSystem':
         return systems.TeamRoundRobinPairingSystem()
-
-
-class MolterVariation(PairingVariation, ABC):
-    @staticmethod
-    def system() -> 'PairingSystem':
-        return systems.MolterPairingSystem()
-
-    @property
-    def engine(self) -> PairingEngine:
-        return MolterEngine()
-
-    @property
-    def settings(self) -> list[PairingSetting]:
-        return []
-
-    @property
-    def trf_encoded_type(self) -> str:
-        return 'OTHER_MOLTER'
 
 
 class StandardTeamSwissVariation(TeamSwissVariation):
@@ -315,7 +298,10 @@ class BergerTeamRoundRobinVariation(TeamRoundRobinVariation):
 
     @property
     def settings(self) -> list[PairingSetting]:
-        return [BergerNumbersSetting()]
+        # Team berger numbers come from each team's pairing_number /
+        # canonical order (handled by ``_teams_for_tournament``).
+        # No per-player ``BergerNumbersSetting`` here.
+        return []
 
     @property
     def engine(self) -> PairingEngine:
@@ -337,7 +323,7 @@ class DoubleBergerTeamRoundRobinVariation(TeamRoundRobinVariation):
 
     @property
     def settings(self) -> list[PairingSetting]:
-        return [BergerNumbersSetting()]
+        return []
 
     @property
     def engine(self) -> PairingEngine:
@@ -346,13 +332,3 @@ class DoubleBergerTeamRoundRobinVariation(TeamRoundRobinVariation):
     @property
     def trf_encoded_type(self) -> str:
         return 'OTHER_TEAM_DOUBLEROUNDROBIN'
-
-
-class StandardMolterVariation(MolterVariation):
-    @staticmethod
-    def variation_id() -> str:
-        return 'STANDARD'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Standard Molter')

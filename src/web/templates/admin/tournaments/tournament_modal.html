@@ -349,8 +349,8 @@
                             </script>
                         </div>
                     </div>
-                    <div id="team-swiss-scores-container" class="row gy-2 gx-3">
-                        <div class="col-12 col-md-6">
+                    <div id="team-scores-container" class="row gy-2 gx-3">
+                        <div class="col-12">
                             {{ admin_macros.select_input(
                                 name='primary_score',
                                 label=_('Primary score:'),
@@ -361,14 +361,31 @@
                                 data=data, errors=errors
                             ) }}
                         </div>
-                        <div class="col-12 col-md-6">
+                        <div id="team-secondary-score-cell" class="col-12 col-md-6">
                             {{ admin_macros.select_input(
                                 name='secondary_score',
                                 label=_('Colour allocation:'),
                                 tooltip_text=_(
-                                    'Score used for colour allocation when pairing. '
+                                    'Score used for colour allocation when '
+                                    'pairing. Only used in Swiss; in '
+                                    'Round-Robin the colour pattern is fixed '
+                                    'by the Berger tables.'
                                 ),
                                 select_options=score_type_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                        <div id="team-colour-type-cell" class="col-12 col-md-6">
+                            {{ admin_macros.select_input(
+                                name='team_colour_type',
+                                label=_('Colour rule:'),
+                                tooltip_text=_(
+                                    'Defines how team colour preferences are calculated. '
+                                    'Type A uses simple White/Black preferences, '
+                                    'while Type B distinguishes between strong and mild '
+                                    'preferences based on colour history and colour difference.'
+                                ),
+                                select_options=team_colour_type_options,
                                 data=data, errors=errors
                             ) }}
                         </div>
@@ -376,9 +393,26 @@
                     <script>
                         (function () {
                             const TEAM_SWISS_ID = '{{ TeamSwissPairingSystem.static_id() }}';
-                            const $container = $('#team-swiss-scores-container');
+                            const TEAM_RR_ID = '{{ TeamRoundRobinPairingSystem.static_id() }}';
+                            const $container = $('#team-scores-container');
+                            const $secondary = $('#team-secondary-score-cell');
+                            const $colourType = $('#team-colour-type-cell');
                             function sync() {
-                                $container.toggle($('#pairing-system').val() === TEAM_SWISS_ID);
+                                const id = $('#pairing-system').val() || '';
+                                // Pairing system ids are <SYSTEM>_<VARIATION>
+                                // (e.g. TEAM_SWISS_STANDARD); match by prefix.
+                                const isSwiss =
+                                    id === TEAM_SWISS_ID ||
+                                    id.startsWith(TEAM_SWISS_ID + '_');
+                                const isRR =
+                                    id === TEAM_RR_ID ||
+                                    id.startsWith(TEAM_RR_ID + '_');
+                                $container.toggle(isSwiss || isRR);
+                                // Secondary score + colour-rule only matter in
+                                // Swiss (colour basis + flip rule); in RR the
+                                // colour pattern is fixed by the Berger tables.
+                                $secondary.toggle(isSwiss);
+                                $colourType.toggle(isSwiss);
                             }
                             $('#pairing-system').on('change', sync);
                             sync();
@@ -448,13 +482,12 @@
                             {{ admin_macros.number_input(
                                 name='gp_pab',
                                 label=_('PAB (Team):') if is_team_event else _('PAB:'),
-                                placeholder='1',
+                                placeholder='0.5' if is_team_event else '1',
                                 tooltip_text=(
                                     _(
-                                        'Total game points awarded to the team '
-                                        'for a Pairing Allocated Bye. '
-                                        'Defaults to the Win value multiplied '
-                                        'by the number of boards.'
+                                        'Game points awarded to the team for a '
+                                        'Pairing Allocated Bye. Defaults to '
+                                        'the Draw value.'
                                     )
                                     if is_team_event else
                                     _(
@@ -477,31 +510,36 @@
                                 return p && p !== '' ? p : fallback;
                             }
                             const $gpWin = $('#gp-win');
+                            const $gpDraw = $('#gp-draw');
                             const $gpLoss = $('#gp-loss');
                             const $gpZpb = $('#gp-zpb');
                             const $gpPab = $('#gp-pab');
                             const $mpWin = $('#mp-win');
+                            const $mpDraw = $('#mp-draw');
                             const $mpPab = $('#mp-pab');
-                            const $teamPlayerCount = $('#team-player-count');
                             function syncDerived() {
                                 $gpZpb.attr('placeholder', effectiveValue($gpLoss, '0'));
-                                let pabPlaceholder = effectiveValue($gpWin, '1');
-                                if (IS_TEAM_EVENT && $teamPlayerCount.length) {
-                                    const win = parseFloat(pabPlaceholder);
-                                    const count = parseInt($teamPlayerCount.val() || '0', 10);
-                                    if (!isNaN(win) && count > 0) {
-                                        pabPlaceholder = String(win * count);
-                                    }
-                                }
-                                $gpPab.attr('placeholder', pabPlaceholder);
+                                // Team mode: PAB defaults to the draw value
+                                // (FIDE C.04.6 §1.4); individual: defaults
+                                // to the win value.
+                                $gpPab.attr(
+                                    'placeholder',
+                                    IS_TEAM_EVENT
+                                        ? effectiveValue($gpDraw, '0.5')
+                                        : effectiveValue($gpWin, '1')
+                                );
                                 if ($mpPab.length) {
-                                    $mpPab.attr('placeholder', effectiveValue($mpWin, '2'));
+                                    $mpPab.attr(
+                                        'placeholder',
+                                        effectiveValue($mpDraw, '1')
+                                    );
                                 }
                             }
                             $gpWin.on('input change', syncDerived);
+                            $gpDraw.on('input change', syncDerived);
                             $gpLoss.on('input change', syncDerived);
                             $mpWin.on('input change', syncDerived);
-                            $teamPlayerCount.on('input change', syncDerived);
+                            $mpDraw.on('input change', syncDerived);
                             syncDerived();
                         })();
                     </script>
@@ -543,8 +581,11 @@
                                 {{ admin_macros.number_input(
                                     name='mp_pab',
                                     label=_('PAB:'),
-                                    placeholder='2',
-                                    tooltip_text=_('Pairing allocated bye. Defaults to the Win value.'),
+                                    placeholder='1',
+                                    tooltip_text=_(
+                                        'Pairing allocated bye. Defaults to '
+                                        'the Draw value.'
+                                    ),
                                     step='any',
                                     data=data, errors=errors
                                 ) }}

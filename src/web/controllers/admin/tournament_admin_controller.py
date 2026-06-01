@@ -34,7 +34,11 @@ from data.input_output.tournament_importer_options import (
 from data.input_output.tournament_importers import TournamentImporter
 from data.input_output.trf.trf_importer import TrfTournamentImporter
 from data.pairings import PairingSystem, PairingSystemManager
-from data.pairings.systems import SwissPairingSystem, TeamSwissPairingSystem
+from data.pairings.systems import (
+    SwissPairingSystem,
+    TeamRoundRobinPairingSystem,
+    TeamSwissPairingSystem,
+)
 from data.player import TournamentPlayer
 from data.tie_breaks import TieBreakManager, TieBreak, TieBreakOptionManager
 from data.tie_breaks.sets import (
@@ -64,6 +68,7 @@ from utils.enum import (
     Result,
     ScoreType,
     ScreenType,
+    TeamColourType,
     TournamentRating,
 )
 from web.controllers.admin.base_event_admin_controller import (
@@ -281,6 +286,7 @@ class TournamentAdminController(BaseEventAdminController):
             match_points: dict[int, float] | None = None
             primary_score: str | None = None
             secondary_score: str | None = None
+            team_colour_type: str | None = None
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             if action == 'create':
                 rounds = 7
@@ -291,6 +297,7 @@ class TournamentAdminController(BaseEventAdminController):
                     team_player_count = 4
                     primary_score = ScoreType.MATCH_POINTS.value
                     secondary_score = ScoreType.GAME_POINTS.value
+                    team_colour_type = TeamColourType.A.value
             else:
                 admin_tournament = web_context.get_admin_tournament()
                 stored_tournament = admin_tournament.stored_tournament
@@ -322,6 +329,9 @@ class TournamentAdminController(BaseEventAdminController):
                 )
                 secondary_score = (
                     stored_tournament.secondary_score or ScoreType.GAME_POINTS.value
+                )
+                team_colour_type = (
+                    stored_tournament.team_colour_type or TeamColourType.A.value
                 )
                 for criterion in tournament_criteria:
                     if criterion.id in stored_tournament.criteria:
@@ -407,6 +417,7 @@ class TournamentAdminController(BaseEventAdminController):
                     ),
                     'primary_score': primary_score,
                     'secondary_score': secondary_score,
+                    'team_colour_type': team_colour_type,
                     'date_range': WebContext.value_to_date_range_form_data(
                         start_date, stop_date
                     ),
@@ -469,7 +480,9 @@ class TournamentAdminController(BaseEventAdminController):
             'is_team_event': admin_event.is_team_event,
             'BoardColor': BoardColor,
             'TeamSwissPairingSystem': TeamSwissPairingSystem,
+            'TeamRoundRobinPairingSystem': TeamRoundRobinPairingSystem,
             'score_type_options': {t.value: str(t) for t in ScoreType},
+            'team_colour_type_options': {t.value: str(t) for t in TeamColourType},
             'modal': 'tournament',
             'action': action,
             'data': data,
@@ -618,6 +631,7 @@ class TournamentAdminController(BaseEventAdminController):
         match_points: dict[int, float] | None = None
         primary_score: str | None = None
         secondary_score: str | None = None
+        team_colour_type: str | None = None
         if event.is_team_event:
             team_player_count = WebContext.form_data_to_int(
                 data, field := 'team_player_count'
@@ -641,6 +655,18 @@ class TournamentAdminController(BaseEventAdminController):
                     primary_score = valid
                 else:
                     secondary_score = valid
+
+            raw_colour_type = (
+                WebContext.form_data_to_str(data, 'team_colour_type')
+                or TeamColourType.A.value
+            )
+            try:
+                team_colour_type = TeamColourType(raw_colour_type).value
+            except ValueError:
+                errors['team_colour_type'] = (
+                    f'Invalid colour-type value [{raw_colour_type}].'
+                )
+                team_colour_type = TeamColourType.A.value
 
             color_pattern = (
                 WebContext.form_data_to_str(data, field := 'color_pattern') or None
@@ -761,6 +787,7 @@ class TournamentAdminController(BaseEventAdminController):
             color_pattern=color_pattern,
             primary_score=primary_score,
             secondary_score=secondary_score,
+            team_colour_type=team_colour_type,
             plugin_data=plugin_data,
             round_datetimes=round_datetimes,
             criteria=stored_criteria,

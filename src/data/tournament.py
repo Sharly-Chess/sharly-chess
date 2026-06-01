@@ -48,6 +48,7 @@ from utils.enum import (
     PlayerGender,
     Result,
     ScoreType,
+    TeamColourType,
     TournamentRating,
     PlayerRatingType,
     ScreenType,
@@ -68,9 +69,11 @@ from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
 if TYPE_CHECKING:
     from data.event import Event
     from data.input_output.trf.trf_data import (
-        TrfTournament,
-        TrfRoundBye,
         TrfAcceleratedRound,
+        TrfOOdOTeamPairing,
+        TrfRoundBye,
+        TrfTeamPABs,
+        TrfTournament,
     )
     from data.pairings import PairingVariation, PairingSystem
     from data.team import Team
@@ -338,18 +341,27 @@ class Tournament:
         """Points awarded for a team match outcome, indexed by `Result`.
         Empty dict for individual tournaments. The stored ``match_points`` dict
         only carries overrides; Olympiad defaults (2/1/0) fill in the rest.
-        PAB match points default to the WIN value (unopposed team = win).
-        Forfeit is handled separately."""
+
+        PAB default depends on the pairing system: Team Swiss defaults
+        to DRAW points (avoids over-rewarding an odd team out and
+        matches Olympiad practice for unopposed teams); other team
+        systems (round-robin, Molter) keep WIN as the PAB default,
+        though they rarely produce PABs in practice. Forfeit handling
+        is separate."""
+        from data.pairings.systems import TeamSwissPairingSystem
+
         if not self.is_team_tournament:
             return {}
         raw = self.stored_tournament.match_points or {}
         win = float(raw.get(Result.WIN.value, 2.0))
+        draw = float(raw.get(Result.DRAW.value, 1.0))
+        pab_default = draw if self.pairing_system == TeamSwissPairingSystem() else win
         return {
             Result.WIN: win,
-            Result.DRAW: float(raw.get(Result.DRAW.value, 1.0)),
+            Result.DRAW: draw,
             Result.LOSS: float(raw.get(Result.LOSS.value, 0.0)),
             Result.PAIRING_ALLOCATED_BYE: float(
-                raw.get(Result.PAIRING_ALLOCATED_BYE.value, win)
+                raw.get(Result.PAIRING_ALLOCATED_BYE.value, pab_default)
             ),
         }
 
@@ -372,8 +384,129 @@ class Tournament:
         return ScoreType.GAME_POINTS
 
     @property
+    def team_colour_type(self) -> TeamColourType:
+        """FIDE C.04.6 §1.7 colour-allocation rule. Default: Type A
+        (board-by-board flip)."""
+        raw = self.stored_tournament.team_colour_type
+        if raw:
+            return TeamColourType(raw)
+        return TeamColourType.A
+
+    @property
     def color_pattern(self) -> str | None:
         return self.stored_tournament.color_pattern
+
+    def team_standings(self) -> list[dict[str, Any]]:
+        """Compute team standings for this tournament, sorted by
+        primary_score then secondary_score then team name.
+        Each entry: {team, mp, gp, played, wins, draws, losses, rank}.
+
+        For ``paired_by_team`` systems (team-vs-team blocks), match
+        points and game points come from the ``team_board`` records.
+        For flat fixed-table systems (e.g. FFE Molter — players from
+        different teams paired directly with no team_board envelope),
+        a team's points are the sum of its players' individual game
+        points across all boards in the tournament. Match-point and
+        win/draw/loss tallies aren't meaningful in that mode."""
+        match_points = self.match_points
+        standings: dict[int, dict[str, Any]] = {}
+        for team in self.event.sorted_teams:
+            if team.tournament_id != self.id:
+                continue
+            standings[team.id] = {
+                'team': team,
+                'mp': 0.0,
+                'gp': 0.0,
+                'played': 0,
+                'wins': 0,
+                'draws': 0,
+                'losses': 0,
+            }
+        win_mp = match_points.get(Result.WIN, 2.0)
+        draw_mp = match_points.get(Result.DRAW, 1.0)
+        loss_mp = match_points.get(Result.LOSS, 0.0)
+        pab_mp = match_points.get(Result.PAIRING_ALLOCATED_BYE, win_mp)
+        # Flat fixed-table fallback (no team_boards): sum player points
+        # straight into team totals.
+        if not self.team_boards_by_id:
+            for board in self.boards_by_id.values():
+                w_player = self.event.players_by_id.get(
+                    board.stored_board.white_player_id
+                )
+                if w_player and w_player.team_id in standings:
+                    standings[w_player.team_id]['gp'] += board.white_pairing.points
+                    standings[w_player.team_id]['played'] += 1
+                if board.stored_board.black_player_id is not None:
+                    b_player = self.event.players_by_id.get(
+                        board.stored_board.black_player_id
+                    )
+                    if b_player and b_player.team_id in standings:
+                        standings[b_player.team_id]['gp'] += board.black_pairing.points
+                        standings[b_player.team_id]['played'] += 1
+            rows = list(standings.values())
+            rows.sort(key=lambda e: (-e['gp'], e['team'].name.lower()))
+            for rank, entry in enumerate(rows, 1):
+                entry['rank'] = rank
+            return rows
+        for team_board in self.team_boards_by_id.values():
+            stb = team_board.stored_team_board
+            a_gp, b_gp = team_board.game_points
+            if stb.team_b_id is None:
+                ent = standings.get(stb.team_a_id)
+                if ent:
+                    ent['played'] += 1
+                    ent['mp'] += pab_mp
+                    ent['gp'] += self.pab_points
+                    ent['wins'] += 1
+                continue
+            ent_a = standings.get(stb.team_a_id)
+            ent_b = standings.get(stb.team_b_id)
+            if ent_a:
+                ent_a['played'] += 1
+                ent_a['gp'] += a_gp
+            if ent_b:
+                ent_b['played'] += 1
+                ent_b['gp'] += b_gp
+            if a_gp > b_gp:
+                if ent_a:
+                    ent_a['mp'] += win_mp
+                    ent_a['wins'] += 1
+                if ent_b:
+                    ent_b['mp'] += loss_mp
+                    ent_b['losses'] += 1
+            elif a_gp < b_gp:
+                if ent_a:
+                    ent_a['mp'] += loss_mp
+                    ent_a['losses'] += 1
+                if ent_b:
+                    ent_b['mp'] += win_mp
+                    ent_b['wins'] += 1
+            else:
+                if ent_a:
+                    ent_a['mp'] += draw_mp
+                    ent_a['draws'] += 1
+                if ent_b:
+                    ent_b['mp'] += draw_mp
+                    ent_b['draws'] += 1
+        rows = list(standings.values())
+        primary = self.primary_score
+        secondary = self.secondary_score
+
+        def score_value(entry: dict[str, Any], score_type: ScoreType) -> float:
+            if score_type == ScoreType.MATCH_POINTS:
+                return float(entry['mp'])
+            return float(entry['gp'])
+
+        rows.sort(
+            key=lambda e: (
+                -score_value(e, primary),
+                -score_value(e, secondary),
+                e['team'].name.lower(),
+            )
+        )
+        for rank, entry in enumerate(rows, 1):
+            entry['rank'] = rank
+        return rows
 
     @cached_property
     def teams_by_id(self) -> dict[int, 'Team']:
@@ -1080,14 +1213,20 @@ class Tournament:
             DRAW = 0.5
             LOSS = 0.0
             ZERO_POINT_BYE          defaults to LOSS value
-            PAIRING_ALLOCATED_BYE   defaults to WIN value
+            PAIRING_ALLOCATED_BYE   defaults to WIN value for individual
+                                    tournaments, DRAW value for team Swiss
+                                    (FIDE C.04.6 §1.4 — the bye-team is
+                                    rewarded as if it had drawn the match).
         """
+        from data.pairings.systems import TeamSwissPairingSystem
+
         raw = self.stored_tournament.game_points or {}
         win = float(raw.get(Result.WIN.value, 1.0))
         draw = float(raw.get(Result.DRAW.value, 0.5))
         loss = float(raw.get(Result.LOSS.value, 0.0))
         zpb = float(raw.get(Result.ZERO_POINT_BYE.value, loss))
-        pab = float(raw.get(Result.PAIRING_ALLOCATED_BYE.value, win))
+        pab_default = draw if self.pairing_system == TeamSwissPairingSystem() else win
+        pab = float(raw.get(Result.PAIRING_ALLOCATED_BYE.value, pab_default))
         return {
             Result.WIN: win,
             Result.DRAW: draw,
@@ -1298,6 +1437,14 @@ class Tournament:
         )
 
     def is_round_finished(self, round_: int) -> bool:
+        # In team events, reserve players (not in the round's lineup) have no
+        # pairing for this round — skip them; they have no game to finish.
+        if self.event.is_team_event:
+            return all(
+                player.pairings[round_].result != Result.NO_RESULT
+                for player in self.tournament_players
+                if player.pairings[round_].exists
+            )
         return all(
             player.pairings[round_].result != Result.NO_RESULT
             for player in self.tournament_players
@@ -1358,15 +1505,13 @@ class Tournament:
         after_round: int | None = None,
         next_round_pairings_as_zpb: bool = False,
     ) -> 'TrfTournament':
-        from data.input_output.trf.trf_data import TrfTournament
-        from data.input_output.trf.trf_importer import TRF_DATE_FORMAT
-        from data.input_output.trf.trf_mappers import TrfPointSystemResult
+        from data.input_output.trf.trf_data import TRF_DATE_FORMAT, TrfTournament
 
         if after_round is None:
             after_round = self.rounds
         self.compute_tournament_player_ranks(after_round=after_round)
         seed_setting = ColorSeedSetting()
-        return TrfTournament(
+        trf = TrfTournament(
             name=self.name,
             city=self.location or '',
             federation=self.event.federation,
@@ -1387,10 +1532,7 @@ class Tournament:
             ],
             num_rounds=self.rounds,
             initial_color=seed_setting.get_value(self).value,
-            individuals_point_system={
-                TrfPointSystemResult.get_outer_value(result) or '': value
-                for result, value in self.point_values.items()
-            },
+            individuals_point_system=self._trf_individuals_point_system(),
             starting_rank_method=(
                 'FIDON' if self.player_rating_type == PlayerRatingType.FIDE else 'NIDOF'
             ),
@@ -1406,6 +1548,504 @@ class Tournament:
             accelerated_rounds=self._trf_accelerated_rounds(),
             round_byes=self._trf_round_byes(),
         )
+        if self.is_team_tournament:
+            self._populate_team_trf(trf, after_round=after_round)
+        return trf
+
+    def _populate_team_trf(
+        self,
+        trf: 'TrfTournament',
+        *,
+        after_round: int,
+    ) -> None:
+        from data.input_output.trf.trf_data import TrfTeam
+
+        """TRF26 team-mode records (310 rosters, 192 team code, 362
+        match-point system, 352 board-colour sequence). Built on top
+        of the individual TRF (001 player rows + 162 game points)
+        produced by :meth:`to_trf` — bbpPairings' ``--team`` mode
+        aggregates the per-player games into team match data."""
+        match_points = self.match_points
+        trf.teams_point_system = {
+            'TW': float(match_points.get(Result.WIN, 2.0)),
+            'TD': float(match_points.get(Result.DRAW, 1.0)),
+            'TL': float(match_points.get(Result.LOSS, 0.0)),
+        }
+        tpn_map = self._team_trf_tpn_map()
+        trf.team_pabs = self._team_pabs_record(
+            after_round=after_round, tpn_by_team_id=tpn_map
+        )
+        trf.oodo_team_pairings = self._team_oodo_records(
+            after_round=after_round, tpn_by_team_id=tpn_map
+        )
+        (
+            trf.informative_team_pairings_records,
+            trf.informative_team_results_records,
+        ) = self._team_informative_records(
+            after_round=after_round, tpn_by_team_id=tpn_map
+        )
+
+        team_player_count = self.team_player_count or 0
+        pattern = self.color_pattern or ''
+        if not pattern and team_player_count:
+            pattern = ''.join(
+                BoardColor.WHITE.value if i % 2 == 0 else BoardColor.BLACK.value
+                for i in range(team_player_count)
+            )
+        trf.board_color_sequence = pattern
+
+        from data.pairings.engines import _team_ui_sort_key
+
+        teams = sorted(self.teams, key=_team_ui_sort_key)
+        tpn_by_team_id = tpn_map
+        tp_by_player_id = {tp.id: tp for tp in self.tournament_players}
+        team_totals = self._team_trf_totals_after(after_round)
+        # Team rank from the tournament's own standings — primary
+        # score + secondary + (eventually) team tie-breaks. Falls back
+        # to the team-UI order for teams ``team_standings`` doesn't
+        # return.
+        rank_by_team_id: dict[int, int] = {}
+        for row in self.team_standings():
+            rank_by_team_id[row['team'].id] = row['rank']
+        trf_teams: list[TrfTeam] = []
+        for team in teams:
+            tpn = tpn_by_team_id[team.id]
+            lineup = team.effective_round_lineup(after_round + 1)[:team_player_count]
+            player_ids: list[int] = []
+            for member in lineup:
+                tp = tp_by_player_id.get(member.id)
+                if tp is None or tp.pairing_number is None:
+                    continue
+                player_ids.append(tp.pairing_number)
+            mp, gp = team_totals.get(team.id, (0.0, 0.0))
+            trf_teams.append(
+                TrfTeam(
+                    id=tpn,
+                    name=team.name[:32],
+                    nickname=(team.name[:5] or 'T').upper(),
+                    match_points=mp,
+                    game_points=gp,
+                    rank=rank_by_team_id.get(team.id),
+                    player_ids=player_ids,
+                )
+            )
+        trf_teams.sort(key=lambda t: t.id)
+        trf.teams = trf_teams
+        trf.num_teams = len(trf_teams)
+        trf.encoded_type = self._team_trf_encoded_type()
+
+    def _trf_individuals_point_system(self) -> dict[str, float]:
+        """TRF26 162 record — game-point values per result symbol.
+        Only emits values that have been overridden vs the FIDE
+        defaults; readers fall back to W=1 / D=0.5 / L=0 / ZPB=LOSS /
+        PAB=WIN when a symbol is absent. bbpPairings ``--team``
+        accepts the full W / D / L / A (ZPB) / P (PAB) alphabet."""
+        from data.input_output.trf.trf_mappers import TrfPointSystemResult
+
+        raw = self.stored_tournament.game_points or {}
+        result: dict[str, float] = {}
+        for outcome_value, value in raw.items():
+            try:
+                outcome = Result(outcome_value)
+            except ValueError:
+                continue
+            symbol = TrfPointSystemResult.get_outer_value(outcome) or ''
+            if not symbol:
+                continue
+            result[symbol] = float(value)
+        return result
+
+    def _team_oodo_records(
+        self,
+        *,
+        after_round: int,
+        tpn_by_team_id: dict[int, int],
+    ) -> 'list[TrfOOdOTeamPairing]':
+        """TRF26 300 records — per-round team lineups in board order.
+        Emitted twice per real (non-PAB) team match: once from team_a's
+        view, once from team_b's. Carries the historical lineup so a
+        re-import can recover round-by-round board ordering when it
+        differs from the current 310 roster."""
+        from data.input_output.trf.trf_data import TrfOOdOTeamPairing
+
+        team_player_count = self.team_player_count or 0
+        team_id_by_player_id = {
+            tp.id: tp.team_id
+            for tp in self.tournament_players
+            if tp.team_id is not None
+        }
+        records: list[TrfOOdOTeamPairing] = []
+        team_boards = sorted(
+            (
+                tb
+                for tb in self.team_boards_by_id.values()
+                if 1 <= tb.round <= after_round
+            ),
+            key=lambda tb: (tb.round, tb.index),
+        )
+        for tb in team_boards:
+            stb = tb.stored_team_board
+            if stb.team_b_id is None:
+                continue
+            a_tpn = tpn_by_team_id.get(stb.team_a_id)
+            b_tpn = tpn_by_team_id.get(stb.team_b_id)
+            if a_tpn is None or b_tpn is None:
+                continue
+            a_lineup: list[int | None] = [None] * team_player_count
+            b_lineup: list[int | None] = [None] * team_player_count
+            for board in tb.boards:
+                slot = board.index
+                if slot < 0 or slot >= team_player_count:
+                    continue
+                white_tp = board.white_tournament_player
+                black_tp = board.black_tournament_player
+                for tp in (white_tp, black_tp):
+                    if tp is None or tp.pairing_number is None:
+                        continue
+                    team_id = team_id_by_player_id.get(tp.id)
+                    if team_id == stb.team_a_id:
+                        a_lineup[slot] = tp.pairing_number
+                    elif team_id == stb.team_b_id:
+                        b_lineup[slot] = tp.pairing_number
+            records.append(
+                TrfOOdOTeamPairing(
+                    round=tb.round,
+                    team_id=a_tpn,
+                    opponent_team_id=b_tpn,
+                    boards=a_lineup,
+                )
+            )
+            records.append(
+                TrfOOdOTeamPairing(
+                    round=tb.round,
+                    team_id=b_tpn,
+                    opponent_team_id=a_tpn,
+                    boards=b_lineup,
+                )
+            )
+        return records
+
+    def _team_informative_records(
+        self,
+        *,
+        after_round: int,
+        tpn_by_team_id: dict[int, int],
+    ) -> tuple[list[str], list[str]]:
+        """TRF26 801 (team pairings) and 802 (team results) — one row
+        per team summarising every played round. Both are informative
+        records; the spec says they "duplicate some information that
+        already exists" but recommends emitting them for human
+        readability. Export-only — the importer ignores these fields.
+
+        801 per-round block: ``<opp_tpn> <colour> <board-results>
+        <team-RID-string>`` where each RID is the player's position on
+        the 310 roster (1-9, then A-Z for 10-35, then ``*``).
+
+        802 per-round block: ``<opp_tpn|bye> <colour> <GP> <forfeit>``
+        with fixed widths (opp/bye = 3 chars, GP = 4 chars "11.5"
+        format)."""
+
+        def _rid_char(position_1based: int) -> str:
+            """Encode a roster position as a single character per the
+            spec's VNC scheme: 1-9 → '1'-'9', 10-35 → 'A'-'Z', 36+ →
+            '*'."""
+            if 1 <= position_1based <= 9:
+                return str(position_1based)
+            if 10 <= position_1based <= 35:
+                return chr(ord('A') + position_1based - 10)
+            return '*'
+
+        pairings: list[str] = []
+        results: list[str] = []
+        team_player_count = self.team_player_count or 0
+        teams_by_tpn = sorted(
+            (
+                (tpn_by_team_id[team.id], team)
+                for team in self.teams
+                if team.id in tpn_by_team_id
+            ),
+            key=lambda item: item[0],
+        )
+
+        # Pre-compute each player's RID character (position on their
+        # team's 310 roster + 1 → spec-encoded char).
+        rid_by_player_id: dict[int, str] = {}
+        for tp in self.tournament_players:
+            if tp.team_index is None:
+                continue
+            rid_by_player_id[tp.id] = _rid_char(tp.team_index + 1)
+
+        # Round → team_id → (opp_tpn, colour, board_results, rid_string,
+        # match_gp, is_forfeit, bye_acronym_or_none).
+        per_round: dict[
+            int,
+            dict[
+                int,
+                tuple[int | None, str, str, str, float, bool, str | None],
+            ],
+        ] = {}
+        for team_board in self.team_boards_by_id.values():
+            if not (1 <= team_board.round <= after_round):
+                continue
+            stb = team_board.stored_team_board
+            round_data = per_round.setdefault(team_board.round, {})
+            a_gp, b_gp = team_board.game_points
+            if stb.team_b_id is None:
+                # Team-level PAB.
+                round_data[stb.team_a_id] = (
+                    None,
+                    ' ',
+                    ' ' * team_player_count,
+                    ' ' * team_player_count,
+                    self.pab_points,
+                    False,
+                    'PAB',
+                )
+                continue
+
+            symbols_a: list[str] = []
+            symbols_b: list[str] = []
+            rid_a: list[str] = []
+            rid_b: list[str] = []
+            for board in sorted(team_board.boards, key=lambda b: b.index):
+                white_tp = board.white_tournament_player
+                black_tp = board.black_tournament_player
+                wtp_team = white_tp.team_id if white_tp is not None else None
+                a_player: TournamentPlayer | None
+                b_player: TournamentPlayer | None
+                if wtp_team == stb.team_a_id:
+                    a_player, b_player = white_tp, black_tp
+                else:
+                    a_player, b_player = black_tp, white_tp
+                rid_a.append(
+                    rid_by_player_id.get(a_player.id, ' ')
+                    if a_player is not None
+                    else ' '
+                )
+                rid_b.append(
+                    rid_by_player_id.get(b_player.id, ' ')
+                    if b_player is not None
+                    else ' '
+                )
+                result = board.result
+                a_is_white = (
+                    a_player is not None
+                    and white_tp is not None
+                    and white_tp.id == a_player.id
+                )
+                if result == Result.WIN:
+                    a_sym, b_sym = ('1', '0') if a_is_white else ('0', '1')
+                elif result == Result.LOSS:
+                    a_sym, b_sym = ('0', '1') if a_is_white else ('1', '0')
+                elif result == Result.DRAW:
+                    a_sym, b_sym = '=', '='
+                else:
+                    a_sym, b_sym = ' ', ' '
+                symbols_a.append(a_sym)
+                symbols_b.append(b_sym)
+            # Pad to team_player_count.
+            while len(symbols_a) < team_player_count:
+                symbols_a.append(' ')
+                symbols_b.append(' ')
+                rid_a.append(' ')
+                rid_b.append(' ')
+            # Colour of team_a on board 0 → team_a's match colour.
+            color_a = ' '
+            color_b = ' '
+            for board in team_board.boards:
+                if board.index != 0:
+                    continue
+                if (
+                    board.white_tournament_player is not None
+                    and board.white_tournament_player.team_id == stb.team_a_id
+                ):
+                    color_a, color_b = 'w', 'b'
+                else:
+                    color_a, color_b = 'b', 'w'
+                break
+            round_data[stb.team_a_id] = (
+                tpn_by_team_id.get(stb.team_b_id),
+                color_a,
+                ''.join(symbols_a),
+                ''.join(rid_a),
+                a_gp,
+                False,
+                None,
+            )
+            round_data[stb.team_b_id] = (
+                tpn_by_team_id.get(stb.team_a_id),
+                color_b,
+                ''.join(symbols_b),
+                ''.join(rid_b),
+                b_gp,
+                False,
+                None,
+            )
+
+        team_totals = self._team_trf_totals_after(after_round)
+        max_tpn = max(tpn_by_team_id.values(), default=0)
+        tpn_width = max(2, len(str(max_tpn)))
+        results_width = max(team_player_count, 4)
+        rid_width = results_width
+        for tpn, team in teams_by_tpn:
+            mp, gp = team_totals.get(team.id, (0.0, 0.0))
+            nickname = (team.name[:5] or 'T').upper()
+            header_801 = f'{tpn:>{tpn_width}} {nickname:<5} {mp:>4.1f} {gp:>4.1f}'
+            header_802 = f'{tpn:>{tpn_width}} {nickname:<5} {mp:>6.1f} {gp:>6.1f}'
+            blocks_801: list[str] = []
+            blocks_802: list[str] = []
+            for round_ in range(1, after_round + 1):
+                entry = per_round.get(round_, {}).get(team.id)
+                if entry is None:
+                    blocks_801.append(
+                        f'  {"":>{tpn_width}} {"":1}'
+                        f' {"":<{results_width}} {"":<{rid_width}}'
+                    )
+                    blocks_802.append(f'  {"":>{tpn_width}} {"":1} {"":>4} {"":1}')
+                    continue
+                opp_tpn, colour, board_str, rid_str, team_gp, _, bye = entry
+                # 801: per the spec, an opponent-less round (bye) is
+                # represented by leaving the opponent / colour / board
+                # results columns blank — keep block width constant.
+                if bye is not None:
+                    opp_801 = ' ' * tpn_width
+                    colour_801 = ' '
+                    opp_802 = f'{bye:>3}'
+                    colour_802 = ' '
+                else:
+                    opp_801 = (
+                        f'{opp_tpn:>{tpn_width}}'
+                        if opp_tpn is not None
+                        else ' ' * tpn_width
+                    )
+                    colour_801 = colour
+                    opp_802 = f'{opp_tpn:>3}' if opp_tpn is not None else '   '
+                    colour_802 = colour
+                blocks_801.append(
+                    f'  {opp_801} {colour_801:1}'
+                    f' {board_str:<{results_width}}'
+                    f' {rid_str:<{rid_width}}'
+                )
+                blocks_802.append(f'  {opp_802} {colour_802:1} {team_gp:>4.1f}  ')
+            pairings.append(header_801 + ''.join(blocks_801))
+            results.append(header_802 + ''.join(blocks_802))
+        return pairings, results
+
+    def _team_trf_tpn_map(self) -> dict[int, int]:
+        """``team.id`` → unique TRF26 team pairing number (TPN).
+        ``team.pairing_number`` is a user-editable hint and may
+        collide across teams of the same tournament in malformed
+        databases; TRF26 requires unique TPNs, so collisions are
+        pushed to the next free slot, in team-UI order."""
+        from data.pairings.engines import _team_ui_sort_key
+
+        teams = sorted(self.teams, key=_team_ui_sort_key)
+        tpn_by_team_id: dict[int, int] = {}
+        used: set[int] = set()
+        next_tpn = 1
+        for team in teams:
+            if team.pairing_number is not None and team.pairing_number not in used:
+                tpn_by_team_id[team.id] = team.pairing_number
+                used.add(team.pairing_number)
+                next_tpn = max(next_tpn, team.pairing_number + 1)
+        for team in teams:
+            if team.id in tpn_by_team_id:
+                continue
+            while next_tpn in used:
+                next_tpn += 1
+            tpn_by_team_id[team.id] = next_tpn
+            used.add(next_tpn)
+            next_tpn += 1
+        return tpn_by_team_id
+
+    def _team_pabs_record(
+        self, *, after_round: int, tpn_by_team_id: dict[int, int]
+    ) -> 'TrfTeamPABs | None':
+        """TRF26 320 record: team-PAB match / game points + per-round
+        team that received the PAB. Built when the team-PAB scores
+        differ from defaults (draw match-points, draw game-points per
+        FIDE C.04.6 §1.4) or when at least one team has actually
+        received a PAB so far."""
+        from data.input_output.trf.trf_data import TrfTeamPABs
+
+        match_points = self.match_points
+        draw_mp = match_points.get(Result.DRAW, 1.0)
+        pab_mp = match_points.get(Result.PAIRING_ALLOCATED_BYE, draw_mp)
+        pab_gp = self.pab_points
+        team_id_by_round: dict[int, int] = {}
+        for team_board in self.team_boards_by_id.values():
+            if team_board.round > after_round:
+                continue
+            stb = team_board.stored_team_board
+            if stb.team_b_id is not None:
+                continue
+            tpn = tpn_by_team_id.get(stb.team_a_id)
+            if tpn is not None:
+                team_id_by_round[team_board.round] = tpn
+        non_default = pab_mp != draw_mp or pab_gp != match_points.get(Result.DRAW, 0.5)
+        if not team_id_by_round and not non_default:
+            return None
+        return TrfTeamPABs(
+            match_points=pab_mp,
+            game_points=pab_gp,
+            team_id_by_round=team_id_by_round,
+        )
+
+    def _team_trf_totals_after(
+        self, after_round: int
+    ) -> dict[int, tuple[float, float]]:
+        """Per-team ``(match_points, game_points)`` cumulative through
+        ``after_round``. Returned dict is keyed by ``team.id``; teams
+        with no team_board entries simply get ``(0.0, 0.0)``. PAB
+        (team-level bye) awards the configured PAB match points and
+        the tournament's PAB game points (default behaviour mirrors
+        :meth:`team_standings`)."""
+        match_points = self.match_points
+        win_mp = match_points.get(Result.WIN, 2.0)
+        draw_mp = match_points.get(Result.DRAW, 1.0)
+        loss_mp = match_points.get(Result.LOSS, 0.0)
+        pab_mp = match_points.get(Result.PAIRING_ALLOCATED_BYE, draw_mp)
+        totals: dict[int, list[float]] = {}
+        for team_board in self.team_boards_by_id.values():
+            if team_board.round > after_round:
+                continue
+            stb = team_board.stored_team_board
+            a_gp, b_gp = team_board.game_points
+            a_entry = totals.setdefault(stb.team_a_id, [0.0, 0.0])
+            if stb.team_b_id is None:
+                a_entry[0] += pab_mp
+                a_entry[1] += self.pab_points
+                continue
+            b_entry = totals.setdefault(stb.team_b_id, [0.0, 0.0])
+            a_entry[1] += a_gp
+            b_entry[1] += b_gp
+            if a_gp > b_gp:
+                a_entry[0] += win_mp
+                b_entry[0] += loss_mp
+            elif a_gp < b_gp:
+                a_entry[0] += loss_mp
+                b_entry[0] += win_mp
+            else:
+                a_entry[0] += draw_mp
+                b_entry[0] += draw_mp
+        return {team_id: (mp, gp) for team_id, (mp, gp) in totals.items()}
+
+    def _team_trf_encoded_type(self) -> str:
+        """``FIDE_TEAM_TYPE<X>_<primary>[_<secondary>]`` per TRF26 §7
+        codes table. ``X`` is the colour-preference rule (A or B);
+        when ``TeamColourType.NONE`` is selected the ``TYPE<X>_``
+        infix is dropped, matching the FIDE convention for events that
+        opt out of colour preferences. MP-only / GP-only codes echo
+        the primary as the secondary."""
+        primary = 'MP' if self.primary_score == ScoreType.MATCH_POINTS else 'GP'
+        secondary = 'MP' if self.secondary_score == ScoreType.MATCH_POINTS else 'GP'
+        colour_type = self.team_colour_type
+        infix = (
+            f'TYPE{colour_type.value}_' if colour_type != TeamColourType.NONE else ''
+        )
+        if primary == secondary:
+            return f'FIDE_TEAM_{infix}{primary}'
+        return f'FIDE_TEAM_{infix}{primary}_{secondary}'
 
     def _trf_round_byes(self) -> list['TrfRoundBye']:
         from data.input_output.trf.trf_data import TrfRoundBye
@@ -1881,6 +2521,12 @@ class Tournament:
                 if pab_board := self.get_round_pab_board(round_):
                     pab_board.stored_board.index = self.get_pab_board_index(round_)
                     database.update_stored_board(pab_board.stored_board)
+            if self.event.is_team_event:
+                for round_ in rounds:
+                    database.delete_stored_team_boards_for_round(self.id, round_)
+                    self.stored_tournament.stored_team_boards_by_round.pop(round_, None)
+        if self.event.is_team_event:
+            self.clear_team_cache()
 
     def create_boards(
         self, stored_boards: list[StoredBoard], round_: int, pab_result: Result

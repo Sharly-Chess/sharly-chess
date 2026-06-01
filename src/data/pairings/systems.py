@@ -19,7 +19,6 @@ if TYPE_CHECKING:
         RoundRobinVariation,
         TeamSwissVariation,
         TeamRoundRobinVariation,
-        MolterVariation,
     )
     from data.tournament import Tournament
     from data.event import Event
@@ -82,6 +81,16 @@ class PairingSystem[PV: PairingVariation](IdentifiableEntity, ABC):
     def round_per_round_pairing_generation(self) -> bool:
         """Determines if the pairings are generated round per round
         or all the rounds at the same time."""
+        return True
+
+    @property
+    def paired_by_team(self) -> bool:
+        """Whether this system pairs entire teams against each other (each
+        round groups boards into team-vs-team blocks). True for the standard
+        team systems; False for individual systems and for team systems
+        like flat-mixed-pairing systems where boards aren't grouped.
+        Default True — most team systems pair by team; non-team systems
+        override to False."""
         return True
 
     @property
@@ -355,30 +364,3 @@ class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
             ),
             1 if tournament.has_pairings else 0,
         )
-
-
-class MolterPairingSystem(PairingSystem['MolterVariation']):
-    @staticmethod
-    def static_id() -> str:
-        return 'MOLTER'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('Molter')
-
-    @override
-    def variation_manager(self, event: 'Event') -> EntityManager['MolterVariation']:
-        from data.pairings.managers import MolterVariationManager
-
-        return MolterVariationManager(event)
-
-    @property
-    def pairing_buttons_template(self) -> str:
-        return '/admin/pairings/swiss_pairing_buttons.html'
-
-    @cached_property
-    def permission_handler(self) -> PermissionHandler[PairingAction]:
-        return SwissPairingSystem().permission_handler
-
-    def default_current_round(self, tournament: 'Tournament') -> int:
-        return tournament.last_paired_round

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTeamBoard
 from utils.date_time import format_datetime
+from utils.enum import Result, ScoreType
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
@@ -72,6 +73,54 @@ class TeamBoard:
             ),
             key=lambda board: board.index,
         )
+
+    @property
+    def game_points(self) -> tuple[float, float]:
+        """(team_a_points, team_b_points) — sum of individual board
+        game-points across this match. Default; an override layer may
+        supersede this later (TRF abnormal-point assignments)."""
+        a, b = 0.0, 0.0
+        team_a_id = self.stored_team_board.team_a_id
+        for board in self.boards:
+            white_player = self.tournament.event.players_by_id.get(
+                board.stored_board.white_player_id
+            )
+            white_team_id = white_player.team_id if white_player else None
+            white_pts = board.white_pairing.points
+            black_pts = (
+                board.black_pairing.points if board.black_tournament_player else 0.0
+            )
+            if white_team_id == team_a_id:
+                a += white_pts
+                b += black_pts
+            else:
+                a += black_pts
+                b += white_pts
+        return a, b
+
+    @property
+    def match_score_display(self) -> str:
+        """Human-readable score line shown in the team-block header. Format
+        follows the tournament's primary score: match points if
+        primary_score is MATCH_POINTS, otherwise game points."""
+        a_gp, b_gp = self.game_points
+        tournament = self.tournament
+        if tournament.primary_score == ScoreType.MATCH_POINTS:
+            mp = tournament.match_points
+            win_mp = mp.get(Result.WIN, 2.0)
+            draw_mp = mp.get(Result.DRAW, 1.0)
+            loss_mp = mp.get(Result.LOSS, 0.0)
+            if self.stored_team_board.team_b_id is None:
+                mp_a = mp.get(Result.PAIRING_ALLOCATED_BYE, win_mp)
+                return f'{mp_a:g} – 0'
+            if a_gp > b_gp:
+                mp_a, mp_b = win_mp, loss_mp
+            elif a_gp < b_gp:
+                mp_a, mp_b = loss_mp, win_mp
+            else:
+                mp_a = mp_b = draw_mp
+            return f'{mp_a:g} – {mp_b:g}'
+        return f'{a_gp:g} – {b_gp:g}'
 
     @property
     def last_result_update(self) -> datetime | None:

@@ -219,6 +219,7 @@ class StoredTournament:
     color_pattern: str | None = None
     primary_score: str | None = None
     secondary_score: str | None = None
+    team_colour_type: str | None = None
     stored_tie_breaks: list[StoredTieBreak] = field(
         default_factory=list[StoredTieBreak]
     )

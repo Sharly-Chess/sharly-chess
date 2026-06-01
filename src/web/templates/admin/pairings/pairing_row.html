@@ -1,7 +1,7 @@
 <tr
-    id="pairing-row-{{ board.id }}"
+    id="pairing-row-{{ board.identifier }}"
     class="pairing-row {{ row_class }} {{ extra_row_class }}"
-    data-board-id="{{ board.id }}"
+    data-board-id="{{ board.identifier }}"
     data-player-id="{{ wtp.id }}"
     {% if swap_oob %}
         hx-swap-oob="true"
@@ -16,9 +16,26 @@
         {% with player=wtp, illegal_moves=board.white_pairing.illegal_moves %}{% include 'illegal_moves_cell.html' %}{% endwith %}
     {% endif %}
     <td>
-        {% with tournament_player=wtp, display_rating=true %}
-            {% include '/admin/player_link.html' %}
-        {% endwith %}
+        {% if lineup_team_board is defined and wtp.team_id %}
+            <span class="lineup-view">
+                {% if board.result.value in [4, 5] %}
+                    <em class="text-muted">— {{ _('Absent (forfeit)') }} —</em>
+                {% else %}
+                    {% with tournament_player=wtp, display_rating=true %}
+                        {% include '/admin/player_link.html' %}
+                    {% endwith %}
+                {% endif %}
+            </span>
+            <span class="lineup-edit d-none">
+                {% with side_player=wtp, side='W' %}
+                    {% include '/admin/pairings/_lineup_player_select.html' %}
+                {% endwith %}
+            </span>
+        {% else %}
+            {% with tournament_player=wtp, display_rating=true %}
+                {% include '/admin/player_link.html' %}
+            {% endwith %}
+        {% endif %}
     </td>
     <td class="text-center" style="width: 4.5rem;">
         <span
@@ -38,7 +55,7 @@
                 {% if not_allowed or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
                     disabled
                 {% else %}
-                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.id) }}"
+                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier) }}"
                     hx-trigger="click"
                     hx-target="body"
                     hx-indicator="#please-wait"
@@ -55,9 +72,26 @@
             {% with player=btp, illegal_moves=board.black_pairing.illegal_moves if btp else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
         {% endif %}
         <td>
-            {% with tournament_player=btp, display_rating=true %}
-                {% include '/admin/player_link.html' %}
-            {% endwith %}
+            {% if lineup_team_board is defined and btp.team_id %}
+                <span class="lineup-view">
+                    {% if board.result.value in [5, 6] %}
+                        <em class="text-muted">— {{ _('Absent (forfeit)') }} —</em>
+                    {% else %}
+                        {% with tournament_player=btp, display_rating=true %}
+                            {% include '/admin/player_link.html' %}
+                        {% endwith %}
+                    {% endif %}
+                </span>
+                <span class="lineup-edit d-none">
+                    {% with side_player=btp, side='B' %}
+                        {% include '/admin/pairings/_lineup_player_select.html' %}
+                    {% endwith %}
+                </span>
+            {% else %}
+                {% with tournament_player=btp, display_rating=true %}
+                    {% include '/admin/player_link.html' %}
+                {% endwith %}
+            {% endif %}
         </td>
         {% if admin_tournament.print_real_points(admin_round) %}
             <td class="text-end">[{{ btp.points_str }}]</td>

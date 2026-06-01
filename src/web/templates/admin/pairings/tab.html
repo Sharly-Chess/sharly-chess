@@ -178,23 +178,31 @@
                 {% endif %}
 
                 <div class="col-12 {{ 'col-lg-9' if has_unpaired else 'col-lg-12' }}">
-                    <table
-                        id="pairings-table"
-                        class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
-                    >
-                        {% include '/admin/pairings/pairing_table_header.html' %}
-                        <tbody>
-                            {% for board in admin_filtered_boards %}
-                                {% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
-                                    {% include '/admin/pairings/pairing_row.html' %}
-                                {% endwith %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                    {% if admin_event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
+                        {% include '/admin/pairings/team_blocks_table.html' %}
+                    {% else %}
+                        <table
+                            id="pairings-table"
+                            class="pairings-table table prominent table-striped table-sm table-hover w-100 bg-light {% if safety_mode != 'SAFE' %}table-danger-header{% endif %}"
+                        >
+                            {% include '/admin/pairings/pairing_table_header.html' %}
+                            <tbody>
+                                {% for board in admin_filtered_boards %}
+                                    {% with wtp=board.white_tournament_player, btp=board.black_tournament_player %}
+                                        {% include '/admin/pairings/pairing_row.html' %}
+                                    {% endwith %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
                 </div>
             {% else %}
                 <div class="col-12">
-                    {% include '/admin/pairings/rankings_table.html' %}
+                    {% if admin_event.is_team_event %}
+                        {% include '/admin/pairings/team_rankings_table.html' %}
+                    {% else %}
+                        {% include '/admin/pairings/rankings_table.html' %}
+                    {% endif %}
                 </div>
             {% endif %}
         </div>
@@ -203,6 +211,65 @@
         var pairing_board_id = null;
         var keyQueue = [];
         var requestInFlight = false;
+
+        function getEditingBlocks() {
+            try {
+                return new Set(JSON.parse(sessionStorage.getItem('editingLineupBlocks') || '[]'));
+            } catch (e) {
+                return new Set();
+            }
+        }
+        function saveEditingBlocks(set) {
+            sessionStorage.setItem('editingLineupBlocks', JSON.stringify(Array.from(set)));
+        }
+        function applyLineupEditState(tbody, side, editing) {
+            const cssClass = 'lineup-editing-' + side;
+            tbody.classList.toggle(cssClass, editing);
+            const sideSelector = '.lineup-side-' + side;
+            tbody.querySelectorAll(sideSelector + ' .lineup-view').forEach(function(el) {
+                el.classList.toggle('d-none', editing);
+            });
+            tbody.querySelectorAll(sideSelector + ' .lineup-edit').forEach(function(el) {
+                el.classList.toggle('d-none', !editing);
+            });
+            const btn = document.querySelector(
+                'button.lineup-edit-toggle[data-target-block="' + tbody.id + '"]'
+                + '[data-side="' + side + '"]'
+            );
+            if (btn) {
+                const icon = btn.querySelector('i');
+                if (icon) {
+                    icon.className = editing ? 'bi bi-x-circle' : 'bi bi-pencil';
+                }
+                btn.classList.toggle('active', editing);
+            }
+        }
+        function toggleLineupEdit(btn) {
+            const targetId = btn.dataset.targetBlock;
+            const side = btn.dataset.side || 'a';
+            const tbody = document.getElementById(targetId);
+            if (!tbody) return;
+            const editing = !tbody.classList.contains('lineup-editing-' + side);
+            applyLineupEditState(tbody, side, editing);
+            const key = targetId + '|' + side;
+            const editingSet = getEditingBlocks();
+            if (editing) {
+                editingSet.add(key);
+            } else {
+                editingSet.delete(key);
+            }
+            saveEditingBlocks(editingSet);
+        }
+        function restoreLineupEditState() {
+            getEditingBlocks().forEach(function(key) {
+                const parts = key.split('|');
+                if (parts.length !== 2) return;
+                const tbody = document.getElementById(parts[0]);
+                if (tbody) {
+                    applyLineupEditState(tbody, parts[1], true);
+                }
+            });
+        }
 
         function scrollToTargetAdjusted(element) {
             const headerHeight = parseFloat(window.getComputedStyle(element).getPropertyValue('--header-height'));
@@ -291,7 +358,11 @@
 
             keyQueue.push({ code, pairing_board_id });
             $('#pairing-row-' + pairing_board_id + ' td, #pairing-row-' + pairing_board_id + ' .player-link').addClass('text-secondary');
-            nextBoardId = $(`[data-board-id="${pairing_board_id}"]`).next().data("board-id");
+            var $allRows = $('tr.pairing-row');
+            var curIdx = $allRows.index($allRows.filter('[data-board-id="' + pairing_board_id + '"]').first());
+            nextBoardId = curIdx >= 0 && curIdx < $allRows.length - 1
+                ? $allRows.eq(curIdx + 1).data("board-id")
+                : null;
             if (nextBoardId) {
                 highlightBoard(nextBoardId, false);
             }
@@ -303,6 +374,13 @@
                 // The event listener is active, but the page has changed
                 return;
             }
+            // Ignore key events originating in form controls (the inline
+            // lineup-swap select, the search field, etc.) so they can be
+            // navigated and typed into normally.
+            var targetTag = (e.target.tagName || '').toLowerCase();
+            if (targetTag === 'select' || targetTag === 'input' || targetTag === 'textarea') {
+                return;
+            }
 
             if ((e.key === "ArrowUp" || e.key === "ArrowDown")) {
                 if (e.shiftKey) {
@@ -311,18 +389,15 @@
                 }
                 e.preventDefault();
                 if (pairing_board_id) {
-                    var $row = $('tr[data-board-id="' + pairing_board_id + '"]');
-                    if (!$row.length) {
+                    var $rows = $('tr.pairing-row');
+                    var idx = $rows.index($rows.filter('[data-board-id="' + pairing_board_id + '"]').first());
+                    if (idx < 0) {
                         return;
                     }
-                    var $next_row = $row.next();
-                    var $prev_row = $row.prev();
-
-                    // Highlight the next/previous row
-                    if (e.key === "ArrowUp" && $prev_row.length) {
-                        highlightBoard($prev_row.data("board-id"), false);
-                    } else if (e.key === "ArrowDown" && $next_row.length) {
-                        highlightBoard($next_row.data("board-id"), false);
+                    if (e.key === "ArrowUp" && idx > 0) {
+                        highlightBoard($rows.eq(idx - 1).data("board-id"), false);
+                    } else if (e.key === "ArrowDown" && idx < $rows.length - 1) {
+                        highlightBoard($rows.eq(idx + 1).data("board-id"), false);
                     }
                 } else {
                     highlightBoard($('.pairing-row').first().data("board-id"), false);
@@ -356,6 +431,9 @@
                 requestInFlight = false;
                 processNextKey();
             }
+            // Re-apply lineup edit mode for any blocks that were being edited
+            // before the swap (sessionStorage keeps the set).
+            restoreLineupEditState();
         }
 
         function searchPlayerHandler(e) {
@@ -400,6 +478,24 @@
                 highlightBoardWithError(e.detail.board_id);
             });
             $(document).on("input.search", "#search-player", searchPlayerHandler);
+            $(document).off("click.team-block-collapse");
+            $(document).on("click.team-block-collapse", "tr.team-block-header", function(e) {
+                if ($(e.target).closest("button").length) return;
+                const targetId = $(this).data("block-id");
+                const el = document.getElementById(targetId);
+                if (el) bootstrap.Collapse.getOrCreateInstance(el).toggle();
+            });
+            $(document).off("show.bs.collapse.team-block hidden.bs.collapse.team-block");
+            $(document).on("show.bs.collapse.team-block hidden.bs.collapse.team-block", "[id^='team-block-body-']", function(e) {
+                const tr = document.querySelector(".team-block-header[data-block-id='" + this.id + "']");
+                if (!tr) return;
+                // "show" fires when starting to expand; "hidden" fires after
+                // collapse animation. Set aria-expanded accordingly so the
+                // chevron rotation transitions with the body.
+                const expanding = e.type.indexOf("show") === 0;
+                tr.setAttribute("aria-expanded", expanding ? "true" : "false");
+            });
+            restoreLineupEditState();
         });
     </script>
 {% else %}

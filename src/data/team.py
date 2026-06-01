@@ -123,6 +123,15 @@ class Team:
         database.update_stored_team(self.stored_team)
 
     def set_tournament(self, tournament_id: int | None, database: EventDatabase):
+        # Pairing numbers are scoped to a tournament; moving a team to
+        # a different tournament invalidates whatever number it had
+        # (and worse, can silently collide with an existing team's
+        # pairing number on the new side — TRF26 export then emits
+        # duplicate TPNs and downstream records become ambiguous).
+        # Clear it on every transition.
+        if self.stored_team.tournament_id != tournament_id:
+            self.stored_team.pairing_number = None
+            database.set_team_pairing_number(self.id, None)
         self.stored_team.tournament_id = tournament_id
         database.set_team_tournament(self.id, tournament_id)
 

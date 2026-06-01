@@ -831,6 +831,32 @@ class ScoreType(StrEnum):
                 raise ValueError(f'Unknown value: {self}')
 
 
+class TeamColourType(StrEnum):
+    """Team colour-preference rule used when pairing (FIDE C.04.6 §1.7).
+    Type A: simple preferences — a team either has a colour preference
+    or doesn't. Type B: adds a *mild* preference level on top of the
+    *strong* one, so the pairing engine can break ties between teams
+    that would otherwise look identical under Type A. ``NONE``: colour
+    preferences are not used at all (the team competition rules can
+    require this). The TRF26 192 encoded type embeds this as
+    ``FIDE_TEAM_TYPEA_…`` / ``FIDE_TEAM_TYPEB_…`` / ``FIDE_TEAM_…``."""
+
+    A = 'A'
+    B = 'B'
+    NONE = 'NONE'
+
+    def __str__(self) -> str:
+        match self:
+            case TeamColourType.A:
+                return _('Type A (simple preferences)')
+            case TeamColourType.B:
+                return _('Type B (strong + mild preferences)')
+            case TeamColourType.NONE:
+                return _('None (no colour preferences)')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
 class RoleType(StrEnum):
     CHIEF_ARBITER = 'chief_arbiter'
     DEPUTY_ARBITER = 'deputy_arbiter'

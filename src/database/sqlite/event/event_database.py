@@ -648,6 +648,7 @@ class EventDatabase(MigrationDatabase):
             color_pattern=row['color_pattern'],
             primary_score=row['primary_score'],
             secondary_score=row['secondary_score'],
+            team_colour_type=row['team_colour_type'],
         )
 
         return stored_tournament
@@ -726,6 +727,7 @@ class EventDatabase(MigrationDatabase):
                 'color_pattern',
                 'primary_score',
                 'secondary_score',
+                'team_colour_type',
             ],
         ) | {
             'start_date': cls.dump_date_to_database_field(stored_tournament.start_date),
@@ -1508,6 +1510,12 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_team_board(self, team_board_id: int):
         self.execute('DELETE FROM `team_board` WHERE `id` = ?', (team_board_id,))
+
+    def delete_stored_team_boards_for_round(self, tournament_id: int, round_: int):
+        self.execute(
+            'DELETE FROM `team_board` WHERE `tournament_id` = ? AND `round` = ?',
+            (tournament_id, round_),
+        )
 
     def update_team_board_last_result_update(
         self, team_board_id: int, clear: bool = False

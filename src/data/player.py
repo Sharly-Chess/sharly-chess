@@ -178,7 +178,7 @@ class Player:
 
     @property
     def federation(self) -> Federation:
-        return Federation(self.stored_player.federation)
+        return Federation(self.stored_player.federation or '')
 
     @property
     def club(self) -> Club:
@@ -652,6 +652,28 @@ class TournamentPlayer(Player):
             if round_index <= after_round
         )
 
+    # Standard W/D/L values for the TRF26 team-mode "standard score".
+    # Tournament-level ``game_points`` overrides intentionally don't apply
+    # here — the spec defines this as an informative over-the-board sum.
+    _TEAM_TRF_STANDARD_POINTS: 'dict[Result, float]' = {
+        Result.WIN: 1.0,
+        Result.DRAW: 0.5,
+        Result.LOSS: 0.0,
+    }
+
+    def team_trf_standard_points_after(self, after_round: int) -> float:
+        """TRF26 §1.6 "standard score" for the 001 ``points`` field in
+        team competitions: the player's score from over-the-board games
+        and forfeit wins only, using fixed W=1 / D=0.5 / L=0 values.
+        Byes (ZPB, HPB, FPB, PAB), forfeit losses and ``REST_GAME``
+        don't count — they're informational fillers, not games."""
+        return sum(
+            pairing.result.points(self._TEAM_TRF_STANDARD_POINTS)
+            for round_index, pairing in self.pairings.items()
+            if round_index <= after_round
+            and (not pairing.result.is_unplayed or pairing.result == Result.FORFEIT_WIN)
+        )
+
     def total_points(self, only_played: bool = False) -> float:
         return sum(
             pairing.result.points(self.point_values)
@@ -743,7 +765,11 @@ class TournamentPlayer(Player):
             federation=self.federation.name,
             fide_id=self.fide_id,
             birth_date=trf_dob,
-            points=self.points_after(after_round),
+            points=(
+                self.team_trf_standard_points_after(after_round)
+                if self.tournament.is_team_tournament
+                else self.points_after(after_round)
+            ),
             rank=self.rank,
             games=games,
         )

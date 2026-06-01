@@ -108,7 +108,15 @@
         </div>
     </div>
     {% if team.tournament and team.tournament.team_player_count %}
+        {# Show the lineup for the next round that still needs pairing
+           when the current round is already finished; otherwise the
+           current round itself. Cap at the total round count so the
+           card stays meaningful past the final round. #}
         {% set current_round = team.tournament.current_round or 1 %}
+        {% if team.tournament.is_round_finished(current_round)
+            and current_round < team.tournament.rounds %}
+            {% set current_round = current_round + 1 %}
+        {% endif %}
         {% set current_lineup = team.effective_round_lineup(current_round) %}
         <div class="card-block">
             <span

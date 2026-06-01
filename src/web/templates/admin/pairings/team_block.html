@@ -1,0 +1,13 @@
+{% include '/admin/pairings/team_block_header.html' %}
+<tbody
+    id="team-block-body-{{ team_board.id }}"
+    class="collapse show"
+>
+    {% if team_board.team_b %}
+        {% for board in team_board.boards %}
+            {% with lineup_team_board=team_board %}
+                {% include '/admin/pairings/team_block_row.html' %}
+            {% endwith %}
+        {% endfor %}
+    {% endif %}
+</tbody>

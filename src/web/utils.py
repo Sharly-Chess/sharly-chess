@@ -209,24 +209,29 @@ class RequestUtils:
 
     @classmethod
     def get_board(cls, request: HTMXRequest) -> Board:
-        # TODO (Molrn) use board IDs instead of board index in every request
+        # TODO (Molrn) use board IDs instead of board index in every request.
+        # In the meantime, accept either the DB identifier or the legacy
+        # display id (index + 1). Team events require the DB identifier
+        # because the legacy id collides across team blocks.
         if cls.REQUEST_BOARD_ATTR in request.state:
             return request.state[cls.REQUEST_BOARD_ATTR]
         tournament: Tournament = cls.get_tournament(request)
-        board_index = cls._get_request_param(request, cls.BOARD_INDEX_PARAM)
+        board_id_param = cls._get_request_param(request, cls.BOARD_INDEX_PARAM)
         round_ = request.path_params.get(cls.ROUND_PARAM, tournament.current_round)
         if not 0 <= round_ <= tournament.rounds:
             raise ValidationException(f'Invalid round number [{round_}].')
+        round_boards = tournament.get_round_boards(round_)
         board = next(
-            (
-                board_
-                for board_ in tournament.get_round_boards(round_)
-                if board_.id == board_index
-            ),
+            (board_ for board_ in round_boards if board_.identifier == board_id_param),
             None,
         )
+        if board is None and not tournament.event.is_team_event:
+            board = next(
+                (board_ for board_ in round_boards if board_.id == board_id_param),
+                None,
+            )
         if not board:
-            raise NotFoundException(f'Board [{board_index}] not found.')
+            raise NotFoundException(f'Board [{board_id_param}] not found.')
         request.state[cls.REQUEST_BOARD_ATTR] = board
         return board
 

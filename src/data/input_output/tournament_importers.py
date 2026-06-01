@@ -59,6 +59,12 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
 
     @staticmethod
     def _reorder_tournament_boards(tournament: Tournament):
+        # Team tournaments index boards by their slot within each team
+        # match (set by the TRF importer's team-board reconstruction).
+        # A global per-round reorder would clobber that, so leave the
+        # importer-set indexes alone.
+        if tournament.is_team_tournament:
+            return
         with EventDatabase(tournament.event.uniq_id, True) as database:
             for round_ in range(1, tournament.rounds + 1):
                 tournament.set_for_round(round_)
@@ -132,8 +138,8 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             task(tournament)
         return tournament.id
 
-    @staticmethod
     def _write_stored_tournament(
+        self,
         stored_tournament: StoredTournament,
         stored_players: list[StoredPlayer],
         database: EventDatabase,

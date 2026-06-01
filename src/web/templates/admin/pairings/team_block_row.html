@@ -1,0 +1,161 @@
+{# Team-block pairing row. Aligns team_a on the left, team_b on the right
+   regardless of the players' colors on this specific board. A color chip
+   next to each player indicates their actual color. Result text is shown
+   from team_a's perspective. Requires: board, lineup_team_board. #}
+{% set wtp = board.white_tournament_player %}
+{% set btp = board.black_tournament_player %}
+{% set team_a_id = lineup_team_board.team_a.id %}
+{% if not btp %}
+    {# Exempt board (no opponent): the present player is always
+       on team_a's side regardless of the stored white/black slot,
+       since ``_team_match_stored_boards`` always pins a lone player
+       to ``white_player_id``. The colour chip, however, must follow
+       the colour pattern — otherwise every exempt-board player
+       shows as white even when their team's natural colour for
+       that slot is black. #}
+    {% set team_a_player = wtp %}
+    {% set team_b_player = none %}
+    {% set _pattern = admin_tournament.color_pattern or '' %}
+    {% if board.index is not none and board.index < _pattern|length %}
+        {% set team_a_color = (_pattern[board.index]|upper) %}
+    {% else %}
+        {% set team_a_color = 'W' %}
+    {% endif %}
+    {% set team_b_color = 'B' if team_a_color == 'W' else 'W' %}
+    {% set team_a_pairing = board.white_pairing %}
+    {% set team_b_pairing = none %}
+{% else %}
+    {% set team_a_is_white = wtp and wtp.team_id == team_a_id %}
+    {% if team_a_is_white %}
+        {% set team_a_player = wtp %}
+        {% set team_b_player = btp %}
+        {% set team_a_color = 'W' %}
+        {% set team_b_color = 'B' %}
+        {% set team_a_pairing = board.white_pairing %}
+        {% set team_b_pairing = board.black_pairing %}
+    {% else %}
+        {% set team_a_player = btp %}
+        {% set team_b_player = wtp %}
+        {% set team_a_color = 'B' %}
+        {% set team_b_color = 'W' %}
+        {% set team_a_pairing = board.black_pairing %}
+        {% set team_b_pairing = board.white_pairing %}
+    {% endif %}
+{% endif %}
+{% set team_a_absent = team_a_pairing and team_a_pairing.result.value in [4, 5] %}
+{% set team_b_absent = team_b_pairing and team_b_pairing.result.value in [4, 5] %}
+{% set raw_result_str = board.result_str %}
+{% if not team_a_is_white and raw_result_str %}
+    {% set parts = raw_result_str.split('-') %}
+    {% if parts|length == 2 %}
+        {% set display_result_str = parts[1] ~ '-' ~ parts[0] %}
+    {% else %}
+        {% set display_result_str = raw_result_str %}
+    {% endif %}
+{% else %}
+    {% set display_result_str = raw_result_str %}
+{% endif %}
+<tr
+    id="pairing-row-{{ board.identifier }}"
+    class="pairing-row {{ row_class }} {{ extra_row_class }}"
+    data-board-id="{{ board.identifier }}"
+    data-player-id="{{ wtp.id }}"
+    {% if swap_oob %}
+        hx-swap-oob="true"
+    {% endif %}
+>
+    <td class="text-center text-nowrap">{{ board.number }}{% if board.number != board.id %} ({{ board.id }}){% endif %}</td>
+    <td class="text-center">{{ team_a_player.vpoints_str if team_a_player else '' }}</td>
+    {% if admin_tournament.print_real_points(admin_round) %}
+        <td class="text-start">{% if team_a_player %}[{{ team_a_player.points_str }}]{% endif %}</td>
+    {% endif %}
+    {% if admin_tournament.record_illegal_moves %}
+        {% with player=team_a_player, illegal_moves=team_a_pairing.illegal_moves if team_a_pairing else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
+    {% endif %}
+    <td class="lineup-side-a">
+        <div class="d-flex align-items-center">
+            <span class="color-chip color-chip-{{ team_a_color|lower }}"></span>
+            {% if team_a_player and team_a_player.team_id %}
+                <span class="lineup-view flex-grow-1">
+                    {% if team_a_absent %}
+                        <em class="text-muted">— {{ _('Absent (forfeit)') }} —</em>
+                    {% else %}
+                        {% with tournament_player=team_a_player, display_rating=true %}
+                            {% include '/admin/player_link.html' %}
+                        {% endwith %}
+                    {% endif %}
+                </span>
+                <span class="lineup-edit d-none flex-grow-1">
+                    {% with side_player=team_a_player, side=team_a_color %}
+                        {% include '/admin/pairings/_lineup_player_select.html' %}
+                    {% endwith %}
+                </span>
+            {% endif %}
+        </div>
+    </td>
+    <td class="text-center" style="width: 4.5rem;">
+        <span
+            {% if not client.can_enter_results(admin_tournament.id) %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to enter results.'), 'top') }}
+                {% set allowed=false %}
+            {% elif board.result_str and not client.can_update_results(admin_tournament.id) %}
+                {{ macros.tooltip_attributes('warning', _('You are not allowed to update results.'), 'top') }}
+                {% set allowed=false %}
+            {% else %}
+                {% set allowed=true %}
+            {% endif %}
+        >
+            <button
+                class="btn btn-sm btn-outline-primary text-nowrap"
+                style="width: 4.5rem;"
+                {% if not_allowed or ('MANUAL_UNPAIRING' not in existing_actions and board.exempt) %}
+                    disabled
+                {% else %}
+                    hx-get="{{ url_for('admin-event-pairing-modal', event_uniq_id=admin_event.uniq_id, tournament_id=admin_tournament.id, round=admin_round, board_id=board.identifier) }}"
+                    hx-trigger="click"
+                    hx-target="body"
+                    hx-indicator="#please-wait"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modal-wrapper"
+                {% endif %}
+            >
+                {% if display_result_str %}{{ display_result_str }}{% else %}-{% endif %}
+            </button>
+        </span>
+    </td>
+    {% if team_b_player %}
+        {% if admin_tournament.record_illegal_moves %}
+            {% with player=team_b_player, illegal_moves=team_b_pairing.illegal_moves if team_b_pairing else 0 %}{% include 'illegal_moves_cell.html' %}{% endwith %}
+        {% endif %}
+        <td class="lineup-side-b">
+            <div class="d-flex align-items-center">
+                <span class="color-chip color-chip-{{ team_b_color|lower }}"></span>
+                {% if team_b_player.team_id %}
+                    <span class="lineup-view flex-grow-1">
+                        {% if team_b_absent %}
+                            <em class="text-muted">— {{ _('Absent (forfeit)') }} —</em>
+                        {% else %}
+                            {% with tournament_player=team_b_player, display_rating=true %}
+                                {% include '/admin/player_link.html' %}
+                            {% endwith %}
+                        {% endif %}
+                    </span>
+                    <span class="lineup-edit d-none flex-grow-1">
+                        {% with side_player=team_b_player, side=team_b_color %}
+                            {% include '/admin/pairings/_lineup_player_select.html' %}
+                        {% endwith %}
+                    </span>
+                {% endif %}
+            </div>
+        </td>
+        {% if admin_tournament.print_real_points(admin_round) %}
+            <td class="text-end">{% if team_b_player %}[{{ team_b_player.points_str }}]{% endif %}</td>
+        {% endif %}
+        <td class="text-center">{{ team_b_player.vpoints_str }}</td>
+    {% else %}
+        {% if admin_tournament.record_illegal_moves %}<td></td>{% endif %}
+        <td>{{ _('EXEMPT') }}</td>
+        <td></td>
+        {% if admin_tournament.print_real_points(admin_round) %}<td></td>{% endif %}
+    {% endif %}
+</tr>

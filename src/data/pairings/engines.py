@@ -18,11 +18,13 @@ from common.logger import (
 from common.tool_installer import BbpPairingsInstaller
 from data.board import Board
 from data.pairings.settings import BergerNumbersSetting
-from database.sqlite.event.event_store import StoredBoard
+from database.sqlite.event.event_database import EventDatabase
+from database.sqlite.event.event_store import StoredBoard, StoredTeamBoard
 from utils import Utils
-from utils.enum import Result
+from utils.enum import BoardColor, Result
 
 if TYPE_CHECKING:
+    from data.team import Team
     from data.tournament import Tournament
 
 logger = get_logger()
@@ -211,7 +213,7 @@ class BbpPairings(PairingEngine):
                 )
             try:
                 bbp_tmp_dir = TMP_DIR / 'bbp-pairings'
-                bbp_tmp_dir.mkdir(exist_ok=True)
+                bbp_tmp_dir.mkdir(parents=True, exist_ok=True)
                 shutil.copy(
                     trf_file_path,
                     bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-input.trfx',
@@ -305,7 +307,7 @@ class BbpPairings(PairingEngine):
                 )
             try:
                 bbp_tmp_dir = TMP_DIR / 'bbp-pairings'
-                bbp_tmp_dir.mkdir(exist_ok=True)
+                bbp_tmp_dir.mkdir(parents=True, exist_ok=True)
                 shutil.copy(
                     trfx_file_path,
                     bbp_tmp_dir / f'{tournament.sanitized_name}-pairings-input.trfx',
@@ -487,8 +489,25 @@ class DoubleBergerPairingEngine(BergerPairingEngine):
 # ---------------------------------------------------------------------------------
 
 
-class _TeamPairingEngineStub(PairingEngine, ABC):
-    """Placeholder engine for team pairing variations. Raises on use."""
+def _team_ui_sort_key(team: 'Team') -> tuple[float, str]:
+    """Sort key matching the team-admin UI:
+    ``(pairing_number or ∞, name.lower())``. Shared by the pairing
+    engines and ``Tournament._populate_team_trf`` so the TPN order
+    bbpPairings sees on TRF26 records matches what the user reorders
+    on screen."""
+    return (
+        team.pairing_number if team.pairing_number is not None else float('inf'),
+        team.name.lower(),
+    )
+
+
+class _TeamPairingBase(PairingEngine, ABC):
+    """Shared machinery for team-vs-team engines (Swiss + Berger). All
+    concrete engines decide *which* teams play whom each round; this
+    base persists the resulting ``team_board`` envelopes + individual
+    boards using the teams' effective round lineups."""
+
+    BYE_ID = 0
 
     def _generate_stored_boards(
         self,
@@ -496,23 +515,446 @@ class _TeamPairingEngineStub(PairingEngine, ABC):
         round_: int,
         partial_pairings: bool = False,
     ) -> list[StoredBoard]:
-        raise NotImplementedError(f'{type(self).__name__} is not yet implemented.')
+        raise NotImplementedError(
+            f'{type(self).__name__} uses generate_pairings directly.'
+        )
+
+    @staticmethod
+    def _teams_for_tournament(tournament: 'Tournament') -> list['Team']:
+        """Teams attached to this tournament, ordered the same way the
+        team-admin UI lists them: by ``pairing_number`` when set (lower
+        first), then lower-cased name. Keeps TPN assignment matching
+        what the user sees on screen."""
+        teams = [
+            team
+            for team in tournament.event.sorted_teams
+            if team.tournament_id == tournament.id
+        ]
+        return sorted(teams, key=_team_ui_sort_key)
+
+    def _persist_team_round(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        team_pairs: list[tuple[int, int | None]],
+    ):
+        stored_boards: list[StoredBoard] = []
+        with EventDatabase(tournament.event.uniq_id, True) as database:
+            # Clear any orphan team_boards from a prior pairing of this round.
+            database.delete_stored_team_boards_for_round(tournament.id, round_)
+            tournament.stored_tournament.stored_team_boards_by_round.pop(round_, None)
+            for index, (team_a_id, team_b_id) in enumerate(team_pairs):
+                stb = StoredTeamBoard(
+                    id=None,
+                    tournament_id=tournament.id,
+                    round_=round_,
+                    team_a_id=team_a_id,
+                    team_b_id=team_b_id,
+                    index=index,
+                )
+                stb.id = database.add_stored_team_board(stb)
+                tournament.stored_tournament.stored_team_boards_by_round.setdefault(
+                    round_, []
+                ).append(stb)
+                stored_boards.extend(self._team_match_stored_boards(tournament, stb))
+        tournament.clear_team_cache()
+        tournament.create_boards(stored_boards, round_, self.pab_result)
+
+    @staticmethod
+    def _team_match_stored_boards(
+        tournament: 'Tournament',
+        stb: StoredTeamBoard,
+    ) -> list[StoredBoard]:
+        """Build StoredBoard entries for a team match.
+        Colors per board taken from *tournament.color_pattern* (a string of
+        'W'/'B' characters, length = team_player_count, position i = team_a's
+        color on board i). Falls back to WBWB... when no pattern is set.
+        Team_b always gets the opposite color of team_a on each board."""
+        team_a = tournament.event.teams_by_id[stb.team_a_id]
+        team_b = (
+            tournament.event.teams_by_id[stb.team_b_id]
+            if stb.team_b_id is not None
+            else None
+        )
+        n = tournament.team_player_count or 0
+        lineup_a = team_a.effective_round_lineup(stb.round_)[:n]
+        lineup_b = team_b.effective_round_lineup(stb.round_)[:n] if team_b else []
+        pattern = tournament.color_pattern or ''
+        boards: list[StoredBoard] = []
+        for board_index in range(n):
+            if board_index >= len(lineup_a):
+                continue
+            player_a = lineup_a[board_index]
+            player_b = lineup_b[board_index] if board_index < len(lineup_b) else None
+            if board_index < len(pattern):
+                team_a_color_char = pattern[board_index]
+            else:
+                team_a_color_char = (
+                    BoardColor.WHITE.value
+                    if board_index % 2 == 0
+                    else BoardColor.BLACK.value
+                )
+            team_a_is_white = team_a_color_char == BoardColor.WHITE.value
+            if team_a_is_white:
+                white_id, black_id = player_a.id, (player_b.id if player_b else None)
+            else:
+                white_id, black_id = (
+                    (player_b.id if player_b else player_a.id),
+                    (player_a.id if player_b else None),
+                )
+            boards.append(
+                StoredBoard(
+                    id=None,
+                    white_player_id=white_id,
+                    black_player_id=black_id,
+                    index=board_index,
+                    team_board_id=stb.id,
+                )
+            )
+        return boards
+
+
+class TeamSwissEngine(_TeamPairingBase):
+    """Team Swiss engine (FIDE C.04.6, TRF26-encoded).
+
+    Builds a full TRF26 team file via :meth:`Tournament.to_trf` —
+    including 310 team rosters, 192 colour-preference / score-config
+    code, 352 board colour sequence, 362 match-points system and 320
+    PAB overrides — and runs the in-tree ``bbpPairings --team``
+    binary on it. The output is a list of ``(team_a_TPN, team_b_TPN)``
+    matches for the round; this engine expands each match into per-
+    board ``StoredBoard`` rows using each team's effective lineup for
+    the round and the tournament's colour pattern."""
+
+    @property
+    def executable_path(self) -> Path:
+        return BbpPairingsInstaller().executable_path
 
     def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+        teams = self._teams_for_tournament(tournament)
+        if len(teams) <= tournament.rounds:
+            return _(
+                'Pairings generation not allowed if there are fewer teams than rounds.'
+            )
+        n = tournament.team_player_count or 0
+        if n <= 0:
+            return _('Tournament has no team-player count configured.')
+        for team in teams:
+            if len(team.players) < n:
+                return _('Team [{name}] has fewer than {n} players.').format(
+                    name=team.name, n=n
+                )
         return None
 
+    def pairings_generation_disabled_message(
+        self, tournament: 'Tournament', at_round: int
+    ) -> str | None:
+        if message := super().pairings_generation_disabled_message(
+            tournament, at_round
+        ):
+            return message
+        if any(
+            not tournament.is_round_finished(round_) for round_ in range(1, at_round)
+        ):
+            return _(
+                'Pairings generation not allowed if previous rounds have '
+                'missing results, players to pair or absent players.'
+            )
+        return None
 
-class TeamSwissEngine(_TeamPairingEngineStub):
-    pass
+    @override
+    def generate_pairings(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        partial_pairings: bool = False,
+    ) -> str:
+        if self.pairings_generation_disabled_message(tournament, round_):
+            raise ValueError(
+                f'Pairings generation not allowed for round {round_} '
+                f'of tournament [{tournament.name}].'
+            )
+        teams = self._teams_for_tournament(tournament)
+        try:
+            team_pairs = self._run_team_bbp(tournament, round_, teams)
+        except Exception as e:
+            logger.exception(e)
+            return _('An error occurred. Consult the logs for more details.')
+        if not team_pairs:
+            return _('Pairing is not possible.')
+        self._persist_team_round(tournament, round_, team_pairs)
+        return ''
+
+    @staticmethod
+    def _build_trf_id_map(teams: list['Team']) -> dict[int, int]:
+        """Map team.id → TRF team pairing number (TPN, 1-based). Prefers
+        the stored ``pairing_number``; falls back to canonical sort
+        order so teams that haven't been ordered yet still get a
+        unique TPN."""
+        result: dict[int, int] = {}
+        used: set[int] = set()
+        # First pass: respect explicit pairing_number values.
+        for team in teams:
+            pn = team.pairing_number
+            if pn is not None and pn not in used:
+                result[team.id] = pn
+                used.add(pn)
+        # Second pass: fill in any teams without one using the lowest
+        # unused TPN.
+        next_tpn = 1
+        for team in teams:
+            if team.id in result:
+                continue
+            while next_tpn in used:
+                next_tpn += 1
+            result[team.id] = next_tpn
+            used.add(next_tpn)
+            next_tpn += 1
+        return result
+
+    def _run_team_bbp(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        teams: list['Team'],
+    ) -> list[tuple[int, int | None]]:
+        from data.input_output.trf.trf_serializer import TrfSerializer
+
+        trf_id_by_team_id = self._build_trf_id_map(teams)
+        trf_tournament = tournament.to_trf(after_round=round_ - 1)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            pairings_dir = Path(tmpdir)
+            trf_path = pairings_dir / 'team-pairings-input.trfx'
+            out_path = pairings_dir / 'team-pairings-output.txt'
+            with open(trf_path, 'w', encoding='utf-8') as f:
+                TrfSerializer.dump(f, trf_tournament)
+            result = Utils.run_process(
+                [
+                    self.executable_path,
+                    '--team',
+                    trf_path,
+                    '-p',
+                    out_path,
+                ],
+                capture_output=True,
+                encoding='utf-8',
+            )
+            if not out_path.exists():
+                raise SharlyChessException(
+                    f'{tournament.log_prefix}round {round_} - Team pairing '
+                    f'generation with BbpPairings failed with status '
+                    f'{result.returncode}.\n'
+                    f'stdout: {result.stdout}\nstderr: {result.stderr}'
+                )
+            try:
+                bbp_tmp_dir = TMP_DIR / 'bbp-pairings'
+                bbp_tmp_dir.mkdir(parents=True, exist_ok=True)
+                shutil.copy(
+                    trf_path,
+                    bbp_tmp_dir
+                    / f'{tournament.sanitized_name}-team-pairings-input.trfx',
+                )
+                shutil.copy(
+                    out_path,
+                    bbp_tmp_dir
+                    / f'{tournament.sanitized_name}-team-pairings-output.txt',
+                )
+            except PermissionError as e:
+                logger.exception(
+                    'Error logging the team BbpPairings input / output files: %s',
+                    e,
+                )
+            team_by_trf_id = {trf_id_by_team_id[team.id]: team for team in teams}
+            with open(out_path, encoding='utf-8') as f:
+                return self._parse_team_pairs(f, team_by_trf_id)
+
+    def _parse_team_pairs(
+        self,
+        file: TextIO,
+        team_by_trf_id: dict[int, 'Team'],
+    ) -> list[tuple[int, int | None]]:
+        file.readline()  # team count
+        pairs: list[tuple[int, int | None]] = []
+        for line in file.readlines():
+            tokens = line.split()
+            if len(tokens) < 2:
+                continue
+            a_id, b_id = int(tokens[0]), int(tokens[1])
+            team_a = team_by_trf_id.get(a_id)
+            if team_a is None:
+                continue
+            team_b_id: int | None
+            if b_id == self.BYE_ID:
+                team_b_id = None
+            else:
+                team_b = team_by_trf_id.get(b_id)
+                team_b_id = team_b.id if team_b is not None else None
+            pairs.append((team_a.id, team_b_id))
+        return pairs
 
 
-class TeamBergerEngine(_TeamPairingEngineStub):
-    pass
+class _TeamRoundRobinEngine(_TeamPairingBase, ABC):
+    """Team round-robin shared logic. Subclasses implement
+    :meth:`_compute_team_pairs` for the round; this base validates
+    round count and persists the resulting matches via
+    :meth:`_persist_team_round`."""
+
+    MIN_TEAMS = 3
+
+    @property
+    def pab_result(self) -> Result:
+        return Result.REST_GAME
+
+    @property
+    @abstractmethod
+    def team_encounters(self) -> int:
+        """How many times each pair of teams meets (1 = Berger, 2 =
+        Double Berger)."""
+
+    @classmethod
+    def get_single_encounter_round_count(cls, team_count: int) -> int:
+        return team_count if team_count % 2 == 1 else team_count - 1
+
+    def get_round_count(self, team_count: int) -> int:
+        return self.team_encounters * self.get_single_encounter_round_count(team_count)
+
+    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+        teams = self._teams_for_tournament(tournament)
+        if len(teams) < self.MIN_TEAMS:
+            return _('Too few teams to generate the pairings (minimum: {min}).').format(
+                min=self.MIN_TEAMS
+            )
+        expected = self.get_round_count(len(teams))
+        if tournament.rounds != expected:
+            return _(
+                'The round count is incompatible with the number of '
+                'teams (expected: {expected}).'
+            ).format(expected=expected)
+        n = tournament.team_player_count or 0
+        if n <= 0:
+            return _('Tournament has no team-player count configured.')
+        for team in teams:
+            if len(team.players) < n:
+                return _('Team [{name}] has fewer than {n} players.').format(
+                    name=team.name, n=n
+                )
+        return None
+
+    @abstractmethod
+    def _compute_team_pairs(
+        self, teams: list['Team'], round_: int
+    ) -> list[tuple[int, int | None]]:
+        """Return the list of (team_a_id, team_b_id) for the given
+        round. ``team_b_id`` is ``None`` for a team-level bye."""
+
+    @override
+    def generate_pairings(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        partial_pairings: bool = False,
+    ) -> str:
+        if self.pairings_generation_disabled_message(tournament, round_):
+            raise ValueError(
+                f'Pairings generation not allowed for round {round_} '
+                f'of tournament [{tournament.name}].'
+            )
+        teams = self._teams_for_tournament(tournament)
+        try:
+            team_pairs = self._compute_team_pairs(teams, round_)
+        except Exception as e:
+            logger.exception(e)
+            return _('An error occurred. Consult the logs for more details.')
+        if not team_pairs:
+            return _('Pairing is not possible.')
+        self._persist_team_round(tournament, round_, team_pairs)
+        return ''
+
+    @staticmethod
+    def _berger_to_team_id_map(teams: list['Team']) -> dict[int, int]:
+        """Berger number → team id. Berger numbers are assigned 1..N in
+        the canonical ``_teams_for_tournament`` order."""
+        return {i + 1: team.id for i, team in enumerate(teams)}
 
 
-class TeamDoubleBergerEngine(_TeamPairingEngineStub):
-    pass
+class TeamBergerEngine(_TeamRoundRobinEngine):
+    """Single round-robin: each pair of teams meets once."""
+
+    @property
+    def team_encounters(self) -> int:
+        return 1
+
+    def _compute_team_pairs(
+        self, teams: list['Team'], round_: int
+    ) -> list[tuple[int, int | None]]:
+        team_count = len(teams)
+        if team_count < self.MIN_TEAMS:
+            return []
+        berger_to_team = self._berger_to_team_id_map(teams)
+        # Reuse the individual Berger table: same pairing pattern,
+        # just over teams. ``get_berger_table`` accepts odd counts and
+        # internally pads with a phantom slot whose unmapped berger
+        # number signals a team-level bye.
+        round_pairings = BergerPairingEngine.get_berger_table(team_count)[round_]
+        team_pairs: list[tuple[int, int | None]] = []
+        for a_berger, b_berger in round_pairings:
+            a_id = berger_to_team.get(a_berger)
+            b_id = berger_to_team.get(b_berger)
+            if a_id is None and b_id is None:
+                continue
+            if a_id is None:
+                # The phantom slot was berger A; flip so the real team
+                # gets the bye record as team_a.
+                team_pairs.append((b_id, None))  # type: ignore[arg-type]
+                continue
+            team_pairs.append((a_id, b_id))
+        return team_pairs
 
 
-class MolterEngine(_TeamPairingEngineStub):
+class TeamDoubleBergerEngine(TeamBergerEngine):
+    """Double round-robin: each pair of teams meets twice, colours
+    inverted in the second half (FIDE Handbook C.05 Annex 1, applied
+    at the team level via the same board-level colour pattern)."""
+
+    @property
+    def team_encounters(self) -> int:
+        return 2
+
+    def _compute_team_pairs(
+        self, teams: list['Team'], round_: int
+    ) -> list[tuple[int, int | None]]:
+        team_count = len(teams)
+        if team_count < self.MIN_TEAMS:
+            return []
+        berger_to_team = self._berger_to_team_id_map(teams)
+        single_rounds = self.get_single_encounter_round_count(team_count)
+        # Mirror the individual DoubleBergerPairingEngine remapping for
+        # the two last rounds of each half (anti-tripling-colour rule).
+        if round_ <= single_rounds - 2:
+            source_round = round_
+            swap = False
+        elif round_ == single_rounds - 1:
+            source_round = round_ + 1
+            swap = False
+        elif round_ == single_rounds:
+            source_round = round_ - 1
+            swap = False
+        else:
+            source_round = (round_ % (single_rounds + 1)) + 1
+            swap = True
+        pairings = BergerPairingEngine.get_berger_table(team_count)[source_round]
+        team_pairs: list[tuple[int, int | None]] = []
+        for a_berger, b_berger in pairings:
+            if swap:
+                a_berger, b_berger = b_berger, a_berger
+            a_id = berger_to_team.get(a_berger)
+            b_id = berger_to_team.get(b_berger)
+            if a_id is None and b_id is None:
+                continue
+            if a_id is None:
+                team_pairs.append((b_id, None))  # type: ignore[arg-type]
+                continue
+            team_pairs.append((a_id, b_id))
+        return team_pairs
+
     pass

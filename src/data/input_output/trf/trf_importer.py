@@ -12,7 +12,12 @@ from data.input_output.tournament_importer_options import (
     TournamentRatingOption,
 )
 from data.input_output.tournament_importers import FileTournamentImporter
-from data.input_output.trf.trf_data import TrfPlayer, TrfGame, TrfTournament
+from data.input_output.trf.trf_data import (
+    TRF_DATE_FORMAT,
+    TrfGame,
+    TrfPlayer,
+    TrfTournament,
+)
 from data.input_output.trf.trf_mappers import (
     TrfPlayerGender,
     TrfColor,
@@ -23,19 +28,21 @@ from data.input_output.trf.trf_mappers import (
 from data.input_output.trf.trf_serializer import TrfSerializer
 from data.pairings.settings import ColorSeedSetting
 from data.tie_breaks import TieBreak, TieBreakManager
+from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
-    StoredTournament,
-    StoredPlayer,
     StoredBoard,
-    StoredTournamentPlayer,
     StoredPairing,
+    StoredPlayer,
+    StoredTeam,
+    StoredTeamBoard,
+    StoredTeamRoundLineupEntry,
+    StoredTournament,
+    StoredTournamentPlayer,
 )
 from plugins.manager import plugin_manager
 from utils.enum import TournamentRating, Result, BoardColor, PlayerRatingType
 from utils.time_control import parse_time_control_trf25
 from utils.types import PlayerRating
-
-TRF_DATE_FORMAT = '%Y/%m/%d'
 
 
 class TrfTournamentImporter(FileTournamentImporter):
@@ -66,16 +73,53 @@ class TrfTournamentImporter(FileTournamentImporter):
     def on_file_selected_post_route_name(self) -> str | None:
         return 'tournament-import-check-trf'
 
+    # Populated during ``load_stored_tournament`` for tournaments that
+    # carry TRF26 team rosters (310 records). Each entry is the
+    # ``StoredTeam`` to insert plus the original TRF player ids that
+    # belong to it — we resolve those to internal ids in
+    # ``_write_stored_tournament`` once the players are persisted.
+    _pending_teams: list[tuple[StoredTeam, list[int]]]
+    # ``(round, TPN of team)`` → list of TRF player ids in board order,
+    # extracted from 300 records. ``None`` entries mark empty slots.
+    _pending_oodo: dict[tuple[int, int], list[int | None]]
+    # ``(round, frozenset({a_tpn, b_tpn}))`` → ``(team_a_tpn,
+    # team_b_tpn)`` in the original source's orientation, taken from
+    # the first 300 record for each match-pair. Drives which team
+    # appears on the left of the round display.
+    _pending_oodo_orientation: dict[tuple[int, frozenset[int]], tuple[int, int]]
+    # round → TPN of the team that got the team-level PAB that round
+    # (from 320).
+    _pending_pab_team_by_round: dict[int, int]
+
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
     ) -> tuple[StoredTournament, list[StoredPlayer]]:
         (file_path, tournament_rating) = self.get_option_values()
         with open(file_path, 'r', encoding='utf-8') as file:
             trf_tournament = TrfSerializer.load(file)
+        self._check_team_event_compatibility(event, trf_tournament)
         stored_tournament = self._read_trf_tournament(
             event, trf_tournament, stored_tournament
         )
         stored_tournament.rating = tournament_rating
+        self._pending_teams = self._read_trf_teams(trf_tournament)
+        # OOdO records (TRF26 300) carry the per-round team lineups in
+        # board order; the team-board reconstruction below uses them to
+        # set ``board.index`` correctly even when historical lineups
+        # diverge from the current 310 roster.
+        self._pending_oodo = self._read_trf_oodo_records(trf_tournament)
+        self._pending_oodo_orientation = self._read_trf_oodo_match_orientation(
+            trf_tournament
+        )
+        # 320 carries the team-PAB schedule per round so we can
+        # synthesise a (team, None) envelope for teams that got the
+        # round bye even though they don't appear in any 300 record.
+        if trf_tournament.team_pabs is not None:
+            self._pending_pab_team_by_round = dict(
+                trf_tournament.team_pabs.team_id_by_round
+            )
+        else:
+            self._pending_pab_team_by_round = {}
 
         next_board_id = 1
         board_id_by_player_id_by_round: dict[int, dict[int, int]] = defaultdict(dict)
@@ -132,7 +176,13 @@ class TrfTournamentImporter(FileTournamentImporter):
             stored_tournament.stored_tournament_players.append(stored_tournament_player)
         stored_tournament.stored_boards_by_round = stored_boards_by_round
         if stored_boards_by_round:
-            stored_tournament.rounds = max(tuple(stored_boards_by_round))
+            # Widen only — the 142 ``num_rounds`` value (set in
+            # ``_read_trf_tournament``) is the source of truth for the
+            # total round count; we just need to make sure it covers
+            # any actually-played rounds we found above.
+            stored_tournament.rounds = max(
+                stored_tournament.rounds, max(stored_boards_by_round)
+            )
         return stored_tournament, stored_players
 
     def get_not_importable_features(self, event: Event) -> list[str]:
@@ -140,9 +190,29 @@ class TrfTournamentImporter(FileTournamentImporter):
         with open(file_path, 'r', encoding='utf-8') as file:
             tournament = TrfSerializer.load(file)
         features: list[str] = []
-        if tournament.teams or tournament.deprecated_teams:
+        if tournament.teams and not event.is_team_event:
+            features.append(
+                _(
+                    'Team tournament file in an individual event — '
+                    'create a team event first.'
+                )
+            )
+        elif event.is_team_event and not tournament.teams:
+            features.append(
+                _(
+                    'Individual tournament file in a team event — '
+                    'create an individual event first.'
+                )
+            )
+        if tournament.deprecated_teams and not tournament.teams:
+            # Legacy 013 records still aren't read; the 310-format teams
+            # introduced in TRF26 are imported below.
             features.append(_('Teams'))
-        if tournament.individuals_point_system:
+        if tournament.individuals_point_system and not tournament.teams:
+            # 162 game-point overrides are still ignored for individual
+            # tournaments. In team mode it's just the W/D/L scoresheet
+            # that pairs alongside the 362 match-point system, so the
+            # round-trip is lossless and no warning is needed.
             features.append(_('162 Point system'))
         sr_method = tournament.starting_rank_method
         if sr_method and sr_method not in ['FIDON', 'NIDOF']:
@@ -202,6 +272,374 @@ class TrfTournamentImporter(FileTournamentImporter):
             features.append(_('BB fields'))
 
         return features
+
+    @staticmethod
+    def _check_team_event_compatibility(
+        event: Event, trf_tournament: TrfTournament
+    ) -> None:
+        """Refuse a TRF file whose team-ness doesn't match the event
+        type. ``get_not_importable_features`` already surfaces this
+        mismatch in the import dialog; this is the back-stop for any
+        code path that skips the dialog."""
+        if trf_tournament.teams and not event.is_team_event:
+            raise ImporterError(
+                _('Team tournament file cannot be imported into an individual event.')
+            )
+        if event.is_team_event and not trf_tournament.teams:
+            raise ImporterError(
+                _('Individual tournament file cannot be imported into a team event.')
+            )
+
+    @staticmethod
+    def _populate_team_fields(
+        stored_tournament: StoredTournament,
+        trf_tournament: TrfTournament,
+    ) -> None:
+        """Fill the team-mode fields on ``stored_tournament`` from
+        TRF26 records (192 ``encoded_type``, 310 rosters, 352
+        ``board_color_sequence``, 362 ``teams_point_system``).
+        No-op when the file isn't a team tournament."""
+        if not trf_tournament.teams:
+            return
+        score_config = TrfEncodedType.get_team_score_config(trf_tournament.encoded_type)
+        if score_config:
+            primary, secondary = score_config
+            stored_tournament.primary_score = primary.value
+            stored_tournament.secondary_score = secondary.value
+        colour_type = TrfEncodedType.get_team_colour_type(trf_tournament.encoded_type)
+        if colour_type:
+            stored_tournament.team_colour_type = colour_type.value
+        if trf_tournament.board_color_sequence:
+            stored_tournament.color_pattern = trf_tournament.board_color_sequence
+        match_points_by_symbol = trf_tournament.teams_point_system
+        if match_points_by_symbol:
+            stored_tournament.match_points = {
+                Result.WIN.value: float(match_points_by_symbol.get('TW', 2.0)),
+                Result.DRAW.value: float(match_points_by_symbol.get('TD', 1.0)),
+                Result.LOSS.value: float(match_points_by_symbol.get('TL', 0.0)),
+            }
+        team_pabs = trf_tournament.team_pabs
+        if team_pabs is not None:
+            if team_pabs.match_points is not None:
+                stored_tournament.match_points = stored_tournament.match_points or {}
+                stored_tournament.match_points[Result.PAIRING_ALLOCATED_BYE.value] = (
+                    float(team_pabs.match_points)
+                )
+            if team_pabs.game_points is not None:
+                stored_tournament.game_points = stored_tournament.game_points or {}
+                stored_tournament.game_points[Result.PAIRING_ALLOCATED_BYE.value] = (
+                    float(team_pabs.game_points)
+                )
+        game_points_by_symbol = trf_tournament.individuals_point_system
+        if game_points_by_symbol:
+            from data.input_output.trf.trf_mappers import TrfPointSystemResult
+
+            game_points: dict[int, float] = {}
+            for symbol, value in game_points_by_symbol.items():
+                try:
+                    outcome = TrfPointSystemResult.get_core_object(symbol)
+                except KeyError:
+                    continue
+                game_points[outcome.value] = float(value)
+            if game_points:
+                stored_tournament.game_points = game_points
+        roster_size = max(
+            (len(team.player_ids) for team in trf_tournament.teams), default=0
+        )
+        pattern_size = len(stored_tournament.color_pattern or '')
+        if pattern_size:
+            stored_tournament.team_player_count = pattern_size
+        elif roster_size:
+            stored_tournament.team_player_count = roster_size
+
+    @staticmethod
+    def _read_trf_oodo_records(
+        trf_tournament: TrfTournament,
+    ) -> dict[tuple[int, int], list[int | None]]:
+        """Index the 300 records by ``(round, team TPN)`` so the
+        reconstruction step can look up the per-round lineup directly
+        without re-walking the record list."""
+        result: dict[tuple[int, int], list[int | None]] = {}
+        for entry in trf_tournament.oodo_team_pairings:
+            result[(entry.round, entry.team_id)] = list(entry.boards)
+        return result
+
+    @staticmethod
+    def _read_trf_oodo_match_orientation(
+        trf_tournament: TrfTournament,
+    ) -> dict[tuple[int, frozenset[int]], tuple[int, int]]:
+        """For each round and team-pair, the ``(team_a_TPN, team_b_TPN)``
+        the source tournament used. The 300 records emit team_a's view
+        before team_b's, so the first one we see locks in the
+        orientation — preserving which team appears on the left of the
+        round display and which colour pattern slot each team takes."""
+        result: dict[tuple[int, frozenset[int]], tuple[int, int]] = {}
+        for entry in trf_tournament.oodo_team_pairings:
+            key = (entry.round, frozenset({entry.team_id, entry.opponent_team_id}))
+            if key in result:
+                continue
+            result[key] = (entry.team_id, entry.opponent_team_id)
+        return result
+
+    @staticmethod
+    def _read_trf_teams(
+        trf_tournament: TrfTournament,
+    ) -> list[tuple[StoredTeam, list[int]]]:
+        """Build ``(StoredTeam, [trf player ids])`` pairs for each 310
+        roster. ``team.id`` (the TPN) becomes ``pairing_number``."""
+        result: list[tuple[StoredTeam, list[int]]] = []
+        for trf_team in trf_tournament.teams:
+            stored_team = StoredTeam(
+                id=None,
+                name=trf_team.name or trf_team.nickname or f'Team {trf_team.id}',
+                pairing_number=trf_team.id or None,
+            )
+            result.append((stored_team, list(trf_team.player_ids)))
+        return result
+
+    def _write_stored_tournament(
+        self,
+        stored_tournament: StoredTournament,
+        stored_players: list[StoredPlayer],
+        database: EventDatabase,
+    ) -> int:
+        """Run the base writer, then persist team rosters when the TRF
+        carried 310 records. Capture each ``StoredPlayer.id`` (still
+        the external TRF id at this point) so we can remap team
+        membership after the players are inserted."""
+        external_player_ids = [player.id for player in stored_players]
+        tournament_id = super()._write_stored_tournament(
+            stored_tournament, stored_players, database
+        )
+        if not self._pending_teams:
+            return tournament_id
+        internal_by_external = {
+            external_id: player.id
+            for external_id, player in zip(external_player_ids, stored_players)
+            if external_id is not None and player.id is not None
+        }
+        team_id_by_internal_player_id: dict[int, int] = {}
+        team_index_by_internal_player_id: dict[int, int] = {}
+        pairing_number_by_team_id: dict[int, int] = {}
+        team_id_by_tpn: dict[int, int] = {}
+        for stored_team, trf_player_ids in self._pending_teams:
+            stored_team.tournament_id = tournament_id
+            team_id = database.add_stored_team(stored_team)
+            stored_team.id = team_id
+            if stored_team.pairing_number is not None:
+                pairing_number_by_team_id[team_id] = stored_team.pairing_number
+                team_id_by_tpn[stored_team.pairing_number] = team_id
+            for index, trf_player_id in enumerate(trf_player_ids):
+                internal_player_id = internal_by_external.get(trf_player_id)
+                if internal_player_id is None:
+                    continue
+                database.set_player_team(internal_player_id, team_id, index)
+                team_id_by_internal_player_id[internal_player_id] = team_id
+                team_index_by_internal_player_id[internal_player_id] = index
+        # Resolve OOdO TRF-player ids → internal player ids; the
+        # reconstruction step keys lineups by ``(round, team_db_id)``.
+        oodo_by_round_team: dict[tuple[int, int], dict[int, int]] = {}
+        for (round_, tpn), trf_player_ids_per_board in self._pending_oodo.items():
+            resolved_team_id = team_id_by_tpn.get(tpn)
+            if resolved_team_id is None:
+                continue
+            slot_to_player: dict[int, int] = {}
+            for slot, maybe_trf_id in enumerate(trf_player_ids_per_board):
+                if maybe_trf_id is None or maybe_trf_id == 0:
+                    continue
+                internal_player_id = internal_by_external.get(maybe_trf_id)
+                if internal_player_id is None:
+                    continue
+                slot_to_player[internal_player_id] = slot
+            if slot_to_player:
+                oodo_by_round_team[(round_, resolved_team_id)] = slot_to_player
+        # Players that appear in an OOdO lineup but never made it onto
+        # a 310 roster (typically substitutes who played early rounds
+        # and were then moved off the team) still need a team_id —
+        # otherwise the team-block display hides them with the
+        # ``if team_a_player.team_id`` guard. Walk OOdO in round order
+        # so later rounds overwrite earlier ones, mirroring the rule
+        # "most recent team membership wins".
+        for (_round, oodo_team_id), slot_map in sorted(
+            oodo_by_round_team.items(), key=lambda item: item[0][0]
+        ):
+            for internal_player_id, slot in slot_map.items():
+                if internal_player_id in team_id_by_internal_player_id:
+                    continue
+                database.set_player_team(internal_player_id, oodo_team_id, slot)
+                team_id_by_internal_player_id[internal_player_id] = oodo_team_id
+                team_index_by_internal_player_id[internal_player_id] = slot
+
+        # Translate the OOdO orientation map from TPN → team_db_id so
+        # the reconstruction step doesn't need to know about TPNs.
+        oodo_orientation: dict[tuple[int, frozenset[int]], tuple[int, int]] = {}
+        for (
+            round_,
+            tpn_pair,
+        ), (a_tpn, b_tpn) in self._pending_oodo_orientation.items():
+            a_team = team_id_by_tpn.get(a_tpn)
+            b_team = team_id_by_tpn.get(b_tpn)
+            if a_team is None or b_team is None:
+                continue
+            oodo_orientation[(round_, frozenset({a_team, b_team}))] = (a_team, b_team)
+        pab_team_id_by_round: dict[int, int] = {}
+        for round_, tpn in self._pending_pab_team_by_round.items():
+            resolved = team_id_by_tpn.get(tpn)
+            if resolved is not None:
+                pab_team_id_by_round[round_] = resolved
+        self._reconstruct_team_boards(
+            stored_tournament,
+            tournament_id,
+            team_id_by_internal_player_id,
+            team_index_by_internal_player_id,
+            pairing_number_by_team_id,
+            oodo_by_round_team,
+            oodo_orientation,
+            pab_team_id_by_round,
+            database,
+        )
+        return tournament_id
+
+    @staticmethod
+    def _reconstruct_team_boards(
+        stored_tournament: StoredTournament,
+        tournament_id: int,
+        team_id_by_player_id: dict[int, int],
+        team_index_by_player_id: dict[int, int],
+        pairing_number_by_team_id: dict[int, int],
+        oodo_by_round_team: dict[tuple[int, int], dict[int, int]],
+        oodo_orientation: dict[tuple[int, frozenset[int]], tuple[int, int]],
+        pab_team_id_by_round: dict[int, int],
+        database: EventDatabase,
+    ) -> None:
+        """Re-create per-round ``StoredTeamBoard`` envelopes plus
+        per-round lineups using OOdO records as the source of truth.
+
+        For each round, the OOdO data tells us which team played which
+        opponent and which slot each player occupied. We then place
+        each ``StoredBoard`` (from the 001 game records) into the
+        matching team-match envelope. Lone boards (PAB-style entries
+        with no opponent) are attached to the team's real match for
+        that round when one exists — that's how the source TRF
+        represents an empty board slot (e.g. a team that fielded fewer
+        than ``team_player_count`` players)."""
+
+        # Pre-index all stored_boards by player so we can look up the
+        # board for a given (slot's player) cheaply.
+        for (
+            round_,
+            stored_boards,
+        ) in stored_tournament.stored_boards_by_round.items():
+            boards_by_player_id: dict[int, StoredBoard] = {}
+            for board in stored_boards:
+                if board.white_player_id is not None:
+                    boards_by_player_id.setdefault(board.white_player_id, board)
+                if board.black_player_id is not None:
+                    boards_by_player_id.setdefault(board.black_player_id, board)
+
+            # Distinct match-pairs for this round, taken straight from
+            # the OOdO orientation map (which records the original
+            # team_a, team_b orientation). Match list order is by team_a
+            # pairing number, then team_b pairing number.
+            real_matches: list[tuple[int, int]] = []
+            seen_pairs: set[frozenset[int]] = set()
+            for (
+                orientation_round,
+                pair,
+            ), (team_a_id, team_b_id) in oodo_orientation.items():
+                if orientation_round != round_:
+                    continue
+                if pair in seen_pairs:
+                    continue
+                seen_pairs.add(pair)
+                real_matches.append((team_a_id, team_b_id))
+            real_matches.sort(
+                key=lambda match: (
+                    pairing_number_by_team_id.get(match[0], match[0]),
+                    pairing_number_by_team_id.get(match[1], match[1]),
+                )
+            )
+
+            # Teams that participate in a real match this round don't
+            # also get a lone (team, None) PAB envelope — their empty
+            # slots are folded into the real match below.
+            teams_in_real_match: set[int] = set()
+            for team_a_id, team_b_id in real_matches:
+                teams_in_real_match.add(team_a_id)
+                teams_in_real_match.add(team_b_id)
+
+            # PAB team for this round (from 320). The team that got
+            # the round bye doesn't appear in any 300 record, so this
+            # is the only place to learn about it.
+            pab_team_ids: list[int] = []
+            pab_team_id = pab_team_id_by_round.get(round_)
+            if pab_team_id is not None and pab_team_id not in teams_in_real_match:
+                pab_team_ids.append(pab_team_id)
+
+            match_index = 0
+            assigned_board_ids: set[int] = set()
+            for team_a_id, team_b_id in real_matches:
+                stb = StoredTeamBoard(
+                    id=None,
+                    tournament_id=tournament_id,
+                    round_=round_,
+                    team_a_id=team_a_id,
+                    team_b_id=team_b_id,
+                    index=match_index,
+                )
+                stb.id = database.add_stored_team_board(stb)
+                match_index += 1
+                slot_a = oodo_by_round_team.get((round_, team_a_id), {})
+                slot_b = oodo_by_round_team.get((round_, team_b_id), {})
+                for player_id, slot in {**slot_a, **slot_b}.items():
+                    match_board = boards_by_player_id.get(player_id)
+                    if match_board is None or match_board.id in assigned_board_ids:
+                        continue
+                    assert match_board.id is not None
+                    match_board.index = slot
+                    match_board.team_board_id = stb.id
+                    database.update_stored_board(match_board)
+                    assigned_board_ids.add(match_board.id)
+
+            for team_id in pab_team_ids:
+                stb = StoredTeamBoard(
+                    id=None,
+                    tournament_id=tournament_id,
+                    round_=round_,
+                    team_a_id=team_id,
+                    team_b_id=None,
+                    index=match_index,
+                )
+                stb.id = database.add_stored_team_board(stb)
+                match_index += 1
+                slot_map = oodo_by_round_team.get((round_, team_id), {})
+                for player_id, slot in slot_map.items():
+                    pab_board = boards_by_player_id.get(player_id)
+                    if pab_board is None or pab_board.id in assigned_board_ids:
+                        continue
+                    assert pab_board.id is not None
+                    pab_board.index = slot
+                    pab_board.team_board_id = stb.id
+                    database.update_stored_board(pab_board)
+                    assigned_board_ids.add(pab_board.id)
+
+            # Persist per-round lineups for every team that has OOdO
+            # data this round; ``effective_round_lineup`` then returns
+            # the historical roster instead of the 310 default.
+            for (oodo_round, team_id), slot_map in oodo_by_round_team.items():
+                if oodo_round != round_:
+                    continue
+                ordered = sorted(slot_map.items(), key=lambda item: item[1])
+                lineup_entries = [
+                    StoredTeamRoundLineupEntry(
+                        team_id=team_id,
+                        round_=round_,
+                        player_id=player_id,
+                        index=slot,
+                    )
+                    for player_id, slot in ordered
+                ]
+                database.replace_team_round_lineup(team_id, round_, lineup_entries)
 
     @classmethod
     def _read_tie_breaks(
@@ -380,6 +818,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         stored_tournament.pairing = TrfEncodedType.get_pairing_variation(
             trf_tournament.encoded_type
         ).id
+        cls._populate_team_fields(stored_tournament, trf_tournament)
         trf_tie_breaks = (
             trf_tournament.standings_tie_breaks or ['PTS'] + trf_tournament.tie_breaks
         )

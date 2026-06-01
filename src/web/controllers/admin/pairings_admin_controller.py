@@ -150,8 +150,12 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_board: Board | None = None
         if board_id is not None:
             self.admin_board = next(
-                (b for b in self.admin_boards if b.board_id == board_id), None
+                (b for b in self.admin_boards if b.identifier == board_id), None
             )
+            if self.admin_board is None and not event.is_team_event:
+                self.admin_board = next(
+                    (b for b in self.admin_boards if b.board_id == board_id), None
+                )
 
         self.admin_player: TournamentPlayer | None = None
         if player_id is not None:
@@ -206,6 +210,13 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_bye_players = []
         self.admin_unpaired = []
         if not self.admin_tournament:
+            return
+        # Team-vs-team systems pair teams, not individual players; the unpaired
+        # / bye / absent player sidebar isn't meaningful in that mode.
+        if (
+            self.admin_tournament.event.is_team_event
+            and self.admin_tournament.pairing_system.paired_by_team
+        ):
             return
         unpaired = self.admin_tournament.get_unpaired_tournament_players(
             self.admin_boards
@@ -275,6 +286,11 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'existing_actions': existing_actions,
             'tournament_options': self.get_tournament_options(self.allowed_tournaments),
             'admin_filtered_boards': self.admin_filtered_boards,
+            'admin_team_boards': (
+                self.admin_tournament.get_round_team_boards(self.admin_round)
+                if self.admin_tournament
+                else []
+            ),
             'admin_unpaired': self.admin_unpaired,
             'admin_bye_players': self.admin_bye_players,
             'admin_absent_players': self.admin_absent_players,
@@ -624,6 +640,187 @@ class PairingsAdminController(BaseEventAdminController):
             result=result,
             validate_result=data['validate_result'] == 'true',
         )
+
+    @patch(
+        path=(
+            '/pairing/swap-board-player/{event_uniq_id:str}/{tournament_id:int}'
+            '/{round:int}/{board_id:int}/{side:str}'
+        ),
+        name='admin-pairings-swap-board-player',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
+        data=Body(media_type=RequestEncodingType.URL_ENCODED),
+    )
+    async def htmx_admin_swap_board_player(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        board_id: int,
+        side: str,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        if side not in ('W', 'B'):
+            raise ClientException(f'Invalid side [{side}].')
+        this_side: str = 'white' if side == 'W' else 'black'
+        try:
+            new_player_id = int(data.get('new_player_id', '0') or '0')
+        except ValueError:
+            raise ClientException('Invalid new_player_id.')
+
+        web_context = PairingsAdminWebContext(
+            request,
+            tournament_id=tournament_id,
+            round_=round,
+            board_id=board_id,
+        )
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        this_board = web_context.get_admin_board()
+
+        if not event.is_team_event:
+            raise ClientException('Lineup swap only allowed in team events.')
+
+        team_board_id = this_board.stored_board.team_board_id
+        if team_board_id is None:
+            raise ClientException('Board is not part of a team match.')
+        team_board = tournament.team_boards_by_id[team_board_id]
+
+        # Absent: keep the current player on the board, record a forfeit for
+        # their side. Black: white wins by forfeit; White: white loses.
+        if new_player_id == 0:
+            forfeit_result = (
+                Result.FORFEIT_LOSS if this_side == 'white' else Result.FORFEIT_WIN
+            )
+            tournament.add_result(this_board, forfeit_result)
+            return self._admin_event_pairings_render(web_context)
+
+        old_player_id = (
+            this_board.stored_board.white_player_id
+            if this_side == 'white'
+            else this_board.stored_board.black_player_id
+        )
+        if old_player_id is None:
+            raise ClientException('No current player on this side to replace.')
+        current_player = event.players_by_id.get(old_player_id)
+        if current_player is None or current_player.team_id is None:
+            raise ClientException('Current player has no team.')
+        team_id = current_player.team_id
+
+        new_player = event.players_by_id.get(new_player_id)
+        if new_player is None or new_player.team_id != team_id:
+            raise ClientException(
+                'New player is not in the same team as the current player.'
+            )
+
+        destination_was_absent = (
+            this_side == 'white' and this_board.result.value in (4, 5)
+        ) or (this_side == 'black' and this_board.result.value in (5, 6))
+
+        if old_player_id == new_player_id:
+            # No swap needed; only act if a forfeit on this side needs clearing
+            # (e.g. user picked the same player to un-mark them as absent).
+            if destination_was_absent:
+                tournament.delete_result(this_board)
+            return self._admin_event_pairings_render(web_context)
+
+        # Locate new player on another board in this team match.
+        other_board: Board | None = None
+        other_side: str | None = None
+        for board in team_board.boards:
+            if board.identifier == this_board.identifier:
+                continue
+            if board.stored_board.white_player_id == new_player_id:
+                other_board = board
+                other_side = 'white'
+                break
+            if board.stored_board.black_player_id == new_player_id:
+                other_board = board
+                other_side = 'black'
+                break
+        if other_board is None or other_side is None:
+            raise ClientException('New player is not currently in this team match.')
+
+        new_player_tp = tournament.tournament_players_by_id[new_player_id]
+        old_player_tp = tournament.tournament_players_by_id[old_player_id]
+        with EventDatabase(event.uniq_id, True) as database:
+            this_board.replace_player(new_player_tp, this_side)  # type: ignore[arg-type]
+            other_board.replace_player(old_player_tp, other_side)  # type: ignore[arg-type]
+            database.update_stored_board(this_board.stored_board)
+            database.update_stored_board(other_board.stored_board)
+            old_pairing = old_player_tp.pairings_by_round[round]
+            new_pairing = new_player_tp.pairings_by_round[round]
+            if destination_was_absent:
+                # The destination side was a forfeit (absent). The new player
+                # is going to play, so wipe the forfeit on both sides of
+                # this_board and reset the source board too.
+                new_pairing.stored_pairing.result = Result.NO_RESULT.value
+                new_pairing.stored_pairing.effective_points = None
+                new_pairing.stored_pairing.illegal_moves = 0
+                opposing_player_id = (
+                    this_board.stored_board.black_player_id
+                    if this_side == 'white'
+                    else this_board.stored_board.white_player_id
+                )
+                if opposing_player_id is not None:
+                    opposing_tp = tournament.tournament_players_by_id[
+                        opposing_player_id
+                    ]
+                    opposing_pairing = opposing_tp.pairings_by_round[round]
+                    opposing_pairing.stored_pairing.result = Result.NO_RESULT.value
+                    opposing_pairing.stored_pairing.effective_points = None
+                    opposing_pairing.update(database)
+                this_board.set_last_result_update(Result.NO_RESULT, database)
+            else:
+                # Y inherits this_board's existing state — result, effective
+                # points, illegal_moves all stay on the board.
+                new_pairing.stored_pairing.result = old_pairing.stored_pairing.result
+                new_pairing.stored_pairing.effective_points = (
+                    old_pairing.stored_pairing.effective_points
+                )
+                new_pairing.stored_pairing.illegal_moves = (
+                    old_pairing.stored_pairing.illegal_moves
+                )
+            new_pairing.stored_pairing.board_id = this_board.identifier
+            # X (displaced player) nominally takes Y's slot on the source
+            # board but is marked absent there — Y was the active player, so
+            # leaving them off that board means it's a forfeit on that side.
+            old_pairing.stored_pairing.result = Result.FORFEIT_LOSS.value
+            old_pairing.stored_pairing.effective_points = None
+            old_pairing.stored_pairing.illegal_moves = 0
+            old_pairing.stored_pairing.board_id = other_board.identifier
+            # Opposing side on the source board wins by forfeit.
+            other_opposing_player_id = (
+                other_board.stored_board.black_player_id
+                if other_side == 'white'
+                else other_board.stored_board.white_player_id
+            )
+            if other_opposing_player_id is not None:
+                opp_tp = tournament.tournament_players_by_id[other_opposing_player_id]
+                opp_pairing = opp_tp.pairings_by_round[round]
+                opp_pairing.stored_pairing.result = Result.FORFEIT_WIN.value
+                opp_pairing.stored_pairing.effective_points = None
+                opp_pairing.update(database)
+            old_pairing.update(database)
+            new_pairing.update(database)
+            other_board.set_last_result_update(Result.FORFEIT_LOSS, database)
+            # Update team_round_lineup to reflect new ordering (so future
+            # re-renders use the right defaults if anything reads it).
+            team = event.teams_by_id[team_id]
+            new_lineup_ids: list[int] = []
+            for board in sorted(team_board.boards, key=lambda b: b.index):
+                w_id = board.stored_board.white_player_id
+                b_id = board.stored_board.black_player_id
+                w_player = event.players_by_id.get(w_id) if w_id else None
+                b_player = event.players_by_id.get(b_id) if b_id else None
+                if w_player and w_player.team_id == team_id and w_id is not None:
+                    new_lineup_ids.append(w_id)
+                elif b_player and b_player.team_id == team_id and b_id is not None:
+                    new_lineup_ids.append(b_id)
+            team.set_round_lineup(round, new_lineup_ids, database)
+        return self._admin_event_pairings_render(web_context)
 
     @patch(
         path=(
