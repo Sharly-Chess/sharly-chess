@@ -313,6 +313,9 @@ msgstr "Licence FFE minimale requise (ne s'applique que aux joueur·euses de la 
 msgid "Modified"
 msgstr "Modifié"
 
+msgid "Molter (FFE)"
+msgstr "Molter (FFE)"
+
 msgid "N - Expired *** FFE licence"
 msgstr "N - Expirée"
 
@@ -410,6 +413,9 @@ msgstr "Certains numéros de table peuvent varier entre Sharly Chess et le site 
 
 msgid "Standard"
 msgstr "Standard"
+
+msgid "Standard FFE Molter"
+msgstr "Molter FFE standard"
 
 msgid "Statuses"
 msgstr "Statuts"

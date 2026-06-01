@@ -313,6 +313,9 @@ msgstr ""
 msgid "Modified"
 msgstr ""
 
+msgid "Molter (FFE)"
+msgstr ""
+
 msgid "N - Expired *** FFE licence"
 msgstr "N - Expired"
 
@@ -409,6 +412,9 @@ msgid "Some table numbers might differ between Sharly Chess and the FFE website.
 msgstr ""
 
 msgid "Standard"
+msgstr ""
+
+msgid "Standard FFE Molter"
 msgstr ""
 
 msgid "Statuses"
