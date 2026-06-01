@@ -1227,7 +1227,8 @@ class Tournament:
             ),
             pairing_controller_id='Sharly Chess',
             encoded_type=self.pairing_variation.trf_encoded_type,
-            tie_breaks=[tie_break.trf_acronym for tie_break in self.tie_breaks],
+            standings_tie_breaks=['PTS']
+            + [tie_break.trf_acronym for tie_break in self.tie_breaks],
             time_control=self.time_control_trf25 or '',
             players=[
                 player.to_trf(after_round, next_round_pairings_as_zpb)

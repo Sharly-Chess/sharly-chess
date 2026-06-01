@@ -1228,14 +1228,8 @@ class TournamentAdminController(BaseEventAdminController):
             message = _('An error occurred. Consult the logs for more details.')
         finally:
             importer.on_import_finished()
-
-        if not message:
-            return HTMXTemplate(
-                template_name='/common/empty.html',
-                re_swap='none',
-            )
         return HTMXTemplate(
-            template_name='/common/alert.html',
+            template_name='/common/alert.html' if message else '/common/empty.html',
             re_swap='innerHTML',
             re_target='#alert-message',
             context={

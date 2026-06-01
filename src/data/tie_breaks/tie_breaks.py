@@ -74,7 +74,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         return '/'.join(acronym_parts)
 
     @property
-    def is_fide_tie_break(self) -> bool:
+    def is_fide(self) -> bool:
         """Defines if the tie-break is an official FIDE tie-break or not."""
         return True
 
@@ -82,7 +82,7 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     def trf_acronym(self) -> str:
         """Acromnym or the tie-break in TRF26. Tie-breaks not defined in the
         FIDE handbook should be prefixed with `OTHER_`."""
-        return f'{"OTHER_" if self.is_fide_tie_break else ""}{self.acronym}'
+        return f'{"" if self.is_fide else "OTHER_"}{self.acronym}'
 
     @property
     @abstractmethod
@@ -602,7 +602,7 @@ class KashdanTieBreak(PlayerRecordTieBreak):
         return 'KA'
 
     @property
-    def is_fide_tie_break(self) -> bool:
+    def is_fide(self) -> bool:
         return False
 
     @property
@@ -938,7 +938,7 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
         return 'SOB'
 
     @property
-    def is_fide_tie_break(self) -> bool:
+    def is_fide(self) -> bool:
         return False
 
     @property
@@ -1989,7 +1989,7 @@ class ManualTieBreak(TieBreak):
         return 'MAN'
 
     @property
-    def is_fide_tie_break(self) -> bool:
+    def is_fide(self) -> bool:
         return False
 
     @property

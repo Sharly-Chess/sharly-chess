@@ -160,16 +160,26 @@ class TrfTournamentImporter(FileTournamentImporter):
                     default=default,
                 )
             )
-        if acronyms := tournament.tie_breaks:
-            __, unknown = self._read_tie_breaks(acronyms, event)
+        tie_breaks = tournament.standings_tie_breaks
+        standard_tie_breaks = ['PTS'] + tournament.tie_breaks
+        if tie_breaks and tournament.tie_breaks and tie_breaks != standard_tie_breaks:
+            features.append(_('202 and 212 tie-breaks (212 used)'))
+            tie_breaks = standard_tie_breaks
+        if not tie_breaks:
+            tie_breaks = standard_tie_breaks
+        if tie_breaks:
+            if tie_breaks[0] != 'PTS':
+                features.append(_('212 Tie-breaks with PTS not used first'))
+        if tie_breaks:
+            __, unknown = self._read_tie_breaks(tie_breaks, event)
             if unknown:
                 features.append(
-                    _('202 Unknown tie-breaks: {tie_breaks}').format(
-                        tie_breaks=', '.join(unknown)
+                    _('{code} Unknown tie-breaks: {tie_breaks}').format(
+                        code=212 if tournament.standings_tie_breaks else 202,
+                        tie_breaks=', '.join(unknown),
                     )
                 )
-        if tournament.standings_tie_breaks:
-            features.append(_('212 Tie-breaks with PTS (use 202)'))
+
         if tournament.accelerated_rounds:
             features.append(_('250 Accelerated rounds'))
         if tournament.prohibited_pairings:
@@ -201,8 +211,11 @@ class TrfTournamentImporter(FileTournamentImporter):
         unknown_acronyms: list[str] = []
         manager = TieBreakManager(event)
         for acronym in tie_break_acronyms:
+            if acronym == 'PTS':
+                continue
+            is_fide = not acronym.startswith('OTHER_')
             tie_break = manager.tie_break_from_trf_acronym(acronym)
-            if tie_break:
+            if tie_break and is_fide == tie_break.is_fide:
                 tie_breaks.append(tie_break)
             else:
                 unknown_acronyms.append(acronym)
@@ -367,7 +380,10 @@ class TrfTournamentImporter(FileTournamentImporter):
         stored_tournament.pairing = TrfEncodedType.get_pairing_variation(
             trf_tournament.encoded_type
         ).id
-        tie_breaks = cls._read_tie_breaks(trf_tournament.tie_breaks, event)[0]
+        trf_tie_breaks = (
+            trf_tournament.standings_tie_breaks or ['PTS'] + trf_tournament.tie_breaks
+        )
+        tie_breaks = cls._read_tie_breaks(trf_tie_breaks, event)[0]
         stored_tournament.stored_tie_breaks = [
             tie_break.to_stored_value() for tie_break in tie_breaks
         ]
