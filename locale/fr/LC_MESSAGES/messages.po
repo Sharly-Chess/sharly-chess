@@ -413,11 +413,11 @@ msgstr "1er jour du mois"
 msgid "2/3 of %(n)s opponents"
 msgstr "2/3 de %(n)s adversaires"
 
-msgid "202 Unknown tie-breaks: {tie_breaks}"
-msgstr "202 Départages inconnus : {tie_breaks}"
+msgid "202 and 212 tie-breaks (212 used)"
+msgstr "202 et 212 Départages (212 utilisé)"
 
-msgid "212 Tie-breaks with PTS (use 202)"
-msgstr "212 Départages avec PTS (utiliser 202)"
+msgid "212 Tie-breaks with PTS not used first"
+msgstr "212 Départages avec PTS pas en première position"
 
 msgid "250 Accelerated rounds"
 msgstr "250 Rondes accélérées"
@@ -5819,8 +5819,6 @@ msgstr "Les équipes avec moins de joueur·euses sont considérées « incompl�
 msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
 msgstr "Les équipes avec moins de femmes/hommes sont considérées « incomplètes »."
 
-
-
 msgid "Template:"
 msgstr "Modèle :"
 
@@ -7462,6 +7460,9 @@ msgstr "{age_limit}+"
 
 msgid "{board_number} {color}"
 msgstr "{board_number} {color}"
+
+msgid "{code} Unknown tie-breaks: {tie_breaks}"
+msgstr "{code} Départages inconnus : {tie_breaks}"
 
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"

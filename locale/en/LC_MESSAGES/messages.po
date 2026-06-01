@@ -413,10 +413,10 @@ msgstr ""
 msgid "2/3 of %(n)s opponents"
 msgstr ""
 
-msgid "202 Unknown tie-breaks: {tie_breaks}"
+msgid "202 and 212 tie-breaks (212 used)"
 msgstr ""
 
-msgid "212 Tie-breaks with PTS (use 202)"
+msgid "212 Tie-breaks with PTS not used first"
 msgstr ""
 
 msgid "250 Accelerated rounds"
@@ -7457,6 +7457,9 @@ msgid "{age_limit}+ *** SENIOR AGE CATEGORY"
 msgstr "{age_limit}+"
 
 msgid "{board_number} {color}"
+msgstr ""
+
+msgid "{code} Unknown tie-breaks: {tie_breaks}"
 msgstr ""
 
 msgid "{count} club represented"
