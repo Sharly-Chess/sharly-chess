@@ -1924,6 +1924,9 @@ msgstr "Supprimer l'écran rotatif."
 msgid "Delete the screen family."
 msgstr "Supprimer la famille d'écrans."
 
+msgid "Delete the screen."
+msgstr "Supprimer l'écran."
+
 msgid "Delete the timer."
 msgstr "Supprimer le chronomètre."
 
@@ -2144,6 +2147,9 @@ msgstr "Dupliquer l'écran rotatif."
 
 msgid "Duplicate the screen family."
 msgstr "Dupliquer la famille d'écrans."
+
+msgid "Duplicate the screen."
+msgstr "Dupliquer l'écran."
 
 msgid "Duplicate the timer."
 msgstr "Dupliquer le chronomètre."
