@@ -1,10 +1,9 @@
-{% set has_real_pts = admin_tournament.print_real_points(admin_round) %}
 {% set has_illegal = admin_tournament.record_illegal_moves %}
-{# Row column layout: Bd | Pts | (real_pts)? | (illegal)? | Player | Result | (illegal)? | Player | (real_pts)? | Pts
-   team_a span covers from Pts through team_a Player.
-   team_b span covers from team_b Player through Pts. #}
-{% set team_a_colspan = 2 + (1 if has_real_pts else 0) + (1 if has_illegal else 0) %}
-{% set team_b_colspan = 2 + (1 if has_real_pts else 0) + (1 if has_illegal else 0) %}
+{# Row column layout (team mode): Bd | (illegal)? | Player | Result | (illegal)? | Player
+   team_a span covers Player.
+   team_b span covers Player. #}
+{% set team_a_colspan = 1 + (1 if has_illegal else 0) %}
+{% set team_b_colspan = 1 + (1 if has_illegal else 0) %}
 <tbody
     id="team-block-header-{{ team_board.id }}"
     class="team-block-header-tbody"
@@ -18,12 +17,31 @@
         aria-expanded="true"
         style="cursor: pointer;"
     >
-        <td class="bg-secondary-subtle text-center">
-            <i class="bi bi-chevron-down team-block-chevron"></i>
+        <td class="bg-secondary-subtle text-center text-nowrap">
+            <i class="bi bi-chevron-down team-block-chevron me-1"></i>
+            <strong>{{ team_board.index + 1 }}</strong>
         </td>
         <td colspan="{{ team_a_colspan }}" class="bg-secondary-subtle">
             <div class="d-flex align-items-center">
-                <strong class="flex-grow-1">{{ team_board.team_a.name }}</strong>
+                <strong class="flex-grow-1">
+                    {% set _a_score = admin_tournament.team_primary_score_before_round(
+                        team_board.team_a.id, team_board.round
+                    ) %}
+                    <span class="text-muted me-1">{{ '%g'|format(_a_score) }}</span>
+                    <a
+                        class="player-link"
+                        hx-get="{{ url_for(
+                            'admin-team-record-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            team_id=team_board.team_a.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        onclick="event.stopPropagation()"
+                    >{{ team_board.team_a.name }}</a>
+                </strong>
                 {% if team_board.team_b and client.can_use_pairing_engine(admin_tournament.id) %}
                     <button
                         type="button"
@@ -38,12 +56,30 @@
                 {% endif %}
             </div>
         </td>
-        <td class="bg-secondary-subtle text-center fw-bold">
-            {% if team_board.team_b %}
-                {{ team_board.match_score_display }}
-            {% else %}
-                {{ _('EXEMPT') }}
-            {% endif %}
+        <td class="bg-secondary-subtle text-center align-middle">
+            <button
+                type="button"
+                class="btn btn-outline-secondary fw-bold px-3 text-nowrap"
+                hx-get="{{ url_for(
+                    'admin-event-team-pairing-modal',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=team_board.round,
+                    team_board_id=team_board.id,
+                ) }}"
+                hx-target="body"
+                hx-indicator="#please-wait"
+                data-bs-toggle="modal"
+                data-bs-target="#modal-wrapper"
+                onclick="event.stopPropagation()"
+            >
+                {% if team_board.team_b %}
+                    {% set _a_gp, _b_gp = team_board.game_points %}
+                    {{ '%g'|format(_a_gp) }} – {{ '%g'|format(_b_gp) }}
+                {% else %}
+                    {{ _('EXEMPT') }}
+                {% endif %}
+            </button>
         </td>
         <td colspan="{{ team_b_colspan }}" class="bg-secondary-subtle">
             <div class="d-flex align-items-center">
@@ -61,7 +97,23 @@
                 {% endif %}
                 <strong class="text-end flex-grow-1">
                     {% if team_board.team_b %}
-                        {{ team_board.team_b.name }}
+                        <a
+                            class="player-link"
+                            hx-get="{{ url_for(
+                                'admin-team-record-modal',
+                                event_uniq_id=admin_event.uniq_id,
+                                team_id=team_board.team_b.id,
+                            ) }}"
+                            hx-target="body"
+                            hx-indicator="#please-wait"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modal-wrapper"
+                            onclick="event.stopPropagation()"
+                        >{{ team_board.team_b.name }}</a>
+                        {% set _b_score = admin_tournament.team_primary_score_before_round(
+                            team_board.team_b.id, team_board.round
+                        ) %}
+                        <span class="text-muted ms-1">{{ '%g'|format(_b_score) }}</span>
                     {% endif %}
                 </strong>
             </div>

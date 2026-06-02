@@ -331,47 +331,49 @@
                 <hr class="my-3" />
 
                 <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center mt-3">
-                    {% set action = 'MANUAL_UNPAIRING' %}
-                    {% set action_route = url_for(
-                        'admin-pairings-unpair-board',
-                        event_uniq_id=admin_event.uniq_id,
-                        tournament_id=admin_tournament.id,
-                        round=admin_round,
-                        board_id=board.identifier
-                    ) %}
-                    <button
-                        class="admin-result-button danger col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
-                        {% if
-                            action not in existing_actions
-                            or
-                            (not board.no_result and not board.exempt)
-                            or
-                            not client.can_unpair_boards(admin_tournament.id)
-                        %}
-                            disabled
-                        {% else %}
-                            {% if action in allowed_actions %}
-                                hx-delete="{{ action_route }}"
+                    {% if not admin_tournament.event.is_team_event %}
+                        {% set action = 'MANUAL_UNPAIRING' %}
+                        {% set action_route = url_for(
+                            'admin-pairings-unpair-board',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            board_id=board.identifier
+                        ) %}
+                        <button
+                            class="admin-result-button danger col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
+                            {% if
+                                action not in existing_actions
+                                or
+                                (not board.no_result and not board.exempt)
+                                or
+                                not client.can_unpair_boards(admin_tournament.id)
+                            %}
+                                disabled
                             {% else %}
-                                hx-get="{{ url_for(
-                                    'admin-pairings-safety-mode-modal',
-                                    event_uniq_id=admin_event.uniq_id,
-                                    tournament_id=admin_tournament.id,
-                                    round=admin_round,
-                                    action=action,
-                                    redirect_method='DELETE',
-                                    redirect_route=action_route,
-                                ) }}"
+                                {% if action in allowed_actions %}
+                                    hx-delete="{{ action_route }}"
+                                {% else %}
+                                    hx-get="{{ url_for(
+                                        'admin-pairings-safety-mode-modal',
+                                        event_uniq_id=admin_event.uniq_id,
+                                        tournament_id=admin_tournament.id,
+                                        round=admin_round,
+                                        action=action,
+                                        redirect_method='DELETE',
+                                        redirect_route=action_route,
+                                    ) }}"
+                                {% endif %}
+                                hx-trigger="click"
+                                hx-target="body"
+                                hx-indicator="#please-wait"
                             {% endif %}
-                            hx-trigger="click"
-                            hx-target="body"
-                            hx-indicator="#please-wait"
-                        {% endif %}
-                    >
-                        <div class="d-flex align-items-center justify-content-center gap-2">
-                            {{ _('UNPAIR') }}
-                        </div>
-                    </button>
+                        >
+                            <div class="d-flex align-items-center justify-content-center gap-2">
+                                {{ _('UNPAIR') }}
+                            </div>
+                        </button>
+                    {% endif %}
                     {% set action = 'RESULT_UPDATE' %}
                     {% set action_route = url_for(
                         'admin-pairings-set-result',
@@ -381,6 +383,17 @@
                         board_id=board.identifier,
                         result=0,
                     ) %}
+                    {# Forfeit results on a team board come from the
+                       lineup "Absent (forfeit)" dropdown, which marks
+                       a slot as a hole. Clearing the result here would
+                       silently revert the slot to "player present"
+                       even though the user never edited the lineup —
+                       force the toggle to go through the lineup
+                       dropdown instead. #}
+                    {% set is_team_forfeit_lock = (
+                        board.stored_board.team_board_id is not none
+                        and board.result.value in [4, 5, 6]
+                    ) %}
                     <button
                         class="admin-result-button danger col-3 ms-auto me-auto btn fs-6 fw-bold p-3"
                         {% if
@@ -388,9 +401,24 @@
                             or
                             board.exempt
                             or
+                            is_team_forfeit_lock
+                            or
                             not client.can_update_results(admin_tournament.id)
                         %}
                             disabled
+                            {% if is_team_forfeit_lock %}
+                                {{ macros.tooltip_attributes(
+                                    'info',
+                                    _(
+                                        'This board is recorded as an '
+                                        'absence (forfeit) from the '
+                                        'lineup. Use the lineup '
+                                        'dropdown to put a player back '
+                                        'on this slot.'
+                                    ),
+                                    'top'
+                                ) }}
+                            {% endif %}
                         {% else %}
                             {% if action in allowed_actions %}
                                 hx-put="{{ action_route }}"

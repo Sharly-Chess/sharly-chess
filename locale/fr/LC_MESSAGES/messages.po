@@ -1190,6 +1190,9 @@ msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
 msgstr[0] "Les byes ne peuvent être attribués lors de la dernière ronde du tournoi."
 msgstr[1] "Les byes ne peuvent être attribués lors des {rounds} dernières rondes du tournoi."
 
+msgid "Byes for past rounds can be edited from the pairings page for that round."
+msgstr "Les byes des rondes précédentes peuvent être modifiés depuis la page d’appariements de la ronde concernée."
+
 msgid "Byes will not be impacted."
 msgstr "Les forfaits et les byes ne seront pas impactés."
 
@@ -2850,6 +2853,9 @@ msgstr "Bye point entier"
 msgid "Full-Point Bye (deprecated)"
 msgstr "Bye point entier (obsolète)"
 
+msgid "Full-Point Bye attributed to team [{team}]."
+msgstr "Bye à point entier attribué à l’équipe [{team}]"
+
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GMI"
 
@@ -2978,6 +2984,9 @@ msgstr "Bye"
 
 msgid "Half-Point Bye attributed to player [{player}]."
 msgstr "Un bye a été attribué au·à la joueur·euse [{player}]."
+
+msgid "Half-Point Bye attributed to team [{team}]."
+msgstr "Bye à demi-point attribué à l’équipe [{team}]"
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
 msgstr "Avoir un nombre de joueur·euses et de prix proches présente un risque qu'un prix ne soit pas attribué."
@@ -6015,6 +6024,9 @@ msgstr "L'équipe [{team}] a été supprimée."
 msgid "Team [{team}] has been updated."
 msgstr "L'équipe [{team}] a été mise à jour."
 
+msgid "Team [{team}] has returned for this round."
+msgstr "L’équipe [{team}] est de retour pour cette ronde."
+
 msgid "Team competition"
 msgstr "Compétition par équipes"
 
@@ -6430,6 +6442,9 @@ msgstr "Ce compte est actif, les utilisateur·ices anonymes peuvent s'y connecte
 
 msgid "This account is not active, anonymous users can not log in to it."
 msgstr "Ce compte est inactif, les utilisateur·ices anonymes ne peuvent s'y connecter."
+
+msgid "This board is recorded as an absence (forfeit) from the lineup. Use the lineup dropdown to put a player back on this slot."
+msgstr "Cet échiquier est marqué comme absent (forfait) dans la composition. Utilisez la liste déroulante de composition pour remettre un joueur à cette place."
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
 msgstr "Cette source de données n'est pas disponible (pour plus de détails : Menu > Sources de données)."
@@ -7489,8 +7504,8 @@ msgstr "Forfait"
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr "Le·la joueur·euse [{player}] a été marqué·e forfait."
 
-msgid "Zero-point bye / forfeit loss. Defaults to the Loss value."
-msgstr "BYE sans points / forfait perdu. Par défaut, valeur de la défaite."
+msgid "Zero-Point Bye attributed to team [{team}]."
+msgstr "L'équipe [{team}] a été marquée forfait."
 
 msgid "Zimbabwe"
 msgstr "Zimbabwe"
@@ -7852,4 +7867,6 @@ msgstr "← Retour au certificat IT1"
 #~ msgid "Value of the pairing allocated bye:"
 #~ msgstr "Points attribués en cas d’exemption :"
 
+#~ msgid "Zero-point bye / forfeit loss."
+#~ msgstr "Forfeit"
 

@@ -808,11 +808,28 @@ button.collapse-button[aria-expanded="true"] .bi-chevron-down {
 }
 
 .team-block-chevron {
-    transition: transform 0.3s ease;
+    display: inline-block;
 }
-[aria-expanded="false"] .team-block-chevron {
+.team-block-chevron.team-block-chevron-collapsed {
     transform: rotate(-90deg);
 }
+.team-block-body-collapsed {
+    display: none !important;
+}
+
+.lineup-chosen,
+.lineup-ghost {
+    opacity: 0.3;
+}
+/* The floating clone follows the cursor — keep it at full opacity. */
+.lineup-drag {
+    opacity: 1 !important;
+}
+.lineup-slot.lineup-slot-hot {
+    border-color: var(--bs-primary) !important;
+    background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.15);
+}
+
 .color-chip {
     display: inline-block;
     width: 0.85rem;

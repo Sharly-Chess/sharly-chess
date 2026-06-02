@@ -1251,18 +1251,29 @@ class EventDatabase(MigrationDatabase):
     def load_tournament_stored_boards_by_round(
         self, tournament_id: int
     ) -> dict[int, list[StoredBoard]]:
+        # A double-hole team-match board has no pairings — its round
+        # is recovered from its parent ``team_board`` instead.
         self.execute(
             (
-                'SELECT `board`.*, `pairing`.`round` '
-                'FROM `board` INNER JOIN `pairing` '
-                'ON `board`.`id` = `pairing`.`board_id` '
+                'SELECT DISTINCT `board`.*, '
+                'COALESCE(`pairing`.`round`, `team_board`.`round`) AS `round` '
+                'FROM `board` '
+                'LEFT JOIN `pairing` ON `board`.`id` = `pairing`.`board_id` '
+                'AND `pairing`.`tournament_id` = ? '
+                'LEFT JOIN `team_board` ON `board`.`team_board_id` = `team_board`.`id` '
+                'AND `team_board`.`tournament_id` = ? '
                 'WHERE `pairing`.`tournament_id` = ? '
-                'ORDER BY `pairing`.`round`, `board`.`index`'
+                'OR `team_board`.`tournament_id` = ? '
+                'ORDER BY `round`, `board`.`index`'
             ),
-            (tournament_id,),
+            (tournament_id, tournament_id, tournament_id, tournament_id),
         )
         stored_boards_by_round: dict[int, list[StoredBoard]] = {}
+        seen_ids: set[int] = set()
         for row in self.fetchall():
+            if row['id'] in seen_ids:
+                continue
+            seen_ids.add(row['id'])
             board = self._row_to_stored_board(row)
             round_ = row['round']
             if round_ in stored_boards_by_round:
@@ -1465,6 +1476,7 @@ class EventDatabase(MigrationDatabase):
             last_result_update=cls.load_optional_timestamp_from_database_field(
                 row['last_result_update']
             ),
+            bye_type=row['bye_type'],
         )
 
     def load_tournament_stored_team_boards_by_round(
@@ -1484,7 +1496,7 @@ class EventDatabase(MigrationDatabase):
     def add_stored_team_board(self, stored_team_board: StoredTeamBoard) -> int:
         fields = self._get_fields_dict(
             stored_team_board,
-            ['tournament_id', 'team_a_id', 'team_b_id', 'index'],
+            ['tournament_id', 'team_a_id', 'team_b_id', 'index', 'bye_type'],
         ) | {'round': stored_team_board.round_}
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -1499,7 +1511,7 @@ class EventDatabase(MigrationDatabase):
     def update_stored_team_board(self, stored_team_board: StoredTeamBoard):
         fields = self._get_fields_dict(
             stored_team_board,
-            ['tournament_id', 'team_a_id', 'team_b_id', 'index'],
+            ['tournament_id', 'team_a_id', 'team_b_id', 'index', 'bye_type'],
         ) | {'round': stored_team_board.round_}
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_team_board.id is not None
@@ -1510,6 +1522,18 @@ class EventDatabase(MigrationDatabase):
 
     def delete_stored_team_board(self, team_board_id: int):
         self.execute('DELETE FROM `team_board` WHERE `id` = ?', (team_board_id,))
+
+    def find_stored_team_bye(self, team_id: int, round_: int) -> StoredTeamBoard | None:
+        """Return the bye ``team_board`` row (``team_b_id`` ``None``)
+        for the given team and round, or ``None`` if the team isn't
+        currently flagged for a bye that round."""
+        self.execute(
+            'SELECT * FROM `team_board` WHERE `team_a_id` = ? AND '
+            '`round` = ? AND `team_b_id` IS NULL',
+            (team_id, round_),
+        )
+        row = self.fetchone()
+        return self._row_to_stored_team_board(row) if row else None
 
     def delete_stored_team_boards_for_round(self, tournament_id: int, round_: int):
         self.execute(

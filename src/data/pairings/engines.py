@@ -537,26 +537,122 @@ class _TeamPairingBase(PairingEngine, ABC):
         tournament: 'Tournament',
         round_: int,
         team_pairs: list[tuple[int, int | None]],
+        partial_pairings: bool = False,
     ):
         stored_boards: list[StoredBoard] = []
         with EventDatabase(tournament.event.uniq_id, True) as database:
-            # Clear any orphan team_boards from a prior pairing of this round.
+            existing = tournament.stored_tournament.stored_team_boards_by_round.get(
+                round_, []
+            )
+            if partial_pairings:
+                # Complementary pairing: keep every existing envelope
+                # (manual byes, real matches, PAB) and append only the
+                # new pairs bbpPairings returned for previously
+                # unpaired teams.
+                kept: list[StoredTeamBoard] = list(existing)
+                for offset, (team_a_id, team_b_id) in enumerate(team_pairs):
+                    stb = StoredTeamBoard(
+                        id=None,
+                        tournament_id=tournament.id,
+                        round_=round_,
+                        team_a_id=team_a_id,
+                        team_b_id=team_b_id,
+                        index=len(kept) + offset,
+                    )
+                    stb.id = database.add_stored_team_board(stb)
+                    kept.append(stb)
+                    stored_boards.extend(
+                        self._team_match_stored_boards(tournament, stb)
+                    )
+                tournament.stored_tournament.stored_team_boards_by_round[round_] = kept
+        if partial_pairings:
+            tournament.clear_team_cache()
+            tournament.create_boards(stored_boards, round_, self.pab_result)
+            return
+        with EventDatabase(tournament.event.uniq_id, True) as database:
+            existing = tournament.stored_tournament.stored_team_boards_by_round.get(
+                round_, []
+            )
+            # Preserve manually-marked bye envelopes (HPB / FPB / ZPB)
+            # across re-pairing; bbpPairings already excluded those
+            # teams via 240 records, so its output won't reference them.
+            manual_byes = [
+                stb
+                for stb in existing
+                if stb.team_b_id is None and stb.bye_type in ('HPB', 'FPB', 'ZPB')
+            ]
+            # Drop everything else, then re-add manual byes + new pairs.
             database.delete_stored_team_boards_for_round(tournament.id, round_)
             tournament.stored_tournament.stored_team_boards_by_round.pop(round_, None)
-            for index, (team_a_id, team_b_id) in enumerate(team_pairs):
+            kept = []
+            for index, bye_stb in enumerate(manual_byes):
+                new_stb = StoredTeamBoard(
+                    id=None,
+                    tournament_id=tournament.id,
+                    round_=round_,
+                    team_a_id=bye_stb.team_a_id,
+                    team_b_id=None,
+                    index=index,
+                    bye_type=bye_stb.bye_type,
+                )
+                new_stb.id = database.add_stored_team_board(new_stb)
+                kept.append(new_stb)
+            # Display order mirrors individual mode (board.py:__lt__):
+            # strongest match first, PAB envelopes last. "Strength" of
+            # a match is its stronger team's (MP, GP) tuple followed
+            # by its weaker team's; for a PAB envelope (no team_b) we
+            # demote the whole tuple to sort last. All else equal, the
+            # user-curated TPN (set by drag-drop in the teams tab) is
+            # the tie-breaker — lower TPN ranks higher.
+            standings_by_team_id = {
+                row['team'].id: (row['mp'], row['gp'])
+                for row in tournament.team_standings()
+            }
+
+            def _tpn_or_inf(team_id: int) -> float:
+                team = tournament.event.teams_by_id.get(team_id)
+                pn = team.pairing_number if team is not None else None
+                return float(pn) if pn is not None else float('inf')
+
+            def _pair_sort_key(
+                pair: tuple[int, int | None],
+            ) -> tuple[int, tuple[float, float], tuple[float, float], float, float]:
+                a_id, b_id = pair
+                if b_id is None:
+                    return (
+                        0,
+                        (0.0, 0.0),
+                        (0.0, 0.0),
+                        -_tpn_or_inf(a_id),
+                        -float('inf'),
+                    )
+                a = standings_by_team_id.get(a_id, (0.0, 0.0))
+                b = standings_by_team_id.get(b_id, (0.0, 0.0))
+                if a >= b:
+                    stronger, weaker = a, b
+                    stronger_tpn, weaker_tpn = _tpn_or_inf(a_id), _tpn_or_inf(b_id)
+                else:
+                    stronger, weaker = b, a
+                    stronger_tpn, weaker_tpn = _tpn_or_inf(b_id), _tpn_or_inf(a_id)
+                # Negate TPNs so that ``reverse=True`` (which makes
+                # larger keys come first) puts the lower TPN first.
+                return (1, stronger, weaker, -stronger_tpn, -weaker_tpn)
+
+            sorted_pairs = sorted(team_pairs, key=_pair_sort_key, reverse=True)
+
+            for offset, (team_a_id, team_b_id) in enumerate(sorted_pairs):
                 stb = StoredTeamBoard(
                     id=None,
                     tournament_id=tournament.id,
                     round_=round_,
                     team_a_id=team_a_id,
                     team_b_id=team_b_id,
-                    index=index,
+                    index=len(kept) + offset,
                 )
                 stb.id = database.add_stored_team_board(stb)
-                tournament.stored_tournament.stored_team_boards_by_round.setdefault(
-                    round_, []
-                ).append(stb)
+                kept.append(stb)
                 stored_boards.extend(self._team_match_stored_boards(tournament, stb))
+            tournament.stored_tournament.stored_team_boards_by_round[round_] = kept
         tournament.clear_team_cache()
         tournament.create_boards(stored_boards, round_, self.pab_result)
 
@@ -577,15 +673,13 @@ class _TeamPairingBase(PairingEngine, ABC):
             else None
         )
         n = tournament.team_player_count or 0
-        lineup_a = team_a.effective_round_lineup(stb.round_)[:n]
-        lineup_b = team_b.effective_round_lineup(stb.round_)[:n] if team_b else []
+        slots_a = team_a.effective_round_slots(stb.round_)
+        slots_b = team_b.effective_round_slots(stb.round_) if team_b else [None] * n
         pattern = tournament.color_pattern or ''
         boards: list[StoredBoard] = []
         for board_index in range(n):
-            if board_index >= len(lineup_a):
-                continue
-            player_a = lineup_a[board_index]
-            player_b = lineup_b[board_index] if board_index < len(lineup_b) else None
+            player_a = slots_a[board_index] if board_index < len(slots_a) else None
+            player_b = slots_b[board_index] if board_index < len(slots_b) else None
             if board_index < len(pattern):
                 team_a_color_char = pattern[board_index]
             else:
@@ -596,12 +690,11 @@ class _TeamPairingBase(PairingEngine, ABC):
                 )
             team_a_is_white = team_a_color_char == BoardColor.WHITE.value
             if team_a_is_white:
-                white_id, black_id = player_a.id, (player_b.id if player_b else None)
+                white_id = player_a.id if player_a else None
+                black_id = player_b.id if player_b else None
             else:
-                white_id, black_id = (
-                    (player_b.id if player_b else player_a.id),
-                    (player_a.id if player_b else None),
-                )
+                white_id = player_b.id if player_b else None
+                black_id = player_a.id if player_a else None
             boards.append(
                 StoredBoard(
                     id=None,
@@ -676,13 +769,17 @@ class TeamSwissEngine(_TeamPairingBase):
             )
         teams = self._teams_for_tournament(tournament)
         try:
-            team_pairs = self._run_team_bbp(tournament, round_, teams)
+            team_pairs = self._run_team_bbp(
+                tournament, round_, teams, partial_pairings=partial_pairings
+            )
         except Exception as e:
             logger.exception(e)
             return _('An error occurred. Consult the logs for more details.')
-        if not team_pairs:
+        if not team_pairs and not partial_pairings:
             return _('Pairing is not possible.')
-        self._persist_team_round(tournament, round_, team_pairs)
+        self._persist_team_round(
+            tournament, round_, team_pairs, partial_pairings=partial_pairings
+        )
         return ''
 
     @staticmethod
@@ -717,11 +814,15 @@ class TeamSwissEngine(_TeamPairingBase):
         tournament: 'Tournament',
         round_: int,
         teams: list['Team'],
+        partial_pairings: bool = False,
     ) -> list[tuple[int, int | None]]:
         from data.input_output.trf.trf_serializer import TrfSerializer
 
         trf_id_by_team_id = self._build_trf_id_map(teams)
-        trf_tournament = tournament.to_trf(after_round=round_ - 1)
+        trf_tournament = tournament.to_trf(
+            after_round=round_ - 1,
+            next_round_pairings_as_zpb=partial_pairings,
+        )
         with tempfile.TemporaryDirectory() as tmpdir:
             pairings_dir = Path(tmpdir)
             trf_path = pairings_dir / 'team-pairings-input.trfx'

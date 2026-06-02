@@ -506,7 +506,8 @@ class TeamPABsEntry(SingleLineEntry):
             f'{float_display(team_pabs.match_points, 4)} '
             f'{float_display(team_pabs.game_points, 4)}'
         )
-        for round_ in range(1, max(team_pabs.team_id_by_round) + 1):
+        last_round = max(team_pabs.team_id_by_round, default=0)
+        for round_ in range(1, last_round + 1):
             team_id = team_pabs.team_id_by_round.get(round_, None)
             line += f' {team_id or "":>3}'
         return line

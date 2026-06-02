@@ -51,10 +51,16 @@
     {% include 'players/players_import_diff_modal.html' %}
 {% elif modal == 'unpaired-player' %}
     {% include 'pairings/unpaired_player_modal.html' %}
+{% elif modal == 'unpaired-team' %}
+    {% include 'pairings/unpaired_team_modal.html' %}
+{% elif modal == 'team-record' %}
+    {% include 'players/team_record_modal.html' %}
 {% elif modal == 'safety-mode' %}
     {% include 'pairings/safety_mode_modal.html' %}
 {% elif modal == 'pairing' %}
     {% include 'pairings/pairing_modal.html' %}
+{% elif modal == 'team-pairing' %}
+    {% include 'pairings/team_pairing_modal.html' %}
 {% elif modal == 'unfinished-round' %}
     {% include 'pairings/unfinished_round_modal.html' %}
 {% elif modal == 'pairing-ratings-warning' %}

@@ -172,7 +172,10 @@
         round=admin_round,
     ) %}
     {% if action in existing_actions %}
-        {% if not admin_tournament.round_has_result(admin_round) %}
+        {# Auto-forfeit results from marking a player absent shouldn't
+           block round-unpair; only actual played results (or
+           user-entered forfeit wins on present players) should. #}
+        {% if not admin_tournament.round_has_played_result(admin_round) %}
             <div
                 {% if not client.can_unpair_round(admin_tournament.id) %}
                     {{ macros.tooltip_attributes('warning', _('You are not allowed to unpair rounds.'), 'top') }}

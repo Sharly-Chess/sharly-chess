@@ -2,6 +2,8 @@ import weakref
 from functools import cached_property
 from typing import TYPE_CHECKING
 
+from collections.abc import Sequence
+
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredTeam,
@@ -106,14 +108,40 @@ class Team:
         return round_ in self.stored_team.stored_round_lineups
 
     def effective_round_lineup(self, round_: int) -> list['Player']:
-        """Lineup applied for *round_*. Returns the stored override if any,
-        otherwise the first *team_player_count* roster players."""
+        """Lineup applied for *round_* as a compact (no-hole) list of
+        players. Returns the stored override if any, otherwise the
+        first *team_player_count* roster players. Holes are skipped —
+        use :meth:`effective_round_slots` to see them."""
         if self.has_explicit_round_lineup(round_):
             return self.get_round_lineup(round_)
         tournament = self.tournament
         if tournament is None or tournament.team_player_count is None:
             return []
         return self.players[: tournament.team_player_count]
+
+    def effective_round_slots(self, round_: int) -> list['Player | None']:
+        """Lineup applied for *round_* as a list of length
+        ``team_player_count``, with ``None`` at each board index where
+        the team has a hole (no player on that slot for this round).
+        Slot K is filled by the stored lineup entry whose ``index``
+        equals K. When no explicit lineup is stored, the first
+        ``team_player_count`` roster players fill slots 0…N-1
+        contiguously."""
+        tournament = self.tournament
+        if tournament is None or tournament.team_player_count is None:
+            return []
+        n = tournament.team_player_count
+        slots: list['Player | None'] = [None] * n
+        if self.has_explicit_round_lineup(round_):
+            players_by_id = self.event.players_by_id
+            for entry in self.stored_team.stored_round_lineups[round_]:
+                if 0 <= entry.index < n and entry.player_id in players_by_id:
+                    slots[entry.index] = players_by_id[entry.player_id]
+            return slots
+        roster = self.players[:n]
+        for i, player in enumerate(roster):
+            slots[i] = player
+        return slots
 
     # -------------------------------------------------------------------------
     # Mutations
@@ -142,11 +170,13 @@ class Team:
     def set_round_lineup(
         self,
         round_: int,
-        player_ids: list[int],
+        player_ids: Sequence[int | None],
         database: EventDatabase,
     ):
-        """Replace the team's lineup for the given round.
-        Order in *player_ids* determines the board index (0-based)."""
+        """Replace the team's lineup for the given round. Position in
+        *player_ids* determines the board index (0-based). ``None``
+        at index i = hole on board i (no row stored for that index,
+        producing a gap in the lineup's index sequence)."""
         entries = [
             StoredTeamRoundLineupEntry(
                 team_id=self.id,
@@ -155,6 +185,7 @@ class Team:
                 index=index,
             )
             for index, player_id in enumerate(player_ids)
+            if player_id is not None
         ]
         database.replace_team_round_lineup(self.id, round_, entries)
         self.stored_team.stored_round_lineups[round_] = entries
@@ -162,6 +193,80 @@ class Team:
     def delete_round_lineup(self, round_: int, database: EventDatabase):
         database.delete_team_round_lineup(self.id, round_)
         self.stored_team.stored_round_lineups.pop(round_, None)
+
+    def round_bye_type(self, round_: int) -> str | None:
+        """Bye-type marker (``PAB`` / ``HPB`` / ``FPB`` / ``ZPB``) for this
+        team in *round_*, or ``None`` if the team has no bye envelope
+        that round."""
+        tournament = self.tournament
+        if tournament is None:
+            return None
+        for tb in tournament.get_round_team_boards(round_):
+            stb = tb.stored_team_board
+            if stb.team_a_id == self.id and stb.team_b_id is None:
+                return stb.bye_type
+        return None
+
+    def set_round_bye(
+        self,
+        round_: int,
+        bye_type: str | None,
+        database: EventDatabase,
+    ) -> None:
+        """Pre-mark the team's round as a bye (PAB / HPB / FPB / ZPB).
+        Persisted as a ``team_board`` envelope with ``team_b_id``
+        ``None`` and the chosen ``bye_type`` — the pairing engine
+        respects existing bye envelopes and won't pair the team into
+        the round.
+
+        Passing ``None`` removes any existing bye envelope for the
+        round. Caller is responsible for ensuring the team isn't
+        currently in a paired team_board (the unpaired-side UI is the
+        only place this is reachable from)."""
+        assert self.tournament_id is not None, (
+            'Cannot set a round bye on a team with no tournament.'
+        )
+        tournament = self.tournament
+        assert tournament is not None
+        round_list = (
+            tournament.stored_tournament.stored_team_boards_by_round.setdefault(
+                round_, []
+            )
+        )
+        existing = next(
+            (
+                stb
+                for stb in round_list
+                if stb.team_a_id == self.id and stb.team_b_id is None
+            ),
+            None,
+        )
+        if bye_type is None:
+            if existing is not None and existing.id is not None:
+                database.delete_stored_team_board(existing.id)
+                round_list.remove(existing)
+                tournament.clear_team_cache()
+            return
+        if existing is not None:
+            existing.bye_type = bye_type
+            database.update_stored_team_board(existing)
+            tournament.clear_team_cache()
+            return
+        from database.sqlite.event.event_store import StoredTeamBoard
+
+        next_index = max((stb.index for stb in round_list), default=-1) + 1
+        stb = StoredTeamBoard(
+            id=None,
+            tournament_id=self.tournament_id,
+            round_=round_,
+            team_a_id=self.id,
+            team_b_id=None,
+            index=next_index,
+            bye_type=bye_type,
+        )
+        stb.id = database.add_stored_team_board(stb)
+        round_list.append(stb)
+        tournament.clear_team_cache()
 
     # -------------------------------------------------------------------------
     # Roster

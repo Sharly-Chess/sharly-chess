@@ -74,6 +74,9 @@ class Migration(BaseMigration):
             '   `team_b_id` INTEGER,'
             '   `index` INTEGER NOT NULL,'
             '   `last_result_update` TEXT,'
+            # Bye type when ``team_b_id`` is NULL (PAB / HPB / FPB / ZPB).
+            # NULL for regular pairings.
+            '   `bye_type` TEXT,'
             '   PRIMARY KEY(`id` AUTOINCREMENT),'
             '   FOREIGN KEY (`tournament_id`) REFERENCES '
             '   `tournament`(`id`) ON DELETE CASCADE,'

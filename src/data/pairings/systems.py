@@ -298,6 +298,10 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
     def permission_handler(self) -> PermissionHandler[PairingAction]:
         return SwissPairingSystem().permission_handler
 
+    @property
+    def allow_bye_definition(self) -> bool:
+        return False
+
     def default_current_round(self, tournament: 'Tournament') -> int:
         return tournament.last_paired_round
 

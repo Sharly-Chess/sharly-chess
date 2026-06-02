@@ -1,6 +1,7 @@
+{% import '/common/macros.j2' as macros with context %}
 <div
     class="modal-dialog modal-dialog-scrollable admin-team-lineups-modal"
-    style="--bs-modal-width: min(95vw, 700px);"
+    style="--bs-modal-width: min(95vw, 720px);"
 >
     <div class="modal-content">
         <div class="modal-header">
@@ -21,10 +22,7 @@
                     <label class="form-label mb-0" for="lineup-round-select">
                         {{ _('Round:') }}
                     </label>
-                    <select
-                        id="lineup-round-select"
-                        class="form-select w-auto"
-                    >
+                    <select id="lineup-round-select" class="form-select w-auto">
                         {% for round_info in rounds_data %}
                             <option
                                 value="{{ round_info['round'] }}"
@@ -38,21 +36,21 @@
                 </div>
                 <p class="text-muted small">
                     {{ _(
-                        'Tick the players who will play and drag them to set the '
-                        'board order. Leaving everything blank uses the first '
-                        'players of the roster as default.'
+                        'Drag players between the board slots and the bench. '
+                        'Empty slots become holes in the lineup.'
                     ) }}
                 </p>
                 {% for round_info in rounds_data %}
                     {% set round_num = round_info['round'] %}
-                    {% set selected_ids = round_info['selected_ids'] %}
+                    {% set slots = round_info['slots'] %}
+                    {% set bench = round_info['bench'] %}
                     <div
-                        class="lineup-round-section border rounded p-2 mb-2"
+                        class="lineup-round-section"
                         data-round="{{ round_num }}"
                         {% if round_num != default_round %}style="display:none"{% endif %}
                     >
                         <form
-                            class="sortable d-flex flex-column gap-1"
+                            class="lineup-form"
                             hx-patch="{{ url_for(
                                 'admin-team-lineup-save',
                                 event_uniq_id=admin_event.uniq_id,
@@ -60,48 +58,220 @@
                                 round_=round_num,
                             ) }}"
                             hx-target="body"
-                            hx-trigger="end, change from:.lineup-r{{ round_num }}-check"
+                            hx-trigger="lineup-changed"
                             hx-indicator="#please-wait"
                         >
-                            {% for player in round_info['ordered_players'] %}
-                                {% set is_selected = player.id in selected_ids %}
-                                <div class="border border-secondary bg-body-tertiary cursor-grab d-flex align-items-center gap-2 p-2">
-                                    <i class="bi-grip-horizontal text-muted"></i>
-                                    <input
-                                        type="checkbox"
-                                        class="form-check-input lineup-r{{ round_num }}-check"
-                                        name="player_ids"
-                                        value="{{ player.id }}"
-                                        {% if is_selected %}checked{% endif %}
-                                    >
-                                    <div class="flex-grow-1">
-                                        {{ player.full_name }}
-                                        {%- set bracket_parts = [] -%}
-                                        {%- set _rating = player.event_default_rating_and_type -%}
-                                        {%- if _rating.value -%}
-                                            {%- do bracket_parts.append(_rating|string) -%}
-                                        {%- endif -%}
-                                        {%- if player.category and player.category.name and player.category.name != '-' -%}
-                                            {%- do bracket_parts.append(player.category.name) -%}
-                                        {%- endif -%}
-                                        {% if bracket_parts or player.gender.value %}
-                                            <span class="text-muted">
-                                                ({{ bracket_parts|join(' • ') }}{% if bracket_parts and player.gender.value %} • {% endif %}{% if player.gender.value %}{{ player.gender.short_name }}{% endif %})
-                                            </span>
-                                        {% endif %}
+                            <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-1 mb-2">
+                                {{ _('Boards') }}
+                            </h6>
+                            <div class="d-flex flex-column gap-1 mb-3">
+                                {% for slot_index in range(team_player_count) %}
+                                    {% set slot_player = slots[slot_index] if slot_index < slots|length else none %}
+                                    {% if slot_index < color_pattern|length %}
+                                        {% set chip_color = color_pattern[slot_index]|upper %}
+                                    {% else %}
+                                        {% set chip_color = 'W' if slot_index % 2 == 0 else 'B' %}
+                                    {% endif %}
+                                    <div class="d-flex align-items-center gap-2">
+                                        <strong class="text-muted" style="width:1.5rem;">
+                                            {{ slot_index + 1 }}
+                                        </strong>
+                                        <span class="color-chip color-chip-{{ chip_color|lower }}"></span>
+                                        <div
+                                            class="lineup-slot border border-secondary rounded flex-grow-1 d-flex align-items-center px-2"
+                                            data-slot-index="{{ slot_index }}"
+                                            data-round="{{ round_num }}"
+                                            style="min-height: 38px;"
+                                        >
+                                            {% if slot_player %}
+                                                <div
+                                                    class="lineup-card cursor-grab d-flex align-items-center gap-2 py-1"
+                                                    data-player-id="{{ slot_player.id }}"
+                                                >
+                                                    <i class="bi-grip-horizontal text-muted"></i>
+                                                    <span>
+                                                        {{ slot_player.full_name }}
+                                                    </span>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <input
+                                            type="hidden"
+                                            name="slot_{{ slot_index }}"
+                                            value="{{ slot_player.id if slot_player else '' }}"
+                                        >
                                     </div>
-                                </div>
-                            {% endfor %}
+                                {% endfor %}
+                            </div>
+                            <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-1 mb-2">
+                                {{ _('Bench') }}
+                            </h6>
+                            <div
+                                class="lineup-bench border border-secondary rounded p-2 d-flex flex-column gap-1"
+                                data-round="{{ round_num }}"
+                                style="min-height: 38px;"
+                            >
+                                {% for player in bench %}
+                                    <div
+                                        class="lineup-card cursor-grab d-flex align-items-center gap-2 py-1 px-2"
+                                        data-player-id="{{ player.id }}"
+                                    >
+                                        <i class="bi-grip-horizontal text-muted"></i>
+                                        <span>{{ player.full_name }}</span>
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </form>
                     </div>
                 {% endfor %}
                 <script>
-                    $('#lineup-round-select').on('change', function () {
-                        const round = String($(this).val());
-                        $('.lineup-round-section').each(function () {
-                            $(this).toggle($(this).data('round') == round);
+                    (function () {
+                        $('#lineup-round-select').on('change', function () {
+                            const round = String($(this).val());
+                            $('.lineup-round-section').each(function () {
+                                $(this).toggle($(this).data('round') == round);
+                            });
                         });
-                    });
+                        function syncSlotInputs(form) {
+                            form.querySelectorAll('.lineup-slot').forEach(function (slot) {
+                                const idx = slot.dataset.slotIndex;
+                                const card = slot.querySelector('.lineup-card');
+                                const pid = card ? card.dataset.playerId : '';
+                                const input = form.querySelector(
+                                    'input[name="slot_' + idx + '"]'
+                                );
+                                if (input) input.value = pid;
+                            });
+                        }
+                        function enforceSlotMaxOne(slotEl, droppedCard) {
+                            // If the slot already has a card before the drop,
+                            // bounce the existing one back to where the
+                            // dragged card came from. Sortable.js drops the
+                            // new card without removing the old one, so we
+                            // see ≥2 children right after onAdd.
+                            const cards = slotEl.querySelectorAll('.lineup-card');
+                            if (cards.length <= 1) return;
+                            const other = Array.from(cards).find(
+                                c => c !== droppedCard
+                            );
+                            if (!other) return;
+                            const origin = droppedCard.dataset.originContainer;
+                            const originEl = origin && document.querySelector(
+                                '[data-origin-id="' + origin + '"]'
+                            );
+                            if (originEl) originEl.appendChild(other);
+                            else {
+                                // Fall back: shove the displaced one onto the bench.
+                                const bench = slotEl.closest('.lineup-round-section')
+                                    .querySelector('.lineup-bench');
+                                if (bench) bench.appendChild(other);
+                            }
+                        }
+                        document.querySelectorAll('.lineup-round-section').forEach(function (section) {
+                            const round = section.dataset.round;
+                            const group = 'lineup-r' + round;
+                            const form = section.querySelector('.lineup-form');
+                            const slots = section.querySelectorAll('.lineup-slot');
+                            const bench = section.querySelector('.lineup-bench');
+                            // Stamp containers with a stable origin id so the
+                            // "max-1" swap rule can find where a card came
+                            // from.
+                            let counter = 0;
+                            section.querySelectorAll('.lineup-slot, .lineup-bench').forEach(function (c) {
+                                c.dataset.originId = 'orig-r' + round + '-' + (counter++);
+                            });
+                            function tagOrigin(evt) {
+                                if (evt && evt.item && evt.from) {
+                                    evt.item.dataset.originContainer = evt.from.dataset.originId || '';
+                                }
+                            }
+                            slots.forEach(function (slot) {
+                                new Sortable(slot, {
+                                    group: group,
+                                    animation: 0,
+                                    sort: false,
+                                    draggable: '.lineup-card',
+                                    forceFallback: true,
+                                    ghostClass: 'lineup-ghost',
+                                    chosenClass: 'lineup-chosen',
+                                    dragClass: 'lineup-drag',
+                                    onStart: tagOrigin,
+                                    onEnd: function () {
+                                        section.querySelectorAll('.lineup-slot').forEach(function (s) {
+                                            s.classList.remove('lineup-slot-hot');
+                                            s.querySelectorAll('.lineup-card').forEach(function (c) {
+                                                c.style.removeProperty('display');
+                                                c.style.removeProperty('opacity');
+                                            });
+                                        });
+                                    },
+                                    onMove: function (evt) {
+                                        section.querySelectorAll('.lineup-slot').forEach(function (s) {
+                                            const hot = s === evt.to;
+                                            s.classList.toggle('lineup-slot-hot', hot);
+                                            s.querySelectorAll('.lineup-card').forEach(function (c) {
+                                                if (hot && !c.classList.contains('lineup-ghost')) {
+                                                    c.style.setProperty('display', 'none', 'important');
+                                                } else {
+                                                    c.style.removeProperty('display');
+                                                    c.style.removeProperty('opacity');
+                                                }
+                                            });
+                                        });
+                                        return true;
+                                    },
+                                    onAdd: function (evt) {
+                                        enforceSlotMaxOne(slot, evt.item);
+                                        syncSlotInputs(form);
+                                        htmx.trigger(form, 'lineup-changed');
+                                    },
+                                    onUpdate: function () {
+                                        syncSlotInputs(form);
+                                        htmx.trigger(form, 'lineup-changed');
+                                    },
+                                });
+                            });
+                            new Sortable(bench, {
+                                group: group,
+                                animation: 0,
+                                sort: false,
+                                draggable: '.lineup-card',
+                                forceFallback: true,
+                                ghostClass: 'lineup-ghost',
+                                chosenClass: 'lineup-chosen',
+                                dragClass: 'lineup-drag',
+                                onStart: tagOrigin,
+                                onEnd: function () {
+                                    section.querySelectorAll('.lineup-slot').forEach(function (s) {
+                                        s.classList.remove('lineup-slot-hot');
+                                        s.querySelectorAll('.lineup-card').forEach(function (c) {
+                                            c.style.removeProperty('display');
+                                            c.style.removeProperty('opacity');
+                                        });
+                                    });
+                                },
+                                onMove: function (evt) {
+                                    section.querySelectorAll('.lineup-slot').forEach(function (s) {
+                                        const hot = s === evt.to;
+                                        s.classList.toggle('lineup-slot-hot', hot);
+                                        s.querySelectorAll('.lineup-card').forEach(function (c) {
+                                            if (hot && !c.classList.contains('lineup-ghost')) {
+                                                c.style.setProperty('display', 'none', 'important');
+                                            } else {
+                                                c.style.removeProperty('display');
+                                                c.style.removeProperty('opacity');
+                                            }
+                                        });
+                                    });
+                                    return true;
+                                },
+                                onAdd: function () {
+                                    syncSlotInputs(form);
+                                    htmx.trigger(form, 'lineup-changed');
+                                },
+                            });
+                        });
+                    })();
                 </script>
             {% endif %}
         </div>

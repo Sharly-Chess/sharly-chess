@@ -99,7 +99,7 @@ class StoredPairing:
 @dataclass
 class StoredBoard:
     id: int | None
-    white_player_id: int
+    white_player_id: int | None
     black_player_id: int | None
     index: int
     last_result_update: datetime | None = None
@@ -134,6 +134,10 @@ class StoredTeamBoard:
     index: int
     team_b_id: int | None = None
     last_result_update: datetime | None = None
+    # Bye type when ``team_b_id`` is None: ``PAB`` (pairing-allocated),
+    # ``HPB`` (half-point), ``FPB`` (full-point) or ``ZPB`` (zero-point).
+    # NULL on regular paired team_boards.
+    bye_type: str | None = None
 
 
 @dataclass

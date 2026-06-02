@@ -62,6 +62,16 @@ class TeamBoard:
     def is_bye(self) -> bool:
         return self.stored_team_board.team_b_id is None
 
+    @property
+    def bye_type(self) -> str | None:
+        """One of ``PAB`` / ``HPB`` / ``FPB`` / ``ZPB`` for a bye
+        team_board; ``None`` for a regular paired match. Stored byes
+        that pre-date the column default to ``PAB`` since that's the
+        only bye the pairing engine produced before this field existed."""
+        if not self.is_bye:
+            return None
+        return self.stored_team_board.bye_type or 'PAB'
+
     @cached_property
     def boards(self) -> list['Board']:
         """Individual boards belonging to this team match, ordered by index."""
@@ -77,18 +87,26 @@ class TeamBoard:
     @property
     def game_points(self) -> tuple[float, float]:
         """(team_a_points, team_b_points) — sum of individual board
-        game-points across this match. Default; an override layer may
-        supersede this later (TRF abnormal-point assignments)."""
+        game-points across this match. Scored via the tournament's
+        :attr:`team_game_points` mapping so the ``gp_*`` override
+        (e.g. 3/2/1) applies at team-scoring level; ``point_values``
+        (individual scoring) stays at FIDE defaults."""
         a, b = 0.0, 0.0
         team_a_id = self.stored_team_board.team_a_id
+        team_game_points = self.tournament.team_game_points
         for board in self.boards:
-            white_player = self.tournament.event.players_by_id.get(
-                board.stored_board.white_player_id
+            w_id = board.stored_board.white_player_id
+            white_player = (
+                self.tournament.event.players_by_id.get(w_id) if w_id else None
             )
             white_team_id = white_player.team_id if white_player else None
-            white_pts = board.white_pairing.points
+            white_pairing = board.optional_white_pairing
+            white_pts = (
+                white_pairing.result.points(team_game_points) if white_pairing else 0.0
+            )
+            black_tp = board.black_tournament_player
             black_pts = (
-                board.black_pairing.points if board.black_tournament_player else 0.0
+                board.black_pairing.result.points(team_game_points) if black_tp else 0.0
             )
             if white_team_id == team_a_id:
                 a += white_pts
@@ -103,6 +121,12 @@ class TeamBoard:
         """Human-readable score line shown in the team-block header. Format
         follows the tournament's primary score: match points if
         primary_score is MATCH_POINTS, otherwise game points."""
+        if (
+            self.stored_team_board.team_b_id is not None
+            and self.boards
+            and all(board.no_result for board in self.boards)
+        ):
+            return '–'
         a_gp, b_gp = self.game_points
         tournament = self.tournament
         if tournament.primary_score == ScoreType.MATCH_POINTS:
@@ -120,6 +144,8 @@ class TeamBoard:
             else:
                 mp_a = mp_b = draw_mp
             return f'{mp_a:g} – {mp_b:g}'
+        if self.stored_team_board.team_b_id is None:
+            return f'{tournament.team_pab_game_points:g} – 0'
         return f'{a_gp:g} – {b_gp:g}'
 
     @property

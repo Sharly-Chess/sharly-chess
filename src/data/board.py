@@ -26,8 +26,13 @@ class Board:
     ):
         self.round = round_
         self.stored_board = stored_board
-        self._white_player_ref: 'ReferenceType[TournamentPlayer]' = weakref.ref(
-            tournament.tournament_players_by_id[stored_board.white_player_id]
+        self._tournament_ref: 'ReferenceType[Tournament]' = weakref.ref(tournament)
+        self._white_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
+            weakref.ref(
+                tournament.tournament_players_by_id[stored_board.white_player_id]
+            )
+            if stored_board.white_player_id
+            else None
         )
         self._black_player_ref: Optional['ReferenceType[TournamentPlayer]'] = (
             weakref.ref(
@@ -39,10 +44,26 @@ class Board:
 
     @property
     def tournament(self) -> 'Tournament':
-        return self.white_tournament_player.tournament
+        if (tournament := self._tournament_ref()) is None:
+            raise RuntimeError('Reference has been garbage collected')
+        return tournament
 
     @property
     def white_tournament_player(self) -> 'TournamentPlayer':
+        """Player on the physical white side. Raises if the slot is a
+        hole — use ``optional_white_tournament_player`` from hole-aware
+        code."""
+        player = self.optional_white_tournament_player
+        if player is None:
+            raise RuntimeError(f'Board {self.stored_board.id} has no white player.')
+        return player
+
+    @property
+    def optional_white_tournament_player(self) -> Optional['TournamentPlayer']:
+        """Player on the physical white side, or ``None`` when the
+        slot is a lineup hole (only possible inside a team match)."""
+        if not self._white_player_ref:
+            return None
         if (player := self._white_player_ref()) is None:
             raise RuntimeError('Reference has been garbage collected')
         return player
@@ -60,8 +81,21 @@ class Board:
         return self.white_tournament_player.pairings_by_round[self.round]
 
     @property
+    def optional_white_pairing(self) -> Optional['Pairing']:
+        player = self.optional_white_tournament_player
+        if player is None:
+            return None
+        return player.pairings_by_round[self.round]
+
+    @property
     def black_pairing(self) -> 'Pairing':
         assert self.black_tournament_player is not None
+        return self.black_tournament_player.pairings_by_round[self.round]
+
+    @property
+    def optional_black_pairing(self) -> Optional['Pairing']:
+        if self.black_tournament_player is None:
+            return None
         return self.black_tournament_player.pairings_by_round[self.round]
 
     @property
@@ -80,7 +114,8 @@ class Board:
 
     @property
     def fixed_number(self) -> int | None:
-        fixed_white: int | None = self.white_tournament_player.fixed
+        white_tp = self.optional_white_tournament_player
+        fixed_white: int | None = white_tp.fixed if white_tp else None
         fixed_black: int | None = getattr(self.black_tournament_player, 'fixed', None)
         if fixed_white and fixed_black:
             return max(fixed_white, fixed_black)
@@ -103,7 +138,13 @@ class Board:
 
     @property
     def result(self) -> Result:
-        return self.white_pairing.result
+        white_pairing = self.optional_white_pairing
+        if white_pairing is not None:
+            return white_pairing.result
+        black_pairing = self.optional_black_pairing
+        if black_pairing is not None:
+            return black_pairing.result
+        return Result.NO_RESULT
 
     @property
     def no_result(self) -> bool:

@@ -292,7 +292,7 @@ class TournamentImporterTestCase(TestCase):
         # 320 said PAB MP = 2.0, PAB GP = 5.0 — both must round-trip
         # to the stored tournament.
         self.assertEqual(match_points[Result.PAIRING_ALLOCATED_BYE], 2.0)
-        self.assertEqual(tournament.pab_points, 5.0)
+        self.assertEqual(tournament.team_pab_game_points, 5.0)
         # 162 override on PAB game points (only key present in the
         # source file).
         self.assertEqual(
@@ -421,6 +421,498 @@ class TournamentImporterTestCase(TestCase):
         self.assertIn((4, 1), match_keys, 'Lyon vs ERP A missing in round 2')
         self.assertIn((2, 5), match_keys, 'Crest vs Tour missing in round 2')
         self.assertIn((3, None), match_keys, 'ERP B PAB missing in round 2')
+
+    def test_trf_team_round_trip_with_lineup_holes(self):
+        """Round-2 ERP A line in the fixture is
+        ``300   2   1   4   10    7 0000 0000`` — slots 2 and 3 are
+        holes. Importing must preserve them as index gaps in the
+        team's round lineup, and re-emitting via :meth:`to_trf` must
+        produce the same OOdO record."""
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-team-import-test.trf')]
+        )
+        tournament = self._import_tournament(importer)
+
+        teams_by_pn = tournament.teams_by_pairing_number
+        erp_a = teams_by_pn[1]
+        lyon = teams_by_pn[4]
+
+        # --- import: ERP A's round-2 lineup is two-deep, holes at the end ---
+        slots = erp_a.effective_round_slots(2)
+        self.assertEqual(len(slots), 4)
+        self.assertIsNotNone(slots[0])
+        self.assertIsNotNone(slots[1])
+        self.assertIsNone(slots[2], 'expected hole at slot 2 for ERP A round 2')
+        self.assertIsNone(slots[3], 'expected hole at slot 3 for ERP A round 2')
+        present_pns = sorted(
+            tournament.tournament_players_by_id[p.id].pairing_number
+            for p in slots
+            if p is not None
+        )
+        self.assertEqual(present_pns, [7, 10])
+
+        # ``team_round_lineup`` is stored as index-gapped rows — only
+        # the slots that have a player exist in the DB.
+        lineup_entries = erp_a.stored_team.stored_round_lineups[2]
+        stored_indexes = sorted(e.index for e in lineup_entries)
+        self.assertEqual(stored_indexes, [0, 1])
+
+        # --- import: the team match's boards reflect the holes ---
+        # Slot 0 and 1: both teams present → black_player_id is set.
+        # Slot 2 and 3: ERP A has a hole → board's black_player_id is
+        # NULL, white_player_id is Lyon's player on that slot.
+        round_2_match = next(
+            tb
+            for tb in tournament.team_boards_by_id.values()
+            if tb.round == 2
+            and {
+                tb.stored_team_board.team_a_id,
+                tb.stored_team_board.team_b_id,
+            }
+            == {erp_a.id, lyon.id}
+        )
+        boards_by_slot = {b.index: b for b in round_2_match.boards}
+        self.assertEqual(set(boards_by_slot), {0, 1, 2, 3})
+        for full_slot in (0, 1):
+            self.assertIsNotNone(
+                boards_by_slot[full_slot].stored_board.black_player_id,
+                f'slot {full_slot} should have both players',
+            )
+        for hole_slot in (2, 3):
+            board = boards_by_slot[hole_slot]
+            self.assertIsNone(
+                board.stored_board.black_player_id,
+                f'slot {hole_slot}: hole side should be NULL',
+            )
+            present_tp = tournament.tournament_players_by_id[
+                board.stored_board.white_player_id
+            ]
+            self.assertEqual(
+                present_tp.team_id,
+                lyon.id,
+                f'slot {hole_slot}: present player must be Lyon (the team that '
+                f'still has a player on this slot)',
+            )
+
+        # --- re-export: holes round-trip via ``to_trf`` ---
+        # OOdO record for (round=2, team_a=ERP A, team_b=Lyon) must put
+        # 0 at slots 2 and 3 (and the present-team's pairing numbers
+        # at the filled slots).
+        trf = tournament.to_trf(after_round=2)
+        erp_a_record = next(
+            r
+            for r in trf.oodo_team_pairings
+            if r.round == 2 and r.team_id == 1 and r.opponent_team_id == 4
+        )
+        self.assertEqual(erp_a_record.boards, [10, 7, None, None])
+        # And the opposite-direction OOdO for Lyon must list all four
+        # slots filled (Lyon had a full lineup).
+        lyon_record = next(
+            r
+            for r in trf.oodo_team_pairings
+            if r.round == 2 and r.team_id == 4 and r.opponent_team_id == 1
+        )
+        self.assertEqual(
+            [pn is not None for pn in lyon_record.boards],
+            [True, True, True, True],
+        )
+
+    def test_trf_team_full_round_trip_with_hole_opponent_forfeit(self):
+        """Full export → re-import round trip. After import, the
+        opposing player on a slot whose own team has a hole carries a
+        ``FORFEIT_WIN``. The serialised TRF emits ``+`` as the result
+        and a colour next to ``0000`` — the importer's validation rules
+        must accept that combination (forfeit-result + colour +
+        opponent_id=0 is valid per TRF-2026 in team mode)."""
+        import io
+
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-team-import-test.trf')]
+        )
+        tournament = self._import_tournament(importer)
+
+        # Force a hole-opponent scenario into the imported state: a
+        # team-match board on round 2 where one side is a real player
+        # and the other side is a hole. The fixture's round-2 ERP A vs
+        # Lyon match has ERP A holes at slots 2 & 3 — Lyon's slot-2 and
+        # slot-3 players need result=FORFEIT_WIN so the re-export
+        # writes ``0000 b +`` / ``0000 w +``.
+        from utils.enum import Result
+        from database.sqlite.event.event_database import EventDatabase
+
+        teams_by_pn = tournament.teams_by_pairing_number
+        lyon = teams_by_pn[4]
+        erp_a = teams_by_pn[1]
+        round_2_match = next(
+            tb
+            for tb in tournament.team_boards_by_id.values()
+            if tb.round == 2
+            and {
+                tb.stored_team_board.team_a_id,
+                tb.stored_team_board.team_b_id,
+            }
+            == {erp_a.id, lyon.id}
+        )
+        with EventDatabase(self.event.uniq_id, write=True) as db:
+            for board in round_2_match.boards:
+                if board.stored_board.black_player_id is None:
+                    # Lyon player (on white) gets a forfeit win.
+                    pairing = board.optional_white_pairing
+                    assert pairing is not None
+                    pairing.stored_pairing.result = Result.FORFEIT_WIN.value
+                    pairing.update(db)
+
+        # --- export to TRF text ---
+        trf_tournament = tournament.to_trf(after_round=2)
+        buf = io.StringIO()
+        TrfSerializer.dump(buf, trf_tournament)
+        trf_text = buf.getvalue()
+
+        # --- re-import the emitted TRF text ---
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        with tempfile.NamedTemporaryFile(
+            'w', encoding='utf-8', suffix='.trfx', delete=False
+        ) as f:
+            f.write(trf_text)
+            reimport_path = Path(f.name)
+        try:
+            reimporter = TrfTournamentImporter([FileOption(reimport_path)])
+            reimported = self._import_tournament(reimporter)
+        finally:
+            reimport_path.unlink(missing_ok=True)
+
+        # The re-imported tournament must have the same hole structure
+        # and the forfeit-win results preserved.
+        reimported_teams_by_pn = reimported.teams_by_pairing_number
+        reimported_erp_a = reimported_teams_by_pn[1]
+        slots = reimported_erp_a.effective_round_slots(2)
+        self.assertEqual(len(slots), 4)
+        self.assertIsNone(slots[2], 'ERP A slot 2 hole lost in round trip')
+        self.assertIsNone(slots[3], 'ERP A slot 3 hole lost in round trip')
+
+    def _set_team_manual_bye(
+        self, tournament: Tournament, team_id: int, round_: int, bye_type: str
+    ) -> None:
+        """Replace whatever envelope the team currently has for
+        ``round_`` with a manual bye of ``bye_type``."""
+        from database.sqlite.event.event_database import EventDatabase
+        from database.sqlite.event.event_store import StoredTeamBoard
+
+        round_team_boards = tournament.get_round_team_boards(round_)
+        existing = next(
+            (
+                tb
+                for tb in round_team_boards
+                if tb.stored_team_board.team_a_id == team_id
+                and tb.stored_team_board.team_b_id is None
+            ),
+            None,
+        )
+        with EventDatabase(tournament.event.uniq_id, write=True) as db:
+            if existing is not None:
+                existing.stored_team_board.bye_type = bye_type
+                db.update_stored_team_board(existing.stored_team_board)
+            else:
+                indexes = [tb.stored_team_board.index for tb in round_team_boards]
+                next_index = max(indexes, default=-1) + 1
+                stb = StoredTeamBoard(
+                    id=None,
+                    tournament_id=tournament.id,
+                    round_=round_,
+                    team_a_id=team_id,
+                    team_b_id=None,
+                    index=next_index,
+                    bye_type=bye_type,
+                )
+                stb.id = db.add_stored_team_board(stb)
+                tournament.stored_tournament.stored_team_boards_by_round.setdefault(
+                    round_, []
+                ).append(stb)
+        tournament.clear_team_cache()
+
+    def test_team_standings_scores_each_bye_type_distinctly(self):
+        """``Tournament.team_standings`` must distinguish PAB / HPB /
+        FPB / ZPB envelopes. Before, every ``team_b_id IS NULL`` row
+        was awarded ``pab_mp`` + ``team_pab_game_points`` regardless of
+        ``bye_type`` — Lyon's ZPB ended up scored like a PAB. Each bye
+        type should now translate to its own MP/GP contribution."""
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-team-import-test.trf')]
+        )
+        tournament = self._import_tournament(importer)
+        teams_by_pn = tournament.teams_by_pairing_number
+        zpb_team = teams_by_pn[1]
+        hpb_team = teams_by_pn[2]
+        fpb_team = teams_by_pn[3]
+        pab_team = teams_by_pn[4]
+        # Wipe rounds 2 and 3 results so the only contribution to the
+        # standings comes from the round-2 byes we're about to inject.
+        # (Round 1's mixed match data complicates the arithmetic.)
+        for r in (1, 2, 3):
+            for stb in list(
+                tournament.stored_tournament.stored_team_boards_by_round.get(r, [])
+            ):
+                from database.sqlite.event.event_database import EventDatabase
+
+                with EventDatabase(tournament.event.uniq_id, write=True) as db:
+                    if stb.id is not None:
+                        db.delete_stored_team_board(stb.id)
+            tournament.stored_tournament.stored_team_boards_by_round[r] = []
+        tournament.clear_team_cache()
+
+        # Inject a different bye for each team at round 1.
+        self._set_team_manual_bye(tournament, zpb_team.id, 1, 'ZPB')
+        self._set_team_manual_bye(tournament, hpb_team.id, 1, 'HPB')
+        self._set_team_manual_bye(tournament, fpb_team.id, 1, 'FPB')
+        self._set_team_manual_bye(tournament, pab_team.id, 1, 'PAB')
+
+        standings = {row['team'].id: row for row in tournament.team_standings()}
+        match_points = tournament.match_points
+        win_mp = match_points[Result.WIN]
+        draw_mp = match_points[Result.DRAW]
+        loss_mp = match_points[Result.LOSS]
+        pab_mp = match_points[Result.PAIRING_ALLOCATED_BYE]
+        n = float(tournament.team_player_count or 0)
+
+        self.assertEqual(standings[zpb_team.id]['mp'], loss_mp)
+        self.assertEqual(standings[zpb_team.id]['gp'], 0.0)
+        self.assertEqual(standings[hpb_team.id]['mp'], draw_mp)
+        self.assertEqual(standings[hpb_team.id]['gp'], n * 0.5)
+        self.assertEqual(standings[fpb_team.id]['mp'], win_mp)
+        self.assertEqual(standings[fpb_team.id]['gp'], n * 1.0)
+        self.assertEqual(standings[pab_team.id]['mp'], pab_mp)
+        self.assertEqual(standings[pab_team.id]['gp'], tournament.team_pab_game_points)
+
+    def test_create_team_round_pairing_flow(self):
+        """Manual team pairing — first click creates a PAB envelope
+        (team_a only, PAB-result individual boards), mirroring an
+        engine bye. Second click on a different team completes the
+        pair: the PAB envelope is mutated to a real ``team_a`` /
+        ``team_b`` match, individual boards regenerated with both
+        lineups and result flipped from PAB to NO_RESULT."""
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-team-import-test.trf')]
+        )
+        tournament = self._import_tournament(importer)
+        teams_by_pn = tournament.teams_by_pairing_number
+        team_a = teams_by_pn[1]
+        team_b = teams_by_pn[2]
+        # Wipe round 2 so we have a clean slate to manually pair.
+        from database.sqlite.event.event_database import EventDatabase
+
+        for stb in list(
+            tournament.stored_tournament.stored_team_boards_by_round.get(2, [])
+        ):
+            with EventDatabase(tournament.event.uniq_id, write=True) as db:
+                if stb.id is not None:
+                    db.delete_stored_team_board(stb.id)
+        tournament.stored_tournament.stored_team_boards_by_round[2] = []
+        tournament.clear_team_cache()
+
+        # First click on team A: creates a PAB envelope with PAB-result
+        # individual boards. The team_b column is empty. Boards with a
+        # present player have a PAB pairing; bare-hole boards stay empty.
+        tb_pending = tournament.create_team_round_pairing(2, team_a.id)
+        self.assertIsNone(tb_pending.team_b)
+        self.assertEqual(tb_pending.team_a.id, team_a.id)
+        self.assertEqual(tb_pending.bye_type, 'PAB')
+        n = tournament.team_player_count or 0
+        self.assertEqual(len(tb_pending.boards), n)
+        present_pending = 0
+        for board in tb_pending.boards:
+            present = board.optional_white_pairing or board.optional_black_pairing
+            if present is not None:
+                self.assertEqual(present.result, Result.PAIRING_ALLOCATED_BYE)
+                present_pending += 1
+        self.assertGreater(present_pending, 0)
+
+        # Second click on team B: completes the pair. PAB-side boards
+        # are dropped and rebuilt with both lineups; results flip to
+        # NO_RESULT (each board with at least one present player).
+        tb_complete = tournament.create_team_round_pairing(2, team_b.id)
+        self.assertIsNotNone(tb_complete.team_b)
+        self.assertEqual(
+            {tb_complete.team_a.id, tb_complete.team_b.id},
+            {team_a.id, team_b.id},
+        )
+        # Same envelope was mutated, not duplicated.
+        self.assertEqual(tb_complete.id, tb_pending.id)
+        self.assertEqual(len(tb_complete.boards), n)
+        for board in tb_complete.boards:
+            both_present = (
+                board.optional_white_pairing is not None
+                and board.optional_black_pairing is not None
+            )
+            if both_present:
+                self.assertEqual(board.optional_white_pairing.result, Result.NO_RESULT)
+                self.assertEqual(board.optional_black_pairing.result, Result.NO_RESULT)
+            else:
+                # Hole on one side → present player has FORFEIT_WIN.
+                present = board.optional_white_pairing or board.optional_black_pairing
+                if present is not None:
+                    self.assertEqual(present.result, Result.FORFEIT_WIN)
+
+    def test_create_team_round_pairing_clears_existing_bye(self):
+        """Pairing a team that already has a manual bye for the round
+        should supersede the bye — the bye envelope is removed."""
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-team-import-test.trf')]
+        )
+        tournament = self._import_tournament(importer)
+        teams_by_pn = tournament.teams_by_pairing_number
+        team_a = teams_by_pn[1]
+        team_b = teams_by_pn[2]
+        from database.sqlite.event.event_database import EventDatabase
+
+        for stb in list(
+            tournament.stored_tournament.stored_team_boards_by_round.get(2, [])
+        ):
+            with EventDatabase(tournament.event.uniq_id, write=True) as db:
+                if stb.id is not None:
+                    db.delete_stored_team_board(stb.id)
+        tournament.stored_tournament.stored_team_boards_by_round[2] = []
+        tournament.clear_team_cache()
+
+        # Give team_b a ZPB at round 2.
+        self._set_team_manual_bye(tournament, team_b.id, 2, 'ZPB')
+        self.assertEqual(team_b.round_bye_type(2), 'ZPB')
+        # Manually pair team_a and team_b. The ZPB should be removed.
+        tournament.create_team_round_pairing(2, team_a.id)
+        tournament.create_team_round_pairing(2, team_b.id)
+        self.assertIsNone(team_b.round_bye_type(2))
+        boards = tournament.get_round_team_boards(2)
+        # Only one envelope — the completed pair.
+        self.assertEqual(len(boards), 1)
+        self.assertIsNotNone(boards[0].team_b)
+
+    def test_team_primary_score_before_round_matches_standings(self):
+        """``team_primary_score_before_round(team, R)`` and
+        ``_team_trf_totals_after(R-1)`` must agree on each team's
+        cumulative score, and both must honour bye_type. Used by the
+        engine + post-import sort, so a drift would silently produce
+        a different display order each side."""
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-team-import-test.trf')]
+        )
+        tournament = self._import_tournament(importer)
+        teams_by_pn = tournament.teams_by_pairing_number
+        team = teams_by_pn[1]
+        # Replace round 2's envelope for the team with a ZPB.
+        self._set_team_manual_bye(tournament, team.id, 2, 'ZPB')
+
+        # As of start of round 3, the team's primary score should
+        # *not* include the ZPB as a PAB. Match the totals helper.
+        score = tournament.team_primary_score_before_round(team.id, 3)
+        totals = tournament._team_trf_totals_after(2)
+        match_points = tournament.match_points
+        if tournament.primary_score == ScoreType.MATCH_POINTS:
+            self.assertEqual(score, totals[team.id][0])
+        else:
+            self.assertEqual(score, totals[team.id][1])
+        # The ZPB contribution itself must not equal a PAB
+        # contribution.
+        self.assertNotEqual(
+            score,
+            tournament._team_trf_totals_after(1)[team.id][
+                0 if tournament.primary_score == ScoreType.MATCH_POINTS else 1
+            ]
+            + match_points[Result.PAIRING_ALLOCATED_BYE],
+        )
+
+    def test_trf_team_round_trip_preserves_manual_bye_history(self):
+        """A manual bye applied to a *past* round must survive a TRF
+        export → re-import cycle. Earlier, ``_team_trf_round_byes``
+        only emitted 240 records for the round being paired, and the
+        importer didn't read 240 at all — so a past-round
+        ``HPB``/``FPB``/``ZPB`` collapsed into a plain PAB envelope on
+        re-import."""
+        import io
+
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        importer = TrfTournamentImporter(
+            [FileOption(BASE_PATH / 'trf-team-import-test.trf')]
+        )
+        tournament = self._import_tournament(importer)
+        teams_by_pn = tournament.teams_by_pairing_number
+
+        # Each team chosen for these rounds already has a PAB
+        # envelope we can convert to a manual bye, so we don't have to
+        # tear down a real match in the fixture.
+        injections = [
+            (teams_by_pn[5].id, 1, 'ZPB'),
+            (teams_by_pn[3].id, 2, 'HPB'),
+        ]
+        for team_id, round_, bye_type in injections:
+            self._set_team_manual_bye(tournament, team_id, round_, bye_type)
+
+        # Export the modified tournament.
+        trf = tournament.to_trf(after_round=tournament.rounds)
+        buf = io.StringIO()
+        TrfSerializer.dump(buf, trf)
+        trf_text = buf.getvalue()
+
+        # Re-import into a fresh event and verify bye_type survives.
+        TestUtils.delete_event(EVENT_ID)
+        TestUtils.create_event(EVENT_ID, overrides={'event_type': EventType.TEAM})
+        self.event = EventLoader().load_event(EVENT_ID)
+        with tempfile.NamedTemporaryFile(
+            'w', encoding='utf-8', suffix='.trfx', delete=False
+        ) as f:
+            f.write(trf_text)
+            reimport_path = Path(f.name)
+        try:
+            reimporter = TrfTournamentImporter([FileOption(reimport_path)])
+            reimported = self._import_tournament(reimporter)
+        finally:
+            reimport_path.unlink(missing_ok=True)
+
+        reimported_teams_by_pn = reimported.teams_by_pairing_number
+        for pn, round_, expected_bye in [
+            (5, 1, 'ZPB'),
+            (3, 2, 'HPB'),
+        ]:
+            team_id = reimported_teams_by_pn[pn].id
+            round_team_boards = reimported.get_round_team_boards(round_)
+            envelope = next(
+                (
+                    tb
+                    for tb in round_team_boards
+                    if tb.stored_team_board.team_a_id == team_id
+                    and tb.stored_team_board.team_b_id is None
+                ),
+                None,
+            )
+            self.assertIsNotNone(
+                envelope,
+                f'team pn={pn} should have a bye envelope in round {round_}',
+            )
+            self.assertEqual(
+                envelope.stored_team_board.bye_type,
+                expected_bye,
+                f'team pn={pn} round {round_}: bye_type lost on round trip',
+            )
 
     def test_trf_team_into_individual_event_is_rejected(self):
         """A team TRF must not be importable into an individual event,

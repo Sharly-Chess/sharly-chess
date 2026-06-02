@@ -36,7 +36,12 @@
         hx-swap="innerHTML"
     >
     </div>
-    {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 or admin_absent_players|length > 0 %}
+    {% set is_team_paired_mode = admin_event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
+    {% if is_team_paired_mode %}
+        {% set has_unpaired = admin_team_bye|length > 0 or admin_team_unpaired|length > 0 %}
+    {% else %}
+        {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 or admin_absent_players|length > 0 %}
+    {% endif %}
 
     <div class="container-fluid">
         <div class="pt-1 pb-1 row">
@@ -163,17 +168,26 @@
             {% if not display_rankings %}
                 {% if has_unpaired %}
                     <div class="col-12 col-lg-3">
-                        {% with title=_('Byes *** ZPB, HPB or FPB'), unpaired_players=admin_bye_players, table_id='bye-players-table' %}
-                            {% include '/admin/pairings/unpaired_table.html' %}
-                        {% endwith %}
-                        {% with title=_('Absents'), unpaired_players=admin_absent_players, table_id='absent-players-table' %}
-                            {% include '/admin/pairings/unpaired_table.html' %}
-                        {% endwith %}
-                        {% with title=(
-                            _('To pair') if admin_tournament.pairing_system.split_unpaired_and_bye_players else _('Players')
-                        ), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
-                            {% include '/admin/pairings/unpaired_table.html' %}
-                        {% endwith %}
+                        {% if is_team_paired_mode %}
+                            {% with title=_('Byes *** ZPB, HPB or FPB'), teams=admin_team_bye, table_id='bye-teams-table' %}
+                                {% include '/admin/pairings/team_unpaired_table.html' %}
+                            {% endwith %}
+                            {% with title=_('To pair'), teams=admin_team_unpaired, table_id='unpaired-teams-table' %}
+                                {% include '/admin/pairings/team_unpaired_table.html' %}
+                            {% endwith %}
+                        {% else %}
+                            {% with title=_('Byes *** ZPB, HPB or FPB'), unpaired_players=admin_bye_players, table_id='bye-players-table' %}
+                                {% include '/admin/pairings/unpaired_table.html' %}
+                            {% endwith %}
+                            {% with title=_('Absents'), unpaired_players=admin_absent_players, table_id='absent-players-table' %}
+                                {% include '/admin/pairings/unpaired_table.html' %}
+                            {% endwith %}
+                            {% with title=(
+                                _('To pair') if admin_tournament.pairing_system.split_unpaired_and_bye_players else _('Players')
+                            ), unpaired_players=admin_unpaired, table_id='unpaired-players-table' %}
+                                {% include '/admin/pairings/unpaired_table.html' %}
+                            {% endwith %}
+                        {% endif %}
                     </div>
                 {% endif %}
 
@@ -358,7 +372,11 @@
 
             keyQueue.push({ code, pairing_board_id });
             $('#pairing-row-' + pairing_board_id + ' td, #pairing-row-' + pairing_board_id + ' .player-link').addClass('text-secondary');
-            var $allRows = $('tr.pairing-row');
+            // Skip rows that can't accept a result via keyboard
+            // (lineup holes, absent-forfeit rows).
+            var $allRows = $('tr.pairing-row').filter(function () {
+                return !this.dataset.noResultEntry;
+            });
             var curIdx = $allRows.index($allRows.filter('[data-board-id="' + pairing_board_id + '"]').first());
             nextBoardId = curIdx >= 0 && curIdx < $allRows.length - 1
                 ? $allRows.eq(curIdx + 1).data("board-id")
@@ -388,8 +406,13 @@
                     return;
                 }
                 e.preventDefault();
+                // Hole rows (team-mode boards with at least one
+                // missing side) can't accept a result via keyboard
+                // shortcut — exclude them from the navigation list.
+                var $rows = $('tr.pairing-row').filter(function () {
+                    return !this.dataset.noResultEntry;
+                });
                 if (pairing_board_id) {
-                    var $rows = $('tr.pairing-row');
                     var idx = $rows.index($rows.filter('[data-board-id="' + pairing_board_id + '"]').first());
                     if (idx < 0) {
                         return;
@@ -399,12 +422,15 @@
                     } else if (e.key === "ArrowDown" && idx < $rows.length - 1) {
                         highlightBoard($rows.eq(idx + 1).data("board-id"), false);
                     }
-                } else {
-                    highlightBoard($('.pairing-row').first().data("board-id"), false);
+                } else if ($rows.length) {
+                    highlightBoard($rows.first().data("board-id"), false);
                 }
             }
 
             if (!pairing_board_id || hasErrorRow()) return;
+            // Block result-entry shortcuts on hole-row.
+            var $currentRow = $('tr.pairing-row[data-board-id="' + pairing_board_id + '"]').first();
+            if ($currentRow.length && $currentRow[0].dataset.noResultEntry) return;
 
             const code = event.code;
             const validCodes = ['Digit0','Digit1','Digit2','Digit3','Numpad0','Numpad1','Numpad2','Numpad3'];
@@ -434,6 +460,9 @@
             // Re-apply lineup edit mode for any blocks that were being edited
             // before the swap (sessionStorage keeps the set).
             restoreLineupEditState();
+            if (typeof syncTeamBlockChevrons === "function") {
+                syncTeamBlockChevrons();
+            }
         }
 
         function searchPlayerHandler(e) {
@@ -478,22 +507,31 @@
                 highlightBoardWithError(e.detail.board_id);
             });
             $(document).on("input.search", "#search-player", searchPlayerHandler);
+            function syncTeamBlockChevrons() {
+                $("tr.team-block-header").each(function () {
+                    const targetId = $(this).data("block-id");
+                    const el = document.getElementById(targetId);
+                    if (!el) return;
+                    const isExpanded = !el.classList.contains("team-block-body-collapsed");
+                    this.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+                    $(this).find(".team-block-chevron")
+                        .toggleClass("team-block-chevron-collapsed", !isExpanded);
+                });
+            }
+            syncTeamBlockChevrons();
+
             $(document).off("click.team-block-collapse");
             $(document).on("click.team-block-collapse", "tr.team-block-header", function(e) {
                 if ($(e.target).closest("button").length) return;
+                if ($(e.target).closest("a").length) return;
                 const targetId = $(this).data("block-id");
                 const el = document.getElementById(targetId);
-                if (el) bootstrap.Collapse.getOrCreateInstance(el).toggle();
-            });
-            $(document).off("show.bs.collapse.team-block hidden.bs.collapse.team-block");
-            $(document).on("show.bs.collapse.team-block hidden.bs.collapse.team-block", "[id^='team-block-body-']", function(e) {
-                const tr = document.querySelector(".team-block-header[data-block-id='" + this.id + "']");
-                if (!tr) return;
-                // "show" fires when starting to expand; "hidden" fires after
-                // collapse animation. Set aria-expanded accordingly so the
-                // chevron rotation transitions with the body.
-                const expanding = e.type.indexOf("show") === 0;
-                tr.setAttribute("aria-expanded", expanding ? "true" : "false");
+                if (!el) return;
+                const willCollapse = !el.classList.contains("team-block-body-collapsed");
+                el.classList.toggle("team-block-body-collapsed", willCollapse);
+                this.setAttribute("aria-expanded", willCollapse ? "false" : "true");
+                $(this).find(".team-block-chevron")
+                    .toggleClass("team-block-chevron-collapsed", willCollapse);
             });
             restoreLineupEditState();
         });

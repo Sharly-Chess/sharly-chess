@@ -7,20 +7,21 @@ from litestar.plugins.htmx import HTMXRequest
 from litestar.response import Template
 from litestar.status_codes import HTTP_200_OK
 
-from common.i18n import _
+from common.i18n import _, ngettext
 from data.access_levels.actions import AuthAction
 from data.player import Player
 from data.team import Team
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTeam
-from utils.enum import FormAction, PlayerGender
+from utils.enum import FormAction, PlayerGender, Result
+from data.access_levels.client import Client
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
 )
 from web.controllers.base_controller import WebContext
-from web.guards import ActionGuard, EventGuard
+from web.guards import ActionGuard, EventGuard, SetByeGuard
 from web.messages import Message
 from web.session import SessionTeamsAddOtherActive
 from web.utils import RequestUtils, SelectOption
@@ -232,6 +233,107 @@ class TeamAdminController(BaseEventAdminController):
             web_context, self._team_roster_modal_context(web_context)
         )
 
+    @get(
+        path='/team-record-modal/{event_uniq_id:str}/{team_id:int}',
+        name='admin-team-record-modal',
+        guards=[ActionGuard(AuthAction.UPDATE_PLAYERS_HISTORY)],
+    )
+    async def htmx_admin_team_record_modal(self, request: HTMXRequest) -> Template:
+        return self._render_team_record_modal(TeamAdminWebContext(request))
+
+    @patch(
+        path='/team-set-bye/{event_uniq_id:str}/{team_id:int}/{round:int}',
+        name='admin-team-set-bye',
+        guards=[SetByeGuard()],
+    )
+    async def htmx_team_set_bye(
+        self,
+        request: HTMXRequest,
+        team_id: int,
+        round: int,
+        result: int,
+    ) -> Template:
+        web_context = TeamAdminWebContext(request)
+        team = web_context.get_admin_team()
+        bye_type = {
+            Result.NO_RESULT: None,
+            Result.ZERO_POINT_BYE: 'ZPB',
+            Result.HALF_POINT_BYE: 'HPB',
+            Result.FULL_POINT_BYE: 'FPB',
+        }.get(Result(result))
+        with EventDatabase(team.event.uniq_id, write=True) as db:
+            team.set_round_bye(round, bye_type, db)
+        return self._render_team_record_modal(web_context)
+
+    @classmethod
+    def _render_team_record_modal(cls, web_context: TeamAdminWebContext) -> Template:
+        team = web_context.get_admin_team()
+        tournament = team.tournament
+        rounds = tournament.rounds if tournament else 0
+        data = {
+            f'round_{round_}_result': WebContext.value_to_form_data(
+                cls._team_round_result_value(team, round_).value
+            )
+            for round_ in range(1, rounds + 1)
+        }
+        return cls._admin_event_teams_render(
+            web_context,
+            {
+                'modal': 'team-record',
+                'get_team_bye_options': cls._get_team_bye_options,
+                'data': data,
+            },
+        )
+
+    @staticmethod
+    def _team_round_result_value(team: Team, round_: int) -> 'Result':
+        bye = team.round_bye_type(round_)
+        if bye is None:
+            return Result.NO_RESULT
+        return {
+            'ZPB': Result.ZERO_POINT_BYE,
+            'HPB': Result.HALF_POINT_BYE,
+            'FPB': Result.FULL_POINT_BYE,
+            'PAB': Result.PAIRING_ALLOCATED_BYE,
+        }.get(bye, Result.NO_RESULT)
+
+    @staticmethod
+    def _get_team_bye_options(
+        client: 'Client', team: Team, round_: int
+    ) -> dict[str, SelectOption]:
+        tournament = team.tournament
+        assert tournament is not None
+        hpb_msg: str | None = None
+        fpb_msg: str | None = None
+        if not client.can_set_half_point_bye(tournament.id):
+            hpb_msg = _('You are not allowed to set Half-Point Byes.')
+        if not client.can_set_full_point_bye(tournament.id):
+            fpb_msg = _('You are not allowed to set Full-Point Byes.')
+        if round_ > tournament.rounds - tournament.last_rounds_no_byes:
+            msg = ngettext(
+                "Byes can't be set for the last round of the tournament.",
+                "Byes can't be set for the last {rounds} rounds of the tournament.",
+                tournament.last_rounds_no_byes,
+            ).format(rounds=tournament.last_rounds_no_byes)
+            hpb_msg = msg
+            fpb_msg = msg
+        options: dict[Result, SelectOption] = {
+            Result.NO_RESULT: SelectOption('-'),
+            Result.ZERO_POINT_BYE: SelectOption(_('Zero-Point Bye')),
+            Result.HALF_POINT_BYE: SelectOption(
+                _('Half-Point Bye'),
+                tooltip=hpb_msg,
+                disabled=bool(hpb_msg),
+            ),
+            Result.FULL_POINT_BYE: SelectOption(
+                _('Full-Point Bye (deprecated)'),
+                tooltip=fpb_msg,
+                disabled=bool(fpb_msg),
+                classes='' if fpb_msg else 'text-danger',
+            ),
+        }
+        return {str(result.value): option for result, option in options.items()}
+
     @post(
         path='/team-add-player/{event_uniq_id:str}/{team_id:int}',
         name='admin-team-add-player',
@@ -295,21 +397,24 @@ class TeamAdminController(BaseEventAdminController):
         team = web_context.get_admin_team()
         tournament = team.tournament
         editable_rounds: list[int] = []
+        team_player_count = 0
+        color_pattern = ''
         if tournament is not None:
             first_editable = max(1, tournament.last_paired_round + 1)
             editable_rounds = list(range(first_editable, tournament.rounds + 1))
+            team_player_count = tournament.team_player_count or 0
+            color_pattern = tournament.color_pattern or ''
         rounds_data: list[dict[str, Any]] = []
         for round_ in editable_rounds:
-            lineup_ids = [p.id for p in team.effective_round_lineup(round_)]
+            slots = team.effective_round_slots(round_)
+            slot_player_ids: set[int] = {p.id for p in slots if p is not None}
+            bench = [p for p in team.players if p.id not in slot_player_ids]
             rounds_data.append(
                 {
                     'round': round_,
                     'has_override': team.has_explicit_round_lineup(round_),
-                    'selected_ids': lineup_ids,
-                    'ordered_players': [
-                        *team.effective_round_lineup(round_),
-                        *(p for p in team.players if p.id not in set(lineup_ids)),
-                    ],
+                    'slots': slots,
+                    'bench': bench,
                 }
             )
         default_round = 0
@@ -322,6 +427,8 @@ class TeamAdminController(BaseEventAdminController):
             'modal': 'team_lineups',
             'rounds_data': rounds_data,
             'default_round': default_round,
+            'team_player_count': team_player_count,
+            'color_pattern': color_pattern,
         }
 
     @get(
@@ -345,7 +452,7 @@ class TeamAdminController(BaseEventAdminController):
         request: HTMXRequest,
         round_: int,
         data: Annotated[
-            dict[str, list[int]],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
@@ -358,14 +465,22 @@ class TeamAdminController(BaseEventAdminController):
             return self._admin_event_teams_render(
                 web_context, self._team_lineups_modal_context(web_context)
             )
-        ordered_ids = data.get('player_ids', []) or []
+        n = tournament.team_player_count or 0
         roster_ids = {p.id for p in team.players}
-        filtered_ids = [pid for pid in ordered_ids if pid in roster_ids]
+        slot_values: list[int | None] = []
+        for i in range(n):
+            raw = data.get(f'slot_{i}', '')
+            raw = raw[0] if isinstance(raw, list) else raw
+            try:
+                pid = int(raw) if raw else None
+            except ValueError:
+                pid = None
+            slot_values.append(pid if pid in roster_ids else None)
         with EventDatabase(event.uniq_id, True) as database:
-            if not filtered_ids:
+            if all(v is None for v in slot_values):
                 team.delete_round_lineup(round_, database)
             else:
-                team.set_round_lineup(round_, filtered_ids, database)
+                team.set_round_lineup(round_, slot_values, database)
         return self._admin_event_teams_render(
             web_context, self._team_lineups_modal_context(web_context)
         )

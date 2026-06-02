@@ -156,7 +156,11 @@
                                 {% set text=_('Pending') %}
                             {% endif %}
                         {% elif pairing.exempt %}
-                            {% set text=_('Pairing Allocated Bye') %}
+                            {% if pairing.opponent_was_hole %}
+                                {% set text=_('Forfeit Win (no opponent)') %}
+                            {% else %}
+                                {% set text=_('Pairing Allocated Bye') %}
+                            {% endif %}
                         {% elif pairing.unrated_loss %}
                             {% set text=_('Unrated Loss') %}
                         {% elif pairing.loss %}
@@ -313,31 +317,33 @@
                     {% endif %}
                 </tbody>
             </table>
-            <div>
+            {% if not admin_event.is_team_event %}
+                <div>
+                    <span class="fst-italic">
+                        {{ _(
+                            'Number of byes: %(byes)d (maximum: %(max_byes)d)',
+                            byes=tournament_player.byes_count,
+                            max_byes=tournament_player.tournament.max_byes
+                        ) }}
+                    </span>
+                    <i
+                        class="bi-info-circle-fill ps-1"
+                        {{ macros.tooltip_attributes(
+                            '',
+                            '<div class="text-center text-nowrap">' ~
+                                _('%(string)s:', string=_('Half-Point Bye')) ~
+                            ' 1</div>'
+                            '<div class="text-center text-nowrap">' ~
+                                _('%(string)s:', string=_('Full-Point Bye')) ~
+                            ' 2</div>',
+                            'right',
+                        ) }}
+                    ></i>
+                </div>
                 <span class="fst-italic">
-                    {{ _(
-                        'Number of byes: %(byes)d (maximum: %(max_byes)d)',
-                        byes=tournament_player.byes_count,
-                        max_byes=tournament_player.tournament.max_byes
-                    ) }}
+                    {{ _('To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player\'s name.') }}
                 </span>
-                <i
-                    class="bi-info-circle-fill ps-1"
-                    {{ macros.tooltip_attributes(
-                        '',
-                        '<div class="text-center text-nowrap">' ~
-                            _('%(string)s:', string=_('Half-Point Bye')) ~
-                        ' 1</div>'
-                        '<div class="text-center text-nowrap">' ~
-                            _('%(string)s:', string=_('Full-Point Bye')) ~
-                        ' 2</div>',
-                        'right',
-                    ) }}
-                ></i>
-            </div>
-            <span class="fst-italic">
-                {{ _('To modify previous rounds, return to that round in the Pairings tab;<br />byes can then be changed using the buttons next to the player\'s name.') }}
-            </span>
+            {% endif %}
         </div>
         <div class="modal-footer">
             {% if client.can_update_players %}

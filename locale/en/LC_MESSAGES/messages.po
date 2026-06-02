@@ -1190,6 +1190,9 @@ msgid_plural "Byes can't be set for the last {rounds} rounds of the tournament."
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Byes for past rounds can be edited from the pairings page for that round."
+msgstr ""
+
 msgid "Byes will not be impacted."
 msgstr ""
 
@@ -2850,6 +2853,9 @@ msgstr ""
 msgid "Full-Point Bye (deprecated)"
 msgstr ""
 
+msgid "Full-Point Bye attributed to team [{team}]."
+msgstr ""
+
 msgid "GM *** SHORT NAME FOR Grand Master"
 msgstr "GM"
 
@@ -2977,6 +2983,9 @@ msgid "Half-Point Bye"
 msgstr ""
 
 msgid "Half-Point Bye attributed to player [{player}]."
+msgstr ""
+
+msgid "Half-Point Bye attributed to team [{team}]."
 msgstr ""
 
 msgid "Having a close amount of players and prizes represents a risk for a prize not to be attributed."
@@ -6013,6 +6022,9 @@ msgstr ""
 msgid "Team [{team}] has been updated."
 msgstr ""
 
+msgid "Team [{team}] has returned for this round."
+msgstr ""
+
 msgid "Team competition"
 msgstr ""
 
@@ -6427,6 +6439,9 @@ msgid "This account is active, anonymous users can log in to it."
 msgstr ""
 
 msgid "This account is not active, anonymous users can not log in to it."
+msgstr ""
+
+msgid "This board is recorded as an absence (forfeit) from the lineup. Use the lineup dropdown to put a player back on this slot."
 msgstr ""
 
 msgid "This data source in unavailable (for more details: Menu > Data sources)."
@@ -7487,7 +7502,7 @@ msgstr ""
 msgid "Zero-Point Bye attributed to player [{player}]."
 msgstr ""
 
-msgid "Zero-point bye / forfeit loss. Defaults to the Loss value."
+msgid "Zero-Point Bye attributed to team [{team}]."
 msgstr ""
 
 msgid "Zimbabwe"
@@ -7848,5 +7863,11 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Value of the pairing allocated bye:"
+#~ msgstr ""
+
+#~ msgid "Byes can't be set for the last {rounds} rounds of the tournament."
+#~ msgstr ""
+
+#~ msgid "Zero-point bye / forfeit loss. Defaults to the Loss value."
 #~ msgstr ""
 

@@ -90,6 +90,10 @@ class TrfTournamentImporter(FileTournamentImporter):
     # round → TPN of the team that got the team-level PAB that round
     # (from 320).
     _pending_pab_team_by_round: dict[int, int]
+    # (round, TPN) → bye_type string ('HPB' / 'FPB' / 'ZPB') from 240
+    # records. Applied to the team's bye envelope during team_board
+    # reconstruction.
+    _pending_manual_team_byes: dict[tuple[int, int], str]
 
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
@@ -120,6 +124,10 @@ class TrfTournamentImporter(FileTournamentImporter):
             )
         else:
             self._pending_pab_team_by_round = {}
+        # 240 records: per-round manual team byes (F/H/Z). Stash for
+        # the team-board reconstruction step in
+        # ``_write_stored_tournament`` to apply.
+        self._pending_manual_team_byes = self._read_trf_manual_team_byes(trf_tournament)
 
         next_board_id = 1
         board_id_by_player_id_by_round: dict[int, dict[int, int]] = defaultdict(dict)
@@ -365,6 +373,22 @@ class TrfTournamentImporter(FileTournamentImporter):
         return result
 
     @staticmethod
+    def _read_trf_manual_team_byes(
+        trf_tournament: TrfTournament,
+    ) -> dict[tuple[int, int], str]:
+        """TRF26 240 records (team-mode interpretation): per
+        ``(round, team TPN)`` mapping to ``HPB`` / ``FPB`` / ``ZPB``."""
+        bye_type_by_letter = {'F': 'FPB', 'H': 'HPB', 'Z': 'ZPB'}
+        result: dict[tuple[int, int], str] = {}
+        for trf_round_bye in trf_tournament.round_byes:
+            mapped = bye_type_by_letter.get((trf_round_bye.type or '').upper())
+            if mapped is None:
+                continue
+            for tpn in trf_round_bye.pairing_numbers:
+                result[(trf_round_bye.round, tpn)] = mapped
+        return result
+
+    @staticmethod
     def _read_trf_oodo_match_orientation(
         trf_tournament: TrfTournament,
     ) -> dict[tuple[int, frozenset[int]], tuple[int, int]]:
@@ -487,6 +511,14 @@ class TrfTournamentImporter(FileTournamentImporter):
             resolved = team_id_by_tpn.get(tpn)
             if resolved is not None:
                 pab_team_id_by_round[round_] = resolved
+        # Resolve the parsed 240 records (keyed by TPN) into the
+        # team-id space the reconstruction step uses.
+        manual_byes_by_round_team: dict[tuple[int, int], str] = {}
+        for (round_, tpn), bye_type in self._pending_manual_team_byes.items():
+            resolved_id: int | None = team_id_by_tpn.get(tpn)
+            if resolved_id is not None:
+                manual_byes_by_round_team[(round_, resolved_id)] = bye_type
+
         self._reconstruct_team_boards(
             stored_tournament,
             tournament_id,
@@ -496,6 +528,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             oodo_by_round_team,
             oodo_orientation,
             pab_team_id_by_round,
+            manual_byes_by_round_team,
             database,
         )
         return tournament_id
@@ -510,6 +543,7 @@ class TrfTournamentImporter(FileTournamentImporter):
         oodo_by_round_team: dict[tuple[int, int], dict[int, int]],
         oodo_orientation: dict[tuple[int, frozenset[int]], tuple[int, int]],
         pab_team_id_by_round: dict[int, int],
+        manual_byes_by_round_team: dict[tuple[int, int], str],
         database: EventDatabase,
     ) -> None:
         """Re-create per-round ``StoredTeamBoard`` envelopes plus
@@ -537,10 +571,10 @@ class TrfTournamentImporter(FileTournamentImporter):
                 if board.black_player_id is not None:
                     boards_by_player_id.setdefault(board.black_player_id, board)
 
-            # Distinct match-pairs for this round, taken straight from
-            # the OOdO orientation map (which records the original
-            # team_a, team_b orientation). Match list order is by team_a
-            # pairing number, then team_b pairing number.
+            # Distinct match-pairs for this round. Display order is
+            # fixed later by ``_reorder_tournament_boards`` (sorts by
+            # primary score at start of round), so the order here is
+            # only for stable iteration during construction.
             real_matches: list[tuple[int, int]] = []
             seen_pairs: set[frozenset[int]] = set()
             for (
@@ -553,12 +587,6 @@ class TrfTournamentImporter(FileTournamentImporter):
                     continue
                 seen_pairs.add(pair)
                 real_matches.append((team_a_id, team_b_id))
-            real_matches.sort(
-                key=lambda match: (
-                    pairing_number_by_team_id.get(match[0], match[0]),
-                    pairing_number_by_team_id.get(match[1], match[1]),
-                )
-            )
 
             # Teams that participate in a real match this round don't
             # also get a lone (team, None) PAB envelope — their empty
@@ -568,13 +596,31 @@ class TrfTournamentImporter(FileTournamentImporter):
                 teams_in_real_match.add(team_a_id)
                 teams_in_real_match.add(team_b_id)
 
-            # PAB team for this round (from 320). The team that got
-            # the round bye doesn't appear in any 300 record, so this
-            # is the only place to learn about it.
-            pab_team_ids: list[int] = []
+            # Lone (team, None) envelopes for this round:
+            # * 320 record → engine PAB (single team per round).
+            # * 240 records → manual byes (HPB / FPB / ZPB), one team
+            #   per entry, distinct from PAB. Teams already in a real
+            #   match (folded-in empty slots) are excluded — a real
+            #   match takes precedence.
+            #
+            # ``bye_envelopes`` carries ``(team_id, bye_type_or_None)``.
+            # ``None`` means PAB; otherwise it's the manual bye type.
+            bye_envelopes: list[tuple[int, str | None]] = []
             pab_team_id = pab_team_id_by_round.get(round_)
             if pab_team_id is not None and pab_team_id not in teams_in_real_match:
-                pab_team_ids.append(pab_team_id)
+                bye_envelopes.append((pab_team_id, None))
+            for (mb_round, mb_team_id), mb_type in manual_byes_by_round_team.items():
+                if mb_round != round_:
+                    continue
+                if mb_team_id in teams_in_real_match:
+                    continue
+                if mb_team_id == pab_team_id:
+                    # Manual bye supersedes the 320 PAB entry if both
+                    # accidentally name the same team.
+                    bye_envelopes = [
+                        (tid, bt) for tid, bt in bye_envelopes if tid != mb_team_id
+                    ]
+                bye_envelopes.append((mb_team_id, mb_type))
 
             match_index = 0
             assigned_board_ids: set[int] = set()
@@ -601,7 +647,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                     database.update_stored_board(match_board)
                     assigned_board_ids.add(match_board.id)
 
-            for team_id in pab_team_ids:
+            for team_id, bye_type in bye_envelopes:
                 stb = StoredTeamBoard(
                     id=None,
                     tournament_id=tournament_id,
@@ -609,6 +655,7 @@ class TrfTournamentImporter(FileTournamentImporter):
                     team_a_id=team_id,
                     team_b_id=None,
                     index=match_index,
+                    bye_type=bye_type,
                 )
                 stb.id = database.add_stored_team_board(stb)
                 match_index += 1
@@ -717,7 +764,14 @@ class TrfTournamentImporter(FileTournamentImporter):
                 )
             )
         if not trf_game.opponent_id and not (
-            result.is_bye or result == Result.NO_RESULT
+            result.is_bye
+            or result == Result.NO_RESULT
+            or result
+            in (
+                Result.FORFEIT_WIN,
+                Result.FORFEIT_LOSS,
+                Result.DOUBLE_FORFEIT,
+            )
         ):
             raise ImporterError(
                 _("Result [{result}] can't be used without an opponent.").format(
@@ -730,7 +784,16 @@ class TrfTournamentImporter(FileTournamentImporter):
                     color=trf_game.color
                 )
             )
-        if not trf_game.opponent_id and color:
+        if (
+            not trf_game.opponent_id
+            and color
+            and result
+            not in (
+                Result.FORFEIT_WIN,
+                Result.FORFEIT_LOSS,
+                Result.DOUBLE_FORFEIT,
+            )
+        ):
             raise ImporterError(
                 _("Color [{color}] can't be used without an opponent.").format(
                     color=trf_game.color
@@ -919,6 +982,25 @@ class TrfTournamentImporter(FileTournamentImporter):
                 id=None,
                 white_player_id=player_id,
                 black_player_id=None,
+                index=0,
+            )
+        elif (
+            result
+            in (
+                Result.FORFEIT_WIN,
+                Result.FORFEIT_LOSS,
+                Result.DOUBLE_FORFEIT,
+            )
+            and color is not None
+        ):
+            # Hole-opponent forfeit in a team match: player has a
+            # board on a known side, opposing side is a hole. The
+            # team-block reconstruction later attaches this board to
+            # its parent ``team_board``.
+            stored_board = StoredBoard(
+                id=None,
+                white_player_id=player_id if color == BoardColor.WHITE else None,
+                black_player_id=player_id if color == BoardColor.BLACK else None,
                 index=0,
             )
         return stored_pairing, stored_board
