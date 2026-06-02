@@ -7835,9 +7835,6 @@ msgstr ""
 msgid "—"
 msgstr ""
 
-msgid "— No team —"
-msgstr ""
-
 msgid "— Unassigned —"
 msgstr ""
 
@@ -7851,11 +7848,5 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Value of the pairing allocated bye:"
-#~ msgstr ""
-
-#~ msgid "Game points awarded to the team for a Pairing Allocated Bye. Defaults to the Draw value."
-#~ msgstr ""
-
-#~ msgid "Score used for colour allocation when pairing. Only used in Swiss; in Round-Robin the colour pattern is fixed by the Berger tables."
 #~ msgstr ""
 

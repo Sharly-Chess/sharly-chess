@@ -807,10 +807,27 @@ class PlayerAdminController(BaseEventAdminController):
                 tournaments.insert(0, admin_player.single_tournament)
         tournament_options |= web_context.get_tournament_options(tournaments)
 
-        team_options: dict[str, str] = {'': _('— No team —')}
+        team_options: dict[str, str | dict[str, str]] = {'': '-'}
         if event.is_team_event:
+            # Group teams by tournament so the picker matches the
+            # team-admin layout. Teams not yet attached to a tournament
+            # land under "Unassigned".
+            teams_by_tournament_label: dict[str, dict[str, str]] = {}
+            tournaments_by_id = event.tournaments_by_id
             for team in event.sorted_teams:
-                team_options[str(team.id)] = team.name
+                if (
+                    team.tournament_id is not None
+                    and team.tournament_id in tournaments_by_id
+                ):
+                    label = tournaments_by_id[team.tournament_id].name
+                else:
+                    label = _('Unassigned')
+                teams_by_tournament_label.setdefault(label, {})[str(team.id)] = (
+                    team.name
+                )
+            # Sorted alphabetically so the order is stable across renders.
+            for label in sorted(teams_by_tournament_label):
+                team_options[label] = teams_by_tournament_label[label]
         plugin_templates_by_section: dict[str, list[str]] = defaultdict(list)
         plugin_manager.hook_for_event(event, 'insert_player_form_fields_template')(
             templates_by_section=plugin_templates_by_section
