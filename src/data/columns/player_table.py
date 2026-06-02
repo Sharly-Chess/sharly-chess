@@ -135,8 +135,9 @@ class RatingColumn(TournamentPlayerTableColumn):
     def get_cell_content(self, tournament_player: TournamentPlayer) -> Any:
         return tournament_player.rating_str
 
-    def get_cell_classes(self, tournament_player: TournamentPlayer) -> str:
-        return 'text-end'
+    @property
+    def shared_classes(self) -> str:
+        return 'text-center'
 
 
 class CategoryColumn(TournamentPlayerTableColumn):
