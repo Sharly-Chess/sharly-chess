@@ -805,7 +805,7 @@ class EventType(StrEnum):
     INDIVIDUAL = 'INDIVIDUAL'
     TEAM = 'TEAM'
 
-    def __str__(self):
+    def __str__(self) -> str:
         match self:
             case EventType.INDIVIDUAL:
                 return _('Individual')

@@ -303,24 +303,32 @@
                                         }
                                         let next = '';
                                         for (let i = 0; i < count; i++) {
-                                            const ch = (stored[i] === WHITE || stored[i] === BLACK)
-                                                ? stored[i] : defaultChar(i);
+                                            const locked = i === 0;
+                                            const ch = locked
+                                                ? WHITE
+                                                : ((stored[i] === WHITE || stored[i] === BLACK)
+                                                    ? stored[i] : defaultChar(i));
                                             next += ch;
                                             const isWhite = ch === WHITE;
                                             const $btn = $('<button>', {
                                                 type: 'button',
                                                 'data-board': i,
                                                 'data-state': ch,
+                                                'data-locked': locked ? '1' : '0',
                                                 class: 'cp-swatch border rounded d-flex align-items-center justify-content-center',
                                                 css: {
                                                     width: '32px',
                                                     height: '32px',
                                                     background: isWhite ? '#ffffff' : '#212529',
                                                     color: isWhite ? '#212529' : '#ffffff',
-                                                    cursor: 'pointer',
+                                                    cursor: locked ? 'not-allowed' : 'pointer',
+                                                    opacity: locked ? 0.6 : 1,
                                                     fontSize: '0.8rem',
                                                 },
                                                 text: String(i + 1),
+                                                title: locked
+                                                    ? '{{ _("First board is always White for team 1.") }}'
+                                                    : '',
                                             });
                                             $container.append($btn);
                                         }
@@ -329,6 +337,9 @@
 
                                     $container.on('click', '.cp-swatch', function () {
                                         const $btn = $(this);
+                                        if ($btn.attr('data-locked') === '1') {
+                                            return;
+                                        }
                                         const state = $btn.attr('data-state') === WHITE ? BLACK : WHITE;
                                         $btn.attr('data-state', state);
                                         const isWhite = state === WHITE;
@@ -366,10 +377,7 @@
                                 name='secondary_score',
                                 label=_('Colour allocation:'),
                                 tooltip_text=_(
-                                    'Score used for colour allocation when '
-                                    'pairing. Only used in Swiss; in '
-                                    'Round-Robin the colour pattern is fixed '
-                                    'by the Berger tables.'
+                                    'Score used for colour allocation when pairing.'
                                 ),
                                 select_options=score_type_options,
                                 data=data, errors=errors

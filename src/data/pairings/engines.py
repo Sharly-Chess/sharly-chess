@@ -956,5 +956,3 @@ class TeamDoubleBergerEngine(TeamBergerEngine):
                 continue
             team_pairs.append((a_id, b_id))
         return team_pairs
-
-    pass

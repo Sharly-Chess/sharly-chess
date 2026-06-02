@@ -169,7 +169,6 @@ def _can_tile(target: int, sizes: tuple[int, ...]) -> bool:
     seen = {0}
     while seen:
         nxt = set()
-        done = False
         for s in seen:
             for size in sizes:
                 v = s + size
@@ -180,8 +179,6 @@ def _can_tile(target: int, sizes: tuple[int, ...]) -> bool:
         if not nxt or nxt == seen:
             break
         seen = nxt
-        if done:
-            break
     return False
 
 
