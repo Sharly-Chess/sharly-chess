@@ -145,27 +145,18 @@
                         }
                         function enforceSlotMaxOne(slotEl, droppedCard) {
                             // If the slot already has a card before the drop,
-                            // bounce the existing one back to where the
-                            // dragged card came from. Sortable.js drops the
-                            // new card without removing the old one, so we
-                            // see ≥2 children right after onAdd.
+                            // send the existing one to the bench. Sortable.js
+                            // drops the new card without removing the old
+                            // one, so we see ≥2 children right after onAdd.
                             const cards = slotEl.querySelectorAll('.lineup-card');
                             if (cards.length <= 1) return;
                             const other = Array.from(cards).find(
                                 c => c !== droppedCard
                             );
                             if (!other) return;
-                            const origin = droppedCard.dataset.originContainer;
-                            const originEl = origin && document.querySelector(
-                                '[data-origin-id="' + origin + '"]'
-                            );
-                            if (originEl) originEl.appendChild(other);
-                            else {
-                                // Fall back: shove the displaced one onto the bench.
-                                const bench = slotEl.closest('.lineup-round-section')
-                                    .querySelector('.lineup-bench');
-                                if (bench) bench.appendChild(other);
-                            }
+                            const bench = slotEl.closest('.lineup-round-section')
+                                .querySelector('.lineup-bench');
+                            if (bench) bench.appendChild(other);
                         }
                         document.querySelectorAll('.lineup-round-section').forEach(function (section) {
                             const round = section.dataset.round;

@@ -9,6 +9,7 @@ from litestar.status_codes import HTTP_200_OK
 
 from common.i18n import _, ngettext
 from data.access_levels.actions import AuthAction
+from data.event import Event
 from data.player import Player
 from data.team import Team
 from data.tournament import Tournament
@@ -424,7 +425,9 @@ class TeamAdminController(BaseEventAdminController):
 
     @classmethod
     def _team_lineups_modal_context(
-        cls, web_context: TeamAdminWebContext
+        cls,
+        web_context: TeamAdminWebContext,
+        requested_round: int | None = None,
     ) -> dict[str, Any]:
         team = web_context.get_admin_team()
         tournament = team.tournament
@@ -433,7 +436,22 @@ class TeamAdminController(BaseEventAdminController):
         color_pattern = ''
         if tournament is not None:
             first_editable = max(1, tournament.last_paired_round + 1)
-            editable_rounds = list(range(first_editable, tournament.rounds + 1))
+            rounds_set = set(range(first_editable, tournament.rounds + 1))
+            # Include the current round even if already paired — paired
+            # rounds get reconciled to existing boards on save.
+            if (
+                tournament.current_round
+                and 1 <= tournament.current_round <= tournament.rounds
+            ):
+                rounds_set.add(tournament.current_round)
+            # Also include an explicitly requested past round (e.g.
+            # opened from the pairings tab pencil).
+            if (
+                requested_round is not None
+                and 1 <= requested_round <= tournament.rounds
+            ):
+                rounds_set.add(requested_round)
+            editable_rounds = sorted(rounds_set)
             team_player_count = tournament.team_player_count or 0
             color_pattern = tournament.color_pattern or ''
         rounds_data: list[dict[str, Any]] = []
@@ -455,6 +473,8 @@ class TeamAdminController(BaseEventAdminController):
             default_round = (
                 current if current in editable_rounds else editable_rounds[0]
             )
+        if requested_round is not None and requested_round in editable_rounds:
+            default_round = requested_round
         return {
             'modal': 'team_lineups',
             'rounds_data': rounds_data,
@@ -468,10 +488,13 @@ class TeamAdminController(BaseEventAdminController):
         name='admin-team-lineups-modal',
         guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
     )
-    async def htmx_admin_team_lineups_modal(self, request: HTMXRequest) -> Template:
+    async def htmx_admin_team_lineups_modal(
+        self, request: HTMXRequest, round: int | None = None
+    ) -> Template:
         web_context = TeamAdminWebContext(request)
         return self._admin_event_teams_render(
-            web_context, self._team_lineups_modal_context(web_context)
+            web_context,
+            self._team_lineups_modal_context(web_context, requested_round=round),
         )
 
     @patch(
@@ -492,10 +515,11 @@ class TeamAdminController(BaseEventAdminController):
         event = web_context.get_admin_event()
         team = web_context.get_admin_team()
         tournament = team.tournament
-        if tournament is None or round_ <= tournament.last_paired_round:
+        if tournament is None or not (1 <= round_ <= tournament.rounds):
             Message.warning(request, _('This round cannot be edited.'))
             return self._admin_event_teams_render(
-                web_context, self._team_lineups_modal_context(web_context)
+                web_context,
+                self._team_lineups_modal_context(web_context, requested_round=round_),
             )
         n = tournament.team_player_count or 0
         roster_ids = {p.id for p in team.players}
@@ -508,14 +532,107 @@ class TeamAdminController(BaseEventAdminController):
             except ValueError:
                 pid = None
             slot_values.append(pid if pid in roster_ids else None)
-        with EventDatabase(event.uniq_id, True) as database:
-            if all(v is None for v in slot_values):
-                team.delete_round_lineup(round_, database)
-            else:
-                team.set_round_lineup(round_, slot_values, database)
+        is_paired_round = round_ <= tournament.last_paired_round
+        if is_paired_round:
+            self._reconcile_paired_round_lineup(
+                event, tournament, team, round_, slot_values
+            )
+        else:
+            with EventDatabase(event.uniq_id, True) as database:
+                if all(v is None for v in slot_values):
+                    team.delete_round_lineup(round_, database)
+                else:
+                    team.set_round_lineup(round_, slot_values, database)
         return self._admin_event_teams_render(
-            web_context, self._team_lineups_modal_context(web_context)
+            web_context,
+            self._team_lineups_modal_context(web_context, requested_round=round_),
         )
+
+    @staticmethod
+    def _reconcile_paired_round_lineup(
+        event: 'Event',
+        tournament: Tournament,
+        team: Team,
+        round_: int,
+        new_slot_values: list[int | None],
+    ) -> None:
+        """Apply *new_slot_values* to ``team``'s lineup at *round_* when
+        the round is already paired. For each slot whose player changed,
+        punch the old player off the corresponding individual board, then
+        fill in the new one — reusing the inline-edit helpers so
+        pairings/results stay consistent. Players bumped off the lineup
+        lose their pairing for the round."""
+        from web.controllers.admin.pairings_admin_controller import (
+            PairingsAdminController,
+        )
+
+        # Find the team's team_board for this round (skip byes/EXEMPT —
+        # those have no opponent and don't need slot reconciliation).
+        team_board = next(
+            (
+                tb
+                for tb in tournament.get_round_team_boards(round_)
+                if (
+                    tb.stored_team_board.team_a_id == team.id
+                    or tb.stored_team_board.team_b_id == team.id
+                )
+                and tb.stored_team_board.team_b_id is not None
+            ),
+            None,
+        )
+        if team_board is None:
+            # Team has a bye / no real match this round — just persist
+            # the lineup; no boards to reconcile.
+            with EventDatabase(event.uniq_id, write=True) as database:
+                if all(v is None for v in new_slot_values):
+                    team.delete_round_lineup(round_, database)
+                else:
+                    team.set_round_lineup(round_, new_slot_values, database)
+            return
+
+        old_slots = [
+            p.id if p is not None else None for p in team.effective_round_slots(round_)
+        ]
+        boards_by_index = {board.index: board for board in team_board.boards}
+
+        # Two-pass: vacate every slot that changes, then fill. Avoids
+        # collisions when two players swap within the team's lineup.
+        to_punch: list[tuple[int, int]] = []  # (slot, old_player_id)
+        to_fill: list[tuple[int, int]] = []  # (slot, new_player_id)
+        for i, old_pid in enumerate(old_slots):
+            new_pid = new_slot_values[i] if i < len(new_slot_values) else None
+            if old_pid == new_pid:
+                continue
+            if old_pid is not None:
+                to_punch.append((i, old_pid))
+            if new_pid is not None:
+                to_fill.append((i, new_pid))
+
+        for slot, old_pid in to_punch:
+            board = boards_by_index.get(slot)
+            if board is None:
+                continue
+            PairingsAdminController._punch_lineup_hole_for_team(
+                event, tournament, board, team_board, team, old_pid
+            )
+        for slot, new_pid in to_fill:
+            board = boards_by_index.get(slot)
+            if board is None:
+                continue
+            new_tp = tournament.tournament_players_by_id.get(new_pid)
+            if new_tp is None:
+                continue
+            physical_side = (
+                'white'
+                if PairingsAdminController._team_owning_side(
+                    tournament, team_board, slot, 'W'
+                )
+                == team
+                else 'black'
+            )
+            PairingsAdminController._fill_lineup_hole(
+                event, tournament, board, team_board, team, physical_side, new_tp
+            )
 
     @patch(
         path='/teams-reassign/{event_uniq_id:str}',

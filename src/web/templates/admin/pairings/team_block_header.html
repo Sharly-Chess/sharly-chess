@@ -42,13 +42,20 @@
                         onclick="event.stopPropagation()"
                     >{{ team_board.team_a.name }}</a>
                 </strong>
-                {% if team_board.team_b and client.can_use_pairing_engine(admin_tournament.id) %}
+                {% if team_board.team_b and client.can_update_tournaments %}
                     <button
                         type="button"
-                        class="btn btn-sm btn-outline-secondary lineup-edit-toggle ms-2"
-                        data-target-block="team-block-body-{{ team_board.id }}"
-                        data-side="a"
-                        onclick="event.stopPropagation(); toggleLineupEdit(this);"
+                        class="btn btn-sm btn-outline-secondary ms-2"
+                        hx-get="{{ url_for(
+                            'admin-team-lineups-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            team_id=team_board.team_a.id,
+                        ) }}?round={{ team_board.round }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        onclick="event.stopPropagation()"
                         {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
                     >
                         <i class="bi bi-pencil"></i>
@@ -59,7 +66,8 @@
         <td class="bg-secondary-subtle text-center align-middle">
             <button
                 type="button"
-                class="btn btn-outline-secondary fw-bold px-3 text-nowrap"
+                class="btn btn-sm btn-outline-primary fw-bold text-nowrap"
+                style="width: 4.5rem;"
                 hx-get="{{ url_for(
                     'admin-event-team-pairing-modal',
                     event_uniq_id=admin_event.uniq_id,
@@ -77,19 +85,26 @@
                     {% set _a_gp, _b_gp = team_board.game_points %}
                     {{ '%g'|format(_a_gp) }} – {{ '%g'|format(_b_gp) }}
                 {% else %}
-                    {{ _('EXEMPT') }}
+                    {{ '%g'|format(admin_tournament.team_pab_game_points) }}
                 {% endif %}
             </button>
         </td>
         <td colspan="{{ team_b_colspan }}" class="bg-secondary-subtle">
             <div class="d-flex align-items-center">
-                {% if team_board.team_b and client.can_use_pairing_engine(admin_tournament.id) %}
+                {% if team_board.team_b and client.can_update_tournaments %}
                     <button
                         type="button"
-                        class="btn btn-sm btn-outline-secondary lineup-edit-toggle me-2"
-                        data-target-block="team-block-body-{{ team_board.id }}"
-                        data-side="b"
-                        onclick="event.stopPropagation(); toggleLineupEdit(this);"
+                        class="btn btn-sm btn-outline-secondary me-2"
+                        hx-get="{{ url_for(
+                            'admin-team-lineups-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            team_id=team_board.team_b.id,
+                        ) }}?round={{ team_board.round }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                        data-bs-toggle="modal"
+                        data-bs-target="#modal-wrapper"
+                        onclick="event.stopPropagation()"
                         {{ macros.tooltip_attributes('info', _('Edit lineup'), 'top') }}
                     >
                         <i class="bi bi-pencil"></i>
@@ -114,6 +129,8 @@
                             team_board.team_b.id, team_board.round
                         ) %}
                         <span class="text-muted ms-1">{{ '%g'|format(_b_score) }}</span>
+                    {% else %}
+                        {{ _('EXEMPT') }}
                     {% endif %}
                 </strong>
             </div>

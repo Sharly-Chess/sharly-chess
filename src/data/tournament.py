@@ -696,14 +696,13 @@ class Tournament:
         Berlin, knockout BC/TBR/BBE)."""
         scores: list[float] = []
         for board in sorted(team_board.boards, key=lambda b: b.index):
-            white_player = self.event.players_by_id.get(
-                board.stored_board.white_player_id
-            )
+            white_id = board.stored_board.white_player_id
+            white_player = self.event.players_by_id.get(white_id) if white_id else None
             white_team_id = white_player.team_id if white_player else None
-            white_pts = board.white_pairing.points
-            black_pts = (
-                board.black_pairing.points if board.black_tournament_player else 0.0
-            )
+            white_pairing = board.optional_white_pairing
+            white_pts = white_pairing.points if white_pairing is not None else 0.0
+            black_pairing = board.optional_black_pairing
+            black_pts = black_pairing.points if black_pairing is not None else 0.0
             scores.append(white_pts if white_team_id == team_id else black_pts)
         return tuple(scores)
 

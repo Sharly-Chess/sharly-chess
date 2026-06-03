@@ -941,11 +941,16 @@ class PairingsAdminController(BaseEventAdminController):
                 lineup_slots[slot] = None
             side_team.set_round_lineup(round_, lineup_slots, database)
             side_pairing = side_tp.pairings_by_round[round_]
-            database.delete_stored_pairing(side_pairing.stored_pairing)
+            # Update (don't delete) the pairing: the
+            # ``delete_board_on_pairing_delete`` trigger would
+            # otherwise nuke this slot's board (cascading to the
+            # opponent's pairing too). Clearing ``board_id`` first
+            # lets the player look "unpaired" without losing the slot.
             side_pairing.stored_pairing.result = Result.NO_RESULT.value
             side_pairing.stored_pairing.board_id = None
             side_pairing.stored_pairing.effective_points = None
             side_pairing.stored_pairing.illegal_moves = 0
+            side_pairing.update(database)
             if physical_side == 'white':
                 this_board.stored_board.white_player_id = None
                 this_board._white_player_ref = None
@@ -964,7 +969,9 @@ class PairingsAdminController(BaseEventAdminController):
             if opp_id is not None:
                 opp_tp = tournament.tournament_players_by_id[opp_id]
                 opp_pairing = opp_tp.pairings_by_round[round_]
-                opp_pairing.stored_pairing.result = Result.NO_RESULT.value
+                # Opposing player now has no opponent → forfeit win,
+                # mirroring the lineup-hole branch in ``create_boards``.
+                opp_pairing.stored_pairing.result = Result.FORFEIT_WIN.value
                 opp_pairing.stored_pairing.effective_points = None
                 opp_pairing.stored_pairing.illegal_moves = 0
                 opp_pairing.update(database)
