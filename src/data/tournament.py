@@ -74,6 +74,7 @@ if TYPE_CHECKING:
         TrfAcceleratedRound,
         TrfOOdOTeamPairing,
         TrfRoundBye,
+        TrfTeamForfeitedMatch,
         TrfTeamPABs,
         TrfTournament,
     )
@@ -1742,6 +1743,17 @@ class Tournament:
         )
 
     def is_round_partially_paired(self, round_: int) -> bool:
+        if self.event.is_team_event and self.pairing_system.paired_by_team:
+            # Team mode: there's something to complement if at least
+            # one team has no envelope (real match / manual bye / PAB)
+            # for the round.
+            envelope_team_ids: set[int] = set()
+            for tb in self.get_round_team_boards(round_):
+                stb = tb.stored_team_board
+                envelope_team_ids.add(stb.team_a_id)
+                if stb.team_b_id is not None:
+                    envelope_team_ids.add(stb.team_b_id)
+            return any(team.id not in envelope_team_ids for team in self.teams)
         return self.round_has_pairings(round_) and not self.is_round_paired(round_)
 
     def round_has_result(self, round_: int) -> bool:
@@ -1893,6 +1905,9 @@ class Tournament:
             after_round=after_round,
             tpn_by_team_id=tpn_map,
             next_round_pairings_as_zpb=next_round_pairings_as_zpb,
+        )
+        trf.team_forfeited_matches = self._team_forfeited_matches(
+            after_round=after_round, tpn_by_team_id=tpn_map
         )
 
         from data.pairings.engines import _team_ui_sort_key
@@ -2441,6 +2456,62 @@ class Tournament:
             for t, tpns in tpns_by_type.items():
                 records.append(
                     TrfRoundBye(type=t, round=round_, pairing_numbers=sorted(tpns))
+                )
+        return records
+
+    def _team_forfeited_matches(
+        self,
+        *,
+        after_round: int,
+        tpn_by_team_id: dict[int, int],
+    ) -> list['TrfTeamForfeitedMatch']:
+        """TRF26 330 records — one entry per played team match where
+        one (or both) teams forfeited by failing to field any player.
+        Type ``W`` = white team won by forfeit (black team forfeited),
+        ``B`` = black team won, ``D`` = double forfeit. The colour each
+        team plays at slot 0 of the match (driven by ``color_pattern``)
+        decides which team is "white" for this encoding."""
+        from data.input_output.trf.trf_data import TrfTeamForfeitedMatch
+
+        pattern = self.color_pattern or ''
+        team_a_board0_white = pattern[:1].upper() != BoardColor.BLACK.value
+        records: list[TrfTeamForfeitedMatch] = []
+        for round_ in range(1, after_round + 1):
+            for tb in self.get_round_team_boards(round_):
+                stb = tb.stored_team_board
+                if stb.team_b_id is None:
+                    continue
+                team_a = self.event.teams_by_id.get(stb.team_a_id)
+                team_b = self.event.teams_by_id.get(stb.team_b_id)
+                if team_a is None or team_b is None:
+                    continue
+                a_empty = all(p is None for p in team_a.effective_round_slots(round_))
+                b_empty = all(p is None for p in team_b.effective_round_slots(round_))
+                if not (a_empty or b_empty):
+                    continue
+                a_tpn = tpn_by_team_id.get(team_a.id)
+                b_tpn = tpn_by_team_id.get(team_b.id)
+                if a_tpn is None or b_tpn is None:
+                    continue
+                if team_a_board0_white:
+                    white_tpn, black_tpn = a_tpn, b_tpn
+                    white_empty, black_empty = a_empty, b_empty
+                else:
+                    white_tpn, black_tpn = b_tpn, a_tpn
+                    white_empty, black_empty = b_empty, a_empty
+                if white_empty and black_empty:
+                    forfeit_type = 'D'
+                elif black_empty:
+                    forfeit_type = 'W'
+                else:
+                    forfeit_type = 'B'
+                records.append(
+                    TrfTeamForfeitedMatch(
+                        type=forfeit_type,
+                        round=round_,
+                        white_team_id=white_tpn,
+                        black_team_id=black_tpn,
+                    )
                 )
         return records
 

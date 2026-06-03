@@ -732,11 +732,6 @@ class TeamSwissEngine(_TeamPairingBase):
         n = tournament.team_player_count or 0
         if n <= 0:
             return _('Tournament has no team-player count configured.')
-        for team in teams:
-            if len(team.players) < n:
-                return _('Team [{name}] has fewer than {n} players.').format(
-                    name=team.name, n=n
-                )
         return None
 
     def pairings_generation_disabled_message(
