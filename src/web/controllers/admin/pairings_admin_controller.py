@@ -2115,6 +2115,9 @@ class PairingsAdminController(BaseEventAdminController):
         )
         tournament = web_context.get_admin_tournament()
 
+        if tournament.event.is_team_event:
+            return self._team_pairings_info_modal(web_context, tournament, round)
+
         engine = tournament.pairing_variation.engine
         assert isinstance(engine, BbpPairings)
 
@@ -2152,6 +2155,79 @@ class PairingsAdminController(BaseEventAdminController):
                 'pairing_history': grouped,
                 'players_by_pairing_number': tournament.tournament_players_by_pairing_number,
                 'warning': warning,
+            },
+        )
+
+    @classmethod
+    def _team_pairings_info_modal(
+        cls,
+        web_context: PairingsAdminWebContext,
+        tournament: Tournament,
+        round: int,
+    ) -> Template:
+        """Team-mode counterpart to the individual info modal: per-team
+        rows with TPN, name, accumulated MP/GP at the start of *round*,
+        and the chronological list of opponents up to *round - 1* (each
+        rendered as the opposing team's TPN, with a tooltip carrying
+        the team name)."""
+        opponents_by_team: dict[int, list[int | None]] = {
+            team.id: [] for team in tournament.teams
+        }
+        # Per-team colour history on board 0 (the team's overall colour
+        # in each match). Same length as ``opponents_by_team[id]``.
+        colors_by_team: dict[int, list[str | None]] = {
+            team.id: [] for team in tournament.teams
+        }
+        pattern = tournament.color_pattern or ''
+        team_a_board0_color = pattern[0].upper() if pattern else 'W'
+        team_b_board0_color = 'B' if team_a_board0_color == 'W' else 'W'
+        for r in range(1, round):
+            paired_team_ids: set[int] = set()
+            for tb in tournament.get_round_team_boards(r):
+                stb = tb.stored_team_board
+                if stb.team_b_id is None:
+                    opponents_by_team.setdefault(stb.team_a_id, []).append(None)
+                    colors_by_team.setdefault(stb.team_a_id, []).append(None)
+                    paired_team_ids.add(stb.team_a_id)
+                    continue
+                opponents_by_team.setdefault(stb.team_a_id, []).append(stb.team_b_id)
+                opponents_by_team.setdefault(stb.team_b_id, []).append(stb.team_a_id)
+                colors_by_team.setdefault(stb.team_a_id, []).append(team_a_board0_color)
+                colors_by_team.setdefault(stb.team_b_id, []).append(team_b_board0_color)
+                paired_team_ids.add(stb.team_a_id)
+                paired_team_ids.add(stb.team_b_id)
+            for tid, hist in opponents_by_team.items():
+                if tid not in paired_team_ids:
+                    hist.append(None)
+                    colors_by_team.setdefault(tid, []).append(None)
+        teams_by_id = tournament.event.teams_by_id
+        rows = []
+        for row in tournament.team_standings():
+            team = row['team']
+            rows.append(
+                {
+                    'team': team,
+                    'tpn': team.pairing_number,
+                    'mp': tournament.team_primary_score_before_round(team.id, round),
+                    'gp': row['gp'],
+                    'rank': row['rank'],
+                    'opponents': opponents_by_team.get(team.id, []),
+                    'colors': colors_by_team.get(team.id, []),
+                }
+            )
+        buckets: dict[float, list[dict[str, Any]]] = defaultdict(list)
+        for row in rows:
+            buckets[row['mp']].append(row)
+        for entries in buckets.values():
+            entries.sort(key=lambda r: (r['tpn'] or 0, r['team'].name.lower()))
+        grouped = sorted(buckets.items(), key=lambda it: it[0], reverse=True)
+        return cls._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'team_pairing_info',
+                'team_info_groups': grouped,
+                'teams_by_id': teams_by_id,
+                'history_columns': max((len(r['opponents']) for r in rows), default=0),
             },
         )
 
