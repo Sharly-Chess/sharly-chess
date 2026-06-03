@@ -6231,8 +6231,7 @@ msgid "The number of columns used to display data."
 msgstr "Le nombre de colonnes utilisé pour afficher les données."
 
 msgid "The number of final rounds in which byes are not permitted."
-msgstr "Le nombre de rondes finales pour lesquelles les joueur·euses ne peuvent prendre de bye."
-
+msgstr "Nombre de dernières rondes durant lesquelles aucun bye ne peut être demandé ou attribué."
 msgid "The number of games played over the board with the Black pieces."
 msgstr "Le nombre de parties jouées sur l'échiquier avec les Noirs."
 
@@ -7869,4 +7868,3 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Zero-point bye / forfeit loss."
 #~ msgstr "Forfeit"
-

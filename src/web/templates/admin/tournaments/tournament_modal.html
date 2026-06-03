@@ -200,7 +200,11 @@
                             name='max_byes',
                             label=_('Max byes:'),
                             placeholder=sharly_chess_config.default_max_byes,
-                            tooltip_text=_('The maximum number of byes a player can pretend to.'),
+                            tooltip_text=(
+                                _('The maximum number of byes a team can pretend to.')
+                                if is_team_event else
+                                _('The maximum number of byes a player can pretend to.')
+                            ),
                             data=data, errors=errors
                         ) }}
                     </div>
