@@ -34,6 +34,10 @@
     text-decoration: none;
 }
 
+.table.prominent .header .player-link {
+    color: var(--pw-contrast-text);
+}
+
 .player-secondary-link {
     color: var(--bs-secondary-color);
     opacity: 50%;

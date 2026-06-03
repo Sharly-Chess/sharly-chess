@@ -12,22 +12,22 @@
     {% endif %}
 >
     <tr
-        class="team-block-header"
+        class="team-block-header header"
         data-block-id="team-block-body-{{ team_board.id }}"
         aria-expanded="true"
         style="cursor: pointer;"
     >
-        <td class="bg-secondary-subtle text-center text-nowrap">
+        <td class="text-center text-nowrap">
             <i class="bi bi-chevron-down team-block-chevron me-1"></i>
             <strong>{{ team_board.index + 1 }}</strong>
         </td>
-        <td colspan="{{ team_a_colspan }}" class="bg-secondary-subtle">
+        <td colspan="{{ team_a_colspan }}">
             <div class="d-flex align-items-center">
                 <strong class="flex-grow-1">
                     {% set _a_score = admin_tournament.team_primary_score_before_round(
                         team_board.team_a.id, team_board.round
                     ) %}
-                    <span class="text-muted me-1">{{ '%g'|format(_a_score) }}</span>
+                    <span class="text-contrast me-1">{{ '%g'|format(_a_score) }}</span>
                     <a
                         class="player-link"
                         hx-get="{{ url_for(
@@ -45,7 +45,7 @@
                 {% if team_board.team_b and client.can_update_tournaments %}
                     <button
                         type="button"
-                        class="btn btn-sm btn-outline-secondary ms-2"
+                        class="btn btn-sm btn-outline-primary ms-2"
                         hx-get="{{ url_for(
                             'admin-team-lineups-modal',
                             event_uniq_id=admin_event.uniq_id,
@@ -63,7 +63,7 @@
                 {% endif %}
             </div>
         </td>
-        <td class="bg-secondary-subtle text-center align-middle">
+        <td class="text-center align-middle">
             <button
                 type="button"
                 class="btn btn-sm btn-outline-primary fw-bold text-nowrap"
@@ -89,7 +89,7 @@
                 {% endif %}
             </button>
         </td>
-        <td colspan="{{ team_b_colspan }}" class="bg-secondary-subtle">
+        <td colspan="{{ team_b_colspan }}">
             <div class="d-flex align-items-center">
                 {% if team_board.team_b and client.can_update_tournaments %}
                     <button
@@ -128,7 +128,7 @@
                         {% set _b_score = admin_tournament.team_primary_score_before_round(
                             team_board.team_b.id, team_board.round
                         ) %}
-                        <span class="text-muted ms-1">{{ '%g'|format(_b_score) }}</span>
+                        <span class="text-contrast ms-1">{{ '%g'|format(_b_score) }}</span>
                     {% else %}
                         {{ _('EXEMPT') }}
                     {% endif %}

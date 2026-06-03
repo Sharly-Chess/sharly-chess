@@ -768,7 +768,7 @@ body[data-bs-theme=light] .btn-primary {
     color: black;
 }
 
-[data-bs-theme=dark] table.prominent tr.highlight td .btn-outline-primary {
+[data-bs-theme=dark] table.prominent tr.highlight td .btn-outline-primary, [data-bs-theme=dark] table.prominent .header td .btn-outline-primary {
     --bs-btn-color: var(--bs-body-bg);
     --bs-btn-border-color: var(--bs-body-bg);
     --bs-btn-hover-color: var(--bs-primary);
