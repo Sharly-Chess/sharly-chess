@@ -494,8 +494,8 @@
                                 tooltip_text=(
                                     _(
                                         'Game points awarded to the team for a '
-                                        'Pairing Allocated Bye. Defaults to '
-                                        'the Draw value.'
+                                        'Pairing Allocated Bye. Defaults to a '
+                                        'drawn match (boards × Draw value).'
                                     )
                                     if is_team_event else
                                     _(
@@ -522,20 +522,37 @@
                             const $gpLoss = $('#gp-loss');
                             const $gpZpb = $('#gp-zpb');
                             const $gpPab = $('#gp-pab');
+                            const $teamPlayerCount = $('#team-player-count');
                             const $mpWin = $('#mp-win');
                             const $mpDraw = $('#mp-draw');
                             const $mpPab = $('#mp-pab');
+                            function formatNumber(n) {
+                                return Number.isFinite(n)
+                                    ? (Number.isInteger(n) ? n.toString() : n.toString())
+                                    : '';
+                            }
                             function syncDerived() {
                                 $gpZpb.attr('placeholder', effectiveValue($gpLoss, '0'));
-                                // Team mode: PAB defaults to the draw value
-                                // (FIDE C.04.6 §1.4); individual: defaults
-                                // to the win value.
-                                $gpPab.attr(
-                                    'placeholder',
-                                    IS_TEAM_EVENT
-                                        ? effectiveValue($gpDraw, '0.5')
-                                        : effectiveValue($gpWin, '1')
-                                );
+                                // Team PAB defaults to a drawn match (FIDE C.04.6
+                                // §1.4) — i.e. team_player_count * gp_draw.
+                                // Individual: gp_win.
+                                let gpPabPlaceholder;
+                                if (IS_TEAM_EVENT) {
+                                    const drawVal = parseFloat(
+                                        effectiveValue($gpDraw, '0.5')
+                                    );
+                                    const teamCount = parseInt(
+                                        effectiveValue($teamPlayerCount, '0'),
+                                        10
+                                    );
+                                    gpPabPlaceholder =
+                                        Number.isFinite(drawVal) && teamCount > 0
+                                            ? formatNumber(drawVal * teamCount)
+                                            : effectiveValue($gpDraw, '0.5');
+                                } else {
+                                    gpPabPlaceholder = effectiveValue($gpWin, '1');
+                                }
+                                $gpPab.attr('placeholder', gpPabPlaceholder);
                                 if ($mpPab.length) {
                                     $mpPab.attr(
                                         'placeholder',
@@ -546,6 +563,7 @@
                             $gpWin.on('input change', syncDerived);
                             $gpDraw.on('input change', syncDerived);
                             $gpLoss.on('input change', syncDerived);
+                            $teamPlayerCount.on('input change', syncDerived);
                             $mpWin.on('input change', syncDerived);
                             $mpDraw.on('input change', syncDerived);
                             syncDerived();

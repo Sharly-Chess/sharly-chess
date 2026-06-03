@@ -2752,6 +2752,9 @@ msgstr "Finlande"
 msgid "First FIDE rating (based only on this tournament)"
 msgstr "Premier classement FIDE (basé uniquement sur ce tournoi)"
 
+msgid "First board is always White for team 1."
+msgstr "Le premier échiquier est toujours attribué aux Blancs pour l’équipe 1."
+
 msgid "First board number:"
 msgstr "Numéro du premier échiquier :"
 
@@ -2862,8 +2865,8 @@ msgstr "Gambie"
 msgid "Game points"
 msgstr "Points de jeu"
 
-msgid "Game points awarded to the team for a Pairing Allocated Bye. Defaults to the Draw value."
-msgstr "Points de jeu attribués à l'équipe pour un appariement BYE. Par défaut, valeur de la nulle."
+msgid "Game points awarded to the team for a Pairing Allocated Bye. Defaults to a drawn match (boards × Draw value)."
+msgstr "Points de parties attribués à une équipe bénéficiant d’un exempt. Par défaut, correspond à un match nul (nombre d’échiquiers × valeur d’une partie nulle)"
 
 msgid "Games played with black"
 msgstr "Nombre de parties jouées avec les Noirs"
@@ -4414,13 +4417,13 @@ msgid "Owed:"
 msgstr "Dû :"
 
 msgid "PAB (Team):"
-msgstr "BYE (équipe) :"
+msgstr "Exempt (équipe) :"
 
 msgid "PAB is already assigned"
 msgstr "il y a déjà un·e joueur·euse exempt·e"
 
 msgid "PAB:"
-msgstr "BYE :"
+msgstr "Exempt :"
 
 msgid "PAI"
 msgstr "APP"
@@ -5531,8 +5534,8 @@ msgstr "Score"
 msgid "Score computed by adding, for each round, a value given by multiplying the score of the opponent by the points scored against them."
 msgstr "Score calculé en ajoutant, pour chaque ronde, la valeur obtenue en multipliant le score de l'adversaire par le nombre de points obtenus."
 
-msgid "Score used for colour allocation when pairing. Only used in Swiss; in Round-Robin the colour pattern is fixed by the Berger tables."
-msgstr "Score utilisé pour l'attribution des couleurs lors de l'appariement. Utilisé uniquement en système Suisse ; en Toutes Rondes, le motif des couleurs est fixé par les tables de Berger."
+msgid "Score used for colour allocation when pairing."
+msgstr "Score utilisé pour l'attribution des couleurs lors de l'appariement."
 
 msgid "Scotland"
 msgstr "Écosse"
@@ -7851,4 +7854,7 @@ msgstr "← Retour au certificat IT1"
 
 #~ msgid "Value of the pairing allocated bye:"
 #~ msgstr "Points attribués en cas d’exemption :"
+
+#~ msgid "Game points awarded to the team for a Pairing Allocated Bye. Defaults to the Draw value."
+#~ msgstr "Points de jeu attribués à l'équipe pour un appariement BYE. Par défaut, valeur de la nulle."
 
