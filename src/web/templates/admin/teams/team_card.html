@@ -90,10 +90,17 @@
         <div class="card-block-content">
             {{ _('%(string)s:', string=_('Roster')) }}
             {% if team.players %}
+                {% set _captain = team.captain %}
                 <ol class="mb-0 ps-3">
                     {% for player in team.players %}
                         <li>
                             {{ player.full_name }}
+                            {% if _captain and _captain.id == player.id %}
+                                <i
+                                    class="bi-star-fill text-warning ms-1"
+                                    {{ macros.tooltip_attributes('info', _('Team captain.'), 'top') }}
+                                ></i>
+                            {% endif %}
                             {%- set bracket_parts = [] -%}
                             {%- set _rating = player.event_default_rating_and_type -%}
                             {%- if _rating.value -%}

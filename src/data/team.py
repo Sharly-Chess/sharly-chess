@@ -54,6 +54,18 @@ class Team:
         return self.stored_team.pairing_number
 
     @property
+    def captain(self) -> 'Player | None':
+        captain_id = self.stored_team.captain_id
+        if captain_id is None:
+            return None
+        captain = self.event.players_by_id.get(captain_id)
+        # Defensive: if the captain has been removed from the team
+        # (or the event), don't claim them as captain.
+        if captain is None or captain.stored_player.team_id != self.id:
+            return None
+        return captain
+
+    @property
     def is_paired(self) -> bool:
         """True if this team appears in any team_board record (i.e. has been
         paired in at least one round). Used to lock cross-tournament drag."""
@@ -175,6 +187,12 @@ class Team:
     def set_pairing_number(self, pairing_number: int | None, database: EventDatabase):
         self.stored_team.pairing_number = pairing_number
         database.set_team_pairing_number(self.id, pairing_number)
+
+    def set_captain(self, captain_id: int | None, database: EventDatabase):
+        """Set this team's captain (or clear it with ``None``). The
+        player must belong to this team's roster — caller enforces."""
+        self.stored_team.captain_id = captain_id
+        database.set_team_captain(self.id, captain_id)
 
     def set_round_lineup(
         self,
@@ -315,6 +333,8 @@ class Team:
         """Remove a player from this team. Compacts remaining indexes."""
         if player.stored_player.team_id != self.id:
             return
+        if self.stored_team.captain_id == player.id:
+            self.set_captain(None, database)
         player.stored_player.team_id = None
         player.stored_player.team_index = None
         database.set_player_team(player.id, None, None)

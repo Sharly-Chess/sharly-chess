@@ -1,3 +1,4 @@
+{% import '/common/macros.j2' as macros with context %}
 {% set roster = admin_team.players %}
 <div
     class="modal-dialog modal-dialog-scrollable admin-team-roster-modal"
@@ -98,6 +99,27 @@
                                     {% if player.club.name %}
                                         <div class="text-muted small fst-italic">{{ player.club.name }}</div>
                                     {% endif %}
+                                </div>
+                                {% set _is_captain = admin_team.stored_team.captain_id == player.id %}
+                                <div class="form-check form-switch m-0">
+                                    <input
+                                        type="checkbox"
+                                        class="form-check-input"
+                                        id="captain-{{ player.id }}"
+                                        {% if _is_captain %}checked{% endif %}
+                                        hx-patch="{{ url_for(
+                                            'admin-team-set-captain',
+                                            event_uniq_id=admin_event.uniq_id,
+                                            team_id=admin_team.id,
+                                            player_id=player.id,
+                                        ) }}"
+                                        hx-target="body"
+                                        hx-indicator="#please-wait"
+                                        {{ macros.tooltip_attributes('info', _('Mark as team captain.'), 'top') }}
+                                    />
+                                    <label class="form-check-label small" for="captain-{{ player.id }}">
+                                        {{ _('Captain') }}
+                                    </label>
                                 </div>
                                 <button
                                     type="button"

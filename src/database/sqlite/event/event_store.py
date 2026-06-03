@@ -120,6 +120,7 @@ class StoredTeam:
     name: str
     tournament_id: int | None = None
     pairing_number: int | None = None
+    captain_id: int | None = None
     stored_round_lineups: dict[int, list[StoredTeamRoundLineupEntry]] = field(
         default_factory=dict[int, list[StoredTeamRoundLineupEntry]]
     )

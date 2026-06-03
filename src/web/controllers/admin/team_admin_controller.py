@@ -393,6 +393,31 @@ class TeamAdminController(BaseEventAdminController):
             web_context, self._team_roster_modal_context(web_context)
         )
 
+    @patch(
+        path=('/team-set-captain/{event_uniq_id:str}/{team_id:int}/{player_id:int}'),
+        name='admin-team-set-captain',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_team_set_captain(
+        self, request: HTMXRequest, player_id: int
+    ) -> Template:
+        web_context = TeamAdminWebContext(request)
+        event = web_context.get_admin_event()
+        team = web_context.get_admin_team()
+        # Toggle: if the player is already captain, clear; otherwise
+        # set them as captain. Player must be on this team's roster.
+        new_captain_id: int | None = player_id
+        if team.stored_team.captain_id == player_id:
+            new_captain_id = None
+        elif player_id not in team.players_by_id:
+            new_captain_id = team.stored_team.captain_id
+        if new_captain_id != team.stored_team.captain_id:
+            with EventDatabase(event.uniq_id, True) as database:
+                team.set_captain(new_captain_id, database)
+        return self._admin_event_teams_render(
+            web_context, self._team_roster_modal_context(web_context)
+        )
+
     # -------------------------------------------------------------------------
     # Lineups
     # -------------------------------------------------------------------------

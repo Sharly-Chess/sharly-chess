@@ -56,9 +56,12 @@ class Migration(BaseMigration):
             '   `tournament_id` INTEGER,'
             '   `name` TEXT NOT NULL,'
             '   `pairing_number` INTEGER,'
+            '   `captain_id` INTEGER,'
             '   PRIMARY KEY(`id` AUTOINCREMENT),'
             '   FOREIGN KEY (`tournament_id`) REFERENCES '
-            '   `tournament`(`id`) ON DELETE SET NULL'
+            '   `tournament`(`id`) ON DELETE SET NULL,'
+            '   FOREIGN KEY (`captain_id`) REFERENCES '
+            '   `player`(`id`) ON DELETE SET NULL'
             ')'
         )
         self.database.execute(
