@@ -23,7 +23,7 @@ from web.controllers.admin.base_event_admin_controller import (
 from web.controllers.base_controller import WebContext
 from web.guards import ActionGuard, EventGuard, SetByeGuard
 from web.messages import Message
-from web.session import SessionTeamsAddOtherActive
+from web.session import SessionTeamsAddOtherActive, SessionTeamsShowDetails
 from web.utils import RequestUtils, SelectOption
 
 
@@ -58,6 +58,7 @@ class TeamAdminWebContext(BaseEventAdminWebContext):
             'teams_by_tournament_id': teams_by_tournament_id,
             'unassigned_teams': teams_by_tournament_id.get(None, []),
             'admin_team': self.admin_team,
+            'show_details': SessionTeamsShowDetails(self.request).get(),
         }
 
 
@@ -116,7 +117,13 @@ class TeamAdminController(BaseEventAdminController):
         path='/event/{event_uniq_id:str}/teams',
         name='admin-event-teams-tab',
     )
-    async def htmx_admin_event_teams_tab(self, request: HTMXRequest) -> Template:
+    async def htmx_admin_event_teams_tab(
+        self,
+        request: HTMXRequest,
+        show_details: bool | None,
+    ) -> Template:
+        if show_details is not None:
+            SessionTeamsShowDetails(request).set(show_details)
         return self._admin_event_teams_render(TeamAdminWebContext(request))
 
     # -------------------------------------------------------------------------

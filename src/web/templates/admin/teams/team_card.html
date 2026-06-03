@@ -40,6 +40,15 @@
             <i class="bi-people-fill pe-1"></i>
             {{ team.players|length }}
         </div>
+        {% set _avg = team.average_rating %}
+        {% if _avg %}
+            <div
+                class="text-nowrap"
+                {{ macros.tooltip_attributes('info', _('Average rating of the roster.'), 'top') }}
+            >
+                <i class="bi-star-fill pe-1"></i>{{ _avg }}
+            </div>
+        {% endif %}
         {% if team.pairing_number %}
             <div
                 class="text-nowrap"
@@ -52,6 +61,7 @@
 {% endblock %}
 
 {% block card_text %}
+{% if show_details %}
     <div class="card-block">
         <span
             class="card-block-button"
@@ -171,6 +181,7 @@
             </div>
         </div>
     {% endif %}
+{% endif %}
 {% endblock %}
 
 {% block card_buttons_left %}{% endblock %}

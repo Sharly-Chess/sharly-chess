@@ -262,6 +262,16 @@ class SessionEventsShowDetails(BoolSessionVariable):
         return 'events_show_details'
 
 
+class SessionTeamsShowDetails(BoolSessionVariable):
+    @property
+    def key(self) -> str:
+        return 'teams_show_details'
+
+    @property
+    def default_value(self) -> bool:
+        return True
+
+
 class SessionTimersAddOtherActive(BoolSessionVariable):
     @property
     def key(self) -> str:

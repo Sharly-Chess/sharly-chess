@@ -87,6 +87,15 @@ class Team:
         return {player.id: player for player in self.players}
 
     @property
+    def average_rating(self) -> int | None:
+        """Mean of the roster's event-default ratings, rounded. ``None``
+        if no player on the roster has a rating."""
+        ratings = [r for r in (p.event_default_rating for p in self.players) if r]
+        if not ratings:
+            return None
+        return round(sum(ratings) / len(ratings))
+
+    @property
     def lineups_by_round(self) -> dict[int, list['Player']]:
         """Per-round lineup as a list of players ordered by board index.
         Missing rounds are absent from the dict."""
