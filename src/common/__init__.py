@@ -17,10 +17,6 @@ SHARLY_CHESS_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 DEVEL_ENV: bool = not getattr(sys, 'frozen', False) and not os.environ.get('FLATPAK_ID')
 TEST_ENV: bool = os.getenv('TEST_ENV') == 'true' or Path(sys.argv[0]).stem == 'pytest'
 
-# Gated team-tournament support. Set FEATURE_TEAMS=1 to expose the TEAM event
-# type in the event-create modal and the rest of the team workflow.
-FEATURE_TEAMS: bool = os.getenv('FEATURE_TEAMS', '').lower() in ('1', 'true', 'yes')
-
 # True when experimental features are enabled, False otherwise.
 _EXPERIMENTAL_FEATURES_ENABLED: bool = False
 

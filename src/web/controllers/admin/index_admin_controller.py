@@ -11,7 +11,6 @@ from litestar.exceptions import ClientException, NotFoundException
 
 from common import (
     BASE_DIR,
-    FEATURE_TEAMS,
     is_http_url,
     is_valid_email,
 )
@@ -620,14 +619,9 @@ class IndexAdminController(BaseAdminController):
             'event_uniq_ids': list(EventLoader().event_uniq_ids),
             'plugins': plugin_manager.enabled_plugins,
             'federation_plugin_used': federation_plugin_used,
-            'show_event_type': FEATURE_TEAMS
-            or (event is not None and event.event_type == EventType.TEAM),
+            'show_event_type': True,
             'event_type_options': {
-                event_type.value: str(event_type)
-                for event_type in EventType
-                if event_type != EventType.TEAM
-                or FEATURE_TEAMS
-                or (event and event.event_type == EventType.TEAM)
+                event_type.value: str(event_type) for event_type in EventType
             },
             'event_type_locked': event_type_locked,
             'player_rating_type_options': {
