@@ -82,6 +82,19 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
             ),
             None,
         )
+        if tie_break is None:
+            # Some tie-breaks have a variant option whose value drives
+            # the base_acronym (e.g. ESB → ``EMMSB`` / ``EMGSB`` / ...).
+            # Try setting each tie-break's options from ``base_acronym``
+            # and re-checking.
+            for candidate in self.objects():
+                if any(
+                    option.set_value_from_variation_acronym(base_acronym)
+                    for option in candidate.options
+                ):
+                    if candidate.base_acronym.upper() == base_acronym:
+                        tie_break = candidate
+                        break
         if not tie_break:
             return None
         for variation_acronym in acronym.split('/')[1:]:

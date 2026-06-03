@@ -1722,13 +1722,26 @@ class Tournament:
         )
 
     def is_round_finished(self, round_: int) -> bool:
-        # In team events, reserve players (not in the round's lineup) have no
-        # pairing for this round — skip them; they have no game to finish.
+        # In team events, reserve players (not in the round's lineup)
+        # have no pairing for this round; players punched out of the
+        # lineup mid-round retain a row but with ``board_id = None``.
+        # Both cases mean "no game to finish". Additionally, the round
+        # isn't finished until every team has an envelope (real match
+        # or any bye) — a team with no envelope is still waiting.
         if self.event.is_team_event:
+            envelope_team_ids: set[int] = set()
+            for tb in self.get_round_team_boards(round_):
+                stb = tb.stored_team_board
+                envelope_team_ids.add(stb.team_a_id)
+                if stb.team_b_id is not None:
+                    envelope_team_ids.add(stb.team_b_id)
+            if any(team.id not in envelope_team_ids for team in self.teams):
+                return False
             return all(
                 player.pairings[round_].result != Result.NO_RESULT
                 for player in self.tournament_players
                 if player.pairings[round_].exists
+                and player.pairings[round_].stored_pairing.board_id is not None
             )
         return all(
             player.pairings[round_].result != Result.NO_RESULT
@@ -2499,12 +2512,14 @@ class Tournament:
                 else:
                     white_tpn, black_tpn = b_tpn, a_tpn
                     white_empty, black_empty = b_empty, a_empty
+                # TRF26 330 type is two chars: white-side, black-side.
+                # ``+`` = forfeit win, ``-`` = forfeit loss.
                 if white_empty and black_empty:
-                    forfeit_type = 'D'
+                    forfeit_type = '--'
                 elif black_empty:
-                    forfeit_type = 'W'
+                    forfeit_type = '+-'
                 else:
-                    forfeit_type = 'B'
+                    forfeit_type = '-+'
                 records.append(
                     TrfTeamForfeitedMatch(
                         type=forfeit_type,

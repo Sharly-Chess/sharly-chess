@@ -619,7 +619,6 @@ class IndexAdminController(BaseAdminController):
             'event_uniq_ids': list(EventLoader().event_uniq_ids),
             'plugins': plugin_manager.enabled_plugins,
             'federation_plugin_used': federation_plugin_used,
-            'show_event_type': True,
             'event_type_options': {
                 event_type.value: str(event_type) for event_type in EventType
             },

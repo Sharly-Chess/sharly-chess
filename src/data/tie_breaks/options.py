@@ -109,11 +109,18 @@ class BaseCutterTieBreakOption(TieBreakOption, ABC):
         return TieBreakCutterManager(self.include_median)
 
     def set_value_from_variation_acronym(self, acronym: str) -> bool:
-        try:
-            self.value = self.cutter_manager.get_object(acronym).id
-            return True
-        except KeyError:
+        cutter = next(
+            (
+                cutter
+                for cutter in self.cutter_manager.objects()
+                if cutter.acronym == acronym
+            ),
+            None,
+        )
+        if cutter is None:
             return False
+        self.value = cutter.id
+        return True
 
     @property
     def cutter_options(self) -> dict[str, 'SelectOption']:

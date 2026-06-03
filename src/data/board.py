@@ -143,7 +143,19 @@ class Board:
             return white_pairing.result
         black_pairing = self.optional_black_pairing
         if black_pairing is not None:
-            return black_pairing.result
+            # White is a hole — black_pairing's result is the *player's*
+            # outcome (e.g. ``FORFEIT_WIN`` when the opponent didn't
+            # show up). The board-level result string is rendered from
+            # white's perspective, so flip it when reversible. Byes
+            # (PAB / HPB / FPB / ZPB) stay as-is — they aren't
+            # board-level outcomes.
+            result = black_pairing.result
+            if result.is_bye:
+                return result
+            try:
+                return result.opposite_result
+            except ValueError:
+                return result
         return Result.NO_RESULT
 
     @property

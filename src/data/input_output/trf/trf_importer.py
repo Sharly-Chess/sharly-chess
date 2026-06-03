@@ -396,13 +396,27 @@ class TrfTournamentImporter(FileTournamentImporter):
         the source tournament used. The 300 records emit team_a's view
         before team_b's, so the first one we see locks in the
         orientation — preserving which team appears on the left of the
-        round display and which colour pattern slot each team takes."""
+        round display and which colour pattern slot each team takes.
+
+        Falls back to 330 (team-forfeited-match) records when the 300
+        record set doesn't include a pair — typically a match fully
+        forfeited by one team where neither side fielded a player."""
         result: dict[tuple[int, frozenset[int]], tuple[int, int]] = {}
         for entry in trf_tournament.oodo_team_pairings:
             key = (entry.round, frozenset({entry.team_id, entry.opponent_team_id}))
             if key in result:
                 continue
             result[key] = (entry.team_id, entry.opponent_team_id)
+        for forfeit in trf_tournament.team_forfeited_matches:
+            key = (
+                forfeit.round,
+                frozenset({forfeit.white_team_id, forfeit.black_team_id}),
+            )
+            if key in result:
+                continue
+            # White team listed first as ``team_a`` — colour pattern
+            # ordering matches the export side.
+            result[key] = (forfeit.white_team_id, forfeit.black_team_id)
         return result
 
     @staticmethod

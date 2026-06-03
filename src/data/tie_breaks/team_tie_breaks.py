@@ -428,6 +428,16 @@ class ExtendedSonnebornBergerTeamTieBreak(TeamTieBreak):
         return self.variant.value
 
     @property
+    def acronym(self) -> str:
+        # The variant option is already encoded in ``base_acronym``
+        # (e.g. ``EMGSB``) — don't repeat it. Append only the cutter.
+        parts: list[str] = [self.base_acronym]
+        cutter_option = self._get_option(ESBCutterTieBreakOption)
+        if cutter_option.is_variation and cutter_option.variation_acronym:
+            parts.append(cutter_option.variation_acronym)
+        return '/'.join(parts)
+
+    @property
     def picker_acronym(self) -> str:
         # The four FIDE variants (EMMSB/EMGSB/EGMSB/EGGSB) are all
         # ESB — the variant is a configurable option, so the picker
