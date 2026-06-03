@@ -6,7 +6,7 @@
             <div class="flex flex-column gap-0 align-items-start">
                 <h2 class="modal-title">
                     {{admin_player.title.short_name}} {{ admin_player.full_name }}
-                    {% if not tournament_player.has_withdrawn %}
+                    {% if not tournament_player.has_withdrawn and not admin_event.is_team_event %}
                         {% set status = tournament_player.check_in_status_no_bye %}
                         <i
                             class="{{ status.icon_classes }} cursor-pointer ps-1 fs-4"

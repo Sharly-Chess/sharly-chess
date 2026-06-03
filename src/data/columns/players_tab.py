@@ -284,6 +284,11 @@ class CheckInPlayersTabColumn(FilterPlayersTabColumn):
     def get_filter_row_tooltip(self, value: Any) -> str:
         return CheckInStatus(int(value)).description
 
+    def is_enabled_for_tournaments(self, tournaments: list[Tournament]) -> bool:
+        if tournaments and tournaments[0].event.is_team_event:
+            return False
+        return True
+
 
 class RatingPlayersTabColumn(PlayersTabColumn):
     @staticmethod
