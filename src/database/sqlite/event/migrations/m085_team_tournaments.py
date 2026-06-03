@@ -39,6 +39,15 @@ def _initial_game_points(
 
 
 class Migration(BaseMigration):
+    @staticmethod
+    def are_foreign_keys_enabled() -> bool:
+        # The ``board`` table rebuild (relaxing ``white_player_id`` to
+        # nullable for lineup-hole support) drops and renames the
+        # table. ``pairing.board_id`` has ``ON DELETE CASCADE`` to
+        # ``board.id`` — with FK enforcement on, the swap cascades
+        # through and nukes every pairing row.
+        return False
+
     def forward(self):
         # New tables
         self.database.execute(
@@ -113,9 +122,52 @@ class Migration(BaseMigration):
             'REFERENCES `team`(`id`) ON DELETE SET NULL'
         )
         self.database.execute('ALTER TABLE `player` ADD `team_index` INTEGER')
+
+        # Rebuild ``board``: relax ``white_player_id`` to nullable
+        # (so a team-match board can store a hole on the physical white
+        # side, mirroring the already-nullable ``black_player_id``)
+        # and add ``team_board_id`` linking each individual board to
+        # its parent team match. ``delete_board_on_pairing_delete``
+        # (m038) references ``board`` so it has to come down before
+        # the rename swap.
+        self.database.execute('DROP TRIGGER IF EXISTS `delete_board_on_pairing_delete`')
         self.database.execute(
-            'ALTER TABLE `board` ADD `team_board_id` INTEGER '
-            'REFERENCES `team_board`(`id`) ON DELETE SET NULL'
+            'CREATE TABLE `board_new` ('
+            '   `id` INTEGER NOT NULL,'
+            '   `white_player_id` INTEGER,'
+            '   `black_player_id` INTEGER,'
+            '   `index` INTEGER NOT NULL,'
+            '   `last_result_update` FLOAT,'
+            '   `team_board_id` INTEGER,'
+            '   PRIMARY KEY(`id` AUTOINCREMENT),'
+            '   FOREIGN KEY (`white_player_id`) REFERENCES '
+            '   `player`(`id`) ON DELETE CASCADE,'
+            '   FOREIGN KEY (`black_player_id`) REFERENCES '
+            '   `player`(`id`) ON DELETE CASCADE,'
+            '   FOREIGN KEY (`team_board_id`) REFERENCES '
+            '   `team_board`(`id`) ON DELETE SET NULL'
+            ')'
+        )
+        self.database.execute(
+            'INSERT INTO `board_new` '
+            '(`id`, `white_player_id`, `black_player_id`, '
+            '`index`, `last_result_update`) '
+            'SELECT `id`, `white_player_id`, `black_player_id`, '
+            '`index`, `last_result_update` '
+            'FROM `board`'
+        )
+        self.database.execute('DROP TABLE `board`')
+        self.database.execute('ALTER TABLE `board_new` RENAME TO `board`')
+        self.database.execute(
+            """
+            CREATE TRIGGER IF NOT EXISTS
+                `delete_board_on_pairing_delete`
+            AFTER DELETE ON `pairing`
+            BEGIN
+                DELETE FROM `board`
+                WHERE `id` = `OLD`.`board_id`;
+            END;
+            """
         )
         self.database.execute(
             'ALTER TABLE `tournament` ADD `team_player_count` INTEGER'
@@ -158,7 +210,45 @@ class Migration(BaseMigration):
         self.database.execute(
             'ALTER TABLE `tournament` DROP COLUMN `team_player_count`'
         )
-        self.database.execute('ALTER TABLE `board` DROP COLUMN `team_board_id`')
+        # Rebuild ``board`` to undo the nullable-white relaxation and
+        # drop ``team_board_id``. Rows with NULL white_player_id can't
+        # be represented in the rolled-back world — drop them.
+        self.database.execute('DROP TRIGGER IF EXISTS `delete_board_on_pairing_delete`')
+        self.database.execute(
+            'CREATE TABLE `board_new` ('
+            '   `id` INTEGER NOT NULL,'
+            '   `white_player_id` INTEGER NOT NULL,'
+            '   `black_player_id` INTEGER,'
+            '   `index` INTEGER NOT NULL,'
+            '   `last_result_update` FLOAT,'
+            '   PRIMARY KEY(`id` AUTOINCREMENT),'
+            '   FOREIGN KEY (`white_player_id`) REFERENCES '
+            '   `player`(`id`) ON DELETE CASCADE,'
+            '   FOREIGN KEY (`black_player_id`) REFERENCES '
+            '   `player`(`id`) ON DELETE CASCADE'
+            ')'
+        )
+        self.database.execute(
+            'INSERT INTO `board_new` '
+            '(`id`, `white_player_id`, `black_player_id`, '
+            '`index`, `last_result_update`) '
+            'SELECT `id`, `white_player_id`, `black_player_id`, '
+            '`index`, `last_result_update` '
+            'FROM `board` WHERE `white_player_id` IS NOT NULL'
+        )
+        self.database.execute('DROP TABLE `board`')
+        self.database.execute('ALTER TABLE `board_new` RENAME TO `board`')
+        self.database.execute(
+            """
+            CREATE TRIGGER IF NOT EXISTS
+                `delete_board_on_pairing_delete`
+            AFTER DELETE ON `pairing`
+            BEGIN
+                DELETE FROM `board`
+                WHERE `id` = `OLD`.`board_id`;
+            END;
+            """
+        )
         self.database.execute('ALTER TABLE `player` DROP COLUMN `team_index`')
         self.database.execute('ALTER TABLE `player` DROP COLUMN `team_id`')
         self.database.execute('ALTER TABLE `info` DROP COLUMN `event_type`')
