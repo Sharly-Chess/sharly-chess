@@ -260,7 +260,7 @@ class TeamSwissVariation(PairingVariation, ABC):
 
     @property
     def settings(self) -> list[PairingSetting]:
-        return []
+        return [ColorSeedSetting()]
 
     @property
     def trf_encoded_type(self) -> str:
