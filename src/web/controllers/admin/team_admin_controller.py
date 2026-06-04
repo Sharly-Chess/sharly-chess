@@ -250,6 +250,19 @@ class TeamAdminController(BaseEventAdminController):
         return self._render_team_record_modal(TeamAdminWebContext(request))
 
     @patch(
+        path='/records/check-in-team/{event_uniq_id:str}/{team_id:int}',
+        name='records-check-in-team',
+        guards=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_records_check_in_team(self, request: HTMXRequest) -> Template:
+        web_context = TeamAdminWebContext(request)
+        team = web_context.get_admin_team()
+        tournament = team.tournament
+        if tournament is not None:
+            tournament.check_in_team(team, not team.check_in)
+        return self._render_team_record_modal(web_context)
+
+    @patch(
         path='/team-set-bye/{event_uniq_id:str}/{team_id:int}/{round:int}',
         name='admin-team-set-bye',
         guards=[SetByeGuard()],
@@ -392,6 +405,62 @@ class TeamAdminController(BaseEventAdminController):
                 team.remove_player(player, database)
         return self._admin_event_teams_render(
             web_context, self._team_roster_modal_context(web_context)
+        )
+
+    @patch(
+        path='/team-toggle-check-in/{event_uniq_id:str}/{team_id:int}',
+        name='admin-team-toggle-check-in',
+        guards=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_admin_team_toggle_check_in(self, request: HTMXRequest) -> Template:
+        web_context = TeamAdminWebContext(request)
+        tournament = web_context.get_admin_team().tournament
+        team = web_context.get_admin_team()
+        if tournament is not None:
+            tournament.check_in_team(team, not team.check_in)
+        return self._admin_event_teams_render(web_context)
+
+    @get(
+        path='/team-check-in-modal/{event_uniq_id:str}',
+        name='admin-team-check-in-modal',
+        guards=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_admin_team_check_in_modal(self, request: HTMXRequest) -> Template:
+        web_context = TeamAdminWebContext(request)
+        event = web_context.get_admin_event()
+        team_tournaments = [
+            t for t in event.tournaments_by_id.values() if t.is_team_tournament
+        ]
+        return self._admin_event_teams_render(
+            web_context,
+            {
+                'modal': 'team-check-in',
+                'team_tournaments': team_tournaments,
+            },
+        )
+
+    @post(
+        path='/team-check-in-reset/{event_uniq_id:str}/{tournament_id:int}/{present:int}',
+        name='admin-team-check-in-reset',
+        guards=[ActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_admin_team_check_in_reset(
+        self, request: HTMXRequest, tournament_id: int, present: int
+    ) -> Template:
+        web_context = TeamAdminWebContext(request)
+        event = web_context.get_admin_event()
+        tournament = event.tournaments_by_id.get(tournament_id)
+        if tournament is not None and tournament.is_team_tournament:
+            tournament.check_in_all_teams(bool(present))
+        team_tournaments = [
+            t for t in event.tournaments_by_id.values() if t.is_team_tournament
+        ]
+        return self._admin_event_teams_render(
+            web_context,
+            {
+                'modal': 'team-check-in',
+                'team_tournaments': team_tournaments,
+            },
         )
 
     @patch(

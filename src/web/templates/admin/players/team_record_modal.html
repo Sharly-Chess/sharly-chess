@@ -15,7 +15,29 @@
     <div class="modal-content" data-team-id="{{ admin_team.id }}">
         <div class="modal-header d-flex justify-content-between align-items-end">
             <div class="d-flex flex-column gap-0 align-items-start">
-                <h2 class="modal-title">{{ admin_team.name }}</h2>
+                <h2 class="modal-title">
+                    {{ admin_team.name }}
+                    {% if client.can_check_in_players(tournament.id) %}
+                        {% set status_present = admin_team.check_in %}
+                        <i
+                            class="{% if status_present %}bi-check-circle-fill text-success{% else %}bi-x-circle-fill text-danger{% endif %} cursor-pointer ps-1 fs-4"
+                            {% set click_detail = _(
+                                'Click to mark as &quot;%(status)s&quot;',
+                                status=_('Absent') if status_present else _('Present')
+                            ) %}
+                            {{ macros.tooltip_attributes('', (
+                                '<div class="fw-bold">' ~ (_('Present') if status_present else _('Absent')) ~ '</div>'
+                                '<div class="fst-italic" style="font-size:80%">' ~ click_detail ~ '</div>'
+                            ), 'right') }}
+                            hx-patch="{{ url_for(
+                                'records-check-in-team',
+                                event_uniq_id=admin_event.uniq_id,
+                                team_id=admin_team.id,
+                            ) }}"
+                            onclick="refreshMessagesIgnored += 1"
+                        ></i>
+                    {% endif %}
+                </h2>
                 <div>{{ tournament.name }}</div>
                 <div>
                     <strong>{{ _('Players:') }}</strong>

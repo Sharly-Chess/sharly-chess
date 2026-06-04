@@ -1,0 +1,188 @@
+{% import '/common/macros.j2' as macros with context %}
+
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(90vw, 500px);"
+>
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+            <div class="modal-title fs-4 fw-bold">
+                {{ _('Absent teams (%(count)d)', count=admin_team_absent|length) }}
+            </div>
+        </div>
+        <div class="modal-body">
+            <form
+                id="modal-form"
+                hx-trigger="submit, enterKeypressFromModal"
+                hx-target="body"
+                hx-post="{{ url_for(
+                    'pairings-validate-team-absents',
+                    event_uniq_id=admin_event.uniq_id,
+                    tournament_id=admin_tournament.id,
+                    round=admin_round
+                ) }}"
+                hx-indicator="#please-wait"
+            >
+                <div class="mb-3">
+                    {{ _('Select an action for absent teams:') }}
+                </div>
+                <div class="d-grid ms-3" style="grid-template-columns: 30px min-content;">
+                    <h5>
+                        <i class="bi-0-circle-fill"></i>
+                    </h5>
+                    <span class="text-nowrap">
+                        {{
+                            _(
+                                'Do not pair at round %(pairing_round)d (Zero-Point Bye)',
+                                pairing_round=admin_round
+                            )
+                        }}
+                        {% if admin_round < admin_tournament.rounds %}
+                            <i
+                                class="bi-info-circle-fill ps-1"
+                                {{
+                                    macros.tooltip_attributes(
+                                        'right',
+                                        _(
+                                            'Teams will receive a Zero-Point Bye at round %(pairing_round)d and remain absent for the following rounds.',
+                                            pairing_round=admin_round
+                                        )
+                                    )
+                                }}
+                            ></i>
+                        {% endif %}
+                    </span>
+                    <h5>
+                        <i class="bi-check-circle-fill"></i>
+                    </h5>
+                    <span class="text-nowrap">
+                        {{
+                            _(
+                                'Pair at round %(pairing_round)d',
+                                pairing_round=admin_round
+                            )
+                        }}
+                        {% if admin_round < admin_tournament.rounds %}
+                            <i
+                                class="bi-info-circle-fill ps-1"
+                                {{
+                                    macros.tooltip_attributes(
+                                        'right',
+                                        _(
+                                            'Teams will be paired at round %(pairing_round)d and marked as present for the following rounds.',
+                                            pairing_round=admin_round
+                                        )
+                                    )
+                                }}
+                            ></i>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="d-flex align-items-center justify-content-end pe-2 pb-2 mt-3">
+                    <span class="text-start flex-grow-1 fw-bold">
+                        {{ _('Apply to all') }}
+                    </span>
+                    <div class="btn-group" role="group">
+                        <input
+                            type="radio"
+                            class="btn-check"
+                            id="zpb-all"
+                            value="zpb"
+                            name="all_teams"
+                            autocomplete="off"
+                            checked
+                        >
+                        <label
+                            class="btn btn-outline-primary lh-1"
+                            for="zpb-all"
+                            {{ macros.tooltip_attributes('', _('Do not pair at round %(pairing_round)d', pairing_round=admin_round)) }}
+                        >
+                            <i class="bi-0-circle-fill"></i>
+                        </label>
+                        <input
+                            type="radio"
+                            class="btn-check"
+                            id="present-all"
+                            value="present"
+                            name="all_teams"
+                            autocomplete="off"
+                        >
+                        <label
+                            class="btn btn-outline-primary lh-1"
+                            for="present-all"
+                            {{ macros.tooltip_attributes('', _('Pair at round %(pairing_round)d', pairing_round=admin_round)) }}
+                        >
+                            <i class="bi-check-circle-fill"></i>
+                        </label>
+                    </div>
+                    <script>
+                        $('input[name="all_teams"]').on('change', function() {
+                            $('.team-' + $(this).val()).prop('checked', true);
+                        });
+                    </script>
+                </div>
+                <div class="d-flex flex-column gap-2">
+                    {% for team in admin_team_absent %}
+                        <div class="border border-secondary bg-body-tertiary">
+                            <div class="p-2 d-flex align-items-center gap-4">
+                                <div class="text-start flex-grow-1">
+                                    {{ team.name }}
+                                </div>
+                                <div class="btn-group" role="group">
+                                    <input
+                                        type="radio"
+                                        class="btn-check team-zpb"
+                                        name="team_{{ team.id }}"
+                                        id="zpb-{{ team.id }}"
+                                        value="zpb"
+                                        autocomplete="off"
+                                        checked
+                                    >
+                                    <label class="btn btn-outline-primary lh-1" for="zpb-{{ team.id }}">
+                                        <i class="bi-0-circle-fill"></i>
+                                    </label>
+                                    <input
+                                        type="radio"
+                                        class="btn-check team-present"
+                                        name="team_{{ team.id }}"
+                                        id="present-{{ team.id }}"
+                                        value="present"
+                                        autocomplete="off"
+                                    >
+                                    <label class="btn btn-outline-primary lh-1" for="present-{{ team.id }}">
+                                        <i class="bi-check-circle-fill"></i>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-secondary text-nowrap"
+                data-bs-dismiss="modal"
+            >
+                <i class="bi-x-circle-fill"></i>
+                {{ _('Cancel') }}
+            </button>
+            <button
+                type="submit"
+                form="modal-form"
+                class="text-nowrap white btn btn-primary"
+            >
+                {% if admin_round == 1 %}
+                    <i class="bi-check-circle-fill pe-1"></i>
+                    {{ _('Validate') }}
+                {% else %}
+                    <i class="bi-shuffle pe-1"></i>
+                    {{ _('Validate and pair') }}
+                {% endif %}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>requestRefresh()</script>

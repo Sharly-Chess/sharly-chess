@@ -1343,6 +1343,7 @@ class EventDatabase(MigrationDatabase):
             tournament_id=row['tournament_id'],
             pairing_number=row['pairing_number'],
             captain_id=row['captain_id'],
+            check_in=cls.load_bool_from_database_field(row['check_in']),
         )
 
     def load_stored_teams(self) -> list[StoredTeam]:
@@ -1375,7 +1376,7 @@ class EventDatabase(MigrationDatabase):
     def add_stored_team(self, stored_team: StoredTeam) -> int:
         fields = self._get_fields_dict(
             stored_team,
-            ['tournament_id', 'name', 'pairing_number', 'captain_id'],
+            ['tournament_id', 'name', 'pairing_number', 'captain_id', 'check_in'],
         )
         fields_str = ', '.join(f'`{f}`' for f in fields)
         values_str = ', '.join(['?'] * len(fields))
@@ -1390,7 +1391,7 @@ class EventDatabase(MigrationDatabase):
     def update_stored_team(self, stored_team: StoredTeam):
         fields = self._get_fields_dict(
             stored_team,
-            ['tournament_id', 'name', 'pairing_number', 'captain_id'],
+            ['tournament_id', 'name', 'pairing_number', 'captain_id', 'check_in'],
         )
         field_sets = ', '.join(f'`{f}` = ?' for f in fields)
         assert stored_team.id is not None
@@ -1403,6 +1404,18 @@ class EventDatabase(MigrationDatabase):
         self.execute(
             'UPDATE `team` SET `captain_id` = ? WHERE `id` = ?',
             (captain_id, team_id),
+        )
+
+    def set_team_check_in(self, team_id: int, check_in: bool):
+        self.execute(
+            'UPDATE `team` SET `check_in` = ? WHERE `id` = ?',
+            (check_in, team_id),
+        )
+
+    def set_team_check_in_for_tournament(self, tournament_id: int, check_in: bool):
+        self.execute(
+            'UPDATE `team` SET `check_in` = ? WHERE `tournament_id` = ?',
+            (check_in, tournament_id),
         )
 
     def delete_stored_team(self, team_id: int):

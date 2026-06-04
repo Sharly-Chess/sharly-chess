@@ -2466,6 +2466,28 @@ class Tournament:
                         tpn = tpn_by_team_id.get(tid)
                         if tpn is not None:
                             tpns_by_type['Z'].append(tpn)
+            if round_ == next_round:
+                # Absent teams (check_in=False) are excluded from
+                # pairing — emit a Z bye for each one not already in
+                # another envelope this round.
+                already_enveloped: set[int] = {
+                    stb.team_a_id
+                    for tb in self.get_round_team_boards(round_)
+                    for stb in [tb.stored_team_board]
+                } | {
+                    stb.team_b_id
+                    for tb in self.get_round_team_boards(round_)
+                    for stb in [tb.stored_team_board]
+                    if stb.team_b_id is not None
+                }
+                for team in self.teams:
+                    if team.check_in:
+                        continue
+                    if team.id in already_enveloped:
+                        continue
+                    tpn = tpn_by_team_id.get(team.id)
+                    if tpn is not None and tpn not in tpns_by_type['Z']:
+                        tpns_by_type['Z'].append(tpn)
             for t, tpns in tpns_by_type.items():
                 records.append(
                     TrfRoundBye(type=t, round=round_, pairing_numbers=sorted(tpns))
@@ -2758,6 +2780,33 @@ class Tournament:
             database.set_player_check_in(player.id, check_in)
         player.stored_player.check_in = check_in
         player.__dict__.pop('check_in_status', None)
+
+    def check_in_team(self, team: 'Team', check_in: bool):
+        """Stores the per-team check-in status."""
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            team.set_check_in(check_in, database)
+
+    def check_in_all_teams(self, check_in: bool):
+        teams = [team for team in self.teams if team.check_in != check_in]
+        if not teams:
+            return
+        with EventDatabase(self.event.uniq_id, write=True) as database:
+            database.set_team_check_in_for_tournament(self.id, check_in)
+            for team in teams:
+                team.stored_team.check_in = check_in
+
+    @property
+    def absent_teams(self) -> list['Team']:
+        return [team for team in self.teams if not team.check_in]
+
+    @property
+    def team_check_in_status_grouped_counts(self) -> 'Counter[CheckInStatus]':
+        counter: Counter[CheckInStatus] = Counter()
+        for team in self.teams:
+            counter[
+                CheckInStatus.PRESENT if team.check_in else CheckInStatus.ABSENT
+            ] += 1
+        return counter
 
     def check_in_all_players(self, check_in: bool):
         player_ids = []

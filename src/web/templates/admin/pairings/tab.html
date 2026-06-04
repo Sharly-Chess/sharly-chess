@@ -38,7 +38,7 @@
     </div>
     {% set is_team_paired_mode = admin_event.is_team_event and admin_tournament.pairing_system.paired_by_team %}
     {% if is_team_paired_mode %}
-        {% set has_unpaired = admin_team_bye|length > 0 or admin_team_unpaired|length > 0 %}
+        {% set has_unpaired = admin_team_bye|length > 0 or admin_team_unpaired|length > 0 or admin_team_absent|length > 0 %}
     {% else %}
         {% set has_unpaired = admin_unpaired|length > 0 or admin_bye_players|length > 0 or admin_absent_players|length > 0 %}
     {% endif %}
@@ -170,6 +170,9 @@
                     <div class="col-12 col-lg-3">
                         {% if is_team_paired_mode %}
                             {% with title=_('Byes *** ZPB, HPB or FPB'), teams=admin_team_bye, table_id='bye-teams-table' %}
+                                {% include '/admin/pairings/team_unpaired_table.html' %}
+                            {% endwith %}
+                            {% with title=_('Absents'), teams=admin_team_absent, table_id='absent-teams-table' %}
                                 {% include '/admin/pairings/team_unpaired_table.html' %}
                             {% endwith %}
                             {% with title=_('To pair'), teams=admin_team_unpaired, table_id='unpaired-teams-table' %}

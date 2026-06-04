@@ -57,6 +57,7 @@ class Migration(BaseMigration):
             '   `name` TEXT NOT NULL,'
             '   `pairing_number` INTEGER,'
             '   `captain_id` INTEGER,'
+            '   `check_in` INTEGER NOT NULL DEFAULT 0,'
             '   PRIMARY KEY(`id` AUTOINCREMENT),'
             '   FOREIGN KEY (`tournament_id`) REFERENCES '
             '   `tournament`(`id`) ON DELETE SET NULL,'

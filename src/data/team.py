@@ -54,6 +54,14 @@ class Team:
         return self.stored_team.pairing_number
 
     @property
+    def check_in(self) -> bool:
+        """Whether the team is checked in for the current round. Teams
+        play whole rounds together — there's no per-player check-in in
+        team mode (player check-in is the only mechanism in individual
+        mode)."""
+        return self.stored_team.check_in
+
+    @property
     def captain(self) -> 'Player | None':
         captain_id = self.stored_team.captain_id
         if captain_id is None:
@@ -193,6 +201,10 @@ class Team:
         player must belong to this team's roster — caller enforces."""
         self.stored_team.captain_id = captain_id
         database.set_team_captain(self.id, captain_id)
+
+    def set_check_in(self, check_in: bool, database: EventDatabase):
+        self.stored_team.check_in = check_in
+        database.set_team_check_in(self.id, check_in)
 
     def set_round_lineup(
         self,

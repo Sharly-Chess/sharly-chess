@@ -83,9 +83,16 @@
                             tournament_id=admin_tournament.id,
                             round=admin_round
                         ) }}"
-                    {% elif admin_round == 1 %}
+                    {% elif admin_round == 1 and admin_tournament.pairing_variation.settings %}
                         hx-get="{{ url_for(
                             'pairings-settings-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round
+                        ) }}"
+                    {% elif admin_team_absent %}
+                        hx-get="{{ url_for(
+                            'pairings-team-absents-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round

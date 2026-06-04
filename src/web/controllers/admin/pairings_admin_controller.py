@@ -150,6 +150,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_absent_players: list[TournamentPlayer] = []
         self.admin_team_bye: list[Team] = []
         self.admin_team_unpaired: list[Team] = []
+        self.admin_team_absent: list[Team] = []
         self.reload_unpaired_player_lists()
         self.reload_unpaired_team_lists()
 
@@ -251,6 +252,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         as bye blocks; they don't appear in either list."""
         self.admin_team_bye = []
         self.admin_team_unpaired = []
+        self.admin_team_absent = []
         if not self.admin_tournament:
             return
         if not (
@@ -283,8 +285,12 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             if team is not None:
                 self.admin_team_bye.append(team)
         for team in teams:
-            if team.id not in on_board_team_ids and team.id not in manual_bye_team_ids:
+            if team.id in on_board_team_ids or team.id in manual_bye_team_ids:
+                continue
+            if team.check_in:
                 self.admin_team_unpaired.append(team)
+            else:
+                self.admin_team_absent.append(team)
 
     @property
     def template_context(self) -> dict[str, Any]:
@@ -358,6 +364,7 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'admin_absent_players': self.admin_absent_players,
             'admin_team_bye': self.admin_team_bye,
             'admin_team_unpaired': self.admin_team_unpaired,
+            'admin_team_absent': self.admin_team_absent,
             'pairings_generation_disabled_message': self.admin_tournament
             and self.admin_tournament.pairings_generation_disabled_message(
                 self.admin_round
@@ -1846,6 +1853,89 @@ class PairingsAdminController(BaseEventAdminController):
             },
         )
 
+    @get(
+        path='/pairings/team-absents-modal/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-team-absents-modal',
+    )
+    async def htmx_pairings_team_absents_modal(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        return self._admin_event_pairings_render(
+            web_context,
+            {
+                'modal': 'pairing-team-absents',
+            },
+        )
+
+    @patch(
+        path='/pairings/team-toggle-check-in/{event_uniq_id:str}/{tournament_id:int}/{round:int}/{team_id:int}',
+        name='pairings-team-toggle-check-in',
+        guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_pairings_team_toggle_check_in(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_id: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        team = tournament.event.teams_by_id.get(team_id)
+        if team is None:
+            raise NotFoundException(f'Team {team_id} not found.')
+        tournament.check_in_team(team, not team.check_in)
+        web_context = PairingsAdminWebContext(
+            request, tournament_id, round, reload_event=True
+        )
+        return self._admin_event_pairings_render(web_context)
+
+    @post(
+        path='/pairings/set-all-teams-present/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-set-all-teams-present',
+        guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_pairings_set_all_teams_present(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        tournament.check_in_all_teams(True)
+        return self._admin_event_pairings_render(web_context)
+
+    @post(
+        path='/pairings/validate-team-absents/{event_uniq_id:str}/{tournament_id:int}/{round:int}',
+        name='pairings-validate-team-absents',
+        guards=[TournamentActionGuard(AuthAction.CHECK_IN_PLAYERS)],
+    )
+    async def htmx_pairings_validate_team_absents(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, str],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+        tournament_id: int,
+        round: int,
+    ) -> Template:
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round
+        )
+        tournament = web_context.get_admin_tournament()
+        for team in list(web_context.admin_team_absent):
+            if data.get(f'team_{team.id}') == 'present':
+                tournament.check_in_team(team, True)
+        if round == 1 and tournament.pairing_variation.settings:
+            return self._render_pairings_settings_modal(web_context)
+        return self._generate_round_pairings(web_context)
+
     @classmethod
     def _render_pairings_settings_modal(
         cls,
@@ -1947,7 +2037,7 @@ class PairingsAdminController(BaseEventAdminController):
                     tournament.set_player_participation(player, withdraw=True)
                 case 'present':
                     tournament.check_in_player(player, check_in=True)
-        if round == 1:
+        if round == 1 and tournament.pairing_variation.settings:
             return self._render_pairings_settings_modal(web_context)
         return self._generate_round_pairings(web_context)
 

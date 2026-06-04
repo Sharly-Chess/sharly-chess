@@ -18,6 +18,25 @@
         </div>
         <div class="modal-body">
             <div class="d-flex flex-column align-items-center justify-content-center gap-2">
+                {% if client.can_check_in_players(admin_tournament.id) %}
+                    <button
+                        class="btn btn-outline-primary w-100"
+                        hx-patch="{{ url_for(
+                            'pairings-team-toggle-check-in',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round,
+                            team_id=admin_team.id,
+                        ) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >
+                        {{ _(
+                            'Mark as "%(status)s" ',
+                            status=_('Absent') if admin_team.check_in else _('Present')
+                        ) }}
+                    </button>
+                {% endif %}
                 {% if admin_team_bye_type in bye_label_map %}
                     {% set action_route = url_for(
                         'pairings-cancel-team-bye',

@@ -70,11 +70,19 @@
                                     '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
                                 ), 'right') }}
                             ></i>
+                        {% elif not team.check_in %}
+                            <i
+                                class="bi-x-circle-fill text-danger"
+                                {{ macros.tooltip_attributes('', (
+                                    '<div class="fw-bold">' ~ _('Absent') ~ '</div>'
+                                    '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
+                                ), 'right') }}
+                            ></i>
                         {% else %}
                             <i
-                                class="bi-circle text-body text-secondary"
+                                class="bi-check-circle-fill text-success"
                                 {{ macros.tooltip_attributes('', (
-                                    '<div class="fw-bold">' ~ _('To pair') ~ '</div>'
+                                    '<div class="fw-bold">' ~ _('Present') ~ '</div>'
                                     '<div class="fst-italic" style="font-size:90%">' ~ _('Click to edit') ~ '</div>'
                                 ), 'right') }}
                             ></i>

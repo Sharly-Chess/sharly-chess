@@ -581,6 +581,7 @@ class _TeamPairingBase(PairingEngine, ABC):
                 for stb in existing
                 if stb.team_b_id is None and stb.bye_type in ('HPB', 'FPB', 'ZPB')
             ]
+            manual_bye_team_ids = {stb.team_a_id for stb in manual_byes}
             # Drop everything else, then re-add manual byes + new pairs.
             database.delete_stored_team_boards_for_round(tournament.id, round_)
             tournament.stored_tournament.stored_team_boards_by_round.pop(round_, None)
@@ -597,6 +598,25 @@ class _TeamPairingBase(PairingEngine, ABC):
                 )
                 new_stb.id = database.add_stored_team_board(new_stb)
                 kept.append(new_stb)
+            # Absent teams (check_in=False) that aren't already on a
+            # manual bye envelope get an auto-ZPB envelope for this
+            # round. bbpPairings was instructed to skip them via 240
+            # records, so its output won't reference them either.
+            for team in tournament.teams:
+                if team.check_in or team.id in manual_bye_team_ids:
+                    continue
+                absent_stb = StoredTeamBoard(
+                    id=None,
+                    tournament_id=tournament.id,
+                    round_=round_,
+                    team_a_id=team.id,
+                    team_b_id=None,
+                    index=len(kept),
+                    bye_type='ZPB',
+                )
+                absent_stb.id = database.add_stored_team_board(absent_stb)
+                kept.append(absent_stb)
+                manual_bye_team_ids.add(team.id)
             # Display order mirrors individual mode (board.py:__lt__):
             # strongest match first, PAB envelopes last. "Strength" of
             # a match is its stronger team's (MP, GP) tuple followed

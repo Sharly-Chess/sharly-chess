@@ -51,8 +51,15 @@
             </button>
             <button
                 type="submit"
-                class="text-nowrap white btn {% if admin_absent_players or show_settings_modal %}btn-outline-primary{% else %}btn-primary{% endif %}"
-                {% if admin_absent_players %}
+                class="text-nowrap white btn {% if admin_team_absent or admin_absent_players or show_settings_modal %}btn-outline-primary{% else %}btn-primary{% endif %}"
+                {% if admin_team_absent %}
+                    hx-get="{{ url_for(
+                        'pairings-team-absents-modal',
+                        event_uniq_id=admin_event.uniq_id,
+                        tournament_id=admin_tournament.id,
+                        round=admin_round
+                    ) }}"
+                {% elif admin_absent_players %}
                     hx-get="{{ url_for(
                         'pairings-absents-modal',
                         event_uniq_id=admin_event.uniq_id,
@@ -77,7 +84,7 @@
                 {% endif %}
                 hx-indicator="#please-wait"
             >
-                {% if admin_absent_players or show_settings_modal %}
+                {% if admin_team_absent or admin_absent_players or show_settings_modal %}
                     <i class="bi-caret-right"></i>
                     {{ _('Continue') }}
                 {% else %}
