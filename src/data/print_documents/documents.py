@@ -32,6 +32,8 @@ from data.print_documents.options import (
     QRCodeNetworkPrintOption,
     QRCodePrintOption,
     RoundPrintOption,
+    MatchSheetSelectionPrintOption,
+    MatchSheetPageBreakPrintOption,
     GridPlayerSortPrintOption,
     ListPlayerSortPrintOption,
     ShowWarningsPrintOption,
@@ -676,6 +678,108 @@ class ResultPrintDocument(BoardPrintDocument):
     @property
     def show_results(self) -> bool:
         return True
+
+
+class MatchSheetsPrintDocument(PrintDocument):
+    """One signature-ready table per team match in the round. Used by
+    arbiters to capture each match's individual results + captains'
+    signatures. Selection option lets the arbiter print only a subset
+    of matches; the page-break option prints one match per page."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'match-sheets'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Match sheets')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [
+            TournamentPrintOption,
+            RoundPrintOption,
+            MatchSheetSelectionPrintOption,
+            MatchSheetPageBreakPrintOption,
+        ]
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/match_sheets.html'
+
+    @property
+    def at_round(self) -> int:
+        return self._get_option(RoundPrintOption).value or self.tournament.current_round
+
+    @property
+    def title(self) -> str:
+        return _('Match sheets for round #{round}').format(round=self.at_round)
+
+    @property
+    def page_break(self) -> bool:
+        return bool(self._get_option(MatchSheetPageBreakPrintOption).value)
+
+    @property
+    def team_boards(self):
+        self.tournament.set_for_round(self.at_round)
+        all_boards = [
+            tb
+            for tb in self.tournament.get_round_team_boards(self.at_round)
+            if tb.stored_team_board.team_b_id is not None
+        ]
+        selected_ids = set(self._get_option(MatchSheetSelectionPrintOption).value or [])
+        if not selected_ids:
+            return all_boards
+        return [tb for tb in all_boards if tb.id in selected_ids]
+
+    @property
+    def match_sheet_options(self) -> list[tuple[int, str]]:
+        """``(team_board_id, label)`` for every paired team match in the
+        round — feeds the selection checkboxes."""
+        self.tournament.set_for_round(self.at_round)
+        rows: list[tuple[int, str]] = []
+        for tb in self.tournament.get_round_team_boards(self.at_round):
+            stb = tb.stored_team_board
+            if stb.team_b_id is None:
+                continue
+            label = _('%(a)s vs %(b)s').format(
+                a=tb.team_a.name,
+                b=tb.team_b.name if tb.team_b else '',
+            )
+            rows.append((tb.id, label))
+        return rows
+
+    @override
+    def validate_options(self):
+        super().validate_options()
+        at_round = self._get_option(RoundPrintOption)
+        if at_round.value is None:
+            return
+        if at_round.value > self.tournament.rounds:
+            raise OptionError(
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
+                at_round,
+            )
+        if at_round.value > self.tournament.current_round:
+            raise OptionError(
+                _(
+                    'There are no pairings for this round (last round '
+                    'with pairings: #{round}).'
+                ).format(round=self.tournament.current_round),
+                at_round,
+            )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        return {
+            'tournament': self.tournament,
+            'subtitle': self.tournament.name,
+            'team_boards': self.team_boards,
+            'page_break': self.page_break,
+            'at_round': self.at_round,
+        }
 
 
 class BergerGridPrintDocument(PrintDocument):

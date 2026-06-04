@@ -189,6 +189,70 @@ class RoundPrintOption(PrintOption):
             raise OptionError(_('A positive integer is expected.'), self)
 
 
+class MatchSheetSelectionPrintOption(PrintOption):
+    """List of team_board ids to print, or empty to print every team
+    match in the round."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'match-sheet-selection'
+
+    @property
+    def type(self) -> type | UnionType:
+        return list[int]
+
+    @property
+    def default_value(self) -> Any:
+        return []
+
+    @override
+    def validate(self):
+        self._validate_list_type(int)
+
+    def match_options_by_tournament_round(
+        self,
+    ) -> 'dict[int, dict[int, list[tuple[int, str]]]]':
+        """``{tournament_id: {round: [(team_board_id, label), ...]}}``
+        — every paired team match in every team tournament of the
+        event. Used by the print modal to show only the matches that
+        match the currently-selected tournament + round."""
+        result: dict[int, dict[int, list[tuple[int, str]]]] = {}
+        if self.event is None or not self.event.is_team_event:
+            return result
+        for tournament in self.event.tournaments_by_id.values():
+            if not tournament.is_team_tournament:
+                continue
+            by_round: dict[int, list[tuple[int, str]]] = {}
+            for round_ in range(1, tournament.rounds + 1):
+                rows: list[tuple[int, str]] = []
+                for tb in tournament.get_round_team_boards(round_):
+                    stb = tb.stored_team_board
+                    if stb.team_b_id is None or tb.team_b is None:
+                        continue
+                    rows.append((tb.id, f'{tb.team_a.name} - {tb.team_b.name}'))
+                if rows:
+                    by_round[round_] = rows
+            if by_round:
+                result[tournament.id] = by_round
+        return result
+
+
+class MatchSheetPageBreakPrintOption(PrintOption):
+    """If on, start every match sheet on a fresh page (one per page)."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'match-sheet-page-break'
+
+    @property
+    def type(self) -> type | UnionType:
+        return bool
+
+    @property
+    def default_value(self) -> Any:
+        return True
+
+
 class PlayerSplitPrintOption(PrintOption):
     @staticmethod
     def static_id() -> str:
