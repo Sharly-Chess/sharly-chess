@@ -93,11 +93,26 @@ class PrintDocument(OptionHandler[PrintOption], ABC):
             AuthAction.GENERATE_DOCUMENTS
         )
 
+    hide_for_team_events: bool = False
+    hide_for_individual_events: bool = False
+
     @classmethod
     def is_available(cls, allowed_tournaments: list[Tournament]) -> bool:
         if not allowed_tournaments and (
             TournamentPrintOption in cls.available_options()
             or TournamentsPrintOption in cls.available_options()
+        ):
+            return False
+        if (
+            cls.hide_for_team_events
+            and allowed_tournaments
+            and any(t.event.is_team_event for t in allowed_tournaments)
+        ):
+            return False
+        if (
+            cls.hide_for_individual_events
+            and allowed_tournaments
+            and any(not t.event.is_team_event for t in allowed_tournaments)
         ):
             return False
         return True
@@ -278,6 +293,8 @@ class PlayerListPrintDocument(PlayerPrintDocument):
 
 
 class PlayerCheckinListPrintDocument(PlayerPrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'player-checkin-list'
@@ -354,6 +371,8 @@ class AbstractPlayerRankingPrintDocument(PlayerPrintDocument, ABC):
 
 
 class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'individual-ranking'
@@ -374,6 +393,8 @@ class PlayerRankingPrintDocument(AbstractPlayerRankingPrintDocument):
 
 
 class PlayerCrosstablePrintDocument(AbstractPlayerRankingPrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'crosstable'
@@ -568,6 +589,8 @@ class BoardPrintDocument(PrintDocument, ABC):
 
 
 class PairingPrintDocument(PrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'pairings'
@@ -662,6 +685,8 @@ class PlayerPairingPrintDocument(PlayerPrintDocument):
 
 
 class ResultPrintDocument(BoardPrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'results'
@@ -685,6 +710,8 @@ class MatchSheetsPrintDocument(PrintDocument):
     arbiters to capture each match's individual results + captains'
     signatures. Selection option lets the arbiter print only a subset
     of matches; the page-break option prints one match per page."""
+
+    hide_for_individual_events = True
 
     @staticmethod
     def static_id() -> str:
@@ -782,7 +809,84 @@ class MatchSheetsPrintDocument(PrintDocument):
         }
 
 
+class TeamRankingPrintDocument(PrintDocument):
+    """Team-tournament equivalent of :class:`PlayerRankingPrintDocument`.
+    Renders the team standings table (rank, team, played, W/D/L, MP/GP,
+    team tie-breaks) for the team event."""
+
+    hide_for_individual_events = True
+
+    @staticmethod
+    def static_id() -> str:
+        return 'team-ranking'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Team ranking')
+
+    @staticmethod
+    def available_options() -> list[type[PrintOption]]:
+        return [TournamentPrintOption, RoundPrintOption]
+
+    @property
+    def template_name(self) -> str:
+        return '/admin/print/team_ranking.html'
+
+    @property
+    def ranking_round(self) -> int:
+        return (
+            self._get_option(RoundPrintOption).value
+            or self.tournament.max_ranking_round
+        )
+
+    @property
+    def title(self) -> str:
+        if self.ranking_round == 0:
+            return _('Team ranking before the first round')
+        return _('Team ranking after round #{round}').format(round=self.ranking_round)
+
+    @override
+    def validate_options(self):
+        super().validate_options()
+        ranking_round = self._get_option(RoundPrintOption)
+        if ranking_round.value is None:
+            return
+        if ranking_round.value > self.tournament.rounds:
+            raise OptionError(
+                _(
+                    'This round is not valid (the tournament has {rounds} rounds).'
+                ).format(rounds=self.tournament.rounds),
+                ranking_round,
+            )
+        if ranking_round.value > self.tournament.max_ranking_round:
+            raise OptionError(
+                _('This round is not finished (last finished: #{round}).').format(
+                    round=self.tournament.max_ranking_round
+                ),
+                ranking_round,
+            )
+
+    @property
+    def template_context(self) -> dict[str, Any]:
+        primary_is_mp = (
+            self.tournament.pairing_system.paired_by_team
+            and str(self.tournament.primary_score) == 'MATCH_POINTS'
+        )
+        team_tie_breaks = [
+            tb for tb in self.tournament.tie_breaks if tb.supports_team_mode
+        ]
+        return {
+            'tournament': self.tournament,
+            'subtitle': self.tournament.name,
+            'standings': self.tournament.team_standings(),
+            'primary_is_mp': primary_is_mp,
+            'team_tie_breaks': team_tie_breaks,
+        }
+
+
 class BergerGridPrintDocument(PrintDocument):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'berger-grid'
@@ -1826,6 +1930,8 @@ class PlaceCardPrintDocument(PrintDocument):
 
 
 class IndividuelTeamRankingPrintDocument(PrintDocument, ABC):
+    hide_for_team_events = True
+
     @staticmethod
     def static_id() -> str:
         return 'individual-team-ranking'
