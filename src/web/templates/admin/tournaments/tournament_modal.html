@@ -130,6 +130,23 @@
                 </div>
                 {% include '/admin/tournaments/time_control_editor.html' %}
 
+                {% if rule_sets %}
+                    <div class="row gy-2 gx-3">
+                        <div class="col-12 col-md-6">
+                            {{ admin_macros.select_input(
+                                name='rule_set',
+                                label=_('%(string)s:', string=_('Rule set')),
+                                tooltip_text=_(
+                                    'Optional: pre-configure the tournament '
+                                    'for an official rule set (federation cup, etc.).'
+                                ),
+                                select_options=rule_set_options,
+                                data=data, errors=errors
+                            ) }}
+                        </div>
+                    </div>
+                {% endif %}
+
                 <h4>
                     {{ _('Pairings') }}
                 </h4>
@@ -646,6 +663,115 @@
                     </div>
                 </div>
                 {% include '/admin/tournaments/tournament_schedule_section.html' %}
+                {% if rule_sets %}
+                    <script>
+                        (function() {
+                            const RULE_SET_MANAGED = {{ rule_set_managed_fields|tojson }};
+                            // Per-pairing-system defaults: nested by
+                            // rule-set id, then by pairing system id
+                            // ('' = no system context).
+                            const RULE_SET_DEFAULTS = {{ rule_set_defaults|tojson }};
+                            const RULE_SET_LOCK_TITLES = {{ rule_set_lock_titles|tojson }};
+                            const $ruleSet = $('#rule-set');
+                            const $pairingSystem = $('#pairing-system');
+
+                            function currentDefaults(ruleId) {
+                                const bySystem = RULE_SET_DEFAULTS[ruleId] || {};
+                                const systemId = $pairingSystem.val() || '';
+                                return bySystem[systemId] || bySystem[''] || {};
+                            }
+
+                            function inputId(name) {
+                                return name.replace(/_/g, '-');
+                            }
+
+                            function disposeTooltip(el) {
+                                if (typeof bootstrap === 'undefined') return;
+                                const existing = bootstrap.Tooltip.getInstance(el);
+                                if (existing) existing.dispose();
+                            }
+
+                            function unlockAll() {
+                                $('[data-rule-set-locked]').each(function() {
+                                    const $input = $(this);
+                                    $input.prop('disabled', false)
+                                          .removeAttr('data-rule-set-locked');
+                                    if ($input.is('select')) {
+                                        $input.trigger('change.select2');
+                                    }
+                                });
+                                $('[data-rule-set-tooltip]').each(function() {
+                                    disposeTooltip(this);
+                                    $(this).removeAttr('data-bs-toggle')
+                                           .removeAttr('data-bs-placement')
+                                           .removeAttr('data-bs-html')
+                                           .removeAttr('data-bs-custom-class')
+                                           .removeAttr('data-bs-title')
+                                           .removeAttr('data-rule-set-tooltip');
+                                });
+                            }
+
+                            function lockForRuleSet(id) {
+                                const fields = RULE_SET_MANAGED[id] || [];
+                                const defaults = currentDefaults(id);
+                                const title = RULE_SET_LOCK_TITLES[id] || '';
+                                fields.forEach(function(name) {
+                                    const fid = inputId(name);
+                                    const $input = $('#' + fid);
+                                    if ($input.length === 0) return;
+                                    if (Object.prototype.hasOwnProperty.call(defaults, name)) {
+                                        $input.val(defaults[name]);
+                                        if ($input.is('select')) {
+                                            $input.trigger('change.select2');
+                                        }
+                                        $input.trigger('change');
+                                    }
+                                    $input.prop('disabled', true)
+                                          .attr('data-rule-set-locked', '1');
+                                    // Disabled inputs swallow hover events so
+                                    // the tooltip has to live on the input
+                                    // wrapper (matches the macro's existing
+                                    // info-icon pattern).
+                                    const $tip = $('#' + fid + '-input-container');
+                                    if ($tip.length === 0) return;
+                                    $tip.attr({
+                                        'data-bs-toggle': 'tooltip',
+                                        'data-bs-placement': 'top',
+                                        'data-bs-html': 'true',
+                                        'data-bs-custom-class': 'sharly-chess-tooltip-info',
+                                        'data-bs-title':
+                                            "<i class='bi-info-circle-fill'></i> " + title,
+                                        'data-rule-set-tooltip': '1',
+                                    });
+                                    const el = $tip.get(0);
+                                    disposeTooltip(el);
+                                    new bootstrap.Tooltip(el);
+                                });
+                            }
+
+                            function refresh() {
+                                unlockAll();
+                                const id = $ruleSet.val();
+                                if (id) lockForRuleSet(id);
+                            }
+
+                            $ruleSet.on('change', refresh);
+                            // Pairing-system changes flip the locked
+                            // values (different scoring / round counts
+                            // per system), so re-apply on that too.
+                            $pairingSystem.on('change', refresh);
+                            // Disabled inputs are skipped by HTMX during
+                            // form serialisation — re-inject their values
+                            // into the request parameters at submit time.
+                            $('#modal-form').on('htmx:configRequest', function(evt) {
+                                $('[data-rule-set-locked]').each(function() {
+                                    evt.detail.parameters[this.name] = $(this).val();
+                                });
+                            });
+                            triggerModalInitEvent('#rule-set');
+                        })();
+                    </script>
+                {% endif %}
             </form>
 
         </div>

@@ -78,6 +78,7 @@ if TYPE_CHECKING:
         TrfTeamPABs,
         TrfTournament,
     )
+    from data.rule_sets import RuleSet
     from data.pairings import PairingVariation, PairingSystem
     from data.team import Team
     from data.tie_breaks.team_records import TeamRecord
@@ -341,6 +342,53 @@ class Tournament:
     def team_player_count(self) -> int | None:
         return self.stored_tournament.team_player_count
 
+    @property
+    def rule_set_id(self) -> str | None:
+        return self.stored_tournament.rule_set
+
+    @cached_property
+    def rule_set(self) -> 'RuleSet | None':
+        """Resolved :class:`RuleSet` object for this tournament, or
+        ``None`` when no rule set is set or the stored id no longer
+        maps to a registered rule set (plugin disabled, etc.)."""
+        from data.rule_sets import RuleSetManager
+
+        rule_set_id = self.stored_tournament.rule_set
+        if not rule_set_id:
+            return None
+        try:
+            return RuleSetManager(self.event).get_object(rule_set_id)
+        except KeyError:
+            return None
+
+    @property
+    def rule_set_roster_max_size(self) -> int | None:
+        """Roster cap imposed by the active rule set, or ``None``."""
+        rule_set = self.rule_set
+        return rule_set.roster_max_size if rule_set else None
+
+    @property
+    def rule_set_locks_lineup_order(self) -> bool:
+        """True iff the active rule set forces lineups to follow the
+        roster order. The lineup picker then renders as a selection
+        list rather than a drag UI."""
+        rule_set = self.rule_set
+        return rule_set is not None and rule_set.lineup_order_locked
+
+    @property
+    def rule_set_managed_tie_breaks(self) -> bool:
+        """True iff the tournament has a rule set that imposes a
+        tie-break list for the current pairing system. The tie-break
+        editor renders read-only in that case."""
+        rule_set = self.rule_set
+        if rule_set is None:
+            return False
+        try:
+            system_id = self.pairing_system.id
+        except KeyError:
+            return False
+        return bool(rule_set.tie_breaks_for_pairing(system_id))
+
     @cached_property
     def match_points(self) -> dict[Result, float]:
         """Points awarded for a team match outcome, indexed by `Result`.
@@ -463,6 +511,7 @@ class Tournament:
         team_player_count = float(self.team_player_count or 0)
         win_gp_per_player = Result.WIN.point_value
         draw_gp_per_player = Result.DRAW.point_value
+        absent_gp_per_player = self.team_game_points[Result.ZERO_POINT_BYE]
         for team_board in self.team_boards_by_id.values():
             stb = team_board.stored_team_board
             a_gp, b_gp = team_board.game_points
@@ -477,6 +526,10 @@ class Tournament:
                 match stb.bye_type:
                     case 'ZPB':
                         ent['mp'] += loss_mp
+                        # Team-level forfeit: every board counts as a
+                        # forfeited game (FFE §4.1: ``-1`` per board
+                        # when the override is set, otherwise 0).
+                        ent['gp'] += team_player_count * absent_gp_per_player
                         ent['losses'] += 1
                     case 'HPB':
                         ent['mp'] += draw_mp
@@ -707,6 +760,35 @@ class Tournament:
             scores.append(white_pts if white_team_id == team_id else black_pts)
         return tuple(scores)
 
+    def _team_board_ratings_for(
+        self, team_board: TeamBoard, team_id: int
+    ) -> tuple[int | None, ...]:
+        """Per-board own player ratings for ``team_id`` in this match,
+        ordered by board index. Mirrors :meth:`_team_board_scores_for`
+        for tie-breaks that weigh team standings by own-player rating.
+        ``None`` for unrated players."""
+        ratings: list[int | None] = []
+        for board in sorted(team_board.boards, key=lambda b: b.index):
+            white_id = board.stored_board.white_player_id
+            black_id = board.stored_board.black_player_id
+            white_player = (
+                self.tournament_players_by_id.get(white_id) if white_id else None
+            )
+            black_player = (
+                self.tournament_players_by_id.get(black_id) if black_id else None
+            )
+            own_player = (
+                white_player
+                if white_player and white_player.team_id == team_id
+                else black_player
+                if black_player and black_player.team_id == team_id
+                else None
+            )
+            ratings.append(
+                own_player.rating if own_player and own_player.rating else None
+            )
+        return tuple(ratings)
+
     def team_records(self, *, after_round: int | None = None) -> list['TeamRecord']:
         """Build :class:`TeamRecord` instances for every team in this
         tournament, suitable as input to the team tie-break compute API.
@@ -743,6 +825,7 @@ class Tournament:
             b_id = stb.team_b_id
             a_gp, b_gp = team_board.game_points
             a_boards = self._team_board_scores_for(team_board, a_id)
+            a_ratings = self._team_board_ratings_for(team_board, a_id)
             if b_id is None:
                 matches_per_team[a_id].append(
                     TeamMatchRecord(
@@ -752,6 +835,7 @@ class Tournament:
                         own_gp=self.pab_points,
                         match_type=TeamMatchType.PAB,
                         board_scores=a_boards,
+                        board_ratings=a_ratings,
                     )
                 )
                 totals_mp[a_id] += pab_mp
@@ -764,6 +848,7 @@ class Tournament:
             else:
                 a_mp = b_mp = draw_mp
             b_boards = self._team_board_scores_for(team_board, b_id)
+            b_ratings = self._team_board_ratings_for(team_board, b_id)
             matches_per_team[a_id].append(
                 TeamMatchRecord(
                     round_=team_board.round,
@@ -772,6 +857,7 @@ class Tournament:
                     own_gp=a_gp,
                     match_type=TeamMatchType.PLAYED,
                     board_scores=a_boards,
+                    board_ratings=a_ratings,
                 )
             )
             matches_per_team[b_id].append(
@@ -782,6 +868,7 @@ class Tournament:
                     own_gp=b_gp,
                     match_type=TeamMatchType.PLAYED,
                     board_scores=b_boards,
+                    board_ratings=b_ratings,
                 )
             )
             totals_mp[a_id] += a_mp
@@ -1491,12 +1578,22 @@ class Tournament:
         (3/2/1 etc. via the tournament modal); team scoring respects
         it, while :attr:`point_values` (used for individual rankings
         within the team and for individual mode) stays at the FIDE
-        defaults. Defaults: WIN=1, DRAW=0.5, LOSS=0."""
+        defaults. Defaults: WIN=1, DRAW=0.5, LOSS=0, ABS / FORFAIT
+        fall back to LOSS unless the form sets ``gp_zpb`` explicitly
+        (e.g. a federation rule scoring forfeits as -1)."""
         raw = self.stored_tournament.game_points or {}
+        loss = float(raw.get(Result.LOSS.value, 0.0))
+        absent = float(raw.get(Result.ZERO_POINT_BYE.value, loss))
         return {
             Result.WIN: float(raw.get(Result.WIN.value, 1.0)),
             Result.DRAW: float(raw.get(Result.DRAW.value, 0.5)),
-            Result.LOSS: float(raw.get(Result.LOSS.value, 0.0)),
+            Result.LOSS: loss,
+            Result.ZERO_POINT_BYE: absent,
+            # ``Result.points()`` only falls back to LOSS for these;
+            # surface the absent override explicitly so a forfeit-loss
+            # or double-forfeit also gets the configured value.
+            Result.FORFEIT_LOSS: absent,
+            Result.DOUBLE_FORFEIT: absent,
         }
 
     @property

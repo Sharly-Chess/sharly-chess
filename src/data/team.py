@@ -17,6 +17,16 @@ if TYPE_CHECKING:
     from data.tournament import Tournament
 
 
+class RosterFullError(Exception):
+    """Raised by :meth:`Team.add_player` when the team is at its
+    roster cap (set by the tournament's rule set)."""
+
+    def __init__(self, team: 'Team', max_size: int):
+        super().__init__(f'Roster full ({max_size} players) for team {team.name}')
+        self.team = team
+        self.max_size = max_size
+
+
 class Team:
     """A team of players competing as a unit in a team tournament."""
 
@@ -114,6 +124,19 @@ class Team:
         if not ratings:
             return None
         return round(sum(ratings) / len(ratings))
+
+    @property
+    def rule_set_warning_message(self) -> str | None:
+        """Combined warnings from the active rule set for this team's
+        roster — encapsulated in :meth:`RuleSet.roster_warnings`.
+        Returns ``None`` when there are no warnings. Rendered as a
+        triangle + tooltip on the team card."""
+        tournament = self.tournament
+        rule_set = tournament.rule_set if tournament else None
+        if rule_set is None:
+            return None
+        warnings = rule_set.roster_warnings(self)
+        return ' '.join(warnings) or None
 
     @property
     def lineups_by_round(self) -> dict[int, list['Player']]:
@@ -317,13 +340,26 @@ class Team:
         if 'players_by_id' in self.__dict__:
             del self.__dict__['players_by_id']
 
+    @property
+    def roster_max_size(self) -> int | None:
+        """Roster cap imposed by the team's tournament rule set, or
+        ``None`` (uncapped). Centralised so every add path obeys it."""
+        tournament = self.tournament
+        return tournament.rule_set_roster_max_size if tournament else None
+
     def add_player(self, player: 'Player', database: EventDatabase):
         """Add a player to the team's roster.
         Removes the player from any previous team (event-wide uniqueness).
-        Appends at the end of the roster ordering."""
+        Appends at the end of the roster ordering.
+
+        Raises :class:`RosterFullError` when adding would exceed the
+        rule-set roster cap."""
         previous_team_id = player.stored_player.team_id
         if previous_team_id == self.id:
             return
+        max_size = self.roster_max_size
+        if max_size is not None and len(self.players) >= max_size:
+            raise RosterFullError(self, max_size)
         next_index = (
             max(
                 (p.team_index for p in self.players if p.team_index is not None),

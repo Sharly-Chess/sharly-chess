@@ -55,8 +55,23 @@ class FFEMolterPairingSystem(FixedTablePairingSystem):
 
     @override
     def get_table(
-        self, team_count: int, players_per_team: int
+        self,
+        team_count: int,
+        players_per_team: int,
+        tournament: 'Tournament | None' = None,
     ) -> FixedPairingTable | None:
+        # The active rule set may override individual cells of the
+        # standard Molter registry (federation cups sometimes ship
+        # their own table for a specific size). Fall back to the
+        # plugin's registry when nothing overrides.
+        if tournament is not None:
+            rule_set = tournament.rule_set
+            if rule_set is not None:
+                override_table = rule_set.molter_table_overrides().get(
+                    (team_count, players_per_team)
+                )
+                if override_table is not None:
+                    return override_table
         return FFE_MOLTER_TABLES.get((team_count, players_per_team))
 
     @override

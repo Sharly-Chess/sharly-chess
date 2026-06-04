@@ -19,6 +19,7 @@ if TYPE_CHECKING:
         RoundRobinVariation,
         TeamSwissVariation,
         TeamRoundRobinVariation,
+        TeamAllerRetourVariation,
     )
     from data.tournament import Tournament
     from data.event import Event
@@ -314,6 +315,77 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
         return tournament.last_paired_round
 
 
+class TeamAllerRetourPairingSystem(PairingSystem['TeamAllerRetourVariation']):
+    """Two-team mini-match: the same two teams meet for an even number
+    of rounds, alternating colours each round. No home / away
+    distinction — colours are the only thing that swaps."""
+
+    @staticmethod
+    def static_id() -> str:
+        return 'TEAM_ALLER_RETOUR'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Two-game team match')
+
+    @override
+    def variation_manager(
+        self, event: 'Event'
+    ) -> EntityManager['TeamAllerRetourVariation']:
+        from data.pairings.managers import TeamAllerRetourVariationManager
+
+        return TeamAllerRetourVariationManager(event)
+
+    @property
+    def allow_rounds_update_once_started(self) -> bool:
+        return False
+
+    @property
+    def allow_player_addition_once_paired(self) -> bool:
+        return False
+
+    @property
+    def allow_bye_definition(self) -> bool:
+        return False
+
+    @property
+    def show_unfinished_round_modal(self) -> bool:
+        return False
+
+    @property
+    def show_unpaired_player_modal(self) -> bool:
+        return False
+
+    @property
+    def split_unpaired_and_bye_players(self) -> bool:
+        return False
+
+    @property
+    def pairing_buttons_template(self) -> str:
+        # Pair round-by-round so the arbiter can adjust each team's
+        # lineup between rounds (a fixed-schedule bulk pair would lock
+        # the round-1 lineups across the whole tournament).
+        return '/admin/pairings/swiss_pairing_buttons.html'
+
+    @cached_property
+    def permission_handler(self) -> PermissionHandler[PairingAction]:
+        # Reuse the Swiss permission set: round-robin's handler omits
+        # FULL_PAIRING, which the single-round pair endpoint requires
+        # whenever the ratings-warning modal falls through to it
+        # (variations with no settings).
+        return SwissPairingSystem().permission_handler
+
+    def default_current_round(self, tournament: 'Tournament') -> int:
+        return next(
+            (
+                round_
+                for round_ in reversed(range(1, tournament.rounds + 1))
+                if tournament.round_has_played_result(round_)
+            ),
+            1 if tournament.has_pairings else 0,
+        )
+
+
 class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
     @staticmethod
     def static_id() -> str:
@@ -322,10 +394,6 @@ class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
     @staticmethod
     def static_name() -> str:
         return _('Team Round-Robin')
-
-    @property
-    def round_per_round_pairing_generation(self) -> bool:
-        return False
 
     @override
     def variation_manager(
@@ -361,11 +429,17 @@ class TeamRoundRobinPairingSystem(PairingSystem['TeamRoundRobinVariation']):
 
     @property
     def pairing_buttons_template(self) -> str:
-        return '/admin/pairings/round_robin_pairing_buttons.html'
+        # Pair round-by-round so each team can edit its lineup between
+        # rounds — a bulk pair would lock every round to the round-1
+        # lineup.
+        return '/admin/pairings/swiss_pairing_buttons.html'
 
     @cached_property
     def permission_handler(self) -> PermissionHandler[PairingAction]:
-        return RoundRobinPairingSystem().permission_handler
+        # Reuse the Swiss permission set so FULL_PAIRING is permitted
+        # when the ratings-warning modal falls through to the single-
+        # round pair endpoint (variations with no settings).
+        return SwissPairingSystem().permission_handler
 
     def default_current_round(self, tournament: 'Tournament') -> int:
         return next(

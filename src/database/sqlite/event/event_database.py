@@ -649,6 +649,7 @@ class EventDatabase(MigrationDatabase):
             primary_score=row['primary_score'],
             secondary_score=row['secondary_score'],
             team_colour_type=row['team_colour_type'],
+            rule_set=row['rule_set'],
         )
 
         return stored_tournament
@@ -728,6 +729,7 @@ class EventDatabase(MigrationDatabase):
                 'primary_score',
                 'secondary_score',
                 'team_colour_type',
+                'rule_set',
             ],
         ) | {
             'start_date': cls.dump_date_to_database_field(stored_tournament.start_date),

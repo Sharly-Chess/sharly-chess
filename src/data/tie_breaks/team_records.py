@@ -52,6 +52,10 @@ class TeamMatchRecord:
     # the consumer doesn't need board-level data; tie-breaks that rely
     # on board weighting (FFE Berlin, BC / TBR / BBE) require this.
     board_scores: tuple[float, ...] = ()
+    # Per-board own players' ratings, parallel to ``board_scores``.
+    # ``None`` for unrated players or boards with no player attributed.
+    # Used by tie-breaks that average own-team ratings.
+    board_ratings: tuple[int | None, ...] = ()
 
     @property
     def played(self) -> bool:

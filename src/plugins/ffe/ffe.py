@@ -76,6 +76,11 @@ from plugins.ffe.ffe_entity import (
     FfeLeagueTournamentCriterion,
     FfeLeagueIndividualTeamType,
 )
+from plugins.ffe.ffe_rule_sets import (
+    ChampionnatFemininN1N2RuleSet,
+    CoupeDeLaPariteRuleSet,
+    CoupeJeanClaudeLoubatiereRuleSet,
+)
 from plugins.ffe.ffe_sql_server import FFESqlServer
 from plugins.ffe.ffe_tie_breaks import (
     BasePapiTieBreak,
@@ -143,6 +148,7 @@ from web.controllers.base_controller import BaseController, WebContext
 if TYPE_CHECKING:
     from data.event import Event
     from database.sqlite.event.event_store import StoredEvent
+    from data.rule_sets import RuleSet
     from data.tournament import Tournament
     from database.sqlite.event.event_store import StoredTournament
 
@@ -837,12 +843,20 @@ class FfePlugin(Plugin):
                 tie_break_types, tie_break_type, tie_break_type.base_tie_break_type()
             )
         tie_break_types.append(ffe_tie_breaks.BerlinTieBreak)
+        tie_break_types.append(ffe_tie_breaks.GamePointsDifferentialTieBreak)
+        tie_break_types.append(ffe_tie_breaks.LowestOwnAverageRatingTieBreak)
 
     @hookimpl
     def insert_tie_break_option_types(
         self, tie_break_option_types: list[type[TieBreakOption]]
     ):
         tie_break_option_types.append(PapiBuchholzTypeOption)
+
+    @hookimpl
+    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]):
+        rule_sets.append(CoupeJeanClaudeLoubatiereRuleSet)
+        rule_sets.append(CoupeDeLaPariteRuleSet)
+        rule_sets.append(ChampionnatFemininN1N2RuleSet)
 
     @hookimpl
     def insert_swiss_system_tie_break_sets(

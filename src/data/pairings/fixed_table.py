@@ -93,15 +93,24 @@ class FixedPairingTable:
         """
         if round_index < 1 or round_index > total_rounds:
             raise ValueError(f'Round {round_index} out of range 1..{total_rounds}.')
-        if total_rounds % 2 == 1 and round_index == total_rounds:
-            if self.autonomous_round is None:
-                raise SharlyChessException(
-                    _('Pairing table has no autonomous round to use as terminal.')
-                )
+        # The autonomous round serves two FFE-defined roles: a stand-
+        # alone 1-round event, or the terminal round of a tournament
+        # that needs MORE rounds than the table's regular cycle can
+        # provide (odd overflow). For tournaments that fit inside the
+        # regular cycle we walk regular rounds — tables built with
+        # exactly enough regulars (e.g. the cup 3T×4P table) then
+        # don't need an autonomous round at all.
+        use_autonomous = (
+            self.autonomous_round is not None
+            and round_index == total_rounds
+            and (
+                total_rounds == 1
+                or (total_rounds > self.regular_round_count and total_rounds % 2 == 1)
+            )
+        )
+        if use_autonomous:
+            assert self.autonomous_round is not None
             return self.autonomous_round
-        # Even total rounds, or a non-terminal round in an odd total — use a
-        # regular round, repeating the cycle if the tournament has more
-        # rounds than the table base.
         return self.rounds[(round_index - 1) % self.regular_round_count]
 
 
@@ -147,11 +156,18 @@ class FixedTablePairingSystem(PairingSystem['FixedTableVariation'], ABC):
 
     @abstractmethod
     def get_table(
-        self, team_count: int, players_per_team: int
+        self,
+        team_count: int,
+        players_per_team: int,
+        tournament: 'Tournament | None' = None,
     ) -> FixedPairingTable | None:
         """Return the table for the given (team_count, players_per_team) combo,
         or None if no exact table exists. The engine may then chain smaller
-        base tables to cover larger rosters."""
+        base tables to cover larger rosters.
+
+        ``tournament`` is forwarded so concrete implementations can
+        consult the rule set for cell overrides (e.g. cup-specific
+        tables)."""
 
     @abstractmethod
     def supported_team_counts(self) -> tuple[int, ...]:
@@ -230,23 +246,32 @@ class FixedTablePairingEngine(PairingEngine):
         n = tournament.team_player_count or 0
         if n <= 0:
             return _('Tournament has no team-player count configured.')
-        if tournament.rounds >= len(teams):
-            return _(
-                'FFE Molter requires the number of rounds ({r}) to be '
-                'strictly less than the team count ({t}). Reduce rounds '
-                'to {max_rounds} or add teams.'
-            ).format(
-                r=tournament.rounds,
-                t=len(teams),
-                max_rounds=len(teams) - 1,
+        # Cap rounds by what the chosen table can actually produce —
+        # regular cycle + optional autonomous round. (The old check
+        # was hardcoded to ``rounds < team_count``, which broke for
+        # cup-specific tables that ship more regular rounds than the
+        # standard FFE registry.)
+        chosen_table = self.system.get_table(len(teams), n, tournament)
+        if chosen_table is not None:
+            max_rounds = chosen_table.regular_round_count + (
+                1 if chosen_table.has_autonomous_round else 0
             )
+            if tournament.rounds > max_rounds:
+                return _(
+                    'This pairing table covers up to {max_rounds} rounds '
+                    'for {t} teams of {p} players. Reduce the round count.'
+                ).format(
+                    max_rounds=max_rounds,
+                    t=len(teams),
+                    p=n,
+                )
         # Validate the player count: tables exist for specific sizes
         # (typically 4, 6, 8, 10, 12) and rosters larger than the
         # largest base table are tiled in blocks. Counts that can't be
         # tiled (e.g. odd counts when only even tables are available)
         # are rejected up-front rather than failing inside the engine.
-        if self.system.get_table(len(teams), n) is None:
-            candidates = self._candidate_player_counts(len(teams))
+        if chosen_table is None:
+            candidates = self._candidate_player_counts(len(teams), tournament)
             if not candidates:
                 return _('No tables available for {t} teams.').format(t=len(teams))
             if not _can_tile(n, candidates):
@@ -391,7 +416,7 @@ class FixedTablePairingEngine(PairingEngine):
         player count for ``team_count`` teams. Player indices in trailing
         blocks are offset to refer to the correct intra-team numbers."""
         # Try exact match first.
-        exact = self.system.get_table(team_count, players_per_team)
+        exact = self.system.get_table(team_count, players_per_team, tournament)
         if exact is not None:
             return list(exact.round_pairings(round_, tournament.rounds))
 
@@ -399,7 +424,7 @@ class FixedTablePairingEngine(PairingEngine):
         candidates = sorted(
             (
                 pc
-                for pc in self._candidate_player_counts(team_count)
+                for pc in self._candidate_player_counts(team_count, tournament)
                 if pc <= players_per_team
             ),
             reverse=True,
@@ -422,7 +447,7 @@ class FixedTablePairingEngine(PairingEngine):
                         'a base table for {t} teams.'
                     ).format(remaining=remaining, t=team_count)
                 )
-            table = self.system.get_table(team_count, block)
+            table = self.system.get_table(team_count, block, tournament)
             if table is None:
                 raise SharlyChessException(
                     _('Missing base table for {t} teams, {p} players.').format(
@@ -442,11 +467,13 @@ class FixedTablePairingEngine(PairingEngine):
             offset += block
         return result
 
-    def _candidate_player_counts(self, team_count: int) -> tuple[int, ...]:
+    def _candidate_player_counts(
+        self, team_count: int, tournament: 'Tournament | None' = None
+    ) -> tuple[int, ...]:
         """The set of players_per_team values for which we have base tables
         at ``team_count`` teams. Default: probe common sizes."""
         return tuple(
             pc
             for pc in (4, 6, 8, 10, 12)
-            if self.system.get_table(team_count, pc) is not None
+            if self.system.get_table(team_count, pc, tournament) is not None
         )

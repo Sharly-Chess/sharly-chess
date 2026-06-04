@@ -35,10 +35,18 @@
                     </select>
                 </div>
                 <p class="text-muted small">
-                    {{ _(
-                        'Drag players between the board slots and the bench. '
-                        'Empty slots become holes in the lineup.'
-                    ) }}
+                    {% if selection_only %}
+                        {{ _(
+                            'Tick the players who will play this round. Board '
+                            'order follows the roster — reorder the roster to '
+                            'change which player plays which board.'
+                        ) }}
+                    {% else %}
+                        {{ _(
+                            'Drag players between the board slots and the bench. '
+                            'Empty slots become holes in the lineup.'
+                        ) }}
+                    {% endif %}
                 </p>
                 {% for round_info in rounds_data %}
                     {% set round_num = round_info['round'] %}
@@ -61,6 +69,57 @@
                             hx-trigger="lineup-changed"
                             hx-indicator="#please-wait"
                         >
+                            {% if selection_only %}
+                                {% set selected_ids = slots|map(attribute='id')|list %}
+                                <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-1 mb-2">
+                                    {{ _('Roster') }}
+                                </h6>
+                                <div class="d-flex flex-column gap-1 mb-3 lineup-roster-list">
+                                    {% for player in roster_players %}
+                                        {% set is_selected = player.id in selected_ids %}
+                                        {% set board_index = selected_ids.index(player.id) if is_selected else -1 %}
+                                        {% if board_index >= 0 and board_index < color_pattern|length %}
+                                            {% set chip_color = color_pattern[board_index]|upper %}
+                                        {% elif board_index >= 0 %}
+                                            {% set chip_color = 'W' if board_index % 2 == 0 else 'B' %}
+                                        {% else %}
+                                            {% set chip_color = '' %}
+                                        {% endif %}
+                                        <label
+                                            class="lineup-roster-row d-flex align-items-center gap-2 border border-secondary rounded px-2 py-1 mb-0
+                                                {% if is_selected %}bg-body-tertiary{% endif %}"
+                                            data-player-id="{{ player.id }}"
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                class="form-check-input m-0 lineup-roster-toggle"
+                                                value="{{ player.id }}"
+                                                {% if is_selected %}checked{% endif %}
+                                            >
+                                            <strong
+                                                class="text-muted lineup-roster-board"
+                                                style="width:1.5rem;"
+                                            >
+                                                {% if is_selected %}{{ board_index + 1 }}{% endif %}
+                                            </strong>
+                                            <span
+                                                class="color-chip lineup-roster-chip
+                                                    {% if chip_color %}color-chip-{{ chip_color|lower }}{% endif %}"
+                                                {% if not chip_color %}style="visibility:hidden"{% endif %}
+                                            ></span>
+                                            <span class="flex-grow-1">{{ player.full_name }}</span>
+                                        </label>
+                                    {% endfor %}
+                                </div>
+                                {% for slot_index in range(team_player_count) %}
+                                    {% set slot_player = slots[slot_index] if slot_index < slots|length else none %}
+                                    <input
+                                        type="hidden"
+                                        name="slot_{{ slot_index }}"
+                                        value="{{ slot_player.id if slot_player else '' }}"
+                                    >
+                                {% endfor %}
+                            {% else %}
                             <h6 class="text-uppercase text-muted small fw-bold border-bottom pb-1 mb-2">
                                 {{ _('Boards') }}
                             </h6>
@@ -121,6 +180,7 @@
                                     </div>
                                 {% endfor %}
                             </div>
+                            {% endif %}
                         </form>
                     </div>
                 {% endfor %}
@@ -158,7 +218,62 @@
                                 .querySelector('.lineup-bench');
                             if (bench) bench.appendChild(other);
                         }
+                        const TEAM_PLAYER_COUNT = {{ team_player_count }};
+                        const COLOR_PATTERN = {{ color_pattern|tojson }};
+                        function setupSelectionOnly(section) {
+                            const form = section.querySelector('.lineup-form');
+                            if (!form) return;
+                            const list = section.querySelector('.lineup-roster-list');
+                            if (!list) return;
+                            const toggles = list.querySelectorAll('.lineup-roster-toggle');
+                            function refresh() {
+                                const checked = Array.from(toggles).filter(t => t.checked);
+                                const limitReached = checked.length >= TEAM_PLAYER_COUNT;
+                                // Renumber rows + chip colours by selection order.
+                                Array.from(toggles).forEach(function (toggle) {
+                                    const row = toggle.closest('.lineup-roster-row');
+                                    const boardEl = row.querySelector('.lineup-roster-board');
+                                    const chipEl = row.querySelector('.lineup-roster-chip');
+                                    const idx = checked.indexOf(toggle);
+                                    if (idx >= 0) {
+                                        boardEl.textContent = String(idx + 1);
+                                        row.classList.add('bg-body-tertiary');
+                                        const c = (idx < COLOR_PATTERN.length
+                                            ? COLOR_PATTERN[idx]
+                                            : (idx % 2 === 0 ? 'W' : 'B')).toLowerCase();
+                                        chipEl.classList.remove('color-chip-w', 'color-chip-b');
+                                        chipEl.classList.add('color-chip-' + c);
+                                        chipEl.style.visibility = '';
+                                    } else {
+                                        boardEl.textContent = '';
+                                        row.classList.remove('bg-body-tertiary');
+                                        chipEl.classList.remove('color-chip-w', 'color-chip-b');
+                                        chipEl.style.visibility = 'hidden';
+                                        toggle.disabled = limitReached;
+                                    }
+                                    if (idx >= 0) toggle.disabled = false;
+                                });
+                                // Sync slot_N hidden inputs by selection order.
+                                for (let i = 0; i < TEAM_PLAYER_COUNT; i++) {
+                                    const input = form.querySelector('input[name="slot_' + i + '"]');
+                                    if (input) {
+                                        input.value = i < checked.length ? checked[i].value : '';
+                                    }
+                                }
+                            }
+                            toggles.forEach(function (toggle) {
+                                toggle.addEventListener('change', function () {
+                                    refresh();
+                                    htmx.trigger(form, 'lineup-changed');
+                                });
+                            });
+                            refresh();
+                        }
                         document.querySelectorAll('.lineup-round-section').forEach(function (section) {
+                            if (section.querySelector('.lineup-roster-list')) {
+                                setupSelectionOnly(section);
+                                return;
+                            }
                             const round = section.dataset.round;
                             const group = 'lineup-r' + round;
                             const form = section.querySelector('.lineup-form');

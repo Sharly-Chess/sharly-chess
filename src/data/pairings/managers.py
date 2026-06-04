@@ -13,6 +13,8 @@ from data.pairings.variations import (
     TeamRoundRobinVariation,
     BergerTeamRoundRobinVariation,
     DoubleBergerTeamRoundRobinVariation,
+    TeamAllerRetourVariation,
+    StandardTeamAllerRetourVariation,
 )
 from plugins.manager import plugin_manager
 from utils.entity import EventBoundEntityManager
@@ -25,6 +27,7 @@ class PairingSystemManager(EventBoundEntityManager[PairingSystem]):
             base: list[type[PairingSystem]] = [
                 systems.TeamSwissPairingSystem,
                 systems.TeamRoundRobinPairingSystem,
+                systems.TeamAllerRetourPairingSystem,
             ]
             plugin_manager.hook_for_event(self.event, 'insert_team_pairing_systems')(
                 pairing_systems=base
@@ -70,16 +73,31 @@ class TeamRoundRobinVariationManager(EventBoundEntityManager[TeamRoundRobinVaria
         ]
 
 
+class TeamAllerRetourVariationManager(
+    EventBoundEntityManager[TeamAllerRetourVariation]
+):
+    @override
+    def entity_types(self) -> list[type[TeamAllerRetourVariation]]:
+        return [StandardTeamAllerRetourVariation]
+
+
 class PairingVariationManager(EventBoundEntityManager[PairingVariation]):
     @override
     def entity_types(self) -> list[type[PairingVariation]]:
         if self.event is not None and self.event.is_team_event:
-            result: list[type[PairingVariation]] = cast(
-                list[type[PairingVariation]],
-                TeamSwissVariationManager(self.event).entity_types(),
-            ) + cast(
-                list[type[PairingVariation]],
-                TeamRoundRobinVariationManager(self.event).entity_types(),
+            result: list[type[PairingVariation]] = (
+                cast(
+                    list[type[PairingVariation]],
+                    TeamSwissVariationManager(self.event).entity_types(),
+                )
+                + cast(
+                    list[type[PairingVariation]],
+                    TeamRoundRobinVariationManager(self.event).entity_types(),
+                )
+                + cast(
+                    list[type[PairingVariation]],
+                    TeamAllerRetourVariationManager(self.event).entity_types(),
+                )
             )
             plugin_manager.hook_for_event(self.event, 'insert_team_pairing_variations')(
                 variations=result

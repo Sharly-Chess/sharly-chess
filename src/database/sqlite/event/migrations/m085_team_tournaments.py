@@ -181,6 +181,7 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `tournament` ADD `primary_score` TEXT')
         self.database.execute('ALTER TABLE `tournament` ADD `secondary_score` TEXT')
         self.database.execute('ALTER TABLE `tournament` ADD `team_colour_type` TEXT')
+        self.database.execute('ALTER TABLE `tournament` ADD `rule_set` TEXT')
         self.database.execute('ALTER TABLE `pairing` ADD `effective_points` REAL')
 
         # Replace three_points_for_a_win/pab_value with a single game_points JSON

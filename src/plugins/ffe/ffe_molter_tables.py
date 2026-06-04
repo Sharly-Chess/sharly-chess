@@ -220,38 +220,6 @@ _TABLE_3T_10P = FixedPairingTable(
     ),
 )
 
-# Tableau None — 3 teams, players [4].
-_TABLE_3T_4P_UNOFFICIAL = FixedPairingTable(
-    team_count=3,
-    players_per_team=4,
-    rounds=(
-        (
-            P('A', 1, 'B', 1),
-            P('A', 2, 'C', 1),
-            P('B', 2, 'C', 2),
-            P('C', 3, 'B', 3),
-            P('C', 4, 'A', 3),
-            P('B', 4, 'A', 4),
-        ),
-        (
-            P('B', 1, 'C', 1),
-            P('B', 2, 'A', 1),
-            P('C', 2, 'A', 2),
-            P('A', 3, 'C', 3),
-            P('A', 4, 'B', 3),
-            P('C', 4, 'B', 4),
-        ),
-        (
-            P('C', 1, 'A', 1),
-            P('C', 2, 'B', 1),
-            P('A', 2, 'B', 2),
-            P('B', 3, 'A', 3),
-            P('B', 4, 'C', 3),
-            P('A', 4, 'C', 4),
-        ),
-    ),
-)
-
 # Tableau 4 — 4 teams, players [4].
 _TABLE_4T_4P = FixedPairingTable(
     team_count=4,

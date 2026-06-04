@@ -11,7 +11,7 @@ from common.i18n import _, ngettext
 from data.access_levels.actions import AuthAction
 from data.event import Event
 from data.player import Player
-from data.team import Team
+from data.team import RosterFullError, Team
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTeam
@@ -224,10 +224,16 @@ class TeamAdminController(BaseEventAdminController):
                 subtitle=club_name or None,
                 search=search_terms,
             )
+        tournament = team.tournament
+        roster_max_size = tournament.rule_set_roster_max_size if tournament else None
         return {
             'modal': 'team_roster',
             'available_players': available_players,
             'player_options': player_options,
+            'roster_max_size': roster_max_size,
+            'roster_at_cap': (
+                roster_max_size is not None and len(team.players) >= roster_max_size
+            ),
         }
 
     @get(
@@ -380,9 +386,41 @@ class TeamAdminController(BaseEventAdminController):
             return self._admin_event_teams_render(
                 web_context, self._team_roster_modal_context(web_context)
             )
+        tournament = team.tournament
+        max_size = tournament.rule_set_roster_max_size if tournament else None
+        if max_size is not None:
+            remaining = max_size - len(team.players)
+            if remaining <= 0:
+                Message.warning(
+                    request,
+                    _('Roster is full ({max} players max for this rule set).').format(
+                        max=max_size
+                    ),
+                )
+                return self._admin_event_teams_render(
+                    web_context, self._team_roster_modal_context(web_context)
+                )
+            if len(valid_players) > remaining:
+                valid_players = valid_players[:remaining]
+                Message.warning(
+                    request,
+                    _(
+                        'Only {n} more player(s) can be added '
+                        '({max} max for this rule set).'
+                    ).format(n=remaining, max=max_size),
+                )
         with EventDatabase(event.uniq_id, True) as database:
             for player in valid_players:
-                team.add_player(player, database)
+                try:
+                    team.add_player(player, database)
+                except RosterFullError as err:
+                    Message.warning(
+                        request,
+                        _(
+                            'Roster is full ({max} players max for this rule set).'
+                        ).format(max=err.max_size),
+                    )
+                    break
         return self._admin_event_teams_render(
             web_context, self._team_roster_modal_context(web_context)
         )
@@ -503,7 +541,9 @@ class TeamAdminController(BaseEventAdminController):
         editable_rounds: list[int] = []
         team_player_count = 0
         color_pattern = ''
+        selection_only = False
         if tournament is not None:
+            selection_only = tournament.rule_set_locks_lineup_order
             first_editable = max(1, tournament.last_paired_round + 1)
             rounds_set = set(range(first_editable, tournament.rounds + 1))
             # Include the current round even if already paired — paired
@@ -550,6 +590,8 @@ class TeamAdminController(BaseEventAdminController):
             'default_round': default_round,
             'team_player_count': team_player_count,
             'color_pattern': color_pattern,
+            'roster_players': team.players if tournament is not None else [],
+            'selection_only': selection_only,
         }
 
     @get(

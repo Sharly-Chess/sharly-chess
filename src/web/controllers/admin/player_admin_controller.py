@@ -39,6 +39,7 @@ from data.player import Player, PlayerRating, TournamentPlayer, MIN_YOB, MAX_YOB
 from data.print_documents.documents import (
     PlayerListPrintDocument,
 )
+from data.team import RosterFullError
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredPlayer, StoredTournamentPlayer
@@ -1258,8 +1259,18 @@ class PlayerAdminController(BaseEventAdminController):
             if team_id and team_id in event.teams_by_id:
                 team = event.teams_by_id[team_id]
                 event_player = event.players_by_id[player_id]
-                with EventDatabase(event.uniq_id, True) as database:
-                    team.add_player(event_player, database)
+                try:
+                    with EventDatabase(event.uniq_id, True) as database:
+                        team.add_player(event_player, database)
+                except RosterFullError as err:
+                    warning_message = _(
+                        'Player [{player}] has been created, but team '
+                        '[{team}] is full ({max} players max).'
+                    ).format(
+                        player=event_player.full_name,
+                        team=team.name,
+                        max=err.max_size,
+                    )
         else:
             tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
             tournament = event.tournaments_by_id[tournament_id]
@@ -1318,11 +1329,20 @@ class PlayerAdminController(BaseEventAdminController):
             new_team = event.teams_by_id.get(team_id) if team_id else None
             current_team = player.team
             if new_team is not current_team:
-                with EventDatabase(event.uniq_id, True) as database:
-                    if current_team is not None and new_team is None:
-                        current_team.remove_player(player, database)
-                    elif new_team is not None:
-                        new_team.add_player(player, database)
+                try:
+                    with EventDatabase(event.uniq_id, True) as database:
+                        if current_team is not None and new_team is None:
+                            current_team.remove_player(player, database)
+                        elif new_team is not None:
+                            new_team.add_player(player, database)
+                except RosterFullError as err:
+                    Message.warning(
+                        request,
+                        _(
+                            'Team [{team}] is full ({max} players max) — '
+                            'player not moved.'
+                        ).format(team=err.team.name, max=err.max_size),
+                    )
         else:
             tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
             tournament = event.tournaments_by_id[tournament_id]

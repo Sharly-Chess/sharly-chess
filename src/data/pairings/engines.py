@@ -909,6 +909,76 @@ class TeamSwissEngine(_TeamPairingBase):
         return pairs
 
 
+class TeamAllerRetourEngine(_TeamPairingBase):
+    """Two-team home-and-away engine: exactly 2 teams meet for an even
+    number of rounds, alternating colours. Round 1 = ``teams[0]`` (W)
+    vs ``teams[1]`` (B); round 2 swaps; the pattern repeats for any
+    additional even-numbered rounds the arbiter configures."""
+
+    REQUIRED_TEAMS = 2
+
+    @property
+    def pab_result(self) -> Result:
+        return Result.REST_GAME
+
+    def invalid_player_count_message(self, tournament: 'Tournament') -> str | None:
+        teams = self._teams_for_tournament(tournament)
+        if len(teams) != self.REQUIRED_TEAMS:
+            return _(
+                'Home-and-away requires exactly {n} teams ({actual} found).'
+            ).format(n=self.REQUIRED_TEAMS, actual=len(teams))
+        if tournament.rounds <= 0 or tournament.rounds % 2 != 0:
+            return _('Home-and-away requires an even number of rounds.')
+        n = tournament.team_player_count or 0
+        if n <= 0:
+            return _('Tournament has no team-player count configured.')
+        for team in teams:
+            if len(team.players) < n:
+                return _('Team [{name}] has fewer than {n} players.').format(
+                    name=team.name,
+                    n=n,
+                )
+        return None
+
+    def pairings_generation_disabled_message(
+        self, tournament: 'Tournament', at_round: int
+    ) -> str | None:
+        if message := super().pairings_generation_disabled_message(
+            tournament, at_round
+        ):
+            return message
+        if any(
+            not tournament.is_round_finished(round_) for round_ in range(1, at_round)
+        ):
+            return _(
+                'Pairings generation not allowed if previous rounds have '
+                'missing results.'
+            )
+        return None
+
+    @override
+    def generate_pairings(
+        self,
+        tournament: 'Tournament',
+        round_: int,
+        partial_pairings: bool = False,
+    ) -> str:
+        if self.pairings_generation_disabled_message(tournament, round_):
+            raise ValueError(
+                f'Pairings generation not allowed for round {round_} '
+                f'of tournament [{tournament.name}].'
+            )
+        teams = self._teams_for_tournament(tournament)
+        # Odd rounds: teams[0] takes white; even rounds: swap. The
+        # individual board colour pattern is applied downstream.
+        if round_ % 2 == 1:
+            team_pairs: list[tuple[int, int | None]] = [(teams[0].id, teams[1].id)]
+        else:
+            team_pairs = [(teams[1].id, teams[0].id)]
+        self._persist_team_round(tournament, round_, team_pairs)
+        return ''
+
+
 class _TeamRoundRobinEngine(_TeamPairingBase, ABC):
     """Team round-robin shared logic. Subclasses implement
     :meth:`_compute_team_pairs` for the round; this base validates

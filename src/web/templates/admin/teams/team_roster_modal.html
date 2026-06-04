@@ -13,7 +13,20 @@
         <div class="modal-body">
             <h5 class="mb-2">
                 {{ _('Add a player') }}
+                {% if roster_max_size is not none %}
+                    <span class="text-muted small">
+                        ({{ roster|length }}/{{ roster_max_size }})
+                    </span>
+                {% endif %}
             </h5>
+            {% if roster_at_cap %}
+                <div class="form-text mb-3">
+                    {{ _(
+                        'Roster is full ({max} players max for this '
+                        'rule set). Remove a player to add another.'
+                    ).format(max=roster_max_size) }}
+                </div>
+            {% else %}
             <form
                 id="add-player-form"
                 hx-post="{{ url_for(
@@ -50,6 +63,7 @@
                     {{ _('No unassigned players available. '
                           'Remove a player from another team first.') }}
                 </div>
+            {% endif %}
             {% endif %}
 
             <h5 class="mb-2">

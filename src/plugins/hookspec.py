@@ -47,6 +47,7 @@ if TYPE_CHECKING:
     from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
     from data.criteria.player_filters import PlayerFilter
+    from data.rule_sets import RuleSet
     from data.tie_breaks import TieBreak, TieBreakOption
     from data.tie_breaks.system_sets import SystemTieBreakSet
     from data.tournament import Tournament
@@ -447,6 +448,16 @@ class AppHookSpecs:
         self, tie_break_by_acronym: dict[str, 'TieBreak']
     ):
         """AAdd tie-breaks whose base acronym does not necessarily match to a manual acronym mapping."""
+
+    # ---------------------------------------------------------------------------------
+    # Rule sets
+    # ---------------------------------------------------------------------------------
+
+    @hookspec
+    def insert_rule_sets(self, rule_sets: list[type['RuleSet']]):
+        """Provide extra official rule sets (federation cups etc.) that
+        an arbiter can pick when creating a tournament. The picker in
+        the tournament modal filters by ``RuleSet.event_type``."""
 
     # ---------------------------------------------------------------------------------
     # Pairings

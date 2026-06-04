@@ -40,6 +40,7 @@ from data.pairings.systems import (
     TeamSwissPairingSystem,
 )
 from data.player import TournamentPlayer
+from data.rule_sets import RuleSetManager
 from data.tie_breaks import TieBreakManager, TieBreak, TieBreakOptionManager
 from data.tie_breaks.sets import (
     TieBreakSetSource,
@@ -55,6 +56,7 @@ from common.sharly_chess_config import SharlyChessConfig
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
+    StoredTieBreak,
     StoredTournament,
     StoredScreen,
     StoredPairing,
@@ -64,6 +66,7 @@ from utils import Utils
 from utils.date_time import format_date, format_date_range
 from utils.enum import (
     BoardColor,
+    EventType,
     FormAction,
     Result,
     ScoreType,
@@ -287,6 +290,7 @@ class TournamentAdminController(BaseEventAdminController):
             primary_score: str | None = None
             secondary_score: str | None = None
             team_colour_type: str | None = None
+            rule_set: str | None = None
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             if action == 'create':
                 rounds = 7
@@ -333,6 +337,7 @@ class TournamentAdminController(BaseEventAdminController):
                 team_colour_type = (
                     stored_tournament.team_colour_type or TeamColourType.A.value
                 )
+                rule_set = stored_tournament.rule_set
                 for criterion in tournament_criteria:
                     if criterion.id in stored_tournament.criteria:
                         value = criterion.value_from_stored_value(
@@ -418,6 +423,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'primary_score': primary_score,
                     'secondary_score': secondary_score,
                     'team_colour_type': team_colour_type,
+                    'rule_set': rule_set,
                     'date_range': WebContext.value_to_date_range_form_data(
                         start_date, stop_date
                     ),
@@ -465,10 +471,38 @@ class TournamentAdminController(BaseEventAdminController):
         assert data is not None
         assert errors is not None
         rounds = int(data.get('rounds') or 1)
+        event_type = (
+            EventType.TEAM if admin_event.is_team_event else EventType.INDIVIDUAL
+        )
+        rule_sets = RuleSetManager(admin_event).for_event_type(event_type)
+        rule_set_options: dict[str, str] = {'': '—'}
+        rule_set_managed_fields: dict[str, list[str]] = {}
+        # Per-pairing-system defaults: nested dict keyed by rule-set
+        # id → pairing system id ('' = no system selected). The modal
+        # JS picks the right inner dict on rule_set / pairing changes.
+        rule_set_defaults: dict[str, dict[str, dict[str, str]]] = {}
+        rule_set_lock_titles: dict[str, str] = {}
+        for rs in rule_sets:
+            rule_set_options[rs.id] = rs.name
+            rule_set_managed_fields[rs.id] = sorted(rs.managed_fields)
+            defaults_by_system: dict[str, dict[str, str]] = {
+                '': dict(rs.form_defaults()),
+            }
+            for system in pairing_systems:
+                defaults_by_system[system.id] = dict(rs.form_defaults(system.id))
+            rule_set_defaults[rs.id] = defaults_by_system
+            rule_set_lock_titles[rs.id] = _('Set by rule set "{name}".').format(
+                name=rs.name
+            )
         template_context = {
             'rating_options': cls._get_rating_options(),
             'pairing_systems': pairing_systems,
             'pairing_system_options': PairingSystemManager(admin_event).options(),
+            'rule_sets': rule_sets,
+            'rule_set_options': rule_set_options,
+            'rule_set_managed_fields': rule_set_managed_fields,
+            'rule_set_defaults': rule_set_defaults,
+            'rule_set_lock_titles': rule_set_lock_titles,
             'plugin_form_fields_templates': plugin_form_fields_templates,
             'admin_tournament': None
             if action == 'clone'
@@ -707,6 +741,14 @@ class TournamentAdminController(BaseEventAdminController):
                 except ValueError:
                     errors[mp_field] = _('A number is expected.')
 
+        rule_set_id = WebContext.form_data_to_str(data, field := 'rule_set') or None
+        if rule_set_id:
+            try:
+                RuleSetManager(event).get_type(rule_set_id)
+            except KeyError:
+                errors[field] = _('Unknown rule set [{id}].').format(id=rule_set_id)
+                rule_set_id = None
+
         stored_criteria: dict[str, Any] = {}
         for criterion in TournamentCriterionManager(event).objects():
             value = criterion.value_from_form_data(data, errors)
@@ -788,11 +830,77 @@ class TournamentAdminController(BaseEventAdminController):
             primary_score=primary_score,
             secondary_score=secondary_score,
             team_colour_type=team_colour_type,
+            rule_set=rule_set_id,
             plugin_data=plugin_data,
             round_datetimes=round_datetimes,
             criteria=stored_criteria,
         )
+        # When a rule set is attached, let it override the form's
+        # scoring / format defaults. The user can edit later to deviate.
+        if rule_set_id and not errors:
+            try:
+                rule_set = RuleSetManager(event).get_object(rule_set_id)
+            except KeyError:
+                rule_set = None
+            if rule_set is not None:
+                system_id = cls._resolve_pairing_system_id(
+                    event, stored_tournament.pairing
+                )
+                rule_set.apply_defaults(stored_tournament, system_id)
         return stored_tournament, errors
+
+    @staticmethod
+    def _resolve_pairing_system_id(event: 'Event', variation_id: str) -> str | None:
+        """Resolve a pairing-variation id to its system id (the value
+        rule sets key their overrides by). Returns ``None`` when the
+        variation isn't registered."""
+        from data.pairings import PairingVariationManager
+
+        try:
+            variation = PairingVariationManager(event).get_object(variation_id)
+        except KeyError:
+            return None
+        return variation.system().id
+
+    @classmethod
+    def _apply_rule_set_tie_breaks(
+        cls,
+        database: 'EventDatabase',
+        event: 'Event',
+        stored_tournament: StoredTournament,
+    ) -> None:
+        """Replace the tournament's stored tie-breaks with the rule
+        set's canonical list for the current pairing system. No-op
+        when the tournament has no rule set, or its rule set defines
+        no overrides for the chosen pairing system. Called after every
+        tournament save."""
+        rule_set_id = stored_tournament.rule_set
+        if not rule_set_id or stored_tournament.id is None:
+            return
+        try:
+            rule_set = RuleSetManager(event).get_object(rule_set_id)
+        except KeyError:
+            return
+        # ``stored_tournament.pairing`` is the pairing VARIATION id;
+        # rule sets key their overrides by pairing SYSTEM id (e.g.
+        # ``TEAM_SWISS``) — resolve the variation to find the system.
+        system_id = cls._resolve_pairing_system_id(event, stored_tournament.pairing)
+        if system_id is None:
+            return
+        overrides = rule_set.tie_breaks_for_pairing(system_id)
+        if not overrides:
+            return
+        database.delete_all_tournament_stored_tie_breaks(stored_tournament.id)
+        for index, (tb_type, options) in enumerate(overrides):
+            database.add_stored_tie_break(
+                StoredTieBreak(
+                    id=None,
+                    tournament_id=stored_tournament.id,
+                    type=tb_type,
+                    options=dict(options),
+                    index=index,
+                )
+            )
 
     @get(
         path='/tournament-modal/create/{event_uniq_id:str}',
@@ -980,6 +1088,7 @@ class TournamentAdminController(BaseEventAdminController):
                             )
 
                 database.update_stored_tournament(stored_tournament)
+                self._apply_rule_set_tie_breaks(database, event, stored_tournament)
                 success_message = _(
                     'Tournament [{tournament}] has been updated.'
                 ).format(tournament=stored_tournament.name)
@@ -992,6 +1101,7 @@ class TournamentAdminController(BaseEventAdminController):
                         stored_tie_break = tie_break.to_stored_value()
                         stored_tie_break.tournament_id = tournament.id
                         database.add_stored_tie_break(stored_tie_break)
+                self._apply_rule_set_tie_breaks(database, event, stored_tournament)
                 if 'add_screens' in data:
                     timer_id: int | None = None
                     if len(event.timers_by_id) == 1:

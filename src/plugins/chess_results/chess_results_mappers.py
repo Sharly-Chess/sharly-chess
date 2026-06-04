@@ -160,6 +160,8 @@ class ChessResultsTieBreak:
                 | ttb.ScoresAndScheduleStrengthCombinationTieBreak
                 | ttb.ExtendedDirectEncounterTieBreak
                 | ffe_tb.BerlinTieBreak
+                | ffe_tb.GamePointsDifferentialTieBreak
+                | ffe_tb.LowestOwnAverageRatingTieBreak
             ):
                 # TODO: Chess-Results has no dedicated codes for FIDE
                 # C.07 team tie-breaks (or the FFE Berlin tie-break)

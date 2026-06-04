@@ -825,3 +825,284 @@ class BerlinTieBreakTestCase(TestCase):
             tb.compute_team_value(team, records, context, after_round=2),
             10.0,
         )
+
+
+@pytest.mark.unit
+class GamePointsDifferentialTieBreakTestCase(TestCase):
+    """FFE *Différentiel des points de parties* — Σ (own_gp - opp_gp)
+    across rounds. Coupe Loubatière §4.4.a."""
+
+    @staticmethod
+    def _context() -> TeamTieBreakContext:
+        return TeamTieBreakContext(
+            primary_score=ScoreType.MATCH_POINTS,
+            secondary_score=ScoreType.GAME_POINTS,
+            rounds=3,
+            win_mp=3.0,
+            draw_mp=2.0,
+            loss_mp=1.0,
+            team_player_count=4,
+            draw_gp=0.0,
+        )
+
+    def test_two_team_played_match_subtracts_opponent_gp(self):
+        from plugins.ffe.ffe_tie_breaks import GamePointsDifferentialTieBreak
+
+        team_a = TeamRecord(
+            team_id=1,
+            name='A',
+            total_mp=0.0,
+            total_gp=3.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=2,
+                    own_mp=3.0,
+                    own_gp=3.0,
+                    match_type=TeamMatchType.PLAYED,
+                ),
+            ],
+        )
+        team_b = TeamRecord(
+            team_id=2,
+            name='B',
+            total_mp=0.0,
+            total_gp=1.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=1,
+                    own_mp=1.0,
+                    own_gp=1.0,
+                    match_type=TeamMatchType.PLAYED,
+                ),
+            ],
+        )
+        records = {1: team_a, 2: team_b}
+        tb = GamePointsDifferentialTieBreak([])
+        self.assertEqual(
+            tb.compute_team_value(team_a, records, self._context(), after_round=1),
+            2.0,
+        )
+        self.assertEqual(
+            tb.compute_team_value(team_b, records, self._context(), after_round=1),
+            -2.0,
+        )
+
+    def test_pab_counts_full_own_gp_with_no_subtraction(self):
+        """No opponent → no opp_gp → differential = own_gp."""
+        from plugins.ffe.ffe_tie_breaks import GamePointsDifferentialTieBreak
+
+        team = TeamRecord(
+            team_id=1,
+            name='A',
+            total_mp=3.0,
+            total_gp=4.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=None,
+                    own_mp=3.0,
+                    own_gp=4.0,
+                    match_type=TeamMatchType.PAB,
+                ),
+            ],
+        )
+        tb = GamePointsDifferentialTieBreak([])
+        self.assertEqual(
+            tb.compute_team_value(team, {1: team}, self._context(), after_round=1),
+            4.0,
+        )
+
+    def test_forfeit_loss_contributes_zero(self):
+        from plugins.ffe.ffe_tie_breaks import GamePointsDifferentialTieBreak
+
+        team = TeamRecord(
+            team_id=1,
+            name='A',
+            total_mp=0.0,
+            total_gp=0.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=2,
+                    own_mp=0.0,
+                    own_gp=0.0,
+                    match_type=TeamMatchType.FORFEIT_LOSS,
+                ),
+            ],
+        )
+        tb = GamePointsDifferentialTieBreak([])
+        self.assertEqual(
+            tb.compute_team_value(team, {1: team}, self._context(), after_round=1),
+            0.0,
+        )
+
+    def test_sums_across_rounds_and_respects_after_round(self):
+        from plugins.ffe.ffe_tie_breaks import GamePointsDifferentialTieBreak
+
+        team_a = TeamRecord(
+            team_id=1,
+            name='A',
+            total_mp=0.0,
+            total_gp=0.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=2,
+                    own_mp=3.0,
+                    own_gp=3.0,
+                    match_type=TeamMatchType.PLAYED,
+                ),
+                TeamMatchRecord(
+                    round_=2,
+                    opponent_id=2,
+                    own_mp=1.0,
+                    own_gp=1.0,
+                    match_type=TeamMatchType.PLAYED,
+                ),
+            ],
+        )
+        team_b = TeamRecord(
+            team_id=2,
+            name='B',
+            total_mp=0.0,
+            total_gp=0.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=1,
+                    own_mp=1.0,
+                    own_gp=1.0,
+                    match_type=TeamMatchType.PLAYED,
+                ),
+                TeamMatchRecord(
+                    round_=2,
+                    opponent_id=1,
+                    own_mp=1.0,
+                    own_gp=2.0,
+                    match_type=TeamMatchType.PLAYED,
+                ),
+            ],
+        )
+        records = {1: team_a, 2: team_b}
+        tb = GamePointsDifferentialTieBreak([])
+        # After R1 only: A = 3-1 = +2
+        self.assertEqual(
+            tb.compute_team_value(team_a, records, self._context(), after_round=1),
+            2.0,
+        )
+        # After R2: A = (3-1) + (1-2) = +1
+        self.assertEqual(
+            tb.compute_team_value(team_a, records, self._context(), after_round=2),
+            1.0,
+        )
+
+
+@pytest.mark.unit
+class LowestOwnAverageRatingTieBreakTestCase(TestCase):
+    """FFE *Moyenne des derniers Elo diffusés, la plus basse*. The
+    tie-break reads ``TeamRecord.own_avg_rating`` and returns its
+    negation so the lowest team wins the descending sort."""
+
+    @staticmethod
+    def _context() -> TeamTieBreakContext:
+        return TeamTieBreakContext(
+            primary_score=ScoreType.MATCH_POINTS,
+            secondary_score=ScoreType.GAME_POINTS,
+            rounds=3,
+            win_mp=3.0,
+            draw_mp=2.0,
+            loss_mp=1.0,
+            team_player_count=4,
+            draw_gp=0.0,
+        )
+
+    @staticmethod
+    def _team(
+        team_id: int, name: str, ratings_per_round: list[tuple[int | None, ...]]
+    ) -> TeamRecord:
+        return TeamRecord(
+            team_id=team_id,
+            name=name,
+            total_mp=0.0,
+            total_gp=0.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=round_,
+                    opponent_id=None,
+                    own_mp=0.0,
+                    own_gp=0.0,
+                    match_type=TeamMatchType.PLAYED,
+                    board_ratings=ratings,
+                )
+                for round_, ratings in enumerate(ratings_per_round, start=1)
+            ],
+        )
+
+    def test_lower_rating_team_outranks_higher(self):
+        from plugins.ffe.ffe_tie_breaks import LowestOwnAverageRatingTieBreak
+
+        # One round, 4-board team, every player rated.
+        low = self._team(1, 'Low', [(1400, 1500, 1500, 1600)])  # avg 1500
+        high = self._team(2, 'High', [(1800, 1800, 1800, 1800)])  # avg 1800
+        records = {1: low, 2: high}
+        tb = LowestOwnAverageRatingTieBreak([])
+        # Tie-break is descending — the higher returned value wins.
+        # Lower rating must return the larger (less-negative) value.
+        self.assertGreater(
+            tb.compute_team_value(low, records, self._context(), after_round=1),
+            tb.compute_team_value(high, records, self._context(), after_round=1),
+        )
+        self.assertEqual(
+            tb.compute_team_value(low, records, self._context(), after_round=1),
+            -1500.0,
+        )
+
+    def test_weighted_by_appearances_across_rounds(self):
+        """A regular starter counts in every round; a substitute fielded
+        once weighs 1/N. The average is over (player, round) samples,
+        not over the roster."""
+        from plugins.ffe.ffe_tie_breaks import LowestOwnAverageRatingTieBreak
+
+        # 3 rounds, board 4 occupied by 1200-rated player only in R3.
+        team = self._team(
+            1,
+            'A',
+            [
+                (1500, 1500, 1500, 1500),
+                (1500, 1500, 1500, 1500),
+                (1500, 1500, 1500, 1200),
+            ],
+        )
+        tb = LowestOwnAverageRatingTieBreak([])
+        # (11 × 1500 + 1 × 1200) / 12 = 1475
+        self.assertEqual(
+            tb.compute_team_value(team, {1: team}, self._context(), after_round=3),
+            -1475.0,
+        )
+
+    def test_unrated_players_excluded_from_average(self):
+        from plugins.ffe.ffe_tie_breaks import LowestOwnAverageRatingTieBreak
+
+        team = self._team(1, 'A', [(1600, 1400, None, None)])  # avg of two rated
+        tb = LowestOwnAverageRatingTieBreak([])
+        self.assertEqual(
+            tb.compute_team_value(team, {1: team}, self._context(), after_round=1),
+            -1500.0,
+        )
+
+    def test_no_ratings_returns_zero(self):
+        from plugins.ffe.ffe_tie_breaks import LowestOwnAverageRatingTieBreak
+
+        team = TeamRecord(
+            team_id=1,
+            name='Empty',
+            total_mp=0.0,
+            total_gp=0.0,
+        )
+        tb = LowestOwnAverageRatingTieBreak([])
+        self.assertEqual(
+            tb.compute_team_value(team, {1: team}, self._context(), after_round=1),
+            0.0,
+        )

@@ -740,3 +740,136 @@ class BerlinTieBreak(TeamTieBreak):
                 coefficient = boards - board_index
                 total += score * coefficient
         return total
+
+
+class GamePointsDifferentialTieBreak(TeamTieBreak):
+    """FFE *Différentiel des points de parties* (Règlement Coupe
+    Loubatière §4.4.a) — sum over all rounds of (own_gp − opponent_gp).
+
+    For PLAYED matches the opponent's game points come from the
+    paired team's record in the same round. For PAB / HPB / +F / -F /
+    ZPB there is no opponent score available, so the differential
+    reduces to ``own_gp`` (awarded byes count as a positive
+    differential; forfeit losses contribute zero)."""
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-GP-DIFFERENTIAL'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Game points differential')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return []
+
+    @property
+    def base_acronym(self) -> str:
+        return 'GP-DIFF'
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            'Sum over every round of (own game points minus opponent '
+            "game points). Awarded byes count as the team's own score "
+            'with no subtraction; forfeit losses contribute zero. '
+        )
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return TeamScoreCategory()
+
+    def compute_team_value(
+        self,
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> float:
+        total = 0.0
+        for match in team_record.matches:
+            if match.round_ > after_round:
+                continue
+            opponent_gp = 0.0
+            if match.played and match.opponent_id is not None:
+                opponent = all_records.get(match.opponent_id)
+                if opponent is not None:
+                    opp_match = opponent.match_at(match.round_)
+                    if opp_match is not None:
+                        opponent_gp = opp_match.own_gp
+            total += match.own_gp - opponent_gp
+        return total
+
+
+class LowestOwnAverageRatingTieBreak(TeamTieBreak):
+    """FFE *Moyenne des derniers Elo diffusés (au prorata des
+    participations), la plus basse* (Règlement Coupe Loubatière /
+    Parité §4.4) — the team with the lowest weighted-average own-Elo
+    wins the tie-break.
+
+    The average is over every (player, round) pair where the player
+    was fielded on a board (= weighting by participations). Per-round
+    ratings come from :attr:`TeamMatchRecord.board_ratings`, set in
+    parallel to ``board_scores``. The tie-break returns the negation
+    of the average so the standings sort (always descending) picks the
+    *lowest* team first.
+    """
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-OWN-AVG-ELO'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Lowest own average rating')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return []
+
+    @property
+    def base_acronym(self) -> str:
+        return 'OWN-ELO'
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            "The team's own players' average rating, weighted by "
+            'their per-round board appearances. The team with the '
+            'lowest average wins the tie-break (lower is better).'
+        )
+
+    @property
+    def display_absolute_value(self) -> bool:
+        # The compute returns -avg so the descending sort works; the
+        # ranking screen should display the actual rating, not the
+        # negated value.
+        return True
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return TeamScoreCategory()
+
+    def compute_team_value(
+        self,
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> float:
+        total = 0
+        count = 0
+        for match in team_record.matches:
+            if match.round_ > after_round:
+                continue
+            for rating in match.board_ratings:
+                if rating is None:
+                    continue
+                total += rating
+                count += 1
+        if not count:
+            return 0.0
+        return -total / count
