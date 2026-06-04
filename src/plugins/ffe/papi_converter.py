@@ -690,9 +690,35 @@ class PapiConverter:
             ).format(rounds=rounds, max=cls.MAX_PAPI_ROUNDS)
         return None
 
+    # WIN / DRAW / LOSS presets the legacy Papi format can round-trip.
+    # Standard FIDE (1 / 0.5 / 0) and "3 points for a win" (3 / 1 / 0)
+    # are the only schemes the format was ever specified for; anything
+    # else is silently lost on import.
+    _SUPPORTED_GAME_POINT_PRESETS: tuple[tuple[float, float, float], ...] = (
+        (1.0, 0.5, 0.0),
+        (3.0, 1.0, 0.0),
+    )
+
     @classmethod
     def papi_export_unavailable_message(cls, tournament: Tournament) -> str | None:
         """Return a message if the export to Papi is unavailable, None otherwise."""
+        if tournament.event.is_team_event:
+            return _('Papi export is not available for team events.')
+
+        win = tournament.win_points
+        draw = tournament.draw_points
+        loss = tournament.loss_points
+        if (win, draw, loss) not in cls._SUPPORTED_GAME_POINT_PRESETS:
+            return _(
+                'Papi export only supports the standard (1 / 0.5 / 0) or '
+                '"3 points for a win" (3 / 1 / 0) game-point scales. '
+                'Current values: {win} / {draw} / {loss}.'
+            ).format(
+                win=Utils.points_str(win),
+                draw=Utils.points_str(draw),
+                loss=Utils.points_str(loss),
+            )
+
         if rounds_blocker := cls.check_rounds(tournament.rounds):
             return rounds_blocker
 
