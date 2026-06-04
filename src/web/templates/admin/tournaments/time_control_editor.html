@@ -1,7 +1,7 @@
 {% set trf25 = data.time_control_trf25 or '' %}
-<input type="hidden" name="time_control_trf25" id="time-control-trf25" value="{{ trf25 }}">
 
-<div class="row mt-2 gx-3">
+<div class="row gy-2 gx-3">
+    <input type="hidden" name="time_control_trf25" id="time-control-trf25" value="{{ trf25 }}">
     <div class="col-12">
         <div id="tc-editor-modal" class="tc" data-initial="{{ trf25 }}">
             <!-- Read-only display -->
@@ -41,291 +41,291 @@
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    function ensureWhite(tc)  {
-        return { white: (tc.white && tc.white.length ? tc.white : [{ seconds: 0 }]), black: tc.black };
-    }
+    <script>
+        function ensureWhite(tc)  {
+            return { white: (tc.white && tc.white.length ? tc.white : [{ seconds: 0 }]), black: tc.black };
+        }
 
-    function periodRow(p) {
-        const moves = p.moves ?? '';
-        const mins  = Math.floor((p.seconds || 0) / 60);
-        const secs  = (p.seconds || 0) % 60;
-        const inc   = p.increment ?? '';
-        return $(`
-            <div class="tc-period">
-                <div class="tc-field">
-                    <label>{{ _('Moves:') }}</label>
-                    <input type="number" class="form-control p-moves" min="0" value="${moves}">
+        function periodRow(p) {
+            const moves = p.moves ?? '';
+            const mins  = Math.floor((p.seconds || 0) / 60);
+            const secs  = (p.seconds || 0) % 60;
+            const inc   = p.increment ?? '';
+            return $(`
+                <div class="tc-period">
+                    <div class="tc-field">
+                        <label>{{ _('Moves:') }}</label>
+                        <input type="number" class="form-control p-moves" min="0" value="${moves}">
+                    </div>
+                    <div class="tc-field">
+                        <label>{{ _('Duration (min):') }}</label>
+                        <input type="number" class="form-control p-mins" min="0" value="${mins}">
+                    </div>
+                    <div class="tc-field">
+                        <label>{{ _('Duration (sec):') }}</label>
+                        <input type="number" class="form-control p-secs" min="0" max="59" value="${secs}">
+                    </div>
+                    <div class="tc-field">
+                        <label>{{ _('Increment (sec):') }}</label>
+                        <input type="number" class="form-control p-inc" min="0" value="${inc}">
+                    </div>
+                    <div class="tc-del-wrap">
+                        <button type="button" class="btn btn-sm btn-secondary tc-del">✕</button>
+                    </div>
                 </div>
-                <div class="tc-field">
-                    <label>{{ _('Duration (min):') }}</label>
-                    <input type="number" class="form-control p-mins" min="0" value="${mins}">
-                </div>
-                <div class="tc-field">
-                    <label>{{ _('Duration (sec):') }}</label>
-                    <input type="number" class="form-control p-secs" min="0" max="59" value="${secs}">
-                </div>
-                <div class="tc-field">
-                    <label>{{ _('Increment (sec):') }}</label>
-                    <input type="number" class="form-control p-inc" min="0" value="${inc}">
-                </div>
-                <div class="tc-del-wrap">
-                    <button type="button" class="btn btn-sm btn-secondary tc-del">✕</button>
-                </div>
-            </div>
-        `);
-    }
+            `);
+        }
 
-    function sideBox(title, arr) {
-        if (title) title = `<h4 class="tc-side-title">${title}</h4>`;
-        const $el = $(`<div class="tc-side">${title}<div class="tc-periods"></div></div>`);
-        arr.forEach(p=> $el.find('.tc-periods').append(periodRow(p)));
-        return $el;
-    }
+        function sideBox(title, arr) {
+            if (title) title = `<h4 class="tc-side-title">${title}</h4>`;
+            const $el = $(`<div class="tc-side">${title}<div class="tc-periods"></div></div>`);
+            arr.forEach(p=> $el.find('.tc-periods').append(periodRow(p)));
+            return $el;
+        }
 
-    function readSide($side, { annotate = false } = {}){
-        const periods = [];
-        const errors = [];
+        function readSide($side, { annotate = false } = {}){
+            const periods = [];
+            const errors = [];
 
-        $side.find('.tc-period').each(function(idx) {
-            const $r = $(this);
-            const $moves = $r.find('.p-moves');
-            const $mins  = $r.find('.p-mins');
-            const $secs  = $r.find('.p-secs');
-            const $inc   = $r.find('.p-inc');
+            $side.find('.tc-period').each(function(idx) {
+                const $r = $(this);
+                const $moves = $r.find('.p-moves');
+                const $mins  = $r.find('.p-mins');
+                const $secs  = $r.find('.p-secs');
+                const $inc   = $r.find('.p-inc');
 
-            // Only clear previous invalid styles when we intend to annotate
-            if (annotate) {
-                $moves.removeClass('is-invalid');
-                $mins.removeClass('is-invalid');
-                $secs.removeClass('is-invalid');
-                $inc.removeClass('is-invalid');
-            }
+                // Only clear previous invalid styles when we intend to annotate
+                if (annotate) {
+                    $moves.removeClass('is-invalid');
+                    $mins.removeClass('is-invalid');
+                    $secs.removeClass('is-invalid');
+                    $inc.removeClass('is-invalid');
+                }
 
-            const movesRaw = $moves.val();
-            const minsRaw  = $mins.val();
-            const secsRaw  = $secs.val();
-            const incRaw   = $inc.val();
+                const movesRaw = $moves.val();
+                const minsRaw  = $mins.val();
+                const secsRaw  = $secs.val();
+                const incRaw   = $inc.val();
 
-            const hasMoves = movesRaw !== '' && !isNaN(parseInt(movesRaw,10));
-            const hasInc   = incRaw   !== '' && !isNaN(parseInt(incRaw,10));
-            const mins = parseInt(minsRaw,10) || 0;
-            const secs = parseInt(secsRaw,10) || 0;
-            const seconds = Math.max(0, mins*60 + secs);
+                const hasMoves = movesRaw !== '' && !isNaN(parseInt(movesRaw,10));
+                const hasInc   = incRaw   !== '' && !isNaN(parseInt(incRaw,10));
+                const mins = parseInt(minsRaw,10) || 0;
+                const secs = parseInt(secsRaw,10) || 0;
+                const seconds = Math.max(0, mins*60 + secs);
 
-            // Skip fully empty
-            if (movesRaw === '' && !hasInc && seconds === 0) return;
+                // Skip fully empty
+                if (movesRaw === '' && !hasInc && seconds === 0) return;
 
-            const isLast = idx === $side.find('.tc-period').length - 1;
+                const isLast = idx === $side.find('.tc-period').length - 1;
 
-            // Validate moves
-            if (movesRaw !== '') {
-                const movesInt = parseInt(movesRaw, 10);
-                if (isNaN(movesInt) || movesInt < 0 || (!isLast && movesInt === 0)) {
-                    if (annotate) $moves.addClass('is-invalid');
-                    errors.push(`{{ _('Period') }} ${idx+1} : {{ _('the number of moves must be a positive integer.') }}`);
+                // Validate moves
+                if (movesRaw !== '') {
+                    const movesInt = parseInt(movesRaw, 10);
+                    if (isNaN(movesInt) || movesInt < 0 || (!isLast && movesInt === 0)) {
+                        if (annotate) $moves.addClass('is-invalid');
+                        errors.push(`{{ _('Period') }} ${idx+1} : {{ _('the number of moves must be a positive integer.') }}`);
+                        return;
+                    }
+                    if (isLast) {
+                        if (annotate) $moves.addClass('is-invalid');
+                        errors.push(`{{ _('Period') }} ${idx+1} : {{ _('the number of moves must not be specified for the final period.') }}`);
+                        return;
+                    }
+                }
+
+                if (seconds === 0 && !hasInc) {
+                    if (annotate) { $mins.addClass('is-invalid'); $secs.addClass('is-invalid'); }
+                    errors.push(`{{ _('Period') }} ${idx+1} : {{ _('either the duration or the increment must be greater than 0.') }}`);
                     return;
                 }
-                if (isLast) {
-                    if (annotate) $moves.addClass('is-invalid');
-                    errors.push(`{{ _('Period') }} ${idx+1} : {{ _('the number of moves must not be specified for the final period.') }}`);
-                    return;
-                }
-            }
 
-            if (seconds === 0 && !hasInc) {
-                if (annotate) { $mins.addClass('is-invalid'); $secs.addClass('is-invalid'); }
-                errors.push(`{{ _('Period') }} ${idx+1} : {{ _('either the duration or the increment must be greater than 0.') }}`);
-                return;
-            }
-
-            const p = { seconds };
-            if (hasMoves) p.moves = Math.max(0, parseInt(movesRaw,10)||0);
-            if (hasInc)   p.increment = Math.max(0, parseInt(incRaw,10)||0);
-            periods.push(p);
-        });
-
-        // Rule C: non-final periods must specify moves; final period must not
-        periods.forEach((p, i) => {
-            const isLast = i === periods.length - 1;
-            const $row = $side.find('.tc-period').eq(i);
-            if (!isLast && (p.moves == null)) {
-                if (annotate) $row.find('.p-moves').addClass('is-invalid');
-                errors.push(`{{ _('Period') }} ${i+1} : {{ _('the number of moves is required for a non-final period.') }}`);
-            }
-        });
-
-        return { periods, errors };
-    }
-
-    function currentModel($root, opts={}) {
-        const diff = $root.find('.tc-diff').is(':checked');
-        const $sides = $root.find('.tc-sides > .tc-side');
-
-        const read = (sideEl) => {
-            const { periods, errors } = readSide(sideEl, { annotate: !!opts.annotate });
-            if (errors.length && !opts.allowPartial) throw new Error(errors.join(' '));
-            return periods;
-        };
-
-        if (!diff) return { white: read($sides.first()) };
-        return { white: read($sides.eq(0)), black: read($sides.eq(1)) };
-    }
-
-    function rerender($root, trf, forceDifferent) {
-        const model = ensureWhite(parseTrf25(trf));
-        const $panel = $root.find('.tc-panel');
-        const $sides = $panel.find('.tc-sides').empty();
-
-        // Checkbox is the source of truth unless caller forces it
-        const wantDifferent = (typeof forceDifferent === 'boolean')
-            ? forceDifferent
-            : $panel.find('.tc-diff').is(':checked');
-
-        $panel.find('.tc-diff').prop('checked', wantDifferent);
-
-        if (wantDifferent) {
-            // Ensure there is a black side; if missing, clone white
-            const black = model.black ? model.black : JSON.parse(JSON.stringify(model.white));
-            $sides.append(sideBox('{{ _("White") }}', model.white));
-            $sides.append(sideBox('{{ _("Black") }}', black));
-        } else {
-            $sides.append(sideBox('', model.white));
-        }
-
-        updatePreview($root);
-    }
-
-    function updatePreview($root){
-        try {
-            const tc  = currentModel($root, { allowPartial:true, annotate:false });
-            const str = formatTrf25(tc);
-            $root.find('.tc-readable').text(humanizeTrf25Short(str));
-            $root.find('.tc-error').text('');
-        } catch {
-            $root.find('.tc-error').text('');
-        }
-    }
-
-    function updateDeleteButtons($root){
-        $root.find('.tc-side').each(function(){
-            const $rows = $(this).find('.tc-period');
-            $rows.find('.tc-del').css('visibility', 'hidden');
-            $rows.last().find('.tc-del').css('visibility', 'visible');
-        });
-    }
-
-
-    // ----- Init for the modal instance -----
-    $(function() {
-        const $root = $('#tc-editor-modal');
-        if (!$root.length) return;
-
-        const $hidden = $('#time-control-trf25');
-        let initial = $root.data('initial') || $hidden.val() || '';
-        try {
-            parseTrf25(initial);   // validate
-        } catch {
-            initial = '';          // reset to empty if corrupt
-        }
-
-        const show = () => {
-            const currentStr = $hidden.val().trim();
-            const wantDifferent = $root.find('.tc-diff').is(':checked');
-            rerender($root, currentStr, wantDifferent);
-            $root.find('.tc-panel').slideDown(120);
-            $root.find('.tc-display .tc-edit').prop('disabled', true);
-            const submitContainer = document.getElementById('submit-button-container');
-            new bootstrap.Tooltip(submitContainer, {
-                title: `{{ _('Please validate the time control to continue.') }}`,
-                placement: 'top',
+                const p = { seconds };
+                if (hasMoves) p.moves = Math.max(0, parseInt(movesRaw,10)||0);
+                if (hasInc)   p.increment = Math.max(0, parseInt(incRaw,10)||0);
+                periods.push(p);
             });
-            $(submitContainer).find('button').prop('disabled', true);
-        };
 
-        const hide = () => {
-            $root.find('.tc-panel').hide();
-            $root.find('.tc-display .tc-edit').prop('disabled', false);
-            const submitContainer = document.getElementById('submit-button-container');
-            bootstrap.Tooltip.getInstance(submitContainer).dispose();
-            $(submitContainer).find('button').prop('disabled', false);
-        };
+            // Rule C: non-final periods must specify moves; final period must not
+            periods.forEach((p, i) => {
+                const isLast = i === periods.length - 1;
+                const $row = $side.find('.tc-period').eq(i);
+                if (!isLast && (p.moves == null)) {
+                    if (annotate) $row.find('.p-moves').addClass('is-invalid');
+                    errors.push(`{{ _('Period') }} ${i+1} : {{ _('the number of moves is required for a non-final period.') }}`);
+                }
+            });
 
-        $root.on('click', '.tc-edit', show);
-        $root.on('click', '.tc-cancel', hide);
+            return { periods, errors };
+        }
 
-
-        $root.on('click', '.tc-ok', function() {
-            try {
-                const tc = currentModel($root, { allowPartial:false, annotate:true }); // validate + mark fields
-                const out = formatTrf25(tc);
-                $root.find('.tc-readable').text(humanizeTrf25Short(out));
-                $root.find('.tc-readable-inline').text(humanizeTrf25Short(out));
-                $hidden.val(out);
-                hide();
-            } catch (e) {
-                $root.find('.tc-error').text(e.message || String(e));
-            }
-        });
-
-        $root.on('click', '.tc-add-period', function() {
-            const different = $root.find('.tc-diff').is(':checked');
+        function currentModel($root, opts={}) {
+            const diff = $root.find('.tc-diff').is(':checked');
             const $sides = $root.find('.tc-sides > .tc-side');
 
-            if (different) {
-                // Add a period row to each side (White and Black)
-                $sides.each(function() {
-                    $(this).find('.tc-periods').append(periodRow({ seconds: 0 }));
-                });
-            } else {
-                // Single (symmetric) control: add to the single side
-                $sides.first().find('.tc-periods').append(periodRow({ seconds: 0 }));
-            }
+            const read = (sideEl) => {
+                const { periods, errors } = readSide(sideEl, { annotate: !!opts.annotate });
+                if (errors.length && !opts.allowPartial) throw new Error(errors.join(' '));
+                return periods;
+            };
 
-            updatePreview($root);
-            updateDeleteButtons($root);
-        });
-
-        $root.on('click', '.tc-del', function() {
-            const $side = $(this).closest('.tc-side');
-            $(this).closest('.tc-period').remove();
-            if (!$side.find('.tc-period').length) {
-                $side.find('.tc-periods').append(periodRow({ seconds: 0 }));
-            }
-            updatePreview($root);
-            updateDeleteButtons($root);
-        });
-
-        $root.on('input', '.tc-panel input', function() { updatePreview($root); });
-
-        $root.on('change', '.tc-diff', function() {
-            const wantDifferent = $(this).is(':checked');
-
-            // Build from the CURRENT form (not the code pill) so edits aren't lost
-            let tc;
-            try { tc = currentModel($root); } catch { tc = { white: [{ seconds: 0 }] }; }
-
-            if (wantDifferent) {
-                // Clone white into black if none present
-                if (!tc.black) tc.black = JSON.parse(JSON.stringify(tc.white));
-            } else {
-                // Collapse to symmetric
-                delete tc.black;
-            }
-
-            // Re-render honoring the user's toggle (don't auto-collapse when equal)
-            rerender($root, formatTrf25(tc), wantDifferent);
-        });
-
-        function tcEditorOpen() {
-            return $root.find('.tc-panel').is(':visible');
+            if (!diff) return { white: read($sides.first()) };
+            return { white: read($sides.eq(0)), black: read($sides.eq(1)) };
         }
 
-        // First render from initial value
-        $hidden.val(initial);
-        $root.find('.tc-readable-inline').text(humanizeTrf25Short(initial));
-        updateDeleteButtons($root);
-    });
-</script>
+        function rerender($root, trf, forceDifferent) {
+            const model = ensureWhite(parseTrf25(trf));
+            const $panel = $root.find('.tc-panel');
+            const $sides = $panel.find('.tc-sides').empty();
+
+            // Checkbox is the source of truth unless caller forces it
+            const wantDifferent = (typeof forceDifferent === 'boolean')
+                ? forceDifferent
+                : $panel.find('.tc-diff').is(':checked');
+
+            $panel.find('.tc-diff').prop('checked', wantDifferent);
+
+            if (wantDifferent) {
+                // Ensure there is a black side; if missing, clone white
+                const black = model.black ? model.black : JSON.parse(JSON.stringify(model.white));
+                $sides.append(sideBox('{{ _("White") }}', model.white));
+                $sides.append(sideBox('{{ _("Black") }}', black));
+            } else {
+                $sides.append(sideBox('', model.white));
+            }
+
+            updatePreview($root);
+        }
+
+        function updatePreview($root){
+            try {
+                const tc  = currentModel($root, { allowPartial:true, annotate:false });
+                const str = formatTrf25(tc);
+                $root.find('.tc-readable').text(humanizeTrf25Short(str));
+                $root.find('.tc-error').text('');
+            } catch {
+                $root.find('.tc-error').text('');
+            }
+        }
+
+        function updateDeleteButtons($root){
+            $root.find('.tc-side').each(function(){
+                const $rows = $(this).find('.tc-period');
+                $rows.find('.tc-del').css('visibility', 'hidden');
+                $rows.last().find('.tc-del').css('visibility', 'visible');
+            });
+        }
+
+
+        // ----- Init for the modal instance -----
+        $(function() {
+            const $root = $('#tc-editor-modal');
+            if (!$root.length) return;
+
+            const $hidden = $('#time-control-trf25');
+            let initial = $root.data('initial') || $hidden.val() || '';
+            try {
+                parseTrf25(initial);   // validate
+            } catch {
+                initial = '';          // reset to empty if corrupt
+            }
+
+            const show = () => {
+                const currentStr = $hidden.val().trim();
+                const wantDifferent = $root.find('.tc-diff').is(':checked');
+                rerender($root, currentStr, wantDifferent);
+                $root.find('.tc-panel').slideDown(120);
+                $root.find('.tc-display .tc-edit').prop('disabled', true);
+                const submitContainer = document.getElementById('submit-button-container');
+                new bootstrap.Tooltip(submitContainer, {
+                    title: `{{ _('Please validate the time control to continue.') }}`,
+                    placement: 'top',
+                });
+                $(submitContainer).find('button').prop('disabled', true);
+            };
+
+            const hide = () => {
+                $root.find('.tc-panel').hide();
+                $root.find('.tc-display .tc-edit').prop('disabled', false);
+                const submitContainer = document.getElementById('submit-button-container');
+                bootstrap.Tooltip.getInstance(submitContainer).dispose();
+                $(submitContainer).find('button').prop('disabled', false);
+            };
+
+            $root.on('click', '.tc-edit', show);
+            $root.on('click', '.tc-cancel', hide);
+
+
+            $root.on('click', '.tc-ok', function() {
+                try {
+                    const tc = currentModel($root, { allowPartial:false, annotate:true }); // validate + mark fields
+                    const out = formatTrf25(tc);
+                    $root.find('.tc-readable').text(humanizeTrf25Short(out));
+                    $root.find('.tc-readable-inline').text(humanizeTrf25Short(out));
+                    $hidden.val(out);
+                    hide();
+                } catch (e) {
+                    $root.find('.tc-error').text(e.message || String(e));
+                }
+            });
+
+            $root.on('click', '.tc-add-period', function() {
+                const different = $root.find('.tc-diff').is(':checked');
+                const $sides = $root.find('.tc-sides > .tc-side');
+
+                if (different) {
+                    // Add a period row to each side (White and Black)
+                    $sides.each(function() {
+                        $(this).find('.tc-periods').append(periodRow({ seconds: 0 }));
+                    });
+                } else {
+                    // Single (symmetric) control: add to the single side
+                    $sides.first().find('.tc-periods').append(periodRow({ seconds: 0 }));
+                }
+
+                updatePreview($root);
+                updateDeleteButtons($root);
+            });
+
+            $root.on('click', '.tc-del', function() {
+                const $side = $(this).closest('.tc-side');
+                $(this).closest('.tc-period').remove();
+                if (!$side.find('.tc-period').length) {
+                    $side.find('.tc-periods').append(periodRow({ seconds: 0 }));
+                }
+                updatePreview($root);
+                updateDeleteButtons($root);
+            });
+
+            $root.on('input', '.tc-panel input', function() { updatePreview($root); });
+
+            $root.on('change', '.tc-diff', function() {
+                const wantDifferent = $(this).is(':checked');
+
+                // Build from the CURRENT form (not the code pill) so edits aren't lost
+                let tc;
+                try { tc = currentModel($root); } catch { tc = { white: [{ seconds: 0 }] }; }
+
+                if (wantDifferent) {
+                    // Clone white into black if none present
+                    if (!tc.black) tc.black = JSON.parse(JSON.stringify(tc.white));
+                } else {
+                    // Collapse to symmetric
+                    delete tc.black;
+                }
+
+                // Re-render honoring the user's toggle (don't auto-collapse when equal)
+                rerender($root, formatTrf25(tc), wantDifferent);
+            });
+
+            function tcEditorOpen() {
+                return $root.find('.tc-panel').is(':visible');
+            }
+
+            // First render from initial value
+            $hidden.val(initial);
+            $root.find('.tc-readable-inline').text(humanizeTrf25Short(initial));
+            updateDeleteButtons($root);
+        });
+    </script>
+</div>
