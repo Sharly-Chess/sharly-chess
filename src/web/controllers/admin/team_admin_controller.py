@@ -370,14 +370,15 @@ class TeamAdminController(BaseEventAdminController):
         self,
         request: HTMXRequest,
         data: Annotated[
-            dict[str, str],
+            dict[str, str | list[str]],
             Body(media_type=RequestEncodingType.URL_ENCODED),
         ],
     ) -> Template:
         web_context = TeamAdminWebContext(request)
         event = web_context.get_admin_event()
         team = web_context.get_admin_team()
-        player_ids = WebContext.form_data_to_list_int(data, 'player_id')
+        flat_data = WebContext.flatten_list_data(data)
+        player_ids = WebContext.form_data_to_list_int(flat_data, 'player_id')
         valid_players: list[Player] = [
             event.players_by_id[pid] for pid in player_ids if pid in event.players_by_id
         ]
