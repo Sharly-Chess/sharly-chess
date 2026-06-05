@@ -161,6 +161,7 @@ class ChessResultsTieBreak:
                 | ttb.ExtendedDirectEncounterTieBreak
                 | ffe_tb.BerlinTieBreak
                 | ffe_tb.GamePointsDifferentialTieBreak
+                | ffe_tb.GamePointsForTieBreak
                 | ffe_tb.LowestOwnAverageRatingTieBreak
             ):
                 # TODO: Chess-Results has no dedicated codes for FIDE

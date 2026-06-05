@@ -844,6 +844,7 @@ class FfePlugin(Plugin):
             )
         tie_break_types.append(ffe_tie_breaks.BerlinTieBreak)
         tie_break_types.append(ffe_tie_breaks.GamePointsDifferentialTieBreak)
+        tie_break_types.append(ffe_tie_breaks.GamePointsForTieBreak)
         tie_break_types.append(ffe_tie_breaks.LowestOwnAverageRatingTieBreak)
 
     @hookimpl

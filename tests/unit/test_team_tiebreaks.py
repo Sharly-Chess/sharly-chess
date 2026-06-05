@@ -998,6 +998,115 @@ class GamePointsDifferentialTieBreakTestCase(TestCase):
             1.0,
         )
 
+    def test_negative_match_total_clamps_before_subtracting(self):
+        from plugins.ffe.ffe_tie_breaks import GamePointsDifferentialTieBreak
+
+        # Raw match: A=2, B=-1 → adjusted A=2, B=0.
+        team_a = TeamRecord(
+            team_id=1,
+            name='A',
+            total_mp=0.0,
+            total_gp=2.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=2,
+                    own_mp=3.0,
+                    own_gp=2.0,
+                    match_type=TeamMatchType.PLAYED,
+                )
+            ],
+        )
+        team_b = TeamRecord(
+            team_id=2,
+            name='B',
+            total_mp=0.0,
+            total_gp=-1.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=1,
+                    own_mp=1.0,
+                    own_gp=-1.0,
+                    match_type=TeamMatchType.PLAYED,
+                )
+            ],
+        )
+        records = {1: team_a, 2: team_b}
+        tb = GamePointsDifferentialTieBreak([])
+        # A: 2 - 0 = +2 ; B: 0 - 2 = -2
+        self.assertEqual(
+            tb.compute_team_value(team_a, records, self._context(), after_round=1),
+            2.0,
+        )
+        self.assertEqual(
+            tb.compute_team_value(team_b, records, self._context(), after_round=1),
+            -2.0,
+        )
+
+
+@pytest.mark.unit
+class GamePointsForTieBreakTestCase(TestCase):
+    """FFE *Points de parties « pour »* — Σ of each match's own score
+    floored at 0."""
+
+    @staticmethod
+    def _context() -> TeamTieBreakContext:
+        return TeamTieBreakContext(
+            primary_score=ScoreType.MATCH_POINTS,
+            secondary_score=ScoreType.GAME_POINTS,
+            rounds=3,
+            win_mp=3.0,
+            draw_mp=2.0,
+            loss_mp=1.0,
+            team_player_count=4,
+            draw_gp=0.0,
+        )
+
+    def test_sums_clamped_match_scores(self):
+        from plugins.ffe.ffe_tie_breaks import GamePointsForTieBreak
+
+        team = TeamRecord(
+            team_id=1,
+            name='A',
+            total_mp=0.0,
+            total_gp=0.0,
+            matches=[
+                TeamMatchRecord(
+                    round_=1,
+                    opponent_id=2,
+                    own_mp=3.0,
+                    own_gp=2.5,
+                    match_type=TeamMatchType.PLAYED,
+                ),
+                # Negative raw match score clamps to 0 (not -1).
+                TeamMatchRecord(
+                    round_=2,
+                    opponent_id=3,
+                    own_mp=0.0,
+                    own_gp=-1.0,
+                    match_type=TeamMatchType.PLAYED,
+                ),
+                TeamMatchRecord(
+                    round_=3,
+                    opponent_id=None,
+                    own_mp=3.0,
+                    own_gp=4.0,
+                    match_type=TeamMatchType.PAB,
+                ),
+            ],
+        )
+        tb = GamePointsForTieBreak([])
+        # 2.5 + max(0,-1) + 4 = 6.5 ; respects after_round.
+        self.assertEqual(
+            tb.compute_team_value(team, {1: team}, self._context(), after_round=3),
+            6.5,
+        )
+        self.assertEqual(
+            tb.compute_team_value(team, {1: team}, self._context(), after_round=1),
+            2.5,
+        )
+
 
 @pytest.mark.unit
 class LowestOwnAverageRatingTieBreakTestCase(TestCase):

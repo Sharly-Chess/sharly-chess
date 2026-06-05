@@ -744,13 +744,20 @@ class BerlinTieBreak(TeamTieBreak):
 
 class GamePointsDifferentialTieBreak(TeamTieBreak):
     """FFE *Différentiel des points de parties* (Règlement Coupe
-    Loubatière §4.4.a) — sum over all rounds of (own_gp − opponent_gp).
+    Loubatière §4.4.a) — sum over all rounds of (points_for −
+    points_against).
 
-    For PLAYED matches the opponent's game points come from the
-    paired team's record in the same round. For PAB / HPB / +F / -F /
-    ZPB there is no opponent score available, so the differential
-    reduces to ``own_gp`` (awarded byes count as a positive
-    differential; forfeit losses contribute zero)."""
+    Per match each side's raw board-score total is first clamped to a
+    floor of 0 (a forfeit can drive a raw total negative); the clamped
+    own total is the match's *points for* and the clamped opponent
+    total its *points against*. ``gains``/``pertes`` in the regulation
+    are these two sides of the adjusted match score — not counts of
+    won/lost games.
+
+    For PLAYED matches the opponent total comes from the paired team's
+    record in the same round. For byes (PAB / HPB / +F / -F / ZPB)
+    there is no opponent, so points_against is 0 and the differential
+    is the team's own (clamped) score."""
 
     @staticmethod
     def static_id() -> str:
@@ -771,9 +778,9 @@ class GamePointsDifferentialTieBreak(TeamTieBreak):
     @property
     def base_help_text(self) -> str:
         return _(
-            'Sum over every round of (own game points minus opponent '
-            "game points). Awarded byes count as the team's own score "
-            'with no subtraction; forfeit losses contribute zero. '
+            'Sum over every round of (points for − points against), '
+            'where each match score is floored at 0 before the '
+            'subtraction. Byes count the awarded score against nothing.'
         )
 
     @property
@@ -799,8 +806,59 @@ class GamePointsDifferentialTieBreak(TeamTieBreak):
                     opp_match = opponent.match_at(match.round_)
                     if opp_match is not None:
                         opponent_gp = opp_match.own_gp
-            total += match.own_gp - opponent_gp
+            # Clamp each side's raw match total to 0 (a forfeit can
+            # push it negative), then take points_for − points_against.
+            total += max(0.0, match.own_gp) - max(0.0, opponent_gp)
         return total
+
+
+class GamePointsForTieBreak(TeamTieBreak):
+    """FFE *Points de parties « pour »* (Règlement Coupe Loubatière
+    §4.4.a) — sum over all rounds of the team's *points for*: each
+    match's own raw board-score total floored at 0 (the same clamped
+    value used by the differential). Distinct from the plain
+    game-points total, which doesn't clamp negative match scores."""
+
+    @staticmethod
+    def static_id() -> str:
+        return f'{PLUGIN_NAME}-GP-FOR'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Game points "for"')
+
+    @staticmethod
+    def available_options() -> list[type[TieBreakOption]]:
+        return []
+
+    @property
+    def base_acronym(self) -> str:
+        return 'GP-FOR'
+
+    @property
+    def base_help_text(self) -> str:
+        return _(
+            "Sum over every round of the team's points for — each "
+            'match score floored at 0. FFE Coupe Loubatière §4.4.a.'
+        )
+
+    @property
+    def category(self) -> TieBreakCategory:
+        return TeamScoreCategory()
+
+    def compute_team_value(
+        self,
+        team_record: TeamRecord,
+        all_records: dict[int, TeamRecord],
+        tournament_context: TeamTieBreakContext,
+        *,
+        after_round: int,
+    ) -> float:
+        return sum(
+            max(0.0, match.own_gp)
+            for match in team_record.matches
+            if match.round_ <= after_round
+        )
 
 
 class LowestOwnAverageRatingTieBreak(TeamTieBreak):

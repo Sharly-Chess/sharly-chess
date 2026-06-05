@@ -70,12 +70,12 @@ _FFE_GAME_POINTS_MOLTER: dict[int, float] = {
 # Tie-break order for the Swiss / round-robin phases of the two FFE
 # team cups (Coupe Loubatière §4.4.a, Coupe de la Parité — same list):
 # match-point primary → game-points differential → game-points "pour"
-# (= secondary score, the MPvGP team tie-break) → lowest own avg Elo.
-# Same list applies to ``TEAM_SWISS`` and ``TEAM_ROUND_ROBIN`` because
-# the regulations bracket "Système Suisse ou toutes rondes" together.
+# → lowest own avg Elo. Same list applies to ``TEAM_SWISS`` and
+# ``TEAM_ROUND_ROBIN`` because the regulations bracket "Système Suisse
+# ou toutes rondes" together.
 _FFE_SUISSE_TIE_BREAKS: list[tuple[str, dict]] = [
     ('ffe-GP-DIFFERENTIAL', {}),
-    ('TEAM_MPVGP', {}),
+    ('ffe-GP-FOR', {}),
     ('ffe-OWN-AVG-ELO', {}),
 ]
 
