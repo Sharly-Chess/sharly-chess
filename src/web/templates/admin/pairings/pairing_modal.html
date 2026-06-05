@@ -383,16 +383,21 @@
                         board_id=board.identifier,
                         result=0,
                     ) %}
-                    {# Forfeit results on a team board come from the
-                       lineup "Absent (forfeit)" dropdown, which marks
-                       a slot as a hole. Clearing the result here would
-                       silently revert the slot to "player present"
-                       even though the user never edited the lineup —
-                       force the toggle to go through the lineup
-                       dropdown instead. #}
+                    {# A team-board slot left empty in the lineup is a
+                       hole: the present opponent gets a forfeit win and
+                       the empty side has no player. Clearing the result
+                       here would silently revert the hole to "player
+                       present", so force that toggle through the lineup
+                       dropdown instead. A forfeit result on a board
+                       where both players are listed is a normal entered
+                       result and stays clearable. #}
                     {% set is_team_forfeit_lock = (
                         board.stored_board.team_board_id is not none
                         and board.result.value in [4, 5, 6]
+                        and (
+                            board.stored_board.white_player_id is none
+                            or board.stored_board.black_player_id is none
+                        )
                     ) %}
                     <button
                         class="admin-result-button danger col-3 ms-auto me-auto btn fs-6 fw-bold p-3"

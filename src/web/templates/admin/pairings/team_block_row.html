@@ -27,8 +27,6 @@
     {% set team_a_pairing = board.optional_black_pairing %}
     {% set team_b_pairing = board.optional_white_pairing %}
 {% endif %}
-{% set team_a_absent = team_a_pairing and team_a_pairing.result.value in [4, 5] %}
-{% set team_b_absent = team_b_pairing and team_b_pairing.result.value in [4, 5] %}
 {% set raw_result_str = board.result_str %}
 {# Result string is stored in physical white-black order; flip it
    when team_a is on the black side so the row reads team_a-on-left. #}
@@ -42,11 +40,12 @@
 {% else %}
     {% set display_result_str = raw_result_str %}
 {% endif %}
+{# Only a true hole (an empty slot) blocks result entry. A listed
+   player who lost by forfeit still occupies the slot and can have
+   their result edited. #}
 {% set _row_has_hole = (
     board.stored_board.white_player_id is none
     or board.stored_board.black_player_id is none
-    or team_a_absent
-    or team_b_absent
 ) %}
 <tr
     id="pairing-row-{{ board.identifier }}"
@@ -67,13 +66,9 @@
             <span class="color-chip color-chip-{{ team_a_color|lower }}"></span>
             <span class="lineup-view flex-grow-1">
                 {% if team_a_player and team_a_player.team_id %}
-                    {% if team_a_absent %}
-                        <em class="text-muted">— {{ _('Absent (forfeit)') }} —</em>
-                    {% else %}
-                        {% with tournament_player=team_a_player, display_rating=true %}
-                            {% include '/admin/player_link.html' %}
-                        {% endwith %}
-                    {% endif %}
+                    {% with tournament_player=team_a_player, display_rating=true %}
+                        {% include '/admin/player_link.html' %}
+                    {% endwith %}
                 {% else %}
                     <em class="text-muted">—</em>
                 {% endif %}
@@ -127,13 +122,9 @@
             <span class="color-chip color-chip-{{ team_b_color|lower }}"></span>
             <span class="lineup-view flex-grow-1">
                 {% if team_b_player and team_b_player.team_id %}
-                    {% if team_b_absent %}
-                        <em class="text-muted">— {{ _('Absent (forfeit)') }} —</em>
-                    {% else %}
-                        {% with tournament_player=team_b_player, display_rating=true %}
-                            {% include '/admin/player_link.html' %}
-                        {% endwith %}
-                    {% endif %}
+                    {% with tournament_player=team_b_player, display_rating=true %}
+                        {% include '/admin/player_link.html' %}
+                    {% endwith %}
                 {% else %}
                     <em class="text-muted">—</em>
                 {% endif %}

@@ -389,19 +389,28 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
 
     @staticmethod
     def _gender_balance_warnings(team: 'Team') -> list[str]:
-        # Règlement C04 §1: each match fields 2 men + 2 women — a
-        # roster that doesn't have at least 2 of each gender can't
-        # field a legal lineup.
+        # Règlement C04 §1: the roster holds at most 3 men and 3 women,
+        # and each match fields 2 men + 2 women — so a roster needs at
+        # least 2 of each gender to field a legal lineup, and no more
+        # than 3 of either.
         men = sum(1 for p in team.players if p.gender == PlayerGender.MAN)
         women = sum(1 for p in team.players if p.gender == PlayerGender.WOMAN)
         msgs: list[str] = []
         if men < 2:
             msgs.append(
-                _('Need at least 2 men on the roster ({n} fielded).').format(n=men)
+                _('Need at least 2 men on the roster ({n} listed).').format(n=men)
+            )
+        elif men > 3:
+            msgs.append(
+                _('At most 3 men allowed on the roster ({n} listed).').format(n=men)
             )
         if women < 2:
             msgs.append(
-                _('Need at least 2 women on the roster ({n} fielded).').format(n=women)
+                _('Need at least 2 women on the roster ({n} listed).').format(n=women)
+            )
+        elif women > 3:
+            msgs.append(
+                _('At most 3 women allowed on the roster ({n} listed).').format(n=women)
             )
         return msgs
 
