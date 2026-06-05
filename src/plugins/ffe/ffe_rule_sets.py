@@ -144,6 +144,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             'team_player_count',
             'primary_score',
             'team_colour_type',
+            'enforce_roster_order',
             'mp_win',
             'mp_draw',
             'mp_loss',
@@ -164,6 +165,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     ) -> None:
         stored_tournament.team_player_count = 4
         stored_tournament.team_colour_type = TeamColourType.A.value
+        stored_tournament.enforce_roster_order = True
         stored_tournament.match_points = dict(_FFE_MATCH_POINTS)
         stored_tournament.primary_score = self._primary_score_for(pairing_system_id)
         gp = dict(self._game_points_for(pairing_system_id))
@@ -194,11 +196,6 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         if pairing_system_id in ('MOLTER', 'TEAM_ALLER_RETOUR'):
             return _FFE_GAME_POINTS_MOLTER
         return _FFE_GAME_POINTS_SUISSE_STYLE
-
-    @property
-    @override
-    def lineup_order_locked(self) -> bool:
-        return True
 
     @property
     @override
@@ -262,6 +259,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             'team_player_count': '4',
             'primary_score': self._primary_score_for(pairing_system_id),
             'team_colour_type': TeamColourType.A.value,
+            'enforce_roster_order': 'on',
             'mp_win': _fmt(_FFE_MATCH_POINTS[Result.WIN.value]),
             'mp_draw': _fmt(_FFE_MATCH_POINTS[Result.DRAW.value]),
             'mp_loss': _fmt(_FFE_MATCH_POINTS[Result.LOSS.value]),

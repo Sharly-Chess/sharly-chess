@@ -368,12 +368,11 @@ class Tournament:
         return rule_set.roster_max_size if rule_set else None
 
     @property
-    def rule_set_locks_lineup_order(self) -> bool:
-        """True iff the active rule set forces lineups to follow the
-        roster order. The lineup picker then renders as a selection
-        list rather than a drag UI."""
-        rule_set = self.rule_set
-        return rule_set is not None and rule_set.lineup_order_locked
+    def enforce_roster_order(self) -> bool:
+        """True iff lineups must follow the roster order. The lineup
+        picker then renders as a selection list rather than a drag UI.
+        Set manually on the tournament, or forced on by a rule set."""
+        return bool(self.stored_tournament.enforce_roster_order)
 
     @property
     def rule_set_managed_tie_breaks(self) -> bool:
@@ -3174,12 +3173,12 @@ class Tournament:
                     if board.stored_board.team_board_id == pab_stb.id:
                         boards_to_delete.append(board.identifier)
                 for board_id in boards_to_delete:
-                    board = self.boards_by_id.get(board_id)
-                    if board is None:
+                    deleted_board = self.boards_by_id.get(board_id)
+                    if deleted_board is None:
                         continue
                     for tp in (
-                        board.optional_white_tournament_player,
-                        board.black_tournament_player,
+                        deleted_board.optional_white_tournament_player,
+                        deleted_board.black_tournament_player,
                     ):
                         if tp is not None:
                             tp.delete_pairing(round_, database)

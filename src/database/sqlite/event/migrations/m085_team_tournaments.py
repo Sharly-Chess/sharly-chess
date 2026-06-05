@@ -181,6 +181,10 @@ class Migration(BaseMigration):
         self.database.execute('ALTER TABLE `tournament` ADD `primary_score` TEXT')
         self.database.execute('ALTER TABLE `tournament` ADD `secondary_score` TEXT')
         self.database.execute('ALTER TABLE `tournament` ADD `team_colour_type` TEXT')
+        self.database.execute(
+            'ALTER TABLE `tournament` ADD `enforce_roster_order` '
+            'INTEGER NOT NULL DEFAULT 0'
+        )
         self.database.execute('ALTER TABLE `tournament` ADD `rule_set` TEXT')
         self.database.execute('ALTER TABLE `pairing` ADD `effective_points` REAL')
 

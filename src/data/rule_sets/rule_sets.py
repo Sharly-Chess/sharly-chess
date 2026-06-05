@@ -117,14 +117,6 @@ class RuleSet(IdentifiableEntity, ABC):
         return []
 
     @property
-    def lineup_order_locked(self) -> bool:
-        """When True, per-round team lineups become a selection-only
-        list (pick which players play; board order is taken from the
-        roster) for rule sets whose regulations require boards to
-        follow the published roster order. Default: False."""
-        return False
-
-    @property
     def tie_break_overrides_by_pairing(self) -> dict[str, list[tuple[str, dict]]]:
         """Per pairing-system id, the ordered ``(tie_break_type_id,
         options)`` list the rule set imposes. When non-empty for the

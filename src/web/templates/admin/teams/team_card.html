@@ -191,12 +191,6 @@
                     <span>{{ _(
                         'Lineup for round #%(round)d:', round=current_round
                     ) }}</span>
-                    {% if not team.has_explicit_round_lineup(current_round) %}
-                        <span
-                            class="badge bg-secondary"
-                            {{ macros.tooltip_attributes('info', _('Default lineup (first roster players).'), 'top') }}
-                        >{{ _('default') }}</span>
-                    {% endif %}
                 </span>
                 {% if current_lineup and current_lineup|select|list %}
                     <ol class="mb-0 ps-3">

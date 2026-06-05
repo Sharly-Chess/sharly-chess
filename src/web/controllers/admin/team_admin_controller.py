@@ -544,7 +544,7 @@ class TeamAdminController(BaseEventAdminController):
         color_pattern = ''
         selection_only = False
         if tournament is not None:
-            selection_only = tournament.rule_set_locks_lineup_order
+            selection_only = tournament.enforce_roster_order
             first_editable = max(1, tournament.last_paired_round + 1)
             rounds_set = set(range(first_editable, tournament.rounds + 1))
             # Include the current round even if already paired — paired

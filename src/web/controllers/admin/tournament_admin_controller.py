@@ -290,6 +290,7 @@ class TournamentAdminController(BaseEventAdminController):
             primary_score: str | None = None
             secondary_score: str | None = None
             team_colour_type: str | None = None
+            enforce_roster_order: bool = False
             rule_set: str | None = None
             stored_plugin_data: dict[str, dict[str, Any]] = {}
             if action == 'create':
@@ -337,6 +338,7 @@ class TournamentAdminController(BaseEventAdminController):
                 team_colour_type = (
                     stored_tournament.team_colour_type or TeamColourType.A.value
                 )
+                enforce_roster_order = stored_tournament.enforce_roster_order
                 rule_set = stored_tournament.rule_set
                 for criterion in tournament_criteria:
                     if criterion.id in stored_tournament.criteria:
@@ -423,6 +425,7 @@ class TournamentAdminController(BaseEventAdminController):
                     'primary_score': primary_score,
                     'secondary_score': secondary_score,
                     'team_colour_type': team_colour_type,
+                    'enforce_roster_order': 'on' if enforce_roster_order else '',
                     'rule_set': rule_set,
                     'date_range': WebContext.value_to_date_range_form_data(
                         start_date, stop_date
@@ -666,7 +669,11 @@ class TournamentAdminController(BaseEventAdminController):
         primary_score: str | None = None
         secondary_score: str | None = None
         team_colour_type: str | None = None
+        enforce_roster_order = False
         if event.is_team_event:
+            enforce_roster_order = WebContext.form_data_to_bool(
+                data, 'enforce_roster_order'
+            )
             team_player_count = WebContext.form_data_to_int(
                 data, field := 'team_player_count'
             )
@@ -830,6 +837,7 @@ class TournamentAdminController(BaseEventAdminController):
             primary_score=primary_score,
             secondary_score=secondary_score,
             team_colour_type=team_colour_type,
+            enforce_roster_order=enforce_roster_order,
             rule_set=rule_set_id,
             plugin_data=plugin_data,
             round_datetimes=round_datetimes,

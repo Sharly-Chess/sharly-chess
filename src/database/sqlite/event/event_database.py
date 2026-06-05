@@ -649,6 +649,9 @@ class EventDatabase(MigrationDatabase):
             primary_score=row['primary_score'],
             secondary_score=row['secondary_score'],
             team_colour_type=row['team_colour_type'],
+            enforce_roster_order=cls.load_bool_from_database_field(
+                row['enforce_roster_order']
+            ),
             rule_set=row['rule_set'],
         )
 
@@ -729,6 +732,7 @@ class EventDatabase(MigrationDatabase):
                 'primary_score',
                 'secondary_score',
                 'team_colour_type',
+                'enforce_roster_order',
                 'rule_set',
             ],
         ) | {
