@@ -323,7 +323,7 @@ class DeprecatedTeamEntry(MultipleLinesEntry):
 
 class TeamEntry(MultipleLinesEntry):
     LINE_PATTERN = re.compile(
-        r'^(?P<id>[ \d]{3}) (?P<name>.{32}) (?P<nickname>[ \w]{5}) '
+        r'^(?P<id>[ \d]{3}) (?P<name>.{32}) (?P<nickname>.{5}) '
         r'(?P<strength_factor>[ \d]{6}) (?P<match_points>[ \d.]{6}) '
         r'(?P<game_points>[ \d.]{6}) (?P<rank>[ \d]{3}) (?P<player_ids>( [ \d]{4})*)\s*$',
         re.IGNORECASE,
