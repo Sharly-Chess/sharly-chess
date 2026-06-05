@@ -857,6 +857,31 @@ class TeamColourType(StrEnum):
                 raise ValueError(f'Unknown value: {self}')
 
 
+class TeamSortMode(StrEnum):
+    """How the teams of a not-yet-paired team tournament are ordered
+    (which sets their pairing numbers). ``MANUAL`` keeps the arbiter's
+    drag-and-drop order; the others re-sort automatically as teams are
+    added or rosters change."""
+
+    MANUAL = 'MANUAL'
+    TEAM_AVERAGE_RATING = 'TEAM_AVERAGE_RATING'
+    LINEUP_AVERAGE_RATING = 'LINEUP_AVERAGE_RATING'
+    RANDOM = 'RANDOM'
+
+    def __str__(self) -> str:
+        match self:
+            case TeamSortMode.MANUAL:
+                return _('Manually')
+            case TeamSortMode.TEAM_AVERAGE_RATING:
+                return _('Average rating of entire team')
+            case TeamSortMode.LINEUP_AVERAGE_RATING:
+                return _('Average rating of round #1 lineup')
+            case TeamSortMode.RANDOM:
+                return _('Randomly')
+            case _:
+                raise ValueError(f'Unknown value: {self}')
+
+
 class RoleType(StrEnum):
     CHIEF_ARBITER = 'chief_arbiter'
     DEPUTY_ARBITER = 'deputy_arbiter'

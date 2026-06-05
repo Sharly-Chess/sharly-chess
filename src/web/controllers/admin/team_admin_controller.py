@@ -15,7 +15,7 @@ from data.team import RosterFullError, Team
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import StoredTeam
-from utils.enum import FormAction, PlayerGender, Result
+from utils.enum import FormAction, PlayerGender, Result, TeamSortMode
 from data.access_levels.client import Client
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
@@ -60,6 +60,7 @@ class TeamAdminWebContext(BaseEventAdminWebContext):
             'unassigned_teams': teams_by_tournament_id.get(None, []),
             'admin_team': self.admin_team,
             'show_details': SessionTeamsShowDetails(self.request).get(),
+            'team_sort_modes': list(TeamSortMode),
         }
 
 
@@ -422,6 +423,7 @@ class TeamAdminController(BaseEventAdminController):
                         ).format(max=err.max_size),
                     )
                     break
+            self._resort_team_tournament(team, database)
         return self._admin_event_teams_render(
             web_context, self._team_roster_modal_context(web_context)
         )
@@ -442,6 +444,7 @@ class TeamAdminController(BaseEventAdminController):
         if player is not None:
             with EventDatabase(event.uniq_id, True) as database:
                 team.remove_player(player, database)
+                self._resort_team_tournament(team, database)
         return self._admin_event_teams_render(
             web_context, self._team_roster_modal_context(web_context)
         )
@@ -747,6 +750,47 @@ class TeamAdminController(BaseEventAdminController):
             )
 
     @patch(
+        path='/team-sort-mode/{event_uniq_id:str}/{tournament_id:int}',
+        name='admin-team-sort-mode',
+        guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
+    )
+    async def htmx_admin_team_sort_mode(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        data: Annotated[
+            dict[str, str | list[str]],
+            Body(media_type=RequestEncodingType.URL_ENCODED),
+        ],
+    ) -> Template:
+        web_context = TeamAdminWebContext(request)
+        event = web_context.get_admin_event()
+        tournament = event.tournaments_by_id.get(tournament_id)
+        if tournament is None or tournament.team_sort_mode_locked:
+            return self._admin_event_teams_render(web_context)
+        # The button lives inside ``#teams-form``, so HTMX also
+        # serialises its repeated ``assignment`` inputs — flatten the
+        # list-valued body before reading the single mode field.
+        flat_data = WebContext.flatten_list_data(data)
+        try:
+            mode = TeamSortMode(
+                WebContext.form_data_to_str(flat_data, 'team_sort_mode') or ''
+            )
+        except ValueError:
+            return self._admin_event_teams_render(web_context)
+        with EventDatabase(event.uniq_id, True) as database:
+            tournament.stored_tournament.team_sort_mode = mode.value
+            # Switching to RANDOM means a fresh shuffle: drop the
+            # existing pairing numbers so every team is a newcomer.
+            if mode == TeamSortMode.RANDOM:
+                for team in tournament.teams:
+                    if team.pairing_number is not None:
+                        team.set_pairing_number(None, database)
+            database.update_stored_tournament(tournament.stored_tournament)
+            tournament.resort_teams(database)
+        return self._admin_event_teams_render(web_context)
+
+    @patch(
         path='/teams-reassign/{event_uniq_id:str}',
         name='admin-teams-reassign',
         guards=[ActionGuard(AuthAction.UPDATE_TOURNAMENTS)],
@@ -799,6 +843,14 @@ class TeamAdminController(BaseEventAdminController):
                         team.set_tournament(tournament_id, database)
                     if team.pairing_number != index:
                         team.set_pairing_number(index, database)
+            # An auto-sort tournament re-orders itself regardless of the
+            # drag order (e.g. a team dragged into it from elsewhere).
+            for tournament_id in by_tournament:
+                if tournament_id is None:
+                    continue
+                tournament = event.tournaments_by_id.get(tournament_id)
+                if tournament is not None:
+                    tournament.resort_teams(database)
         return self._admin_event_teams_render(web_context)
 
     @patch(
@@ -820,9 +872,19 @@ class TeamAdminController(BaseEventAdminController):
         ordered_ids = data.get('player_ids', []) or []
         with EventDatabase(event.uniq_id, True) as database:
             team.reorder_players(list(ordered_ids), database)
+            # Roster order can change the round-1 lineup average.
+            self._resort_team_tournament(team, database)
         return self._admin_event_teams_render(
             web_context, self._team_roster_modal_context(web_context)
         )
+
+    @staticmethod
+    def _resort_team_tournament(team: Team, database: EventDatabase) -> None:
+        """Re-apply the team's tournament auto-sort after a roster
+        change. No-op when the team isn't assigned to a tournament."""
+        tournament = team.tournament
+        if tournament is not None:
+            tournament.resort_teams(database)
 
     # -------------------------------------------------------------------------
     # Actions
@@ -903,6 +965,8 @@ class TeamAdminController(BaseEventAdminController):
             )
         event = web_context.get_admin_event()
         team = event.add_team(stored_team)
+        with EventDatabase(event.uniq_id, True) as database:
+            self._resort_team_tournament(team, database)
         Message.success(
             request,
             _('Team [{team}] has been created.').format(team=team.name),
@@ -952,6 +1016,8 @@ class TeamAdminController(BaseEventAdminController):
         event.clear_team_cache()
         for tournament in event.tournaments:
             tournament.clear_team_cache()
+        with EventDatabase(event.uniq_id, True) as database:
+            self._resort_team_tournament(team, database)
         Message.success(
             request,
             _('Team [{team}] has been updated.').format(team=team.name),

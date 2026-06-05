@@ -227,6 +227,7 @@ class StoredTournament:
     secondary_score: str | None = None
     team_colour_type: str | None = None
     enforce_roster_order: bool = False
+    team_sort_mode: str = 'MANUAL'
     rule_set: str | None = None
     stored_tie_breaks: list[StoredTieBreak] = field(
         default_factory=list[StoredTieBreak]

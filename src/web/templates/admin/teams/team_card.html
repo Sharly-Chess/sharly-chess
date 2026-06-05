@@ -10,6 +10,8 @@
         class="assignment-input"
         name="assignment"
         value="{{ team.id }}:{{ team.tournament_id or '' }}"
+        data-team-avg="{{ team.average_rating or 0 }}"
+        data-lineup-avg="{{ team.lineup_average_rating(1) or 0 }}"
     />
     <div class="d-flex align-items-center">
         {% if team.tournament_id and client.can_check_in_players(team.tournament_id) %}
@@ -202,6 +204,13 @@
                             {% endif %}
                         {% endfor %}
                     </ol>
+                    {% set _lineup_avg = team.lineup_average_rating(current_round) %}
+                    {% if _lineup_avg %}
+                        <div class="text-muted small mt-1">
+                            <i class="bi-star-fill"></i>
+                            {{ _('Average rating: %(rating)d', rating=_lineup_avg) }}
+                        </div>
+                    {% endif %}
                 {% else %}
                     <span class="text-secondary"><i>{{ _('Empty') }}</i></span>
                 {% endif %}

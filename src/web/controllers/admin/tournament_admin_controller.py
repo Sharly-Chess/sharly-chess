@@ -659,9 +659,30 @@ class TournamentAdminController(BaseEventAdminController):
             if raw is None or raw == '':
                 continue
             try:
-                game_points[result.value] = float(raw)
+                gp_value = float(raw)
             except ValueError:
                 errors[gp_field] = _('A number is expected.')
+                continue
+            # Negative game points aren't representable in the TRF
+            # point system (bbpPairings reads it to pair) — disallow
+            # them for now.
+            if gp_value < 0:
+                errors[gp_field] = _('A positive value is expected.')
+                continue
+            game_points[result.value] = gp_value
+
+        # A win must be worth at least a draw, and a draw at least a
+        # loss.
+        win_gp = game_points.get(Result.WIN.value)
+        draw_gp = game_points.get(Result.DRAW.value)
+        loss_gp = game_points.get(Result.LOSS.value)
+        if (
+            win_gp is not None
+            and draw_gp is not None
+            and loss_gp is not None
+            and not (loss_gp <= draw_gp <= win_gp)
+        ):
+            errors['gp_draw'] = _('Game points must satisfy loss ≤ draw ≤ win.')
 
         team_player_count: int | None = None
         color_pattern: str | None = None
@@ -744,9 +765,27 @@ class TournamentAdminController(BaseEventAdminController):
                 if raw is None or raw == '':
                     continue
                 try:
-                    match_points[result.value] = float(raw)
+                    mp_value = float(raw)
                 except ValueError:
                     errors[mp_field] = _('A number is expected.')
+                    continue
+                if mp_value < 0:
+                    errors[mp_field] = _('A positive value is expected.')
+                    continue
+                match_points[result.value] = mp_value
+
+            # A win must be worth at least a draw, and a draw at least
+            # a loss.
+            win_mp = match_points.get(Result.WIN.value)
+            draw_mp = match_points.get(Result.DRAW.value)
+            loss_mp = match_points.get(Result.LOSS.value)
+            if (
+                win_mp is not None
+                and draw_mp is not None
+                and loss_mp is not None
+                and not (loss_mp <= draw_mp <= win_mp)
+            ):
+                errors['mp_draw'] = _('Match points must satisfy loss ≤ draw ≤ win.')
 
         rule_set_id = WebContext.form_data_to_str(data, field := 'rule_set') or None
         if rule_set_id:

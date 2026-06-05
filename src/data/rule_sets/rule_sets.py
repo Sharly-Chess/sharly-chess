@@ -90,6 +90,14 @@ class RuleSet(IdentifiableEntity, ABC):
         ``None`` (default) means uncapped."""
         return None
 
+    @property
+    def forced_team_sort_mode(self) -> str | None:
+        """When set, locks the tournament's team-sort mode to this
+        :class:`~utils.enum.TeamSortMode` value — the teams tab shows
+        it but won't let the arbiter change it. ``None`` (default)
+        leaves the choice free."""
+        return None
+
     def rounds_for_pairing(self, pairing_system_id: str) -> int | None:
         """Round count this rule set imposes for the given pairing
         system id. ``None`` (default) means no lock — the arbiter

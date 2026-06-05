@@ -1,5 +1,5 @@
 import tempfile
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from itertools import cycle
 import re
 import time
@@ -99,7 +99,7 @@ class WebContext:
         return 'light'
 
     @staticmethod
-    def flatten_list_data(data: dict[str, str | list[str]]) -> dict[str, str]:
+    def flatten_list_data(data: Mapping[str, str | list[str]]) -> dict[str, str]:
         return {
             key: value if isinstance(value, str) else ';'.join(value)
             for key, value in data.items()

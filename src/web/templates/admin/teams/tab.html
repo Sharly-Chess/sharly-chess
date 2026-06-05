@@ -62,15 +62,71 @@
             {% for tournament in sorted_tournaments %}
                 {% set tournament_teams = teams_by_tournament_id.get(tournament.id, []) %}
                 {% set sortable = draggable %}
+                {% set sort_mode = tournament.team_sort_mode %}
+                {% set sort_locked = tournament.team_sort_mode_locked %}
                 <div class="mb-5">
-                    <h5 class="border-bottom pb-1">
+                    <h5 class="border-bottom pb-1 d-flex align-items-center">
                         <i class="bi-diagram-3-fill me-1"></i>
                         {{ tournament.name }}
-                        <span class="text-muted small">({{ tournament_teams|length }})</span>
+                        <span class="text-muted small ms-1">({{ tournament_teams|length }})</span>
+                        {% if client.can_update_tournaments %}
+                            {# A disabled button swallows hover events, so the
+                               lock tooltip has to live on the wrapping span. #}
+                            <span
+                                class="dropdown ms-auto"
+                                {% if sort_locked %}
+                                    {{ macros.tooltip_attributes(
+                                        'info',
+                                        _('The rule set fixes the team sort order.')
+                                        if tournament.rule_set
+                                            and tournament.rule_set.forced_team_sort_mode
+                                        else _('The team sort order is fixed once the first round is paired.'),
+                                        'top'
+                                    ) }}
+                                {% endif %}
+                            >
+                                <button
+                                    class="btn btn-sm btn-outline-primary dropdown-toggle text-nowrap mb-1"
+                                    type="button"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
+                                    {% if sort_locked %}disabled{% endif %}
+                                >
+                                    <i class="bi-sort-down me-1"></i>
+                                    {{ sort_mode }}
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    {% for mode in team_sort_modes %}
+                                        <li>
+                                            <button
+                                                type="button"
+                                                class="dropdown-item {% if mode == sort_mode %}active{% endif %}"
+                                                hx-patch="{{ url_for(
+                                                    'admin-team-sort-mode',
+                                                    event_uniq_id=admin_event.uniq_id,
+                                                    tournament_id=tournament.id,
+                                                ) }}"
+                                                hx-vals='{"team_sort_mode": "{{ mode.value }}"}'
+                                                hx-target="body"
+                                                hx-indicator="#please-wait"
+                                            >
+                                                {{ mode|string }}
+                                            </button>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </span>
+                        {% endif %}
                     </h5>
                     <div
                         class="row gy-3 gx-3 team-sortable"
                         data-tournament-id="{{ tournament.id }}"
+                        {% if sort_mode.value != 'MANUAL' %}data-auto-sort="1"{% endif %}
+                        {% if sort_mode.value == 'TEAM_AVERAGE_RATING' %}
+                            data-sort-key="team-avg"
+                        {% elif sort_mode.value == 'LINEUP_AVERAGE_RATING' %}
+                            data-sort-key="lineup-avg"
+                        {% endif %}
                     >
                         {% for team in tournament_teams %}
                             {% include 'team_card.html' %}
@@ -123,13 +179,51 @@
                             input.value = teamId + ':' + tid;
                         });
                     }
+                    // Read a card's sort metric (higher = stronger).
+                    function sortValue(itemEl, key) {
+                        const input = itemEl.querySelector('.assignment-input');
+                        const raw = input && input.dataset[
+                            key === 'team-avg' ? 'teamAvg' : 'lineupAvg'
+                        ];
+                        return parseFloat(raw || '0') || 0;
+                    }
                     document.querySelectorAll('.team-sortable').forEach(function (container) {
+                        const sortKey = container.dataset.sortKey || '';
+                        const autoSort = !!container.dataset.autoSort;
                         new Sortable(container, {
                             group: 'teams',
                             animation: 150,
                             ghostClass: 'sortable-ghost',
                             filter: '.non-sortable',
                             preventOnFilter: true,
+                            // Auto-sorted tournaments own their order:
+                            // disable in-list reordering (no sibling
+                            // shifting) but still accept teams dropped in
+                            // from other tournaments.
+                            sort: !autoSort,
+                            // Auto-sorted tournaments preview the drop at
+                            // the rating-correct slot during the drag:
+                            // only allow the move when it keeps the list
+                            // in descending order. (Server re-sorts on
+                            // drop regardless, so this is purely visual.)
+                            onMove: function (evt) {
+                                const toKey = evt.to.dataset.sortKey || '';
+                                if (!toKey) return true;
+                                if (evt.related.classList.contains('non-sortable')) {
+                                    return true;
+                                }
+                                const dragged = sortValue(evt.dragged, toKey);
+                                const related = sortValue(evt.related, toKey);
+                                // Descending order. Each value has a
+                                // single valid slot: allow inserting
+                                // BEFORE a sibling only when strictly
+                                // higher, AFTER it otherwise — equal
+                                // values settle after (no two-slot
+                                // ambiguity that drifts the ghost up).
+                                return evt.willInsertAfter
+                                    ? dragged <= related
+                                    : dragged > related;
+                            },
                             onEnd: function () {
                                 refreshAssignments();
                                 htmx.trigger('#teams-form', 'teams-changed');

@@ -652,6 +652,7 @@ class EventDatabase(MigrationDatabase):
             enforce_roster_order=cls.load_bool_from_database_field(
                 row['enforce_roster_order']
             ),
+            team_sort_mode=row['team_sort_mode'],
             rule_set=row['rule_set'],
         )
 
@@ -733,6 +734,7 @@ class EventDatabase(MigrationDatabase):
                 'secondary_score',
                 'team_colour_type',
                 'enforce_roster_order',
+                'team_sort_mode',
                 'rule_set',
             ],
         ) | {

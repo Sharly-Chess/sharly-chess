@@ -41,6 +41,13 @@
                         data-bs-target="#modal-wrapper"
                         onclick="event.stopPropagation()"
                     >{{ team_board.team_a.name }}</a>
+                    {% set _a_avg = team_board.team_a.lineup_average_rating(team_board.round) %}
+                    {% if _a_avg %}
+                        <span
+                            class="text-muted small fw-normal ms-1"
+                            {{ macros.tooltip_attributes('info', _('Average rating of the round lineup.'), 'top') }}
+                        ><i class="bi-star-fill"></i> {{ _a_avg }}</span>
+                    {% endif %}
                 </strong>
                 {% if team_board.team_b and client.can_update_tournaments %}
                     <button
@@ -112,6 +119,13 @@
                 {% endif %}
                 <strong class="text-end flex-grow-1">
                     {% if team_board.team_b %}
+                        {% set _b_avg = team_board.team_b.lineup_average_rating(team_board.round) %}
+                        {% if _b_avg %}
+                            <span
+                                class="text-muted small fw-normal me-1"
+                                {{ macros.tooltip_attributes('info', _('Average rating of the round lineup.'), 'top') }}
+                            ><i class="bi-star-fill"></i> {{ _b_avg }}</span>
+                        {% endif %}
                         <a
                             class="player-link"
                             hx-get="{{ url_for(

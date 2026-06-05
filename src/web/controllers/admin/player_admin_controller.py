@@ -1262,6 +1262,9 @@ class PlayerAdminController(BaseEventAdminController):
                 try:
                     with EventDatabase(event.uniq_id, True) as database:
                         team.add_player(event_player, database)
+                        tournament = team.tournament
+                        if tournament is not None:
+                            tournament.resort_teams(database)
                 except RosterFullError as err:
                     warning_message = _(
                         'Player [{player}] has been created, but team '
@@ -1335,6 +1338,9 @@ class PlayerAdminController(BaseEventAdminController):
                             current_team.remove_player(player, database)
                         elif new_team is not None:
                             new_team.add_player(player, database)
+                        for affected in (current_team, new_team):
+                            if affected is not None and affected.tournament:
+                                affected.tournament.resort_teams(database)
                 except RosterFullError as err:
                     Message.warning(
                         request,

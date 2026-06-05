@@ -23,7 +23,14 @@ from typing import override, TYPE_CHECKING
 from common.i18n import _
 from data.pairings.fixed_table import FixedPairingTable, TablePairing as P
 from data.rule_sets import RuleSet
-from utils.enum import EventType, PlayerGender, Result, ScoreType, TeamColourType
+from utils.enum import (
+    EventType,
+    PlayerGender,
+    Result,
+    ScoreType,
+    TeamColourType,
+    TeamSortMode,
+)
 
 if TYPE_CHECKING:
     from data.team import Team
@@ -42,20 +49,22 @@ _FFE_MATCH_POINTS: dict[int, float] = {
 }
 
 # Suisse / all-play-all: only wins count, draws are uncounted, losses
-# are zero. (For finals, the FFE rules add a -1 forfeit-loss penalty
-# above any real game; that's not yet representable in the
-# ``game_points`` JSON so it stays as a runtime tweak for later.)
+# are zero. Absence scores 0. (For finals, the FFE rules add a -1
+# forfeit penalty; that needs a negative game point, deferred until it
+# can be emitted via the TRF 299 field.)
 _FFE_GAME_POINTS_SUISSE_STYLE: dict[int, float] = {
     Result.WIN.value: 1.0,
     Result.DRAW.value: 0.0,
     Result.LOSS.value: 0.0,
+    Result.ZERO_POINT_BYE.value: 0.0,
 }
 
-# Molter: standard 1 / 0.5 / 0 game-points.
+# Molter: standard 1 / 0.5 / 0 game-points. Absence scores 0.
 _FFE_GAME_POINTS_MOLTER: dict[int, float] = {
     Result.WIN.value: 1.0,
     Result.DRAW.value: 0.5,
     Result.LOSS.value: 0.0,
+    Result.ZERO_POINT_BYE.value: 0.0,
 }
 
 # Tie-break order for the Swiss / round-robin phases of the two FFE
@@ -130,16 +139,16 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     def event_type(self) -> EventType:
         return EventType.TEAM
 
-    # Per-cup absent / forfeit override (Result.ZERO_POINT_BYE). When
-    # set, the rule set locks the modal's ``Absence`` field to this
-    # value and writes it into the stored game-points on save.
-    # ``None`` (default) means the cup leaves the field to the arbiter.
-    GP_ABSENT_OVERRIDE: float | None = None
+    @property
+    @override
+    def forced_team_sort_mode(self) -> str | None:
+        # FFE cups order teams by the round-1 lineup's average Elo.
+        return TeamSortMode.LINEUP_AVERAGE_RATING.value
 
     @property
     @override
     def managed_fields(self) -> set[str]:
-        fields = {
+        return {
             'rounds',
             'team_player_count',
             'primary_score',
@@ -152,10 +161,8 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             'gp_win',
             'gp_draw',
             'gp_loss',
+            'gp_zpb',
         }
-        if self.GP_ABSENT_OVERRIDE is not None:
-            fields.add('gp_zpb')
-        return fields
 
     @override
     def apply_defaults(
@@ -168,10 +175,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         stored_tournament.enforce_roster_order = True
         stored_tournament.match_points = dict(_FFE_MATCH_POINTS)
         stored_tournament.primary_score = self._primary_score_for(pairing_system_id)
-        gp = dict(self._game_points_for(pairing_system_id))
-        if self.GP_ABSENT_OVERRIDE is not None:
-            gp[Result.ZERO_POINT_BYE.value] = self.GP_ABSENT_OVERRIDE
-        stored_tournament.game_points = gp
+        stored_tournament.game_points = dict(self._game_points_for(pairing_system_id))
         if pairing_system_id is not None:
             rounds = self.rounds_for_pairing(pairing_system_id)
             if rounds is not None:
@@ -267,9 +271,8 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
             'gp_win': _fmt(gp[Result.WIN.value]),
             'gp_draw': _fmt(gp[Result.DRAW.value]),
             'gp_loss': _fmt(gp[Result.LOSS.value]),
+            'gp_zpb': _fmt(gp[Result.ZERO_POINT_BYE.value]),
         }
-        if self.GP_ABSENT_OVERRIDE is not None:
-            defaults['gp_zpb'] = _fmt(self.GP_ABSENT_OVERRIDE)
         if pairing_system_id is not None:
             rounds = self.rounds_for_pairing(pairing_system_id)
             if rounds is not None:
@@ -285,10 +288,10 @@ class CoupeJeanClaudeLoubatiereRuleSet(_FfeTeamCupRuleSet):
     # warning so the arbiter judges case by case.
     PLAYER_RATING_CAP = 1800
 
-    # §4.1.a: "Une partie perdue par forfait (sportif ou administratif)
-    # est comptée -1." Absent / forfeited boards subtract one game
-    # point from the team's total.
-    GP_ABSENT_OVERRIDE = -1.0
+    # §4.1.a scores a forfeit as -1 game point. Negative point values
+    # aren't representable in the TRF point system (bbpPairings derives
+    # match points from game points), so the penalty is deferred until
+    # it can be emitted via the TRF 299 field.
 
     @property
     @override

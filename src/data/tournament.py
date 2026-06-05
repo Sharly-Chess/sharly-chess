@@ -51,6 +51,7 @@ from utils.enum import (
     Result,
     ScoreType,
     TeamColourType,
+    TeamSortMode,
     TournamentRating,
     PlayerRatingType,
     ScreenType,
@@ -373,6 +374,93 @@ class Tournament:
         picker then renders as a selection list rather than a drag UI.
         Set manually on the tournament, or forced on by a rule set."""
         return bool(self.stored_tournament.enforce_roster_order)
+
+    @property
+    def team_sort_mode(self) -> TeamSortMode:
+        """Effective team-ordering mode. A rule set may force a value
+        (locking the choice); otherwise the stored mode applies."""
+        rule_set = self.rule_set
+        if rule_set is not None and rule_set.forced_team_sort_mode is not None:
+            try:
+                return TeamSortMode(rule_set.forced_team_sort_mode)
+            except ValueError:
+                pass
+        try:
+            return TeamSortMode(self.stored_tournament.team_sort_mode)
+        except ValueError:
+            return TeamSortMode.MANUAL
+
+    @property
+    def _has_stored_pairings(self) -> bool:
+        """Cheap, shape-agnostic "already paired?" check read straight
+        from the stored board collections — no Board objects built
+        (so it can't trip over a mid-rebuild player cache). Covers both
+        team-board envelopes (Swiss / Berger) and flat fixed-table
+        boards (Molter)."""
+        stored = self.stored_tournament
+        return bool(stored.stored_team_boards_by_round) or bool(
+            stored.stored_boards_by_round
+        )
+
+    @property
+    def team_sort_mode_locked(self) -> bool:
+        """True iff a rule set forces the team-sort mode (UI read-only),
+        or the tournament is already paired (mode can no longer change)."""
+        rule_set = self.rule_set
+        forced = rule_set is not None and rule_set.forced_team_sort_mode is not None
+        return forced or self._has_stored_pairings
+
+    def resort_teams(self, database: 'EventDatabase') -> None:
+        """Re-assign team pairing numbers per the effective sort mode.
+        No-op for MANUAL and once any round is paired. RANDOM keeps the
+        existing relative order and only drops newly-added teams (no
+        pairing number yet) into random positions; the rating modes
+        fully re-sort."""
+        mode = self.team_sort_mode
+        if mode == TeamSortMode.MANUAL or self._has_stored_pairings:
+            return
+        teams = list(self.teams)
+        if not teams:
+            return
+        if mode == TeamSortMode.TEAM_AVERAGE_RATING:
+            ordered = sorted(
+                teams,
+                key=lambda t: (-(t.average_rating or 0), t.name.lower()),
+            )
+        elif mode == TeamSortMode.LINEUP_AVERAGE_RATING:
+            ordered = sorted(
+                teams,
+                key=lambda t: (
+                    -(t.lineup_average_rating(1) or 0),
+                    t.name.lower(),
+                ),
+            )
+        else:  # RANDOM
+            ordered = self._random_team_order(teams)
+        for index, team in enumerate(ordered, start=1):
+            if team.pairing_number != index:
+                team.set_pairing_number(index, database)
+
+    @staticmethod
+    def _random_team_order(teams: list['Team']) -> list['Team']:
+        import random
+
+        placed = sorted(
+            (t for t in teams if t.pairing_number is not None),
+            key=lambda t: t.pairing_number or 0,
+        )
+        newcomers = [t for t in teams if t.pairing_number is None]
+        if not placed:
+            # Fresh shuffle (mode just switched to random).
+            order = list(teams)
+            random.shuffle(order)
+            return order
+        # Insert each newcomer at a random position among the existing
+        # order; existing teams keep their relative order.
+        order = list(placed)
+        for team in newcomers:
+            order.insert(random.randint(0, len(order)), team)
+        return order
 
     @property
     def rule_set_managed_tie_breaks(self) -> bool:

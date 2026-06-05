@@ -85,15 +85,32 @@ class Team:
 
     @property
     def is_paired(self) -> bool:
-        """True if this team appears in any team_board record (i.e. has been
-        paired in at least one round). Used to lock cross-tournament drag."""
+        """True if this team has been paired in at least one round.
+        Used to lock cross-tournament drag.
+
+        Two pairing shapes exist: team-board envelopes (Swiss / Berger)
+        and flat fixed-table boards (Molter), where each roster player
+        gets an individual board with no team envelope. Check both, or
+        a Molter-paired team would look unpaired and could be wrongly
+        reassigned — orphaning its boards."""
         tournament = self.tournament
         if tournament is None:
             return False
-        return any(
+        if any(
             tb.stored_team_board.team_a_id == self.id
             or tb.stored_team_board.team_b_id == self.id
             for tb in tournament.team_boards_by_id.values()
+        ):
+            return True
+        # Flat (Molter) pairings: any roster player carrying a board.
+        player_ids = {p.id for p in self.players}
+        if not player_ids:
+            return False
+        return any(
+            pairing.stored_pairing.board_id is not None
+            for tournament_player in tournament.tournament_players
+            if tournament_player.id in player_ids
+            for pairing in tournament_player.pairings_by_round.values()
         )
 
     @cached_property
@@ -121,6 +138,19 @@ class Team:
         """Mean of the roster's event-default ratings, rounded. ``None``
         if no player on the roster has a rating."""
         ratings = [r for r in (p.event_default_rating for p in self.players) if r]
+        if not ratings:
+            return None
+        return round(sum(ratings) / len(ratings))
+
+    def lineup_average_rating(self, round_: int) -> int | None:
+        """Mean event-default rating of the players fielded in *round_*'s
+        effective lineup (holes skipped), rounded. ``None`` when no
+        fielded player has a rating."""
+        ratings = [
+            p.event_default_rating
+            for p in self.effective_round_lineup(round_)
+            if p.event_default_rating
+        ]
         if not ratings:
             return None
         return round(sum(ratings) / len(ratings))
