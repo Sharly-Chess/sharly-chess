@@ -2,7 +2,6 @@ import weakref
 from typing import TYPE_CHECKING, Optional
 from collections import namedtuple
 
-from trf.Player import Game as TrfGame
 
 from logging import Logger
 from common.i18n import _
@@ -15,6 +14,7 @@ from utils.enum import Result, BoardColor, PlayerRatingType
 
 if TYPE_CHECKING:
     from _weakref import ReferenceType
+    from data.input_output.trf.trf_data import TrfGame
     from data.player import TournamentPlayer
 
 logger: Logger = get_logger()
@@ -201,11 +201,12 @@ class Pairing:
     def next_round_bye(self) -> bool:
         return self.result.is_next_round_bye
 
-    def to_trf(self, round_number: int) -> TrfGame:
-        from data.input_output.trf_mappers import TrfColor
+    def to_trf(self, round_number: int) -> 'TrfGame':
+        from data.input_output.trf.trf_data import TrfGame
+        from data.input_output.trf.trf_mappers import TrfColor
 
         return TrfGame(
-            startrank=(
+            opponent_id=(
                 0
                 if self.result.is_bye
                 else getattr(self.opponent, 'pairing_number', None)

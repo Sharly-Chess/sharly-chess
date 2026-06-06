@@ -219,6 +219,19 @@ class SCEPlugin(Plugin):
 
     @hookimpl
     def on_player_deleted(self, player: 'Player'):
+        for tournament in player.event.tournaments:
+            t_plugin_data = SCEUtils.get_tournament_plugin_data(tournament)
+            if not t_plugin_data.id:
+                continue
+            old_duplicates = t_plugin_data.duplicated_players_by_id
+            new_duplicates = {
+                sce_id: dup_player
+                for sce_id, dup_player in old_duplicates.items()
+                if dup_player.duplicate_player_id != player.id
+            }
+            if len(old_duplicates) != len(new_duplicates):
+                t_plugin_data.duplicated_players_by_id = new_duplicates
+                SCEUtils.update_tournament_plugin_data(tournament, t_plugin_data)
         sce_player_id = SCEUtils.get_player_plugin_data(player).id
         if not sce_player_id:
             return

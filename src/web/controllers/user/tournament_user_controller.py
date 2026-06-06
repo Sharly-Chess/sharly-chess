@@ -106,8 +106,8 @@ class CheckInUserController(BaseInputUserController):
             request,
         )
         return HTMXTemplate(
-            template_name='user/modals.html',
-            context=web_context.template_context | {},
+            template_name='user/modals/check_in_modal.html',
+            context=web_context.template_context,
             re_target='#modal-wrapper',
             trigger_event='modal_opened',
             after='settle',
@@ -190,8 +190,8 @@ class ResultUserController(BaseInputUserController):
     async def htmx_user_result_modal(self, request: HTMXRequest) -> Template:
         web_context = BoardUserWebContext(request)
         return HTMXTemplate(
-            template_name='user/modals.html',
-            context=web_context.template_context | {},
+            template_name='user/modals/results_modal.html',
+            context=web_context.template_context,
             re_target='#modal-wrapper',
             trigger_event='modal_opened',
             after='settle',

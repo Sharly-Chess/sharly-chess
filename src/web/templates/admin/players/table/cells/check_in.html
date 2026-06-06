@@ -1,7 +1,8 @@
 {% set status = tournament_player.check_in_status %}
 {% set player_id = tournament_player.id %}
 {% set is_bye_update = status not in (4, 5) %}
-{% set editable = not is_bye_update or client.can_set_zero_point_bye(tournament_player.tournament.id) %}
+{% set tournament = tournament_player.tournament %}
+{% set editable = not tournament.is_last_round and (not is_bye_update or client.can_set_zero_point_bye(tournament.id)) %}
 
 <span
     id="player-{{ player_id }}-check-in"

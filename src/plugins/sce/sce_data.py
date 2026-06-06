@@ -34,6 +34,7 @@ class SCETokens:
 class SCEDuplicatedPlayer:
     last_name: str
     first_name: str | None
+    duplicate_player_id: int | None = None
 
     @property
     def full_name(self) -> str:
@@ -44,6 +45,7 @@ class SCEDuplicatedPlayer:
         return cls(
             last_name=value['last_name'],
             first_name=value['first_name'],
+            duplicate_player_id=value.get('duplicate_player_id'),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -400,7 +402,7 @@ class SCEPlayerSyncData:
             rating_type=player.rating_type if player.rating else None,
             phone=player.phone,
             gender=player.gender,
-            comment=player.comment,
+            comment=player.comment or None,
             check_in=player.check_in,
         )
         plugin_manager.hook_for_event(
@@ -789,7 +791,12 @@ class SCEPlayerPluginData(PluginData):
     deleted_id: str | None = None
     last_sync_data: SCEPlayerSyncData | None = None
     conflict_sync_data: SCEPlayerSyncData | None = None
-    is_duplicated: bool = False
+    duplicated_registration_id: str | None = None
+    _legacy_is_duplicated: bool = False
+
+    @property
+    def is_duplicated(self) -> bool:
+        return self._legacy_is_duplicated or bool(self.duplicated_registration_id)
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:
@@ -808,7 +815,8 @@ class SCEPlayerPluginData(PluginData):
                 if stored_conflict_sync_data
                 else None
             ),
-            is_duplicated=stored_value.get('is_duplicated', False),
+            duplicated_registration_id=stored_value.get('duplicated_registration_id'),
+            _legacy_is_duplicated=stored_value.get('is_duplicated', False),
         )
 
     def to_stored_value(self) -> dict[str, Any]:
@@ -823,7 +831,8 @@ class SCEPlayerPluginData(PluginData):
                 if self.conflict_sync_data
                 else None
             ),
-            'is_duplicated': self.is_duplicated,
+            'duplicated_registration_id': self.duplicated_registration_id,
+            'is_duplicated': self._legacy_is_duplicated,
         }
 
     @classmethod

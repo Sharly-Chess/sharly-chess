@@ -1,0 +1,99 @@
+{% set wtp = board.white_tournament_player %}
+{% set btp = board.black_tournament_player %}
+<div class="modal-dialog input-screen-result-modal">
+    <div class="modal-content bg-secondary-subtle">
+        <div class="modal-header">
+        <div class="modal-title fs-4 fw-bold">{{ _('Enter the result') }}</div>
+        </div>
+        <div class="modal-body">
+            <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center">
+                <button
+                    data-testid="white-wins-button"
+                    class="result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
+                    {% if board.result and not client.can_update_results(wtp.tournament.id) %}
+                        disabled
+                    {% else %}
+                        hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=3) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    {% endif %}
+                >{{ _('WHITE WINS') }}<br/>1 - 0<br/><br/>{{ wtp.last_name }}<br/>{{ wtp.first_name }}<br/>{{ wtp.rating_str }}</button>
+                <button
+                    data-testid="draw-button"
+                    class="result-button draw col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
+                    {% if board.result and not client.can_update_results(wtp.tournament.id) %}
+                        disabled
+                    {% else %}
+                        hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=2) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    {% endif %}
+                >{{ _('DRAW') }}<br/>½ - ½<br/><br/><br/><br/><br/></button>
+                <button
+                    data-testid="black-wins-button"
+                    class="result-button black text-white bg-black col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
+                    {% if board.result and not client.can_update_results(wtp.tournament.id) %}
+                        disabled
+                    {% else %}
+                        hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=1) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    {% endif %}
+                >{{ _('BLACK WINS') }}<br/>0 - 1<br/><br/>{{ btp.last_name }}<br/>{{ btp.first_name }}<br/>{{ btp.rating_str }}</button>
+            </div>
+            {% if client.can_set_special_results(wtp.tournament.id) %}
+                <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center mt-3">
+                    <button
+                        data-testid="white-wins-by-forfeit-button"
+                        class="admin-result-button white text-black bg-white col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
+                        hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=6) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >{{ _('WHITE WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>1 - F</button>
+                    <button
+                        data-testid="double-forfeit-button"
+                        class="admin-result-button draw col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
+                        hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=5) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >{{ _('DOUBLE') }}<br/>{{ _('FORFEIT') }}<br/>F - F</button>
+                    <button
+                        data-testid="black-wins-by-forfeit-button"
+                        class="admin-result-button black text-white bg-black col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
+                        hx-put="{{ url_for('user-add-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id, result=4) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    >{{ _('BLACK WINS') }}<br/>{{ _('BY FORFEIT') }}<br/>F - 1</button>
+                </div>
+            {% endif %}
+        </div>
+        <div class="modal-footer row d-flex align-items-center justify-content-center">
+            {% if client.can_update_results(wtp.tournament.id) %}
+                <button
+                    data-testid="clear-result-button"
+                    class="admin-result-button col-3 ms-auto me-auto btn fs-4 fw-bold p-3"
+                    {% if board.no_result %}
+                        disabled
+                    {% else %}
+                        hx-trigger="click"
+                        hx-delete="{{ url_for('user-delete-result', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, round=tournament.current_round, board_id=board.id) }}"
+                        hx-target="body"
+                        hx-indicator="#please-wait"
+                    {% endif %}
+                >{{ _('CLEAR THE RESULT') }}</button>
+            {% endif %}
+            <button
+                type="button"
+                data-bs-dismiss="modal"
+                class="result-button btn-secondary col-3 ms-auto me-auto btn fs-4 p-3"
+            >
+                {{ _('Cancel') }}
+            </button>
+        </div>
+    </div>
+    <script>
+        $('.result-button,.admin-result-button').click(function(e) {
+            e.target.disabled = true;
+        });
+    </script>
+</div>

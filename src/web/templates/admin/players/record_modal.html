@@ -33,7 +33,7 @@
             </div>
             <div>
                 {% set tournament = tournament_player.tournament %}
-                {% if tournament.pairing_system.allow_bye_definition and not tournament.finished %}
+                {% if tournament.pairing_system.allow_bye_definition and not tournament.is_last_round %}
                     {% if tournament_player.has_withdrawn %}
                         <button
                             class="btn btn-sm btn-outline-primary w-100"
@@ -51,10 +51,7 @@
                         >
                             {{ _('Return to tournament') }}
                         </button>
-                    {% elif (
-                        tournament.current_round < tournament.rounds
-                        or tournament_player.pairings_by_round[tournament.current_round].needs_pairing_or_has_bye
-                    ) %}
+                    {% elif not tournament.started or tournament_player.pairings_by_round[tournament.current_round].needs_pairing_or_has_bye %}
                         <button
                             class="btn btn-sm btn-outline-danger w-100"
                             {% if not client.can_set_zero_point_bye(tournament_player.tournament.id) %}
@@ -147,10 +144,7 @@
                         {% set zero_point_bye = false %}
                         {% set half_point_bye = false %}
                         {% set full_point_bye = false %}
-                        {% if pairing.zero_point_bye %}
-                            {% set text=_('Round skipped') %}
-                            {% set zero_point_bye = true %}
-                        {% elif pairing.needs_pairing %}
+                        {% if pairing.needs_pairing %}
                             {% set text = '' %}
                         {% elif pairing.paired_no_result %}
                             {% if tournament_player.tournament.current_round == round %}
@@ -170,6 +164,9 @@
                             {% set text=_('Draw') %}
                         {% elif pairing.win %}
                             {% set text=_('Win') %}
+                        {% elif pairing.zero_point_bye %}
+                            {% set text=_('Zero-Point Bye') %}
+                            {% set zero_point_bye = true %}
                         {% elif pairing.half_point_bye %}
                             {% set text=_('Half-Point Bye') %}
                             {% set half_point_bye = true %}

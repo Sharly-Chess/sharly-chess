@@ -75,9 +75,16 @@
                 %}
                     disabled
                 {% else %}
-                    {% if admin_round == 1 or admin_tournament.multiple_fide_periods %}
+                    {% if not skip_ratings_warning and (admin_round == 1 or admin_tournament.multiple_fide_periods) %}
                         hx-get="{{ url_for(
                             'pairings-ratings-warning-modal',
+                            event_uniq_id=admin_event.uniq_id,
+                            tournament_id=admin_tournament.id,
+                            round=admin_round
+                        ) }}"
+                    {% elif admin_round == 1 %}
+                        hx-get="{{ url_for(
+                            'pairings-settings-modal',
                             event_uniq_id=admin_event.uniq_id,
                             tournament_id=admin_tournament.id,
                             round=admin_round

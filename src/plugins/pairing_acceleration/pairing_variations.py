@@ -17,6 +17,7 @@ from plugins.pairing_acceleration.pairing_settings import (
     GroupA3GroupsSetting,
     GroupB3GroupsSetting,
     GroupC3GroupsSetting,
+    AccelerationRule,
 )
 from utils import Utils
 from utils.enum import Result
@@ -26,6 +27,15 @@ class AccelerationSwissVariation(SwissVariation, ABC):
     @classmethod
     def static_id(cls) -> str:
         return f'{PLUGIN_NAME}-{super().static_id()}'
+
+    @abstractmethod
+    def get_tournament_accelerated_rules(
+        self, rounds: int, draw_points: float, win_points: float
+    ) -> list[AccelerationRule]: ...
+
+    @property
+    def include_accelerated_rules_in_trf(self) -> bool:
+        return True
 
     @property
     def vpoints_use_pairing_numbers(self) -> bool:
@@ -97,11 +107,6 @@ class AccelerationSwissVariation(SwissVariation, ABC):
     ) -> AccelerationGroup:
         """Get the acceleration group of a player in a tournament."""
 
-    @classmethod
-    @abstractmethod
-    def get_group_max_numbers(cls, tournament: Tournament) -> list[int]:
-        """Returns the list of the plast pairing numbers of each acceleration group."""
-
 
 class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
     @property
@@ -156,11 +161,20 @@ class Acceleration2GroupsSwissVariation(AccelerationSwissVariation, ABC):
         return True
 
     @classmethod
-    def get_group_max_numbers(cls, tournament: Tournament) -> list[int]:
-        _, group_a_max = tournament.pairing_settings[GroupA2GroupsSetting.static_id()]
+    def get_acceleration_group_max_numbers(cls, tournament: Tournament) -> list[int]:
+        _, group_a_max = tournament.pairing_settings[GroupA2GroupsSetting().id]
         return [
             group_a_max,
         ]
+
+    @classmethod
+    def get_acceleration_number_range_by_group(
+        cls, tournament: Tournament
+    ) -> dict[AccelerationGroup, tuple[int, int]]:
+        return {
+            AccelerationGroup.A: tournament.pairing_settings[GroupA2GroupsSetting().id],
+            AccelerationGroup.B: tournament.pairing_settings[GroupB2GroupsSetting().id],
+        }
 
 
 class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
@@ -240,13 +254,23 @@ class Acceleration3GroupsSwissVariation(AccelerationSwissVariation, ABC):
         return True
 
     @classmethod
-    def get_group_max_numbers(cls, tournament: Tournament) -> list[int]:
+    def get_acceleration_group_max_numbers(cls, tournament: Tournament) -> list[int]:
         _, group_a_max = tournament.pairing_settings[GroupA3GroupsSetting.static_id()]
         _, group_b_max = tournament.pairing_settings[GroupB3GroupsSetting.static_id()]
         return [
             group_a_max,
             group_b_max,
         ]
+
+    @classmethod
+    def get_acceleration_number_range_by_group(
+        cls, tournament: Tournament
+    ) -> dict[AccelerationGroup, tuple[int, int]]:
+        return {
+            AccelerationGroup.A: tournament.pairing_settings[GroupA3GroupsSetting().id],
+            AccelerationGroup.B: tournament.pairing_settings[GroupB3GroupsSetting().id],
+            AccelerationGroup.C: tournament.pairing_settings[GroupC3GroupsSetting().id],
+        }
 
     @staticmethod
     def _format_vpoints_inequality(
@@ -308,12 +332,21 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
         return _('Baku acceleration system')
 
     @property
+    def trf_encoded_type(self) -> str:
+        return 'FIDE_DUTCH_2026_BAKU'
+
+    @property
+    def include_accelerated_rules_in_trf(self) -> bool:
+        # Acceleration already defined by the encoded type
+        return False
+
+    @property
     def are_groups_editable(self) -> bool:
         return False
 
-    @staticmethod
-    def print_real_points(current_round, rounds):
-        return current_round <= ceil(rounds / 2)
+    @classmethod
+    def print_real_points(cls, current_round, rounds):
+        return current_round <= cls.accelerated_rounds(rounds)
 
     @staticmethod
     def accelerated_rounds(rounds: int) -> int:
@@ -332,14 +365,32 @@ class BakuSwissVariation(Acceleration2GroupsSwissVariation):
         rating_group = cls.get_player_group(tournament, tournament_player)
         if at_round > cls.full_point_rounds(tournament.rounds):
             if rating_group == AccelerationGroup.A:
-                return Result.DRAW.points(tournament.point_values)
+                return tournament.draw_points
             else:
                 return 0
         else:
             if rating_group == AccelerationGroup.A:
-                return Result.WIN.points(tournament.point_values)
+                return tournament.win_points
             else:
                 return 0
+
+    def get_tournament_accelerated_rules(
+        self, rounds: int, draw_points: float, win_points: float
+    ) -> list[AccelerationRule]:
+        return [
+            AccelerationRule(
+                vpoints=win_points,
+                first_round=1,
+                last_round=self.full_point_rounds(rounds),
+                group=AccelerationGroup.A,
+            ),
+            AccelerationRule(
+                vpoints=draw_points,
+                first_round=self.full_point_rounds(rounds) + 1,
+                last_round=self.accelerated_rounds(rounds),
+                group=AccelerationGroup.A,
+            ),
+        ]
 
     @classmethod
     def _get_group_a_tooltip_lines(
@@ -371,6 +422,18 @@ class HaleySwissVariation(Acceleration2GroupsSwissVariation):
     @staticmethod
     def static_name() -> str:
         return _('Haley system')
+
+    def get_tournament_accelerated_rules(
+        self, rounds: int, draw_points: float, win_points: float
+    ) -> list[AccelerationRule]:
+        return [
+            AccelerationRule(
+                vpoints=win_points,
+                first_round=1,
+                last_round=2,
+                group=AccelerationGroup.A,
+            ),
+        ]
 
     @classmethod
     def _get_group_a_tooltip_lines(
@@ -414,6 +477,24 @@ class HaleySoftSwissVariation(Acceleration2GroupsSwissVariation):
     @staticmethod
     def static_name() -> str:
         return _('Soft Haley system')
+
+    def get_tournament_accelerated_rules(
+        self, rounds: int, draw_points: float, win_points: float
+    ) -> list[AccelerationRule]:
+        return [
+            AccelerationRule(
+                vpoints=win_points,
+                first_round=1,
+                last_round=2,
+                group=AccelerationGroup.A,
+            ),
+            AccelerationRule(
+                vpoints=draw_points,
+                first_round=2,
+                last_round=2,
+                group=AccelerationGroup.B,
+            ),
+        ]
 
     @classmethod
     def _get_group_a_tooltip_lines(
@@ -466,6 +547,47 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
     @staticmethod
     def static_name() -> str:
         return _('Progressive accelerated system')
+
+    def get_tournament_accelerated_rules(
+        self, rounds: int, draw_points: float, win_points: float
+    ) -> list[AccelerationRule]:
+        rules: list[AccelerationRule] = []
+        # Starting points: Group A - 2, Group B - 1, Group C - 0
+        starting_vpoints_by_group = {
+            AccelerationGroup.A: 2 * win_points,
+            AccelerationGroup.B: win_points,
+            AccelerationGroup.C: 0,
+        }
+        # Players cannot have more than 2 virtual points
+        max_vpoints = 2 * win_points
+        # If a player gets at least half the possible score,
+        # their capital is set at 2 points.
+        max_threshold = rounds * win_points / 2
+        for group, starting_vpoints in starting_vpoints_by_group.items():
+            threshold = 0.0
+            vpoints = starting_vpoints
+            while vpoints < max_vpoints and threshold < max_threshold:
+                rule = AccelerationRule(
+                    vpoints=vpoints,
+                    first_round=1,
+                    last_round=rounds - 2,
+                    group=group,
+                    points_threshold=threshold,
+                )
+                rules.append(rule)
+                # Players get a virtual draw points for 3 real draw points
+                threshold += 3 * draw_points
+                vpoints += draw_points
+
+            rule = AccelerationRule(
+                vpoints=max_vpoints,
+                first_round=1,
+                last_round=rounds - 2,
+                group=group,
+                points_threshold=min(max_threshold, threshold),
+            )
+            rules.append(rule)
+        return rules
 
     @classmethod
     def _get_group_a_tooltip_lines(
@@ -525,8 +647,8 @@ class ProgressiveSwissVariation(Acceleration3GroupsSwissVariation):
             group=cls.get_player_group(tournament, tournament_player),
             tournament_rounds=tournament.rounds,
             points=tournament_player.points_before(at_round),
-            draw_points=Result.DRAW.points(tournament.point_values),
-            win_points=Result.WIN.points(tournament.point_values),
+            draw_points=tournament.draw_points,
+            win_points=tournament.win_points,
         )
 
     @staticmethod

@@ -13,6 +13,7 @@ from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import TournamentPlayer
 from data.tie_breaks import TieBreak, TieBreakOption
 from data.tie_breaks.categories import TieBreakCategory
+from data.tie_breaks.options import SilentTieBreakOption
 from data.tie_breaks.tie_breaks import (
     TournamentPerformanceRatingTieBreak,
     KashdanTieBreak,
@@ -54,6 +55,19 @@ class BasePapiTieBreak(TieBreak, ABC):
     @classmethod
     def static_name(cls) -> str:
         return f'{cls.base_tie_break_type().static_name()} (PAPI)'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
+
+    @property
+    def trf_sub_acronym(self) -> str:
+        """Acronyme used to represent the papi tie-break in the TRF."""
+        return self.sub_id()
+
+    @property
+    def trf_acronym(self) -> str:
+        return 'OTHER_PAPI_' + self.trf_sub_acronym
 
     @property
     def full_name(self) -> str:
@@ -429,7 +443,7 @@ class PapiBuchholzTypeManager(EntityManager[PapiBuchholzType]):
         ]
 
 
-class PapiBuchholzTypeOption(TieBreakOption):
+class PapiBuchholzTypeOption(SilentTieBreakOption):
     @staticmethod
     def static_id() -> str:
         return f'{PLUGIN_NAME}-PAPI_BUCHHOLZ_TYPE'
@@ -440,18 +454,6 @@ class PapiBuchholzTypeOption(TieBreakOption):
 
     @property
     def template_file_stem(self) -> str:
-        return ''
-
-    @property
-    def variation_acronym(self) -> str:
-        return ''
-
-    @property
-    def variation_name(self) -> str:
-        return ''
-
-    @property
-    def variation_help_text(self) -> str:
         return ''
 
     @property
@@ -502,6 +504,10 @@ class PapiBuchholzTieBreak(BasePapiTieBreak):
     @property
     def base_acronym(self) -> str:
         return self.type.acronym
+
+    @property
+    def trf_sub_acronym(self) -> str:
+        return f'{self.sub_id()}_{self.type.id}'
 
     @property
     def base_full_name(self) -> str:

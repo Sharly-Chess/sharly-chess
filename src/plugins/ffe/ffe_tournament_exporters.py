@@ -17,10 +17,6 @@ class PapiTournamentExporter(TournamentExporter):
     def static_name() -> str:
         return _('PAPI')
 
-    @property
-    def tooltip(self) -> str:
-        return _('Export the tournament to the PAPI format.')
-
     def is_unavailable_message(self, tournament: Tournament) -> str | None:
         return PapiConverter.papi_export_unavailable_message(tournament)
 

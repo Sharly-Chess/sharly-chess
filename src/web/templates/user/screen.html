@@ -106,27 +106,24 @@
         class="content user-content user-screen-content"
         style="--font-size: {{ screen.font_size or 100 }};"
     >
-        {% if screen.type in ('boards', 'input', 'check-in') %}
+        {% if screen.type in ('boards', 'input', 'check-in', 'players', 'ranking') %}
             <div class="screen {{ screen.type.value }}-screen">
                 {% for screen_set in screen.sorted_screen_sets %}
-                    {% include 'screen/boards/set.html' %}
-                {% endfor %}
-            </div>
-        {% elif screen.type == 'players' %}
-            <div class="screen players-screen">
-                {% for screen_set in screen.sorted_screen_sets %}
-                    {% include 'screen/players/set.html' %}
+                    {% set tournament = screen_set.tournament %}
+                    {% if screen.type == 'players' %}
+                        {% include 'screen/sets/players_set.html' %}
+                    {% elif screen.type == 'ranking' %}
+                        {% include 'screen/sets/ranking_set.html' %}
+                    {% elif screen.type == 'check-in' or not screen_set.tournament.started %}
+                        {% include 'screen/sets/check_in_set.html' %}
+                    {% else %}
+                        {% include 'screen/sets/boards_set.html' %}
+                    {% endif %}
                 {% endfor %}
             </div>
         {% elif screen.type == 'results' %}
             <div class="screen results-screen">
                 {% include 'screen/results.html' %}
-            </div>
-        {% elif screen.type == 'ranking' %}
-            <div class="screen ranking-screen">
-                {% for screen_set in screen.sorted_screen_sets %}
-                    {% include 'screen/ranking/set.html' %}
-                {% endfor %}
             </div>
         {% elif screen.type == 'image' %}
             <div

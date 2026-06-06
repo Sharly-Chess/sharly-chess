@@ -27,8 +27,12 @@ from data.input_output import (
     TournamentExporterManager,
     TournamentImporterManager,
 )
-from data.input_output.tournament_importer_options import TournamentImporterOption
+from data.input_output.tournament_importer_options import (
+    TournamentImporterOption,
+    FileOption,
+)
 from data.input_output.tournament_importers import TournamentImporter
+from data.input_output.trf.trf_importer import TrfTournamentImporter
 from data.pairings import PairingSystem, PairingSystemManager
 from data.pairings.systems import SwissPairingSystem
 from data.player import TournamentPlayer
@@ -1179,6 +1183,62 @@ class TournamentAdminController(BaseEventAdminController):
             web_context.template_context | template_context
         )
 
+    @post(
+        path=[
+            '/tournament-import/check-trf/{event_uniq_id:str}',
+            '/tournament-import/check-trf/{event_uniq_id:str}/{tournament_id:int}',
+        ],
+        name='tournament-import-check-trf',
+        guards=[ActionGuard(AuthAction.ADD_TOURNAMENTS)],
+    )
+    async def htmx_tournament_import_check_trf(
+        self,
+        request: HTMXRequest,
+        data: Annotated[
+            dict[str, Any], Body(media_type=RequestEncodingType.MULTI_PART)
+        ],
+        tournament_id: int | None,
+    ) -> Template:
+        web_context = TournamentAdminWebContext(request, tournament_id)
+        event = web_context.get_admin_event()
+        tournament = web_context.admin_tournament
+        normalized_data = await WebContext.normalize_multipart_data(data)
+        file_path = WebContext.form_data_to_path(normalized_data, 'file')
+        importer = TrfTournamentImporter([FileOption(file_path)])
+        message: str | None = None
+        message_type = 'error'
+        try:
+            importer.validate_options(event)
+            stored_tournament, stored_players = importer.load_stored_tournament(
+                event, getattr(tournament, 'stored_tournament', None)
+            )
+            importer.check_players_unicity(stored_players)
+            importer.check_pairing_inconsistencies(stored_tournament)
+            features = importer.get_not_importable_features(event)
+            if features:
+                message_type = 'warning'
+                message = _("The following features won't be imported:")
+                feature_list = ''.join(f'<li>{feature}</li>' for feature in features)
+                message += f'<ul class="mb-0">{feature_list}</ul>'
+
+        except (OptionError, ImporterError) as error:
+            message = str(error)
+        except Exception as error:
+            logger.exception(f'Tournament importer [{importer.id}] error: {error}')
+            message = _('An error occurred. Consult the logs for more details.')
+        finally:
+            importer.on_import_finished()
+        return HTMXTemplate(
+            template_name='/common/alert.html' if message else '/common/empty.html',
+            re_swap='innerHTML',
+            re_target='#alert-message',
+            context={
+                'message': message,
+                'type': message_type,
+                'hide_remove_button': True,
+            },
+        )
+
     # -------------------------------------------------------------------------
     # Tie breaks
     # -------------------------------------------------------------------------
@@ -1462,8 +1522,9 @@ class TournamentAdminController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id)
         event = web_context.get_admin_event()
         tournament = web_context.get_admin_tournament()
-        add_other = 'add_other' in data
-        SessionTieBreakAddOtherActive(request).set(add_other)
+        add_other = WebContext.resolve_add_other(
+            data, SessionTieBreakAddOtherActive(request)
+        )
         if errors := self._validate_tie_break_form_data(
             web_context, FormAction.CREATE, data
         ):

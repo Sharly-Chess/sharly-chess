@@ -2,21 +2,20 @@ from abc import ABC, abstractmethod
 from typing import IO, override
 
 from common.i18n.utils import unicode_normalize
-import trf
 
 from common.i18n import _
+from data.input_output.trf.trf_serializer import TrfSerializer
 from data.tournament import Tournament
 from utils.entity import IdentifiableEntity
-from utils.enum import TrfType
 
 
 class TournamentExporter(IdentifiableEntity, ABC):
     """Abstract class representing an export format for a tournament."""
 
     @property
-    @abstractmethod
-    def tooltip(self) -> str:
+    def tooltip(self) -> str | None:
         """Tooltip to display on the export button."""
+        return None
 
     @property
     def data_loss_modal_redirect(self) -> bool:
@@ -56,18 +55,14 @@ class TournamentExporter(IdentifiableEntity, ABC):
         return False
 
 
-class Trf16TournamentExporter(TournamentExporter):
+class Trf26TournamentExporter(TournamentExporter):
     @staticmethod
     def static_id() -> str:
-        return 'trf-16'
+        return 'trf-26'
 
     @staticmethod
     def static_name() -> str:
-        return _('TRF16')
-
-    @property
-    def tooltip(self) -> str:
-        return _('Export the tournament to the TRF16 format.')
+        return _('TRF26')
 
     @property
     def file_extension(self) -> str:
@@ -78,35 +73,7 @@ class Trf16TournamentExporter(TournamentExporter):
         return 'ascii'
 
     def dump_to_file(self, file: IO, tournament: Tournament):
-        trf_tournament = trf.dumps(tournament.to_trf(TrfType.TRF_16))
-        file.write(unicode_normalize(trf_tournament))
-
-
-class TrfBxTournamentExporter(TournamentExporter):
-    @staticmethod
-    def static_id() -> str:
-        return 'trf-bx'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('TRF(bx)')
-
-    @property
-    def tooltip(self) -> str:
-        return _(
-            'Export the tournament to the TRF(bx) format (usage: pairings generation).'
-        )
-
-    @property
-    def file_extension(self) -> str:
-        return 'trfx'
-
-    @property
-    def file_encoding(self) -> str:
-        return 'ascii'
-
-    def dump_to_file(self, file: IO, tournament: Tournament):
-        trf_tournament = trf.dumps(tournament.to_trf(TrfType.TRF_BX))
+        trf_tournament = TrfSerializer.dumps(tournament.to_trf())
         file.write(unicode_normalize(trf_tournament))
 
 

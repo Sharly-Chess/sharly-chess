@@ -1,4 +1,7 @@
 from typing import override
+
+from cryptography.utils import cached_property
+
 from data.tie_breaks import cutters, options, tie_breaks
 from data.tie_breaks.cutters import TieBreakCutter
 from data.tie_breaks.options import TieBreakOption
@@ -39,6 +42,44 @@ class TieBreakManager(EventBoundEntityManager[TieBreak]):
             tie_break_types=tie_break_types
         )
         return tie_break_types
+
+    @cached_property
+    def _manual_trf_acronym_mapping(self) -> dict[str, TieBreak]:
+        """Manual mapping of tie-break per acronym.
+        Required when the base acronym depends on options."""
+        tie_break_by_acronym: dict[str, TieBreak] = {}
+        plugin_manager.hook_for_event(
+            self.event, 'add_tie_breaks_to_trf_acronym_mapping'
+        )(tie_break_by_acronym=tie_break_by_acronym)
+        return {
+            acronym.upper(): tie_break
+            for acronym, tie_break in tie_break_by_acronym.items()
+        }
+
+    def tie_break_from_trf_acronym(self, acronym: str) -> TieBreak | None:
+        acronym = acronym.upper()
+        tie_break = self._manual_trf_acronym_mapping.get(acronym)
+        if tie_break:
+            return tie_break
+        acronym = acronym.split('OTHER_', maxsplit=1)[-1]
+        base_acronym = acronym.split('/')[0]
+        tie_break = next(
+            (
+                tie_break
+                for tie_break in self.objects()
+                if tie_break.base_acronym.upper() == base_acronym
+            ),
+            None,
+        )
+        if not tie_break:
+            return None
+        for variation_acronym in acronym.split('/')[1:]:
+            if not any(
+                option.set_value_from_variation_acronym(variation_acronym)
+                for option in tie_break.options
+            ):
+                return None
+        return tie_break
 
 
 class TieBreakOptionManager(EventBoundEntityManager[TieBreakOption]):

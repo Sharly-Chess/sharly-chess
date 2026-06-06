@@ -1,45 +1,25 @@
-import re
 from abc import ABC, abstractmethod
-from collections import defaultdict
 from collections.abc import Callable
 from copy import copy
-from datetime import datetime, date
+from datetime import date
 
-import trf
-from trf import Game as TrfGame
-from trf import Player as TrfPlayer
-from trf import Tournament as TrfTournament
-from trf.TrfException import TrfException
-
-from common.exception import ImporterError, OptionError, SharlyChessException
+from common.exception import ImporterError, OptionError
 from common.i18n import _
-from common.sharly_chess_config import SharlyChessConfig
 from data.event import Event
 from data.input_output.tournament_importer_options import (
     TournamentImporterOption,
     FileOption,
-    TournamentRatingOption,
-)
-from data.input_output.trf_mappers import (
-    TrfPlayerGender,
-    TrfPlayerTitle,
-    TrfColor,
-    TrfResult,
 )
 from data.loader import EventLoader
-from data.pairings.variations import StandardSwissVariation
-from data.player import PlayerRating
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.event.event_store import (
     StoredTournament,
     StoredPlayer,
-    StoredTournamentPlayer,
     StoredBoard,
-    StoredPairing,
 )
 from utils.date_time import format_date
-from utils.enum import TournamentRating, Result, BoardColor
+from utils.enum import Result
 from utils.option import OptionHandler
 
 
@@ -395,6 +375,11 @@ class FileTournamentImporter(TournamentImporter, ABC):
         return [FileOption]
 
     @property
+    def on_file_selected_post_route_name(self) -> str | None:
+        """POST route called when a file is selected."""
+        return None
+
+    @property
     @abstractmethod
     def accepted_file_suffixes(self) -> list[str]:
         """List of suffixes accepted by the file input."""
@@ -419,289 +404,3 @@ class FileTournamentImporter(TournamentImporter, ABC):
                 file_path.unlink(missing_ok=True)
             except OSError:
                 pass
-
-
-TRF_DATE_FORMAT = '%Y/%m/%d'
-
-
-class TrfTournamentImporter(FileTournamentImporter):
-    @staticmethod
-    def static_id() -> str:
-        return 'TRF'
-
-    @staticmethod
-    def static_name() -> str:
-        return _('TRF file')
-
-    @staticmethod
-    def available_options() -> list[type[TournamentImporterOption]]:
-        return [
-            FileOption,
-            TournamentRatingOption,
-        ]
-
-    @property
-    def modal_title(self) -> str:
-        return _('Import TRF file')
-
-    @property
-    def accepted_file_suffixes(self) -> list[str]:
-        return ['.trf', '.trfx']
-
-    def load_stored_tournament(
-        self, event: Event, stored_tournament: StoredTournament | None = None
-    ) -> tuple[StoredTournament, list[StoredPlayer]]:
-        (file_path, tournament_rating) = self.get_option_values()
-        try:
-            with open(file_path, 'r', encoding='utf-8') as file:
-                trf_tournament = trf.load(file)
-        except TrfException as exception:
-            raise SharlyChessException(str(exception))
-        stored_tournament = self._read_trf_tournament(
-            event, trf_tournament, stored_tournament
-        )
-        stored_tournament.rating = tournament_rating
-        next_board_id = 1
-        board_id_by_player_id_by_round: dict[int, dict[int, int]] = defaultdict(dict)
-        stored_boards_by_round: dict[int, list[StoredBoard]] = defaultdict(list)
-        stored_players: list[StoredPlayer] = []
-        for trf_player in trf_tournament.players:
-            player_id = trf_player.startrank
-            try:
-                self._validate_trf_player(trf_player)
-            except ImporterError as exception:
-                raise ImporterError(
-                    _('Player [{player_id}]: {error}').format(
-                        player_id=player_id,
-                        error=exception,
-                    )
-                )
-            stored_player = self._read_trf_player(
-                trf_player, TournamentRating(tournament_rating)
-            )
-            stored_tournament_player = StoredTournamentPlayer(
-                player_id=player_id,
-                pairing_number=trf_player.startrank,
-            )
-            for trf_game in trf_player.games:
-                if trf_game.round > stored_tournament.rounds:
-                    stored_tournament.rounds = trf_game.round
-                round_nb = trf_game.round
-                try:
-                    self._validate_trf_game(trf_game)
-                except ImporterError as exception:
-                    raise ImporterError(
-                        _('Player [{player_id}] - round {round}: ').format(
-                            player_id=player_id,
-                            round=round_nb,
-                        )
-                        + str(exception)
-                    )
-                stored_pairing, stored_board = self._read_trf_game(trf_game, player_id)
-                if stored_board:
-                    if player_id in board_id_by_player_id_by_round[round_nb]:
-                        board_id = board_id_by_player_id_by_round[round_nb][player_id]
-                    else:
-                        board_id = next_board_id
-                        next_board_id += 1
-                        stored_board.id = board_id
-                        stored_boards_by_round[round_nb].append(stored_board)
-                        if trf_game.startrank:
-                            board_id_by_player_id_by_round[round_nb][
-                                trf_game.startrank
-                            ] = board_id
-                    stored_pairing.board_id = board_id
-                stored_tournament_player.stored_pairings.append(stored_pairing)
-            stored_players.append(stored_player)
-            stored_tournament.stored_tournament_players.append(stored_tournament_player)
-        stored_tournament.stored_boards_by_round = stored_boards_by_round
-        if stored_boards_by_round:
-            stored_tournament.rounds = max(tuple(stored_boards_by_round))
-        return stored_tournament, stored_players
-
-    @staticmethod
-    def _validate_trf_player(trf_player: TrfPlayer):
-        try:
-            TrfPlayerGender.get_core_object(trf_player.sex)
-        except KeyError:
-            raise ImporterError(
-                _('Unknown gender [{gender}].').format(gender=trf_player.sex)
-            )
-        try:
-            TrfPlayerTitle.get_core_object(trf_player.title)
-        except KeyError:
-            raise ImporterError(
-                _('Unknown title [{title}].').format(title=trf_player.title)
-            )
-        if (
-            trf_player.fed
-            and trf_player.fed.upper() not in SharlyChessConfig().federations
-        ):
-            raise ImporterError(
-                _('Unknown federation [{federation}].').format(
-                    federation=trf_player.fed.upper()
-                )
-            )
-        if trf_player.birthdate:
-            try:
-                datetime.strptime(trf_player.birthdate, '%Y/%m/%d')
-            except ValueError:
-                if not re.match(r'^\d{4}/00/00$', trf_player.birthdate):
-                    raise ImporterError(
-                        _('Invalid date format [{date}] (expected: {format}).').format(
-                            date=trf_player.birthdate, format=_('YYYY/MM/DD')
-                        )
-                    )
-
-    @staticmethod
-    def _validate_trf_game(trf_game: TrfGame):
-        try:
-            color = TrfColor.get_core_object(trf_game.color)
-        except KeyError:
-            raise ImporterError(
-                _('Unknown color [{color}].').format(color=trf_game.color)
-            )
-        try:
-            result = TrfResult.get_core_object(
-                trf_game.result, has_opponent=bool(trf_game.startrank)
-            )
-        except KeyError:
-            raise ImporterError(
-                _('Unknown result [{result}].').format(result=trf_game.result)
-            )
-
-        if trf_game.startrank and result.is_bye:
-            raise ImporterError(
-                _("Result [{result}] can't be used with an opponent.").format(
-                    result=trf_game.result
-                )
-            )
-        if not trf_game.startrank and not (result.is_bye or result == Result.NO_RESULT):
-            raise ImporterError(
-                _("Result [{result}] can't be used without an opponent.").format(
-                    result=trf_game.result
-                )
-            )
-        if trf_game.startrank and not color:
-            raise ImporterError(
-                _("Color [{color}] can't be used with an opponent.").format(
-                    color=trf_game.color
-                )
-            )
-        if not trf_game.startrank and color:
-            raise ImporterError(
-                _("Color [{color}] can't be used without an opponent.").format(
-                    color=trf_game.color
-                )
-            )
-
-    @staticmethod
-    def _read_trf_tournament(
-        event: Event,
-        trf_tournament: TrfTournament,
-        stored_tournament: StoredTournament | None = None,
-    ) -> StoredTournament:
-        if not stored_tournament:
-            stored_tournament = StoredTournament(
-                id=None,
-                name=trf_tournament.name,
-                start_date=event.start_date,
-                stop_date=event.stop_date,
-            )
-        if trf_tournament.startdate:
-            try:
-                stored_tournament.start_date = datetime.strptime(
-                    trf_tournament.startdate, TRF_DATE_FORMAT
-                ).date()
-            except ValueError:
-                raise ImporterError(
-                    _('Invalid date format [{date}] (expected: {format}).').format(
-                        date=trf_tournament.startdate, format=_('YYYY/MM/DD')
-                    )
-                )
-        if trf_tournament.enddate:
-            try:
-                stored_tournament.stop_date = datetime.strptime(
-                    trf_tournament.enddate, TRF_DATE_FORMAT
-                ).date()
-            except ValueError:
-                raise ImporterError(
-                    _('Invalid date format [{date}] (expected: {format}).').format(
-                        date=trf_tournament.enddate, format=_('YYYY/MM/DD')
-                    )
-                )
-        stored_tournament.pairing = StandardSwissVariation.static_id()
-        stored_tournament.location = trf_tournament.city
-        return stored_tournament
-
-    @staticmethod
-    def _read_trf_player(
-        trf_player: TrfPlayer, tournament_rating: TournamentRating
-    ) -> StoredPlayer:
-        ratings = {tr.value: PlayerRating().stored_value for tr in TournamentRating}
-        ratings[tournament_rating.value] = PlayerRating(
-            fide=trf_player.rating or None
-        ).stored_value
-        date_of_birth: date | None = None
-        year_of_birth: int | None = None
-        if trf_player.birthdate:
-            try:
-                date_of_birth = datetime.strptime(
-                    trf_player.birthdate, '%Y/%m/%d'
-                ).date()
-            except ValueError:
-                if re.match(r'^\d{4}/00/00$', trf_player.birthdate):
-                    year_of_birth = int(trf_player.birthdate.split('/')[0])
-
-        return StoredPlayer(
-            id=trf_player.startrank,
-            last_name=trf_player.name.split(',')[0].strip().upper(),
-            ratings=ratings,
-            first_name=(
-                trf_player.name.split(',')[1].strip()
-                if ',' in trf_player.name
-                else None
-            ),
-            gender=TrfPlayerGender.get_core_object(trf_player.sex).value,
-            title=TrfPlayerTitle.get_core_object(trf_player.title).value,
-            fide_id=trf_player.id,
-            date_of_birth=date_of_birth,
-            year_of_birth=year_of_birth,
-            federation=trf_player.fed.upper() or 'FID',
-        )
-
-    @staticmethod
-    def _read_trf_game(
-        trf_game: TrfGame, player_id: int
-    ) -> tuple[StoredPairing, StoredBoard | None]:
-        stored_board: StoredBoard | None = None
-        result = TrfResult.get_core_object(
-            trf_game.result, has_opponent=bool(trf_game.startrank)
-        )
-        color = TrfColor.get_core_object(trf_game.color)
-        stored_pairing = StoredPairing(
-            tournament_id=0,
-            player_id=player_id,
-            round_=trf_game.round,
-            result=result.value,
-            board_id=None,
-        )
-        if trf_game.startrank:
-            stored_board = StoredBoard(
-                id=None,
-                white_player_id=(
-                    player_id if color == BoardColor.WHITE else trf_game.startrank
-                ),
-                black_player_id=(
-                    trf_game.startrank if color == BoardColor.WHITE else player_id
-                ),
-                index=0,
-            )
-        elif result.is_board_bye:
-            stored_board = StoredBoard(
-                id=None,
-                white_player_id=player_id,
-                black_player_id=None,
-                index=0,
-            )
-        return stored_pairing, stored_board

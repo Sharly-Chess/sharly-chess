@@ -243,7 +243,7 @@ class PlayerFFELicence(StrEnum):
     @staticmethod
     def validate(string: str) -> bool:
         """Returns True if the string is a correct licence number."""
-        return bool(re.match(r'^[A-Z]\d{5}$', string))
+        return bool(re.match(r'^[A-Z][A-Z\d]\d{4}$', string))
 
     @property
     def sort_index(self) -> int:
