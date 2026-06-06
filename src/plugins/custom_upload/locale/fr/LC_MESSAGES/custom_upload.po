@@ -91,6 +91,12 @@ msgstr "Il ne doit pas y avoir plus d'un caractère '?' non échappé"
 msgid "Tournament"
 msgstr "Tournoi"
 
+msgid "Tournament successfully uploaded."
+msgstr "Le tournoi a été mis en ligne avec succès."
+
+msgid "Tournament upload failed, consult the Custom Upload modal for more details."
+msgstr "La mise en ligne du tournoi a échoué, consultez la modale Site personnel pour plus d'informations."
+
 msgid "Up to date"
 msgstr "À jour"
 

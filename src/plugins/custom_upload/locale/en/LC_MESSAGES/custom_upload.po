@@ -91,6 +91,12 @@ msgstr ""
 msgid "Tournament"
 msgstr ""
 
+msgid "Tournament successfully uploaded."
+msgstr ""
+
+msgid "Tournament upload failed, consult the Custom Upload modal for more details."
+msgstr ""
+
 msgid "Up to date"
 msgstr ""
 

@@ -24,6 +24,7 @@ from web.controllers.admin.base_event_admin_controller import (
 )
 from web.controllers.admin.tournament_admin_controller import TournamentAdminWebContext
 from web.guards import EventGuard, ActionGuard, TournamentActionGuard
+from web.messages import Message
 
 
 class CustomUploadAdminEventController(BaseEventAdminController):
@@ -84,6 +85,19 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         return HTMXTemplate(
             template_name='/custom_upload_results.html',
             context=cls._upload_results_context(web_context),
+        )
+
+    @staticmethod
+    def _render_messages(
+        request: HTMXRequest,
+    ) -> Template:
+        return HTMXTemplate(
+            template_name='common/messages.html',
+            re_swap='afterbegin',
+            re_target='#messages',
+            context={
+                'messages': Message.messages(request),
+            },
         )
 
     @get(
@@ -251,8 +265,17 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
 
         CustomUploadUploader.schedule_upload(tournament, True)
+        if CustomUploadUtils.get_tournament_plugin_data(tournament).upload_failure_id:
+            Message.error(
+                request,
+                _(
+                    'Tournament upload failed, consult the Custom Upload modal for more details.'
+                ),
+            )
+        else:
+            Message.success(request, _('Tournament successfully uploaded.'))
 
-        return self._render_upload_results(web_context)
+        return self._render_messages(request)
 
     @post(
         path='/custom-upload/test-auth',
