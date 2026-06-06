@@ -662,13 +662,20 @@ class TrfTournamentImporter(FileTournamentImporter):
                     assigned_board_ids.add(match_board.id)
 
             for team_id, bye_type in bye_envelopes:
+                # PAB (``bye_type is None``) is displayed → gets the next
+                # table number; hidden byes (HPB/FPB/ZPB) hold NULL.
+                if bye_type is None:
+                    bye_index: int | None = match_index
+                    match_index += 1
+                else:
+                    bye_index = None
                 stb = StoredTeamBoard(
                     id=None,
                     tournament_id=tournament_id,
                     round_=round_,
                     team_a_id=team_id,
                     team_b_id=None,
-                    index=match_index,
+                    index=bye_index,
                     bye_type=bye_type,
                 )
                 stb.id = database.add_stored_team_board(stb)

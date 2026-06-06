@@ -44,24 +44,19 @@ class TeamBoard:
         return self.stored_team_board.round_
 
     @property
-    def index(self) -> int:
+    def index(self) -> int | None:
         return self.stored_team_board.index
 
     @property
-    def display_number(self) -> int:
-        """1-based position of this match among the round's *displayed*
-        team boards. Used as the match number in the pairings UI — the
-        raw ``index`` can have gaps (re-pairing, byes, legacy data), and
-        manual / auto byes (HPB / FPB / ZPB) aren't shown as numbered
-        matches, so the number is the sequential position among the
-        rendered matches."""
-        position = 0
-        for tb in self.tournament.get_round_team_boards(self.round):
-            if not tb._counts_as_displayed_match:
-                continue
-            position += 1
-            if tb.id == self.id:
-                return position
+    def display_number(self) -> int | None:
+        """1-based table number for this match, straight from the stored
+        ``index``. ``None`` for a hidden bye (HPB / FPB / ZPB), which has
+        no table. Because the number is carried by the stored ``index``,
+        it is stable: unpairing a match leaves a hole rather than
+        renumbering the matches after it (exactly like individual board
+        numbers), and a new pairing reuses that hole."""
+        if self.index is None:
+            return None
         return self.index + 1
 
     @property

@@ -133,7 +133,10 @@ class StoredTeamBoard:
     tournament_id: int
     round_: int
     team_a_id: int
-    index: int
+    # Table number slot (0-based). None for hidden byes (HPB / FPB /
+    # ZPB) that don't occupy a table; real matches and the PAB bye
+    # carry an index.
+    index: int | None
     team_b_id: int | None = None
     last_result_update: datetime | None = None
     # Bye type when ``team_b_id`` is None: ``PAB`` (pairing-allocated),

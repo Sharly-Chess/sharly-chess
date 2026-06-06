@@ -1420,7 +1420,11 @@ class PairingsAdminController(BaseEventAdminController):
         if exempt_team is not None:
             message = _(
                 'Team [{team}] has been paired against [{opponent}] at board #{board}.'
-            ).format(team=team.name, opponent=exempt_team.name, board=tb.index + 1)
+            ).format(
+                team=team.name,
+                opponent=exempt_team.name,
+                board=tb.display_number,
+            )
         else:
             message = _('Pairing-Allocated Bye assigned to team [{team}].').format(
                 team=team.name

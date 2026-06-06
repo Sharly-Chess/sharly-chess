@@ -83,9 +83,10 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
         tournament: Tournament, round_: int, database: EventDatabase
     ) -> None:
         """Sort the round's team-match envelopes by ``(primary score at
-        start of round, -TPN)`` and reassign their indexes. Manual byes
-        (HPB/FPB/ZPB) stay at the top of the round; PAB envelopes are
-        demoted below real matches; everything else is ranked."""
+        start of round, -TPN)`` and reassign their indexes. Real matches
+        take table numbers ``0…`` ranked by strength; a PAB envelope is
+        demoted to the last table number; hidden byes (HPB/FPB/ZPB) get a
+        NULL index (no table number)."""
         team_boards = tournament.get_round_team_boards(round_)
         manual_bye_types = ('HPB', 'FPB', 'ZPB')
 
@@ -135,9 +136,15 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
             return (1, -stronger, -weaker, stronger_tpn, weaker_tpn)
 
         sorted_team_boards = sorted(team_boards, key=_key)
-        for index, tb in enumerate(sorted_team_boards):
-            tb.stored_team_board.index = index
-            database.update_stored_team_board(tb.stored_team_board)
+        next_index = 0
+        for tb in sorted_team_boards:
+            stb = tb.stored_team_board
+            if stb.team_b_id is None and stb.bye_type in manual_bye_types:
+                stb.index = None
+            else:
+                stb.index = next_index
+                next_index += 1
+            database.update_stored_team_board(stb)
 
     def on_import_finished(self):
         """Function to execute when the import process ends, whether it fails or succeeds."""

@@ -550,14 +550,26 @@ class _TeamPairingBase(PairingEngine, ABC):
                 # new pairs bbpPairings returned for previously
                 # unpaired teams.
                 kept: list[StoredTeamBoard] = list(existing)
-                for offset, (team_a_id, team_b_id) in enumerate(team_pairs):
+                # Fill the lowest free index first so a manual pairing
+                # reuses the hole left by an earlier unpairing instead of
+                # always appending at the end.
+                used_indexes = {stb.index for stb in existing if stb.index is not None}
+
+                def _next_free_index() -> int:
+                    index = 0
+                    while index in used_indexes:
+                        index += 1
+                    used_indexes.add(index)
+                    return index
+
+                for team_a_id, team_b_id in team_pairs:
                     stb = StoredTeamBoard(
                         id=None,
                         tournament_id=tournament.id,
                         round_=round_,
                         team_a_id=team_a_id,
                         team_b_id=team_b_id,
-                        index=len(kept) + offset,
+                        index=_next_free_index(),
                     )
                     stb.id = database.add_stored_team_board(stb)
                     kept.append(stb)
@@ -585,38 +597,6 @@ class _TeamPairingBase(PairingEngine, ABC):
             # Drop everything else, then re-add manual byes + new pairs.
             database.delete_stored_team_boards_for_round(tournament.id, round_)
             tournament.stored_tournament.stored_team_boards_by_round.pop(round_, None)
-            kept = []
-            for index, bye_stb in enumerate(manual_byes):
-                new_stb = StoredTeamBoard(
-                    id=None,
-                    tournament_id=tournament.id,
-                    round_=round_,
-                    team_a_id=bye_stb.team_a_id,
-                    team_b_id=None,
-                    index=index,
-                    bye_type=bye_stb.bye_type,
-                )
-                new_stb.id = database.add_stored_team_board(new_stb)
-                kept.append(new_stb)
-            # Absent teams (check_in=False) that aren't already on a
-            # manual bye envelope get an auto-ZPB envelope for this
-            # round. bbpPairings was instructed to skip them via 240
-            # records, so its output won't reference them either.
-            for team in tournament.teams:
-                if team.check_in or team.id in manual_bye_team_ids:
-                    continue
-                absent_stb = StoredTeamBoard(
-                    id=None,
-                    tournament_id=tournament.id,
-                    round_=round_,
-                    team_a_id=team.id,
-                    team_b_id=None,
-                    index=len(kept),
-                    bye_type='ZPB',
-                )
-                absent_stb.id = database.add_stored_team_board(absent_stb)
-                kept.append(absent_stb)
-                manual_bye_team_ids.add(team.id)
             # Display order mirrors individual mode (board.py:__lt__):
             # strongest match first, PAB envelopes last. "Strength" of
             # a match is its stronger team's (MP, GP) tuple followed
@@ -662,18 +642,55 @@ class _TeamPairingBase(PairingEngine, ABC):
 
             sorted_pairs = sorted(team_pairs, key=_pair_sort_key, reverse=True)
 
-            for offset, (team_a_id, team_b_id) in enumerate(sorted_pairs):
+            kept = []
+            # Real / PAB matches own the table numbers 0…d-1, exactly
+            # like individual boards. Hidden byes (HPB / FPB / ZPB) are
+            # placed *after* them so they never consume a table number.
+            for index, (team_a_id, team_b_id) in enumerate(sorted_pairs):
                 stb = StoredTeamBoard(
                     id=None,
                     tournament_id=tournament.id,
                     round_=round_,
                     team_a_id=team_a_id,
                     team_b_id=team_b_id,
-                    index=len(kept) + offset,
+                    index=index,
                 )
                 stb.id = database.add_stored_team_board(stb)
                 kept.append(stb)
                 stored_boards.extend(self._team_match_stored_boards(tournament, stb))
+            # Hidden byes (HPB / FPB / ZPB) hold a NULL index — they
+            # don't occupy a table number.
+            for bye_stb in manual_byes:
+                new_stb = StoredTeamBoard(
+                    id=None,
+                    tournament_id=tournament.id,
+                    round_=round_,
+                    team_a_id=bye_stb.team_a_id,
+                    team_b_id=None,
+                    index=None,
+                    bye_type=bye_stb.bye_type,
+                )
+                new_stb.id = database.add_stored_team_board(new_stb)
+                kept.append(new_stb)
+            # Absent teams (check_in=False) that aren't already on a
+            # manual bye envelope get an auto-ZPB envelope for this
+            # round. bbpPairings was instructed to skip them via 240
+            # records, so its output won't reference them either.
+            for team in tournament.teams:
+                if team.check_in or team.id in manual_bye_team_ids:
+                    continue
+                absent_stb = StoredTeamBoard(
+                    id=None,
+                    tournament_id=tournament.id,
+                    round_=round_,
+                    team_a_id=team.id,
+                    team_b_id=None,
+                    index=None,
+                    bye_type='ZPB',
+                )
+                absent_stb.id = database.add_stored_team_board(absent_stb)
+                kept.append(absent_stb)
+                manual_bye_team_ids.add(team.id)
             tournament.stored_tournament.stored_team_boards_by_round[round_] = kept
         tournament.clear_team_cache()
         tournament.create_boards(stored_boards, round_, self.pab_result)

@@ -85,7 +85,10 @@ class Migration(BaseMigration):
             '   `round` INTEGER NOT NULL,'
             '   `team_a_id` INTEGER NOT NULL,'
             '   `team_b_id` INTEGER,'
-            '   `index` INTEGER NOT NULL,'
+            # Table number slot (0-based). NULL for byes that don't sit
+            # at a table — hidden byes (HPB / FPB / ZPB). Real matches
+            # and the (displayed) PAB bye carry an index.
+            '   `index` INTEGER,'
             '   `last_result_update` TEXT,'
             # Bye type when ``team_b_id`` is NULL (PAB / HPB / FPB / ZPB).
             # NULL for regular pairings.

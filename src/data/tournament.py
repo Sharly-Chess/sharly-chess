@@ -820,7 +820,7 @@ class Tournament:
         for team_board in self.team_boards_by_id.values():
             result.setdefault(team_board.round, []).append(team_board)
         for round_team_boards in result.values():
-            round_team_boards.sort(key=lambda tb: tb.index)
+            round_team_boards.sort(key=lambda tb: (tb.index is None, tb.index or 0))
         return result
 
     def get_round_team_boards(self, round_: int) -> list[TeamBoard]:
@@ -2213,13 +2213,12 @@ class Tournament:
                 tb
                 for tb in self.team_boards_by_id.values()
                 if 1 <= tb.round <= after_round
+                and tb.stored_team_board.team_b_id is not None
             ),
-            key=lambda tb: (tb.round, tb.index),
+            key=lambda tb: (tb.round, tb.index or 0),
         )
         for tb in team_boards:
             stb = tb.stored_team_board
-            if stb.team_b_id is None:
-                continue
             a_tpn = tpn_by_team_id.get(stb.team_a_id)
             b_tpn = tpn_by_team_id.get(stb.team_b_id)
             if a_tpn is None or b_tpn is None:
@@ -3300,7 +3299,15 @@ class Tournament:
                     self, pab_stb
                 )
             else:
-                next_index = max((stb.index for stb in round_list), default=-1) + 1
+                # Engine PAB is displayed, so it takes the next table
+                # number after the real matches (hidden byes hold NULL).
+                next_index = (
+                    max(
+                        (stb.index for stb in round_list if stb.index is not None),
+                        default=-1,
+                    )
+                    + 1
+                )
                 new_stb = StoredTeamBoard(
                     id=None,
                     tournament_id=self.id,

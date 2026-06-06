@@ -1514,7 +1514,7 @@ class EventDatabase(MigrationDatabase):
     ) -> dict[int, list[StoredTeamBoard]]:
         self.execute(
             'SELECT * FROM `team_board` WHERE `tournament_id` = ? '
-            'ORDER BY `round`, `index`',
+            'ORDER BY `round`, `index` IS NULL, `index`',
             (tournament_id,),
         )
         result: dict[int, list[StoredTeamBoard]] = {}

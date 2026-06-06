@@ -361,14 +361,26 @@ class Team:
             return
         from database.sqlite.event.event_store import StoredTeamBoard
 
-        next_index = max((stb.index for stb in round_list), default=-1) + 1
+        # Hidden byes (HPB / FPB / ZPB) don't sit at a table → no table
+        # number. A PAB is displayed, so it takes the next number after
+        # the real matches.
+        if bye_type == 'PAB':
+            index: int | None = (
+                max(
+                    (stb.index for stb in round_list if stb.index is not None),
+                    default=-1,
+                )
+                + 1
+            )
+        else:
+            index = None
         stb = StoredTeamBoard(
             id=None,
             tournament_id=self.tournament_id,
             round_=round_,
             team_a_id=self.id,
             team_b_id=None,
-            index=next_index,
+            index=index,
             bye_type=bye_type,
         )
         stb.id = database.add_stored_team_board(stb)
