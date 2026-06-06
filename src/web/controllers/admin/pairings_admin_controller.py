@@ -1808,6 +1808,10 @@ class PairingsAdminController(BaseEventAdminController):
                         board
                         for board in web_context.admin_boards
                         if board.result == Result.NO_RESULT
+                        # A board with a hole on either side is a forfeit,
+                        # not a pending result.
+                        and board.stored_board.white_player_id is not None
+                        and board.stored_board.black_player_id is not None
                     ]
                 ),
             },

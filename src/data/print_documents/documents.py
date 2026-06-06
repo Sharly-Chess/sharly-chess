@@ -63,7 +63,7 @@ from data.print_documents.individual_teams import IndividualTeamType, Individual
 from data.tournament import Tournament
 from plugins.manager import plugin_manager
 from utils import Utils
-from utils.enum import Result, TitleNorm, PlayerGender
+from utils.enum import Result, TitleNorm, PlayerGender, ScoreType
 from utils.option import Option, OptionHandler
 from utils.types import PlayerTitle
 
@@ -870,7 +870,7 @@ class TeamRankingPrintDocument(PrintDocument):
     def template_context(self) -> dict[str, Any]:
         primary_is_mp = (
             self.tournament.pairing_system.paired_by_team
-            and str(self.tournament.primary_score) == 'MATCH_POINTS'
+            and self.tournament.primary_score == ScoreType.MATCH_POINTS
         )
         team_tie_breaks = [
             tb for tb in self.tournament.tie_breaks if tb.supports_team_mode
@@ -878,7 +878,7 @@ class TeamRankingPrintDocument(PrintDocument):
         return {
             'tournament': self.tournament,
             'subtitle': self.tournament.name,
-            'standings': self.tournament.team_standings(),
+            'standings': self.tournament.team_standings(after_round=self.ranking_round),
             'primary_is_mp': primary_is_mp,
             'team_tie_breaks': team_tie_breaks,
         }

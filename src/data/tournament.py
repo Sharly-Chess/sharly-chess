@@ -536,10 +536,16 @@ class Tournament:
     def color_pattern(self) -> str | None:
         return self.stored_tournament.color_pattern
 
-    def team_standings(self) -> list[dict[str, Any]]:
+    def team_standings(self, *, after_round: int | None = None) -> list[dict[str, Any]]:
         """Compute team standings for this tournament, sorted by
         primary_score then secondary_score then team name.
         Each entry: {team, mp, gp, played, wins, draws, losses, rank}.
+
+        ``after_round`` bounds which rounds count: only matches up to
+        and including it are tallied. ``None`` (default) counts every
+        stored match — the live standings. A ranking document passes
+        the finished round it's printing for, so a paired-but-unfinished
+        round isn't counted (played / points stay at the prior round).
 
         For ``paired_by_team`` systems (team-vs-team blocks), match
         points and game points come from the ``team_board`` records.
@@ -572,6 +578,8 @@ class Tournament:
         if not self.team_boards_by_id:
             team_game_points = self.team_game_points
             for board in self.boards_by_id.values():
+                if after_round is not None and board.round > after_round:
+                    continue
                 w_id = board.stored_board.white_player_id
                 w_player = self.event.players_by_id.get(w_id) if w_id else None
                 if w_player and w_player.team_id in standings:
@@ -600,6 +608,8 @@ class Tournament:
         draw_gp_per_player = Result.DRAW.point_value
         absent_gp_per_player = self.team_game_points[Result.ZERO_POINT_BYE]
         for team_board in self.team_boards_by_id.values():
+            if after_round is not None and team_board.round > after_round:
+                continue
             stb = team_board.stored_team_board
             a_gp, b_gp = team_board.game_points
             if stb.team_b_id is None:
@@ -680,10 +690,13 @@ class Tournament:
 
         team_tie_breaks = [tb for tb in self.tie_breaks if tb.supports_team_mode]
         if team_tie_breaks:
-            team_records_list = self.team_records(after_round=self.current_round)
+            tie_break_round = (
+                after_round if after_round is not None else self.current_round
+            )
+            team_records_list = self.team_records(after_round=tie_break_round)
             records_by_id = {r.team_id: r for r in team_records_list}
             context = self.team_tie_break_context()
-            after_round = self.current_round
+            after_round = tie_break_round
             for tb in team_tie_breaks:
                 if tb.display_rank_delta and isinstance(tb, TeamTieBreak):
                     # Group-level resolution (EDE): cluster rows by the
@@ -1926,6 +1939,9 @@ class Tournament:
                 for player in self.tournament_players
                 if player.pairings[round_].exists
                 and player.pairings[round_].stored_pairing.board_id is not None
+                # A board whose opponent slot is a hole has no game to
+                # play (it's a forfeit), so it never holds up the round.
+                and player.pairings[round_].opponent_id is not None
             )
         return all(
             player.pairings[round_].result != Result.NO_RESULT

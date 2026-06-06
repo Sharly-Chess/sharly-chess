@@ -48,6 +48,31 @@ class TeamBoard:
         return self.stored_team_board.index
 
     @property
+    def display_number(self) -> int:
+        """1-based position of this match among the round's *displayed*
+        team boards. Used as the match number in the pairings UI — the
+        raw ``index`` can have gaps (re-pairing, byes, legacy data), and
+        manual / auto byes (HPB / FPB / ZPB) aren't shown as numbered
+        matches, so the number is the sequential position among the
+        rendered matches."""
+        position = 0
+        for tb in self.tournament.get_round_team_boards(self.round):
+            if not tb._counts_as_displayed_match:
+                continue
+            position += 1
+            if tb.id == self.id:
+                return position
+        return self.index + 1
+
+    @property
+    def _counts_as_displayed_match(self) -> bool:
+        """Whether this team board is rendered as a numbered match in
+        the pairings table (matches the controller's filter: manual /
+        auto byes are hidden)."""
+        stb = self.stored_team_board
+        return not (stb.team_b_id is None and stb.bye_type in ('HPB', 'FPB', 'ZPB'))
+
+    @property
     def team_a(self) -> 'Team':
         return self.tournament.event.teams_by_id[self.stored_team_board.team_a_id]
 
