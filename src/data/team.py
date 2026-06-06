@@ -225,6 +225,21 @@ class Team:
             slots[i] = player
         return slots
 
+    def lineup_out_of_roster_order(self, round_: int) -> bool:
+        """True iff *round_*'s board players (holes skipped) are not in
+        ascending roster order. Used to warn when a line-up reshuffles
+        players relative to the roster."""
+        roster_index = {player.id: i for i, player in enumerate(self.players)}
+        last = -1
+        for player in self.effective_round_lineup(round_):
+            idx = roster_index.get(player.id)
+            if idx is None:
+                continue
+            if idx < last:
+                return True
+            last = idx
+        return False
+
     # -------------------------------------------------------------------------
     # Mutations
     # -------------------------------------------------------------------------

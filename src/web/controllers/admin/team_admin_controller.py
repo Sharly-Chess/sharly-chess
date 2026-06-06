@@ -545,9 +545,9 @@ class TeamAdminController(BaseEventAdminController):
         editable_rounds: list[int] = []
         team_player_count = 0
         color_pattern = ''
-        selection_only = False
+        warn_lineup_order = False
         if tournament is not None:
-            selection_only = tournament.enforce_roster_order
+            warn_lineup_order = tournament.warn_lineup_order
             first_editable = max(1, tournament.last_paired_round + 1)
             rounds_set = set(range(first_editable, tournament.rounds + 1))
             # Include the current round even if already paired — paired
@@ -578,6 +578,7 @@ class TeamAdminController(BaseEventAdminController):
                     'has_override': team.has_explicit_round_lineup(round_),
                     'slots': slots,
                     'bench': bench,
+                    'out_of_order': team.lineup_out_of_roster_order(round_),
                 }
             )
         default_round = 0
@@ -595,7 +596,7 @@ class TeamAdminController(BaseEventAdminController):
             'team_player_count': team_player_count,
             'color_pattern': color_pattern,
             'roster_players': team.players if tournament is not None else [],
-            'selection_only': selection_only,
+            'warn_lineup_order': warn_lineup_order,
         }
 
     @get(

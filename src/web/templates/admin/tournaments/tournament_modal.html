@@ -396,12 +396,12 @@
                         <div class="col-12 col-md-6">
                             {{ admin_macros.switch_input(
                                 name='enforce_roster_order',
-                                placeholder=_('Enforce roster order in line-ups'),
+                                placeholder=_('Warn on line-up out of roster order'),
                                 tooltip_text=_(
-                                    'When enabled, per-round line-ups can only '
-                                    'select which players play; the board order '
-                                    'follows the team roster and cannot be '
-                                    'reordered per round.'
+                                    'When enabled, a warning is shown if a '
+                                    'per-round line-up places players in a '
+                                    'different order than the team roster. '
+                                    'The line-up can still be reordered freely.'
                                 ),
                                 data=data, errors=errors
                             ) }}

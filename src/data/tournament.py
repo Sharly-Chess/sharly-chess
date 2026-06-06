@@ -369,10 +369,11 @@ class Tournament:
         return rule_set.roster_max_size if rule_set else None
 
     @property
-    def enforce_roster_order(self) -> bool:
-        """True iff lineups must follow the roster order. The lineup
-        picker then renders as a selection list rather than a drag UI.
-        Set manually on the tournament, or forced on by a rule set."""
+    def warn_lineup_order(self) -> bool:
+        """True iff the lineup editor warns when a round's board order
+        differs from the team roster order. Lineups can still be
+        reordered freely. Set manually on the tournament, or forced on
+        by a rule set."""
         return bool(self.stored_tournament.enforce_roster_order)
 
     @property
@@ -2134,7 +2135,10 @@ class Tournament:
         # to the team-UI order for teams ``team_standings`` doesn't
         # return.
         rank_by_team_id: dict[int, int] = {}
-        for row in self.team_standings():
+        # Rank must match ``team_totals`` (bounded to ``after_round``) —
+        # otherwise the in-progress round leaks into the TRF rank fed to
+        # bbpPairings (e.g. during complementary pairing).
+        for row in self.team_standings(after_round=after_round):
             rank_by_team_id[row['team'].id] = row['rank']
         trf_teams: list[TrfTeam] = []
         for team in teams:

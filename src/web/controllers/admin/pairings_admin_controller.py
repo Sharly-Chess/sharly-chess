@@ -2296,7 +2296,9 @@ class PairingsAdminController(BaseEventAdminController):
                     colors_by_team.setdefault(tid, []).append(None)
         teams_by_id = tournament.event.teams_by_id
         rows = []
-        for row in tournament.team_standings():
+        # Standings as they stand entering this round (the modal shows
+        # the accumulated MP/GP "at the start of round").
+        for row in tournament.team_standings(after_round=round - 1):
             team = row['team']
             rows.append(
                 {

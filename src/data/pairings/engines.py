@@ -624,9 +624,11 @@ class _TeamPairingBase(PairingEngine, ABC):
             # demote the whole tuple to sort last. All else equal, the
             # user-curated TPN (set by drag-drop in the teams tab) is
             # the tie-breaker — lower TPN ranks higher.
+            # Order matches by standings entering the round (exclude any
+            # results already entered for the round being paired).
             standings_by_team_id = {
                 row['team'].id: (row['mp'], row['gp'])
-                for row in tournament.team_standings()
+                for row in tournament.team_standings(after_round=round_ - 1)
             }
 
             def _tpn_or_inf(team_id: int) -> float:
