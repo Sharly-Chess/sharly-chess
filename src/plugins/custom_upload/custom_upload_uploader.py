@@ -56,10 +56,21 @@ class CustomUploadResult:
 class CustomUploadUploader:
     uploading_event: bool = False
     upload_status_messages: dict[str, CustomUploadResult] = {}
+    ongoing_result_ids: set[str] = set()
 
     @classmethod
     def result_id(cls, event_uniq_id: str, tournament_id: int) -> str:
         return f'{event_uniq_id}:{tournament_id}'
+
+    @classmethod
+    def tournament_result_id(cls, tournament: Tournament) -> str:
+        return cls.result_id(tournament.event.uniq_id, tournament.id)
+
+    @classmethod
+    def is_upload_ongoing(cls, tournament: Tournament) -> bool:
+        """Return True if a background upload is currently running for this tournament."""
+        key = cls.tournament_result_id(tournament)
+        return key in cls.ongoing_result_ids
 
     @classmethod
     def get_updated_tournament_upload_result(
@@ -177,6 +188,7 @@ class CustomUploadUploader:
             return current_result
 
         result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
+        cls.ongoing_result_ids.add(result_id)
         if not NetworkMonitor.connected():
             # The network is offline, we can't upload
             cls.upload_status_messages[result_id] = CustomUploadResult(
@@ -235,6 +247,7 @@ class CustomUploadUploader:
                 )
                 failure_status = UnexpectedFailureCustomUploadStatus()
             finally:
+                cls.ongoing_result_ids.discard(result_id)
                 now = datetime.now()
                 if failure_status:
                     tournament_plugin_data.upload_failure_id = failure_status.id

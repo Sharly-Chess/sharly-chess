@@ -16,6 +16,7 @@ from plugins.custom_upload.custom_upload_status import (
     FailureCustomUploadStatus,
     UnexpectedFailureCustomUploadStatus,
     ModifiedCustomUploadStatus,
+    OngoingCustomUploadStatus,
 )
 from plugins.utils import PluginData
 from utils.date_time import format_datetime
@@ -91,6 +92,8 @@ class CustomUploadUtils:
             return [NeverUploadedCustomUploadStatus()]
         elif is_modified:
             return [ModifiedCustomUploadStatus()]
+        elif CustomUploadUploader.is_upload_ongoing(tournament):
+            return [OngoingCustomUploadStatus()]
         else:
             return [UpToDateCustomUploadStatus()]
 

@@ -70,6 +70,9 @@ msgstr "Aucun document ne correspond à cette entrée"
 msgid "Not configured"
 msgstr "Non configuré"
 
+msgid "Ongoing"
+msgstr "En cours"
+
 msgid "Path in the server:"
 msgstr "Chemin sur le serveur :"
 
@@ -90,6 +93,9 @@ msgstr "Tournoi"
 
 msgid "Tournament has been modified since the last upload."
 msgstr "Le tournoi a été modifié depuis la dernière mise en ligne."
+
+msgid "Tournament is currently being uploaded."
+msgstr "Le tournoi est en cours de mise en ligne."
 
 msgid "Tournament successfully uploaded."
 msgstr "Le tournoi a été mis en ligne avec succès."

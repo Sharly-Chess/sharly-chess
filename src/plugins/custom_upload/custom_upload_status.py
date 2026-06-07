@@ -68,6 +68,23 @@ class ModifiedCustomUploadStatus(CustomUploadStatus):
         return 'message-info'
 
 
+class OngoingCustomUploadStatus(CustomUploadStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'ONGOING'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Ongoing')
+
+    def tooltip_message(self, tournament: Tournament) -> str | None:
+        return _('Tournament is currently being uploaded.')
+
+    @property
+    def css_classes(self) -> str:
+        return 'message-info'
+
+
 class NotConfiguredCustomUploadStatus(CustomUploadStatus):
     @staticmethod
     def static_id() -> str:

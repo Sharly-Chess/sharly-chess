@@ -70,6 +70,9 @@ msgstr ""
 msgid "Not configured"
 msgstr ""
 
+msgid "Ongoing"
+msgstr ""
+
 msgid "Path in the server:"
 msgstr ""
 
@@ -89,6 +92,9 @@ msgid "Tournament"
 msgstr ""
 
 msgid "Tournament has been modified since the last upload."
+msgstr ""
+
+msgid "Tournament is currently being uploaded."
 msgstr ""
 
 msgid "Tournament successfully uploaded."
