@@ -17,6 +17,7 @@ from plugins.custom_upload.custom_upload_status import (
     UnexpectedFailureCustomUploadStatus,
 )
 from plugins.utils import PluginData
+from utils.date_time import format_datetime
 from utils.entity import EntityManager
 from utils.enum import FormAction
 from web.controllers.base_controller import WebContext
@@ -79,6 +80,9 @@ class CustomUploadUtils:
             )
             return [status]
 
+        # TODO: handle modified since last upload case
+        # TODO: handle ongoing upload case
+        # TODO: handle multiple concurrent statuses
         # Current data status
         if not custom_upload_plugin_data.last_upload_at:
             return [NeverUploadedCustomUploadStatus()]
@@ -103,6 +107,12 @@ class CustomUploadTournamentPluginData(PluginData):
     last_upload_attempt_at: datetime | None = None
     upload_failure_id: str | None = None
     document_urls: list[str] = field(default_factory=list)
+
+    @property
+    def last_upload_at_str(self) -> str:
+        if not self.last_upload_at:
+            return '-'
+        return format_datetime(self.last_upload_at)
 
     @classmethod
     def from_stored_value(cls, stored_value: dict[str, Any]) -> Self:

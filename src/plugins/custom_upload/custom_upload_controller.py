@@ -17,7 +17,6 @@ from plugins.custom_upload.utils import (
     CustomUploadUtils,
     CustomUploadTournamentPluginData,
 )
-from utils.date_time import format_datetime
 from web.controllers.admin.base_event_admin_controller import (
     BaseEventAdminController,
     BaseEventAdminWebContext,
@@ -57,7 +56,6 @@ class CustomUploadAdminEventController(BaseEventAdminController):
                 ).get_type(document_id)
                 document_types.append(document_type)
         return web_context.template_context | {
-            'format_datetime': format_datetime,
             'allowed_tournaments': cls._allowed_tournaments(web_context),
             'documents': document_types,
         }
