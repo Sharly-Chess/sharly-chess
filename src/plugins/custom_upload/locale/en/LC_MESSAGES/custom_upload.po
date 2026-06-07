@@ -55,12 +55,6 @@ msgstr ""
 msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr ""
 
-msgid "Manual"
-msgstr ""
-
-msgid "Mode"
-msgstr ""
-
 msgid "Modified"
 msgstr ""
 

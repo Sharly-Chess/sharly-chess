@@ -55,12 +55,6 @@ msgstr "Dernière mise en ligne"
 msgid "Last upload attempt failed on {last_attempt_date} at {last_attempt_time} (details: {details})."
 msgstr "La dernière tentative de mise en ligne a échoué le {last_attempt_date} à {last_attempt_time} (détails : {details})."
 
-msgid "Manual"
-msgstr "Manuel"
-
-msgid "Mode"
-msgstr "Mode"
-
 msgid "Modified"
 msgstr "Modifié"
 
