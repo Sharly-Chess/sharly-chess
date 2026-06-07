@@ -306,7 +306,7 @@ class CoupeJeanClaudeLoubatiereRuleSet(_FfeTeamCupRuleSet):
     @staticmethod
     @override
     def static_name() -> str:
-        return _('Coupe Jean-Claude Loubatière')
+        return _('Jean-Claude Loubatière Cup')
 
     @property
     @override
@@ -352,14 +352,14 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
     @staticmethod
     @override
     def static_name() -> str:
-        return _('Championnat de France Féminin (N1F / N2F)')
+        return _('FFE Women championship (N1F / N2F)')
 
     @property
     @override
     def description(self) -> str:
         return _(
             'FFE Nationale 1 / Nationale 2 Féminine. 5-player roster, '
-            '4-board team matches, mixed Suisse / Molter schedule. '
+            '4-board team matches, mixed Suisse / Molter / round-robin schedule. '
             'Roster must consist of women players only.'
         )
 
@@ -453,7 +453,7 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
     @staticmethod
     @override
     def static_name() -> str:
-        return _('Coupe de la Parité')
+        return _('Mixed Cup')
 
     @property
     @override
