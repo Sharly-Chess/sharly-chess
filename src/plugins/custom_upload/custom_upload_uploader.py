@@ -156,7 +156,6 @@ class CustomUploadUploader:
         cls,
         event_uniq_id: str,
         tournament_id: int,
-        force: bool,
     ) -> CustomUploadResult | None:
         """Upload a tournament to custom website."""
 
@@ -178,13 +177,6 @@ class CustomUploadUploader:
             return current_result
 
         result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
-        if not force and current_result.status != CustomUploadStatus.NEVER:
-            cls.upload_status_messages[result_id] = CustomUploadResult(
-                CustomUploadStatus.CHANGED,
-                _('Modified since last upload'),
-            )
-            return cls.upload_status_messages[result_id]
-
         if not NetworkMonitor.connected():
             # The network is offline, we can't upload
             cls.upload_status_messages[result_id] = CustomUploadResult(
@@ -333,7 +325,7 @@ class CustomUploadUploader:
                         cls_.timeout_threads.pop(
                             cls_.result_id(event_uuid_, tournament_id_), None
                         )
-                    cls_.upload_tournament(event_uuid_, tournament_id_, True)
+                    cls_.upload_tournament(event_uuid_, tournament_id_)
 
             finally:
                 cls.uploading_event = False

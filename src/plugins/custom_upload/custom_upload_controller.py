@@ -264,9 +264,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         web_context = TournamentAdminWebContext(request, tournament_id)
         tournament = web_context.get_admin_tournament()
 
-        CustomUploadUploader.upload_tournament(
-            tournament.event.uniq_id, tournament_id, True
-        )
+        CustomUploadUploader.upload_tournament(tournament.event.uniq_id, tournament_id)
         if CustomUploadUtils.get_tournament_plugin_data(tournament).upload_failure_id:
             Message.error(
                 request,
