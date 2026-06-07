@@ -122,11 +122,8 @@ class Engine:
             )
             previous_versions: list[tuple[Version, Path]] = []
             for version_dir in Path('..').glob('*'):
-                if version_dir.samefile(Path('.')):
-                    # do not inspect the current directory
-                    continue
-                if not version_dir.is_dir():
-                    logger.debug('Not a directory: [%s]', version_dir)
+                if not version_dir.is_dir() or version_dir.samefile(Path('.')):
+                    # Only inspect directories not matching the current directory
                     continue
                 version: Version
                 if matches := re.match(
@@ -135,7 +132,6 @@ class Engine:
                 ):
                     version: Version = Version(matches.group(1))
                 else:
-                    logger.debug('Not a release: [%s].', version_dir)
                     continue
                 if version < Version('2.4.0'):
                     logger.debug('Version [%s] : too old, ignored.', version)
