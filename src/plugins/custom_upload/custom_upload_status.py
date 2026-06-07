@@ -51,6 +51,23 @@ class UpToDateCustomUploadStatus(CustomUploadStatus):
         return 'message-success'
 
 
+class ModifiedCustomUploadStatus(CustomUploadStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'MODIFIED'
+
+    @staticmethod
+    def static_name() -> str:
+        return _('Modified')
+
+    def tooltip_message(self, tournament: Tournament) -> str | None:
+        return _('Tournament has been modified since the last upload.')
+
+    @property
+    def css_classes(self) -> str:
+        return 'message-info'
+
+
 class NotConfiguredCustomUploadStatus(CustomUploadStatus):
     @staticmethod
     def static_id() -> str:

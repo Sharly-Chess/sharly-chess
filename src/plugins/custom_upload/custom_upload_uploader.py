@@ -27,6 +27,7 @@ from plugins.custom_upload.utils import (
     CustomUploadTournamentPluginData,
 )
 from plugins.utils import PluginUtils
+from utils import Utils
 from web.channels import channels_plugin
 from web.controllers.admin.event_documents_controller import EventDocumentsController
 
@@ -134,10 +135,9 @@ class CustomUploadUploader:
 
     @classmethod
     def custom_upload_needed(cls, tournament: Tournament | StoredTournament) -> bool:
-        return (cls.custom_last_upload(tournament) or datetime.min) < max(
-            tournament.last_update or datetime.min,
-            tournament.last_player_update or datetime.min,
-            tournament.last_pairing_update or datetime.min,
+        last_upload = cls.custom_last_upload(tournament)
+        return not last_upload or Utils.tournament_results_modified_since(
+            tournament, last_upload
         )
 
     @classmethod

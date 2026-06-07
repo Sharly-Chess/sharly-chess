@@ -15,6 +15,7 @@ from plugins.custom_upload.custom_upload_status import (
     UpToDateCustomUploadStatus,
     FailureCustomUploadStatus,
     UnexpectedFailureCustomUploadStatus,
+    ModifiedCustomUploadStatus,
 )
 from plugins.utils import PluginData
 from utils.date_time import format_datetime
@@ -63,6 +64,8 @@ class CustomUploadUtils:
     def resolve_tournament_upload_statuses(
         cls, tournament: Tournament
     ) -> list[CustomUploadStatus]:
+        from plugins.custom_upload.custom_upload_uploader import CustomUploadUploader
+
         custom_upload_plugin_data = cls.get_tournament_plugin_data(tournament)
 
         if (
@@ -80,12 +83,14 @@ class CustomUploadUtils:
             )
             return [status]
 
-        # TODO: handle modified since last upload case
         # TODO: handle ongoing upload case
         # TODO: handle multiple concurrent statuses
+        is_modified = CustomUploadUploader.custom_upload_needed(tournament)
         # Current data status
         if not custom_upload_plugin_data.last_upload_at:
             return [NeverUploadedCustomUploadStatus()]
+        elif is_modified:
+            return [ModifiedCustomUploadStatus()]
         else:
             return [UpToDateCustomUploadStatus()]
 
