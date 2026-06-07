@@ -340,19 +340,3 @@ class CustomUploadUploader:
 
         uploader = Thread(target=_upload_tournaments, args=(cls,))
         uploader.start()
-
-    @classmethod
-    def schedule_upload(cls, tournament: Tournament, force=False) -> None:
-        """Schedule the upload of a tournament that has been modified."""
-        result = cls.get_updated_tournament_upload_result(tournament)
-        if result.status == CustomUploadStatus.SETTINGS_ERROR:
-            # Skip this tournament if we have a SETTINGS_ERROR
-            return
-        result_id = cls.result_id(tournament.event.uniq_id, tournament.id)
-        if force:
-            cls.upload_status_messages[result_id] = CustomUploadResult(
-                CustomUploadStatus.IN_PROGRESS,
-                _('Uploading tournament…'),
-            )
-
-        cls.upload_tournament(tournament.event.uniq_id, tournament.id, force)
