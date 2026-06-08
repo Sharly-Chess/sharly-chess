@@ -704,8 +704,9 @@ class Tournament:
                     # sort key so far, then ask the tie-break to assign
                     # rank-deltas within each still-tied group.
                     rows.sort(
-                        key=lambda e: base_key(e)
-                        + tuple(-v for v in e['tie_break_values'])
+                        key=lambda e: (
+                            base_key(e) + tuple(-v for v in e['tie_break_values'])
+                        )
                     )
                     groups: list[list[dict[str, Any]]] = []
                     current: list[dict[str, Any]] = []
@@ -760,9 +761,11 @@ class Tournament:
                         row['tie_break_values'].append(float(value))
 
         rows.sort(
-            key=lambda e: base_key(e)
-            + tuple(-v for v in e['tie_break_values'])
-            + (e['team'].name.lower(),)
+            key=lambda e: (
+                base_key(e)
+                + tuple(-v for v in e['tie_break_values'])
+                + (e['team'].name.lower(),)
+            )
         )
         for rank, entry in enumerate(rows, 1):
             entry['rank'] = rank
