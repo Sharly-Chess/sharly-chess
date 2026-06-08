@@ -747,14 +747,39 @@ class PairingsAdminController(BaseEventAdminController):
     ) -> Template:
         board_id: int = int(data['board_id'])
         key: str = data['key']
+        # In a team match the row shows team_a on the left, team_b on the
+        # right, regardless of colour — so keys 1/2 mean "left wins" /
+        # "right wins". Results are stored white-relative, so flip them
+        # when team_a is the black side on this board.
+        web_context = PairingsAdminWebContext(
+            request, tournament_id=tournament_id, round_=round, board_id=board_id
+        )
+        event = web_context.get_admin_event()
+        tournament = web_context.get_admin_tournament()
+        left_is_white = True
+        if event.is_team_event:
+            board = tournament.boards_by_id.get(board_id)
+            team_board_id = (
+                board.stored_board.team_board_id if board is not None else None
+            )
+            if board is not None and team_board_id is not None:
+                team_board = tournament.team_boards_by_id.get(team_board_id)
+                if team_board is not None:
+                    team_a_id = team_board.stored_team_board.team_a_id
+                    white_tp = board.optional_white_tournament_player
+                    black_tp = board.black_tournament_player
+                    if white_tp is not None:
+                        left_is_white = white_tp.team_id == team_a_id
+                    elif black_tp is not None:
+                        left_is_white = black_tp.team_id != team_a_id
         result: Optional[Result] = None
         match key:
             case 'Digit0' | 'Numpad0':
                 result = Result.NO_RESULT
             case 'Digit1' | 'Numpad1':
-                result = Result.WIN
+                result = Result.WIN if left_is_white else Result.LOSS
             case 'Digit2' | 'Numpad2':
-                result = Result.LOSS
+                result = Result.LOSS if left_is_white else Result.WIN
             case 'Digit3' | 'Numpad3':
                 result = Result.DRAW
             case _:

@@ -93,8 +93,8 @@
                                             '',
                                             '<div class=\"gap-0 d-grid align-self-center\" style=\"grid-template-columns: min-content min-content;\">' ~
                                                 '<div class=\"text-center text-nowrap\"><i class=\"bi bi-0-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('No result') ~ '</div>' ~
-                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('White wins') ~ '</div>' ~
-                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('Black wins') ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-1-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ (_('Left wins') if admin_event.is_team_event else _('White wins')) ~ '</div>' ~
+                                                '<div class=\"text-center text-nowrap\"><i class=\"bi bi-2-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ (_('Right wins') if admin_event.is_team_event else _('Black wins')) ~ '</div>' ~
                                                 '<div class=\"text-center text-nowrap\"><i class=\"bi bi-3-square\"></i></div><div class=\"text-start text-nowrap ps-1\">' ~ _('Draw') ~ '</div>' ~
                                                 '<div class=\"text-center text-nowrap\"><i class=\"bi bi-arrow-up-square pe-1\"></i><i class=\"bi bi-arrow-down-square\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Boards') ~ '</div>' ~
                                                 '<div class=\"text-center text-nowrap\"><i class=\"bi bi-shift pe-1\"></i>+ <i class=\"bi bi-arrow-left-square pe-1\"></i><i class=\"bi bi-arrow-right-square pe-2\"></i></div><div class=\"text-start text-nowrap\">' ~ _('Rounds') ~ '</div>' ~
