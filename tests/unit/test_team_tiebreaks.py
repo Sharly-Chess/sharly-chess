@@ -713,7 +713,7 @@ class TecTeamTieBreakTestCase(TestCase):
 
 @pytest.mark.unit
 class BerlinTieBreakTestCase(TestCase):
-    """FFE Berlin / Coefficient d'échiquier (FFE règlement §11.1).
+    """FFE Berlin / Coefficient d'échiquier (FFE rules §11.1).
 
     Reproduces the worked example from the FFE rulebook: 8-board match,
     Team A scores 1-0-0-½-1-0-½-1 → Berlin 16.5;

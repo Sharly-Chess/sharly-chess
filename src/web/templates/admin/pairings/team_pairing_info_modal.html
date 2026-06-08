@@ -14,9 +14,9 @@
             >
                 <thead>
                     <tr>
-                        <th scope="col" class="text-start compact-col">{{ _('TPN') }}</th>
+                        <th scope="col" class="text-start compact-col">{{ _('TPN *** TOURNAMENT PAIRING NUMBER') }}</th>
                         <th scope="col" class="text-start">{{ _('Team') }}</th>
-                        <th scope="col" class="text-end compact-col">{{ _('GP') }}</th>
+                        <th scope="col" class="text-end compact-col">{{ _('GP *** GAME POINTS') }}</th>
                         {% if history_columns %}
                             <th colspan="{{ history_columns }}" scope="col" class="text-start compact-col">
                                 {{ _('Opponents') }}
@@ -32,11 +32,12 @@
                         <tr class="header">
                             <td class="group-title fw-bold text-center" colspan="10000">
                                 {{ ngettext(
-                                    '%(num).1f %(unit)s group -',
-                                    '%(num).1f %(unit)s group -',
+                                    '%(num).1f %(unit)s group',
+                                    '%(num).1f %(unit)s group',
                                     mp,
-                                    unit=_('MP'),
+                                    unit=_('MP *** MATCH POINTS'),
                                 ) }}
+                                -
                                 {{ ngettext(
                                     '%(num)d team',
                                     '%(num)d teams',

@@ -714,7 +714,7 @@ class BerlinTieBreak(TeamTieBreak):
             "Each board's score is multiplied by a coefficient — the "
             'top board by N, the next by N-1, and so on down to the '
             'bottom board by 1 — then summed across all rounds. '
-            'Rewards results on the higher boards (FFE règlement §11.1).'
+            'Rewards results on the higher boards (FFE rules §11.1).'
         )
 
     @property
@@ -839,7 +839,7 @@ class GamePointsForTieBreak(TeamTieBreak):
     def base_help_text(self) -> str:
         return _(
             "Sum over every round of the team's points for — each "
-            'match score floored at 0. FFE Coupe Loubatière §4.4.a.'
+            'match score floored at 0. FFE Loubatière Cup rules §4.4.a.'
         )
 
     @property

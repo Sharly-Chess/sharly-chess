@@ -21,12 +21,12 @@
             <th class="name text-start">{{ _('Team') }}</th>
             <th class="text-center">{{ _('Played') }}</th>
             {% if primary_is_mp %}
-                <th class="text-center">{{ _('W') }}</th>
-                <th class="text-center">{{ _('D') }}</th>
-                <th class="text-center">{{ _('L') }}</th>
-                <th class="text-center fw-bold">{{ _('MP') }}</th>
+                <th class="text-center">{{ _('W *** TEAM RANKING HEADER WIN') }}</th>
+                <th class="text-center">{{ _('D *** TEAM RANKING HEADER DRAW') }}</th>
+                <th class="text-center">{{ _('L *** TEAM RANKING HEADER LOSS') }}</th>
+                <th class="text-center fw-bold">{{ _('MP *** MATCH POINTS') }}</th>
             {% else %}
-                <th class="text-center fw-bold">{{ _('GP') }}</th>
+                <th class="text-center fw-bold">{{ _('GP *** GAME POINTS') }}</th>
             {% endif %}
             {% for tie_break in team_tie_breaks %}
                 <th
