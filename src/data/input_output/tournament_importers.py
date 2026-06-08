@@ -264,7 +264,11 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 board_id_by_external_id[external_id] = board_id
                 stored_board.id = board_id
 
-        # Tournament players
+        # Tournament players. Team tournaments don't persist
+        # ``tournament_player`` rows for rostered players (they're
+        # synthesised from team membership at load), so only the
+        # pairings are stored in that case.
+        team_mode = bool(stored_tournament.team_player_count)
         for stored_tournament_player in stored_tournament.stored_tournament_players:
             stored_tournament_player.tournament_id = tournament_id
             stored_tournament_player.player_id = player_id_by_external_id[
@@ -279,7 +283,9 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                     stored_pairing.board_id = board_id_by_external_id[
                         stored_pairing.board_id
                     ]
-            database.add_stored_tournament_player(stored_tournament_player)
+            database.add_stored_tournament_player(
+                stored_tournament_player, persist_player_row=not team_mode
+            )
         return tournament_id
 
     _asymmetric_to_symmetric_results: dict[

@@ -42,7 +42,11 @@ from data.print_documents.documents import (
 from data.team import RosterFullError
 from data.tournament import Tournament
 from database.sqlite.event.event_database import EventDatabase
-from database.sqlite.event.event_store import StoredPlayer, StoredTournamentPlayer
+from database.sqlite.event.event_store import (
+    StoredPlayer,
+    StoredTeam,
+    StoredTournamentPlayer,
+)
 from utils import Utils
 from utils.date_time import format_date
 from utils.enum import (
@@ -1843,6 +1847,7 @@ class PlayerAdminController(BaseEventAdminController):
             'started_tournament_ids': [
                 str(tournament.id) for tournament in tournaments if tournament.started
             ],
+            'is_team_event': event.is_team_event,
             'tournament_options': tournament_options,
             'data_source_options': {
                 data_source.id: data_source.name for data_source in data_sources
@@ -1904,12 +1909,14 @@ class PlayerAdminController(BaseEventAdminController):
         for column in used_columns:
             column.update_from_used_columns(used_columns)
         event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
+        # A team event imports players at the event level (their team —
+        # not a tournament — places them), so there may be no tournament.
+        tournament = web_context.admin_tournament
         data_source = web_context.admin_data_source
         unique_values_by_column_id: dict[str, list[str]] = defaultdict(list)
         check_duplicate_players: list[TournamentPlayer] = []
         for player in event.tournament_players:
-            if player.tournament.id == tournament.id:
+            if tournament is not None and player.tournament.id == tournament.id:
                 if overwrite_players:
                     continue
             elif event.allow_multi_tournament_players:
@@ -1936,7 +1943,11 @@ class PlayerAdminController(BaseEventAdminController):
             stored_player = StoredPlayer(
                 id=None,
                 federation=event.federation,
-                check_in=tournament.default_player_check_in,
+                check_in=(
+                    tournament.default_player_check_in
+                    if tournament is not None
+                    else False
+                ),
             )
             for column in used_columns:
                 if column.is_informative:
@@ -1966,7 +1977,9 @@ class PlayerAdminController(BaseEventAdminController):
                             message.format(
                                 column=column.id,
                                 value=value,
-                                tournament=tournament.name,
+                                tournament=tournament.name
+                                if tournament
+                                else event.name,
                             )
                         )
                 except SharlyChessException as error:
@@ -1994,7 +2007,7 @@ class PlayerAdminController(BaseEventAdminController):
                                 format_date(stored_player.date_of_birth),
                             ]
                         ),
-                        tournament=tournament.name,
+                        tournament=tournament.name if tournament else event.name,
                     )
             if index in import_errors_by_index:
                 continue
@@ -2109,7 +2122,9 @@ class PlayerAdminController(BaseEventAdminController):
         tournament_id = web_context.form_data_to_int(
             normalized_data, field := 'tournament_id'
         )
-        if not tournament_id:
+        # Team events import at the event level — a team (not a
+        # tournament) places each player — so no tournament is required.
+        if not tournament_id and not event.is_team_event:
             errors[field] = _('This field is required.')
         file_path = WebContext.form_data_to_path(normalized_data, field := 'file')
         content_by_column_id: dict[str, list[str]] = {}
@@ -2175,19 +2190,55 @@ class PlayerAdminController(BaseEventAdminController):
     ):
         request = web_context.request
         event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
+        tournament = web_context.admin_tournament
+        team_mode = event.is_team_event
         if stored_players:
+            # Team events import players at the event level: no
+            # ``tournament_player`` row (the synthetic loader derives one
+            # from team membership). A team name on the row matches an
+            # existing team by name event-wide (created on first sight,
+            # attached to the team tournament when there is one).
+            team_id_by_name: dict[str, int] = {}
+            next_team_index: dict[int, int] = {}
+            if team_mode:
+                for team in event.teams:
+                    team_id_by_name.setdefault(team.name, team.id)
+                    next_team_index[team.id] = len(team.players)
             with EventDatabase(event.uniq_id, True) as database:
-                if overwrite_players:
+                if overwrite_players and tournament is not None:
                     database.delete_players_in_tournament(tournament.id)
                 for stored_player in stored_players:
                     player_id = database.add_stored_player(stored_player)
-                    database.add_stored_tournament_player(
-                        StoredTournamentPlayer(
-                            player_id=player_id,
-                            tournament_id=tournament.id,
+                    if not team_mode:
+                        assert tournament is not None
+                        database.add_stored_tournament_player(
+                            StoredTournamentPlayer(
+                                player_id=player_id,
+                                tournament_id=tournament.id,
+                            )
                         )
-                    )
+                        continue
+                    team_name = stored_player.transient_team_name
+                    if team_name:
+                        team_id = team_id_by_name.get(team_name)
+                        if team_id is None:
+                            team_id = database.add_stored_team(
+                                StoredTeam(
+                                    id=None,
+                                    name=team_name,
+                                    tournament_id=(
+                                        tournament.id
+                                        if tournament is not None
+                                        else None
+                                    ),
+                                )
+                            )
+                            team_id_by_name[team_name] = team_id
+                            next_team_index[team_id] = 0
+                        database.set_player_team(
+                            player_id, team_id, next_team_index[team_id]
+                        )
+                        next_team_index[team_id] += 1
                 if any(column.save_stored_event for column in used_columns):
                     database.update_stored_event(event.stored_event)
             Message.success(
@@ -2205,7 +2256,11 @@ class PlayerAdminController(BaseEventAdminController):
         )
 
     @post(
-        path='/import-players/{event_uniq_id:str}/{tournament_id:int}',
+        path=[
+            # Team events import at the event level, with no tournament.
+            '/import-players/{event_uniq_id:str}',
+            '/import-players/{event_uniq_id:str}/{tournament_id:int}',
+        ],
         name='import-players',
     )
     async def import_players(
@@ -2214,7 +2269,7 @@ class PlayerAdminController(BaseEventAdminController):
         data: Annotated[
             dict[str, str | list[str]], Body(media_type=RequestEncodingType.URL_ENCODED)
         ],
-        tournament_id: int,
+        tournament_id: int | None = None,
     ) -> HTMXTemplate:
         flat_data = WebContext.flatten_list_data(data)
         web_context = PlayerAdminWebContext(
@@ -2223,13 +2278,13 @@ class PlayerAdminController(BaseEventAdminController):
             data_source_id=WebContext.form_data_to_str(flat_data, 'data_source'),
         )
         event = web_context.get_admin_event()
-        tournament = web_context.get_admin_tournament()
+        tournament = web_context.admin_tournament
         data_source = web_context.admin_data_source
         file_path = WebContext.form_data_to_path(flat_data, 'file_path')
         assert file_path is not None
         row_indexes = WebContext.form_data_to_list_int(flat_data, 'row_indexes')
         overwrite_players = WebContext.form_data_to_bool(flat_data, 'overwrite_players')
-        if overwrite_players and tournament.started:
+        if overwrite_players and tournament is not None and tournament.started:
             raise ClientException('Overwrite is forbidden on started tournaments.')
         columns = PlayerDatasheetColumnHandler(event, data_source).columns
         content_by_column_id = self._read_csv_file(file_path)

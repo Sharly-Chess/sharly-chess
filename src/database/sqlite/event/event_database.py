@@ -1076,18 +1076,29 @@ class EventDatabase(MigrationDatabase):
         return stored_tournament_players
 
     def add_stored_tournament_player(
-        self, stored_tournament_player: StoredTournamentPlayer
+        self,
+        stored_tournament_player: StoredTournamentPlayer,
+        persist_player_row: bool = True,
     ):
-        fields = self._get_fields_dict(
-            stored_tournament_player,
-            ['tournament_id', 'player_id', 'pairing_number', 'manual_tiebreak'],
-        )
-        fields_str = ', '.join(f'`{f}`' for f in fields)
-        values_str = ', '.join(['?'] * len(fields))
-        self.execute(
-            f'INSERT INTO `tournament_player`({fields_str}) VALUES ({values_str})',
-            tuple(fields.values()),
-        )
+        """Persist a tournament player's pairings, and (unless
+        *persist_player_row* is False) its ``tournament_player`` row.
+
+        Team tournaments don't store ``tournament_player`` rows for
+        rostered players — they're synthesised in-memory from team
+        membership at load time — so team imports pass
+        ``persist_player_row=False`` to keep only the pairings (the
+        ``pairing`` table has no foreign key to ``tournament_player``)."""
+        if persist_player_row:
+            fields = self._get_fields_dict(
+                stored_tournament_player,
+                ['tournament_id', 'player_id', 'pairing_number', 'manual_tiebreak'],
+            )
+            fields_str = ', '.join(f'`{f}`' for f in fields)
+            values_str = ', '.join(['?'] * len(fields))
+            self.execute(
+                f'INSERT INTO `tournament_player`({fields_str}) VALUES ({values_str})',
+                tuple(fields.values()),
+            )
         for stored_pairing in stored_tournament_player.stored_pairings:
             self.add_stored_pairing(stored_pairing)
 

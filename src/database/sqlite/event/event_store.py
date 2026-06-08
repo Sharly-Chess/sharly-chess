@@ -193,6 +193,9 @@ class StoredPlayer:
         default_factory=dict[str, dict[str, Any]]
     )
     transient_arbiter_titles: dict[str, Any] = field(default_factory=dict[str, Any])
+    # Team name from a datasheet import (team mode); resolved to a team
+    # membership after the player is persisted. Not stored.
+    transient_team_name: str | None = None
 
 
 @dataclass
