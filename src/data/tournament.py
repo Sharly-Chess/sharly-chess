@@ -2147,9 +2147,19 @@ class Tournament:
         trf_teams: list[TrfTeam] = []
         for team in teams:
             tpn = tpn_by_team_id[team.id]
+            # 310 lists the whole roster: the round's board order first
+            # (capped at the board count), then the remaining roster
+            # members as substitutes, so a never-fielded player still
+            # round-trips through the team record on re-import.
             lineup = team.effective_round_lineup(after_round + 1)[:team_player_count]
+            ordered_members = list(lineup)
+            seen_ids = {member.id for member in lineup}
+            for member in team.players:
+                if member.id not in seen_ids:
+                    ordered_members.append(member)
+                    seen_ids.add(member.id)
             player_ids: list[int] = []
-            for member in lineup:
+            for member in ordered_members:
                 tp = tp_by_player_id.get(member.id)
                 if tp is None or tp.pairing_number is None:
                     continue

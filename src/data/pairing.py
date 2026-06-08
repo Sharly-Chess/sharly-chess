@@ -241,7 +241,12 @@ class Pairing:
             opponent_id = opponent_pn
         return TrfGame(
             opponent_id=opponent_id,
-            color=TrfColor.get_outer_value(self.color, self.result.is_bye),
+            # TRF forbids a colour without an opponent, so drop it for
+            # byes *and* hole-opponent boards (team mode), both of which
+            # carry opponent ``0000``.
+            color=TrfColor.get_outer_value(
+                self.color, self.result.is_bye or opponent_id == 0
+            ),
             result=self.result.to_trf,
             round=round_number,
         )

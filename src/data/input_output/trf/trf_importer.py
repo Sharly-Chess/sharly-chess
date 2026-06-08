@@ -572,6 +572,14 @@ class TrfTournamentImporter(FileTournamentImporter):
         represents an empty board slot (e.g. a team that fielded fewer
         than ``team_player_count`` players)."""
 
+        color_pattern = stored_tournament.color_pattern or ''
+        # ``(player_id, round)`` → its pairing, so a synthesised
+        # hole-board can be linked back to the forfeit pairing.
+        pairing_by_player_round: dict[tuple[int, int], StoredPairing] = {}
+        for stp in stored_tournament.stored_tournament_players:
+            for sp in stp.stored_pairings:
+                pairing_by_player_round[(stp.player_id, sp.round_)] = sp
+
         # Pre-index all stored_boards by player so we can look up the
         # board for a given (slot's player) cheaply.
         for (
@@ -651,15 +659,43 @@ class TrfTournamentImporter(FileTournamentImporter):
                 match_index += 1
                 slot_a = oodo_by_round_team.get((round_, team_a_id), {})
                 slot_b = oodo_by_round_team.get((round_, team_b_id), {})
-                for player_id, slot in {**slot_a, **slot_b}.items():
-                    match_board = boards_by_player_id.get(player_id)
-                    if match_board is None or match_board.id in assigned_board_ids:
-                        continue
-                    assert match_board.id is not None
-                    match_board.index = slot
-                    match_board.team_board_id = stb.id
-                    database.update_stored_board(match_board)
-                    assigned_board_ids.add(match_board.id)
+                for is_team_a, slot_map in ((True, slot_a), (False, slot_b)):
+                    for player_id, slot in slot_map.items():
+                        match_board = boards_by_player_id.get(player_id)
+                        if match_board is not None:
+                            if match_board.id in assigned_board_ids:
+                                continue
+                            assert match_board.id is not None
+                            match_board.index = slot
+                            match_board.team_board_id = stb.id
+                            database.update_stored_board(match_board)
+                            assigned_board_ids.add(match_board.id)
+                            continue
+                        # Player was fielded against an empty opposing
+                        # board (a hole): the ``0000`` game produced no
+                        # board record. Synthesise one — colour from the
+                        # pattern, opposing side empty — and point the
+                        # player's (forfeit) pairing at it, so the match
+                        # score counts the board.
+                        if slot < len(color_pattern):
+                            pattern_white = color_pattern[slot].upper() == 'W'
+                        else:
+                            pattern_white = slot % 2 == 0
+                        player_is_white = (
+                            pattern_white if is_team_a else not pattern_white
+                        )
+                        hole_board = StoredBoard(
+                            id=None,
+                            white_player_id=player_id if player_is_white else None,
+                            black_player_id=None if player_is_white else player_id,
+                            index=slot,
+                            team_board_id=stb.id,
+                        )
+                        hole_board.id = database.add_stored_board(hole_board)
+                        pairing = pairing_by_player_round.get((player_id, round_))
+                        if pairing is not None:
+                            pairing.board_id = hole_board.id
+                            database.update_stored_pairing(pairing)
 
             for team_id, bye_type in bye_envelopes:
                 # PAB (``bye_type is None``) is displayed → gets the next

@@ -331,7 +331,20 @@ class TournamentImporter(OptionHandler[TournamentImporterOption], ABC):
                 )
                 result = Result(pairing.result)
                 if pairing.board_id is None:
-                    if not result.is_no_board_bye and result != Result.NO_RESULT:
+                    # Forfeit results with no board are valid in team
+                    # competition: a ``0000`` game is a forfeit against an
+                    # undefined opponent (the opposing team left the board
+                    # empty). TRF-2026 permits this.
+                    board_less_forfeit = result in (
+                        Result.FORFEIT_WIN,
+                        Result.FORFEIT_LOSS,
+                        Result.DOUBLE_FORFEIT,
+                    )
+                    if (
+                        not result.is_no_board_bye
+                        and result != Result.NO_RESULT
+                        and not board_less_forfeit
+                    ):
                         raise ImporterError(
                             error_prefix
                             + _(
