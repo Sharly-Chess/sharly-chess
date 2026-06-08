@@ -2140,6 +2140,7 @@ class Tournament:
         # bbpPairings (e.g. during complementary pairing).
         for row in self.team_standings(after_round=after_round):
             rank_by_team_id[row['team'].id] = row['rank']
+        nickname_by_team_id = self._team_trf_nickname_map(tpn_by_team_id)
         trf_teams: list[TrfTeam] = []
         for team in teams:
             tpn = tpn_by_team_id[team.id]
@@ -2155,7 +2156,7 @@ class Tournament:
                 TrfTeam(
                     id=tpn,
                     name=team.name[:32],
-                    nickname=(team.name[:5] or 'T').upper(),
+                    nickname=nickname_by_team_id[team.id],
                     match_points=mp,
                     game_points=gp,
                     rank=rank_by_team_id.get(team.id),
@@ -2416,13 +2417,14 @@ class Tournament:
             )
 
         team_totals = self._team_trf_totals_after(after_round)
+        nickname_by_team_id = self._team_trf_nickname_map(tpn_by_team_id)
         max_tpn = max(tpn_by_team_id.values(), default=0)
         tpn_width = max(2, len(str(max_tpn)))
         results_width = max(team_player_count, 4)
         rid_width = results_width
         for tpn, team in teams_by_tpn:
             mp, gp = team_totals.get(team.id, (0.0, 0.0))
-            nickname = (team.name[:5] or 'T').upper()
+            nickname = nickname_by_team_id[team.id]
             header_801 = f'{tpn:>{tpn_width}} {nickname:<5} {mp:>4.1f} {gp:>4.1f}'
             header_802 = f'{tpn:>{tpn_width}} {nickname:<5} {mp:>6.1f} {gp:>6.1f}'
             blocks_801: list[str] = []
@@ -2490,6 +2492,30 @@ class Tournament:
             used.add(next_tpn)
             next_tpn += 1
         return tpn_by_team_id
+
+    def _team_trf_nickname_map(self, tpn_by_team_id: dict[int, int]) -> dict[int, str]:
+        """``team.id`` → unique 5-char TRF26 310 nickname. Derived from
+        the team name; same-club teams (e.g. ``Rennes Paul Bert A/B/C``)
+        all reduce to the same prefix, so on a collision the trailing
+        characters are replaced with a counter until unique (TRF26
+        requires distinct nicknames). Assigned in TPN order for
+        determinism. Shared by the 310 and 801/802 records so a team's
+        nickname is identical across them."""
+        nicknames: dict[int, str] = {}
+        used: set[str] = set()
+        teams_by_id = self.event.teams_by_id
+        for team_id in sorted(tpn_by_team_id, key=lambda t: tpn_by_team_id[t]):
+            team = teams_by_id.get(team_id)
+            base = ((team.name[:5] if team is not None else '') or 'T').upper()
+            nickname = base
+            seq = 0
+            while nickname in used:
+                seq += 1
+                tag = str(seq)
+                nickname = (base[: max(1, 5 - len(tag))] + tag)[:5]
+            used.add(nickname)
+            nicknames[team_id] = nickname
+        return nicknames
 
     def _team_pabs_record(
         self, *, after_round: int, tpn_by_team_id: dict[int, int]
