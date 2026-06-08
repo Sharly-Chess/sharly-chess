@@ -659,6 +659,10 @@ class TeamAdminController(BaseEventAdminController):
                     team.delete_round_lineup(round_, database)
                 else:
                     team.set_round_lineup(round_, slot_values, database)
+                # The line-up-average sort mode keys off the round 1
+                # line-up, so re-sort once it changes (self-guards for
+                # the other modes and once a round is paired).
+                tournament.resort_teams(database)
         return self._admin_event_teams_render(
             web_context,
             self._team_lineups_modal_context(web_context, requested_round=round_),

@@ -103,6 +103,11 @@
                                                     data-roster-index="{{ roster_ids.index(slot_player.id) if slot_player.id in roster_ids else -1 }}"
                                                 >
                                                     <i class="bi-grip-horizontal text-muted"></i>
+                                                    {% if warn_lineup_order and slot_player.id in roster_ids %}
+                                                        <span class="text-muted small">
+                                                            #{{ roster_ids.index(slot_player.id) + 1 }}
+                                                        </span>
+                                                    {% endif %}
                                                     <span>
                                                         {{ slot_player.full_name }}
                                                     </span>
@@ -132,6 +137,11 @@
                                         data-roster-index="{{ roster_ids.index(player.id) if player.id in roster_ids else -1 }}"
                                     >
                                         <i class="bi-grip-horizontal text-muted"></i>
+                                        {% if warn_lineup_order and player.id in roster_ids %}
+                                            <span class="text-muted small">
+                                                #{{ roster_ids.index(player.id) + 1 }}
+                                            </span>
+                                        {% endif %}
                                         <span>{{ player.full_name }}</span>
                                     </div>
                                 {% endfor %}
