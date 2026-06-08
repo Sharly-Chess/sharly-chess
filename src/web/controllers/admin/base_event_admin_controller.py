@@ -152,7 +152,7 @@ class BaseEventAdminWebContext(AdminWebContext):
                     'shortcut': f'{_("*** KEYBOARD SHORTCUT FOR THE PAIRINGS TAB")} from:body',
                 },
             }
-        if self.client.can_view_prizes_tab:
+        if self.client.can_view_prizes_tab and not event.is_team_event:
             nav_tabs |= {
                 'admin-event-prizes-tab': {
                     'title': _('Prizes *** WITH_SHORTCUT_INDICATION'),
