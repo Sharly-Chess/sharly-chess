@@ -208,20 +208,20 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
     @staticmethod
     def _primary_score_for(pairing_system_id: str | None) -> str:
         # Suisse / toutes rondes: match points. Molter: game points.
-        # Aller-retour isn't mentioned in the cup regs — treat it like
+        # A two-game match isn't mentioned in the cup regs — treat it like
         # a head-to-head 2-game match where the result hinges on game
         # points.
-        if pairing_system_id in ('MOLTER', 'TEAM_ALLER_RETOUR'):
+        if pairing_system_id in ('MOLTER', 'TEAM_TWO_GAME_MATCH'):
             return ScoreType.GAME_POINTS.value
         return ScoreType.MATCH_POINTS.value
 
     @staticmethod
     def _game_points_for(pairing_system_id: str | None) -> dict[int, float]:
         # Suisse / round-robin: wins-only (1 / 0 / 0) — draws are
-        # uncounted "X". Molter and the 2-team aller-retour count
+        # uncounted "X". Molter and the 2-team two-game match count
         # every game (1 / 0.5 / 0), the standard chess convention for
         # a head-to-head match.
-        if pairing_system_id in ('MOLTER', 'TEAM_ALLER_RETOUR'):
+        if pairing_system_id in ('MOLTER', 'TEAM_TWO_GAME_MATCH'):
             return _FFE_GAME_POINTS_MOLTER
         return _FFE_GAME_POINTS_SUISSE_STYLE
 
@@ -231,19 +231,19 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         return {
             'TEAM_SWISS': _FFE_SUISSE_TIE_BREAKS,
             'TEAM_ROUND_ROBIN': _FFE_SUISSE_TIE_BREAKS,
-            'TEAM_ALLER_RETOUR': _FFE_SUISSE_TIE_BREAKS,
+            'TEAM_TWO_GAME_MATCH': _FFE_SUISSE_TIE_BREAKS,
             'MOLTER': _FFE_MOLTER_TIE_BREAKS,
         }
 
     @override
     def rounds_for_pairing(self, pairing_system_id: str) -> int | None:
         # Phase rounds per pairing system (Loubatière / Parité):
-        # Swiss / Molter / single RR: 3 rounds; 2-team aller-retour: 2.
+        # Swiss / Molter / single RR: 3 rounds; 2-team two-game match: 2.
         return {
             'TEAM_SWISS': 3,
             'MOLTER': 3,
             'TEAM_ROUND_ROBIN': 3,
-            'TEAM_ALLER_RETOUR': 2,
+            'TEAM_TWO_GAME_MATCH': 2,
         }.get(pairing_system_id)
 
     @override
@@ -350,7 +350,7 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         self, team: 'Team', round_: int
     ) -> 'PointAdjustment | None':
         """A game lost by forfeit counts −1 game point. Only applies
-        under the wins-only Suisse / round-robin / aller-retour
+        under the wins-only Suisse / round-robin / two-game-match
         scoring — Molter keeps the standard 1 / 0.5 / 0."""
         tournament = team.tournament
         if tournament is None:

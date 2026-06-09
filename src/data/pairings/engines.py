@@ -928,7 +928,7 @@ class TeamSwissEngine(_TeamPairingBase):
         return pairs
 
 
-class TeamAllerRetourEngine(_TeamPairingBase):
+class TeamTwoGameMatchEngine(_TeamPairingBase):
     """Two-team home-and-away engine: exactly 2 teams meet for an even
     number of rounds, alternating colours. Round 1 = ``teams[0]`` (W)
     vs ``teams[1]`` (B); round 2 swaps; the pattern repeats for any

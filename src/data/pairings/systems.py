@@ -19,7 +19,7 @@ if TYPE_CHECKING:
         RoundRobinVariation,
         TeamSwissVariation,
         TeamRoundRobinVariation,
-        TeamAllerRetourVariation,
+        TeamTwoGameMatchVariation,
     )
     from data.tournament import Tournament
     from data.event import Event
@@ -315,14 +315,14 @@ class TeamSwissPairingSystem(PairingSystem['TeamSwissVariation']):
         return tournament.last_paired_round
 
 
-class TeamAllerRetourPairingSystem(PairingSystem['TeamAllerRetourVariation']):
+class TeamTwoGameMatchPairingSystem(PairingSystem['TeamTwoGameMatchVariation']):
     """Two-team mini-match: the same two teams meet for an even number
     of rounds, alternating colours each round. No home / away
     distinction — colours are the only thing that swaps."""
 
     @staticmethod
     def static_id() -> str:
-        return 'TEAM_ALLER_RETOUR'
+        return 'TEAM_TWO_GAME_MATCH'
 
     @staticmethod
     def static_name() -> str:
@@ -331,10 +331,10 @@ class TeamAllerRetourPairingSystem(PairingSystem['TeamAllerRetourVariation']):
     @override
     def variation_manager(
         self, event: 'Event'
-    ) -> EntityManager['TeamAllerRetourVariation']:
-        from data.pairings.managers import TeamAllerRetourVariationManager
+    ) -> EntityManager['TeamTwoGameMatchVariation']:
+        from data.pairings.managers import TeamTwoGameMatchVariationManager
 
-        return TeamAllerRetourVariationManager(event)
+        return TeamTwoGameMatchVariationManager(event)
 
     @property
     def allow_rounds_update_once_started(self) -> bool:
