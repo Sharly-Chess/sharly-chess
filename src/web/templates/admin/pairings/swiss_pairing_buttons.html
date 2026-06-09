@@ -135,7 +135,7 @@
             {% elif pairings_generation_disabled_message %}
                 {{ macros.tooltip_attributes('warning', pairings_generation_disabled_message, 'top') }}
             {% else %}
-                {{ macros.tooltip_attributes('info', _('Pair the unpaired players with each other.'), 'top') }}
+                {{ macros.tooltip_attributes('info', _('Pair the unpaired teams with each other.') if admin_tournament.is_team_tournament else _('Pair the unpaired players with each other.'), 'top') }}
             {% endif %}
         >
             <button
