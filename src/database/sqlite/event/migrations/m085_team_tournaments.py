@@ -119,6 +119,26 @@ class Migration(BaseMigration):
             '   `team`(`id`) ON DELETE CASCADE'
             ')'
         )
+        # Per-team, per-round bonus / penalty points (manual entry).
+        # ``mp_delta`` / ``gp_delta`` may be negative. Rule-set
+        # adjustments are computed live and are not stored here.
+        self.database.execute(
+            'CREATE TABLE `team_point_adjustment` ('
+            '   `id` INTEGER NOT NULL,'
+            '   `tournament_id` INTEGER NOT NULL,'
+            '   `team_id` INTEGER NOT NULL,'
+            '   `round` INTEGER NOT NULL,'
+            '   `mp_delta` REAL NOT NULL DEFAULT 0,'
+            '   `gp_delta` REAL NOT NULL DEFAULT 0,'
+            '   `reason` TEXT,'
+            '   PRIMARY KEY(`id` AUTOINCREMENT),'
+            '   FOREIGN KEY (`tournament_id`) REFERENCES '
+            '   `tournament`(`id`) ON DELETE CASCADE,'
+            '   FOREIGN KEY (`team_id`) REFERENCES '
+            '   `team`(`id`) ON DELETE CASCADE,'
+            '   UNIQUE(`tournament_id`, `team_id`, `round`)'
+            ')'
+        )
 
         # ALTER existing tables
         self.database.execute(

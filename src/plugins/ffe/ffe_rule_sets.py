@@ -20,9 +20,10 @@ future phases.
 from abc import ABC
 from typing import override, TYPE_CHECKING
 
-from common.i18n import _
+from common.i18n import _, ngettext
 from data.pairings.fixed_table import FixedPairingTable, TablePairing as P
 from data.rule_sets import RuleSet
+from data.rule_sets.rule_sets import PointAdjustment
 from utils.enum import (
     EventType,
     PlayerGender,
@@ -34,6 +35,7 @@ from utils.enum import (
 
 if TYPE_CHECKING:
     from data.team import Team
+    from data.team_board import TeamBoard
     from database.sqlite.event.event_store import StoredTournament
 
 
@@ -68,22 +70,44 @@ _FFE_GAME_POINTS_MOLTER: dict[int, float] = {
 }
 
 # Tie-break order for the Swiss / round-robin phases of the two FFE
-# team cups (Coupe Loubatière §4.4.a, Coupe de la Parité — same list):
-# match-point primary → game-points differential → game-points "pour"
-# → lowest own avg Elo. Same list applies to ``TEAM_SWISS`` and
-# ``TEAM_ROUND_ROBIN`` because the regulations bracket "Système Suisse
-# ou toutes rondes" together.
+# team cups: match-point primary → game-points differential →
+# game-points "pour" → lowest own avg Elo. Same list applies to
+# ``TEAM_SWISS`` and ``TEAM_ROUND_ROBIN`` because the regulations
+# bracket "Système Suisse ou toutes rondes" together.
 _FFE_SUISSE_TIE_BREAKS: list[tuple[str, dict]] = [
     ('ffe-GP-DIFFERENTIAL', {}),
     ('ffe-GP-FOR', {}),
     ('ffe-OWN-AVG-ELO', {}),
 ]
 
-# Coupe Loubatière §4.4.b — Molter: Berlin then lowest own avg Elo.
+# Molter phases: Berlin then lowest own avg Elo.
 _FFE_MOLTER_TIE_BREAKS: list[tuple[str, dict]] = [
     ('ffe-BERLIN', {}),
     ('ffe-OWN-AVG-ELO', {}),
 ]
+
+# Pairing systems that use the wins-only "Suisse-style" game-point
+# scheme — the only ones the forfeit penalty applies to.
+_FFE_SUISSE_SYSTEMS = frozenset(
+    {'TEAM_SWISS', 'TEAM_ROUND_ROBIN', 'TEAM_TWO_GAME_MATCH'}
+)
+
+# Results that mean a game was actually contested over the board, as
+# opposed to a forfeit, a bye, or an unplayed pairing.
+_FFE_PLAYED_RESULTS = frozenset(
+    {
+        Result.WIN,
+        Result.LOSS,
+        Result.DRAW,
+        Result.UNRATED_WIN,
+        Result.UNRATED_LOSS,
+        Result.UNRATED_DRAW,
+    }
+)
+
+# Per-board results that count as a game lost by forfeit for the side
+# that holds them.
+_FFE_FORFEIT_LOSS_RESULTS = frozenset({Result.FORFEIT_LOSS, Result.DOUBLE_FORFEIT})
 
 
 # 3 teams / 4 players — cup-specific Molter table used by both the
@@ -183,20 +207,20 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
 
     @staticmethod
     def _primary_score_for(pairing_system_id: str | None) -> str:
-        # Suisse / toutes rondes (§4.4.a): match points. Molter
-        # (§4.4.b): game points. Aller-retour isn't mentioned in the
-        # cup regs — treat it like a head-to-head 2-game match where
-        # the result hinges on game points.
+        # Suisse / toutes rondes: match points. Molter: game points.
+        # Aller-retour isn't mentioned in the cup regs — treat it like
+        # a head-to-head 2-game match where the result hinges on game
+        # points.
         if pairing_system_id in ('MOLTER', 'TEAM_ALLER_RETOUR'):
             return ScoreType.GAME_POINTS.value
         return ScoreType.MATCH_POINTS.value
 
     @staticmethod
     def _game_points_for(pairing_system_id: str | None) -> dict[int, float]:
-        # Suisse / round-robin: wins-only (1 / 0 / 0) — §4.1.a draws
-        # are uncounted "X". Molter and the 2-team aller-retour count
-        # every game (1 / 0.5 / 0) — §4.1.b and the standard chess
-        # convention for a head-to-head match.
+        # Suisse / round-robin: wins-only (1 / 0 / 0) — draws are
+        # uncounted "X". Molter and the 2-team aller-retour count
+        # every game (1 / 0.5 / 0), the standard chess convention for
+        # a head-to-head match.
         if pairing_system_id in ('MOLTER', 'TEAM_ALLER_RETOUR'):
             return _FFE_GAME_POINTS_MOLTER
         return _FFE_GAME_POINTS_SUISSE_STYLE
@@ -256,6 +280,134 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         Default: no constraint."""
         return []
 
+    @staticmethod
+    def _team_round_match(team: 'Team', round_: int) -> 'TeamBoard | None':
+        """The team's real (non-bye) team-match for ``round_``, or
+        ``None`` when the team sat out / wasn't paired that round."""
+        tournament = team.tournament
+        if tournament is None:
+            return None
+        for team_board in tournament.get_round_team_boards(round_):
+            stored = team_board.stored_team_board
+            if (
+                team.id in (stored.team_a_id, stored.team_b_id)
+                and not team_board.is_bye
+            ):
+                return team_board
+        return None
+
+    @staticmethod
+    def _team_board_breakdown(
+        team_board: 'TeamBoard', team_id: int
+    ) -> list[tuple[int, bool, bool]]:
+        """Per individual board, in board order, a tuple of
+        ``(index, team_forfeited, game_played)``:
+
+        - ``team_forfeited`` — the team didn't field a player on the
+          board, or its player there lost by forfeit.
+        - ``game_played`` — both teams fielded a player and the board
+          carries a real, contested result.
+        """
+        event = team_board.tournament.event
+        team_a_id = team_board.stored_team_board.team_a_id
+        team_b_id = team_board.stored_team_board.team_b_id
+        rows: list[tuple[int, bool, bool]] = []
+        for board in team_board.boards:
+            white_id = board.stored_board.white_player_id
+            black_id = board.stored_board.black_player_id
+            white_player = event.players_by_id.get(white_id) if white_id else None
+            black_player = event.players_by_id.get(black_id) if black_id else None
+            white_team = white_player.team_id if white_player else None
+            black_team = black_player.team_id if black_player else None
+            # A forfeited side is a hole (no player → no team), so infer
+            # it from the present side and the match's two teams —
+            # otherwise a hole on the team's own side is misread as the
+            # opponent and the forfeit goes uncounted.
+            if white_team is None and black_team is not None:
+                white_team = team_a_id if black_team == team_b_id else team_b_id
+            elif black_team is None and white_team is not None:
+                black_team = team_a_id if white_team == team_b_id else team_b_id
+            if team_id not in (white_team, black_team):
+                continue
+            team_is_white = white_team == team_id
+            if team_is_white:
+                team_player = board.optional_white_tournament_player
+                team_pairing = board.optional_white_pairing
+            else:
+                team_player = board.black_tournament_player
+                team_pairing = board.optional_black_pairing
+            team_result = team_pairing.result if team_pairing else Result.NO_RESULT
+            forfeited = team_player is None or team_result in _FFE_FORFEIT_LOSS_RESULTS
+            played = (
+                board.optional_white_tournament_player is not None
+                and board.black_tournament_player is not None
+                and board.result in _FFE_PLAYED_RESULTS
+            )
+            rows.append((board.index, forfeited, played))
+        return rows
+
+    def _forfeit_loss_penalty(
+        self, team: 'Team', round_: int
+    ) -> 'PointAdjustment | None':
+        """A game lost by forfeit counts −1 game point. Only applies
+        under the wins-only Suisse / round-robin / aller-retour
+        scoring — Molter keeps the standard 1 / 0.5 / 0."""
+        tournament = team.tournament
+        if tournament is None:
+            return None
+        if tournament.pairing_system.static_id() not in _FFE_SUISSE_SYSTEMS:
+            return None
+        team_board = self._team_round_match(team, round_)
+        if team_board is None:
+            return None
+        count = sum(
+            1
+            for _index, forfeited, _played in self._team_board_breakdown(
+                team_board, team.id
+            )
+            if forfeited
+        )
+        if not count:
+            return None
+        return PointAdjustment(
+            gp=-float(count),
+            explanation=ngettext(
+                '{n} game lost by forfeit, counted as -1.',
+                '{n} games lost by forfeit, counted as -1 each.',
+                count,
+            ).format(n=count),
+        )
+
+    def _following_board_played_penalty(
+        self, team: 'Team', round_: int
+    ) -> 'PointAdjustment | None':
+        """−1 for each board the team forfeited while a game was
+        actually played on a following (lower) board — i.e. the team
+        left a hole above a board it did field."""
+        team_board = self._team_round_match(team, round_)
+        if team_board is None:
+            return None
+        rows = self._team_board_breakdown(team_board, team.id)
+        played_indexes = [index for index, _f, played in rows if played]
+        if not played_indexes:
+            return None
+        last_played = max(played_indexes)
+        count = sum(
+            1 for index, forfeited, _p in rows if forfeited and index < last_played
+        )
+        if not count:
+            return None
+        return PointAdjustment(
+            gp=-float(count),
+            explanation=ngettext(
+                '{n} forfeited board above a board on which a game was '
+                'played, counted as -1.',
+                '{n} forfeited boards above a board on which a game was '
+                'played, counted as -1 each.',
+                count,
+            ).format(n=count),
+        )
+
     @override
     def form_defaults(self, pairing_system_id: str | None = None) -> dict[str, str]:
         gp = self._game_points_for(pairing_system_id)
@@ -283,15 +435,17 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
 class CoupeJeanClaudeLoubatiereRuleSet(_FfeTeamCupRuleSet):
     """FFE *Coupe Jean-Claude Loubatière* (C03) — 4-board team cup."""
 
-    # Règlement C03: players ≤1800 Elo for phase 1; later phases let
-    # phase-1 alumni back in regardless of rating. Surfaced as a
-    # warning so the arbiter judges case by case.
+    # Players ≤1800 Elo for phase 1; later phases let phase-1 alumni
+    # back in regardless of rating. Surfaced as a warning so the
+    # arbiter judges case by case.
     PLAYER_RATING_CAP = 1800
 
-    # §4.1.a scores a forfeit as -1 game point. Negative point values
-    # aren't representable in the TRF point system (bbpPairings derives
-    # match points from game points), so the penalty is deferred until
-    # it can be emitted via the TRF 299 field.
+    @override
+    def team_point_adjustment(
+        self, team: 'Team', round_: int
+    ) -> 'PointAdjustment | None':
+        # A game lost by forfeit counts -1 game point.
+        return self._forfeit_loss_penalty(team, round_)
 
     @property
     @override
@@ -328,10 +482,10 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
     enforced as a soft warning so the arbiter can override.
 
     No Suisse / round-robin tie-breaks are imposed: the official
-    departage at 4.4.a (differential → points pour → per-board
-    differential) is defined for the *whole competition* across
-    multiple phases, which Sharly Chess doesn't aggregate — the
-    arbiter picks per-phase tie-breaks if they need any.
+    departage (differential → points pour → per-board differential)
+    is defined for the *whole competition* across multiple phases,
+    which Sharly Chess doesn't aggregate — the arbiter picks per-phase
+    tie-breaks if they need any.
     """
 
     @property
@@ -343,6 +497,13 @@ class ChampionnatFemininN1N2RuleSet(_FfeTeamCupRuleSet):
     @override
     def tie_break_overrides_by_pairing(self) -> dict[str, list[tuple[str, dict]]]:
         return {'MOLTER': _FFE_MOLTER_TIE_BREAKS}
+
+    @override
+    def team_point_adjustment(
+        self, team: 'Team', round_: int
+    ) -> 'PointAdjustment | None':
+        # -1 when a game was played on a board below a forfeited one.
+        return self._following_board_played_penalty(team, round_)
 
     @staticmethod
     @override
@@ -390,9 +551,16 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
         msgs.extend(self._gender_balance_warnings(team))
         return msgs
 
+    @override
+    def team_point_adjustment(
+        self, team: 'Team', round_: int
+    ) -> 'PointAdjustment | None':
+        # -1 when a game was played on a board below a forfeited one.
+        return self._following_board_played_penalty(team, round_)
+
     @staticmethod
     def _gender_balance_warnings(team: 'Team') -> list[str]:
-        # Règlement C04 §1: the roster holds at most 3 men and 3 women,
+        # The roster holds at most 3 men and 3 women,
         # and each match fields 2 men + 2 women — so a roster needs at
         # least 2 of each gender to field a legal lineup, and no more
         # than 3 of either.
@@ -426,7 +594,7 @@ class CoupeDeLaPariteRuleSet(_FfeTeamCupRuleSet):
         if roster_size == 0:
             return []
         lineup_size = min(tournament.team_player_count, roster_size)
-        # Règlement C04 §1: lineup of 4 ≤ 8000 ; lineup of 3 < 6000.
+        # Lineup of 4 ≤ 8000 ; lineup of 3 < 6000.
         if lineup_size >= 4:
             cap = 8000
         elif lineup_size == 3:

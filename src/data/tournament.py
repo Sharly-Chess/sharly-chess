@@ -37,6 +37,7 @@ from database.sqlite.event.event_store import (
     StoredPlayer,
     StoredBoard,
     StoredTeamBoard,
+    StoredTeamPointAdjustment,
     StoredTournamentPlayer,
     StoredPairing,
     StoredTieBreak,
@@ -72,6 +73,7 @@ from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
 if TYPE_CHECKING:
     from data.event import Event
     from data.input_output.trf.trf_data import (
+        TrfAbnormalPointsAssignment,
         TrfAcceleratedRound,
         TrfOOdOTeamPairing,
         TrfRoundBye,
@@ -80,6 +82,7 @@ if TYPE_CHECKING:
         TrfTournament,
     )
     from data.rule_sets import RuleSet
+    from data.rule_sets.rule_sets import PointAdjustment
     from data.pairings import PairingVariation, PairingSystem
     from data.team import Team
     from data.tie_breaks.team_records import TeamRecord
@@ -537,6 +540,94 @@ class Tournament:
     def color_pattern(self) -> str | None:
         return self.stored_tournament.color_pattern
 
+    def stored_point_adjustment(
+        self, team_id: int, round_: int
+    ) -> 'StoredTeamPointAdjustment | None':
+        """The stored manual adjustment row for (team, round), or None."""
+        for adj in self.stored_tournament.stored_team_point_adjustments:
+            if adj.team_id == team_id and adj.round_ == round_:
+                return adj
+        return None
+
+    def manual_point_adjustment(self, team_id: int, round_: int) -> tuple[float, float]:
+        """Stored manual (MP, GP) bonus/penalty for (team, round)."""
+        adj = self.stored_point_adjustment(team_id, round_)
+        return (adj.mp_delta, adj.gp_delta) if adj else (0.0, 0.0)
+
+    def rule_set_point_adjustment(
+        self, team_id: int, round_: int
+    ) -> 'PointAdjustment | None':
+        """Rule-set-imposed adjustment for (team, round), or None."""
+        rule_set = self.rule_set
+        if rule_set is None:
+            return None
+        team = self.event.teams_by_id.get(team_id)
+        if team is None:
+            return None
+        return rule_set.team_point_adjustment(team, round_)
+
+    def effective_point_adjustment(
+        self, team_id: int, round_: int
+    ) -> tuple[float, float]:
+        """Combined manual + rule-set (MP, GP) adjustment for the team's
+        round. Folded into standings, tie-break records, screens and the
+        TRF 299 export."""
+        mp, gp = self.manual_point_adjustment(team_id, round_)
+        rule_set_adjustment = self.rule_set_point_adjustment(team_id, round_)
+        if rule_set_adjustment is not None:
+            mp += rule_set_adjustment.mp
+            gp += rule_set_adjustment.gp
+        return mp, gp
+
+    def set_manual_point_adjustment(
+        self,
+        team_id: int,
+        round_: int,
+        mp_delta: float,
+        gp_delta: float,
+        reason: str | None,
+        database: 'EventDatabase',
+    ) -> None:
+        """Upsert the manual (MP, GP) adjustment for (team, round) and
+        keep the in-memory stored list in sync."""
+        database.set_stored_team_point_adjustment(
+            self.id, team_id, round_, mp_delta, gp_delta, reason
+        )
+        adjustments = self.stored_tournament.stored_team_point_adjustments
+        adjustments[:] = [
+            adjustment
+            for adjustment in adjustments
+            if not (adjustment.team_id == team_id and adjustment.round_ == round_)
+        ]
+        if mp_delta or gp_delta or reason:
+            adjustments.append(
+                StoredTeamPointAdjustment(
+                    id=None,
+                    tournament_id=self.id,
+                    team_id=team_id,
+                    round_=round_,
+                    mp_delta=mp_delta,
+                    gp_delta=gp_delta,
+                    reason=reason,
+                )
+            )
+
+    def _point_adjustment_bound(self, after_round: int | None) -> int:
+        """Highest round whose adjustments count: the explicit bound, or
+        the current round for live views."""
+        bound = after_round if after_round is not None else self.current_round
+        return bound or 0
+
+    def _apply_point_adjustments_to_standings(
+        self, standings: dict[int, dict[str, Any]], after_round: int | None
+    ) -> None:
+        bound = self._point_adjustment_bound(after_round)
+        for round_ in range(1, bound + 1):
+            for team_id, entry in standings.items():
+                mp_adj, gp_adj = self.effective_point_adjustment(team_id, round_)
+                entry['mp'] += mp_adj
+                entry['gp'] += gp_adj
+
     def team_standings(self, *, after_round: int | None = None) -> list[dict[str, Any]]:
         """Compute team standings for this tournament, sorted by
         primary_score then secondary_score then team name.
@@ -597,6 +688,7 @@ class Tournament:
                             board.black_pairing.result.points(team_game_points)
                         )
                         standings[b_player.team_id]['played'] += 1
+            self._apply_point_adjustments_to_standings(standings, after_round)
             rows = list(standings.values())
             for row in rows:
                 row['tie_break_values'] = []
@@ -672,6 +764,7 @@ class Tournament:
                 if ent_b:
                     ent_b['mp'] += draw_mp
                     ent_b['draws'] += 1
+        self._apply_point_adjustments_to_standings(standings, after_round)
         rows = list(standings.values())
         primary = self.primary_score
 
@@ -979,6 +1072,31 @@ class Tournament:
             totals_gp[a_id] += a_gp
             totals_mp[b_id] += b_mp
             totals_gp[b_id] += b_gp
+
+        # Fold bonus/penalty points into totals (used by total-based
+        # tie-breaks and the secondary score) and into each round's match
+        # record (so MP/GP-sum tie-breaks like points-for / differential
+        # see them; board- and rating-based tie-breaks read board data and
+        # are unaffected).
+        from dataclasses import replace
+
+        adjustment_bound = self._point_adjustment_bound(after_round)
+        for team in self.teams:
+            for round_ in range(1, adjustment_bound + 1):
+                mp_adj, gp_adj = self.effective_point_adjustment(team.id, round_)
+                if not mp_adj and not gp_adj:
+                    continue
+                totals_mp[team.id] += mp_adj
+                totals_gp[team.id] += gp_adj
+                team_matches = matches_per_team[team.id]
+                for index, match in enumerate(team_matches):
+                    if match.round_ == round_:
+                        team_matches[index] = replace(
+                            match,
+                            own_mp=match.own_mp + mp_adj,
+                            own_gp=match.own_gp + gp_adj,
+                        )
+                        break
 
         records: list[TeamRecord] = []
         for team in self.teams:
@@ -2180,6 +2298,40 @@ class Tournament:
         trf.teams = trf_teams
         trf.num_teams = len(trf_teams)
         trf.encoded_type = self._team_trf_encoded_type()
+        trf.abnormal_points_assignments = self._team_abnormal_points_assignments(
+            after_round=after_round, tpn_by_team_id=tpn_map
+        )
+
+    def _team_abnormal_points_assignments(
+        self, *, after_round: int, tpn_by_team_id: dict[int, int]
+    ) -> 'list[TrfAbnormalPointsAssignment]':
+        """TRF26 299 records — the team bonus / penalty points actually
+        applied, one line per (team, round) carrying a non-zero
+        effective (MP, GP) delta (manual entry + rule-set). The single
+        pairing number is the team's TPN. On import the value is stored
+        as a manual adjustment (the rule set isn't carried by the TRF,
+        so nothing re-derives the automatic part)."""
+        from data.input_output.trf.trf_data import TrfAbnormalPointsAssignment
+
+        assignments: list[TrfAbnormalPointsAssignment] = []
+        for team in self.teams:
+            tpn = tpn_by_team_id.get(team.id)
+            if tpn is None:
+                continue
+            for round_ in range(1, after_round + 1):
+                mp, gp = self.effective_point_adjustment(team.id, round_)
+                if not mp and not gp:
+                    continue
+                assignments.append(
+                    TrfAbnormalPointsAssignment(
+                        type=' ',
+                        match_points=mp,
+                        game_points=gp,
+                        round=round_,
+                        pairing_numbers=[tpn],
+                    )
+                )
+        return assignments
 
     def _trf_individuals_point_system(self) -> dict[str, float]:
         """TRF26 162 record — game-point values per result symbol.

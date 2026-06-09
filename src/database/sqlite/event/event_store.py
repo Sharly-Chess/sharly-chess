@@ -156,6 +156,21 @@ class StoredTeamPairingBlock:
 
 
 @dataclass
+class StoredTeamPointAdjustment:
+    """Manual per-team, per-round bonus / penalty points. ``mp_delta``
+    and ``gp_delta`` may be negative. One row per (tournament, team,
+    round)."""
+
+    id: int | None
+    tournament_id: int
+    team_id: int
+    round_: int
+    mp_delta: float = 0.0
+    gp_delta: float = 0.0
+    reason: str | None = None
+
+
+@dataclass
 class StoredTournamentPlayer:
     tournament_id: int = 0
     player_id: int = 0
@@ -253,6 +268,9 @@ class StoredTournament:
     )
     stored_team_pairing_blocks: list[StoredTeamPairingBlock] = field(
         default_factory=list[StoredTeamPairingBlock]
+    )
+    stored_team_point_adjustments: list[StoredTeamPointAdjustment] = field(
+        default_factory=list[StoredTeamPointAdjustment]
     )
 
     # Plugins can add their own tournament data

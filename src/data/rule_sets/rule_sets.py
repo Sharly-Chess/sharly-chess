@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from utils.entity import IdentifiableEntity
@@ -8,6 +9,17 @@ if TYPE_CHECKING:
     from data.pairings.fixed_table import FixedPairingTable
     from data.team import Team
     from database.sqlite.event.event_store import StoredTournament
+
+
+@dataclass(frozen=True)
+class PointAdjustment:
+    """A bonus / penalty a rule set applies to a team for one round.
+    ``mp`` / ``gp`` may be negative. ``explanation`` is shown to the
+    arbiter (e.g. in the match-score dialog)."""
+
+    mp: float = 0.0
+    gp: float = 0.0
+    explanation: str = ''
 
 
 class RuleSet(IdentifiableEntity, ABC):
@@ -135,3 +147,12 @@ class RuleSet(IdentifiableEntity, ABC):
 
     def tie_breaks_for_pairing(self, pairing_id: str) -> list[tuple[str, dict]]:
         return self.tie_break_overrides_by_pairing.get(pairing_id, [])
+
+    def team_point_adjustment(
+        self, team: 'Team', round_: int
+    ) -> 'PointAdjustment | None':
+        """Bonus / penalty points this rule set assigns to ``team`` for
+        ``round_``, with a human-readable explanation. Returns ``None``
+        when the rule set imposes no adjustment (the default). Added on
+        top of any manual adjustment the arbiter enters."""
+        return None

@@ -94,6 +94,10 @@ class TrfTournamentImporter(FileTournamentImporter):
     # records. Applied to the team's bye envelope during team_board
     # reconstruction.
     _pending_manual_team_byes: dict[tuple[int, int], str]
+    # (round, TPN) → (mp_delta, gp_delta) from 299 records — the
+    # arbiter's manual team bonus / penalty points, applied once the
+    # teams are persisted and TPNs resolve to team ids.
+    _pending_point_adjustments: dict[tuple[int, int], tuple[float, float]]
 
     def load_stored_tournament(
         self, event: Event, stored_tournament: StoredTournament | None = None
@@ -128,6 +132,19 @@ class TrfTournamentImporter(FileTournamentImporter):
         # the team-board reconstruction step in
         # ``_write_stored_tournament`` to apply.
         self._pending_manual_team_byes = self._read_trf_manual_team_byes(trf_tournament)
+        # 299 records: manual team bonus / penalty points, keyed by
+        # (round, TPN). Applied once teams are persisted.
+        self._pending_point_adjustments = {}
+        for assignment in trf_tournament.abnormal_points_assignments:
+            if assignment.round is None:
+                continue
+            mp = assignment.match_points or 0.0
+            gp = assignment.game_points or 0.0
+            if not mp and not gp:
+                continue
+            for tpn in assignment.pairing_numbers:
+                if tpn:
+                    self._pending_point_adjustments[(assignment.round, tpn)] = (mp, gp)
 
         next_board_id = 1
         board_id_by_player_id_by_round: dict[int, dict[int, int]] = defaultdict(dict)
@@ -262,7 +279,7 @@ class TrfTournamentImporter(FileTournamentImporter):
             features.append(_('250 Accelerated rounds'))
         if tournament.prohibited_pairings:
             features.append(_('260 Prohibited pairings'))
-        if tournament.abnormal_points_assignments:
+        if tournament.abnormal_points_assignments and not tournament.teams:
             features.append(_('299 Abnormal assignment points'))
         if any(
             federation != event.federation
@@ -520,6 +537,13 @@ class TrfTournamentImporter(FileTournamentImporter):
             if a_team is None or b_team is None:
                 continue
             oodo_orientation[(round_, frozenset({a_team, b_team}))] = (a_team, b_team)
+        for (round_, tpn), (mp, gp) in self._pending_point_adjustments.items():
+            resolved_team_id = team_id_by_tpn.get(tpn)
+            if resolved_team_id is None:
+                continue
+            database.set_stored_team_point_adjustment(
+                tournament_id, resolved_team_id, round_, mp, gp, None
+            )
         pab_team_id_by_round: dict[int, int] = {}
         for round_, tpn in self._pending_pab_team_by_round.items():
             resolved = team_id_by_tpn.get(tpn)

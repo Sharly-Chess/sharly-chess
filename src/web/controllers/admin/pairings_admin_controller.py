@@ -487,8 +487,83 @@ class PairingsAdminController(BaseEventAdminController):
             {
                 'modal': 'team-pairing',
                 'team_board': team_board,
+                'team_a_adjustment': self._team_point_adjustment_context(
+                    tournament, team_board.team_a, round
+                ),
+                'team_b_adjustment': self._team_point_adjustment_context(
+                    tournament, team_board.team_b, round
+                ),
             },
         )
+
+    @staticmethod
+    def _team_point_adjustment_context(
+        tournament: 'Tournament', team: 'Team | None', round_: int
+    ) -> dict[str, Any] | None:
+        """Bonus/penalty data for one side of the match dialog: the
+        team's current manual MP/GP/reason plus any rule-set-imposed
+        adjustment and its explanation."""
+        if team is None:
+            return None
+        manual_mp, manual_gp, reason = 0.0, 0.0, ''
+        for adjustment in tournament.stored_tournament.stored_team_point_adjustments:
+            if adjustment.team_id == team.id and adjustment.round_ == round_:
+                manual_mp = adjustment.mp_delta
+                manual_gp = adjustment.gp_delta
+                reason = adjustment.reason or ''
+                break
+        rule_set_adjustment = tournament.rule_set_point_adjustment(team.id, round_)
+        return {
+            'team': team,
+            'mp': manual_mp,
+            'gp': manual_gp,
+            'reason': reason,
+            'rule_set_mp': rule_set_adjustment.mp if rule_set_adjustment else 0.0,
+            'rule_set_gp': rule_set_adjustment.gp if rule_set_adjustment else 0.0,
+            'rule_set_explanation': (
+                rule_set_adjustment.explanation if rule_set_adjustment else ''
+            ),
+        }
+
+    @patch(
+        path='/team-pairing/point-adjustments/'
+        '{event_uniq_id:str}/{tournament_id:int}/{round:int}/{team_board_id:int}',
+        name='admin-team-point-adjustments',
+        guards=[TournamentActionGuard(AuthAction.UPDATE_RESULTS)],
+        data=Body(media_type=RequestEncodingType.URL_ENCODED),
+    )
+    async def htmx_admin_team_point_adjustments(
+        self,
+        request: HTMXRequest,
+        tournament_id: int,
+        round: int,
+        team_board_id: int,
+        data: Annotated[
+            dict[str, str], Body(media_type=RequestEncodingType.URL_ENCODED)
+        ],
+    ) -> Template:
+        web_context = PairingsAdminWebContext(request, tournament_id, round)
+        tournament = web_context.get_admin_tournament()
+        team_board = tournament.team_boards_by_id.get(team_board_id)
+        if team_board is None:
+            raise NotFoundException(f'Team board {team_board_id} not found.')
+        sides = [('a', team_board.team_a), ('b', team_board.team_b)]
+        event = web_context.get_admin_event()
+        with EventDatabase(event.uniq_id, write=True) as database:
+            for prefix, team in sides:
+                if team is None:
+                    continue
+                mp_delta = WebContext.form_data_to_float(data, f'{prefix}_mp') or 0.0
+                gp_delta = WebContext.form_data_to_float(data, f'{prefix}_gp') or 0.0
+                reason = WebContext.form_data_to_str(data, f'{prefix}_reason') or None
+                tournament.set_manual_point_adjustment(
+                    team.id, round, mp_delta, gp_delta, reason, database
+                )
+        Message.success(request, _('Bonus / penalty points updated.'))
+        web_context = PairingsAdminWebContext(
+            request, tournament_id, round, reload_event=True
+        )
+        return self._admin_event_pairings_render(web_context)
 
     @delete(
         path='/team-pairing/unpair/'
