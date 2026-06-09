@@ -717,8 +717,8 @@ class Tournament:
                     case 'ZPB':
                         ent['mp'] += loss_mp
                         # Team-level forfeit: every board counts as a
-                        # forfeited game (FFE §4.1: ``-1`` per board
-                        # when the override is set, otherwise 0).
+                        # forfeited game, scored at the absent-board game
+                        # point value (the gp_zpb override, otherwise 0).
                         ent['gp'] += team_player_count * absent_gp_per_player
                         ent['losses'] += 1
                     case 'HPB':
@@ -947,9 +947,7 @@ class Tournament:
         Berlin, knockout BC/TBR/BBE)."""
         scores: list[float] = []
         for board in sorted(team_board.boards, key=lambda b: b.index):
-            white_id = board.stored_board.white_player_id
-            white_player = self.event.players_by_id.get(white_id) if white_id else None
-            white_team_id = white_player.team_id if white_player else None
+            white_team_id, _black_team_id = team_board.board_team_ids(board)
             white_pairing = board.optional_white_pairing
             white_pts = white_pairing.points if white_pairing is not None else 0.0
             black_pairing = board.optional_black_pairing

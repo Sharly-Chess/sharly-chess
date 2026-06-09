@@ -308,25 +308,9 @@ class _FfeTeamCupRuleSet(RuleSet, ABC):
         - ``game_played`` — both teams fielded a player and the board
           carries a real, contested result.
         """
-        event = team_board.tournament.event
-        team_a_id = team_board.stored_team_board.team_a_id
-        team_b_id = team_board.stored_team_board.team_b_id
         rows: list[tuple[int, bool, bool]] = []
         for board in team_board.boards:
-            white_id = board.stored_board.white_player_id
-            black_id = board.stored_board.black_player_id
-            white_player = event.players_by_id.get(white_id) if white_id else None
-            black_player = event.players_by_id.get(black_id) if black_id else None
-            white_team = white_player.team_id if white_player else None
-            black_team = black_player.team_id if black_player else None
-            # A forfeited side is a hole (no player → no team), so infer
-            # it from the present side and the match's two teams —
-            # otherwise a hole on the team's own side is misread as the
-            # opponent and the forfeit goes uncounted.
-            if white_team is None and black_team is not None:
-                white_team = team_a_id if black_team == team_b_id else team_b_id
-            elif black_team is None and white_team is not None:
-                black_team = team_a_id if white_team == team_b_id else team_b_id
+            white_team, black_team = team_board.board_team_ids(board)
             if team_id not in (white_team, black_team):
                 continue
             team_is_white = white_team == team_id

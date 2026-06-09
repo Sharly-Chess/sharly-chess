@@ -104,6 +104,28 @@ class TeamBoard:
             key=lambda board: board.index,
         )
 
+    def board_team_ids(self, board: 'Board') -> tuple[int | None, int | None]:
+        """The ``(white_team_id, black_team_id)`` for ``board`` within
+        this match. A forfeited side is a hole — no player, hence no
+        team — so it's inferred from the present side and the match's
+        two teams. Without this, every per-board team attribution would
+        mis-credit a forfeited board to the opponent whenever the
+        forfeiting team sat on the white side."""
+        players_by_id = self.tournament.event.players_by_id
+        w_id = board.stored_board.white_player_id
+        b_id = board.stored_board.black_player_id
+        white_player = players_by_id.get(w_id) if w_id else None
+        black_player = players_by_id.get(b_id) if b_id else None
+        white_team_id = white_player.team_id if white_player else None
+        black_team_id = black_player.team_id if black_player else None
+        team_a_id = self.stored_team_board.team_a_id
+        team_b_id = self.stored_team_board.team_b_id
+        if white_team_id is None and black_team_id is not None:
+            white_team_id = team_a_id if black_team_id == team_b_id else team_b_id
+        elif black_team_id is None and white_team_id is not None:
+            black_team_id = team_a_id if white_team_id == team_b_id else team_b_id
+        return white_team_id, black_team_id
+
     @property
     def game_points(self) -> tuple[float, float]:
         """(team_a_points, team_b_points) — sum of individual board
@@ -115,11 +137,7 @@ class TeamBoard:
         team_a_id = self.stored_team_board.team_a_id
         team_game_points = self.tournament.team_game_points
         for board in self.boards:
-            w_id = board.stored_board.white_player_id
-            white_player = (
-                self.tournament.event.players_by_id.get(w_id) if w_id else None
-            )
-            white_team_id = white_player.team_id if white_player else None
+            white_team_id, _black_team_id = self.board_team_ids(board)
             white_pairing = board.optional_white_pairing
             white_pts = (
                 white_pairing.result.points(team_game_points) if white_pairing else 0.0
