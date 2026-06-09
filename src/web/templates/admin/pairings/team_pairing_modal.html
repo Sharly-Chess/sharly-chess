@@ -1,10 +1,17 @@
 {% import '/common/macros.j2' as macros with context %}
 
+{# Admin team-match modal (opened from the match button on the pairings
+   tab): sober styling with a normal Bootstrap button, matching
+   pairing_modal.html. #}
+
 {% set _a_gp, _b_gp = team_board.game_points %}
-<div class="modal-dialog modal-dialog-scrollable pairing-modal">
-    <div class="modal-content bg-secondary-subtle">
-        <div class="modal-header d-flex flex-column mb-1">
-            <h2 class="modal-title fs-4 fw-bold text-center w-100">
+<div
+    class="modal-dialog modal-dialog-scrollable"
+    style="--bs-modal-width: min(95vw, 480px);"
+>
+    <div class="modal-content">
+        <div class="modal-header d-flex flex-column">
+            <h2 class="modal-title fs-5 fw-bold text-center w-100">
                 {{ team_board.team_a.name }}
                 {% if team_board.team_b %}
                     <span class="mx-2">{{ '%g'|format(_a_gp) }} – {{ '%g'|format(_b_gp) }}</span>
@@ -13,43 +20,48 @@
                     <span class="mx-2">— {{ _('EXEMPT') }}</span>
                 {% endif %}
             </h2>
-            <div>{{ _('Round #%(round)d', round=team_board.round) }}</div>
+            <div class="text-muted small w-100 text-center">
+                {{ _('Round #%(round)d', round=team_board.round) }}
+            </div>
         </div>
         <div class="modal-body">
-            <div class="row gy-2 gx-3 d-flex align-items-center justify-content-center">
-                {% set action = 'MANUAL_UNPAIRING' %}
-                {% set action_route = url_for(
-                    'admin-pairings-unpair-team-board',
-                    event_uniq_id=admin_event.uniq_id,
-                    tournament_id=admin_tournament.id,
-                    round=team_board.round,
-                    team_board_id=team_board.id,
-                ) %}
-                {% set has_played_result = namespace(value=false) %}
-                {% for board in team_board.boards %}
-                    {% if
-                        not board.no_result
-                        and board.optional_white_tournament_player is not none
-                        and board.black_tournament_player is not none
-                    %}
-                        {% set has_played_result.value = true %}
-                    {% endif %}
-                {% endfor %}
+            {% set action = 'MANUAL_UNPAIRING' %}
+            {% set action_route = url_for(
+                'admin-pairings-unpair-team-board',
+                event_uniq_id=admin_event.uniq_id,
+                tournament_id=admin_tournament.id,
+                round=team_board.round,
+                team_board_id=team_board.id,
+            ) %}
+            {% set has_played_result = namespace(value=false) %}
+            {% for board in team_board.boards %}
+                {% if
+                    not board.no_result
+                    and board.optional_white_tournament_player is not none
+                    and board.black_tournament_player is not none
+                %}
+                    {% set has_played_result.value = true %}
+                {% endif %}
+            {% endfor %}
+            {% set unpair_disabled = (
+                action not in existing_actions
+                or has_played_result.value
+                or not client.can_unpair_boards(admin_tournament.id)
+            ) %}
+            {% if unpair_disabled and has_played_result.value %}
+                <span class="d-grid" {{ macros.tooltip_attributes(
+                    'info',
+                    _('Clear board results between players first before unpairing.'),
+                    'top'
+                ) }}>
+            {% else %}
+                <div class="d-grid">
+            {% endif %}
                 <button
-                    class="admin-result-button danger col-6 ms-auto me-auto btn fs-6 fw-bold p-3"
-                    {% if
-                        action not in existing_actions
-                        or has_played_result.value
-                        or not client.can_unpair_boards(admin_tournament.id)
-                    %}
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    {% if unpair_disabled %}
                         disabled
-                        {% if has_played_result.value %}
-                            {{ macros.tooltip_attributes(
-                                'info',
-                                _('Clear board results between players first before unpairing.'),
-                                'top'
-                            ) }}
-                        {% endif %}
                     {% else %}
                         {% if action in allowed_actions %}
                             hx-delete="{{ action_route }}"
@@ -69,11 +81,13 @@
                         hx-indicator="#please-wait"
                     {% endif %}
                 >
-                    <div class="d-flex align-items-center justify-content-center gap-2">
-                        {{ _('UNPAIR') }}
-                    </div>
+                    {{ _('Unpair') }}
                 </button>
-            </div>
+            {% if unpair_disabled and has_played_result.value %}
+                </span>
+            {% else %}
+                </div>
+            {% endif %}
         </div>
         <div class="modal-footer">
             <button
@@ -81,7 +95,7 @@
                 class="btn btn-secondary text-nowrap"
                 data-bs-dismiss="modal"
             >
-                <i class="bi-x-circle-fill"></i>
+                <i class="bi-x-circle-fill pe-1"></i>
                 {{ _('Close') }}
             </button>
         </div>

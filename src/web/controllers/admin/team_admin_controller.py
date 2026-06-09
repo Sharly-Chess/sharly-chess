@@ -936,13 +936,19 @@ class TeamAdminController(BaseEventAdminController):
 
         if action == FormAction.UPDATE:
             existing_team = web_context.get_admin_team()
-            if (
-                tournament_id != existing_team.tournament_id
-                and existing_team.has_been_paired
-            ):
-                errors['tournament_id'] = _(
-                    "This team has already been paired and can't change tournament."
-                )
+            if existing_team.has_been_paired:
+                # The tournament field is disabled for paired teams, so it
+                # submits nothing — preserve the current tournament. Only
+                # a (bypassed) explicit different value is an error.
+                if (
+                    tournament_id is not None
+                    and tournament_id != existing_team.tournament_id
+                ):
+                    errors['tournament_id'] = _(
+                        "This team has already been paired and can't change tournament."
+                    )
+                else:
+                    tournament_id = existing_team.tournament_id
 
         if errors:
             return None, errors
