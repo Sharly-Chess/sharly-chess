@@ -84,7 +84,7 @@ class Team:
         return captain
 
     @property
-    def is_paired(self) -> bool:
+    def has_been_paired(self) -> bool:
         """True if this team has been paired in at least one round.
         Used to lock cross-tournament drag.
 

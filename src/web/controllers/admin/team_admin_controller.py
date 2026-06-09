@@ -842,7 +842,7 @@ class TeamAdminController(BaseEventAdminController):
                     team = event.teams_by_id.get(team_id)
                     if team is None:
                         continue
-                    if team.is_paired and team.tournament_id != tournament_id:
+                    if team.has_been_paired and team.tournament_id != tournament_id:
                         continue
                     if team.tournament_id != tournament_id:
                         team.set_tournament(tournament_id, database)

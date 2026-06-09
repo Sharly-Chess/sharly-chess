@@ -812,6 +812,14 @@ class PlayerAdminController(BaseEventAdminController):
                 tournaments.insert(0, admin_player.single_tournament)
         tournament_options |= web_context.get_tournament_options(tournaments)
 
+        # A player already placed on a board can't change team — moving
+        # them would orphan their board(s). Lock the team picker then.
+        team_locked = (
+            event.is_team_event
+            and admin_player is not None
+            and admin_player.has_been_paired
+        )
+
         team_options: dict[str, str | dict[str, str]] = {'': '-'}
         if event.is_team_event:
             # Group teams by tournament so the picker matches the
@@ -873,6 +881,7 @@ class PlayerAdminController(BaseEventAdminController):
             'federation_options': cls._get_federation_options(),
             'tournament_options': tournament_options,
             'team_options': team_options,
+            'team_locked': team_locked,
             'is_team_event': event.is_team_event,
             'selected_data_source': SessionPlayersActiveDataSource(request).get(),
             'plugin_templates_by_section': plugin_templates_by_section,
@@ -1065,6 +1074,19 @@ class PlayerAdminController(BaseEventAdminController):
             team_id = WebContext.form_data_to_int(data, field)
             if team_id and team_id not in event.teams_by_id:
                 errors[field] = _('Unknown team.')
+            elif team_id:
+                target_team = event.teams_by_id[team_id]
+                player = web_context.admin_player
+                already_on_team = player is not None and player.team_id == team_id
+                max_size = target_team.roster_max_size
+                if (
+                    not already_on_team
+                    and max_size is not None
+                    and len(target_team.players) >= max_size
+                ):
+                    errors[field] = _(
+                        'Team [{team}] is full ({max} players max).'
+                    ).format(team=target_team.name, max=max_size)
         else:
             tournament: Tournament | None = None
             field = 'tournament_id'
@@ -1222,6 +1244,11 @@ class PlayerAdminController(BaseEventAdminController):
             federation=WebContext.form_data_to_str(data, 'federation') or '',
             club=WebContext.form_data_to_str(data, 'club') or '',
             fixed=WebContext.form_data_to_int(data, 'fixed'),
+            # Carry the existing team membership through the rebuild; team
+            # changes are applied separately (and skipped for paired
+            # players) so it must not be wiped here.
+            team_id=player.team_id if player else None,
+            team_index=player.team_index if player else None,
             plugin_data=plugin_data,
             check_in=(
                 player.check_in
@@ -1331,7 +1358,7 @@ class PlayerAdminController(BaseEventAdminController):
                 web_context, action, data=data, errors=errors
             )
         event.update_player(player, stored_player)
-        if event.is_team_event:
+        if event.is_team_event and not player.has_been_paired:
             team_id = WebContext.form_data_to_int(data, 'team_id')
             new_team = event.teams_by_id.get(team_id) if team_id else None
             current_team = player.team
@@ -1345,14 +1372,11 @@ class PlayerAdminController(BaseEventAdminController):
                         for affected in (current_team, new_team):
                             if affected is not None and affected.tournament:
                                 affected.tournament.resort_teams(database)
-                except RosterFullError as err:
-                    Message.warning(
-                        request,
-                        _(
-                            'Team [{team}] is full ({max} players max) — '
-                            'player not moved.'
-                        ).format(team=err.team.name, max=err.max_size),
-                    )
+                except RosterFullError:
+                    # Normally prevented by _validate_player_form_data
+                    # (which keeps the modal open with a field error);
+                    # this is just a safety net against races.
+                    pass
         else:
             tournament_id = WebContext.form_data_to_int(data, 'tournament_id') or 0
             tournament = event.tournaments_by_id[tournament_id]

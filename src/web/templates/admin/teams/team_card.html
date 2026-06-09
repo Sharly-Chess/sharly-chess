@@ -122,7 +122,9 @@
                 <ol class="mb-0 ps-3">
                     {% for player in team.players %}
                         <li>
-                            {{ player.full_name }}
+                            {% with tournament_player=player.optional_single_tournament_player %}
+                                {% include '/admin/player_link.html' %}
+                            {% endwith %}
                             {% if _captain and _captain.id == player.id %}
                                 <i
                                     class="bi-star-fill text-warning ms-1"
@@ -198,7 +200,11 @@
                     <ol class="mb-0 ps-3">
                         {% for player in current_lineup %}
                             {% if player %}
-                                <li>{{ player.full_name }}</li>
+                                <li>
+                                    {% with tournament_player=player.optional_single_tournament_player %}
+                                        {% include '/admin/player_link.html' %}
+                                    {% endwith %}
+                                </li>
                             {% else %}
                                 <li class="text-muted">—</li>
                             {% endif %}
