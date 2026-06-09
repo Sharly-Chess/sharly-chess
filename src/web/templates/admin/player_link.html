@@ -11,6 +11,17 @@
             data-bs-toggle="modal"
             data-bs-target="#modal-wrapper"
         >{{ full_name }}{{ rating_suffix }}</a>
+    {% elif player is defined and player and client.can_update_players %}
+        {# Event-level player (no tournament): no record to show, so the
+           name opens the edit modal instead. #}
+        <a
+            class="player-link{% if secondary_link %} player-secondary-link{% endif %}"
+            hx-get="{{ url_for('admin-player-modal', action='update', event_uniq_id=admin_event.uniq_id, player_id=player.id) }}"
+            hx-target="body"
+            hx-indicator="#please-wait"
+            data-bs-toggle="modal"
+            data-bs-target="#modal-wrapper"
+        >{{ full_name }}{{ rating_suffix }}</a>
     {% else %}
         {{ full_name }}{{ rating_suffix }}
     {% endif %}

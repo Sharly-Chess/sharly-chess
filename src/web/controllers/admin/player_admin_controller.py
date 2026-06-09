@@ -808,8 +808,9 @@ class PlayerAdminController(BaseEventAdminController):
                 tournament_options |= {'': '-'}
         else:
             assert admin_player is not None
-            if admin_player.single_tournament not in tournaments:
-                tournaments.insert(0, admin_player.single_tournament)
+            player_tournament = admin_player.optional_single_tournament
+            if player_tournament is not None and player_tournament not in tournaments:
+                tournaments.insert(0, player_tournament)
         tournament_options |= web_context.get_tournament_options(tournaments)
 
         # A player already placed on a board can't change team — moving

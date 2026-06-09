@@ -2551,11 +2551,8 @@ class Tournament:
             for board in team_board.boards:
                 if board.index != 0:
                     continue
-                white_tp_for_color = board.optional_white_tournament_player
-                if (
-                    white_tp_for_color is not None
-                    and white_tp_for_color.team_id == stb.team_a_id
-                ):
+                white_team_id, _black_team_id = team_board.board_team_ids(board)
+                if white_team_id == stb.team_a_id:
                     color_a, color_b = 'w', 'b'
                 else:
                     color_a, color_b = 'b', 'w'
