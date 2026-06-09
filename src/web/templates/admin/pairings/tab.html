@@ -454,6 +454,26 @@
             }
         }
 
+        // Survives HTMX body swaps (manual / complementary pairing
+        // re-render) so collapsed team blocks stay collapsed. Defined at
+        // script scope so afterSwapHandler can re-apply it after a swap.
+        window.collapsedTeamBlocks = window.collapsedTeamBlocks || new Set();
+        function syncTeamBlockChevrons() {
+            $("tr.team-block-header").each(function () {
+                const targetId = $(this).data("block-id");
+                const key = String($(this).data("collapse-key"));
+                const el = document.getElementById(targetId);
+                if (!el) return;
+                if (window.collapsedTeamBlocks.has(key)) {
+                    el.classList.add("team-block-body-collapsed");
+                }
+                const isExpanded = !el.classList.contains("team-block-body-collapsed");
+                this.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+                $(this).find(".team-block-chevron")
+                    .toggleClass("team-block-chevron-collapsed", !isExpanded);
+            });
+        }
+
         function afterSwapHandler(e) {
             // If we've swapped a row element, process the next key
             if (e.detail.elt?.dataset?.boardId) {
@@ -510,17 +530,6 @@
                 highlightBoardWithError(e.detail.board_id);
             });
             $(document).on("input.search", "#search-player", searchPlayerHandler);
-            function syncTeamBlockChevrons() {
-                $("tr.team-block-header").each(function () {
-                    const targetId = $(this).data("block-id");
-                    const el = document.getElementById(targetId);
-                    if (!el) return;
-                    const isExpanded = !el.classList.contains("team-block-body-collapsed");
-                    this.setAttribute("aria-expanded", isExpanded ? "true" : "false");
-                    $(this).find(".team-block-chevron")
-                        .toggleClass("team-block-chevron-collapsed", !isExpanded);
-                });
-            }
             syncTeamBlockChevrons();
 
             $(document).off("click.team-block-collapse");
@@ -532,6 +541,8 @@
                 if (!el) return;
                 const willCollapse = !el.classList.contains("team-block-body-collapsed");
                 el.classList.toggle("team-block-body-collapsed", willCollapse);
+                const key = String($(this).data("collapse-key"));
+                window.collapsedTeamBlocks[willCollapse ? "add" : "delete"](key);
                 this.setAttribute("aria-expanded", willCollapse ? "false" : "true");
                 $(this).find(".team-block-chevron")
                     .toggleClass("team-block-chevron-collapsed", willCollapse);

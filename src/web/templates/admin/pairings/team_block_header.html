@@ -14,6 +14,7 @@
     <tr
         class="team-block-header header"
         data-block-id="team-block-body-{{ team_board.id }}"
+        data-collapse-key="{{ team_board.team_a.id }}-{{ team_board.team_b.id if team_board.team_b else 'bye' }}"
         aria-expanded="true"
         style="cursor: pointer;"
     >
