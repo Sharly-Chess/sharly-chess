@@ -93,10 +93,18 @@ class TeamAdminController(BaseEventAdminController):
             event.tournaments_by_id.values(), key=lambda t: (t.index, t.name)
         ):
             tournament_options[str(tournament.id)] = tournament.name
+        # A team already paired can't change tournament — moving it would
+        # orphan its boards.
+        tournament_locked = (
+            action == FormAction.UPDATE
+            and web_context.admin_team is not None
+            and web_context.admin_team.has_been_paired
+        )
         return {
             'modal': 'team',
             'action': action,
             'tournament_options': tournament_options,
+            'tournament_locked': tournament_locked,
             'add_other_active': SessionTeamsAddOtherActive(web_context.request).get(),
             'data': data,
             'errors': errors or {},
@@ -925,6 +933,16 @@ class TeamAdminController(BaseEventAdminController):
                 if tournament_id not in event.tournaments_by_id:
                     errors[field] = _('Unknown tournament.')
                     tournament_id = None
+
+        if action == FormAction.UPDATE:
+            existing_team = web_context.get_admin_team()
+            if (
+                tournament_id != existing_team.tournament_id
+                and existing_team.has_been_paired
+            ):
+                errors['tournament_id'] = _(
+                    "This team has already been paired and can't change tournament."
+                )
 
         if errors:
             return None, errors

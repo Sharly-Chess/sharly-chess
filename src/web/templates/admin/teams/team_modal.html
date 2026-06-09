@@ -54,6 +54,11 @@
                                 'or leave unassigned.'
                             ),
                             select_options=tournament_options,
+                            disabled=tournament_locked,
+                            input_tooltip=_(
+                                'This team has already been paired; its '
+                                'tournament cannot be changed.'
+                            ) if tournament_locked else '',
                             data=data, errors=errors
                         ) }}
                     </div>
