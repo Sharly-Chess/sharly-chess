@@ -87,7 +87,11 @@
                             data=data, errors=errors
                         ) }}
                     </div>
-                    <div class="col-12 col-md-6">
+                    <div
+                        class="col-12 col-md-6"
+                        id="allow-multi-tournament-players-col"
+                        {% if data['event_type'] == 'TEAM' %}style="display: none;"{% endif %}
+                    >
                         {{ admin_macros.switch_input(
                             name='allow_multi_tournament_players',
                             label='',
@@ -349,6 +353,12 @@
                             $('#plugins-container').toggle($('.plugin-container:visible').length > 0);
                         });
                         triggerModalInitEvent('#federation');
+                        // Multi-tournament players make no sense for team
+                        // events — hide the switch when the type is TEAM.
+                        $('#event-type').change(function () {
+                            $('#allow-multi-tournament-players-col')
+                                .toggle($(this).val() !== 'TEAM');
+                        });
                     </script>
                 </span>
             </form>
