@@ -456,7 +456,9 @@ class Event:
         with EventDatabase(self.uniq_id, True) as database:
             database.delete_stored_player(player.id)
         del self.players_by_id[player.id]
-        del player.single_tournament.tournament_players_by_id[player.id]
+        tournament = player.optional_single_tournament
+        if tournament is not None:
+            del tournament.tournament_players_by_id[player.id]
         plugin_manager.hook_for_event(self, 'on_player_deleted')(player=player)
 
     def update_player(self, player: Player, new_stored_player: StoredPlayer):
