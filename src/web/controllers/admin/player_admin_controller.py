@@ -2626,6 +2626,18 @@ class PlayerAdminController(BaseEventAdminController):
             },
         )
 
+    @staticmethod
+    def _players_export_sort_key(player: Player) -> Any:
+        if player.event.is_team_event:
+            return (
+                player.event.teams_by_id[player.team_id].name
+                if player.team_id
+                else '|',  # players with no team at the end
+                player.team_index,
+            )
+        else:
+            return player.last_name, player.first_name
+
     @get(
         path=[
             '/event-export-players/{event_uniq_id:str}/{exporter_id:str}',
@@ -2651,6 +2663,7 @@ class PlayerAdminController(BaseEventAdminController):
                 for player_id in search_results
                 if player_id in event.players_by_id
             ]
+        players = sorted(players, key=self._players_export_sort_key)
         try:
             exporter = PlayerExporterManager().get_object(exporter_id)
         except KeyError:
