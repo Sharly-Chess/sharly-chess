@@ -14,7 +14,8 @@ SHARLY_CHESS_VERSION: Version = Version(importlib.metadata.version(APP_NAME))
 
 # True when the program is running in a development environment, False if running as an EXE file.
 # We also consider Flatpak as a non-development environment.
-DEVEL_ENV: bool = not getattr(sys, 'frozen', False) and not os.environ.get('FLATPAK_ID')
+_FROZEN: bool = getattr(sys, 'frozen', False) or '__compiled__' in globals()
+DEVEL_ENV: bool = not _FROZEN and not os.environ.get('FLATPAK_ID')
 TEST_ENV: bool = os.getenv('TEST_ENV') == 'true' or Path(sys.argv[0]).stem == 'pytest'
 
 # True when experimental features are enabled, False otherwise.
@@ -61,6 +62,10 @@ def app_base_dir() -> Path:
     meipass = getattr(sys, '_MEIPASS', None)
     if meipass:
         return Path(meipass)
+
+    # Nuitka standalone/app: resources sit beside the executable (Contents/MacOS in a bundle)
+    if '__compiled__' in globals():
+        return Path(sys.argv[0]).resolve().parent
 
     # macOS .app onedir
     try:

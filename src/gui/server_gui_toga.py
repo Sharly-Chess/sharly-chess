@@ -684,6 +684,18 @@ class SharlyChessServerToga(toga.App):
         )
         self.serve_task = loop.create_task(engine.serve())
 
+        def _log_serve_result(task: asyncio.Task) -> None:
+            if task.cancelled():
+                return
+            exc = task.exception()
+            if exc is not None:
+                import traceback
+
+                print('=== SERVER TASK CRASHED ===', file=sys.stderr)
+                traceback.print_exception(type(exc), exc, exc.__traceback__)
+
+        self.serve_task.add_done_callback(_log_serve_result)
+
         try:
             loop.run_forever()
         finally:
