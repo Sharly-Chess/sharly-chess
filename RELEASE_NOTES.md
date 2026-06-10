@@ -18,6 +18,11 @@
 - Added support for norm exemption 1.4.2c (last round forfeit as loss) (4.2.0)
 - Added custom team ranking documents (4.2.0)
 
+## Screens
+
+- Restored check-in on input screens (4.2.0)
+- Fixed default global background color (4.2.1)
+
 ## _Sharly-Chess.com_
 
 - Added missing timeouts (4.2.0)
