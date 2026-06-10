@@ -585,7 +585,7 @@ msgstr "Valeur inconnue (attendu : {expected})."
 msgid "Unknown value [{value}]"
 msgstr "Valeur [{value}] inconnue."
 
-msgid "Unrated *** SINGULAR"
+msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
 msgstr "Non-classé·e"
 
 msgid "Up to date"
@@ -653,4 +653,14 @@ msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
 msgstr[0] "{count} ligue représentée"
 msgstr[1] "{count} ligues représentées"
+
+msgid "{n} forfeited board above a board on which a game was played, counted as -1."
+msgid_plural "{n} forfeited boards above a board on which a game was played, counted as -1 each."
+msgstr[0] "{n} échiquier après un échiquier perdu par forfait, compté -1."
+msgstr[1] "{n} échiquiers après un échiquier perdu par forfait, comptés -1 chacun."
+
+msgid "{n} game lost by forfeit, counted as -1."
+msgid_plural "{n} games lost by forfeit, counted as -1 each."
+msgstr[0] "{n} partie perdue par forfait, comptée -1."
+msgstr[1] "{n} parties perdues par forfait, comptées -1."
 

@@ -585,7 +585,7 @@ msgstr ""
 msgid "Unknown value [{value}]"
 msgstr ""
 
-msgid "Unrated *** SINGULAR"
+msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
 msgstr "Unrated"
 
 msgid "Up to date"
@@ -651,6 +651,16 @@ msgstr ""
 
 msgid "{count} league represented"
 msgid_plural "{count} leagues represented"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{n} forfeited board above a board on which a game was played, counted as -1."
+msgid_plural "{n} forfeited boards above a board on which a game was played, counted as -1 each."
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "{n} game lost by forfeit, counted as -1."
+msgid_plural "{n} games lost by forfeit, counted as -1 each."
 msgstr[0] ""
 msgstr[1] ""
 

@@ -50,7 +50,7 @@
                                 <div class="fw-bold">{{ adj.team.name }}</div>
                                 <div class="row g-2">
                                     <div class="col-3">
-                                        <label class="form-label small mb-0">{{ _('MP') }}</label>
+                                        <label class="form-label small mb-0">{{ _('MP *** MATCH POINTS') }}</label>
                                         <input
                                             class="form-control form-control-sm"
                                             type="number" step="0.5"
@@ -59,7 +59,7 @@
                                         >
                                     </div>
                                     <div class="col-3">
-                                        <label class="form-label small mb-0">{{ _('GP') }}</label>
+                                        <label class="form-label small mb-0">{{ _('GP *** GAME POINTS') }}</label>
                                         <input
                                             class="form-control form-control-sm"
                                             type="number" step="0.5"
@@ -82,8 +82,8 @@
                                         <i class="bi-exclamation-triangle-fill"></i>
                                         <div>
                                             <div class="fw-bold">
-                                                {{ _('Rule set applied') }}:
-                                                {% if adj.rule_set_mp %}{{ '%+g'|format(adj.rule_set_mp) }}&nbsp;{{ _('MP') }}{% endif %}{% if adj.rule_set_mp and adj.rule_set_gp %}, {% endif %}{% if adj.rule_set_gp %}{{ '%+g'|format(adj.rule_set_gp) }}&nbsp;{{ _('GP') }}{% endif %}
+                                                {{ _('%(string)s:', string=_('Rule set applied')) }}
+                                                {% if adj.rule_set_mp %}{{ '%+g'|format(adj.rule_set_mp) }}&nbsp;{{ _('MP *** MATCH POINTS') }}{% endif %}{% if adj.rule_set_mp and adj.rule_set_gp %}, {% endif %}{% if adj.rule_set_gp %}{{ '%+g'|format(adj.rule_set_gp) }}&nbsp;{{ _('GP *** GAME POINTS') }}{% endif %}
                                             </div>
                                             {% if adj.rule_set_explanation %}
                                                 <div>{{ adj.rule_set_explanation }}</div>

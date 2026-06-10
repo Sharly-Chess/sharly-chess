@@ -1233,7 +1233,7 @@ class StatisticsPrintDocument(PrintDocument):
         }
 
         if estimated_count:
-            rows[_('Unrated *** PLURAL')] = estimated_count
+            rows[_('Unrated *** PLURAL FOR UNRATED PLAYERS')] = estimated_count
 
         non_estimated_players = [
             player

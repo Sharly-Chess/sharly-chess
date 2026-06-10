@@ -945,7 +945,7 @@ class TeamAdminController(BaseEventAdminController):
                     and tournament_id != existing_team.tournament_id
                 ):
                     errors['tournament_id'] = _(
-                        "This team has already been paired and can't change tournament."
+                        'This team has already been paired; its tournament cannot be changed.'
                     )
                 else:
                     tournament_id = existing_team.tournament_id

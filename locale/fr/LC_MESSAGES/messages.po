@@ -308,18 +308,6 @@ msgstr "/<moves>"
 msgid "/move"
 msgstr "/cp"
 
-msgid "0 - 0 (U)"
-msgstr "0 - 0 (NC)"
-
-msgid "0 - 1 (U)"
-msgstr "0 - 1 (NC)"
-
-msgid "0 - ½ (U)"
-msgstr "0 - ½ (NC)"
-
-msgid "1 - 0 (U)"
-msgstr "1 - 0 (NC)"
-
 msgid "1.4.1 — Games played"
 msgstr "1.4.1 — Parties jouées"
 
@@ -698,6 +686,9 @@ msgstr "Ajouter un départage"
 
 msgid "Add tournaments"
 msgstr "Ajouter des tournois"
+
+msgid "Added automatically, on top of any manual points above."
+msgstr "Ajoutés automatiquement, en plus des points manuels ci-dessous."
 
 msgid "Administration"
 msgstr "Administration"
@@ -1155,6 +1146,12 @@ msgstr "Les écrans d'affichage des échiquiers présentent les appariements par
 msgid "Bolivia"
 msgstr "Bolivie"
 
+msgid "Bonus / penalty points"
+msgstr "Points de bonus/pénalité"
+
+msgid "Bonus / penalty points updated."
+msgstr "Les points de bonus/pénalité ont été mis à jour."
+
 msgid "Border"
 msgstr "Bordure"
 
@@ -1422,6 +1419,9 @@ msgstr "Effacer tous les filtres."
 
 msgid "Clear board results between players first before unpairing."
 msgstr "Supprimer les résultats entre les joueur·euses avant de désapparier."
+
+msgid "Clear result"
+msgstr "Effacer le résultat"
 
 msgid "Click and drag to select balanced groups."
 msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
@@ -3166,6 +3166,10 @@ msgid "Import players from a CSV file."
 msgstr "Importer des joueur·euses depuis un fichier CSV."
 
 #, python-format
+msgid "Import players to event [%(event)s]"
+msgstr "Importer des joueur·euses dans l'évènement [%(event)s]"
+
+#, python-format
 msgid "Import players to tournament [%(tournament)s]"
 msgstr "Importer des joueur·euses dans le tournoi [%(tournament)s]"
 
@@ -3490,6 +3494,9 @@ msgstr "Laisser décoché pour imprimer tous les matchs."
 
 msgid "Lebanon"
 msgstr "Liban"
+
+msgid "Left wins"
+msgstr "Victoire gauche"
 
 msgid "Legacy"
 msgstr "Obsolète"
@@ -4588,12 +4595,6 @@ msgstr "APP"
 msgid "PASS"
 msgstr "RÉUSSITE"
 
-msgid "PENALTY"
-msgstr "PÉNALITÉ"
-
-msgid "PERMUTE WHITE/BLACK"
-msgstr "PERMUTER BLANCS/NOIRS"
-
 msgid "PGN"
 msgstr "PGN"
 
@@ -4623,7 +4624,10 @@ msgid "Pair at round %(pairing_round)d"
 msgstr "Apparier à la ronde %(pairing_round)d"
 
 msgid "Pair the unpaired players with each other."
-msgstr "Apparier les joueur·euses non-apparié·es ensembles."
+msgstr "Apparier les joueur·euses non-apparié·es ensemble."
+
+msgid "Pair the unpaired teams with each other."
+msgstr "Apparier les équipes non-appariées ensemble."
 
 msgid "Pair tournament"
 msgstr "Apparier le tournoi"
@@ -4757,6 +4761,9 @@ msgstr "Mot de passe :"
 msgid "Payment"
 msgstr "Paiement"
 
+msgid "Penalty"
+msgstr "Pénalité"
+
 msgid "Pending"
 msgstr "À venir"
 
@@ -4789,6 +4796,9 @@ msgstr "Permissions"
 
 msgid "Permissions list"
 msgstr "Liste des permissions"
+
+msgid "Permute White/Black"
+msgstr "Permuter Blancs/Noirs"
 
 msgid "Permute boards"
 msgstr "Permuter les échiquiers"
@@ -5506,6 +5516,9 @@ msgstr "Inverser l'ordre"
 msgid "Reversed"
 msgstr "Inversé"
 
+msgid "Right wins"
+msgstr "Victoire droite"
+
 msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Pl."
 
@@ -5643,6 +5656,9 @@ msgstr "Règle 1.4.6 : le classement du·de la plus faible adversaire est relev
 msgid "Rule set"
 msgstr "Jeu de règles"
 
+msgid "Rule set applied"
+msgstr "Jeu de règles appliqué"
+
 msgid "Rules used were only effective until march 2026 (legacy)."
 msgstr "Les règles utilisées n'étaient effectives que jusqu'en mars 2026 (obsolètes)."
 
@@ -5687,6 +5703,9 @@ msgstr "Enregistrer"
 
 msgid "Save current tie-breaks as custom set"
 msgstr "Enregistrer les départages actuels comme ensemble personnalisé"
+
+msgid "Save points"
+msgstr "Enregistrer les points"
 
 msgid "Save the set or cancel."
 msgstr "Enregistrez l'ensemble ou annulez."
@@ -6223,8 +6242,8 @@ msgstr "L'équipe [{team}] a été mise à jour."
 msgid "Team [{team}] has returned for this round."
 msgstr "L’équipe [{team}] est de retour pour cette ronde."
 
-msgid "Team [{team}] is full ({max} players max) — player not moved."
-msgstr "L'équipe [{team}] est complète ({max} joueur·euses maximum) — joueur·euse non déplacé·e."
+msgid "Team [{team}] is full ({max} players max)."
+msgstr "L'équipe [{team}] est complète ({max} joueur·euses maximum)."
 
 msgid "Team check-in"
 msgstr "Pointage des équipes"
@@ -6745,7 +6764,7 @@ msgid "This label will be used for the link to other screens to this screen. If 
 msgstr "Ce texte sera utilisé pour le lien permettant d'accéder à cet écran depuis les autres écrans. Si ce champ est laissé vide, une étiquette par défaut sera utilisée."
 
 msgid "This line-up is not in the same order as the team roster."
-msgstr "Cette composition n'est pas dans le même ordre que l'effectif'."
+msgstr "Cette composition n'est pas dans le même ordre que l'effectif."
 
 msgid "This name is already used."
 msgstr "Ce nom est déjà utilisé."
@@ -6764,6 +6783,9 @@ msgstr "Ce·tte joueur·euse existe déjà dans l'évènement."
 
 msgid "This player already exists in tournament [{tournament}]."
 msgstr "Ce·tte joueur·euse existe déjà dans le tournoi [{tournament}]."
+
+msgid "This player has already been paired; their team cannot be changed."
+msgstr "Ce·tte joueur·euse a déjà été apparié·e, son équipe ne peut être modifiée."
 
 msgid "This rotator is private (not visible by the spectators)."
 msgstr "Cet écran rotatif est privé (non visible des spectateur·ices)."
@@ -6800,6 +6822,9 @@ msgstr "Cet écran est public (visible des spectateur·ices)."
 
 msgid "This set contains [{name}] twice in a row."
 msgstr "Cet ensemble contient [{name}] deux fois de suite."
+
+msgid "This team has already been paired; its tournament cannot be changed."
+msgstr "Cette équipe a déjà été appariée, elle ne peut changer de tournoi."
 
 msgid "This tie-break can be used multiple times."
 msgstr "Ce départage peut-être utilisé plusieurs fois."
@@ -7116,21 +7141,6 @@ msgstr "U7-U19 / 50+ / 65+"
 msgid "U8-U20 / 50+ / 65+"
 msgstr "U8-U20 / 50+ / 65+"
 
-msgid "UNPAIR"
-msgstr "DÉSAPPARIER"
-
-msgid "UNRATED BLACK VICTORY"
-msgstr "VICTOIRE NOIR NON HOMOLOGUÉE"
-
-msgid "UNRATED DRAW"
-msgstr "NUL NON HOMOLOGUÉ"
-
-msgid "UNRATED PENALTY"
-msgstr "PÉNALITÉ NON HOMOLOGUÉE"
-
-msgid "UNRATED WHITE VICTORY"
-msgstr "VICTOIRE BLANCHE NON HOMOLOGUÉE"
-
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr "L'URL [{url}] n'a pas répondu (erreur : [{error}])."
 
@@ -7259,23 +7269,29 @@ msgstr "Désapparier une ronde publiée peut être très désagréable pour les 
 msgid "Unplayed (no result recorded)."
 msgstr "Non jouée (aucun résultat enregistré)."
 
-msgid "Unrated *** PLURAL"
+msgid "Unrated *** FOR GAMES"
+msgstr "Non comptabilisés pour le classement Elo"
+
+msgid "Unrated *** PLURAL FOR UNRATED PLAYERS"
 msgstr "Non-classé·es"
 
-msgid "Unrated *** SINGULAR"
+msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
 msgstr "Non-classé·e"
 
 msgid "Unrated Draw"
-msgstr "Nulle non comptabilisé pour le classement Elo"
+msgstr "Nulle non comptabilisée pour le classement Elo"
 
 msgid "Unrated Loss"
-msgstr "Défaite non comptabilisé pour le classement Elo"
+msgstr "Défaite non comptabilisée pour le classement Elo"
 
 msgid "Unrated Win"
-msgstr "Victoire non comptabilisé pour le classement Elo"
+msgstr "Victoire non comptabilisée pour le classement Elo"
 
 msgid "Unrated opponent."
 msgstr "Adversaire non classé·e."
+
+msgid "Unrated penalty"
+msgstr "Pénalité non comptabilisée pour le classement Elo"
 
 msgid "Unrated players"
 msgstr "Joueur·euses non-classé·es"
@@ -8123,12 +8139,6 @@ msgstr "{title} {full_name} {rating}{rating_type}"
 
 msgid "{title} {full_name} {rating}{rating_type} [{points}]"
 msgstr "{title} {full_name} {rating}{rating_type} [{points}]"
-
-msgid "½ - 0 (U)"
-msgstr "½ - 0 (NC)"
-
-msgid "½ - ½ (U)"
-msgstr "½ - ½ (NC)"
 
 msgid "—"
 msgstr "—"

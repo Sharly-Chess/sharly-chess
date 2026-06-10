@@ -308,18 +308,6 @@ msgstr ""
 msgid "/move"
 msgstr ""
 
-msgid "0 - 0 (U)"
-msgstr ""
-
-msgid "0 - 1 (U)"
-msgstr ""
-
-msgid "0 - ½ (U)"
-msgstr ""
-
-msgid "1 - 0 (U)"
-msgstr ""
-
 msgid "1.4.1 — Games played"
 msgstr ""
 
@@ -697,6 +685,9 @@ msgid "Add tie-break"
 msgstr ""
 
 msgid "Add tournaments"
+msgstr ""
+
+msgid "Added automatically, on top of any manual points above."
 msgstr ""
 
 msgid "Administration"
@@ -1155,6 +1146,12 @@ msgstr ""
 msgid "Bolivia"
 msgstr ""
 
+msgid "Bonus / penalty points"
+msgstr ""
+
+msgid "Bonus / penalty points updated."
+msgstr ""
+
 msgid "Border"
 msgstr ""
 
@@ -1421,6 +1418,9 @@ msgid "Clear all the filters."
 msgstr ""
 
 msgid "Clear board results between players first before unpairing."
+msgstr ""
+
+msgid "Clear result"
 msgstr ""
 
 msgid "Click and drag to select balanced groups."
@@ -3166,6 +3166,10 @@ msgid "Import players from a CSV file."
 msgstr ""
 
 #, python-format
+msgid "Import players to event [%(event)s]"
+msgstr ""
+
+#, python-format
 msgid "Import players to tournament [%(tournament)s]"
 msgstr ""
 
@@ -3489,6 +3493,9 @@ msgid "Leave all unchecked to print every match."
 msgstr ""
 
 msgid "Lebanon"
+msgstr ""
+
+msgid "Left wins"
 msgstr ""
 
 msgid "Legacy"
@@ -4586,12 +4593,6 @@ msgstr ""
 msgid "PASS"
 msgstr ""
 
-msgid "PENALTY"
-msgstr ""
-
-msgid "PERMUTE WHITE/BLACK"
-msgstr ""
-
 msgid "PGN"
 msgstr ""
 
@@ -4621,6 +4622,9 @@ msgid "Pair at round %(pairing_round)d"
 msgstr ""
 
 msgid "Pair the unpaired players with each other."
+msgstr ""
+
+msgid "Pair the unpaired teams with each other."
 msgstr ""
 
 msgid "Pair tournament"
@@ -4755,6 +4759,9 @@ msgstr ""
 msgid "Payment"
 msgstr ""
 
+msgid "Penalty"
+msgstr ""
+
 msgid "Pending"
 msgstr ""
 
@@ -4786,6 +4793,9 @@ msgid "Permissions"
 msgstr ""
 
 msgid "Permissions list"
+msgstr ""
+
+msgid "Permute White/Black"
 msgstr ""
 
 msgid "Permute boards"
@@ -5504,6 +5514,9 @@ msgstr ""
 msgid "Reversed"
 msgstr ""
 
+msgid "Right wins"
+msgstr ""
+
 msgid "Rk. *** RANK COLUMN HEADER"
 msgstr "Rk."
 
@@ -5641,6 +5654,9 @@ msgstr ""
 msgid "Rule set"
 msgstr ""
 
+msgid "Rule set applied"
+msgstr ""
+
 msgid "Rules used were only effective until march 2026 (legacy)."
 msgstr ""
 
@@ -5684,6 +5700,9 @@ msgid "Save"
 msgstr ""
 
 msgid "Save current tie-breaks as custom set"
+msgstr ""
+
+msgid "Save points"
 msgstr ""
 
 msgid "Save the set or cancel."
@@ -6221,7 +6240,7 @@ msgstr ""
 msgid "Team [{team}] has returned for this round."
 msgstr ""
 
-msgid "Team [{team}] is full ({max} players max) — player not moved."
+msgid "Team [{team}] is full ({max} players max)."
 msgstr ""
 
 msgid "Team check-in"
@@ -6763,6 +6782,9 @@ msgstr ""
 msgid "This player already exists in tournament [{tournament}]."
 msgstr ""
 
+msgid "This player has already been paired; their team cannot be changed."
+msgstr ""
+
 msgid "This rotator is private (not visible by the spectators)."
 msgstr ""
 
@@ -6797,6 +6819,9 @@ msgid "This screen is public (visible by the spectators)."
 msgstr ""
 
 msgid "This set contains [{name}] twice in a row."
+msgstr ""
+
+msgid "This team has already been paired; its tournament cannot be changed."
 msgstr ""
 
 msgid "This tie-break can be used multiple times."
@@ -7114,21 +7139,6 @@ msgstr ""
 msgid "U8-U20 / 50+ / 65+"
 msgstr ""
 
-msgid "UNPAIR"
-msgstr ""
-
-msgid "UNRATED BLACK VICTORY"
-msgstr ""
-
-msgid "UNRATED DRAW"
-msgstr ""
-
-msgid "UNRATED PENALTY"
-msgstr ""
-
-msgid "UNRATED WHITE VICTORY"
-msgstr ""
-
 msgid "URL [{url}] did not respond (error: [{error}])."
 msgstr ""
 
@@ -7257,10 +7267,13 @@ msgstr ""
 msgid "Unplayed (no result recorded)."
 msgstr ""
 
-msgid "Unrated *** PLURAL"
+msgid "Unrated *** FOR GAMES"
 msgstr "Unrated"
 
-msgid "Unrated *** SINGULAR"
+msgid "Unrated *** PLURAL FOR UNRATED PLAYERS"
+msgstr "Unrated"
+
+msgid "Unrated *** SINGULAR FOR UNRATED PLAYER"
 msgstr "Unrated"
 
 msgid "Unrated Draw"
@@ -7273,6 +7286,9 @@ msgid "Unrated Win"
 msgstr ""
 
 msgid "Unrated opponent."
+msgstr ""
+
+msgid "Unrated penalty"
 msgstr ""
 
 msgid "Unrated players"
@@ -8120,12 +8136,6 @@ msgid "{title} {full_name} {rating}{rating_type}"
 msgstr ""
 
 msgid "{title} {full_name} {rating}{rating_type} [{points}]"
-msgstr ""
-
-msgid "½ - 0 (U)"
-msgstr ""
-
-msgid "½ - ½ (U)"
 msgstr ""
 
 msgid "—"
