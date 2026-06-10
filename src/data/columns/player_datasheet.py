@@ -402,7 +402,10 @@ class RatingColumn(DatasheetColumn):
         return 'rating'
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.single_tournament_player.rating
+        if player.optional_single_tournament_player:
+            return player.optional_single_tournament_player.rating
+        else:
+            return 0
 
     def update_from_used_columns(self, used_columns: list['DatasheetColumn']):
         for column in used_columns:
@@ -438,7 +441,10 @@ class RatingTypeColumn(DatasheetColumn):
         return 'rating_type'
 
     def get_cell_content(self, player: Player) -> Any:
-        return player.single_tournament_player.rating_type.key.upper()
+        if player.optional_single_tournament_player:
+            return player.optional_single_tournament_player.rating_type.key.upper()
+        else:
+            return ''
 
     def update_from_used_columns(self, used_columns: list['DatasheetColumn']):
         for column in used_columns:
