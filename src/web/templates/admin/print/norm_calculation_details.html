@@ -242,8 +242,9 @@
                             </td>
                         </tr>
 
-                        {# 1.4.4 — federation caps. Note: 1.4.3a/b/c do NOT
-                           exempt 1.4.4 — only 1.4.3d does. #}
+                        {# 1.4.4 — federation caps. All 1.4.3a-d exemptions
+                           waive 1.4.4 along with 1.4.3 (the "foreigner
+                           requirement", see 1.4.3e). #}
                         <tr>
                             <td>{{ _('1.4.4 — Own federation cap') }}</td>
                             <td>
@@ -252,12 +253,14 @@
                             </td>
                             <td>{{ norm.from_own_federations_count }}</td>
                             <td class="center">
-                                {% if norm.too_many_own_federation and not norm.is_143d_met %}
-                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
-                                {% elif norm.too_many_own_federation and norm.is_143d_met %}
-                                    <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
-                                {% else %}
+                                {% if not norm.too_many_own_federation %}
                                     <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% elif norm.is_143d_met %}
+                                    <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
+                                {% elif norm.is_143_exempt_via_abc %}
+                                    <span class="verdict-pass">{{ _('EXEMPT') }} (1.4.3{{ norm.rule_143_exemption }})</span>
+                                {% else %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
                                 {% endif %}
                             </td>
                         </tr>
@@ -276,12 +279,14 @@
                                 {% endif %}
                             </td>
                             <td class="center">
-                                {% if norm.too_many_one_federation and not norm.is_143d_met %}
-                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
-                                {% elif norm.too_many_one_federation and norm.is_143d_met %}
-                                    <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
-                                {% else %}
+                                {% if not norm.too_many_one_federation %}
                                     <span class="verdict-pass">{{ _('PASS') }}</span>
+                                {% elif norm.is_143d_met %}
+                                    <span class="verdict-pass">{{ _('EXEMPT (1.4.3d)') }}</span>
+                                {% elif norm.is_143_exempt_via_abc %}
+                                    <span class="verdict-pass">{{ _('EXEMPT') }} (1.4.3{{ norm.rule_143_exemption }})</span>
+                                {% else %}
+                                    <span class="verdict-fail">{{ _('FAIL') }}</span>
                                 {% endif %}
                             </td>
                         </tr>

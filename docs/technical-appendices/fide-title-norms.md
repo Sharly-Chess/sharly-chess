@@ -114,7 +114,32 @@ Exemptions from that normal rule:
 - `1.4.3c`: Zonal and sub-zonal tournaments.
 - `1.4.3d`: Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles. For this purpose, players are counted only if they miss at most one round (excluding pairing-allocated byes). **Otherwise, `1.4.4` applies.**
 
-The "Otherwise, `1.4.4` applies" clause is important: when `1.4.3d`'s tournament-wide conditions are met, the player is exempted from **both** `1.4.3` (foreign-federation count) AND `1.4.4` (federation caps). When `1.4.3d` is not met, the normal `1.4.4` caps apply. `1.4.3a`–`1.4.3c` only exempt `1.4.3`, not `1.4.4`.
+All four exemptions (`1.4.3a`–`1.4.3d`) waive the **whole** foreigner
+requirement — **both** `1.4.3` (foreign-federation count) AND `1.4.4`
+(the 3/5 own-federation and 2/3 one-federation caps). This is the scope
+defined by `1.4.3e`, which calls the combination of `1.4.3` and `1.4.4`
+"the normal foreigner requirement", and by the chapeau of the article
+("at least two federations … must be included, except `1.4.3a`–`1.4.3d`
+shall be exempt"). The "Otherwise, `1.4.4` applies" clause inside
+`1.4.3d` is what couples `1.4.4` to the exemption: when an exemption
+holds, `1.4.4` stops applying; when `1.4.3d`'s tournament-wide
+conditions are *not* met (and no `1.4.3a`–`1.4.3c` event-type exemption
+applies), the normal `1.4.4` caps apply.
+
+This was confirmed in writing by the FIDE Qualification Commission: the
+national-championship and national-team-championship exemptions
+(`1.4.3a` / `1.4.3b`), which apply only to players from the registering
+federation, also waive `1.4.4`. Without this, a home player in an
+all-domestic field (e.g. the French Interclubs) could never use the
+exemption, because the 3/5 own-federation cap would always block them —
+the exemption would be a dead letter for exactly the players it exists
+to serve.
+
+The application-level restriction is `1.4.3e`: across the norms making
+up a full title application, at least one must be achieved under the
+normal foreigner requirement (without any `1.4.3` exemption). That is a
+multi-tournament concern handled at title-application time, not a
+per-tournament norm check.
 
 Important extra rule:
 
@@ -122,7 +147,7 @@ Important extra rule:
 
 ## 1.4.4 Federation Maximums
 
-Opponent federation limits (subject to the `1.4.3d` exemption above):
+Opponent federation limits (waived by any `1.4.3a`–`1.4.3d` exemption, as above):
 
 - Maximum 3/5 of opponents may be from the applicant's federation.
 - Maximum 2/3 of opponents may be from one federation.
