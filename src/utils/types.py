@@ -231,13 +231,12 @@ class NormCheckResult:
     # list[Any] here to avoid a circular import with data.norms.inputs.
     round_audit: list = field(default_factory=list)
 
-    # 1.4.3a/b/c — exemption from 1.4.3 only (NOT 1.4.4). Set by the
-    # print doc's `apply_143abc_exemption` based on the arbiter's
-    # tournament-type selection. Values: 'a', 'b', 'c', or None.
-    # Independent of 1.4.3d: both exemption paths can hold on the same
-    # result simultaneously. `is_met` checks 1.4.3d first as a fast path
-    # (it covers more — both 1.4.3 and 1.4.4); a/b/c only matters when
-    # 1.4.3d doesn't hold.
+    # 1.4.3a/b/c — exemption from the foreigner requirement (1.4.3 AND
+    # 1.4.4, see 1.4.3e: "the normal foreigner requirement. (See 1.4.3
+    # and 1.4.4)"). Set by the print doc's `apply_143abc_exemption`
+    # based on the arbiter's tournament-type selection. Values: 'a',
+    # 'b', 'c', or None. Independent of 1.4.3d: both exemption paths
+    # can hold on the same result simultaneously.
     rule_143_exemption: str | None = None
 
     @property
@@ -266,14 +265,12 @@ class NormCheckResult:
             or self.performance_too_low
         ):
             return False
-        # 1.4.3d exempts BOTH 1.4.3 and 1.4.4 ("Otherwise, 1.4.4 applies"
-        # clause inside 1.4.3d means 1.4.4 stops applying only when
-        # 1.4.3d holds).
-        if self.is_143d_met:
+        # 1.4.3a-d all exempt the foreigner requirement, i.e. BOTH 1.4.3
+        # and 1.4.4 ("except 1.4.3a - 1.4.3d shall be exempt"; the
+        # "Otherwise, 1.4.4 applies" clause inside 1.4.3d means 1.4.4
+        # stops applying when an exemption holds).
+        if self.is_143d_met or self.is_143_exempt_via_abc:
             return True
-        # 1.4.3a/b/c exempt 1.4.3 only. 1.4.4 still applies on top.
-        if self.is_143_exempt_via_abc:
-            return not (self.too_many_own_federation or self.too_many_one_federation)
         return not (
             self.not_enough_federations
             or self.too_many_own_federation

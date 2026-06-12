@@ -225,14 +225,15 @@ def apply_143abc_exemption(
 
     `exemption_code` is the arbiter's selection from the print option:
     - 'none'   → no manual exemption (1.4.3d still auto-applies elsewhere).
-    - '1.4.3a' → National championship final. Exempts 1.4.3 only for
-                 players whose federation == event's registering federation.
+    - '1.4.3a' → National championship final. Exempts only players whose
+                 federation == event's registering federation.
     - '1.4.3b' → National team championship. Same player filter as a.
-    - '1.4.3c' → Zonal or sub-zonal. Exempts 1.4.3 for ALL players
-                 regardless of federation.
+    - '1.4.3c' → Zonal or sub-zonal. Exempts ALL players regardless of
+                 federation.
 
-    NONE of a/b/c exempt 1.4.4 — only 1.4.3d does that. The result's
-    `is_met` honors this asymmetry via `is_143_exempt_via_abc`.
+    Like 1.4.3d, a/b/c exempt the whole foreigner requirement — both
+    1.4.3 and 1.4.4 (1.4.3e: "the normal foreigner requirement. (See
+    1.4.3 and 1.4.4)").
 
     Sets `result.rule_143_exemption` to 'a' / 'b' / 'c' / None as
     appropriate. The print templates render a badge from this field.
