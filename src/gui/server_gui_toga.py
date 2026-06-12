@@ -419,11 +419,11 @@ class SharlyChessServerToga(toga.App):
         self.server_start_progress_bar.max = None
         self.server_state_container.add(self.server_start_progress_bar)
         doc_btn = toga.Button(_('Open documentation'), on_press=self._open_website)
-        close_warning = toga.Label(
-            _('Warning: closing this window will stop Sharly Chess.')
-        )
         self.home_view.add(
-            toga.Box(children=[close_warning]),
+            toga.Label(
+                _('Warning: closing this window will stop Sharly Chess.'),
+                text_align='center',
+            ),
             self.server_state_container,
             toga.Divider(style=Pack(margin=(5, 0))),
             toga.Box(children=[doc_btn]),
@@ -499,14 +499,21 @@ class SharlyChessServerToga(toga.App):
 
         # Settings view
         self.settings_view = toga.Box(
-            style=Pack(direction=COLUMN, margin=10, align_items='center')
+            style=Pack(
+                direction=COLUMN,
+                margin=10,
+                gap=7,
+                align_items='center',
+            )
         )
         self.launch_browser_switch = toga.Switch(
             text=_('Launch a browser on startup'),
             value=config.launch_browser,
             on_change=self._on_launch_browser_switch_change,
         )
-        self.settings_view.add(self.launch_browser_switch)
+        self.settings_view.add(
+            toga.Box(children=[self.launch_browser_switch]),
+        )
 
         # Layout container
         self.main_box = toga.Box(style=Pack(direction=COLUMN, margin=(5, 10, 10, 10)))
@@ -522,6 +529,7 @@ class SharlyChessServerToga(toga.App):
             title='Sharly Chess',
             size=self.compact_size,
             content=self.main_box,
+            resizable=False,
         )
 
         assert isinstance(self.main_window, toga.Window)
