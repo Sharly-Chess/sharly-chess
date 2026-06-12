@@ -1364,9 +1364,6 @@ msgstr "Choisir les colonnes affichées."
 msgid "Choose your language"
 msgstr "Veuillez choisir votre langue"
 
-msgid "Clear Log"
-msgstr "Effacer le journal"
-
 msgid "Clear all"
 msgstr "Tout supprimer"
 
@@ -1375,6 +1372,9 @@ msgstr "Supprimer tous les horaires"
 
 msgid "Clear all the filters."
 msgstr "Effacer tous les filtres."
+
+msgid "Clear logs"
+msgstr "Effacer les logs"
 
 msgid "Click and drag to select balanced groups."
 msgstr "Cliquer-glisser pour sélectionner des groupes équilibrés."
@@ -2914,12 +2914,6 @@ msgstr "Avoir un nombre de joueur·euses et de prix proches présente un risque 
 msgid "Hide"
 msgstr "Cacher"
 
-msgid "Hide Log"
-msgstr "Cacher les logs"
-
-msgid "Hide Networks"
-msgstr "Masquer les réseaux"
-
 msgid "Highlight"
 msgstr "Surbrillance"
 
@@ -2928,6 +2922,9 @@ msgstr "Met l'échiquier en surbrillance lorsqu'un résultat saisi au clavier es
 
 msgid "Home"
 msgstr "Accueil"
+
+msgid "Home page"
+msgstr "Page d'accueil"
 
 msgid "Home page:"
 msgstr "Site web :"
@@ -3390,12 +3387,18 @@ msgstr "Connexion"
 msgid "Log out"
 msgstr "Déconnexion"
 
+msgid "Log settings"
+msgstr "Paramètres des logs"
+
 msgid "Log-level specific colors"
 msgstr "Couleurs spécifiques au niveau de log"
 
 #, python-format
 msgid "Logged in as [%(account_name)s]"
 msgstr "Connecté en tant que [%(account_name)s]"
+
+msgid "Logs"
+msgstr "Logs"
 
 msgid "Loss"
 msgstr "Défaite"
@@ -3764,6 +3767,9 @@ msgstr "Réseau"
 
 msgid "Network:"
 msgstr "Réseau :"
+
+msgid "Networks"
+msgstr "Réseaux"
 
 msgid "New Caledonia"
 msgstr "Nouvelle-Calédonie"
@@ -4218,9 +4224,6 @@ msgstr "Uniquement requis pour les utilisateur·ices devant se connecter au serv
 
 msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
 msgstr "Seule l'année de naissance est nécessaire pour la plupart des tournois. Il est donc recommandé de ne demander que l'année de naissance de vos joueur·euses afin de respecter leur vie privée."
-
-msgid "Open Admin Interface"
-msgstr "Ouvrir l'interface d'administration"
 
 msgid "Open IT1 certificate for this norm"
 msgstr "Ouvrir le certificat IT1 pour cette norme"
@@ -5060,6 +5063,9 @@ msgstr "Référence à un·e joueur·euse inconnu·e [{player_id}]."
 msgid "Refresh"
 msgstr "Actualiser"
 
+msgid "Refresh networks"
+msgstr "Actualiser les réseaux"
+
 msgid "Refresh this page."
 msgstr "Actualiser la page."
 
@@ -5457,9 +5463,6 @@ msgstr "Recherche en cours…"
 msgid "Sector arbitration"
 msgstr "Arbitrage de secteur"
 
-msgid "See Networks"
-msgstr "Afficher les réseaux"
-
 msgid "See the pairings information for the start of this round."
 msgstr "Voir les informations d’appariement pour le début de cette ronde."
 
@@ -5561,9 +5564,6 @@ msgstr "Prix partagés"
 msgid "Sharing threshold"
 msgstr "Seuil de partage"
 
-msgid "Sharly Chess Server"
-msgstr "Serveur Sharly Chess"
-
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr "Sharly Chess peut proposer des fonctionnalités spécifiques à la fédération choisie pour chaque évènement."
 
@@ -5593,9 +5593,6 @@ msgstr "Sharly Chess utilisant le réseau local, tout le trafic est public. Cela
 
 msgid "Should only be used when the wrong player has been added by mistake."
 msgstr "Ne doit être utilisé que lorsque un·e mauvais·e joueur·euse a été ajouté·e par erreur."
-
-msgid "Show Log"
-msgstr "Montrer les logs"
 
 msgid "Show logging level"
 msgstr "Afficher le niveau de log"
@@ -5808,6 +5805,9 @@ msgstr "Soudan"
 
 msgid "Sum of Buchholz"
 msgstr "Somme des Buchholz"
+
+msgid "Support us"
+msgstr "Nous soutenir"
 
 msgid "Suriname"
 msgstr "Suriname"
@@ -6899,9 +6899,6 @@ msgstr "Verdict"
 msgid "Verdict:"
 msgstr "Verdict :"
 
-msgid "Version: {version}"
-msgstr "Version : {version}"
-
 msgid "Vietnam"
 msgstr "Vietnam"
 
@@ -7573,6 +7570,9 @@ msgstr "{start} → {end}"
 
 msgid "{status_code} - Unknown error"
 msgstr "{status_code} - Erreur inconnue"
+
+msgid "{string}:"
+msgstr "{string} :"
 
 msgid "{string}: {value}"
 msgstr "{string} : {value}"

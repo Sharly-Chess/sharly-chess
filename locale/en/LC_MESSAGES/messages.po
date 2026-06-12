@@ -1364,9 +1364,6 @@ msgstr ""
 msgid "Choose your language"
 msgstr ""
 
-msgid "Clear Log"
-msgstr ""
-
 msgid "Clear all"
 msgstr ""
 
@@ -1374,6 +1371,9 @@ msgid "Clear all hours"
 msgstr ""
 
 msgid "Clear all the filters."
+msgstr ""
+
+msgid "Clear logs"
 msgstr ""
 
 msgid "Click and drag to select balanced groups."
@@ -2914,12 +2914,6 @@ msgstr ""
 msgid "Hide"
 msgstr ""
 
-msgid "Hide Log"
-msgstr ""
-
-msgid "Hide Networks"
-msgstr ""
-
 msgid "Highlight"
 msgstr ""
 
@@ -2927,6 +2921,9 @@ msgid "Highlights the row if the new result is different when using the keyboard
 msgstr ""
 
 msgid "Home"
+msgstr ""
+
+msgid "Home page"
 msgstr ""
 
 msgid "Home page:"
@@ -3390,11 +3387,17 @@ msgstr ""
 msgid "Log out"
 msgstr ""
 
+msgid "Log settings"
+msgstr ""
+
 msgid "Log-level specific colors"
 msgstr ""
 
 #, python-format
 msgid "Logged in as [%(account_name)s]"
+msgstr ""
+
+msgid "Logs"
 msgstr ""
 
 msgid "Loss"
@@ -3763,6 +3766,9 @@ msgid "Network"
 msgstr ""
 
 msgid "Network:"
+msgstr ""
+
+msgid "Networks"
 msgstr ""
 
 msgid "New Caledonia"
@@ -4215,9 +4221,6 @@ msgid "Only required for users that need to connect to the server."
 msgstr ""
 
 msgid "Only the year of birth is required for most tournaments. it is therefore recommanded to only ask for your players' year of birth in order to respect their privacy."
-msgstr ""
-
-msgid "Open Admin Interface"
 msgstr ""
 
 msgid "Open IT1 certificate for this norm"
@@ -5058,6 +5061,9 @@ msgstr ""
 msgid "Refresh"
 msgstr ""
 
+msgid "Refresh networks"
+msgstr ""
+
 msgid "Refresh this page."
 msgstr ""
 
@@ -5455,9 +5461,6 @@ msgstr ""
 msgid "Sector arbitration"
 msgstr ""
 
-msgid "See Networks"
-msgstr ""
-
 msgid "See the pairings information for the start of this round."
 msgstr ""
 
@@ -5559,9 +5562,6 @@ msgstr ""
 msgid "Sharing threshold"
 msgstr ""
 
-msgid "Sharly Chess Server"
-msgstr ""
-
 msgid "Sharly Chess may provide functionality specific to the federation chosen for each event."
 msgstr ""
 
@@ -5590,9 +5590,6 @@ msgid "Sharly Chess using the local network, all the traffic is public. This mea
 msgstr ""
 
 msgid "Should only be used when the wrong player has been added by mistake."
-msgstr ""
-
-msgid "Show Log"
 msgstr ""
 
 msgid "Show logging level"
@@ -5805,6 +5802,9 @@ msgid "Sudan"
 msgstr ""
 
 msgid "Sum of Buchholz"
+msgstr ""
+
+msgid "Support us"
 msgstr ""
 
 msgid "Suriname"
@@ -6897,9 +6897,6 @@ msgstr ""
 msgid "Verdict:"
 msgstr ""
 
-msgid "Version: {version}"
-msgstr ""
-
 msgid "Vietnam"
 msgstr ""
 
@@ -7570,6 +7567,9 @@ msgid "{start} → {end}"
 msgstr ""
 
 msgid "{status_code} - Unknown error"
+msgstr ""
+
+msgid "{string}:"
 msgstr ""
 
 msgid "{string}: {value}"
