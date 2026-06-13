@@ -548,6 +548,7 @@ def _real_searcher(
     federation: str = 'FRA',
     gender: PlayerGender = PlayerGender.MAN,
     pairing_system=None,
+    rule_143_exemption: str = 'none',
 ) -> TitleNormSubsetSearcher:
     from data.pairings.systems import SwissPairingSystem
     from utils.types import BigTournamentExemption
@@ -567,7 +568,7 @@ def _real_searcher(
             high_level_tournament=False,
         ),
     )
-    return TitleNormSubsetSearcher(player)
+    return TitleNormSubsetSearcher(player, rule_143_exemption=rule_143_exemption)
 
 
 def _gm(id_: int, rating: int = 2400, federation: str = 'USA') -> FakeOpponent:
@@ -704,6 +705,65 @@ class TestSearcherWithRealEvaluator:
         # Either R10 or R11 alone is a winning size-1 subset (both are
         # equivalent tail-loss drops).
         assert result.ignored_rounds_via_search in (frozenset({10}), frozenset({11}))
+
+    def test_search_applies_143abc_exemption_to_dropped_subset(self):
+        # Regression: a norm reachable only by (drop a round) AND (the
+        # 1.4.3a/b/c exemption) TOGETHER must be found. All 11 opponents
+        # share the applicant's federation (FRA) — so 1.4.3 / 1.4.4 fail —
+        # and the baseline Rp (2580) is below the GM 2600 line. Dropping a
+        # tail loss lifts Rp over 2600; the exemption waives the federation
+        # caps. The search must apply the exemption to each candidate, or
+        # it rejects the rescuing subset (federations still failing) and
+        # returns the baseline → false negative.
+        opponents = [_gm(i, rating=2500, federation='FRA') for i in range(1, 5)] + [
+            _im(i, rating=2350, federation='FRA') for i in range(5, 12)
+        ]
+        results = [Result.WIN] * 7 + [Result.DRAW] * 2 + [Result.LOSS] * 2
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+
+        # Without the exemption: the dropped-tail subset clears performance
+        # but still fails the all-FRA federation caps → not met, no drop.
+        no_exempt = _real_searcher(rounds=11, rule_143_exemption='none')
+        blind = no_exempt._search_one(inputs, None, TitleNorm.GM, meets_gender=True)
+        assert not blind.is_met
+        assert blind.ignored_rounds_via_search == frozenset()
+
+        # With 1.4.3c (applies to every player): the search waives the
+        # federation caps on each candidate, so dropping a tail loss is a
+        # winning subset.
+        exempt = _real_searcher(rounds=11, rule_143_exemption='1.4.3c')
+        found = exempt._search_one(inputs, None, TitleNorm.GM, meets_gender=True)
+        assert found.is_met, (
+            f'Exemption should let the search find the dropped subset. '
+            f'Rp={found.performance}, ignored={found.ignored_rounds_via_search}'
+        )
+        assert found.rule_143_exemption == 'c'
+        assert found.ignored_rounds_via_search in (frozenset({10}), frozenset({11}))
+
+    def test_search_exemption_scoped_to_event_federation(self):
+        # 1.4.3a/b apply only to the registering federation's players. A
+        # foreign applicant (USA) in an FRA-registered event gets no
+        # exemption, so the all-foreign-cap failure still blocks the
+        # dropped subset → not met.
+        opponents = [_gm(i, rating=2500, federation='FRA') for i in range(1, 5)] + [
+            _im(i, rating=2350, federation='FRA') for i in range(5, 12)
+        ]
+        results = [Result.WIN] * 7 + [Result.DRAW] * 2 + [Result.LOSS] * 2
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        # Applicant USA, event FRA → 1.4.3b does not apply.
+        searcher = _real_searcher(
+            rounds=11, federation='USA', rule_143_exemption='1.4.3b'
+        )
+        searcher.player.event.federation = 'FRA'
+        # Re-resolve the exemption against the FRA event federation.
+        from data.norms.tournament_checks import resolve_143abc_code
+
+        searcher._exemption_code = resolve_143abc_code(
+            '1.4.3b', searcher.player.federation, Federation('FRA')
+        )
+        result = searcher._search_one(inputs, None, TitleNorm.GM, meets_gender=True)
+        assert searcher._exemption_code is None
+        assert not result.is_met
 
     def test_gm_norm_unachievable_returns_baseline_failure(self):
         # 11-round Swiss where the player has too few wins to recover even

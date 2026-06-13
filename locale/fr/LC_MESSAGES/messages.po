@@ -7002,8 +7002,8 @@ msgstr "Une semaine"
 msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
-msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm secured — round optional\" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it."
-msgstr "Ce dont le·la joueur·euse a besoin à la ronde {round} pour réaliser chaque norme. « tout résultat sur l'échiquier » signifie qu'une victoire, nulle ou défaite jouée conviennent — mais la ronde doit néanmoins être jouée (une absence devient une défaite par forfait et invalide la norme). « norme acquise — ronde optionnelle » signifie que la norme est déjà acquise grâce aux rondes précédentes (1.4.1e) ; la partie de la ronde {round} ne l'affecte pas."
+msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm already achieved\" means it is locked in regardless of round {round} — either the result is already in, or it holds without this round (1.4.1e)."
+msgstr "Ce dont le joueur·euse a besoin à la ronde {round} pour réaliser chaque norme. « any OTB result » signifie qu'une victoire, une nulle ou une défaite jouée conviennent toutes — mais la ronde doit être jouée (un forfait devient une défaite par forfait et disqualifie la norme). « norm already achieved » signifie qu'elle est acquise quel que soit le résultat de la ronde {round} — soit le résultat est déjà saisi, soit elle tient sans cette ronde (1.4.1e)."
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans."
@@ -7338,8 +7338,8 @@ msgstr "mon-ecran"
 msgid "no"
 msgstr "non"
 
-msgid "norm secured — round optional"
-msgstr "norme acquise — ronde optionnelle"
+msgid "norm already achieved"
+msgstr "norme déjà acquise"
 
 #, python-format
 msgid "of %(n)s opponents"

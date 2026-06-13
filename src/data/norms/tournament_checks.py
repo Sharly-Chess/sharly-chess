@@ -238,19 +238,25 @@ def apply_143abc_exemption(
     Sets `result.rule_143_exemption` to 'a' / 'b' / 'c' / None as
     appropriate. The print templates render a badge from this field.
     """
-    if exemption_code == 'none':
-        return
-
-    # a and b are player-scoped: only the registering federation's
-    # players are exempt. c is tournament-scoped (applies to everyone).
-    if exemption_code in ('1.4.3a', '1.4.3b'):
-        if applicant_federation != event_federation:
-            return
-
-    code_map = {'1.4.3a': 'a', '1.4.3b': 'b', '1.4.3c': 'c'}
-    code = code_map.get(exemption_code)
+    code = resolve_143abc_code(exemption_code, applicant_federation, event_federation)
     if code is None:
-        return  # unknown value — validate() should have caught this
-
+        return
     for res in results.values():
         res.rule_143_exemption = code
+
+
+def resolve_143abc_code(
+    exemption_code: str,
+    applicant_federation: 'Federation',
+    event_federation: 'Federation',
+) -> str | None:
+    """Resolve the arbiter's print-option selection to the stored
+    exemption letter ('a' / 'b' / 'c'), or ``None`` when no exemption
+    applies to this player.
+
+    a and b are player-scoped: only the registering federation's players
+    are exempt. c is tournament-scoped (applies to everyone)."""
+    if exemption_code in ('1.4.3a', '1.4.3b'):
+        if applicant_federation != event_federation:
+            return None
+    return {'1.4.3a': 'a', '1.4.3b': 'b', '1.4.3c': 'c'}.get(exemption_code)
