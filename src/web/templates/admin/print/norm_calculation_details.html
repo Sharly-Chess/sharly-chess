@@ -540,7 +540,7 @@
             </section>
 
             {#— 4. Federation histogram —#}
-            {% if norm.federations_counter %}
+            {% if norm.federations_counter or norm.fid_count %}
             <section class="calc-section">
                 {% set sec.n = sec.n + 1 %}<h2>{{ sec.n }}. {{ _('Federation distribution (counted opponents)') }}</h2>
                 <table class="calc-table">
@@ -563,6 +563,16 @@
                                 </td>
                             </tr>
                         {% endfor %}
+                        {% if norm.fid_count %}
+                            {# FID games are counted, but 1.4.2a says FID is
+                               not a federation — it stays outside the
+                               1.4.3 / 1.4.4 federation mix. #}
+                            <tr>
+                                <td>FID</td>
+                                <td class="right">{{ norm.fid_count }}</td>
+                                <td>{{ _('Not counted as a federation (1.4.2a)') }}</td>
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </section>
