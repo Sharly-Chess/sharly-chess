@@ -37,14 +37,39 @@ class TitleNormSubsetSearcher:
         self,
         player: 'TournamentPlayer',
         min_games_override: int | None = None,
+        rule_143_exemption: str = 'none',
     ):
         """`min_games_override` is forwarded to the evaluator and used by
-        the subset-search to bound `max_ignores`."""
+        the subset-search to bound `max_ignores`.
+
+        `rule_143_exemption` is the arbiter's 1.4.3a/b/c selection. It is
+        resolved (with the player's federation scoping) and applied to
+        every result the search evaluates — so a subset that the
+        exemption rescues (e.g. dropping a round to clear `1.4.4` /
+        performance once the foreigner requirement is waived) is
+        recognised *during* the search, not only after it."""
+        from data.norms.tournament_checks import resolve_143abc_code
+        from utils.types import Federation
+
         self.player = player
         self.min_games_override = min_games_override
         self.evaluator = TitleNormEvaluator(
             player, min_games_override=min_games_override
         )
+        self._exemption_code = resolve_143abc_code(
+            rule_143_exemption,
+            player.federation,
+            Federation(player.event.federation),
+        )
+
+    def _evaluate(
+        self, inputs: 'NormInputs', tn: TitleNorm, meets_gender: bool
+    ) -> NormCheckResult:
+        """Evaluate one subset and stamp the resolved 1.4.3a/b/c
+        exemption so ``is_met`` reflects the waiver during the search."""
+        result = self.evaluator.evaluate_one(inputs, tn, meets_gender)
+        result.rule_143_exemption = self._exemption_code
+        return result
 
     @property
     def tournament(self):
@@ -86,13 +111,13 @@ class TitleNormSubsetSearcher:
         meets_gender: bool,
     ) -> NormCheckResult:
         # Fast path 1: full game set.
-        baseline_result = self.evaluator.evaluate_one(baseline, tn, meets_gender)
+        baseline_result = self._evaluate(baseline, tn, meets_gender)
         if baseline_result.is_met:
             return baseline_result
 
         # Fast path 2: 1.4.2c interpretation on the full set.
         if baseline_142c is not None:
-            result_142c = self.evaluator.evaluate_one(baseline_142c, tn, meets_gender)
+            result_142c = self._evaluate(baseline_142c, tn, meets_gender)
             if result_142c.is_met:
                 result_142c.applied_142c = True
                 result_142c.alternate_142c = baseline_result
@@ -131,7 +156,7 @@ class TitleNormSubsetSearcher:
 
         for candidate in self._candidates(droppable, max_ignores, inputs):
             modified = inputs.without_rounds(candidate)
-            result = self.evaluator.evaluate_one(modified, tn, meets_gender)
+            result = self._evaluate(modified, tn, meets_gender)
             if result.is_met:
                 result.ignored_rounds_via_search = candidate
                 # Flip the dropped rounds' audit entries to DROPPED so the
