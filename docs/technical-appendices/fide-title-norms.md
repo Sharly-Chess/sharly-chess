@@ -86,6 +86,24 @@ Do not include:
 
 - `1.4.2a`: Games against opponents who do not belong to FIDE federations.
 - `1.4.2a`: `FID` players are accepted, but do not count as foreign players.
+
+**"Foreign" and `FID` (FIDE QC clarification, 2026).** "Foreign" means a
+federation *different from the candidate's* — not different from the host
+federation. And `FID` "is not considered a federation": `FID` players are
+disregarded for every federation-mix rule. Concretely:
+
+- A game against a `FID` opponent is still **accepted** — it counts
+  towards games played, titled opponents, the rating average (`Ra`), and
+  the score.
+- But `FID` is **not** counted as one of the foreign federations under
+  `1.4.3`, does **not** count towards `1.4.3d`'s "≥ 20 players not from
+  the host federation" or "≥ 3 different federations", and cannot be the
+  over-represented federation that breaches the `1.4.4` caps (so a field
+  that is mostly `FID` does not violate the 2/3 one-federation cap).
+- Exception: `RUS` and `BLR` players are displayed as `FID` but count
+  under their own flag for norm purposes. The arbiter corrects the flag
+  in the tournament data; the software then treats them as that
+  federation, not as `FID`.
 - `1.4.2b`: Games against unrated players who score zero against rated opponents in round-robin tournaments.
 - `1.4.2c`: Games decided by forfeit, adjudication, or anything other than over-the-board play.
 - `1.4.2d`: Tournaments changed to benefit one or more players, including changes to rounds, round order, or opponent assignment.

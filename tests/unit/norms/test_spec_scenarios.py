@@ -767,12 +767,17 @@ class TestRule_1_4_2a_NON_excluded:
 
 
 class TestRule_1_4_2a_FID_nuance:
-    """The dev-reviewed clause: FID is a 'real' federation for counting
-    purposes (1.4.3) but NOT a foreign player (1.4.3d/1.5.6a)."""
+    """FIDE QC clarification (2026): "FID is not considered a federation.
+    FID players are disregarded." A game against a FID opponent is still
+    accepted (it counts towards games played, titled opponents, Ra, score),
+    but FID never enters the federation mix — neither as a foreign
+    federation for 1.4.3 / 1.4.3d nor as a federation that can breach the
+    1.4.4 caps. (RUS/BLR are shown as FID but counted under their own flag;
+    the arbiter corrects the flag in the data.)"""
 
-    def test_fid_opponent_counts_in_federations_counter_for_1_4_3(self):
-        """1.4.3 cares about distinct federations in the applicant's mix.
-        FID is a valid FIDE federation, so it counts."""
+    def test_fid_opponent_not_counted_as_a_federation_for_1_4_3(self):
+        """FID is not a federation: a FID opponent does not add to the
+        distinct-federation tally, though the game itself is kept."""
         usa_opp = _gm(1, federation='USA')
         fid_opp = _gm(2, federation='FID')
         player = _player_with_pairings(
@@ -784,12 +789,30 @@ class TestRule_1_4_2a_FID_nuance:
         )
         evaluator = TitleNormEvaluator(player)
         inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
-        # FID DOES count as a federation in the mix.
-        assert Federation('FID') in inputs.federations_counter
-        assert inputs.federations_counter[Federation('FID')] == 1
-        # The 1.4.3 num_feds count therefore sees 2 distinct (USA + FID).
+        # FID is NOT in the federation mix.
+        assert Federation('FID') not in inputs.federations_counter
+        # ...but the game is still counted (played + the opponent's title).
+        assert inputs.played_games == 2
+        assert fid_opp in inputs.opponents
+        # 1.4.3 sees only USA → one distinct federation.
         _, num_feds, _own = evaluator.federation_count_requirement(inputs)
-        assert num_feds == 2
+        assert num_feds == 1
+
+    def test_fid_majority_does_not_breach_1_4_4_one_fed_cap(self):
+        """ ">2/3 of the opponents from one federation" cannot be triggered
+        by FID, since FID is not a federation. A field of mostly FID
+        opponents passes the 1.4.4 one-federation cap."""
+        pairings = {1: (_gm(1, federation='USA'), Result.DRAW)}
+        for r in range(2, 10):  # 8 FID opponents out of 9
+            pairings[r] = (_gm(r, federation='FID'), Result.DRAW)
+        player = _player_with_pairings(rounds=9, pairings=pairings)
+        evaluator = TitleNormEvaluator(player)
+        inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        passes, top_fed, _count = evaluator.top_federation_requirement(
+            inputs, TitleNorm.GM
+        )
+        assert passes, 'FID majority must not breach the 2/3 one-federation cap'
+        assert top_fed in (None, Federation('USA'))
 
     def test_fid_player_does_not_count_in_1_4_3d_foreign_count(self):
         """1.4.3d's per-round count of "foreign rated players" is filtered:
