@@ -259,7 +259,9 @@ class TitleNormEvaluator:
             # caps. (FIDE QC clarification, 2026.) RUS/BLR players are shown
             # as FID but count under their own flag — the arbiter corrects
             # the flag in the data; nothing special is done here.
-            if opponent.federation != Federation('FID'):
+            if opponent.federation == Federation('FID'):
+                inputs.fid_count += 1
+            else:
                 inputs.federations_counter[opponent.federation] += 1
 
             # 1.4.5a — CM/WCM are NOT counted as title-holders.
@@ -450,6 +452,7 @@ class TitleNormEvaluator:
             Federation(self.player.event.federation), 0
         )
         res.federations_count = num_feds
+        res.fid_count = inputs.fid_count
 
         if not self.own_federation_requirement(inputs, tn):
             res.too_many_own_federation = _(

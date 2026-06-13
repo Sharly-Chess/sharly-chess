@@ -73,6 +73,11 @@ class NormInputs:
 
     played_games: int = 0
     federations_counter: Counter[Federation] = field(default_factory=Counter)
+    # Counted opponents whose federation is FID. The game counts (it is in
+    # `played_games` / `opponents`), but 1.4.2a says FID "is not a
+    # federation", so it is kept out of `federations_counter`. Tracked
+    # separately only so the audit view can show it with a clarifying note.
+    fid_count: int = 0
     titles_counter: Counter[PlayerTitle] = field(default_factory=Counter)
     opponents: list['TournamentPlayer'] = field(default_factory=list)
     results_list: list[Result] = field(default_factory=list)
@@ -105,14 +110,19 @@ class NormInputs:
 
         feds: Counter[Federation] = Counter()
         titles: Counter[PlayerTitle] = Counter()
+        fid_count = 0
         for opponent in kept_opponents:
-            feds[opponent.federation] += 1
+            if opponent.federation == Federation('FID'):
+                fid_count += 1
+            else:
+                feds[opponent.federation] += 1
             if opponent.title in TitleNorm.TITLE_HOLDERS:
                 titles[opponent.title] += 1
 
         return NormInputs(
             played_games=len(kept_idx),
             federations_counter=feds,
+            fid_count=fid_count,
             titles_counter=titles,
             opponents=kept_opponents,
             results_list=kept_results,

@@ -4060,6 +4060,9 @@ msgstr ""
 msgid "Not assigned"
 msgstr ""
 
+msgid "Not counted as a federation (1.4.2a)"
+msgstr ""
+
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr ""
 

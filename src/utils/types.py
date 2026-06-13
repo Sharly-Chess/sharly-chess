@@ -172,6 +172,9 @@ class NormCheckResult:
     federations_count: int = 0
     from_own_federations_count: int = 0
     from_host_federations_count: int = 0
+    # Counted opponents with federation FID — accepted games that don't
+    # enter the federation mix (1.4.2a). Shown in the audit histogram.
+    fid_count: int = 0
     num_title_holders: int = 0
     title_counts: Optional[Counter[PlayerTitle]] = None
     federations_counter: Optional[Counter['Federation']] = None

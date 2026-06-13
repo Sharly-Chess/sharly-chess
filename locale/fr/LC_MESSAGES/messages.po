@@ -4060,6 +4060,9 @@ msgstr "Norvège"
 msgid "Not assigned"
 msgstr "Non-attribué"
 
+msgid "Not counted as a federation (1.4.2a)"
+msgstr "Non comptée comme une fédération (1.4.2a)"
+
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr "Il n'y a pas assez de byes disponibles pour attribuer un bye point entier (requis : 2)."
 
