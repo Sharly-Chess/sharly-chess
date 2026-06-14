@@ -1313,14 +1313,25 @@ class PairingsAdminController(BaseEventAdminController):
             load_check_in_data=True,
         )
         tournament = web_context.get_admin_tournament()
-        for player in web_context.admin_absent_players:
-            match data.get(f'player_{player.id}'):
-                case 'zpb':
-                    tournament.set_player_byes(player, {round: Result.ZERO_POINT_BYE})
-                case 'withdraw':
-                    tournament.set_player_participation(player, withdraw=True)
-                case 'present':
+        absent_players = web_context.admin_absent_players
+        if len(absent_players) > tournament.player_count / 2:
+            set_present = 'over_50_present' in data
+            for player in absent_players:
+                if set_present:
                     tournament.check_in_player(player, check_in=True)
+                else:
+                    tournament.set_player_byes(player, {round: Result.ZERO_POINT_BYE})
+        else:
+            for player in absent_players:
+                match data.get(f'player_{player.id}'):
+                    case 'zpb':
+                        tournament.set_player_byes(
+                            player, {round: Result.ZERO_POINT_BYE}
+                        )
+                    case 'withdraw':
+                        tournament.set_player_participation(player, withdraw=True)
+                    case 'present':
+                        tournament.check_in_player(player, check_in=True)
         if round == 1:
             return self._render_pairings_settings_modal(web_context)
         return self._generate_round_pairings(web_context)

@@ -8,6 +8,10 @@
 
 - TRF26 import / export (4.2.0)
 
+## Players
+
+- Clarify actions on absent players if over half absent players (4.2.1)
+
 ## Documents
 
 - Added a new document to get a summary of norms achieved, or a forecast of norms that can be achieved for the final round (4.2.0)
