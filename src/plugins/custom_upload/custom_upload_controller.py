@@ -40,24 +40,24 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         cls, web_context: BaseEventAdminWebContext
     ) -> dict[str, Any]:
         tournaments = web_context.get_admin_event().tournaments
-        # TODO: load document URLs for *each* tournament instead of an arbitrary one
-        document_urls = None
+        document_types_by_tournament = {}
         for tournament in tournaments:
             document_urls = CustomUploadUtils.get_tournament_plugin_data(
                 tournament
             ).document_urls
-        document_types = []
-        if document_urls is not None and len(document_urls) > 0:
-            # TODO: refactor logic to be cleaner
-            for document_url in document_urls:
-                document_id = document_url.split('/')[-1].split('?')[0]
-                document_type = PrintDocumentManager(
-                    web_context.get_admin_event()
-                ).get_type(document_id)
-                document_types.append(document_type)
+            document_types = []
+            if document_urls is not None and len(document_urls) > 0:
+                # TODO: refactor logic to be cleaner
+                for document_url in document_urls:
+                    document_id = document_url.split('/')[-1].split('?')[0]
+                    document_type = PrintDocumentManager(
+                        web_context.get_admin_event()
+                    ).get_type(document_id)
+                    document_types.append(document_type)
+            document_types_by_tournament[tournament.id] = document_types
         return web_context.template_context | {
             'allowed_tournaments': cls._allowed_tournaments(web_context),
-            'documents': document_types,
+            'documents_by_tournament': document_types_by_tournament,
         }
 
     @get(
@@ -263,6 +263,7 @@ class CustomUploadAdminEventController(BaseEventAdminController):
         tournament = web_context.get_admin_tournament()
 
         CustomUploadUploader.upload_tournament(tournament.event.uniq_id, tournament_id)
+        # TODO: fetch up-to-date status instead the one before the actual upload
         if CustomUploadUtils.get_tournament_plugin_data(tournament).upload_failure_id:
             Message.error(
                 request,

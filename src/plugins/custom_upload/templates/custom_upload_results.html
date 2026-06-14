@@ -40,7 +40,7 @@
             <td>
                 <!-- TODO: handle properly rendering of list of documents -->
                 <ul>
-                    {% for document in documents %}
+                    {% for document in documents_by_tournament[tournament.id] %}
                         <li>{{ document and _(document.static_name()) }}</li>
                     {% endfor %}
                 </ul>
