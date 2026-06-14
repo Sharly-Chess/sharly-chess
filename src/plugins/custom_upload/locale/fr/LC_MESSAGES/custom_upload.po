@@ -117,3 +117,7 @@ msgstr "Mettre en ligne les tournois maintenant"
 
 msgid "consult the logs"
 msgstr "consulter les logs"
+
+
+msgid "target server path not found"
+msgstr "le chemin sur le serveur n'a pas pu être trouvé"

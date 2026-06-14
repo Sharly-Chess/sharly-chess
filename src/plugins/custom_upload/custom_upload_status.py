@@ -137,6 +137,16 @@ class FailureCustomUploadStatus(CustomUploadStatus, ABC):
         )
 
 
+class TargetLocationNotFoundCustomUploadStatus(FailureCustomUploadStatus):
+    @staticmethod
+    def static_id() -> str:
+        return 'TARGET_LOCATION_NOT_FOUND'
+
+    @property
+    def details(self) -> str:
+        return _('target server path not found')
+
+
 class UnexpectedFailureCustomUploadStatus(FailureCustomUploadStatus):
     @staticmethod
     def static_id() -> str:

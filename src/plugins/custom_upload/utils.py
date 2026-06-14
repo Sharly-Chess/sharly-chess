@@ -17,6 +17,7 @@ from plugins.custom_upload.custom_upload_status import (
     UnexpectedFailureCustomUploadStatus,
     ModifiedCustomUploadStatus,
     OngoingCustomUploadStatus,
+    TargetLocationNotFoundCustomUploadStatus,
 )
 from plugins.utils import PluginData
 from utils.date_time import format_datetime
@@ -101,6 +102,7 @@ class CustomUploadUtils:
 class CustomUploadFailureStatusManager(EntityManager[FailureCustomUploadStatus]):
     def entity_types(self) -> list[type[FailureCustomUploadStatus]]:
         return [
+            TargetLocationNotFoundCustomUploadStatus,
             UnexpectedFailureCustomUploadStatus,
         ]
 

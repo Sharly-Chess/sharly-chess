@@ -8,6 +8,7 @@ from pathlib import Path
 from threading import Thread
 
 import paramiko.client
+from paramiko.sftp_client import SFTPClient
 
 from common.i18n import _, set_locale
 from common.i18n.utils import parse_jinja_template
@@ -21,6 +22,7 @@ from database.sqlite.event.event_store import StoredTournament
 from plugins.custom_upload import PLUGIN_NAME
 from plugins.custom_upload.custom_upload_status import (
     UnexpectedFailureCustomUploadStatus,
+    TargetLocationNotFoundCustomUploadStatus,
 )
 from plugins.custom_upload.utils import (
     CustomUploadUtils,
@@ -224,15 +226,30 @@ class CustomUploadUploader:
             try:
                 client.connect(host, username=username, password=password)
                 sftp_client = client.open_sftp()
+
+                target_path = Path(tournament_plugin_data.server_path)
+                if not CustomUploadUploader._does_remote_path_exist(
+                    sftp_client, target_path.as_posix()
+                ):
+                    logger.error(
+                        'Error uploading tournament [%s]: path "%s" doesn\'t target a valid location',
+                        tournament.name,
+                        tournament_plugin_data.server_path,
+                    )
+                    cls.upload_status_messages[result_id] = CustomUploadResult(
+                        CustomUploadStatus.ERROR,
+                        _('Error uploading tournament'),
+                    )
+                    failure_status = TargetLocationNotFoundCustomUploadStatus()
+                    return cls.upload_status_messages[result_id]
+
                 for (
                     temporary_document_file,
                     file_name,
                 ) in temporary_files_with_destination:
                     sftp_client.putfo(
                         temporary_document_file,
-                        (
-                            Path(tournament_plugin_data.server_path) / file_name
-                        ).as_posix(),
+                        (target_path / file_name).as_posix(),
                     )
                     logger.info('Uploaded document file [%s]', file_name)
                     temporary_document_file.close()
@@ -345,3 +362,11 @@ class CustomUploadUploader:
 
         uploader = Thread(target=_upload_tournaments, args=(cls,))
         uploader.start()
+
+    @staticmethod
+    def _does_remote_path_exist(sftp_client: SFTPClient, remote_path: str):
+        try:
+            sftp_client.stat(remote_path)
+        except FileNotFoundError:
+            return False
+        return True
