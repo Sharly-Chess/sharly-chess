@@ -7,10 +7,11 @@
 var sceTooltipByFieldId = {};
 $('#{{ plugin.form_key }}').change(function () {
     if (this.checked) {
+        const message = `{{ _('This field is controlled from Sharly-Chess.com.') }}`
         {% for id in field_ids %}
             var inputContainer = document.getElementById('{{ id }}-input-container');
             sceTooltipByFieldId['{{ id }}'] = new bootstrap.Tooltip(inputContainer, {
-                title: `{{ _('This field is controlled from Sharly-Chess.com.') }}`,
+                title: message,
                 placement: 'top',
             });
             $('#{{ id }}').prop('disabled', true);
