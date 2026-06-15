@@ -169,7 +169,7 @@ class ViewScreenEntityGuard[T](BaseGuard, ABC):
 
     @staticmethod
     def is_entity_public(entity: T) -> bool:
-        return entity.public
+        return getattr(entity, 'public')
 
     def authorize_client(self, client: Client, request: HTMXRequest):
         entity = self.get_entity(request)
