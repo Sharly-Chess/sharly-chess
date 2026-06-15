@@ -316,11 +316,14 @@ msgstr ""
 msgid "1.4.1c (default — forfeit excluded)"
 msgstr ""
 
-msgid "1.4.1e/f: ignored by the subset search to satisfy this norm."
-msgstr ""
-
 #, python-format
 msgid "1.4.1e/f: round(s) %(rounds)s ignored"
+msgstr ""
+
+msgid "1.4.1e: game after the title result was reached, ignored by the subset search."
+msgstr ""
+
+msgid "1.4.1f: game against a defeated opponent, ignored by the subset search."
 msgstr ""
 
 msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
