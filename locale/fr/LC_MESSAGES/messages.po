@@ -310,12 +310,15 @@ msgstr "1.4.1 — Parties jouées"
 msgid "1.4.1c (default — forfeit excluded)"
 msgstr "1.4.1c (par défaut — forfait exclu)"
 
-msgid "1.4.1e/f: ignored by the subset search to satisfy this norm."
-msgstr "1.4.1e/f : ignorée par la recherche de sous-ensembles pour satisfaire cette norme."
-
 #, python-format
 msgid "1.4.1e/f: round(s) %(rounds)s ignored"
 msgstr "1.4.1e/f : ronde(s) %(rounds)s ignorée(s)"
+
+msgid "1.4.1e: game after the title result was reached, ignored by the subset search."
+msgstr "1.4.1e : partie jouée après l'obtention du résultat de norme, ignorée par la recherche de sous-ensembles."
+
+msgid "1.4.1f: game against a defeated opponent, ignored by the subset search."
+msgstr "1.4.1f : partie contre un·e adversaire battu·e, ignorée par la recherche de sous-ensembles."
 
 msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
 msgstr "1.4.2a : adversaire sans fédération FIDE (NON) — non compté·e."

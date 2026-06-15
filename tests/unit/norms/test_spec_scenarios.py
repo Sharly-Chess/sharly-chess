@@ -2018,7 +2018,7 @@ class TestRoundAuditTrail:
 
     def test_search_marks_dropped_rounds_in_audit(self):
         """When the subset search drops rounds via 1.4.1e/f, the result's
-        audit lists those rounds as DROPPED / ignored_via_1_4_1ef."""
+        audit lists those rounds as DROPPED with a 1.4.1e or 1.4.1f reason."""
         from data.norms.inputs import NormInputs, RoundDecision
 
         # Drive `_search_subsets` directly so we don't have to stub
@@ -2065,7 +2065,10 @@ class TestRoundAuditTrail:
             for r in winner.ignored_rounds_via_search:
                 entry = next(e for e in winner.round_audit if e.round_ == r)
                 assert entry.decision == RoundDecision.DROPPED
-                assert entry.reason_key == 'ignored_via_1_4_1ef'
+                assert entry.reason_key in (
+                    'ignored_via_1_4_1e',
+                    'ignored_via_1_4_1f',
+                )
                 assert entry.effective_result is None
             for entry in winner.round_audit:
                 if entry.round_ not in winner.ignored_rounds_via_search:
