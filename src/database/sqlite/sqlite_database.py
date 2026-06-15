@@ -8,6 +8,7 @@ from sqlite3 import Connection, Cursor, connect, OperationalError
 from typing import Self, Any
 
 from common.logger import get_logger
+from common.profiling import incr
 
 
 logger = get_logger()
@@ -62,6 +63,7 @@ class SQLiteDatabase:
         try:
             self.database = connect(db_url, detect_types=1, uri=True)
             self.cursor = self.database.cursor()
+            incr('db_open')
 
             self.cursor.execute('PRAGMA busy_timeout=5000')
 

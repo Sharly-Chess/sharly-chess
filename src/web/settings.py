@@ -9,6 +9,9 @@ from typing import Sequence
 import aiosqlite
 from aiosqlitepool import SQLiteConnectionPool
 from jinja2 import Environment, FileSystemLoader, TemplateNotFound
+from jinja2 import Template as JinjaTemplate
+
+from common.profiling import PROFILE_ENABLED, timed
 from litestar import Router
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import CacheControlHeader
@@ -28,7 +31,7 @@ from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
 from litestar.middleware.base import DefineMiddleware
 
-from common import BASE_DIR, TMP_DIR
+from common import BASE_DIR, TMP_DIR, DEVEL_ENV
 from common.i18n import gettext, ngettext
 from data.input_output import OnlineDataSourceManager
 
@@ -66,6 +69,7 @@ from web.controllers.user.tournament_user_controller import (
 )
 from web.sqlite_store import SQLiteStore
 from web.session_backend import SkipUnchangedSessionBackend
+from web.profiling_middleware import ProfilingMiddleware
 
 static_files_base_dir = BASE_DIR / 'src/web/static'
 
@@ -174,6 +178,26 @@ class FileSystemLoaderWithRelativePath(FileSystemLoader):
         return contents, os.path.normpath(filename), uptodate
 
 
+# Auto-reload re-stats every template (and every {% include %}) from disk on
+# each render — costly, and especially so on Windows where each stat is scanned
+# by the antivirus. Only worth it when editing templates live: keep it on in a
+# source checkout, but off once packaged, and off whenever profiling so the
+# measurements reflect production behaviour.
+_TEMPLATE_AUTO_RELOAD: bool = DEVEL_ENV and not PROFILE_ENABLED
+
+
+class _TimedTemplate(JinjaTemplate):
+    """Records the wall time of each top-level template render. Includes and
+    macros execute within the parent render frame, so one ``render()`` call
+    covers the whole template tree for a response."""
+
+    def render(self, *args, **kwargs) -> str:
+        if not PROFILE_ENABLED:
+            return super().render(*args, **kwargs)
+        with timed('render'):
+            return super().render(*args, **kwargs)
+
+
 class SharlyChessEnvironment(Environment):
     """Override to:
     - have a join_path() method that accepts relative path from the template that call %include, %extends and %from
@@ -191,7 +215,9 @@ class SharlyChessEnvironment(Environment):
             loader=template_loader,
             autoescape=True,
             trim_blocks=True,
+            auto_reload=_TEMPLATE_AUTO_RELOAD,
         )
+        self.template_class = _TimedTemplate
         self.add_extension('jinja2.ext.i18n')
         self.install_gettext_callables(  # type: ignore
             gettext=gettext, ngettext=ngettext, newstyle=True
@@ -270,6 +296,8 @@ _session_config = ServerSideSessionConfig(
 )
 
 middlewares: Sequence[Middleware] = [
+    # Outermost, so total time covers the whole request (incl. session work).
+    ProfilingMiddleware,
     DefineMiddleware(
         SessionMiddleware,
         backend=SkipUnchangedSessionBackend(config=_session_config),

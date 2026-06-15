@@ -23,6 +23,7 @@ from litestar.channels import ChannelsPlugin
 from common.exception import SharlyChessException
 from common.i18n import _, ngettext
 from common.logger import get_logger
+from common.profiling import timed
 from data.board import Board
 from data.player import TournamentPlayer
 from data.print_documents.documents import (
@@ -72,9 +73,10 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
     ):
         super().__init__(request, reload_event)
         self.admin_tournament: Tournament | None = None
-        self.allowed_tournaments = self.client.allowed_tournaments_for_action(
-            AuthAction.VIEW_PAIRINGS_TAB
-        )
+        with timed('pair_perms'):
+            self.allowed_tournaments = self.client.allowed_tournaments_for_action(
+                AuthAction.VIEW_PAIRINGS_TAB
+            )
         event = self.get_admin_event()
         if tournament_id:
             if tournament_id not in event.tournaments_by_id:
@@ -129,11 +131,15 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
         self.admin_boards: list[Board] = []
         if self.admin_tournament is not None:
-            self.admin_tournament.set_for_round(self.admin_round)
-            self.admin_boards = self.admin_tournament.get_round_boards(self.admin_round)
+            with timed('pair_boards'):
+                self.admin_tournament.set_for_round(self.admin_round)
+                self.admin_boards = self.admin_tournament.get_round_boards(
+                    self.admin_round
+                )
 
         if self.admin_tournament and self.display_rankings:
-            self.admin_tournament.compute_tournament_player_ranks()
+            with timed('pair_ranks'):
+                self.admin_tournament.compute_tournament_player_ranks()
 
         if SessionPairingsShowWithoutResults(request).get():
             self.admin_filtered_boards = [
@@ -145,7 +151,8 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
         self.admin_unpaired: list[TournamentPlayer] = []
         self.admin_bye_players: list[TournamentPlayer] = []
         self.admin_absent_players: list[TournamentPlayer] = []
-        self.reload_unpaired_player_lists()
+        with timed('pair_unpaired'):
+            self.reload_unpaired_player_lists()
 
         self.admin_board: Board | None = None
         if board_id is not None:
@@ -231,10 +238,13 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
 
         if self.admin_tournament:
             permission_handler = self.admin_tournament.pairing_system.permission_handler
-            allowed_actions = permission_handler.allowed_actions(
-                self.round_status, self.safety_mode
-            )
-            existing_actions = permission_handler.existing_actions(self.round_status)
+            with timed('pair_actions'):
+                allowed_actions = permission_handler.allowed_actions(
+                    self.round_status, self.safety_mode
+                )
+                existing_actions = permission_handler.existing_actions(
+                    self.round_status
+                )
 
             if (
                 self.display_rankings
@@ -258,7 +268,19 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             else None
         )
 
-        return super().template_context | {
+        with timed('pair_basectx'):
+            base_context = super().template_context
+        with timed('pair_topts'):
+            tournament_options = self.get_tournament_options(self.allowed_tournaments)
+        with timed('pair_gendisabled'):
+            pairings_generation_disabled_message = (
+                self.admin_tournament
+                and self.admin_tournament.pairings_generation_disabled_message(
+                    self.admin_round
+                )
+            )
+
+        return base_context | {
             'admin_event_tab': 'admin-event-pairings-tab',
             'admin_tournament': self.admin_tournament,
             'admin_tournament_id': self.value_to_form_data(self.admin_tournament.id)
@@ -273,15 +295,12 @@ class PairingsAdminWebContext(BaseEventAdminWebContext):
             'safety_mode': self.safety_mode,
             'allowed_actions': allowed_actions,
             'existing_actions': existing_actions,
-            'tournament_options': self.get_tournament_options(self.allowed_tournaments),
+            'tournament_options': tournament_options,
             'admin_filtered_boards': self.admin_filtered_boards,
             'admin_unpaired': self.admin_unpaired,
             'admin_bye_players': self.admin_bye_players,
             'admin_absent_players': self.admin_absent_players,
-            'pairings_generation_disabled_message': self.admin_tournament
-            and self.admin_tournament.pairings_generation_disabled_message(
-                self.admin_round
-            ),
+            'pairings_generation_disabled_message': pairings_generation_disabled_message,
             'show_without_results': SessionPairingsShowWithoutResults(
                 self.request
             ).get(),

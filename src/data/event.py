@@ -467,7 +467,7 @@ class Event:
             stored_player.last_name,
             stored_player.first_name,
             stored_player.date_of_birth,
-        ) == (player.last_name, player.last_name, player.date_of_birth):
+        ) == (player.last_name, player.first_name, player.date_of_birth):
             return True
         if stored_player.fide_id and stored_player.fide_id == player.fide_id:
             return True
@@ -502,12 +502,42 @@ class Event:
 
     @cached_property
     def has_multi_tournament_players(self) -> bool:
-        for ref_player in self.players:
-            if any(
-                self._are_player_duplicates(ref_player.stored_player, player)
-                for player in self.players
-            ):
-                return True
+        # The deterministic duplicate rules (name + date of birth, FIDE id)
+        # are detected in a single pass by bucketing on their keys, instead
+        # of comparing every player against every other player.
+        name_keys: set[tuple[str | None, str | None, object]] = set()
+        fide_ids: set[str] = set()
+        for player in self.players:
+            stored_player = player.stored_player
+            if stored_player.date_of_birth:
+                name_key = (
+                    stored_player.last_name,
+                    stored_player.first_name,
+                    stored_player.date_of_birth,
+                )
+                if name_key in name_keys:
+                    return True
+                name_keys.add(name_key)
+            if stored_player.fide_id:
+                if stored_player.fide_id in fide_ids:
+                    return True
+                fide_ids.add(stored_player.fide_id)
+
+        # Plugin-defined duplicate rules can be arbitrary, so they still need
+        # the pairwise check — but only run it when a plugin actually provides
+        # one (otherwise the deterministic pass above is conclusive).
+        duplicate_hook = plugin_manager.hook_for_event(self, 'are_players_duplicates')
+        if duplicate_hook.get_hookimpls():
+            for ref_player in self.players:
+                for player in self.players:
+                    if player.id == ref_player.id:
+                        continue
+                    if any(
+                        duplicate_hook(
+                            stored_player=ref_player.stored_player, player=player
+                        )
+                    ):
+                        return True
         return False
 
     @property

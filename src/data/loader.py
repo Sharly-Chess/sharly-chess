@@ -17,6 +17,7 @@ from common import (
     EVENTS_DIR,
 )
 from common.exception import SharlyChessException
+from common.profiling import timed
 from common.i18n.utils import normalized_key
 from common.sharly_chess_config import SharlyChessConfig
 from common.logger import get_logger
@@ -33,6 +34,10 @@ logger: Logger = get_logger()
 class EventLoader:
     _valid_event_ids: set[str] = set()
     _invalid_uniq_ids: set[str] = set()
+    # uniq_id -> (database file mtime, metadata). Keyed by mtime so a write
+    # to an event database (which bumps the file's mtime) invalidates the
+    # entry automatically — the cache cannot serve stale metadata.
+    _metadata_cache: dict[str, tuple[float, EventMetadata]] = {}
 
     @classmethod
     def get(cls, request: HTMXRequest | None):
@@ -46,6 +51,7 @@ class EventLoader:
     @classmethod
     def unload_event(cls, uniq_id: str):
         cls._valid_event_ids.remove(uniq_id)
+        cls._metadata_cache.pop(uniq_id, None)
         cls.load_event_ids()
 
     @classmethod
@@ -145,16 +151,70 @@ class EventLoader:
         )
 
     def load_event(self, uniq_id: str) -> Event:
-        self.load_event_ids(uniq_id)
-        with EventDatabase(uniq_id) as event_database:
-            event = Event(event_database.load_stored_event())
+        with timed('load_event'):
+            self.load_event_ids(uniq_id)
+            with EventDatabase(uniq_id) as event_database:
+                event = Event(event_database.load_stored_event())
         return event
 
     @classmethod
     def load_event_metadata(cls, uniq_id: str) -> EventMetadata:
+        try:
+            mtime: float | None = (
+                EventDatabase.event_database_path(uniq_id).stat().st_mtime
+            )
+        except OSError:
+            mtime = None
+        if mtime is not None:
+            cached = cls._metadata_cache.get(uniq_id)
+            if cached is not None and cached[0] == mtime:
+                return cached[1]
         with EventDatabase(uniq_id) as database:
             event_metadata = database.load_stored_event_metadata()
+        if mtime is not None:
+            cls._metadata_cache[uniq_id] = (mtime, event_metadata)
         return event_metadata
+
+    @classmethod
+    def get_events_metadata_by_status(
+        cls, public_only: bool = False
+    ) -> tuple[list[EventMetadata], list[EventMetadata], list[EventMetadata]]:
+        """Loads every event's metadata once and partitions it into
+        (passed, current, coming), each sorted as :meth:`get_events_metadata`
+        would. Avoids the three separate full sweeps an index render would
+        otherwise do."""
+        cls.load_event_ids()
+        today = date.today()
+        all_metadata = [
+            cls.load_event_metadata(uniq_id) for uniq_id in cls._valid_event_ids
+        ]
+        if public_only:
+            all_metadata = [event for event in all_metadata if event.public]
+
+        def _key(event: EventMetadata, order: int) -> tuple:
+            return (
+                get_date_timestamp(event.stop_date) * order,
+                get_date_timestamp(event.start_date) * order,
+                normalized_key(event.name),
+            )
+
+        passed = sorted(
+            (event for event in all_metadata if event.stop_date < today),
+            key=lambda event: _key(event, -1),
+        )
+        current = sorted(
+            (
+                event
+                for event in all_metadata
+                if event.start_date <= today <= event.stop_date
+            ),
+            key=lambda event: _key(event, 1),
+        )
+        coming = sorted(
+            (event for event in all_metadata if today < event.start_date),
+            key=lambda event: _key(event, 1),
+        )
+        return passed, current, coming
 
     @classmethod
     def get_events_metadata(

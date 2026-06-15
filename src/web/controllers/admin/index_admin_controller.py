@@ -17,6 +17,7 @@ from common import (
 from common.exception import FormError, SharlyChessException
 from common.logger import get_logger
 from common.network import NetworkMonitor
+from common.profiling import timed
 from data.access_levels.actions import AuthAction
 from data.board import PlayerRatingType
 from data.event import Event
@@ -170,17 +171,13 @@ class IndexAdminController(BaseAdminController):
         template_context: dict[str, Any] | None = None,
         keep_modal_open: bool | None = None,
     ) -> Template:
-        sorted_archives = ArchiveLoader.get_sorted_archives()
+        with timed('admin_archives'):
+            sorted_archives = ArchiveLoader.get_sorted_archives()
         public_only: bool = not web_context.client.can_view_private_events
-        passed_events = EventLoader.get_events_metadata(
-            'passed', public_only=public_only
-        )
-        current_events = EventLoader.get_events_metadata(
-            'current', public_only=public_only
-        )
-        coming_events = EventLoader.get_events_metadata(
-            'coming', public_only=public_only
-        )
+        with timed('admin_events'):
+            passed_events, current_events, coming_events = (
+                EventLoader.get_events_metadata_by_status(public_only=public_only)
+            )
         lan_events = [
             event
             for event in current_events + coming_events
@@ -270,12 +267,19 @@ class IndexAdminController(BaseAdminController):
                     (nav_index + 1) % len(nav_tabs)
                 ]
 
-        svg_logo = (BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg').read_text(
-            encoding='utf-8'
-        )
+        with timed('admin_svg'):
+            svg_logo = (
+                BASE_DIR / 'src/web/static/images/sharly-chess-logo.svg'
+            ).read_text(encoding='utf-8')
         request = web_context.request
+        with timed('admin_basectx'):
+            base_context = web_context.template_context
+        with timed('admin_pluginbtns'):
+            plugin_event_create_button_templates = (
+                plugin_manager.hook.create_event_button_template()
+            )
         context = (
-            web_context.template_context
+            base_context
             | {
                 'messages': Message.messages(request),
                 'format_date_range': format_date_range,
@@ -284,7 +288,7 @@ class IndexAdminController(BaseAdminController):
                 'svg_logo': svg_logo,
                 'show_details': SessionEventsShowDetails(request).get(),
                 'plugin_event_create_button_templates': (
-                    plugin_manager.hook.create_event_button_template()
+                    plugin_event_create_button_templates
                 ),
             }
             | (template_context or {})
@@ -584,15 +588,22 @@ class IndexAdminController(BaseAdminController):
         federation_plugin_used = False
         if action == FormAction.UPDATE:
             assert event is not None
-            for plugin in event.enabled_plugins:
-                if not plugin.federation:
-                    continue
-                if plugin.used_by_tournaments_count(event):
-                    federation_plugin_used = True
-                    break
+            with timed('modal_fedused'):
+                for plugin in event.enabled_plugins:
+                    if not plugin.federation:
+                        continue
+                    if plugin.used_by_tournaments_count(event):
+                        federation_plugin_used = True
+                        break
         errors = errors or {}
+        with timed('modal_fedopts'):
+            federation_options = self._get_federation_options()
+        with timed('modal_multitp'):
+            has_multi_tournament_players = bool(
+                event and event.has_multi_tournament_players
+            )
         template_context = {
-            'federation_options': self._get_federation_options(),
+            'federation_options': federation_options,
             'months_options': self._months_options(),
             'modal': 'event',
             'event_uniq_ids': list(EventLoader().event_uniq_ids),
@@ -604,8 +615,7 @@ class IndexAdminController(BaseAdminController):
                     'National *** NAME FOR RATING TYPE NATIONAL'
                 ),
             },
-            'has_multi_tournament_players': event
-            and event.has_multi_tournament_players,
+            'has_multi_tournament_players': has_multi_tournament_players,
             'force_organiser_open': any(
                 field in errors
                 for field in [
@@ -644,8 +654,12 @@ class IndexAdminController(BaseAdminController):
         admin_tab: str | None = None,
     ) -> Template:
         web_context = AdminWebContext(request, admin_tab=admin_tab)
-        data = self._prepare_event_modal_data(action, request, web_context.admin_event)
-        template_context = self._event_modal_context(web_context, action, data)
+        with timed('modal_prepare'):
+            data = self._prepare_event_modal_data(
+                action, request, web_context.admin_event
+            )
+        with timed('modal_ctx'):
+            template_context = self._event_modal_context(web_context, action, data)
 
         return self._admin_render(
             web_context=web_context,
