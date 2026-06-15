@@ -17,6 +17,13 @@
         hx-get="{{ url_for(
             'user-checkin-modal',
             event_uniq_id=user_event.uniq_id,
+            display_controller_id=display_controller.id,
+            tournament_id=tournament.id,
+            player_id=player.id
+        ) if display_controller else url_for(
+            'user-checkin-modal',
+            is_screen=1,
+            event_uniq_id=user_event.uniq_id,
             screen_uniq_id=screen.uniq_id,
             tournament_id=tournament.id,
             player_id=player.id

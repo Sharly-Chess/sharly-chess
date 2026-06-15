@@ -12,9 +12,10 @@ from data.tournament import Tournament
 from utils.enum import ScreenType
 from web.controllers.user.base_screen_user_controller import (
     BaseScreenUserController,
-    BasicScreenOrFamilyUserWebContext,
     DisplayControllerUserWebContext,
     RotatorUserWebContext,
+    ScreenUserWebContext,
+    ScreenEntityUserWebContext,
 )
 from web.guards import (
     EventGuard,
@@ -54,12 +55,15 @@ class ScreenUserController(BaseScreenUserController):
     @classmethod
     def _user_screen_refresh_needed(
         cls,
-        web_context: BasicScreenOrFamilyUserWebContext
-        | DisplayControllerUserWebContext,
+        web_context: ScreenEntityUserWebContext,
         date: float,
     ) -> bool:
         date_dt = datetime.fromtimestamp(date)
         screen = web_context.screen
+        family = web_context.family
+        if family:
+            if family.last_update > date_dt:
+                return True
         if screen:
             event = screen.event
             if event.last_update > date_dt:
@@ -98,17 +102,6 @@ class ScreenUserController(BaseScreenUserController):
                                 return True
                 case _:
                     raise ValueError(f'type={screen.type}')
-        elif isinstance(web_context, BasicScreenOrFamilyUserWebContext):
-            family = web_context.family
-            assert family is not None
-            if (
-                max(
-                    family.event.last_update,
-                    family.last_update,
-                )
-                > date_dt
-            ):
-                return True
         return False
 
     @get(
@@ -120,7 +113,7 @@ class ScreenUserController(BaseScreenUserController):
         self,
         request: HTMXRequest,
     ) -> HTMXTemplate | Reswap:
-        web_context = BasicScreenOrFamilyUserWebContext(request)
+        web_context = ScreenUserWebContext(request)
         date: float | None = self.get_if_modified_since(request)
         if date is None or self._user_screen_refresh_needed(web_context, date):
             return self._user_screen_render(web_context)
