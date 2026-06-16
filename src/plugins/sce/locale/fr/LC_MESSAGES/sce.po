@@ -345,6 +345,9 @@ msgstr "Synchroniser automatiquement toutes les %(delay)d minutes."
 msgid "Synchronize players"
 msgstr "Synchroniser les joueur·euses"
 
+msgid "This field is controlled from Sharly-Chess.com."
+msgstr "Ce champ est controllé depuis Sharly-Chess.com."
+
 msgid "Time control"
 msgstr "Cadence"
 
