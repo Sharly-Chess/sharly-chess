@@ -3,9 +3,9 @@
 The searcher's hard edges live in two places, tested individually:
 
   * `NormInputs.without_rounds` — pure data manipulation (no Tournament).
-  * `TitleNormSubsetSearcher._droppable_rounds` / `_candidates` —
-    candidate generation. Tested against a faked-evaluator setup so we
-    can drive the search without building a full tournament.
+  * `TitleNormSubsetSearcher._candidates` — candidate generation. Tested
+    against a faked-evaluator setup so we can drive the search without
+    building a full tournament.
 
 Then end-to-end scenarios exercise `_search_one` with a fake evaluator
 that returns is_met for specific subsets, verifying:
@@ -178,7 +178,7 @@ class TestWithoutRounds:
 
 
 # ---------------------------------------------------------------------------
-# Candidate generation — _droppable_rounds and _candidates
+# Candidate generation — _candidates
 # ---------------------------------------------------------------------------
 # These need a TitleNormSubsetSearcher instance, but we only exercise its
 # pure helpers — so a MagicMock for `player` suffices.
@@ -199,8 +199,12 @@ def _make_searcher(
     return TitleNormSubsetSearcher(player)
 
 
-class TestDroppableRounds:
-    def test_only_wins_droppable_in_round_robin(self):
+class TestCandidateShape:
+    """1.4.1f drops won games in any combination; 1.4.1e drops a whole
+    trailing suffix once a title result is reached. A loss or draw may
+    therefore be dropped only as part of an 1.4.1e tail — never alone."""
+
+    def test_only_won_subsets_in_round_robin(self):
         from data.pairings.systems import RoundRobinPairingSystem
 
         opps = [FakeOpponent(i, 2400) for i in range(1, 11)]
@@ -218,47 +222,40 @@ class TestDroppableRounds:
         ]
         inputs = make_inputs(rounds_data)
         searcher = _make_searcher(rounds=10, pairing_system=RoundRobinPairingSystem())
-        # RR — only 1.4.1f applies. All wins droppable, regardless of position.
-        droppable = searcher._droppable_rounds(inputs)
-        assert droppable == {1, 3, 5, 6, 8, 10}
+        # RR — no 1.4.1e tail; every candidate is a subset of the won rounds.
+        wins = {1, 3, 5, 6, 8, 10}
+        candidates = list(searcher._candidates(inputs, max_ignores=1))
+        assert candidates  # at least the size-1 won drops
+        for combo in candidates:
+            assert combo <= wins
 
-    def test_wins_and_tail_rounds_droppable_in_swiss(self):
+    def test_tail_loss_only_dropped_with_the_rounds_after_it(self):
         opps = [FakeOpponent(i, 2400) for i in range(1, 12)]
-        rounds_data = [
-            (1, opps[0], Result.WIN),
-            (2, opps[1], Result.DRAW),
-            (3, opps[2], Result.WIN),
-            (4, opps[3], Result.LOSS),
-            (5, opps[4], Result.LOSS),
-            (6, opps[5], Result.WIN),
-            (7, opps[6], Result.DRAW),
-            (8, opps[7], Result.WIN),
-            (9, opps[8], Result.LOSS),  # tail
-            (10, opps[9], Result.DRAW),  # tail
-            (11, opps[10], Result.WIN),  # tail (also a win)
-        ]
+        results = [Result.WIN] * 8 + [Result.LOSS, Result.LOSS, Result.WIN]
+        rounds_data = list(zip(range(1, 12), opps, results))
         inputs = make_inputs(rounds_data)
-        searcher = _make_searcher(rounds=11)
-        droppable = searcher._droppable_rounds(inputs)
-        # Wins: {1, 3, 6, 8, 11}
-        # Tail (last 2, since max_ignores = 11-9 = 2): {10, 11}
-        # Union: {1, 3, 6, 8, 10, 11}
-        assert droppable == {1, 3, 6, 8, 10, 11}
+        searcher = _make_searcher(rounds=11)  # max_ignores = 11 - 9 = 2
+        candidates = list(searcher._candidates(inputs, max_ignores=2))
+
+        # R10 (a loss) is never an isolated drop, and any candidate that
+        # drops it also drops every later round (here just R11).
+        assert frozenset({10}) not in candidates
+        for combo in candidates:
+            if 10 in combo:
+                assert 11 in combo
+        # The whole-tail drop {10, 11} is offered.
+        assert frozenset({10, 11}) in candidates
+        # R9 (a mid loss) is unreachable within the 2-round budget — it
+        # would need the tail {9, 10, 11}, which is 3 drops.
+        assert all(9 not in combo for combo in candidates)
 
     def test_no_ignores_available_in_9_round_swiss(self):
-        # max_ignores = 0 — tail-window empty, only wins droppable per 1.4.1f
-        # but 1.4.1f also requires headroom (max_ignores > 0). The droppable
-        # set still surfaces wins, but the search will refuse to enumerate.
+        # max_ignores = 0 — no headroom, so no candidates regardless of wins.
         opps = [FakeOpponent(i, 2400) for i in range(1, 10)]
         rounds_data = [(r, opps[r - 1], Result.WIN) for r in range(1, 10)]
         inputs = make_inputs(rounds_data)
         searcher = _make_searcher(rounds=9)
-        # All rounds are wins → droppable includes them, but search exits
-        # because max_ignores == 0.
-        droppable = searcher._droppable_rounds(inputs)
-        assert all(r in droppable for r in range(1, 10))
-        candidates = list(searcher._candidates(droppable, max_ignores=0, inputs=inputs))
-        assert candidates == []
+        assert list(searcher._candidates(inputs, max_ignores=0)) == []
 
     def test_unrated_win_counts_as_win_for_1_4_1f(self):
         opps = [FakeOpponent(i, 2400) for i in range(1, 5)]
@@ -270,9 +267,52 @@ class TestDroppableRounds:
         ]
         inputs = make_inputs(rounds_data)
         searcher = _make_searcher(rounds=10)
-        droppable = searcher._droppable_rounds(inputs)
-        assert 1 in droppable  # UNRATED_WIN counted
-        assert 2 in droppable  # WIN counted
+        candidates = list(searcher._candidates(inputs, max_ignores=1))
+        assert frozenset({1}) in candidates  # UNRATED_WIN droppable
+        assert frozenset({2}) in candidates  # WIN droppable
+        # R3 (loss) only reachable as the tail {3, 4}; never alone at size 1.
+        assert frozenset({3}) not in candidates
+
+
+class TestDropClassification:
+    """`_classify_drops` labels each dropped round 1.4.1e (post-title tail)
+    or 1.4.1f (defeated opponent), so the audit report can name the rule."""
+
+    def _inputs(self):
+        opps = [FakeOpponent(i, 2400) for i in range(1, 12)]
+        results = [Result.WIN] * 8 + [Result.LOSS, Result.LOSS, Result.WIN]
+        return make_inputs(list(zip(range(1, 12), opps, results)))
+
+    def test_whole_tail_is_1_4_1e(self):
+        searcher = _make_searcher(rounds=11)
+        reasons = searcher._classify_drops(self._inputs(), frozenset({10, 11}))
+        assert reasons == {
+            10: 'ignored_via_1_4_1e',
+            11: 'ignored_via_1_4_1e',
+        }
+
+    def test_isolated_won_drop_is_1_4_1f(self):
+        searcher = _make_searcher(rounds=11)
+        reasons = searcher._classify_drops(self._inputs(), frozenset({3}))
+        assert reasons == {3: 'ignored_via_1_4_1f'}
+
+    def test_mixed_drop_splits_by_rule(self):
+        # R3 is an isolated won-game drop (1.4.1f); R11 is the trailing
+        # tail (1.4.1e). R3 is not contiguous with the end, so it stays f.
+        searcher = _make_searcher(rounds=11)
+        reasons = searcher._classify_drops(self._inputs(), frozenset({3, 11}))
+        assert reasons == {
+            3: 'ignored_via_1_4_1f',
+            11: 'ignored_via_1_4_1e',
+        }
+
+    def test_no_tail_label_in_round_robin(self):
+        from data.pairings.systems import RoundRobinPairingSystem
+
+        searcher = _make_searcher(rounds=11, pairing_system=RoundRobinPairingSystem())
+        # Even a trailing round is 1.4.1f in RR — 1.4.1e doesn't apply.
+        reasons = searcher._classify_drops(self._inputs(), frozenset({11}))
+        assert reasons == {11: 'ignored_via_1_4_1f'}
 
 
 class TestCandidateOrdering:
@@ -285,7 +325,7 @@ class TestCandidateOrdering:
         inputs = make_inputs([(r, opps[r - 1], Result.WIN) for r in (1, 2, 3)])
         searcher = _make_searcher(rounds=10)
         # max_ignores = 1 — only size-1 subsets.
-        size1 = list(searcher._candidates({1, 2, 3}, max_ignores=1, inputs=inputs))
+        size1 = list(searcher._candidates(inputs, max_ignores=1))
         assert all(len(c) == 1 for c in size1)
         assert len(size1) == 3
 
@@ -297,7 +337,7 @@ class TestCandidateOrdering:
         ]
         inputs = make_inputs([(r, opps[r - 1], Result.WIN) for r in (1, 2, 3)])
         searcher = _make_searcher(rounds=10)
-        candidates = list(searcher._candidates({1, 2, 3}, max_ignores=1, inputs=inputs))
+        candidates = list(searcher._candidates(inputs, max_ignores=1))
         # Drop round 2 (lowest) first.
         assert candidates[0] == frozenset({2})
         # Then round 3, then round 1.
@@ -308,7 +348,7 @@ class TestCandidateOrdering:
         opps = [FakeOpponent(i, 2400) for i in range(1, 4)]
         inputs = make_inputs([(r, opps[r - 1], Result.WIN) for r in (1, 2, 3)])
         searcher = _make_searcher(rounds=11)  # max_ignores = 2
-        candidates = list(searcher._candidates({1, 2, 3}, max_ignores=2, inputs=inputs))
+        candidates = list(searcher._candidates(inputs, max_ignores=2))
         # First 3 are size-1, next 3 are size-2.
         assert all(len(c) == 1 for c in candidates[:3])
         assert all(len(c) == 2 for c in candidates[3:])
@@ -326,7 +366,7 @@ class TestCandidateOrdering:
             ]
         )
         searcher = _make_searcher(rounds=10)
-        candidates = list(searcher._candidates({1, 2}, max_ignores=1, inputs=inputs))
+        candidates = list(searcher._candidates(inputs, max_ignores=1))
         # unrated (1400 effective) should sort BEFORE rated_high (2500).
         assert candidates[0] == frozenset({2})
 
@@ -548,6 +588,7 @@ def _real_searcher(
     federation: str = 'FRA',
     gender: PlayerGender = PlayerGender.MAN,
     pairing_system=None,
+    rule_143_exemption: str = 'none',
 ) -> TitleNormSubsetSearcher:
     from data.pairings.systems import SwissPairingSystem
     from utils.types import BigTournamentExemption
@@ -567,7 +608,7 @@ def _real_searcher(
             high_level_tournament=False,
         ),
     )
-    return TitleNormSubsetSearcher(player)
+    return TitleNormSubsetSearcher(player, rule_143_exemption=rule_143_exemption)
 
 
 def _gm(id_: int, rating: int = 2400, federation: str = 'USA') -> FakeOpponent:
@@ -704,6 +745,65 @@ class TestSearcherWithRealEvaluator:
         # Either R10 or R11 alone is a winning size-1 subset (both are
         # equivalent tail-loss drops).
         assert result.ignored_rounds_via_search in (frozenset({10}), frozenset({11}))
+
+    def test_search_applies_143abc_exemption_to_dropped_subset(self):
+        # Regression: a norm reachable only by (drop a round) AND (the
+        # 1.4.3a/b/c exemption) TOGETHER must be found. All 11 opponents
+        # share the applicant's federation (FRA) — so 1.4.3 / 1.4.4 fail —
+        # and the baseline Rp (2580) is below the GM 2600 line. Dropping a
+        # tail loss lifts Rp over 2600; the exemption waives the federation
+        # caps. The search must apply the exemption to each candidate, or
+        # it rejects the rescuing subset (federations still failing) and
+        # returns the baseline → false negative.
+        opponents = [_gm(i, rating=2500, federation='FRA') for i in range(1, 5)] + [
+            _im(i, rating=2350, federation='FRA') for i in range(5, 12)
+        ]
+        results = [Result.WIN] * 7 + [Result.DRAW] * 2 + [Result.LOSS] * 2
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+
+        # Without the exemption: the dropped-tail subset clears performance
+        # but still fails the all-FRA federation caps → not met, no drop.
+        no_exempt = _real_searcher(rounds=11, rule_143_exemption='none')
+        blind = no_exempt._search_one(inputs, None, TitleNorm.GM, meets_gender=True)
+        assert not blind.is_met
+        assert blind.ignored_rounds_via_search == frozenset()
+
+        # With 1.4.3c (applies to every player): the search waives the
+        # federation caps on each candidate, so dropping a tail loss is a
+        # winning subset.
+        exempt = _real_searcher(rounds=11, rule_143_exemption='1.4.3c')
+        found = exempt._search_one(inputs, None, TitleNorm.GM, meets_gender=True)
+        assert found.is_met, (
+            f'Exemption should let the search find the dropped subset. '
+            f'Rp={found.performance}, ignored={found.ignored_rounds_via_search}'
+        )
+        assert found.rule_143_exemption == 'c'
+        assert found.ignored_rounds_via_search in (frozenset({10}), frozenset({11}))
+
+    def test_search_exemption_scoped_to_event_federation(self):
+        # 1.4.3a/b apply only to the registering federation's players. A
+        # foreign applicant (USA) in an FRA-registered event gets no
+        # exemption, so the all-foreign-cap failure still blocks the
+        # dropped subset → not met.
+        opponents = [_gm(i, rating=2500, federation='FRA') for i in range(1, 5)] + [
+            _im(i, rating=2350, federation='FRA') for i in range(5, 12)
+        ]
+        results = [Result.WIN] * 7 + [Result.DRAW] * 2 + [Result.LOSS] * 2
+        inputs = make_inputs(list(zip(range(1, 12), opponents, results)))
+        # Applicant USA, event FRA → 1.4.3b does not apply.
+        searcher = _real_searcher(
+            rounds=11, federation='USA', rule_143_exemption='1.4.3b'
+        )
+        searcher.player.event.federation = 'FRA'
+        # Re-resolve the exemption against the FRA event federation.
+        from data.norms.tournament_checks import resolve_143abc_code
+
+        searcher._exemption_code = resolve_143abc_code(
+            '1.4.3b', searcher.player.federation, Federation('FRA')
+        )
+        result = searcher._search_one(inputs, None, TitleNorm.GM, meets_gender=True)
+        assert searcher._exemption_code is None
+        assert not result.is_met
 
     def test_gm_norm_unachievable_returns_baseline_failure(self):
         # 11-round Swiss where the player has too few wins to recover even

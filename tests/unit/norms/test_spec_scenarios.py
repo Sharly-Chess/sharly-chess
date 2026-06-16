@@ -186,8 +186,9 @@ class TestRule_1_4_3d:
 #
 # a (National championship final) and b (National team championship) only
 # apply to players from the event's REGISTERING federation. c (Zonal /
-# Sub-zonal) applies to ALL players regardless of federation. None of
-# a/b/c exempt 1.4.4 — only 1.4.3d does.
+# Sub-zonal) applies to ALL players regardless of federation. Like 1.4.3d,
+# every a/b/c exemption waives the WHOLE foreigner requirement — both
+# 1.4.3 and 1.4.4 (1.4.3e; confirmed in writing by the FIDE QC).
 #
 # Applied by `apply_143abc_exemption()` based on the
 # Rule143ExemptionPrintOption value set on the doc.
@@ -278,11 +279,12 @@ class TestRule_1_4_3abc:
         assert norms[TitleNorm.GM].rule_143_exemption == 'c'
         assert norms[TitleNorm.GM].is_met
 
-    # ---------- 1.4.4 NOT exempted by a/b/c ----------
+    # ---------- 1.4.4 exempted by a/b/c (foreigner requirement, 1.4.3e) ----------
 
-    def test_abc_does_NOT_exempt_144_own_fed_cap(self):
-        """Even with 1.4.3c applied, a 1.4.4 own-fed violation still
-        blocks is_met. Only 1.4.3d covers 1.4.4."""
+    def test_abc_exempts_144_own_fed_cap(self):
+        """1.4.3a-d all waive the foreigner requirement — 1.4.3 AND
+        1.4.4 (1.4.3e: "the normal foreigner requirement. (See 1.4.3
+        and 1.4.4)"). A 1.4.4 own-fed violation is exempt under c."""
         from data.norms import apply_143abc_exemption
 
         res = self._failing_143_result()
@@ -291,10 +293,9 @@ class TestRule_1_4_3abc:
         apply_143abc_exemption(norms, '1.4.3c', Federation('USA'), Federation('FRA'))
         assert res.rule_143_exemption == 'c'
         assert res.is_143_exempt_via_abc
-        # 1.4.3 is exempt, but 1.4.4 own-fed still fails.
-        assert not res.is_met
+        assert res.is_met
 
-    def test_abc_does_NOT_exempt_144_one_fed_cap(self):
+    def test_abc_exempts_144_one_fed_cap(self):
         from data.norms import apply_143abc_exemption
 
         res = self._failing_143_result()
@@ -302,14 +303,13 @@ class TestRule_1_4_3abc:
         norms = {TitleNorm.GM: res}
         apply_143abc_exemption(norms, '1.4.3a', Federation('FRA'), Federation('FRA'))
         assert res.rule_143_exemption == 'a'
-        assert not res.is_met  # 1.4.4 one-fed still blocks
+        assert res.is_met
 
     # ---------- 1.4.3d co-exists with a/b/c ----------
 
     def test_143d_wins_when_both_could_apply(self):
         """If 1.4.3d holds AND a/b/c also applies, the result still
-        passes — both exemption paths reach the same is_met=True.
-        1.4.3d's exemption is broader (covers 1.4.4 too)."""
+        passes — both exemption paths reach the same is_met=True."""
         from data.norms import apply_143abc_exemption
 
         # 1.4.3d sub-criteria met
@@ -322,12 +322,12 @@ class TestRule_1_4_3abc:
         # Both exemption paths active.
         assert res.is_143d_met
         assert res.is_143_exempt_via_abc
-        # is_met passes via the broader 1.4.3d (which covers 1.4.4).
         assert res.is_met
 
-    def test_abc_alone_blocks_when_1_4_4_violated(self):
-        """When 1.4.3d does NOT hold and 1.4.4 also fails, a/b/c alone
-        cannot save the norm — 1.4.4 still applies."""
+    def test_abc_alone_rescues_when_1_4_4_violated(self):
+        """When 1.4.3d does NOT hold, a/b/c alone still saves the norm
+        even with 1.4.4 violations — the exemption covers the whole
+        foreigner requirement."""
         from data.norms import apply_143abc_exemption
 
         res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
@@ -338,7 +338,96 @@ class TestRule_1_4_3abc:
         apply_143abc_exemption(norms, '1.4.3a', Federation('FRA'), Federation('FRA'))
         assert not res.is_143d_met
         assert res.is_143_exempt_via_abc
-        assert not res.is_met  # 1.4.4 still applies, blocks
+        assert res.is_met
+
+    def _failing_143_and_144_result(self) -> NormCheckResult:
+        """The real-world shape FIDE confirmed (Interclubs / national team
+        championship): a player whose mix fails BOTH the 1.4.3 federation
+        count and BOTH 1.4.4 caps (3/5 own-fed, 2/3 one-fed), with 1.4.3d
+        not met, but everything else (games, titles, score, Ra, Rp) fine.
+        Only the foreigner requirement stands between them and the norm."""
+        res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
+        res.not_enough_federations = 'violation'  # 1.4.3
+        res.too_many_own_federation = 'violation'  # 1.4.4 (3/5)
+        res.too_many_one_federation = (Federation('FRA'), 'violation')  # 1.4.4 (2/3)
+        res.not_enough_foreign_players = 'violation'  # → 1.4.3d NOT met
+        return res
+
+    @pytest.mark.parametrize('code', ['1.4.3a', '1.4.3b', '1.4.3c'])
+    def test_abc_waives_full_foreigner_requirement(self, code: str):
+        """FIDE QC confirmed: the 1.4.3a/b/c exemptions waive the WHOLE
+        foreigner requirement — 1.4.3 AND both 1.4.4 caps together (1.4.3e
+        "the normal foreigner requirement. (See 1.4.3 and 1.4.4)"). A
+        result failing all three, with 1.4.3d not met, is met under any of
+        a/b/c."""
+        from data.norms import apply_143abc_exemption
+
+        res = self._failing_143_and_144_result()
+        assert not res.is_met  # blocked before the exemption
+        apply_143abc_exemption(
+            {TitleNorm.GM: res}, code, Federation('FRA'), Federation('FRA')
+        )
+        assert res.rule_143_exemption == code[-1]
+        assert not res.is_143d_met  # the rescue is NOT via 1.4.3d
+        assert res.is_met
+
+    def test_abc_waiver_does_not_mutate_violation_flags(self):
+        """The exemption is honoured at the ``is_met`` layer — the
+        underlying 1.4.3 / 1.4.4 violation flags remain set so the IT1 /
+        calculation-details views can still show the raw figures and the
+        'exempt' badge side by side."""
+        from data.norms import apply_143abc_exemption
+
+        res = self._failing_143_and_144_result()
+        apply_143abc_exemption(
+            {TitleNorm.GM: res}, '1.4.3b', Federation('FRA'), Federation('FRA')
+        )
+        assert res.is_met
+        # Data untouched: only the verdict changed, not the measured facts.
+        assert res.not_enough_federations
+        assert res.too_many_own_federation
+        assert res.too_many_one_federation
+
+    # ---------- 1.4.4 still enforced when NO exemption applies ----------
+
+    def test_no_exemption_lets_144_own_cap_block(self):
+        """Without any 1.4.3 exemption, the 1.4.4 own-federation cap
+        blocks the norm — the waiver is exemption-gated, not unconditional."""
+        from data.norms import apply_143abc_exemption
+
+        res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
+        res.too_many_own_federation = 'violation'
+        res.not_enough_foreign_players = 'violation'  # → 1.4.3d NOT met
+        norms = {TitleNorm.GM: res}
+        apply_143abc_exemption(norms, 'none', Federation('FRA'), Federation('FRA'))
+        assert not res.is_143d_met
+        assert not res.is_143_exempt_via_abc
+        assert not res.is_met
+
+    def test_no_exemption_lets_144_one_fed_cap_block(self):
+        """Without any 1.4.3 exemption, the 1.4.4 one-federation cap blocks."""
+        from data.norms import apply_143abc_exemption
+
+        res = NormCheckResult(title_norm=TitleNorm.GM, meets_gender=True)
+        res.too_many_one_federation = (Federation('FRA'), 'violation')
+        res.not_enough_foreign_players = 'violation'  # → 1.4.3d NOT met
+        norms = {TitleNorm.GM: res}
+        apply_143abc_exemption(norms, 'none', Federation('FRA'), Federation('FRA'))
+        assert not res.is_143_exempt_via_abc
+        assert not res.is_met
+
+    def test_foreign_player_not_exempt_still_blocked_by_144(self):
+        """1.4.3a/b are scoped to the registering federation: a foreign
+        player gets no exemption, so 1.4.4 still blocks even though the
+        arbiter selected the national-championship event type."""
+        from data.norms import apply_143abc_exemption
+
+        res = self._failing_143_and_144_result()
+        norms = {TitleNorm.GM: res}
+        # Event registered by FRA, applicant is USA → 1.4.3b doesn't apply.
+        apply_143abc_exemption(norms, '1.4.3b', Federation('USA'), Federation('FRA'))
+        assert res.rule_143_exemption is None
+        assert not res.is_met
 
     def test_unknown_exemption_code_is_noop(self):
         """An unknown code (shouldn't happen via UI; validate() catches it)
@@ -678,12 +767,17 @@ class TestRule_1_4_2a_NON_excluded:
 
 
 class TestRule_1_4_2a_FID_nuance:
-    """The dev-reviewed clause: FID is a 'real' federation for counting
-    purposes (1.4.3) but NOT a foreign player (1.4.3d/1.5.6a)."""
+    """FIDE QC clarification (2026): "FID is not considered a federation.
+    FID players are disregarded." A game against a FID opponent is still
+    accepted (it counts towards games played, titled opponents, Ra, score),
+    but FID never enters the federation mix — neither as a foreign
+    federation for 1.4.3 / 1.4.3d nor as a federation that can breach the
+    1.4.4 caps. (RUS/BLR are shown as FID but counted under their own flag;
+    the arbiter corrects the flag in the data.)"""
 
-    def test_fid_opponent_counts_in_federations_counter_for_1_4_3(self):
-        """1.4.3 cares about distinct federations in the applicant's mix.
-        FID is a valid FIDE federation, so it counts."""
+    def test_fid_opponent_not_counted_as_a_federation_for_1_4_3(self):
+        """FID is not a federation: a FID opponent does not add to the
+        distinct-federation tally, though the game itself is kept."""
         usa_opp = _gm(1, federation='USA')
         fid_opp = _gm(2, federation='FID')
         player = _player_with_pairings(
@@ -695,12 +789,30 @@ class TestRule_1_4_2a_FID_nuance:
         )
         evaluator = TitleNormEvaluator(player)
         inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
-        # FID DOES count as a federation in the mix.
-        assert Federation('FID') in inputs.federations_counter
-        assert inputs.federations_counter[Federation('FID')] == 1
-        # The 1.4.3 num_feds count therefore sees 2 distinct (USA + FID).
+        # FID is NOT in the federation mix.
+        assert Federation('FID') not in inputs.federations_counter
+        # ...but the game is still counted (played + the opponent's title).
+        assert inputs.played_games == 2
+        assert fid_opp in inputs.opponents
+        # 1.4.3 sees only USA → one distinct federation.
         _, num_feds, _own = evaluator.federation_count_requirement(inputs)
-        assert num_feds == 2
+        assert num_feds == 1
+
+    def test_fid_majority_does_not_breach_1_4_4_one_fed_cap(self):
+        """ ">2/3 of the opponents from one federation" cannot be triggered
+        by FID, since FID is not a federation. A field of mostly FID
+        opponents passes the 1.4.4 one-federation cap."""
+        pairings = {1: (_gm(1, federation='USA'), Result.DRAW)}
+        for r in range(2, 10):  # 8 FID opponents out of 9
+            pairings[r] = (_gm(r, federation='FID'), Result.DRAW)
+        player = _player_with_pairings(rounds=9, pairings=pairings)
+        evaluator = TitleNormEvaluator(player)
+        inputs = evaluator.collect_inputs(include_last_forfeit_as_loss=False)
+        passes, top_fed, _count = evaluator.top_federation_requirement(
+            inputs, TitleNorm.GM
+        )
+        assert passes, 'FID majority must not breach the 2/3 one-federation cap'
+        assert top_fed in (None, Federation('USA'))
 
     def test_fid_player_does_not_count_in_1_4_3d_foreign_count(self):
         """1.4.3d's per-round count of "foreign rated players" is filtered:
@@ -1906,7 +2018,7 @@ class TestRoundAuditTrail:
 
     def test_search_marks_dropped_rounds_in_audit(self):
         """When the subset search drops rounds via 1.4.1e/f, the result's
-        audit lists those rounds as DROPPED / ignored_via_1_4_1ef."""
+        audit lists those rounds as DROPPED with a 1.4.1e or 1.4.1f reason."""
         from data.norms.inputs import NormInputs, RoundDecision
 
         # Drive `_search_subsets` directly so we don't have to stub
@@ -1953,7 +2065,10 @@ class TestRoundAuditTrail:
             for r in winner.ignored_rounds_via_search:
                 entry = next(e for e in winner.round_audit if e.round_ == r)
                 assert entry.decision == RoundDecision.DROPPED
-                assert entry.reason_key == 'ignored_via_1_4_1ef'
+                assert entry.reason_key in (
+                    'ignored_via_1_4_1e',
+                    'ignored_via_1_4_1f',
+                )
                 assert entry.effective_result is None
             for entry in winner.round_audit:
                 if entry.round_ not in winner.ignored_rounds_via_search:
@@ -2138,11 +2253,11 @@ class TestRule_1_4_3abc_EndToEnd:
         }
         return _player_with_pairings(federation=federation, rounds=9, pairings=pairings)
 
-    def test_143c_via_evaluator_does_NOT_rescue_when_144_fails(self):
-        """1.4.3c (zonal) exempts 1.4.3 only — 1.4.4 still applies.
-        Setup: applicant from FRA, all 9 opponents also from FRA.
-        Both 1.4.3 (only 1 fed) and 1.4.4 own-fed cap (9/9 from own)
-        fail. 1.4.3c can't rescue because 1.4.4 still blocks."""
+    def test_143c_via_evaluator_rescues_when_144_fails(self):
+        """1.4.3c (zonal) waives the foreigner requirement — 1.4.3 AND
+        1.4.4 (1.4.3e). Setup: applicant from FRA, all 9 opponents also
+        from FRA. Both 1.4.3 (only 1 fed) and 1.4.4 own-fed cap (9/9
+        from own) fail; 1.4.3c rescues both."""
         from data.norms import TitleNormEvaluator, apply_143abc_exemption
 
         player = self._player_failing_143_only(federation='FRA')
@@ -2166,8 +2281,7 @@ class TestRule_1_4_3abc_EndToEnd:
         )
         assert res.rule_143_exemption == 'c'
         assert res.is_143_exempt_via_abc
-        # Still NOT met because 1.4.4 wasn't exempted.
-        assert not res.is_met, '1.4.4 own-fed cap still applies under 1.4.3c'
+        assert res.is_met, '1.4.3c waives both 1.4.3 and 1.4.4'
 
     def test_143a_via_evaluator_rescues_only_event_fed_players(self):
         """National championship final: same opponent mix, two players.
