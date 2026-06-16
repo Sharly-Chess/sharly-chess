@@ -3,6 +3,7 @@
 ## General
 
 - Improved detection of internet connectivity (4.2.0)
+- Prevent reloading templates (4.2.1)
 
 ## Tournaments
 
