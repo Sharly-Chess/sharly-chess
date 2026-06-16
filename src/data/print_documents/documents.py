@@ -18,6 +18,7 @@ from data.columns.board_table import BoardColumn, ResultColumn, NoResultColumn
 from data.columns.handlers import PlayerColumnHandler, BoardColumnHandler
 from data.columns.player_table import ColumnUsage, TournamentPlayerTableColumn
 from data.event import Event
+from data.norms import ForecastRequirement
 from data.pairings.engines import RoundRobinPairingEngine
 from data.pairings.systems import RoundRobinPairingSystem, SwissPairingSystem
 from data.player import TournamentPlayer, TournamentRating
@@ -1574,9 +1575,12 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
                 < min_needed - 1
             ):
                 continue
+            requirements: dict[TitleNorm, ForecastRequirement | None]
             if forecastable:
-                chaseable = forecaster.chaseable_norms(forecast_round)
-                requirements = chaseable
+                requirements = {
+                    tn: r
+                    for tn, r in forecaster.chaseable_norms(forecast_round).items()
+                }
                 achieved = False
             else:
                 # Her game is in even though the round is still open for
@@ -1593,7 +1597,7 @@ class TournamentNormsSummaryPrintDocument(PrintDocument):
                 {
                     'player': tournament_player,
                     'opponent': pairing.opponent,
-                    'requirements': requirements,  # dict[TitleNorm, Result|None]
+                    'requirements': requirements,  # dict[TitleNorm, ForecastRequirement | None]
                     'achieved': achieved,
                 }
             )
