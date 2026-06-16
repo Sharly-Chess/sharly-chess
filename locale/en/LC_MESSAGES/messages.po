@@ -91,6 +91,12 @@ msgstr[0] ""
 msgstr[1] ""
 
 #, python-format
+msgid "%(num)d player will be paired"
+msgid_plural "%(num)d players will be paired"
+msgstr[0] ""
+msgstr[1] ""
+
+#, python-format
 msgid "%(num)d prize"
 msgid_plural "%(num)d prizes"
 msgstr[0] ""
@@ -2069,6 +2075,10 @@ msgstr ""
 msgid "Do not pair at round %(pairing_round)d (Zero-Point Bye)"
 msgstr ""
 
+#, python-format
+msgid "Do not pair for round #%(round)d"
+msgstr ""
+
 msgid "Do not recover"
 msgstr ""
 
@@ -3474,6 +3484,9 @@ msgstr ""
 
 #, python-format
 msgid "Mark as \"%(status)s\" "
+msgstr ""
+
+msgid "Mark as \"Present\" (recommended)"
 msgstr ""
 
 msgid "Mark this round as over and define the next one as the current round."
@@ -5454,6 +5467,10 @@ msgstr ""
 msgid "Select an action for absent players:"
 msgstr ""
 
+#, python-format
+msgid "Select an action for the %(count)d absent players:"
+msgstr ""
+
 msgid "Select player"
 msgstr ""
 
@@ -6957,6 +6974,9 @@ msgid "Warning: closing this window will stop Sharly Chess."
 msgstr ""
 
 msgid "Warning: experimental features are enabled!"
+msgstr ""
+
+msgid "Warning: over half of the players are absent!"
 msgstr ""
 
 msgid "Warning: potential data loss"
