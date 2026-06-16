@@ -248,7 +248,8 @@
             'board_bye': _('Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent.'),
             'unplayed_no_pairing': _('Unplayed (no result recorded).'),
             'no_opponent': _('No opponent paired this round.'),
-            'ignored_via_1_4_1ef': _('1.4.1e/f: ignored by the subset search to satisfy this norm.'),
+            'ignored_via_1_4_1e': _('1.4.1e: game after the title result was reached, ignored by the subset search.'),
+            'ignored_via_1_4_1f': _('1.4.1f: game against a defeated opponent, ignored by the subset search.'),
         } %}
 
         {% for norm_title, norm in norms.items() %}
@@ -368,7 +369,7 @@
                             <input value="{{ tournament.time_control_trf25 }}"/>
                         </div>
 
-                        <div class="item {{ 'error' if norm.not_enough_federations else '' }}">
+                        <div class="item {{ 'error' if norm.not_enough_federations and not norm.is_143_exempt_via_abc else '' }}">
                             <div class="error-info">
                                 {{ norm.not_enough_federations | safe }}
                             </div>
@@ -428,7 +429,7 @@
                        1.4.3d is what couples 1.4.4 to this exception. So we
                        care about the 1.4.3d block whenever 1.4.3 OR 1.4.4
                        fails — the player needs 1.4.3d to save them either way. #}
-                    {% set applying_143d = is_swiss and (
+                    {% set applying_143d = is_swiss and not norm.is_143_exempt_via_abc and (
                             norm.not_enough_federations
                             or norm.too_many_own_federation
                             or norm.too_many_one_federation
@@ -477,7 +478,7 @@
                     {% endif %}
                     {% if norm.is_143_exempt_via_abc %}
                         {% set _discard = remarks.append(
-                            '1.4.3' ~ norm.rule_143_exemption ~ ' applied: 1.4.3 federation requirement waived for event type.'
+                            '1.4.3' ~ norm.rule_143_exemption ~ ' applied: foreigner requirement (1.4.3 and 1.4.4) waived for event type.'
                         ) %}
                     {% endif %}
                     <input value="{{ remarks | join(' ') }}" />
@@ -513,14 +514,14 @@
                         {% if opp.id == norm.adjusted_player.id %}
                             {% set adjusted_opp_rating = norm.adjusted_player_rating %}
                         {% endif %}
-                        {# 1.4.4 violations only matter when 1.4.3d isn't
-                           rescuing the player. The "Otherwise, 1.4.4 applies"
-                           clause inside 1.4.3d makes 1.4.3d an exemption from
-                           1.4.4 as well as 1.4.3. #}
-                        {% if not norm.is_143d_met and norm.too_many_own_federation and opp.federation == tournament_player.federation %}
+                        {# 1.4.4 violations only matter when no 1.4.3a-d
+                           exemption rescues the player — all of them waive
+                           the foreigner requirement (1.4.3 and 1.4.4). #}
+                        {% set _144_exempt = norm.is_143d_met or norm.is_143_exempt_via_abc %}
+                        {% if not _144_exempt and norm.too_many_own_federation and opp.federation == tournament_player.federation %}
                             {% set too_many_own = true %}
                             {% set err = norm.too_many_own_federation %}
-                        {% elif not norm.is_143d_met and norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
+                        {% elif not _144_exempt and norm.too_many_one_federation and opp.federation == norm.too_many_one_federation[0] %}
                             {% set too_many_one = true %}
                             {% set err = norm.too_many_one_federation[1] %}
                         {% endif %}

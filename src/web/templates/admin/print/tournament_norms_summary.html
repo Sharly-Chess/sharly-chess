@@ -260,7 +260,7 @@
                 </p>
             {% else %}
                 <p style="margin: 0.5rem 0 1rem 0; font-style: italic; color: #444;">
-                    {{ _('What the player needs in round {round} to achieve each norm. "any OTB result" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). "norm secured — round optional" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it.').format(round=forecast_round) }}
+                    {{ _('What the player needs in round {round} to achieve each norm. "any OTB result" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). "norm already achieved" means it is locked in regardless of round {round} — either the result is already in, or it holds without this round (1.4.1e).').format(round=forecast_round) }}
                 </p>
                 <table>
                     <thead>
@@ -302,8 +302,8 @@
                                         <span class="norm-badge">{{ tn.name }}</span>
                                     </td>
                                     <td class="center requirement">
-                                        {% if not required.play_required %}
-                                            <span class="req-secured">{{ _('norm secured — round optional') }}</span>
+                                        {% if entry.achieved or not required.play_required %}
+                                            <span class="req-secured">{{ _('norm already achieved') }}</span>
                                         {% elif required.minimum_outcome == Result.LOSS %}
                                             <span class="req-any">{{ _('any OTB result') }}</span>
                                         {% elif required.minimum_outcome == Result.DRAW %}

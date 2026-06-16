@@ -86,6 +86,24 @@ Do not include:
 
 - `1.4.2a`: Games against opponents who do not belong to FIDE federations.
 - `1.4.2a`: `FID` players are accepted, but do not count as foreign players.
+
+**"Foreign" and `FID` (FIDE QC clarification, 2026).** "Foreign" means a
+federation *different from the candidate's* — not different from the host
+federation. And `FID` "is not considered a federation": `FID` players are
+disregarded for every federation-mix rule. Concretely:
+
+- A game against a `FID` opponent is still **accepted** — it counts
+  towards games played, titled opponents, the rating average (`Ra`), and
+  the score.
+- But `FID` is **not** counted as one of the foreign federations under
+  `1.4.3`, does **not** count towards `1.4.3d`'s "≥ 20 players not from
+  the host federation" or "≥ 3 different federations", and cannot be the
+  over-represented federation that breaches the `1.4.4` caps (so a field
+  that is mostly `FID` does not violate the 2/3 one-federation cap).
+- Exception: `RUS` and `BLR` players are displayed as `FID` but count
+  under their own flag for norm purposes. The arbiter corrects the flag
+  in the tournament data; the software then treats them as that
+  federation, not as `FID`.
 - `1.4.2b`: Games against unrated players who score zero against rated opponents in round-robin tournaments.
 - `1.4.2c`: Games decided by forfeit, adjudication, or anything other than over-the-board play.
 - `1.4.2d`: Tournaments changed to benefit one or more players, including changes to rounds, round order, or opponent assignment.
@@ -114,7 +132,32 @@ Exemptions from that normal rule:
 - `1.4.3c`: Zonal and sub-zonal tournaments.
 - `1.4.3d`: Swiss System tournaments in which participants include in every round at least 20 FIDE rated players, not from the host federation, from at least 3 different federations, at least 10 of whom hold GM, IM, WGM or WIM titles. For this purpose, players are counted only if they miss at most one round (excluding pairing-allocated byes). **Otherwise, `1.4.4` applies.**
 
-The "Otherwise, `1.4.4` applies" clause is important: when `1.4.3d`'s tournament-wide conditions are met, the player is exempted from **both** `1.4.3` (foreign-federation count) AND `1.4.4` (federation caps). When `1.4.3d` is not met, the normal `1.4.4` caps apply. `1.4.3a`–`1.4.3c` only exempt `1.4.3`, not `1.4.4`.
+All four exemptions (`1.4.3a`–`1.4.3d`) waive the **whole** foreigner
+requirement — **both** `1.4.3` (foreign-federation count) AND `1.4.4`
+(the 3/5 own-federation and 2/3 one-federation caps). This is the scope
+defined by `1.4.3e`, which calls the combination of `1.4.3` and `1.4.4`
+"the normal foreigner requirement", and by the chapeau of the article
+("at least two federations … must be included, except `1.4.3a`–`1.4.3d`
+shall be exempt"). The "Otherwise, `1.4.4` applies" clause inside
+`1.4.3d` is what couples `1.4.4` to the exemption: when an exemption
+holds, `1.4.4` stops applying; when `1.4.3d`'s tournament-wide
+conditions are *not* met (and no `1.4.3a`–`1.4.3c` event-type exemption
+applies), the normal `1.4.4` caps apply.
+
+This was confirmed in writing by the FIDE Qualification Commission: the
+national-championship and national-team-championship exemptions
+(`1.4.3a` / `1.4.3b`), which apply only to players from the registering
+federation, also waive `1.4.4`. Without this, a home player in an
+all-domestic field (e.g. the French Interclubs) could never use the
+exemption, because the 3/5 own-federation cap would always block them —
+the exemption would be a dead letter for exactly the players it exists
+to serve.
+
+The application-level restriction is `1.4.3e`: across the norms making
+up a full title application, at least one must be achieved under the
+normal foreigner requirement (without any `1.4.3` exemption). That is a
+multi-tournament concern handled at title-application time, not a
+per-tournament norm check.
 
 Important extra rule:
 
@@ -122,7 +165,7 @@ Important extra rule:
 
 ## 1.4.4 Federation Maximums
 
-Opponent federation limits (subject to the `1.4.3d` exemption above):
+Opponent federation limits (waived by any `1.4.3a`–`1.4.3d` exemption, as above):
 
 - Maximum 3/5 of opponents may be from the applicant's federation.
 - Maximum 2/3 of opponents may be from one federation.

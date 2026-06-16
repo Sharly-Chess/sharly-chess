@@ -37,14 +37,39 @@ class TitleNormSubsetSearcher:
         self,
         player: 'TournamentPlayer',
         min_games_override: int | None = None,
+        rule_143_exemption: str = 'none',
     ):
         """`min_games_override` is forwarded to the evaluator and used by
-        the subset-search to bound `max_ignores`."""
+        the subset-search to bound `max_ignores`.
+
+        `rule_143_exemption` is the arbiter's 1.4.3a/b/c selection. It is
+        resolved (with the player's federation scoping) and applied to
+        every result the search evaluates — so a subset that the
+        exemption rescues (e.g. dropping a round to clear `1.4.4` /
+        performance once the foreigner requirement is waived) is
+        recognised *during* the search, not only after it."""
+        from data.norms.tournament_checks import resolve_143abc_code
+        from utils.types import Federation
+
         self.player = player
         self.min_games_override = min_games_override
         self.evaluator = TitleNormEvaluator(
             player, min_games_override=min_games_override
         )
+        self._exemption_code = resolve_143abc_code(
+            rule_143_exemption,
+            player.federation,
+            Federation(player.event.federation),
+        )
+
+    def _evaluate(
+        self, inputs: 'NormInputs', tn: TitleNorm, meets_gender: bool
+    ) -> NormCheckResult:
+        """Evaluate one subset and stamp the resolved 1.4.3a/b/c
+        exemption so ``is_met`` reflects the waiver during the search."""
+        result = self.evaluator.evaluate_one(inputs, tn, meets_gender)
+        result.rule_143_exemption = self._exemption_code
+        return result
 
     @property
     def tournament(self):
@@ -86,13 +111,13 @@ class TitleNormSubsetSearcher:
         meets_gender: bool,
     ) -> NormCheckResult:
         # Fast path 1: full game set.
-        baseline_result = self.evaluator.evaluate_one(baseline, tn, meets_gender)
+        baseline_result = self._evaluate(baseline, tn, meets_gender)
         if baseline_result.is_met:
             return baseline_result
 
         # Fast path 2: 1.4.2c interpretation on the full set.
         if baseline_142c is not None:
-            result_142c = self.evaluator.evaluate_one(baseline_142c, tn, meets_gender)
+            result_142c = self._evaluate(baseline_142c, tn, meets_gender)
             if result_142c.is_met:
                 result_142c.applied_142c = True
                 result_142c.alternate_142c = baseline_result
@@ -125,22 +150,47 @@ class TitleNormSubsetSearcher:
         max_ignores = self._max_ignores(tn)
         if max_ignores <= 0:
             return None
-        droppable = self._droppable_rounds(inputs)
-        if not droppable:
-            return None
 
-        for candidate in self._candidates(droppable, max_ignores, inputs):
+        for candidate in self._candidates(inputs, max_ignores):
             modified = inputs.without_rounds(candidate)
-            result = self.evaluator.evaluate_one(modified, tn, meets_gender)
+            result = self._evaluate(modified, tn, meets_gender)
             if result.is_met:
                 result.ignored_rounds_via_search = candidate
                 # Flip the dropped rounds' audit entries to DROPPED so the
                 # IT1 reflects what the search did, not just what
                 # collect_inputs produced. `audit_with_dropped` returns a
                 # fresh list — entries themselves stay frozen.
-                result.round_audit = inputs.audit_with_dropped(candidate)
+                result.round_audit = inputs.audit_with_dropped(
+                    self._classify_drops(inputs, candidate)
+                )
                 return result
         return None
+
+    def _classify_drops(
+        self, inputs: NormInputs, candidate: frozenset[int]
+    ) -> dict[int, str]:
+        """Map each dropped round to the rule that ignored it.
+
+        The maximal trailing suffix of the schedule contained in the drop
+        is the 1.4.1e tail (every game after the title result). The rest
+        are isolated 1.4.1f drops against defeated opponents. In a system
+        with pre-determined pairings 1.4.1e never applies, so every drop
+        is 1.4.1f.
+        """
+        from data.norms.inputs import REASON_DROPPED_BY_141E, REASON_DROPPED_BY_141F
+        from data.pairings.systems import RoundRobinPairingSystem
+
+        tail: set[int] = set()
+        if self.tournament.pairing_system != RoundRobinPairingSystem():
+            for rnd in sorted(inputs.included_rounds, reverse=True):
+                if rnd not in candidate:
+                    break
+                tail.add(rnd)
+
+        return {
+            rnd: REASON_DROPPED_BY_141E if rnd in tail else REASON_DROPPED_BY_141F
+            for rnd in candidate
+        }
 
     # ---------- candidate generation ----------
 
@@ -155,67 +205,72 @@ class TitleNormSubsetSearcher:
             tn, self.tournament, self.min_games_override
         )
 
-    def _droppable_rounds(self, inputs: NormInputs) -> set[int]:
-        """Rounds the spec allows the applicant to drop.
+    def _candidates(
+        self,
+        inputs: NormInputs,
+        max_ignores: int,
+    ) -> Iterable[frozenset[int]]:
+        """Yield the ignore-subsets the spec allows, by ascending size and
+        most-promising-first (drops lifting Ra the most — i.e. the
+        lowest-rated opponents — come first within a size class).
 
-        1.4.1f — any round where the applicant defeated their opponent
-                 (a real win, not a forfeit-win — forfeit-wins aren't
-                 even in `included_rounds` under the 1.4.1c interpretation).
-        1.4.1e — any tail round (non-RR only). After-a-title-result test
-                 isn't applied explicitly: if dropping a tail round still
-                 yields a norm, by definition the prefix achieves it.
+        The two rules drop rounds with different shapes, and conflating
+        them produces illegal subsets:
+
+        1.4.1f — games against *defeated* opponents may be ignored, in any
+                 combination. So any subset of won rounds is a candidate.
+                 (Real wins only; forfeit-wins aren't in `included_rounds`
+                 under the 1.4.1c interpretation.)
+        1.4.1e — once a title result is reached, *all* later games may be
+                 ignored. The drop is therefore a whole trailing suffix of
+                 the schedule, never an isolated middle round. Non-RR only
+                 (pre-determined pairings must use every scheduled round).
+                 The after-a-title-result test isn't applied explicitly:
+                 if dropping the tail still yields a norm, the prefix
+                 achieved it by definition.
+
+        A non-won round (loss/draw) may thus be dropped *only* as part of a
+        1.4.1e tail — dropping round k pulls in every later round too. A
+        candidate is the union of one 1.4.1e tail (possibly empty) and any
+        1.4.1f subset of the won rounds left in the prefix.
         """
         from data.pairings.systems import RoundRobinPairingSystem
 
-        droppable: set[int] = set()
+        ordered = sorted(inputs.included_rounds)
+        if not ordered or max_ignores <= 0:
+            return
 
-        # 1.4.1f — won rounds in the mix.
-        for rnd, result in zip(inputs.included_rounds, inputs.results_list):
-            if result in (Result.WIN, Result.UNRATED_WIN):
-                droppable.add(rnd)
-
-        # 1.4.1e — tail rounds, non-RR only.
-        if self.tournament.pairing_system != RoundRobinPairingSystem():
-            total = self.tournament.rounds
-            tail_window = self._max_ignores_for_any_norm()
-            for r in range(max(1, total - tail_window + 1), total + 1):
-                if r in inputs.included_rounds:
-                    droppable.add(r)
-
-        return droppable
-
-    def _max_ignores_for_any_norm(self) -> int:
-        """Largest possible ignore-set size across all norms — defines the
-        tail-window for 1.4.1e candidate generation."""
-        return max(self._max_ignores(tn) for tn in TitleNorm.values())
-
-    def _candidates(
-        self,
-        droppable: set[int],
-        max_ignores: int,
-        inputs: NormInputs,
-    ) -> Iterable[frozenset[int]]:
-        """Yield ignore-subsets by ascending size; within a size class,
-        try the most-promising first (drops yielding the largest expected
-        Ra improvement, i.e. dropping the lowest-rated opponents first).
-        """
         opponent_by_round = dict(zip(inputs.included_rounds, inputs.opponents))
-        # Pre-compute the per-round drop score: lower opponent rating ⇒
-        # dropping that round is more likely to lift Ra.
-        round_score: dict[int, int] = {
-            rnd: (
-                opponent_by_round[rnd].rating
-                if opponent_by_round[rnd].rating_type == PlayerRatingType.FIDE
-                else 1400
-            )
-            for rnd in droppable
+        won = {
+            rnd
+            for rnd, result in zip(inputs.included_rounds, inputs.results_list)
+            if result in (Result.WIN, Result.UNRATED_WIN)
         }
-        limit = min(max_ignores, len(droppable))
-        for size in range(1, limit + 1):
-            sized = combinations(droppable, size)
-            ranked = sorted(
-                sized,
-                key=lambda combo: sum(round_score[r] for r in combo),
-            )
-            for combo in ranked:
-                yield frozenset(combo)
+
+        def drop_score(rnd: int) -> int:
+            opponent = opponent_by_round[rnd]
+            if opponent.rating_type == PlayerRatingType.FIDE:
+                return opponent.rating
+            return 1400  # unrated ⇒ treat as the 1.4.6 floor
+
+        allow_tail = self.tournament.pairing_system != RoundRobinPairingSystem()
+        max_tail = max_ignores if allow_tail else 0
+
+        seen: set[frozenset[int]] = set()
+        collected: list[frozenset[int]] = []
+        n = len(ordered)
+        for tail_len in range(min(max_tail, n) + 1):
+            tail = frozenset(ordered[n - tail_len :]) if tail_len else frozenset()
+            prefix_won = [r for r in ordered[: n - tail_len] if r in won]
+            for extra in range(max_ignores - tail_len + 1):
+                for won_combo in combinations(prefix_won, extra):
+                    candidate = tail | frozenset(won_combo)
+                    if not candidate or candidate in seen:
+                        continue
+                    seen.add(candidate)
+                    collected.append(candidate)
+
+        collected.sort(
+            key=lambda combo: (len(combo), sum(drop_score(r) for r in combo))
+        )
+        yield from collected

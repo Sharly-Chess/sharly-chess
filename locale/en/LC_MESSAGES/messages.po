@@ -316,11 +316,14 @@ msgstr ""
 msgid "1.4.1c (default — forfeit excluded)"
 msgstr ""
 
-msgid "1.4.1e/f: ignored by the subset search to satisfy this norm."
-msgstr ""
-
 #, python-format
 msgid "1.4.1e/f: round(s) %(rounds)s ignored"
+msgstr ""
+
+msgid "1.4.1e: game after the title result was reached, ignored by the subset search."
+msgstr ""
+
+msgid "1.4.1f: game against a defeated opponent, ignored by the subset search."
 msgstr ""
 
 msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
@@ -4060,6 +4063,9 @@ msgstr ""
 msgid "Not assigned"
 msgstr ""
 
+msgid "Not counted as a federation (1.4.2a)"
+msgstr ""
+
 msgid "Not enough byes available to set a Full-Point Bye (required: 2)."
 msgstr ""
 
@@ -7020,7 +7026,7 @@ msgstr ""
 msgid "Welcome to Sharly Chess!"
 msgstr ""
 
-msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm secured — round optional\" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it."
+msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm already achieved\" means it is locked in regardless of round {round} — either the result is already in, or it holds without this round (1.4.1e)."
 msgstr ""
 
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
@@ -7356,7 +7362,7 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-msgid "norm secured — round optional"
+msgid "norm already achieved"
 msgstr ""
 
 #, python-format

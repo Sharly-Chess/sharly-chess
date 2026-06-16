@@ -251,7 +251,18 @@ class TitleNormEvaluator:
                     )
                 )
                 continue
-            inputs.federations_counter[opponent.federation] += 1
+            # 1.4.2a — players with federation 'FID' are accepted (the game
+            # counts towards games played, titled opponents, Ra, score) but
+            # FID "is not considered a federation": it must not enter the
+            # federation mix. So it counts neither towards 1.4.3's foreign-
+            # federation tally nor as a federation that can breach the 1.4.4
+            # caps. (FIDE QC clarification, 2026.) RUS/BLR players are shown
+            # as FID but count under their own flag — the arbiter corrects
+            # the flag in the data; nothing special is done here.
+            if opponent.federation == Federation('FID'):
+                inputs.fid_count += 1
+            else:
+                inputs.federations_counter[opponent.federation] += 1
 
             # 1.4.5a — CM/WCM are NOT counted as title-holders.
             if opponent.title in TitleNorm.TITLE_HOLDERS:
@@ -441,6 +452,7 @@ class TitleNormEvaluator:
             Federation(self.player.event.federation), 0
         )
         res.federations_count = num_feds
+        res.fid_count = inputs.fid_count
 
         if not self.own_federation_requirement(inputs, tn):
             res.too_many_own_federation = _(

@@ -22,6 +22,8 @@
 - Fixed a norm calculation bug that incorrectly considered CM and WCM as title-holders (4.2.0)
 - Added support for norm exemption 1.4.2c (last round forfeit as loss) (4.2.0)
 - Added custom team ranking documents (4.2.0)
+- For norm calculations, 1.4.3 exemption now also waive 1.4.4 as confirmed to us by the FIDE (4.2.1)
+- For norm calculations, players under the FID federation are now disregarded when considering foreign federation counts (4.2.1)
 
 ## Screens
 
