@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from functools import cached_property
 from logging import Logger
 from typing import Any
 
@@ -47,6 +48,16 @@ class ScreenEntityUserWebContext(EventUserWebContext, ABC):
     def screen(self) -> Screen:
         pass
 
+    @cached_property
+    def family(self) -> Family | None:
+        if ':' in self.screen.uniq_id:
+            family_uniq_id: str = self.screen.uniq_id.split(':')[0]
+            try:
+                return self.user_event.families_by_uniq_id[family_uniq_id]
+            except KeyError:
+                raise NotFoundException(f'Family [{family_uniq_id}] not found.')
+        return None
+
     @property
     def background_image(self) -> str | None:
         if self.screen:
@@ -69,7 +80,9 @@ class ScreenEntityUserWebContext(EventUserWebContext, ABC):
         return super().template_context | {
             'rotator': self.rotator,
             'rotator_screen_index': self.rotator_screen_index,
+            'is_rotator': self.is_rotator,
             'screen': self.screen,
+            'family': self.family,
             'display_controller': self.display_controller,
         }
 
@@ -124,24 +137,6 @@ class DisplayControllerUserWebContext(ScreenEntityUserWebContext):
     def screen(self) -> Screen:
         assert self._screen is not None
         return self._screen
-
-
-class BasicScreenOrFamilyUserWebContext(ScreenUserWebContext):
-    def __init__(self, request: HTMXRequest):
-        super().__init__(request)
-        self.family: Family | None = None
-        if ':' in self.screen.uniq_id:
-            family_uniq_id: str = self.screen.uniq_id.split(':')[0]
-            try:
-                self.family = self.user_event.families_by_uniq_id[family_uniq_id]
-            except KeyError:
-                raise NotFoundException(f'Family [{family_uniq_id}] not found.')
-
-    @property
-    def template_context(self) -> dict[str, Any]:
-        return super().template_context | {
-            'family': self.family,
-        }
 
 
 class BaseScreenUserController(BaseUserController):

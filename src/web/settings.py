@@ -59,11 +59,7 @@ from web.controllers.background_controller import BackgroundController
 from web.controllers.index_controller import IndexController
 from web.controllers.qrcode_controller import QRCodeController
 from web.controllers.user.screen_user_controller import ScreenUserController
-from web.controllers.user.tournament_user_controller import (
-    CheckInUserController,
-    IllegalMoveUserController,
-    ResultUserController,
-)
+from web.controllers.user.input_user_controller import InputUserController
 from web.sqlite_store import SQLiteStore
 from web.session_backend import SkipUnchangedSessionBackend
 
@@ -85,9 +81,7 @@ _route_handlers: Sequence[ControllerRouterHandler] = [
     IndexController,
     BackgroundController,
     ScreenUserController,
-    ResultUserController,
-    CheckInUserController,
-    IllegalMoveUserController,
+    InputUserController,
     IndexAdminController,
     EventAdminController,
     EventDocumentsController,

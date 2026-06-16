@@ -109,6 +109,13 @@ class RequestUtils:
         request.state[cls.REQUEST_SCREEN_ATTR] = screen
         return screen
 
+    @classmethod
+    def get_optional_screen(cls, request: HTMXRequest) -> Screen | None:
+        try:
+            return cls.get_screen(request)
+        except ValidationException:
+            return None
+
     REQUEST_ROTATOR_ATTR: str = 'sharly_chess_rotator'
     ROTATOR_ID_PARAM: str = 'rotator_id'
 
@@ -151,6 +158,15 @@ class RequestUtils:
             )
         request.state[cls.REQUEST_DISPLAY_CONTROLLER_ATTR] = display_controller
         return display_controller
+
+    @classmethod
+    def get_optional_display_controller(
+        cls, request: HTMXRequest
+    ) -> DisplayController | None:
+        try:
+            return cls.get_display_controller(request)
+        except ValidationException:
+            return None
 
     REQUEST_TOURNAMENT_ATTR: str = 'sharly_chess_tournament'
     TOURNAMENT_ID_PARAM: str = 'tournament_id'

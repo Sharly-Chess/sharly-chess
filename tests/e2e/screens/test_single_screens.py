@@ -123,7 +123,7 @@ class TestSingleScreensFunctionality:
 
         # Test that the page is updated after a player checks in on another screen
         api_request_context.patch(
-            f'/view/toggle-check-in/{EVENT_ID}/{SCREEN_ID}/{unpaired_tournament.id}/{barbara.id}'
+            f'/view/toggle-check-in/1/{EVENT_ID}/{SCREEN_ID}/{unpaired_tournament.id}/{barbara.id}'
         )
 
         row = rows.filter(has_text='BARBARA')

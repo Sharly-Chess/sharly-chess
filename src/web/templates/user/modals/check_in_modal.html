@@ -8,7 +8,20 @@
                 <button
                     class="result-button white text-black bg-white ms-auto me-auto btn fs-4 fw-bold p-3"
                     style="width: fit-content;"
-                    hx-patch="{{ url_for('user-toggle-check-in', event_uniq_id=user_event.uniq_id, screen_uniq_id=screen.uniq_id, tournament_id=tournament.id, player_id=tournament_player.id) }}"
+                    hx-patch="{{ url_for(
+                            'user-toggle-check-in',
+                            event_uniq_id=user_event.uniq_id,
+                            display_controller_id=display_controller.id,
+                            tournament_id=tournament.id,
+                            player_id=tournament_player.id
+                        ) if display_controller else url_for(
+                            'user-toggle-check-in',
+                            is_screen=1,
+                            event_uniq_id=user_event.uniq_id,
+                            screen_uniq_id=screen.uniq_id,
+                            tournament_id=tournament.id,
+                            player_id=tournament_player.id
+                        ) }}"
                     hx-target="body"
                     hx-indicator="#please-wait"
                 >{% if not tournament_player.check_in %}{{ _('CHECK-IN') }}{% else %}{{ _('CHECK-OUT') }}{% endif %}<br/><br/>{{ tournament_player.last_name }}<br/>{{ tournament_player.first_name }}<br/>{{ tournament_player.rating_str }}</button>
