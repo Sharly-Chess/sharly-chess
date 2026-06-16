@@ -886,6 +886,14 @@ class FfePlugin(Plugin):
         for buchholz_type in PapiBuchholzTypeManager().objects():
             tie_break = PapiBuchholzTieBreak([PapiBuchholzTypeOption(buchholz_type.id)])
             tie_break_by_acronym[tie_break.trf_acronym] = tie_break
+        tie_break_by_acronym |= {
+            tie_break.trf_acronym: tie_break
+            for tie_break in [
+                ffe_tie_breaks.PapiPerformanceTieBreak(),
+                ffe_tie_breaks.PapiSumOfBuchholzTieBreak(),
+                ffe_tie_breaks.PapiKashdanTieBreak(),
+            ]
+        }
 
     # ---------------------------------------------------------------------------------
     # Pairings
