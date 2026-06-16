@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from data.columns.player_table import TournamentPlayerTableColumn
     from data.columns.players_tab import PlayersTabColumn
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
+    from data.input_output.trf.trf_data import TrfNationalPlayer
     from data.pairings.variations import SwissVariation
     from data.player import (
         Player,
@@ -184,6 +185,20 @@ class AppHookSpecs:
     ):
         """Test if a player can be moved to a tournament.
         Raises a translated ValueError if so."""
+
+    @hookspec
+    def augment_trf_national_player(
+        self, player: 'Player', trf_national_player: 'TrfNationalPlayer'
+    ):
+        """Augment a TRF national player from a player."""
+
+    @hookspec
+    def augment_stored_player_from_trf_national_player(
+        self,
+        stored_player: 'StoredPlayer',
+        trf_national_player: 'TrfNationalPlayer',
+    ):
+        """Augment a stored player from a TRF national player."""
 
     @hookspec(firstresult=True)
     def player_distribution_error_message(self, event: 'Event') -> str | None:
@@ -425,6 +440,12 @@ class AppHookSpecs:
         self, system_sets: list['SystemTieBreakSet']
     ):
         """Provide extra system tie-break sets for the swiss pairing system."""
+
+    @hookspec
+    def add_tie_breaks_to_trf_acronym_mapping(
+        self, tie_break_by_acronym: dict[str, 'TieBreak']
+    ):
+        """AAdd tie-breaks whose base acronym does not necessarily match to a manual acronym mapping."""
 
     # ---------------------------------------------------------------------------------
     # Pairings

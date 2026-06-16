@@ -1,14 +1,12 @@
 from datetime import date, datetime
 import weakref
-from collections import Counter
+from collections import Counter, defaultdict
 from collections.abc import Collection
 from functools import cached_property
 from logging import Logger
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any
 from _weakref import ReferenceType
-
-from trf import Tournament as TrfTournament
 
 from common.i18n import _
 from common.sharly_chess_config import SharlyChessConfig
@@ -18,6 +16,7 @@ from data.account import Account
 from data.board import Board
 from data.criteria.managers import TournamentCriterionManager
 from data.family import Family
+from data.pairings.settings import ColorSeedSetting
 from data.player import Player, TournamentPlayer
 from data.player_categories import PlayerCategory
 from data.prize.assigned_prize import AssignedPrize
@@ -47,7 +46,6 @@ from utils.enum import (
     PlayerGender,
     Result,
     TournamentRating,
-    TrfType,
     PlayerRatingType,
     ScreenType,
     RoleType,
@@ -66,6 +64,11 @@ from database.sqlite.event.event_store import StoredTournament, StoredPrizeGroup
 
 if TYPE_CHECKING:
     from data.event import Event
+    from data.input_output.trf.trf_data import (
+        TrfTournament,
+        TrfRoundBye,
+        TrfAcceleratedRound,
+    )
     from data.pairings import PairingVariation, PairingSystem
 
 logger: Logger = get_logger()
@@ -943,13 +946,11 @@ class Tournament:
 
     @cached_property
     def point_values(self) -> dict[Result, float]:
-        values: dict[Result, float]
+        values: dict[Result, float] = {}
         if self.three_points_for_a_win:
             values = {Result.WIN: 3, Result.DRAW: 1, Result.LOSS: 0}
-        else:
-            values = {Result.WIN: 1, Result.DRAW: 0.5, Result.LOSS: 0}
-
-        values[Result.PAIRING_ALLOCATED_BYE] = values[self.pab_value]
+        if self.pab_value != Result.WIN:
+            values[Result.PAIRING_ALLOCATED_BYE] = values[self.pab_value]
         return values
 
     @property
@@ -1185,94 +1186,147 @@ class Tournament:
 
     def to_trf(
         self,
-        trf_type: TrfType,
         after_round: int | None = None,
         next_round_pairings_as_zpb: bool = False,
-    ) -> TrfTournament:
-        from data.input_output.tournament_importers import TRF_DATE_FORMAT
+    ) -> 'TrfTournament':
+        from data.input_output.trf.trf_data import TrfTournament
+        from data.input_output.trf.trf_importer import TRF_DATE_FORMAT
+        from data.input_output.trf.trf_mappers import TrfPointSystemResult
 
         if after_round is None:
             after_round = self.rounds
         self.compute_tournament_player_ranks(after_round=after_round)
+        seed_setting = ColorSeedSetting()
         return TrfTournament(
             name=self.name,
-            city=self.location,
-            startdate=self.start_date.strftime(TRF_DATE_FORMAT),
-            enddate=self.stop_date.strftime(TRF_DATE_FORMAT),
-            numplayers=len(self.tournament_players_by_id),
-            chiefarbiter=getattr(self.chief_arbiter, 'fide_arbiter_str', ''),
-            players=[
-                player.to_trf(
-                    after_round,
-                    next_round_pairings_as_zpb,
-                    include_next_round_bye=trf_type == TrfType.TRF_BX,
-                )
-                for player in self.tournament_players_by_pairing_number.values()
+            city=self.location or '',
+            federation=self.event.federation,
+            start_date=self.start_date.strftime(TRF_DATE_FORMAT),
+            end_date=self.stop_date.strftime(TRF_DATE_FORMAT),
+            num_players=len(self.tournament_players_by_id),
+            num_rated_players=sum(
+                bool(player.fide_rating_value) for player in self.players
+            ),
+            chief_arbiter=getattr(self.chief_arbiter, 'fide_arbiter_str', ''),
+            deputy_arbiters=[
+                arbiter.fide_arbiter_str for arbiter in self.deputy_arbiters
             ],
-            rounddates=[
-                dt.strftime('%y/%m/%d') if dt else '        '
+            round_dates=[
+                dt.strftime('%y/%m/%d') if dt else ''
                 for idx in range(1, after_round + 1)
                 for dt in [self.round_datetimes.get(idx)]
             ],
-            federation=self.event.federation,
-            xx_fields=(
-                self._trf_xx_fields(after_round + 1)
-                if trf_type == TrfType.TRF_BX
-                else {}
+            num_rounds=self.rounds,
+            initial_color=seed_setting.get_value(self).value,
+            individuals_point_system={
+                TrfPointSystemResult.get_outer_value(result) or '': value
+                for result, value in self.point_values.items()
+            },
+            starting_rank_method=(
+                'FIDON' if self.player_rating_type == PlayerRatingType.FIDE else 'NIDOF'
             ),
-            bb_fields=(
-                self._trf_bb_fields(point_values=self.point_values)
-                if trf_type == TrfType.TRF_BX
-                else {}
-            ),
+            pairing_controller_id='Sharly Chess',
+            encoded_type=self.pairing_variation.trf_encoded_type,
+            standings_tie_breaks=['PTS']
+            + [tie_break.trf_acronym for tie_break in self.tie_breaks],
+            time_control=self.time_control_trf25 or '',
+            players=[
+                player.to_trf(after_round, next_round_pairings_as_zpb)
+                for player in self.tournament_players_by_pairing_number.values()
+            ],
+            accelerated_rounds=self._trf_accelerated_rounds(),
+            round_byes=self._trf_round_byes(),
         )
 
-    def _player_id_to_rank(self, player_id: int) -> int:
-        return self.tournament_players_by_id[player_id].rank
+    def _trf_round_byes(self) -> list['TrfRoundBye']:
+        from data.input_output.trf.trf_data import TrfRoundBye
 
-    def _trf_xx_fields(self, next_round: int):
-        from data.input_output.trf_mappers import TrfSeedColor
-        from data.pairings.settings import ColorSeedSetting
-
-        fields: dict[str, str] = {
-            'XXR': str(self.rounds),
-            'XXC': TrfSeedColor.get_outer_value(ColorSeedSetting.get_value(self)) or '',
-            'XXZ': ' '.join(
-                [
-                    str(trf_id)
-                    for trf_id, player in self.tournament_players_by_pairing_number.items()
-                    if next_round in player.pairings
-                    and player.pairings[next_round].next_round_bye
-                ]
-            ),
-        }
-        for trf_id, player in self.tournament_players_by_pairing_number.items():
-            vpoints_history = [
-                self._calculate_player_virtual_points(player, at_round=round_)
-                for round_ in range(1, next_round + 1)
-            ]
-            if sum(vpoints_history) > 0:
-                fields[f'XXA {trf_id:>4}'] = ' '.join(
-                    [f'{float(vpoints):>4}' for vpoints in vpoints_history]
+        round_byes: list[TrfRoundBye] = []
+        for round_ in range(1, self.rounds + 1):
+            pairing_numbers_by_bye: dict[Result, list[int]] = defaultdict(list)
+            for (
+                pairing_number,
+                player,
+            ) in self.tournament_players_by_pairing_number.items():
+                result = player.pairings[round_].result
+                if result.is_next_round_bye:
+                    pairing_numbers_by_bye[result].append(pairing_number)
+            for bye, pairing_numbers in pairing_numbers_by_bye.items():
+                round_bye = TrfRoundBye(
+                    type=bye.to_trf.upper(),
+                    round=round_,
+                    pairing_numbers=pairing_numbers,
                 )
-        return fields
+                round_byes.append(round_bye)
+        return round_byes
 
-    @staticmethod
-    def _trf_bb_fields(
-        result_class: type[Result] = Result,
-        point_values: dict[Result, float] | None = None,
-    ) -> dict[str, str]:
-        fields: dict[str, str] = {}
-        for result in [
-            result_class.WIN,
-            result_class.DRAW,
-            result_class.LOSS,
-            result_class.FORFEIT_LOSS,
-            result_class.PAIRING_ALLOCATED_BYE,
-            result_class.ZERO_POINT_BYE,
-        ]:
-            fields[result.bbp_field] = f'{result.points(point_values):>4}'
-        return fields
+    def _trf_accelerated_rounds(self) -> list['TrfAcceleratedRound']:
+        from data.input_output.trf.trf_data import TrfAcceleratedRound
+
+        variation = self.pairing_variation
+        if not variation.include_accelerated_rules_in_trf:
+            return []
+        rounds = self.rounds
+        acceleration_rules = variation.get_tournament_accelerated_rules(
+            rounds, self.draw_points, self.win_points
+        )
+        tpn_range_by_group = variation.get_acceleration_number_range_by_group(self)
+        accelerated_rounds: list[TrfAcceleratedRound] = []
+        players_by_tpn = self.tournament_players_by_pairing_number
+        for group, (min_tpn, max_tpn) in tpn_range_by_group.items():
+            group_rules = [rule for rule in acceleration_rules if rule.group == group]
+            if not any(rule.points_threshold for rule in group_rules):
+                accelerated_rounds += [
+                    TrfAcceleratedRound(
+                        match_points=None,
+                        game_points=rule.vpoints,
+                        first_round=rule.first_round,
+                        last_round=rule.last_round,
+                        first_id=min_tpn,
+                        last_id=max_tpn,
+                    )
+                    for rule in group_rules
+                ]
+                continue
+
+            for tpn, player in players_by_tpn.items():
+                if not min_tpn <= tpn <= max_tpn:
+                    continue
+                vpoints_history = [
+                    self._calculate_player_virtual_points(player, at_round=round_)
+                    for round_ in range(1, rounds + 1)
+                ]
+                first_round = 1
+                previous_vpoints = vpoints_history[0]
+                for index in range(1, rounds):
+                    vpoints = vpoints_history[index]
+                    if vpoints == previous_vpoints:
+                        continue
+                    if previous_vpoints != 0:
+                        accelerated_rounds.append(
+                            TrfAcceleratedRound(
+                                match_points=None,
+                                game_points=previous_vpoints,
+                                first_round=first_round,
+                                last_round=index,
+                                first_id=tpn,
+                                last_id=tpn,
+                            )
+                        )
+                    first_round = index + 1
+                    previous_vpoints = vpoints
+                if previous_vpoints != 0:
+                    accelerated_rounds.append(
+                        TrfAcceleratedRound(
+                            match_points=None,
+                            game_points=previous_vpoints,
+                            first_round=first_round,
+                            last_round=rounds,
+                            first_id=tpn,
+                            last_id=tpn,
+                        )
+                    )
+        return accelerated_rounds
 
     def set_tournament_player_points(
         self, tournament_player: TournamentPlayer, *, before_round: int

@@ -132,16 +132,14 @@ class Result(IntEnum):
         If the closest result's value is not given, will default to the default
         value, as defined by FIDE rules (1-0.5-0)
         """
-        if not isinstance(values, dict):
+        if not values:
             return self.point_value
-        value: float | None = values.get(self, None)
+        value = values.get(self)
         if value is not None:
             return value
         match self:
             case Result.DOUBLE_FORFEIT:
-                value = (
-                    value or values.get(Result.FORFEIT_LOSS) or values.get(Result.LOSS)
-                )
+                value = values.get(Result.FORFEIT_LOSS, values.get(Result.LOSS))
             case (
                 Result.FORFEIT_LOSS
                 | Result.UNRATED_LOSS
@@ -152,21 +150,21 @@ class Result(IntEnum):
                 | Result.PENALTY_LD
                 | Result.UNRATED_PENALTY_LD
             ):
-                value = value or values.get(Result.LOSS)
+                value = values.get(Result.LOSS)
             case (
                 Result.UNRATED_DRAW
                 | Result.HALF_POINT_BYE
                 | Result.PENALTY_DL
                 | Result.UNRATED_PENALTY_DL
             ):
-                value = value or values.get(Result.DRAW)
+                value = values.get(Result.DRAW)
             case (
                 Result.FULL_POINT_BYE
                 | Result.FORFEIT_WIN
                 | Result.UNRATED_WIN
                 | Result.PAIRING_ALLOCATED_BYE
             ):
-                value = value or values.get(Result.WIN)
+                value = values.get(Result.WIN)
         return value or self.point_value
 
     @property
@@ -234,7 +232,7 @@ class Result(IntEnum):
 
     @property
     def to_trf(self) -> str:
-        from data.input_output.trf_mappers import TrfResult
+        from data.input_output.trf.trf_mappers import TrfResult
 
         return TrfResult.get_outer_value(self)
 
@@ -1325,11 +1323,6 @@ class NeedsUpload(Enum):
                 return False
             case _:
                 raise ValueError(f'Unknown value: {self}')
-
-
-class TrfType(StrEnum):
-    TRF_16 = 'trf-16'
-    TRF_BX = 'trf-bx'
 
 
 class FormAction(StrEnum):

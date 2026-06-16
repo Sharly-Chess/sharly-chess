@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from enum import StrEnum
 from math import ceil
 from typing import TYPE_CHECKING
@@ -15,6 +16,15 @@ class AccelerationGroup(StrEnum):
     A = 'A'
     B = 'B'
     C = 'C'
+
+
+@dataclass
+class AccelerationRule:
+    vpoints: float
+    first_round: int
+    last_round: int
+    group: AccelerationGroup
+    points_threshold: float = 0
 
 
 class PairingGroupSetting(PairingSetting[tuple[int, int]], ABC):

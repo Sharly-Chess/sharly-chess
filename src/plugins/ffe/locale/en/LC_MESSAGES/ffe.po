@@ -125,9 +125,6 @@ msgstr ""
 msgid "Expired FFE licence"
 msgstr ""
 
-msgid "Export the tournament to the PAPI format."
-msgstr ""
-
 msgid "FFE"
 msgstr ""
 

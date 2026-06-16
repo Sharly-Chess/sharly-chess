@@ -408,7 +408,7 @@
                                 {% endif %}
                                 {% if warning_message %}
                                     {{ macros.tooltip_attributes('warning', warning_message, 'right') }}
-                                {% else %}
+                                {% elif exporter.tooltip %}
                                     {{ macros.tooltip_attributes('info', exporter.tooltip, 'right') }}
                                 {% endif %}
                             >
