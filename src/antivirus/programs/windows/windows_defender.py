@@ -2,7 +2,10 @@ from logging import Logger
 from pathlib import Path
 
 from antivirus.programs.windows import WindowsAntivirus
+from antivirus.uac import UACWrapper
+from common import DEVEL_ENV
 from common.logger import get_logger
+from common.tool_installer import UACInstaller
 
 logger: Logger = get_logger()
 
@@ -102,5 +105,12 @@ class WindowsDefender(WindowsAntivirus):
                     'Folder [%s] already belongs to the Windows Defender exclusions.',
                     folder,
                 )
-            else:
-                super().run(folder)
+            elif UACInstaller().is_installed:
+                logger.info(
+                    f'Calling Sharly Chess UAC to add folder [{folder}] to the Windows Defender exclusions...'
+                )
+                UACWrapper().windows_defender_exclude_sharly_chess_folder(folder)
+            elif DEVEL_ENV:
+                logger.info(
+                    'Sharly Chess UAC not installed yet, can not add Sharly Chess folder to the Windows Defender exclusions.'
+                )

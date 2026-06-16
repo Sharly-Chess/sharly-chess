@@ -128,6 +128,8 @@ try:
     from web.server_engine import ServerEngine
     from antivirus.control import search_missing_files
     from antivirus.detect import detect_antivirus_programs
+    from antivirus.programs.antivirus import Antivirus
+    from antivirus.protect import protect_from_antivirus_programs
 
     logger = get_logger()
 
@@ -250,7 +252,10 @@ try:
         messagebox.showerror('Sharly Chess startup error', error_message)
         root.destroy()
         sys.exit(1)
-    detect_antivirus_programs()
+    detected_antivirus_programs: list[Antivirus] = detect_antivirus_programs()
+    protect_from_antivirus_programs(
+        detected_antivirus_programs=detected_antivirus_programs, folder=Path()
+    )
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):
         # Pre-check GTK availability on Linux before trying to create the app

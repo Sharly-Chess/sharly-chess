@@ -490,3 +490,42 @@ class PapiConverterInstaller(ExecutableInstaller):
         self.download_file(build_url, archive_path)
         self.install_archive_and_delete(archive_path, self.install_dir)
         return self.is_installed
+
+
+class UACInstaller(ExecutableInstaller):
+    def __init__(self):
+        super().__init__()
+
+    @cached_property
+    def system_handler(self) -> SystemHandler:
+        match sys.platform:
+            case 'win32':
+                return SystemHandler(
+                    executable_dir=f'sharly-chess-uac-{self.version}',
+                    executable_filename=f'sharly-chess-uac-{self.version}.exe',
+                    archive_filename=f'sharly-chess-uac-{self.version}.zip',
+                )
+            case _:
+                raise NotImplementedError(
+                    f'{self._name} is not available for system [{sys.platform}]'
+                )
+
+    @property
+    def _name(self) -> str:
+        return 'sharly-chess-uac'
+
+    @property
+    def _version(self) -> Version:
+        return Version('1.1.3')
+
+    def install(self) -> bool:
+        archive_filename = self.system_handler.archive_filename
+        build_url: str = (
+            'https://github.com/Sharly-Chess/sharly-chess-uac/'
+            f'releases/download/{self.version}/{archive_filename}'
+        )
+        self.install_dir.mkdir(parents=True, exist_ok=True)
+        archive_path: Path = self.install_dir / archive_filename
+        self.download_file(build_url, archive_path)
+        self.install_archive_and_delete(archive_path, self.install_dir)
+        return self.is_installed

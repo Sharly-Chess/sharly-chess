@@ -9,7 +9,7 @@ from common.logger import get_logger
 logger: Logger = get_logger()
 
 
-def detect_antivirus_programs(folder: Path | None = None) -> list[Antivirus]:
+def detect_antivirus_programs() -> list[Antivirus]:
     """Return known antivirus programs running on the server."""
     if os.getenv('TEST_ENV') == 'true' or Path(sys.argv[0]).stem == 'pytest':
         return []
@@ -65,11 +65,6 @@ def detect_antivirus_programs(folder: Path | None = None) -> list[Antivirus]:
                     logger.debug('- %s', detected_antivirus_program.name)
             else:
                 logger.debug('No antivirus program has been detected.')
-            for detected_antivirus_program in detected_antivirus_programs:
-                logger.debug(
-                    'Running action for [%s]...', detected_antivirus_program.name
-                )
-                detected_antivirus_program.run(folder or Path())
             return detected_antivirus_programs
         case _:
             logger.debug('No antivirus detection for platform [%s].', sys.platform)
