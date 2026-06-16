@@ -467,7 +467,7 @@ class Event:
             stored_player.last_name,
             stored_player.first_name,
             stored_player.date_of_birth,
-        ) == (player.last_name, player.last_name, player.date_of_birth):
+        ) == (player.last_name, player.first_name, player.date_of_birth):
             return True
         if stored_player.fide_id and stored_player.fide_id == player.fide_id:
             return True
