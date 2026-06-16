@@ -28,7 +28,7 @@ from litestar.template import TemplateConfig
 from litestar.types import ControllerRouterHandler, Middleware
 from litestar.middleware.base import DefineMiddleware
 
-from common import BASE_DIR, TMP_DIR
+from common import BASE_DIR, TMP_DIR, DEVEL_ENV
 from common.i18n import gettext, ngettext
 from data.input_output import OnlineDataSourceManager
 
@@ -185,6 +185,7 @@ class SharlyChessEnvironment(Environment):
             loader=template_loader,
             autoescape=True,
             trim_blocks=True,
+            auto_reload=DEVEL_ENV,
         )
         self.add_extension('jinja2.ext.i18n')
         self.install_gettext_callables(  # type: ignore
