@@ -6976,7 +6976,7 @@ msgstr ""
 msgid "Warning: experimental features are enabled!"
 msgstr ""
 
-msgid "Warning: over half of the players are absent"
+msgid "Warning: over half of the players are absent!"
 msgstr ""
 
 msgid "Warning: potential data loss"

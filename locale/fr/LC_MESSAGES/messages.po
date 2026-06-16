@@ -6978,8 +6978,8 @@ msgstr "Avertissement : la fermeture de cette fenêtre arrête Sharly Chess."
 msgid "Warning: experimental features are enabled!"
 msgstr "Avertissement : les fonctionnalités expérimentales sont activées !"
 
-msgid "Warning: over half of the players are absent"
-msgstr "Attention : plus de la moitié des joueur·euses sont absent·es"
+msgid "Warning: over half of the players are absent!"
+msgstr "Attention : plus de la moitié des joueur·euses sont absent·es !"
 
 msgid "Warning: potential data loss"
 msgstr "Attention : perte de données potentielle"
