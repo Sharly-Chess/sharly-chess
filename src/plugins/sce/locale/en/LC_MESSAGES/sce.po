@@ -345,6 +345,9 @@ msgstr ""
 msgid "Synchronize players"
 msgstr ""
 
+msgid "This field is controlled from Sharly-Chess.com."
+msgstr ""
+
 msgid "Time control"
 msgstr ""
 

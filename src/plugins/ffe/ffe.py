@@ -1001,6 +1001,7 @@ class FfePlugin(Plugin):
         event: 'Event',
         stored_player: StoredPlayer,
         sync_data: SCEPlayerSyncData,
+        database: EventDatabase | None,
     ):
         plugin_data = FfePlayerPluginData.from_stored_value(
             stored_player.plugin_data.get(PLUGIN_NAME, {})

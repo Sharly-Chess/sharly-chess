@@ -291,6 +291,7 @@ class FRASchoolsUtils:
         school: FRASchool,
         update_existing: bool = False,
         save: bool = True,
+        database: EventDatabase | None = None,
     ) -> int:
         """Add a school to the event, returning its ID.
         If a school already exists with the same code:
@@ -315,8 +316,11 @@ class FRASchoolsUtils:
         plugin_data.fra_schools_by_id[school_id] = school
         event.stored_event.plugin_data[PLUGIN_NAME] = plugin_data.to_stored_value()
         if save:
-            with EventDatabase(event.uniq_id, True) as database:
+            if database:
                 database.update_stored_event(event.stored_event)
+            else:
+                with EventDatabase(event.uniq_id, True) as database:
+                    database.update_stored_event(event.stored_event)
         return school_id
 
     @classmethod

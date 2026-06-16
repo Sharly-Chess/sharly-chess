@@ -27,6 +27,7 @@
 
 - Added missing timeouts (4.2.0)
 - Prevent moving players from a synced tournament to a not-synced tournament (4.2.0)
+- Fixed tournament import of schools tournaments (4.2.1)
 
 ## _FFE_
 
