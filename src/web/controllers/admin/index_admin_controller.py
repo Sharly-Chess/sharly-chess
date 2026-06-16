@@ -1386,8 +1386,7 @@ class IndexAdminController(BaseAdminController):
             action = OutdatedActionManager().get_object(action_id)
         stored_database.outdate_delay = delay.id
         stored_database.outdate_action = action.id
-        with ConfigDatabase(write=True) as config_database:
-            config_database.update_stored_local_source_database(stored_database)
+        database.update_stored_source_database(stored_database)
         database.check()
         return HTMXTemplate(
             template_name='admin/common/database/database_row.html',
