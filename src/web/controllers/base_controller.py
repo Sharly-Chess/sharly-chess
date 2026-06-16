@@ -491,15 +491,9 @@ class BaseController(Controller):
             return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
         """
         try:
-            if_modified_since: int = httpdate_to_unixtime(
-                request.headers[self.IF_MODIFIED_SINCE_HEADER]
-            )
-            logger.debug(
-                'request.headers[%s]=%s',
-                self.IF_MODIFIED_SINCE_HEADER,
-                request.headers[self.IF_MODIFIED_SINCE_HEADER],
-            )
-            logger.debug('if_modified_since=%d', if_modified_since)
+            http_modified_since = request.headers[self.IF_MODIFIED_SINCE_HEADER]
+            logger.debug('%s=%s', self.IF_MODIFIED_SINCE_HEADER, http_modified_since)
+            if_modified_since = httpdate_to_unixtime(http_modified_since)
             return if_modified_since
         except KeyError:
             return None

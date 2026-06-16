@@ -7,10 +7,8 @@ from data.input_output.data_source import (
 )
 from data.input_output.player_exporters import PlayerExporter
 from data.input_output.tournament_exporters import TournamentExporter
-from data.input_output.tournament_importers import (
-    TournamentImporter,
-    TrfTournamentImporter,
-)
+from data.input_output.tournament_importers import TournamentImporter
+from data.input_output.trf.trf_importer import TrfTournamentImporter
 from plugins.manager import plugin_manager
 from utils.entity import EntityManager, EventBoundEntityManager
 
@@ -37,8 +35,7 @@ class TournamentExporterManager(EventBoundEntityManager[TournamentExporter]):
     @override
     def entity_types(self) -> list[type[TournamentExporter]]:
         exporters: list[type[TournamentExporter]] = [
-            tournament_exporters.Trf16TournamentExporter,
-            tournament_exporters.TrfBxTournamentExporter,
+            tournament_exporters.Trf26TournamentExporter,
             tournament_exporters.PgnTournamentExporter,
         ]
         plugin_manager.hook_for_event(self.event, 'insert_tournament_exporters')(

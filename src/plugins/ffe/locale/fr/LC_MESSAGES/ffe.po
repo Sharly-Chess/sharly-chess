@@ -125,9 +125,6 @@ msgstr "Exclure : {values}"
 msgid "Expired FFE licence"
 msgstr "Licence FFE expirée"
 
-msgid "Export the tournament to the PAPI format."
-msgstr "Exporter le tournoi au format PAPI."
-
 msgid "FFE"
 msgstr "FFE"
 

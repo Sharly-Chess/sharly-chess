@@ -4,8 +4,6 @@ from functools import total_ordering, cached_property
 from typing import TYPE_CHECKING, Any
 
 from babel.lists import format_list
-from trf import Player as TrfPlayer
-from trf.Player import Game as TrfGame
 
 from common.i18n import _, get_locale
 from common.i18n.utils import normalized_key
@@ -45,7 +43,7 @@ if TYPE_CHECKING:
     from data.criteria.tournament_criteria import TournamentCriterion
     from data.event import Event
     from data.tournament import Tournament
-
+    from data.input_output.trf.trf_data import TrfPlayer
 
 MIN_YOB = 1900
 MAX_YOB = date.today().year
@@ -424,6 +422,12 @@ class TournamentPlayer(Player):
 
         return False
 
+    @cached_property
+    def tournament_rating_is_overridden(self) -> bool:
+        return self.rating_is_overridden(
+            self.tournament.rating, self.tournament.player_rating_type
+        )
+
     def rating_is_overridden(
         self, tournament_rating: TournamentRating, player_rating_type: PlayerRatingType
     ) -> bool:
@@ -454,9 +458,7 @@ class TournamentPlayer(Player):
 
     @cached_property
     def _tournament_rating(self) -> PlayerRatingAndType:
-        if self.rating_is_overridden(
-            self.tournament.rating, self.tournament.player_rating_type
-        ):
+        if self.tournament_rating_is_overridden:
             rating = self.ratings.get(TournamentRating.STANDARD)
             assert rating is not None
             assert rating.fide is not None
@@ -465,6 +467,17 @@ class TournamentPlayer(Player):
         return self.get_rating_and_type(
             self.tournament.rating, self.tournament.player_rating_type, self.category
         )
+
+    @property
+    def fide_rating_value(self) -> int | None:
+        rating = self.tournament.rating
+        if self.tournament_rating_is_overridden:
+            rating = TournamentRating.STANDARD
+        return self.ratings[rating].fide
+
+    @property
+    def national_rating_value(self) -> int | None:
+        return self.ratings[self.tournament.rating].national
 
     @property
     def ratings_str(self) -> str:
@@ -619,49 +632,60 @@ class TournamentPlayer(Player):
         self,
         after_round: int,
         next_round_pairings_as_zpb: bool,
-        include_next_round_bye: bool,
-    ) -> TrfPlayer:
+    ) -> 'TrfPlayer':
+        from data.input_output.trf.trf_data import TrfPlayer, TrfGame, TrfNationalPlayer
+
         games: list[TrfGame] = []
-        from data.input_output.trf_mappers import TrfPlayerGender, TrfPlayerTitle
+        from data.input_output.trf.trf_mappers import TrfPlayerGender, TrfPlayerTitle
 
         for round_nb, pairing in self.pairings.items():
             trf_game = pairing.to_trf(round_nb)
             if round_nb <= after_round:
                 games.append(trf_game)
-            elif round_nb == after_round + 1:
-                if include_next_round_bye and pairing.next_round_bye:
-                    games.append(trf_game)
-                elif (
-                    include_next_round_bye
-                    and self.check_in_status_for_round(after_round + 1)
-                    == CheckInStatus.ABSENT
-                ) or (next_round_pairings_as_zpb and not pairing.needs_pairing):
-                    games.append(
-                        TrfGame(
-                            startrank=0,
-                            color='-',
-                            result=Result.ZERO_POINT_BYE.to_trf,
-                            round=round_nb,
-                        )
+            elif (
+                round_nb == after_round + 1
+                and next_round_pairings_as_zpb
+                and not pairing.needs_pairing
+            ):
+                games.append(
+                    TrfGame(
+                        opponent_id=0,
+                        color='-',
+                        result=Result.ZERO_POINT_BYE.to_trf,
+                        round=round_nb,
                     )
+                )
         trf_dob = ''
         if self.date_of_birth:
             trf_dob = self.date_of_birth.strftime('%Y/%m/%d')
         elif self.year_of_birth:
             trf_dob = f'{self.year_of_birth}/00/00'
-        return TrfPlayer(
-            startrank=self.pairing_number,
-            name=f'{self.last_name}, {self.first_name or ""}'[:32],
-            sex=TrfPlayerGender.get_outer_value(self.gender),
-            title=TrfPlayerTitle.get_outer_value(self.title),
-            rating=self.rating,
-            fed=self.federation.name,
-            id=self.fide_id,
-            birthdate=trf_dob,
+        assert self.pairing_number is not None
+        trf_player = TrfPlayer(
+            id=self.pairing_number,
+            name=(
+                f'{self.last_name}{f", {self.first_name}" if self.first_name else ""}'
+            )[:32],
+            gender=TrfPlayerGender.get_outer_value(self.gender) or '',
+            title=TrfPlayerTitle.get_outer_value(self.title) or '',
+            rating=self.fide_rating_value or 0,
+            federation=self.federation.name,
+            fide_id=self.fide_id,
+            birth_date=trf_dob,
             points=self.points_after(after_round),
             rank=self.rank,
             games=games,
         )
+        np = TrfNationalPlayer(
+            player_id=trf_player.id,
+            rating=self.national_rating_value or 0,
+        )
+        plugin_manager.hook_for_event(self.event, 'augment_trf_national_player')(
+            player=self, trf_national_player=np
+        )
+        if np.rating or np.classification or np.origin or np.national_id:
+            trf_player.national_player_by_federation[self.event.federation] = np
+        return trf_player
 
     # FIXME(Amaras): this should not be in the Player class
     def reset_board(self):

@@ -339,6 +339,7 @@ class PairingsAdminController(BaseEventAdminController):
         tournament_id: int | None,
         round: int | None,
         show_without_results: bool | None,
+        skip_ratings_warning: bool = False,
     ) -> Template:
         if show_without_results is not None:
             SessionPairingsShowWithoutResults(request).set(show_without_results)
@@ -350,7 +351,7 @@ class PairingsAdminController(BaseEventAdminController):
                 SessionPairingsSelectedRound(request, tournament).set(admin_round)
 
         return self._admin_event_pairings_render(
-            web_context,
+            web_context, {'skip_ratings_warning': skip_ratings_warning}
         )
 
     @get(

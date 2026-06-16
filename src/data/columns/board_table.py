@@ -68,7 +68,7 @@ class IllegalMovesColumn(BoardColumn, ABC):
 
     @property
     def cell_template(self) -> str | None:
-        return '/user/screen/boards/board_row_illegal_moves_cell.html'
+        return '/user/screen/sets/board_row_illegal_moves_cell.html'
 
     @property
     @abstractmethod

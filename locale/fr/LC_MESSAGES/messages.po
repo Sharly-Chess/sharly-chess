@@ -397,12 +397,36 @@ msgstr "1.5.6a exige que chaque ronde compte au moins 40 joueur·euses classé·
 msgid "1/3 of %(n)s opponents, min 3"
 msgstr "1/3 de %(n)s adversaires, min 3"
 
+msgid "162 Point system"
+msgstr "162 Système de points"
+
+msgid "172 Starting rank method {method}"
+msgstr "172 méthode de classement initial {method}"
+
+msgid "192 Encoded type {type} (default: {default})"
+msgstr "192 Type {type} (défaut : {default})"
+
 msgid "1st day of the month"
 msgstr "1er jour du mois"
 
 #, python-format
 msgid "2/3 of %(n)s opponents"
 msgstr "2/3 de %(n)s adversaires"
+
+msgid "202 and 212 tie-breaks (212 used)"
+msgstr "202 et 212 Départages (212 utilisé)"
+
+msgid "212 Tie-breaks with PTS not used first"
+msgstr "212 Départages avec PTS pas en première position"
+
+msgid "250 Accelerated rounds"
+msgstr "250 Rondes accélérées"
+
+msgid "260 Prohibited pairings"
+msgstr "260 Appariements interdits"
+
+msgid "299 Abnormal assignment points"
+msgstr "299 Attribution de points anormaux"
 
 #, python-format
 msgid "3/5 of %(n)s opponents"
@@ -928,6 +952,9 @@ msgstr "N"
 
 msgid "B *** BLACK COLOR FOR PLACE CARDS"
 msgstr "N"
+
+msgid "BB fields"
+msgstr "Champs BB"
 
 msgid "BLACK PLAYER"
 msgstr "JOUEUR·EUSE NOIRS"
@@ -1897,6 +1924,9 @@ msgstr "Supprimer l'écran rotatif."
 msgid "Delete the screen family."
 msgstr "Supprimer la famille d'écrans."
 
+msgid "Delete the screen."
+msgstr "Supprimer l'écran."
+
 msgid "Delete the timer."
 msgstr "Supprimer le chronomètre."
 
@@ -2117,6 +2147,9 @@ msgstr "Dupliquer l'écran rotatif."
 
 msgid "Duplicate the screen family."
 msgstr "Dupliquer la famille d'écrans."
+
+msgid "Duplicate the screen."
+msgstr "Dupliquer l'écran."
 
 msgid "Duplicate the timer."
 msgstr "Dupliquer le chronomètre."
@@ -2499,12 +2532,6 @@ msgstr "Exporter l'évènement au format SCE"
 
 msgid "Export players"
 msgstr "Exporter les joueur·euses"
-
-msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
-msgstr "Exporter le tournoi au format TRF(bx) (usage : génération d'appariements)."
-
-msgid "Export the tournament to the TRF16 format."
-msgstr "Exporter le tournoi au format TRF16."
 
 msgid "Export tournament"
 msgstr "Exporter le tournoi"
@@ -3144,6 +3171,9 @@ msgstr "Période invalide :"
 msgid "Invalid rows"
 msgstr "Lignes invalides"
 
+msgid "Invalid time control format [{time_control}]."
+msgstr "Format de cadence invalide [{time_control}]."
+
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
 msgstr "Type invalide [{type}] pour le champ [{field}] (attendu : {expected})."
 
@@ -3313,6 +3343,9 @@ msgid "Limit {operator} {count} half-point"
 msgid_plural "Limit {operator} {count} half-points"
 msgstr[0] "Limite {operator} {count} demi-point"
 msgstr[1] "Limite {operator} {count} demi-points"
+
+msgid "Line not recognized: {line}"
+msgstr "Ligne non reconnue : {line}"
 
 msgid "Link to a board not involving the player."
 msgstr "Lien à un échiquier n'impliquant pas le·la joueur·euse."
@@ -3682,6 +3715,12 @@ msgstr "Arbitre National"
 
 msgid "National championship final (1.4.3a)"
 msgstr "Finale du championnat national (1.4.3a)"
+
+msgid "National rating support for other federations than the event federation {federation}"
+msgstr "Support du classement national pour les fédérations autres que la fédération de l'évènement {federation}"
+
+msgid "National rating support for unknown player [{player}]."
+msgstr "Support du classement national pour le·la joueur·euse inconnu·e [{player}]."
 
 msgid "National team championship (1.4.3b)"
 msgstr "Championnat national par équipes (1.4.3b)"
@@ -5768,17 +5807,17 @@ msgstr "Système"
 msgid "TRF file"
 msgstr "Fichier TRF"
 
-msgid "TRF(bx)"
-msgstr "TRF(bx)"
-
-msgid "TRF16"
-msgstr "TRF16"
+msgid "TRF26"
+msgstr "TRF26"
 
 msgid "Tajikistan"
 msgstr "Tadjikistan"
 
 msgid "Tanzania"
 msgstr "Tanzanie"
+
+msgid "Teams"
+msgstr "Équipes"
 
 msgid "Teams with fewer players are considered &quot;incomplete&quot;."
 msgstr "Les équipes avec moins de joueur·euses sont considérées « incomplètes »."
@@ -5883,6 +5922,9 @@ msgstr "Le premier tournoi de l'écran."
 
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
+
+msgid "The following features won't be imported:"
+msgstr "Les fonctionnalités suivant ne seront pas importées :"
 
 msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
 msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
@@ -7023,8 +7065,14 @@ msgstr "Maître Internationale Femme"
 msgid "XLSX format"
 msgstr "Format XLSX"
 
+msgid "XX fields"
+msgstr "Champs XX"
+
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "O"
+
+msgid "YY/MM/DD"
+msgstr "AA/MM/JJ"
 
 msgid "YYYY or {date_format}"
 msgstr "AAAA ou {date_format}"
@@ -7419,6 +7467,9 @@ msgstr "{age_limit}+"
 msgid "{board_number} {color}"
 msgstr "{board_number} {color}"
 
+msgid "{code} Unknown tie-breaks: {tie_breaks}"
+msgstr "{code} Départages inconnus : {tie_breaks}"
+
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
 msgstr[0] "{count} club représenté"
@@ -7520,3 +7571,4 @@ msgstr "½ - ½ (NC)"
 
 msgid "← Back to IT1 certificate"
 msgstr "← Retour au certificat IT1"
+

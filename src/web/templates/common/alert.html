@@ -11,12 +11,14 @@
         </div>
     {% endblock %}
     {% block remove_button %}
-        <button
-            type="button"
-            class="btn-close position-static p-0"
-            style="margin: 4px 0 0 0;"
-            data-bs-dismiss="alert"
-            aria-label="{{ _('Hide') }}"
-        ></button>
+        {% if not hide_remove_button %}
+            <button
+                type="button"
+                class="btn-close position-static p-0"
+                style="margin: 4px 0 0 0;"
+                data-bs-dismiss="alert"
+                aria-label="{{ _('Hide') }}"
+            ></button>
+        {% endif %}
     {% endblock %}
 </div>

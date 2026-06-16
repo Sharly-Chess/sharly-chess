@@ -2292,6 +2292,8 @@ class PlayerAdminController(BaseEventAdminController):
         redirect_url = request.app.route_reverse(
             f'admin-event-{tab}-tab', event_uniq_id=event.uniq_id
         )
+        if tab == 'pairings':
+            redirect_url += '?skip_ratings_warning=1'
         return Redirect(redirect_url, status_code=303)
 
     @get(

@@ -16,6 +16,10 @@ from data.pairings.settings import (
     BergerNumbersSetting,
 )
 from data.player import TournamentPlayer
+from plugins.pairing_acceleration.pairing_settings import (
+    AccelerationRule,
+    AccelerationGroup,
+)
 from utils.entity import IdentifiableEntity
 
 if TYPE_CHECKING:
@@ -82,6 +86,12 @@ class PairingVariation(IdentifiableEntity, ABC):
             ]
         )
 
+    @property
+    @abstractmethod
+    def trf_encoded_type(self) -> str:
+        """Encoded type of the variation in TRF26.
+        See https://handbook.fide.com/files/handbook/ETT26.pdf for all the types."""
+
     # -------------------------------------------------------------------------
     # Acceleration
     # -------------------------------------------------------------------------
@@ -123,6 +133,29 @@ class PairingVariation(IdentifiableEntity, ABC):
         Return True if the settings have been updated."""
         return False
 
+    def get_tournament_accelerated_rules(
+        self, rounds: int, draw_points: float, win_points: float
+    ) -> list[AccelerationRule]:
+        """Get the acceleration rules of a tournament."""
+        return []
+
+    @property
+    def include_accelerated_rules_in_trf(self) -> bool:
+        """Defines if accelerated rules should be included in the TRF export."""
+        return False
+
+    @classmethod
+    def get_acceleration_group_max_numbers(cls, tournament: 'Tournament') -> list[int]:
+        """Returns the list of the last pairing numbers of each acceleration group."""
+        return []
+
+    @classmethod
+    def get_acceleration_number_range_by_group(
+        cls, tournament: 'Tournament'
+    ) -> dict[AccelerationGroup, tuple[int, int]]:
+        """Returns the list of the last pairing numbers of each acceleration group."""
+        return {}
+
 
 class SwissVariation(PairingVariation, ABC):
     """Variations of the swiss system are accelerations of the pairings.
@@ -140,6 +173,10 @@ class SwissVariation(PairingVariation, ABC):
     @property
     def settings(self) -> list[PairingSetting]:
         return [ColorSeedSetting()]
+
+    @property
+    def trf_encoded_type(self) -> str:
+        return 'FIDE_DUTCH_2026'
 
 
 class RoundRobinVariation(PairingVariation, ABC):
@@ -177,6 +214,10 @@ class BergerRoundRobinVariation(RoundRobinVariation):
     def engine(self) -> PairingEngine:
         return BergerPairingEngine()
 
+    @property
+    def trf_encoded_type(self) -> str:
+        return 'FIDE_ROUNDROBIN'
+
 
 class DoubleBergerRoundRobinVariation(RoundRobinVariation):
     @staticmethod
@@ -194,3 +235,7 @@ class DoubleBergerRoundRobinVariation(RoundRobinVariation):
     @property
     def engine(self) -> PairingEngine:
         return DoubleBergerPairingEngine()
+
+    @property
+    def trf_encoded_type(self) -> str:
+        return 'FIDE_DOUBLEROUNDROBIN'
