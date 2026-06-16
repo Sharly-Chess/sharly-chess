@@ -1,21 +1,17 @@
 import filecmp
 import json
+import os
+import platform
 import re
 import shutil
+import subprocess
 import sys
 import tempfile
 import zipfile
-import os
-import platform
-import subprocess
 from json import JSONDecodeError
 from pathlib import Path
 from time import time
 from typing import Any
-
-from packaging.version import Version
-from requests import Response, get
-from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
 from antivirus.control import search_missing_files
 from common import (
@@ -41,7 +37,10 @@ from data.loader import EventLoader
 from database.sqlite.config.config_database import ConfigDatabase
 from database.sqlite.event.event_database import EventDatabase
 from database.sqlite.local_source_database import LocalSourceDatabaseManager
+from packaging.version import Version
 from plugins.manager import plugin_manager
+from requests import Response, get
+from requests.exceptions import RequestException  # pylint: disable=redefined-builtin
 
 logger = get_logger()
 
@@ -476,7 +475,7 @@ class Engine:
                     valid_asset_names: list[str] = []
                     match sys.platform:
                         case 'win32':
-                            valid_asset_names: list[str] = [
+                            valid_asset_names = [
                                 f'sharly-chess-{version}-windows.zip',
                                 f'sharly-chess-{version}.zip',
                             ]

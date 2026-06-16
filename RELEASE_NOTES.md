@@ -3,6 +3,7 @@
 ## General
 
 - Improved detection of internet connectivity (4.2.0)
+- Detect antivirus software and suggest adding exclusions on _Sharly Chess_ folder (???)
 
 ## Tournaments
 

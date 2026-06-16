@@ -42,6 +42,7 @@ try:
     if sys.platform == 'win32':
         # Windows marks the downloaded files as unsure and blocks their usage.
         # On the first run, all the files of the distribution are unmarked.
+
         base_dir: Path = Path(sys.argv[0]).resolve().parent
         tracer: Path = base_dir / 'tmp' / '.unblock_files'
         if tracer.exists():
@@ -126,6 +127,7 @@ try:
     from gui.server_gui_toga import SharlyChessServerToga
     from web.server_engine import ServerEngine
     from antivirus.control import search_missing_files
+    from antivirus.detect import detect_antivirus_programs
 
     logger = get_logger()
 
@@ -238,6 +240,7 @@ try:
     if debug:
         # set the log level to DEBUG before loading the logging configuration of the application
         set_logging_config(console_log_level=logging.DEBUG)
+
     if error_message := search_missing_files(folder=Path(), delete_control_file=True):
         import tkinter
         from tkinter import messagebox
@@ -247,6 +250,7 @@ try:
         messagebox.showerror('Sharly Chess startup error', error_message)
         root.destroy()
         sys.exit(1)
+    detect_antivirus_programs()
     # Check if GUI mode should be used
     if not TEST_ENV and not (DEVEL_ENV and args.cli):
         # Pre-check GTK availability on Linux before trying to create the app
