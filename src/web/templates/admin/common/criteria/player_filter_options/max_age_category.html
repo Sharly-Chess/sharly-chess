@@ -1,0 +1,10 @@
+<div class="col-12">
+    {{ admin_macros.select_input(
+        name=option.id,
+        label=_('%(string)s:', string=_('Max. age category')),
+        tooltip_text=_('Filter out players of higher categories.'),
+        select_options=option.age_select_options(admin_tournament),
+        search_disabled=true,
+        data=data, errors=errors
+    ) }}
+</div>

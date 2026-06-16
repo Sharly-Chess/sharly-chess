@@ -133,6 +133,14 @@ msgstr[0] "%(num)d colonne inconnue (ignorée)"
 msgstr[1] "%(num)d colonnes inconnues (ignorées)"
 
 #, python-format
+msgid "%(pts)s score-points above the Rp threshold"
+msgstr "%(pts)s points marqués au-dessus du seuil Rp"
+
+#, python-format
+msgid "%(pts)s score-points below the Rp threshold"
+msgstr "%(pts)s points marqués en dessous du seuil Rp"
+
+#, python-format
 msgid "%(rating)s (%(rating_type)s)"
 msgstr "%(rating)s (%(rating_type)s)"
 
@@ -209,6 +217,10 @@ msgid "(%(num)d screen)"
 msgid_plural "(%(num)d screens)"
 msgstr[0] "(%(num)d écran)"
 msgstr[1] "(%(num)d écrans)"
+
+#, python-format
+msgid "(%(total)s total, %(own)s from own federation)"
+msgstr "(%(total)s au total, %(own)s de sa propre fédération)"
 
 msgid "(*) Knowing the list of the currents events is needed to select the events before authenticating."
 msgstr "(*) Connaître la liste des évènements en cours est nécessaire pour sélection les évènements avant de s'authentifier."
@@ -292,8 +304,133 @@ msgstr "0 - ½ (NC)"
 msgid "1 - 0 (U)"
 msgstr "1 - 0 (NC)"
 
+msgid "1.4.1 — Games played"
+msgstr "1.4.1 — Parties jouées"
+
+msgid "1.4.1c (default — forfeit excluded)"
+msgstr "1.4.1c (par défaut — forfait exclu)"
+
+msgid "1.4.1e/f: ignored by the subset search to satisfy this norm."
+msgstr "1.4.1e/f : ignorée par la recherche de sous-ensembles pour satisfaire cette norme."
+
+#, python-format
+msgid "1.4.1e/f: round(s) %(rounds)s ignored"
+msgstr "1.4.1e/f : ronde(s) %(rounds)s ignorée(s)"
+
+msgid "1.4.2a: opponent has no FIDE federation (NON) — not counted."
+msgstr "1.4.2a : adversaire sans fédération FIDE (NON) — non compté·e."
+
+msgid "1.4.2b: Round-Robin only — unrated opponent scored zero against every FIDE-rated opponent."
+msgstr "1.4.2b : Toutes-Rondes uniquement — adversaire non classé·e ayant marqué zéro contre tous ses adversaires classé·es FIDE."
+
+msgid "1.4.2c (forfeit as LOSS)"
+msgstr "1.4.2c (forfait compté comme DÉFAITE)"
+
+msgid "1.4.2c applied"
+msgstr "1.4.2c appliqué"
+
+msgid "1.4.2c interpretation — side by side"
+msgstr "Interprétation 1.4.2c — comparaison"
+
+msgid "1.4.2c was applied: the last-round opponent forfeit was included in the mix and scored as a played loss. The default 1.4.1c interpretation (forfeit excluded) is shown alongside for comparison."
+msgstr "1.4.2c a été appliqué : le forfait de l'adversaire à la dernière ronde a été inclus dans le panel et compté comme une défaite jouée. L'interprétation 1.4.1c par défaut (forfait exclu) est affichée à côté pour comparaison."
+
+msgid "1.4.2c: last-round opponent forfeit, counted as a played LOSS."
+msgstr "1.4.2c : forfait de l'adversaire à la dernière ronde, compté comme une DÉFAITE jouée."
+
+msgid "1.4.3 exemption:"
+msgstr "Exemption 1.4.3 :"
+
+msgid "1.4.3 — At least 2 foreign federations"
+msgstr "1.4.3 — Au moins 2 fédérations étrangères"
+
+#, python-format
+msgid "1.4.3%(code)s applied"
+msgstr "1.4.3%(code)s appliqué"
+
+msgid "1.4.3d applied"
+msgstr "1.4.3d appliqué"
+
+msgid "1.4.3d per-round breakdown"
+msgstr "Détail 1.4.3d par ronde"
+
+msgid "1.4.3d requires every round to have at least 20 FIDE-rated foreigners (excl. FID), from at least 3 federations, of whom at least 10 hold GM/IM/WGM/WIM. "
+msgstr "1.4.3d exige que chaque ronde compte au moins 20 joueur·euses étranger·es classé·es FIDE (hors FID), réparti·es dans au moins 3 fédérations, dont au moins 10 portent les titres GM/IM/WGM/WIM."
+
+msgid "1.4.4 — One-federation cap"
+msgstr "1.4.4 — Plafond pour une fédération"
+
+msgid "1.4.4 — Own federation cap"
+msgstr "1.4.4 — Plafond pour la fédération du·de la candidat·e"
+
+msgid "1.4.5a — Title holders (CM/WCM excluded)"
+msgstr "1.4.5a — Joueur·euses titré·es (CM/WCM exclu·es)"
+
+msgid "1.4.5b-e — Required titles"
+msgstr "1.4.5b-e — Titres requis"
+
+msgid "1.4.6 floor applied"
+msgstr "Plancher 1.4.6 appliqué"
+
+msgid "1.4.6 — Minimum opponent rating"
+msgstr "1.4.6 — Classement minimal des adversaires"
+
+msgid "1.4.8 — Performance rating (Rp)"
+msgstr "1.4.8 — Performance (Rp)"
+
+msgid "1.4.8a — Minimum opponent average (Ra)"
+msgstr "1.4.8a — Moyenne minimale des adversaires (Ra)"
+
+msgid "1.4.8b — Minimum score"
+msgstr "1.4.8b — Score minimal"
+
+msgid "1.5.6a met"
+msgstr "1.5.6a respecté"
+
+msgid "1.5.6a per-round breakdown"
+msgstr "Détail 1.5.6a par ronde"
+
+msgid "1.5.6a requires every round to have at least 40 FIDE-rated players whose top-40 average is at least 2000."
+msgstr "1.5.6a exige que chaque ronde compte au moins 40 joueur·euses classé·es FIDE dont la moyenne des 40 meilleur·es est d'au moins 2000."
+
+#, python-format
+msgid "1/3 of %(n)s opponents, min 3"
+msgstr "1/3 de %(n)s adversaires, min 3"
+
+msgid "162 Point system"
+msgstr "162 Système de points"
+
+msgid "172 Starting rank method {method}"
+msgstr "172 méthode de classement initial {method}"
+
+msgid "192 Encoded type {type} (default: {default})"
+msgstr "192 Type {type} (défaut : {default})"
+
 msgid "1st day of the month"
 msgstr "1er jour du mois"
+
+#, python-format
+msgid "2/3 of %(n)s opponents"
+msgstr "2/3 de %(n)s adversaires"
+
+msgid "202 and 212 tie-breaks (212 used)"
+msgstr "202 et 212 Départages (212 utilisé)"
+
+msgid "212 Tie-breaks with PTS not used first"
+msgstr "212 Départages avec PTS pas en première position"
+
+msgid "250 Accelerated rounds"
+msgstr "250 Rondes accélérées"
+
+msgid "260 Prohibited pairings"
+msgstr "260 Appariements interdits"
+
+msgid "299 Abnormal assignment points"
+msgstr "299 Attribution de points anormaux"
+
+#, python-format
+msgid "3/5 of %(n)s opponents"
+msgstr "3/5 de %(n)s adversaires"
 
 msgid "400 - Bad request"
 msgstr "400 - Mauvaise requête"
@@ -406,6 +543,9 @@ msgstr "Une valeur est attendue."
 msgid "ADM"
 msgstr "ADM"
 
+msgid "APPLIED"
+msgstr "APPLIQUÉ"
+
 msgid "Absent"
 msgstr "Absent·e"
 
@@ -420,7 +560,7 @@ msgid "Absolute"
 msgstr "Préférence absolue"
 
 msgid "Accepted characters are letters, numbers, underscore (_) and minus (-)."
-msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
+msgstr "Les caractères acceptés sont les lettres, chiffres, souligné (« tiret du 8 ») et moins (« tiret du 6 »)."
 
 msgid "Access control"
 msgstr "Contrôle d'accès"
@@ -463,6 +603,9 @@ msgstr "Actions"
 
 msgid "Actions / Access levels"
 msgstr "Actions / Niveaux d'accès"
+
+msgid "Actual"
+msgstr "Réel"
 
 msgid "Add"
 msgstr "Ajouter"
@@ -647,6 +790,9 @@ msgstr "Autorise l'appariement des joueur·euses, en utilisant un moteur d'appar
 msgid "An error occurred. Consult the logs for more details."
 msgstr "Une erreur s'est produite. Consultez les logs pour plus de détails."
 
+msgid "An integer greater than 1 is expected."
+msgstr "Un entier supérieur à 1 est attendu."
+
 msgid "An unexpected error occurred while reading the CSV file. Consult the logs for more details."
 msgstr "Une erreur inattendue s'est produite lors de la lecture du fichier CSV. Consultez les logs pour plus de détails."
 
@@ -667,6 +813,9 @@ msgstr "Antigua-et-Barbuda"
 
 msgid "Any number of devices can be controlled by the same display controller."
 msgstr "Un pilote d’afficheurs peut contrôler l’affichage de plusieurs afficheurs."
+
+msgid "Applicant's federation"
+msgstr "Fédération du·de la candidat·e"
 
 msgid "Application"
 msgstr "Application"
@@ -728,6 +877,9 @@ msgstr "Attribuer un écran au pilote."
 msgid "Assign to a display controller."
 msgstr "Attribuer à un pilote d'écran."
 
+msgid "At least a minimum or a maximum category must be defined."
+msgstr "Au moins une catégorie minimale ou catégorie maximale doit être définie."
+
 msgid "At least a minimum or a maximum rating must be defined."
 msgstr "Au moins un Elo minimum ou un Elo maximum doit être défini."
 
@@ -767,8 +919,18 @@ msgstr "Créer automatiquement les horaires à partir des horaires des rondes d'
 msgid "Average"
 msgstr "Moyenne"
 
+msgid "Average (Ra), rounded per 1.4.7:"
+msgstr "Moyenne (Ra), arrondie selon 1.4.7 :"
+
+#, python-format
+msgid "Average age: %(years)s"
+msgstr "Âge moyen : %(years)s"
+
 msgid "Average of opponents Buchholz"
 msgstr "Moyenne du Buchholz des adversaires"
+
+msgid "Average opponent rating (Ra)"
+msgstr "Classement moyen des adversaires (Ra)"
 
 msgid "Average perfect performance of opponents"
 msgstr "Moyenne des performances parfaites des adversaires"
@@ -790,6 +952,9 @@ msgstr "N"
 
 msgid "B *** BLACK COLOR FOR PLACE CARDS"
 msgstr "N"
+
+msgid "BB fields"
+msgstr "Champs BB"
 
 msgid "BLACK PLAYER"
 msgstr "JOUEUR·EUSE NOIRS"
@@ -1036,6 +1201,9 @@ msgstr "Fichier CSV"
 
 msgid "CSV format"
 msgstr "Format CSV"
+
+msgid "Calculation details — read-only audit view, hidden when printed."
+msgstr "Détail du calcul — vue d'audit en lecture seule, masquée à l'impression."
 
 msgid "Cambodia"
 msgstr "Cambodge"
@@ -1312,6 +1480,9 @@ msgstr "Appariements complémentaires générés avec succès !"
 msgid "Complementary prize"
 msgstr "Prix complémentaire"
 
+msgid "Complete Team"
+msgstr "Équipe complète"
+
 msgid "Configuration *** WITH_SHORTCUT_INDICATION"
 msgstr "<u>C</u>onfiguration"
 
@@ -1383,6 +1554,15 @@ msgstr "Côte d'Ivoire"
 
 msgid "Could not connect to data source [{data_source}]."
 msgstr "Impossible de se connecter à la source de données [{data_source}]."
+
+msgid "Count"
+msgstr "Nombre"
+
+msgid "Counted"
+msgstr "Compté"
+
+msgid "Counted toward the norm."
+msgstr "Compté pour la norme."
 
 msgid "Create"
 msgstr "Créer"
@@ -1555,6 +1735,9 @@ msgstr "Ronde en cours"
 #, python-format
 msgid "Current round: %(round)d"
 msgstr "Ronde courante : %(round)d"
+
+msgid "Current title:"
+msgstr "Titre actuel :"
 
 msgid "Currently displaying rotator [{name}]"
 msgstr "Affiche actuellement l'écran rotatif [{name}]"
@@ -1749,6 +1932,9 @@ msgstr "Supprimer l'écran rotatif."
 
 msgid "Delete the screen family."
 msgstr "Supprimer la famille d'écrans."
+
+msgid "Delete the screen."
+msgstr "Supprimer l'écran."
 
 msgid "Delete the timer."
 msgstr "Supprimer le chronomètre."
@@ -1971,6 +2157,9 @@ msgstr "Dupliquer l'écran rotatif."
 msgid "Duplicate the screen family."
 msgstr "Dupliquer la famille d'écrans."
 
+msgid "Duplicate the screen."
+msgstr "Dupliquer l'écran."
+
 msgid "Duplicate the timer."
 msgstr "Dupliquer le chronomètre."
 
@@ -2088,6 +2277,9 @@ msgstr "Ex. : pierre.dupont@chess.com"
 msgid "EXEMPT"
 msgstr "EXEMPT·E"
 
+msgid "EXEMPT (1.4.3d)"
+msgstr "EXEMPTÉ (1.4.3d)"
+
 #, python-format
 msgid "EXEMPT (already received at round #%(round)d)"
 msgstr "EXEMPT·E (déjà reçu à la ronde n°%(round)d)"
@@ -2097,6 +2289,9 @@ msgstr "Chaque groupe doit contenir une ou plusieurs catégories (par exemple :
 
 msgid "Each player can only be awarded one prize per bracket."
 msgstr "Chaque joueur·euse ne peut se voir attribuer qu'un prix par groupe."
+
+msgid "Each row represents one norm achieved by a player. The IT1 certificate for each norm is generated separately via the per-player Norm Report."
+msgstr "Chaque ligne représente une norme réalisée par un·e joueur·euse. Le certificat IT1 pour chaque norme se génère séparément via le Rapport de normes par joueur·euse."
 
 msgid "Ecuador"
 msgstr "Équateur"
@@ -2347,12 +2542,6 @@ msgstr "Exporter l'évènement au format SCE"
 msgid "Export players"
 msgstr "Exporter les joueur·euses"
 
-msgid "Export the tournament to the TRF(bx) format (usage: pairings generation)."
-msgstr "Exporter le tournoi au format TRF(bx) (usage : génération d'appariements)."
-
-msgid "Export the tournament to the TRF16 format."
-msgstr "Exporter le tournoi au format TRF16."
-
 msgid "Export tournament"
 msgstr "Exporter le tournoi"
 
@@ -2361,6 +2550,9 @@ msgstr "F"
 
 msgid "FA *** SHORT NAME FOR FIDE Arbiter"
 msgstr "AF"
+
+msgid "FAIL"
+msgstr "ÉCHEC"
 
 msgid "FIDE"
 msgstr "FIDE"
@@ -2394,6 +2586,9 @@ msgstr "Recommendation FIDE (2019)"
 
 msgid "FIDE recommendation - Unrated (2019)"
 msgstr "Recommendation FIDE - Non classé·es (2019)"
+
+msgid "FIDE-rated present"
+msgstr "Joueur·euses classé·es FIDE présent·es"
 
 msgid "FM *** SHORT NAME FOR Fide Master"
 msgstr "MF"
@@ -2437,11 +2632,17 @@ msgstr "Fev"
 msgid "February"
 msgstr "Février"
 
+msgid "Fed"
+msgstr "Féd."
+
 msgid "Fed. *** FEDERATION COLUMN HEADER"
 msgstr "Féd."
 
 msgid "Federation"
 msgstr "Fédération"
+
+msgid "Federation distribution (counted opponents)"
+msgstr "Répartition par fédération (adversaires compté·es)"
 
 msgid "Federation plugins"
 msgstr "Plug-ins de fédération"
@@ -2469,6 +2670,12 @@ msgstr "Fichier"
 
 msgid "File has invalid suffix [{suffix}] (expected: {expected})."
 msgstr "L'extension du fichier [{suffix}] est invalide (attendue : {expected})."
+
+msgid "Filter out players of higher categories."
+msgstr "Exclure les joueur·euses des catégories supérieures."
+
+msgid "Filter out players of lower categories."
+msgstr "Exclure les joueur·euses des catégories inférieures."
 
 msgid "Filter out players with a greater rating."
 msgstr "Exclure les joueur·euses ayant un Elo plus élevé."
@@ -2516,6 +2723,9 @@ msgstr "Échiquiers fixes :"
 msgid "Floats"
 msgstr "Flotteurs"
 
+msgid "Floor applied to"
+msgstr "Plancher appliqué à"
+
 msgid "Foldable (mirrored top)"
 msgstr "Miroir (recto-verso)"
 
@@ -2535,11 +2745,20 @@ msgstr "Fore"
 msgid "Fore Buchholz"
 msgstr "Fore Buchholz"
 
+msgid "Forecast considers 1.4.1c (PAB exception), 1.4.1e/f (ignore games), 1.4.2c (last-round opponent forfeit) and 1.4.3d (Swiss exemption)."
+msgstr "La prévision prend en compte 1.4.1c (exemption), 1.4.1e/f (parties ignorées), 1.4.2c (forfait adverse en dernière ronde) et 1.4.3d (dérogation Suisse)."
+
+msgid "Foreigners"
+msgstr "Étrangers"
+
 msgid "Forfeit Loss"
 msgstr "Défaite par forfait"
 
 msgid "Forfeit Win"
 msgstr "Victoire par forfait"
+
+msgid "Forfeit win against a no-show — not counted as a played game."
+msgstr "Gain par forfait contre un·e adversaire absent·e — non compté comme une partie jouée."
 
 msgid "Forfeited games are always considered as played in Round-Robin tournaments."
 msgstr "Les parties gagnées ou perdues par forfait sont toujours considérées comme jouées dans les tournois Toutes-Rondes."
@@ -2823,11 +3042,8 @@ msgstr "Dans le tournoi"
 msgid "Include IDs and passwords for uploading results"
 msgstr "Inclure les identifiants et mots de passe nécessaires à la mise en ligne des résultats"
 
-msgid "Include greater categories"
-msgstr "Inclure les catégories supérieures"
-
-msgid "Include lower categories"
-msgstr "Inclure les catégories inférieures"
+msgid "Include incomplete teams"
+msgstr "Inclure les équipes incomplètes"
 
 msgid "Include non-monetary prizes"
 msgstr "Inclure les prix non-monétaires"
@@ -2844,6 +3060,9 @@ msgstr "Inclure les données privées des joueur·euses (mél, tél, etc.)"
 msgid "Includes all other access levels and grants full access to the application. This access level is granted only when accessing Sharly Chess from the device it is running on (not from another device on the network)."
 msgstr "Inclut tous les autres rôles et donne un accès complet à l'application ; ce niveau d'accès est donné seulement en accédant à Sharly Chess sur l'ordinateur sur lequel est lancé le serveur (à aucun autre appareil du réseau)."
 
+msgid "Incomplete Team"
+msgstr "Équipe incomplète"
+
 msgid "Incorrect installation, exiting."
 msgstr "Installation incorrecte, abandon."
 
@@ -2852,6 +3071,12 @@ msgstr "Incrément (sec) :"
 
 msgid "India"
 msgstr "Inde"
+
+msgid "Individual ranking"
+msgstr "Classement individuel"
+
+msgid "Individual team ranking"
+msgstr "Classement individuel par équipe"
 
 msgid "Indonesia"
 msgstr "Indonésie"
@@ -2955,6 +3180,9 @@ msgstr "Période invalide :"
 msgid "Invalid rows"
 msgstr "Lignes invalides"
 
+msgid "Invalid time control format [{time_control}]."
+msgstr "Format de cadence invalide [{time_control}]."
+
 msgid "Invalid type [{type}] for field [{field}] (expected: {expected})."
 msgstr "Type invalide [{type}] pour le champ [{field}] (attendu : {expected})."
 
@@ -2984,6 +3212,9 @@ msgstr "Israël"
 
 msgid "It is highly recommended to set at least one tie-break."
 msgstr "Il est fortement recommandé de définir au moins un départage."
+
+msgid "It is not possible to return players on the last round."
+msgstr "Il n'est pas possible de faire revenir des joueur·euses lors de la dernière ronde."
 
 msgid "Italy"
 msgstr "Italie"
@@ -3121,6 +3352,9 @@ msgid "Limit {operator} {count} half-point"
 msgid_plural "Limit {operator} {count} half-points"
 msgstr[0] "Limite {operator} {count} demi-point"
 msgstr[1] "Limite {operator} {count} demi-points"
+
+msgid "Line not recognized: {line}"
+msgstr "Ligne non reconnue : {line}"
 
 msgid "Link to a board not involving the player."
 msgstr "Lien à un échiquier n'impliquant pas le·la joueur·euse."
@@ -3288,6 +3522,15 @@ msgstr "Nombre max : %(num)d"
 msgid "Max number: unlimited"
 msgstr "Nombre max : illimité"
 
+msgid "Max. age category"
+msgstr "Catégorie d'âge max."
+
+msgid "Max. teams per club:"
+msgstr "Max. d'équipes par club :"
+
+msgid "Max. teams per federation:"
+msgstr "Max. d'équipes par fédération :"
+
 msgid "Maximum age of the results:"
 msgstr "Âge maximum des résultats :"
 
@@ -3345,6 +3588,12 @@ msgstr "Mexique"
 msgid "Min *** MINIMUM"
 msgstr "Min"
 
+msgid "Min. age category"
+msgstr "Catégorie d'âge min."
+
+msgid "Min:"
+msgstr "Min :"
+
 msgid "Minimum category is expected to be lower or equal to the maximum category."
 msgstr "La catégorie minimale doit être inférieure or égale à la catégorie maximale."
 
@@ -3357,11 +3606,20 @@ msgstr "Elo minimum"
 msgid "Minimum rating is expected to be lower than the maximum rating."
 msgstr "Le classement minimal doit être inférieur au classement maximal."
 
+msgid "Minimum score to clear the Rp threshold"
+msgstr "Score minimal pour franchir le seuil Rp"
+
+msgid "Missing men"
+msgstr "Hommes manquants"
+
 msgid "Missing required column [{column}]."
 msgstr "Colonne obligatoire [{column}] manquante."
 
 msgid "Missing required field [{field}]."
 msgstr "Champ requis manquant [{field}]."
+
+msgid "Missing women"
+msgstr "Femmes manquantes"
 
 msgid "Mo *** MONDAY"
 msgstr "Lu"
@@ -3427,8 +3685,17 @@ msgstr "N"
 msgid "N *** THE LETTER TO ANSWER NO"
 msgstr "N"
 
+msgid "N/A"
+msgstr "S/O"
+
 msgid "NA *** SHORT NAME FOR National Arbiter"
 msgstr "AN"
+
+msgid "NORM ACHIEVED"
+msgstr "NORME OBTENUE"
+
+msgid "NOT ACHIEVED"
+msgstr "NON OBTENUE"
 
 msgid "Name"
 msgstr "Nom"
@@ -3455,8 +3722,23 @@ msgstr "National"
 msgid "National Arbiter"
 msgstr "Arbitre National"
 
+msgid "National championship final (1.4.3a)"
+msgstr "Finale du championnat national (1.4.3a)"
+
+msgid "National rating support for other federations than the event federation {federation}"
+msgstr "Support du classement national pour les fédérations autres que la fédération de l'évènement {federation}"
+
+msgid "National rating support for unknown player [{player}]."
+msgstr "Support du classement national pour le·la joueur·euse inconnu·e [{player}]."
+
+msgid "National team championship (1.4.3b)"
+msgstr "Championnat national par équipes (1.4.3b)"
+
 msgid "Nauru"
 msgstr "Nauru"
+
+msgid "Needs"
+msgstr "Requis"
 
 msgid "Neither screen nor rotator currently assigned"
 msgstr "Pas d'écran ni d'écran rotatif utilisé actuellement"
@@ -3578,6 +3860,9 @@ msgstr "Aucun évènement."
 msgid "No families to add."
 msgstr "Pas de famille à ajouter."
 
+msgid "No floor needed"
+msgstr "Aucun plancher nécessaire"
+
 msgid "No games against FIDE rated opponents."
 msgstr "Aucune partie contre des adversaires classés FIDE."
 
@@ -3605,6 +3890,12 @@ msgstr "Aucun réseau détecté, utilisez le bouton Actualiser après connexion.
 msgid "No new hours to create from tournament [{name}] (all rounds are already covered)."
 msgstr "Aucun nouvel horaire à créer depuis le tournoi [{name}] (toutes les rondes sont déjà couvertes)."
 
+msgid "No norm is reachable for this player. The IT1 certificate is the right place to inspect the player."
+msgstr "Aucune norme n'est accessible pour ce·tte joueur·euse. Le certificat IT1 est l'endroit approprié pour consulter ce·tte joueur·euse."
+
+msgid "No opponent paired this round."
+msgstr "Aucun·e adversaire apparié·e à cette ronde."
+
 msgid "No organiser"
 msgstr "Aucun organisateur·ice"
 
@@ -3625,6 +3916,9 @@ msgstr "Aucune permission définie."
 
 msgid "No permissions."
 msgstr "Aucune permission."
+
+msgid "No player is in contention for a title norm in round {round}."
+msgstr "Aucun·e joueur·euse ne peut prétendre à une norme à la ronde {round}."
 
 msgid "No players"
 msgstr "Aucun·e joueur·euse"
@@ -3704,6 +3998,9 @@ msgstr "Aucun départage."
 msgid "No timers"
 msgstr "Aucun chronomètre"
 
+msgid "No title norm has been achieved in this tournament."
+msgstr "Aucune norme de titre n'a été réalisée dans ce tournoi."
+
 msgid "No tournaments"
 msgstr "Aucun tournoi"
 
@@ -3734,8 +4031,21 @@ msgstr "Aucun"
 msgid "None *** FEDERATION"
 msgstr "Aucune"
 
+msgid "Norm"
+msgstr "Norme"
+
+msgid "Norm Calculation Details"
+msgstr "Détail du calcul de la norme"
+
+#, python-format
+msgid "Norm Calculation Details — %(norm)s"
+msgstr "Détail du calcul de la norme — %(norm)s"
+
 msgid "Norm Report"
 msgstr "Rapport de norme"
+
+msgid "Norm(s) Achieved"
+msgstr "Norme(s) réalisée(s)"
 
 msgid "North Macedonia"
 msgstr "Macédoine du Nord"
@@ -3761,8 +4071,14 @@ msgstr "Non-apparié·e pour cette ronde"
 msgid "Not specified"
 msgstr "Non-spécifié"
 
+msgid "Note"
+msgstr "Remarque"
+
 msgid "Note: norms are computed based only on <em>completed</em> games."
 msgstr "Note : les normes ne sont calculées qu'à partir des parties <em>terminées</em>."
+
+msgid "Notes"
+msgstr "Notes"
 
 msgid "Notification"
 msgstr "Notification"
@@ -3785,6 +4101,9 @@ msgstr "Numéro (double-face, tournoi au dos)"
 msgid "Number (tournament on front)"
 msgstr "Numéro (tournoi devant)"
 
+msgid "Number of W/M per team:"
+msgstr "Nombre de F/H par équipe :"
+
 #, python-format
 msgid "Number of byes: %(byes)d (maximum: %(max_byes)d)"
 msgstr "Nombre de byes : %(byes)d (maximum : %(max_byes)d)"
@@ -3802,6 +4121,9 @@ msgstr "Le nombre de demi-points au-dessus ou en dessous des 50 %% de points re
 
 msgid "Number of players"
 msgstr "Nombre de joueur·euses"
+
+msgid "Number of players per team:"
+msgstr "Nombre de joueur·euses par équipe :"
 
 #, python-format
 msgid "Number of players: %(num)d"
@@ -3881,9 +4203,6 @@ msgstr "Seul·es les utilisateur·ices autorisé·es peuvent voir les écrans ro
 msgid "Only current and future events that have been declared as <b>public</b> by the administrator are visible via the network."
 msgstr "Seuls les événements actuels et à venir déclarés comme <b>publics</b> par l’administrateur·ice sont visibles via le réseau."
 
-msgid "Only one age category is expected with options including other categories."
-msgstr "Une seule catégorie d'age est attendue avec les options incluant d'autres catégories."
-
 msgid "Only required for users that need to connect to the server."
 msgstr "Uniquement requis pour les utilisateur·ices devant se connecter au serveur."
 
@@ -3892,6 +4211,9 @@ msgstr "Seule l'année de naissance est nécessaire pour la plupart des tournois
 
 msgid "Open Admin Interface"
 msgstr "Ouvrir l'interface d'administration"
+
+msgid "Open IT1 certificate for this norm"
+msgstr "Ouvrir le certificat IT1 pour cette norme"
 
 msgid "Open documentation"
 msgstr "Ouvrir la documentation"
@@ -3905,11 +4227,17 @@ msgstr "Ouverture de la page d'accueil [{url}] dans un navigateur…"
 msgid "Opponent"
 msgstr "Adversaire"
 
+msgid "Opponent (R{round})"
+msgstr "Adversaire (R{round})"
+
 msgid "Opponent Elo"
 msgstr "Adversaire Elo"
 
 msgid "Opponent Elo [Pts]"
 msgstr "Adversaire Elo [Pts]"
+
+msgid "Opponent ratings (1.4.6 + 1.4.7)"
+msgstr "Classements des adversaires (1.4.6 + 1.4.7)"
 
 msgid "Opponent:"
 msgstr "Adversaire :"
@@ -3935,11 +4263,17 @@ msgstr "Organisez vos prix en groupes pour gérer leur attribution. Un·e joueur
 msgid "Origin: {template_origin}"
 msgstr "Origine : {template_origin}"
 
+msgid "Other missing players: {count}"
+msgstr "Autres joueur·euses manquant·es : {count}"
+
 msgid "Other players in this score group are not awarded prizes, as their share would be less than the minimum threshold."
 msgstr "Les autres joueur·euses de ce groupe de points n'entrent pas dans les prix (prix inférieur au seuil minimum)."
 
 msgid "Others"
 msgstr "Autres"
+
+msgid "Overall ranking"
+msgstr "Classement général"
 
 msgid "Overwrite"
 msgstr "Remplacement"
@@ -3958,6 +4292,9 @@ msgstr "il y a déjà un·e joueur·euse exempt·e"
 
 msgid "PAI"
 msgstr "APP"
+
+msgid "PASS"
+msgstr "RÉUSSITE"
 
 msgid "PENALTY"
 msgstr "PÉNALITÉ"
@@ -4033,6 +4370,9 @@ msgstr "Format d’appariement :"
 
 msgid "Pairing system"
 msgstr "Système d'appariements"
+
+msgid "Pairing-Allocated Bye / Half-Point Bye / Rest game — no opponent."
+msgstr "Exempt / Bye / Partie non jouée — aucun adversaire."
 
 msgid "Pairing-Allocated Bye assigned to player [{player}]."
 msgstr "Le·la joueur·euse [{player}] a été apparié·e exempt·e."
@@ -4110,11 +4450,26 @@ msgstr "Paiement"
 msgid "Pending"
 msgstr "À venir"
 
+msgid "Per-round audit"
+msgstr "Audit par ronde"
+
+msgid "Per-rule checks"
+msgstr "Vérifications par règle"
+
 msgid "Perfect tournament performance"
 msgstr "Performance parfaite"
 
+msgid "Performance bonus (dp), from 1.4.9 table"
+msgstr "Bonus de performance (dp), table 1.4.9"
+
 msgid "Performance indicators for round #{round}"
 msgstr "Indicateurs de performance pour la ronde n°{round}"
+
+msgid "Performance rating (Rp)"
+msgstr "Performance (Rp)"
+
+msgid "Performance rating (Rp) at this score"
+msgstr "Performance (Rp) à ce score"
 
 msgid "Period"
 msgstr "Période"
@@ -4151,6 +4506,12 @@ msgstr "Chevalets"
 
 msgid "Place card type:"
 msgstr "Type de chevalet :"
+
+msgid "Played"
+msgstr "Parties"
+
+msgid "Played games"
+msgstr "Parties jouées"
 
 msgid "Player"
 msgstr "Joueur·euse"
@@ -4562,6 +4923,9 @@ msgstr "Qatar"
 msgid "Quick-apply a tie-break set"
 msgstr "Appliquer un ensemble de départages"
 
+msgid "R"
+msgstr "R"
+
 #, python-format
 msgid "R %(round)d *** ROUND COLUMN HEADER"
 msgstr "R %(round)d"
@@ -4571,6 +4935,9 @@ msgstr "R {round}"
 
 msgid "RES"
 msgstr "RÉS"
+
+msgid "Ra"
+msgstr "Ra"
 
 msgid "Random"
 msgstr "Aléatoire"
@@ -4604,6 +4971,12 @@ msgstr "Classement après la ronde {round}"
 
 msgid "Ranking before the first round"
 msgstr "Classement avant la première ronde"
+
+msgid "Ranking by club after round #{round}"
+msgstr "Classement par club après la ronde n°{round}"
+
+msgid "Ranking by federation after round #{round}"
+msgstr "Classement par fédération après la ronde n°{round}"
 
 msgid "Ranking only"
 msgstr "Classement seulement"
@@ -4650,6 +5023,9 @@ msgstr "Classements"
 msgid "Ratings update"
 msgstr "Mise à jour des classements"
 
+msgid "Reason"
+msgstr "Raison"
+
 msgid "Received a Full-Point Bye for the next round"
 msgstr "Ont reçu un bye point entier pour la ronde à venir"
 
@@ -4676,6 +5052,9 @@ msgstr "Actualiser"
 
 msgid "Refresh this page."
 msgstr "Actualiser la page."
+
+msgid "Regular event"
+msgstr "Évènement régulier"
 
 msgid "Release {version} has been installed in [{folder}]."
 msgstr "La nouvelle version {version} a été installée dans [{folder}]."
@@ -4724,6 +5103,9 @@ msgstr "La requête à la base de données a échoué (délai expiré)."
 
 msgid "Request to the database failed."
 msgstr "La requête à la base de données a échoué."
+
+msgid "Required (1.4.8)"
+msgstr "Requis (1.4.8)"
 
 #, python-format
 msgid "Required by plugin <b>%(plugin)s</b>."
@@ -4785,7 +5167,7 @@ msgstr "Ré-essayer"
 
 #, python-format
 msgid "Return [%(player)s] to the tournament?"
-msgstr "Faire revenir [%(player)s] dans le tournoi ?"
+msgstr "Faire revenir [%(player)s] dans le tournoi ?"
 
 msgid "Return to the home page"
 msgstr "Retourner à la page d'accueil"
@@ -4882,14 +5264,14 @@ msgstr "Ronde n°{round}"
 msgid "Round %(round)d - Board %(board_number)d"
 msgstr "Ronde %(round)d – Echiquier %(board_number)d"
 
+msgid "Round meets 1.5.6a?"
+msgstr "La ronde satisfait 1.5.6a ?"
+
 msgid "Round number or text"
 msgstr "Numéro de ronde ou texte"
 
 msgid "Round performance indicators"
 msgstr "Indicateurs de performance pour la ronde"
-
-msgid "Round skipped"
-msgstr "Absent·e"
 
 #, python-format
 msgid "Round {} started for %%s"
@@ -4917,8 +5299,18 @@ msgstr "Rondes désigné comme jouant"
 msgid "Rows per screen:"
 msgstr "Lignes par écran :"
 
+msgid "Rp"
+msgstr "Rp"
+
 msgid "Rpd *** RAPID RATING ACRONYM"
 msgstr "Rpd"
+
+msgid "Rule"
+msgstr "Règle"
+
+#, python-format
+msgid "Rule 1.4.6: the lowest-rated opponent is raised to the norm floor (%(r)s) before computing the average."
+msgstr "Règle 1.4.6 : le classement du·de la plus faible adversaire est relevé au plancher de la norme (%(r)s) avant le calcul de la moyenne."
 
 msgid "Rules used were only effective until march 2026 (legacy)."
 msgstr "Les règles utilisées n'étaient effectives que jusqu'en mars 2026 (obsolètes)."
@@ -5424,17 +5816,23 @@ msgstr "Système"
 msgid "TRF file"
 msgstr "Fichier TRF"
 
-msgid "TRF(bx)"
-msgstr "TRF(bx)"
-
-msgid "TRF16"
-msgstr "TRF16"
+msgid "TRF26"
+msgstr "TRF26"
 
 msgid "Tajikistan"
 msgstr "Tadjikistan"
 
 msgid "Tanzania"
 msgstr "Tanzanie"
+
+msgid "Teams"
+msgstr "Équipes"
+
+msgid "Teams with fewer players are considered &quot;incomplete&quot;."
+msgstr "Les équipes avec moins de joueur·euses sont considérées « incomplètes »."
+
+msgid "Teams with fewer women/men are considered &quot;incomplete&quot;."
+msgstr "Les équipes avec moins de femmes/hommes sont considérées « incomplètes »."
 
 msgid "Template:"
 msgstr "Modèle :"
@@ -5534,6 +5932,12 @@ msgstr "Le premier tournoi de l'écran."
 msgid "The following categories will also be deleted:"
 msgstr "Les catégories suivantes vont aussi être supprimées :"
 
+msgid "The following features won't be imported:"
+msgstr "Les fonctionnalités suivant ne seront pas importées :"
+
+msgid "The forecast becomes available once the last round is paired. Once the tournament finishes, this report will list every achieved norm."
+msgstr "Les prévisions sont disponibles une fois la dernière ronde appariée. À la fin du tournoi, ce rapport listera toutes les normes réalisées."
+
 msgid "The least and the most significant values are removed."
 msgid_plural "The {count} least and the {count} most significant values are removed."
 msgstr[0] "La valeur la moins élevée et la valeur la plus élevée sont retirées."
@@ -5556,6 +5960,9 @@ msgstr "La catégorie générale est ouverte à tou·tes les joueur·euses."
 #, python-format
 msgid "The maximum age of the results, in minutes (by default %(minutes)d minutes)."
 msgstr "L'âge maximal des résultats affichés sur l'écran, en minutes (par défaut %(minutes)d minutes)."
+
+msgid "The maximum category must be at most equal to the minimum category."
+msgstr "La catégorie maximale doit être au moins égale à la catégorie minimale."
 
 msgid "The maximum number of byes a player can pretend to."
 msgstr "Le nombre maximum de byes auquel un·e joueur·euse peut prétendre."
@@ -5759,6 +6166,9 @@ msgstr "Les valeurs doivent être supérieures au seuil de partage de la catégo
 msgid "The values to take into account when computing the tie-break."
 msgstr "Les valeurs à prendre en compte lors du calcul du départage."
 
+msgid "The way to form teams."
+msgstr "La manière de constituer les équipes."
+
 msgid "The way to share the prizes between players with the same points."
 msgstr "La manière de partages les prix entre les joueurs ayant le même nombre de points."
 
@@ -5820,7 +6230,7 @@ msgid "This document is not available for unpaired tournaments."
 msgstr "Ce document n'est pas disponible pour les tournois non-appariés."
 
 msgid "This document is only available for Round-Robin tournaments."
-msgstr "Ce document est seulement disponible pour les tournois toutes rondes."
+msgstr "Ce document est seulement disponible pour les tournois Toutes-Rondes."
 
 msgid "This document is only available for standard time control tournaments."
 msgstr "Ce document est disponible uniquement pour les tournois en cadence classique."
@@ -5933,14 +6343,17 @@ msgstr "Ce départage n'est pas recommandé avec des joueur·euses estimé·es (
 msgid "This tie-break uses a legacy way to compute values."
 msgstr "Ce départage utilise une manière obsolète de calculer les valeurs."
 
-msgid "This tournament has no titled players."
-msgstr "Ce tournoi n'a pas de joueur·euses titré·es."
+msgid "This tournament has no norm-eligible titled players."
+msgstr "Ce tournoi ne comporte aucun joueur titré éligible pour les calculs de normes."
 
 msgid "This unique ID is already used."
 msgstr "Cet identifiant unique est déjà utilisé."
 
 msgid "Three points for a win"
 msgstr "Victoire à 3 points"
+
+msgid "Threshold"
+msgstr "Seuil"
 
 #, python-format
 msgid "Tie-break [%(tie_break)s] successfully created!"
@@ -6020,6 +6433,21 @@ msgstr "Chronomètres : %(num)d"
 msgid "Timor-Leste"
 msgstr "Timor-Leste"
 
+msgid "Title"
+msgstr "Titre"
+
+msgid "Title Norms"
+msgstr "Normes de titre"
+
+msgid "Title Norms Achieved"
+msgstr "Normes de titre réalisées"
+
+msgid "Title Norms Forecast — Round {round}"
+msgstr "Prévision des normes de titre — Ronde {round}"
+
+msgid "Titled (M-titles)"
+msgstr "Titrés (titres M)"
+
 msgid "Titled players"
 msgstr "Joueur·euses titré·es"
 
@@ -6051,6 +6479,9 @@ msgstr "Trop de byes pour le joueur [{player_name}]."
 msgid "Too much information to display on a single projector?"
 msgstr "Trop d’informations à afficher sur un seul projecteur ?"
 
+msgid "Top-40 average"
+msgstr "Moyenne des 40 meilleur·es"
+
 msgid "Total"
 msgstr "Total"
 
@@ -6062,6 +6493,9 @@ msgstr "Tournoi"
 
 msgid "Tournament *** TOURNAMENT FOR PLAYERS COLUMNS"
 msgstr "Tournoi"
+
+msgid "Tournament Norms Summary"
+msgstr "Résumé des normes du tournoi"
 
 msgid "Tournament [{tournament_id}] not found."
 msgstr "Le tournoi [{tournament_id}] n'existe pas."
@@ -6158,6 +6592,9 @@ msgstr "Turkménistan"
 
 msgid "Type"
 msgstr "Type"
+
+msgid "Type of teams:"
+msgstr "Type d'équipes :"
 
 msgid "Type:"
 msgstr "Type :"
@@ -6304,6 +6741,9 @@ msgstr "Non apparié·es : caché·es"
 msgid "Unpairing a published round can be very inconvenient for players. Additionally, you will lose any manual adjustments."
 msgstr "Désapparier une ronde publiée peut être très désagréable pour les joueur·euses. De plus, vous perdrez tout ajustement manuel."
 
+msgid "Unplayed (no result recorded)."
+msgstr "Non jouée (aucun résultat enregistré)."
+
 msgid "Unrated *** PLURAL"
 msgstr "Non-classé·es"
 
@@ -6439,6 +6879,12 @@ msgstr "Variante"
 msgid "Venezuela"
 msgstr "Venezuela"
 
+msgid "Verdict"
+msgstr "Verdict"
+
+msgid "Verdict:"
+msgstr "Verdict :"
+
 msgid "Version: {version}"
 msgstr "Version : {version}"
 
@@ -6453,6 +6899,10 @@ msgstr "Voir l'onglet Joueur·euses"
 
 msgid "View Prizes tab"
 msgstr "Voir l'onglet Prix"
+
+#, python-format
+msgid "View calculation details for %(norm)s →"
+msgstr "Voir le détail du calcul pour %(norm)s →"
 
 msgid "View event cards details"
 msgstr "Voir les détails des cartes d'évènement"
@@ -6561,6 +7011,9 @@ msgstr "Une semaine"
 msgid "Welcome to Sharly Chess!"
 msgstr "Bienvenue dans Sharly Chess !"
 
+msgid "What the player needs in round {round} to achieve each norm. \"any OTB result\" means a played win, draw or loss all work — but the round must still be played (a no-show becomes a forfeit-loss and disqualifies the norm). \"norm secured — round optional\" means the norm is already locked in from earlier rounds (1.4.1e); the round-{round} game does not affect it."
+msgstr "Ce dont le·la joueur·euse a besoin à la ronde {round} pour réaliser chaque norme. « tout résultat sur l'échiquier » signifie qu'une victoire, nulle ou défaite jouée conviennent — mais la ronde doit néanmoins être jouée (une absence devient une défaite par forfait et invalide la norme). « norme acquise — ronde optionnelle » signifie que la norme est déjà acquise grâce aux rondes précédentes (1.4.1e) ; la partie de la ronde {round} ne l'affecte pas."
+
 msgid "When defined, the alert message is displayed in a scrolling banner at the bottom of the screens."
 msgstr "Lorsqu'il est défini, le message d'alerte est utilisé par défaut dans le bandeau défilant en bas des écrans."
 
@@ -6621,8 +7074,14 @@ msgstr "Maître Internationale Femme"
 msgid "XLSX format"
 msgstr "Format XLSX"
 
+msgid "XX fields"
+msgstr "Champs XX"
+
 msgid "Y *** THE LETTER TO ANSWER YES"
 msgstr "O"
+
+msgid "YY/MM/DD"
+msgstr "AA/MM/JJ"
 
 msgid "YYYY or {date_format}"
 msgstr "AAAA ou {date_format}"
@@ -6783,6 +7242,9 @@ msgstr "Le·la joueur·euse [{player}] a été marqué·e forfait."
 msgid "Zimbabwe"
 msgstr "Zimbabwe"
 
+msgid "Zonal or sub-zonal (1.4.3c)"
+msgstr "Tournoi zonal ou sous-zonal (1.4.3c)"
+
 msgid "[{value}] is not a positive value."
 msgstr "[{value}] n'est pas une valeur positive."
 
@@ -6797,6 +7259,9 @@ msgstr "tou·tes les joueur·euses"
 
 msgid "all the tournaments"
 msgstr "tous les tournois"
+
+msgid "any OTB result"
+msgstr "tout résultat sur l'échiquier"
 
 msgid "boards from #{first} to #{last}"
 msgstr "échiquiers du n°{first} au n°{last}"
@@ -6828,6 +7293,9 @@ msgstr "effacer les filtres"
 msgid "default"
 msgstr "défaut"
 
+msgid "draw or win"
+msgstr "nulle ou victoire"
+
 msgid "either the duration or the increment must be greater than 0."
 msgstr "la durée ou l’incrément doit être supérieur à 0."
 
@@ -6843,11 +7311,20 @@ msgstr "évènement"
 msgid "example"
 msgstr "exemple"
 
+msgid "federations other than the applicant's"
+msgstr "fédérations autres que celle du·de la candidat·e"
+
 msgid "forfeits played"
 msgstr "forfaits joués"
 
+msgid "from"
+msgstr "de"
+
 msgid "from move 1"
 msgstr "depuis le 1er coup"
+
+msgid "incomplete *** INCOMPLETE TEAM"
+msgstr "incomplète"
 
 msgid "last"
 msgstr "dernier"
@@ -6869,6 +7346,17 @@ msgstr "mon-ecran"
 
 msgid "no"
 msgstr "non"
+
+msgid "norm secured — round optional"
+msgstr "norme acquise — ronde optionnelle"
+
+#, python-format
+msgid "of %(n)s opponents"
+msgstr "de %(n)s adversaires"
+
+#, python-format
+msgid "of %(n)s played games"
+msgstr "de %(n)s parties jouées"
 
 msgid "player already received a PAB in a previous round"
 msgstr "le·la joueur·euse a déjà été exempt·e lors d'une ronde précédente"
@@ -6893,6 +7381,10 @@ msgstr "joueur·euses du début au n°{last}, sur {parts} écrans"
 
 msgid "players on {parts} screens"
 msgstr "joueur·euses sur {parts} écrans"
+
+#, python-format
+msgid "raised to %(r)s"
+msgstr "porté à %(r)s"
 
 msgid "ranking from #{first} to #{last}"
 msgstr "classement de {first} à {last}"
@@ -6968,6 +7460,13 @@ msgstr "valeur : {value}"
 msgid "vs %(player)s"
 msgstr "contre %(player)s"
 
+#, python-format
+msgid "was %(r)s"
+msgstr "était %(r)s"
+
+msgid "win required"
+msgstr "victoire requise"
+
 msgid "yes"
 msgstr "oui"
 
@@ -6976,6 +7475,9 @@ msgstr "{age_limit}+"
 
 msgid "{board_number} {color}"
 msgstr "{board_number} {color}"
+
+msgid "{code} Unknown tie-breaks: {tie_breaks}"
+msgstr "{code} Départages inconnus : {tie_breaks}"
 
 msgid "{count} club represented"
 msgid_plural "{count} clubs represented"
@@ -7075,4 +7577,7 @@ msgstr "½ - 0 (NC)"
 
 msgid "½ - ½ (U)"
 msgstr "½ - ½ (NC)"
+
+msgid "← Back to IT1 certificate"
+msgstr "← Retour au certificat IT1"
 

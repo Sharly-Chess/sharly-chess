@@ -24,7 +24,7 @@ from plugins.ffe.papi_mappers import (
     PapiPlayerRatingType,
     PapiPlayerFFELicence,
 )
-from plugins.ffe.utils import FfePlayerPluginData
+from plugins.ffe.utils import FfePlayerPluginData, PlayerFFELicence
 from utils.enum import TournamentRating, PlayerRatingType
 
 logger: Logger = get_logger()
@@ -158,18 +158,6 @@ class FFESqlServer(SqlServer):
     RATING_TYPE_CONDITION: str = f'joueur.Fide IN ({", ".join(map(lambda s: f"'{s}'", [PlayerRatingType.ESTIMATED, PlayerRatingType.NATIONAL, PlayerRatingType.FIDE]))})'
 
     @staticmethod
-    def string_matches_ffe_licence_number(string: str) -> str | None:
-        # TODO: fix magic number
-        return (
-            string
-            if string.isalnum()
-            and len(string) == 6
-            and string[0].isalpha()
-            and string[1:].isdecimal()
-            else None
-        )
-
-    @staticmethod
     def string_matches_fide_id(string: str) -> int | None:
         return int(string) if string.isdecimal() else None
 
@@ -188,10 +176,8 @@ class FFESqlServer(SqlServer):
         # NOTE(Amaras): Quicken search if the string looks like a complete FFE
         # licence number, so that it skips a more complex request
         string = string.upper().strip()
-        if ffe_licence_number := self.string_matches_ffe_licence_number(string):
-            return await self.get_stored_players_by_licence_numbers(
-                [ffe_licence_number]
-            )
+        if PlayerFFELicence.validate(string):
+            return await self.get_stored_players_by_licence_numbers([string])
         if fide_id := self.string_matches_fide_id(string):
             return await self.get_players_by_fide_id([fide_id])
         tokens: list[str] = [

@@ -1,0 +1,8 @@
+<div class="col-12">
+    {{ admin_macros.number_input(
+        name=option.id,
+        label=_('Number of players per team:'),
+        tooltip_text=_('Teams with fewer players are considered &quot;incomplete&quot;.'),
+        data=data, errors=errors
+    ) }}
+</div>

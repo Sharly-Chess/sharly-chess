@@ -1,5 +1,5 @@
 <div
-    class="modal-dialog modal-dialog-scrollable"
+    class="modal-dialog {% if admin_timer.timer_hours %}modal-dialog-scrollable{% endif %}"
     style="--bs-modal-width: min(90vw, 500px);"
 >
     <div class="modal-content">
@@ -30,7 +30,7 @@
                     {% set tournaments_with_schedule = admin_event.tournaments | selectattr('has_schedule') | list %}
                     {% if tournaments_with_schedule %}
                         <div class="mt-2 text-center">
-                            <div class="btn-group dropup">
+                            <div class="btn-group dropdown">
                                 <button
                                     type="button"
                                     class="btn btn-outline-primary dropdown-toggle text-nowrap"
@@ -41,7 +41,7 @@
                                     <i class="bi-calendar2-check-fill pe-1"></i>
                                     {{ _('Create hours from tournament') }}
                                 </button>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu dropdown-menu-end">
                                     {% for t in tournaments_with_schedule %}
                                         <li>
                                             <button

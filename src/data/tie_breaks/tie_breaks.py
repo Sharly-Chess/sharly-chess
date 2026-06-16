@@ -74,6 +74,17 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
         return '/'.join(acronym_parts)
 
     @property
+    def is_fide(self) -> bool:
+        """Defines if the tie-break is an official FIDE tie-break or not."""
+        return True
+
+    @property
+    def trf_acronym(self) -> str:
+        """Acromnym or the tie-break in TRF26. Tie-breaks not defined in the
+        FIDE handbook should be prefixed with `OTHER_`."""
+        return f'{"" if self.is_fide else "OTHER_"}{self.acronym}'
+
+    @property
     @abstractmethod
     def base_help_text(self) -> str:
         """Short explanation of how the tie-break values are computed."""
@@ -250,6 +261,11 @@ class TieBreak(OptionHandler[TieBreakOption], ABC):
     @cached_property
     def is_legacy(self) -> bool:
         return any(option.is_legacy and option.value is True for option in self.options)
+
+    @property
+    def is_used_for_team_ranking(self) -> bool:
+        # Override this property for tie-breaks that should not be used for team ranking.
+        return True
 
 
 class PlayerRecordTieBreak(TieBreak, ABC):
@@ -586,6 +602,10 @@ class KashdanTieBreak(PlayerRecordTieBreak):
         return 'KA'
 
     @property
+    def is_fide(self) -> bool:
+        return False
+
+    @property
     def base_help_text(self) -> str:
         return _(
             'Grant 4 tie-break points for a win, 2 for a draw, '
@@ -916,6 +936,10 @@ class SumOfBuchholzTieBreak(BuchholzTieBreak):
     @property
     def base_acronym(self) -> str:
         return 'SOB'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
 
     @property
     def base_help_text(self) -> str:
@@ -1944,6 +1968,10 @@ class DirectEncounterTieBreak(TieBreak):
             group_points + Result.WIN.points(point_values) * not_played,
         )
 
+    @property
+    def is_used_for_team_ranking(self) -> bool:
+        return False
+
 
 class ManualTieBreak(TieBreak):
     """Used for play-off's, etc"""
@@ -1959,6 +1987,10 @@ class ManualTieBreak(TieBreak):
     @property
     def base_acronym(self) -> str:
         return 'MAN'
+
+    @property
+    def is_fide(self) -> bool:
+        return False
 
     @property
     def base_help_text(self) -> str:
@@ -1985,3 +2017,7 @@ class ManualTieBreak(TieBreak):
         if not player.tournament.finished:
             return 0
         return player.stored_tournament_player.manual_tiebreak or 0
+
+    @property
+    def is_used_for_team_ranking(self) -> bool:
+        return False

@@ -1,6 +1,6 @@
 """A file grouping all the "utility" enum"""
 
-from enum import Enum, StrEnum, IntEnum, auto
+from enum import Enum, StrEnum, IntEnum, auto, nonmember
 from math import ceil
 from typing import Iterator, Self, TYPE_CHECKING
 
@@ -132,16 +132,14 @@ class Result(IntEnum):
         If the closest result's value is not given, will default to the default
         value, as defined by FIDE rules (1-0.5-0)
         """
-        if not isinstance(values, dict):
+        if not values:
             return self.point_value
-        value: float | None = values.get(self, None)
+        value = values.get(self)
         if value is not None:
             return value
         match self:
             case Result.DOUBLE_FORFEIT:
-                value = (
-                    value or values.get(Result.FORFEIT_LOSS) or values.get(Result.LOSS)
-                )
+                value = values.get(Result.FORFEIT_LOSS, values.get(Result.LOSS))
             case (
                 Result.FORFEIT_LOSS
                 | Result.UNRATED_LOSS
@@ -152,21 +150,21 @@ class Result(IntEnum):
                 | Result.PENALTY_LD
                 | Result.UNRATED_PENALTY_LD
             ):
-                value = value or values.get(Result.LOSS)
+                value = values.get(Result.LOSS)
             case (
                 Result.UNRATED_DRAW
                 | Result.HALF_POINT_BYE
                 | Result.PENALTY_DL
                 | Result.UNRATED_PENALTY_DL
             ):
-                value = value or values.get(Result.DRAW)
+                value = values.get(Result.DRAW)
             case (
                 Result.FULL_POINT_BYE
                 | Result.FORFEIT_WIN
                 | Result.UNRATED_WIN
                 | Result.PAIRING_ALLOCATED_BYE
             ):
-                value = value or values.get(Result.WIN)
+                value = values.get(Result.WIN)
         return value or self.point_value
 
     @property
@@ -234,7 +232,7 @@ class Result(IntEnum):
 
     @property
     def to_trf(self) -> str:
-        from data.input_output.trf_mappers import TrfResult
+        from data.input_output.trf.trf_mappers import TrfResult
 
         return TrfResult.get_outer_value(self)
 
@@ -856,6 +854,8 @@ class TitleNorm(Enum):
                 return PlayerTitle.INTERNATIONAL_MASTER
             case TitleNorm.GM:
                 return PlayerTitle.GRANDMASTER
+            case _:
+                raise AssertionError(f'unhandled TitleNorm: {self!r}')
 
     def satisfies_gender_requirement(self, gender: PlayerGender) -> bool:
         match self:
@@ -923,12 +923,18 @@ class TitleNorm(Enum):
         return ceil(rounds / 2)
 
     @staticmethod
-    def minimum_required_titles(tournament: 'Tournament') -> int:
+    def minimum_required_titles(tournament: 'Tournament', played_games: int) -> int:
+        """1.4.5b–e: "at least 1/3 of the opponents, minimum 3" (or 1/2 in DRR).
+
+        Threshold scales with the size of the opponent mix (`played_games`),
+        not the tournament's nominal round count — see 1.4.1c which says
+        the mix requirements apply to the actually-played opponents.
+        """
         from data.pairings.variations import DoubleBergerRoundRobinVariation
 
         if tournament.pairing_variation == DoubleBergerRoundRobinVariation():
-            return ceil(tournament.rounds / 2)  # 1.4.5.f
-        return max(ceil(tournament.rounds / 3), 3)
+            return ceil(played_games / 2)  # 1.4.5.f
+        return max(ceil(played_games / 3), 3)
 
     @staticmethod
     def maximum_of_own_federation(rounds: int) -> int:
@@ -938,9 +944,11 @@ class TitleNorm(Enum):
     def maximum_of_one_federation(rounds: int) -> int:
         return (2 * rounds) // 3
 
-    @property
-    def title_holders(self) -> tuple[PlayerTitle, ...]:
-        return (
+    # 1.4.5a — titles that count as "title-holders" for the 50% rule.
+    # CM and WCM are explicitly excluded by the spec. Same set for every norm.
+    # `nonmember` stops Enum's metaclass from turning the tuple into a member.
+    TITLE_HOLDERS = nonmember(
+        (
             PlayerTitle.WOMAN_FIDE_MASTER,
             PlayerTitle.FIDE_MASTER,
             PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
@@ -948,6 +956,19 @@ class TitleNorm(Enum):
             PlayerTitle.WOMAN_GRANDMASTER,
             PlayerTitle.GRANDMASTER,
         )
+    )
+
+    # 1.4.3d — the Swiss-exception's "titleholder" subset excludes FM/WFM.
+    # Spec wording: "at least 10 GM/IM/WGM/WIM titleholders" (narrower than
+    # 1.4.5a's title-holder set).
+    MASTER_TITLES = nonmember(
+        (
+            PlayerTitle.WOMAN_INTERNATIONAL_MASTER,
+            PlayerTitle.INTERNATIONAL_MASTER,
+            PlayerTitle.WOMAN_GRANDMASTER,
+            PlayerTitle.GRANDMASTER,
+        )
+    )
 
     @property
     def required_titles(self) -> tuple[PlayerTitle, ...]:
@@ -1302,11 +1323,6 @@ class NeedsUpload(Enum):
                 return False
             case _:
                 raise ValueError(f'Unknown value: {self}')
-
-
-class TrfType(StrEnum):
-    TRF_16 = 'trf-16'
-    TRF_BX = 'trf-bx'
 
 
 class FormAction(StrEnum):

@@ -21,13 +21,17 @@ class Migration(BaseMigration):
                     'max': options.get('MAX_RATING'),
                 }
             case 'AGE':
-                categories = options.get('AGE_CATEGORIES', [])
-                if len(categories) != 1:
-                    return new_id, None
+                categories = sorted(
+                    options.get('AGE_CATEGORIES', []),
+                    key=lambda cat: (
+                        cat.startswith('O'),
+                        int(cat[1:]),
+                    ),
+                )
                 new_id = 'age_category'
                 value = {
                     'min': categories[0],
-                    'max': categories[0],
+                    'max': categories[-1],
                 }
                 if options.get('AGE_LOWER'):
                     value['min'] = None

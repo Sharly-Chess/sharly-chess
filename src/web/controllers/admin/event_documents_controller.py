@@ -107,6 +107,7 @@ class EventDocumentsController(BaseEventAdminController):
             ]
             for tournament in allowed_tournaments
         }
+
         template_context = {
             'modal': 'print',
             'client': web_context.client,

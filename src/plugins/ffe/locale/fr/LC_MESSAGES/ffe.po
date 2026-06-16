@@ -51,6 +51,9 @@ msgstr "Mise en ligne automatique activée"
 msgid "B - Leisure *** FFE licence"
 msgstr "B - Loisir"
 
+msgid "Back"
+msgstr "Retour"
+
 msgid "Black pairings are supposed to have an opponent"
 msgstr "Les appariements avec les Noirs sont censés avoir un·e adversaire."
 
@@ -121,9 +124,6 @@ msgstr "Exclure : {values}"
 
 msgid "Expired FFE licence"
 msgstr "Licence FFE expirée"
-
-msgid "Export the tournament to the PAPI format."
-msgstr "Exporter le tournoi au format PAPI."
 
 msgid "FFE"
 msgstr "FFE"
@@ -201,6 +201,9 @@ msgstr "Échec"
 msgid "Fees link not found, check that a tournament has already been sent and that the tournament has not been archived on the FFE website."
 msgstr "Lien de facture non trouvé, vérifier qu'un tournoi a été envoyé et que le tournoi n'a pas été archivé sur le site web FFE."
 
+msgid "File"
+msgstr "Fichier"
+
 msgid "For a tournament with {rounds} rounds, the least and the most significant values are removed."
 msgid_plural "For a tournament with {rounds} rounds, the {count} least and the {count} most significant values are removed."
 msgstr[0] "Pour un tournoi de {rounds} rondes, la valeur la moins significative et la valeur la plus significative sont retirées."
@@ -274,6 +277,9 @@ msgstr "Ligue :"
 msgid "Leagues"
 msgstr "Ligues"
 
+msgid "Leagues (FFE)"
+msgstr "Ligues (FFE)"
+
 msgid "Lic. *** LICENCE COLUMN HEADER"
 msgstr "Lic."
 
@@ -291,6 +297,9 @@ msgstr "Licence :"
 
 msgid "Make visible on FFE site"
 msgstr "Rendre visible sur le site de la FFE"
+
+msgid "Max. teams per league:"
+msgstr "Max. d'équipes par ligue :"
 
 msgid "Median"
 msgstr "Médian"
@@ -334,9 +343,6 @@ msgstr "Aucune"
 msgid "Not configured"
 msgstr "Non configuré"
 
-msgid "OK"
-msgstr "OK"
-
 msgid "Ongoing"
 msgstr "En cours"
 
@@ -360,6 +366,12 @@ msgstr "En attente"
 
 msgid "Players:"
 msgstr "Joueur·euses :"
+
+msgid "Please select a file."
+msgstr "Veuillez sélectionner un fichier."
+
+msgid "Ranking by league after round #{round}"
+msgstr "Classement par ligue après la ronde n°{round}"
 
 msgid "Replace the player to update this field."
 msgstr "Remplacez le·la joueur·euse pour mettre à jour ce champ."
@@ -516,6 +528,12 @@ msgstr "Mettre en ligne automatiquement toutes les %(delay)d minutes."
 
 msgid "Upload rules"
 msgstr "Mettre en ligne le règlement"
+
+msgid "Upload the FFE rules"
+msgstr "Mise en ligne du règlement FFE"
+
+msgid "Upload the rules in PDF format to the FFE website for one or more tournaments."
+msgstr "Mettre en ligne le règlement au format PDF sur le site FFE pour un ou plusieurs tournois."
 
 msgid "Upload to the FFE site"
 msgstr "Mettre en ligne sur le site de la FFE"

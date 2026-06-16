@@ -29,11 +29,14 @@
                 hx-target="body"
                 hx-indicator="#please-wait"
             >
-                {% if errors.alert %}
-                    {% with type='error', message=errors.alert %}
-                        {% include '/common/alert.html' %}
-                    {% endwith %}
-                {% endif %}
+                <span id="alert-message">
+                    {% if errors.alert %}
+                        {% with type='error', message=errors.alert %}
+                            {% include '/common/alert.html' %}
+                        {% endwith %}
+                    {% endif %}
+                </span>
+
                 {% if admin_tournament %}
                     <h4>
                         {{ _('Tournament: %(tournament_name)s', tournament_name=admin_tournament.name) }}
@@ -56,7 +59,6 @@
                     <div class="mt-2">
                         {{ admin_macros.checkbox_input(
                             name='confirm_checkbox',
-                            label='',
                             placeholder=_(
                                 'I confirm that I want to overwrite the player data of this tournament.'
                             ),

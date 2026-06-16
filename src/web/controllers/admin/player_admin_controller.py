@@ -966,7 +966,7 @@ class PlayerAdminController(BaseEventAdminController):
             return None, errors
         tournament = event.tournaments_by_id[int(data['tournament_id'])]
         stored_player = cls._stored_player_from_data(data, tournament, player)
-        if not event.check_player_unicity(
+        if event.get_player_duplicate(
             stored_player, tournament, player.id if player else None
         ):
             errors['alert'] = (
@@ -1164,8 +1164,9 @@ class PlayerAdminController(BaseEventAdminController):
         web_context = PlayerAdminWebContext(request)
         event = web_context.get_admin_event()
         action = FormAction.CREATE
-        add_other = 'add_other' in data
-        SessionPlayersAddOtherActive(request).set(add_other)
+        add_other = WebContext.resolve_add_other(
+            data, SessionPlayersAddOtherActive(request)
+        )
 
         stored_player, errors = self._read_player_form_data(web_context, action, data)
         if not stored_player:
@@ -1304,9 +1305,8 @@ class PlayerAdminController(BaseEventAdminController):
                 ),
             )
         else:
-            event.delete_player(player.id)
+            event.delete_player(player)
             deleted_player_id = player.id
-            plugin_manager.hook_for_event(event, 'on_player_deleted')(player=player)
         return self._render_player_table_row(
             web_context, deleted_player_id=deleted_player_id
         )
@@ -2204,16 +2204,10 @@ class PlayerAdminController(BaseEventAdminController):
                     tournament=dst_tournament.name,
                 ),
             )
-        if plugin_error := (
-            plugin_manager.hook_for_event(
-                event, 'is_tournament_participation_possible'
-            )(
-                tournament=dst_tournament,
-                tournament_player=player.single_tournament_player,
-            )
-            or None
-        ):
-            raise ValueError(plugin_error)
+        plugin_manager.hook_for_event(event, 'validate_player_tournament_move')(
+            tournament=dst_tournament,
+            player=player.single_tournament_player,
+        )
 
     @get(
         path='/history-popover/{event_uniq_id:str}/{tournament_id:int}/{player_id:int}',
@@ -2298,6 +2292,8 @@ class PlayerAdminController(BaseEventAdminController):
         redirect_url = request.app.route_reverse(
             f'admin-event-{tab}-tab', event_uniq_id=event.uniq_id
         )
+        if tab == 'pairings':
+            redirect_url += '?skip_ratings_warning=1'
         return Redirect(redirect_url, status_code=303)
 
     @get(

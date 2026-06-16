@@ -9,6 +9,7 @@ from data.tie_breaks.cutters import NoCutTieBreakCutter, TieBreakCutter
 from utils.option import Option
 
 if TYPE_CHECKING:
+    from data.tie_breaks.managers import TieBreakCutterManager
     from web.utils import SelectOption
 
 
@@ -35,6 +36,11 @@ class TieBreakOption(Option, ABC):
         """Represents the variation in the tie-break acronym
         Example: BH/C1."""
 
+    @abstractmethod
+    def set_value_from_variation_acronym(self, acronym: str) -> bool:
+        """Set the value from a variation acronym if it matches it.
+        Returns True if the acronym matched the option."""
+
     @property
     @abstractmethod
     def variation_name(self) -> str:
@@ -53,6 +59,25 @@ class TieBreakOption(Option, ABC):
         return False
 
 
+class SilentTieBreakOption(TieBreakOption, ABC):
+    """Base class of options which are not displayed."""
+
+    @property
+    def variation_acronym(self) -> str:
+        return ''
+
+    def set_value_from_variation_acronym(self, acronym: str) -> bool:
+        return False
+
+    @property
+    def variation_name(self) -> str:
+        return ''
+
+    @property
+    def variation_help_text(self) -> str:
+        return ''
+
+
 class BaseCutterTieBreakOption(TieBreakOption, ABC):
     @property
     @abstractmethod
@@ -68,20 +93,30 @@ class BaseCutterTieBreakOption(TieBreakOption, ABC):
         return NoCutTieBreakCutter.static_id()
 
     @property
-    def cutter_options(self) -> dict[str, 'SelectOption']:
+    def cutter_manager(self) -> 'TieBreakCutterManager':
         from data.tie_breaks.managers import TieBreakCutterManager
+
+        return TieBreakCutterManager(self.include_median)
+
+    def set_value_from_variation_acronym(self, acronym: str) -> bool:
+        try:
+            self.value = self.cutter_manager.get_object(acronym).id
+            return True
+        except KeyError:
+            return False
+
+    @property
+    def cutter_options(self) -> dict[str, 'SelectOption']:
         from web.utils import SelectOption
 
         return {
             cutter.id: SelectOption(cutter.name, tooltip=cutter.help_text)
-            for cutter in TieBreakCutterManager(self.include_median).objects()
+            for cutter in self.cutter_manager.objects()
         }
 
     @cached_property
     def cutter(self) -> TieBreakCutter:
-        from data.tie_breaks.managers import TieBreakCutterManager
-
-        return TieBreakCutterManager(self.include_median).get_object(self.value)
+        return self.cutter_manager.get_object(self.value)
 
     def validate(self):
         super().validate()
@@ -148,6 +183,12 @@ class PlayedModifierTieBreakOption(TieBreakOption):
     def variation_acronym(self) -> str:
         return 'P'
 
+    def set_value_from_variation_acronym(self, acronym: str) -> bool:
+        if acronym == 'P':
+            self.value = True
+            return True
+        return False
+
     @property
     def variation_name(self) -> str:
         return _('forfeits played')
@@ -177,6 +218,12 @@ class ForeModifierTieBreakOption(TieBreakOption):
     @property
     def variation_acronym(self) -> str:
         return 'F'
+
+    def set_value_from_variation_acronym(self, acronym: str) -> bool:
+        if acronym == 'F':
+            self.value = True
+            return True
+        return False
 
     @property
     def variation_name(self) -> str:
@@ -213,7 +260,24 @@ class KoyaLimitTieBreakOption(TieBreakOption):
 
     @property
     def variation_acronym(self) -> str:
-        return f'L{self.value}'
+        return f'L{self.operator}{self.value}'
+
+    def set_value_from_variation_acronym(self, acronym: str) -> bool:
+        if len(acronym) != 3 or acronym[0] != 'L':
+            return False
+        operator = acronym[1]
+        if operator not in '+-':
+            return False
+        try:
+            value = int(acronym[2])
+            if not 0 < value <= self.MAX_VALUE:
+                return False
+            if operator == '-':
+                value = -value
+            self.value = value
+            return True
+        except ValueError:
+            return False
 
     @property
     def variation_name(self) -> str:
@@ -243,7 +307,7 @@ class KoyaLimitTieBreakOption(TieBreakOption):
             )
 
 
-class EstimatedRatingsTieBreakOption(TieBreakOption):
+class EstimatedRatingsTieBreakOption(SilentTieBreakOption):
     @staticmethod
     def static_id() -> str:
         return 'ESTIMATED_RATINGS'
@@ -251,18 +315,6 @@ class EstimatedRatingsTieBreakOption(TieBreakOption):
     @property
     def template_file_stem(self) -> str:
         return 'estimated_ratings'
-
-    @property
-    def variation_acronym(self) -> str:
-        return ''
-
-    @property
-    def variation_name(self) -> str:
-        return ''
-
-    @property
-    def variation_help_text(self) -> str:
-        return ''
 
     @property
     def type(self) -> type | UnionType:
@@ -290,6 +342,12 @@ class ReversedTieBreakOption(TieBreakOption):
     def variation_acronym(self) -> str:
         return 'R'
 
+    def set_value_from_variation_acronym(self, acronym: str) -> bool:
+        if acronym == 'R':
+            self.value = True
+            return True
+        return False
+
     @property
     def variation_name(self) -> str:
         return _('Reversed')
@@ -311,17 +369,13 @@ class ReversedTieBreakOption(TieBreakOption):
         return None
 
 
-class LegacyTieBreakOption(TieBreakOption, ABC):
+class LegacyTieBreakOption(SilentTieBreakOption, ABC):
     @property
     def template_file_stem(self) -> str:
         return ''
 
     @property
     def template_name(self) -> str:
-        return ''
-
-    @property
-    def variation_acronym(self) -> str:
         return ''
 
     @property

@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from data.columns.player_table import TournamentPlayerTableColumn
     from data.columns.players_tab import PlayersTabColumn
     from data.input_output import DataSource, TournamentExporter, TournamentImporter
+    from data.input_output.trf.trf_data import TrfNationalPlayer
     from data.pairings.variations import SwissVariation
     from data.player import (
         Player,
@@ -40,6 +41,7 @@ if TYPE_CHECKING:
         PrintOption,
         PlayerSplitter,
         QRCodeType,
+        IndividualTeamType,
     )
     from data.print_documents.place_cards.data import PlaceCardPlayer
     from data.criteria.player_filter_options import PlayerFilterOption
@@ -177,11 +179,30 @@ class AppHookSpecs:
     ) -> Optional['PlayerRatingAndType']:
         """Get the estimated rating of a player."""
 
+    @hookspec
+    def validate_player_tournament_move(
+        self, tournament: 'Tournament', player: 'TournamentPlayer'
+    ):
+        """Test if a player can be moved to a tournament.
+        Raises a translated ValueError if so."""
+
+    @hookspec
+    def augment_trf_national_player(
+        self, player: 'Player', trf_national_player: 'TrfNationalPlayer'
+    ):
+        """Augment a TRF national player from a player."""
+
+    @hookspec
+    def augment_stored_player_from_trf_national_player(
+        self,
+        stored_player: 'StoredPlayer',
+        trf_national_player: 'TrfNationalPlayer',
+    ):
+        """Augment a stored player from a TRF national player."""
+
     @hookspec(firstresult=True)
-    def is_tournament_participation_possible(
-        self, tournament: 'Tournament', tournament_player: 'TournamentPlayer'
-    ) -> str | None:
-        """Test if a player can participate in a tournament"""
+    def player_distribution_error_message(self, event: 'Event') -> str | None:
+        """Get an error message disabling the player distribution."""
 
     @hookspec
     def alter_players_tab_columns(self, columns: list['PlayersTabColumn']):
@@ -389,6 +410,12 @@ class AppHookSpecs:
         """Provide QR Code options"""
 
     @hookspec
+    def insert_print_individual_team_types(
+        self, individual_team_types: list[type['IndividualTeamType']]
+    ):
+        """Provide print team type options"""
+
+    @hookspec
     def get_extra_statistics_sections(
         self, document: 'PrintDocument', tournaments: list['Tournament']
     ) -> Iterable[ExtraStatisticsSection]:
@@ -413,6 +440,12 @@ class AppHookSpecs:
         self, system_sets: list['SystemTieBreakSet']
     ):
         """Provide extra system tie-break sets for the swiss pairing system."""
+
+    @hookspec
+    def add_tie_breaks_to_trf_acronym_mapping(
+        self, tie_break_by_acronym: dict[str, 'TieBreak']
+    ):
+        """AAdd tie-breaks whose base acronym does not necessarily match to a manual acronym mapping."""
 
     # ---------------------------------------------------------------------------------
     # Pairings

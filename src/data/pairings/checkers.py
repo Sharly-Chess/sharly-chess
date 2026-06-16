@@ -319,7 +319,7 @@ class BbpPairingsChecker(BbpPairings):
                 )
 
                 from data.input_output.tournament_importer_options import FileOption
-                from data.input_output.tournament_importers import TrfTournamentImporter
+                from data.input_output.trf.trf_importer import TrfTournamentImporter
                 from data.loader import EventLoader
 
                 event_loader = EventLoader()
@@ -327,9 +327,7 @@ class BbpPairingsChecker(BbpPairings):
                 EventDatabase(event_uniq_id).create()
                 event = EventLoader().load_event(event_uniq_id)
                 tournament_id = TrfTournamentImporter(
-                    [
-                        FileOption(trf_input_file_path),
-                    ]
+                    [FileOption(trf_input_file_path)]
                 ).load_tournament(event)
                 event = EventLoader().load_event(event_uniq_id)
                 tournament = event.tournaments_by_id[tournament_id]

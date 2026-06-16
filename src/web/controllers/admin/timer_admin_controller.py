@@ -700,7 +700,9 @@ class TimerAdminController(BaseEventAdminController):
         ],
     ) -> Template:
         web_context = TimerAdminWebContext(request, timer_id)
-        SessionTimersAddOtherActive(request).set('add_other' in data)
+        add_other = WebContext.resolve_add_other(
+            data, SessionTimersAddOtherActive(request)
+        )
         stored_timer_hour, errors = self._read_timer_hour_form_data(
             web_context, FormAction.CREATE, data
         )
@@ -714,7 +716,7 @@ class TimerAdminController(BaseEventAdminController):
         timer = web_context.get_admin_timer()
         timer_hour = timer.add_timer_hour(stored_timer_hour)
         message = _('Hour [{hour}] has been created.').format(hour=timer_hour.name)
-        if 'add_other' in data:
+        if add_other:
             template_context = self._timer_hour_form_modal_context(
                 web_context, FormAction.CREATE, success_message=message
             )

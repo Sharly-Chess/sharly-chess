@@ -13,6 +13,7 @@ from litestar.datastructures import UploadFile
 from litestar.plugins.htmx import HTMXRequest, HTMXTemplate
 from litestar.controller import Controller
 from litestar.response import Template
+from typing_extensions import TYPE_CHECKING
 
 from common import check_rgb_str, DEVEL_ENV
 from common.exception import FormError
@@ -33,6 +34,9 @@ from donate.certificate_reader import DonationCertificateReader
 from utils import Utils
 from utils.date_time import format_date, format_date_range, format_datetime
 from web.messages import Message
+
+if TYPE_CHECKING:
+    from web.session import BoolSessionVariable
 
 logger: Logger = get_logger()
 
@@ -377,6 +381,19 @@ class WebContext:
             return ''
         return format_date_range(start_date, stop_date)
 
+    @staticmethod
+    def resolve_add_other(
+        data: dict[str, str], session_variable: 'BoolSessionVariable'
+    ) -> bool:
+        if 'add_other' in data:
+            add_other = True
+        elif 'create' in data:
+            add_other = False
+        else:
+            return session_variable.get()
+        session_variable.set(add_other)
+        return add_other
+
     @property
     def template_context(self) -> dict[str, Any]:
         """
@@ -476,15 +493,9 @@ class BaseController(Controller):
             return Reswap(content=None, method='none', status_code=HTTP_304_NOT_MODIFIED)
         """
         try:
-            if_modified_since: int = httpdate_to_unixtime(
-                request.headers[self.IF_MODIFIED_SINCE_HEADER]
-            )
-            logger.debug(
-                'request.headers[%s]=%s',
-                self.IF_MODIFIED_SINCE_HEADER,
-                request.headers[self.IF_MODIFIED_SINCE_HEADER],
-            )
-            logger.debug('if_modified_since=%d', if_modified_since)
+            http_modified_since = request.headers[self.IF_MODIFIED_SINCE_HEADER]
+            logger.debug('%s=%s', self.IF_MODIFIED_SINCE_HEADER, http_modified_since)
+            if_modified_since = httpdate_to_unixtime(http_modified_since)
             return if_modified_since
         except KeyError:
             return None

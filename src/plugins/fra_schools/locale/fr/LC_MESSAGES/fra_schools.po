@@ -2,9 +2,6 @@
 msgid "%(string)s:"
 msgstr "%(string)s :"
 
-msgid "A positive integer is expected."
-msgstr "Un entier positif est attendu."
-
 msgid "Add"
 msgstr "Ajouter"
 
@@ -20,10 +17,6 @@ msgstr "Ajoute la prise en charge des compétitions scolaires en France"
 msgid "At least one school is expected."
 msgstr "Au moins un établissement est attendu."
 
-#, python-format
-msgid "Average age: %(years)s"
-msgstr "Âge moyen : %(years)s ans"
-
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -36,9 +29,6 @@ msgstr "Ville"
 msgid "Code"
 msgstr "Code"
 
-msgid "Complete Team"
-msgstr "Équipe complète"
-
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -47,6 +37,9 @@ msgstr "Metre à jour l'établissement scolaire sélectionné."
 
 msgid "Exclude: {values}"
 msgstr "Exclure : {values}"
+
+msgid "FFE Scholar Championship"
+msgstr "Classement championnat scolaire FFE"
 
 msgid "French School Competitions"
 msgstr "Compétitions scolaires françaises"
@@ -57,6 +50,9 @@ msgstr "Établissements Scolaires"
 msgid "French school"
 msgstr "Établissement scolaire"
 
+msgid "French schools (FRA)"
+msgstr "Établissements scolaires (FRA)"
+
 msgid "French schools championship"
 msgstr "Championnat de France des écoles et collèges"
 
@@ -66,35 +62,23 @@ msgstr "Cacher les codes UAI lors de la mise en ligne FFE"
 msgid "Include incomplete teams"
 msgstr "Inclure les équipes incomplètes"
 
-msgid "Incomplete Team"
-msgstr "Équipe incomplète"
-
 msgid "Invalid format (expected: {format})."
 msgstr "Format invalide (attendu : {format})."
 
 msgid "Loading more results…"
 msgstr "Plus de résultats en cours de chargement…"
 
-msgid "Maximum number of teams per school."
-msgstr "Nombre d'équipes maximum par établissement."
+msgid "Max. teams per school:"
+msgstr "Max. d'équipes par établissement :"
 
-#, python-format
-msgid "Missing boys: %(count)d"
-msgstr "Garçons manquants: %(count)d"
+msgid "Missing boys"
+msgstr "Garçons manquants"
 
-#, python-format
-msgid "Missing girls: %(count)d"
-msgstr "Filles manquantes : %(count)d"
+msgid "Missing girls"
+msgstr "Filles manquantes"
 
 msgid "Name"
 msgstr "Nom"
-
-#, python-format
-msgid "Other missing players: %(count)d"
-msgstr "Autres joueur·euses manquant·es : %(count)d"
-
-msgid "Overall ranking"
-msgstr "Classement général"
 
 msgid "Please validate the French school to continue."
 msgstr "Merci de valider l'établissement scolaire avant de continuer."
@@ -102,17 +86,8 @@ msgstr "Merci de valider l'établissement scolaire avant de continuer."
 msgid "Postal code"
 msgstr "Code postal"
 
-msgid "Pts *** POINTS COLUMN HEADER"
-msgstr "Pts"
-
-msgid "Ranking by school"
-msgstr "Classement par établissement"
-
 msgid "Ranking by school after round #{round}"
 msgstr "Classement par établissement après la ronde n°{round}"
-
-msgid "Rk. *** RANK COLUMN HEADER"
-msgstr "Pl."
 
 msgid "Save"
 msgstr "Enregistrer"
@@ -136,9 +111,6 @@ msgstr "Rechercher par : %(fields)s"
 msgid "Teams are considered complete when they have 8 players including 2 boys and 2 girls."
 msgstr "Les équipes sont considérées complètes lorsqu'elles comprennent 8 joueur·euses dont 2 garçons et 2 filles."
 
-msgid "Teams per school:"
-msgstr "Équipes par établissement :"
-
 #, python-format
 msgid "The database [%(database)s] is not installed (to install it: Menu > Data sources)."
 msgstr "La base de données [%(database)s] n'est pas installée (pour l'installer : Menu > Sources de données)."
@@ -150,23 +122,11 @@ msgstr "La base de données [%(database)s] a été mise à jour pour la dernièr
 msgid "The school with that code already exists."
 msgstr "L'établissement ayant ce code existe déjà."
 
-msgid "The tournament has not yet started."
-msgstr "Le tournoi n'est pas encore commencé."
-
 msgid "This field is not editable."
 msgstr "Ce champ n'est pas modifiable."
 
 msgid "This field is required."
 msgstr "Ce champ est obligatoire."
-
-msgid "This round is not finished (last finished: #{round})."
-msgstr "Cette ronde n'est pas terminée (dernière ronde terminée : n°{round})."
-
-msgid "This round is not valid (the tournament has {rounds} rounds)."
-msgstr "Ce numéro de ronde n'est pas valide (le tournoi comporte {rounds} rondes)."
-
-msgid "Total"
-msgstr "Total"
 
 msgid "UAI code"
 msgstr "Code UAI"
@@ -180,9 +140,6 @@ msgstr "Les codes UAI sont nécessaires pour distinguer les établissements avec
 #, python-format
 msgid "Update the school [%(school_name)s]"
 msgstr "Mettre à jour l'établissement [%(school_name)s]"
-
-msgid "incomplete *** INCOMPLETE TEAM"
-msgstr "incomplète"
 
 msgid "{count} school represented"
 msgid_plural "{count} schools represented"
