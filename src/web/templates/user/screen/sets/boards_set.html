@@ -65,6 +65,13 @@
                                         hx-get="{{ url_for(
                                             'user-result-modal',
                                             event_uniq_id=user_event.uniq_id,
+                                            display_controller_id=display_controller.id,
+                                            tournament_id=tournament.id,
+                                            board_id=board.id
+                                        ) if display_controller else url_for(
+                                            'user-result-modal',
+                                            is_screen=1,
+                                            event_uniq_id=user_event.uniq_id,
                                             screen_uniq_id=screen.uniq_id,
                                             tournament_id=tournament.id,
                                             board_id=board.id
